@@ -10,12 +10,23 @@ class
 inherit
 
 	AUT_TEST_CASE_WRITTER_I
+		redefine
+			tc_class_content
+		end
 
 	AUT_DESERIALIZATION_DATA_REGISTER
 		undefine
 			copy,
 			is_equal
 		end
+
+	EPA_UTILITY
+
+	SHARED_TYPES
+
+	ITP_VARIABLE_CONSTANTS
+
+	ERL_G_TYPE_ROUTINES
 
 create
 	default_create
@@ -32,14 +43,13 @@ feature -- Data event handler
 
 feature -- Configuration
 
-	config (a_sys: like system; a_session: like session; a_conf: like configuration)
+	config (a_error_handler: like error_handler; a_conf: like configuration)
 			-- <Precursor>
 		local
 			l_dir_name: STRING
 			l_dir: DIRECTORY
 		do
-			system := a_sys
-			session := a_session
+			error_handler := a_error_handler
 			configuration := a_conf
 
 			-- Prepare directory.
@@ -55,11 +65,8 @@ feature -- Access
 	configuration: TEST_GENERATOR_CONF_I
 			-- Configuration of current AutoTest run.
 
-	session: AUT_SESSION
-			-- Current AutoTest Session.
-
-	system: SYSTEM_I
-			-- Current system.
+	error_handler: UT_ERROR_HANDLER
+			-- <Precursor>
 
 	test_case_dir: STRING
 			-- Directory where the generated test cases would be saved.
@@ -67,12 +74,15 @@ feature -- Access
 			Result := configuration.data_output
 		end
 
+feature{NONE} -- Status report
+
+	is_exception_information_resolved: BOOLEAN
+			-- Is the exception information resolved?
+
 feature{NONE} -- Implementation
 
 	generate_test_case (a_data: AUT_DESERIALIZED_DATA)
 			-- Generate the test case from 'a_data' and save it into `test_case_dir'.
-		require
-			is_data_ready: a_data.is_resolved and then a_data.is_good
 		local
 			l_transition_loader: AUT_FEATURE_CALL_TRANSITION_LOADER_FROM_TEST_CASE
 			l_transition: SEM_FEATURE_CALL_TRANSITION
@@ -105,20 +115,6 @@ feature{NONE} -- Implementation
 			recursive_create_directory (l_file_name.string)
 		end
 
-	truncate_class_name (a_length: INTEGER)
-			-- Truncate the class name so that it contains no more than 'a_length' characters.
-			-- Due to the constraint on the length of file name, we need to truncate the extra part.
-			-- This may result in incomplete information in the file name.
-		local
-			l_name: STRING
-		do
-			l_name := tc_class_name
-			if l_name.count > a_length then
-				session.error_handler.report_warning_message ("Class name truncated: " + l_name)
-				tc_class_name_cache := l_name.substring (1, a_length)
-			end
-		end
-
 	tc_class_full_path (a_dir_name: STRING): STRING
 			-- <Precursor>
 		local
@@ -137,9 +133,23 @@ feature{NONE} -- Implementation
 			Result := l_file_name.string
 		end
 
+feature{NONE} -- Class content
+
+	tc_class_content: STRING
+			-- <Precursor>
+			-- Return empty string if there was error during the extraction.
+		local
+			l_content: STRING
+		do
+			l_content := Precursor
+			if not current_data.is_summarization_available then
+				l_content := ""
+			end
+			Result := l_content
+		end
+
 	tc_class_name: STRING
 			-- <Precursor>
-			-- Get test case class name 'tc_class_name_cache'.
 		local
 			l_name: STRING
 		do
@@ -149,72 +159,109 @@ feature{NONE} -- Implementation
 				l_name.replace_substring_all (ph_class_under_test, tc_class_under_test)
 				l_name.replace_substring_all (ph_feature_under_test, tc_feature_under_test)
 				l_name.replace_substring_all (ph_success_status, tc_success_status)
-				l_name.replace_substring_all (ph_exception_code, tc_exception_code)
-				l_name.replace_substring_all (ph_breakpoint_index, tc_breakpoint_index)
-				l_name.replace_substring_all (ph_recipient, tc_recipient)
+				l_name.replace_substring_all (ph_exception_code, tc_exception_code.out)
+				l_name.replace_substring_all (ph_breakpoint_index, tc_breakpoint_index.out)
+				l_name.replace_substring_all (ph_exception_recipient, tc_exception_recipient)
+				l_name.replace_substring_all (ph_exception_recipient_class, tc_exception_recipient_class)
+--				l_name.replace_substring_all (ph_recipient, tc_recipient)
 				l_name.replace_substring_all (ph_assertion_tag, tc_assertion_tag)
 				l_name.replace_substring_all (ph_hash_code, tc_hash_code)
 				l_name.replace_substring_all (ph_uuid, tc_uuid)
+
 				tc_class_name_cache := l_name
 			end
 			Result := tc_class_name_cache
 		end
 
-	string_to_identifier (a_str: STRING): STRING
-			-- Get an identifier out of 'a_str' by removing all the invalid characters.
-		local
-			l_is_start: BOOLEAN
-			l_char: CHARACTER
-			l_index: INTEGER
+	tc_is_query: BOOLEAN
+			-- <Precursor>
 		do
-			l_is_start := True
-			from
-				create Result.make (a_str.count)
-				l_index := 1
-			until
-				l_index > a_str.count
-			loop
-				l_char := a_str[l_index]
-				if (l_is_start and then l_char.is_alpha)
-						or else (not l_is_start and then (l_char.is_alpha_numeric or else l_char = '_')) then
-					Result.append_character (l_char)
-					if l_is_start then
-						l_is_start := False
-					end
-				end
-				l_index := l_index + 1
-			end
+			Result := current_data.is_feature_query
 		end
 
-	tc_exception_code: STRING
-			-- If the test case is a failing one, return the exception code.
-			-- Otherwise, return "0".
+    tc_is_creation: BOOLEAN
+            -- <Precursor>
+        do
+        	Result := current_data.is_feature_creation
+        end
+
+    tc_is_passing: BOOLEAN
+            -- <Precursor>
+        do
+        	Result := current_data.is_execution_successful
+        end
+
+	tc_exception_recipient: STRING
+			-- <Precursor>
 		do
-			if tc_exception_code_cache = Void then
-				resolve_test_case_information
+			if not is_exception_information_resolved then
+				resolve_exception_information
+			end
+			Result := tc_exception_recipient_cache
+        end
+
+	tc_exception_recipient_class: STRING
+			-- <Precursor>
+        do
+			if not is_exception_information_resolved then
+				resolve_exception_information
+			end
+			Result := tc_exception_recipient_class_cache
+        end
+
+	tc_argument_count: INTEGER
+			-- <Precursor>
+		do
+			Result := current_data.test_case.argument_count
+        end
+
+    tc_operand_table_initializer: STRING
+            -- <Precursor>
+		local
+			l_feature_call: AUT_CALL_BASED_REQUEST
+			l_operand_indexes: SPECIAL[INTEGER]
+			l_line: STRING
+			l_index: INTEGER
+        do
+			if tc_operand_table_initializer_cache = Void then
+				l_feature_call := current_data.test_case
+				l_operand_indexes := l_feature_call.operand_indexes
+				create tc_operand_table_initializer_cache.make (20 * l_operand_indexes.count + 1)
+				from
+					l_index := 0
+				until
+					l_index >= l_operand_indexes.count
+				loop
+					l_line := tc_operand_table_initializer_template.twin
+					l_line.replace_substring_all (ph_operand_index, l_index.out)
+					l_line.replace_substring_all (ph_var_index, l_operand_indexes[l_index].out)
+					tc_operand_table_initializer_cache.append (l_line + "%N")
+--					Result.put (variable_name_prefix + l_operand_indexes[l_index].out, l_index)
+					l_index := l_index + 1
+				end
+			end
+			tc_operand_table_initializer_cache.prune_all_trailing ('%N')
+			Result := tc_operand_table_initializer_cache
+        end
+
+	tc_exception_code: INTEGER
+			-- If the test case is a failing one, return the exception code.
+			-- Otherwise, return 0.
+		do
+			if not is_exception_information_resolved then
+				resolve_exception_information
 			end
 			Result := tc_exception_code_cache
 		end
 
-	tc_breakpoint_index: STRING
+	tc_breakpoint_index: INTEGER
 			-- If the test case is a failing one, return the breakpoint index.
-			-- Otherwise, return "0".
+			-- Otherwise, return 0.
 		do
-			if tc_breakpoint_index_cache = Void then
-				resolve_test_case_information
+			if not is_exception_information_resolved then
+				resolve_exception_information
 			end
 			Result := tc_breakpoint_index_cache
-		end
-
-	tc_recipient: STRING
-			-- If the test case is a failing one, return the recipient info in the
-			-- 	format of "RC_$(CLASS_NAME)__$(FEATURE_NAME)"
-			-- Otherwise, use the class name and feature name under test.
-		do
-			if tc_recipient_cache = Void then
-				resolve_test_case_information
-			end
-			Result := tc_recipient_cache
 		end
 
 	tc_assertion_tag: STRING
@@ -223,7 +270,7 @@ feature{NONE} -- Implementation
 			-- Otherwise, return "TAG_noname".
 		do
 			if tc_assertion_tag_cache = Void then
-				resolve_test_case_information
+				resolve_exception_information
 			end
 			Result := tc_assertion_tag_cache
 		end
@@ -278,10 +325,11 @@ feature{NONE} -- Implementation
 	tc_success_status: STRING
 			-- <Precursor>
 		do
-			if current_data.trace_str.count /= 0 then
-				Result := "F"
-			else
+--			Result := current_data.is_execution_successful
+			if current_data.is_execution_successful then
 				Result := "S"
+			else
+				Result := "F"
 			end
 		end
 
@@ -301,16 +349,23 @@ feature{NONE} -- Implementation
 			-- <Precursor>
 		local
 			l_data: like current_data
-			l_all_var_table: HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			l_table, l_all_var_table: HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			l_var_name: STRING
 			l_var: ITP_VARIABLE
 			l_type: TYPE_A
 			l_line, l_dec: STRING
 		do
 			l_data := current_data
-			create l_all_var_table.make (l_data.operand_types.count + l_data.variable_types.count)
-			l_all_var_table.copy (l_data.operand_types)
-			l_all_var_table.fill (l_data.variable_types)
+			create l_all_var_table.make (l_data.operand_type_table.count + l_data.variable_type_table.count)
+			l_all_var_table.copy (l_data.operand_type_table)
+			from
+				l_table := l_data.variable_type_table
+				l_table.start
+			until l_table.after
+			loop
+				l_all_var_table.put (l_table.item_for_iteration, l_table.key_for_iteration)
+				l_table.forth
+			end
 
 			from
 				create l_dec.make (128)
@@ -343,12 +398,19 @@ feature{NONE} -- Implementation
 		do
 			create Result.make (128)
 			l_data := current_data
-			l_operand_types := l_data.operand_types
-			l_variable_types := l_data.variable_types
+
+			-- Collect all the operands and variables types into 'l_all_types'
+			l_operand_types := l_data.operand_type_table
+			l_variable_types := l_data.variable_type_table
 			create l_all_types.make (l_operand_types.count + l_variable_types.count)
 			l_all_types.compare_objects
 			l_all_types.copy (l_operand_types)
-			l_all_types.fill (l_variable_types)
+			from l_variable_types.start
+			until l_variable_types.after
+			loop
+				l_all_types.put (l_variable_types.item_for_iteration, l_variable_types.key_for_iteration)
+				l_variable_types.forth
+			end
 
 			-- Initialize all local variables.
 			from
@@ -446,15 +508,26 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 			l_hash_value: INTEGER
 		do
-			l_hash_string := current_data.trans_hashcode
-			l_index := l_hash_string.index_of ('.', 1)
-			l_index := l_hash_string.index_of ('.', l_index + 1)
-			l_hash_string := l_hash_string.substring (l_index + 1, l_hash_string.count)
-			l_hash_value := l_hash_string.hash_code
-			Result := l_hash_value.out
+			Result := current_data.trans_hashcode.hash_code.out
 		end
 
-feature{NONE} -- Implementation
+feature{NONE} -- Cache
+
+	tc_class_name_cache: STRING
+			-- Cache for calculated class name.
+
+	tc_uuid_cache: STRING
+			-- Cache for the uuid generated last time.
+
+	tc_exception_code_cache: INTEGER
+			-- Cache for breakpoint index in case of a failing test case.
+
+	tc_breakpoint_index_cache: INTEGER
+	tc_exception_recipient_cache: detachable STRING
+	tc_exception_recipient_class_cache: detachable STRING
+	tc_assertion_tag_cache: detachable STRING
+	tc_test_case_cache: detachable AUT_CALL_BASED_REQUEST
+	tc_operand_table_initializer_cache: detachable STRING
 
 	reset_cache
 			-- Reset all cached information.
@@ -463,22 +536,61 @@ feature{NONE} -- Implementation
 			tc_uuid_cache := Void
 
 			-- test case information.
-			tc_exception_code_cache := Void
-			tc_breakpoint_index_cache := Void
-			tc_recipient_cache := Void
+			is_exception_information_resolved := False
 			tc_assertion_tag_cache := Void
+			tc_exception_recipient_cache := Void
+			tc_exception_recipient_class_cache := Void
+			tc_operand_table_initializer_cache := Void
 		end
 
-	tc_exception_code_cache: STRING
-	tc_breakpoint_index_cache: STRING
-	tc_recipient_cache: STRING
-	tc_assertion_tag_cache: STRING
+feature{NONE} -- Auxiliary features
 
-	resolve_test_case_information
-			-- Resolve relevant test case information from the exception trace, if any.
-			-- The information would be used for constructing the test case class name.
+	truncate_class_name (a_length: INTEGER)
+			-- Truncate the class name so that it contains no more than 'a_length' characters.
+			-- Due to the constraint on the length of file name, we need to truncate the extra part.
+			-- This may result in incomplete information in the file name.
+		local
+			l_name: STRING
+		do
+			l_name := tc_class_name
+			if l_name.count > a_length then
+				error_handler.report_warning_message ("Class name truncated: " + l_name)
+				tc_class_name_cache := l_name.substring (1, a_length)
+			end
+		end
+
+	string_to_identifier (a_str: STRING): STRING
+			-- Get an identifier out of 'a_str' by removing all the invalid characters.
+		local
+			l_is_start: BOOLEAN
+			l_char: CHARACTER
+			l_index: INTEGER
+		do
+			l_is_start := True
+			from
+				create Result.make (a_str.count)
+				l_index := 1
+			until
+				l_index > a_str.count
+			loop
+				l_char := a_str[l_index]
+				if (l_is_start and then l_char.is_alpha)
+						or else (not l_is_start and then (l_char.is_alpha_numeric or else l_char = '_')) then
+					Result.append_character (l_char)
+					if l_is_start then
+						l_is_start := False
+					end
+				end
+				l_index := l_index + 1
+			end
+		end
+
+
+	resolve_exception_information
+			-- Resolve relevant exception information from the exception trace, if any.
 		require
 			trace_attached: current_data /= Void and then current_data.trace_str /= Void
+			exception_information_not_resolved: not is_exception_information_resolved
 		local
 			l_trace: STRING
 			l_lines: LIST[STRING]
@@ -492,12 +604,14 @@ feature{NONE} -- Implementation
 			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
 			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
 		do
+			is_exception_information_resolved := False
 			l_trace := current_data.trace_str
 			if l_trace.is_empty then
-				tc_exception_code_cache := once "c0"
-				tc_breakpoint_index_cache := once "b0"
-				tc_recipient_cache := "REC_" + tc_class_under_test + "__" + tc_feature_under_test
-				tc_assertion_tag_cache := "TAG_noname"
+				tc_exception_code_cache := 0
+				tc_breakpoint_index_cache := 0
+				tc_exception_recipient_cache := tc_feature_under_test
+				tc_exception_recipient_class_cache := tc_class_under_test
+				tc_assertion_tag_cache := "noname"
 			else
 				l_trace.prune_all_leading ('%N')
 				l_trace.prune_all_trailing ('%N')
@@ -507,26 +621,29 @@ feature{NONE} -- Implementation
 				l_exception_code := l_lines[1]
 				l_exception_code.prune_all_leading ('-')
 				check valid_exception_code: l_exception_code.is_integer end
-				tc_exception_code_cache := "c" + l_exception_code
+				tc_exception_code_cache := l_exception_code.to_integer_32
 
-				-- Recipient
+				-- Recipient feature
 				l_recipient_feature := l_lines[2]
 				l_recipient_feature.prune_all_leading ('-')
+				tc_exception_recipient_cache := l_recipient_feature
+
+				-- Recipient class
 				l_recipient_class := l_lines[3]
 				l_recipient_class.prune_all_leading ('-')
-				tc_recipient_cache := "REC_" + l_recipient_class + "__" + l_recipient_feature
+				tc_exception_recipient_class_cache := l_recipient_class
 
 				-- Assertion tag
 				l_assertion_tag := l_lines[4]
 				l_assertion_tag.prune_all_leading ('-')
 				if l_assertion_tag.is_empty then
-					tc_assertion_tag_cache := "TAG_noname"
+					tc_assertion_tag_cache := "noname"
 				else
 					l_assertion_tag_new := string_to_identifier (l_assertion_tag)
 					if l_assertion_tag /~ l_assertion_tag_new then
-						session.error_handler.report_error_message ("Unexpected character(s) in the failing assertion tag: " + l_assertion_tag)
+						error_handler.report_error_message ("Unexpected character(s) in the failing assertion tag: " + l_assertion_tag)
 					end
-					tc_assertion_tag_cache := "TAG_" + l_assertion_tag_new
+					tc_assertion_tag_cache := l_assertion_tag_new
 				end
 
 				-- Breakpoint index
@@ -542,21 +659,17 @@ feature{NONE} -- Implementation
 				loop
 					l_frame := l_frames.item_for_iteration
 					if l_frame /= Void and then l_recipient_class ~ l_frame.origin_class_name and then l_recipient_feature ~ l_frame.feature_name then
---							and then l_assertion_tag ~ l_frame.tag then
---						check correct_context: l_recipient_class ~ l_frame.context_class_name and then l_recipient_feature ~ l_frame.feature_name end
-						tc_breakpoint_index_cache := "b" + l_frame.breakpoint_slot_index.out
+						tc_breakpoint_index_cache := l_frame.breakpoint_slot_index
 						l_done := True
 					end
 					l_frames.forth
 				end
 				check tc_breakpoint_index_attached: tc_breakpoint_index /= Void end
 
+				is_exception_information_resolved := True
 			end
 		ensure
 			test_case_information_attached:
-				tc_exception_code /= Void and then
-				tc_breakpoint_index_cache /= Void and then
-				tc_recipient_cache /= Void and then
 				tc_assertion_tag_cache /= Void
 		end
 
@@ -569,12 +682,6 @@ feature{NONE} -- Implementation
 			-- Reset class name cache.
 			tc_class_name_cache := Void
 		end
-
-	tc_class_name_cache: STRING
-			-- Cache for calculated class name.
-
-	tc_uuid_cache: STRING
-			-- Cache for the uuid generated last time.
 
 	current_data: detachable AUT_DESERIALIZED_DATA
 			-- Current data from which the test case would be extracted.

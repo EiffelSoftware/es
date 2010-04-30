@@ -11,6 +11,13 @@ inherit
 
 	AUT_FILE_SYSTEM_ROUTINES
 
+feature -- Access
+
+	error_handler: UT_ERROR_HANDLER
+			-- Current AutoTest Session.
+		deferred
+		end
+
 feature -- Status report
 
 	is_successful: BOOLEAN
@@ -33,43 +40,28 @@ feature -- Operation
 		do
 			is_successful := True
 
-			-- Prepare test case directory.
-			prepare_directory (a_dir_name)
---			create l_file_name.make_from_string (a_dir_name)
---			l_file_name.set_subdirectory (tc_class_under_test)
---			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
---			recursive_create_directory (l_file_name.string)
+			l_class_content := tc_class_content
 
-			-- Create test case file.
-			l_name := tc_class_full_path (a_dir_name)
---			l_length := 255 - l_file_name.string.count - 2
---			truncate_class_name (l_length)
---			l_file_name.set_file_name (tc_class_name)
---			l_file_name.add_extension (tc_name_extension)
-			create l_file.make (l_name)
-
-			-- Write test case.
-			l_file.recursive_open_write
-			if not l_file.is_open_write then
-				is_successful := False
+			if not l_class_content.is_empty then
+				-- Prepare test case directory.
+				prepare_directory (a_dir_name)
+				-- Create test case file.
+				l_name := tc_class_full_path (a_dir_name)
+				create l_file.make (l_name)
+				-- Write test case.
+				l_file.recursive_open_write
+				if not l_file.is_open_write then
+					is_successful := False
+				else
+					l_file.put_string (l_class_content)
+					l_file.close
+				end
 			else
-				l_class_content := tc_class_content
-				l_file.put_string (l_class_content)
-				l_file.close
+				error_handler.report_error_message ("Error generating test case class content: " + tc_class_full_path (a_dir_name))
 			end
 		end
 
 feature{NONE} -- Construction
-
-	prepare_directory (a_dir_name: STRING)
-			-- Prepare the directory where the class will be saved.
-		deferred
-		end
-
-	tc_class_full_path (a_dir_name: STRING): STRING
-			-- Full path of the test case file.
-		deferred
-		end
 
 	tc_class_content: STRING
 			-- Construct a test case class, with its name in 'name' and content in 'content'.
@@ -88,6 +80,15 @@ feature{NONE} -- Construction
 			l_all_var_dec := tc_all_variable_declaration
 			l_class_str.replace_substring_all (ph_var_declaration, l_all_var_dec)
 			l_class_str.replace_substring_all (ph_body, tc_body)
+			l_class_str.replace_substring_all (ph_is_creation, tc_is_creation.out)
+			l_class_str.replace_substring_all (ph_is_query, tc_is_query.out)
+			l_class_str.replace_substring_all (ph_is_passing, tc_is_passing.out)
+			l_class_str.replace_substring_all (ph_exception_code, tc_exception_code.out)
+			l_class_str.replace_substring_all (ph_exception_recipient, tc_exception_recipient)
+			l_class_str.replace_substring_all (ph_exception_recipient_class, tc_exception_recipient_class)
+			l_class_str.replace_substring_all (ph_assertion_tag, tc_assertion_tag)
+			l_class_str.replace_substring_all (ph_argument_count, tc_argument_count.out)
+			l_class_str.replace_substring_all (ph_operand_table_initializer, tc_operand_table_initializer)
 			l_class_str.replace_substring_all (ph_trace, tc_trace)
 			l_class_str.replace_substring_all (ph_pre_serialization, tc_pre_serialization)
 			l_class_str.replace_substring_all (ph_post_serialization, tc_post_serialization)
@@ -111,7 +112,63 @@ feature{NONE} -- Construction
 			Result := l_class_str
 		end
 
-	tc_directory_postfix: STRING
+	prepare_directory (a_dir_name: STRING)
+			-- Prepare the directory where the class will be saved.
+		deferred
+		end
+
+	tc_class_full_path (a_dir_name: STRING): STRING
+			-- Full path of the test case file.
+		deferred
+		end
+
+	tc_is_query: BOOLEAN
+			-- Is the feature under test a query?
+		deferred
+		end
+
+    tc_is_creation: BOOLEAN
+            -- Is the feature under test a creation feature?
+        deferred
+        end
+
+    tc_is_passing: BOOLEAN
+            -- Is the test case passing?
+        deferred
+        end
+
+    tc_exception_code: INTEGER
+            -- Exception code. 0 for passing test cases.
+        deferred
+        end
+
+    tc_assertion_tag: STRING
+			-- Tag of the violated assertion, if any.
+			-- Empty string for passing test cases.
+        deferred
+        end
+
+	tc_exception_recipient: STRING
+			-- Feature of the exception recipient, same as `tc_feature_under_test' in passing test cases.
+        deferred
+        end
+
+	tc_exception_recipient_class: STRING
+			-- Class of the recipient feature of the exception, same as `tc_class_under_test' in passing test cases.
+        deferred
+        end
+
+	tc_argument_count: INTEGER
+			-- Number of arguments of the feature under test.
+        deferred
+        end
+
+    tc_operand_table_initializer: STRING
+            -- Code to initialize the operand table.
+        deferred
+        end
+
+    tc_directory_postfix: STRING
 			-- Due to the practical limitation on number of files in one directory,
 			-- We might need to store the test cases for a feature into several directories.
 			-- This postfix string is introduced for this purpose. It is calculated for each test case,
@@ -221,7 +278,6 @@ feature{NONE} -- Constants
 	ph_success_status: STRING = "$(STATUS)"
 	ph_exception_code: STRING = "$(EXCEPTION_CODE)"
 	ph_breakpoint_index: STRING = "$(BREAKPOINT_INDEX)"
-	ph_recipient: STRING = "$(RECIPIENT)"
 	ph_assertion_tag: STRING = "$(ASSERTION_TAG)"
 	ph_hash_code: STRING = "$(HASH_CODE)"
 	ph_uuid: STRING = "$(UUID)"
@@ -232,6 +288,16 @@ feature{NONE} -- Constants
 	ph_trace: STRING = "$(TRACE)"
 	ph_pre_serialization: STRING = "$(PRE_SERIALIZATION)"
 	ph_post_serialization: STRING = "$(POST_SERIALIZATION)"
+	ph_is_creation: STRING = "$(IS_CREATION)"
+	ph_is_query: STRING = "$(IS_QUERY)"
+	ph_is_passing: STRING = "$(IS_PASSING)"
+	ph_exception_recipient: STRING = "$(EXCEPTION_RECIPIENT)"
+	ph_exception_recipient_class: STRING = "$(EXCEPTION_RECIPIENT_CLASS)"
+	ph_argument_count: STRING = "$(ARGUMENT_COUNT)"
+	ph_operand_table_initializer: STRING = "$(OPERAND_TABLE_INITIALIZER)"
+	ph_operand_index: STRING = "$(OPERAND_INDEX)"
+	ph_var_index: STRING = "$(VAR_INDEX)"
+
 
 	ph_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
 	ph_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
@@ -245,8 +311,10 @@ feature{NONE} -- Constants
 	tc_feature_name: STRING = "generated_test_1"
 	tc_generation_type: STRING = "AutoTest test case extracted from serialization"
 
-	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__$(EXCEPTION_CODE)__$(BREAKPOINT_INDEX)__$(RECIPIENT)__$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
+	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
 	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
+	tc_operand_table_initializer_template: STRING = "%T%T%TResult.put ($(VAR_INDEX),$(OPERAND_INDEX))"
+
 	tc_class_template: STRING = "[
 class 
 	$(CLASS_NAME)
@@ -254,7 +322,7 @@ class
 inherit
     EQA_SERIALIZED_TEST_SET
 	
-feature -- Test routines
+feature -- Test routine
 
     $(FEATURE_NAME)
         note
@@ -266,6 +334,54 @@ $(VAR_DECLARATION)
 $(BODY)
         end
         
+feature -- Test case information
+
+	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
+			-- Name of the class under test.
+
+	tci_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
+			-- Name of the feature under test.
+			
+	tci_is_creation: BOOLEAN = $(IS_CREATION)
+			-- Is the feature under test a creation feature?
+
+	tci_is_query: BOOLEAN = $(IS_QUERY)
+			-- Is the feature under test a query?
+	
+	tci_is_passing: BOOLEAN = $(IS_PASSING)
+			-- Is the test case passing?
+	
+	tci_exception_code: INTEGER = $(EXCEPTION_CODE)
+			-- Exception code. 0 for passing test cases.
+	
+	tci_assertion_tag: STRING = "$(ASSERTION_TAG)"
+			-- Tag of the violated assertion, if any.
+			-- Empty string for passing test cases.
+	
+	tci_exception_recipient: STRING = "$(EXCEPTION_RECIPIENT)"
+			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
+	
+	tci_exception_recipient_class: STRING = "$(EXCEPTION_RECIPIENT_CLASS)"
+			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
+	
+	tci_argument_count: INTEGER = $(ARGUMENT_COUNT)
+			-- Number of arguments of the feature under test.
+	
+	tci_operand_table: HASH_TABLE[INTEGER, INTEGER]
+			-- key is operand position index (0 means target, 1 means the first argument, 
+			-- and argument_count + 1 means the result, if any), value is the variable 
+			-- index of that operand.
+		do
+			create Result.make ($(ARGUMENT_COUNT) + 2)
+$(OPERAND_TABLE_INITIALIZER)
+		end
+
+    tci_exception_trace: STRING =
+			-- Exception trace.
+--<exception_trace>
+$(TRACE)
+--</exception_trace>
+
 feature{NONE} -- Serialization data
 
     pre_serialization: ARRAY [NATURAL_8]
@@ -287,22 +403,7 @@ $(POST_SERIALIZATION)
 --</post_serialization>
 			>>
 		end
-		
-feature{NONE} -- Test case information
 
-	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
-			-- Name of the class under test.
-
-	tci_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
-			-- Name of the feature under test.
-
-    tci_exception_trace: STRING =
-			-- Exception trace.
---<exception_trace>
-$(TRACE)
---</exception_trace>
-
-feature{NONE} -- Implementation
 
 note
 --<extra_information>

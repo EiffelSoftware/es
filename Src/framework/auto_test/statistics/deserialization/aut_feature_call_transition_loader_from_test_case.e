@@ -75,45 +75,64 @@ feature -- Operation
 
 feature{NONE} -- Implementation
 
+	last_test_case_summarization: detachable AUT_TEST_CASE_SUMMARIZATION
+			-- Test case summarization from the test case file.
+
 	last_class: detachable CLASS_C
 			-- Class of the last feature call.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.class_
+		end
 
 	last_feature: detachable FEATURE_I
 			-- Feature of the last feature call.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.feature_
+		end
 
 	last_feature_call: detachable AUT_CALL_BASED_REQUEST
 			-- Feature call.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.test_case
+		end
 
 	last_pre_state: detachable EPA_STATE
 			-- Object state before the transition.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.pre_state
+		end
 
 	last_post_state: detachable EPA_STATE
 			-- Object state after the transition.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.post_state
+		end
 
 	last_operand_names: detachable HASH_TABLE[STRING, INTEGER]
 			-- Hashtable mapping 0-based operand index to the variable name.
 		require
-			last_feature_call_attached: last_feature_call /= Void
-		local
-			l_feature_call: like last_feature_call
-			l_operand_indexes: SPECIAL[INTEGER]
-			l_index: INTEGER
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
 		do
-			l_feature_call := last_feature_call
-			l_operand_indexes := l_feature_call.operand_indexes
-			create Result.make (l_operand_indexes.count)
-			from
-				l_index := 0
-			until
-				l_index >= l_operand_indexes.count
-			loop
-				Result.put (variable_name_prefix + l_operand_indexes[l_index].out, l_index)
-				l_index := l_index + 1
-			end
+			Result := last_test_case_summarization.operand_position_name_table
 		end
 
 	last_operand_types: detachable HASH_TABLE[STRING, STRING]
 			-- Map between operand name and its associated type.
+		require
+			last_test_case_summarization_attached: last_test_case_summarization /= Void
+		do
+			Result := last_test_case_summarization.operand_name_type_in_string_table
+		end
 
 	parse_transition_from_string (a_string: STRING)
 			-- Parse a {SEM_FEATURE_CALL_TRANSITION} from 'a_string'.
@@ -124,6 +143,7 @@ feature{NONE} -- Implementation
 			l_code: STRING
 			l_operands_declaration: STRING
 			l_pre_state_report, l_post_state_report: STRING
+			l_summarization: AUT_TEST_CASE_SUMMARIZATION
 			l_context: EPA_CONTEXT
 			l_pos, l_count: INTEGER
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
@@ -174,6 +194,7 @@ feature{NONE} -- Implementation
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_operands_declaration := l_reg.captured_substring (1)
+			l_operands_declaration.replace_substring_all ("$", "%N")
 			l_pos := l_reg.captured_end_position (1)
 
 			-- Pre state report
@@ -189,245 +210,10 @@ feature{NONE} -- Implementation
 			check l_reg.has_matched end
 			l_post_state_report := l_reg.captured_substring (1)
 
-			last_class := first_class_starts_with_name (l_class_under_test)
-			check last_class /= Void end
-			last_feature := last_class.feature_named (l_feature_under_test)
-			last_operand_types := variable_type_table_from_string (l_operands_declaration)
-			last_feature_call := feature_call_from_string (l_code)
-
-			create l_context.make_with_variable_names (last_operand_types)
-			last_pre_state := state_from_string (l_context, l_pre_state_report)
-			last_post_state := state_from_string (l_context, l_post_state_report)
-
-			if attached {AUT_CREATE_OBJECT_REQUEST} last_feature_call then
-				l_is_creation := True
-			else
-				l_is_creation := False
-			end
-			create last_transition.make (last_class, last_feature, last_operand_names, l_context, l_is_creation)
+			create last_test_case_summarization.make (l_class_under_test, l_code, l_operands_declaration, l_exception_trace, l_pre_state_report, l_post_state_report)
+			create last_transition.make (last_class, last_feature, last_operand_names, last_test_case_summarization.context, last_test_case_summarization.is_feature_creation)
 			last_transition.set_precondition (last_pre_state)
 			last_transition.set_postcondition (last_post_state)
-		end
-
-	state_from_string (a_context: EPA_CONTEXT; a_state_string: STRING):EPA_STATE --_TRANSITION_MODEL_STATE
-			-- State from state string.
-		require
-			last_operand_types_attached: last_operand_types /= Void
-		local
-			l_exp_type: TYPE_A
-			l_valid_exp: BOOLEAN
-			l_str: STRING
-			l_list: LIST [STRING]
-			l_line: STRING
-			l_var_name: STRING
-			l_exp_str: STRING
-			l_val_str: STRING
-			l_start_index, l_end_index: INTEGER
-			l_new_var_index: INTEGER
-			l_new_var_name: STRING
-			l_expr: EPA_AST_EXPRESSION
-			l_value: EPA_EXPRESSION_VALUE
-			l_equations: HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_AST_EXPRESSION]
-		do			l_str := a_state_string.twin
-
-			-- Split types into lines of declarations
-			l_str.prune_all ('%R')
-			l_str.prune_all_leading ('%N')
-			l_str.prune_all_trailing ('%N')
-			l_list := l_str.split ('%N')
-
-			from
-				create l_equations.make (l_list.count + 1)
-				l_equations.compare_objects
-				l_list.start
-			until
-				l_list.after
-			loop
-				l_line := l_list.item_for_iteration
-
-				if l_line.starts_with ("--|") then
-					l_valid_exp := True
-					-- Object state.
-					l_start_index := 4
-					l_end_index := l_line.last_index_of ('=', l_line.count) - 1
-
-					if l_end_index /= -1 then
-						-- Prepend "var." to the expression
-						l_exp_str := l_var_name.twin
-						l_exp_str.append (once ".")
-						l_exp_str.append (l_line.substring (l_start_index, l_end_index))
-						l_exp_type := a_context.expression_text_type (l_exp_str)
-						create l_expr.make_with_text_and_type (a_context.class_, a_context.feature_, l_exp_str, a_context.class_, l_exp_type)
-
-						-- Value of the expression.
-						l_start_index := l_end_index + 2
-						l_val_str := l_line.substring (l_start_index, l_line.count)
-						l_val_str.prune_all (' ')
-
-						if l_val_str ~ once "[[Error]]" then
-							-- For example: "--|valid_index_set = [[Error]]"
-							l_valid_exp := False
-						elseif l_val_str.is_integer then
-							create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
-						elseif l_val_str.is_boolean then
-							create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
-						else
-							check not_supported: False end
-						end
-					elseif l_line.substring_index ("[[Void]]", 1) /= -1 then
-						-- "--|[[Void]]"
-						l_exp_str := l_var_name.twin
-						l_exp_type := a_context.expression_text_type (l_exp_str)
-						create l_expr.make_with_text_and_type (a_context.class_, a_context.feature_, l_exp_str, a_context.class_, l_exp_type)
-						create {EPA_VOID_VALUE} l_value.make
-					end
-
-					-- Store the <expr, value> pair
-					if l_valid_exp and then not l_equations.has (l_expr) then
-						l_equations.put (l_value, l_expr)
-					end
-
-				elseif l_line.starts_with ("--") then
-					-- Object name and type.
-					l_start_index := l_line.index_of ('v', 1)
-					l_end_index := l_line.index_of (':', l_start_index) - 1
-					l_var_name := l_line.substring (l_start_index, l_end_index)
-					l_var_name.prune_all (' ')
-				end
-
-				l_list.forth
-			end
-
-			create Result.make_from_expression_value (l_equations, last_class, last_feature)
-		end
-
-	operand_name_list: HASH_TABLE[STRING, INTEGER]
-			-- List of operand names, in the order of their position in the feature call.
-		local
-			l_feature_call: like last_feature_call
-			l_operand_indexes: SPECIAL[INTEGER]
-			l_index: INTEGER
-		do
-			l_feature_call := last_feature_call
-			l_operand_indexes := l_feature_call.operand_indexes
-			create Result.make (l_operand_indexes.count)
-			from
-				l_index := 0
-			until
-				l_index < l_operand_indexes.count
-			loop
-				Result.put (variable_name_prefix + l_operand_indexes[l_index].out, l_index)
-				l_index := l_index + 1
-			end
-		end
-
-	variable_type_table_from_string (a_string: STRING): HASH_TABLE[STRING, STRING]
-			-- A table of variable type and variable name, as declared in 'a_string'.
-			-- 'a_string': variable declarations separated by '$'
-		local
-			l_str: STRING
-			l_list: LIST [STRING]
-			l_table: like last_operand_types
-			l_line: STRING
-			l_var_name: STRING
-			l_type_str: STRING
-			l_start_index, l_end_index: INTEGER
-			l_type: TYPE_A
-		do
-			l_str := a_string
-			l_list := l_str.split ('$')
-
-			-- Analyze variables and their types.
-			create l_table.make (l_list.count + 1)
-			l_table.compare_objects
-
-			from
-				l_list.start
-			until l_list.after
-			loop
-				l_line := l_list.item_for_iteration
-				l_end_index := l_line.index_of (':', 1)
-
-				-- Variable.
-				l_var_name := l_line.substring (1, l_end_index - 1)
-				l_var_name.prune_all (' ')
-
-				-- Type.
-				l_type_str := l_line.substring (l_end_index + 1, l_line.count)
-				l_type_str.prune_all (' ')
-
-				l_table.put (l_type_str, l_var_name)
-
-				l_list.forth
-			end
-			Result := l_table
-
-		end
-
-	feature_call_from_string (a_string: STRING): AUT_CALL_BASED_REQUEST
-			-- Get the feature call from its string representation.
-		local
-			l_parser: AUT_REQUEST_PARSER
-			l_error_handler: UT_ERROR_HANDLER
-			l_input: STRING
-			l_request: AUT_REQUEST
-		do
-			l_input := ":execute "
-			l_input.append (a_string)
-
-			l_error_handler := error_handler
-			create l_parser.make (system, create {AUT_ERROR_HANDLER}.make (system))
-			l_parser.set_input (l_input)
-			l_parser.parse
-
-			if not l_parser.has_error and then attached {AUT_CALL_BASED_REQUEST} l_parser.last_request as lt_call then
-				-- Explictly set the target type, which will be needed when finding out the 'feature_to_call'.
-				if attached {AUT_INVOKE_FEATURE_REQUEST}lt_call as lt_invoke then
-					lt_invoke.set_target_type (base_type (last_operand_types[lt_invoke.target.name (variable_name_prefix)]))
-				end
-				Result := lt_call
-			else
-				l_error_handler.report_error_message ("Bad feature call.")
-				check bad_feature_call: False end
-			end
-		end
-
-	var_table_from_declaration (a_string: STRING): HASH_TABLE [TYPE_A, ITP_VARIABLE]
-			-- Parse the variable table from a variable declaration string.
-		local
-			l_lines: LIST[STRING]
-			l_line: STRING
-			l_var_str, l_type_str: STRING
-			l_var_index: INTEGER
-			l_var: ITP_VARIABLE
-			l_type: TYPE_A
-			l_pos, l_count: INTEGER
-		do
-			a_string.prune_all ('?')
-			a_string.prune_all_leading ('%N')
-			a_string.prune_all_trailing ('%N')
-			l_lines := a_string.split ('%N')
-			create Result.make (l_lines.count + 1)
-
-			if not l_lines.is_empty then
-				from
-					l_lines.start
-				until
-					l_lines.after
-				loop
-					l_pos := l_line.index_of (':', 1)
-					l_var_str := l_line.substring (1, l_pos - 1)
-					l_type_str := l_line.substring (l_pos + 1, l_count)
-
-					-- Get variable's index and the type.
-					l_var_index := variable_index (l_var_str, variable_name_prefix)
-					create l_var.make (l_var_index)
-					l_type := base_type (l_type_str)
-					Result.force (l_type, l_var)
-
-					l_lines.forth
-				end
-			end
 		end
 
 	Eiffel_id_pattern: STRING = "([A-Z]|[a-z])([a-z]|[A-Z]|[0-9]|_)*"

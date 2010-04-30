@@ -26,8 +26,7 @@ feature -- Equality
 			elseif u = Void or else v = Void then
 				Result := False
 			else
-				Result := u.is_good and then v.is_good
-						and then u.trans_hashcode ~ v.trans_hashcode
+				Result := u.trans_hashcode ~ v.trans_hashcode
 			end
 		end
 

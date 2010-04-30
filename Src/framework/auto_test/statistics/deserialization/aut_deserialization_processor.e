@@ -47,7 +47,7 @@ feature{NONE} -- Initialization
 
 			-- Config the `test_case_extractor' and subscribe it to `data_event'.
 			create test_case_extractor
-			test_case_extractor.config (a_system, a_session, a_conf)
+			test_case_extractor.config (a_session.error_handler, a_conf)
 
 			-- Subscribe listeners to the data event.
 			data_event.subscribe (agent test_case_extractor.on_serialization_data)
@@ -499,11 +499,11 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_is_unique: BOOLEAN
 		do
-			if not a_data.is_resolved then
-				a_data.resolve (system, session)
-			end
-			if a_data.is_resolved and then a_data.is_good
-					and then (a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
+--			if not a_data.is_resolved then
+--				a_data.resolve (system, session)
+--			end
+			if -- a_data.is_resolved and then a_data.is_good and then
+					(a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
 					and then (not a_data.is_execution_successful implies configuration.is_failing_test_case_deserialization_enabled) then
 				check a_data.class_ /= Void and then a_data.feature_ /= Void end
 				register.put_value (a_data, a_data.feature_, a_data.class_)
