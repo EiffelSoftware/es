@@ -22,7 +22,7 @@ inherit
 create
 	make
 
-feature{SEM_TRANSITION_FACTORY} -- Initialization
+feature{NONE} -- Initialization
 
 	make (a_class: like class_; a_feature: like feature_;  a_operands: HASH_TABLE [STRING, INTEGER]; a_context: like context; a_is_creation: BOOLEAN)
 			-- Initialize Current as the transition of `a_feature' in `a_class'.

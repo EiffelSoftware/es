@@ -336,6 +336,9 @@ $(BODY)
         
 feature -- Test case information
 
+	tci_class_name: STRING = "$(CLASS_NAME)"
+			-- Name of current class
+
 	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
 			-- Name of the class under test.
 
