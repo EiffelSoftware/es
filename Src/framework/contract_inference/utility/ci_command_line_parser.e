@@ -39,6 +39,7 @@ feature -- Basic operations
 			l_args: DS_LINKED_LIST [STRING]
 			l_build_project_option: AP_STRING_OPTION
 			l_feature_name_option: AP_STRING_OPTION
+			l_class_name_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -53,13 +54,21 @@ feature -- Basic operations
 			l_feature_name_option.set_description ("Format: feature <feature_name>. Specify that when building project for contract inference, only test cases for <feature_name> is used. When this option is not present, test cases for all features in the class are used. Only have effect when used with option %"build-from%".")
 			l_parser.options.force_last (l_feature_name_option)
 
+			create l_class_name_option.make_with_long_form ("class")
+			l_class_name_option.set_description ("Specify name of class whose contracts are to be inferred.")
+			l_parser.options.force_last (l_class_name_option)
 
+			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_test_case_directory (l_build_project_option.parameter)
 			end
 
 			if l_feature_name_option.was_found then
 				config.set_feature_name_for_test_cases (l_feature_name_option.parameter)
+			end
+
+			if l_class_name_option.was_found then
+				config.set_class_name (l_class_name_option.parameter)
 			end
 		end
 

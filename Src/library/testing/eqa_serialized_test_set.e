@@ -103,6 +103,12 @@ feature{NONE} -- Implementation
             end
         end
 
+feature -- Test case
+
+	generated_test_1
+			-- Test routine
+		deferred
+		end
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"

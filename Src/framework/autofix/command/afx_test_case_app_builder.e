@@ -20,6 +20,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	EPA_FILE_UTILITY
+
 create
 	make
 
@@ -241,25 +243,10 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	copy_file (a_test_case_name: STRING; a_source_folder: STRING; a_destination_folder: STRING)
+	copy_test_case_file (a_test_case_name: STRING; a_source_folder: STRING; a_destination_folder: STRING)
 			-- Copy test case named `a_test_case_name' from `a_source_folder' to `a_destination_folder'.
-		local
-			l_source_path: FILE_NAME
-			l_source_file: PLAIN_TEXT_FILE
-			l_dest_path: FILE_NAME
-			l_dest_file: PLAIN_TEXT_FILE
 		do
-			create l_source_path.make_from_string (a_source_folder)
-			l_source_path.set_file_name (a_test_case_name + ".e")
-
-			create l_dest_path.make_from_string (a_destination_folder)
-			l_dest_path.set_file_name (a_test_case_name + ".e")
-
-			create l_source_file.make_open_read (l_source_path)
-			create l_dest_file.make_create_read_write (l_dest_path)
-			l_source_file.copy_to (l_dest_file)
-			l_source_file.close
-			l_dest_file.close
+			copy_file (a_test_case_name + once ".e", a_source_folder, a_destination_folder)
 		end
 
 	build_project
@@ -292,12 +279,12 @@ feature{NONE} -- Implementation
 			until
 				failing_test_cases.after
 			loop
-				failing_test_cases.item_for_iteration.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
+				failing_test_cases.item_for_iteration.do_all (agent copy_test_case_file (?, config.test_case_path, l_root_class_folder))
 				failing_test_cases.forth
 			end
 
 				-- Copy passing test cases into `system'.
-			temp_passing_test_cases.do_all (agent copy_file (?, config.test_case_path, l_root_class_folder))
+			temp_passing_test_cases.do_all (agent copy_test_case_file (?, config.test_case_path, l_root_class_folder))
 
 				-- Recompile current project.
 			freeze_and_c_compile

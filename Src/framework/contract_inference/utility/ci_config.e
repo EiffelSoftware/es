@@ -31,9 +31,24 @@ feature -- Access
 	test_case_directory: detachable STRING
 			-- Directory where test cases are stored
 
+	class_name: STRING
+			-- Name of class whose contracts are to be inferred
+
 	feature_name_for_test_cases: detachable STRING
 			-- Name of the feature whose test cases are used for contract inference.
 			-- If Void, test cases for all features in the class are considered.
+
+	project_directory: STRING
+			-- Directory of current project
+		do
+			Result := eiffel_system.eiffel_project.project_directory.path
+		end
+
+	root_class: CLASS_C
+			-- Root class in `system'.
+		do
+			Result := eiffel_system.root_type.associated_class
+		end
 
 feature -- Status report
 
@@ -65,6 +80,12 @@ feature -- Setting
 			else
 				feature_name_for_test_cases := a_name.twin
 			end
+		end
+
+	set_class_name (a_name: like class_name)
+			-- Set `class_name' with `a_name'.
+		do
+			class_name := a_name.twin
 		end
 
 end

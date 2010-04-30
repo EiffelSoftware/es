@@ -58,11 +58,16 @@ feature -- Properties
 		local
 			l_parser: CI_COMMAND_LINE_PARSER
 			l_config: CI_CONFIG
+			l_build_command: CI_BUILD_TEST_CASE_APP_CMD
 		do
 			create l_parser.make_with_arguments (contract_inference_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config
 			set_contract_inference_config (l_config)
+			if l_config.should_build_project then
+				create l_build_command.make (l_config)
+				l_build_command.execute
+			end
 		end
 
 note
