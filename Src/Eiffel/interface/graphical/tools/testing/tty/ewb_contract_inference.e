@@ -10,8 +10,6 @@ class
 inherit
 	EWB_CMD
 
-	EPA_GENERATOR_ROUTINES
-
 	CI_SHARED_SESSION
 
 create

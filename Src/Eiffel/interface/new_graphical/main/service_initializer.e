@@ -137,8 +137,6 @@ feature {NONE} -- Registrations: Testing
 			a_service_usable: a_service.is_interface_usable
 		local
 			a_registrar: TEST_PROCESSOR_REGISTRAR_I
-			l_test_generator_routines: EPA_GENERATOR_ROUTINES
-			l_routines: TEST_SERVICE_ROUTINES
 		do
 			a_registrar := a_service.processor_registrar
 			a_registrar.register (create {TEST_BACKGROUND_EXECUTOR}.make (a_service))
@@ -147,17 +145,10 @@ feature {NONE} -- Registrations: Testing
 			a_registrar.register (create {TEST_EXTRACTOR}.make (a_service))
 			a_registrar.register (create {TEST_GENERATOR}.make (a_service))
 			a_registrar.register (create {AFX_FIX_PROPOSER}.make (a_service))
-
-				-- Hook up AutoTest library with agents wrapping features that are
-				-- defined outside of the AutoTest library.
-			fixme ("This is a walkaround. Remove the followling code in the future. 2009.6.11 Jasonw")
-			create l_routines
-			create l_test_generator_routines
-			l_test_generator_routines.set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

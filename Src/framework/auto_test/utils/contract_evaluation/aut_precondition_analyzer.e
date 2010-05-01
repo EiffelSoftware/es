@@ -50,6 +50,8 @@ inherit
 
 	AUT_SHARED_PREDICATE_FACTORY
 
+	EPA_UTILITY
+
 create
 	make
 
@@ -190,20 +192,20 @@ feature{NONE} -- Process
 			-- Process `l_as'.
 		do
 			text.append_character (' ')
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 			text.append_character (' ')
 		end
 
 	process_keyword_stub_as (l_as: KEYWORD_STUB_AS)
 			-- Process `l_as'.
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_symbol_as (l_as: SYMBOL_AS)
 			-- Process `l_as'.
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
@@ -214,7 +216,7 @@ feature{NONE} -- Process
 
 	process_bool_as (l_as: BOOL_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_char_as (l_as: CHAR_AS)
@@ -229,22 +231,22 @@ feature{NONE} -- Process
 	process_typed_char_as (l_as: TYPED_CHAR_AS)
 			-- Process `l_as'.
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_void_as (l_as: VOID_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_string_as (l_as: STRING_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_current_as (l_as: CURRENT_AS)
@@ -258,12 +260,12 @@ feature{NONE} -- Process
 
 	process_integer_as (l_as: INTEGER_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_real_as (l_as: REAL_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			text.append_string (text_from_ast (l_as))
 		end
 
 	process_unary_as (l_as: UNARY_AS)
@@ -357,12 +359,6 @@ feature{NONE} -- Process
 	process_like_cur_as (l_as: LIKE_CUR_AS)
 		do
 			process_anchored_type (l_as)
-		end
-
-	text_of_ast (a_ast: AST_EIFFEL): STRING is
-			-- Text of `a_ast' in lower case
-		do
-			Result := a_ast.text (current_match_list)
 		end
 
 	nested_list: DS_LINKED_LIST [DS_LINKED_STACK [BOOLEAN]]

@@ -22,6 +22,11 @@ inherit
 
 	EPA_TYPE_UTILITY
 
+	ETR_SHARED_ERROR_HANDLER
+		rename
+			error_handler as etr_error_handler
+		end
+
 feature -- AST
 
 	text_from_ast (a_ast: AST_EIFFEL): STRING
@@ -94,6 +99,30 @@ feature -- AST
 			-- Old expression remover
 		once
 			create Result.make_with_output (old_remover_output)
+		end
+
+	ast_in_other_context (a_ast: AST_EIFFEL; a_source_context: ETR_CONTEXT; a_target_context: ETR_CONTEXT): detachable AST_EIFFEL
+			-- New AST from `a_ast' (in `a_source_context'), but viewed from `a_target_context'.
+			-- Void if context transformation failed.
+		local
+			l_transformable: ETR_TRANSFORMABLE
+		do
+			etr_error_handler.reset_errors
+			create l_transformable.make (a_ast, a_source_context, True)
+			Result := l_transformable.as_in_other_context (a_target_context)
+			if etr_error_handler.has_errors then
+				Result := Void
+			end
+		end
+
+	context_from_class_feature (a_class: CLASS_C; a_feature: detachable FEATURE_I): ETR_CONTEXT
+			-- Context from `a_class' and possibly `a_feature'
+		do
+			if a_feature = Void then
+				create {ETR_CLASS_CONTEXT} Result.make (a_class)
+			else
+				create {ETR_FEATURE_CONTEXT} Result.make (a_feature, create {ETR_CLASS_CONTEXT}.make (a_class))
+			end
 		end
 
 feature -- Class/feature related

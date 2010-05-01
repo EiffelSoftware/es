@@ -21,6 +21,9 @@ inherit
 	ERL_G_TYPE_ROUTINES
 
 	EPA_CONTRACT_EXTRACTOR
+		undefine
+			system
+		end
 
 create
 

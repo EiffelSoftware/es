@@ -14,7 +14,7 @@ inherit
 
 	EPA_STRING_UTILITY
 
-	ETR_SHARED_ERROR_HANDLER
+	EPA_UTILITY
 
 feature -- Access
 
@@ -373,20 +373,6 @@ feature -- Variable name
 	variable_original_name: INTEGER = 4				  -- Original variable name
 
 feature{NONE} -- Implementation
-
-	ast_in_other_context (a_ast: AST_EIFFEL; a_source_context: ETR_CONTEXT; a_target_context: ETR_CONTEXT): detachable AST_EIFFEL
-			-- New AST from `a_ast' (in `a_source_context'), but viewed from `a_target_context'.
-			-- Void if context transformation failed.
-		local
-			l_transformable: ETR_TRANSFORMABLE
-		do
-			error_handler.reset_errors
-			create l_transformable.make (a_ast, a_source_context, True)
-			Result := l_transformable.as_in_other_context (a_target_context)
-			if error_handler.has_errors then
-				Result := Void
-			end
-		end
 
 	equation_in_other_context (a_equation: EPA_EQUATION; a_source_context: ETR_CONTEXT; a_target_context: ETR_CONTEXT; a_type_checking_context: like context): detachable EPA_EQUATION
 			-- Equation `a_equation' (originally in `a_source_context' viewed from `a_target_context'.

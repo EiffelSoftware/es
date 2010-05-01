@@ -31,13 +31,6 @@ inherit
 			is_equal
 		end
 
-	ETR_SHARED_ERROR_HANDLER
-		export
-			{NONE}all
-		undefine
-			is_equal
-		end
-
 create
 	make,
 	make_with_text,
@@ -245,9 +238,9 @@ feature{NONE} -- Implementation
 		local
 			l_check_post: BOOLEAN
 			l_checker: like expression_type_checker
-			l_error_handler: like error_handler
+			l_error_handler: like etr_error_handler
 		do
-			l_error_handler := error_handler
+			l_error_handler := etr_error_handler
 			l_error_handler.reset_errors
 			l_checker := expression_type_checker
 			l_check_post := l_checker.is_checking_postcondition

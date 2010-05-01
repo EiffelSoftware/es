@@ -10,8 +10,6 @@ class
 inherit
 	EWB_CMD
 
-	EPA_GENERATOR_ROUTINES
-
 	AFX_SHARED_SESSION
 
 create
@@ -61,12 +59,8 @@ feature -- Properties
 			l_retrieve_state_cmd: EWB_AUTO_FIX_RETRIEVE_STATE
 			l_build_tc_cmd: AFX_TEST_CASE_APP_BUILDER
 			l_analyze_tc_cmd: AFX_TEST_CASE_APP_ANALYZER
-			l_routines: TEST_SERVICE_ROUTINES
 			l_initializer: AFX_INITIALIZER
 		do
-			create l_routines
-			set_contracts_of_feature_action (agent l_routines.contracts_of_feature)
-
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config

@@ -21,6 +21,9 @@ inherit
 		end
 
 	EPA_CONTRACT_EXTRACTOR
+		undefine
+			system
+		end
 
 create
 	make
