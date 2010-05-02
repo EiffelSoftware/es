@@ -50,6 +50,27 @@ feature -- Access
 			Result := eiffel_system.root_type.associated_class
 		end
 
+	data_directory: STRING is
+			-- Directory for AutoFix data
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend (once "data")
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
+	output_directory: STRING is
+			-- Directory for output
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.contract_inference_results_path)
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -86,6 +107,19 @@ feature -- Setting
 			-- Set `class_name' with `a_name'.
 		do
 			class_name := a_name.twin
+		end
+
+feature{NONE} -- Implementation
+
+	safe_recursive_create_directory (a_dir: STRING)
+			-- Create `a_dir' if it doesnot exist.
+		local
+			l_dir: KL_DIRECTORY
+		do
+			create l_dir.make (a_dir)
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+			end
 		end
 
 end

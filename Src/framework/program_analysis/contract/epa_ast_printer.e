@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_AST_PRINTER}."
+	description: "Should be replaced with ETR_AST_STRUCTURE_PRINTER"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_AST_PRINTER
+	EPA_AST_PRINTER
 
 inherit
 	AST_ITERATOR

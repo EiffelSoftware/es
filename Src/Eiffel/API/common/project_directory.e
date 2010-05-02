@@ -282,6 +282,17 @@ feature -- Directories
 			end
 		end
 
+	contract_inference_results_path: DIRECTORY_NAME
+			-- Path to store contract inference related output files
+		do
+			Result := internal_contract_inference_results_path
+			if Result = Void then
+				create Result.make_from_string (target_path)
+				Result.extend (contract_inference_results_directory)
+				internal_contract_inference_results_path := Result
+			end
+		end
+
 feature -- Files
 
 	project_file_name: FILE_NAME
@@ -592,6 +603,7 @@ feature {NONE} -- Implementation: Access
 	internal_eifgens_cluster_path: like eifgens_cluster_path
 	internal_testing_results_path: like testing_results_path
 	internal_fixing_results_path: like fixing_results_path
+	internal_contract_inference_results_path: like contract_inference_results_path
 			-- Placeholders for storing path.
 
 	internal_precompilation_file_name: like precompilation_file_name
@@ -606,7 +618,7 @@ invariant
 	target_not_empty: not target.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

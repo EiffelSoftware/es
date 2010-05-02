@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_PRECONDITION_REWRITE_VISITOR
+	EPA_CONTRACT_REWRITE_VISITOR
 
 inherit
-	AFX_AST_PRINTER
+	EPA_AST_PRINTER
 		redefine
 			process_nested_as,
 			process_current_as,

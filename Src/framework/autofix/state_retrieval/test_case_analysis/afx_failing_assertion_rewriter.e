@@ -111,7 +111,7 @@ feature{NONE} -- Implementation
 			c: CHARACTER
 			l_cur_arg: STRING
 			l_failing_precondition: EPA_EXPRESSION
-			l_rewriter: AFX_PRECONDITION_REWRITE_VISITOR
+			l_rewriter: EPA_CONTRACT_REWRITE_VISITOR
 			l_arg_expr: EPA_AST_EXPRESSION
 			l_square_level: INTEGER
 		do

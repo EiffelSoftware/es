@@ -142,7 +142,7 @@ feature -- Contract extraction
 				a_feature)
 		end
 
-	invariant_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I; a_include_postcondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
+	invariant_expression_set (a_context_class: CLASS_C; a_include_postcondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of class invariant assertions in `a_context_class'
 			-- `a_include_postcondition' indicates if include some postconditions from features into the result invariant set when possible.
 		local
@@ -162,7 +162,7 @@ feature -- Contract extraction
 				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := True end,
 				Result,
 				a_context_class,
-				a_feature)
+				Void)
 
 				-- Include some postconditions as class invariants.
 			l_gen.last_invariants.do_if (

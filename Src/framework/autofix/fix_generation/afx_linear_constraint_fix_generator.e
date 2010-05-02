@@ -60,12 +60,12 @@ feature{NONE} -- Implementation
 			-- Contraints relevant to `constraints'
 			-- `relevant_constriants' is a super set of `constraints'.
 
-	constraint_table: HASH_TABLE [EPA_NUMERIC_CONSTRAINTS, EPA_EXPRESSION]
+	constraint_table: DS_HASH_TABLE [EPA_NUMERIC_CONSTRAINTS, EPA_EXPRESSION]
 			-- Table of contraints.
 			-- Key is the assertion from which the contraint comes,
 			-- value is that constraint.
 
-	constrained_expressions: LINKED_LIST [EPA_EXPRESSION]
+	constraining_expressions: LINKED_LIST [EPA_EXPRESSION]
 			-- Constrained expressions
 			-- This list contains the keys of `constraint_table'
 
@@ -121,16 +121,9 @@ feature{NONE} -- Implementation
 			-- store result in `constraints'.
 		local
 			l_asserts: DS_HASH_SET [EPA_EXPRESSION]
-			l_constraint_analyzer: EPA_LINEAR_CONSTRAINED_EXPRESSION_STRUCTURE_ANALYZER
 			l_feat: FEATURE_I
 			l_class: CLASS_C
-			l_constraints, l_temp: like constraint_table
-			l_rev_components: DS_HASH_SET [EPA_EXPRESSION]
-			l_done: BOOLEAN
-			l_kept: DS_HASH_SET [EPA_EXPRESSION]
-			l_cir: ARRAYED_CIRCULAR [ANY]
-			l_cursor: CURSOR
-			l_removed: LINKED_LIST [EPA_EXPRESSION]
+			l_relevant_constraint_finder: EPA_RELAVANT_LINEAR_CONSTRAINT_FINDER
 		do
 			create l_asserts.make (20)
 			l_asserts.set_equality_tester (expression_equality_tester)
@@ -140,96 +133,29 @@ feature{NONE} -- Implementation
 			if exception_spot.is_precondition_violation then
 					-- Collect all precondion assertions and class invariant assertions.
 				l_asserts.append (precondition_expression_set (l_class, l_feat))
-				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
+				l_asserts.append (invariant_expression_set (l_class, True))
 
 			elseif exception_spot.is_postcondition_violation then
 					-- Collect all postcondition assertions and class invariant assertions.
 				l_asserts.append (postconditions_expression_set (l_class, l_feat))
-				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
+				l_asserts.append (invariant_expression_set (l_class, True))
 
 			elseif exception_spot.is_class_invariant_violation then
 					-- Collect class invariant assertions.
-				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
+				l_asserts.append (invariant_expression_set (l_class, True))
 
 			else
 					-- Collect class invariant assertions.
 				fixme ("In feature body, the class invariant need not to hold. The solution here is too strong. 30.12.2009 Jasonw")
-				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
+				l_asserts.append (invariant_expression_set (l_class, True))
 			end
 
-				-- Find out only numeric constrained assertions.
-			create l_constraint_analyzer
-			create l_constraints.make (l_asserts.count)
-			l_constraints.compare_objects
-			from
-				l_asserts.start
-			until
-				l_asserts.after
-			loop
-				l_constraint_analyzer.analyze (l_asserts.item_for_iteration)
-				if l_constraint_analyzer.is_matched then
-					l_constraints.put (l_constraint_analyzer.constraints, l_asserts.item_for_iteration)
-				end
-				l_asserts.forth
-			end
-
-				-- Collect constraints relevant to `constraint', keep them in `l_constraints'.			
-			create l_rev_components.make (20)
-			l_rev_components.set_equality_tester (expression_equality_tester)
-			l_rev_components.append (constraints.components)
-			l_temp := l_constraints.twin
-			create l_kept.make (5)
-			l_kept.set_equality_tester (expression_equality_tester)
-			if attached {EPA_EXPRESSION} constraints.expression as l_expr then
-				l_kept.force_last (l_expr)
-			else
-				check False end
-			end
-
-			if not l_temp.is_empty then
-				from
-					l_done := False
-				until
-					l_done
-				loop
-					l_done := True
-					create l_removed.make
-					from
-						l_temp.start
-					until
-						l_temp.after
-					loop
-						if
-							not l_temp.item_for_iteration.components.is_disjoint (l_rev_components)
-						then
-							l_kept.force_last (l_temp.key_for_iteration)
-							l_removed.extend (l_temp.key_for_iteration)
-							l_rev_components.append (l_temp.item_for_iteration.components)
-							relevant_constraints.merge (l_temp.item_for_iteration)
-							if l_done then
-								l_done := False
-							end
-						end
-						l_temp.forth
-					end
-					l_removed.do_all (agent l_temp.remove)
-				end
-			end
-
-				-- Construct `constraint_table' and `constrained_expressions'.
-			create constrained_expressions.make
-			create constraint_table.make (l_constraints.count)
-			from
-				l_constraints.start
-			until
-				l_constraints.after
-			loop
-				if l_kept.has (l_constraints.key_for_iteration) then
-					constraint_table.put (l_constraints.item_for_iteration, l_constraints.key_for_iteration)
-					constrained_expressions.extend (l_constraints.key_for_iteration)
-				end
-				l_constraints.forth
-			end
+				-- Find out linear constraints from `l_asserts' which are relevant to `constraints'.
+			create l_relevant_constraint_finder
+			l_relevant_constraint_finder.calculate (constraints, l_asserts)
+			relevant_constraints := l_relevant_constraint_finder.relevant_constraints
+			constraint_table := l_relevant_constraint_finder.constraint_table
+			constraining_expressions := l_relevant_constraint_finder.constraining_expressions
 		end
 
 	solve_and_append_solution (a_maximize: BOOLEAN; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION]; a_solutions: DS_HASH_SET [EPA_EXPRESSION])
@@ -256,9 +182,9 @@ feature{NONE} -- Implementation
 
 	type_anchor: TUPLE [constrained_expression: EPA_EXPRESSION; solution: EPA_EXPRESSION; constrained_expressions: DS_HASH_SET [EPA_EXPRESSION]; constraining_expressions: DS_HASH_SET [EPA_EXPRESSION]]
 			-- Anchor type
-			-- `constrained_expression' is the expression considered as the solving target, `constrained_expression' must be one of `constrained_expressions'.
+			-- `constrained_expression' is the expression considered as the solving target, `constrained_expression' must be one of `constraining_expressions'.
 			-- `solution' is the solution for `constrained_expression' under the constraints.
-			-- `constrained_expressions' and `constraining_expressions' are used for supporting data.
+			-- `constraining_expressions' and `constraining_expressions' are used for supporting data.
 
 	generate_fix_for_constrained_solution (a_solution: like type_anchor)
 			-- Generate fixes for `a_solution'.
@@ -496,8 +422,8 @@ feature{NONE} -- Implementation
 					create l_arguments.make
 					l_arguments.extend (l_constrained_expr)
 						-- Get a maximized solution and a minimized solution.
-					solve_and_append_solution (True, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
-					solve_and_append_solution (False, l_constrained_expr, constrained_expressions, l_arguments, l_solutions)
+					solve_and_append_solution (True, l_constrained_expr, constraining_expressions, l_arguments, l_solutions)
+					solve_and_append_solution (False, l_constrained_expr, constraining_expressions, l_arguments, l_solutions)
 
 --					create l_sol.make_with_text (l_constrained_expr.class_, l_constrained_expr.feature_, "1", l_constrained_expr.class_)
 --					l_solutions.force_last (l_sol)
