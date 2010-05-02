@@ -117,7 +117,7 @@ feature{NONE} -- Implementation
 feature{NONE} -- Implementation
 
 	collect_relevant_constraints
-			-- Coleect numeric constrained assertions which are relevant to the failing assertion,
+			-- Collect numeric constrained assertions which are relevant to the failing assertion,
 			-- store result in `constraints'.
 		local
 			l_asserts: DS_HASH_SET [EPA_EXPRESSION]
@@ -139,22 +139,22 @@ feature{NONE} -- Implementation
 			l_class := exception_spot.class_of_feature_of_failing_assertion
 			if exception_spot.is_precondition_violation then
 					-- Collect all precondion assertions and class invariant assertions.
-				l_asserts.append (precondition_expressions (l_class, l_feat))
-				l_asserts.append (invariant_expressions (l_class, l_feat))
+				l_asserts.append (precondition_expression_set (l_class, l_feat))
+				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
 
 			elseif exception_spot.is_postcondition_violation then
 					-- Collect all postcondition assertions and class invariant assertions.
-				l_asserts.append (postconditions_expressions (l_class, l_feat))
-				l_asserts.append (invariant_expressions (l_class, l_feat))
+				l_asserts.append (postconditions_expression_set (l_class, l_feat))
+				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
 
 			elseif exception_spot.is_class_invariant_violation then
 					-- Collect class invariant assertions.
-				l_asserts.append (invariant_expressions (l_class, l_feat))
+				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
 
 			else
 					-- Collect class invariant assertions.
 				fixme ("In feature body, the class invariant need not to hold. The solution here is too strong. 30.12.2009 Jasonw")
-				l_asserts.append (invariant_expressions (l_class, l_feat))
+				l_asserts.append (invariant_expression_set (l_class, l_feat, True))
 			end
 
 				-- Find out only numeric constrained assertions.
@@ -340,7 +340,7 @@ feature{NONE} -- Implementation
 				l_old_ast := a_fixing_location.instructions.first.ast.ast
 			end
 
-			fixme ("The above method of removing old expression is not should. Refactoring is needed. 7.1.2009 Jasonw")
+			fixme ("The above method of removing old expression is not appropriate. Refactoring is needed. 7.1.2009 Jasonw")
 			l_old_free_text := a_solved_expression.text.twin
 			l_old_free_text.replace_substring_all ("old ", "")
 			l_new_ast := ast_from_statement_text (a_solution.constrained_expression.text + " := " + l_old_free_text)

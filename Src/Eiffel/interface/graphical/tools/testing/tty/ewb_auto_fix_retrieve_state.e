@@ -63,7 +63,7 @@ feature -- Execute
 			l_test_state_implication: BOOLEAN
 			l_build_theory: BOOLEAN
 			l_retrieve_system_state: BOOLEAN
-			l: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l: EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_test_postcondition_generation: BOOLEAN
 			l_test_daikon_generation: BOOLEAN
 		do
@@ -177,7 +177,7 @@ feature -- Execute
 
 	test_postcondition_generation
 		local
-			l_generator: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l_generator: EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_feature: FEATURE_I
 		do
 --			create l_generator

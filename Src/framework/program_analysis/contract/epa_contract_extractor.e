@@ -14,6 +14,8 @@ inherit
 
 	EPA_UTILITY
 
+	EPA_SHARED_EQUALITY_TESTERS
+
 feature -- Access
 
 	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION] is
@@ -100,6 +102,77 @@ feature -- Access
 			end
 		end
 
+feature -- Contract extraction
+
+	precondition_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
+			-- List of precondition assertions of `a_feature' in `a_context_class'
+		local
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_expr: EPA_AST_EXPRESSION
+		do
+			l_exprs := precondition_of_feature (a_feature, a_context_class)
+
+			create Result.make (l_exprs.count)
+			Result.set_equality_tester (expression_equality_tester)
+
+			fixme ("Require else assertions are ignored. 30.12.2009 Jasonw")
+			extend_expression_in_set (
+				l_exprs,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_require_else end,
+				Result,
+				a_context_class,
+				a_feature)
+		end
+
+	postconditions_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
+			-- List of postcondition assertions of `a_feature' in `a_context_class'
+		local
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+		do
+			l_exprs := postcondition_of_feature (a_feature, a_context_class)
+
+			create Result.make (l_exprs.count)
+			Result.set_equality_tester (expression_equality_tester)
+
+			extend_expression_in_set (
+				l_exprs,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := True end,
+				Result,
+				a_context_class,
+				a_feature)
+		end
+
+	invariant_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I; a_include_postcondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
+			-- List of class invariant assertions in `a_context_class'
+			-- `a_include_postcondition' indicates if include some postconditions from features into the result invariant set when possible.
+		local
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_gen: EPA_POSTCONDITION_AS_INVARIANT_GENERATOR
+		do
+			l_exprs := invariant_of_class (a_context_class)
+			create l_gen
+			l_gen.generate (a_context_class)
+
+			create Result.make (l_exprs.count + l_gen.last_invariants.count)
+			Result.set_equality_tester (expression_equality_tester)
+
+				-- Include normal class invariants.
+			extend_expression_in_set (
+				l_exprs,
+				agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := True end,
+				Result,
+				a_context_class,
+				a_feature)
+
+				-- Include some postconditions as class invariants.
+			l_gen.last_invariants.do_if (
+				agent Result.force_last,
+				agent (a_item: EPA_EXPRESSION; a_set: DS_HASH_SET [EPA_EXPRESSION]): BOOLEAN
+					do
+						Result := not a_set.has (a_item)
+					end (?, Result))
+		end
+
 feature{NONE} -- Implementation
 
 	tags (a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION] is
@@ -143,6 +216,27 @@ feature{NONE} -- Implementation
 
 		ensure
 			result_attached: Result /= Void
+		end
+
+	extend_expression_in_set (a_exprs: LINKED_LIST [EPA_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [EPA_EXPRESSION]]; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+			-- Append items from `a_exprs' into `a_set' if those items satisfy `a_test'.
+			-- `a_context_class' and `a_feature' are used to construct AFX_EXPRESSION.
+		local
+			l_expr: EPA_AST_EXPRESSION
+		do
+			from
+				a_exprs.start
+			until
+				a_exprs.after
+			loop
+				if a_test.item ([a_exprs.item_for_iteration]) then
+					create l_expr.make_with_text (a_context_class, a_feature, text_from_ast (a_exprs.item_for_iteration.ast), a_exprs.item_for_iteration.written_class)
+					if not a_set.has (l_expr) then
+						a_set.force_last (l_expr)
+					end
+				end
+				a_exprs.forth
+			end
 		end
 
 note

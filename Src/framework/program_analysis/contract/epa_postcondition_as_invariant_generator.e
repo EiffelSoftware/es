@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_POSTCONDITION_AS_INVARIANT_GENERATOR}."
+	description: "Pick postconditions which can be considered as class invariants"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_POSTCONDITION_AS_INVARIANT_GENERATOR
+	EPA_POSTCONDITION_AS_INVARIANT_GENERATOR
 
 inherit
 	SHARED_WORKBENCH
@@ -120,7 +120,7 @@ feature{NONE} -- Implementation
 			-- of `a_feature', store result in `last_invariants'.
 		local
 			l_posts: LINKED_LIST [detachable EPA_EXPRESSION]
-			l_post_gen: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l_post_gen: EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_post_str: detachable STRING
 			l_post_expr: EPA_EXPRESSION
 		do

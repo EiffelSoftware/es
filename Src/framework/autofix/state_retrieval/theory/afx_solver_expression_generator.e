@@ -67,7 +67,7 @@ feature -- Basic operations
 			-- Generate SMTLIB axioms for some of the postconditions in `a_class'
 			-- as if they are class invariants and store results in `last_statements'.
 		local
-			l_inv_gen: AFX_POSTCONDITION_AS_INVARIANT_GENERATOR
+			l_inv_gen: EPA_POSTCONDITION_AS_INVARIANT_GENERATOR
 			l_inv: DS_HASH_SET [EPA_EXPRESSION]
 			l_stmt: STRING
 			l_paran_needed: BOOLEAN

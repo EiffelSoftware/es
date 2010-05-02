@@ -52,7 +52,7 @@ feature -- Solve
 	solve (a_maximize: BOOLEAN; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Maximize or Minimize (depending on `a_maximize') the value of `a_function' under constraints `a_constraints', with respect to `a_arguments'.
 			-- Store results in `last_solutions'.
-			-- If there is no solution, make `lasT_solutions' empty.
+			-- If there is no solution, make `last_solutions' empty.
 		do
 			if a_maximize then
 				maximize (a_function, a_constraints, a_arguments)

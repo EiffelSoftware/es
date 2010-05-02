@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR}."
+	description: "Class to consider some postconditions from simple functions as class invariants"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+	EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 
 inherit
 	SHARED_TYPES
