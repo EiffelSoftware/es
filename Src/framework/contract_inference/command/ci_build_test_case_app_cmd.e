@@ -258,6 +258,7 @@ feature{NONE} -- Initialization
 	make
 			-- Initialize Current.
 		do
+			create memory
 			create test_cases.make (100)
 			test_cases.compare_objects
 			initialize_test_cases
@@ -272,6 +273,9 @@ feature -- Access
 	test_cases: HASH_TABLE [ARRAYED_LIST [EQA_SERIALIZED_TEST_SET], STRING]
 			-- Table of test cases
 			-- Key is feature name, value is a list of test cases for that feature
+			
+	memory: MEMORY
+			-- GC controller
 
 feature -- Basic operations
 
@@ -296,7 +300,9 @@ feature -- Basic operations
 	execute_test_case (a_test_case: EQA_SERIALIZED_TEST_SET)
 			-- Execute `a_test_case'.
 		do
+			memory.collection_off
 			a_test_case.generated_test_1
+			memory.collection_on
 		end
 
 	initialize_test_cases

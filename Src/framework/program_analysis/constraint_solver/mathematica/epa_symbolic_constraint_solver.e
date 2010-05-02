@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_SYMBOLIC_CONSTRAINT_SOLVER}."
+	description: "Symbolic linear constraint solver"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AFX_SYMBOLIC_CONSTRAINT_SOLVER
+	EPA_SYMBOLIC_CONSTRAINT_SOLVER
 
 feature -- Access
 

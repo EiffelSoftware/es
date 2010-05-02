@@ -1,34 +1,35 @@
 note
-	description: "Summary description for {AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER}."
+	description: "Symbolic constraint solver based on Mathematica"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+	EPA_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
 
 inherit
-	AFX_SYMBOLIC_CONSTRAINT_SOLVER
+	EPA_SYMBOLIC_CONSTRAINT_SOLVER
 
-	KL_SHARED_STRING_EQUALITY_TESTER
+	EPA_PROCESS_UTILITY
 
-	AFX_UTILITY
+	EPA_SHARED_EQUALITY_TESTERS
 
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config)
+	make (a_directory: STRING)
 			-- Initialize.
+			-- `a_directory' is the directory to store generated Mathematica program.
 		do
-			config := a_config
+			program_directory := a_directory.twin
 		end
 
 feature -- Access
 
-	config: AFX_CONFIG
-			-- Config used in current AutoFix session
+	program_directory: STRING
+			-- Directory to store generated Mathematica program
 
 feature -- Solve
 
@@ -130,7 +131,7 @@ feature{NONE} -- Implementation
 	parse_result (a_output: STRING; a_function: EPA_EXPRESSION; a_constraints: LINKED_LIST [EPA_EXPRESSION]; a_arguments: LINKED_LIST [EPA_EXPRESSION])
 			-- Parse Mathematica result in `a_output' and setup `last_solutions'.
 		local
-			l_output_parser: AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
+			l_output_parser: EPA_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
 			l_solution: HASH_TABLE [TUPLE [argument_valuations: HASH_TABLE [STRING, STRING]; condition: STRING], STRING]
 			l_value: STRING
 			l_expr: EPA_AST_EXPRESSION
@@ -168,7 +169,7 @@ feature{NONE} -- Implementation
 		local
 			l_file_content: STRING
 			l_output: STRING
-			l_output_parser: AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
+			l_output_parser: EPA_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
 			l_solution: HASH_TABLE [TUPLE [argument_valuations: HASH_TABLE [STRING, STRING]; condition: STRING], STRING]
 			l_value: STRING
 			l_expr: EPA_AST_EXPRESSION
@@ -327,7 +328,7 @@ feature{NONE} -- Implementation
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (config.data_directory)
+			create l_file_name.make_from_string (program_directory)
 			l_file_name.set_file_name ("linear_constraints.m")
 			Result := l_file_name
 		end

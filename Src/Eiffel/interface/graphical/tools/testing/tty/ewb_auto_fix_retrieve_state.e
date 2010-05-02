@@ -180,10 +180,10 @@ feature -- Execute
 			l_generator: AFX_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_feature: FEATURE_I
 		do
-			create l_generator
-			l_feature := config.state_recipient_class.feature_named ("before")
-			l_generator.generate (config.state_recipient_class, l_feature)
-			io.put_string (l_generator.last_postcondition + "%N")
+--			create l_generator
+--			l_feature := config.state_recipient_class.feature_named ("before")
+--			l_generator.generate (config.state_recipient_class, l_feature)
+--			io.put_string (l_generator.last_postcondition + "%N")
 		end
 
 feature{NONE} -- Implementation

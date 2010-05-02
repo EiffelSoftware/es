@@ -26,6 +26,7 @@
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
+		<library name="process" location="$EIFFEL_SRC\library\process\process.ecf"/>
 		<cluster name="program_analysis" location=".\" recursive="true"/>
 	</target>
 </system>

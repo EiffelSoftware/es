@@ -237,10 +237,10 @@ feature{NONE} -- Implementation
 			-- If `a_maximize' is True, maximize the solution, otherwise, minimize it.
 			-- The linear constrianed problem is defined by `a_function', `a_constriants' and `a_arguments'.
 		local
-			l_solver: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+			l_solver: EPA_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
 		do
 				-- Solve the linear constrained problem.
-			create l_solver.make (config)
+			create l_solver.make (config.data_directory)
 			l_solver.solve (a_maximize, a_function, a_constraints, a_arguments)
 
 				-- Collect solutions in to `a_solutions'.
@@ -466,8 +466,8 @@ feature{NONE} -- Implementation
 	constrained_solutions (a_constrain_possibilities: like constrain_possibilities): LINKED_LIST [like type_anchor]
 			-- A list of solutions for constrained problems defined in `a_constrain_possibilities'
 		local
-			l_maximizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
-			l_minimizer: AFX_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+			l_maximizer: EPA_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
+			l_minimizer: EPA_MATHEMATICA_SYMBOLIC_CONSTRAINT_SOLVER
 			l_constrained_exprs: DS_HASH_SET [EPA_EXPRESSION]
 			l_arguments: LINKED_LIST [EPA_EXPRESSION]
 			l_solutions: DS_HASH_SET [EPA_EXPRESSION]

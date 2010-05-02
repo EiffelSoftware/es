@@ -1,16 +1,16 @@
 note
-	description: "Summary description for {AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER}."
+	description: "Parser for Mathematica output"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
+	EPA_MATHEMATICA_CONSTRAINT_SOLVER_OUTPUT_PARSER
 
 inherit
 	REFACTORING_HELPER
 
---	AFX_UTILITY
+	EPA_UTILITY
 
 feature -- Access
 
