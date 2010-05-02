@@ -63,7 +63,6 @@ feature -- Access
 			l_object: detachable ANY
 			l_should_serialize: BOOLEAN
 			l_hash: INTEGER
-			l_state_summary: like pre_state_object_summary
 		do
 			if is_test_case_setup then
 				l_hash := test_case_hash_code.hash_code
@@ -489,13 +488,25 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 		do
 			l_interpreter := interpreter
-			l_index := l_interpreter.store.variable_index (a_object)
-			if l_index > 0 then
-				a_object_table.put (a_object, l_index)
+			if attached {INTEGER_32_REF} a_object as l_int then
+				l_index := l_interpreter.store.variable_index (l_int)
+				if l_index > 0 then
+					a_object_table.put (l_int, l_index)
+				end
+			elseif attached {BOOLEAN_REF} a_object as l_bool then
+				l_index := l_interpreter.store.variable_index (l_bool)
+				if l_index > 0 then
+					a_object_table.put (l_bool, l_index)
+				end
+			else
+				l_index := l_interpreter.store.variable_index (a_object)
+				if l_index > 0 then
+					a_object_table.put (a_object, l_index)
+				end
 			end
 		end
 
-	object_graph_traversor: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
+	object_graph_traversor: ITP_OBJECT_TRAVERSABLE
 			-- Object graph traversor, used to find objects in the object pool
 			-- that are also (recursively) referenced by a given object.
 
@@ -707,6 +718,8 @@ feature{NONE} -- Implementation/Test case synthesis
 					a_buffer.append_character ('%N')
 					a_state.forth
 				end
+			else
+				a_buffer.append ("This is Void%N")
 			end
 
 			if a_is_pre_state then
