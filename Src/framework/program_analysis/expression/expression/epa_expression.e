@@ -194,19 +194,19 @@ feature -- Status report
 	is_boolean: BOOLEAN
 			-- Is Current expression of boolean type?
 		do
-			Result := type.is_boolean
+			Result := resolved_type.is_boolean
 		end
 
 	is_integer: BOOLEAN
 			-- Is Current expression of integer type?
 		do
-			Result := type.is_integer
+			Result := resolved_type.is_integer
 		end
 
 	is_reference: BOOLEAN
 			-- Is Current expression of reference type?
 		do
-			Result := type.is_reference
+			Result := resolved_type.is_reference
 		end
 
 	is_result: BOOLEAN

@@ -102,7 +102,6 @@ feature -- Parsing
 					l_empty_table.compare_objects
 					fixme ("argument valuation and condition are not handled. 6.1.2009 Jasonw")
 					solution.put ([l_empty_table, ""], l_solution)
-					io.put_string (l_solution + "%N")
 					l_parts.forth
 				end
 			else
@@ -112,7 +111,6 @@ feature -- Parsing
 				create l_empty_table.make (1)
 				l_empty_table.compare_objects
 				fixme ("argument valuation and condition are not handled. 6.1.2009 Jasonw")
-				io.put_string (l_parts.first + "%N")
 				solution.put ([l_empty_table, ""], l_parts.first)
 			end
 		end

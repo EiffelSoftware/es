@@ -16,25 +16,32 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	HASHABLE
+
 create
 	make_from_expression,
-	make_from_feature
-
-create{CI_FUNCTION}
+	make_from_feature_with_domains,
+	make_from_feature,
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_argument_types: like argument_types; a_result_type: like result_type; a_body: like body; a_context: like context)
+	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body; a_context: like context)
 			-- Initialize Current.
+		require
+			a_argument_types_attached: a_argument_types /= Void
+			a_argument_domains_attached: a_argument_domains /= Void
+			a_result_type_attached: a_result_type /= Void
 		do
 			argument_types := a_argument_types
-			result_type := a_result_type
+			argument_domains := a_argument_domains
+			result_type := resolved_type_in_context (a_result_type, a_context.class_)
 			body := a_body.twin
 			context := a_context
 		ensure
 			argument_types_set: argument_types = a_argument_types
-			result_type_set: result_type = a_result_type
+			argument_domains_set: argument_domains = a_argument_domains
+			result_type_set: is_type_equal (result_type, a_result_type)
 			body_set: body ~ a_body
 			context_set: context = a_context
 		end
@@ -46,7 +53,8 @@ feature{NONE} -- Initialization
 			a_expr_correct: attached a_expr.type
 		do
 			create argument_types.make (1, 0)
-			result_type := a_expr.type
+			create argument_domains.make (1, 0)
+			result_type := resolved_type_in_context (a_expr.type, a_context.class_)
 			context := a_context
 			body := a_expr.text.twin
 		ensure
@@ -56,12 +64,14 @@ feature{NONE} -- Initialization
 			context_set: context = a_context
 		end
 
-	make_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_context: like context)
+	make_from_feature_with_domains (a_feature: FEATURE_I; a_class: CLASS_C; a_domains: like argument_domains; a_context: like context)
 			-- Initialize Current function from `a_feature' viewed in `a_class'.
 			-- If `a_feature' has n arguments, then Current function will have n+1 arguments
 			-- because the first argument in Current function represents the target of the feature call.
+			-- `a_domains' specify the domain of every operand in the resulting function.
 		require
 			a_feature_is_query: a_feature.has_return_value
+			a_domains_valid: a_domains.count = a_feature.argument_count + 1 and a_domains.lower = 1
 		local
 			l_arg_count: INTEGER
 			l_args: FEAT_ARG
@@ -71,12 +81,14 @@ feature{NONE} -- Initialization
 			context := a_context
 
 				-- Setup `result_type'.
-			result_type := a_feature.type
+			result_type := resolved_type_in_context (a_feature.type, context.class_)
 
 				-- Setup `argument_types'.
 			l_arg_count := 1 + a_feature.argument_count
 			create argument_types.make (1, l_arg_count)
+			create argument_domains.make (1, l_arg_count)
 			argument_types.put (a_class.actual_type, 1)
+			argument_domains.put (a_domains.item (1), 1)
 
 			if a_feature.argument_count > 0 then
 				l_args := a_feature.arguments
@@ -88,6 +100,7 @@ feature{NONE} -- Initialization
 					l_args.after
 				loop
 					argument_types.put (l_args.item_for_iteration, i)
+					argument_domains.put (a_domains.item (i), i)
 					i := i + 1
 					l_args.forth
 				end
@@ -96,6 +109,31 @@ feature{NONE} -- Initialization
 
 				-- Setup `body'.
 			body := body_for_feature (a_feature, a_class, 1)
+		end
+
+	make_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_context: like context)
+			-- Initialize Current function from `a_feature' viewed in `a_class'.
+			-- If `a_feature' has n arguments, then Current function will have n+1 arguments
+			-- because the first argument in Current function represents the target of the feature call.
+			-- Domains of all operands in the resulting function are initialized as unspecified domain.
+		require
+			a_feature_is_query: a_feature.has_return_value
+		local
+			l_domains: like argument_domains
+			i: INTEGER
+			l_count: INTEGER
+		do
+			l_count := a_feature.argument_count + 1
+			create l_domains.make (1, l_count)
+			from
+				i := 1
+			until
+				i > l_count
+			loop
+				l_domains.put (create {CI_UNSPECIFIED_DOMAIN}, i)
+				i := i + 1
+			end
+			make_from_feature_with_domains (a_feature, a_class, l_domains, a_context)
 		end
 
 feature -- Access
@@ -108,7 +146,10 @@ feature -- Access
 			-- The order in the list is important. The first element
 			-- is the type of the first argument, and so on.
 			-- The index of the array is 1-based. 1 refers to the first argument, and so on.
-			-- The argument types may not be resovled.			
+			-- The argument types may not be resovled.
+
+	argument_domains: ARRAY [CI_DOMAIN]
+			-- Domain of arguments of current function			
 
 	argument_type (i: INTEGER): TYPE_A
 			-- Type of argument at `i'-th position
@@ -117,6 +158,14 @@ feature -- Access
 			i_valid: is_argument_position_valid (i)
 		do
 			Result := argument_types.item (i)
+		end
+
+	argument_domain (i: INTEGER): CI_DOMAIN
+			-- Domain of argument at `i'-th position
+		require
+			i_valid: is_argument_position_valid (i)
+		do
+			Result := argument_domains.item (i)
 		end
 
 	resolved_argument_type  (i: INTEGER): TYPE_A
@@ -240,12 +289,14 @@ feature -- Partial evaluation
 			l_position: INTEGER
 			l_arg_index: INTEGER
 			l_arguments: LINKED_LIST [TYPE_A]
+			l_domains: LINKED_LIST [CI_DOMAIN]
 			l_func: CI_FUNCTION
 			i: INTEGER
 			l_new_args: LINKED_LIST [STRING]
 			l_arg_body: STRING
 
 			l_final_args: ARRAY [TYPE_A]
+			l_final_domains: ARRAY [CI_DOMAIN]
 			l_final_body: STRING
 		do
 				-- Calculate arguments of the final function.
@@ -254,6 +305,7 @@ feature -- Partial evaluation
 			l_position := 1
 			create l_arg_replacements.make (5)
 			create l_arguments.make
+			create l_domains.make
 			create l_new_args.make
 			from
 				l_arg_index := 1
@@ -271,6 +323,7 @@ feature -- Partial evaluation
 						i > l_func.arity
 					loop
 						l_arguments.extend (l_func.argument_type (i))
+						l_domains.extend (l_func.argument_domain (i))
 						l_arg_replacements.put (l_arg_index, i)
 						l_arg_index := l_arg_index + 1
 						i := i + 1
@@ -289,6 +342,7 @@ feature -- Partial evaluation
 					l_new_args.extend (l_arg_body)
 				else
 					l_arguments.extend (argument_type (l_position))
+					l_domains.extend (argument_domain (i))
 					l_new_args.extend (curly_brace_surrounded_integer (l_position))
 					l_arg_index := l_arg_index + 1
 				end
@@ -297,15 +351,19 @@ feature -- Partial evaluation
 
 				-- Fabricate the final function.
 			create l_final_args.make (1, l_final_arity)
+			create l_final_domains.make (1, l_final_arity)
 			from
 				i := 1
 				l_arguments.start
+				l_domains.start
 			until
 				l_arguments.after
 			loop
 				l_final_args.put (l_arguments.item_for_iteration, i)
+				l_final_domains.put (l_domains.item_for_iteration, i)
 				i := i + 1
 				l_arguments.forth
+				l_domains.forth
 			end
 			l_final_body := body.twin
 			from
@@ -318,7 +376,7 @@ feature -- Partial evaluation
 				i := i + 1
 				l_new_args.forth
 			end
-			create Result.make (l_final_args, result_type, l_final_body, context)
+			create Result.make (l_final_args, l_final_domains, result_type, l_final_body, context)
 		end
 
 feature -- Status report
@@ -403,9 +461,29 @@ feature -- Equality
 			-- Is `a_type' equal to `b_type'?
 		local
 			l_context_class: CLASS_C
+			l_type_a: TYPE_A
+			l_type_b: TYPE_A
 		do
 			l_context_class := context.class_
-			Result := resolved_type_in_context (a_type, l_context_class).is_equivalent (resolved_type_in_context (b_type, l_context_class))
+			l_type_a := resolved_type_in_context (a_type, l_context_class)
+			l_type_b := resolved_type_in_context (b_type, l_context_class)
+			Result :=
+				l_type_a.conform_to (l_context_class, l_type_b) and then
+				l_type_b.conform_to (l_context_class, l_type_a)
+		end
+
+feature -- Access
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			if hash_code_internal = 0 then
+				hash_code_internal := body.hash_code
+				if hash_code_internal = 0 then
+					hash_code_internal := 1
+				end
+			end
+			Result := hash_code_internal
 		end
 
 feature -- Status report
@@ -454,7 +532,11 @@ feature{NONE} -- Implementation
 	types_internal: detachable like types
 			-- Cache for `types'
 
+	hash_code_internal: INTEGER
+			-- Cache for `hash_code'
+
 invariant
 	argument_types_valid: argument_types.lower = 1
+	argument_domains_valid: argument_domains.lower = 1
 
 end

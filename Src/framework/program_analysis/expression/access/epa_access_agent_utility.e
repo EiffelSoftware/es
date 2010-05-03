@@ -65,7 +65,7 @@ feature -- Expression veto agents
 		end
 
 	feature_with_few_arguments_veto_agent (a_arg_count: INTEGER): FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
-			-- An agent to select feature access
+			-- An agent to select feature with no more than `a_arg_count' number of arguments
 		do
 			Result :=
 				agent (a_access: EPA_ACCESS; a_args: INTEGER): BOOLEAN
@@ -77,6 +77,23 @@ feature -- Expression veto agents
 							end
 						end
 					end (?, a_arg_count)
+		end
+
+	feature_with_one_integer_argument_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select feature with a single integer argument
+		do
+			Result :=
+				agent (a_access: EPA_ACCESS): BOOLEAN
+					do
+						Result := True
+						if a_access.is_feature then
+							if attached {EPA_ACCESS_FEATURE} a_access as l_feat then
+								Result :=
+									l_feat.feature_.argument_count = 1 and then
+									l_feat.feature_.arguments.i_th (1).is_integer
+							end
+						end
+					end
 		end
 
 	feature_not_from_any_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]

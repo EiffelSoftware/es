@@ -221,19 +221,21 @@ feature -- Class/feature related
 				Result.force_last (a_feature.type, l_operand_count)
 			end
 
-			l_args := a_feature.arguments
-			l_cursor := l_args.cursor
-			from
-				i := 1
-				l_args.start
-			until
-				l_args.after
-			loop
-				Result.force_last (l_args.item_for_iteration, i)
-				i := i + 1
-				l_args.forth
+			if a_feature.argument_count > 0 then
+				l_args := a_feature.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					Result.force_last (l_args.item_for_iteration, i)
+					i := i + 1
+					l_args.forth
+				end
+				l_args.go_to (l_cursor)
 			end
-			l_args.go_to (l_cursor)
 		end
 
 	operand_name_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
@@ -258,19 +260,21 @@ feature -- Class/feature related
 				Result.force_last (a_feature.type, ti_result)
 			end
 
-			l_args := a_feature.arguments
-			l_cursor := l_args.cursor
-			from
-				i := 1
-				l_args.start
-			until
-				l_args.after
-			loop
-				Result.force_last (l_args.item_for_iteration, l_args.item_name (i))
-				i := i + 1
-				l_args.forth
+			if a_feature.argument_count > 0 then
+				l_args := a_feature.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					Result.force_last (l_args.item_for_iteration, l_args.item_name (i))
+					i := i + 1
+					l_args.forth
+				end
+				l_args.go_to (l_cursor)
 			end
-			l_args.go_to (l_cursor)
 		end
 
 	local_names_of_feature (a_feature: FEATURE_I): DS_HASH_SET [STRING]

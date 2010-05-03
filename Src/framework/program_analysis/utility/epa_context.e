@@ -45,6 +45,7 @@ feature{NONE} -- Initialization
 			-- Key in `a_variables' is variable name, value is type name.
 		require
 			has_root_class: attached workbench.system.root_type as l_root_type and then l_root_type.associated_class /= Void
+			a_variables_valid: is_variables_valid (a_variables, l_root_type.associated_class)
 		do
 			make_with_class_and_variable_names (workbench.system.root_type.associated_class, a_variables)
 		end
@@ -62,6 +63,8 @@ feature{NONE} -- Initialization
 	make_with_class_and_variable_names (a_class: like class_; a_variables: HASH_TABLE [STRING, STRING])
 			-- Initialize Current with `a_class' and `a_variables'.
 			-- Key in `a_variables' is variable name, value is type name.
+		require
+			a_variables_valid: is_variables_valid (a_variables, a_class)
 		local
 			l_variables: like variables
 			l_cursor: CURSOR
@@ -77,6 +80,7 @@ feature{NONE} -- Initialization
 				a_variables.after
 			loop
 				l_type := type_a_from_string (a_variables.item_for_iteration, a_class)
+				check l_type /= Void end
 				variables.put (l_type, a_variables.key_for_iteration)
 				a_variables.forth
 			end
@@ -141,6 +145,31 @@ feature -- Access
 			-- a transition.
 			-- Key is the case sensitive name of variable,
 			-- value is the type of that variable.
+
+feature -- Status report
+
+	is_variables_valid (a_variables: HASH_TABLE [STRING, STRING]; a_context_class: CLASS_C): BOOLEAN
+			-- Are variables in `a_variables' valid in `a_context_class'?
+		local
+			l_cursor: CURSOR
+		do
+			l_cursor := a_variables.cursor
+			Result := True
+			from
+				a_variables.start
+			until
+				a_variables.after or not Result
+			loop
+				Result := is_variable_valid (a_variables.key_for_iteration, a_variables.item_for_iteration, a_context_class)
+				a_variables.forth
+			end
+		end
+
+	is_variable_valid (a_variable_name: STRING; a_type_name: STRING; a_context_class: CLASS_C): BOOLEAN
+			-- Is `a_variable_name' with `a_type_name' valid in `a_context_class'?
+		do
+			Result := attached type_a_from_string (a_type_name, a_context_class)
+		end
 
 feature -- Type checking
 
