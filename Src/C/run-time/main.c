@@ -424,6 +424,13 @@ rt_public int is_inside_rt_eiffel_code = 0;
 #endif
 
 /*
+TODO: doc
+*/
+rt_public uint32 cr_cross_depth = 0;
+rt_public struct stcrchunk *cr_top_area = (struct stcrchunk *) NULL;
+rt_public FILE *cr_file = (FILE *) NULL;
+
+/*
 doc:	<attribute name="EIF_once_values" return_type="EIF_once_value_t *" export="public">
 doc:		<summary>Array to save value of each computed once. It is used to store once per thread values.</summary>
 doc:		<access>Read/Write</access>
@@ -492,6 +499,11 @@ doc:	</routine>
 rt_public void set_debug_mode (int v){
 	debug_mode = v;
 }
+
+
+rt_public int is_capturing = 1;      /* Assume we always capture */
+rt_public int is_replaying = 0;      /* Assume we do not replay anything */
+
 
 /*
 doc:	<attribute name="catcall_detection_mode" return_type="int" export="private">
@@ -807,6 +819,15 @@ rt_public void eif_retrieve_root (int *argc, char **argv)
 			egc_ridx = -1;
 		}
 	}
+
+	if ((*argc) > 1) {
+		if (0 == strcmp (argv[(*argc)-1], "-eif_replay")) {
+			is_capturing = 0;
+			is_replaying = 1;
+			(*argc) -= 1;
+		}
+	}
+
 }
 
 rt_public void eif_init_root (void)
@@ -841,6 +862,9 @@ rt_public void eif_init_root (void)
 
 rt_public void eif_rtinit(int argc, char **argv, char **envp)
 {
+
+//	EIF_GET_CONTEXT
+
 	char *eif_timeout;
 
 	/* Compute the program name, so that all the error messages can be tagged
@@ -962,6 +986,12 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 	notify_root_thread();
 #endif
 	init_emnger();					/* Initialize ISE_EXCEPTION_MANAGER */
+
+
+	// Capture replay file
+	//cr_file = fopen("./capture.log", "w");
+	eif_gc_stop();
+
 }
 
 rt_public void failure(void)

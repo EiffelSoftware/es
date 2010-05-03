@@ -54,6 +54,7 @@
 #include "eif_rout_obj.h"
 #include "eif_option.h"
 #include "eif_bits.h"
+#include "eif_capture_replay.h"
 
 #ifdef WORKBENCH
 #include "eif_wbench.h"
@@ -1307,6 +1308,63 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTSA(x)		opt = eoption + x
 #endif
 
+/* Macros used for the capture replay mechanism.
+ * RTCRI 1 if current thread is inside of the captured boundary, 0 otherwise.
+ * RTCRC(x,y,z) capture replay hook in routine which decides what to do
+ *     x: 1 if routine is "inside", 0 otherwise
+ *     y: Number of arguments for this routine
+ *     z: Number of reference arguments for this routine
+ * RTCRA(a)    register argument for capture/replay
+ * RTCRE       execute actual feature body
+ * RTCRV       end capture replay clause without Result
+ * RTCRR(t)    end capture replay clause with Result
+ *     t: type of result (e.g. SK_BOOL, ...)
+ *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
+ */
+#define RTCRI (!(cr_cross_depth%2))
+#define RTCRC(x,y,z) \
+	int cr_cross = (RTCRI != (x)); \
+	EIF_TYPED_VALUE cr_result; \
+	if (cr_cross) { \
+		cr_cross_depth++; \
+		if (is_capturing || !RTCRI) { \
+			cr_init (exvect, y, z); \
+
+#define RTCRA(a) \
+			cr_register_argument (a);
+
+#define RTCRE \
+		} \
+	} \
+	if (is_capturing || RTCRI || !is_replaying) {
+
+/*
+ * Routine body comes here!
+ */
+
+#define RTCRR(t,f) \
+		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
+			cr_result.type = t; \
+			cr_result.f = Result; \
+			cr_register_result (exvect, cr_result); \
+		} \
+	} \
+	else if (cr_cross) { \
+		cr_replay (&cr_result); \
+		Result = cr_result.f; \
+	} \
+	if (cr_cross) cr_cross_depth--;
+
+#define RTCRV \
+		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
+			cr_result.type = SK_INVALID; \
+			cr_register_result (exvect, cr_result);  \
+		} \
+	} \
+	else if (cr_cross) { \
+		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
+	} \
+	if (cr_cross) cr_cross_depth--;
 
  /*
  * Macros for workbench

@@ -1,0 +1,34 @@
+
+#ifndef _eif_capture_replay_h_
+#define _eif_capture_replay_h_
+
+#include "eif_portable.h"
+#include "eif_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+/* Capture routines */
+
+void cr_init (struct ex_vect*, int num_args, int num_ref_args);
+
+void cr_register_argument (EIF_TYPED_VALUE arg);
+
+void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result);
+
+void cr_register_emalloc (EIF_REFERENCE obj);
+
+/* Replay routines */
+
+void cr_replay (EIF_TYPED_VALUE *Result);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif // _eif_capture_replay_h_

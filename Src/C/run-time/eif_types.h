@@ -485,6 +485,24 @@ struct pgcontext {				/* Program context */
 
 #endif /* WORKBENCH */
 
+
+/* eif_capture_replay.h */
+
+struct cr_area {                         /* Area being observed by capture/replay framework */
+	uint32 cross_depth;              /* Depth at which current area was added */
+        EIF_REFERENCE obj;               /* Pointer to observed area */
+	void *copy;                      /* Pointer to last copy of observed area, null if no copy made yet */
+};
+
+/*
+ * Stack of observed areas
+ */
+
+struct stcrchunk {
+        struct stcrchunk *sk_prev;       /* Previous chunk in stack, null if none */
+        struct cr_area area;         /* Arena where objects are stored */
+};
+
 #ifdef __cplusplus
 }
 #endif

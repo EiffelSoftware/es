@@ -113,8 +113,8 @@ LSRC = malloc.c garcol.c local.c store.c retrieve.c \
 	hector.c cecil.c bits.c file.c dir.c misc.c \
 	error.c umain.c memory.c memory_analyzer.c argv.c boolstr.c search.c \
 	run_idr.c path_name.c object_id.c eif_threads.c eif_project.c \
-	posix_threads.c gen_conf.c eif_type_id.c rout_obj.c \
-	option.c compress.c console.c offset.c main.c except.c
+	posix_threads.c gen_conf.c eif_type_id.c rout_obj.c option.c \
+	compress.c console.c offset.c main.c except.c queue.c capture_replay.c
 
 WADD = debug.c interp.c update.c wbench.c
 
@@ -171,7 +171,9 @@ WOBJ = \
 	wconsole.o \
 	woffset.o \
 	wmain.o \
-	wexcept.o 
+	wexcept.o \
+	wqueue.o \
+	wcapture_replay.o
 
 LOBJ = \
 	$(IDRS_OBJ) \
@@ -220,7 +222,9 @@ LOBJ = \
 	console.o \
 	offset.o \
 	main.o \
-	except.o 
+	except.o \
+	queue.o \
+	capture_replay.o
 
 MT_WOBJ = \
 	$(MTIDRS_OBJ) \
@@ -275,7 +279,9 @@ MT_WOBJ = \
 	MTwconsole.o \
 	MTwoffset.o \
 	MTwmain.o \
-	MTwexcept.o 
+	MTwexcept.o \
+	MTwqueue.o \
+	MTwcapture_replay.o
 
 MT_LOBJ = \
 	$(MTIDRS_OBJ) \
@@ -324,7 +330,9 @@ MT_LOBJ = \
 	MTconsole.o \
 	MToffset.o \
 	MTmain.o \
-	MTexcept.o 
+	MTexcept.o \
+	MTqueue.o \
+	MTcapture_replay.o
 
 wmalloc.o: malloc.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
@@ -462,6 +470,12 @@ wmain.o: main.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 wexcept.o: except.c
+	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
+
+wqueue.o: queue.c
+	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
+
+wcapture_replay.o: capture_replay.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 
@@ -603,6 +617,12 @@ MTmain.o: main.c
 MTexcept.o: except.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
+MTqueue.o: queue.c
+	       $(CC) -c $(JMTCFLAGS) $? -o $@
+
+MTcapture_replay.o: capture_replay.c
+	       $(CC) -c $(JMTCFLAGS) $? -o $@
+
 
 MTwmalloc.o: malloc.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
@@ -740,6 +760,12 @@ MTwmain.o: main.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 MTwexcept.o: except.c
+	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
+
+MTwqueue.o: queue.c
+	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
+
+MTwcapture_replay.o: capture_replay.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 
