@@ -425,8 +425,14 @@ feature -- Analyzis
 				-- Generate old variables
 			generate_old_variables
 
+				-- Capture/Replay entry hook
+			generate_capture_replay_enter
+
 				-- Now we want the body
 			generate_compound
+
+				-- Capture/Replay exit hook
+			generate_capture_replay_exit
 
 				-- Now the postcondition
 			generate_postcondition
@@ -1262,6 +1268,95 @@ end
 					--   implicitly by a code of once routine
 				buffer.put_new_line
 				buffer.put_string ("RTEV;")
+			end
+		end
+
+	generate_capture_replay_enter
+			-- Generate enter hook for capture replay
+		local
+			buf: like buffer
+			l_feat: FEATURE_I
+			l_args: like arguments
+			l_arg_count, l_ref_arg_count, i: INTEGER
+		do
+			buf := buffer
+
+			l_args := arguments
+			if l_args /= Void then
+				from
+					i := l_args.lower
+				until
+					i > l_args.upper
+				loop
+					if l_args[i].is_reference then
+						l_ref_arg_count := l_ref_arg_count + 1
+					end
+					i := i + 1
+				end
+				l_arg_count := l_args.count
+			end
+
+			buf.put_new_line
+			buf.put_string ("RTCRC(")
+			l_feat := context.current_feature
+
+			if l_feat.is_external then
+				io.put_string (l_feat.written_class.name)
+				io.put_character ('.')
+				io.put_string (l_feat.feature_name)
+				io.put_new_line
+				if
+					attached {EXTERNAL_I} l_feat as l_ext_i and then
+					attached {EXTERNAL_EXT_I} l_ext_i.extension as l_ext and then
+					(not l_ext.is_built_in) and then
+					(not l_feat.feature_name.is_case_insensitive_equal ("eif_gen_typecode_str"))
+				then
+					buf.put_integer (0)
+				else
+					buf.put_integer (1)
+				end
+			else
+				buf.put_integer (1)
+			end
+			buf.put_character (',')
+			buf.put_integer (l_arg_count)
+			buf.put_character (',')
+			buf.put_integer (l_ref_arg_count)
+			buf.put_two_character (')', ';')
+
+			from
+				i := 1
+			until
+				i > l_arg_count
+			loop
+				buf.put_new_line
+				buf.put_string ("RTCRA(arg");
+				buf.put_integer (i)
+				buf.put_three_character ('x', ')', ';')
+				i := i + 1
+			end
+
+			buf.put_new_line
+			buf.put_string ("RTCRE;")
+		end
+
+	generate_capture_replay_exit
+			-- Generate exit hook for capture replay
+		local
+			buf: like buffer
+			type_c: TYPE_C
+		do
+			buf := buffer
+			buf.put_new_line
+			if result_type.is_void then
+				buf.put_string ("RTCRV;")
+			else
+				type_c := real_type (result_type).c_type
+				buf.put_string ("RTCRR(")
+				type_c.generate_sk_value (buf)
+				buf.put_character (',')
+				type_c.generate_typed_field (buf)
+				buf.put_two_character (')', ';')
 			end
 		end
 
