@@ -579,8 +579,6 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 			a_buffer.append (code_tag_end)
 			a_buffer.append_character ('%N')
-			a_buffer.append (code_tag_end)
-			a_buffer.append_character ('%N')
 
 				-- Synthesize type information.
 			a_buffer.append (operands_tag_start)
@@ -641,6 +639,8 @@ feature{NONE} -- Implementation/Test case synthesis
 			end
 			a_buffer.append_character ('%N')
 			a_buffer.append (cdata_tag_end)
+			a_buffer.append_character ('%N')
+			a_buffer.append (trace_tag_end)
 			a_buffer.append_character ('%N')
 		end
 
