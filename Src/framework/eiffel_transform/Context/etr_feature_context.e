@@ -102,7 +102,7 @@ feature {NONE} -- Creation
 			-- compute explicit type
 			if a_written_feature.has_return_value then
 				unresolved_type := a_written_feature.type
-				type := type_checker.explicit_type (a_written_feature.type, class_context.written_class, written_feature)
+				type := type_checker.explicit_type (a_written_feature.type, class_context.written_class, a_written_feature)
 				has_return_value := true
 			end
 
@@ -120,9 +120,9 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, class_context.written_class, written_feature)
+					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, class_context.written_class, a_written_feature)
 					l_name := l_e_feat.argument_names.item
-					l_arg_list.extend (create {ETR_TYPED_VAR}.make(l_name, l_expl_type,l_e_feat.arguments.item))
+					l_arg_list.extend (create {ETR_TYPED_VAR}.make (l_name, l_expl_type,l_e_feat.arguments.item))
 
 					l_e_feat.argument_names.forth
 					l_e_feat.arguments.forth

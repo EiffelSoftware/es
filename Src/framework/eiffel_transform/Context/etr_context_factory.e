@@ -31,15 +31,12 @@ feature -- New
 			system_defined: system_defined
 			non_void: a_classname /= void and a_featurename /= void
 		local
+			l_class: CLASS_C
 			l_feat: FEATURE_I
-			l_cc: ETR_CLASS_CONTEXT
 		do
-			l_feat := feature_of_compiled_class (a_classname, a_featurename)
-			l_cc := new_class_context (a_classname)
-
-			if l_feat /= void and l_cc /= void then
-				Result := l_cc.corresponding_feature (l_feat)
-			end
+			l_class := compiled_class_with_name (a_classname)
+			l_feat := l_class.feature_named (a_featurename)
+			create Result.make (l_feat, create {ETR_CLASS_CONTEXT}.make(l_class))
 		end
 
 	new_empty_context: ETR_CONTEXT
