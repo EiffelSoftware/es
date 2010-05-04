@@ -279,7 +279,9 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 			l_type: TYPE_A
 			l_table: like operand_type_table
+			l_root_class: CLASS_C
 		do
+			l_root_class := system.root_type.associated_class
 			l_str := a_var_str
 
 			-- Split types into lines of declarations
@@ -309,7 +311,7 @@ feature{NONE} -- Implementation
 					-- Type.
 					l_type_str := l_line.substring (l_end_index + 1, l_line.count)
 					l_type_str.prune_all (' ')
-					l_type := base_type (l_type_str)
+					l_type := base_type_with_context (l_type_str, l_root_class)
 
 					create l_var.make (l_index)
 					l_table.put (l_type, l_var)
@@ -422,7 +424,9 @@ feature{NONE} -- Implementation
 			l_parser: AUT_REQUEST_PARSER
 			l_input: STRING
 			l_request: AUT_REQUEST
+			l_root_class: CLASS_C
 		do
+			l_root_class := system.root_type.associated_class
 			l_input := ":execute "
 			l_input.append (a_string)
 
@@ -433,7 +437,7 @@ feature{NONE} -- Implementation
 			if not l_parser.has_error and then attached {AUT_CALL_BASED_REQUEST} l_parser.last_request as lt_call then
 				-- Explictly set the target type, which will be needed when finding out the 'feature_to_call'.
 				if attached {AUT_INVOKE_FEATURE_REQUEST}lt_call as lt_invoke then
-					lt_invoke.set_target_type (base_type (operand_name_type_in_string_table[lt_invoke.target.name (variable_name_prefix)]))
+					lt_invoke.set_target_type (base_type_with_context (operand_name_type_in_string_table[lt_invoke.target.name (variable_name_prefix)], l_root_class))
 				end
 				Result := lt_call
 			else
