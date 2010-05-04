@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Constants for describing the type of event, using the first 3 bits of a byte */
+/* Constants for describing the type of event, using the first 4 bits of a byte */
 
 #define TYPE_MASK 0xF0
 
@@ -35,7 +35,7 @@
 
 #define MEMMUT  0x90    /* Memory area mutation */
 
-/* The other 5 bits can be used for argument count etc. */
+/* The other 4 bits can be used for argument count etc. */
 
 #define ARG_MASK 0x0F
 
