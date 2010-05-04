@@ -66,55 +66,6 @@ feature{NONE} -- Implementation
 	post_variable_table_cache: detachable like post_variable_table
 			-- Internal cache for `post_variable_table'.
 
-    deserialized_variable_table (a_serialization: ARRAY [NATURAL_8]): HASH_TABLE [detachable ANY, INTEGER]
-            -- Deserialize the objects from 'a_serialization'
-            -- (as object of type {SPECIAL [TUPLE [INTEGER, detachable ANY]]})
-            -- and store the objects into the Result hashtable.
-        local
-            l_data: STRING
-            l_index: INTEGER
-            l_variable_table: HASH_TABLE [detachable ANY, INTEGER]
-        do
-            l_data := string_from_array (a_serialization)
-            if attached {SPECIAL [TUPLE [index: INTEGER; var: detachable ANY]]}deserialized_object (l_data) as lt_variable then
-                from
-                    create l_variable_table.make (lt_variable.count + 1)
-                    l_variable_table.compare_objects
-                    l_index := lt_variable.lower
-                until
-                    l_index > lt_variable.upper
-                loop
-                    l_variable_table.put (lt_variable[l_index].var, lt_variable[l_index].index)
-                    l_index := l_index + 1
-                end
-            else
-                create l_variable_table.make (0)
-            end
-            Result := l_variable_table
-        end
-
-    string_from_array (a_array: ARRAY [NATURAL_8]): STRING is
-            -- String from `a_array'.
-        local
-            l_lower, l_upper: INTEGER
-            i: INTEGER
-            j: INTEGER
-        do
-            l_lower := a_array.lower
-            l_upper := a_array.upper
-            create Result.make_filled (' ', l_upper - l_lower + 1)
-            from
-                j := 1
-                i := l_lower
-            until
-                i > l_upper
-            loop
-                Result.put (a_array.item (i).to_character_8, j)
-                i := i + 1
-                j := j + 1
-            end
-        end
-
 feature -- Test case
 
 	generated_test_1
@@ -190,36 +141,6 @@ feature -- Test case information
     tci_exception_trace: STRING
 		deferred
 		end
-
-feature{NONE} -- Implementation
-
-    keys_from_table (a_tbl: HASH_TABLE [detachable ANY, INTEGER]): STRING
-    		-- A string containing comma separated indexes of keys in `a_tbl'
-    	local
-    		l_tbl: like pre_variable_table
-    		l_cursor: CURSOR
-    		i: INTEGER
-    		l_count: INTEGER
-    	do
-    		l_tbl := pre_variable_table
-    		l_cursor := l_tbl.cursor
-    		create Result.make (64)
-    		from
-    			i := 1
-    			l_count := l_tbl.count
-    			l_tbl.start
-    		until
-    			l_tbl.after
-    		loop
-    			Result.append (l_tbl.key_for_iteration.out)
-    			if i < l_count then
-    				Result.append_character (',')
-    			end
-    			i := i + 1
-    			l_tbl.forth
-    		end
-    		l_tbl.go_to (l_cursor)
-    	end
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
