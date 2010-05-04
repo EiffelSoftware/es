@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_TEST_CASE_LOADER}."
+	description: "Loader to load a test case into a transition"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EPA_FEATURE_CALL_TRANSITION_LOADER_FROM_TEST_CASE
+	SEM_FEATURE_CALL_TRANSITION_LOADER_FROM_TEST_CASE
 
 inherit
 	EPA_UTILITY
