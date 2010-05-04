@@ -43,20 +43,6 @@ feature -- Status report
 		    Result := internal_hash_code.abs
 		end
 
---	is_cached_hash_code_reset: BOOLEAN
---			-- Is cached hash code reset to 0?
---		do
---			Result := internal_hash_code = 0
---		end
-
---feature{NONE} -- Operation
-
---	reset_cached_hash_code
---			-- Reset the cached hash code.
---		do
---			internal_hash_code := 0
---		end
-
 feature{NONE} -- implementation
 
 	key_to_hash: DS_LINEAR[INTEGER]

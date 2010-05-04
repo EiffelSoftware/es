@@ -73,6 +73,15 @@ feature -- Status report
 			Result := content_of_transition_internal (variable_type_name)
 		end
 
+
+feature -- Visitor
+
+	process (a_visitor: SEM_QUERYABLE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_feature_call (Current)
+		end
+
 feature{NONE} -- Implementation
 
 	content_of_transition_internal (a_variable_display_type: INTEGER): STRING
@@ -118,7 +127,7 @@ feature{NONE} -- Implementation
 	content_of_transition: STRING
 			-- Content of current transition
 		do
-			Result := content_of_transition_internal (variable_original_name)
+			Result := content_of_transition_internal (variable_position_name)
 		end
 
 	target_variable: EPA_EXPRESSION
@@ -160,14 +169,12 @@ feature{NONE} -- Implementation
 		local
 			l_cursor: CURSOR
 			l_index: INTEGER
-			l_expr: EPA_AST_EXPRESSION
+			l_expr: EPA_EXPRESSION
 			l_operand_count: INTEGER
 			l_is_query: BOOLEAN
 			l_env_feat: FEATURE_I
 			l_env_class: CLASS_C
 			l_context: like context
-			l_type: TYPE_A
-			l_expr_as: EXPR_AS
 		do
 			l_context := context
 			l_env_feat := l_context.feature_
@@ -176,10 +183,18 @@ feature{NONE} -- Implementation
 			l_is_query := feature_.has_return_value
 
 			create variables.make (l_operand_count)
+			variables.set_equality_tester (expression_equality_tester)
+
 			create variable_positions.make (l_operand_count)
+
 			create reversed_variable_position.make (l_operand_count)
+			reversed_variable_position.set_equality_tester (expression_equality_tester)
+
 			create inputs.make (l_operand_count)
+			inputs.set_equality_tester (expression_equality_tester)
+
 			create outputs.make (l_operand_count)
+			outputs.set_equality_tester (expression_equality_tester)
 
 				-- Put operands into `variables', `inputs' and `outputs'.
 			l_cursor := a_operands.cursor
@@ -188,10 +203,7 @@ feature{NONE} -- Implementation
 			until
 				a_operands.after
 			loop
-				l_expr_as := ast_from_expression_text (a_operands.item_for_iteration)
-				l_type := l_context.expression_type (l_expr_as)
-				create l_expr.make_with_type (l_env_class, l_env_feat, l_expr_as, l_env_class, l_type)
-
+				l_expr := variable_expression_from_context (a_operands.item_for_iteration, l_context)
 				extend_variable (l_expr, a_operands.key_for_iteration)
 				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) then
 					inputs.force_last (l_expr)
