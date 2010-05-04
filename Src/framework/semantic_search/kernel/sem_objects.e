@@ -10,15 +10,23 @@ class
 inherit
 	SEM_QUERYABLE
 
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_context: EPA_CONTEXT; a_variable_positions: HASH_TABLE [INTEGER, STRING])
+	make (a_context: EPA_CONTEXT; a_variable_positions: HASH_TABLE [INTEGER, STRING]; a_serializatoin: like serialization)
 			-- Initialize `context' with `a_context'.
 			-- `a_variable_positions' is a table defining the position of each variable in `a_context'.`variables'.
-			-- Key of the table is variable name, value is the 0-based position of that variables.
+			-- Key of the table is variable name, value is the position of that variables.
+			-- `a_serialization' is the serialized data for all objects in `a_context'.`variables'. 			
+			-- The serialized data should be of type SPECIAL [TUPLE [index: INTEGER; object: detachable ANY]].
+			-- `index' of a tuple is the position of that variable,
+			-- `object' of the tuple is the serialized data (the data should be serialized by `independent_store' so the data can be deserialized by
+			-- another application, even in a different platform) for that object.
+
 		require
 			a_variable_positions_valid: is_variable_position_table_valid (a_variable_positions, a_context)
 		local
@@ -28,6 +36,7 @@ feature{NONE} -- Initialization
 			l_variable_count: INTEGER
 		do
 			context := a_context
+			serialization := a_serializatoin
 			create properties.make (20, context.class_, context.feature_)
 
 			l_variables := context.variables
@@ -62,6 +71,21 @@ feature -- Access
 	properties: EPA_STATE
 			-- Set of properties among `variables' that can be queries		
 
+	serialization: ARRAY [NATURAL_8]
+			-- Serialized data for all objects in `a_context'.`variables'.
+			-- The serialized data should be of type SPECIAL [TUPLE [index: INTEGER; object: detachable ANY]].
+			-- `index' of a tuple is the position of that variable,
+			-- `object' of the tuple is the serialized data (the data should be serialized by `independent_store' so the data can be deserialized by
+			-- another application, even in a different platform) for that object.
+
+	objects: detachable HASH_TABLE [detachable ANY, INTEGER]
+			-- Objects deserialized from `serialization'
+			-- Key is object position, value is the object itself.
+			-- Return Void if deserialization failed.
+		do
+			Result := deserialized_variable_table (serialization)
+		end
+
 feature -- Setting
 
 	set_properties (a_properties: like properties)
@@ -70,7 +94,6 @@ feature -- Setting
 		do
 			set_state (a_properties, properties)
 		end
-
 
 feature -- Visitor
 
