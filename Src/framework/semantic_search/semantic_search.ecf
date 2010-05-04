@@ -25,6 +25,8 @@
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>	
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<cluster name="semantic_search" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/java$</exclude>

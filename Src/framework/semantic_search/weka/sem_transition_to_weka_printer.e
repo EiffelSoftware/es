@@ -35,7 +35,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	context: SEM_TRANSITION_CONTEXT
+	context: EPA_CONTEXT
 			-- Context in which transitions are type checked
 
 	transitions: LINKED_LIST [SEM_TRANSITION]

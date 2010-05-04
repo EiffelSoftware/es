@@ -46,7 +46,6 @@
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
-        <library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
