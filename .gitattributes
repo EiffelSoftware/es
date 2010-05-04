@@ -3969,6 +3969,7 @@ eweasel/tests/lib020/file.txt -text
 eweasel/tests/lib023/file.txt -text
 eweasel/tests/lib024/file.txt -text
 eweasel/tests/lib027/file.txt -text svneol=native#application/octet-stream
+eweasel/tests/list015/Ace -text
 eweasel/tests/melt001/notes -text
 eweasel/tests/melt002/notes -text
 eweasel/tests/melt003/notes -text
