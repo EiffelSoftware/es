@@ -15,8 +15,12 @@ inherit
 
 feature -- Access
 
+	block_number: INTEGER
+			-- This is the block number (possibly used for display)
+
 	id: INTEGER
 			-- Basic block identifier
+			-- This is used as hash_code of a block, ideally, each block should have a different id.
 
 	class_: CLASS_C
 			-- Class to which current basic block is associated
@@ -87,6 +91,14 @@ feature -- Setting
 			feature_ := a_feature
 		ensure
 			feature_set: feature_ = a_feature
+		end
+
+	set_block_number (a_number: INTEGER)
+			-- Set `block_number' with `a_number'.
+		do
+			block_number := a_number
+		ensure
+			block_number_set: block_number = a_number
 		end
 
 feature{NONE} -- Implementation

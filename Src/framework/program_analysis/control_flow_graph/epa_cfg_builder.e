@@ -42,6 +42,7 @@ feature -- Basic operations
 			l_start_node: EPA_AUXILARY_BLOCK
 			l_end_node: EPA_AUXILARY_BLOCK
 		do
+			next_block_number := 1
 			feature_ := a_feature
 			context_class := a_context_class
 			written_class := feature_.written_class
@@ -291,6 +292,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_instruction_node (a_instructions: ARRAYED_LIST [INSTRUCTION_AS]): EPA_INSTRUCTION_BLOCK
@@ -300,6 +303,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_if_branching_node (a_expr: EXPR_AS): EPA_IF_BRANCHING_BLOCK
@@ -309,6 +314,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_loop_branching_node (a_expr: EXPR_AS): EPA_LOOP_BRANCHING_BLOCK
@@ -318,6 +325,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_inspect_branching_node (a_switch: EXPR_AS; a_internvals: ARRAYED_LIST [INTERVAL_AS]): EPA_INSPECT_BRANCHING_BLOCK
@@ -327,6 +336,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_auxilary_node: EPA_AUXILARY_BLOCK
@@ -342,6 +353,8 @@ feature{NONE} -- Implementation/Visit
 			-- New node for loop invariant `a_invariants'.
 		do
 			create Result.make_with_ast (next_basic_block_id, a_invariants)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	extended_branches (a_branches: ARRAYED_LIST [TUPLE [condition: detachable EPA_BRANCHING_BLOCK; instructions: ARRAYED_LIST [INSTRUCTION_AS]]]): TUPLE [start_block: EPA_BASIC_BLOCK; end_block: EPA_BASIC_BLOCK]
@@ -522,5 +535,8 @@ feature{NONE} -- Implementation/Visit
 				l_nodes.forth
 			end
 		end
+
+	next_block_number: INTEGER
+			-- Block number for the next created non-auxiliary block
 
 end
