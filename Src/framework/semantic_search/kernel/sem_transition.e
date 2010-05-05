@@ -25,20 +25,21 @@ feature -- Access
 			Result := variables.subtraction (inputs).subtraction (outputs)
 		end
 
-	precondition: like properties assign set_precondition
+	precondition: EPA_STATE assign set_precondition
 			-- Precondition of Current transition
 
-	postcondition: like properties assign set_postcondition
+	postcondition: EPA_STATE assign set_postcondition
 			-- Postcondition of Current transition
 
-	properties: EPA_STATE
-			-- Set of properties among `variables' that can be queries
-			-- `postcondition' is returned, although it is arguable whether `postcondition' should be
-			-- considered as the property of current transition. The initial thinking is that the focus of
-			-- a transition is the state (postcondition) which it can deliver.
-		do
-			Result := postcondition
-		end
+	precondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
+			-- Boost values for equations in `precondition'
+			-- Key is an equation in `precondition', value is the boost number associated with that equation.
+			-- The boost numbers will be used as boost values for a field (in Lucene sense).
+
+	postcondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
+			-- Boost values for equations in `postcondition'
+			-- Key is an equation in `postcondition', value is the boost number associated with that equation.
+			-- The boost numbers will be used as boost values for a field (in Lucene sense).			
 
 	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
 			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
@@ -158,6 +159,17 @@ feature -- Setting
 			outputs.force_last (a_variable)
 		end
 
+feature{NONE} -- Implementation
+
+	initialize_boosts
+			-- Initialize `precondition_boosts' and `postcondition_boosts'.
+		do
+			create precondition_boosts.make (20)
+			precondition_boosts.set_key_equality_tester (equation_equality_tester)
+			create postcondition_boosts.make (20)
+			postcondition_boosts.set_key_equality_tester (equation_equality_tester)
+		end
+
 invariant
 	inputs_valid: inputs.for_all (agent variables.has)
 	outputs_valid: outputs.for_all (agent variables.has)
@@ -165,5 +177,9 @@ invariant
 	outputs_equality_tester_valid: outputs.equality_tester = expression_equality_tester
 	precondition_equality_tester_valid: precondition.equality_tester = equation_equality_tester
 	postcondition_equality_tester_valid: postcondition.equality_tester = equation_equality_tester
+	precondition_boosts_valid: precondition_boosts.keys.for_all (agent precondition.has)
+	precondition_boosts_key_equality_tester_valid: precondition_boosts.key_equality_tester = equation_equality_tester
+	postcondition_boosts_valid: postcondition_boosts.keys.for_all (agent postcondition.has)
+	postcondition_boosts_key_equality_tester_valid: postcondition_boosts.key_equality_tester = equation_equality_tester
 
 end

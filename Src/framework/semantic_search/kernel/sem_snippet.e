@@ -9,6 +9,9 @@ class
 
 inherit
 	SEM_TRANSITION
+		redefine
+			is_snippet
+		end
 
 create
 	make
@@ -40,6 +43,7 @@ feature{NONE} -- Initialization
 			context := a_context
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
+			initialize_boosts
 
 			create variables.make (l_operand_count)
 			variables.set_equality_tester (expression_equality_tester)
@@ -100,6 +104,11 @@ feature -- Access
 
 	description: STRING
 			-- Description of current transition
+
+feature -- Type status report
+
+	is_snippet: BOOLEAN = True
+			-- Is Current a snippet queryable?
 
 feature -- Setting
 

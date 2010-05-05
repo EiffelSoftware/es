@@ -122,12 +122,12 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
-	properties: EPA_STATE
-			-- Set of properties among `variables' that can be queries
-		deferred
-		end
+--	properties: EPA_STATE
+--			-- Set of properties among `variables' that can be queried
+--		deferred
+--		end
 
-	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: like properties): detachable EPA_EQUATION
+	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: EPA_STATE): detachable EPA_EQUATION
 			-- Assertion equation from `a_state' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
@@ -199,6 +199,23 @@ feature -- Status report
 				end
 				l_vars.go_to (l_var_cursor)
 			end
+		end
+
+feature -- Type status report
+
+	is_objects: BOOLEAN
+			-- Is Current an object set queryable?
+		do
+		end
+
+	is_snippet: BOOLEAN
+			-- Is Current a snippet queryable?
+		do
+		end
+
+	is_feature_call: BOOLEAN
+			-- Is Current a feature call queryable?
+		do
 		end
 
 feature -- Visitor
@@ -370,7 +387,7 @@ feature{NONE} -- Implementation
 			create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
 		end
 
-	set_state (a_source_state: like properties; a_target_state: like properties)
+	set_state (a_source_state: EPA_STATE; a_target_state: EPA_STATE)
 			-- Adapt `a_source_state' into `a_target_state'.
 		do
 			a_target_state.wipe_out

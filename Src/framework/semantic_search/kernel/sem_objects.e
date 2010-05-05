@@ -9,6 +9,9 @@ class
 
 inherit
 	SEM_QUERYABLE
+		redefine
+			is_objects
+		end
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
@@ -38,6 +41,9 @@ feature{NONE} -- Initialization
 			context := a_context
 			serialization := a_serializatoin
 			create properties.make (20, context.class_, context.feature_)
+
+			create boosts.make (20)
+			boosts.set_key_equality_tester (equation_equality_tester)
 
 			l_variables := context.variables
 			l_variable_count := l_variables.count
@@ -86,6 +92,16 @@ feature -- Access
 			Result := deserialized_variable_table (serialization)
 		end
 
+	boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
+			-- Boost values for equations in `properties'
+			-- Key is an equation in `properties', value is the boost number associated with that equation.
+			-- The boost numbers will be used as boost values for a field (in Lucene sense).
+
+feature -- Type status report
+
+	is_objects: BOOLEAN = True
+			-- Is Current an object set queryable?
+
 feature -- Setting
 
 	set_properties (a_properties: like properties)
@@ -102,5 +118,9 @@ feature -- Visitor
 		do
 			a_visitor.process_objects (Current)
 		end
+
+invariant
+	boosts_valid: boosts.keys.for_all (agent properties.has)
+	boosts_key_equality_tester_valid: boosts.key_equality_tester = equation_equality_tester
 
 end

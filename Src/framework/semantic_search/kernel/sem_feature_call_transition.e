@@ -10,7 +10,8 @@ class
 inherit
 	SEM_TRANSITION
 		redefine
-			name
+			name,
+			is_feature_call
 		end
 
 	EPA_HASH_CALCULATOR
@@ -40,6 +41,7 @@ feature{NONE} -- Initialization
 			is_creation := a_is_creation
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
+			initialize_boosts
 			initialize (a_operands)
 		end
 
@@ -73,6 +75,10 @@ feature -- Status report
 			Result := content_of_transition_internal (variable_type_name)
 		end
 
+feature -- Type status report
+
+	is_feature_call: BOOLEAN = True
+			-- Is Current a feature call queryable?
 
 feature -- Visitor
 
