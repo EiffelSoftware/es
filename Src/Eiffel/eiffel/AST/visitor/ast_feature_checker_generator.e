@@ -2372,9 +2372,7 @@ feature -- Implementation
 				end
 					-- Type check the call
 				if not l_is_not_call then
-    	            if workbench.is_degree_scoop_processing and then l_last_type.is_separate then
-        	            l_last_type.processor_tag.set_controlled (l_last_type.is_implicitly_attached)
-            	    end
+					-- set_controlled (l_last_type)
 
 					process_call (l_last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
 						False, False, True, False)
@@ -2440,10 +2438,7 @@ feature -- Implementation
 
 						-- We need to remember if this argument is controlled so we can pass this on
 	                    -- to later stages, important for SCOOP separate call validity checking.
-
-    	            if workbench.is_degree_scoop_processing and then l_last_type.is_separate then
-        	            l_last_type.processor_tag.set_controlled (l_last_type.is_implicitly_attached)
-            	    end
+					set_controlled (l_last_type)
 
 					process_call (l_last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
 						False, False, True, False)
@@ -2577,11 +2572,7 @@ feature -- Implementation
 
                     -- We need to remember if this argument is controlled so we can pass this on
                     -- to later stages, important for SCOOP separate call validity checking.
-
-                if workbench.is_degree_scoop_processing and then l_type.is_separate then
-                    l_type.processor_tag.set_controlled (l_type.is_implicitly_attached)
-                end
-
+				set_controlled (l_type)
 
 				l_has_vuar_error := l_as.parameters /= Void
 				if l_needs_byte_node then
@@ -2741,6 +2732,7 @@ feature -- Implementation
 				l_arg_type := l_feature.arguments.i_th (l_arg_pos)
 
 				last_type := l_arg_type.actual_type.instantiation_in (last_type.as_implicitly_detachable, l_last_id)
+				set_controlled (last_type)
 				if l_as.parameters /= Void then
 					create l_vuar1
 					context.init_error (l_vuar1)
@@ -8277,6 +8269,13 @@ feature {NONE} -- Implementation: overloading
 
 feature {NONE} -- SCOOP Implementation
     last_is_controlled : BOOLEAN
+
+	set_controlled (a_type : TYPE_A)
+		do
+			if workbench.is_degree_scoop_processing and then a_type.is_separate then
+				a_type.processor_tag.set_controlled (a_type.is_implicitly_attached)
+			end
+		end
 
     is_arg_controlled (a_type : TYPE_A) : BOOLEAN
             -- Determine whether the argument `var' is controlled, as
