@@ -59,15 +59,9 @@ feature -- Access
 
 	name: STRING
 			-- Name of current transition
-		deferred
-		end
 
 	description: STRING
 			-- Description of current transition
-		deferred
-		ensure
-			result_attached: Result /= Void
-		end
 
 	content: STRING
 			-- String representing the content of Current transition
@@ -104,6 +98,24 @@ feature -- Status setting
 			-- Set `postcondition_boosts' with `a_postcondition_boosts'.
 		do
 			postcondition_boosts := a_postcondition_boosts.cloned_object
+		end
+
+	set_name (a_name: like name)
+			-- Set `name' with `a_name'.
+			-- Make a copy of `a_name'.
+		do
+			name := a_name.twin
+		ensure
+			name_set: name ~ a_name
+		end
+
+	set_description (a_description: like description)
+			-- Set `description' with `a_description'.
+			-- Make a copy of `a_description'.
+		do
+			description := a_description.twin
+		ensure
+			description_set: description ~ a_description
 		end
 
 feature -- Status report
@@ -180,6 +192,24 @@ feature{NONE} -- Implementation
 			precondition_boosts.set_key_equality_tester (equation_equality_tester)
 			create postcondition_boosts.make (20)
 			postcondition_boosts.set_key_equality_tester (equation_equality_tester)
+		end
+
+	initialize_tables
+			-- Initialize serval tables.
+		do
+			create variables.make (5)
+			variables.set_equality_tester (expression_equality_tester)
+
+			create variable_positions.make (5)
+
+			create reversed_variable_position.make (5)
+			reversed_variable_position.set_equality_tester (expression_equality_tester)
+
+			create inputs.make (5)
+			inputs.set_equality_tester (expression_equality_tester)
+
+			create outputs.make (5)
+			outputs.set_equality_tester (expression_equality_tester)
 		end
 
 invariant

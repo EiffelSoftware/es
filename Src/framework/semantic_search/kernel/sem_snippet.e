@@ -44,21 +44,9 @@ feature{NONE} -- Initialization
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
 			initialize_boosts
+			initialize_tables
 
-			create variables.make (l_operand_count)
-			variables.set_equality_tester (expression_equality_tester)
-
-			create variable_positions.make (l_operand_count)
-
-			create reversed_variable_position.make (l_operand_count)
-			reversed_variable_position.set_equality_tester (expression_equality_tester)
-
-			create inputs.make (l_operand_count)
-			inputs.set_equality_tester (expression_equality_tester)
 			l_inputs := inputs
-
-			create outputs.make (l_operand_count)
-			outputs.set_equality_tester (expression_equality_tester)
 			l_outputs := outputs
 
 				-- Initialize `variables'.
@@ -99,37 +87,10 @@ feature -- Access
 			-- {1}.extend ({2})
 			-- {1} and {2} represent the first and second variable, respectively.
 
-	name: STRING
-			-- Name of current transition
-
-	description: STRING
-			-- Description of current transition
-
 feature -- Type status report
 
 	is_snippet: BOOLEAN = True
 			-- Is Current a snippet queryable?
-
-feature -- Setting
-
-	set_name (a_name: like name)
-			-- Set `name' with `a_name'.
-			-- Make a copy of `a_name'.
-		do
-			name := a_name.twin
-		ensure
-			name_set: name ~ a_name
-		end
-
-	set_description (a_description: like description)
-			-- Set `description' with `a_description'.
-			-- Make a copy of `a_description'.
-		do
-			description := a_description.twin
-		ensure
-			description_set: description ~ a_description
-		end
-
 
 feature -- Visitor
 

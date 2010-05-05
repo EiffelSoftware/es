@@ -59,9 +59,6 @@ feature -- Access
 	name: STRING
 			-- Name of current transition
 
-	description: STRING
-			-- Description of current transition
-
 	as_snippet: SEM_SNIPPET
 			-- A snippet version of current feature call transition
 			-- Because a feature call is a snippet by nature.
@@ -221,11 +218,11 @@ feature{NONE} -- Implementation
 			l_cursor: CURSOR
 			l_index: INTEGER
 			l_expr: EPA_EXPRESSION
-			l_operand_count: INTEGER
 			l_is_query: BOOLEAN
 			l_env_feat: FEATURE_I
 			l_env_class: CLASS_C
 			l_context: like context
+			l_operand_count: INTEGER
 		do
 			l_context := context
 			l_env_feat := l_context.feature_
@@ -233,19 +230,7 @@ feature{NONE} -- Implementation
 			l_operand_count := operand_count_of_feature (feature_)
 			l_is_query := feature_.has_return_value
 
-			create variables.make (l_operand_count)
-			variables.set_equality_tester (expression_equality_tester)
-
-			create variable_positions.make (l_operand_count)
-
-			create reversed_variable_position.make (l_operand_count)
-			reversed_variable_position.set_equality_tester (expression_equality_tester)
-
-			create inputs.make (l_operand_count)
-			inputs.set_equality_tester (expression_equality_tester)
-
-			create outputs.make (l_operand_count)
-			outputs.set_equality_tester (expression_equality_tester)
+			initialize_tables
 
 				-- Put operands into `variables', `inputs' and `outputs'.
 			l_cursor := a_operands.cursor
@@ -269,8 +254,8 @@ feature{NONE} -- Implementation
 			content := content_of_transition
 
 				-- Initialize `name' and `description'.
-			name :=  class_.name_in_upper + once "." + feature_.feature_name.as_lower
-			description := feature_header_comment (feature_)
+			set_name (class_.name_in_upper + once "." + feature_.feature_name.as_lower)
+			set_description (feature_header_comment (feature_))
 		end
 
 end
