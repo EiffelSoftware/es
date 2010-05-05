@@ -45,6 +45,10 @@ feature -- Access
 			-- Agent to retrieve the drawing style for `edge' connecting `start_node' and `end_node'
 			-- If Void, `default_edge_style' will be used as default.
 
+	node_id_agent: detachable FUNCTION [ANY, TUPLE [node: N], INTEGER]
+			-- Agent to retrieve an identifier of the DOT node givne `node'
+			-- If Void, a default ID assignment scheme is used.
+
 feature -- Status report
 
 	is_ready: BOOLEAN
@@ -99,6 +103,14 @@ feature -- Setting
 			end
 		end
 
+	set_node_id_agent (a_agent: like node_id_agent)
+			-- Set `node_id_agent' with `a_agent'.
+		do
+			node_id_agent := a_agent
+		ensure
+			node_id_agent_set: node_id_agent = a_agent
+		end
+
 feature -- Print
 
 	print_graph (a_graph: EGX_GENERAL_GRAPH [N, L]) is
@@ -134,8 +146,12 @@ feature{NONE} -- Implementation/Visiting
 	first_visit_action (a_start_node: N; a_end_node: N; a_edge: L; a_new_start: BOOLEAN) is
 			-- Action to be performed when `a_end_node' is visited for the first time
 		do
-			node_index := node_index + 1
-			node_ids.force_last (node_index, a_end_node)
+			if node_id_agent /= Void then
+				node_ids.force_last (node_id_agent.item ([a_end_node]), a_end_node)
+			else
+				node_index := node_index + 1
+				node_ids.force_last (node_index, a_end_node)
+			end
 
 				-- Draw `a_end_node'.
 			draw_node (a_end_node)

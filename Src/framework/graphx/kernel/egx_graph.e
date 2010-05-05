@@ -263,7 +263,7 @@ feature -- Setting
 				l_label := l_edge.label
 				l_other_node := l_edge.end_node.data
 				remove_out_edges (a_node, l_label)
-				if not has_out_edge (b_node, l_label) then
+				if not actual_node_equality_tester.item ([l_other_node, b_node]) and then not has_out_edge (b_node, l_label) then
 					extend_out_edge (b_node, l_other_node, l_label)
 				end
 				l_out_edges.forth
@@ -280,9 +280,12 @@ feature -- Setting
 				l_label := l_edge.label
 				l_other_node := l_edge.start_node.data
 				remove_out_edges (l_other_node, l_label)
-				if not has_out_edge (l_other_node, l_label) then
+				if not actual_node_equality_tester.item ([l_other_node, b_node]) and then not has_out_edge (l_other_node, l_label) then
 					extend_out_edge (l_other_node, b_node, l_label)
 				end
+--				if not has_out_edge (l_other_node, l_label) then
+--					extend_out_edge (l_other_node, b_node, l_label)
+--				end
 				if not l_in_edges.after then
 					l_in_edges.forth
 				end
