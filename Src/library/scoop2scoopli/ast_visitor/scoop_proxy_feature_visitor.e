@@ -93,13 +93,13 @@ feature {NONE} -- Implementation
 					-- get feature name
 					l_feature_name_visitor.process_feature_name (l_feature_name, False)
 					l_feature_name_str := l_feature_name_visitor.feature_name
-					l_feature_name_visitor.process_feature_name (l_feature_name, True)
+					-- l_feature_name_visitor.process_feature_name (l_feature_name, True)
 					l_feature_declaration_name := l_feature_name_visitor.feature_name
 
 					-- get original feature name
 					l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
 					l_original_feature_alias_name := l_feature_name_visitor.feature_name
-					l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
+					-- l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
 					l_original_feature_name := l_feature_name_visitor.feature_name
 
 

@@ -63,6 +63,11 @@ inherit
 			{NONE} all
 		end
 
+	PREFIX_INFIX_NAMES
+		export
+			{NONE} all
+		end
+
 	SHARED_ERROR_HANDLER
 		export
 			{NONE} all
@@ -444,8 +449,8 @@ feature {NONE} -- Expressions processing
 				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 				-- TODO: This doesn't handle the convert clauses where the types may be `converted'
 				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.left, flattened_object_tests_layers, flattened_inline_agents_layers)
-				l_is_left_expression_separate := l_type_expression_visitor.is_expression_separate
 				l_left_type := l_type_expression_visitor.expression_type
+				l_is_left_expression_separate := l_type_expression_visitor.is_expression_separate and not is_in_ignored_group (l_left_type.associated_class)
 
 				-- Determine the separateness and the type of the left expression.
 				-- The left expression could introduce object test locals that need to be available in the evaluation of the right expression.
@@ -814,6 +819,7 @@ feature {NONE} -- Expressions processing
 						-- l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
 						-- context.add_string ("." + l_feature_name_visitor.get_feature_name)
 						convert_infix (l_left_type, l_as.operator_ast.name)
+
 						last_index := l_as.operator_index
 						update_current_level_with_name (l_as.infix_function_name)
 						-- Note: This class could inherit from PREFIX_INFIX_NAMES.. then it can be used to resolve symbols to prefix or infix names
@@ -888,7 +894,8 @@ feature {NONE} -- Expressions processing
 		local
 			l_feature : FEATURE_I
 		do
-			l_feature := l_type.associated_class.feature_table.alias_item (symb)
+			l_feature := l_type.associated_class.feature_table.alias_item (infix_feature_name_with_symbol (symb))
+			context.add_string ("." + l_feature.feature_name)
 		end
 
 	process_unary_as (l_as: UNARY_AS)
