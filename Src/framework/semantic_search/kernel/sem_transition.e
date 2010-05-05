@@ -94,6 +94,18 @@ feature -- Status setting
 			set_state (a_post, postcondition)
 		end
 
+	set_precondition_boosts (a_precondition_boosts: like precondition_boosts)
+			-- Set `precondition_boosts' with `a_precondition_boosts'.
+		do
+			precondition_boosts := a_precondition_boosts.cloned_object
+		end
+
+	set_postcondition_boosts (a_postcondition_boosts: like postcondition_boosts)
+			-- Set `postcondition_boosts' with `a_postcondition_boosts'.
+		do
+			postcondition_boosts := a_postcondition_boosts.cloned_object
+		end
+
 feature -- Status report
 
 	is_input_variable (a_variable: EPA_EXPRESSION): BOOLEAN

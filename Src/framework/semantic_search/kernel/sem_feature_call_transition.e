@@ -62,6 +62,51 @@ feature -- Access
 	description: STRING
 			-- Description of current transition
 
+	as_snippet: SEM_SNIPPET
+			-- A snippet version of current feature call transition
+			-- Because a feature call is a snippet by nature.
+			-- Note: The other way around is not true. In general, a snippet
+			-- cannot be translated into a feature call.
+		local
+			l_positions: HASH_TABLE [INTEGER, STRING]
+			l_inputs: DS_HASH_SET [STRING]
+			l_outputs: DS_HASH_SET [STRING]
+		do
+				-- Initialize variable position table `l_positions'.
+			create l_positions.make (variable_positions.count)
+			l_positions.compare_objects
+			variable_positions.do_all_with_key (
+				agent (a_pos: INTEGER; a_var: EPA_EXPRESSION; a_tbl: HASH_TABLE [INTEGER, STRING])
+					do
+						a_tbl.put (a_pos, a_var.text)
+					end (?, ?, l_positions))
+
+				-- Initialize input set `l_inputs'.
+			create l_inputs.make (inputs.count)
+			l_inputs.set_equality_tester (string_equality_tester)
+			inputs.do_all (
+				agent (a_var: EPA_EXPRESSION; a_set: DS_HASH_SET [STRING])
+					do
+						a_set.force_last (a_var.text)
+					end (?, l_inputs))
+
+				-- Initialize output set `l_outputs'.
+			create l_outputs.make (outputs.count)
+			l_outputs.set_equality_tester (string_equality_tester)
+			outputs.do_all (
+				agent (a_var: EPA_EXPRESSION; a_set: DS_HASH_SET [STRING])
+					do
+						a_set.force_last (a_var.text)
+					end (?, l_outputs))
+
+				-- Construct the resulting snippet transition.
+			create Result.make (context, l_positions, l_inputs, l_outputs, content)
+			Result.set_precondition (precondition)
+			Result.set_postcondition (postcondition)
+			Result.set_precondition_boosts (precondition_boosts)
+			Result.set_postcondition_boosts (postcondition_boosts)
+		end
+
 feature -- Status report
 
 	is_creation: BOOLEAN

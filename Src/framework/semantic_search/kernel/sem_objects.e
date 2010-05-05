@@ -111,6 +111,12 @@ feature -- Setting
 			set_state (a_properties, properties)
 		end
 
+	set_boosts (a_boosts: like boosts)
+			-- Set `boosts' with `a_boosts'.
+		do
+			boosts := a_boosts.cloned_object
+		end
+
 feature -- Visitor
 
 	process (a_visitor: SEM_QUERYABLE_VISITOR)
