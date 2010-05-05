@@ -63,12 +63,14 @@ feature -- Access
 				i: INTEGER
 				formal_type: STRING
 				n_overwrites: HASH_TABLE[STRING,STRING]
+				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
 			do
 				if result = void then
 				  create result.make
 				end
 
 				create	n_overwrites.make (0)
+				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 
 				if l_as.internal_conforming_parents /= Void and not l_as.internal_conforming_parents.is_empty then
 					from
@@ -96,9 +98,10 @@ feature -- Access
 
 								-- print generics and store them for potention overwrites
 								if attached {CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
-									l_string.append_string (type.class_name.name)
---									n_overwrites.force (formal_type, type.class_name.name)
-									n_overwrites.force (type.class_name.name,formal_type)
+									l_type_expr_visitor.resolve_type_in_workbench (l_as.internal_conforming_parents.item.type.generics.item)
+									l_string.append_string (l_type_expr_visitor.resolved_type.name)
+									n_overwrites.force (formal_type, type.class_name.name)
+--									n_overwrites.force (type.class_name.name,formal_type)
 								elseif attached {FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
 									if overwrites.has_key (type.name.name) then
 										l_string.append_string (overwrites.item (type.name.name))
@@ -123,22 +126,22 @@ feature -- Access
 							l_string.append_string ("]")
 						end
 
-						-- go up one layer of the hierarchy
-						l_ancestors := compute_ancestors_names (l_parent, n_overwrites)
+--						-- go up one layer of the hierarchy
+--						l_ancestors := compute_ancestors_names (l_parent, n_overwrites)
 
-						-- merge lists (eliminating duplicates)
-						if not l_ancestors.is_empty then
-							from
-								l_ancestors.start
-							until
-								l_ancestors.after
-							loop
-								if not has_string (result, l_ancestors.item) then
-									result.extend (l_ancestors.item)
-								end
-								l_ancestors.forth
-							end
-						end
+--						-- merge lists (eliminating duplicates)
+--						if not l_ancestors.is_empty then
+--							from
+--								l_ancestors.start
+--							until
+--								l_ancestors.after
+--							loop
+--								if not has_string (result, l_ancestors.item) then
+--									result.extend (l_ancestors.item)
+--								end
+--								l_ancestors.forth
+--							end
+--						end
 
 						-- put current ancestor on the list if he is not in the list yet
 						if not has_string (result, l_string) then
