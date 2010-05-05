@@ -223,8 +223,7 @@ LOBJ = \
 	offset.o \
 	main.o \
 	except.o \
-	queue.o \
-	capture_replay.o
+	queue.o
 
 MT_WOBJ = \
 	$(MTIDRS_OBJ) \
@@ -331,8 +330,7 @@ MT_LOBJ = \
 	MToffset.o \
 	MTmain.o \
 	MTexcept.o \
-	MTqueue.o \
-	MTcapture_replay.o
+	MTqueue.o
 
 wmalloc.o: malloc.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
@@ -618,9 +616,6 @@ MTexcept.o: except.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
 MTqueue.o: queue.c
-	       $(CC) -c $(JMTCFLAGS) $? -o $@
-
-MTcapture_replay.o: capture_replay.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
 

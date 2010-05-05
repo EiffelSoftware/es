@@ -124,10 +124,12 @@ typedef struct tag_eif_globals		/* Structure containing all global variables to 
 		/* eif_threads.c */
 	int is_external_cx;					/* Is current thread created by an external entity. */
 
+#ifdef WORKBENCH
 		/* capture replay */
 	uint32 cr_cross_depth_cx;
 	struct stcrchunk *cr_top_area_cx;
 	FILE *cr_file_cx;			/* File to/from which log is written/read */
+#endif
 
 } eif_global_context_t;
 
@@ -231,10 +233,12 @@ rt_private eif_global_context_t * eif_thr_getspecific (EIF_TSD_TYPE global_key) 
 #define eif_optimize_return	(eif_globals->eif_optimize_return_cx)			/* rt_public */
 #define eif_optimized_return_value	(eif_globals->eif_optimized_return_value_cx)			/* rt_public */
 
+#ifdef WORKBENCH
 /* Capture/Replay variables */
 #define cr_cross_depth		(eif_globals->cr_cross_depth_cx)
 #define cr_top_area             (eif_globals->cr_top_area_cx)
 #define cr_file			(eif_globals->cr_file_cx)
+#endif
 
 #ifdef EIF_TLS_WRAP
 RT_LNK EIF_TSD_TYPE eif_global_key_get (void);

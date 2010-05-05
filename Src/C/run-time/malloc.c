@@ -80,7 +80,9 @@ doc:<file name="malloc.c" header="eif_malloc.h" version="$Id$" summary="Memory a
 #endif
 #endif
 
+#ifdef WORKBENCH
 #include "eif_capture_replay.h"
+#endif
 
 /* For debugging */
 #define dprintf(n)		if (DEBUG & (n)) printf
@@ -3997,7 +3999,9 @@ doc:	</routine>
 rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_INDEX dftype, EIF_TYPE_INDEX dtype)
 {
 	RT_GET_CONTEXT
-	EIF_GET_CONTEXT
+#ifdef WORKBENCH
+	EIF_GET_CONTEXT					/* Needed for capture replay */
+#endif
 	union overhead *zone = HEADER(object);		/* Object's header */
 	void (*init)(EIF_REFERENCE, EIF_REFERENCE);	/* The optional initialization */
 
@@ -4061,8 +4065,10 @@ rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_IN
 	CHECK ("Cannot be in object ID stack", !st_has (&object_id_stack, object));
 #endif
 
+#ifdef WORKBENCH
 	if (is_capturing && !RTCRI)
 		cr_register_emalloc(object);
+#endif
 
 	return object;
 }

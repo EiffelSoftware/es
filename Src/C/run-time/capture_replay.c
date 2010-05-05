@@ -184,7 +184,6 @@ rt_private void cr_retrieve_value (EIF_TYPED_VALUE *Result)
 
 }
 
-#ifdef WORKBENCH
 
 rt_private EIF_REFERENCE cr_retrieve_object ()
 {
@@ -193,7 +192,6 @@ rt_private EIF_REFERENCE cr_retrieve_object ()
 	return object_of_id (id);
 }
 
-#endif
 
 rt_private void cr_retrieve_id (EIF_REFERENCE obj)
 {
@@ -360,16 +358,11 @@ rt_public void cr_init (struct ex_vect* vect, int num_args, int num_ref_args)
 	char type;
 	if (RTCRI) {
 		type = INCALL | num_args;
-#ifdef WORKBENCH
 		PRINTFDBG(("INCALL to %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
-#endif
-
 	}
 	else {
 		type = OUTCALL | num_ref_args;
-#ifdef WORKBENCH
 		PRINTFDBG(("OUTCALL to %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
-#endif
 	}
 
 	if (is_capturing) {
@@ -382,9 +375,7 @@ rt_public void cr_init (struct ex_vect* vect, int num_args, int num_ref_args)
 			cr_raise ("to many arguments");
 
 		bwrite(&type, sizeof(char));
-#ifdef WORKBENCH
 		bwrite((char *) &(vect->ex_bodyid), sizeof(BODY_INDEX));
-#endif
 		cr_capture_id(vect->ex_id);
 
 		cr_check_observation(vect->ex_id);
@@ -393,7 +384,6 @@ rt_public void cr_init (struct ex_vect* vect, int num_args, int num_ref_args)
 			// If we are not capturing, it must be an outcall
 		char rtype;
 		bread(&rtype, sizeof(char));
-#ifdef WORKBENCH
 		BODY_INDEX bid;
 		bread((char *) &bid, sizeof(BODY_INDEX));
 		
@@ -401,7 +391,6 @@ rt_public void cr_init (struct ex_vect* vect, int num_args, int num_ref_args)
 			PRINTFDBG(("%x <> %x and %d != %d\n", rtype, type, bid, vect->ex_bodyid));
 			cr_raise("Replay missmatch");
 		}
-#endif
 
 		cr_retrieve_id (vect->ex_id);
 	}
@@ -480,15 +469,11 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result)
 
 	if (RTCRI) {
 		type = (char) INRET;
-#ifdef WORKBENCH
 		PRINTFDBG(("INRET %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
-#endif
 	}
 	else {
 		type = (char) OUTRET;
-#ifdef WORKBENCH
 		PRINTFDBG(("OUTRET %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
-#endif
 	}
 
 	if (Result.type != SK_INVALID) {
@@ -533,7 +518,6 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result)
 	}
 }
 
-#ifdef WORKBENCH
 
 rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 {
@@ -547,7 +531,6 @@ rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 	}
 }
 
-#endif
 
 rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 {
@@ -557,11 +540,9 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 	char type;
 
-#ifdef WORKBENCH
 	BODY_INDEX body_id;
 	EIF_REFERENCE Current;
 	EIF_TYPED_VALUE arg1, arg2;
-#endif
 	EIF_TYPE_INDEX dftype;
 	EIF_REFERENCE obj = NULL;
 
@@ -583,7 +564,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				return;
 
 			case INCALL:
-#ifdef WORKBENCH
 
 				bread((char *) &body_id, sizeof(BODY_INDEX));
 				Current = cr_retrieve_object();
@@ -611,7 +591,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 					cr_raise("Too many args for INCALL");
 				}
 
-#endif
 				break;
 
 			case NEWOBJ:
@@ -628,7 +607,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				break;
 
 			case MEMMUT:
-#ifdef WORKBENCH
+
 				Current = cr_retrieve_object();
 
 				CHECK("is_special", ((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
@@ -641,7 +620,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 				bread((char *) Current, size);
 				PRINTFDBG(("MEMMUT (%d)\n", (int) size));
-#endif
+
 				break;
 			default:
 				cr_raise("Corrupted log");

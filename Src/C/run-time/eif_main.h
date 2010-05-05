@@ -55,9 +55,11 @@ RT_LNK EIF_process_once_value_t *EIF_process_once_values; /* Once values for a p
 RT_LNK EIF_once_value_t *EIF_once_values; /* Once values for a thread */
 RT_LNK EIF_REFERENCE **EIF_oms;           /* Once manifest strings for a thread */
 RT_LNK int in_assertion;                  /* Value of the assertion level */
+#ifdef WORKBENCH
 RT_LNK uint32 cr_cross_depth;             /* How many IN-/OUTCALLs are currently on the stack? */
 RT_LNK struct stcrchunk *cr_top_area;           /* Top area observed by capture mechanism */
 RT_LNK FILE *cr_file;
+#endif
 #ifdef WORKBENCH
 RT_LNK int is_inside_rt_eiffel_code;
 #endif
@@ -84,9 +86,12 @@ RT_LNK char **eif_environ;
 RT_LNK int is_debug_mode (void);
 RT_LNK void set_debug_mode (int);
 
+
+#ifdef WORKBENCH
 RT_LNK int is_capturing;                /* Are we capturing anything? */
 RT_LNK int is_replaying;                /* Are we replaying anything? Note: although not implemeted yet,       */
 					/* it is conceptually possible to capture and replay at the same time  */
+#endif
 
 
 #ifdef __cplusplus

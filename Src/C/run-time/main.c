@@ -423,12 +423,15 @@ rt_public int in_assertion = 0;
 rt_public int is_inside_rt_eiffel_code = 0;
 #endif
 
+#ifdef WORKBENCH
 /*
 TODO: doc
 */
 rt_public uint32 cr_cross_depth = 0;
 rt_public struct stcrchunk *cr_top_area = (struct stcrchunk *) NULL;
 rt_public FILE *cr_file = (FILE *) NULL;
+#endif
+
 
 /*
 doc:	<attribute name="EIF_once_values" return_type="EIF_once_value_t *" export="public">
@@ -500,10 +503,10 @@ rt_public void set_debug_mode (int v){
 	debug_mode = v;
 }
 
-
-rt_public int is_capturing = 1;      /* Assume we always capture */
-rt_public int is_replaying = 0;      /* Assume we do not replay anything */
-
+#ifdef WORKBENCH
+rt_public int is_capturing = 0;      /* By default we do not capture */
+rt_public int is_replaying = 0;      /* By default we do not replay */
+#endif
 
 /*
 doc:	<attribute name="catcall_detection_mode" return_type="int" export="private">
@@ -810,22 +813,30 @@ rt_public void eif_retrieve_root (int *argc, char **argv)
 	 */
 	egc_ridx = 0;
 	egc_eif_root = NULL;
-	if ((*argc) > 1) {
+
+	while ((*argc) > 1) {
+
 		if (0 == strcmp (argv[(*argc)-2], "-eif_root")) {
 			egc_eif_root = argv[(*argc)-1];
-			(*argc) -= 2;
-		}
-		else if (0 == strcmp (argv[(*argc)-1], "-eif_root")) {
-			egc_ridx = -1;
-		}
-	}
-
-	if ((*argc) > 1) {
-		if (0 == strcmp (argv[(*argc)-1], "-eif_replay")) {
-			is_capturing = 0;
-			is_replaying = 1;
 			(*argc) -= 1;
 		}
+		else if (0 == strcmp (argv[(*argc)-1], "-eif_root"))
+			egc_ridx = -1;
+#ifdef WORKBENCH
+		else if (0 == strcmp (argv[(*argc)-1], "-eif_replay")) {
+			is_capturing = 0;
+			is_replaying = 1;
+		}
+		else if (0 == strcmp (argv[(*argc)-1], "-eif_capture")) {
+			is_capturing = 1;
+			is_replaying = 0;
+		}
+#endif
+		else {
+			break;
+		}
+		(*argc) -= 1;
+
 	}
 
 }
@@ -862,8 +873,6 @@ rt_public void eif_init_root (void)
 
 rt_public void eif_rtinit(int argc, char **argv, char **envp)
 {
-
-//	EIF_GET_CONTEXT
 
 	char *eif_timeout;
 
@@ -987,10 +996,13 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 #endif
 	init_emnger();					/* Initialize ISE_EXCEPTION_MANAGER */
 
-
-	// Capture replay file
-	//cr_file = fopen("./capture.log", "w");
+#ifdef WORKBENCH
+	//
+	// For now we disable garbage collection as the capture/replay mechanism identifies
+	// objects through their address in memory
+	//
 	eif_gc_stop();
+#endif
 
 }
 

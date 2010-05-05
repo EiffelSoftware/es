@@ -486,6 +486,8 @@ struct pgcontext {				/* Program context */
 #endif /* WORKBENCH */
 
 
+#ifdef WORKBENCH
+
 /* eif_capture_replay.h */
 
 struct cr_area {                         /* Area being observed by capture/replay framework */
@@ -502,6 +504,8 @@ struct stcrchunk {
         struct stcrchunk *sk_prev;       /* Previous chunk in stack, null if none */
         struct cr_area area;         /* Arena where objects are stored */
 };
+
+#endif /* WORKBENCH */
 
 #ifdef __cplusplus
 }

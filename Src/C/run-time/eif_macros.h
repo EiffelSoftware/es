@@ -54,10 +54,10 @@
 #include "eif_rout_obj.h"
 #include "eif_option.h"
 #include "eif_bits.h"
-#include "eif_capture_replay.h"
 
 #ifdef WORKBENCH
 #include "eif_wbench.h"
+#include "eif_capture_replay.h"
 #endif
 
 #ifdef __cplusplus
@@ -1321,13 +1321,14 @@ RT_LNK void eif_exit_eiffel_code(void);
  *     t: type of result (e.g. SK_BOOL, ...)
  *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
  */
+#ifdef WORKBENCH
 #define RTCRI (!(cr_cross_depth%2))
 #define RTCRC(x,y,z) \
-	int cr_cross = (RTCRI != (x)); \
+	int cr_cross = (RTCRI != (x)) && (is_capturing || is_replaying); \
 	EIF_TYPED_VALUE cr_result; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
-		if (is_capturing || !RTCRI) { \
+		if (!is_replaying || !RTCRI) { \
 			cr_init (exvect, y, z); \
 
 #define RTCRA(a) \
@@ -1365,6 +1366,14 @@ RT_LNK void eif_exit_eiffel_code(void);
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
 	if (cr_cross) cr_cross_depth--;
+#else
+#define RTCRI (1)
+#define RTCRC(x,y,z)
+#define RTCRA(a)
+#define RTCRE
+#define RTCRR(t,f)
+#define RTCRV
+#endif
 
  /*
  * Macros for workbench
