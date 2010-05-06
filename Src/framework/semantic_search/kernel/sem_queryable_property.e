@@ -6,7 +6,7 @@ note
 		2. The category of that property (for example, precondition, postcondition, to change, by change).
 		3. A boost value indicating how important the property is.		
 		4. The matching criterion: SHOULD, MUST, MUST_NOT.
-		
+
 		]"
 	author: ""
 	date: "$Date$"
@@ -14,6 +14,9 @@ note
 
 class
 	SEM_QUERYABLE_PROPERTY
+
+inherit
+	SEM_FIELD_NAMES
 
 feature -- Access
 
@@ -26,9 +29,7 @@ feature -- Access
 
 feature -- Constants
 
-	precondition_category: INTEGER is 1
-	postcondition_category: INTEGER is 2
-	to_change_category: INTEGER is 3
+
 
 
 invariant
