@@ -66,6 +66,18 @@ feature -- Timing
 			result_not_void: Result /= Void
 		end
 
+	total_time: INTEGER
+			-- What's the total (profiled) time?
+		local
+			d: DATE_TIME_DURATION
+		do
+			d := stop_time.duration.minus (start_time.duration)
+			d.set_origin_date_time (epoch)
+			Result := duration_to_milliseconds (d)
+		ensure
+			result_non_negative: Result >= 0
+		end
+
 feature -- Access
 
 	processors: HASH_TABLE [like new_processor_profile, INTEGER]

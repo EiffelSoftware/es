@@ -511,7 +511,7 @@ feature {NONE} -- Element search
 			until
 				q.after or Result /= Void
 			loop
-				if q.item.feature_definition.name.is_equal (a_event.feature_name) and q.item.feature_definition.class_definition.name.is_equal (a_event.class_name) then
+				if is_same_feature (q.item, a_event) then
 					Result := q.item
 					if a_remove then
 						q.prune (Result)

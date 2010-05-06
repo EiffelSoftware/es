@@ -17,6 +17,13 @@ inherit
 			default_create, copy
 		end
 
+	SCOOP_PROFILER_EV_HELPER
+		export
+			{NONE} all
+		undefine
+			default_create, copy
+		end
+
 create
 	make_with_profile
 
@@ -59,7 +66,8 @@ feature {NONE} -- Initialization
 			create button_box
 			button_box.set_border_width (Layout_constants.Small_border_size)
 			button_box.set_padding (Layout_constants.Small_border_size)
-			--| FIXME extend_button (button_box, help_button)
+
+			extend_no_expand (button_box, create {EV_LABEL}.make_with_text (interface_names.l_scoop_profiled_time + profile.total_time.out + millisecond_suffix))
 			button_box.extend (create {EV_CELL}) -- expandable item
 			extend_button (button_box, close_button)
 

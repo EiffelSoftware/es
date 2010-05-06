@@ -2081,6 +2081,7 @@ feature -- Label texts
 	l_profile_data_scoop: STRING_32 do Result := locale.translation ("SCOOP profile data") end
 	l_scoop_profiling_element: STRING_32 do Result := locale.translation ("prof") end
 	l_scoop_processor_element: STRING_32 do Result := locale.translation ("Processor ") end
+	l_scoop_profiled_time: STRING_32 do Result := locale.translation ("Profiled time span: ") end
 
 feature -- Label text, no translation (for the editor)
 
