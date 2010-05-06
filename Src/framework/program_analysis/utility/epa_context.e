@@ -171,6 +171,12 @@ feature -- Status report
 			Result := attached type_a_from_string (a_type_name, a_context_class)
 		end
 
+	has_variable_named (a_name: STRING): BOOLEAN
+			-- Does `variables' have a varaible named `a_name'?
+		do
+			Result := variables.has (a_name)
+		end
+
 feature -- Type checking
 
 	expression_type (a_expression: EXPR_AS): detachable TYPE_A
