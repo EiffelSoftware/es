@@ -9,6 +9,9 @@ deferred class
 
 inherit
 	SEM_QUERYABLE
+		redefine
+			is_transition
+		end
 
 feature -- Access
 
@@ -150,6 +153,9 @@ feature -- Status report
 			Result := context.expression_type (a_equation.expression.ast) /= Void
 		end
 
+	is_transition: BOOLEAN = True
+			-- Is Current a transition querable (either a feature call or a snippet)?
+
 feature -- Setting
 
 	extend_ast_precondition_equation (a_equation: EPA_EQUATION)
@@ -223,5 +229,6 @@ invariant
 	precondition_boosts_key_equality_tester_valid: precondition_boosts.key_equality_tester = equation_equality_tester
 	postcondition_boosts_valid: postcondition_boosts.keys.for_all (agent postcondition.has)
 	postcondition_boosts_key_equality_tester_valid: postcondition_boosts.key_equality_tester = equation_equality_tester
+	precondition_postcondition_consistent: precondition.class_ = postcondition.class_ and precondition.feature_ = postcondition.feature_
 
 end

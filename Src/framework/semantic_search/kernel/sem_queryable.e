@@ -31,6 +31,7 @@ feature -- Access
 			-- while intermedidate locals is hidden from the outside.
 			-- A variable can be both input and output. An intermediate local can neither
 			-- be input nor be output.
+			-- This variable set must be a subset of `context'.`variables'.
 
 	variable_positions: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
 			-- Table of positions for `variables'.
@@ -122,11 +123,6 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
---	properties: EPA_STATE
---			-- Set of properties among `variables' that can be queried
---		deferred
---		end
-
 	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: EPA_STATE): detachable EPA_EQUATION
 			-- Assertion equation from `a_state' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
@@ -159,6 +155,12 @@ feature -- Status report
 			-- Does `a_variable' exist in `variables'?
 		do
 			Result := variables.has (a_variable)
+		end
+
+	has_variable_in_context (a_variable: EPA_EXPRESSION; a_context: EPA_CONTEXT): BOOLEAN
+			-- Does `a_context' have variable `a_variable'?
+		do
+			Result := context.has_variable_named (a_variable.text)
 		end
 
 	is_variable_position_table_valid (a_table: HASH_TABLE [INTEGER, STRING]; a_context: like context): BOOLEAN
@@ -215,6 +217,11 @@ feature -- Type status report
 
 	is_feature_call: BOOLEAN
 			-- Is Current a feature call queryable?
+		do
+		end
+
+	is_transition: BOOLEAN
+			-- Is Current a transition querable (either a feature call or a snippet)?
 		do
 		end
 
@@ -398,5 +405,5 @@ invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)
 	variable_equality_tester_valid: variables.equality_tester = expression_equality_tester
 	variable_positions_equality_tester_valid: variable_positions.key_equality_tester = expression_equality_tester
-
+	variables_in_context: variables.for_all (agent has_variable_in_context)
 end
