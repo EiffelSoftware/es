@@ -255,7 +255,7 @@ feature{NONE} -- Implementation
 				loop
 					l_var := l_cursor.item
 					if l_transition.is_operand_variable (l_var) then
-						Result.append (l_transition.anonymous_expressoin_text (l_var))
+						Result.append (l_transition.anonymous_expression_text (l_var))
 						Result.append (once ": ")
 						Result.append (l_transition.variable_name (l_var, {SEM_TRANSITION}.variable_type_name))
 						Result.append_character ('%N')
@@ -328,7 +328,7 @@ feature{NONE} -- Implementation
 				loop
 					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
 						l_expression :=	l_state_cursor.item.expression
-						l_anonymous_expr := l_transition.anonymous_expressoin_text (l_expression)
+						l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
 						l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
 						l_type_tbl.force_last (l_expression.resolved_type, l_anonymous_expr)
 					end

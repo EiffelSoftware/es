@@ -62,6 +62,11 @@ feature -- Access
 
 feature -- Access
 
+	field_name_value_separator: STRING = " : "
+			-- Separator to separate field name and field value
+
+feature -- Access
+
 	field_name_set: DS_HASH_SET [STRING]
 			-- Set of field names/prefixes
 		once
@@ -139,6 +144,19 @@ feature -- Access
 			Result.force_last (property_field_prefix)
 		end
 
+	field_prefix_set: DS_HASH_SET [STRING]
+			-- Set of field prefixes that can be used in documents.
+		once
+			create Result.make (25)
+			Result.set_equality_tester (string_equality_tester)
+
+			Result.force_last (to_field_prefix)
+			Result.force_last (by_field_prefix)
+			Result.force_last (changed_field_prefix)
+			Result.force_last (precondition_field_prefix)
+			Result.force_last (postcondition_field_prefix)
+		end
+
 feature -- Status report
 
 	is_valid_field_name (a_name: STRING): BOOLEAN
@@ -157,6 +175,12 @@ feature -- Status report
 			-- Is `a_name' a valid field name/prefix object documents?
 		do
 			Result := object_field_name_set.has (a_name)
+		end
+
+	is_valid_field_prefix (a_name: STRING): BOOLEAN
+			-- Is `a_name' a valid field prefix?
+		do
+			Result := field_prefix_set.has (a_name)
 		end
 
 end

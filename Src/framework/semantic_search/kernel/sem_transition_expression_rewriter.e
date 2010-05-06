@@ -25,6 +25,8 @@ inherit
 
 	EPA_EXPRESSION_VISITOR
 
+	EPA_EXPRESSION_VALUE_VISITOR
+
 create
 	make
 
@@ -55,6 +57,17 @@ feature -- Basic operations
 			replacements := a_replacements
 			last_was_unqualified := true
 			a_expr.process (Current)
+			Result := output.string_representation.twin
+		end
+
+	expression_value_text (a_expr_value: EPA_EXPRESSION_VALUE; a_replacements: like replacements): STRING
+			-- Text of `a_expr_value' with `a_replacements'
+		do
+			output.reset
+			replacements := a_replacements
+			last_was_unqualified := true
+
+			a_expr_value.process (Current)
 			Result := output.string_representation.twin
 		end
 
@@ -200,4 +213,63 @@ feature {NONE} -- Process/expression
 			output.reset
 			output.append_string (l_str)
 		end
+
+feature{NONE} -- Process equationn values
+
+feature -- Process
+
+	process_boolean_value (a_value: EPA_BOOLEAN_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_random_boolean_value (a_value: EPA_RANDOM_BOOLEAN_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_integer_value (a_value: EPA_INTEGER_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_nonsensical_value (a_value: EPA_NONSENSICAL_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_void_value (a_value: EPA_VOID_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (ti_void)
+		end
+
+	process_any_value (a_value: EPA_ANY_VALUE)
+			-- Process `a_value'.
+		do
+			check should_not_be_here: False end
+		end
+
+	process_reference_value (a_value: EPA_REFERENCE_VALUE)
+			-- Process `a_value'.
+		do
+			check should_not_be_here: False end
+		end
+
+	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)
+			-- Process `a_value'.
+		do
+			a_value.item.process (Current)
+		end
+
 end

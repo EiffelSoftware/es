@@ -16,6 +16,8 @@ inherit
 
 	EPA_UTILITY
 
+	SEM_UTILITY
+
 feature -- Access
 
 	context: EPA_CONTEXT
@@ -103,24 +105,8 @@ feature -- Access
 	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
 			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
-		local
-			l_replacements: HASH_TABLE [STRING, STRING]
 		do
-			create l_replacements.make (variables.count)
-			l_replacements.compare_objects
-			variables.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
-					local
-						l_type: STRING
-					do
-						l_type := a_expr.resolved_type.name
-						l_type.replace_substring_all (once "?", once "")
-						l_type.prepend_character ('{')
-						l_type.append_character ('}')
-						a_tbl.put (l_type, a_expr.text.as_lower)
-					end (?, l_replacements))
-
-			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+			Result := typed_expression_text_with_variables (a_expression, variables)
 		end
 
 	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: EPA_STATE): detachable EPA_EQUATION
@@ -148,6 +134,19 @@ feature -- Access
 			end
 		end
 
+	typed_expression_text_with_variables (a_expression: EPA_EXPRESSION; a_variables: EPA_HASH_SET [EPA_EXPRESSION]): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
+			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
+		do
+			Result := expression_rewriter.expression_text (a_expression, variable_to_type_replacements (a_variables))
+		end
+
+	typed_expression_value_text_with_variables (a_expr_value: EPA_EXPRESSION_VALUE; a_variables: EPA_HASH_SET [EPA_EXPRESSION]): STRING
+			-- Text of `a_expr_value' with all accesses to variables replaced by the variables' static type
+			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
+		do
+			Result := expression_rewriter.expression_value_text (a_expr_value, variable_to_type_replacements (a_variables))
+		end
 
 feature -- Status report
 
@@ -233,20 +232,6 @@ feature -- Visitor
 		end
 
 feature{NONE} -- Implementation
-
-	expression_rewriter: SEM_TRANSITION_EXPRESSION_REWRITER
-			-- Expression rewriter to rewrite `variables' in anonymous format.
-		do
-			if attached {SEM_TRANSITION_EXPRESSION_REWRITER} expression_rewriter_internal as l_rewriter then
-				Result := l_rewriter
-			else
-				create expression_rewriter_internal.make
-				Result := expression_rewriter_internal
-			end
-		end
-
-	expression_rewriter_internal: detachable like expression_rewriter
-			-- Cache of `expression_rewriter'
 
 	extend_variable (a_variable: EPA_EXPRESSION; a_index: INTEGER)
 			-- Extend `a_vairable' at `a_index' in `variables'.
