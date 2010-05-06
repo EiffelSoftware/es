@@ -1,11 +1,14 @@
 note
-	description: "Class to find expressions for a feature. Those expressions are buiding blocks for contracts to be inferred"
+	description: "[
+		Class to find expressions for a feature based on types of variables in the given context. 
+		Those expressions are buiding blocks for contracts to be inferred
+		]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CI_EXPRESSION_FINDER
+	CI_TYPE_BASED_EXPRESSION_FINDER
 
 inherit
 	EPA_UTILITY
@@ -23,6 +26,48 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			output_directory := a_output_directory.twin
+		end
+
+feature -- Access/Search scope
+
+	feature_: FEATURE_I
+			-- Feature
+
+	context_class: CLASS_C
+			-- Context class
+
+	context: EPA_CONTEXT
+			-- Context which provides all available variables.
+
+
+	operand_map: DS_HASH_TABLE [STRING, INTEGER]
+			-- Map from 0-based operand index to name of variables in `context'
+			-- This a map from operand index to variable name,
+			-- key is operand index in `feature_', 0 means target, 1 means arguments, followed by result, if any,
+			-- value is name of that operand as seen in `context'.
+			-- `operand_map' is needed because for a given test case, which variables are used as which operands in the called
+			-- feature is already fixed, the same ordering needs to be consistent with the generated expressions.
+
+feature -- Setting
+
+	set_class_and_feature (a_class: like context_class; a_feature: like feature_)
+			-- Set `context_class' and `feature_'.
+		do
+			context_class := a_class
+			feature_ := a_feature
+		ensure
+			context_class_set: context_class = a_class
+			feature_set: feature_ = a_feature
+		end
+
+	set_context (a_context: like context; a_operand_map: like operand_map)
+			-- Set `context' and `operand_map'.
+		do
+			context := a_context
+			operand_map := a_operand_map
+		ensure
+			context_set: context = a_context
+			operand_map_set: operand_map = a_operand_map
 		end
 
 feature -- Access
@@ -48,20 +93,12 @@ feature -- Access
 
 feature -- Basic operations
 
-	search_in_context (a_context_class: CLASS_C; a_feature: FEATURE_I; a_context: EPA_CONTEXT; a_operand_map: DS_HASH_TABLE [STRING, INTEGER])
-			-- Search for expression in `a_feature' viewed in `a_context_class'.
-			-- `a_context' provides all available variables.
-			-- `a_operand_map' is a map from operand index to variable name,
-			-- key is operand index in `a_feature', 0 means target, 1 means arguments, followed by result, if any,
-			-- value is name of that operand as seen in `a_context'.
-			-- Make result available in `quasi_constant_functions', `variable_functions' and `composed_functions'.
+	search
+			-- Search for expression in `feature_' viewed in `context_class'.
+			-- Make result available in `quasi_constant_functions', `variable_functions', `composed_functions' and `functions'.
+			-- Call `set_class_and_feature' and `set_context' before calling this feature to setup the search scope.
 		do
 				-- Initialize data structures.
-			context := a_context
-			operand_map := a_operand_map
-			context_class := a_context_class
-			feature_ := a_feature
-
 			create quasi_constant_functions.make (100)
 			quasi_constant_functions.set_equality_tester (ci_function_equality_tester)
 
@@ -85,29 +122,17 @@ feature -- Basic operations
 			functions.merge (composed_functions)
 		end
 
-	search (a_context_class: CLASS_C; a_feature: FEATURE_I)
-			-- Search expressions in `a_feature' viewed `a_context_class'.
-			-- Make result avaiable in `quasi_constant_functions'.
-		local
-			l_context: EPA_CONTEXT
-		do
-			create l_context.make_with_class_and_feature (a_context_class, a_feature)
-			search_in_context (a_context_class, a_feature, l_context, operands_with_feature (a_feature))
-		end
+--	search (a_context_class: CLASS_C; a_feature: FEATURE_I)
+--			-- Search expressions in `a_feature' viewed `a_context_class'.
+--			-- Make result avaiable in `quasi_constant_functions'.
+--		local
+--			l_context: EPA_CONTEXT
+--		do
+--			create l_context.make_with_class_and_feature (a_context_class, a_feature)
+--			search_in_context (a_context_class, a_feature, l_context, operands_with_feature (a_feature))
+--		end
 
 feature{NONE} -- Implementation
-
-	feature_: FEATURE_I
-			-- Feature
-
-	context_class: CLASS_C
-			-- Context class
-
-	context: EPA_CONTEXT
-			-- Context
-
-	operand_map: DS_HASH_TABLE [STRING, INTEGER]
-			-- Map from 0-based operand index to name of variables in `context'
 
 	operand_names: DS_HASH_SET [STRING]
 			-- Name of operands of `feature_'
@@ -226,7 +251,6 @@ feature{NONE} -- Implementation
 								l_funcs.after
 							loop
 								l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
-								io.put_string (l_composed_func.body + "%N")
 								l_funcs.forth
 							end
 						end
