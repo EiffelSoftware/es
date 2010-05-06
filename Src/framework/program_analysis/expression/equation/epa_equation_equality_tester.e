@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AFX_PREDICATE_EQUALITY_TESTER}."
+	description: "Equality tester for {EPA_EQUATION} objects"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

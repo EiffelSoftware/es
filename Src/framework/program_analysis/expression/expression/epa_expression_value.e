@@ -26,7 +26,7 @@ feature -- Access
 		deferred
 		end
 
-	out: STRING
+	text, out: STRING
 			-- New string containing terse printable representation
 			-- of current object
 		do

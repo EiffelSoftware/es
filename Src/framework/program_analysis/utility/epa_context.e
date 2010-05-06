@@ -146,6 +146,29 @@ feature -- Access
 			-- Key is the case sensitive name of variable,
 			-- value is the type of that variable.
 
+	variable_type_name_table: HASH_TABLE [STRING, STRING]
+			-- Table from variable name to variable type name
+			-- Key is name of a variable, value is the name of the type of that variable
+		local
+			l_cursor: CURSOR
+			l_variables: like variables
+		do
+			l_variables := variables
+			create Result.make (l_variables.count)
+			Result.compare_objects
+
+			l_cursor := l_variables.cursor
+			from
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				Result.put (cleaned_type_name (l_variables.item_for_iteration.name), l_variables.key_for_iteration)
+				l_variables.forth
+			end
+			l_variables.go_to (l_cursor)
+		end
+
 feature -- Status report
 
 	is_variables_valid (a_variables: HASH_TABLE [STRING, STRING]; a_context_class: CLASS_C): BOOLEAN

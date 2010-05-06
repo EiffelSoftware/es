@@ -111,7 +111,7 @@ feature -- Access
 
 feature -- Status report
 
-	out, debug_output: STRING
+	out, debug_output, text: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
 			create Result.make (64)
