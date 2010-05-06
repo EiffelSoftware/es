@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Creation
 
-	make (a_output: like output; a_changed_local_list: LIST[ETR_CT_CHANGED_NAME_TYPE]; a_constraint_renaming_list: LIST[ETR_CT_CONSTRAINT_RENAMING]; a_source_context, a_target_context: ETR_CONTEXT)
+	make (a_output: like output; a_changed_local_list: detachable LIST[ETR_CT_CHANGED_NAME_TYPE]; a_constraint_renaming_list: detachable LIST[ETR_CT_CONSTRAINT_RENAMING])
 			-- Make with `a_output', `a_changed_local_list' and `a_constraint_renaming_list'
 		do
 			make_with_output(a_output)
