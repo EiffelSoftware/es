@@ -12,11 +12,14 @@ inherit
 		export{NONE}
 			all
 		redefine
+			process_like_id_as,
+			process_instr_call_as,
 			process_id_as,
+			process_expr_call_as,
+			process_creation_as,
 			process_access_feat_as,
-			process_current_as,
-			process_result_as,
 			process_nested_as,
+			process_nested_expr_as,
 			output
 		end
 
@@ -25,13 +28,12 @@ inherit
 create
 	make
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Initialize Current.
 		do
 			create output.make
-			create nested_level.make
 		end
 
 feature -- Basic operations
@@ -41,8 +43,7 @@ feature -- Basic operations
 		do
 			output.reset
 			replacements := a_replacements
-			nested_level.wipe_out
-			nested_level.extend (0)
+			last_was_unqualified := true
 			a_ast.process (Current)
 			Result := output.string_representation.twin
 		end
@@ -51,14 +52,109 @@ feature -- Basic operations
 			-- Text of `a_expr' with `a_replacements'
 		do
 			output.reset
-			nested_level.wipe_out
-			nested_level.extend (0)
 			replacements := a_replacements
+			last_was_unqualified := true
 			a_expr.process (Current)
 			Result := output.string_representation.twin
 		end
 
-feature{NONE} -- Process
+feature {AST_EIFFEL} -- Processing
+
+	process_like_id_as (l_as: LIKE_ID_AS)
+		do
+			last_was_unqualified := true
+			Precursor (l_as)
+		end
+
+	process_instr_call_as (l_as: INSTR_CALL_AS)
+		do
+			last_was_unqualified := true
+			Precursor(l_as)
+		end
+
+	process_expr_call_as (l_as: EXPR_CALL_AS)
+		do
+			last_was_unqualified := true
+			Precursor(l_as)
+		end
+
+	process_creation_as (l_as: CREATION_AS)
+		do
+			last_was_unqualified := true
+			output.append_string (ti_create_keyword+ti_Space)
+
+			if processing_needed (l_as.type, l_as, 2) then
+				output.append_string(ti_l_curly)
+				process_child (l_as.type, l_as, 2)
+				output.append_string(ti_r_curly+ti_Space)
+			end
+			process(l_as.target, l_as, 1)
+			last_was_unqualified := false
+			if processing_needed (l_as.call, l_as, 3) then
+				output.append_string (ti_dot)
+				process_child (l_as.call, l_as, 3)
+			end
+			output.append_string(ti_New_line)
+		end
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		local
+			l_changed_arguments: ETR_CT_CHANGED_NAME_TYPE
+		do
+			if last_was_unqualified then
+				process_access_name (l_as.access_name)
+			else
+				output.append_string (l_as.access_name)
+			end
+
+			last_was_unqualified := true
+			if processing_needed (l_as.parameters,l_as,1) then
+				output.append_string (ti_Space+ti_l_parenthesis)
+				process_child_list(l_as.parameters, ti_comma+ti_Space, l_as, 1)
+				output.append_string (ti_r_parenthesis)
+			end
+		end
+
+	process_id_as (l_as: ID_AS)
+		do
+			if last_was_unqualified then
+				process_access_name (l_as.name)
+			else
+				output.append_string (l_as.name)
+			end
+		end
+
+	process_nested_expr_as (l_as: NESTED_EXPR_AS)
+		do
+			if attached {BRACKET_AS}l_as.target then
+				process_child(l_as.target, l_as, 1)
+			else
+				output.append_string (ti_l_parenthesis)
+				process_child(l_as.target, l_as, 1)
+				output.append_string (ti_r_parenthesis)
+			end
+
+			output.append_string (ti_dot)
+			last_was_unqualified := false
+			process_child(l_as.message, l_as, 2)
+		end
+
+	process_nested_as (l_as: NESTED_AS)
+		do
+			if not last_was_unqualified then
+				process_child (l_as.target, l_as, 1)
+				output.append_string (ti_dot)
+				process_child (l_as.message, l_as, 2)
+			else
+				process_child (l_as.target, l_as, 1)
+				last_was_unqualified := false
+				output.append_string (ti_dot)
+				process_child (l_as.message, l_as, 2)
+				last_was_unqualified := true
+			end
+		end
+
+feature {NONE} -- Implementation
 
 	process_access_name (a_name: STRING)
 			-- Process accessed variable named `a_name'.
@@ -68,75 +164,8 @@ feature{NONE} -- Process
 			end
 		end
 
-	process_id_as (l_as: ID_AS)
-		do
-			process_access_name (l_as.name)
-		end
-
-	process_argument_list (l_as: EIFFEL_LIST [AST_EIFFEL]; separator: STRING_8; a_parent: AST_EIFFEL; a_branch: INTEGER_32)
-			-- Process `l_as' and use `separator' for string output
-			-- (from ETR_AST_STRUCTURE_PRINTER)
-			-- (export status {NONE})
-		local
-			l_cursor: INTEGER_32
-		do
-			output.enter_child (l_as)
-			from
-				l_cursor := l_as.index
-				l_as.start
-			until
-				l_as.after
-			loop
-				nested_level.extend (0)
-				process_child (l_as.item, l_as, l_as.index)
-				if attached separator and l_as.index /= l_as.count then
-					output.append_string (separator)
-				end
-				nested_level.remove
-				l_as.forth
-			end
-			l_as.go_i_th (l_cursor)
-			output.exit_child
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			if nested_level.item <= 1 then
-				output.append_string (l_as.access_name)
-			end
-
-			if processing_needed (l_as.parameters,l_as,1) then
-				output.append_string (ti_Space+ti_l_parenthesis)
-				process_child_list(l_as.parameters, ti_comma+ti_Space, l_as, 1)
-				output.append_string (ti_r_parenthesis)
-			end
-		end
-
-	process_current_as (l_as: CURRENT_AS)
-		do
-			process_access_name (ti_current)
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			process_access_name (ti_result)
-		end
-
-	process_nested_as (l_as: NESTED_AS)
-		do
-			check not nested_level.is_empty end
-			nested_level.replace (nested_level.item + 1)
-			process_child (l_as.target, l_as, 1)
-			output.append_string (ti_dot)
-			process_child (l_as.message, l_as, 2)
-			check nested_level.item > 0 end
-			nested_level.replace (nested_level.item - 1)
-		end
-
-feature{NONE} -- Implementation
-
-	nested_level: LINKED_STACK [INTEGER]
-			-- Stack to store nested levels
+	last_was_unqualified: BOOLEAN
+			-- Are we in an unqualified call?
 
 	replacements: HASH_TABLE [STRING, STRING]
 			-- Table of expression replacements
@@ -145,7 +174,7 @@ feature{NONE} -- Implementation
 	output: ETR_AST_STRING_OUTPUT
 			-- Output of current visitor
 
-feature{NONE} -- Process/expression
+feature {NONE} -- Process/expression
 
 	process_ast_expression (a_expr: EPA_AST_EXPRESSION)
 			-- Process `a_expr'.
@@ -171,5 +200,4 @@ feature{NONE} -- Process/expression
 			output.reset
 			output.append_string (l_str)
 		end
-
 end

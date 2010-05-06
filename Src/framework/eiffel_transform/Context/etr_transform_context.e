@@ -263,7 +263,7 @@ feature -- Transformations
 			-- Now visit the ETR_TRANSFORMABLE
 			-- and perform replacements
 			create l_output.make
-			create l_transformer.make(l_output, l_changed_args_locals, l_constraint_renaming_list, l_source_context, a_target_context)
+			create l_transformer.make(l_output, l_changed_args_locals, l_constraint_renaming_list)
 			-- Print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
 			-- Reparse it

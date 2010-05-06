@@ -83,7 +83,7 @@ feature -- Access
 			Result := variable_positions.item (a_variable)
 		end
 
-	anonymous_expressoin_text (a_expression: EPA_EXPRESSION): STRING
+	anonymous_expression_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
 			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
 		local
@@ -139,7 +139,7 @@ feature -- Access
 				l_cursor.after or else l_done
 			loop
 				l_equation := l_cursor.item
-				if a_expr_text ~ anonymous_expressoin_text (l_equation.expression) then
+				if a_expr_text ~ anonymous_expression_text (l_equation.expression) then
 					Result := l_equation
 					l_done := True
 				else
