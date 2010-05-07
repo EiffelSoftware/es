@@ -2691,6 +2691,16 @@ Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocumentL
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticIndexWriter.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticQueryTranslator.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticToLuceneDocumentTranslator.java -text
+Src/framework/semantic_search/lucene_server/Lucene_server.iml -text
+Src/framework/semantic_search/lucene_server/lib/lucene-core-3.0.1.jar -text
+Src/framework/semantic_search/lucene_server/src/Main.java -text
+Src/framework/semantic_search/lucene_server/src/TestClient.java -text
+Src/framework/semantic_search/lucene_server/src/data/server.properties -text
+Src/framework/semantic_search/lucene_server/src/lucene/LuceneEngine.java -text
+Src/framework/semantic_search/lucene_server/src/server/LuceneServer.java -text
+Src/framework/semantic_search/lucene_server/src/server/Message.java -text
+Src/framework/semantic_search/lucene_server/src/server/Protocol.java -text
+Src/framework/semantic_search/lucene_server/src/utility/Utility.java -text
 Src/framework/sqlite3/sqlite-safe.lic -text
 Src/framework/sqlite3/sqlite.lic -text
 Src/framework/tagging/tests/tests.lic -text
