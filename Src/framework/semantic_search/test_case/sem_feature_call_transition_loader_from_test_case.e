@@ -118,6 +118,34 @@ feature{NONE} -- Implementation
 			Result := last_test_case_summarization.post_state
 		end
 
+	last_pre_serialization: ARRAYED_LIST[NATURAL_8]
+			-- Serialization data before the test.
+		require
+			last_pre_serialization_str_attached: last_pre_serialization_str /= Void
+		do
+			if last_pre_serialization_cache = Void then
+				last_pre_serialization_cache := serialization_from_str (last_pre_serialization_str)
+			end
+			Result := last_pre_serialization_cache
+		end
+
+	last_pre_serialization_str: detachable STRING
+			-- Last pre serialization data as {STRING}.
+
+	last_post_serialization: ARRAYED_LIST[NATURAL_8]
+			-- Serialization data after the test.
+		require
+			last_post_serialization_str_attached: last_post_serialization_str /= Void
+		do
+			if last_post_serialization_cache = Void then
+				last_post_serialization_cache := serialization_from_str (last_post_serialization_str)
+			end
+			Result := last_post_serialization_cache
+		end
+
+	last_post_serialization_str: detachable STRING
+			-- Last post serialization data as {STRING}.
+
 	last_operand_names: detachable HASH_TABLE[STRING, INTEGER]
 			-- Hashtable mapping 0-based operand index to the variable name.
 		require
@@ -143,6 +171,7 @@ feature{NONE} -- Implementation
 			l_code: STRING
 			l_operands_declaration: STRING
 			l_pre_state_report, l_post_state_report: STRING
+			l_pre_serialization_str, l_post_serialization_str: STRING
 			l_summarization: AUT_TEST_CASE_SUMMARIZATION
 			l_context: EPA_CONTEXT
 			l_pos, l_count: INTEGER
@@ -160,6 +189,20 @@ feature{NONE} -- Implementation
 			l_reg.match (a_string)
 			check l_reg.has_matched end
 			l_exception_trace := l_reg.captured_substring (1)
+			l_pos := l_reg.captured_end_position (1)
+
+			-- Pre serialization
+			l_reg := Reg_pre_serialization
+			l_reg.match_substring (a_string, l_pos, l_count)
+			check l_reg.has_matched end
+			last_pre_serialization_str := l_reg.captured_substring (1)
+			l_pos := l_reg.captured_end_position (1)
+
+			-- Post serialization
+			l_reg := Reg_post_serialization
+			l_reg.match_substring (a_string, l_pos, l_count)
+			check l_reg.has_matched end
+			last_post_serialization_str := l_reg.captured_substring (1)
 
 			-- Extra information
 			l_reg := reg_extra_information
@@ -197,14 +240,14 @@ feature{NONE} -- Implementation
 			l_operands_declaration.replace_substring_all ("$", "%N")
 			l_pos := l_reg.captured_end_position (1)
 
-			-- Pre state report
+			-- Pre state
 			l_reg := reg_pre_state
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
 			l_pre_state_report := l_reg.captured_substring (1)
 			l_pos := l_reg.captured_end_position (1)
 
-			-- Post state report
+			-- Post state
 			l_reg := reg_post_state
 			l_reg.match_substring (l_string, l_pos, l_count)
 			check l_reg.has_matched end
@@ -216,6 +259,37 @@ feature{NONE} -- Implementation
 			last_transition.set_postcondition (last_post_state)
 		end
 
+	serialization_from_str (a_str: STRING): ARRAYED_LIST [NATURAL_8]
+			-- Get the serialized data in array from the string representation.
+		local
+			l_numbers: LIST[STRING]
+			l_num_str: STRING
+			l_num: NATURAL_8
+		do
+			l_numbers := a_str.split (',')
+			create Result.make (l_numbers.count + 1)
+
+			from l_numbers.start
+			until l_numbers.after
+			loop
+				l_num_str := l_numbers.item_for_iteration
+				l_num_str.prune_all (' ')
+				l_num_str.prune_all ('%N')
+				check l_num_str.is_natural_8 end
+				Result.force (l_num_str.to_natural_8)
+
+				l_numbers.forth
+			end
+		end
+
+	last_pre_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
+			-- Cache for `last_pre_serialization'.
+
+	last_post_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
+			-- Cache for `last_post_serialization'.
+
+feature{NONE} -- Constants
+
 	Eiffel_id_pattern: STRING = "([A-Z]|[a-z])([a-z]|[A-Z]|[0-9]|_)*"
 
 	Reg_extra_information: RX_PCRE_REGULAR_EXPRESSION
@@ -225,6 +299,24 @@ feature{NONE} -- Implementation
 			Result.set_multiline (True)
 			Result.set_dotall (True)
 			Result.compile ("--<extra_information>(.*)--</extra_information>")
+		end
+
+	Reg_pre_serialization: RX_PCRE_REGULAR_EXPRESSION
+		once
+			create Result.make
+			Result.set_caseless (True)
+			Result.set_multiline (True)
+			Result.set_dotall (True)
+			Result.compile ("--<pre_serialization>(.*)--</pre_serialization>")
+		end
+
+	Reg_post_serialization: RX_PCRE_REGULAR_EXPRESSION
+		once
+			create Result.make
+			Result.set_caseless (True)
+			Result.set_multiline (True)
+			Result.set_dotall (True)
+			Result.compile ("--<post_serialization>(.*)--</post_serialization>")
 		end
 
 	Reg_class_under_test: RX_PCRE_REGULAR_EXPRESSION
