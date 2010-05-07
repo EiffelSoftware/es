@@ -139,8 +139,16 @@ feature -- Status report
 		deferred
 		end
 
+
 	is_random_testing_enabled: BOOLEAN
 			-- Is random testing enabled?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_evolutionary_testing_enabled: BOOLEAN
+			-- Is evolutionary testing enabled?
 		require
 			usable: is_interface_usable
 		deferred

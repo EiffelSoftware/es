@@ -358,13 +358,23 @@ feature {NONE} -- Basic operations
 								status := statistic_status_code
 							end
 						else
-							if configuration.is_random_testing_enabled then
-								execute_random_tests
+
+							  if configuration.is_evolutionary_testing_enabled then
+							  	parameter_loader.set_folder_location (session.output_dirname)
+                                parameter_loader.load_parameters
+                                execute_evolved_tests
+                                is_finished := test_task = Void
+                              else
+                              	if configuration.is_random_testing_enabled then
+                              		execute_random_tests
 							elseif configuration.is_load_log_enabled then
 								load_log (configuration.log_file_path)
 							elseif configuration.is_test_case_deserialization_enabled then
 								process_deserialization
 							end
+
+                              end
+
 
 							is_finished := test_task = Void
 						end
@@ -389,6 +399,10 @@ feature {NONE} -- Basic operations
 --								else
 --									is_finished := True
 --								end
+								--FOR EVOLUTIONARY STRATEGY, otherwise it will never stop!
+							elseif attached {AUT_EVOLVE_STRATEGY} test_task as l_task then
+								request_stop
+
 							end
 						end
 					else
