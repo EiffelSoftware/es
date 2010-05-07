@@ -125,6 +125,14 @@ feature -- AST
 			end
 		end
 
+feature -- Contract extractor
+
+	contract_extractor: EPA_CONTRACT_EXTRACTOR
+			-- Contract extractor
+		once
+			create Result
+		end
+
 feature -- Class/feature related
 
 	arguments_of_feature (a_feature: FEATURE_I): DS_HASH_TABLE [INTEGER, STRING]

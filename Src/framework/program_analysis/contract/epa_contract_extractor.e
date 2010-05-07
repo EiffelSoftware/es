@@ -124,7 +124,7 @@ feature -- Contract extraction
 				a_feature)
 		end
 
-	postconditions_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
+	postcondition_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
 			-- List of postcondition assertions of `a_feature' in `a_context_class'
 		local
 			l_exprs: LINKED_LIST [EPA_EXPRESSION]
