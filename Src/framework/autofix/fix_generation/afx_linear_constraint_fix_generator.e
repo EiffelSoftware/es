@@ -137,7 +137,7 @@ feature{NONE} -- Implementation
 
 			elseif exception_spot.is_postcondition_violation then
 					-- Collect all postcondition assertions and class invariant assertions.
-				l_asserts.append (postconditions_expression_set (l_class, l_feat))
+				l_asserts.append (postcondition_expression_set (l_class, l_feat))
 				l_asserts.append (invariant_expression_set (l_class, True))
 
 			elseif exception_spot.is_class_invariant_violation then
