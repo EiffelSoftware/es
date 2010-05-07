@@ -51,6 +51,8 @@ feature{NONE} -- Implementation
 		do
 			loader.load_transition (a_file)
 			if attached {SEM_FEATURE_CALL_TRANSITION} loader.last_transition  as l_transition then
+				l_transition.add_feature_precondition
+				l_transition.add_feature_postcondition
 				last_transitions.extend (l_transition)
 			end
 		end

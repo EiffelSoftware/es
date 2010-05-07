@@ -53,7 +53,6 @@ feature{NONE} -- Initialization
 			create variable_positions.make (l_variable_count)
 
 			create reversed_variable_position.make (l_variable_count)
-			reversed_variable_position.set_equality_tester (expression_equality_tester)
 
 				-- Initialize variables in `a_context' into `variables'.
 

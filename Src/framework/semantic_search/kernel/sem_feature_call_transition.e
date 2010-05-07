@@ -130,6 +130,20 @@ feature -- Visitor
 			a_visitor.process_feature_call (Current)
 		end
 
+feature -- Basic operations
+
+	add_feature_precondition
+			-- Add precondition of `feature_' into `precondition'.
+		do
+			adapt_state (rewritten_contracts (contract_extractor.precondition_expression_set (class_, feature_), True), precondition)
+		end
+
+	add_feature_postcondition
+			-- Add postcondition of `feature_' into `postcondition'.
+		do
+			adapt_state (rewritten_contracts (contract_extractor.postcondition_expression_set  (class_, feature_), False), postcondition)
+		end
+
 feature{NONE} -- Implementation
 
 	content_of_transition_internal (a_variable_display_type: INTEGER): STRING
@@ -256,6 +270,43 @@ feature{NONE} -- Implementation
 				-- Initialize `name' and `description'.
 			set_name (class_.name_in_upper + once "." + feature_.feature_name.as_lower)
 			set_description (feature_header_comment (feature_))
+		end
+
+	rewritten_contracts (a_assertions: DS_HASH_SET [EPA_EXPRESSION]; a_precondition: BOOLEAN): EPA_STATE
+			-- A state containing assertions from `a_assertions', but rewritten in `context'
+			-- `a_precondition' indicates if `a_assertions' are from preconditions.
+		local
+			l_rewriter: EPA_CONTRACT_REWRITE_VISITOR
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_target_prefix: STRING
+			l_arg_tbl: HASH_TABLE [STRING, INTEGER]
+			l_context: like context
+			l_context_class: CLASS_C
+			l_context_feature: FEATURE_I
+		do
+			l_context := context
+			l_context_class := l_context.class_
+			l_context_feature := l_context.feature_
+			create Result.make (a_assertions.count, l_context_class, l_context_feature)
+
+				-- Prepare arguments to `rewrite'.				
+			l_arg_tbl := variable_position_name_map
+			l_target_prefix := reversed_variable_position.item (0).text
+
+				-- Rewrite `a_assertions' in `context'.
+			create l_rewriter
+			from
+				l_cursor := a_assertions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_rewriter.rewrite (l_cursor.item.ast, feature_, l_cursor.item.written_class, class_, l_target_prefix, l_arg_tbl)
+				if attached {EPA_EXPRESSION} expression_from_text (l_rewriter.assertion.twin, l_context) as l_expr then
+					Result.force_last (create {EPA_EQUATION}.make (l_expr, create {EPA_BOOLEAN_VALUE}.make (True)))
+				end
+				l_cursor.forth
+			end
 		end
 
 end

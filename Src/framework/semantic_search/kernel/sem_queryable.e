@@ -40,7 +40,7 @@ feature -- Access
 			-- Key is a variable, value is the 0-based appearing index of that
 			-- variable in Current transition.
 
-	reversed_variable_position: DS_HASH_TABLE [EPA_EXPRESSION, INTEGER]
+	reversed_variable_position: HASH_TABLE [EPA_EXPRESSION, INTEGER]
 			-- Revsersed table for `variable_position'
 			-- Key is variable expression, value is the index of that variable
 
@@ -240,7 +240,7 @@ feature{NONE} -- Implementation
 		do
 			variables.force_last (a_variable)
 			variable_positions.force_last (a_index, a_variable)
-			reversed_variable_position.force_last (a_variable, a_index)
+			reversed_variable_position.put (a_variable, a_index)
 		end
 
 feature -- Variable name
@@ -384,6 +384,44 @@ feature{NONE} -- Implementation
 		do
 			a_target_state.wipe_out
 			adapt_state (a_source_state, a_target_state)
+		end
+
+	variable_position_name_map: HASH_TABLE [STRING, INTEGER]
+			-- Map from variable position to variable name
+			-- Key is variable position, value is variable name
+			-- Note: create a new table each time.
+		local
+			l_cursor: CURSOR
+			l_reversed_variable_position: like reversed_variable_position
+		do
+			l_reversed_variable_position := reversed_variable_position
+			create Result.make (l_reversed_variable_position.count)
+			l_cursor := l_reversed_variable_position.cursor
+			from
+				l_reversed_variable_position.start
+			until
+				l_reversed_variable_position.after
+			loop
+				Result.put (l_reversed_variable_position.item_for_iteration.text, l_reversed_variable_position.key_for_iteration)
+				l_reversed_variable_position.forth
+			end
+			l_reversed_variable_position.go_to (l_cursor)
+		end
+
+	expression_from_text (a_expr: STRING; a_context: like context): detachable EPA_EXPRESSION
+			-- Expression from `a_expr', viewed from `a_context'.
+			-- Void if the `a_expr' has syntax error or the resulting expression is not type checked.
+		local
+			l_expr_as: detachable EXPR_AS
+			l_type: detachable TYPE_A
+		do
+			l_expr_as := a_context.ast_from_expression_text (a_expr)
+			if l_expr_as /= Void then
+				l_type := a_context.expression_type (l_expr_as)
+				if l_type /= Void then
+					create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
+				end
+			end
 		end
 
 invariant

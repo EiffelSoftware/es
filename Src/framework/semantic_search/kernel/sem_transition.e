@@ -209,7 +209,6 @@ feature{NONE} -- Implementation
 			create variable_positions.make (5)
 
 			create reversed_variable_position.make (5)
-			reversed_variable_position.set_equality_tester (expression_equality_tester)
 
 			create inputs.make (5)
 			inputs.set_equality_tester (expression_equality_tester)
