@@ -33,6 +33,7 @@ feature{NONE} -- Initialization
 		do
 			create nesting_stacks.make
 			context_class := a_context_class
+			create last_found_expressions.make_default
 		end
 
 
@@ -108,7 +109,7 @@ feature{EPA_ALL_EXPRESSION_FINDER}
 		l_aggregate.remove_tail (1)
 		if not l_aggregate.is_empty then
 			create l_expr.make_with_text (context_class, current_feature, l_aggregate, context_class)
-			last_found_expressions.put (l_expr)
+			last_found_expressions.force_last (l_expr)
 		end
 	end
 
@@ -119,11 +120,11 @@ feature --  Basic operations
 			l_expr: EPA_AST_EXPRESSION
 			l_ot_checker: EPA_OBJECT_TEST_CHECKER
 		do
-			create l_ot_checker
+			create l_ot_checker.make
 			l_as.process (l_ot_checker)
 			if not l_ot_checker.object_test_found then
 				create l_expr.make_with_text (context_class, current_feature, text_from_ast (l_as), context_class)
-				last_found_expressions.put (l_expr)
+				last_found_expressions.force_last (l_expr)
 			end
 			precursor(l_as)
 		end
@@ -158,7 +159,7 @@ feature --  Basic operations
 			else
 				create l_expr.make_with_text (context_class, current_feature, text_from_ast (l_as), context_class)
 				if not l_expr.has_syntax_error and then not l_expr.has_type_error then
-					last_found_expressions.put (l_expr)
+					last_found_expressions.force_last (l_expr)
 				end
 			end
 			precursor(l_as)
@@ -185,12 +186,9 @@ feature -- inherited
 			l_ast: AST_EIFFEL
 			l_written_class: CLASS_C
 		do
-				-- Create empty `last_found_expressions'.
-			create last_found_expressions.make (200)
 			last_found_expressions.set_equality_tester (expression_equality_tester)
 
 				-- Go through the ASTs of all features in `context_class',
-				-- searching for similar expressions.
 			l_features := features_in_class (context_class, Void)
 			l_cursor := l_features.cursor
 			from
