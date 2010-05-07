@@ -23,7 +23,6 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 			-- `a_output_dir' specifies the directory to store generated files.
 		do
-			create contract_extractor
 			output_directory := a_output_dir.twin
 		end
 
@@ -94,11 +93,6 @@ feature -- Basic operations
 				end
 			end
 		end
-
-feature{NONE} -- Implementation
-
-	contract_extractor: EPA_CONTRACT_EXTRACTOR
-			-- Contract extractor
 
 feature{NONE} -- Implementation
 
