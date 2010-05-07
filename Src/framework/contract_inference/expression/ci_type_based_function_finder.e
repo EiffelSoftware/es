@@ -1,16 +1,18 @@
 note
 	description: "[
-		Class to find expressions for a feature based on types of variables in the given context. 
-		Those expressions are buiding blocks for contracts to be inferred
+		Class to find function for a feature based on types of variables in the given context. 
+		Those functions are buiding blocks for contracts to be inferred
 		]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CI_TYPE_BASED_EXPRESSION_FINDER
+	CI_TYPE_BASED_FUNCTION_FINDER
 
 inherit
+	CI_FUNCTION_FINDER
+
 	EPA_UTILITY
 
 	CI_SHARED_EQUALITY_TESTERS
@@ -46,7 +48,7 @@ feature -- Access/Search scope
 			-- key is operand index in `feature_', 0 means target, 1 means arguments, followed by result, if any,
 			-- value is name of that operand as seen in `context'.
 			-- `operand_map' is needed because for a given test case, which variables are used as which operands in the called
-			-- feature is already fixed, the same ordering needs to be consistent with the generated expressions.
+			-- feature is already fixed, the same ordering needs to be consistent with the generated functions.
 
 feature -- Setting
 
@@ -73,7 +75,7 @@ feature -- Setting
 feature -- Access
 
 	quasi_constant_functions: DS_HASH_SET [CI_FUNCTION]
-			-- Functions found by last `search_in_context'
+			-- Functions found by last `search'
 			-- Those functions must be constant functions or
 			-- functions with a single argument and that argument
 			-- must have both a lower and a upper bound.
@@ -88,13 +90,13 @@ feature -- Access
 			-- where v1 and v2 are too operands of `feature_'.
 
 	functions: DS_HASH_SET [CI_FUNCTION]
-			-- Functions that are found by last `search_in_context'.
+			-- Functions that are found by last `search'.
 			-- The result is the union of `quasi_constant_functions', `variable_functions' and `composed_functions'.
 
 feature -- Basic operations
 
-	search
-			-- Search for expression in `feature_' viewed in `context_class'.
+	search (a_repository: detachable like functions)
+			-- Search for functions in `feature_' viewed in `context_class'.
 			-- Make result available in `quasi_constant_functions', `variable_functions', `composed_functions' and `functions'.
 			-- Call `set_class_and_feature' and `set_context' before calling this feature to setup the search scope.
 		do
@@ -121,16 +123,6 @@ feature -- Basic operations
 			functions.merge (variable_functions)
 			functions.merge (composed_functions)
 		end
-
---	search (a_context_class: CLASS_C; a_feature: FEATURE_I)
---			-- Search expressions in `a_feature' viewed `a_context_class'.
---			-- Make result avaiable in `quasi_constant_functions'.
---		local
---			l_context: EPA_CONTEXT
---		do
---			create l_context.make_with_class_and_feature (a_context_class, a_feature)
---			search_in_context (a_context_class, a_feature, l_context, operands_with_feature (a_feature))
---		end
 
 feature{NONE} -- Implementation
 
@@ -617,5 +609,7 @@ feature{NONE} -- Implementations
 
 	output_directory: STRING
 			-- Directory to store temp files
+			-- Those files are Mathematica scripts, which are used to determine
+			-- the minimal and maximal value of a integer argument constrained in preconditions.
 
 end
