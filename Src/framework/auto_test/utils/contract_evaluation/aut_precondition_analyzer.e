@@ -211,7 +211,7 @@ feature{NONE} -- Process
 	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
 			-- Process `l_as'.
 		do
-			text.append_string (l_as.text (current_match_list))
+			text.append_string (l_as.literal_text (Void))
 		end
 
 	process_bool_as (l_as: BOOL_AS)
@@ -295,7 +295,7 @@ feature{NONE} -- Process
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		do
 			if l_as.is_attached_keyword then
-				safe_process (l_as.attached_keyword (current_match_list))
+				text.append (ti_attached_keyword)
 				text.append_character (' ')
 				if l_as.type /= Void then
 					safe_process (l_as.type)
@@ -303,7 +303,7 @@ feature{NONE} -- Process
 				end
 				l_as.expression.process (Current)
 				text.append_character (' ')
-				safe_process (l_as.as_keyword (current_match_list))
+				text.append (ti_as_keyword)
 				text.append_character (' ')
 				safe_process (l_as.name)
 			else
@@ -315,9 +315,9 @@ feature{NONE} -- Process
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
-			safe_process (l_as.lcurly_symbol (current_match_list))
-			text.append (full_type_name (l_as.class_name.text (current_match_list), current_assertion.written_class))
-			safe_process (l_as.rcurly_symbol (current_match_list))
+			text.append (ti_l_curly)
+			text.append (full_type_name (text_from_ast (l_as.class_name), current_assertion.written_class))
+			text.append (ti_r_curly)
 		end
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
@@ -327,7 +327,7 @@ feature{NONE} -- Process
 			l_as.class_type.process (Current)
 			l_stack := nested_list.last
 			l_stack.force (False)
-			safe_process (l_as.dot_symbol (current_match_list))
+			text.append (ti_dot)
 			process_access_feat_as (l_as)
 			l_stack.remove
 		end
@@ -351,9 +351,9 @@ feature{NONE} -- Process
 			l_type_checker.init_for_checking (current_feature.feature_, current_written_class, Void, error_handler)
 			l_type2 := l_type_checker.check_and_solved (l_type, l_as).actual_type.deep_actual_type
 
-			safe_process (l_as.lcurly_symbol (current_match_list))
+			text.append (ti_l_curly)
 			text.append (type_name_with_context (l_type2, current_assertion.written_class, current_feature.feature_))
-			safe_process (l_as.rcurly_symbol (current_match_list))
+			text.append (ti_r_curly)
 		end
 
 	process_like_cur_as (l_as: LIKE_CUR_AS)
@@ -482,12 +482,6 @@ feature{NONE} -- Implementation
 
 	current_break_point_slot: INTEGER
 			-- Current break point slot
-
-	current_match_list: LEAF_AS_LIST is
-			-- Match list of the class where `current_assertion' is written
-		do
-			Result := match_list_server.item (current_assertion.written_class.class_id)
-		end
 
 	integer_operands: DS_HASH_TABLE [INTEGER, STRING];
 			-- Table of integer operands in the feature
