@@ -65,7 +65,7 @@ feature -- Basic operation
 		do
 		end
 
-	clean_after_test
+	cleanup_after_test
 			-- Cleanup after executing the test case.
 		do
 		end
