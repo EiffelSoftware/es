@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_DEBUGGER_HELPER
+	EPA_DEBUGGER_UTILITY
 
 inherit
 	SHARED_EIFFEL_PROJECT
