@@ -417,16 +417,20 @@ feature{NONE} -- Class content
 				l_var_index := l_var.index
 
 				-- Output one line.
-				l_line := "%T%T%T" + tc_var_initialization_template.twin
-				l_line.replace_substring_all ("$(VAR)", l_var_name)
-				l_line.replace_substring_all ("$(INDEX)", l_var_index.out)
+				create l_line.make (64)
+				l_line.append (once "%T%T%T")
+				l_line.append (tc_var_initialization_template)
+				l_line.replace_substring_all (once "$(VAR)", l_var_name)
+				l_line.replace_substring_all (once "$(INDEX)", l_var_index.out)
 				Result.append (l_line)
-
 				l_all_types.forth
 			end
 
 			-- Output test case.
-			Result.append ("%T%T%T" + l_data.code_str)
+			Result.append (once "%N%T%T%Tsetup_before_test%N%N")
+			Result.append (once "%T%T%T%T-- Execute feature under test.%N%T%T%T")
+			Result.append (l_data.code_str)
+			Result.append (once "%N%N%T%T%Tcleanup_after_test")
 		end
 
 	tc_pre_state: STRING

@@ -58,6 +58,18 @@ feature -- Access
 			Result := keys_from_table (post_variable_table)
     	end
 
+feature -- Basic operation
+
+	setup_before_test
+			-- Setup before executing the test case.
+		do
+		end
+
+	clean_after_test
+			-- Cleanup after executing the test case.
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	pre_variable_table_cache: detachable like pre_variable_table
