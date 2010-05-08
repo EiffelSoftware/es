@@ -1,25 +1,18 @@
 note
-	description: "Summary description for {AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY_I}."
+	description: "Summary description for {AFX_EXCEPTION_POSITION_RESOLVER_I}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY_I
+	EPA_EXCEPTION_POSITION_RESOLVER_I
 
 feature -- Operation
 
-	mark (an_exception: EQA_TEST_INVOCATION_EXCEPTION; a_frame_list: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
-			-- mark relevant frames in the list, which indicated the range for fixing
+	resolve (an_exception_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I])
+			-- resolve the detailed information of the exception frames
 		require
-		    list_not_empty: not a_frame_list.is_empty
-		deferred
-		end
-
-feature -- Access
-
-	last_marking_result: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
-			-- the result of last marking process
+		    exception_frames_not_empty: not an_exception_frames.is_empty
 		deferred
 		end
 

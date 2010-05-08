@@ -73,8 +73,8 @@ feature -- execution
 			-- <Precursor>
 		local
 		    l_failing_tests: DS_LINEAR[AFX_TEST]
-		    l_failure_explainer: AFX_FAILURE_EXPLAINER
-		    l_marking_strategy: AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY_I
+		    l_failure_explainer: EPA_FAILURE_EXPLAINER
+		    l_marking_strategy: EPA_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY_I
 --		    l_explanation: detachable DS_LINEAR [AFX_EXCEPTION_CALL_STACK_FRAME_I]
 		do
 		    	-- get failing test from session
@@ -90,7 +90,7 @@ feature -- execution
         		    create l_failure_explainer
         		    l_failure_explainer.explain (failing_test.test.outcomes.last.test_response.exception.trace)
 
-        		    create {AFX_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY}l_marking_strategy
+        		    create {EPA_FAULTY_EXCEPTION_CALL_STACK_FRAME_MARKING_STRATEGY}l_marking_strategy
         		    l_marking_strategy.mark (failing_test.test.outcomes.last.test_response.exception, l_failure_explainer.last_exception_explanation)
 
         			exception_call_stack_frames.append_last (l_marking_strategy.last_marking_result)
