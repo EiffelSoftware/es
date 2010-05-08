@@ -1,11 +1,14 @@
 note
-	description: "Summary description for {AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION}."
+	description: "[
+		Action to be performed when a break point is hit
+		The action is to evaluate a set of expressions.
+		]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
+	EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 
 inherit
 	BREAKPOINT_WHEN_HITS_ACTION_I
@@ -30,7 +33,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	expressions: AFX_STATE_SKELETON
+	expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions to be evaluate
 
 	on_hit_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [a_breakpoint: BREAKPOINT; a_state: EPA_STATE]]]
@@ -100,7 +103,7 @@ feature -- Basic operations
 				create {EPA_VOID_VALUE} Result.make
 
 			elseif a_dump_value.is_type_object then
-				create {EPA_ANY_VALUE} Result.make (a_dump_value.string_representation)
+				create {EPA_ANY_VALUE} Result.make (a_dump_value.address.as_string)
 			else
 				check False end
 			end

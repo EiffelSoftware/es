@@ -14,7 +14,7 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
-	AFX_DEBUGGER_HELPER
+	EPA_DEBUGGER_HELPER
 
 	AFX_SHARED_STATE_SERVER
 
@@ -139,7 +139,7 @@ feature{NONE} -- Access
 	daikon_facility: detachable AFX_DAIKON_FACILITY
 			-- Daikon Facility
 
-	current_test_case_breakpoint_manager: detachable AFX_BREAKPOINT_MANAGER
+	current_test_case_breakpoint_manager: detachable EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			-- Breakpoint manager for current test case
 
 	root_class: CLASS_C
@@ -178,7 +178,7 @@ feature{NONE} -- Implementation
 	debug_project
 			-- Debug current project to retrieve system states from test cases.
 		local
-			l_new_tc_bp_manager: AFX_BREAKPOINT_MANAGER
+			l_new_tc_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_mark_tc_feat: FEATURE_I
 			l_tc_info_skeleton: AFX_STATE_SKELETON
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
@@ -193,8 +193,9 @@ feature{NONE} -- Implementation
 			l_mark_tc_feat := root_class.feature_named (mark_test_case_feature_name)
 			create l_new_tc_bp_manager.make (root_class, l_mark_tc_feat)
 			l_tc_info_skeleton := test_case_info_skeleton (root_class, l_mark_tc_feat)
-			l_new_tc_bp_manager.set_hit_action_with_agent (l_tc_info_skeleton, agent on_new_test_case_found)
-			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, 1)
+--			l_new_tc_bp_manager.set_all_breakpoints_with_expression_and_actions (l_tc_info_skeleton, agent on_new_test_case_found)
+--			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, 1)
+			l_new_tc_bp_manager.set_breakpoint_with_expression_and_action (1, l_tc_info_skeleton, agent on_new_test_case_found)
 			l_new_tc_bp_manager.toggle_breakpoints (True)
 			l_app_stop_agent := agent on_application_stopped
 			l_app_exited_agent := agent on_application_exited
@@ -374,8 +375,8 @@ feature{NONE} -- Actions
 				l_recipient_class := current_test_case_info.recipient_written_class
 				l_recipient := current_test_case_info.origin_recipient
 				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
-				current_test_case_breakpoint_manager.set_hit_action_with_agent (l_spot.skeleton, agent on_breakpoint_hit_in_test_case)
-				current_test_case_breakpoint_manager.set_all_breakpoints (l_spot.skeleton)
+				current_test_case_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (l_spot.skeleton, agent on_breakpoint_hit_in_test_case)
+--				current_test_case_breakpoint_manager.set_all_breakpoints (l_spot.skeleton)
 				current_test_case_breakpoint_manager.toggle_breakpoints (True)
 				check debugger_manager.breakpoints_manager.is_breakpoint_enabled (l_recipient.e_feature, 1) end
 			end

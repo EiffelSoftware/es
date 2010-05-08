@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_DEBUGGER_HELPER}."
+	description: "Debugger utilities"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_DEBUGGER_HELPER
+	EPA_DEBUGGER_HELPER
 
 inherit
 	SHARED_EIFFEL_PROJECT

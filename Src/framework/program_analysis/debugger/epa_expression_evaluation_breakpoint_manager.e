@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AFX_BREAKPOINT_MANAGER}."
+	description: "Class to manage expressions to be evaluated by the debugger for a feature"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AFX_BREAKPOINT_MANAGER
+	EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 
 inherit
 	SHARED_DEBUGGER_MANAGER
@@ -20,7 +20,7 @@ feature{NONE} -- Initialization
 		do
 			class_ := a_class
 			feature_ := a_feature
-			create breakpoints.make (initial_capacity)
+			create expressions.make (initial_capacity)
 			create hit_actions.make (initial_capacity)
 		end
 
@@ -32,51 +32,26 @@ feature -- Access
 	feature_: FEATURE_I
 			-- Feature from which break points are put
 
-	breakpoints: HASH_TABLE [AFX_STATE_SKELETON, BREAKPOINT_LOCATION]
+	expressions: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], BREAKPOINT_LOCATION]
 			-- Breakpoints where the debuggee should be stopped and expressions should be evaluated.
 			-- Key is the breakpoint, value is the state consisting expressions to be evaluated
 			-- at the breakpoint.
 
-	hit_actions: HASH_TABLE [LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I], BREAKPOINT_LOCATION]
+	hit_actions: HASH_TABLE [LINKED_LIST [EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION], BREAKPOINT_LOCATION]
 			-- Actions to perform when a breakpoint is hit.
 			-- Key is the breakpoint, value is a list of actions to perform when that breakpoint is hit.
+			-- When a break point is hit, the expressions registered in `expressions' for that break point are evaluated,
+			-- and the values are passed to the actions.
 
 feature -- Basic operations
 
-	set_hit_action_with_agent (a_skeleton: AFX_STATE_SKELETON; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
+	set_all_breakpoints_with_expression_and_actions (a_expressions: DS_HASH_SET [EPA_EXPRESSION]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
 			-- Set `a_action' to all break points to `a_feature'.
-			-- Every time when the breakpoint is hit, all expressions in `a_skeleton' are evaluated and
+			-- Every time when the breakpoint is hit, all expressions in `a_expressions' are evaluated and
 			-- their values are passed to `a_action' through the argument `a_state'.
 		require
-			a_skeleton_attached: a_skeleton /= Void
+			a_expressions_attached: a_expressions /= Void
 		local
-			l_bp_location: BREAKPOINT_LOCATION
-			l_slot_count: INTEGER
-			i: INTEGER
-			l_act_list: LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
-			l_action:AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
-		do
-			l_slot_count := feature_.number_of_breakpoint_slots
-			from
-				i := 1
-			until
-				i > l_slot_count
-			loop
-				create l_act_list.make
-				create l_action.make (a_skeleton, class_, feature_)
-				l_action.on_hit_actions.extend (a_action)
-				l_act_list.extend (l_action)
-				l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, i, False)
-				hit_actions.put (l_act_list, l_bp_location)
-				i := i + 1
-			end
-		end
-
-	set_all_breakpoints (a_state: AFX_STATE_SKELETON)
-			-- Set breakpoints in all breakpoints slots in `a_feature' to evaluate
-			-- expressions in `a_state'.
-		local
-			l_bp_location: BREAKPOINT_LOCATION
 			l_slot_count: INTEGER
 			i: INTEGER
 		do
@@ -86,31 +61,73 @@ feature -- Basic operations
 			until
 				i > l_slot_count
 			loop
-				set_breakpoint (a_state, i)
+				set_breakpoint_with_expression_and_action (i, a_expressions, a_action)
 				i := i + 1
 			end
 		end
 
-	set_breakpoint (a_state: AFX_STATE_SKELETON; a_bpslot: INTEGER)
-			-- Set breakpoint at slot `a_bpslot' in `feature_' to evaluate expressions
-			-- in `a_state'.
+	set_breakpoint_with_expression_and_action (a_bpslot: INTEGER; a_expressions: DS_HASH_SET [EPA_EXPRESSION]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
+			-- Set `a_action' to `a_bpslot'-th break point in `a_feature'.
+			-- Every time when the breakpoint is hit, all expressions in `a_expressions' are evaluated and
+			-- their values are passed to `a_action' through the argument `a_state'.
+		require
+			a_expressions_attached: a_expressions /= Void
 		local
 			l_bp_location: BREAKPOINT_LOCATION
+			l_slot_count: INTEGER
+			l_act_list: LINKED_LIST [EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION]
+			l_action:EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 		do
+			create l_act_list.make
+			create l_action.make (a_expressions, class_, feature_)
+			l_action.on_hit_actions.extend (a_action)
+			l_act_list.extend (l_action)
 			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
-			breakpoints.put (a_state, l_bp_location)
+			hit_actions.force (l_act_list, l_bp_location)
+			expressions.force (a_expressions, l_bp_location)
 		end
 
-	clear_breakpoints
-			-- Clear `breakpoints'.
+--	set_all_breakpoints (a_state: DS_HASH_SET [EPA_EXPRESSION])
+--			-- Set breakpoints in all breakpoints slots in `a_feature' to evaluate
+--			-- expressions in `a_state'.
+--		local
+--			l_bp_location: BREAKPOINT_LOCATION
+--			l_slot_count: INTEGER
+--			i: INTEGER
+--		do
+--			l_slot_count := feature_.number_of_breakpoint_slots
+--			from
+--				i := 1
+--			until
+--				i > l_slot_count
+--			loop
+--				set_breakpoint (a_state, i)
+--				i := i + 1
+--			end
+--		end
+
+--	set_breakpoint (a_state: DS_HASH_SET [EPA_EXPRESSION]; a_bpslot: INTEGER)
+--			-- Set breakpoint at slot `a_bpslot' in `feature_' to evaluate expressions
+--			-- in `a_state'.
+--		local
+--			l_bp_location: BREAKPOINT_LOCATION
+--		do
+--			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
+--			breakpoints.put (a_state, l_bp_location)
+--		end
+
+	wipe_out
+			-- Clear `expressions' and `hit_actions'.
 		do
-			breakpoints.wipe_out
+			toggle_breakpoints (False)
+			expressions.wipe_out
+			hit_actions.wipe_out
 		end
 
 	toggle_breakpoints (b: BOOLEAN)
-			-- If `b' is True, enable `breakpoints', otherwise disable `breakpoints'.
+			-- If `b' is True, enabled break points to evaluate `expressions'; otherwise, disable those break points.
 		local
-			l_bps: like breakpoints
+			l_bps: like expressions
 			l_bp_manager: BREAKPOINTS_MANAGER
 			l_bp: BREAKPOINT_LOCATION
 			l_routine: E_FEATURE
@@ -118,7 +135,7 @@ feature -- Basic operations
 			l_actions: detachable LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
 		do
 			l_bp_manager := debugger_manager.breakpoints_manager
-			l_bps := breakpoints
+			l_bps := expressions
 			from
 				l_bps.start
 			until

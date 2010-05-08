@@ -62,7 +62,9 @@ feature{NONE} -- Implementation
 			l_test_tbl: HASH_TABLE [LINKED_LIST [STRING], STRING]
 			l_tests: LINKED_LIST [STRING]
 			l_test_name: STRING
+			l_feature_specified: BOOLEAN
 		do
+			l_feature_specified := attached config.feature_name_for_test_cases
 			create test_cases.make (100)
 			test_cases.compare_objects
 
@@ -77,37 +79,39 @@ feature{NONE} -- Implementation
 					l_sections := string_slices (l_subdir_name, once "__")
 					if l_sections.count = 2 then
 						l_feature_name := l_sections.first
-						if test_cases.has (l_feature_name) then
-							l_test_tbl := test_cases.item (l_feature_name)
-						else
-							create l_test_tbl.make (200)
-							l_test_tbl.compare_objects
-							test_cases.put (l_test_tbl, l_feature_name)
-						end
-
-							-- Go into feature level sub-directory.
-						create l_tests.make
-
-						create l_file_name.make_from_string (l_class_dir.name)
-						l_file_name.extend (l_subdir_name)
-						create l_subdir.make (l_file_name)
-						if l_subdir.exists then
-							l_subdir.open_read
-							from
-								l_subdir.readentry
-							until
-								l_subdir.lastentry = Void
-							loop
-								l_test_name := l_subdir.lastentry.twin
-								if l_test_name.starts_with (once "TC__") and then l_test_name.ends_with (once ".e") then
-										-- Found a test case.
-									l_tests.extend (l_test_name)
-								end
-								l_subdir.readentry
+						if l_feature_specified implies l_feature_name ~ config.feature_name_for_test_cases then
+							if test_cases.has (l_feature_name) then
+								l_test_tbl := test_cases.item (l_feature_name)
+							else
+								create l_test_tbl.make (200)
+								l_test_tbl.compare_objects
+								test_cases.put (l_test_tbl, l_feature_name)
 							end
-							l_subdir.close
-							if not l_tests.is_empty then
-								l_test_tbl.put (l_tests, l_subdir_name)
+
+								-- Go into feature level sub-directory.
+							create l_tests.make
+
+							create l_file_name.make_from_string (l_class_dir.name)
+							l_file_name.extend (l_subdir_name)
+							create l_subdir.make (l_file_name)
+							if l_subdir.exists then
+								l_subdir.open_read
+								from
+									l_subdir.readentry
+								until
+									l_subdir.lastentry = Void
+								loop
+									l_test_name := l_subdir.lastentry.twin
+									if l_test_name.starts_with (once "TC__") and then l_test_name.ends_with (once ".e") then
+											-- Found a test case.
+										l_tests.extend (l_test_name)
+									end
+									l_subdir.readentry
+								end
+								l_subdir.close
+								if not l_tests.is_empty then
+									l_test_tbl.put (l_tests, l_subdir_name)
+								end
 							end
 						end
 					end
@@ -179,8 +183,8 @@ feature{NONE} -- Implementation
 		do
 				-- Generate text of the new root class.
 			l_text := root_class_template.twin
-			l_text.replace_substring_all ("${CLASS_NAME}", config.root_class.name_in_upper)
-			l_text.replace_substring_all ("${CLASS_NAME_UNDER_TEST}", config.class_name)
+			l_text.replace_substring_all ("${CLASS_NAME}", config.root_class.name.as_upper)
+			l_text.replace_substring_all ("${CLASS_NAME_UNDER_TEST}", config.class_name.as_upper)
 			l_text.replace_substring_all ("${INITIALIZE_TEST_CASES_FEATURE_BODY}", initialize_test_cases_body)
 
 				-- Create new root class.
@@ -249,6 +253,9 @@ feature{NONE} -- Implementation
 	root_class_template: STRING = "[
 class
 	${CLASS_NAME}
+	
+inherit
+	ARGUMENTS
 
 create
 	make
@@ -262,7 +269,11 @@ feature{NONE} -- Initialization
 			create test_cases.make (100)
 			test_cases.compare_objects
 			initialize_test_cases
-			execute_all_test_cases
+			if argument_count = 0 then
+				execute_test_cases (Void)
+			else
+				execute_test_cases (argument (1))
+			end
 		end
 
 feature -- Access
@@ -279,8 +290,9 @@ feature -- Access
 
 feature -- Basic operations
 
-	execute_all_test_cases
-			-- Execute all test cases in `test_cases'.
+	execute_test_cases (a_feature_name: detachable STRING)
+			-- Execute test cases for `a_feature_name' in `test_cases'.
+			-- If `a_feature_name' is Void, execute all test cases.
 		local
 			l_cursor: CURSOR
 			l_tests: ARRAYED_LIST [EQA_SERIALIZED_TEST_SET]
@@ -291,8 +303,10 @@ feature -- Basic operations
 			until
 				test_cases.after
 			loop
-				l_tests := test_cases.item_for_iteration
-				l_tests.do_all (agent execute_test_case)
+				if a_feature_name /= Void implies a_feature_name ~ test_cases.key_for_iteration then
+					l_tests := test_cases.item_for_iteration
+					l_tests.do_all (agent execute_test_case)
+				end
 			end
 			test_cases.go_to (l_cursor)
 		end

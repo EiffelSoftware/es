@@ -50,9 +50,9 @@ feature -- Execute
 	execute
 			-- Execute current command.
 		local
-			l_bp_manager: AFX_BREAKPOINT_MANAGER
+			l_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_state: AFX_STATE_SKELETON
-			l_action: AFX_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
+			l_action: EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 			l_gen: EPA_NESTED_EXPRESSION_GENERATOR
 
 			l_smt_generator:AFX_SMTLIB_GENERATOR
@@ -67,81 +67,81 @@ feature -- Execute
 			l_test_postcondition_generation: BOOLEAN
 			l_test_daikon_generation: BOOLEAN
 		do
-			if l_build_theory then
-				l_theory := resolved_class_theory (first_class_starts_with_name ("LINKED_LIST"))
-				io.put_string ("============================EXECUTE=========================================%N")
-				from
-					l_theory.functions.start
-				until
-					l_theory.functions.after
-				loop
-					io.put_string (l_theory.functions.item_for_iteration.expression + "%N")
-					l_theory.functions.forth
-				end
-				io.put_string ("%N%N")
-				from
-					l_theory.axioms.start
-				until
-					l_theory.axioms.after
-				loop
-					io.put_string (l_theory.axioms.item_for_iteration.expression + "%N")
-					l_theory.axioms.forth
-				end
-			end
+--			if l_build_theory then
+--				l_theory := resolved_class_theory (first_class_starts_with_name ("LINKED_LIST"))
+--				io.put_string ("============================EXECUTE=========================================%N")
+--				from
+--					l_theory.functions.start
+--				until
+--					l_theory.functions.after
+--				loop
+--					io.put_string (l_theory.functions.item_for_iteration.expression + "%N")
+--					l_theory.functions.forth
+--				end
+--				io.put_string ("%N%N")
+--				from
+--					l_theory.axioms.start
+--				until
+--					l_theory.axioms.after
+--				loop
+--					io.put_string (l_theory.axioms.item_for_iteration.expression + "%N")
+--					l_theory.axioms.forth
+--				end
+--			end
 
-			l_retrieve_system_state := True
-			if l_retrieve_system_state then
-				create l_bp_manager.make (config.state_recipient_class, config.state_recipient)
+--			l_retrieve_system_state := True
+--			if l_retrieve_system_state then
+--				create l_bp_manager.make (config.state_recipient_class, config.state_recipient)
 
-				create l_gen.make
-				l_gen.generate (config.state_recipient_class, config.state_recipient)
-				create l_state.make_with_accesses (config.state_recipient_class, config.state_recipient, l_gen.accesses)
-				l_state := l_state.simplified
-				l_theory := l_state.theory
+--				create l_gen.make
+--				l_gen.generate (config.state_recipient_class, config.state_recipient)
+--				create l_state.make_with_accesses (config.state_recipient_class, config.state_recipient, l_gen.accesses)
+--				l_state := l_state.simplified
+--				l_theory := l_state.theory
 
-				l_smt_expr := l_state.smtlib_expressions
-				io.put_string ("=======================EXECUTE2=====================================%N")
-				io.put_string (l_theory.debug_output)
-				io.put_string ("%N%N")
-				from
-					l_smt_expr.start
-				until
-					l_smt_expr.after
-				loop
-					io.put_string (l_smt_expr.item_for_iteration.expression + "%N")
-					l_smt_expr.forth
-				end
+--				l_smt_expr := l_state.smtlib_expressions
+--				io.put_string ("=======================EXECUTE2=====================================%N")
+--				io.put_string (l_theory.debug_output)
+--				io.put_string ("%N%N")
+--				from
+--					l_smt_expr.start
+--				until
+--					l_smt_expr.after
+--				loop
+--					io.put_string (l_smt_expr.item_for_iteration.expression + "%N")
+--					l_smt_expr.forth
+--				end
 
 
-				create l_action.make (l_state, config.state_recipient_class, config.state_recipient)
-				debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
+--				create l_action.make (l_state, config.state_recipient_class, config.state_recipient)
+--				debugger_manager.breakpoints_manager.remove_user_breakpoints_in_feature (config.state_recipient.e_feature)
 
-				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit)
-				l_bp_manager.set_all_breakpoints (l_state)
-				l_bp_manager.toggle_breakpoints (True)
+--				l_bp_manager.set_hit_action_with_agent (l_state, agent on_hit)
+--				l_bp_manager.set_all_breakpoints (l_state)
+--				l_bp_manager.toggle_breakpoints (True)
 
-				debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
-				debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
-				start_debugger
-				l_bp_manager.toggle_breakpoints (False)
+--				debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
+--				debugger_manager.observer_provider.application_stopped_actions.extend_kamikaze (agent on_application_stopped)
+--				start_debugger
+--				l_bp_manager.toggle_breakpoints (False)
 
-			end
+--			end
 
---			l_test_state_implication := True
-			if l_test_state_implication then
-				test_state_implication
-			end
+----			l_test_state_implication := True
+--			if l_test_state_implication then
+--				test_state_implication
+--			end
 
---			l_test_daikon_generation := True
-			if l_test_daikon_generation then
-				io.put_string (daikon_generator.declarations)
-				io.put_string (daikon_generator.traces)
-			end
+----			l_test_daikon_generation := True
+--			if l_test_daikon_generation then
+--				io.put_string (daikon_generator.declarations)
+--				io.put_string (daikon_generator.traces)
+--			end
 
---			l_test_postcondition_generation := True
-			if l_test_postcondition_generation then
-				test_postcondition_generation
-			end
+----			l_test_postcondition_generation := True
+--			if l_test_postcondition_generation then
+--				test_postcondition_generation
+--			end
 		end
 
 	test_state_implication
