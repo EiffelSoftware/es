@@ -14,6 +14,8 @@ inherit
 
 	EIFFEL_LAYOUT
 
+	SHARED_DEBUGGER_MANAGER
+
 feature -- Access
 
 	call_stack_index (a_dm: DEBUGGER_MANAGER; a_feature_name: STRING): INTEGER
@@ -98,6 +100,43 @@ feature -- Basic operations
 		do
 			a_dm.breakpoints_manager.remove_user_breakpoints_in_class (a_class)
 			a_dm.breakpoints_manager.notify_breakpoints_changes
+		end
+
+feature -- Evaluation
+
+	evaluated_value_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: EPA_EXPRESSION): EPA_EXPRESSION_VALUE
+			-- Value of `a_expression' evaluated through debugger
+		do
+			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression.text))
+		end
+
+	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): EPA_EXPRESSION_VALUE
+			-- Expression value from `a_dump_value'
+		do
+			if a_dump_value = Void or else a_dump_value.is_invalid_value then
+				create {EPA_NONSENSICAL_VALUE} Result
+
+			elseif a_dump_value.is_type_boolean then
+				create {EPA_BOOLEAN_VALUE} Result.make (a_dump_value.output_for_debugger.to_boolean)
+
+			elseif a_dump_value.is_type_integer_32 then
+				create {EPA_INTEGER_VALUE} Result.make (a_dump_value.output_for_debugger.to_integer)
+
+			elseif a_dump_value.is_void then
+				create {EPA_VOID_VALUE} Result.make
+
+			elseif a_dump_value.is_type_object then
+				if attached {CLASS_C} a_dump_value.dynamic_class as l_class then
+					if l_class.name_in_upper ~ once "STRING_8" then
+						create {EPA_STRING_VALUE} Result.make (a_dump_value.address.as_string, a_dump_value.string_representation)
+					end
+				end
+				if Result = Void then
+					create {EPA_ANY_VALUE} Result.make (a_dump_value.address.as_string)
+				end
+			else
+				check False end
+			end
 		end
 
 end

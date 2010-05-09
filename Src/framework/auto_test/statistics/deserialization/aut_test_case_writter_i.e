@@ -336,13 +336,13 @@ $(BODY)
         
 feature -- Test case information
 
-	tci_class_name: STRING = "$(CLASS_NAME)"
+	tci_class_name: STRING do Result :="$(CLASS_NAME)" end
 			-- Name of current class
 
-	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
+	tci_class_under_test: STRING do Result := "$(CLASS_UNDER_TEST)" end
 			-- Name of the class under test.
 
-	tci_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
+	tci_feature_under_test: STRING do Result := "$(FEATURE_UNDER_TEST)" end
 			-- Name of the feature under test.
 			
 	tci_is_creation: BOOLEAN = $(IS_CREATION)
@@ -357,14 +357,14 @@ feature -- Test case information
 	tci_exception_code: INTEGER = $(EXCEPTION_CODE)
 			-- Exception code. 0 for passing test cases.
 	
-	tci_assertion_tag: STRING = "$(ASSERTION_TAG)"
+	tci_assertion_tag: STRING do Result := "$(ASSERTION_TAG)" end
 			-- Tag of the violated assertion, if any.
 			-- Empty string for passing test cases.
 	
-	tci_exception_recipient: STRING = "$(EXCEPTION_RECIPIENT)"
+	tci_exception_recipient: STRING do Result := "$(EXCEPTION_RECIPIENT)" end
 			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
 	
-	tci_exception_recipient_class: STRING = "$(EXCEPTION_RECIPIENT_CLASS)"
+	tci_exception_recipient_class: STRING do Result := "$(EXCEPTION_RECIPIENT_CLASS)" end
 			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
 	
 	tci_argument_count: INTEGER = $(ARGUMENT_COUNT)

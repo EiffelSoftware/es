@@ -24,6 +24,8 @@ inherit
 
 	AFX_SHARED_EVENT_ACTIONS
 
+	EPA_COMPILATION_UTILITY
+
 create
 	make
 
@@ -101,7 +103,7 @@ feature -- Basic operations
 			event_actions.notify_on_session_starts
 
 				-- Compile project			
-			compile_project
+			compile_project (eiffel_project, True)
 
 				-- Start test case analysis
 			event_actions.notify_on_test_case_analysis_starts
@@ -463,16 +465,6 @@ feature{NONE} -- Actions
 --				l_value := debugger_manager.expression_evaluation ("exception_trace")
 --				l_app.set_current_execution_stack_number (l_old_stack_level)
 --			end
-		end
-
-	compile_project
-			-- Compile interpreter when needed.
-		do
-			if config.should_freeze then
-				eiffel_project.quick_melt
-				eiffel_project.freeze
-				eiffel_project.call_finish_freezing_and_wait (True)
-			end
 		end
 
 feature{NONE} -- Implication

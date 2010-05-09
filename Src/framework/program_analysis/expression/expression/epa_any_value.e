@@ -27,10 +27,10 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_item: like item)
+	make (a_address: like item)
 		-- Initialize Current.
 		do
-			item := a_item
+			item := a_address
 		end
 
 feature -- Access

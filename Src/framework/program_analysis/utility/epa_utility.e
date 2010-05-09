@@ -321,7 +321,7 @@ feature -- Class/feature related
 			l_classes: LIST [CLASS_I]
 			l_class_c: CLASS_C
 		do
-			l_classes := universe.classes_with_name (a_class_name)
+			l_classes := universe.classes_with_name (a_class_name.as_upper)
 			if not l_classes.is_empty then
 				Result := l_classes.first.compiled_representation
 			end

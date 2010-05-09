@@ -50,6 +50,22 @@ feature -- Access/Search scope
 			-- `operand_map' is needed because for a given test case, which variables are used as which operands in the called
 			-- feature is already fixed, the same ordering needs to be consistent with the generated functions.
 
+feature -- Status
+
+	is_query: BOOLEAN
+			-- Is `feature_' a query?
+		do
+			Result := feature_.has_return_value
+		end
+
+	is_creation: BOOLEAN
+			-- Is `feature_' used as a creation procedure?
+
+	is_for_pre_execution: BOOLEAN
+			-- Are functions used a pre-execution evaluation?
+			-- For pre-execution evaluation, functions such as "Result", and
+			-- target object (if `feature_' is a creation procedure) are not included
+
 feature -- Setting
 
 	set_class_and_feature (a_class: like context_class; a_feature: like feature_)
@@ -70,6 +86,22 @@ feature -- Setting
 		ensure
 			context_set: context = a_context
 			operand_map_set: operand_map = a_operand_map
+		end
+
+	set_is_creation (b: BOOLEAN)
+			-- Set `is_creation' with `b'.
+		do
+			is_creation := b
+		ensure
+			is_creation_set: is_creation = b
+		end
+
+	set_is_for_pre_execution (b: BOOLEAN)
+			-- Set `is_for_pre_execution' with `b'.
+		do
+			is_for_pre_execution := b
+		ensure
+			is_for_pre_execution_set: is_for_pre_execution = b
 		end
 
 feature -- Access
@@ -199,12 +231,16 @@ feature{NONE} -- Implementation
 			l_outer_func: CI_FUNCTION
 			l_context: like context
 			l_composed_func: CI_FUNCTION
+			l_composed_functions: like composed_functions
+			l_quasi_constant_functions: like quasi_constant_functions
 		do
 				-- 1. Iterate through all operands
-				-- 2. For each operand, get all queries with on argument.
+				-- 2. For each operand, get all queries with one argument.
 				-- 3. For each such query, iterate through all functions in `variable_functions', select those
 				--    whose type conforms to the type of that query,
 				-- 4. Compose the query and the selected function in `quasi_constant_functions'.
+			l_composed_functions := composed_functions
+			l_quasi_constant_functions := quasi_constant_functions
 			l_context := context
 			l_context_class := l_context.class_
 				-- 1. Iterate through all operands
@@ -231,19 +267,25 @@ feature{NONE} -- Implementation
 							-- 3. For each such query, iterate through all functions in `variable_functions', select those
 							--    whose type conforms to the type of that query,
 						l_feature := l_features.item_for_iteration
-						l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class)
+						fixme ("We don't handle is_equal for the moment. 9.5.2010 Jasonw")
+						if not l_feature.feature_name.is_case_insensitive_equal (once "is_equal") then
+							l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class)
 
 
-							-- 4. Compose the query and the selected function in `quasi_constant_functions'.
-						if not l_funcs.is_empty then
-							l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context)
-							from
-								l_funcs.start
-							until
-								l_funcs.after
-							loop
-								l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
-								l_funcs.forth
+								-- 4. Compose the query and the selected function in `quasi_constant_functions'.
+							if not l_funcs.is_empty then
+								l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context)
+								from
+									l_funcs.start
+								until
+									l_funcs.after
+								loop
+									l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
+									l_composed_functions.force_last (l_composed_func)
+									l_quasi_constant_functions.force_last (l_composed_func)
+
+									l_funcs.forth
+								end
 							end
 						end
 						l_features.forth
@@ -537,15 +579,43 @@ feature{NONE} -- Implementations
 
 	argumentless_query_expression_generator: EPA_NESTED_EXPRESSION_GENERATOR
 			-- Expression generator to list all argument-less queries
+		local
+			l_criteria: LINKED_LIST [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
+			l_cri_array: ARRAY [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
+			i: INTEGER
 		do
 			create Result.make
 			Result.expression_veto_agents.wipe_out
+
+			create l_criteria.make
+			l_criteria.extend (argument_expression_veto_agent)
+				-- Extend different expression selection criteria into `l_criteria' depending on
+				-- the value of `is_for_pre_execution', `is_creation' and `is_query'.
+			if is_for_pre_execution then
+				if not is_creation then
+					l_criteria.extend (current_expression_veto_agent)
+				end
+			else
+				l_criteria.extend (current_expression_veto_agent)
+				if is_query then
+					l_criteria.extend (result_expression_veto_agent)
+				end
+			end
+			create l_cri_array.make (1, l_criteria.count)
+			from
+				i := 1
+				l_criteria.start
+			until
+				l_criteria.after
+			loop
+				l_cri_array.put (l_criteria.item_for_iteration, i)
+				i := i + 1
+				l_criteria.forth
+			end
+
 			Result.expression_veto_agents.put (
 				anded_agents (<<
-					ored_agents (
-						<<result_expression_veto_agent,
-					  	  current_expression_veto_agent,
-					  	  argument_expression_veto_agent>>),
+					ored_agents (l_cri_array),
 					feature_not_from_any_veto_agent>>),
 					 	 1)
 

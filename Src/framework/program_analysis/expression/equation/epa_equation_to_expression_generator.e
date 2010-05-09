@@ -129,7 +129,12 @@ feature -- Process
 			-- Process `a_value'.
 		do
 		end
-		
+
+	process_string_value (a_value: EPA_STRING_VALUE)
+			-- Process `a_value'
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

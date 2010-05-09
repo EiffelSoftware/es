@@ -272,4 +272,12 @@ feature -- Process
 			a_value.item.process (Current)
 		end
 
+	process_string_value (a_value: EPA_STRING_VALUE)
+			-- Process `a_value'
+		do
+			output.append_string (once "%"")
+			output.append_string (a_value.string_value)
+			output.append_string (once "%"")
+		end
+
 end

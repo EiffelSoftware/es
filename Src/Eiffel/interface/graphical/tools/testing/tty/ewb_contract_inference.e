@@ -57,6 +57,7 @@ feature -- Properties
 			l_parser: CI_COMMAND_LINE_PARSER
 			l_config: CI_CONFIG
 			l_build_command: CI_BUILD_TEST_CASE_APP_CMD
+			l_infer_command: CI_INFER_CONTRACT_CMD
 		do
 			create l_parser.make_with_arguments (contract_inference_arguments, system)
 			l_parser.parse
@@ -65,6 +66,9 @@ feature -- Properties
 			if l_config.should_build_project then
 				create l_build_command.make (l_config)
 				l_build_command.execute
+			elseif l_config.should_infer_contracts then
+				create l_infer_command.make (l_config)
+				l_infer_command.execute
 			end
 		end
 

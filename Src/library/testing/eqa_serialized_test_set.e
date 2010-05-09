@@ -143,11 +143,41 @@ feature -- Test case information
 		deferred
 		end
 
-	tci_operand_table: HASH_TABLE[INTEGER, INTEGER]
+	tci_operand_table: HASH_TABLE [INTEGER, INTEGER]
 			-- key is operand position index (0 means target, 1 means the first argument,
 			-- and argument_count + 1 means the result, if any), value is the variable
 			-- index of that operand.
 		deferred
+		end
+
+	tci_operand_variable_indexes: STRING
+			-- Comma separated indexes of operands of the feature under test
+		local
+			l_tbl: HASH_TABLE [INTEGER, INTEGER]
+			l_otbl: like tci_operand_table
+			i: INTEGER
+			c: INTEGER
+		do
+			l_otbl := tci_operand_table
+			create l_tbl.make (tci_operand_table.count)
+			create Result.make (32)
+
+			c := tci_argument_count
+			if tci_is_query then
+				c := c + 1
+			end
+
+			from
+				i := 0
+			until
+				i > c
+			loop
+				Result.append (l_otbl.item (i).out)
+				if i < c then
+					Result.append_character (',')
+				end
+				i := i + 1
+			end
 		end
 
     tci_exception_trace: STRING

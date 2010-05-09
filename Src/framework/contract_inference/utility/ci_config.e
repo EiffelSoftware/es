@@ -61,6 +61,17 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
+	log_directory: STRING is
+			-- Directory for AutoFix logs
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend ("log")
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
 	output_directory: STRING is
 			-- Directory for output
 		local
@@ -71,6 +82,12 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
+	working_directory: STRING is
+			-- Working directory of the project
+		do
+			Result := Execution_environment.current_working_directory
+		end
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -78,6 +95,9 @@ feature -- Status report
 		do
 			Result := attached test_case_directory
 		end
+
+	should_infer_contracts: BOOLEAN
+			-- Should contracts be inferred?
 
 feature -- Setting
 
@@ -107,6 +127,14 @@ feature -- Setting
 			-- Set `class_name' with `a_name'.
 		do
 			class_name := a_name.twin
+		end
+
+	set_should_infer_contracts (b: BOOLEAN)
+			-- Set `should_infer_contracts' with `b'.
+		do
+			should_infer_contracts := b
+		ensure
+			should_infer_contracts_set: should_infer_contracts = b
 		end
 
 feature{NONE} -- Implementation

@@ -307,6 +307,7 @@ feature -- Basic operations
 					l_tests := test_cases.item_for_iteration
 					l_tests.do_all (agent execute_test_case)
 				end
+				test_cases.forth
 			end
 			test_cases.go_to (l_cursor)
 		end

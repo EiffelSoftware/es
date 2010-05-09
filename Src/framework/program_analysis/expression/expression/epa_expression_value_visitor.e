@@ -54,4 +54,9 @@ feature -- Process
 		deferred
 		end
 
+	process_string_value (a_value: EPA_STRING_VALUE)
+			-- Process `a_value'
+		deferred
+		end
+
 end

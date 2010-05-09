@@ -217,4 +217,12 @@ feature{NONE} -- Process/Data
 			to_implement ("To implement. 29.4.2010 Jasonw")
 		end
 
+
+	process_string_value (a_value: EPA_STRING_VALUE)
+			-- Process `a_value'
+		do
+			to_implement ("To implement. 8.5.2010 Jasonw")
+		end
+
+
 end
