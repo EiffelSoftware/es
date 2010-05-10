@@ -1293,10 +1293,6 @@ feature -- Predicate evaluation
 					l_arity := l_arity_table.item (l_pred_id)
 					l_count := l_objects.count
 
---					check
---						(l_arity > 0 implies l_objects.count \\ l_arity = 0) and then
---						(l_arity = 0 implies l_objects.count = 0)
---					end
 					l_args := l_argument_holder.item (l_arity)
 					if l_arity = 0 then
 						create l_pred_response.make (1)

@@ -24,10 +24,15 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_output_directory: STRING)
+	make (a_output_directory: like output_directory)
 			-- Initialize Current.
 		do
-			output_directory := a_output_directory.twin
+			should_solve_integer_argument_bound := a_output_directory = Void
+			if a_output_directory /= Void then
+				output_directory := a_output_directory.twin
+			else
+				output_directory := Void
+			end
 		end
 
 feature -- Access/Search scope
@@ -65,6 +70,9 @@ feature -- Status
 			-- Are functions used a pre-execution evaluation?
 			-- For pre-execution evaluation, functions such as "Result", and
 			-- target object (if `feature_' is a creation procedure) are not included
+
+	should_solve_integer_argument_bound: BOOLEAN
+			-- Should bounds of integer arguments be solved?			
 
 feature -- Setting
 
@@ -337,50 +345,52 @@ feature{NONE} -- Implementation
 			l_range: like integer_bounds
 			l_quasi_functions: like quasi_constant_functions
 		do
-			l_quasi_functions := quasi_constant_functions
-			l_any_id := system.any_class.compiled_representation.class_id
-			from
-				l_cursor := operand_static_type_table.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				check l_cursor.item.associated_class /= Void end
-				l_class := l_cursor.item.associated_class
-				l_feat_tbl := l_class.feature_table
-				l_tbl_cursor := l_feat_tbl.cursor
+			if should_solve_integer_argument_bound then
+				l_quasi_functions := quasi_constant_functions
+				l_any_id := system.any_class.compiled_representation.class_id
 				from
-					l_feat_tbl.start
+					l_cursor := operand_static_type_table.new_cursor
+					l_cursor.start
 				until
-					l_feat_tbl.after
+					l_cursor.after
 				loop
-					l_feat := l_feat_tbl.item_for_iteration
-					if
-						l_feat.has_return_value and then
-						l_feat.written_class.class_id /= l_any_id and then
-						l_feat.argument_count = 1 and then
-						l_feat.arguments.i_th (1).is_integer
-					then
-						l_range := integer_bounds (context_class, l_feat)
-						if l_range /= Void then
-							create l_argument_types.make (1, 1)
-							create l_argument_domains.make (1, 1)
-							l_argument_types.put (integer_type, 1)
-							l_argument_domains.put (l_range, 1)
-							l_result_type := resolved_type_in_context (l_feat.type, context_class)
-							create l_body.make (32)
-							l_body.append (l_cursor.key)
-							l_body.append_character ('.')
-							l_body.append (l_feat.feature_name)
-							l_body.append (once " ({1})")
-							create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body, context)
-							l_quasi_functions.force_last (l_function)
+					check l_cursor.item.associated_class /= Void end
+					l_class := l_cursor.item.associated_class
+					l_feat_tbl := l_class.feature_table
+					l_tbl_cursor := l_feat_tbl.cursor
+					from
+						l_feat_tbl.start
+					until
+						l_feat_tbl.after
+					loop
+						l_feat := l_feat_tbl.item_for_iteration
+						if
+							l_feat.has_return_value and then
+							l_feat.written_class.class_id /= l_any_id and then
+							l_feat.argument_count = 1 and then
+							l_feat.arguments.i_th (1).is_integer
+						then
+							l_range := integer_bounds (context_class, l_feat)
+							if l_range /= Void then
+								create l_argument_types.make (1, 1)
+								create l_argument_domains.make (1, 1)
+								l_argument_types.put (integer_type, 1)
+								l_argument_domains.put (l_range, 1)
+								l_result_type := resolved_type_in_context (l_feat.type, context_class)
+								create l_body.make (32)
+								l_body.append (l_cursor.key)
+								l_body.append_character ('.')
+								l_body.append (l_feat.feature_name)
+								l_body.append (once " ({1})")
+								create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body, context)
+								l_quasi_functions.force_last (l_function)
+							end
 						end
+						l_feat_tbl.forth
 					end
-					l_feat_tbl.forth
+					l_feat_tbl.go_to (l_tbl_cursor)
+					l_cursor.forth
 				end
-				l_feat_tbl.go_to (l_tbl_cursor)
-				l_cursor.forth
 			end
 		end
 
@@ -677,9 +687,10 @@ feature{NONE} -- Implementations
 			end
 		end
 
-	output_directory: STRING
+	output_directory: detachable STRING
 			-- Directory to store temp files
 			-- Those files are Mathematica scripts, which are used to determine
 			-- the minimal and maximal value of a integer argument constrained in preconditions.
+			-- If Void, no Mathematica files are generated.
 
 end

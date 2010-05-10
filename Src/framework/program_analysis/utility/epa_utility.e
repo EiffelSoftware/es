@@ -246,6 +246,23 @@ feature -- Class/feature related
 			end
 		end
 
+	resolved_operand_types_with_feature (a_feature: FEATURE_I; a_viewed_class: CLASS_C; a_context_class: CLASS_C): like operand_types_with_feature
+			-- Types of operands of `a_feature' in the context of `a_context_class'.
+			-- Result is a table, key is the 0-based operand index, 0 indicates the target,
+			-- followed by arguments and result, if any. Value is the type of that operand.
+			-- Note: Types in the result is solved in `a_context_class'.		
+		do
+			Result := operand_types_with_feature (a_feature, a_viewed_class)
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				Result.replace (resolved_type_in_context (Result.item_for_iteration, a_context_class), Result.key_for_iteration)
+				Result.forth
+			end
+		end
+
 	operand_name_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
 			-- Types of operands of `a_feature' in the context of `a_context_class'.
 			-- Result is a table, key is operand name, such as "Current", "Result", and arguments.
