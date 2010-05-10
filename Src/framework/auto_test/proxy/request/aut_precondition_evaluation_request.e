@@ -1,5 +1,8 @@
 note
-	description: "Summary description for {AUT_PRECONDITION_EVALUATION_REQUEST}."
+	description: "[
+		Note: This is a request designed before, but not currently used. 
+		We decided to keep it because it may become useful in the future"
+		]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -45,7 +48,7 @@ feature -- Processing
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

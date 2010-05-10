@@ -1488,62 +1488,62 @@ feature -- Precondition satisfaction
 			variable_table.wipe_out_actions.extend (agent used_integer_values.wipe_out)
 		end
 
-	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
-			-- Can the precondition of `a_feature' be satisfied by `a_variables'?
-		local
-			l_request: AUT_PRECONDITION_EVALUATION_REQUEST
-		do
-			create l_request.make (system, a_feature, a_variables)
-			last_request := l_request
-			last_request.process (socket_data_printer)
-			flush_process
-			parse_precondition_evaluation_response
-			last_request.set_response (last_response)
-			Result := attached {AUT_PRECONDITION_EVALUATION_RESPONSE} last_response as l_response and then l_response.is_satisfied
-			stop_process_on_problems (last_response)
-		end
+--	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
+--			-- Can the precondition of `a_feature' be satisfied by `a_variables'?
+--		local
+--			l_request: AUT_PRECONDITION_EVALUATION_REQUEST
+--		do
+--			create l_request.make (system, a_feature, a_variables)
+--			last_request := l_request
+--			last_request.process (socket_data_printer)
+--			flush_process
+--			parse_precondition_evaluation_response
+--			last_request.set_response (last_response)
+--			Result := attached {AUT_PRECONDITION_EVALUATION_RESPONSE} last_response as l_response and then l_response.is_satisfied
+--			stop_process_on_problems (last_response)
+--		end
 
-	parse_precondition_evaluation_response is
-			-- Parse the response of the last precondition evaluation request.
-		do
-			if attached {AUT_PRECONDITION_EVALUATION_REQUEST} last_request as l_request then
-				retrieve_precondition_evaluation_response
---				if is_logging_enabled then
---					last_response.process (response_printer)
+--	parse_precondition_evaluation_response is
+--			-- Parse the response of the last precondition evaluation request.
+--		do
+--			if attached {AUT_PRECONDITION_EVALUATION_REQUEST} last_request as l_request then
+--				retrieve_precondition_evaluation_response
+----				if is_logging_enabled then
+----					last_response.process (response_printer)
+----				end
+--			end
+--		end
+
+--	retrieve_precondition_evaluation_response is
+--			-- Retrieve response of the last precondition evaluation request.
+--		local
+--			l_data: TUPLE [object_index: detachable ARRAY [INTEGER]; output: detachable STRING; error: detachable STRING]
+--			l_retried: BOOLEAN
+--			l_socket: like socket
+--			l_response_flag: NATURAL_32
+--			l_response: AUT_PRECONDITION_EVALUATION_RESPONSE
+--			l_any: detachable ANY
+--		do
+--			if not l_retried then
+--				l_socket := socket
+--				l_socket.read_natural_32
+--				l_response_flag := l_socket.last_natural_32
+--				l_any ?= l_socket.retrieved
+--				l_data ?= l_any
+--				process.set_timeout (0)
+--				if l_data /= Void then
+--					create l_response.make (l_data.object_index /= Void)
+--					last_response := l_response
+--				else
+--					last_raw_response := Void
 --				end
-			end
-		end
-
-	retrieve_precondition_evaluation_response is
-			-- Retrieve response of the last precondition evaluation request.
-		local
-			l_data: TUPLE [object_index: detachable ARRAY [INTEGER]; output: detachable STRING; error: detachable STRING]
-			l_retried: BOOLEAN
-			l_socket: like socket
-			l_response_flag: NATURAL_32
-			l_response: AUT_PRECONDITION_EVALUATION_RESPONSE
-			l_any: detachable ANY
-		do
-			if not l_retried then
-				l_socket := socket
-				l_socket.read_natural_32
-				l_response_flag := l_socket.last_natural_32
-				l_any ?= l_socket.retrieved
-				l_data ?= l_any
-				process.set_timeout (0)
-				if l_data /= Void then
-					create l_response.make (l_data.object_index /= Void)
-					last_response := l_response
-				else
-					last_raw_response := Void
-				end
-			end
-		rescue
-			is_ready := False
-			l_retried := True
-			last_raw_response := Void
-			retry
-		end
+--			end
+--		rescue
+--			is_ready := False
+--			l_retried := True
+--			last_raw_response := Void
+--			retry
+--		end
 
 	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
 			-- State of `a_variable'

@@ -14,25 +14,28 @@ inherit
 
 	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
 
+	AUT_SOURCE_WRITER_UTILITY
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_config: like configuration; a_stream: like stream; a_class_info: like class_info) is
+	make (a_config: like configuration; a_stream: like stream; a_type_list: DS_LINEAR [STRING]; a_root_class: like root_class) is
 			-- Initialize `stream' with `a_stream'.
 		require
 			a_config_attached: a_config /= Void
 			a_stream_attached: a_stream /= Void
-			a_class_info_attached: a_class_info /= Void
+			a_type_list_attached: a_type_list /= Void
 		do
 			configuration := a_config
 			stream := a_stream
-			class_info := a_class_info
+			root_class := a_root_class
+			class_info := topologically_sorted_classes_info (a_type_list)
 		ensure
 			configuration_set: configuration = a_config
 			stream_set: stream = a_stream
-			class_info_set: class_info = a_class_info
+			root_class_set: root_class = a_root_class
 		end
 
 feature -- Access
@@ -45,6 +48,9 @@ feature -- Access
 
 	class_info: LINKED_LIST [TUPLE [class_name: STRING; type: TYPE_A; type_name: STRING]]
 			-- Information of classes	
+
+	root_class: CLASS_C
+			-- Root class of current system
 
 feature -- Generation
 

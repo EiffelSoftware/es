@@ -102,7 +102,6 @@ feature {NONE} -- Initialization
 			end
 
 				-- Initialize precondition table.
-			initialize_precondition_table
 
 				-- Initialize predicate related data structure.
 			initialize_predicates
@@ -1130,11 +1129,6 @@ feature -- Precondition satisfaction
 
 	argument_arrays: ARRAY [ARRAY [INTEGER]]
 			-- Array for arguments used in predicate evaluation
-
-	initialize_precondition_table is
-			-- Initialize `precondition_table'.
-		deferred
-		end
 
 	objects_satisfying_precondition (a_feature: STRING; a_args: ARRAY [INTEGER]): detachable TUPLE is
 			--
