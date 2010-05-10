@@ -5,17 +5,17 @@ note
 	revision: "$Revision$"
 
 class
-	CI_FUNCTION_EQUALITY_TESTER
+	EPA_FUNCTION_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [CI_FUNCTION]
+	KL_EQUALITY_TESTER [EPA_FUNCTION]
 		redefine
 			test
 		end
 
 feature -- Status report
 
-	test (v, u: CI_FUNCTION): BOOLEAN
+	test (v, u: EPA_FUNCTION): BOOLEAN
 		do
 			if v = u then
 				Result := True

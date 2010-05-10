@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	CI_UNSPECIFIED_DOMAIN
+	EPA_UNSPECIFIED_DOMAIN
 
 inherit
-	CI_DOMAIN
+	EPA_FUNCTION_DOMAIN
 		redefine
 			is_unspecified
 		end

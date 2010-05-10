@@ -126,10 +126,10 @@ feature{NONE} -- Implementation
 			-- `a_pre_execution' indicates that the resulting expressions should be evaluated before
 			-- the execution of the test case.
 		local
-			l_before_expr_finder: CI_TYPE_BASED_FUNCTION_FINDER
+			l_before_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_context: EPA_CONTEXT
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
-			l_functions: DS_HASH_SET [CI_FUNCTION]
+			l_functions: DS_HASH_SET [EPA_FUNCTION]
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True)
@@ -143,20 +143,20 @@ feature{NONE} -- Implementation
 			l_functions := nullary_functions (l_before_expr_finder.functions, l_context)
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
-			l_functions.do_all (agent (a_function: CI_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]) do a_set.force_last (a_function.as_expression) end (?, Result))
+			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]) do a_set.force_last (a_function.as_expression) end (?, Result))
 		end
 
-	nullary_functions (a_functions: DS_HASH_SET [CI_FUNCTION]; a_context: EPA_CONTEXT): DS_HASH_SET [CI_FUNCTION]
+	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
 			-- Nullary version of functions in `a_functions'
 			-- For functions that are already nullary, those functions are directly put into the resulting set.
 			-- For functions whose domain needs dynamic evaluation, we evaluate the domain and use the evaluated
 			-- domain to form nullary functions.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [CI_FUNCTION]
-			l_func: CI_FUNCTION
+			l_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_func: EPA_FUNCTION
 		do
 			create Result.make (a_functions.count * 2)
-			Result.set_equality_tester (ci_function_equality_tester)
+			Result.set_equality_tester (function_equality_tester)
 			from
 				l_cursor := a_functions.new_cursor
 				l_cursor.start
@@ -173,7 +173,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	functions_with_domain_resolved (a_function: CI_FUNCTION; a_context: EPA_CONTEXT): DS_HASH_SET [CI_FUNCTION]
+	functions_with_domain_resolved (a_function: EPA_FUNCTION; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
 			-- Functions from `a_fucntion' with its domain resolved
 		require
 			a_function_has_unresolved_domain: a_function.arity = 1 and then a_function.argument_domain (1).is_integer_range
@@ -189,13 +189,13 @@ feature{NONE} -- Implementation
 			l_final_lower: INTEGER
 			l_final_upper: INTEGER
 			i: INTEGER
-			l_arg: CI_FUNCTION
+			l_arg: EPA_FUNCTION
 			l_int_expr: EPA_AST_EXPRESSION
 		do
 			create Result.make (10)
-			Result.set_equality_tester (ci_function_equality_tester)
+			Result.set_equality_tester (function_equality_tester)
 
-			if attached {CI_INTEGER_RANGE_DOMAIN} a_function.argument_domain (1) as l_domain then
+			if attached {EPA_INTEGER_RANGE_DOMAIN} a_function.argument_domain (1) as l_domain then
 				l_lowers := l_domain.lower_bounds
 				l_uppers := l_domain.upper_bounds
 
@@ -293,8 +293,8 @@ feature{NONE} -- Actions
 			-- Action to be performed if a new test case is found and about to execute
 		local
 			l_tc_info: CI_TEST_CASE_INFO
-			l_after_expr_finder: CI_TYPE_BASED_FUNCTION_FINDER
-			l_functions: DS_HASH_SET [CI_FUNCTION]
+			l_after_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
+			l_functions: DS_HASH_SET [EPA_FUNCTION]
 			l_before_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
 			l_after_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
 		do

@@ -27,6 +27,10 @@
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
 		<library name="process" location="$EIFFEL_SRC\library\process\process.ecf"/>
-		<cluster name="program_analysis" location=".\" recursive="true"/>
+		<cluster name="program_analysis" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
 	</target>
 </system>

@@ -27,4 +27,11 @@ feature -- Equality tester
 			create Result.make (agent (a_type, b_type: TYPE_A): BOOLEAN do Result := a_type.is_equivalent (b_type) end)
 		end
 
+	function_equality_tester: EPA_FUNCTION_EQUALITY_TESTER
+			-- Equality tester for {CI_FUNCTION}
+		once
+			create Result
+		end
+
+
 end

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CI_QUERY_POSTCONDITION_FINDER
+	EPA_QUERY_POSTCONDITION_FINDER
 
 inherit
 	REFACTORING_HELPER

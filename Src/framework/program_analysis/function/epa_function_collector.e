@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	CI_FUNCTION_COLLECTOR
+	EPA_FUNCTION_COLLECTOR
 
 inherit
-	CI_FUNCTION_FINDER
+	EPA_FUNCTION_FINDER
 
 create
 	make
@@ -24,10 +24,10 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	functions: DS_HASH_SET [CI_FUNCTION]
+	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions found by last `search'
 
-	finders: LINKED_LIST [CI_FUNCTION_FINDER]
+	finders: LINKED_LIST [EPA_FUNCTION_FINDER]
 			-- List of functions finders which will find functions
 			-- according to different criteria
 
@@ -50,7 +50,7 @@ feature -- Basic operations
 			l_cursor: CURSOR
 			l_finders: like finders
 			l_found_functions: like functions
-			l_finder: CI_FUNCTION_FINDER
+			l_finder: EPA_FUNCTION_FINDER
 			l_existing_functions: like functions
 			l_newly_added: like newly_added_functions
 			l_new_exprs: like functions
@@ -61,7 +61,7 @@ feature -- Basic operations
 			l_found_functions := functions
 
 			create l_existing_functions.make (a_repository.count)
-			l_existing_functions.set_equality_tester (ci_function_equality_tester)
+			l_existing_functions.set_equality_tester (function_equality_tester)
 			l_existing_functions.append (a_repository)
 
 				-- Iterate through `finders' multiple times until
@@ -75,7 +75,7 @@ feature -- Basic operations
 			loop
 				create newly_added_functions.make (100)
 				l_newly_added := newly_added_functions
-				l_newly_added.set_equality_tester (ci_function_equality_tester)
+				l_newly_added.set_equality_tester (function_equality_tester)
 
 					-- One round of applying `finders'.
 				from

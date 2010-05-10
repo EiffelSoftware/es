@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CI_LINEAR_BOUNDED_ARGUMENT_FINDER
+	EPA_LINEAR_BOUNDED_ARGUMENT_FINDER
 
 inherit
 	EPA_TYPE_UTILITY
@@ -243,7 +243,7 @@ feature{NONE} -- Implementation
 			-- List of assertions that are derived from postconditions of `a_precondition_features'.
 		local
 			l_cursor: CURSOR
-			l_finder: CI_QUERY_POSTCONDITION_FINDER
+			l_finder: EPA_QUERY_POSTCONDITION_FINDER
 			l_rewriter: EPA_CONTRACT_REWRITE_VISITOR
 			l_asserts: LINKED_LIST [EPA_EXPRESSION]
 			l_feat: FEATURE_I

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CI_FUNCTION
+	EPA_FUNCTION
 
 inherit
 	EPA_UTILITY
@@ -130,7 +130,7 @@ feature{NONE} -- Initialization
 			until
 				i > l_count
 			loop
-				l_domains.put (create {CI_UNSPECIFIED_DOMAIN}, i)
+				l_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, i)
 				i := i + 1
 			end
 			make_from_feature_with_domains (a_feature, a_class, l_domains, a_context)
@@ -148,7 +148,7 @@ feature -- Access
 			-- The index of the array is 1-based. 1 refers to the first argument, and so on.
 			-- The argument types may not be resovled.
 
-	argument_domains: ARRAY [CI_DOMAIN]
+	argument_domains: ARRAY [EPA_FUNCTION_DOMAIN]
 			-- Domain of arguments of current function			
 
 	argument_type (i: INTEGER): TYPE_A
@@ -160,7 +160,7 @@ feature -- Access
 			Result := argument_types.item (i)
 		end
 
-	argument_domain (i: INTEGER): CI_DOMAIN
+	argument_domain (i: INTEGER): EPA_FUNCTION_DOMAIN
 			-- Domain of argument at `i'-th position
 		require
 			i_valid: is_argument_position_valid (i)
@@ -256,7 +256,7 @@ feature -- Access
 
 feature -- Partial evaluation
 
-	partially_evalauted (a_argument: CI_FUNCTION; a_position: INTEGER): CI_FUNCTION
+	partially_evalauted (a_argument: EPA_FUNCTION; a_position: INTEGER): EPA_FUNCTION
 			-- A function that is derived from Current by partially evaluating the
 			-- `a_position'-th argument with `a_argument'.
 			-- `a_argument' can be a function with arguments, so it is possible that
@@ -269,14 +269,14 @@ feature -- Partial evaluation
 			a_position_valid: is_argument_position_valid (a_position)
 			a_argument_has_valid_type: is_conformant_to (a_argument.result_type, argument_type (a_position))
 		local
-			l_tbl: HASH_TABLE [CI_FUNCTION, INTEGER]
+			l_tbl: HASH_TABLE [EPA_FUNCTION, INTEGER]
 		do
 			create l_tbl.make (1)
 			l_tbl.put (a_argument, a_position)
 			Result := partially_evaluated_with_arguments (l_tbl)
 		end
 
-	partially_evaluated_with_arguments (a_arguments: HASH_TABLE [CI_FUNCTION, INTEGER]): CI_FUNCTION
+	partially_evaluated_with_arguments (a_arguments: HASH_TABLE [EPA_FUNCTION, INTEGER]): EPA_FUNCTION
 			-- A function that is derived from Current by partially evaluating the
 			-- arguments specified in `a_arguments'.
 			-- `a_arguments' is table indicating which arguments in Current function should be replaced
@@ -289,14 +289,14 @@ feature -- Partial evaluation
 			l_position: INTEGER
 			l_arg_index: INTEGER
 			l_arguments: LINKED_LIST [TYPE_A]
-			l_domains: LINKED_LIST [CI_DOMAIN]
-			l_func: CI_FUNCTION
+			l_domains: LINKED_LIST [EPA_FUNCTION_DOMAIN]
+			l_func: EPA_FUNCTION
 			i: INTEGER
 			l_new_args: LINKED_LIST [STRING]
 			l_arg_body: STRING
 
 			l_final_args: ARRAY [TYPE_A]
-			l_final_domains: ARRAY [CI_DOMAIN]
+			l_final_domains: ARRAY [EPA_FUNCTION_DOMAIN]
 			l_final_body: STRING
 		do
 				-- Calculate arguments of the final function.

@@ -5,19 +5,19 @@ note
 	revision: "$Revision$"
 
 deferred class
-	CI_FUNCTION_FINDER
+	EPA_FUNCTION_FINDER
 
 inherit
-	CI_SHARED_EQUALITY_TESTERS
+	EPA_SHARED_EQUALITY_TESTERS
 
 feature -- Access
 
-	functions: DS_HASH_SET [CI_FUNCTION]
+	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions that are found by last `search'.
 		deferred
 		ensure
 			result_attached: Result /= Void
-			result_equality_tester_set: Result.equality_tester = ci_function_equality_tester
+			result_equality_tester_set: Result.equality_tester = function_equality_tester
 		end
 
 feature -- Search
@@ -30,7 +30,7 @@ feature -- Search
 		deferred
 		ensure
 			functions_initialized: functions /= Void
-			functions_equality_tester_set: functions.equality_tester = ci_function_equality_tester
+			functions_equality_tester_set: functions.equality_tester = function_equality_tester
 		end
 
 	search_with_empty_repository
@@ -39,7 +39,7 @@ feature -- Search
 			l_emtpy_set: like functions
 		do
 			create l_emtpy_set.make (100)
-			l_emtpy_set.set_equality_tester (ci_function_equality_tester)
+			l_emtpy_set.set_equality_tester (function_equality_tester)
 			search (l_emtpy_set)
 		end
 
@@ -49,7 +49,7 @@ feature{NONE} -- Implementation
 			-- New function set
 		do
 			create Result.make (50)
-			Result.set_equality_tester (ci_function_equality_tester)
+			Result.set_equality_tester (function_equality_tester)
 		end
 
 end

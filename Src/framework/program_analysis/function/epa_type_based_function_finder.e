@@ -8,14 +8,14 @@ note
 	revision: "$Revision$"
 
 class
-	CI_TYPE_BASED_FUNCTION_FINDER
+	EPA_TYPE_BASED_FUNCTION_FINDER
 
 inherit
-	CI_FUNCTION_FINDER
+	EPA_FUNCTION_FINDER
 
 	EPA_UTILITY
 
-	CI_SHARED_EQUALITY_TESTERS
+	EPA_SHARED_EQUALITY_TESTERS
 
 	EPA_ACCESS_AGENT_UTILITY
 
@@ -106,22 +106,22 @@ feature -- Setting
 
 feature -- Access
 
-	quasi_constant_functions: DS_HASH_SET [CI_FUNCTION]
+	quasi_constant_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions found by last `search'
 			-- Those functions must be constant functions or
 			-- functions with a single argument and that argument
 			-- must have both a lower and a upper bound.
 			-- quasi_constant_functions.is_superset (variable_functions)
 
-	variable_functions: DS_HASH_SET [CI_FUNCTION]
+	variable_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions for `variables'
 			-- quasi_constant_functions.is_superset (variable_functions)
 
-	composed_functions: DS_HASH_SET [CI_FUNCTION]
+	composed_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Composed functions, for example v1.has (v2),
 			-- where v1 and v2 are too operands of `feature_'.
 
-	functions: DS_HASH_SET [CI_FUNCTION]
+	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions that are found by last `search'.
 			-- The result is the union of `quasi_constant_functions', `variable_functions' and `composed_functions'.
 
@@ -134,13 +134,13 @@ feature -- Basic operations
 		do
 				-- Initialize data structures.
 			create quasi_constant_functions.make (100)
-			quasi_constant_functions.set_equality_tester (ci_function_equality_tester)
+			quasi_constant_functions.set_equality_tester (function_equality_tester)
 
 			create composed_functions.make (100)
-			composed_functions.set_equality_tester (ci_function_equality_tester)
+			composed_functions.set_equality_tester (function_equality_tester)
 
 			create functions.make (200)
-			functions.set_equality_tester (ci_function_equality_tester)
+			functions.set_equality_tester (function_equality_tester)
 
 				-- Search for functions.
 			build_operand_names
@@ -192,12 +192,12 @@ feature{NONE} -- Implementation
 			l_expr: EPA_AST_EXPRESSION
 			l_context_class: CLASS_C
 			l_feature: FEATURE_I
-			l_func: CI_FUNCTION
+			l_func: EPA_FUNCTION
 			l_context: like context
 			l_expr_ast: EXPR_AS
 		do
 			create variable_functions.make (variables.count)
-			variable_functions.set_equality_tester (ci_function_equality_tester)
+			variable_functions.set_equality_tester (function_equality_tester)
 			l_context := context
 			l_context_class := l_context.class_
 			l_feature := l_context.feature_
@@ -227,10 +227,10 @@ feature{NONE} -- Implementation
 			l_context_class: CLASS_C
 			l_features: LIST [FEATURE_I]
 			l_feature: FEATURE_I
-			l_funcs: LIST [CI_FUNCTION]
-			l_outer_func: CI_FUNCTION
+			l_funcs: LIST [EPA_FUNCTION]
+			l_outer_func: EPA_FUNCTION
 			l_context: like context
-			l_composed_func: CI_FUNCTION
+			l_composed_func: EPA_FUNCTION
 			l_composed_functions: like composed_functions
 			l_quasi_constant_functions: like quasi_constant_functions
 		do
@@ -300,7 +300,7 @@ feature{NONE} -- Implementation
 		local
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
-			l_function: CI_FUNCTION
+			l_function: EPA_FUNCTION
 			l_quasi_functions: like quasi_constant_functions
 		do
 				-- Setup expression generator to list all argument-less queries.
@@ -323,7 +323,7 @@ feature{NONE} -- Implementation
 		local
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
-			l_function: CI_FUNCTION
+			l_function: EPA_FUNCTION
 			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, STRING]
 			l_class: CLASS_C
 			l_feat_tbl: FEATURE_TABLE
@@ -331,7 +331,7 @@ feature{NONE} -- Implementation
 			l_feat: FEATURE_I
 			l_any_id: INTEGER
 			l_argument_types: ARRAY [TYPE_A]
-			l_argument_domains: ARRAY [CI_DOMAIN]
+			l_argument_domains: ARRAY [EPA_FUNCTION_DOMAIN]
 			l_result_type: TYPE_A
 			l_body: STRING
 			l_range: like integer_bounds
@@ -459,21 +459,21 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementations
 
-	new_single_argument_function (a_context_class: CLASS_C; a_feature: FEATURE_I; a_operand_name: STRING; a_context: EPA_CONTEXT): CI_FUNCTION
+	new_single_argument_function (a_context_class: CLASS_C; a_feature: FEATURE_I; a_operand_name: STRING; a_context: EPA_CONTEXT): EPA_FUNCTION
 			-- Function for `a_feature'.
 			-- `a_feature' should only have one argument. `a_operand_name' serves as the target of the feature call in the resulting function.
 			-- For example, if `a_operand_name' is "v" and `a_feature' is i_th, then the final function is: "v1.i_th({1})".
 			-- The {1} part stands for the open argument of the resulting function.
 		local
 			l_arg_types: ARRAY [TYPE_A]
-			l_arg_domains: ARRAY [CI_DOMAIN]
+			l_arg_domains: ARRAY [EPA_FUNCTION_DOMAIN]
 			l_result_type: TYPE_A
 			l_body: STRING
 		do
 			create l_arg_types.make (1, 1)
 			l_arg_types.put (resolved_type_in_context (a_feature.arguments.first, a_context_class), 1)
 			create l_arg_domains.make (1, 1)
-			l_arg_domains.put (create {CI_UNSPECIFIED_DOMAIN}, 1)
+			l_arg_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
 			l_result_type := resolved_type_in_context (a_feature.type, a_context_class)
 			create l_body.make (32)
 			l_body.append (a_operand_name)
@@ -483,16 +483,16 @@ feature{NONE} -- Implementations
 			create Result.make (l_arg_types, l_arg_domains, l_result_type, l_body, a_context)
 		end
 
-	argumentable_functions (a_functions: DS_HASH_SET[CI_FUNCTION]; a_feature: FEATURE_I; a_context_class: CLASS_C): LIST [CI_FUNCTION]
+	argumentable_functions (a_functions: DS_HASH_SET[EPA_FUNCTION]; a_feature: FEATURE_I; a_context_class: CLASS_C): LIST [EPA_FUNCTION]
 			-- Functions from `a_functions' whose type conforms to the argument type of `a_feature'
 		local
 			l_arg_type: TYPE_A
-			l_cursor: DS_HASH_SET_CURSOR [CI_FUNCTION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
 			l_func_type: TYPE_A
-			l_func: CI_FUNCTION
+			l_func: EPA_FUNCTION
 			l_context_class: CLASS_C
 		do
-			create {LINKED_LIST [CI_FUNCTION]} Result.make
+			create {LINKED_LIST [EPA_FUNCTION]} Result.make
 			l_context_class := context.class_
 			l_arg_type := resolved_type_in_context (a_feature.arguments.first, a_context_class)
 
@@ -656,19 +656,19 @@ feature{NONE} -- Implementations
 		end
 
 
-	integer_domain_from_bounds (a_lower_bounds: LINKED_LIST [EPA_EXPRESSION]; a_upper_bounds: LINKED_LIST [EPA_EXPRESSION]): CI_INTEGER_RANGE_DOMAIN
+	integer_domain_from_bounds (a_lower_bounds: LINKED_LIST [EPA_EXPRESSION]; a_upper_bounds: LINKED_LIST [EPA_EXPRESSION]): EPA_INTEGER_RANGE_DOMAIN
 			-- Integer bounds from `a_lower_bounds' and `a_upper_bounds'
 		do
 			create Result.make (a_lower_bounds, a_upper_bounds)
 		end
 
-	integer_bounds (a_class: CLASS_C; a_feature: FEATURE_I): detachable CI_INTEGER_RANGE_DOMAIN
+	integer_bounds (a_class: CLASS_C; a_feature: FEATURE_I): detachable EPA_INTEGER_RANGE_DOMAIN
 			-- Integer bounds for input of `a_feature' viewed from `a_class'
 			-- Void if no such bounds exist
 		require
 			a_feature_valid: a_feature.argument_count = 1 and then a_feature.has_return_value and then a_feature.arguments.i_th (1).is_integer
 		local
-			l_bound_checker: CI_LINEAR_BOUNDED_ARGUMENT_FINDER
+			l_bound_checker: EPA_LINEAR_BOUNDED_ARGUMENT_FINDER
 		do
 			create l_bound_checker.make (output_directory)
 			l_bound_checker.analyze_bounds (a_class, a_feature)

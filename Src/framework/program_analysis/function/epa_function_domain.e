@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	CI_DOMAIN
+	EPA_FUNCTION_DOMAIN
 
 feature -- Status report
 

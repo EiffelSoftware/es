@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	CI_INTEGER_RANGE_DOMAIN
+	EPA_INTEGER_RANGE_DOMAIN
 
 inherit
-	CI_DOMAIN
+	EPA_FUNCTION_DOMAIN
 		redefine
 			is_integer_range
 		end
