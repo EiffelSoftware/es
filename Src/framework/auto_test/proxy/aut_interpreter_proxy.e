@@ -1488,63 +1488,6 @@ feature -- Precondition satisfaction
 			variable_table.wipe_out_actions.extend (agent used_integer_values.wipe_out)
 		end
 
---	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
---			-- Can the precondition of `a_feature' be satisfied by `a_variables'?
---		local
---			l_request: AUT_PRECONDITION_EVALUATION_REQUEST
---		do
---			create l_request.make (system, a_feature, a_variables)
---			last_request := l_request
---			last_request.process (socket_data_printer)
---			flush_process
---			parse_precondition_evaluation_response
---			last_request.set_response (last_response)
---			Result := attached {AUT_PRECONDITION_EVALUATION_RESPONSE} last_response as l_response and then l_response.is_satisfied
---			stop_process_on_problems (last_response)
---		end
-
---	parse_precondition_evaluation_response is
---			-- Parse the response of the last precondition evaluation request.
---		do
---			if attached {AUT_PRECONDITION_EVALUATION_REQUEST} last_request as l_request then
---				retrieve_precondition_evaluation_response
-----				if is_logging_enabled then
-----					last_response.process (response_printer)
-----				end
---			end
---		end
-
---	retrieve_precondition_evaluation_response is
---			-- Retrieve response of the last precondition evaluation request.
---		local
---			l_data: TUPLE [object_index: detachable ARRAY [INTEGER]; output: detachable STRING; error: detachable STRING]
---			l_retried: BOOLEAN
---			l_socket: like socket
---			l_response_flag: NATURAL_32
---			l_response: AUT_PRECONDITION_EVALUATION_RESPONSE
---			l_any: detachable ANY
---		do
---			if not l_retried then
---				l_socket := socket
---				l_socket.read_natural_32
---				l_response_flag := l_socket.last_natural_32
---				l_any ?= l_socket.retrieved
---				l_data ?= l_any
---				process.set_timeout (0)
---				if l_data /= Void then
---					create l_response.make (l_data.object_index /= Void)
---					last_response := l_response
---				else
---					last_raw_response := Void
---				end
---			end
---		rescue
---			is_ready := False
---			l_retried := True
---			last_raw_response := Void
---			retry
---		end
-
 	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
 			-- State of `a_variable'
 			-- Value is in the form [query value, query name].
@@ -1868,54 +1811,6 @@ feature -- Predicate evaluation
 		do
 			l_related_objects := relevant_objects (a_target, a_arguments, a_result)
 			calculate_feature_invalid_test_case_rate (a_feature, l_related_objects)
---			if
---				configuration.is_precondition_checking_enabled and then
---				is_running and then
-----				not (last_response.is_bad or last_response.is_error) and then
-----				not (last_response.is_class_;invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
---				last_response.is_normal
---			then
---				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response and then l_normal_response.exception = Void then
---					create l_request_data.make
---					if relevant_predicates_of_feature.has (a_feature) then
---						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
---						from
---							l_cursor := l_predicate_table.new_cursor
---							l_cursor.start
---						until
---							l_cursor.after
---						loop
---							l_predicate := l_cursor.key
---							l_arranger := l_cursor.item
---							l_arity := l_predicate.arity
---							create l_arguments.make (l_arranger.count * l_arity)
---							from
---								i := 0
---								l_arranger_cursor := l_arranger.new_cursor
---								l_arranger_cursor.start
---							until
---								l_arranger_cursor.after
---							loop
---								from
---									l_args := l_arranger_cursor.item
---									j := 1
---								until
---									j > l_arity
---								loop
---									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
---									i := i + 1
---									j := j + 1
---								end
---								l_arranger_cursor.forth
---							end
---							l_request_data.extend ([l_predicate.id, l_arguments])
---							l_cursor.forth
---						end
---						evaluate_predicates (l_request_data)
---						update_predicate_pool (last_request)
---					end
---				end
---			end
 		end
 
 	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is

@@ -884,10 +884,7 @@ feature {NONE} -- Factory
 			l_itp_gen.create_interpreter (file_system.pathname (session.output_dirname, "log"), configuration)
 			Result := l_itp_gen.last_interpreter
 			if Result /= Void then
-					-- Generate typed object pool for precondition evaluation.
---				if configuration.is_precondition_checking_enabled then
-					Result.generate_typed_object_pool
---				end
+				Result.generate_typed_object_pool
 			end
 		end
 
