@@ -839,7 +839,8 @@ feature {NONE} -- Feature redeclaration handling
 				loop
 					if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
 						l_feature_name := feature_i.body.feature_names.item
-						if l_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, argument_position) then
+						if l_feature_name /= void and a_class_c.feature_table.item (l_feature_name.internal_name.name).arguments /= Void and then
+						   l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, argument_position) then
 							Result := True
 						end
 					end

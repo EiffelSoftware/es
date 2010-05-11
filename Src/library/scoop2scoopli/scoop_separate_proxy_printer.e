@@ -811,7 +811,8 @@ feature {NONE} -- Implementation
 					if a_class_c = class_c then
 						has_context := true
 					end
-					if a_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, arg_pos) then
+					if a_feature_name /= void and a_class_c.feature_table.item (l_feature_name.internal_name.name).arguments /= Void
+					   and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, arg_pos) then
 						Result := True
 					end
 				end

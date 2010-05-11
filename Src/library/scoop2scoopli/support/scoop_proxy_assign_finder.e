@@ -61,7 +61,8 @@ feature -- Access Redeclaration substituion
 		require
 			a_class_is_valid: a_class /= void
 			a_feature_name_is_valid: a_feature_name /= void and then a_class.feature_table.has (a_feature_name.internal_name.name)
-			a_argument_position_is_valid: a_argument_position > 0 and a_argument_position <= a_class.feature_table.item (a_feature_name.internal_name.name).arguments.count
+			a_argument_position_is_valid: a_argument_position > 0 and
+					a_argument_position <= a_class.feature_table.item (a_feature_name.internal_name.name).arguments.count
 		local
 			l_child_feature: FEATURE_I
 			l_ancestor_features: LINKED_SET[FEATURE_I]
