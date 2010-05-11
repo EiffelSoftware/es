@@ -4,6 +4,7 @@ note
 					
 					- It analyses call chains in terms of types. It also writes call chains that involve SCOOP processing using the generated SCOOP classes. These generated call chains either involve both proxies and clients or just clients. This is controlled with the avoid proxy calls in call chains flag.
 					- It translates comparison operators.
+					- It replaces calls to alias features of proxy classes with the non-aliased form.
 					- It replaces separate types with proxy class types.
 					- It transformes creation instructions and creation expressions.
 				]"
@@ -49,6 +50,7 @@ inherit
 			process_bool_as,
 			process_void_as,
 			process_eiffel_list,
+			process_bracket_as,
 			process_address_as,
 			process_assign_as,
 			process_if_as,
@@ -436,7 +438,7 @@ feature {NONE} -- Expressions processing
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
 			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 			l_is_left_expression_separate, l_is_right_expression_separate: BOOLEAN
-			l_left_type : TYPE_A
+			l_left_type, l_right_type : TYPE_A
 		do
 			-- Check whether we are generating proxy calls in the call chains. The processing of binary nodes differs significantly, depending on this option.
 			if not avoid_proxy_calls_in_call_chains then
@@ -459,7 +461,8 @@ feature {NONE} -- Expressions processing
 				add_object_tests_layer
 				add_multiple_to_current_object_tests_layer (l_type_expression_visitor.object_test_context_update)
 				l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.right, flattened_object_tests_layers, flattened_inline_agents_layers)
-				l_is_right_expression_separate := l_type_expression_visitor.is_expression_separate
+				l_right_type := l_type_expression_visitor.expression_type
+				l_is_right_expression_separate := l_type_expression_visitor.is_expression_separate and not is_in_ignored_group (l_right_type.associated_class)
 				remove_current_object_tests_layer
 
 				-- Process the binary operator.
@@ -816,13 +819,12 @@ feature {NONE} -- Expressions processing
 						-- Add a level, process the operator as a non-infix, non-alias feature and update the new level.
 						add_level
 						l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-						-- l_feature_name_visitor.process_infix_str (l_as.operator_ast.name)
-						-- context.add_string ("." + l_feature_name_visitor.get_feature_name)
-						convert_infix (l_left_type, l_as.operator_ast.name)
+
+						-- Add the call to the feature. Calls to aliased features have to be translated to the non-aliased form.
+						add_non_aliased_call (l_left_type, l_as.operator_ast.name)
 
 						last_index := l_as.operator_index
 						update_current_level_with_name (l_as.infix_function_name)
-						-- Note: This class could inherit from PREFIX_INFIX_NAMES.. then it can be used to resolve symbols to prefix or infix names
 
 						-- Process the right expression as an argument. The target is a separate and therefore it is a proxy object. Thus we need to add the caller as a first actual argument.
 						context.add_string ("(Current,")
@@ -890,11 +892,13 @@ feature {NONE} -- Expressions processing
 			end
 		end
 
-	convert_infix (l_type : TYPE_A; symb : STRING)
+
+	add_non_aliased_call (a_type : TYPE_A; a_symb : STRING)
+			-- Add the non-aliased version for the call to 'a_symb' with a target of type 'a_type.'
 		local
 			l_feature : FEATURE_I
 		do
-			l_feature := l_type.associated_class.feature_table.alias_item (infix_feature_name_with_symbol (symb))
+			l_feature := a_type.associated_class.feature_table.alias_item (infix_feature_name_with_symbol (a_symb))
 			context.add_string ("." + l_feature.feature_name)
 		end
 
@@ -928,6 +932,26 @@ feature {NONE} -- Expressions processing
 			-- Update current level with 'l_as'.
 		do
 			process_binary_as (l_as)
+		end
+
+	process_bracket_as (l_as: BRACKET_AS)
+			-- Update the current level with 'l_as'.
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+		do
+			safe_process (l_as.target)
+			reset_current_levels_layer
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.evaluate_expression_type_in_workbench (l_as.target, flattened_object_tests_layers, flattened_inline_agents_layers)
+			update_current_level_with_type (l_type_expression_visitor.is_expression_separate, l_type_expression_visitor.expression_type)
+			add_level
+			update_current_level_with_name ({SYNTAX_STRINGS}.bracket_str)
+
+			safe_process (l_as.lbracket_symbol)
+			add_levels_layer
+			safe_process (l_as.operands)
+			remove_current_levels_layer
+			safe_process (l_as.rbracket_symbol)
 		end
 
 	process_address_as (l_as: ADDRESS_AS)
@@ -1018,7 +1042,7 @@ feature {NONE} -- Features processing
 feature {NONE} -- Creation handling
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
-			-- Process `l_as'.
+			-- Update the current level with 'l_as'.
 		local
 			is_separate: BOOLEAN
 			l_class_name: STRING
@@ -1027,7 +1051,6 @@ feature {NONE} -- Creation handling
 			l_target_type: TYPE_A
 			l_processor_tag: PROCESSOR_TAG_TYPE
 		do
-
 			l_feature_i := class_c.feature_named (feature_as.feature_name.name)
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 
@@ -1192,7 +1215,6 @@ feature {NONE} -- Creation handling
 			l_target_type: TYPE_A
 			l_processor_tag: PROCESSOR_TAG_TYPE
 		do
-
 			if derived_class_information.create_creations /= void then
 				if not derived_class_information.create_creations.has (l_as) then
 					derived_class_information.create_creations.go_i_th (derived_class_information.create_creations.count)

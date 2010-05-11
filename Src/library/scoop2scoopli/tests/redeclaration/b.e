@@ -7,43 +7,33 @@ note
 class
 	B
 
+
 inherit
 	A
-	redefine f, g, d_attr, x_attr end
+		rename
+			parent_function as child_function,
+			parent_procedure as child_procedure,
+			parent_attribute as child_attribute
+		redefine
+			child_function,
+			child_procedure,
+			child_attribute
+		end
+
 create
 	make
 
 feature -- Access
 
-	make is
-			-- bla
-		do
-			create d_object.make
-		end
-
-
-	d_object: D
-
-
-	f(a: D): D is
-
+	child_function: D
 	     do
-	     	result := a
-			result.do_it
-
+			Result := create {D}
 	     end
 
-	g(a,b: separate D;c: separate D): D is
-
+	child_procedure (a, b: separate D; c: separate D)
 	     do
-			result.do_it
-
 	     end
 
-	d_attr: D is
-		do
-		end
-
-	x_attr: D
+	child_attribute: D
 
 end

@@ -16,7 +16,7 @@ inherit
 
 feature -- Access
 
-	has_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
+	has_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
 			-- Does the feature with name `an_original_name' or `an_original_alias_name'
 			-- and an assigner exists within the ancestors of `a_base_class'?
 		local
@@ -26,7 +26,7 @@ feature -- Access
 			Result := l_result.found
 		end
 
-	has_current_or_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_parent_class: CLASS_C): BOOLEAN is
+	has_current_or_parents_feature_with_assigner (an_original_name, an_original_alias_name: STRING; a_parent_class: CLASS_C): BOOLEAN
 			-- Does the feature with name `an_original_name' or `an_original_alias_name'
 			-- and an assigner exists within the ancestors of `a_base_class' or itself?
 		local
@@ -36,14 +36,14 @@ feature -- Access
 			Result := l_result.found
 		end
 
-	is_first_parent_feature_deferred (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
+	is_first_parent_feature_deferred (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
 			-- Is the first inherited parent feature of the feature with
 			-- name `an_original_name' or `an_original_alias' deferred?
 		do
 			Result := is_first_feature_deferred (an_original_name, an_original_alias_name, a_base_class, false)
 		end
 
-	inherited_assigner_name (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): STRING is
+	inherited_assigner_name (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): STRING
 			-- Inherited assigner name of the feature with name `an_original_name'
 			-- or `an_original_alias_name'.
 		local
@@ -55,107 +55,89 @@ feature -- Access
 
 feature -- Access Redeclaration substituion
 
-	have_to_replace_internal_arguments(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; argument_position: INTEGER;  is_processed_class: BOOLEAN): BOOLEAN is
+	have_to_replace_internal_arguments (a_feature_name: FEATURE_NAME; a_class: CLASS_C; a_argument_position: INTEGER): BOOLEAN
 			-- Do we need to replace the return type?
 			-- Is the case when we have a redeclaration with a separate return type
-			local
-				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
-				parent_class_c: CLASS_C
-				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
-				l_original_feature_alias_name,l_original_feature_name: STRING
-				l_class_as: CLASS_AS
-
-			do
-				-- Setup:
-				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
-
-				l_class_as := class_as_by_name (a_class_c.name)
-
-				-- Check if class has a redefine clause for this feature
-				if l_class_as.parents /= void then
-					-- get original feature name
-					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, True, is_processed_class)
-					l_original_feature_alias_name := l_feature_name_visitor.feature_name
-					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, False, is_processed_class)
-					l_original_feature_name := l_feature_name_visitor.feature_name
-
-					from
-						l_class_as.parents.start
-					until
-						l_class_as.parents.after
-					loop
-						if l_class_as.parents.item.redefining /= void and then l_class_as.parents.item.redefining.has (a_feature_name) then
-							-- Has a redefine clause for this feature:
-							-- Check if the internal argument from parent classes is separate.
-
-							parent_class_c := system.class_of_id (class_as_by_name (l_class_as.parents.item.type.class_name.name).class_id)
-							internal_argument_to_check := argument_position
-							if has_parent_feature_nseparate_argument (l_original_feature_name, l_original_feature_alias_name, parent_class_c) then
-								-- Return type was separate in previus version of feature:
-								Result := True
-							end
-							internal_argument_to_check := 0
-						end
-						l_class_as.parents.forth
-					end
+		require
+			a_class_is_valid: a_class /= void
+			a_feature_name_is_valid: a_feature_name /= void and then a_class.feature_table.has (a_feature_name.internal_name.name)
+			a_argument_position_is_valid: a_argument_position > 0 and a_argument_position <= a_class.feature_table.item (a_feature_name.internal_name.name).arguments.count
+		local
+			l_child_feature: FEATURE_I
+			l_ancestor_features: LINKED_SET[FEATURE_I]
+			l_current_feature: FEATURE_I
+			l_one_parent_feature_argument_is_non_separate: BOOLEAN
+		do
+			l_child_feature := a_class.feature_table.item (a_feature_name.internal_name.name)
+			from
+				l_ancestor_features := ancestor_features (l_child_feature.rout_id_set, a_class)
+				l_ancestor_features.start
+			until
+				l_ancestor_features.after
+			loop
+				l_current_feature := l_ancestor_features.item
+				if not l_current_feature.arguments.at (a_argument_position).is_separate then
+					l_one_parent_feature_argument_is_non_separate := true
 				end
-
+				l_ancestor_features.forth
 			end
+			Result := (l_child_feature.arguments /= void and then l_child_feature.arguments.i_th (a_argument_position).is_separate) and l_one_parent_feature_argument_is_non_separate
+		end
 
-
-	have_to_replace_return_type(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; is_processed_class: BOOLEAN): BOOLEAN is
+	have_to_replace_return_type (a_feature_name: FEATURE_NAME; a_class: CLASS_C): BOOLEAN
 			-- Do we need to replace the return type?
 			-- Is the case when we have a redeclaration with a separate return type
-			require
-				has_name: a_feature_name /= void
-				has_class: a_class_c /= void
-			local
-				l_type_expr_visitor: SCOOP_TYPE_EXPR_VISITOR
-				parent_class_c: CLASS_C
-				l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
-				l_original_feature_alias_name,l_original_feature_name: STRING
-				l_class_as: CLASS_AS
-
-			do
-				-- Setup:
-				l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
-				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
-
-				l_class_as := class_as_by_name (a_class_c.name)
-
-				-- Check if class has a redefine clause for this feature
-				if l_class_as.parents /= void then
-
-					-- get original feature name
-
-					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, True, False)
-					l_original_feature_alias_name := l_feature_name_visitor.feature_name
-					l_feature_name_visitor.process_original_feature_name_no_matchlist (a_feature_name, False, False)
-					l_original_feature_name := l_feature_name_visitor.feature_name
-
-					from
-						l_class_as.parents.start
-					until
-						l_class_as.parents.after
-					loop
-						if l_class_as.parents.item.redefining /= void and then l_class_as.parents.item.redefining.has (a_feature_name) then
-							-- Has a redefine clause for this feature:
-							-- Check if the return type from parent classes is separate.
-							parent_class_c := system.class_of_id (class_as_by_name (l_class_as.parents.item.type.class_name.name).class_id)
-
-							if has_parent_feature_separate_return_type (l_original_feature_name, l_original_feature_alias_name, parent_class_c) then
-								-- Return type was separate in previus version of feature:
-								Result := True
-							end
-						end
-						l_class_as.parents.forth
-					end
+		require
+			a_class_is_valid: a_class /= void
+			a_feature_name_is_valid:
+				a_feature_name /= void and then
+				a_class.feature_table.has (a_feature_name.internal_name.name) and then
+				a_class.feature_table.item (a_feature_name.internal_name.name).type /= void
+		local
+			l_child_feature: FEATURE_I
+			l_ancestor_features: LINKED_SET[FEATURE_I]
+			l_current_feature: FEATURE_I
+			l_one_parent_feature_has_separate_return_type: BOOLEAN
+		do
+			l_child_feature := a_class.feature_table.item (a_feature_name.internal_name.name)
+			from
+				l_ancestor_features := ancestor_features (l_child_feature.rout_id_set, a_class)
+				l_ancestor_features.start
+			until
+				l_ancestor_features.after
+			loop
+				l_current_feature := l_ancestor_features.item
+				if l_current_feature.type.is_separate then
+					l_one_parent_feature_has_separate_return_type := true
 				end
-
+				l_ancestor_features.forth
 			end
+			Result := not l_child_feature.type.is_separate and l_one_parent_feature_has_separate_return_type
+		end
 
-	generic_parameters_to_replace(a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; is_processed_class: BOOLEAN;  internal_argument: TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN): LINKED_LIST[TUPLE[INTEGER,INTEGER]] is
+	ancestor_features (a_feature: ROUT_ID_SET; a_class: CLASS_C): LINKED_SET[FEATURE_I]
+			-- All the ancestors features of the feature defined in 'a_feature' written in class 'a_class'.
+		local
+			l_parent_class: CLASS_C
+			l_parent_feature: FEATURE_I
+		do
+			from
+				a_class.parents_classes.start
+				create Result.make
+			until
+				a_class.parents_classes.after
+			loop
+				l_parent_class := a_class.parents_classes.item
+				l_parent_feature := l_parent_class.feature_of_rout_id_set (a_feature)
+				if l_parent_feature /= void then
+					Result.put (l_parent_feature)
+					Result.fill (ancestor_features(a_feature, l_parent_class))
+				end
+				a_class.parents_classes.forth
+			end
+		end
+
+	generic_parameters_to_replace (a_feature_name: FEATURE_NAME; a_class_c: CLASS_C; is_processed_class: BOOLEAN;  internal_argument: TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN): LINKED_LIST[TUPLE[INTEGER,INTEGER]] is
 			-- Do we need to substitute generics? Is the case when we have a redeclaration with separate generics
 			-- `is_processed_class' : Is the class we are checking the current processed class?
 			-- `is_return_type' : Are we checking the generics of a return type? If this is `False' we are cheking the generics of a internal argument
@@ -211,7 +193,7 @@ feature -- Access Redeclaration substituion
 
 feature {NONE} -- Implementation
 
-	has_feature (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_base_class, track_assigner, ignore_found: BOOLEAN): TUPLE [found: BOOLEAN; assigner: STRING] is
+	has_feature (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_base_class, track_assigner, ignore_found: BOOLEAN): TUPLE [found: BOOLEAN; assigner: STRING]
 			-- Does some ancestors of `a_class_c' have a feature with name `an_original_name'
 			-- or `an_original_alias_name' and an assigner?
 			-- Check also `a_class_c' if `is_check_base_class' has value `True'.
@@ -380,7 +362,7 @@ feature {NONE} -- Implementation
 			Result := l_result
 		end
 
-	is_first_feature_deferred (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_a_class_a: BOOLEAN): BOOLEAN is
+	is_first_feature_deferred (an_original_name, an_original_alias_name: STRING; a_class_c: CLASS_C; is_check_a_class_a: BOOLEAN): BOOLEAN
 			-- Is the first inherited parent feature of the feature with name `an_original_name'
 			-- or `an_original_alias_name' deferred?
 		local
@@ -458,32 +440,32 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation Redeclaration substitution
 
 
-	has_parent_feature_separate_return_type (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
-			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
-			-- and does it have a separate return type?
-		local
-			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
-		do
-			compare_return_type := True
-			return_type_separate := false
-			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
-			Result := return_type_separate
-			compare_return_type := False
-		end
+--	has_parent_feature_separate_return_type (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
+--			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
+--			-- and does it have a separate return type?
+--		local
+--			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
+--		do
+--			compare_return_type := True
+--			return_type_separate := false
+--			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
+--			Result := return_type_separate
+--			compare_return_type := False
+--		end
 
-	has_parent_feature_nseparate_argument (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN is
-			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
-			-- and does it have a non separate argument at the position of `check_internal_arguments'
-		local
-			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
-		do
-			compare_internal_argument := True
-			internal_argument_nseparate := false
-			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
-			Result := internal_argument_nseparate
-			compare_internal_argument := False
-		end
-	has_parent_feature_different_generics (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C; internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN) is
+--	has_parent_feature_nseparate_argument (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
+--			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
+--			-- and does it have a non separate argument at the position of `check_internal_arguments'
+--		local
+--			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
+--		do
+--			compare_internal_argument := True
+--			internal_argument_nseparate := false
+--			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
+--			Result := internal_argument_nseparate
+--			compare_internal_argument := False
+--		end
+	has_parent_feature_different_generics (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C; internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN)
 			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
 			-- and does it have different generic parameter (separateness wise)
 			-- `is_return_type' : Are we checking the generics of a return type? If this is `False' we are cheking the generics of a internal argument
@@ -510,7 +492,7 @@ feature {NONE} -- Implementation Redeclaration substitution
 		end
 
 
-	compare_generic_parameters(curr_type: TYPE_AS; org_type: TYPE_AS; position: TUPLE[stage:INTEGER;pos: INTEGER]) is
+	compare_generic_parameters(curr_type: TYPE_AS; org_type: TYPE_AS; position: TUPLE[stage:INTEGER;pos: INTEGER])
 			--
 		local
 			i: INTEGER
@@ -548,7 +530,7 @@ feature {NONE} -- Implementation Redeclaration substitution
 		end
 
 
-	has_nseparate_internal_argument(l_feature_i: FEATURE_I): BOOLEAN is
+	has_nseparate_internal_argument(l_feature_i: FEATURE_I): BOOLEAN
 			-- Used for internal_arguments return type fix
 			-- Compare internal argument from original feature and feature from parent class
 
@@ -612,21 +594,10 @@ feature {NONE} -- implementation for redeclaration
 
 	compare_generics: BOOLEAN
 		-- Ccmpare generics of the ancestor's version.
---	conformance_up_to_down: BOOLEAN
---		-- Do we need to check conformance for return types or internal arguments?
---		-- True: Return Type -> separate redeclared to non separate
---		-- False: Internal Argument -> non separate redeclared to separate
 	generic_parameters_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
 		-- The generic parameters to substitute
 	original_class_type: TYPE_AS
 		-- Class type to check redeclared features with.
---	current_generic_position: TUPLE[stage: INTEGER; pos: INTEGER]
---		-- Current position of processed generic parameter.
---		-- Stage: Nested level of the generics
---		-- Pos: position on the current level
---		-- i.e TUPLE[CLASS[B,C]] => position(C) = 2,2
-
-
 ;note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

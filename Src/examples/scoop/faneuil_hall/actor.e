@@ -16,14 +16,14 @@ inherit
 
 feature {FANEUIL_HALL} -- Creation procedure
 
-	make_with_hall (a_id: INTEGER; a_hall: ? attached separate HALL) is
+	make_with_hall (a_id: INTEGER; a_hall: attached separate HALL) is
 			-- Creation procedure.
 		require
 			a_id_positive: a_id > 0
 			a_hall_not_void: a_hall /= Void
 		do
 			id := a_id
-			hall ?= a_hall
+			hall := a_hall
 			create random.set_seed (a_id)
 		ensure
 			id_set: id = a_id

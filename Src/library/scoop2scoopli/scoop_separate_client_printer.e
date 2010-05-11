@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 			end
 
 			create l_table.make (0)
-			l_ancestors := l_parent_visitor.compute_ancestors_names (l_as, l_table)
+			l_ancestors := l_parent_visitor.ancestors_names_list (l_as, l_table)
 
 			if l_ancestors /= Void and not l_ancestors.is_empty then
 				from

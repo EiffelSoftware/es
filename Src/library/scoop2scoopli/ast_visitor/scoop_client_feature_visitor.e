@@ -25,6 +25,8 @@ inherit
 			process_reverse_as,
 			process_routine_as,
 			process_body_as,
+			process_create_creation_as,
+			process_create_creation_expr_as,
 			process_access_feat_as,
 			process_access_assert_as,
 			process_access_inv_as,
@@ -472,7 +474,7 @@ feature {NONE} -- Feature redeclaration handling
 					end
 					if not typ.is_separate then
 						-- non Separate: Check if substitution is needed.
-						if l_assign_finder.have_to_replace_return_type(feature_name, class_c, false) then
+						if l_assign_finder.have_to_replace_return_type(feature_name, class_c) then
 							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)
 							result_substitution := True
 	--						seperate_result_signature := typ
@@ -523,6 +525,24 @@ feature {NONE} -- Feature redeclaration handling
 			-- Wipe out `internal_arguments_to_substitute'
 			feature_object.internal_arguments_to_substitute.wipe_out
 
+		end
+
+	process_create_creation_as (l_as: CREATE_CREATION_AS)
+		do
+			if l_as.call /= void and then l_as.call.internal_parameters /= void and then l_as.call.internal_parameters.parameters /= void then
+				accessed_feature := l_as.call.feature_name
+			end
+
+			Precursor (l_as)
+		end
+
+	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
+		do
+			if l_as.call /= void and then l_as.call.internal_parameters /= void and then l_as.call.internal_parameters.parameters /= void then
+				accessed_feature := l_as.call.feature_name
+			end
+
+			Precursor (l_as)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -686,7 +706,10 @@ feature {NONE} -- Feature redeclaration handling
 			i,pos: INTEGER
 			l_count: INTEGER
 			a_class_c: CLASS_C
+			l_current_accessed_feature: ID_AS
 		do
+			-- Remember the current accessed feature to restore after a actual argument has been processed. Note that the processing of an actual argument could change the accessed feature, if the actual argument contains a call.
+			l_current_accessed_feature := accessed_feature
 
 			safe_process (l_as.lparan_symbol (match_list))
 
@@ -722,6 +745,9 @@ feature {NONE} -- Feature redeclaration handling
 					-- process the node
 					add_levels_layer
 					safe_process (l_as.parameters.item)
+
+					-- Restore the accessed feature to the previous value for the next actual argument.
+					accessed_feature := l_current_accessed_feature
 
 					-- Check if current Parameter is separate, if it is -> check if fix is needed
 					if current_level.type.is_separate then
@@ -789,39 +815,38 @@ feature {NONE} -- Feature redeclaration handling
 	need_internal_argument_substitution (a_feature_name: ID_AS; a_class_c: CLASS_C; argument_position: INTEGER): BOOLEAN
 			-- Do we need to substitute the internal argument?
 			-- Needed when current argument is separate and a parent version of the feature has a non separate argument.
-
-			require
-				has_name: a_feature_name /= void
-				has_class: a_class_c /= void
-				valid: not argument_position.is_equal (0)
-			local
-				l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-				feature_i: FEATURE_I
-				l_feature_name: FEATURE_NAME
-				has_context: BOOLEAN
-			do
-				if a_class_c = class_c then
-					has_context := true
-				end
-				create l_assign_finder
-				feature_i := a_class_c.feature_named (a_feature_name.name)
-				if feature_i /= Void then
-					-- Does not have to be the current feature beeing processed, get the name of the feature.
-					from
-						feature_i.body.feature_names.start
-					until
-						feature_i.body.feature_names.after
-					loop
-						if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
-							l_feature_name := feature_i.body.feature_names.item
-							if l_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, argument_position, has_context) then
-								Result := True
-							end
+		require
+			has_name: a_feature_name /= void
+			has_class: a_class_c /= void
+			valid: not argument_position.is_equal (0)
+		local
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			feature_i: FEATURE_I
+			l_feature_name: FEATURE_NAME
+			has_context: BOOLEAN
+		do
+			if a_class_c = class_c then
+				has_context := true
+			end
+			create l_assign_finder
+			feature_i := a_class_c.feature_named (a_feature_name.name)
+			if feature_i /= Void then
+				-- Does not have to be the current feature beeing processed, get the name of the feature.
+				from
+					feature_i.body.feature_names.start
+				until
+					feature_i.body.feature_names.after
+				loop
+					if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
+						l_feature_name := feature_i.body.feature_names.item
+						if l_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, argument_position) then
+							Result := True
 						end
-						feature_i.body.feature_names.forth
 					end
+					feature_i.body.feature_names.forth
 				end
 			end
+		end
 
 	is_internal_arguments: BOOLEAN
 			-- Are we currently processing internal arguments?
@@ -847,44 +872,43 @@ feature {NONE} -- Feature redeclaration handling
 	add_result_type_substitution (a_feature_name: ID_AS; a_class_c: CLASS_C) is
 			-- Check if the result type was substituted in the case where the current result type is non separate and was non separate in a parent redeclaration.
 			-- If so add `implementation_' to reconvert.
+		require
+			has_name: a_feature_name /= void
+			has_class: a_class_c /= void
+		local
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			feature_i: FEATURE_I
+			l_feature_name: FEATURE_NAME
+			has_context: BOOLEAN
 
-			require
-				has_name: a_feature_name /= void
-				has_class: a_class_c /= void
-			local
-				l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
-				feature_i: FEATURE_I
-				l_feature_name: FEATURE_NAME
-				has_context: BOOLEAN
+		do
+			-- If we went throuth a `NESTED_AS' this has to be handled there
+			-- If target of assignment is separate this is skipped
 
-			do
-				-- If we went throuth a `NESTED_AS' this has to be handled there
-				-- If target of assignment is separate this is skipped
-
-				if not skip_result_type_substitution then
-					if a_class_c = class_c then
-						has_context := true
-					end
-					create l_assign_finder
-					feature_i := a_class_c.feature_named (a_feature_name.name)
-					if feature_i /= Void then
-						-- Might not be the current processing feature, so get the name of the feature
-						from
-							feature_i.body.feature_names.start
-						until
-							feature_i.body.feature_names.after
-						loop
-							if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
-								l_feature_name := feature_i.body.feature_names.item
-								if l_feature_name /= void and then l_assign_finder.have_to_replace_return_type (l_feature_name, a_class_c, has_context) then
-									context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
-								end
+			if not skip_result_type_substitution then
+				if a_class_c = class_c then
+					has_context := true
+				end
+				create l_assign_finder
+				feature_i := a_class_c.feature_named (a_feature_name.name)
+				if feature_i /= Void then
+					-- Might not be the current processing feature, so get the name of the feature
+					from
+						feature_i.body.feature_names.start
+					until
+						feature_i.body.feature_names.after
+					loop
+						if feature_i.body.feature_names.item.visual_name.is_equal (a_feature_name.name) then
+							l_feature_name := feature_i.body.feature_names.item
+							if l_feature_name /= void and then l_assign_finder.have_to_replace_return_type (l_feature_name, a_class_c) then
+								context.add_string ("." + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name)
 							end
-							feature_i.body.feature_names.forth
 						end
+						feature_i.body.feature_names.forth
 					end
 				end
 			end
+		end
 
 feature -- Agent handling
 

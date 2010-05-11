@@ -6,25 +6,28 @@ note
 
 class
 	A
+	
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+		do
+			parent_attribute := create {separate D}
+		end
 
 feature -- Access
 
-	f (a: D): separate D is
-
+	parent_function: separate D
 	     do
-	     	-- do nothing
+			Result := create {separate D}
 	     end
-	g(a: separate D; b:D ;c: separate D): separate D is
-		do
-			--do nothing
-		end
 
-	d_attr: separate D is
+	parent_procedure (a: separate D; b: D; c: separate D)
 		do
 		end
 
-	x_attr: separate D
-
-
+	parent_attribute: separate D
 
 end

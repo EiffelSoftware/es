@@ -38,7 +38,7 @@ create
 
 feature -- Access
 
-	process_internal_conforming_parents(l_as: PARENT_LIST_AS) is
+	process_internal_conforming_parents (l_as: PARENT_LIST_AS)
 			-- Process `l_as'.
 		do
 			if l_as /= Void then
@@ -52,8 +52,8 @@ feature -- Access
 			end
 		end
 
-	compute_ancestors_names(l_as: CLASS_AS; overwrites: HASH_TABLE[STRING,STRING]): LINKED_LIST[STRING] is
-			-- gets all ancestors of a class, without duplicates
+	ancestors_names_list (l_as: CLASS_AS; overwrites: HASH_TABLE[STRING,STRING]): LINKED_LIST[STRING]
+			-- All ancestors of a class, without duplicates.
 			require
 				has_class_as: l_as /= void
 			local
@@ -69,7 +69,7 @@ feature -- Access
 				  create result.make
 				end
 
-				create	n_overwrites.make (0)
+				create n_overwrites.make (0)
 				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
 
 				if l_as.internal_conforming_parents /= Void and not l_as.internal_conforming_parents.is_empty then
@@ -96,23 +96,18 @@ feature -- Access
 								-- get formal generic type from the ancestor, only interesting if it is of type `FORMAL_AS'
 								formal_type  := l_parent.generics.i_th (i).name.name
 
-								-- print generics and store them for potention overwrites
+								-- print generics and store them for potential overwrites
 								if attached {CLASS_TYPE_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
 									l_type_expr_visitor.resolve_type_in_workbench (l_as.internal_conforming_parents.item.type.generics.item)
 									l_string.append_string (l_type_expr_visitor.resolved_type.name)
-									n_overwrites.force (formal_type, type.class_name.name)
---									n_overwrites.force (type.class_name.name,formal_type)
+									n_overwrites.force (l_type_expr_visitor.resolved_type.name, formal_type)
 								elseif attached {FORMAL_AS} l_as.internal_conforming_parents.item.type.generics.item as type then
 									if overwrites.has_key (type.name.name) then
 										l_string.append_string (overwrites.item (type.name.name))
-
-										-- propagate the change
---										n_overwrites.force (formal_type, overwrites.key (type.name.name))
-										n_overwrites.force (overwrites.item (type.name.name),formal_type)
+										n_overwrites.force (overwrites.item (type.name.name), formal_type)
 									else
 										l_string.append_string (type.name.name)
---										n_overwrites.force (formal_type, type.name.name)
-										n_overwrites.force (type.name.name,formal_type)
+										n_overwrites.force (type.name.name, formal_type)
 									end
 								end
 
@@ -126,22 +121,22 @@ feature -- Access
 							l_string.append_string ("]")
 						end
 
---						-- go up one layer of the hierarchy
---						l_ancestors := compute_ancestors_names (l_parent, n_overwrites)
+						-- go up one layer of the hierarchy
+						l_ancestors := ancestors_names_list (l_parent, n_overwrites)
 
---						-- merge lists (eliminating duplicates)
---						if not l_ancestors.is_empty then
---							from
---								l_ancestors.start
---							until
---								l_ancestors.after
---							loop
---								if not has_string (result, l_ancestors.item) then
---									result.extend (l_ancestors.item)
---								end
---								l_ancestors.forth
---							end
---						end
+						-- merge lists (eliminating duplicates)
+						if not l_ancestors.is_empty then
+							from
+								l_ancestors.start
+							until
+								l_ancestors.after
+							loop
+								if not has_string (result, l_ancestors.item) then
+									result.extend (l_ancestors.item)
+								end
+								l_ancestors.forth
+							end
+						end
 
 						-- put current ancestor on the list if he is not in the list yet
 						if not has_string (result, l_string) then
@@ -153,30 +148,9 @@ feature -- Access
 
 			end
 
---	get_class_as(name: STRING): CLASS_AS is
---			-- gets class_as from a class name
---			local
---				a_class : CLASS_C
---				i: INTEGER
---			do
---				from
---					i := 1
---				until
---					i > system.classes.sorted_classes.count
---				loop
---					a_class := system.classes.sorted_classes.item (i)
---					if a_class /= Void then
---						if a_class.name_in_upper.is_equal (name.as_upper) then
---							Result := a_class.ast
---						end
---					end
---					i := i + 1
---				end
---			end
-
 feature {NONE} -- Visitor implementation
 
-	process_parent_as (l_as: PARENT_AS) is
+	process_parent_as (l_as: PARENT_AS)
 		do
 			last_index := l_as.type.first_token (match_list).index - 1
 			current_parent_c := get_parent_class_c_by_name (l_as.type.class_name.name)
@@ -222,7 +196,7 @@ feature {NONE} -- Visitor implementation
 --			end
 		end
 
-	process_id_as (l_as: ID_AS) is
+	process_id_as (l_as: ID_AS)
 			-- Process `l_as'.
 		do
 			process_leading_leaves (l_as.index)
@@ -241,7 +215,7 @@ feature {NONE} -- Visitor implementation
 			last_index := l_as.index
 		end
 
-	process_infix_prefix_as (l_as: INFIX_PREFIX_AS) is
+	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
 			-- Remove this feature with EiffelStuidio 6.4
 			-- It creates for each infix / prefix feature name a list
 			-- containing the infix and non-infix notation
@@ -267,7 +241,7 @@ feature {NONE} -- Visitor implementation
 			Precursor (l_as)
 		end
 
-	process_rename_as (l_as: RENAME_AS) is
+	process_rename_as (l_as: RENAME_AS)
 			-- Remove this feature with EiffelStudio 6.4
 
 			-- Rename 'infx x as non-infix x:
@@ -408,7 +382,7 @@ feature {NONE} -- Visitor implementation
 			is_rename_clause := False
 		end
 
-	insert_infix_prefix_redefine_list (is_insert_with_rename_keyword: BOOLEAN) is
+	insert_infix_prefix_redefine_list (is_insert_with_rename_keyword: BOOLEAN)
 			-- Inserts the elements from `infix_prefix_redefine_list'
 			-- Remove this feature with EiffelStudio 6.4
 		local
@@ -453,7 +427,7 @@ feature {NONE} -- Visitor implementation
 feature {NONE} -- Implementation
 
 
-	has_string(a_list: LINKED_LIST[STRING]; a_item: STRING): BOOLEAN is
+	has_string(a_list: LINKED_LIST[STRING]; a_item: STRING): BOOLEAN
 		 --`a_item' in `a_list' already?
 		do
 			result := False

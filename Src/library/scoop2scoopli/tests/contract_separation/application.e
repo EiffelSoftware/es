@@ -32,11 +32,10 @@ feature {NONE} -- Initialization
 		do
 			Result := True
 		ensure
-			-- Some of these should fail, as they return separate results, which we don't know are controlled.
 			old_keyword: a_separate_argument.is_condition_satisfied = old a_non_separate_argument.is_condition_satisfied
 			result_keyword: Result = a_separate_argument.is_condition_satisfied or a_non_separate_argument.is_condition_satisfied
-			non_separate_call_in_main_chain: a_non_separate_argument.separate_query_with_argument (a_separate_argument.non_separate_query_without_argument).is_condition_satisfied
-			non_separate_call_in_actual_arguments: a_separate_argument.separate_query_with_argument (a_non_separate_argument.non_separate_query_without_argument).is_condition_satisfied
-			only_separate_calls: a_separate_argument.separate_query_with_argument (a_separate_argument.separate_query_without_argument).is_condition_satisfied
+			non_separate_call_in_main_chain: a_non_separate_argument.is_condition_satisfied
+			non_separate_call_in_actual_arguments: a_separate_argument.non_separate_query_with_argument (a_non_separate_argument.non_separate_query_without_argument).is_condition_satisfied
+			only_separate_calls: a_separate_argument.is_condition_satisfied
 		end
 end

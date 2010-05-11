@@ -5,6 +5,7 @@ note
 				- Actual generic parameters and generic constraints are taken over unmodified from the original class.
 				- Each proxy has only the processor setter as its creation routine.
 				- It adds for each creation routine a creation routine wrapper and an effective creation routine wrapper. The creation routine wrapper can be used by a client to issue a creation routine call on a separate processor. For this the creation routine wrapper creates an agent to the effective creation routine wrapper and adds it to the request queue of the proxy processor.
+				- Aliased features are transformed to non-aliased features both in the inheritance clause and in the feature names.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -460,7 +461,7 @@ feature {NONE} -- Implementation
 				i >  a_feature.feature_names.count
 			loop
 				l_feature_name := a_feature.feature_names.i_th (i)
-				if l_feature_name.visual_name.is_equal (a_feature.feature_name.name) then
+				if l_feature_name.internal_name.is_equal (a_feature.feature_name) then
 					feature_name := l_feature_name
 				end
 				i := i + 1
@@ -476,7 +477,7 @@ feature {NONE} -- Implementation
 					if attached {CLASS_TYPE_AS} a_feature.body.type as typ then
 						create l_assign_finder
 						if not typ.is_separate then
-							if l_assign_finder.have_to_replace_return_type(feature_name, class_c, true) then
+							if l_assign_finder.have_to_replace_return_type(feature_name, class_c) then
 								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)
 								add_result_substitution := true -- Remember we added the substitution so we dont add `proxy_' later					
 							else
@@ -810,7 +811,7 @@ feature {NONE} -- Implementation
 					if a_class_c = class_c then
 						has_context := true
 					end
-					if a_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, arg_pos, has_context) then
+					if a_feature_name /= void and then l_assign_finder.have_to_replace_internal_arguments (l_feature_name, a_class_c, arg_pos) then
 						Result := True
 					end
 				end

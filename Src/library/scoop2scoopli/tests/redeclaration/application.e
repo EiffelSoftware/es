@@ -1,5 +1,5 @@
 indexing
-	description : "project application root class"
+	description : "This test case is used to test redeclarations."
 	date        : "$Date$"
 	revision    : "$Revision$"
 
@@ -12,34 +12,27 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Used to test redeclaration in various situations.
-			-- Redeclared features and attributes from class A in classes B and D
-
 		local
-			d_sep_class: separate D
-			d: D
+			non_separate_result: D
+			separate_result: separate D
+
+			a: A
 			b: B
-			y_class: Y
-			y_sep_class: separate Y
-
-
 		do
+			create a.make
 			create b.make
-			create d.make
-			create d_sep_class.make
-			create y_sep_class
-			create y_class
 
-			d := b.d_object.f(d)
-			d := b.f(d)
+			separate_result := a.parent_function
+			a.parent_procedure (create {separate D}, create {D}, create {separate D})
+			separate_result := a.parent_attribute
 
-			d := d.g(d_sep_class,d_sep_class,d_sep_class)
+			non_separate_result := b.child_function
+			b.child_procedure (create {separate D}, create {separate D}, create {separate D})
+			non_separate_result := b.child_attribute
 
-			d_sep_class := b.d_object.f(d)
-			d_sep_class := b.f(d)
-
-
-
+			a := b
+			separate_result := a.parent_function
+			a.parent_procedure (create {separate D}, create {D}, create {separate D})
+			separate_result := a.parent_attribute
 		end
-
 end

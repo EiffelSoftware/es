@@ -22,7 +22,8 @@ feature
 
 		do
 			if {try: separate C} l_a.b.c then
-				try.print_it
+				io.put_string ("SUCCESSFUL")
+				io.put_new_line
 			else
 				io.put_string ("FAILED")
 				io.new_line

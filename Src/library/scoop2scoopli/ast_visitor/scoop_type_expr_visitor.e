@@ -17,6 +17,7 @@ class
 inherit
 	AST_ROUNDTRIP_ITERATOR
 		redefine
+			process_bracket_as,
 			process_address_as,
 			process_create_creation_expr_as,
 			process_bang_creation_expr_as,
@@ -148,7 +149,7 @@ feature -- Expression and call evaluation access
 			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
 			a_expression_is_valid: a_expression /= Void
-			a_context_type_is_valud: a_context_type /= Void
+			a_context_type_is_valid: a_context_type /= Void
 			a_object_test_context_is_valid: a_object_test_context /= Void
 			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
 		do
@@ -857,6 +858,14 @@ feature {NONE} -- Expression evaluation visits
 			end
 		end
 
+	process_bracket_as (l_as: BRACKET_AS)
+			-- Update the interface with 'l_as'.
+		do
+			-- For bracket expressions we can ignore the operands as we are only interested in the type of the bracket operand.
+			safe_process (l_as.target)
+			update_interface(type_of_qualified_query({SYNTAX_STRINGS}.bracket_str))
+		end
+
 	process_address_as (l_as: ADDRESS_AS)
 			-- Update the interface with 'l_as'.
 		do
@@ -946,31 +955,31 @@ feature {NONE} -- Expression evaluation visits
 	process_bin_eq_as (l_as: BIN_EQ_AS)
 			-- Update the interface with 'l_as'.
 		do
-			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+			update_interface (create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_tilde_as (l_as: BIN_TILDE_AS)
 			-- Update the interface with 'l_as'.
 		do
-			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+			update_interface (create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS)
 			-- Update the interface with 'l_as'.
 		do
-			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+			update_interface (create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_bin_ne_as (l_as: BIN_NE_AS)
 			-- Update the interface with 'l_as'.
 		do
-			update_interface(create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
+			update_interface (create {CL_TYPE_A}.make (system.boolean_class.compiled_representation.class_id))
 		end
 
 	process_binary_as (l_as: BINARY_AS)
 			-- Update the interface with 'l_as'.
 		do
-			safe_process(l_as.left)
+			safe_process (l_as.left)
 
 			update_interface(type_of_qualified_query(l_as.infix_function_name))
 		end
