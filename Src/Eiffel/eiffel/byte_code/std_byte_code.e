@@ -1277,63 +1277,78 @@ end
 			buf: like buffer
 			l_feat: FEATURE_I
 			l_args: like arguments
-			l_arg_count, l_ref_arg_count, i: INTEGER
+			i: INTEGER
+			l_inside: BOOLEAN
 		do
 			buf := buffer
 
 			l_args := arguments
-			if l_args /= Void then
-				from
-					i := l_args.lower
-				until
-					i > l_args.upper
-				loop
-					if l_args[i].is_reference then
-						l_ref_arg_count := l_ref_arg_count + 1
-					end
-					i := i + 1
-				end
-				l_arg_count := l_args.count
-			end
 
 			buf.put_new_line
 			buf.put_string ("RTCRC(")
 			l_feat := context.current_feature
 
+			l_inside := True
 			if l_feat.is_external then
-				io.put_string (l_feat.written_class.name)
-				io.put_character ('.')
-				io.put_string (l_feat.feature_name)
-				io.put_new_line
+--				io.put_string (l_feat.written_class.name)
+--				io.put_character ('.')
+--				io.put_string (l_feat.feature_name)
+--				io.put_new_line
+
 				if
+					not l_feat.written_class.name_in_upper.is_equal ("TUPLE") and then
 					attached {EXTERNAL_I} l_feat as l_ext_i and then
 					attached {EXTERNAL_EXT_I} l_ext_i.extension as l_ext and then
-					(not l_ext.is_built_in) and then
-					(not l_feat.feature_name.is_case_insensitive_equal ("eif_gen_typecode_str"))
+					not l_ext.is_built_in
 				then
-					buf.put_integer (0)
-				else
-					buf.put_integer (1)
+					l_inside := False
+				end
+			elseif l_feat.written_class.name_in_upper.is_equal ("MANAGED_POINTER") then
+				if
+					l_feat.feature_name.starts_with ("put_") or
+					l_feat.feature_name.starts_with ("read_")
+				then
+					l_inside := False
+				end
+			end
+
+			if l_inside then
+				buf.put_integer (1)
+			else
+				buf.put_integer (0)
+			end
+
+			buf.put_character (',')
+
+			if l_args /= Void then
+				buf.put_integer (l_args.count)
+				buf.put_two_character (')', ';')
+				from
+					i := l_args.lower
+				until
+					i > l_args.upper
+				loop
+					buf.put_new_line
+					buf.put_string ("RTCRA(arg");
+					buf.put_integer (i - l_args.lower + 1)
+					buf.put_two_character ('x', ',')
+					if
+						attached {TYPED_POINTER_A} l_args[i] as l_tpointer and then
+						attached l_tpointer.pointed_type as l_gen_type and then
+						l_gen_type.is_basic
+					then
+						buf.put_string ("sizeof(")
+						buf.put_string (real_type (l_gen_type).c_type.c_string)
+						buf.put_character (')')
+					else
+						buf.put_character ('0')
+					end
+					buf.put_two_character (')', ';')
+					i := i + 1
 				end
 			else
-				buf.put_integer (1)
-			end
-			buf.put_character (',')
-			buf.put_integer (l_arg_count)
-			buf.put_character (',')
-			buf.put_integer (l_ref_arg_count)
-			buf.put_two_character (')', ';')
-
-			from
-				i := 1
-			until
-				i > l_arg_count
-			loop
-				buf.put_new_line
-				buf.put_string ("RTCRA(arg");
-				buf.put_integer (i)
-				buf.put_three_character ('x', ')', ';')
-				i := i + 1
+				buf.put_integer (0)
+				buf.put_two_character (')', ';')
 			end
 
 			buf.put_new_line
@@ -1345,17 +1360,31 @@ end
 		local
 			buf: like buffer
 			type_c: TYPE_C
+			l_rtype: like result_type
 		do
 			buf := buffer
 			buf.put_new_line
-			if result_type.is_void then
+			l_rtype := result_type
+			if l_rtype.is_void then
 				buf.put_string ("RTCRV;")
 			else
-				type_c := real_type (result_type).c_type
+				type_c := real_type (l_rtype).c_type
 				buf.put_string ("RTCRR(")
 				type_c.generate_sk_value (buf)
 				buf.put_character (',')
 				type_c.generate_typed_field (buf)
+				buf.put_character (',')
+				if
+					attached {TYPED_POINTER_A} l_rtype as l_tpointer and then
+					attached l_tpointer.pointed_type as l_gen_type and then
+					l_gen_type.is_basic
+				then
+					buf.put_string ("sizeof(")
+					buf.put_string (real_type (l_gen_type).c_type.c_string)
+					buf.put_character (')')
+				else
+					buf.put_character ('0')
+				end
 				buf.put_two_character (')', ';')
 			end
 		end
