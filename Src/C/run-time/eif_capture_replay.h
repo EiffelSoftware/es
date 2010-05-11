@@ -12,12 +12,9 @@ extern "C" {
 
 /* Capture routines */
 
-void cr_init (struct ex_vect*, int num_args, int num_ref_args);
-
-void cr_register_argument (EIF_TYPED_VALUE arg);
-
-void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result);
-
+void cr_init (struct ex_vect*, int num_args);
+void cr_register_argument (EIF_TYPED_VALUE arg, size_t size);
+void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result, size_t size);
 void cr_register_emalloc (EIF_REFERENCE obj);
 
 /* Replay routines */

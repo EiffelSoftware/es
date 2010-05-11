@@ -57,7 +57,7 @@ RT_LNK EIF_REFERENCE **EIF_oms;           /* Once manifest strings for a thread 
 RT_LNK int in_assertion;                  /* Value of the assertion level */
 #ifdef WORKBENCH
 RT_LNK uint32 cr_cross_depth;             /* How many IN-/OUTCALLs are currently on the stack? */
-RT_LNK struct stcrchunk *cr_top_area;           /* Top area observed by capture mechanism */
+RT_LNK struct stcrchunk *cr_top_object;           /* Top area observed by capture mechanism */
 RT_LNK FILE *cr_file;
 #endif
 #ifdef WORKBENCH

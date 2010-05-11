@@ -12,6 +12,7 @@
 #include "rt_malloc.h"
 #include "eif_malloc.h"
 #include "eif_project.h"
+#include "eif_traverse.h"
 
 
 #include <stdio.h>
@@ -40,7 +41,7 @@
 #define ARG_MASK 0x0F
 
 
-#if 0
+#if 1
 #define PRINTFDBG(x) \
 	{ \
 		int i;for(i=0;i<cr_cross_depth;i++)printf("  "); \
@@ -51,13 +52,23 @@
 #endif
 
 
+/*
+ * Type definitions
+ */
+
+
+
+
 /* Exception handling */
 
 rt_private void cr_raise (char *msg) {
 	//eraise (msg, EN_CR);
-	print_err_msg(stderr, msg);
+	print_err_msg(stderr, "%s\n", msg);
 	exit(1);
 }
+
+
+
 
 /* Read/write capture log */
 
@@ -90,168 +101,134 @@ rt_private void bread (char *buffer, size_t nbytes)
 
 
 
-
-
-#define MAX_OBJ 1000
-
-rt_private int cr_object_count;
-rt_private EIF_REFERENCE cr_objects[MAX_OBJ];
-
-rt_private void set_object_id (int id, EIF_REFERENCE obj)
-{
-	REQUIRE("valid_id", id < 1000);
-	cr_objects[id] = obj;
-	cr_object_count = id+1 > cr_object_count ? id+1 : cr_object_count;
-}
-
-rt_private int object_id (EIF_REFERENCE obj)
-{
-	int i;
-	for (i = 0; i < cr_object_count; i++) {
-		if (cr_objects[i] == obj) {
-			return i;
-		}
-	}
-
-	return -1;
-
-}
-
-rt_private int new_object_id (EIF_REFERENCE obj)
-{
-	REQUIRE("no_id_yet", object_id(obj) < 0);
-	
-	if (cr_object_count < MAX_OBJ) {
-		cr_objects[cr_object_count] = obj;
-		cr_object_count++;
-	}
-	else
-		cr_raise ("Too many objects");
-	return cr_object_count - 1;
-}
-
-rt_private int id_for_object (EIF_REFERENCE obj)
-{
-	int id = object_id(obj);
-	if (id < 0) {
-		id = new_object_id (obj);	
-	}
-	return id;
-}
-
-rt_private EIF_REFERENCE object_of_id (int id)
-{
-	if (1000 <= id)
-		cr_raise ("Invalid object id");
-	return cr_objects[id];
-}
-
-
-
-
-
-
-
-
-
-rt_private void cr_capture_value (EIF_TYPED_VALUE value)
-{
-
-	if ((value.type & SK_HEAD) == SK_REF) {
-		value.it_i4 = id_for_object (value.it_r);
-	}
-	bwrite((char *) &value, sizeof(EIF_TYPED_VALUE));
-
-}
-
-rt_private void cr_capture_id (EIF_REFERENCE obj)
-{
-
-	uint32 id = id_for_object(obj);
-
-	bwrite((char *) &id, sizeof(uint32));
-
-}
-
-rt_private void cr_retrieve_value (EIF_TYPED_VALUE *Result)
-{
-
-	bread((char *) Result, sizeof(EIF_TYPED_VALUE));
-
-	if (((*Result).type & SK_HEAD) == SK_REF) {
-		Result->it_r = object_of_id (Result->it_i4);
-	}
-
-}
-
-
-rt_private EIF_REFERENCE cr_retrieve_object ()
-{
-	uint32 id;
-	bread((char *) &id, sizeof (uint32));
-	return object_of_id (id);
-}
-
-
-rt_private void cr_retrieve_id (EIF_REFERENCE obj)
-{
-	uint32 id;
-	bread((char *) &id, sizeof(uint32));
-
-	set_object_id(id, obj);
-}
-
-
-
-
-
-
 /*
- * SPECIAL observing
+ * Object/Memory observing
  */
 
-rt_private void cr_observe_object (EIF_REFERENCE sp)
+
+rt_private uint32 cr_id_of_object (EIF_POINTER p, size_t size)
+{
+
+	/*
+		size == 0 will return any reference that matches...
+	*/
+
+	EIF_GET_CONTEXT
+
+	struct stcrchunk *chunk = cr_top_object;
+	
+
+	uint32 id = 1;
+	while (chunk != NULL) {
+		int same_ref = 0;
+		if (chunk->object.size > 0)
+			same_ref = chunk->object.ref.p == p;
+		else
+			same_ref = eif_access(chunk->object.ref.o) == (EIF_REFERENCE) p;
+
+		if (same_ref && (size == 0 || chunk->object.size == size))
+			return id;
+
+		chunk = chunk->sk_prev;
+		id++;
+	}
+
+	 /* No object for that pointer */
+	return 0;
+
+}
+
+
+rt_private struct cr_object *cr_object_of_id (uint32 id)
+{
+
+	REQUIRE("valid_id", id > 0);
+
+	EIF_GET_CONTEXT
+
+	uint32 curr_id = id;
+	struct stcrchunk *chunk = cr_top_object;
+
+	while (curr_id-- > 1) {
+		chunk = chunk->sk_prev;
+		if (chunk == NULL)
+			return NULL;
+	}
+
+	return &(chunk->object);
+}
+
+rt_private void cr_push_object (EIF_VALUE val, size_t size, int is_current)
 {
 
 	EIF_GET_CONTEXT
 
-	REQUIRE("capturing", is_capturing);
-	REQUIRE("has_id", object_id(sp) > -1);
-
-	union overhead *zone = HEADER(sp);
-
-	REQUIRE("is_special", (zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
-
-
 	struct stcrchunk *chunk;
+	void *src = NULL;
+	size_t src_size = 0;
+	uint32 id;
 
-	chunk = cr_top_area;
-	while (chunk != NULL) {
-		if (chunk->area.obj == sp)
-			return;
-		chunk = chunk->sk_prev;
+	EIF_CR_REFERENCE ref;
+
+		/* Get id if `ref' has already been pushed to stack  */
+	if (size > 0) {
+		ref.p = val.p;
+		id = cr_id_of_object (ref.p, size);
+	}
+	else {
+		ref.o = eif_protect(val.r);
+		id = cr_id_of_object (val.r, (size_t) 0);
 	}
 
 	chunk = (struct stcrchunk *) cmalloc(sizeof(struct stcrchunk));
 	if (chunk == NULL)
 		enomem();
 
-	chunk->sk_prev = cr_top_area;
-	cr_top_area = chunk;
-	chunk->area.cross_depth = cr_cross_depth;
-	chunk->area.obj = sp;
+	chunk->sk_prev = cr_top_object;
+	cr_top_object = chunk;
 
-	size_t size = RT_SPECIAL_CAPACITY(sp)*RT_SPECIAL_ELEM_SIZE(sp);
-	chunk->area.copy = cmalloc(size);
-	if (chunk->area.copy == NULL)
-		enomem();
-	memcpy(chunk->area.copy, (void *) sp, size);
+	chunk->object.is_current = is_current;
+	chunk->object.ref = ref;
+	chunk->object.size = size;
+	chunk->object.copy = NULL;
 
-	PRINTFDBG(("Added observed obj (%d)\n", (int) size));
+		/* when replaying we do not observe objects */
+	if (is_replaying)
+		return;
+
+		/* return if ref is already being observed by a different area */
+	if (id > 0)
+		return;
+
+		/* check if we need to do any observation */
+	if (size == 0) {
+		EIF_REFERENCE r = eif_access(ref.o);
+		union overhead *zone = HEADER(r);
+			// FIXME: make sure r is a basic typed SPECIAL!
+		if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
+			src = (void *) r;
+			src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
+		}
+	}
+	else {
+		src = (void *) ref.p;
+		src_size = size;
+	}
+
+	if (src_size > 0 && src != NULL) {
+		chunk->object.copy = cmalloc(src_size);
+
+		if (chunk->object.copy == NULL)
+			enomem();
+		memcpy(chunk->object.copy, src, src_size);
+	}
+
+	return;
 
 }
 
-rt_private void cr_observe_changes ()
+
+rt_private void cr_capture_mutations ()
 {
 
 	EIF_GET_CONTEXT
@@ -259,177 +236,355 @@ rt_private void cr_observe_changes ()
 	REQUIRE("capturing", is_capturing);
 
 	struct stcrchunk *chunk;
+	uint32 id = 1;
 
-	chunk = cr_top_area;
+	chunk = cr_top_object;
 	while (chunk != NULL) {
-		EIF_REFERENCE sp = chunk->area.obj;
-		void *copy = chunk->area.copy;
-		size_t size = RT_SPECIAL_CAPACITY(sp)*RT_SPECIAL_ELEM_SIZE(sp);
-		if (memcmp(sp, copy, size)) {
-			char type = (char) MEMMUT;
-			bwrite(&type, 1);
-			cr_capture_id(sp);
-			size_t start, end;
 
-				// TODO: optimize start/end values
-			start = 0;
-			end = size-1;
+		void *src;
+		size_t src_size = chunk->object.size;
+		if (src_size == 0) {
+			EIF_REFERENCE r = eif_access(chunk->object.ref.o);
+			union overhead *zone = HEADER(r);
+			if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
+				src = (void *) r;
+				src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
+			}
+		}
+		else {
+			src = chunk->object.ref.p;
+		}
 
-			bwrite((char *) &start, sizeof(size_t));
-			bwrite((char *) &end, sizeof(size_t));
-			bwrite((char *) sp, size);
+		void *copy = chunk->object.copy;
 
-			PRINTFDBG(("MEMMUT (%d, %d, %d)\n", (int) size, (int) start, (int) end));
+		if (src_size > 0 && copy != NULL) {
+			if (memcmp(src, copy, src_size)) {
+
+				char type = (char) MEMMUT;
+				bwrite(&type, 1);
+				bwrite((char *) &id, sizeof(uint32));
+
+				size_t start, end;
+
+					// TODO: optimize start/end values
+				start = 0;
+				end = src_size-1;
+
+				bwrite((char *) &start, sizeof(size_t));
+				bwrite((char *) &end, sizeof(size_t));
+				bwrite((char *) src, src_size);
+
+				memcpy(chunk->object.copy, src, src_size);
+
+				PRINTFDBG(("MEMMUT (%d, %d, %d)\n", (int) src_size, (int) start, (int) end));
+			}
 		}
 		chunk = chunk->sk_prev;
+		id++;
 	}
 
 }
 
-rt_private void cr_remove_observed ()
+rt_private void cr_pop_objects ()
 {
 	
 	EIF_GET_CONTEXT
 
-	REQUIRE("capturing", is_capturing);
-
 	struct stcrchunk *chunk;
+	int done = 0;
 
-	chunk = cr_top_area;
-	while (cr_top_area != NULL && cr_top_area->area.cross_depth >= cr_cross_depth) {
-		struct stcrchunk *chunk = cr_top_area;
+	chunk = cr_top_object;
+	while (!done) {
 
-		cr_top_area = chunk->sk_prev;
+		CHECK("top_not_null", cr_top_object != NULL);
 
-		eif_rt_xfree (chunk->area.copy);
+		struct stcrchunk *chunk = cr_top_object;
+		cr_top_object = chunk->sk_prev;
+
+		if (chunk->object.copy != NULL)
+			eif_rt_xfree (chunk->object.copy);
+
+		done = chunk->object.is_current;
+
 		eif_rt_xfree (chunk);
-		PRINTFDBG(("Removed observed obj\n"));
-	}
 
+	}
 
 }
 
-rt_private void cr_check_observation (EIF_REFERENCE obj)
+
+
+
+/*
+ * Capture/Replay helper routines
+ */
+
+
+/* Special EIF_VALUE for storing the size and id of an EIF_CR_REFERENCE */
+typedef union EIF_CR_VALUE_tag {
+	EIF_NATURAL_64 n8;
+	struct {
+		uint32 size;
+		uint32 id;
+	} n4;
+} EIF_CR_VALUE;
+
+rt_private void cr_store_value (EIF_TYPED_VALUE value);
+rt_private void cr_read_value (EIF_TYPED_VALUE *value);
+
+rt_private void cr_capture_object (EIF_VALUE value, EIF_TYPE_INDEX dtype, size_t size, char flag);
+rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag);
+
+rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value);
+rt_private struct cr_object * cr_retrieve_object ();
+
+
+rt_private void cr_store_value (EIF_TYPED_VALUE value)
+{
+	bwrite((char *) &value, sizeof(EIF_TYPED_VALUE));
+}
+
+rt_private void cr_read_value (EIF_TYPED_VALUE *value)
+{
+	bread((char *) value, sizeof(EIF_TYPED_VALUE));
+}
+
+
+#define CV_PUSH		0x01
+#define CV_RECURSIVE	0x02
+#define CV_CURRENT	0x04
+
+
+rt_private void cr_capture_object (EIF_VALUE val, EIF_TYPE_INDEX dtype, size_t size, char flag)
 {
 
-	REQUIRE("has_id", object_id(obj) > -1);
+	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
+	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
+	REQUIRE("size_xor_dtype", (dtype != 0)^(size > 0));
+	
+	EIF_TYPED_VALUE tvalue, rtvalue;
+	EIF_CR_VALUE item;
+	uint32 id = 0;
 
-	union overhead *zone = HEADER(obj);
-	EIF_REFERENCE sp;
+	item.n4.size = size;
 
-	if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
-		sp = obj;
-	}
-	else if (zone->ov_dftype == egc_str_dtype) {
-		// TODO: observe special inside of STRING_8 object
-		return;
+	if (flag & CV_PUSH) {
+		id = 0;
+		// TODO: recursively push TUPLE [..] objects and store subitems in `id'
+
+		cr_push_object (val, size, flag & CV_CURRENT);
 	}
 	else {
-		return;
+		id = cr_id_of_object (val.p, size);
+
+		if (id == 0)
+			cr_raise ("Passing unknown reference to Eiffel");
+
 	}
 
-	if (is_capturing)
-		cr_observe_object (sp);
+	item.n4.size = size;
+	item.n4.id = id;
 
+	tvalue.type = SK_REF | dtype;
+	tvalue.it_n8 = item.n8;
+
+	if (is_capturing) {
+		cr_store_value (tvalue);
+	}
+	else {
+		cr_read_value (&rtvalue);
+		if (tvalue.type != rtvalue.type)
+			cr_raise("Replay mismatch: passed type differs from one when capturing");
+
+		if (tvalue.it_n8 != rtvalue.it_n8)
+			cr_raise("Replay mismatch: passed reference size differs from one when capturing");
+	}
+
+}
+
+rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag)
+{
+
+	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
+	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
+	REQUIRE("not_current", !(flag & CV_CURRENT));
+
+	EIF_TYPED_VALUE rvalue;
+
+	if ((value.type & SK_HEAD) == SK_REF) {
+		cr_capture_object (value.item, (EIF_TYPE_INDEX) value.type & SK_DTYPE, (size_t) 0, flag);
+	}
+	else if ((value.type & SK_POINTER) && is_instance (value.it_p)) {
+		cr_capture_object (value.item, HEADER(value.it_r)->ov_dftype, (size_t) 0, flag);
+	}
+	else {
+		if (is_capturing)
+			cr_store_value (value);
+		else {
+			cr_read_value (&rvalue);
+
+			if (value.type != rvalue.type)
+				cr_raise("Replay mismatch: passed basic type differs from one when capturing");
+
+			// FIXME: compare the basic values and at least provide warning
+
+			// FIXME: if previous captured object was a reference type/tuple, provide warning and push dummy reference to stack
+			
+		}
+	}
+}
+
+
+rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value)
+{
+
+	REQUIRE("replaying", is_replaying);
+
+	EIF_CR_VALUE item;
+	struct cr_object *object;
+
+	cr_read_value (value);
+
+	if ((value->type & SK_HEAD) == SK_REF) {
+
+		item.n8 = value->it_n8;
+		if (item.n4.id > 0) {
+			object = cr_object_of_id (item.n4.id);
+			if (object == NULL)
+				cr_raise ("Replay mismatch: requested reference for unknown ID");
+			
+			if (object->size > 0) {
+				value->type = SK_POINTER;
+				value->it_p = object->ref.p;
+			}
+			else {
+				value->it_r = eif_access (object->ref.o);
+				value->type = SK_REF | (EIF_TYPE_INDEX) HEADER(value->it_r)->ov_dftype;
+			}
+		}
+		else {
+			value->it_p = NULL;
+		}
+
+	}
+
+}
+
+rt_private struct cr_object * cr_retrieve_object ()
+{
+
+	REQUIRE("replaying", is_replaying);
+
+	uint32 id;
+
+	bread((char *) &id, sizeof(id));
+	
+	if (id == 0)
+		cr_raise("Replay mismatch: read invalid id from log");
+
+	return cr_object_of_id (id);
 }
 
 
 /*
- * Public Capture/Replay routines
+ * Public capture/replay routines
  */
 
 
-rt_public void cr_init (struct ex_vect* vect, int num_args, int num_ref_args)
+rt_public void cr_init (struct ex_vect* vect, int num_args)
 {
 
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
 
-	// To be done during some (thread) initialization
+	// FIXME: To be done during some (thread) initialization
 	if (cr_file == (FILE *) NULL) {
-		cr_object_count = 0;
 		if (is_capturing)
 			cr_file = fopen("./capture.log", "w");
 		else
 			cr_file = fopen("./capture.log", "r");
 	}
 
-	char type;
+	char type, rtype;
+	EIF_VALUE v;
+	BODY_INDEX bid;
+
+	if (num_args > 15)
+		cr_raise ("To many arguments");
+
+		/* Initialize descriptor */
 	if (RTCRI) {
-		type = INCALL | num_args;
+		type = (char) INCALL;
 		PRINTFDBG(("INCALL to %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
 	}
 	else {
-		type = OUTCALL | num_ref_args;
+		type = (char) OUTCALL;
 		PRINTFDBG(("OUTCALL to %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
 	}
+	type |= (char) num_args;
+
+	v.r = vect->ex_id;
 
 	if (is_capturing) {
 
 
-		cr_observe_changes();
-
-
-		if (num_args > 15)
-			cr_raise ("to many arguments");
+			/* We only capture changes done during external OUTCALL */
+		if (RTCRI)
+			cr_capture_mutations();
 
 		bwrite(&type, sizeof(char));
 		bwrite((char *) &(vect->ex_bodyid), sizeof(BODY_INDEX));
-		cr_capture_id(vect->ex_id);
 
-		cr_check_observation(vect->ex_id);
 	}
 	else {
 			// If we are not capturing, it must be an outcall
-		char rtype;
 		bread(&rtype, sizeof(char));
-		BODY_INDEX bid;
+
+		if (rtype != type) {
+			PRINTFDBG(("%x <> %x\n", rtype, type));
+			cr_raise ("Expected OUTCALL but read different event from log");
+		}
+
 		bread((char *) &bid, sizeof(BODY_INDEX));
 		
-		if (rtype != type || bid != (vect->ex_bodyid)) {
-			PRINTFDBG(("%x <> %x and %d != %d\n", rtype, type, bid, vect->ex_bodyid));
-			cr_raise("Replay missmatch");
+		if (bid != (vect->ex_bodyid)) {
+			PRINTFDBG(("%d != %d\n", bid, vect->ex_bodyid));
+			cr_raise("Expected OUTCALL to different routine");
 		}
-
-		cr_retrieve_id (vect->ex_id);
 	}
+
+	cr_capture_object (v, HEADER(v.r)->ov_dftype, (size_t) 0, RTCRI ? (char) 0 : CV_CURRENT | CV_PUSH | CV_RECURSIVE);
+
 }
 
 
-rt_public void cr_register_argument (EIF_TYPED_VALUE argx) {
-
+rt_public void cr_register_argument (EIF_TYPED_VALUE arg, size_t size)
+{
 	EIF_GET_CONTEXT
 
-	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
+	REQUIRE("valid_size", size == 0 || arg.type == SK_POINTER);
 
+	char flags;
 	if (RTCRI) {
-		// We must be capturing an INCALL
-		cr_capture_value (argx);
+			/* We must be capturing the arguments of an incall */
+		flags = (char) 0;
 	}
 	else {
-		if ((argx.type & SK_HEAD) == SK_POINTER && argx.it_r != NULL) {
-			if ((HEADER(argx.it_r)->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
-				argx.type = SK_REF;
-				PRINTFDBG(("Pointer -> Special Ref\n"));
-			}
-			else {
-				PRINTFDBG(("Pointer -> Nothing\n"));
-			}
-		}
+		flags = CV_PUSH | CV_PUSH;
+	}
 
-		// We are either capturing or replaying an outcall
-		if ((argx.type & SK_HEAD) == SK_REF) {
-			if (is_capturing)
-				cr_capture_id (argx.it_r);
-			else
-				cr_retrieve_id (argx.it_r);
-			cr_check_observation(argx.it_r);
-		}
+	if (size > 0) {
+		cr_capture_object (arg.item, (EIF_TYPE_INDEX) 0, size, flags);
+	}
+	else {
+		cr_capture_value (arg, flags);
 	}
 
 }
+
+
 
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 {
@@ -439,8 +594,9 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	REQUIRE("valid_context", is_capturing && !RTCRI);
 
 	union overhead *zone = HEADER(obj);
-
 	char type = NEWOBJ;
+	EIF_VALUE v;
+
 	if ((zone->ov_flags) & EO_NEW)
 		type |= 0x1;
 
@@ -449,73 +605,69 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	bwrite (&type, 1);
 	bwrite ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
 
-	cr_capture_id (obj);
+	v.r = obj;
+	cr_push_object (v, (size_t) 0, 0);
 
-	cr_check_observation(obj);
-	
 	PRINTFDBG(("NEWOBJ %s\n", System(dftype).cn_generator));
 
 }
 
-rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result) {
+rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result, size_t size) {
 
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || (is_replaying && RTCRI));
+	REQUIRE("size_implies_pointer", size == 0 || (Result.type == SK_POINTER));
 
-	char type;
-	int returns_value = 0;
-	int returns_id = 0;
+	char type, rtype, flags;
 
 	if (RTCRI) {
 		type = (char) INRET;
+		flags = CV_PUSH | CV_RECURSIVE;
+
 		PRINTFDBG(("INRET %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
 	}
 	else {
 		type = (char) OUTRET;
-		PRINTFDBG(("OUTRET %s (%d)\n", vect->ex_rout, vect->ex_bodyid));
+		flags = (char) 0;
+
+			/* We only capture changes done during OUTCALL */
+		if (is_capturing)
+			cr_capture_mutations();
+
+		if (Result.type != SK_INVALID) {
+			PRINTFDBG(("OUTRET (%x, %lx)\n", (unsigned int) Result.type, (long unsigned int) Result.it_n8));
+		}
+		else {
+			PRINTFDBG(("OUTRET\n"));
+		}
 	}
 
 	if (Result.type != SK_INVALID) {
-		if (type == OUTRET) {
-			returns_value = 1;
-			type |= 0x1;
-		}
-		else if ((Result.type & SK_HEAD) == SK_REF) {
-			returns_id = 1;
-			type |= 0x1;
-		}
+		type |= 0x1;
 	}
 
 	if (is_capturing) {
-
-		cr_observe_changes();
-
 		bwrite (&type, 1);
-
-		if (returns_value) {
-			cr_capture_value (Result);
-		}
-		else if (returns_id) {
-			cr_capture_id (Result.it_r);
-		}
-
-		cr_remove_observed();
 	}
 	else {
-		// We must be returning an Eiffel in-call
-
-		char rtype;
+			// We must be returning an Eiffel in-call
 		bread(&rtype, 1);
 		if (rtype != type) {
 			PRINTFDBG(("%x <> %x\n", rtype, type));
 			cr_raise("Replay missmatch");
 		}
-
-		if (returns_id)
-			cr_retrieve_id (Result.it_r);
-		
 	}
+
+	if (Result.type != SK_INVALID) {
+		if (size > 0)
+			cr_capture_object (Result.item, (EIF_TYPE_INDEX) 0, size, flags);
+		else
+			cr_capture_value (Result, flags);
+	}
+
+	if (RTCRI)
+		cr_pop_objects();
 }
 
 
@@ -538,35 +690,47 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 		// FIXME: remove once printf is no longer done
 	EIF_GET_CONTEXT
 
+	REQUIRE("valid_context", is_replaying && !RTCRI);
+
 	char type;
 
 	BODY_INDEX body_id;
+	EIF_TYPED_VALUE target, arg1, arg2;
 	EIF_REFERENCE Current;
-	EIF_TYPED_VALUE arg1, arg2;
 	EIF_TYPE_INDEX dftype;
-	EIF_REFERENCE obj = NULL;
+	EIF_VALUE v;
+	struct cr_object *object;
+
 
 	while (1) {
 		bread (&type, 1);
 
 		switch (type & TYPE_MASK) {
 			case OUTRET:
-				if ((type & ARG_MASK) > 0) {
-					cr_retrieve_value(Result);
+
+				if ((type & ARG_MASK) > 0)
+					cr_retrieve_value (Result);
+
+				if (Result) {
+					PRINTFDBG(("OUTRET (%x, %lx)\n", (unsigned int) Result->type, (long unsigned int) Result->it_n8));
+				}
+				else {
+					PRINTFDBG(("OUTRET\n"));
 				}
 
-				if (Result)
-					if (Result->type == SK_POINTER)
-						Result->it_p = (EIF_POINTER) NULL;
-
-				PRINTFDBG(("OUTRET (?)\n"));
+				cr_pop_objects();
 
 				return;
 
 			case INCALL:
 
 				bread((char *) &body_id, sizeof(BODY_INDEX));
-				Current = cr_retrieve_object();
+			
+				cr_retrieve_value (&target);
+				if ((target.type & SK_HEAD) != SK_REF)
+					cr_raise ("Replay mismatch: retrieved target not valid for incall");
+
+				Current = target.it_r;
 
 				PRINTFDBG(("INCALL to (%d): %lx\n", body_id, (long unsigned int) Current));
 
@@ -598,27 +762,41 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				bread ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
 
 				if ((type & ARG_MASK) == 1)
-					obj = emalloc(dftype);
+					v.r = emalloc(dftype);
 				else
-					obj = emalloc_as_old(dftype);
+					v.r = emalloc_as_old(dftype);
 
-				cr_retrieve_id(obj);
+				cr_push_object (v, (size_t) 0, 0);
+
 				PRINTFDBG(("NEWOBJ %s\n", System(dftype).cn_generator));
+
 				break;
 
 			case MEMMUT:
 
-				Current = cr_retrieve_object();
+				object = cr_retrieve_object();
 
-				CHECK("is_special", ((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
+				if (object == NULL)
+					cr_raise("Invalid ID for MEMMUT");
 
 				size_t start, end, size;
 				bread((char *) &start, sizeof(size_t));
 				bread((char *) &end, sizeof(size_t));
 				size = end - start + 1;
-				CHECK("valid_size", size <= RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current));
 
-				bread((char *) Current, size);
+				if (object->size > 0) {
+					CHECK("valid_size", size <= object->size);
+					bread((char *) object->ref.p, size);
+				}
+				else {
+					Current = eif_access(object->ref.o);
+
+					CHECK("is_special", ((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
+					CHECK("valid_size", size <= RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current));
+
+					bread((char *) Current, size);
+				}
+
 				PRINTFDBG(("MEMMUT (%d)\n", (int) size));
 
 				break;

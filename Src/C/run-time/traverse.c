@@ -532,6 +532,10 @@ doc:	</attribute>
 */
 rt_private EIF_INTEGER instance_type = 0;
 
+
+rt_private EIF_POINTER is_instance_pointer = NULL;
+rt_private int is_instance_result = 0;
+
 /*
 doc:	<routine name="find_referers" return_type="EIF_REFERENCE" export="shared">
 doc:		<summary>Find all objects that refers to `target' and return a SPECIAL object.</summary>
@@ -617,6 +621,49 @@ rt_public EIF_REFERENCE find_all_instances (EIF_INTEGER result_type)
 #endif
 	return result;
 }
+
+
+
+
+rt_private void internal_is_instance (EIF_REFERENCE enclosing, EIF_REFERENCE compare_to)
+{
+	
+	if
+		((enclosing == compare_to) &&
+		((EIF_POINTER) (enclosing) == is_instance_pointer ? 1 : 0) &&
+		(!((HEADER(enclosing)->ov_flags) & EO_STORE)))
+        {
+		is_instance_result = 1;
+        }
+}
+
+
+rt_public int is_instance (EIF_POINTER pointer)
+{
+	RT_GET_CONTEXT
+	EIF_REFERENCE sp = NULL;
+	int result;
+
+#ifdef ISE_GC
+	GC_THREAD_PROTECT(eif_synchronize_gc (rt_globals));
+#else
+	EIF_EO_STORE_LOCK
+#endif
+	is_instance_result = 0;
+	is_instance_pointer = pointer;
+	sp = matching (internal_is_instance, egc_sp_ref);
+	result = is_instance_result;
+	is_instance_pointer = NULL;
+	is_instance_result = 0;
+#ifdef ISE_GC
+	GC_THREAD_PROTECT(eif_unsynchronize_gc (rt_globals));
+#else
+	EIF_EO_STORE_UNLOCK
+#endif
+
+	return result;
+}
+
 
 
 /*

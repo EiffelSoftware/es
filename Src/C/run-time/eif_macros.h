@@ -1310,29 +1310,31 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 /* Macros used for the capture replay mechanism.
  * RTCRI 1 if current thread is inside of the captured boundary, 0 otherwise.
- * RTCRC(x,y,z) capture replay hook in routine which decides what to do
+ * RTCRC(x,y) capture replay hook in routine which decides what to do
  *     x: 1 if routine is "inside", 0 otherwise
  *     y: Number of arguments for this routine
- *     z: Number of reference arguments for this routine
- * RTCRA(a)    register argument for capture/replay
+ * RTCRA(a,s)    register argument for capture/replay
+ *     a: argument value (EIF_TYPED_VALUE)
+ *     s: size of area if a is a TYPED_POINTER
  * RTCRE       execute actual feature body
  * RTCRV       end capture replay clause without Result
- * RTCRR(t)    end capture replay clause with Result
+ * RTCRR(t,f,s)    end capture replay clause with Result
  *     t: type of result (e.g. SK_BOOL, ...)
  *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
+ *     s: size of area if Result is a TYPED_POINTER
  */
 #ifdef WORKBENCH
 #define RTCRI (!(cr_cross_depth%2))
-#define RTCRC(x,y,z) \
+#define RTCRC(x,y) \
 	int cr_cross = (RTCRI != (x)) && (is_capturing || is_replaying); \
 	EIF_TYPED_VALUE cr_result; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
-		if (!is_replaying || !RTCRI) { \
-			cr_init (exvect, y, z); \
+		if (!(is_replaying && RTCRI)) { \
+			cr_init (exvect, y); \
 
-#define RTCRA(a) \
-			cr_register_argument (a);
+#define RTCRA(a,s) \
+			cr_register_argument (a,s);
 
 #define RTCRE \
 		} \
@@ -1343,11 +1345,11 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Routine body comes here!
  */
 
-#define RTCRR(t,f) \
+#define RTCRR(t,f,s) \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = t; \
 			cr_result.f = Result; \
-			cr_register_result (exvect, cr_result); \
+			cr_register_result (exvect, cr_result, s); \
 		} \
 	} \
 	else if (cr_cross) { \
@@ -1359,19 +1361,21 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRV \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = SK_INVALID; \
-			cr_register_result (exvect, cr_result);  \
+			cr_register_result (exvect, cr_result, (size_t) 0);  \
 		} \
 	} \
 	else if (cr_cross) { \
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
 	if (cr_cross) cr_cross_depth--;
+
 #else
+
 #define RTCRI (1)
-#define RTCRC(x,y,z)
-#define RTCRA(a)
+#define RTCRC(x,y)
+#define RTCRA(a,s)
 #define RTCRE
-#define RTCRR(t,f)
+#define RTCRR(t,f,s)
 #define RTCRV
 #endif
 

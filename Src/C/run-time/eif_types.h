@@ -45,6 +45,10 @@
 #include "eif_constants.h"
 #include <setjmp.h>
 
+//#ifdef WORKBENCH
+//#include "eif_cecil.h"	/* Capture/replay requires EIF_OBJECT */
+//#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -490,10 +494,26 @@ struct pgcontext {				/* Program context */
 
 /* eif_capture_replay.h */
 
-struct cr_area {                         /* Area being observed by capture/replay framework */
-	uint32 cross_depth;              /* Depth at which current area was added */
-        EIF_REFERENCE obj;               /* Pointer to observed area */
-	void *copy;                      /* Pointer to last copy of observed area, null if no copy made yet */
+typedef union tag_EIF_CR_REFERENCE {
+	EIF_REFERENCE *o;                  /* FIXME: should be an EIF_OBJECT.. */
+	EIF_POINTER p;
+} EIF_CR_REFERENCE;
+
+
+struct cr_object {                         /* Area being observed by capture/replay framework */
+	int is_current;                    /* True if object represents the bottom object of an observed stack frame */
+	EIF_CR_REFERENCE ref;              /* Reference pointing to actual object/memory area */
+	size_t size;                       /* 0 if ref points to an Eiffel object, otherwise the size of the memory ref points to */
+
+		/* Only used when capturing */
+	void *copy;                      /* pointer to copy of ref, NULL if ref points to a non-special Eiffel object */
+
+		/* meaning of size/copy
+			size == 0 && copy == 0 : ref is an regular Eiffel object or a SPECIAL we do not observe
+			size == 0 && copy != 0 : ref points to a non empty SPECIAL of basic types
+			size != 0 && copy == 0 : ref points to a C area we are not observing
+			size != 0 && copy != 0 : ref points to an observed C area
+		*/
 };
 
 /*
@@ -502,7 +522,7 @@ struct cr_area {                         /* Area being observed by capture/repla
 
 struct stcrchunk {
         struct stcrchunk *sk_prev;       /* Previous chunk in stack, null if none */
-        struct cr_area area;         /* Arena where objects are stored */
+        struct cr_object object;         /* Arena where objects are stored */
 };
 
 #endif /* WORKBENCH */
