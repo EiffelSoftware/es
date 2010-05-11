@@ -26,6 +26,8 @@ public class LuceneEngine {
         //Create result MSG
         //Return
         log.info("Lucene ENgine will process this message! MSG Size = " + msg.getBodyLength());
+        log.info("MSG= " + msg.toString());
+
 
 
         Message result = new Message("numberOfLines=1;requestId=10;\n");
