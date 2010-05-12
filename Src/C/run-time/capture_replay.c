@@ -41,7 +41,7 @@
 #define ARG_MASK 0x0F
 
 
-#if 1
+#if 0
 #define PRINTFDBG(x) \
 	{ \
 		int i;for(i=0;i<cr_cross_depth;i++)printf("  "); \
@@ -188,6 +188,9 @@ rt_private void cr_push_object (EIF_VALUE val, size_t size, int is_current)
 	cr_top_object = chunk;
 
 	chunk->object.is_current = is_current;
+	if (is_current) {
+		PRINTFDBG(("PUSH_CURRENT\n"));
+	}	
 	chunk->object.ref = ref;
 	chunk->object.size = size;
 	chunk->object.copy = NULL;
@@ -293,6 +296,8 @@ rt_private void cr_pop_objects ()
 	struct stcrchunk *chunk;
 	int done = 0;
 
+	PRINTFDBG(("POP_CURRENT\n"));
+
 	chunk = cr_top_object;
 	while (!done) {
 
@@ -360,7 +365,7 @@ rt_private void cr_capture_object (EIF_VALUE val, EIF_TYPE_INDEX dtype, size_t s
 
 	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
 	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
-	REQUIRE("size_xor_dtype", (dtype != 0)^(size > 0));
+	REQUIRE("size_or_dtype", size == 0 || dtype == 0);
 	
 	EIF_TYPED_VALUE tvalue, rtvalue;
 	EIF_CR_VALUE item;
@@ -398,6 +403,18 @@ rt_private void cr_capture_object (EIF_VALUE val, EIF_TYPE_INDEX dtype, size_t s
 
 		if (tvalue.it_n8 != rtvalue.it_n8)
 			cr_raise("Replay mismatch: passed reference size differs from one when capturing");
+	}
+
+	if ((flag & (CV_PUSH | CV_RECURSIVE)) && size == 0) {
+		if (HEADER(val.r)->ov_flags & EO_TUPLE) {
+			EIF_TYPED_VALUE *titem = (EIF_TYPED_VALUE *) val.r;
+			uint32 count = RT_SPECIAL_COUNT (val.r);
+			unsigned int i;
+			titem++;
+			for (i = 1; i < count; i++) {
+				cr_capture_value (*titem, CV_PUSH);
+			}
+		}
 	}
 
 }
@@ -666,7 +683,7 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 			cr_capture_value (Result, flags);
 	}
 
-	if (RTCRI)
+	if (!RTCRI)
 		cr_pop_objects();
 }
 
