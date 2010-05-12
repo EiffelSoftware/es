@@ -66,8 +66,11 @@ feature {NONE} -- Implementation
 			context.add_string (" -- Operations are expressed as postconditions to allow for switching them on and off.)")
 
 			-- postcondition clause 'not unseparated_postconditions_left'
-			context.add_string ("%N%T%T%Tnot unseparated_postconditions_left (" + feature_object.feature_name + "_scoop_separate_")
+			context.add_string ("%N%T%T%T" + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions")
+			context.add_string (" = Void or else")
+			context.add_string ("%N%T%T%T%Tnot unseparated_postconditions_left (" + feature_object.feature_name + "_scoop_separate_")
 			context.add_string (class_c.name.as_lower + "_unseparated_postconditions)")
+
 
 			from
 				i := 1

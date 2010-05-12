@@ -84,11 +84,14 @@ feature {NONE} -- Implementation
 				context.add_string (")")
 
 				-- postcondition added_to_unseparated_postconditions
-				context.add_string ("%N%T%T%T%Tor else added_to_unseparated_postconditions (" + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions,")
-				context.add_string ("%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
-				process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, "Current")
-
-				context.add_string (")")
+				context.add_string ("%N%T%T%T%Tor else (")
+					context.add_string (feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions = Void or else")
+					context.add_string ("added_to_unseparated_postconditions (")
+						context.add_string (feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions,")
+						context.add_string ("%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")
+						process_formal_argument_list_as_actual_argument_list_with_prefix (l_as, "Current")
+					context.add_string (")")
+				context.add_string ("%N%T%T%T%T)")
 				i := i + 1
 			end
 			is_processing_assertions := False
