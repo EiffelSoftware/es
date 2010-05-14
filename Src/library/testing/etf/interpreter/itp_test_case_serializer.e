@@ -272,12 +272,8 @@ feature{NONE} -- Implementation
 			-- `summary' is the state summary for `operands'.
 			-- `hash' is the hash code of `summary'.
 		local
-			i: INTEGER
-			l_upper: INTEGER
 			l_summary: like pre_state_object_summary
-			l_operands: like operands
 			l_hash_code: STRING
-			l_types: like types
 			l_queries: HASH_TABLE [STRING, STRING]
 			l_cursor: CURSOR
 			l_value_hash_list: LINKED_LIST [INTEGER]
@@ -290,26 +286,7 @@ feature{NONE} -- Implementation
 				l_hash_code.append (feature_name)
 				l_hash_code.append_character ('.')
 
-				l_operands := operands
-				l_types := types
-				from
-					if is_creation and a_is_pre_state then
-						i := 1
-					else
-						i := 0
-					end
-					l_upper := argument_count
-					if is_query and then not a_is_pre_state then
-						l_upper := l_upper + 1
-					end
-					create l_summary.make (l_upper - i + 1)
-				until
-					i > l_upper
-				loop
-					append_variable_with_type (l_operands.item (i), l_types.item (i), l_summary, True)
-					i := i + 1
-				end
-
+				create l_summary.make (256)
 				l_queries := interpreter.query_values
 				l_cursor := l_queries.cursor
 				from
