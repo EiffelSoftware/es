@@ -269,56 +269,9 @@ feature {AUT_REQUEST} -- Processing
 
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
-		local
-			l_locals: ARRAYED_LIST [TYPE_A]
-			l_feature: FEATURE_I
-			l_compound: BYTE_LIST [BYTE_NODE]
-			l_target: DS_LINKED_LIST [ITP_EXPRESSION]
-			l_compound_count: INTEGER
-			l_target_index: INTEGER
-			l_local_count: INTEGER
-			l_record_feature: FEATURE_I
-			l_query_names: LIST [STRING]
-			l_target_type: CL_TYPE_A
 		do
-			if attached {CL_TYPE_A} expression_type_visitor.type (a_request.variable) as l_type then
-				l_target_type := l_type
-			else
-				l_target_type := system.any_type
-			end
-
-			l_query_names := a_request.query_names
-			l_compound_count := 2 + l_query_names.count
-			l_local_count := 1
-
-			create l_compound.make (l_compound_count)
-			create l_locals.make (l_local_count)
-
-				-- Setup locals: The only local we need is the the target object
-				-- whose state is to be recorded.
-			l_locals.extend (l_target_type)
-
-				-- Setup context for byte-node generation.
-			setup_byte_code_in_context (l_locals)
-
-				-- Create nodes to load target into local.
-			create l_target.make
-			l_target.force_last (a_request.variable)
-			l_compound.append (new_load_local_nodes (l_target, 1))
-
-				-- Create a node for "record_query" for each query that we are interested in.
---				from
---					l_query_names.start
---				until
---					l_query_names.after
---				loop
---					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
---					l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
---					l_query_names.forth
---				end
-
-				-- Dump request into `output_stream'.
-			print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
+--WY		print_execute_request_with_string_byte_code (a_request.byte_code_for_object_state_retrieval, object_state_request_flag, a_request.variable.index.out)
+			print_execute_request_with_string_byte_code (a_request.byte_code_for_object_state_retrieval, object_state_request_flag)
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
@@ -574,6 +527,13 @@ feature {NONE} -- Byte code generation
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
 		end
 
+	print_execute_request_with_string_byte_code (a_byte_code: STRING; a_request_flag: NATURAL_8)
+			-- Print request indicated by `a_request_flag' to `output_stream'.
+			-- The execute request contains the byte code defined by `a_locals' and `a_compound'.
+		do
+			last_request := [a_request_flag, [a_byte_code]]
+		end
+
 feature{NONE} -- Implementation
 
 	expression_type_visitor: AUT_EXPRESSION_TYPE_VISITOR
@@ -661,7 +621,7 @@ feature{NONE} -- Precondition satisfaction
 					a_request.test_case_index,
 					interpreter.duration_until_now.millisecond_count,
 					a_request.operand_indexes,
-					a_request.operand_types,
+					a_request.operand_type_names,
 					a_request.argument_count,
 					l_is_creation,
 					l_is_query],

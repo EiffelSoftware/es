@@ -358,13 +358,6 @@ feature{NONE} -- Implementation
 				a_position >= 0
 		end
 
-	anonymous_variable_name (a_position: INTEGER): STRING
-			-- Anonymous name for `a_position'-th variable
-			-- Format: {`a_position'}, for example "{0}".
-		do
-			Result := curly_brace_surrounded_integer (a_position)
-		end
-
 	variable_expression_from_context (a_variable_name: STRING; a_context: like context): EPA_EXPRESSION
 			-- Expression for variable named `a_variable_name'
 			-- The variable should appear in `a_context'.

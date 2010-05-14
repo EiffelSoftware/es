@@ -226,11 +226,11 @@ feature{NONE} -- Process
 			Precursor (a_request)
 
 				-- Variable information
-			l_type := a_request.type
+--WY		l_type := a_request.type
 			check l_type /= Void end
-			l_class := a_request.type.associated_class
+--WY		l_class := a_request.type.associated_class
 
-			l_var_index := a_request.variable.index
+--WY		l_var_index := a_request.variable.index
 			check l_var_index >= 0 end
 
 			l_is_good := False

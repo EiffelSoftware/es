@@ -97,9 +97,6 @@ feature -- Access
 			result_set: Result = log_file_path_cache
 		end
 
-	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
-			-- Configuration related to object states retrieval
-
 	log_processor: detachable STRING
 			-- Name of the specified log processor
 		do
@@ -274,6 +271,18 @@ feature -- Access
 			Result := is_post_state_serialized_cache
 		ensure then
 			good_result: Result = is_post_state_serialized_cache
+		end
+
+	is_all_query_state_enabled: BOOLEAN
+			-- Is state retrieval enabled for all queries?
+		do
+			Result := attached {AUT_OBJECT_STATE_CONFIG} object_state_config as l_config and then l_config.is_all
+		end
+
+	is_only_argumentless_query_state_enabled: BOOLEAN
+
+		do
+			Result := attached {AUT_OBJECT_STATE_CONFIG} object_state_config as l_config and then l_config.is_only_argumentless
 		end
 
 feature -- Access: cache
@@ -470,26 +479,6 @@ feature -- Status report
 			Result := is_evolutionary_testing_enabled_cache
 		ensure then
 			result_set: Result = is_evolutionary_testing_enabled_cache
-		end
-
-feature -- Object state retrieval
-
-	is_target_state_retrieved: BOOLEAN is
-			-- Should states of target objects be retrieved?
-		do
-			Result := object_state_config /= Void and then object_state_config.is_target_object_state_retrieval_enabled
-		end
-
-	is_argument_state_retrieved: BOOLEAN is
-			-- Should states of argument objects be retrieved?
-		do
-			Result := object_state_config /= Void and then object_state_config.is_argument_object_state_retrieval_enabled
-		end
-
-	is_query_result_state_retrieved: BOOLEAN is
-			-- Should states of objects returned as query results be retrieved?
-		do
-			Result := object_state_config /= Void and then object_state_config.is_query_result_object_state_retrieval_enabled
 		end
 
 feature -- Precondition satisfaction
@@ -748,22 +737,6 @@ feature -- Status setting
 				log_processor_output_cache := Void
 			end
 		end
-
---	set_serialization_filters (a_filters: like serialization_filters)
---			-- <Precursor>
---		do
---			if a_filters /= Void then
---				create serialization_filters_cache.make (a_filters.count)
---				from a_filters.start
---				until a_filters.after
---				loop
---					serialization_filters_cache.force (a_filters.item_for_iteration.twin)
---					a_filters.forth
---				end
---			else
---				serialization_filters_cache := Void
---			end
---		end
 
 	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries) is
 			-- Set `max_precondition_search_tries' with `a_tries'.

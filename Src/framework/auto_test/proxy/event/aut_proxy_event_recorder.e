@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 					create l_state_response.make_from_normal_response (l_normal_response)
 				end
 			else
-				create l_state_response.make_with_bad
+				create l_state_response.make_empty
 			end
 			a_request.set_response (l_state_response)
 		end

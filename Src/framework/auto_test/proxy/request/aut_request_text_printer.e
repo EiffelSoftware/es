@@ -130,12 +130,29 @@ feature {AUT_REQUEST} -- Processing
 
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
+		local
+			l_variables: HASH_TABLE [TYPE_A, INTEGER]
+			l_cursor: CURSOR
+			l_stream: like output_stream
 		do
-			output_stream.put_string (once ":state ")
-			output_stream.put_string (a_request.variable.name (variable_name_prefix))
-			output_stream.put_string (once " {")
-			output_stream.put_string (a_request.type.name)
-			output_stream.put_line (once "}")
+			l_stream := output_stream
+			l_stream.put_string (once ":state ")
+			l_variables := a_request.variables
+			l_cursor := l_variables.cursor
+			from
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_stream.put_string (variable_name_prefix)
+				l_stream.put_string (l_variables.key_for_iteration.out)
+				l_stream.put_string (once ": {")
+				l_stream.put_string (l_variables.item_for_iteration.name)
+				l_stream.put_string (once "}; ")
+				l_variables.forth
+			end
+			l_stream.put_line (once "")
+			l_variables.go_to (l_cursor)
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
@@ -192,7 +209,7 @@ invariant
 	output_stream_is_writable: output_stream.is_open_write
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

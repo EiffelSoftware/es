@@ -94,13 +94,8 @@ feature -- Access
 		deferred
 		end
 
-	is_interpreter_log_enabled: BOOLEAN
-			-- Should messages from the interpreter be logged?
-			-- Default: False
-		require
-			usable: is_interface_usable
-		deferred
-		end
+	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
+			-- Configuration related to object states retrieval
 
 feature -- Status report
 
@@ -184,26 +179,23 @@ feature -- Status report
 		deferred
 		end
 
+	is_interpreter_log_enabled: BOOLEAN
+			-- Should messages from the interpreter be logged?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Object state retrieval
 
-	is_target_state_retrieved: BOOLEAN is
-			-- Should states of target objects be retrieved?
-		require
-			usable: is_interface_usable
+	is_all_query_state_enabled: BOOLEAN
+			-- Is state retrieval enabled for all queries?
 		deferred
 		end
 
-	is_argument_state_retrieved: BOOLEAN is
-			-- Should states of argument objects be retrieved?
-		require
-			usable: is_interface_usable
-		deferred
-		end
+	is_only_argumentless_query_state_enabled: BOOLEAN
 
-	is_query_result_state_retrieved: BOOLEAN is
-			-- Should states of object returned as query results be retrieved?
-		require
-			usable: is_interface_usable
 		deferred
 		end
 
@@ -211,15 +203,8 @@ feature -- Object state retrieval
 			-- Should object state be retrieved?
 		do
 			Result :=
-				is_target_state_retrieved or else
-				is_argument_state_retrieved or else
-				is_query_result_state_retrieved
-		ensure
-			good_result:
-				Result =
-					is_target_state_retrieved or else
-					is_argument_state_retrieved or else
-					is_query_result_state_retrieved
+				is_all_query_state_enabled or else
+				is_only_argumentless_query_state_enabled
 		end
 
 feature -- Precondition satisfaction

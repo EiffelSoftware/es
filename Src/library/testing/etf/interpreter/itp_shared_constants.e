@@ -61,10 +61,23 @@ feature -- Index for extra data
 
 feature -- Strings
 
-	nonsensical: STRING is "nonsensical"
-			-- Nonsensical value
+	nonsensical_value: STRING = "[[nonsensical]]"
+			-- Nonsensical value, when there is an exception during expression evaluation
 
-note
+	invariant_violation_value: STRING = "[[invariant_violation]]"
+			-- Value when trying to evaluate an expression on an object which violates
+			-- its class invariants
+
+	void_value: STRING = "[[void]]"
+			-- Value when an expression evaluates to Void
+
+	reference_value: STRING = "[[reference]]"
+			-- Reference value
+
+	query_value_separator: STRING = " == "
+			-- String to separate query name and its value
+
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

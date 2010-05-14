@@ -1,68 +1,30 @@
 note
-	description: "AutoTest request to check states of an object"
+	description: "Shared data structure for object state retrieval"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AUT_OBJECT_STATE_REQUEST
+	AUT_SHARED_OBJECT_STATE_RETRIEVAL_CONTEXT
 
 inherit
-	AUT_REQUEST
-		rename
-			make as make_old
-		end
-
-	EPA_COMPILATION_UTILITY
-
-	AUT_SHARED_INTERPRETER_INFO
-
-	EPA_STRING_UTILITY
+	AUT_PREDICATE_UTILITY
 		undefine
 			system
 		end
 
-	AUT_SHARED_OBJECT_STATE_RETRIEVAL_CONTEXT
-
 feature -- Access
 
-
-	variables: HASH_TABLE [TYPE_A, INTEGER]
-			-- Variables whose states are to be retrieved
-			-- Key is object index (used in object pool), value is type of that variables.
-
-	byte_code_for_object_state_retrieval: STRING
-			-- String representation of the byte-code needed to retrieve object states
-		deferred
+	feature_text_table: DS_HASH_TABLE [TUPLE [pre_state_text: STRING; post_state_text: STRING], AUT_FEATURE_OF_TYPE]
+			-- Table of feature text used to retrieve states of operands of a feature
+			-- Key is the feature, value is a tuple. `pre_state_text' is the feature text to execute before the test case execution.
+			-- `post_state_text' is the feature text to execute after the test case execution.
+		once
+			create Result.make (256)
+			Result.set_key_equality_tester (feature_of_type_equality_tester)
 		end
 
-	config: detachable AUT_OBJECT_STATE_CONFIG
-			-- Configuration for object state retrieval
-
-feature -- Status report
-
-	is_for_feature: BOOLEAN
-			-- Is the state to be retrieved for operands of a feature?
-		do
-		end
-
-	is_for_objects: BOOLEAN
-			-- Is the state to be retrieved for an arbitrary set of objects?
-		do
-			Result := not is_for_feature
-		ensure
-			good_result: Result = not is_for_feature
-		end
-
-feature -- Processing
-
-	process (a_processor: AUT_REQUEST_PROCESSOR)
-			-- Process current request.
-		do
-			a_processor.process_object_state_request (Current)
-		end
-
-note
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

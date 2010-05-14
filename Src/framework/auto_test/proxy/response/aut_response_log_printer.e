@@ -116,11 +116,13 @@ feature -- Process
 			l_void: STRING
 			l_value: STRING
 			l_state: STRING
+			l_separator: STRING
 		do
 			l_void := object_state_void_value
 			print_line (multi_line_value_start_tag)
 			l_results := a_response.query_results
-			if not a_response.is_void and then not a_response.is_class_invariant_violated and then not a_response.is_bad then
+			if not a_response.is_bad then
+				l_separator := query_value_separator
 				create l_state.make (64)
 				from
 					l_results.start
@@ -130,30 +132,15 @@ feature -- Process
 						-- Print out query name in a line.
 					l_state.wipe_out
 					l_state.append (l_results.key_for_iteration)
-					l_state.append_character (':')
-
-						-- Print out query value (possibly in multiple lines).
-					if l_results.item_for_iteration = Void then
-						l_value := l_void
-					else
-						l_value := l_results.item_for_iteration
-						l_value.replace_substring_all ("%N", "%%N")
-					end
-					l_state.append (l_value)
+					l_state.append (l_separator)
+					l_state.append (l_results.item_for_iteration)
 					l_state.append_character ('%N')
-
 					print_lines_with_prefix (l_state, <<response_prefix, object_state_query_prefix>>)
 					l_results.forth
 				end
 			end
 			print_line (multi_line_value_end_tag)
-			if a_response.is_class_invariant_violated then
-				print_line (object_state_invariant_violation)
-			elseif a_response.is_void then
-				print_line (object_is_void)
-			else
-				print_line (interpreter_success_message)
-			end
+			print_line (interpreter_success_message)
 			print_line (interpreter_done_message)
 		end
 
@@ -243,7 +230,7 @@ invariant
 	output_stream_attached: output_stream /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

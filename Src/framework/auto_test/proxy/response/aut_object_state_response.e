@@ -12,57 +12,71 @@ inherit
 		rename
 			make as old_make
 		redefine
-			process,
-			is_bad
+			process
 		end
 
 	AUT_SHARED_CONSTANTS
 
+	EPA_UTILITY
+
+	ITP_SHARED_CONSTANTS
+
 create
 	make,
-	make_from_normal_response,
-	make_with_void,
-	make_with_class_invariant_violation,
-	make_with_bad
+	make_empty,
+	make_from_normal_response
 
 feature{NONE} -- Initialization
 
-	make (a_query_names: LIST [STRING]; a_values: detachable LIST [detachable STRING]; a_status: detachable LIST [BOOLEAN]) is
+	make (a_results: like query_results)
 			-- Initialize.
-		require
-			a_query_names_attached: a_query_names /= Void
-			a_values_a_status_valid:
-				(a_values /= Void implies a_status /= Void) and
-				(a_values /= Void and then a_status /= Void implies a_values.count = a_status.count and a_values.count = a_query_names.count)
-		local
-			l_count: INTEGER
 		do
-			raw_text := ""
-			if a_values /= Void then
-				l_count := a_values.count
-			end
-			create query_results.make (l_count)
-			query_results.compare_objects
-			if l_count > 0 then
-				from
-					a_values.start
-					a_status.start
-					a_query_names.start
-				until
-					a_values.after
-				loop
-						-- We only report those queries whose value have been retrieved.
-					if a_status.item then
-						query_results.force (a_values.item, a_query_names.item)
-					else
-						query_results.force (nonsensical, a_query_names.item)
-					end
-					a_values.forth
-					a_status.forth
-					a_query_names.forth
-				end
-			end
+			query_results := a_results
 		end
+
+	make_empty
+			-- Initialize an empty `query_results'.
+		do
+			create query_results.make (0)
+			query_results.compare_objects
+		end
+
+--	make (a_query_names: LIST [STRING]; a_values: detachable LIST [detachable STRING]; a_status: detachable LIST [BOOLEAN]) is
+--			-- Initialize.
+--		require
+--			a_query_names_attached: a_query_names /= Void
+--			a_values_a_status_valid:
+--				(a_values /= Void implies a_status /= Void) and
+--				(a_values /= Void and then a_status /= Void implies a_values.count = a_status.count and a_values.count = a_query_names.count)
+--		local
+--			l_count: INTEGER
+--		do
+--			raw_text := ""
+--			if a_values /= Void then
+--				l_count := a_values.count
+--			end
+--			create query_results.make (l_count)
+--			query_results.compare_objects
+--			if l_count > 0 then
+--				from
+--					a_values.start
+--					a_status.start
+--					a_query_names.start
+--				until
+--					a_values.after
+--				loop
+--						-- We only report those queries whose value have been retrieved.
+--					if a_status.item then
+--						query_results.force (a_values.item, a_query_names.item)
+--					else
+--						query_results.force (nonsensical_value, a_query_names.item)
+--					end
+--					a_values.forth
+--					a_status.forth
+--					a_query_names.forth
+--				end
+--			end
+--		end
 
 	make_from_normal_response (a_response: AUT_NORMAL_RESPONSE) is
 			-- Initialize Current with `a_response'.
@@ -100,7 +114,7 @@ feature{NONE} -- Initialization
 
 					if l_prefix.is_equal (l_query_name_prefix) then
 							-- We find a query name, store that.
-						l_pair := l_va.split (':')
+						l_pair := string_slices (l_va, query_value_separator)
 						check l_pair.count = 2 end
 
 						create l_query.make_from_string (l_pair.first)
@@ -116,56 +130,11 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make_with_void is
-			-- Initialize current response for Void.
-		do
-			create query_results.make (0)
-			is_void := True
-		end
-
-	make_with_class_invariant_violation
-			-- Initialize current response for an object which violates its invariants.
-		do
-			create query_results.make (0)
-			set_is_class_invariant_violated (True)
-		end
-
-	make_with_bad
-			-- Initialize current response for a bad one.
-		do
-			create query_results.make (0)
-			is_bad := True
-		end
-
-feature -- State report
-
-	is_class_invariant_violated: BOOLEAN
-			-- Is the object in an invariant violation
-			-- state when its state is requested?
-
-	is_void: BOOLEAN
-			-- Does current state response represent an Void object?
-
-	is_bad: BOOLEAN
-			-- Does current a bad response?
-
 feature -- Access
 
-	query_results: HASH_TABLE [detachable STRING, STRING]
+	query_results: HASH_TABLE [STRING, STRING]
 			-- Table to store results of queries
-			-- The attached result is stored as string representation, otherwise, Void is stored.
-			-- This table only stores achievable results, if there is an exception when trying to
-			-- evaluate a query, that result is not stored.
-
-feature -- Setting
-
-	set_is_class_invariant_violated (b: BOOLEAN) is
-			-- Set `is_class_invariant_violated' with `b'.
-		do
-			is_class_invariant_violated := b
-		ensure
-			is_class_invariant_violated_set: is_class_invariant_violated = b
-		end
+			-- Key is query name, value is the evaluated value of that query.
 
 feature -- Process
 
@@ -179,7 +148,7 @@ invariant
 	query_results_attached: query_results /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -91,9 +91,6 @@ feature{NONE} -- Implementation
 			-- Current feature whose linearly solvable precondition
 			-- is to be generated as a SMT-LIB file
 
-	current_match_list: LEAF_AS_LIST
-			-- Match list of current processed assertion
-
 	current_written_class: CLASS_C
 			-- Written class of currently processed assertion
 
@@ -115,7 +112,7 @@ feature{NONE} -- Process
 			l_operator: STRING
 		do
 				-- Get operator for current binary expression.
-			l_operator := normalized_string (l_as.operator (current_match_list).text (current_match_list))
+			l_operator := normalized_string (l_as.op_name.name)
 			if
 				l_operator.is_equal ("and then") or else
 				l_operator.is_equal ("and")
@@ -146,7 +143,7 @@ feature{NONE} -- Process
 		local
 			l_operator: STRING
 		do
-			l_operator := normalized_string (l_as.operator (current_match_list).text (current_match_list))
+			l_operator := normalized_string (l_as.operator_name)
 			has_unsupported_expression := True
 			fixme ("unsupported operator: " + l_operator)
 		end
@@ -201,7 +198,6 @@ feature{NONE} -- Generation
 				current_access_pattern := l_data.pattern
 				current_written_class := current_access_pattern.assertion.written_class
 				current_context_class := current_access_pattern.assertion.context_class
-				current_match_list := match_list_server.item (current_written_class.class_id)
 				current_access_pattern.assertion.ast.process (Current)
 				last_lpsolve.append (";%N")
 				assertions.forth

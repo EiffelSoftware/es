@@ -249,13 +249,6 @@ feature{NONE} -- Implementation
 							else
 								raise ("Bad data length format.")
 							end
-						elseif last_tag ~ post_serialization_length_tag_start then
-							if last_length /= Void and then last_length.is_integer then
-								l_length := last_length.to_integer
-								collect_serialization_tag_block (l_length, a_stream, False)
-							else
-								raise ("Bad data length format.")
-							end
 						end
 					else
 						raise ("Missing start tag.")
@@ -387,11 +380,8 @@ feature{NONE} -- Auxiliary routines
 				last_hash_code := pruned_string (a_block)
 			elseif a_tag ~ pre_state_tag_start then
 				last_pre_state := pruned_string (a_block)
-			elseif a_tag ~ post_state_tag_start then
 				last_post_state := pruned_string (a_block)
 			elseif a_tag ~ pre_serialization_length_tag_start then
-				last_length := pruned_string (a_block)
-			elseif a_tag ~ post_serialization_length_tag_start then
 				last_length := pruned_string (a_block)
 			else
 				check dead_end: False end
@@ -414,9 +404,6 @@ feature{NONE} -- Auxiliary routines
 			if a_is_pre then
 				l_prefix_count := pre_serialization_tag_start.count + cdata_tag_start.count
 				l_postfix_count := pre_serialization_tag_end.count + cdata_tag_end.count
-			else
-				l_prefix_count := post_serialization_tag_start.count + cdata_tag_start.count
-				l_postfix_count := post_serialization_tag_end.count + cdata_tag_end.count
 			end
 			l_length := a_length + l_prefix_count + l_postfix_count
 
@@ -684,11 +671,8 @@ feature{NONE} -- Constants
 				serialization_tags_cache.put (trace_tag_end,        trace_tag_start)
 				serialization_tags_cache.put (hash_code_tag_end,     hash_code_tag_start)
 				serialization_tags_cache.put (pre_state_tag_end, pre_state_tag_start)
-				serialization_tags_cache.put (post_state_tag_end, post_state_tag_start)
 				serialization_tags_cache.put (pre_serialization_length_tag_end,  pre_serialization_length_tag_start)
 				serialization_tags_cache.put (pre_serialization_tag_end,         pre_serialization_tag_start)
-				serialization_tags_cache.put (post_serialization_length_tag_end,  post_serialization_length_tag_start)
-				serialization_tags_cache.put (post_serialization_tag_end,         post_serialization_tag_start)
 			end
 
 			Result := serialization_tags_cache

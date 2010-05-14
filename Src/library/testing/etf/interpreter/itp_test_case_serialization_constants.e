@@ -36,20 +36,11 @@ feature -- Constants
 	pre_serialization_length_tag_start: STRING = "<pre_serialization_length>"
 	pre_serialization_length_tag_end: STRING = "</pre_serialization_length>"
 
-	post_serialization_length_tag_start: STRING = "<post_serialization_length>"
-	post_serialization_length_tag_end: STRING = "</post_serialization_length>"
-
 	pre_serialization_tag_start: STRING = "<pre_serialization>"
 	pre_serialization_tag_end: STRING = "</pre_serialization>"
 
-	post_serialization_tag_start: STRING = "<post_serialization>"
-	post_serialization_tag_end: STRING = "</post_serialization>"
-
 	pre_state_tag_start: STRING = "<pre_state>"
 	pre_state_tag_end: STRING = "</pre_state>"
-
-	post_state_tag_start: STRING = "<post_state>"
-	post_state_tag_end: STRING = "</post_state>"
 
 	CDATA_tag_start: STRING = "<![CDATA["
 	CDATA_tag_end: STRING = "]]>"

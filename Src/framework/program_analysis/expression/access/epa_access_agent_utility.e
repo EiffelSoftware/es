@@ -155,4 +155,42 @@ feature -- Expression veto agents
 					end
 		end
 
+	feature_not_from_agent_class_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select accesses which are not froun agent related classes.
+		do
+			Result := agent (a_access: EPA_ACCESS): BOOLEAN
+				local
+					l_class_id: INTEGER
+				do
+					if attached {EPA_ACCESS_NESTED} a_access as l_nested then
+						l_class_id := l_nested.left.context_class.class_id
+						Result :=
+							l_class_id /= system.function_class.compiled_representation.class_id and then
+							l_class_id /= system.procedure_class.compiled_representation.class_id and then
+							l_class_id /= system.predicate_class.compiled_representation.class_id and then
+							l_class_id /= system.routine_class.compiled_representation.class_id
+
+					else
+						Result := True
+					end
+				end
+		end
+
+	feature_not_from_tuple_class_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select accesses which are not froun TUPLE class.
+		do
+			Result := agent (a_access: EPA_ACCESS): BOOLEAN
+				local
+					l_class_id: INTEGER
+				do
+					if attached {EPA_ACCESS_NESTED} a_access as l_nested then
+						l_class_id := l_nested.left.context_class.class_id
+						Result :=
+							l_class_id /= system.tuple_class.compiled_representation.class_id
+					else
+						Result := True
+					end
+				end
+		end
+
 end

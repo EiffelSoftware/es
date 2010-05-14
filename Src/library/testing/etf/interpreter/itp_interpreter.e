@@ -78,8 +78,7 @@ feature {NONE} -- Initialization
 			store.set_is_typed_search_enabled (is_test_case_serialization_enabled)
 
 				-- Create storage for object state retrieval.
-			create query_values.make
-			create query_status.make
+			initialize_query_value_holders
 
 			create primitive_types.make (10)
 			primitive_types.put (1, "INTEGER_32")
@@ -106,8 +105,7 @@ feature {NONE} -- Initialization
 				-- Initialize predicate related data structure.
 			initialize_predicates
 
-				-- Initialize supported query name table.
-			initialize_supported_query_name_table
+			create internal
 
 				-- Create test case serializer.
 			create test_case_serializer.make (Current, is_post_state_serialized)
@@ -593,7 +591,7 @@ feature {NONE} -- Parsing
 						report_object_state_request
 
 					when precondition_evaluation_request_flag then
-						report_precondition_evaluation_request
+						report_error (invalid_request_type_error + once " Type code: " + last_request_type.out)
 
 					when predicate_evaluation_request_flag then
 						report_predicate_evaluate_request
@@ -776,137 +774,15 @@ feature{NONE} -- Invariant checking
 
 feature -- Object state checking
 
-	last_exception_trace: detachable STRING
-			-- Last exception trace
-
-	report_precondition_evaluation_request is
-			-- Report and precondition evaluation request.
-		local
-			l_result: detachable TUPLE
-		do
-			output_buffer.wipe_out
-			error_buffer.wipe_out
-			if attached {TUPLE [l_feature_name: STRING; l_arguments: ARRAY [INTEGER]]} last_request as l_request then
-				l_result := objects_satisfying_precondition (l_request.l_feature_name, l_request.l_arguments)
-				if l_result /= Void then
-					last_response := [l_request.l_arguments, output_buffer, error_buffer]
-				else
-					last_response := [Void, output_buffer, error_buffer]
-				end
-				refresh_last_response_flag
-				send_response_to_socket
-			else
-				report_error (invalid_precondition_evaluation_request)
-				last_response := [Void, output_buffer, error_buffer]
-				refresh_last_response_flag
-				send_response_to_socket
-			end
-		end
-
-	record_object_queries (a_object_index: INTEGER; a_object: ANY) is
-			-- Record queries of object with `a_object_index' in object pool into `query_values' and `query_status'.
-			-- If there the specified object is invariant-violating, `a_queries' is not changed,
-			-- and no error will be reported.
-		do
-			execute_protected_for_query_recording (a_object)
-		end
-
-	object_summary (a_object_index: INTEGER; a_static_type: STRING): TUPLE [obj_summary: STRING; hash: INTEGER] is
-			-- Summary of `a_object_index'
-			-- `obj_summary' is the summary of the variable given by index `a_object_index'.
-			-- `hash' is the hash code of the summary, with object index ignored.
-		require
-			a_object_index_valid: a_object_index > 0
-		local
-			o: detachable ANY
-			l_retried: BOOLEAN
-			l_values: like query_values
-			l_status: like query_status
-			l_queries: LINKED_LIST [STRING]
-			l_value: detachable STRING
-			l_hash: INTEGER
-			l_data: STRING
-			l_var_def: STRING
-		do
-			create l_var_def.make (32)
-			l_var_def.append (once "v_")
-			l_var_def.append (a_object_index.out)
-			l_var_def.append (once ": ")
-			l_var_def.append (a_static_type)
-			l_var_def.append_character ('%N')
-
-			if not l_retried then
-				create l_data.make (512)
-				initialize_query_value_holders
-				o := variable_at_index (a_object_index)
-
-				if o = Void then
-					l_data.append_character ('|')
-					l_data.append (once "[[Void]]%N")
-				else
-					check_invariant (a_object_index, o)
-					record_queries_with_static_type (o, a_static_type)
-					l_values := query_values
-					l_status := query_status
-					l_queries := supported_query_names_with_static_type (o, a_static_type)
-					if l_values.count = l_status.count and then l_values.count = l_queries.count then
-						from
-							l_values.start
-							l_status.start
-							l_queries.start
-						until
-							l_values.after
-						loop
-							l_data.append_character ('|')
-							l_data.append (l_queries.item_for_iteration)
-							l_data.append (once " = ")
-							if l_status.item_for_iteration then
-								l_value := l_values.item_for_iteration
-								if l_value = Void then
-									l_value := once "[[Void]]"
-								end
-								l_data.append (l_value)
-								l_data.append_character ('%N')
-							else
-								l_data.append (once "[[Error]]%N")
-							end
-							l_values.forth
-							l_status.forth
-							l_queries.forth
-						end
-					end
-				end
-				l_hash := l_data.hash_code
-				l_data.prepend (l_var_def)
-			else
-				create l_data.make (64)
-				l_data.append (l_var_def)
-				l_data.append (once "|[[Invariant_violation]]%N")
-				l_hash := l_data.hash_code
-				l_data.prepend (l_var_def)
-			end
-			Result := [l_data, l_hash]
-		ensure
-			result_attached: Result /= Void
-		rescue
-			l_retried := True
-			retry
-		end
-
-
 	initialize_query_value_holders is
 			-- Initialize `query_values' and `query_status'.
 		do
 			if query_values = Void then
-				create query_values.make
+				create query_values.make (20)
+				create query_value_hash_list.make
 			else
 				query_values.wipe_out
-			end
-
-			if query_status = Void then
-				create query_status.make
-			else
-				query_status.wipe_out
+				query_value_hash_list.wipe_out
 			end
 		end
 
@@ -916,62 +792,35 @@ feature -- Object state checking
 			o: detachable ANY
 			l_retried: BOOLEAN
 			l_bcode: STRING
-			l_index: INTEGER
-			l_ind_str: STRING
 		do
 			if not l_retried then
 				output_buffer.wipe_out
 				error_buffer.wipe_out
-				if attached {TUPLE [l_byte_code: STRING; l_object_ind: ANY]} last_request as l_request then
+				if attached {TUPLE [l_byte_code: STRING]} last_request as l_request then
 						-- Load byte-code.
 					l_bcode := l_request.l_byte_code
 					if l_bcode.count = 0 then
 						report_error (byte_code_length_error)
 					else
-							-- We first check if the invariant of the object is violated,
-							-- if so, we don't need to retrieve any state, instead,
-							-- an exception will be rasied, and an error message is sent back
-							-- to the interpreter.
-						l_ind_str ?= l_request.l_object_ind
-						l_index := l_ind_str.to_integer
-						o := variable_at_index (l_index)
-						if o = Void then
-							refresh_last_response_flag
-							last_response_flag := object_is_void_flag
-							last_response := [Void, Void, output_buffer, error_buffer]
-							send_response_to_socket
-						else
-							check_invariant (l_index, o)
+						log_message (once "report_object_state_request start%N")
 
-								-- If `o' is OK, we start checking the states of it.
-							log_message (once "report_object_state_request start%N")
-								-- Inject received byte-code into byte-code array of Current process.
-							eif_override_byte_code_of_body (
-								byte_code_feature_body_id,
-								byte_code_feature_pattern_id,
-								pointer_for_byte_code (l_bcode),
-								l_bcode.count)
+							-- Initialize query result storage
+						initialize_query_value_holders
 
-							if query_values = Void then
-								create query_values.make
-							else
-								query_values.wipe_out
-							end
+							-- Inject received byte-code into byte-code array of Current process.
+						eif_override_byte_code_of_body (
+							byte_code_feature_body_id,
+							byte_code_feature_pattern_id,
+							pointer_for_byte_code (l_bcode),
+							l_bcode.count)
 
-							if query_status = Void then
-								create query_status.make
-							else
-								query_status.wipe_out
-							end
-
-								-- Run the feature with newly injected byte-code.
---							execute_protected
-							execute_protected_for_query_recording (o)
-							log_message (once "report_object_state_request end%N")
-							last_response := [query_values, query_status, output_buffer, error_buffer]
-							refresh_last_response_flag
-							send_response_to_socket
-						end
+							-- Run the feature with newly injected byte-code.
+						last_response_flag := normal_response_flag
+						execute_protected
+						log_message (once "report_object_state_request end%N")
+						last_response := [query_values, output_buffer, error_buffer]
+						refresh_last_response_flag
+						send_response_to_socket
 					end
 				else
 					report_error (invalid_object_state_request)
@@ -991,153 +840,205 @@ feature -- Object state checking
 	invalid_object_state_request: STRING = "Invalid object state request."
 			-- Error message for invalid object state request
 
-	invalid_precondition_evaluation_request: STRING = "Invalid precondition evaluation request."
-
 	invalid_predicate_evaluation_request: STRING = "Invalid predicate evaluation request."
 
-	query_values: LINKED_LIST [detachable STRING]
-			-- List to store string representation of query values
+	query_values: HASH_TABLE [STRING, STRING]
+			-- Table to store string representation of query values
+			-- Key is query name, value is the value of that query
 
-	query_status: LINKED_LIST [BOOLEAN]
-			-- List to store if query value is retrievable.
-			-- An item at position `i' is False means that there was
-			-- an exception when that feature is being evaluated, so
-			-- the value is not retrievable.
+	query_value_hash_list: LINKED_LIST [INTEGER]
+			-- List of `query_values'.
+			-- The first element is the hash code of the value of the first evaluated query in an object state request,
+			-- the second element is the hash code of the value of the second evaluated query in an object state request, and so on.
 
-	reference_type_output_format: INTEGER
-			-- String representation format for reference type.
+	record_attribute_value (a_query_name: STRING; a_value: detachable ANY)
+			-- Record the query named `a_query_name' to have `a_value' into `query_values'.
+		local
+			l_internal: like internal
+			l_type: INTEGER
+			l_value: STRING
+		do
+			if a_value = Void then
+				query_values.put (void_value, a_query_name)
+			else
+				l_internal := internal
+				l_type := l_internal.dynamic_type (a_value)
+				if
+					l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.real_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.double_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.character_type)
+				then
+					l_value := a_value.out
+					query_values.put (l_value, a_query_name)
+					query_value_hash_list.extend (l_value.hash_code)
+				else
+					l_value := ($a_value).out
+					query_values.put (l_value, a_query_name)
+					query_value_hash_list.extend (l_value.hash_code)
+				end
+			end
+		end
 
-	record_query (a_query: FUNCTION [ANY, TUPLE, detachable ANY]) is
-			-- Execute `a_query' and extend the string representation of the result into `query_values'.
-			-- If the query execution succeeded, a True value will be extended to `query_status',
-			-- otherwise, a False value will be extended to `query_status'.
+	record_function_value (a_query_name: STRING; a_query: FUNCTION [ANY, TUPLE, detachable ANY])
+			-- Evaluate the query specified by `a_query' and record its value into `query_values'
+			-- under the name `a_query_name'.
 		require
 			a_query_attached: a_query /= Void
 		local
 			l_retried: BOOLEAN
 			l_result: detachable ANY
-			l_str_result: detachable STRING
+			l_internal: like internal
+			l_type: INTEGER
+			l_value: STRING
 		do
 			if not l_retried then
 				l_result := a_query.item (Void)
 				if l_result = Void then
-					l_str_result := Void
+					query_values.put (void_value, a_query_name)
 				else
-					if reference_type_output_format = value_as_string then
-						l_str_result := l_result.out
-					elseif reference_type_output_format = value_as_address then
-						l_str_result := ($l_result).out
+					l_internal := internal
+					l_type := l_internal.dynamic_type (l_result)
+					if
+						l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
+						l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
+						l_internal.type_conforms_to (l_type, l_internal.real_type) or else
+						l_internal.type_conforms_to (l_type, l_internal.double_type) or else
+						l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
+						l_internal.type_conforms_to (l_type, l_internal.character_type)
+					then
+						l_value := l_result.out
+						query_values.put (l_value, a_query_name)
+						query_value_hash_list.extend (l_value.hash_code)
+					else
+						l_value := ($l_result).out
+						query_values.put (l_value, a_query_name)
+						query_value_hash_list.extend (reference_value.hash_code)
 					end
 				end
-				query_values.extend (l_str_result)
-				query_status.extend (True)
 			end
 		rescue
-			query_values.extend (Void)
-			query_status.extend (False)
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_message ("-----------------------------------------------%N")
+			log_message (a_query_name + "%N")
+			log_message (exception_trace)
 			l_retried := True
 			retry
 		end
 
-	record_object_state_basic (a_any: ANY) is
-			-- Record the query "out" of `a_any'.
-		local
-			l_retried: BOOLEAN
+	record_void_value (a_variable_index: INTEGER)
+			-- Record that object with `a_variable_index' is Void into `query_values'.
 		do
-			if not l_retried then
-				query_values.extend (a_any.out)
-				query_status.extend (True)
-			end
-		rescue
-			query_values.extend (Void)
-			query_status.extend (False)
-			l_retried := True
-			retry
+			query_values.put (void_value, object_name (a_variable_index))
+			query_value_hash_list.extend (void_value.hash_code)
+			log_message ("v_" + a_variable_index.out + " is void.%N")
 		end
 
-	value_as_string: INTEGER = 0
-			-- Flag to indicate that the string representation of the query value is retrieved by calling `out' on that value.
-
-	value_as_address: INTEGER = 1
-			-- Flag to indicate that the string repsrsentation of the query value is its memory address.
-
-	record_queries (o: ANY) is
-			-- Record queries for `o'.
-		deferred
-		end
-
-	record_queries_with_static_type (o: ANY; a_static_type: STRING)
-			-- Record quereis for `o' whose static type name is `a_static_type'
-		deferred
-		end
-
-	execute_protected_for_query_recording (o: ANY)
-			-- Execute `procedure' in a protected way.
-			-- Note: This is a walkaround for the issue that the interpreter
-			-- cannot deal with exceptions in melted code correctly.
-			-- Remove this feature when that issue is fixed. 19.03.2009 Jason
-		local
-			failed: BOOLEAN
+	record_basic_value (a_variable_index: INTEGER; a_value: STRING)
+			-- Record that object with `a_variable_index' has value `a_value' into `query_values'.
+			-- That object must be of primitive type.
 		do
-			is_last_protected_execution_successful := False
-			if not failed then
-				record_queries (o)
-				is_last_protected_execution_successful := True
-			end
-		rescue
-			failed := True
-			report_trace
---			if exception = Class_invariant then
---					-- A class invariant cannot be recovered from since we
---					-- don't know how many and what objects are now invalid
---				should_quit := True
---			end
-			retry
+			query_values.put (a_value, object_name (a_variable_index))
+			query_value_hash_list.extend (a_value.hash_code)
+			log_message ("v_" + a_variable_index.out + " is " + a_value + "%N")
 		end
+
+	record_invariant_violating_value (a_variable_index: INTEGER)
+			-- Record that object with `a_variable_index' voilates its class invariants in `query_values'.
+		do
+			query_values.put (invariant_violation_value, object_name (a_variable_index))
+			query_value_hash_list.extend (invariant_violation_value.hash_code)
+		end
+
+	object_name (a_index: INTEGER): STRING
+			-- Name of object with `a_index'
+		do
+			create Result.make (5)
+			Result.append (once "v_")
+			Result.append (a_index.out)
+		end
+
+	internal: INTERNAL
+			-- Internal to get types of an object
+
+feature -- Function types
+
+	function0: FUNCTION [ANY, TUPLE, INTEGER]
+	function1: FUNCTION [ANY, TUPLE, INTEGER_8]
+	function2: FUNCTION [ANY, TUPLE, INTEGER_16]
+	function3: FUNCTION [ANY, TUPLE, INTEGER_64]
+	function4: FUNCTION [ANY, TUPLE, NATURAL]
+	function5: FUNCTION [ANY, TUPLE, NATURAL_8]
+	function6: FUNCTION [ANY, TUPLE, NATURAL_16]
+	function7: FUNCTION [ANY, TUPLE, NATURAL_64]
+	function8: FUNCTION [ANY, TUPLE, REAL_32]
+	function9: FUNCTION [ANY, TUPLE, REAL_64]
+	function10: FUNCTION [ANY, TUPLE, BOOLEAN]
+	function11: FUNCTION [ANY, TUPLE, CHARACTER]
+	function12: FUNCTION [ANY, TUPLE, CHARACTER_32]
+	function13: FUNCTION [ANY, TUPLE, POINTER]
+	function14: FUNCTION [ANY, TUPLE, ANY]
+
+	function20: FUNCTION [ANY, TUPLE [INTEGER], INTEGER]
+	function21: FUNCTION [ANY, TUPLE [INTEGER], INTEGER_8]
+	function22: FUNCTION [ANY, TUPLE [INTEGER], INTEGER_16]
+	function23: FUNCTION [ANY, TUPLE [INTEGER], INTEGER_64]
+	function24: FUNCTION [ANY, TUPLE [INTEGER], NATURAL]
+	function25: FUNCTION [ANY, TUPLE [INTEGER], NATURAL_8]
+	function26: FUNCTION [ANY, TUPLE [INTEGER], NATURAL_16]
+	function27: FUNCTION [ANY, TUPLE [INTEGER], NATURAL_64]
+	function28: FUNCTION [ANY, TUPLE [INTEGER], REAL_32]
+	function29: FUNCTION [ANY, TUPLE [INTEGER], REAL_64]
+	function30: FUNCTION [ANY, TUPLE [INTEGER], BOOLEAN]
+	function31: FUNCTION [ANY, TUPLE [INTEGER], CHARACTER]
+	function32: FUNCTION [ANY, TUPLE [INTEGER], CHARACTER_32]
+	function33: FUNCTION [ANY, TUPLE [INTEGER], POINTER]
+	function34: FUNCTION [ANY, TUPLE [INTEGER], ANY]
+
+	function40: FUNCTION [ANY, TUPLE [BOOLEAN], INTEGER]
+	function41: FUNCTION [ANY, TUPLE [BOOLEAN], INTEGER_8]
+	function42: FUNCTION [ANY, TUPLE [BOOLEAN], INTEGER_16]
+	function43: FUNCTION [ANY, TUPLE [BOOLEAN], INTEGER_64]
+	function44: FUNCTION [ANY, TUPLE [BOOLEAN], NATURAL]
+	function45: FUNCTION [ANY, TUPLE [BOOLEAN], NATURAL_8]
+	function46: FUNCTION [ANY, TUPLE [BOOLEAN], NATURAL_16]
+	function47: FUNCTION [ANY, TUPLE [BOOLEAN], NATURAL_64]
+	function48: FUNCTION [ANY, TUPLE [BOOLEAN], REAL_32]
+	function49: FUNCTION [ANY, TUPLE [BOOLEAN], REAL_64]
+	function50: FUNCTION [ANY, TUPLE [BOOLEAN], BOOLEAN]
+	function51: FUNCTION [ANY, TUPLE [BOOLEAN], CHARACTER]
+	function52: FUNCTION [ANY, TUPLE [BOOLEAN], CHARACTER_32]
+	function53: FUNCTION [ANY, TUPLE [BOOLEAN], POINTER]
+	function54: FUNCTION [ANY, TUPLE [BOOLEAN], ANY]
+
+
+
+--	function40: FUNCTION [ANY, TUPLE [], INTEGER]
+--	function41: FUNCTION [ANY, TUPLE [], INTEGER_8]
+--	function42: FUNCTION [ANY, TUPLE [], INTEGER_16]
+--	function43: FUNCTION [ANY, TUPLE [], INTEGER_64]
+--	function44: FUNCTION [ANY, TUPLE [], NATURAL]
+--	function45: FUNCTION [ANY, TUPLE [], NATURAL_8]
+--	function46: FUNCTION [ANY, TUPLE [], NATURAL_16]
+--	function47: FUNCTION [ANY, TUPLE [], NATURAL_64]
+--	function48: FUNCTION [ANY, TUPLE [], REAL_32]
+--	function49: FUNCTION [ANY, TUPLE [], REAL_64]
+--	function50: FUNCTION [ANY, TUPLE [], BOOLEAN]
+--	function51: FUNCTION [ANY, TUPLE [], CHARACTER]
+--	function52: FUNCTION [ANY, TUPLE [], CHARACTER_32]
+--	function53: FUNCTION [ANY, TUPLE [], POINTER]
+--	function54: FUNCTION [ANY, TUPLE [], ANY]
+
+		-- Those types are here to make sure the byte-code generated on-the-fly
+		-- works.
 
 feature -- Precondition satisfaction
 
-	safe_satisfied_objects (a_agent: FUNCTION [ANY, TUPLE, TUPLE]; a_args: TUPLE): detachable TUPLE is
-			-- Evaluate precondition wrapped in `a_agent' using arguments `a_args'.
-			-- If the precondition is satisfied, return the set of objects that satisfy
-			-- the precondition. In most of the cases, the original objects in `a_args' will be returned
-			-- In the case when linear constrain solving is needed, the returned satisfied integers may
-			-- be different from the original.
-			-- If there is an exception during precondition evaluation, return Void.
-		local
-			l_retried: BOOLEAN
-			l_checking: BOOLEAN
-		do
-			if not l_retried then
-				l_checking := {ISE_RUNTIME}.check_assert (False)
-				Result := a_agent.item (a_args)
-				l_checking := {ISE_RUNTIME}.check_assert (l_checking)
-			else
-				Result := Void
-			end
-		rescue
-			l_retried := True
-			l_checking := {ISE_RUNTIME}.check_assert (l_checking)
-			retry
-		end
-
-	precondition_table: HASH_TABLE [FUNCTION [ANY, TUPLE, TUPLE], STRING]
-			-- Table for precondition evaluation agents for features under test
-			-- [agent, feature_identifier]
-			-- Key is the feature identifier in the form of "CLASS_NAME.feature_name".
-			-- Value is the agent used to evaluate precondition of that feature.
-
 	argument_arrays: ARRAY [ARRAY [INTEGER]]
 			-- Array for arguments used in predicate evaluation
-
-	objects_satisfying_precondition (a_feature: STRING; a_args: ARRAY [INTEGER]): detachable TUPLE is
-			--
-		local
-			l_agent: FUNCTION [ANY, TUPLE, TUPLE]
-		do
-			l_agent := precondition_table.item (a_feature)
-			Result := safe_satisfied_objects (l_agent, arguement_tuple_from_indexes (a_args, a_args.lower, a_args.upper))
-		end
 
 	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE is
 			-- Tuple containing objects with `a_indexes'
@@ -1433,54 +1334,6 @@ feature -- Test case serialization
 	test_case_serializer: ITP_TEST_CASE_SERIALIZER
 			-- Test case serializer
 
-	supported_query_names (o: ANY): LINKED_LIST [STRING] is
-			-- Suported query names for `o' for state retrieval
-		require
-			o_attached: o /= Void
-		deferred
-		ensure
-			result_attached: Result /= Void
-		end
-
-
-	supported_query_names_with_static_type (o: ANY; a_static_type: STRING): LINKED_LIST [STRING]
-		require
-			o_attached: o /= Void
-			a_static_type_attached: a_static_type /= Void
-		deferred
-		ensure
-			result_attached: Result /= Void
-		end
-
-	supported_query_types (o: ANY): STRING is
-			-- Suported query types for `o' for state retrieval
-		require
-			o_attached: o /= Void
-		deferred
-		ensure
-			result_attached: Result /= Void
-		end
-
-	initialize_supported_query_name_table is
-			-- Initialize `supported_query_name_table'.
-		deferred
-		end
-
-	supported_query_name_table: HASH_TABLE [LINKED_LIST [STRING], INTEGER]
-			-- Table for supported query names
-			-- Key is an integer representing different types,
-			-- Value is a list of supported query names.
-
-	supported_query_type_table: HASH_TABLE [STRING, INTEGER]
-			-- Table for type of supported query names.
-			-- Key is an integer representing different types,
-			-- Value is a string containing the query types, for example,
-			-- if there are 4 queries supported for a type, the first 3 queries are
-			-- of type INTEGER and then fourth query is of type BOOLEAN, the string
-			-- will be "iiib".
-			-- 'i' for INTEGER types
-			-- 'b' for BOOLEAN types
-
 	retrieve_test_case_prestate (a_data: detachable ANY) is
 			-- Retrieve prestate of operands for the test case to be executed next.
 			-- Store serialized objects in `serialized_objects' and
@@ -1530,7 +1383,7 @@ feature -- Test case serialization
 			-- Is test case serialization enabled?
 
 	is_duplicated_test_case_serialized: BOOLEAN
-			-- Should duplicated test case be serialized?
+			-- Should duplicated test case be serialized?		
 
 invariant
 	log_file_open_write: log_file.is_open_write

@@ -261,7 +261,7 @@ feature -- Basic operations
 		do
 			l_class ?= a_fix.recipient_written_class
 			l_feat := a_fix.origin_recipient
-			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text)
+			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text, False)
 			if not l_data.byte_code.is_empty then
 				l_body_id := l_feat.real_body_id (l_class.types.first) - 1
 				l_pattern_id := l_feat.real_pattern_id (l_class.types.first)

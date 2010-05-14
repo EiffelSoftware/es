@@ -41,10 +41,11 @@ feature -- Basic operations
 			end
 		end
 
-	feature_byte_code_with_text (a_written_class: EIFFEL_CLASS_C; a_feature: FEATURE_I; a_text: STRING): TUPLE [byte_code: STRING; last_bpslot: INTEGER]
+	feature_byte_code_with_text (a_written_class: EIFFEL_CLASS_C; a_feature: FEATURE_I; a_text: STRING; a_ignore_export: BOOLEAN): TUPLE [byte_code: STRING; last_bpslot: INTEGER]
 			-- String containing byte code for feature
 			-- `byte_code' is the string representation for the byte-code.
 			-- `last_bpslot' is the last break point slot of the feature.
+			-- `a_ignore_export' indicates if feature call visibility is ignored.
 		require
 			a_written_class_attached: a_written_class /= Void
 			a_feature_attached: a_feature /= Void
@@ -72,6 +73,7 @@ feature -- Basic operations
 				l_ast_context.initialize (a_written_class, a_written_class.actual_type, a_written_class.feature_table)
 				l_ast_context.set_current_feature (a_feature)
 				l_ast_context.set_written_class (a_written_class)
+				l_ast_context.set_is_ignoring_export (a_ignore_export)
 				l_feature_checker := feature_checker
 				l_feature_checker.init (l_ast_context)
 				l_feature_checker.type_check_and_code (a_feature, True, False)

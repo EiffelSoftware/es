@@ -176,7 +176,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_load_log_option)
 
 			create l_state_option.make_with_long_form ("state")
-			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated names. The supported parameters are target, argument and result. For example: %"target,argument%" means only retrieve state for target and argument objects.")
+			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated names. The supported parameters are %"argumentless%" and %"all%". Default is %"argumentless%".")
 			parser.options.force_last (l_state_option)
 
 			create l_precondition_option.make ('p', "precondition")
@@ -414,6 +414,8 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				if l_state_option.was_found then
 					create object_state_config.make_with_string (l_state_option.parameter)
+				else
+					create object_state_config.make
 				end
 			end
 

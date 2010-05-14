@@ -126,21 +126,18 @@ feature{NONE} -- Implementation
 			-- `a_pre_execution' indicates that the resulting expressions should be evaluated before
 			-- the execution of the test case.
 		local
-			l_before_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
+			l_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_context: EPA_CONTEXT
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True)
-
-			create l_before_expr_finder.make (config.data_directory)
-			l_before_expr_finder.set_class_and_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test)
-			l_before_expr_finder.set_context (l_context, a_tc_info.operand_map)
-			l_before_expr_finder.set_is_for_pre_execution (a_pre_execution)
-			l_before_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
-			l_before_expr_finder.search (Void)
-			l_functions := nullary_functions (l_before_expr_finder.functions, l_context)
+			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory)
+			l_expr_finder.set_is_for_pre_execution (a_pre_execution)
+			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
+			l_expr_finder.search (Void)
+			l_functions := nullary_functions (l_expr_finder.functions, l_context)
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]) do a_set.force_last (a_function.as_expression) end (?, Result))

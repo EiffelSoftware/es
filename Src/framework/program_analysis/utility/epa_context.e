@@ -58,6 +58,7 @@ feature{NONE} -- Initialization
 			variables := a_variables
 			feature_ := environment_feature (variables)
 			create feature_context.make_with_locals (feature_, a_variables)
+			is_dummy_feature_used := True
 		end
 
 	make_with_class_and_variable_names (a_class: like class_; a_variables: HASH_TABLE [STRING, STRING])
@@ -172,6 +173,9 @@ feature -- Access
 			l_variables.go_to (l_cursor)
 		end
 
+	transition_feature_name: STRING = "dummy__feature"
+			-- Name of the fake feature used to type check feature transitions
+
 feature -- Status report
 
 	is_variables_valid (a_variables: HASH_TABLE [STRING, STRING]; a_context_class: CLASS_C): BOOLEAN
@@ -202,6 +206,9 @@ feature -- Status report
 		do
 			Result := variables.has (a_name)
 		end
+
+	is_dummy_feature_used: BOOLEAN
+			-- Is dummy feature used?
 
 feature -- Type checking
 
@@ -264,8 +271,5 @@ feature{NONE} -- Implementation
 			Result.set_written_in (l_class.class_id)
 			Result.set_feature_name_id (l_name_id, l_name_id)
 		end
-
-	transition_feature_name: STRING = "dummy__feature"
-			-- Name of the fake feature used to type check feature transitions
 
 end

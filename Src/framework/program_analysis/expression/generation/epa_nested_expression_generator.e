@@ -20,6 +20,8 @@ inherit
 
 	EPA_SHARED_EXPR_TYPE_CHECKER
 
+	SHARED_NAMES_HEAP
+
 create
 	make
 
@@ -76,14 +78,49 @@ feature -- Basic operations
 			final_expression_veto_agent_set: final_expression_veto_agent = a_agent
 		end
 
+	generate_for_dummy_feature (a_context: EPA_CONTEXT)
+			-- Generate accesses for dummy feature defined in `a_context'.
+		local
+			l_new: ARRAYED_LIST [EPA_ACCESS]
+			l_accesses: like accesses
+			l_local_tbl: HASH_TABLE [TYPE_A, STRING]
+			l_position: INTEGER
+			l_cursor: CURSOR
+			l_access_local: EPA_ACCESS_LOCAL
+			l_veto: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+		do
+			context_class := a_context.class_
+			context_feature := a_context.feature_
+			create accesses.make (initial_capacity)
+			l_accesses := accesses
+
+				-- Generate accesses for FAKE local variables.
+				-- Those local variables are fake becaue `context_feature' is a dummy feature.
+			l_local_tbl := a_context.variables
+			l_cursor := l_local_tbl.cursor
+			l_veto := expression_veto_agents.item (1)
+			from
+				l_local_tbl.start
+			until
+				l_local_tbl.after
+			loop
+				create l_access_local.make (context_class, context_feature, context_class, l_local_tbl.key_for_iteration, l_position, l_local_tbl.item_for_iteration)
+				if l_veto.item ([l_access_local]) then
+					l_accesses.extend (l_access_local)
+				end
+				l_local_tbl.forth
+			end
+			l_local_tbl.go_to (l_cursor)
+
+				-- Generate expressions at level 2 or above.
+			generate_for_level_2_or_above
+		end
+
 	generate (a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Generate accesses for `a_feature' in `a_class' and
 			-- store results in `accesses'.
 		local
 			l_new: ARRAYED_LIST [EPA_ACCESS]
-			l_access: EPA_ACCESS
-			l_level: INTEGER
-			l_veto: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
 			l_accesses: like accesses
 		do
 			fixme ("a_feature needs to be attached now, but is not necessary. 27.11.2009 Jasonw")
@@ -94,32 +131,8 @@ feature -- Basic operations
 			l_accesses := accesses
 			l_new := initial_accesses (a_class, a_feature)
 			l_accesses.append (l_new)
-			from
-				l_level := 2
-			until
-				l_level > level
-			loop
-				l_accesses.append (accesses_at_level (l_accesses, l_level))
-				l_level := l_level + 1
-			end
 
-				-- Strip results with `final_expression_veto_agent'.
-			if final_expression_veto_agent /= Void then
-				l_veto := final_expression_veto_agent
-			else
-				l_veto := default_access_veto_agent
-			end
-			from
-				l_accesses.start
-			until
-				l_accesses.after
-			loop
-				if l_veto.item ([l_accesses.item]) then
-					l_accesses.forth
-				else
-					l_accesses.remove
-				end
-			end
+			generate_for_level_2_or_above
 		end
 
 feature{NONE} -- Implementation
@@ -257,6 +270,7 @@ feature{NONE} -- Implementation
 			l_veto: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
 			i: INTEGER
 			l_locals: HASH_TABLE [LOCAL_INFO, INTEGER]
+			l_local: LOCAL_INFO
 		do
 				-- Setup the initial accesses.
 			create l_new.make (initial_capacity)
@@ -284,7 +298,8 @@ feature{NONE} -- Implementation
 				until
 					l_locals.after
 				loop
-					l_new.extend (create {EPA_ACCESS_LOCAL}.make (a_class, a_feature, a_feature.written_class, l_locals.key_for_iteration))
+					l_local := l_locals.item_for_iteration
+					l_new.extend (create {EPA_ACCESS_LOCAL}.make (a_class, a_feature, a_feature.written_class, names_heap.item (l_locals.key_for_iteration), l_local.position, l_local.type))
 					l_locals.forth
 				end
 			end
@@ -348,6 +363,42 @@ feature{NONE} -- Implementation
 				ored_agents (<<
 					integer_expression_veto_agent,
 					boolean_expression_veto_agent>>)
+		end
+
+	generate_for_level_2_or_above
+			-- Generate expressions for level two or above.
+		local
+			l_level: INTEGER
+			l_veto: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			l_accesses: like accesses
+		do
+			l_accesses := accesses
+			from
+				l_level := 2
+			until
+				l_level > level
+			loop
+				l_accesses.append (accesses_at_level (l_accesses, l_level))
+				l_level := l_level + 1
+			end
+
+				-- Strip results with `final_expression_veto_agent'.
+			if final_expression_veto_agent /= Void then
+				l_veto := final_expression_veto_agent
+			else
+				l_veto := default_access_veto_agent
+			end
+			from
+				l_accesses.start
+			until
+				l_accesses.after
+			loop
+				if l_veto.item ([l_accesses.item]) then
+					l_accesses.forth
+				else
+					l_accesses.remove
+				end
+			end
 		end
 
 end

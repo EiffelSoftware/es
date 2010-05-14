@@ -72,6 +72,8 @@ inherit
 			system
 		end
 
+	AUT_SHARED_OBJECT_STATE_RETRIEVAL_CONTEXT
+
 create
 	make
 
@@ -1223,77 +1225,6 @@ feature -- Log processor
 
 --	serialization_processors_internal: like serialization_processors
 --			-- Internal storage of serialization processors.
-
-feature -- CITADEL related
-
-	generate_citadel_tests
-			-- Generate tests for CITADEL from an existing proxy log file.
-		local
---			l_gen: AUT_CITADEL_TEST_GENERATOR
-		do
---			create l_gen.make (result_repository, interpreter, error_handler, system, output_dirname)
---			l_gen.generate_tests (class_names)
-		end
-
-feature -- Repository generation
-
-	build_failure_only_result_repository
-			-- Build result repository from failure log file.
-			-- Ilinca, "number of faults law" experiment
---		local
---			log_stream: KL_TEXT_INPUT_FILE
---			builder: AUT_RESULT_REPOSITORY_BUILDER
-		do
---			create result_repository.make
---			create log_stream.make (log_file_path)
---			log_stream.open_read
---			if not log_stream.is_open_read then
---				error_handler.report_cannot_read_error (log_file_path)
---			else
---				create builder.make  (system, error_handler)
---				builder.build (log_stream)
---				result_repository := builder.last_result_repository
---				log_stream.close
---			end
---		ensure
---			result_repository_not_void: result_repository /= Void
-		end
-
-	build_citadel_result_repository
-			-- Build result repository from log file.
---		local
---			log_stream: KL_TEXT_INPUT_FILE
---			builder: AUT_CITADEL_RESULT_REPOSITORY_BUILDER
-		do
---			create result_repository.make
---			create log_stream.make (log_file_path)
---			log_stream.open_read
---			if not log_stream.is_open_read then
---				error_handler.report_cannot_read_error (log_file_path)
---			else
---				create builder.make  (system, error_handler)
---				builder.build (log_stream)
---				result_repository := builder.last_result_repository
---				log_stream.close
---			end
---		ensure
---			result_repository_not_void: result_repository /= Void
-		end
-
-	generate_failure_statistics
---		require
---			result_repository_not_void: result_repository /= Void
---		local
---			l_generator: AUT_FAILURE_STATISTICS_GENERATOR
-		do
---			create l_generator.make ("", file_system.pathname (output_dirname, "result"), system, classes_under_test)
---			l_generator.generate (result_repository)
---			if l_generator.has_fatal_error then
---				error_handler.report_text_generation_error
---			else
---				error_handler.report_text_generation_finished (l_generator.absolute_index_filename)
---			end
-		end
 
 invariant
 	not_running_implies_status_compiling: not is_running implies (status = compile_status_code)

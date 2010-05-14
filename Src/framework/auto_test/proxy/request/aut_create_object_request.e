@@ -16,7 +16,8 @@ inherit
 			make as make_request,
 			feature_to_call as creation_procedure
 		redefine
-			creation_procedure
+			creation_procedure,
+			is_creation
 		end
 
 create
@@ -80,7 +81,7 @@ feature -- Access
 			-- `creation_procecure' will be Void.
 
 	operand_indexes: SPECIAL [INTEGER] is
-			-- Indexes of operands for the feature call
+			-- Indexes of operands (indexes are used in object pool) for the feature call
 			-- in current
 		do
 			if argument_list /= Void then
@@ -93,8 +94,10 @@ feature -- Access
 			end
 		end
 
-	operand_types: SPECIAL [STRING] is
-			-- Typss of operands
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		local
 			l_count: INTEGER
 			l_args: FEAT_ARG
@@ -107,7 +110,7 @@ feature -- Access
 			l_count := argument_list.count + 1
 
 			create Result.make (l_count)
-			Result.put (cleaned_type_name (l_target_type.name), 0)
+			Result.put (l_target_type, 0)
 
 			if argument_count > 0 then
 				l_args := creation_procedure.arguments
@@ -120,13 +123,39 @@ feature -- Access
 				loop
 					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
-					Result.put (cleaned_type_name (l_type.name), i)
+					Result.put (l_type, i)
 					l_args.forth
 					i := i + 1
 				end
 				l_args.go_to (l_cursor)
 			end
 		end
+
+	operand_type_table: HASH_TABLE [TYPE_A, INTEGER]
+			-- A table for opernad indexes and their associated types
+			-- Key is 0-based operand index, value is type of that operand.
+		local
+			l_opd_types: like operand_types
+			i: INTEGER
+			c: INTEGER
+		do
+			l_opd_types := operand_types
+			c := l_opd_types.count
+			create Result.make (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (l_opd_types.item (i), i)
+				i := i + 1
+			end
+		end
+
+feature -- Status report
+
+	is_creation: BOOLEAN = True
+			-- Is Current a creation procedure request?
 
 feature -- Processing
 

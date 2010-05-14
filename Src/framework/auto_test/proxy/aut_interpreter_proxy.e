@@ -437,7 +437,7 @@ feature -- Execution
 			normal_response: AUT_NORMAL_RESPONSE
 			l_arg_list: DS_LINEAR [ITP_EXPRESSION]
 			l_request: AUT_CREATE_OBJECT_REQUEST
-			l_var_set: like variable_set
+			l_is_passing: BOOLEAN
 		do
 			l_arg_list := an_argument_list
 			if l_arg_list = Void then
@@ -450,11 +450,12 @@ feature -- Execution
 			last_operands := l_request.operand_indexes
 
 			set_test_case_index (l_request)
+
+				-- Object state recording.
 			if is_state_recording_enabled then
-				l_var_set := variable_set
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				record_object_states (l_var_set)
+				record_operand_states (l_request, True)
 			end
+
 			last_request := l_request
 			last_request.process (socket_data_printer)
 			proxy_log_printers.set_start_time (test_duration)
@@ -471,13 +472,12 @@ feature -- Execution
 						normal_response_not_void: normal_response /= Void
 					end
 					if not normal_response.has_exception then
+						l_is_passing := True
 						variable_table.define_variable (a_receiver, a_type)
 							-- Predicate evaluation.
 						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), a_receiver, an_argument_list, Void)
-					else -- Ilinca, "number of faults law" experiment
+					else
 						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), Void, an_argument_list, Void)
-						if not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid then
-						end
 					end
 				end
 			else
@@ -485,16 +485,6 @@ feature -- Execution
 			end
 			stop_process_on_problems (last_response)
 			log_speed
-
-				-- Retrieve object states.
-			if is_running and then  is_state_recording_enabled then
-				l_var_set.wipe_out
-				if variable_table.is_variable_defined (a_receiver) then
-					retrieve_target_object_state (a_receiver, l_var_set)
-				end
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				record_object_states (l_var_set)
-			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -517,7 +507,6 @@ feature -- Execution
 			l_feature: FEATURE_I
 			l_target_type: TYPE_A
 			l_objects: DS_LINEAR [ITP_EXPRESSION]
-			l_var_set: like variable_set
 			l_object_state: AUT_OBJECT_STATE
 			l_normal_response: AUT_NORMAL_RESPONSE
 		do
@@ -535,23 +524,7 @@ feature -- Execution
 			set_test_case_index (l_invoke_request)
 
 			if is_state_recording_enabled then
-				l_var_set := variable_set
-
-				if configuration.is_target_state_retrieved then
-					l_var_set.wipe_out
-					retrieve_target_object_state (a_target, l_var_set)
-					record_object_states (l_var_set)
-					if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
-						create l_object_state.make (l_object_state_response)
-						object_state_table.put_invoked_source_object_state (l_object_state, a_feature, a_type)
-					end
-				end
-
-				if configuration.is_argument_state_retrieved then
-					l_var_set.wipe_out
-					retrieve_argument_objects_state (an_argument_list, l_var_set)
-					record_object_states (l_var_set)
-				end
+				record_operand_states (l_invoke_request, True)
 			end
 
 			last_request := l_invoke_request
@@ -572,14 +545,6 @@ feature -- Execution
 
 				-- Precondition evaluation.
 			evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_feature, a_type), a_target, an_argument_list, Void)
-
-				-- Object state retrieval.
-			if is_running and then is_state_recording_enabled then
-				l_var_set.wipe_out
-				retrieve_target_object_state (a_target, l_var_set)
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				record_object_states (l_var_set)
-			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -602,8 +567,6 @@ feature -- Execution
 		local
 			normal_response: AUT_NORMAL_RESPONSE
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
-			l_var_set: like variable_set
-			l_object_state: AUT_OBJECT_STATE
 		do
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_feature_id (a_feature.id)
@@ -611,24 +574,9 @@ feature -- Execution
 			last_operands := l_invoke_request.operand_indexes
 			set_test_case_index (l_invoke_request)
 
+				-- Record operand states.
 			if is_state_recording_enabled then
-				l_var_set := variable_set
-
-				if configuration.is_target_state_retrieved then
-					l_var_set.wipe_out
-					retrieve_target_object_state (a_target, l_var_set)
-					record_object_states (l_var_set)
-					if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
-						create l_object_state.make (l_object_state_response)
-						object_state_table.put_invoked_source_object_state (l_object_state, a_query, a_type)
-					end
-				end
-
-				if configuration.is_argument_state_retrieved then
-					l_var_set.wipe_out
-					retrieve_argument_objects_state (an_argument_list, l_var_set)
-					record_object_states (l_var_set)
-				end
+				record_operand_states (l_invoke_request, True)
 			end
 
 			last_request := l_invoke_request
@@ -664,16 +612,6 @@ feature -- Execution
 
 				-- Predicate evaluation.
 			evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_query, a_type), a_target, an_argument_list, a_receiver)
-
-			if is_running and then is_state_recording_enabled then
-				l_var_set.wipe_out
-				retrieve_target_object_state (a_target, l_var_set)
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				if variable_table.is_variable_defined (a_receiver) then
-					retrieve_query_result_object_state (a_receiver, l_var_set)
-				end
-				record_object_states (l_var_set)
-			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -759,107 +697,11 @@ feature -- Execution
 			last_request_not_void: last_request /= Void
 		end
 
-	retrieve_object_state (a_variable: ITP_VARIABLE) is
-			-- Retrieve the state of variable `a_variable'.
-		require
-			a_variable_attached: a_variable /= Void
-			a_variable_defined: variable_table.is_variable_defined (a_variable)
-		local
-			l_type: TYPE_A
-			l_request: AUT_OBJECT_STATE_REQUEST
-		do
-			l_type := variable_table.variable_type (a_variable)
-			create l_request.make (system, a_variable, variable_table.variable_type (a_variable))
-			if l_type /= none_type then
-				l_request.set_queries (argumentless_primitive_queries (l_type))
-			else
-				l_request.set_queries (create {LINKED_LIST [FEATURE_I]}.make)
-			end
-			last_request := l_request
-			last_request.process (socket_data_printer)
-			flush_process
-			parse_object_state_response
-			last_request.set_response (last_response)
-			proxy_log_printers.report_request (Current, last_request)
-			if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
-				object_state_table.put_variable (a_variable, create {AUT_OBJECT_STATE}.make (l_object_state_response), l_type)
-			end
-
-			if not last_response.is_bad then
-
-			else
-				is_ready  := False
-			end
-			stop_process_on_problems (last_response)
-		ensure
---			last_request_attached: is_object_state_retrieval_enabled implies last_request /= Void
-		end
-
-	retrieve_argument_objects_state (a_expressions: DS_LINEAR [ITP_EXPRESSION]; a_variable_set: DS_HASH_SET [ITP_VARIABLE]) is
-			-- Retrieve states of variables in `a_expressions'.
-		require
-			a_expressions_attached: a_expressions /= Void
-		local
-			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
-		do
-			if configuration.is_argument_state_retrieved then
-				from
-					l_cursor := a_expressions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after or not is_running
-				loop
-					if attached {ITP_VARIABLE} l_cursor.item as l_variable then
-						if not a_variable_set.has (l_variable) then
-							a_variable_set.force_last (l_variable)
-						end
-					end
-					l_cursor.forth
-				end
-			end
-		end
-
-	retrieve_target_object_state (a_variable: ITP_VARIABLE; a_variable_set: DS_HASH_SET [ITP_VARIABLE]) is
-			-- Record state of `a_variable' as a target of a feature call.			
-		do
-			if configuration.is_target_state_retrieved and then not a_variable_set.has (a_variable) then
-				a_variable_set.force_last (a_variable)
-			end
-		end
-
-	retrieve_query_result_object_state (a_variable: ITP_VARIABLE; a_variable_set: DS_HASH_SET [ITP_VARIABLE]) is
-			-- Record state of `a_variable' as a return value of a query.
-		do
-			if configuration.is_query_result_state_retrieved and then not a_variable_set.has (a_variable) then
-				a_variable_set.force_last (a_variable)
-			end
-		end
-
-	parse_object_state_response is
-			-- Parse response from the last object state request.
-		local
---			l_response: AUT_OBJECT_STATE_RESPONSE
---			l_features: LIST [STRING]
---			l_table: HASH_TABLE [detachable STRING, STRING]
-		do
-			if attached {AUT_OBJECT_STATE_REQUEST} last_request as l_request then
-				retrieve_object_state_response
---				l_features := l_request.query_names
---				create l_table.make (l_features.count)
---				l_features.do_all (agent l_table.force (Void, ?))
-				check last_response /= Void end
-				report_event (last_response)
---				if is_logging_enabled then
---					last_response.process (response_printer)
---				end
-			end
-		end
-
 	retrieve_object_state_response
 			-- Retrieve response from the interpreter,
 			-- store it in `last_raw_response'.
 		local
-			l_data: TUPLE [values: detachable LINKED_LIST [detachable STRING]; status: detachable LINKED_LIST [BOOLEAN]; output: detachable STRING; error: detachable STRING]
+			l_data: TUPLE [values: detachable HASH_TABLE [STRING, STRING]; output: detachable STRING; error: detachable STRING]
 			l_retried: BOOLEAN
 			l_socket: like socket
 			l_response_flag: NATURAL_32
@@ -878,13 +720,8 @@ feature -- Execution
 						-- because everything that the interpreter output should come from `l_data.output'.
 						-- Jason 2008.10.22
 					replace_output_from_socket_by_pipe_data
-					if l_response_flag = {AUT_SHARED_CONSTANTS}.object_is_void_flag then
-						create l_response.make_with_void
-					elseif l_response_flag = {AUT_SHARED_CONSTANTS}.invariant_violation_on_entry_response_flag then
-						create l_response.make_with_class_invariant_violation
-					else
-						create l_response.make (l_request.query_names, l_data.values, l_data.status)
-					end
+
+					create l_response.make (l_data.values)
 					last_response := l_response
 				else
 					last_raw_response := Void
@@ -895,36 +732,6 @@ feature -- Execution
 			l_retried := True
 			last_raw_response := Void
 			retry
-		end
-
-	is_target_object_state_retrieval_enabled: BOOLEAN
-			-- Is object state retrieval enabled?
-
-	is_argument_object_state_retrieval_enabled: BOOLEAN
-			-- Should state of argument object be retrieved?
-
-	is_query_result_object_state_retrieval_enabled: BOOLEAN
-			-- Should state of object returned by a query be retrieved?
-
-	is_variable_equal (a_var, b_var: ITP_VARIABLE): BOOLEAN is
-			-- Is `a_var' equal to `b_bar'?
-		do
-			Result := a_var ~ b_var
-		ensure
-			good_result: Result = (a_var ~ b_var)
-		end
-
-	variable_set: DS_HASH_SET [ITP_VARIABLE] is
-			-- Hash set for variables
-		do
-			create Result.make (2)
-			Result.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE]}.make (agent is_variable_equal))
-		end
-
-	record_object_states (a_variables: DS_HASH_SET [ITP_VARIABLE]) is
-			-- Record state of `a_variables'.
-		do
-			a_variables.do_all (agent retrieve_object_state)
 		end
 
 	is_state_recording_enabled: BOOLEAN is
@@ -1488,23 +1295,6 @@ feature -- Precondition satisfaction
 			variable_table.wipe_out_actions.extend (agent used_integer_values.wipe_out)
 		end
 
-	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
-			-- State of `a_variable'
-			-- Value is in the form [query value, query name].
-		do
-			retrieve_object_state (a_variable)
-
-			if is_ready then
-				if attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_response then
-					Result := l_response.query_results
-				end
-			end
-			if Result = Void then
-				create Result.make (0)
-				Result.compare_objects
-			end
-		end
-
 	log_types_under_test is
 			-- Log `types_under_test'.
 		local
@@ -1623,9 +1413,6 @@ feature -- Predicate evaluation
 		do
 			if attached {AUT_PREDICATE_EVALUATION_REQUEST} last_request as l_request then
 				retrieve_predicate_evaluation_response
---				if is_logging_enabled then
---					last_response.process (response_printer)
---				end
 			end
 		end
 
@@ -1769,24 +1556,6 @@ feature -- Predicate evaluation
 				update_predicate_pool_on_precondition_violation (a_feature, a_related_objects)
 			else
 				l_rate.put_integer (duration_until_now.second_count, 3)
---				if is_eager_feature_selection_enabled then
---					create l_predicates.make
---					l_table := predicate_feature_table
---					from
---						l_cursor := l_table.new_cursor
---						l_cursor.start
---					until
---						l_cursor.after
---					loop
---						l_features := l_cursor.item
---						l_features.remove (a_feature)
---						if l_features.is_empty then
---							l_predicates.extend (l_cursor.key)
---						end
---						l_cursor.forth
---					end
---					l_predicates.do_all (agent l_table.remove)
---				end
 			end
 			l_rate.put_integer (l_rate.all_times + 1, 2)
 		end
@@ -2236,6 +2005,149 @@ feature{NONE} -- Logging
 
 	precondition_satisfaction_message_type: STRING = "precondition_satisfaction"
 			-- Message type for precondition satisfaction
+
+feature -- Objec state retrieval
+
+	record_operand_states (a_request: AUT_CALL_BASED_REQUEST; a_before_execution: BOOLEAN)
+			-- Record states of operands defined in `a_request'.
+			-- `a_before_execution' indicates if the recording happens before the execution of `a_request'.
+		local
+			l_request: AUT_OBJECT_STATE_FEATURE_REQUEST
+		do
+				-- Send state acquiring request and parse response.			
+			create l_request.make_with_request (a_request, a_before_execution, configuration.object_state_config)
+			last_request := l_request
+			last_request.process (socket_data_printer)
+			flush_process
+			parse_object_state_response
+			last_request.set_response (last_response)
+			proxy_log_printers.report_request (Current, last_request)
+
+				-- Populate `object_state_table'.
+			if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
+--WY: The following line has something to do with object state table, which needs adaptation.				
+--WY			object_state_table.put_variable (a_variable, create {AUT_OBJECT_STATE}.make (l_object_state_response), l_request.type)
+				populate_object_state_table (l_object_state_response)
+			end
+
+			if last_response.is_bad then
+				is_ready  := False
+			end
+			stop_process_on_problems (last_response)
+		end
+
+	populate_object_state_table (a_object_state_response: AUT_OBJECT_STATE_RESPONSE)
+			-- Use information inside `a_object_state_response' to populate `object_state_table'.
+		local
+			l_values: HASH_TABLE [STRING, STRING]
+			l_values_by_target: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			l_tbl: HASH_TABLE [STRING, STRING]
+			l_target: STRING
+			l_query: STRING
+			l_index: INTEGER
+			l_var_table: like variable_table
+			l_variable: ITP_VARIABLE
+			l_state_table: like object_state_table
+		do
+			l_values := a_object_state_response.query_results
+			if not l_values.is_empty then
+				create l_values_by_target.make (3)
+				l_values_by_target.compare_objects
+
+					-- Collect queries by their target.
+				from
+					l_values.start
+				until
+					l_values.after
+				loop
+					l_query := l_values.key_for_iteration.twin
+					l_index := l_query.index_of ('.', 1)
+					fixme ("We don't handle queries with arguments for the moment. 14.5.2010 Jasonw")
+					if l_index > 0 and then l_query.index_of ('(', 1) = 0 then
+						l_target := l_query.substring (1, l_index - 1)
+						l_query	:= l_query.substring (l_index + 1, l_query.count)
+						l_values_by_target.search (l_target)
+						if l_values_by_target.found then
+							l_tbl := l_values_by_target.found_item
+						else
+							create l_tbl.make (10)
+							l_tbl.compare_objects
+							l_values_by_target.put (l_tbl, l_target)
+						end
+						l_tbl.put (l_values.item_for_iteration, l_query)
+					end
+					l_values.forth
+				end
+
+					-- Report states for all collected targets.
+				l_var_table := variable_table
+				l_state_table := object_state_table
+				from
+					l_values_by_target.start
+				until
+					l_values_by_target.after
+				loop
+					l_target := l_values_by_target.key_for_iteration
+					create l_variable.make (l_target.substring (3, l_target.count).to_integer)
+					if attached {TYPE_A} variable_table.variable_type (l_variable) as l_type then
+						l_state_table.put_variable (l_variable, create {AUT_OBJECT_STATE}.make (l_values_by_target.item_for_iteration), l_type)
+					end
+					l_values_by_target.forth
+				end
+			end
+		end
+
+	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
+			-- State of `a_variable'
+			-- Value is in the form [query value, query name].
+		local
+			l_request: AUT_OBJECT_STATE_OBJECT_REQUEST
+			l_objects: HASH_TABLE [TYPE_A, INTEGER]
+			s: STRING
+			l_state: HASH_TABLE [STRING, STRING]
+			l_expr: STRING
+			l_index: INTEGER
+		do
+			create l_objects.make (1)
+			l_objects.put (variable_table.variable_type (a_variable), a_variable.index)
+			create l_request.make_with_objects (l_objects, configuration.object_state_config)
+			last_request := l_request
+			last_request.process (socket_data_printer)
+			flush_process
+			retrieve_object_state_response
+			last_request.set_response (last_response)
+
+			if is_ready then
+				if attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_response then
+					l_state := l_response.query_results
+					create Result.make (l_state.count)
+					Result.compare_objects
+					from
+						l_state.start
+					until
+						l_state.after
+					loop
+						l_expr := l_state.key_for_iteration
+						if not l_expr.has ('(') then
+							l_index := l_expr.index_of ('.', 1)
+							l_expr := l_expr.substring (l_index + 1, l_expr.count)
+							Result.put (l_state.item_for_iteration, l_expr)
+						end
+						l_state.forth
+					end
+				end
+			end
+			if Result = Void then
+				create Result.make (0)
+				Result.compare_objects
+			end
+		end
+
+	parse_object_state_response
+		do
+			retrieve_object_state_response
+			report_event (last_response)
+		end
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

@@ -319,7 +319,7 @@ feature -- Basic operations
 			l_type: TYPE_A
 		do
 			l_operand_index := a_request.operand_indexes
-			l_operand_type := a_request.operand_types
+			l_operand_type := a_request.operand_type_names
 			check l_operand_index.count = l_operand_type.count end
 			l_variable_table := variable_table
 			create l_processed_vars.make (a_request.argument_count + 2)

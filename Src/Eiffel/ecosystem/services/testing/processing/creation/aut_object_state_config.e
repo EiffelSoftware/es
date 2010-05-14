@@ -1,68 +1,61 @@
 note
-	description: "AutoTest request to check states of an object"
+	description: "Summary description for {AUT_OBJECT_STATE_CONFIG}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_OBJECT_STATE_REQUEST
+class
+	AUT_OBJECT_STATE_CONFIG
 
-inherit
-	AUT_REQUEST
-		rename
-			make as make_old
+create
+	make,
+	make_with_string
+
+feature{NONE} -- Initialization
+
+	make
+			-- Initialize Current with state retrieval disabled.
+		do
+			is_all := False
+			is_only_argumentless := False
 		end
 
-	EPA_COMPILATION_UTILITY
-
-	AUT_SHARED_INTERPRETER_INFO
-
-	EPA_STRING_UTILITY
-		undefine
-			system
+	make_with_string (a_config: STRING) is
+			-- Initialize Current with configuration defined in `config'.
+		require
+			a_config_attached: a_config /= Void
+		local
+			l_pairs: LIST [STRING]
+			l_str: STRING
+		do
+			l_pairs := a_config.split (',')
+			if not l_pairs.is_empty then
+				from
+					l_pairs.start
+				until
+					l_pairs.after
+				loop
+					l_str := l_pairs.item
+					if l_str.is_case_insensitive_equal (once "argumentless") then
+						is_only_argumentless := True
+					elseif l_str.is_case_insensitive_equal (once "all") then
+						is_all := True
+					end
+					l_pairs.forth
+				end
+			end
 		end
-
-	AUT_SHARED_OBJECT_STATE_RETRIEVAL_CONTEXT
 
 feature -- Access
 
+	is_only_argumentless: BOOLEAN
+			-- Should object state contain only argument-less queries?
 
-	variables: HASH_TABLE [TYPE_A, INTEGER]
-			-- Variables whose states are to be retrieved
-			-- Key is object index (used in object pool), value is type of that variables.
+	is_all: BOOLEAN
+			-- Should object state contain all queries.
+			-- For the moment, "all" means argument-less and single argument queries.
 
-	byte_code_for_object_state_retrieval: STRING
-			-- String representation of the byte-code needed to retrieve object states
-		deferred
-		end
-
-	config: detachable AUT_OBJECT_STATE_CONFIG
-			-- Configuration for object state retrieval
-
-feature -- Status report
-
-	is_for_feature: BOOLEAN
-			-- Is the state to be retrieved for operands of a feature?
-		do
-		end
-
-	is_for_objects: BOOLEAN
-			-- Is the state to be retrieved for an arbitrary set of objects?
-		do
-			Result := not is_for_feature
-		ensure
-			good_result: Result = not is_for_feature
-		end
-
-feature -- Processing
-
-	process (a_processor: AUT_REQUEST_PROCESSOR)
-			-- Process current request.
-		do
-			a_processor.process_object_state_request (Current)
-		end
-
-note
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

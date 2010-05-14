@@ -87,6 +87,7 @@ feature -- Access
 	resolved_type_in_context (a_type: TYPE_A; a_context_class: ClASS_C): TYPE_A
 			-- Resolved type of `a_type' in context `a_context_class'
 		do
+			fixme ("This implementation may not be correct. Check {AUT_CREATE_OBJECT_REQUEST}.operand_types. 11.5.2010 Jasonw")
 			Result := a_type.actual_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
 			Result := actual_type_from_formal_type (Result, a_context_class)
 		end

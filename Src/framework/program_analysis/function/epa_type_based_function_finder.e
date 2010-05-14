@@ -20,19 +20,47 @@ inherit
 	EPA_ACCESS_AGENT_UTILITY
 
 create
-	make
+	make_for_feature,
+	make_for_variables
 
 feature{NONE} -- Initialization
 
 	make (a_output_directory: like output_directory)
 			-- Initialize Current.
 		do
-			should_solve_integer_argument_bound := a_output_directory = Void
+			should_solve_integer_argument_bound := a_output_directory /= Void
 			if a_output_directory /= Void then
 				output_directory := a_output_directory.twin
 			else
 				output_directory := Void
 			end
+			should_search_for_query_with_arguments := True
+		end
+
+	make_for_feature (a_class: like context_class; a_feature: like feature_; a_operand_map: like operand_map; a_context: like context; a_output_directory: like output_directory)
+			-- Initialize Current for feature `a_feature'.
+		do
+			set_class_and_feature (a_class, a_feature)
+			set_context (a_context, a_operand_map)
+			make (a_output_directory)
+			is_for_feature := True
+		end
+
+	make_for_variables (a_variables: HASH_TABLE [TYPE_A, STRING]; a_output_directory: like output_directory)
+			-- Initialize Current to find expressions among variables specified in `a_variables'.
+			-- `a_variables' is a table, key is variable name, value is variable type.
+		require
+			a_variables_valid: a_variables.object_comparison
+		local
+			l_context: EPA_CONTEXT
+			l_operand_map: like operand_map
+		do
+			create l_context.make (a_variables)
+			create l_operand_map.make (0)
+			set_class_and_feature (l_context.class_, l_context.feature_)
+			set_context (l_context, l_operand_map)
+			is_for_variables := True
+			make (a_output_directory)
 		end
 
 feature -- Access/Search scope
@@ -45,7 +73,6 @@ feature -- Access/Search scope
 
 	context: EPA_CONTEXT
 			-- Context which provides all available variables.
-
 
 	operand_map: DS_HASH_TABLE [STRING, INTEGER]
 			-- Map from 0-based operand index to name of variables in `context'
@@ -72,7 +99,11 @@ feature -- Status
 			-- target object (if `feature_' is a creation procedure) are not included
 
 	should_solve_integer_argument_bound: BOOLEAN
-			-- Should bounds of integer arguments be solved?			
+			-- Should bounds of integer arguments be solved?
+
+	should_search_for_query_with_arguments: BOOLEAN
+			-- Should search for queries with arguments?
+			-- Default: True		
 
 feature -- Setting
 
@@ -112,6 +143,14 @@ feature -- Setting
 			is_for_pre_execution_set: is_for_pre_execution = b
 		end
 
+	set_should_search_for_query_with_arguments (b: BOOLEAN)
+			-- Set `should_search_for_query_with_arguments' with `b'.
+		do
+			should_search_for_query_with_arguments := b
+		ensure
+			should_search_for_query_with_arguments_set: should_search_for_query_with_arguments = b
+		end
+
 feature -- Access
 
 	quasi_constant_functions: DS_HASH_SET [EPA_FUNCTION]
@@ -120,10 +159,16 @@ feature -- Access
 			-- functions with a single argument and that argument
 			-- must have both a lower and a upper bound.
 			-- quasi_constant_functions.is_superset (variable_functions)
+			-- `quasi_constant_functions' is superset of `variale_functions', `argumentless_functions' and `variable_functions'.
 
 	variable_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions for `variables'
 			-- quasi_constant_functions.is_superset (variable_functions)
+			-- `variable_functions', argumentless_functions and `composed_functions' are disjoint.
+
+	argumentless_functions: DS_HASH_SET [EPA_FUNCTION]
+			-- Functions representing a qualified argumentless query,
+			-- the target is one of `variable_functions'
 
 	composed_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Composed functions, for example v1.has (v2),
@@ -131,7 +176,15 @@ feature -- Access
 
 	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions that are found by last `search'.
-			-- The result is the union of `quasi_constant_functions', `variable_functions' and `composed_functions'.
+			-- The result is the union of `quasi_constant_functions', `variable_functions', `composed_functions' and `argumentless_functions'.
+
+feature -- Status report	
+
+	is_for_feature: BOOLEAN
+			-- Is Current made for generating expressions among operands of a feature?
+
+	is_for_variables: BOOLEAN
+			-- Is Current made for generating expressions among a given set of variables?
 
 feature -- Basic operations
 
@@ -143,6 +196,9 @@ feature -- Basic operations
 				-- Initialize data structures.
 			create quasi_constant_functions.make (100)
 			quasi_constant_functions.set_equality_tester (function_equality_tester)
+
+			create argumentless_functions.make (100)
+			argumentless_functions.set_equality_tester (function_equality_tester)
 
 			create composed_functions.make (100)
 			composed_functions.set_equality_tester (function_equality_tester)
@@ -168,6 +224,9 @@ feature{NONE} -- Implementation
 
 	operand_names: DS_HASH_SET [STRING]
 			-- Name of operands of `feature_'
+
+	variable_names: DS_HASH_SET [STRING]
+			-- Name of variables in `variables'
 
 	static_type_table: DS_HASH_TABLE [TYPE_A, STRING]
 			-- Table for static type of variables defined in `context'
@@ -242,79 +301,91 @@ feature{NONE} -- Implementation
 			l_composed_functions: like composed_functions
 			l_quasi_constant_functions: like quasi_constant_functions
 		do
-				-- 1. Iterate through all operands
-				-- 2. For each operand, get all queries with one argument.
-				-- 3. For each such query, iterate through all functions in `variable_functions', select those
-				--    whose type conforms to the type of that query,
-				-- 4. Compose the query and the selected function in `quasi_constant_functions'.
-			l_composed_functions := composed_functions
-			l_quasi_constant_functions := quasi_constant_functions
-			l_context := context
-			l_context_class := l_context.class_
-				-- 1. Iterate through all operands
-			from
-				l_operand_cur := operand_names.new_cursor
-				l_operand_cur.start
-			until
-				l_operand_cur.after
-			loop
-				l_operand_name := l_operand_cur.item
-				l_operand_type := variable_type_table.item (l_operand_name)
-				l_operand_type := resolved_type_in_context (l_operand_type, l_context_class)
-				l_operand_class := l_operand_type.associated_class
+			if should_search_for_query_with_arguments then
+					-- 1. Iterate through all operands
+					-- 2. For each operand, get all queries with one argument.
+					-- 3. For each such query, iterate through all functions in `variable_functions', select those
+					--    whose type conforms to the type of that query,
+					-- 4. Compose the query and the selected function in `quasi_constant_functions'.
+				l_composed_functions := composed_functions
+				l_quasi_constant_functions := quasi_constant_functions
+				l_context := context
+				l_context_class := l_context.class_
+					-- 1. Iterate through all operands
+				from
+					if is_for_feature then
+						l_operand_cur := operand_names.new_cursor
+					else
+						l_operand_cur := variable_names.new_cursor
+					end
+					l_operand_cur.start
+				until
+					l_operand_cur.after
+				loop
+					l_operand_name := l_operand_cur.item
+					l_operand_type := variable_type_table.item (l_operand_name)
+					l_operand_type := resolved_type_in_context (l_operand_type, l_context_class)
+					l_operand_class := l_operand_type.associated_class
 
-					-- 2. For each operand, get all queries with on argument.
-				l_features := queries_with_one_argument (l_operand_class)
+						-- 2. For each operand, get all queries with one argument.
+					l_features := queries_with_one_argument (l_operand_class)
 
-				if not l_features.is_empty then
-					from
-						l_features.start
-					until
-						l_features.after
-					loop
-							-- 3. For each such query, iterate through all functions in `variable_functions', select those
-							--    whose type conforms to the type of that query,
-						l_feature := l_features.item_for_iteration
-						fixme ("We don't handle is_equal for the moment. 9.5.2010 Jasonw")
-						if not l_feature.feature_name.is_case_insensitive_equal (once "is_equal") then
-							l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class)
+					if not l_features.is_empty then
+						from
+							l_features.start
+						until
+							l_features.after
+						loop
+								-- 3. For each such query, iterate through all functions in `variable_functions', select those
+								--    whose type conforms to the type of that query,
+							l_feature := l_features.item_for_iteration
+							fixme ("We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases. 9.5.2010 Jasonw")
+							if not l_feature.feature_name.is_case_insensitive_equal (once "is_equal") then
+								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class)
 
 
-								-- 4. Compose the query and the selected function in `quasi_constant_functions'.
-							if not l_funcs.is_empty then
-								l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context)
-								from
-									l_funcs.start
-								until
-									l_funcs.after
-								loop
-									l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
-									l_composed_functions.force_last (l_composed_func)
-									l_quasi_constant_functions.force_last (l_composed_func)
+									-- 4. Compose the query and the selected function in `quasi_constant_functions'.
+								if not l_funcs.is_empty then
+									l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context)
+									from
+										l_funcs.start
+									until
+										l_funcs.after
+									loop
+										l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
+										l_composed_functions.force_last (l_composed_func)
+										l_quasi_constant_functions.force_last (l_composed_func)
 
-									l_funcs.forth
+										l_funcs.forth
+									end
 								end
 							end
+							l_features.forth
 						end
-						l_features.forth
 					end
+					l_operand_cur.forth
 				end
-				l_operand_cur.forth
 			end
 		end
 
 	build_operand_argumentless_query_table
-			-- Build `operand_argumentless_query_table'.
+			-- Search for argumentless queries for variables.
 		local
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
 			l_function: EPA_FUNCTION
 			l_quasi_functions: like quasi_constant_functions
+			l_argless_functions: like argumentless_functions
 		do
 				-- Setup expression generator to list all argument-less queries.
 			l_expr_gen := argumentless_query_expression_generator
-			l_expr_gen.generate (context_class, feature_)
+			if context.is_dummy_feature_used then
+				l_expr_gen.generate_for_dummy_feature (context)
+			else
+				l_expr_gen.generate (context_class, feature_)
+			end
 			l_quasi_functions := quasi_constant_functions
+			l_argless_functions := argumentless_functions
 			from
 				l_expr_gen.accesses.start
 			until
@@ -322,6 +393,7 @@ feature{NONE} -- Implementation
 			loop
 				create l_function.make_from_expression (expression_from_access (l_expr_gen.accesses.item_for_iteration), context)
 				l_quasi_functions.force_last (l_function)
+				l_argless_functions.force_last (l_function)
 				l_expr_gen.accesses.forth
 			end
 		end
@@ -345,7 +417,7 @@ feature{NONE} -- Implementation
 			l_range: like integer_bounds
 			l_quasi_functions: like quasi_constant_functions
 		do
-			if should_solve_integer_argument_bound then
+			if should_solve_integer_argument_bound and then is_for_feature and then should_search_for_query_with_arguments then
 				l_quasi_functions := quasi_constant_functions
 				l_any_id := system.any_class.compiled_representation.class_id
 				from
@@ -414,6 +486,7 @@ feature{NONE} -- Implementation
 			l_operand_name: STRING
 			l_variable_type_table: like variable_type_table
 			l_var_name: STRING
+			l_variable_names: like variable_names
 		do
 			create static_type_table.make (variables.count)
 			l_static_type_table := static_type_table
@@ -448,8 +521,11 @@ feature{NONE} -- Implementation
 				l_opernd_types.forth
 			end
 
-				-- Add types of variables other than operand of `feature_' into `static_type_table'.
+				-- Add types of variables other than operand of `feature_' into `static_type_table'.			
 			l_variables := context.variables
+			create variable_names.make (l_variables.count)
+			l_variable_names := variable_names
+			l_variable_names.set_equality_tester (string_equality_tester)
 			l_cursor := l_variables.cursor
 			from
 				l_variables.start
@@ -457,6 +533,7 @@ feature{NONE} -- Implementation
 				l_variables.after
 			loop
 				l_var_name := l_variables.key_for_iteration
+				l_variable_names.force_last (l_var_name)
 				l_type := l_variables.item_for_iteration
 				if not l_static_type_table.has (l_var_name) then
 					l_static_type_table.force_last (l_type, l_var_name)
@@ -559,25 +636,29 @@ feature{NONE} -- Implementations
 			l_context: like context
 		do
 			l_text := a_access.text
-			if l_text.is_case_insensitive_equal (ti_current) then
-				l_new_text := operand_map.item (0)
-			elseif l_text.is_case_insensitive_equal (ti_result) then
-				l_new_text := operand_map.item (feature_.argument_count + 1)
-			elseif l_text.has ('.') then
-				l_parts := l_text.split ('.')
-				l_arg_name := l_parts.first
-				if l_arg_name ~ ti_result then
-					l_new_text := operand_map.item (feature_.argument_count + 1).twin
+			if is_for_feature then
+				if l_text.is_case_insensitive_equal (ti_current) then
+					l_new_text := operand_map.item (0)
+				elseif l_text.is_case_insensitive_equal (ti_result) then
+					l_new_text := operand_map.item (feature_.argument_count + 1)
+				elseif l_text.has ('.') then
+					l_parts := l_text.split ('.')
+					l_arg_name := l_parts.first
+					if l_arg_name ~ ti_result then
+						l_new_text := operand_map.item (feature_.argument_count + 1).twin
+					else
+						l_new_text := operand_map.item (operands_of_feature (feature_).item (l_arg_name)).twin
+					end
+					l_new_text.append_character ('.')
+					l_new_text.append (l_parts.last)
 				else
-					l_new_text := operand_map.item (operands_of_feature (feature_).item (l_arg_name)).twin
+					create l_new_text.make (32)
+					l_new_text.append (operand_map.item (0))
+					l_new_text.append_character ('.')
+					l_new_text.append (l_text)
 				end
-				l_new_text.append_character ('.')
-				l_new_text.append (l_parts.last)
 			else
-				create l_new_text.make (32)
-				l_new_text.append (operand_map.item (0))
-				l_new_text.append_character ('.')
-				l_new_text.append (l_text)
+				l_new_text := l_text
 			end
 			l_context := context
 			l_expr_ast := l_context.ast_from_expression_text (l_new_text)
@@ -597,37 +678,41 @@ feature{NONE} -- Implementations
 			create Result.make
 			Result.expression_veto_agents.wipe_out
 
-			create l_criteria.make
-			l_criteria.extend (argument_expression_veto_agent)
-				-- Extend different expression selection criteria into `l_criteria' depending on
-				-- the value of `is_for_pre_execution', `is_creation' and `is_query'.
-			if is_for_pre_execution then
-				if not is_creation then
+			if is_for_feature then
+				create l_criteria.make
+				l_criteria.extend (argument_expression_veto_agent)
+					-- Extend different expression selection criteria into `l_criteria' depending on
+					-- the value of `is_for_pre_execution', `is_creation' and `is_query'.
+				if is_for_pre_execution then
+					if not is_creation then
+						l_criteria.extend (current_expression_veto_agent)
+					end
+				else
 					l_criteria.extend (current_expression_veto_agent)
+					if is_query then
+						l_criteria.extend (result_expression_veto_agent)
+					end
 				end
-			else
-				l_criteria.extend (current_expression_veto_agent)
-				if is_query then
-					l_criteria.extend (result_expression_veto_agent)
+				create l_cri_array.make (1, l_criteria.count)
+				from
+					i := 1
+					l_criteria.start
+				until
+					l_criteria.after
+				loop
+					l_cri_array.put (l_criteria.item_for_iteration, i)
+					i := i + 1
+					l_criteria.forth
 				end
-			end
-			create l_cri_array.make (1, l_criteria.count)
-			from
-				i := 1
-				l_criteria.start
-			until
-				l_criteria.after
-			loop
-				l_cri_array.put (l_criteria.item_for_iteration, i)
-				i := i + 1
-				l_criteria.forth
-			end
 
-			Result.expression_veto_agents.put (
-				anded_agents (<<
-					ored_agents (l_cri_array),
-					feature_not_from_any_veto_agent>>),
-					 	 1)
+				Result.expression_veto_agents.put (
+					anded_agents (<<
+						ored_agents (l_cri_array),
+						feature_not_from_any_veto_agent>>),
+						 	 1)
+			else
+				Result.expression_veto_agents.put (local_expression_veto_agent, 1)
+			end
 
 			Result.expression_veto_agents.put (
 				anded_agents (<<

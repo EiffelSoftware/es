@@ -55,7 +55,7 @@ feature -- Execution
 				receivers.force_first (interpreter.object_state_table.random_variable (l_untried_source_object_states.first, types.first))
 				has_next_step := False
 			else
-				io.put_string ("My Own Random Step (Precursor)")
+--				io.put_string ("My Own Random Step (Precursor)")
 				Precursor
 			end
 		end
@@ -65,7 +65,7 @@ invariant
 	feature_to_call_attached: feature_to_call /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

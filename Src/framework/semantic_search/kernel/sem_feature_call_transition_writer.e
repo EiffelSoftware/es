@@ -81,7 +81,7 @@ feature {NONE} -- Impelementation
 			Result := transition.variable_position (a_variable) = 0
 		end
 
-	expression_rewriter: SEM_TRANSITION_EXPRESSION_REWRITER
+	expression_rewriter: EPA_TRANSITION_EXPRESSION_REWRITER
 			-- Expression rewriter to rewrite `variables' in anonymous format.
 		once
 			create Result.make

@@ -113,14 +113,8 @@ feature -- Basic operations
 				end
 			end
 
-				-- Generate routines for object state retrieval
-			put_object_state_routines (a_type_list)
-
 				-- Generate predicate related routines
 			put_predicate_related_routines
-
-				-- Generate routines for test case serialization
-			put_test_case_serialization_routines (a_type_list)
 
 			put_class_footer
 			stream := Void
@@ -250,28 +244,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature -- Object state retrieval
-
-	is_object_state_retrieval_needed: BOOLEAN is
-			-- Is object state retrieval needed?
-		do
-			Result :=
-				configuration.is_object_state_retrieval_enabled or
-				configuration.is_precondition_checking_enabled or
-				configuration.is_test_case_serialization_enabled
-		end
-
-	put_object_state_routines (a_types: DS_LINEAR [STRING]) is
-			-- Generate routines to support object state retrieval.
-			-- Note: If the recording from byte-code works, this feature should be removed.
-			-- This is a walkaround for the moment. 4.10.2009 Jasonw
-		local
-			l_writer: AUT_OBJECT_STATE_RETRIEVAL_WRITER
-		do
-			create l_writer.make (a_types, stream, is_object_state_retrieval_needed, root_class, root_feature)
-			l_writer.write
-		end
-
 feature -- Precondition satisfaction
 
 	predicate_text (a_predicate: AUT_PREDICATE_ACCESS_PATTERN): STRING is
@@ -334,17 +306,6 @@ feature -- Predicate evaluation
 		do
 			create l_writer.make (configuration, stream)
 			l_writer.generate_predicates
-		end
-
-feature -- Test case serialization
-
-	put_test_case_serialization_routines (a_types: DS_LINEAR [STRING]) is
-			-- Generate routines for test case serialization.
-		local
-			l_writer: AUT_TEST_CASE_SERIALIZATION_WRITER
-		do
-			create l_writer.make (configuration, stream, a_types, root_class)
-			l_writer.generate
 		end
 
 note

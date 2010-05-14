@@ -97,12 +97,10 @@ feature -- Access
 					append_test_case_hash_code (test_case_hash_code, Result)
 
 						-- Synthesize pre-/post-state object summary.
-					append_object_state (pre_state_object_summary, True, Result)
-					append_object_state (post_state_object_summary, False, Result)
+					append_object_state (pre_state_object_summary, Result)
 
 						-- Synthesize serialization
-					append_object_serialization (True, pre_state_serialization, Result)
-					append_object_serialization (False, post_state_serialization, Result)
+					append_object_serialization (pre_state_serialization, Result)
 
 					Result.append (once "</test_case>%N")
 				end
@@ -209,7 +207,7 @@ feature -- Basic operations
 			-- Retrieve state of objects before test case
 			-- execution.
 		local
-			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING]
+			l_data: TUPLE [summary: STRING; hash: STRING]
 			l_serialization: like object_serialization
 		do
 			pre_state_object_summary := Void
@@ -224,25 +222,9 @@ feature -- Basic operations
 	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
 			-- Retrieve post state of the test case.
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
-		local
-			l_data: TUPLE [summary: ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]; hash: STRING]
-			l_serialization: like object_serialization
 		do
-			post_state_object_summary := Void
 			if is_test_case_setup then
 				exception := interpreter.error_buffer
-				if not a_is_failing_test_case then
-					l_data := abstract_object_state (False)
-					post_state_object_summary := l_data.summary
-					if is_post_state_serialized then
-						l_serialization := object_serialization (False)
-						post_state_serialization := l_serialization.serialization
-						post_state_objects := l_serialization.description
-					else
-						post_state_serialization := Void
-						post_state_objects := Void
-					end
-				end
 			else
 				exception := Void
 			end
@@ -271,15 +253,8 @@ feature -- Basic operations
 		end
 feature{NONE} -- Implementation
 
-	pre_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
-			-- Table of object state summary in pre-state.
-			-- Key is the object index,
-			-- value is a string containing state summary for that object
-
-	post_state_object_summary: detachable ARRAYED_LIST [TUPLE [summary: STRING; index: INTEGER]]
-			-- Table of object state summary in post-state
-			-- Key is the object index,
-			-- value is a string containing state summary for that object
+	pre_state_object_summary: detachable STRING
+			-- Pre-state object summary
 
 	test_case_hash_code: STRING
 			-- Hash code for current test case
@@ -292,17 +267,8 @@ feature{NONE} -- Implementation
 			-- List of variables in `pre_state_serialization' along with their object index.
 			-- Key is variable index, value is the variable object itself in pre-execution state.
 
-	post_state_serialization: detachable STRING
-			-- String representing the serialized data for objects specified by
-			-- `operands' in pre-execution state.
-
-	post_state_objects: detachable HASH_TABLE [detachable ANY, INTEGER]
-			-- List of variables in `pre_state_serialization' along with their object index.
-			-- Key is variable index, value is the variable object itself in pre-execution state.
-
-	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: ARRAYED_LIST [TUPLE [STRING_8, INTEGER_32]]; hash: STRING] is
+	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
-			-- `a_is_pre_state' indicates if this state extraction are before or after test case execution.
 			-- `summary' is the state summary for `operands'.
 			-- `hash' is the hash code of `summary'.
 		local
@@ -310,10 +276,11 @@ feature{NONE} -- Implementation
 			l_upper: INTEGER
 			l_summary: like pre_state_object_summary
 			l_operands: like operands
-			l_interpreter: like interpreter
-			l_sum_data: TUPLE [summary: STRING; hash: INTEGER]
 			l_hash_code: STRING
 			l_types: like types
+			l_queries: HASH_TABLE [STRING, STRING]
+			l_cursor: CURSOR
+			l_value_hash_list: LINKED_LIST [INTEGER]
 		do
 			if is_test_case_setup then
 					-- Setup test case hash code, which consists the hash of the states of all operands.
@@ -325,7 +292,6 @@ feature{NONE} -- Implementation
 
 				l_operands := operands
 				l_types := types
-				l_interpreter := interpreter
 				from
 					if is_creation and a_is_pre_state then
 						i := 1
@@ -340,17 +306,44 @@ feature{NONE} -- Implementation
 				until
 					i > l_upper
 				loop
-					l_sum_data := l_interpreter.object_summary (l_operands.item (i), l_types.item (i))
-					l_hash_code.append_integer (l_sum_data.hash)
-					if i < l_upper then
-						l_hash_code.append_character ('.')
-					end
-					l_summary.extend ([commented_string (l_sum_data.summary), i])
+					append_variable_with_type (l_operands.item (i), l_types.item (i), l_summary, True)
 					i := i + 1
 				end
+
+				l_queries := interpreter.query_values
+				l_cursor := l_queries.cursor
+				from
+					l_queries.start
+				until
+					l_queries.after
+				loop
+					l_summary.append_character ('%T')
+					l_summary.append (l_queries.key_for_iteration)
+					l_summary.append (query_value_separator)
+					l_summary.append (l_queries.item_for_iteration)
+					l_summary.append_character ('%N')
+					l_queries.forth
+				end
+				l_queries.go_to (l_cursor)
+
+					-- Calculate hash code of current test case for test case duplication detection.
+				l_hash_code.append (hash_code_from_list (interpreter.query_value_hash_list).out)
 				Result := [l_summary, l_hash_code]
 			else
 				Result := Void
+			end
+		end
+
+	hash_code_from_list (a_list: LINKED_LIST [INTEGER]): INTEGER
+			-- Hash code of `a_list'.
+		do
+			from
+				a_list.start
+			until
+				a_list.after
+			loop
+				Result := ((Result \\ 8388593) |<< 8) + (a_list.item_for_iteration \\ 255)
+				a_list.forth
 			end
 		end
 
@@ -592,7 +585,7 @@ feature{NONE} -- Implementation/Test case synthesis
 				l_var_id := a_operands.item (i)
 				if not l_var_tbl.has (l_var_id) then
 					l_var_tbl.put (l_var_id, l_var_id)
-					append_variable_with_type (l_var_id, types.item (i), a_buffer)
+					append_variable_with_type (l_var_id, types.item (i), a_buffer, True)
 				end
 				i := i + 1
 			end
@@ -617,9 +610,9 @@ feature{NONE} -- Implementation/Test case synthesis
 				l_index := a_objects.key_for_iteration
 				l_object := a_objects.item_for_iteration
 				if l_object = Void then
-					append_variable_with_type (l_index, once "NONE", a_buffer)
+					append_variable_with_type (l_index, once "NONE", a_buffer, True)
 				else
-					append_variable_with_type (l_index, l_object.generating_type, a_buffer)
+					append_variable_with_type (l_index, l_object.generating_type, a_buffer, True)
 				end
 				a_objects.forth
 			end
@@ -653,16 +646,10 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 		end
 
-	append_object_serialization (a_pre_state: BOOLEAN; a_serialization: detachable STRING; a_buffer: STRING)
+	append_object_serialization (a_serialization: detachable STRING; a_buffer: STRING)
 			-- Append object serialization data `a_serialization' into `a_buffer'.
-			-- `a_pre_state' indicates if `a_serialization' is retrieved in pre-execution state or
-			-- in post-execution state.		
 		do
-			if a_pre_state then
-				a_buffer.append (pre_serialization_length_tag_start)
-			else
-				a_buffer.append (post_serialization_length_tag_start)
-			end
+			a_buffer.append (pre_serialization_length_tag_start)
 
 			if a_serialization = Void then
 				a_buffer.append_character ('0')
@@ -670,71 +657,43 @@ feature{NONE} -- Implementation/Test case synthesis
 				a_buffer.append (a_serialization.count.out)
 			end
 
-			if a_pre_state then
-				a_buffer.append (pre_serialization_length_tag_end)
-				a_buffer.append_character ('%N')
-				a_buffer.append (pre_serialization_tag_start)
-				a_buffer.append (cdata_tag_start)
-			else
-				a_buffer.append (post_serialization_length_tag_end)
-				a_buffer.append_character ('%N')
-				a_buffer.append (post_serialization_tag_start)
-				a_buffer.append (cdata_tag_start)
-			end
+			a_buffer.append (pre_serialization_length_tag_end)
+			a_buffer.append_character ('%N')
+			a_buffer.append (pre_serialization_tag_start)
+			a_buffer.append (cdata_tag_start)
 
 			if a_serialization /= Void then
 				a_buffer.append (a_serialization)
 			end
 
-			if a_pre_state then
-				a_buffer.append (cdata_tag_end)
-				a_buffer.append (pre_serialization_tag_end)
-				a_buffer.append_character ('%N')
-			else
-				a_buffer.append (cdata_tag_end)
-				a_buffer.append (post_serialization_tag_end)
-				a_buffer.append_character ('%N')
-			end
+			a_buffer.append (cdata_tag_end)
+			a_buffer.append (pre_serialization_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
-	append_object_state (a_state: detachable ARRAYED_LIST [TUPLE [summary: STRING_8; index: INTEGER_32]]; a_is_pre_state: BOOLEAN; a_buffer: STRING)
-			-- Append `a_stat' into `a_buffer'. `a_is_pre_state' indicates whether `a_state' is retrieved before or after test case execution.
+	append_object_state (a_state: detachable STRING; a_buffer: STRING)
+			-- Append `a_state' into `a_buffer'.
 		do
-			if a_is_pre_state then
-				a_buffer.append (pre_state_tag_start)
-				a_buffer.append_character ('%N')
-			else
-				a_buffer.append (post_state_tag_start)
-				a_buffer.append_character ('%N')
-			end
+			a_buffer.append (pre_state_tag_start)
+			a_buffer.append_character ('%N')
 
 			if a_state /= Void then
-				from
-					a_state.start
-				until
-					a_state.after
-				loop
-					a_buffer.append (a_state.item_for_iteration.summary)
-					a_buffer.append_character ('%N')
-					a_state.forth
-				end
+				a_buffer.append (a_state)
 			else
-				a_buffer.append ("This is Void%N")
+				a_buffer.append (once "This is Void%N")
 			end
 
-			if a_is_pre_state then
-				a_buffer.append (pre_state_tag_end)
-				a_buffer.append_character ('%N')
-			else
-				a_buffer.append (post_state_tag_end)
-				a_buffer.append_character ('%N')
-			end
+			a_buffer.append (pre_state_tag_end)
+			a_buffer.append_character ('%N')
 		end
 
-	append_variable_with_type (a_index: INTEGER; a_type: STRING; a_buffer: STRING)
-			-- Append variable with `a_index' and `a_type' into `a_buffer'.
+	append_variable_with_type (a_index: INTEGER; a_type: STRING; a_buffer: STRING; a_indent_needed: BOOLEAN)
+			-- Append variable with `a_index' and `a_type' into `a_buffer'.			
 		do
-			a_buffer.append (once "%Tv_")
+			if a_indent_needed then
+				a_buffer.append_character ('%T')
+			end
+			a_buffer.append (once "v_")
 			a_buffer.append_integer (a_index)
 			a_buffer.append (once ": ")
 			if a_index = 0 then
@@ -744,8 +703,6 @@ feature{NONE} -- Implementation/Test case synthesis
 			end
 			a_buffer.append_character ('%N')
 		end
-
-
 
 invariant
 	interpreter_attached: interpreter /= Void

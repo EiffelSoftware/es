@@ -23,39 +23,30 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_object_state_response: AUT_OBJECT_STATE_RESPONSE)
+	make (a_queries: HASH_TABLE [STRING, STRING])
 			-- Initialization for `Current'.
-		require
-			an_object_state_response_attached: an_object_state_response /= Void
 		local
 			l_key_string, l_item_string: STRING
 		do
-			if an_object_state_response.query_results = Void then
-				create boolean_query_results.make (1)
-			else
-				create boolean_query_results.make (an_object_state_response.query_results.count)
+			create boolean_query_results.make (a_queries.count)
 
-				from
-					an_object_state_response.query_results.start
-				until
-					an_object_state_response.query_results.after
-				loop
-					l_key_string := an_object_state_response.query_results.key_for_iteration
-					l_item_string := an_object_state_response.query_results.item_for_iteration
+			from
+				a_queries.start
+			until
+				a_queries.after
+			loop
+				l_key_string := a_queries.key_for_iteration
+				l_item_string := a_queries.item_for_iteration
 
-					if l_item_string.is_equal ("True%N") or l_item_string.is_equal ("True") then
-						boolean_query_results.put (True, l_key_string)
-					elseif l_item_string.is_equal ("False%N") or l_item_string.is_equal ("False") then
-						boolean_query_results.put (False, l_key_string)
-					end
-
-					an_object_state_response.query_results.forth
+				if l_item_string.is_equal ("True%N") or l_item_string.is_equal ("True") then
+					boolean_query_results.put (True, l_key_string)
+				elseif l_item_string.is_equal ("False%N") or l_item_string.is_equal ("False") then
+					boolean_query_results.put (False, l_key_string)
 				end
+				a_queries.forth
 			end
 		ensure
 			boolean_query_results_attached: boolean_query_results /= Void
-			boolean_query_results_not_overfilled: an_object_state_response.query_results = Void or else
-				boolean_query_results.count <= an_object_state_response.query_results.count
 		end
 
 feature -- Access
@@ -146,29 +137,11 @@ feature -- Comparison
 			end
 		end
 
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
 invariant
 	boolean_query_results_attached: boolean_query_results /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

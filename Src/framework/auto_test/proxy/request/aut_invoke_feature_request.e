@@ -118,8 +118,10 @@ feature -- Access
 			end
 		end
 
-	operand_types: SPECIAL [STRING] is
-			-- Typss of operands
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		local
 			l_count: INTEGER
 			l_args: FEAT_ARG
@@ -138,7 +140,7 @@ feature -- Access
 			end
 
 			create Result.make (l_count)
-			Result.put (cleaned_type_name (l_target_type.name), 0)
+			Result.put (l_target_type, 0)
 
 			if argument_count > 0 then
 				l_args := feature_to_call.arguments
@@ -151,7 +153,7 @@ feature -- Access
 				loop
 					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
-					Result.put (cleaned_type_name (l_type.name), i)
+					Result.put (l_type, i)
 					l_args.forth
 					i := i + 1
 				end
@@ -161,7 +163,7 @@ feature -- Access
 			if is_feature_query then
 				l_type := feature_to_call.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 				l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
-				Result.put (cleaned_type_name (l_type.name), l_count - 1)
+				Result.put (l_type, l_count - 1)
 			end
 		end
 

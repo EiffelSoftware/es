@@ -202,15 +202,11 @@ feature  -- Parsing
 			else
 				output := last_string.twin
 				parse_object_state_status
-				if last_string = Void then
+				if last_string = Void or else not is_status_success_message (last_string) then
 					create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
 				else
 					if is_status_success_message (last_string) then
 						create {AUT_NORMAL_RESPONSE} last_response.make (output)
-					elseif is_status_class_invariant_message (last_string) then
-						create {AUT_OBJECT_STATE_RESPONSE} last_response.make_with_class_invariant_violation
-					elseif is_status_object_is_void_message (last_string) then
-						create {AUT_OBJECT_STATE_RESPONSE} last_response.make_with_void
 					else
 						parse_exception
 						if last_exception = Void then
@@ -525,7 +521,7 @@ invariant
 	input_stream_open_read: input_stream.is_open_read
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

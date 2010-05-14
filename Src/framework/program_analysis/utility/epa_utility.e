@@ -226,7 +226,7 @@ feature -- Class/feature related
 			create Result.make (l_operand_count)
 			Result.force_last (a_context_class.actual_type, 0)
 			if a_feature.has_return_value then
-				Result.force_last (a_feature.type, l_operand_count)
+				Result.force_last (a_feature.type, l_operand_count - 1)
 			end
 
 			if a_feature.argument_count > 0 then
@@ -492,5 +492,43 @@ feature -- Equation transformation
 				Result := a_equation
 			end
 		end
+
+feature -- Expressions/Types
+
+	variable_to_type_replacements (a_variables: EPA_HASH_SET [EPA_EXPRESSION]): HASH_TABLE [STRING, STRING]
+			-- Table to lookup the type of variables in `a_variables'
+			-- Key is variable name, value is the type of that variable.
+		do
+			create Result.make (a_variables.count)
+			Result.compare_objects
+			a_variables.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+					local
+						l_type: STRING
+					do
+						l_type := cleaned_type_name (a_expr.resolved_type.name)
+						l_type.prepend_character ('{')
+						l_type.append_character ('}')
+						a_tbl.put (l_type, a_expr.text.as_lower)
+					end (?, Result))
+		end
+
+feature -- Expressions
+
+	expression_rewriter: EPA_TRANSITION_EXPRESSION_REWRITER
+			-- Expression rewriter to rewrite `variables' in anonymous format.
+		once
+			create Result.make
+		end
+
+	expression_text_with_replacement (a_expression: EPA_EXPRESSION; a_replacements: HASH_TABLE [STRING, STRING]): STRING
+			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
+			-- `a_replacements' defines the replacements. Key is the original variable name in `a_expressions',
+			-- value is the new text for that variable in the resulting string.
+			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.			
+		do
+			Result := expression_rewriter.expression_text (a_expression, a_replacements)
+		end
+
 
 end

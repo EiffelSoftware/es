@@ -71,14 +71,59 @@ feature -- Access
 			-- This is an ID used for predicate evaluation
 
 	operand_indexes: SPECIAL [INTEGER] is
-			-- Indexes of operands for the feature call
-			-- in current
+			-- Indexes of operands for the feature call in current
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		deferred
 		end
 
-	operand_types: SPECIAL [STRING] is
-			-- Typss of operands
+	operand_type_names: SPECIAL [STRING] is
+			-- Type names of operands
+		local
+			l_types: like operand_types
+			i: INTEGER
+			c: INTEGER
+		do
+			l_types := operand_types
+			c := l_types.count
+			create Result.make (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (cleaned_type_name (l_types.item (i).name), i)
+				i := i + 1
+			end
+		end
+
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		deferred
+		end
+
+	operand_variable_index_table: HASH_TABLE [INTEGER, INTEGER]
+			-- Table for the mapping from 0-based operand indexes to object indexes of those operands.
+			-- Key is 0-based operand indexes (0 for target, 1 for the first argument, and so on, followed by possible result).
+			-- Value is the index of the object for that operand in the object pool.
+		local
+			l_opd_indexes: like operand_indexes
+			i: INTEGER
+			c: INTEGER
+		do
+			l_opd_indexes := operand_indexes
+			c := l_opd_indexes.count
+			create Result.make (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (l_opd_indexes.item (i), i)
+				i := i + 1
+			end
 		end
 
 feature -- Status report
@@ -106,6 +151,11 @@ feature -- Status report
 			Result := argument_count > 0
 		ensure
 			good_result: Result = (argument_count > 0)
+		end
+
+	is_creation: BOOLEAN
+			-- Is Current a creation procedure request?
+		do
 		end
 
 feature -- Setting
