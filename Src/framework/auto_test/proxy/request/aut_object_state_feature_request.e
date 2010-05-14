@@ -87,7 +87,6 @@ feature -- Access
 			l_feat_generator: AUT_OBJECT_STATE_RETRIEVAL_FEATURE_GENERATOR
 			l_class: EIFFEL_CLASS_C
 			l_map: HASH_TABLE [STRING, STRING]
-			l_text: STRING
 			l_operand_map: like operand_map
 			l_obj_index: STRING
 			l_feat_text_tbl: like feature_text_table
@@ -107,8 +106,8 @@ feature -- Access
 				-- it in cache `feature_text_table'.
 			l_feat_text_tbl.search (l_feature)
 			if l_feat_text_tbl.found then
-				l_pre_text := l_feat_text_tbl.found_item.pre_state_text
-				l_post_text := l_feat_text_tbl.found_item.post_state_text
+				l_pre_text := l_feat_text_tbl.found_item.pre_state_text.twin
+				l_post_text := l_feat_text_tbl.found_item.post_state_text.twin
 			else
 				create l_feat_generator
 				l_feat_generator.set_config (config)
@@ -119,12 +118,8 @@ feature -- Access
 				l_feat_generator.generate_for_feature (context_class, feature_, False, is_creation)
 				l_post_text := l_feat_generator.feature_text.twin
 				l_feat_text_tbl.force_last ([l_pre_text, l_post_text], l_feature)
-
-				if is_for_pre_state then
-					l_text := l_pre_text.twin
-				else
-					l_text := l_post_text.twin
-				end
+				l_pre_text := l_pre_text.twin
+				l_post_text := l_post_text.twin
 			end
 
 				-- Create operand index to varaible index map.
