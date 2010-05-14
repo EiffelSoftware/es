@@ -16,14 +16,16 @@ inherit
 
 	SEM_FIELD_NAMES
 
+	SEM_UTILITY
+
 feature -- Basic operation
 
 	write (a_queryable: SEM_QUERYABLE; a_folder: STRING)
 			-- Output `a_queryable' into a file in `a_folder'
 		do
-			if attached {SEM_FEATURE_CALL_TRANSITION}a_queryable as l_ft_call_trans then
-				-- delegate
-				feature_call_writer.write (l_ft_call_trans, a_folder)
+			-- delegate
+			if attached {SEM_TRANSITION}a_queryable as l_trans then
+				transition_writer.write (l_trans, a_folder)
 			else
 				to_implement("")
 			end
@@ -31,7 +33,7 @@ feature -- Basic operation
 
 feature {NONE} -- Specialized writers
 
-	feature_call_writer: SEM_FEATURE_CALL_TRANSITION_WRITER
+	transition_writer: SEM_TRANSITION_WRITER
 		once
 			create Result
 		end
@@ -112,30 +114,149 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	abstract_types (a_type: TYPE_A; a_feature: FEATURE_I): LIST[CL_TYPE_A]
-			-- Get a list of abstract types of `a_type' that also contain the feature `a_feature'
+	abstract_types (a_type: TYPE_A; a_feature_list: LIST[STRING]): LIST[CL_TYPE_A]
+			-- Get a list of abstract types of `a_type' that also contain the features in `a_feature_list'
 		require
 			is_class_type: a_type.is_full_named_type
 		local
+			l_feature: E_FEATURE
 			l_precursors: LIST[CLASS_C]
+			l_class: CLASS_C
+			l_first: BOOLEAN
+			l_type: CL_TYPE_A
+			l_has_all: BOOLEAN
+			l_features: LINKED_LIST[FEATURE_I]
+		do
+			l_class := a_type.associated_class
+
+			-- Get all abstract candidates
+			from
+				a_feature_list.start
+				l_first := true
+				create l_features.make
+				create {LINKED_LIST[CL_TYPE_A]}Result.make
+			until
+				a_feature_list.after
+			loop
+				l_feature := l_class.feature_named (a_feature_list.item).e_feature
+				l_features.extend (l_feature.associated_feature_i)
+
+				l_precursors := l_feature.precursors
+
+				from
+					l_precursors.start
+				until
+					l_precursors.after
+				loop
+					if attached {GEN_TYPE_A}a_type as l_gen_type then
+						if l_gen_type.generics.count /= l_precursors.item.generics.count then
+							to_implement ("Generics reduced on inheritance")
+						else
+							create {GEN_TYPE_A}l_type.make (l_precursors.item.class_id, l_gen_type.generics)
+						end
+					else
+						l_type := l_precursors.item.actual_type
+					end
+					Result.extend(l_type)
+
+					l_precursors.forth
+				end
+				a_feature_list.forth
+			end
+
+			-- Remove candidates that don't have all the features
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				from
+					l_class := Result.item.associated_class
+					l_has_all := true
+					l_features.start
+				until
+					l_features.after or not l_has_all
+				loop
+					if l_class.feature_of_rout_id_set (l_features.item.rout_id_set) = void then
+						l_has_all := false
+					end
+
+					l_features.forth
+				end
+
+				if not l_has_all then
+					Result.remove
+				else
+					Result.forth
+				end
+			end
+		end
+
+	variable_form_from_anonymous (a_string: STRING): STRING
+			-- Converts any {n} to vn
+		local
+			l_pos: INTEGER
+			l_change: BOOLEAN
 		do
 			from
-				create {LINKED_LIST[CL_TYPE_A]}Result.make
-				l_precursors := a_feature.e_feature.precursors
-				l_precursors.start
+				create Result.make (a_string.count)
+				l_pos := 1
 			until
-				l_precursors.after
+				l_pos > a_string.count
 			loop
-				if attached {GEN_TYPE_A}a_type as l_gen_type then
-					if l_gen_type.generics.count /= l_precursors.item.generics.count then
-						to_implement ("Generics reduced on inheritance")
-					else
-						Result.extend (create {GEN_TYPE_A}.make (l_precursors.item.class_id, l_gen_type.generics))
+				if a_string.item (l_pos) = '{' then
+					l_change := true
+				elseif a_string.item (l_pos) /= '}' then
+					if l_change then
+						Result.extend ('v')
+						l_change := false
 					end
-				else
-					Result.extend(l_precursors.item.actual_type)
+
+					Result.extend (a_string.item (l_pos))
 				end
-				l_precursors.forth
+				l_pos := l_pos + 1
+			end
+		end
+
+	calls_on_principal_variable (a_content: STRING; a_princ_var_index: INTEGER): LIST[STRING]
+			-- Parse `a_content' and return calls to `a_princ_var_index'
+		local
+			l_pos: INTEGER
+			l_in_index, l_in_call: BOOLEAN
+			l_cur_index_str: STRING
+			l_cur_index: INTEGER
+			l_cur_fun: STRING
+		do
+			from
+				create {LINKED_LIST[STRING]}Result.make
+				l_pos := 1
+			until
+				l_pos > a_content.count
+			loop
+				if a_content.item (l_pos) = '{' then
+					l_in_index := true
+					create l_cur_index_str.make (3)
+				elseif l_in_index and a_content.item (l_pos) = '}' then
+					l_in_index := false
+					l_cur_index := l_cur_index.to_integer
+
+					if l_cur_index = a_princ_var_index and a_content.count>l_pos and a_content.item (l_pos+1) = '.' then
+						l_in_call := true
+						-- Skip over '.'
+						l_pos := l_pos+1
+						create l_cur_fun.make_empty
+					end
+				elseif l_in_index then
+					l_cur_index_str.extend (a_content.item (l_pos))
+				elseif l_in_call then
+					if a_content.item (l_pos).is_alpha_numeric then
+						l_cur_fun.extend (a_content.item (l_pos))
+					else
+						l_in_call := false
+						Result.extend (l_cur_fun)
+					end
+				end
+				l_pos := l_pos + 1
 			end
 		end
 

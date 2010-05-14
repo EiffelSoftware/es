@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {SEM_DOCUMENT_LOADER}."
-	author: ""
+	description: "Loads a semantic document into a SEM_QUERYABLE"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,7 +7,7 @@ class
 	SEM_DOCUMENT_LOADER
 inherit
 	SEM_FIELD_NAMES
-	EPA_UTILITY
+	SEM_UTILITY
 
 feature -- Loading
 
@@ -32,6 +31,9 @@ feature -- Loading
 				if fields.has(feature_field) then
 					-- Feature-call transition
 					load_feature_call_transition
+				else
+					-- Snippet
+					load_snippet_transition
 				end
 			end
 		end
@@ -40,7 +42,7 @@ feature -- Access
 
 	last_queryable: SEM_QUERYABLE
 
-feature {NONE} -- Implementation
+feature {NONE} -- Helpers
 
 	variable_locations (a_var_index_list: LIST[STRING]): LIST[TUPLE[type:STRING;position:INTEGER]]
 			-- Extracts types and positions from a list of variables ({type}@position)
@@ -164,25 +166,44 @@ feature {NONE} -- Implementation
 			Result :=  l_anon_start = 0 or else a_string.item (l_anon_start+1).is_digit
 		end
 
-	load_feature_call_transition
-			-- Loads a feature-call transition
+	linear_variable_positions (a_count: INTEGER): HASH_TABLE [INTEGER, STRING]
+			-- Linear list of variabels positions (0,v0) (1,v1) etc
 		local
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-			l_context: EPA_CONTEXT
-			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_index: INTEGER
+		do
+			create Result.make (a_count)
+			from
+				l_index := 0
+			until
+				l_index >= a_count
+			loop
+				Result.extend(l_index, "v"+l_index.out)
+				l_index := l_index + 1
+			end
+		end
 
+	linear_variable_set (a_count: INTEGER): DS_HASH_SET [STRING]
+			-- Linear list of variables, i.e. vn with n=[0..a_count-1]
+		local
+			l_index: INTEGER
+		do
+			create Result.make (a_count)
+			from
+				l_index := 0
+			until
+				l_index >= a_count
+			loop
+				Result.put ("v"+l_index.out)
+				l_index := l_index + 1
+			end
+		end
+
+	transition_context: EPA_CONTEXT
+			-- Returns the context of the transition
+		local
 			l_variables: LIST[STRING]
 			l_var_locations: like variable_locations
 			l_concrete_var_locations: like variable_locations
-
-			l_operands: HASH_TABLE[STRING,INTEGER]
-			l_prestate, l_poststate: EPA_STATE
-			l_prestate_queries, l_poststate_queries: HASH_TABLE[STRING,STRING]
-			l_var_replacement_map: HASH_TABLE[STRING,STRING]
-
-			l_current_anon_property, l_current_var_property, l_current_property_value: STRING
-			l_field: STRING
 		do
 			-- Split variable field into single variables+index
 			l_variables := string_slices (fields[variables_field], field_value_separator)
@@ -194,17 +215,66 @@ feature {NONE} -- Implementation
 			l_concrete_var_locations := concrete_variable_locations (l_var_locations)
 
 			-- Create a context with the variables
-			l_context := context_from_var_locations (l_concrete_var_locations)
+			Result := context_from_var_locations (l_concrete_var_locations)
+		end
 
-			-- Create simple operand-list			
-			l_operands := linear_operand_list (l_context.variables.count)
+		transition_inputs: DS_HASH_SET [STRING]
+			-- Inputs of transition
+		local
+			l_variables: LIST[STRING]
+			l_var_locations: like variable_locations
+			l_concrete_var_locations: like variable_locations
+		do
+			-- Split variable field into single variables+index
+			l_variables := string_slices (fields[inputs_field], field_value_separator)
 
-			-- Create the transition
-			l_class := first_class_starts_with_name (fields[class_field])
-			l_feature := l_class.feature_named (fields[feature_field])
-			create l_transition.make (l_class, l_feature, l_operands, l_context, false)
+			-- Extract typename and positions
+			l_var_locations := variable_locations (l_variables)
 
-			-- Gather pre- & poststate-queries
+			from
+				l_var_locations.start
+				create Result.make(l_var_locations.count)
+				Result.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A[STRING]})
+			until
+				l_var_locations.after
+			loop
+				Result.put ("v"+l_var_locations.item.position.out)
+				l_var_locations.forth
+			end
+		end
+
+	transition_outputs: DS_HASH_SET [STRING]
+			-- Outputs of transition
+		local
+			l_variables: LIST[STRING]
+			l_var_locations: like variable_locations
+			l_concrete_var_locations: like variable_locations
+		do
+			-- Split variable field into single variables+index
+			l_variables := string_slices (fields[outputs_field], field_value_separator)
+
+			-- Extract typename and positions
+			l_var_locations := variable_locations (l_variables)
+
+			from
+				l_var_locations.start
+				create Result.make(l_var_locations.count)
+				Result.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A[STRING]})
+			until
+				l_var_locations.after
+			loop
+				Result.put ("v"+l_var_locations.item.position.out)
+				l_var_locations.forth
+			end
+		end
+
+	set_pre_post_states (a_transition: SEM_TRANSITION; a_context_class: CLASS_C; a_context_feature: detachable FEATURE_I)
+		local
+			l_field: STRING
+			l_prestate, l_poststate: EPA_STATE
+			l_prestate_queries, l_poststate_queries: HASH_TABLE[STRING,STRING]
+			l_current_anon_property, l_current_var_property, l_current_property_value: STRING
+		do
 			from
 				fields.start
 				create l_prestate_queries.make (20)
@@ -232,13 +302,77 @@ feature {NONE} -- Implementation
 			end
 
 			-- Create and set pre- & poststates
-			create l_prestate.make_from_object_state (l_prestate_queries, l_class, l_feature)
-			create l_poststate.make_from_object_state (l_poststate_queries, l_class, l_feature)
-			l_transition.set_precondition (l_prestate)
-			l_transition.set_postcondition (l_poststate)
+			create l_prestate.make_from_object_state (l_prestate_queries, a_context_class, a_context_feature)
+			create l_poststate.make_from_object_state (l_poststate_queries, a_context_class, a_context_feature)
+			a_transition.set_precondition (l_prestate)
+			a_transition.set_postcondition (l_poststate)
+		end
+
+feature {NONE} -- Load
+
+	load_snippet_transition
+			-- Loads a snippet transition
+		local
+			l_context: EPA_CONTEXT
+			l_transition: SEM_SNIPPET
+
+			l_variables: LIST[STRING]
+			l_var_locations: like variable_locations
+			l_concrete_var_locations: like variable_locations
+
+			l_operands: HASH_TABLE[STRING,INTEGER]
+
+			l_var_replacement_map: HASH_TABLE[STRING,STRING]
+			l_var_positions: like linear_variable_positions
+
+			l_princ_var_index: INTEGER
+			l_princ_var_class: CLASS_C
+
+			l_content: STRING
+		do
+			l_context := transition_context
+
+			l_var_positions := linear_variable_positions (l_context.variables.count)
+
+			l_content := fields[content_field]
+			create l_transition.make (l_context, l_var_positions, transition_inputs, transition_outputs, l_content)
+
+			-- Gather pre- & poststate-queries
+			l_princ_var_index := principal_variable_from_anon_content (l_content)
+			l_princ_var_class := l_context.variables["v"+l_princ_var_index.out].associated_class
+
+			set_pre_post_states (l_transition, l_princ_var_class, void)
 
 			last_queryable := l_transition
 		end
+
+	load_feature_call_transition
+			-- Loads a feature-call transition
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_context: EPA_CONTEXT
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+
+			l_operands: HASH_TABLE[STRING,INTEGER]
+			l_var_replacement_map: HASH_TABLE[STRING,STRING]
+		do
+			l_context := transition_context
+
+			-- Create simple operand-list			
+			l_operands := linear_operand_list (l_context.variables.count)
+
+			-- Create the transition
+			l_class := first_class_starts_with_name (fields[class_field])
+			l_feature := l_class.feature_named (fields[feature_field])
+			create l_transition.make (l_class, l_feature, l_operands, l_context, false)
+
+			set_pre_post_states (l_transition, l_class, l_feature)
+
+			last_queryable := l_transition
+		end
+
+feature {NONE} -- Parsing
 
 	document: STRING
 

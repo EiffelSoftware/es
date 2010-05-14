@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	SEM_FEATURE_CALL_TRANSITION_WRITER
+	SEM_TRANSITION_WRITER
 inherit
 	SEM_DOCUMENT_WRITER
 		redefine
@@ -16,22 +16,36 @@ create {SEM_DOCUMENT_WRITER}
 
 feature -- Basic operation
 
-	write (a_transition: SEM_FEATURE_CALL_TRANSITION; a_folder: STRING)
+	write (a_transition: SEM_TRANSITION; a_folder: STRING)
 			-- Output `a_transition' into a file in `a_folder'
 		local
 			l_id: STRING
 			l_file: PLAIN_TEXT_FILE
 			l_file_name: FILE_NAME
+			l_princ_var_index: INTEGER
+			l_calls: LIST[STRING]
 		do
 			transition := a_transition
-			principal_variable := transition.reversed_variable_position.item (0)
-			abstract_principal_types := abstract_types (principal_variable.resolved_type, transition.feature_)
+			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
+				principal_variable_index := 0
+			else
+				principal_variable_index := principal_variable_from_anon_content(transition.content)
+			end
+			principal_variable := transition.reversed_variable_position.item (principal_variable_index)
+			l_calls := calls_on_principal_variable(transition.content, principal_variable_index)
+
+			abstract_principal_types := abstract_types (principal_variable.resolved_type,l_calls)
 
 			create buffer.make (4096)
 			append_document_type
 			append_content
-			append_class
-			append_feature
+
+			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
+				append_class
+				append_feature
+				append_export_status
+			end
+
 			append_variables (transition.variables, variables_field, true)
 			append_variables (transition.variables, variable_types_field, false)
 			append_variables (transition.inputs, inputs_field, true)
@@ -40,13 +54,12 @@ feature -- Basic operation
 			append_variables (transition.outputs, output_types_field, false)
 			append_variables (transition.intermediate_variables, locals_field, true)
 			append_variables (transition.intermediate_variables, local_types_field, false)
-			append_export_status
 			append_precondition
 			append_postcondition
 			append_changes
 
 			create l_id.make (64)
-			l_id.append (transition.name)
+			l_id.append (cleaned_type_name (principal_variable.resolved_type.name))
 			l_id.append_character ('.')
 			l_id.append (buffer.hash_code.out)
 			append_field (id_field, default_boost, type_string, l_id)
@@ -67,26 +80,17 @@ feature {NONE} -- Impelementation
 	buffer: STRING
 			-- Buffer to store output content
 
-	transition: SEM_FEATURE_CALL_TRANSITION
+	transition: SEM_TRANSITION
 			-- Transition to be output
 
 	principal_variable: EPA_EXPRESSION
 			-- The principal variable of this transition
 
+	principal_variable_index: INTEGER
+			-- The index of the principal variable
+
 	abstract_principal_types: LIST[CL_TYPE_A]
-			-- Abstract types of `principal_variable'			
-
-	is_principal_variable (a_variable: EPA_EXPRESSION): BOOLEAN
-			-- Is `a_variable' the principle one
-		do
-			Result := transition.variable_position (a_variable) = 0
-		end
-
-	expression_rewriter: EPA_TRANSITION_EXPRESSION_REWRITER
-			-- Expression rewriter to rewrite `variables' in anonymous format.
-		once
-			create Result.make
-		end
+			-- Abstract types of `principal_variable'		
 
 	abstracting_rewriter: SEM_ABSTRACTING_EXPRESSION_REWRITER
 		once
@@ -175,11 +179,11 @@ feature {NONE} -- Append
 				loop
 					l_pos := transition.variable_position (a_variables.item_for_iteration)
 
-					if is_principal_variable (a_variables.item_for_iteration) then
+					if l_pos = principal_variable_index then
 						-- "principal" object
 						-- add better way to get this ofc
 						from
-							l_abs_types := abstract_types (a_variables.item_for_iteration.resolved_type, transition.feature_)
+							l_abs_types := abstract_principal_types
 							l_abs_types.start
 						until
 							l_abs_types.after
