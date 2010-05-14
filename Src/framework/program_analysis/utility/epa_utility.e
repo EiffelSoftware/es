@@ -246,11 +246,13 @@ feature -- Class/feature related
 			end
 		end
 
-	resolved_operand_types_with_feature (a_feature: FEATURE_I; a_viewed_class: CLASS_C; a_context_class: CLASS_C): like operand_types_with_feature
+	resolved_operand_types_with_feature (a_feature: FEATURE_I; a_viewed_class: CLASS_C; a_context_type: TYPE_A): like operand_types_with_feature
 			-- Types of operands of `a_feature' in the context of `a_context_class'.
 			-- Result is a table, key is the 0-based operand index, 0 indicates the target,
 			-- followed by arguments and result, if any. Value is the type of that operand.
-			-- Note: Types in the result is solved in `a_context_class'.		
+			-- Note: Types in the result is solved in `a_context_class'.	
+		local
+			l_type: TYPE_A
 		do
 			Result := operand_types_with_feature (a_feature, a_viewed_class)
 			from
@@ -258,7 +260,9 @@ feature -- Class/feature related
 			until
 				Result.after
 			loop
-				Result.replace (resolved_type_in_context (Result.item_for_iteration, a_context_class), Result.key_for_iteration)
+				l_type := Result.item_for_iteration
+				l_type := l_type.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
+				Result.replace (l_type, Result.key_for_iteration)
 				Result.forth
 			end
 		end

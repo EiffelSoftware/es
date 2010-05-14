@@ -50,13 +50,14 @@ feature -- Setting
 
 feature -- Basic operations
 
-	generate_for_feature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_prestate: BOOLEAN; a_is_creation: BOOLEAN)
+	generate_for_feature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_prestate: BOOLEAN; a_is_creation: BOOLEAN; a_target_type: TYPE_A)
 			-- Generate feature to retrieve states for operands of `a_feature' viewed in `a_context_class',
 			-- make result available in `feature_text'.
 			-- `a_prestate' indicates whether the found expressions are to be evaluated before
 			-- the execution of the test case. This is important because expressions such as "Result"
 			-- does not make sense to be evaluated before the test case execution.
 			-- `a_is_creation' indicates if `a_feature' is used as a creation procedure.
+			-- `a_target_type' indicates the type of the target of `a_feature'.
 		local
 			l_finder: AUT_OBJECT_STATE_EXPRESSION_FINDER
 			l_operands: like operands_of_feature
@@ -64,7 +65,7 @@ feature -- Basic operations
 			is_for_feature := True
 				-- Search for expressions that are included in state model.
 			create l_finder.make
-			l_finder.search_for_feature (a_context_class, a_feature, a_prestate, a_is_creation, interpreter_root_class)
+			l_finder.search_for_feature (a_context_class, a_feature, a_prestate, a_is_creation, interpreter_root_class, a_target_type)
 
 			if attached {AUT_OBJECT_STATE_CONFIG} config as l_config and then l_config.is_all then
 				functions_by_target := l_finder.functions_by_target

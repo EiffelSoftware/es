@@ -37,9 +37,10 @@ feature{NONE} -- Initialization
 			should_search_for_query_with_arguments := True
 		end
 
-	make_for_feature (a_class: like context_class; a_feature: like feature_; a_operand_map: like operand_map; a_context: like context; a_output_directory: like output_directory)
+	make_for_feature (a_class: like context_class; a_feature: like feature_; a_operand_map: like operand_map; a_context: like context; a_output_directory: like output_directory; a_context_type: like context_type)
 			-- Initialize Current for feature `a_feature'.
 		do
+			context_type := a_context_type
 			set_class_and_feature (a_class, a_feature)
 			set_context (a_context, a_operand_map)
 			make (a_output_directory)
@@ -61,6 +62,7 @@ feature{NONE} -- Initialization
 			set_context (l_context, l_operand_map)
 			is_for_variables := True
 			make (a_output_directory)
+			context_type := l_context.class_.actual_type
 		end
 
 feature -- Access/Search scope
@@ -81,6 +83,9 @@ feature -- Access/Search scope
 			-- value is name of that operand as seen in `context'.
 			-- `operand_map' is needed because for a given test case, which variables are used as which operands in the called
 			-- feature is already fixed, the same ordering needs to be consistent with the generated functions.
+
+	context_type: TYPE_A
+			-- Context type where types are resolved
 
 feature -- Status
 
@@ -324,7 +329,7 @@ feature{NONE} -- Implementation
 				loop
 					l_operand_name := l_operand_cur.item
 					l_operand_type := variable_type_table.item (l_operand_name)
-					l_operand_type := resolved_type_in_context (l_operand_type, l_context_class)
+--					l_operand_type := resolved_type_in_context (l_operand_type, l_context_class)
 					l_operand_class := l_operand_type.associated_class
 
 						-- 2. For each operand, get all queries with one argument.
@@ -341,12 +346,12 @@ feature{NONE} -- Implementation
 							l_feature := l_features.item_for_iteration
 							fixme ("We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases. 9.5.2010 Jasonw")
 							if not l_feature.feature_name.is_case_insensitive_equal (once "is_equal") then
-								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class)
+								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
 
 
 									-- 4. Compose the query and the selected function in `quasi_constant_functions'.
 								if not l_funcs.is_empty then
-									l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context)
+									l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context, l_operand_type)
 									from
 										l_funcs.start
 									until
@@ -416,6 +421,7 @@ feature{NONE} -- Implementation
 			l_body: STRING
 			l_range: like integer_bounds
 			l_quasi_functions: like quasi_constant_functions
+			l_type: TYPE_A
 		do
 			if should_solve_integer_argument_bound and then is_for_feature and then should_search_for_query_with_arguments then
 				l_quasi_functions := quasi_constant_functions
@@ -426,8 +432,9 @@ feature{NONE} -- Implementation
 				until
 					l_cursor.after
 				loop
-					check l_cursor.item.associated_class /= Void end
-					l_class := l_cursor.item.associated_class
+					l_type := l_cursor.item
+					check l_type.associated_class /= Void end
+					l_class := l_type.associated_class
 					l_feat_tbl := l_class.feature_table
 					l_tbl_cursor := l_feat_tbl.cursor
 					from
@@ -448,7 +455,7 @@ feature{NONE} -- Implementation
 								create l_argument_domains.make (1, 1)
 								l_argument_types.put (integer_type, 1)
 								l_argument_domains.put (l_range, 1)
-								l_result_type := resolved_type_in_context (l_feat.type, context_class)
+								l_result_type := l_feat.type.actual_type.instantiation_in (l_type, l_class.class_id)
 								create l_body.make (32)
 								l_body.append (l_cursor.key)
 								l_body.append_character ('.')
@@ -487,7 +494,11 @@ feature{NONE} -- Implementation
 			l_variable_type_table: like variable_type_table
 			l_var_name: STRING
 			l_variable_names: like variable_names
+			l_context_type: like context_type
+			l_context_type_class: CLASS_C
 		do
+			l_context_type := context_type
+			l_context_type_class := l_context_type.associated_class
 			create static_type_table.make (variables.count)
 			l_static_type_table := static_type_table
 			l_static_type_table.set_key_equality_tester (string_equality_tester)
@@ -501,24 +512,26 @@ feature{NONE} -- Implementation
 			l_variable_type_table.set_key_equality_tester (string_equality_tester)
 
 				-- Add static types of operands in `feature_' in `static_type_table'.
-			from
-				l_opernd_types := operand_types_with_feature (feature_, context_class)
-				l_opernd_types.start
-			until
-				l_opernd_types.after
-			loop
-				l_operand_name := operand_map.item (l_opernd_types.key_for_iteration)
-				l_type := resolved_type_in_context (l_opernd_types.item_for_iteration, context_class)
-				l_static_type_table.force_last (l_type, l_operand_name)
-				l_operand_static_type_table.force_last (l_type, l_operand_name)
-				if l_opernd_types.key_for_iteration = 0 then
-						-- Dynamic type for feature target.
-					l_variable_type_table.force_last (variables.item (l_operand_name), l_operand_name)
-				else
-						-- Static type for arguments and result, if any.
-					l_variable_type_table.force_last (l_type, l_operand_name)
+			if not context.is_dummy_feature_used then
+				from
+					l_opernd_types := operand_types_with_feature (feature_, context_class)
+					l_opernd_types.start
+				until
+					l_opernd_types.after
+				loop
+					l_operand_name := operand_map.item (l_opernd_types.key_for_iteration)
+					l_type := l_opernd_types.item_for_iteration.instantiation_in (l_context_type, l_context_type_class.class_id)
+					l_static_type_table.force_last (l_type, l_operand_name)
+					l_operand_static_type_table.force_last (l_type, l_operand_name)
+					if l_opernd_types.key_for_iteration = 0 then
+							-- Dynamic type for feature target.
+						l_variable_type_table.force_last (variables.item (l_operand_name), l_operand_name)
+					else
+							-- Static type for arguments and result, if any.
+						l_variable_type_table.force_last (l_type, l_operand_name)
+					end
+					l_opernd_types.forth
 				end
-				l_opernd_types.forth
 			end
 
 				-- Add types of variables other than operand of `feature_' into `static_type_table'.			
@@ -546,7 +559,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementations
 
-	new_single_argument_function (a_context_class: CLASS_C; a_feature: FEATURE_I; a_operand_name: STRING; a_context: EPA_CONTEXT): EPA_FUNCTION
+	new_single_argument_function (a_context_class: CLASS_C; a_feature: FEATURE_I; a_operand_name: STRING; a_context: EPA_CONTEXT; a_context_type: TYPE_A): EPA_FUNCTION
 			-- Function for `a_feature'.
 			-- `a_feature' should only have one argument. `a_operand_name' serves as the target of the feature call in the resulting function.
 			-- For example, if `a_operand_name' is "v" and `a_feature' is i_th, then the final function is: "v1.i_th({1})".
@@ -558,10 +571,10 @@ feature{NONE} -- Implementations
 			l_body: STRING
 		do
 			create l_arg_types.make (1, 1)
-			l_arg_types.put (resolved_type_in_context (a_feature.arguments.first, a_context_class), 1)
+			l_arg_types.put (a_feature.arguments.first.instantiation_in (a_context_type, a_context_type.associated_class.class_id), 1)
 			create l_arg_domains.make (1, 1)
 			l_arg_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
-			l_result_type := resolved_type_in_context (a_feature.type, a_context_class)
+			l_result_type := a_feature.type.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
 			create l_body.make (32)
 			l_body.append (a_operand_name)
 			l_body.append_character ('.')
@@ -570,7 +583,7 @@ feature{NONE} -- Implementations
 			create Result.make (l_arg_types, l_arg_domains, l_result_type, l_body, a_context)
 		end
 
-	argumentable_functions (a_functions: DS_HASH_SET[EPA_FUNCTION]; a_feature: FEATURE_I; a_context_class: CLASS_C): LIST [EPA_FUNCTION]
+	argumentable_functions (a_functions: DS_HASH_SET[EPA_FUNCTION]; a_feature: FEATURE_I; a_context_class: CLASS_C; a_context_type: TYPE_A): LIST [EPA_FUNCTION]
 			-- Functions from `a_functions' whose type conforms to the argument type of `a_feature'
 		local
 			l_arg_type: TYPE_A
@@ -581,7 +594,7 @@ feature{NONE} -- Implementations
 		do
 			create {LINKED_LIST [EPA_FUNCTION]} Result.make
 			l_context_class := context.class_
-			l_arg_type := resolved_type_in_context (a_feature.arguments.first, a_context_class)
+			l_arg_type := a_feature.arguments.first.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
 
 			from
 				l_cursor := a_functions.new_cursor

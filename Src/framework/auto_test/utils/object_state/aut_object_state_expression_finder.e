@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	search_for_feature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_prestate: BOOLEAN; a_is_creation: BOOLEAN; a_root_class: CLASS_C)
+	search_for_feature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_prestate: BOOLEAN; a_is_creation: BOOLEAN; a_root_class: CLASS_C; a_target_type: TYPE_A)
 			-- Search for expressions, make results avaiable in `expressions'.
 			-- The expressions are related to `a_feature' viewed in `a_context_class'.
 			-- `a_prestate' indicates whether the found expressions are to be evaluated before
@@ -55,11 +55,12 @@ feature -- Basic operations
 			-- does not make sense to be evaluated before the test case execution.
 			-- `a_is_creation' indicates if `a_feature' is used as a creation procedure.
 			-- `a_root_class' should be the root class of the interpreter.
+			-- `a_target_type' indicates the type of the target of `a_feature'.
 		local
 			l_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_data: like variables_from_feature_signature
 		do
-			l_data := variables_from_feature_signature (a_context_class, a_feature, a_context_class, a_prestate, a_is_creation)
+			l_data := variables_from_feature_signature (a_context_class, a_feature, a_context_class, a_prestate, a_is_creation, a_target_type)
 			variables := l_data.variable_types
 			operand_map := l_data.operand_map
 
@@ -88,7 +89,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	variables_from_feature_signature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_root_class: CLASS_C; a_pre_state: BOOLEAN; a_creation: BOOLEAN): TUPLE [variable_types: HASH_TABLE [TYPE_A, STRING]; operand_map: DS_HASH_TABLE [STRING, INTEGER]]
+	variables_from_feature_signature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_root_class: CLASS_C; a_pre_state: BOOLEAN; a_creation: BOOLEAN; a_target_type: TYPE_A): TUPLE [variable_types: HASH_TABLE [TYPE_A, STRING]; operand_map: DS_HASH_TABLE [STRING, INTEGER]]
 			-- Variables extracted from the signature of `a_feature' viewed in `a_context_class'.
 			-- `a_root_class' is the root class of the interpreter.
 			-- The result is a table. Key is variable name, value is the type of that variable.
@@ -104,7 +105,7 @@ feature{NONE} -- Implementation
 			l_result_pos: INTEGER
 			l_query: BOOLEAN
 		do
-			l_operands := resolved_operand_types_with_feature (a_feature, a_context_class, a_root_class)
+			l_operands := resolved_operand_types_with_feature (a_feature, a_context_class, a_target_type)
 			l_operand_names := operands_with_feature (a_feature)
 			create l_variables.make (l_operands.count)
 			l_variables.compare_objects

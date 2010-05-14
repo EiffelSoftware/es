@@ -113,9 +113,9 @@ feature -- Access
 				l_feat_generator.set_config (config)
 
 					-- Generate text for feature to retrieve object states.
-				l_feat_generator.generate_for_feature (context_class, feature_, True, is_creation)
+				l_feat_generator.generate_for_feature (context_class, feature_, True, is_creation, type)
 				l_pre_text := l_feat_generator.feature_text.twin
-				l_feat_generator.generate_for_feature (context_class, feature_, False, is_creation)
+				l_feat_generator.generate_for_feature (context_class, feature_, False, is_creation, type)
 				l_post_text := l_feat_generator.feature_text.twin
 				l_feat_text_tbl.force_last ([l_pre_text, l_post_text], l_feature)
 				l_pre_text := l_pre_text.twin
