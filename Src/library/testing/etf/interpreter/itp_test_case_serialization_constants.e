@@ -42,6 +42,9 @@ feature -- Constants
 	pre_state_tag_start: STRING = "<pre_state>"
 	pre_state_tag_end: STRING = "</pre_state>"
 
+	post_state_tag_start: STRING = "<post_state>"
+	post_state_tag_end: STRING = "</post_state>"
+
 	CDATA_tag_start: STRING = "<![CDATA["
 	CDATA_tag_end: STRING = "]]>"
 

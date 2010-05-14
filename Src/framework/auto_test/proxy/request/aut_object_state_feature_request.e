@@ -79,8 +79,10 @@ feature -- Access
 			-- Key is 0-based operand index.
 			-- Value is object id (used in the object pool) for that operand.
 
-	byte_code_for_object_state_retrieval: STRING
-			-- String representation of the byte-code needed to retrieve object states
+	byte_codes: TUPLE [pre_state_byte_code: STRING; post_state_byte_code: detachable STRING]
+			-- Strings representing the byte-code needed to retrieve object states
+			-- `pre_state_byte_code' is to be executed before the test case execution.
+			-- `post_state_byte_code' is to be executed after the test case execution.
 		local
 			l_feat_generator: AUT_OBJECT_STATE_RETRIEVAL_FEATURE_GENERATOR
 			l_class: EIFFEL_CLASS_C
@@ -105,11 +107,8 @@ feature -- Access
 				-- it in cache `feature_text_table'.
 			l_feat_text_tbl.search (l_feature)
 			if l_feat_text_tbl.found then
-				if is_for_pre_state then
-					l_text := l_feat_text_tbl.found_item.pre_state_text
-				else
-					l_text := l_feat_text_tbl.found_item.post_state_text
-				end
+				l_pre_text := l_feat_text_tbl.found_item.pre_state_text
+				l_post_text := l_feat_text_tbl.found_item.post_state_text
 			else
 				create l_feat_generator
 				l_feat_generator.set_config (config)
@@ -149,13 +148,16 @@ feature -- Access
 			until
 				l_map.after
 			loop
-				l_text.replace_substring_all (l_map.key_for_iteration, l_map.item_for_iteration)
+				l_pre_text.replace_substring_all (l_map.key_for_iteration, l_map.item_for_iteration)
+				l_post_text.replace_substring_all (l_map.key_for_iteration, l_map.item_for_iteration)
 				l_map.forth
 			end
 
 				-- Compile text into byte code.
 			l_class ?= interpreter_root_class
-			Result := feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_text, True).byte_code
+			Result :=
+				[feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_pre_text, True).byte_code,
+				 feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_post_text, True).byte_code]
 		end
 
 feature -- Status report

@@ -26,13 +26,14 @@ inherit
 
 feature -- Access
 
-
 	variables: HASH_TABLE [TYPE_A, INTEGER]
 			-- Variables whose states are to be retrieved
 			-- Key is object index (used in object pool), value is type of that variables.
 
-	byte_code_for_object_state_retrieval: STRING
-			-- String representation of the byte-code needed to retrieve object states
+	byte_codes: TUPLE [pre_state_byte_code: STRING; post_state_byte_code: detachable STRING]
+			-- Strings representing the byte-code needed to retrieve object states
+			-- `pre_state_byte_code' is to be executed before the test case execution.
+			-- `post_state_byte_code' is to be executed after the test case execution.
 		deferred
 		end
 

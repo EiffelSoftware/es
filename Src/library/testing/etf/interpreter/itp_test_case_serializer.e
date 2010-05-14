@@ -97,7 +97,8 @@ feature -- Access
 					append_test_case_hash_code (test_case_hash_code, Result)
 
 						-- Synthesize pre-/post-state object summary.
-					append_object_state (pre_state_object_summary, Result)
+					append_object_state (pre_state_object_summary, Result, True)
+					append_object_state (post_state_object_summary, Result, False)
 
 						-- Synthesize serialization
 					append_object_serialization (pre_state_serialization, Result)
@@ -211,9 +212,13 @@ feature -- Basic operations
 			l_serialization: like object_serialization
 		do
 			pre_state_object_summary := Void
+			test_case_hash_code := Void
 			l_data := abstract_object_state (True)
-			pre_state_object_summary := l_data.summary
-			test_case_hash_code := l_data.hash
+			if l_data /= Void then
+				pre_state_object_summary := l_data.summary
+				test_case_hash_code := l_data.hash
+			end
+
 			l_serialization := object_serialization (True)
 			pre_state_serialization := l_serialization.serialization
 			pre_state_objects := l_serialization.description
@@ -222,9 +227,19 @@ feature -- Basic operations
 	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
 			-- Retrieve post state of the test case.
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
+		local
+			l_data: TUPLE [summary: STRING; hash: STRING]
 		do
 			if is_test_case_setup then
-				exception := interpreter.error_buffer
+				exception := interpreter.error_buffer.twin
+				if interpreter.post_state_retrieveal_byte_code /= Void then
+					interpreter.retrieve_post_object_state
+					post_state_object_summary := Void
+					l_data := abstract_object_state (False)
+					if l_data /= Void then
+						post_state_object_summary := l_data.summary
+					end
+				end
 			else
 				exception := Void
 			end
@@ -256,6 +271,9 @@ feature{NONE} -- Implementation
 	pre_state_object_summary: detachable STRING
 			-- Pre-state object summary
 
+	post_state_object_summary: detachable STRING
+			-- Post-state object summary
+
 	test_case_hash_code: STRING
 			-- Hash code for current test case
 
@@ -267,10 +285,11 @@ feature{NONE} -- Implementation
 			-- List of variables in `pre_state_serialization' along with their object index.
 			-- Key is variable index, value is the variable object itself in pre-execution state.
 
-	abstract_object_state (a_is_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING] is
+	abstract_object_state (a_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING] is
 			-- Retrieve object state summary from objects specified by `operands'
 			-- `summary' is the state summary for `operands'.
 			-- `hash' is the hash code of `summary'.
+			-- `a_pre_state' indicates if those object states are retrieved before test case execution.
 		local
 			l_summary: like pre_state_object_summary
 			l_hash_code: STRING
@@ -280,11 +299,13 @@ feature{NONE} -- Implementation
 		do
 			if is_test_case_setup then
 					-- Setup test case hash code, which consists the hash of the states of all operands.
-				create l_hash_code.make (64)
-				l_hash_code.append (class_name)
-				l_hash_code.append_character ('.')
-				l_hash_code.append (feature_name)
-				l_hash_code.append_character ('.')
+				if a_pre_state then
+					create l_hash_code.make (64)
+					l_hash_code.append (class_name)
+					l_hash_code.append_character ('.')
+					l_hash_code.append (feature_name)
+					l_hash_code.append_character ('.')
+				end
 
 				create l_summary.make (256)
 				l_queries := interpreter.query_values
@@ -304,7 +325,9 @@ feature{NONE} -- Implementation
 				l_queries.go_to (l_cursor)
 
 					-- Calculate hash code of current test case for test case duplication detection.
-				l_hash_code.append (hash_code_from_list (interpreter.query_value_hash_list).out)
+				if a_pre_state then
+					l_hash_code.append (hash_code_from_list (interpreter.query_value_hash_list).out)
+				end
 				Result := [l_summary, l_hash_code]
 			else
 				Result := Void
@@ -648,20 +671,28 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 		end
 
-	append_object_state (a_state: detachable STRING; a_buffer: STRING)
-			-- Append `a_state' into `a_buffer'.
+	append_object_state (a_state: detachable STRING; a_buffer: STRING; a_is_pre_state: BOOLEAN)
+			-- Append `a_state' into `a_buffer'.			
 		do
-			a_buffer.append (pre_state_tag_start)
-			a_buffer.append_character ('%N')
+			if a_is_pre_state then
+				a_buffer.append (pre_state_tag_start)
+				a_buffer.append_character ('%N')
+			else
+				a_buffer.append (post_state_tag_start)
+				a_buffer.append_character ('%N')
+			end
 
 			if a_state /= Void then
 				a_buffer.append (a_state)
-			else
-				a_buffer.append (once "This is Void%N")
 			end
 
-			a_buffer.append (pre_state_tag_end)
-			a_buffer.append_character ('%N')
+			if a_is_pre_state then
+				a_buffer.append (pre_state_tag_end)
+				a_buffer.append_character ('%N')
+			else
+				a_buffer.append (post_state_tag_end)
+				a_buffer.append_character ('%N')
+			end
 		end
 
 	append_variable_with_type (a_index: INTEGER; a_type: STRING; a_buffer: STRING; a_indent_needed: BOOLEAN)

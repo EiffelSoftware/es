@@ -292,7 +292,9 @@ feature {NONE} -- Handlers
 						l_bcode.count)
 
 						-- Test case serialization: retrieve pre-TC state.
-					retrieve_test_case_prestate (l_last_request.l_data)
+					if is_test_case_serialization_enabled then
+						retrieve_test_case_prestate (l_last_request.l_data)
+					end
 
 						-- Run the feature with newly injected byte-code.
 					execute_protected
@@ -310,8 +312,10 @@ feature {NONE} -- Handlers
 					end
 
 						-- Test case serialization.
-					retrieve_post_test_case_state
-					log_test_case_serialization
+					if is_test_case_serialization_enabled then
+						retrieve_post_test_case_state
+						log_test_case_serialization
+					end
 				end
 			else
 				report_error (invalid_request_format_error)
@@ -796,12 +800,17 @@ feature -- Object state checking
 			if not l_retried then
 				output_buffer.wipe_out
 				error_buffer.wipe_out
-				if attached {TUPLE [l_byte_code: STRING]} last_request as l_request then
+				if attached {TUPLE [pre_state_byte_code: STRING; post_state_byte_code: detachable STRING]} last_request as l_request then
 						-- Load byte-code.
-					l_bcode := l_request.l_byte_code
+					l_bcode := l_request.pre_state_byte_code
 					if l_bcode.count = 0 then
 						report_error (byte_code_length_error)
 					else
+						if l_request.post_state_byte_code /= Void and then is_test_case_serialization_enabled then
+							post_state_retrieveal_byte_code := l_request.post_state_byte_code
+						else
+							post_state_retrieveal_byte_code := Void
+						end
 						log_message (once "report_object_state_request start%N")
 
 							-- Initialize query result storage
@@ -835,6 +844,23 @@ feature -- Object state checking
 			refresh_last_response_flag
 			send_response_to_socket
 			retry
+		end
+
+	retrieve_post_object_state
+			-- Retrieve post-execution object states by executing byte-code
+			-- stored in `post_state_retrieval_byte_code'.
+		do
+			initialize_query_value_holders
+			if attached {STRING} post_state_retrieveal_byte_code as l_byte_code then
+				eif_override_byte_code_of_body (
+					byte_code_feature_body_id,
+					byte_code_feature_pattern_id,
+					pointer_for_byte_code (l_byte_code),
+					l_byte_code.count)
+
+					-- Run the feature with newly injected byte-code.
+				execute_protected
+			end
 		end
 
 	invalid_object_state_request: STRING = "Invalid object state request."
@@ -963,6 +989,9 @@ feature -- Object state checking
 
 	internal: INTERNAL
 			-- Internal to get types of an object
+
+	post_state_retrieveal_byte_code: detachable STRING
+			-- Byte code used to retrieve post-execute object states
 
 feature -- Function types
 

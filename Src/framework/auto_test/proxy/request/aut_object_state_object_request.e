@@ -25,8 +25,10 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	byte_code_for_object_state_retrieval: STRING
-			-- String representation of the byte-code needed to retrieve object states
+	byte_codes: TUPLE [pre_state_byte_code: STRING; post_state_byte_code: detachable STRING]
+			-- Strings representing the byte-code needed to retrieve object states
+			-- `pre_state_byte_code' is to be executed before the test case execution.
+			-- `post_state_byte_code' is Void.
 		local
 			l_feat_generator: AUT_OBJECT_STATE_RETRIEVAL_FEATURE_GENERATOR
 			l_class: EIFFEL_CLASS_C
@@ -70,11 +72,11 @@ feature -- Access
 
 				-- Compile text into byte code.
 			l_class ?= interpreter_root_class
-			Result := feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_text, True).byte_code
+			Result :=
+				[feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_text, True).byte_code, Void]
 		end
 
-
-;note
+note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -270,8 +270,7 @@ feature {AUT_REQUEST} -- Processing
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
 		do
---WY		print_execute_request_with_string_byte_code (a_request.byte_code_for_object_state_retrieval, object_state_request_flag, a_request.variable.index.out)
-			print_execute_request_with_string_byte_code (a_request.byte_code_for_object_state_retrieval, object_state_request_flag)
+			print_execute_request_with_string_byte_code (a_request.byte_codes, object_state_request_flag)
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
@@ -527,11 +526,11 @@ feature {NONE} -- Byte code generation
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
 		end
 
-	print_execute_request_with_string_byte_code (a_byte_code: STRING; a_request_flag: NATURAL_8)
+	print_execute_request_with_string_byte_code (a_byte_codes: TUPLE [a_pre_state_byte_code: STRING; a_post_state_byte_code: STRING]; a_request_flag: NATURAL_8)
 			-- Print request indicated by `a_request_flag' to `output_stream'.
 			-- The execute request contains the byte code defined by `a_locals' and `a_compound'.
 		do
-			last_request := [a_request_flag, [a_byte_code]]
+			last_request := [a_request_flag, a_byte_codes]
 		end
 
 feature{NONE} -- Implementation
