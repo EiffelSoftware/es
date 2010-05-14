@@ -159,9 +159,6 @@ feature {NONE} -- Implementation
 
 	type_string: STRING = "STRING"
 
-	field_value_separator: STRING = ";;;"
-			-- Field value separator
-
 	change_value_buffer: STRING
 			-- Buffer to store change values
 

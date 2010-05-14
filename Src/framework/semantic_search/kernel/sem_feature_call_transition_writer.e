@@ -28,17 +28,18 @@ feature -- Basic operation
 			abstract_principal_types := abstract_types (principal_variable.resolved_type, transition.feature_)
 
 			create buffer.make (4096)
+			append_document_type
 			append_content
 			append_class
 			append_feature
-			append_variables (transition.variables, variables_field, false)
-			append_variables (transition.variables, variable_types_field, true)
-			append_variables (transition.inputs, inputs_field, false)
-			append_variables (transition.inputs, input_types_field, true)
-			append_variables (transition.outputs, outputs_field, false)
-			append_variables (transition.outputs, output_types_field, true)
-			append_variables (transition.intermediate_variables, locals_field, false)
-			append_variables (transition.intermediate_variables, local_types_field, true)
+			append_variables (transition.variables, variables_field, true)
+			append_variables (transition.variables, variable_types_field, false)
+			append_variables (transition.inputs, inputs_field, true)
+			append_variables (transition.inputs, input_types_field, false)
+			append_variables (transition.outputs, outputs_field, true)
+			append_variables (transition.outputs, output_types_field, false)
+			append_variables (transition.intermediate_variables, locals_field, true)
+			append_variables (transition.intermediate_variables, local_types_field, false)
 			append_export_status
 			append_precondition
 			append_postcondition
@@ -57,7 +58,7 @@ feature -- Basic operation
 			l_file.close
 		end
 
-feature {NONE} -- Constants
+feature -- Constants
 
 	document_type: STRING = "transition"
 
@@ -115,7 +116,7 @@ feature {NONE} -- Impelementation
 
 feature {NONE} -- Append
 
-	append_document_type_field
+	append_document_type
 			-- Append document type
 		do
 			append_field (document_type_field, default_boost, type_string, document_type)
@@ -177,24 +178,22 @@ feature {NONE} -- Append
 					if is_principal_variable (a_variables.item_for_iteration) then
 						-- "principal" object
 						-- add better way to get this ofc
-						if attached {SEM_FEATURE_CALL_TRANSITION}transition as l_ft_call_trans then
-							from
-								l_abs_types := abstract_types (a_variables.item_for_iteration.resolved_type, l_ft_call_trans.feature_)
-								l_abs_types.start
-							until
-								l_abs_types.after
-							loop
-								l_values.append (once "{")
-								l_values.append (cleaned_type_name (l_abs_types.item.name))
-								if a_print_pos then
-									l_values.append (once "}@")
-									l_values.append (l_pos.out)
-								else
-									l_values.append (once "}")
-								end
-								l_values.append (field_value_separator)
-								l_abs_types.forth
+						from
+							l_abs_types := abstract_types (a_variables.item_for_iteration.resolved_type, transition.feature_)
+							l_abs_types.start
+						until
+							l_abs_types.after
+						loop
+							l_values.append (once "{")
+							l_values.append (cleaned_type_name (l_abs_types.item.name))
+							if a_print_pos then
+								l_values.append (once "}@")
+								l_values.append (l_pos.out)
+							else
+								l_values.append (once "}")
 							end
+							l_values.append (field_value_separator)
+							l_abs_types.forth
 						end
 					end
 

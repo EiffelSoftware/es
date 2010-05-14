@@ -16,7 +16,7 @@ feature -- Access
 
 	class_field: STRING = "class"
 
-	feature_field: STRING = "field"
+	feature_field: STRING = "feature"
 
 	to_field_prefix: STRING = "to::"
 
@@ -64,6 +64,9 @@ feature -- Access
 
 	field_name_value_separator: STRING = " : "
 			-- Separator to separate field name and field value
+
+	field_value_separator: STRING = ";;;"
+			-- Field value separator
 
 feature -- Access
 
