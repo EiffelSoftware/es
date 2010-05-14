@@ -5,31 +5,16 @@ indexing
 
 class
 	APPLICATION
+
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
 	make is
-			--
+		local
+			l_child: CHILD
 		do
-
 		end
 
-	append (s: X) is
-
-     do
-         --
-     end
-
-  append2 (s: separate X)is
-    do
-    end
-    
-	x: separate X
-
-
-
-
-
-end
+end -- class APPLICATION	
