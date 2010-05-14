@@ -1,9 +1,11 @@
 note
 	description: "[
 					Roundtrip visitor to create a non-separate postcondition wrapper in a client class, based on an original feature.
-					A non-separate postcondition wrapper exists for an original feature with separate arguments. It checks the non-separate postcondition and the unseparated postcondition of the original feature. It also decreases the postcondition counters for the involved separate arguments.
-					Each clause of the non-separate postcondition contains at least one call on a non-separate target and does not contain the old or the result keyword. The non-separate postcondition must be checked by the current processor, but it does not have to be checked right after the execution of the enclosing routine.
-					Generated call chains operate on client objects.
+					
+					- A non-separate postcondition wrapper exists for an original feature with separate arguments. It checks the non-separate postcondition and the unseparated postcondition of the original feature. It also decreases the postcondition counters for the involved separate arguments.
+					- Each clause of the non-separate postcondition contains at least one call on a non-separate target and does not contain the old or the result keyword. The non-separate postcondition must be checked by the current processor, but it does not have to be checked right after the execution of the enclosing routine.
+					- Generated call chains operate on client objects.
+					- Non-separate postcondition wrappers are always effective, so that they can be inherited by effective classes without the need to redefine them.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."

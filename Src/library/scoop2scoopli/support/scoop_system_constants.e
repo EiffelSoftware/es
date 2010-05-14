@@ -68,6 +68,8 @@ feature -- Scoop system constants
 
 	scoop_library_starter_feature_name: STRING is "make"
 
+	scoop_library_proxy_any_default_create_feature_name: STRING is "any_default_create_"
+
 	lock_passing_detector_local_name: STRING is "scoop_passing_locks"
 
 	lock_passing_detector_local_type: STRING is "BOOLEAN"

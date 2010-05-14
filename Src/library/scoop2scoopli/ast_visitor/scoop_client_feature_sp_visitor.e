@@ -1,7 +1,9 @@
 note
 	description: "[
 					Roundtrip visitor to create a separate postcondition wrapper in a client class, based on an original feature.
-					A separate postcondition wrapper exists for an original feature with separate arguments. It asynchronously checks the individual separate postconditions that do not involve the current processor. The remaining individual separate postconditions are added to the unseparated postcondition.
+					
+					- A separate postcondition wrapper exists for an original feature with separate arguments. It asynchronously checks the individual separate postconditions that do not involve the current processor. The remaining individual separate postconditions are added to the unseparated postcondition.
+					- Separate postcondition wrappers are always effective, so that they can be inherited by effective classes without the need to redefine them.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -85,7 +87,7 @@ feature {NONE} -- Implementation
 
 				-- postcondition added_to_unseparated_postconditions
 				context.add_string ("%N%T%T%T%Tor else (")
-					context.add_string (feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions = Void or else")
+					context.add_string (feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions = Void or else ")
 					context.add_string ("added_to_unseparated_postconditions (")
 						context.add_string (feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_unseparated_postconditions,")
 						context.add_string ("%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_" + class_c.name.as_lower + "_spc_" + i.out + " ")

@@ -1,9 +1,11 @@
 note
 	description: "[
 					Roundtrip visitor to create a locking request feature in a client class, based on an original feature.
-					A locking request feature exists for an original feature with separate arguments. It checks the non-separate precondition of the original feature. If the check is successful, it blocks until the scheduler signals that all all requested locks are granted and the wait condition is satisfied. Then it executes the enclosing routine.
-					The non-separate precondition contains only calls on non-separate targets. The non-separate precondition is always controlled. Therefore it can be checked before the locking requestor gets executed. 
-					The formal argument list of the locking requestor is changed in case the original feature redeclares its internal arguments from non-separate to separate.
+					
+					- A locking request feature exists for an original feature with separate arguments. It checks the non-separate precondition of the original feature. If the check is successful, it blocks until the scheduler signals that all all requested locks are granted and the wait condition is satisfied. Then it executes the enclosing routine.
+					- The non-separate precondition contains only calls on non-separate targets. The non-separate precondition is always controlled. Therefore it can be checked before the locking requestor gets executed. 
+					- The formal argument list of the locking requestor is changed in case the original feature redeclares its internal arguments from non-separate to separate.
+					- A locking requestor is deferred if the original feature is deferred. Otherwise it is effective.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -61,7 +63,7 @@ feature -- Access
 
 feature {NONE} -- General implementation
 
-	process_routine_as_function
+	add_function_content (l_as: ROUTINE_AS)
 			-- Adds body for routine body: function
 		local
 			is_set_prefix: BOOLEAN
@@ -69,152 +71,165 @@ feature {NONE} -- General implementation
 			l_routine_type: TYPE_A
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
-			-- add locals
-			context.add_string ("%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, ")
-			l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
-			l_type_expr_visitor.resolve_type_in_class (feature_as.body.type, class_c)
-			l_routine_type := l_type_expr_visitor.resolved_type
-			context.add_string (" ")
+			if not l_as.is_deferred then
+				-- add locals
+				context.add_string ("%N%T%Tlocal%N%T%T%Ta_function_to_evaluate: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, ")
+				l_type_expr_visitor := scoop_visitor_factory.new_type_expr_visitor
+				l_type_expr_visitor.resolve_type_in_class (feature_as.body.type, class_c)
+				l_routine_type := l_type_expr_visitor.resolved_type
+				context.add_string (" ")
 
 
-			-- Fix for redeclarations if feature is query type:
-			-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
-			-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
-			is_set_prefix := l_routine_type.is_separate and then not l_routine_type.is_tuple or l_routine_type.is_formal
-			process_class_name_str (l_routine_type.associated_class.name_in_upper, is_set_prefix, context, match_list)
+				-- Fix for redeclarations if feature is query type:
+				-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate
+				-- Only a potential problem when return type is `non-separate' and a `CLASS_TYPE_AS'
+				is_set_prefix := l_routine_type.is_separate and then not l_routine_type.is_tuple or l_routine_type.is_formal
+				process_class_name_str (l_routine_type.associated_class.name_in_upper, is_set_prefix, context, match_list)
 
-			-- process internal generics
-			if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
-				l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
-				l_generics_visitor.process_internal_generics (typ.internal_generics, false, False)
-				if typ.internal_generics /= Void then
-					last_index := l_generics_visitor.get_last_index
+				-- process internal generics
+				if attached {GENERIC_CLASS_TYPE_AS} feature_as.body.type as typ then
+					l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+					l_generics_visitor.process_internal_generics (typ.internal_generics, false, False)
+					if typ.internal_generics /= Void then
+						last_index := l_generics_visitor.get_last_index
+					end
 				end
-			end
 
 
-			context.add_string ("]")
+				context.add_string ("]")
 
-			-- add do keyword
-			context.add_string ("%N%T%Tdo")
+				-- add do keyword
+				context.add_string ("%N%T%Tdo")
 
-			-- create function
-			context.add_string ("%N%T%T%Ta_function_to_evaluate := agent " + feature_object.feature_name + "_scoop_separate_" + parsed_class.class_name.name.as_lower + "_enclosing_routine ")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
+				-- create function
+				context.add_string ("%N%T%T%Ta_function_to_evaluate := agent " + feature_object.feature_name + "_scoop_separate_" + parsed_class.class_name.name.as_lower + "_enclosing_routine ")
+				if feature_as.body.internal_arguments /= Void then
+					context.add_string ("(")
+					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+					context.add_string (")")
+				end
 
-			-- call function
-			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(True)
-			context.add_string ("]")
-			context.add_string (", a_function_to_evaluate,%N%T%T%T%Tagent "+ feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string (" (")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-
-			-- 5th argument, postcondition processing: separate postconditions
-			if feature_object.postconditions.separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_separate_postcondition")
+				-- call function
+				context.add_string ("%N%T%T%Tseparate_execute_routine ([")
+				process_separate_internal_arguments_as_actual_argument_list(True)
+				context.add_string ("]")
+				context.add_string (", a_function_to_evaluate,%N%T%T%T%Tagent "+ feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition")
 				if feature_as.body.internal_arguments /= Void then
 					context.add_string (" (")
 					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
 					context.add_string (")")
 				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
 
-			-- 6th argument, postcondition processing: non separate postconditions
-			if feature_object.postconditions.non_separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
-					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-					context.add_string (")")
+				-- 5th argument, postcondition processing: separate postconditions
+				if feature_object.postconditions.separate_postconditions.count > 0 then
+					-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
+					context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+					context.add_string (class_c.name.as_lower + "_separate_postcondition")
+					if feature_as.body.internal_arguments /= Void then
+						context.add_string (" (")
+						process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+						context.add_string (")")
+					end
+				else
+					-- just pass 'void' as fifth argument
+					context.add_string (", Void")
 				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-			context.add_string (")")
 
-			-- Result
-			context.add_string ("%N%T%T%TResult ")
-			if not l_routine_type.associated_class.is_expanded and then not l_routine_type.is_formal then
-				context.add_string ("?= ")
+				-- 6th argument, postcondition processing: non separate postconditions
+				if feature_object.postconditions.non_separate_postconditions.count > 0 then
+					-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
+					context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+					context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
+					if feature_as.body.internal_arguments /= Void then
+						context.add_string (" (")
+						process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+						context.add_string (")")
+					end
+				else
+					-- just pass 'void' as fifth argument
+					context.add_string (", Void")
+				end
+				context.add_string (")")
+
+				-- Result
+				context.add_string ("%N%T%T%TResult ")
+				if not l_routine_type.associated_class.is_expanded and then not l_routine_type.is_formal then
+					context.add_string ("?= ")
+				else
+					context.add_string (":= ")
+				end
+				context.add_string ("a_function_to_evaluate.last_result")
+				context.add_string ("%N%T%Tend")
 			else
-				context.add_string (":= ")
+				context.add_string ("%N%T%Tdeferred")
+				context.add_string ("%N%T%Tend")
 			end
-			context.add_string ("a_function_to_evaluate.last_result")
+
 		end
 
-	process_routine_as_procedure
+	add_procedure_content (l_as: ROUTINE_AS)
 			-- Adds body for routine body: procedure
 		do
-			context.add_string ("%N%T%Tdo")
+			if not l_as.is_deferred then
+				context.add_string ("%N%T%Tdo")
 
-			context.add_string ("%N%T%T%Tinvariant_disabled := True")
-			context.add_string ("%N%T%T%Tseparate_execute_routine ([")
-			process_separate_internal_arguments_as_actual_argument_list(True)
-			context.add_string ("], agent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_enclosing_routine ")
-			if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-			context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition ")
-						if feature_as.body.internal_arguments /= Void then
-				context.add_string ("(")
-				process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
-				context.add_string (")")
-			end
-
-			-- 5th argument, postcondition processing: separate postconditions
-			if feature_object.postconditions.separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_separate_postcondition")
+				context.add_string ("%N%T%T%Tinvariant_disabled := True")
+				context.add_string ("%N%T%T%Tseparate_execute_routine ([")
+				process_separate_internal_arguments_as_actual_argument_list(True)
+				context.add_string ("], agent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_enclosing_routine ")
 				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
+					context.add_string ("(")
 					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
 					context.add_string (")")
 				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-
-			-- 6th argument, postcondition processing: non separate postconditions
-			if feature_object.postconditions.non_separate_postconditions.count > 0 then
-				-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
-				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
-				context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
-				if feature_as.body.internal_arguments /= Void then
-					context.add_string (" (")
+				context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name.as_lower + "_scoop_separate_" + class_c.name.as_lower + "_wait_condition ")
+							if feature_as.body.internal_arguments /= Void then
+					context.add_string ("(")
 					process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
 					context.add_string (")")
 				end
-			else
-				-- just pass 'void' as fifth argument
-				context.add_string (", Void")
-			end
-			context.add_string (")")
 
-			-- End keyword.
-			context.add_string ("%N%T%T%Tinvariant_disabled := False")
+				-- 5th argument, postcondition processing: separate postconditions
+				if feature_object.postconditions.separate_postconditions.count > 0 then
+					-- add agent calling 'agent f_scoop_separate_C_separate_postcondition(<formal argument list>)'
+					context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+					context.add_string (class_c.name.as_lower + "_separate_postcondition")
+					if feature_as.body.internal_arguments /= Void then
+						context.add_string (" (")
+						process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+						context.add_string (")")
+					end
+				else
+					-- just pass 'void' as fifth argument
+					context.add_string (", Void")
+				end
+
+				-- 6th argument, postcondition processing: non separate postconditions
+				if feature_object.postconditions.non_separate_postconditions.count > 0 then
+					-- add agent calling 'agent f_scoop_separate_C_non_separate_postcondition(<formal argument list>)'
+					context.add_string (",%N%T%T%T%Tagent " + feature_object.feature_name + "_scoop_separate_")
+					context.add_string (class_c.name.as_lower + "_non_separate_postcondition")
+					if feature_as.body.internal_arguments /= Void then
+						context.add_string (" (")
+						process_internal_arguments_as_actual_argument_list(feature_as.body.internal_arguments)
+						context.add_string (")")
+					end
+				else
+					-- just pass 'void' as fifth argument
+					context.add_string (", Void")
+				end
+				context.add_string (")")
+
+				-- End keyword.
+				context.add_string ("%N%T%T%Tinvariant_disabled := False")
+				context.add_string ("%N%T%Tend")
+			else
+				context.add_string ("%N%T%Tdeferred")
+				context.add_string ("%N%T%Tend")
+			end
 		end
 
-	process_internal_arguments_as_actual_argument_list(l_as: FORMAL_ARGU_DEC_LIST_AS)
+	process_internal_arguments_as_actual_argument_list (l_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- prints argument names as actual argument list to context.
 		local
 			i: INTEGER
@@ -287,16 +302,12 @@ feature {NONE} -- General implementation
 
 			if feature_as.body.type /= Void then
 				-- function
-				process_routine_as_function
+				add_function_content (l_as)
 			else
 				-- procedure
-				process_routine_as_procedure
+				add_procedure_content (l_as)
 			end
-
-			last_index := l_as.last_token (match_list).index - 1
-			context.add_string ("%N%T%T")
-			safe_process (l_as.end_keyword)
-
+			last_index := l_as.last_token (match_list).index
 
 			if attached {ROUNDTRIP_STRING_LIST_CONTEXT} context as ctxt then
 				if feature_object.need_local_section then
@@ -304,8 +315,6 @@ feature {NONE} -- General implementation
 					feature_object.set_need_local_section ( False )
 				end
 			end
-
-
 		end
 
 	process_require_else_as (l_as: REQUIRE_ELSE_AS)

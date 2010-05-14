@@ -1,10 +1,12 @@
 note
 	description: "[
 					Roundtrip visitor to create an enclosing routine in a client class, based on an original feature.
-					An enclosing routine exists for an original feature with separate arguments. It contains the code of the original feature and it checks the separate precondition and the immediate postcondition. It also increments a postcondition counter for each separate argument. This counter is used to keep track of when all postcondition clauses that involve the particular argument have been evaluated. Each time a postcondition clause gets evaluated that involves the argument, the postcondition counter of the argument gets decreased by the number of times the argument appears in the postcondition clause. When the postcondition counter reaches 0, it means that the lock on the corresponding processor can be released. After increasing the postcondition counter, the enclosing routine decreases the postcondition counter for the number of times the argument appears in the immediate postcondition.
-					A separate precondition contains calls on separate targets. It can either be controlled or uncontrolled. An uncontrolled separate precondition has a wait semantics. A uncontrolled separate precondition has a correctness semantics. Whether a separate precondition is uncontrolled or controlled depends on the context in which the feature was called. To make sure that a separate precondition can be used as wait condition and as a correctness condition, the separate precondition must be replicated in two places of the client class. The separate precondition must appear in the body of the wait condition wrapper and as a precondition of the enclosing routine. If the separate precondition is controlled then it must be treated as a correctness condition. This happens when the precondition of the enclosing routine gets checked. If the separate precondition is uncontrolled then it must be treated as a wait condition. This happens when the scheduler periodically checks the wait condition wrapper. After the wait condition wrapper returns true, the enclosing routine wrapper gets executed. As part of this execution the separate precondition gets checked one more time, because it appears as a precondition in the enclosing routine wrapper. This is unnecessary, but not harmful, because the locking semantics guarantees that the separate precondition must still hold at this point. 
-					The immediate postcondition contains old and result keywords. It must be checked right after the execution of the body, because this is when the old values and the result are still available.
-					Generated call chains in the contracts operate on client objects. Call chains in the body operate both on client- and proxy objects.
+					
+					- An enclosing routine exists for an original feature with separate arguments. It contains the code of the original feature and it checks the separate precondition and the immediate postcondition. It also increments a postcondition counter for each separate argument. This counter is used to keep track of when all postcondition clauses that involve the particular argument have been evaluated. Each time a postcondition clause gets evaluated that involves the argument, the postcondition counter of the argument gets decreased by the number of times the argument appears in the postcondition clause. When the postcondition counter reaches 0, it means that the lock on the corresponding processor can be released. After increasing the postcondition counter, the enclosing routine decreases the postcondition counter for the number of times the argument appears in the immediate postcondition.
+					- A separate precondition contains calls on separate targets. It can either be controlled or uncontrolled. An uncontrolled separate precondition has a wait semantics. A uncontrolled separate precondition has a correctness semantics. Whether a separate precondition is uncontrolled or controlled depends on the context in which the feature was called. To make sure that a separate precondition can be used as wait condition and as a correctness condition, the separate precondition must be replicated in two places of the client class. The separate precondition must appear in the body of the wait condition wrapper and as a precondition of the enclosing routine. If the separate precondition is controlled then it must be treated as a correctness condition. This happens when the precondition of the enclosing routine gets checked. If the separate precondition is uncontrolled then it must be treated as a wait condition. This happens when the scheduler periodically checks the wait condition wrapper. After the wait condition wrapper returns true, the enclosing routine wrapper gets executed. As part of this execution the separate precondition gets checked one more time, because it appears as a precondition in the enclosing routine wrapper. This is unnecessary, but not harmful, because the locking semantics guarantees that the separate precondition must still hold at this point. 
+					- The immediate postcondition contains old and result keywords. It must be checked right after the execution of the body, because this is when the old values and the result are still available.
+					- Generated call chains in the contracts operate on client objects. Call chains in the body operate both on client- and proxy objects.
+					- Enclosing routines are always effective, so that they can be inherited by effective classes without the need to redefine them.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -18,6 +20,7 @@ inherit
 	SCOOP_CLIENT_FEATURE_VISITOR
 		redefine
 			process_body_as,
+			process_deferred_as,
 			process_precursor_as,
 			process_ensure_then_as,
 			process_ensure_as,
@@ -112,6 +115,12 @@ feature {NONE} -- Implementation
 				end
 			end
 
+		end
+
+	process_deferred_as (l_as: DEFERRED_AS)
+		do
+			-- Enclosing routines must never be deferred. Otherwise they render effective classes invalid, when they get inherited.
+			context.add_string ("%N%T%Tdo")
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)

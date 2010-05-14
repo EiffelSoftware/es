@@ -2,7 +2,7 @@ note
 	description: "[
 			A class visitor to create a client class.
 
-			- Each client has only the processor setter as its creation routine.
+			- Each client only has the processor setter as its creation routine, with one exception: Clients for expanded original classes additionally list the default create routine, because this is an Eiffel requirement.
 			]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -95,6 +95,10 @@ feature {NONE} -- Implementation
 			--- Change the creation clause to only include the processor setter.
 			if not l_as.is_deferred then
 				context.add_string ("%N%Ncreate%N%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name)
+				if l_as.is_expanded then
+					context.add_string (", ")
+					context.add_string (system.any_class.compiled_class.default_create_feature.feature_name)
+				end
 			end
 			if l_as.creators /= void then
 				last_index := l_as.creators.last_token (match_list).index
@@ -265,8 +269,6 @@ feature {NONE} -- Implementation
 						l_generics_visitor.process_class_internal_generics (l_as.internal_generics, True, True)
 						last_index := l_generics_visitor.get_last_index
 					end
---					context.add_string ("}%N%T%T%TResult.set_implementation_(Current)%N")
---           		context.add_string ("%T%T%TResult.set_processor_ (Current.processor_)%N")
            			context.add_string ("}.set_processor_ (Current.processor_)%N%T%T%TResult.set_implementation_(Current)%N")
 
 				else

@@ -101,7 +101,7 @@ feature {NONE} -- Roundtrip: process nodes
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
-			evaluate_generic_class_type_flags (l_as.is_expanded, l_as.is_separate)
+			evaluate_generic_class_type_flags (l_as)
 
 			-- process lcurly symbol
 			safe_process (l_as.lcurly_symbol (match_list))
@@ -135,95 +135,16 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
-feature {NONE} -- TYPE_A implementation
-
-	process_actual_type_a (l_type_a: TYPE_A) is
-		require
-			l_type_a /= Void
-		local
-			ast_rdtrip: SCOOP_CONTEXT_AST_PRINTER
-			is_formal_generic: BOOLEAN
-			i, nb: INTEGER
-			l_name: STRING
-			l_formal_a: FORMAL_A
-		do
-			if l_type_a.is_formal then
-				-- it is a formal generic parameter
-				l_formal_a ?= l_type_a
-				create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-				process_class_name_str (l_name, False, context, match_list)
-			elseif l_type_a.has_generics then
-				-- formal generic or with explicit type
-				from
-					i := 1
-					nb := l_type_a.generics.count
-				until
-					i > nb
-				loop
-					if l_type_a.generics.item (i).is_formal then
-						is_formal_generic := True
-					end
-
-					i := i + 1
-				end
-
-				if is_formal_generic then
-					-- print out current name
-					create l_name.make_from_string (l_type_a.associated_class.name_in_upper)
-					process_class_name_str (l_name, False, context, match_list)
-
-					-- get current formal generic parameters
-				--	context.add_string ("[")
-					from
-						i := 1
-						nb := l_type_a.generics.count
-					until
-						i > nb
-					loop
-						if l_type_a.generics.item (i).is_formal then
-							l_formal_a ?= l_type_a.generics.item (i)
-							if l_formal_a.has_attached_mark then
-								context.add_string ("!")
-							elseif l_formal_a.has_detachable_mark then
-								context.add_string ("?")
-							end
-							create l_name.make_from_string (class_c.generics.i_th (l_formal_a.position).name.name.as_upper)
-							process_class_name_str (l_name, False, context, match_list)
-						else
-							process_class_name_str (l_type_a.generics.item (i).name, False, context, match_list)
-						end
-
-						if i < nb then
-							context.add_string (", ")
-						end
-						i := i + 1
-					end
-				--	context.add_string ("]")
-				elseif l_type_a.is_like_current then
-					context.add_string ("[like implementation_]")
-				else
-					-- just print out the actual type
-
-					create ast_rdtrip
-					ast_rdtrip.setup (class_as, match_list, True, True)
-					ast_rdtrip.set_context (context)
-					if feature_as.body.type /= void then
-						ast_rdtrip.process_ast_node (feature_as.body.type)
-					end
-				--	process_class_name_str (l_type_a.actual_type., False, context, match_list)
-				end
-			else
-				-- just print out the actual type
-				process_class_name_str (l_type_a.actual_type.name, False, context, match_list)
-			end
-		end
-
 feature {NONE} -- Feature implementation
 
-	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_class_type_flags (l_as: CLASS_TYPE_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_separate and not is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_separate and not l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := True
 			else
 				is_print_with_prefix := False
@@ -231,10 +152,14 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_generic_class_type_flags (l_as: GENERIC_CLASS_TYPE_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_separate and not is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_separate and not l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := True
 			else
 				is_print_with_prefix := False
@@ -242,10 +167,14 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
+	evaluate_named_tuple_type_flags (l_as: NAMED_TUPLE_TYPE_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_separate then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_separate then
 				is_print_with_prefix := True
 			else
 				is_print_with_prefix := False
@@ -260,10 +189,14 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	 evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
+	 evaluate_like_id_type_flags (l_as: LIKE_ID_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_separate and not is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_separate and not l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := True
 			else
 				is_print_with_prefix := False

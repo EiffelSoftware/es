@@ -19,10 +19,14 @@ create
 
 feature {NONE} -- Feature implementation
 
-	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_class_type_flags (l_as: CLASS_TYPE_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := False
 			else
 				is_print_with_prefix := True
@@ -30,10 +34,14 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_generic_class_type_flags (l_as: GENERIC_CLASS_TYPE_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := False
 			else
 				is_print_with_prefix := True
@@ -41,7 +49,7 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	evaluate_named_tuple_type_flags (is_separate: BOOLEAN) is
+	evaluate_named_tuple_type_flags (l_as: NAMED_TUPLE_TYPE_AS) is
 			-- the flags are set dependant on the situation
 		do
 			is_print_with_prefix := False
@@ -55,10 +63,14 @@ feature {NONE} -- Feature implementation
 			is_filter_detachable := True
 		end
 
-	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN) is
+	evaluate_like_id_type_flags (l_as: LIKE_ID_AS) is
 			-- the flags are set dependant on the situation
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
-			if is_expanded then
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (l_as)
+			if l_type_expression_visitor.resolved_type.is_expanded then
 				is_print_with_prefix := False
 			else
 				is_print_with_prefix := True

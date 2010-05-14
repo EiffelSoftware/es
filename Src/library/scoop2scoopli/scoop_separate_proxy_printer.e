@@ -3,8 +3,8 @@ note
 				A class visitor to create a proxy class.
 				
 				- Actual generic parameters and generic constraints are taken over unmodified from the original class.
-				- Each proxy has only the processor setter as its creation routine.
-				- It adds for each creation routine a creation routine wrapper and an effective creation routine wrapper. The creation routine wrapper can be used by a client to issue a creation routine call on a separate processor. For this the creation routine wrapper creates an agent to the effective creation routine wrapper and adds it to the request queue of the proxy processor.
+				- Each proxy only has the processor setter as its creation routine, with one exception: Proxies for expanded original classes additionally list the default create routine, because this is an Eiffel requirement.
+				- It adds for each creation routine a creation routine wrapper and an effective creation routine wrapper. The creation routine wrapper can be used by a client to issue a creation routine call on a separate processor. For this the creation routine wrapper creates an agent to the effective creation routine wrapper and adds it to the request queue of the proxy processor. These wrappers are always effective, because creation routines are always effective.
 				- Aliased features are transformed to non-aliased features both in the inheritance clause and in the feature names.
 				]"
 	legal: "See notice at end of class."
@@ -89,13 +89,6 @@ feature {NONE} -- Implementation
 
 			safe_process (l_as.frozen_keyword (match_list))
 			safe_process (l_as.deferred_keyword (match_list))
-
-			-- if class is expanded then set proxy class deferred
-			if l_as.is_expanded then
-				process_leading_leaves (l_as.expanded_keyword_index)
-				context.add_string ("deferred ")
-			end
-
 			safe_process (l_as.external_keyword (match_list))
 			safe_process (l_as.class_keyword (match_list))
 			process_leading_leaves (l_as.class_name.index)
@@ -302,6 +295,10 @@ feature {NONE} -- Implementation
 				-- creator
 				-- context.add_string ("%N%Ncreate%N%Tmake_from_local, set_processor_")
 				context.add_string ("%N%Ncreate%N%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_processor_setter_name)
+				if class_as.is_expanded then
+					context.add_string (", ")
+					context.add_string ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_proxy_any_default_create_feature_name)
+				end
 			end
 
 			-- skip original creators and convertors
@@ -314,15 +311,6 @@ feature {NONE} -- Implementation
 					last_index := class_as.internal_bottom_indexes.index -1
 				else
 					last_index := class_as.end_keyword.index - 1
-				end
-			end
-
-			-- wrapping creation instruction
-			if not class_as.is_deferred and then class_as.is_expanded then
-				if class_as.creators /= Void then
-					safe_process (class_as.creators)
-				else
-					add_default_create_wrappers
 				end
 			end
 		end

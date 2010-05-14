@@ -84,7 +84,7 @@ feature {NONE} -- Roundtrip: process nodes
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
-			evaluate_class_type_flags (l_as.is_expanded, l_as.is_separate)
+			evaluate_class_type_flags (l_as)
 
 			-- process lcurly symbol
 			safe_process (l_as.lcurly_symbol (match_list))
@@ -112,7 +112,7 @@ feature {NONE} -- Roundtrip: process nodes
 			l_generics_visitor: SCOOP_GENERICS_VISITOR
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
-			evaluate_generic_class_type_flags (l_as.is_expanded, l_as.is_separate)
+			evaluate_generic_class_type_flags (l_as)
 
 			-- process lcurly symbol
 			safe_process (l_as.lcurly_symbol (match_list))
@@ -158,7 +158,7 @@ feature {NONE} -- Roundtrip: process nodes
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
 			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
-			evaluate_named_tuple_type_flags (l_as.is_separate)
+			evaluate_named_tuple_type_flags (l_as)
 
 			-- process lcurly symbol
 			safe_process (l_as.lcurly_symbol (match_list))
@@ -206,17 +206,17 @@ feature {NONE} -- Roundtrip: process nodes
 
 feature {NONE} -- Deferred feature implementation
 
-	evaluate_class_type_flags (is_expanded, is_separate: BOOLEAN)
+	evaluate_class_type_flags (l_as: CLASS_TYPE_AS)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_generic_class_type_flags (is_expanded, is_separate: BOOLEAN)
+	evaluate_generic_class_type_flags (l_as: GENERIC_CLASS_TYPE_AS)
 			-- the flags are set dependant on the situation
 		deferred
 		end
 
-	evaluate_named_tuple_type_flags (is_separate: BOOLEAN)
+	evaluate_named_tuple_type_flags (l_as: NAMED_TUPLE_TYPE_AS)
 			-- the flags are set dependant on the situation
 		deferred
 		end
@@ -226,7 +226,7 @@ feature {NONE} -- Deferred feature implementation
 		deferred
 		end
 
-	evaluate_like_id_type_flags (is_expanded, is_separate: BOOLEAN)
+	evaluate_like_id_type_flags (l_as: LIKE_ID_AS)
 			-- the flags are set dependant on the situation
 		deferred
 		end

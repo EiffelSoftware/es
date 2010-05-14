@@ -11,7 +11,8 @@ class
 inherit
 	ANY
 		rename
-			out as any_out_, default_create as any_default_create_, conforms_to as any_conforms_to_,
+			out as any_out_, conforms_to as any_conforms_to_,
+			default_create as any_default_create_,
 			copy as any_copy_,
 			default_rescue as any_default_rescue_, io as any_io_, is_equal as any_is_equal_,
 			generator as any_generator

@@ -440,32 +440,6 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation Redeclaration substitution
 
-
---	has_parent_feature_separate_return_type (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
---			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
---			-- and does it have a separate return type?
---		local
---			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
---		do
---			compare_return_type := True
---			return_type_separate := false
---			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
---			Result := return_type_separate
---			compare_return_type := False
---		end
-
---	has_parent_feature_nseparate_argument (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C): BOOLEAN
---			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
---			-- and does it have a non separate argument at the position of `check_internal_arguments'
---		local
---			l_result: TUPLE [found: BOOLEAN; assigner: STRING]
---		do
---			compare_internal_argument := True
---			internal_argument_nseparate := false
---			l_result := has_feature (an_original_name, an_original_alias_name, a_base_class, True, False, True)
---			Result := internal_argument_nseparate
---			compare_internal_argument := False
---		end
 	has_parent_feature_different_generics (an_original_name, an_original_alias_name: STRING; a_base_class: CLASS_C; internal_argument:TUPLE[pos:INTEGER;type:TYPE_AS]; is_return_type: BOOLEAN)
 			-- Does the feature with name `an_original_name' or `an_original_alias_name' has a parent redeclaration
 			-- and does it have different generic parameter (separateness wise)

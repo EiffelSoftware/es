@@ -2,12 +2,12 @@ note
 	description: "[
 					A class visitor to generate proxy features out of original features.
 					
-					- For each original feature of the original class, a feature with the same name gets created in the proxy class.
+					- For each original feature of the original class, a feature with the same name gets created in the proxy class. This feature is deferred if the original feature is deferred, and effective if the original feature is effective.
 					- A proxy feature decides whether the call from the client is asynchronous or synchronous. Lock passing and wait by necessity cause a synchronous call.
 					- Each such proxy feature has as a first argument the caller. The caller is necessary to decide whether lock passing will happen. The remaining argument are the same as in the original feature, except that non-ignored, non-expanded, non-formal types are transformed into the respective proxy types.
 					- The visitor takes care of assigner mediator creation.
-					- For each attribute, a attribute wrapper gets generated, because Eiffel doesn't support agents on attributes directly.
-					- For each constant, a constant wrapper gets generated, because Eiffel doesn't support agents on constants directly.
+					- For each attribute, a attribute wrapper gets generated, because Eiffel doesn't support agents on attributes directly. This wrapper is always effective, so that it can be inherited by effective classes without the need to redefine them.
+					- For each constant, a constant wrapper gets generated, because Eiffel doesn't support agents on constants directly. This wrapper is always effective, so that it can be inherited by effective classes without the need to redefine them.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -268,6 +268,7 @@ feature {NONE} -- Implementation
 			l_feature_name: FEATURE_NAME
 			l_feature_name_str: STRING
 			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			a_class_type ?= l_as.body.type
 			if not (a_class_type /= Void and then a_class_type.class_name.name.as_upper.is_equal ({SCOOP_SYSTEM_CONSTANTS}.original_code_processor_class_name)) then
@@ -328,16 +329,16 @@ feature {NONE} -- Implementation
 					context.add_string (":=")
 					context.add_string ({SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + "." + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_result_query_name)
 
-					if attached {CLASS_TYPE_AS} l_as.body.type as typ then
-						if not typ.is_expanded then
-							-- first has prefix
-							if not typ.is_separate then
-								-- second doesnt have prefix
-								if scoop_classes.has (typ.class_name.name.as_upper) then
-									if not add_result_substitution then
-										-- If `add_result_substitution' was converted -> dont reconvert
-										context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
-									end
+					l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+					l_type_expression_visitor.resolve_type_in_workbench (l_as.body.type)
+					if not l_type_expression_visitor.resolved_type.is_expanded then
+						-- first has prefix
+						if not l_type_expression_visitor.resolved_type.is_separate then
+							-- second doesnt have prefix
+							if not is_in_ignored_group (l_type_expression_visitor.resolved_type.associated_class) then
+								if not add_result_substitution then
+									-- If `add_result_substitution' was converted -> dont reconvert
+									context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
 								end
 							end
 						end
@@ -463,6 +464,8 @@ feature {NONE} -- Implementation
 		end
 
 	add_function_content (l_as: ROUTINE_AS; a_feature: FEATURE_AS; a_feature_name, a_feature_declaration_name: STRING)
+		local
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
 		do
 			context.add_string ("%N%T%Tlocal")
 			add_client_agent_local (a_feature)
@@ -493,16 +496,16 @@ feature {NONE} -- Implementation
 			context.add_string (":= ")
 			context.add_string ({SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + "." + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_result_query_name)
 
-			if attached {CLASS_TYPE_AS} a_feature.body.type as typ then
-				if not typ.is_expanded then
-					-- first has prefix
-					if not typ.is_separate then
-						-- second doesnt have prefix
-						if scoop_classes.has (typ.class_name.name.as_upper) then
-							if not add_result_substitution then
-								-- If `add_result_substitution' means the result type was converted -> dont reconvert
-								context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
-							end
+			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+			l_type_expression_visitor.resolve_type_in_workbench (a_feature.body.type)
+			if not l_type_expression_visitor.resolved_type.is_expanded then
+				-- first has prefix
+				if not l_type_expression_visitor.resolved_type.is_separate then
+					-- second doesnt have prefix
+					if not is_in_ignored_group (l_type_expression_visitor.resolved_type.associated_class) then
+						if not add_result_substitution then
+							-- If `add_result_substitution' means the result type was converted -> dont reconvert
+							context.add_string ("."+{SCOOP_SYSTEM_CONSTANTS}.proxy_conversion_feature_name)
 						end
 					end
 				end

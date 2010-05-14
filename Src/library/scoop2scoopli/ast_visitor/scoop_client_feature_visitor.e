@@ -7,6 +7,7 @@ note
 					- It handles the modification of call chains that involve calls to redeclared features.
 					- It handles object tests and assignment attempts.
 					- It handles agents.
+					- It adds individual separate postcondition wrappers. These wrappers are always effective, so that they can be inherited by effective classes without redefinition.
 				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."

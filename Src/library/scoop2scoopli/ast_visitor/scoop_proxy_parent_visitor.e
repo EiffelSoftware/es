@@ -56,9 +56,10 @@ feature -- Access
 				context.add_string ("%N%Ninherit%N%TSCOOP_SEPARATE__ANY")
 					-- rename and redefine 'implementation_'
 				if parsed_class.is_expanded then
-					context.add_string ("%N%T%Trename%N%T%T%Timplementation_ as implementation_any_%N%T%Tselect%N%T%T%Timplementation_any_%N%T%Tend")
+					-- Attributes of expanded type cannot be used to redefine an attribute of non-expanded type. As we are going to introduce an implementation feature of expanded type, we have to rename the one inherited from the proxy root.
+					context.add_string ("%N%T%Trename%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " as " + system.any_class.name + "_" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " end")
 				else
-					context.add_string ("%N%T%Tredefine implementation_ end")
+					context.add_string ("%N%T%Tredefine " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " end")
 				end
 			end
 		end
@@ -108,6 +109,8 @@ feature {NONE} -- Visitor implementation
 				if parsed_class.is_expanded then
 					if l_as.internal_renaming = Void then
 						context.add_string ("%N%T%Trename")
+					else
+						context.add_string (", ")
 					end
 					-- add renaming of 'implementation_'
 					context.add_string ("%N%T%T%Timplementation_ as implementation_" + l_as.type.class_name.name.as_lower + "_")
@@ -127,25 +130,28 @@ feature {NONE} -- Visitor implementation
 
 				-- process internal redefining
 				safe_process (l_as.internal_redefining)
-				if l_as.internal_redefining /= Void then
-					context.add_string (",")
-				else
-					context.add_string ("%N%T%Tredefine")
+				if not parsed_class.is_expanded then
+					if l_as.internal_redefining /= Void then
+						context.add_string (",")
+					else
+						context.add_string ("%N%T%Tredefine")
+					end
+					context.add_string ("%N%T%T%Timplementation_")
 				end
-				context.add_string ("%N%T%T%Timplementation_")
+
 				parent_object.set_redefine_cursor (l_string_context.cursor_to_current_position)
 
 				-- process internal selection
 				safe_process (l_as.internal_selecting)
-				if parsed_class.is_expanded and then is_process_first_select then
-					if l_as.internal_selecting = Void then
-						context.add_string ("%N%T%Tselect")
-					else
-						context.add_string (", ")
-					end
-					context.add_string ("%N%T%T%Timplementation_" + l_as.type.class_name.name.as_lower + "_")
-					is_process_first_select := False
-				end
+--				if parsed_class.is_expanded and then is_process_first_select then
+--					if l_as.internal_selecting = Void then
+--						context.add_string ("%N%T%Tselect")
+--					else
+--						context.add_string (", ")
+--					end
+--					context.add_string ("%N%T%T%Timplementation_" + l_as.type.class_name.name.as_lower + "_")
+--					is_process_first_select := False
+--				end
 
 					-- add in each case the end keyword
 				context.add_string ("%N%T%Tend")
@@ -191,7 +197,7 @@ feature {NONE} -- Visitor implementation
 				else
 					-- add prefix if parent class is not expanded.
 					a_class := class_as_by_name (l_as.name)
-					if (a_class /= Void and then not a_class.is_expanded) then
+					if a_class /= Void then
 						context.add_string (l_scoop_separate_str)
 					end
 				end
