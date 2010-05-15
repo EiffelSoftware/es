@@ -38,6 +38,7 @@ feature{NONE} -- Initialization
 			class_ := a_class
 			feature_ := a_feature
 			context := a_context
+			context_type := a_context.variables.item (a_operands.item (0))
 			is_creation := a_is_creation
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)

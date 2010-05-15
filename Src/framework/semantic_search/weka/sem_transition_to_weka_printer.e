@@ -330,7 +330,7 @@ feature{NONE} -- Implementation
 						l_expression :=	l_state_cursor.item.expression
 						l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
 						l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
-						l_type_tbl.force_last (l_expression.resolved_type, l_anonymous_expr)
+						l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
 					end
 					l_state_cursor.forth
 				end

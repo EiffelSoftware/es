@@ -58,6 +58,51 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	ored_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+			-- Agent to ored result of agents in `a_agents'
+		require
+			a_agents_attached: a_agents /= Void
+		do
+			Result := agent (a_item: G; a_agts: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): BOOLEAN
+				do
+					from
+						a_agts.start
+					until
+						a_agts.after or else Result
+					loop
+						Result := a_agts.item_for_iteration.item ([a_item])
+						a_agts.forth
+					end
+
+				end
+				(?, a_agents)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	anded_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+			-- Agent to anded result of agents in `a_agents'
+		require
+			a_agents_attached: a_agents /= Void
+		do
+			Result := agent (a_item: G; a_agts: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): BOOLEAN
+				do
+					Result := True
+					from
+						a_agts.start
+					until
+						a_agts.after or not Result
+					loop
+						Result := a_agts.item_for_iteration.item ([a_item])
+						a_agts.forth
+					end
+
+				end
+				(?, a_agents)
+		ensure
+			result_attached: Result /= Void
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

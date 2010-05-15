@@ -19,11 +19,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_output_dir: STRING)
+	make (a_output_dir: STRING; a_context_type: detachable TYPE_A)
 			-- Initialize Current.
 			-- `a_output_dir' specifies the directory to store generated files.
 		do
 			output_directory := a_output_dir.twin
+			context_type := a_context_type
 		end
 
 feature -- Access
@@ -38,6 +39,9 @@ feature -- Access
 
 	output_directory: STRING
 			-- Directory to store generated files.
+
+	context_type: detachable TYPE_A
+			-- Context type in which types are resolved
 
 feature -- Status report
 
@@ -66,7 +70,7 @@ feature -- Basic operations
 			if not l_done then
 					-- Check if the argument is of type INTEGER.
 				create l_expr.make_with_text (a_context_class, a_feature, a_feature.arguments.item_name (1), a_feature.written_class)
-				l_done := not l_expr.resolved_type.is_integer
+				l_done := not l_expr.resolved_type (context_type).is_integer
 			end
 
 			if not l_done then

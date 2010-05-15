@@ -12,6 +12,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	EPA_CONTRACT_EXTRACTOR
+
 feature -- Expression veto agents
 
 	result_expression_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
@@ -189,6 +191,20 @@ feature -- Expression veto agents
 							l_class_id /= system.tuple_class.compiled_representation.class_id
 					else
 						Result := True
+					end
+				end
+		end
+
+	feature_without_precondition: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select features without precondition
+		do
+			Result := agent (a_access: EPA_ACCESS): BOOLEAN
+				local
+					l_feat: FEATURE_I
+				do
+					if attached {EPA_ACCESS_NESTED} a_access as l_nested then
+						l_feat := l_nested.right.feature_
+						Result := precondition_of_feature (l_feat, l_feat.written_class).is_empty
 					end
 				end
 		end

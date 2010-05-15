@@ -52,6 +52,7 @@ feature -- Access
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_type: TYPE_A
+			l_context_type: like context_type
 		do
 			create Result.make (variables.count)
 			Result.set_key_equality_tester (
@@ -61,13 +62,14 @@ feature -- Access
 							Result := a.name ~ b.name
 						end))
 
+			l_context_type := context_type
 			from
 				l_cursor := variables.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
 			loop
-				l_type := l_cursor.item.resolved_type
+				l_type := l_cursor.item.resolved_type (l_context_type)
 				if Result.has (l_type) then
 					Result.replace (Result.item (l_type) + 1, l_type)
 				else
@@ -138,15 +140,18 @@ feature -- Access
 			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
 			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
 		do
-			Result := expression_rewriter.expression_text (a_expression, variable_to_type_replacements (a_variables))
+			Result := expression_rewriter.expression_text (a_expression, variable_to_type_replacements (a_variables, context_type))
 		end
 
 	typed_expression_value_text_with_variables (a_expr_value: EPA_EXPRESSION_VALUE; a_variables: EPA_HASH_SET [EPA_EXPRESSION]): STRING
 			-- Text of `a_expr_value' with all accesses to variables replaced by the variables' static type
 			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
 		do
-			Result := expression_rewriter.expression_value_text (a_expr_value, variable_to_type_replacements (a_variables))
+			Result := expression_rewriter.expression_value_text (a_expr_value, variable_to_type_replacements (a_variables, context_type))
 		end
+
+	context_type: detachable TYPE_A
+			-- Context type in which types are resolved
 
 feature -- Status report
 

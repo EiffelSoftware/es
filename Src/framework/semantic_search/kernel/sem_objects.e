@@ -39,6 +39,7 @@ feature{NONE} -- Initialization
 			l_variable_count: INTEGER
 		do
 			context := a_context
+			context_type := context.class_.actual_type
 			serialization := a_serializatoin
 			create properties.make (20, context.class_, context.feature_)
 

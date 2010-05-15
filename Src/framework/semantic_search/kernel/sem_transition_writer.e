@@ -34,7 +34,7 @@ feature -- Basic operation
 			principal_variable := transition.reversed_variable_position.item (principal_variable_index)
 			l_calls := calls_on_principal_variable(transition.content, principal_variable_index)
 
-			abstract_principal_types := abstract_types (principal_variable.resolved_type,l_calls)
+			abstract_principal_types := abstract_types (principal_variable.resolved_type (transition.context_type),l_calls)
 
 			create buffer.make (4096)
 			append_document_type
@@ -59,7 +59,7 @@ feature -- Basic operation
 			append_changes
 
 			create l_id.make (64)
-			l_id.append (cleaned_type_name (principal_variable.resolved_type.name))
+			l_id.append (cleaned_type_name (principal_variable.resolved_type (transition.context_type).name))
 			l_id.append_character ('.')
 			l_id.append (buffer.hash_code.out)
 			append_field (id_field, default_boost, type_string, l_id)
@@ -104,16 +104,16 @@ feature {NONE} -- Impelementation
 			create l_replacements.make (transition.variables.count*2)
 			l_replacements.compare_objects
 			transition.variables.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_context_type: detachable TYPE_A)
 					local
 						l_type: STRING
 					do
-						l_type := a_expr.resolved_type.name
+						l_type := a_expr.resolved_type (a_context_type).name
 						l_type.replace_substring_all (once "?", once "")
 						l_type.prepend_character ('{')
 						l_type.append_character ('}')
 						a_tbl.put (l_type, a_expr.text.as_lower)
-					end (?, l_replacements))
+					end (?, l_replacements, transition.context_type))
 
 			Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
 		end
@@ -169,8 +169,10 @@ feature {NONE} -- Append
 			l_values: STRING
 			l_pos: INTEGER
 			l_abs_types: LIST[TYPE_A]
+			l_context_type: detachable TYPE_A
 		do
 			if attached a_variables and then not a_variables.is_empty then
+				l_context_type := transition.context_type
 				create l_values.make (128)
 				from
 					a_variables.start
@@ -202,7 +204,7 @@ feature {NONE} -- Append
 					end
 
 					l_values.append (once "{")
-					l_values.append (cleaned_type_name (a_variables.item_for_iteration.resolved_type.name))
+					l_values.append (cleaned_type_name (a_variables.item_for_iteration.resolved_type (l_context_type).name))
 					if a_print_pos then
 						l_values.append (once "}@")
 						l_values.append (l_pos.out)

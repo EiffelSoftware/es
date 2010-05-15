@@ -41,6 +41,7 @@ feature{NONE} -- Initialization
 			l_outputs: like outputs
 		do
 			context := a_context
+			context_type := context.class_.actual_type
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
 			initialize_boosts

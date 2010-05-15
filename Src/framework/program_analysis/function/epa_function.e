@@ -21,7 +21,7 @@ inherit
 create
 	make_from_expression,
 	make_from_feature_with_domains,
-	make_from_feature,
+--	make_from_feature,
 	make
 
 feature{NONE} -- Initialization
@@ -35,7 +35,7 @@ feature{NONE} -- Initialization
 		do
 			argument_types := a_argument_types
 			argument_domains := a_argument_domains
-			result_type := resolved_type_in_context (a_result_type, a_context.class_)
+			result_type := a_result_type
 			body := a_body.twin
 			context := a_context
 		ensure
@@ -54,7 +54,7 @@ feature{NONE} -- Initialization
 		do
 			create argument_types.make (1, 0)
 			create argument_domains.make (1, 0)
-			result_type := resolved_type_in_context (a_expr.type, a_context.class_)
+			result_type := a_expr.type
 			context := a_context
 			body := a_expr.text.twin
 		ensure
@@ -81,7 +81,7 @@ feature{NONE} -- Initialization
 			context := a_context
 
 				-- Setup `result_type'.
-			result_type := resolved_type_in_context (a_feature.type, context.class_)
+			result_type := a_feature.type
 
 				-- Setup `argument_types'.
 			l_arg_count := 1 + a_feature.argument_count
@@ -111,30 +111,30 @@ feature{NONE} -- Initialization
 			body := body_for_feature (a_feature, a_class, 1)
 		end
 
-	make_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_context: like context)
-			-- Initialize Current function from `a_feature' viewed in `a_class'.
-			-- If `a_feature' has n arguments, then Current function will have n+1 arguments
-			-- because the first argument in Current function represents the target of the feature call.
-			-- Domains of all operands in the resulting function are initialized as unspecified domain.
-		require
-			a_feature_is_query: a_feature.has_return_value
-		local
-			l_domains: like argument_domains
-			i: INTEGER
-			l_count: INTEGER
-		do
-			l_count := a_feature.argument_count + 1
-			create l_domains.make (1, l_count)
-			from
-				i := 1
-			until
-				i > l_count
-			loop
-				l_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, i)
-				i := i + 1
-			end
-			make_from_feature_with_domains (a_feature, a_class, l_domains, a_context)
-		end
+--	make_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_context: like context)
+--			-- Initialize Current function from `a_feature' viewed in `a_class'.
+--			-- If `a_feature' has n arguments, then Current function will have n+1 arguments
+--			-- because the first argument in Current function represents the target of the feature call.
+--			-- Domains of all operands in the resulting function are initialized as unspecified domain.
+--		require
+--			a_feature_is_query: a_feature.has_return_value
+--		local
+--			l_domains: like argument_domains
+--			i: INTEGER
+--			l_count: INTEGER
+--		do
+--			l_count := a_feature.argument_count + 1
+--			create l_domains.make (1, l_count)
+--			from
+--				i := 1
+--			until
+--				i > l_count
+--			loop
+--				l_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, i)
+--				i := i + 1
+--			end
+--			make_from_feature_with_domains (a_feature, a_class, l_domains, a_context)
+--		end
 
 feature -- Access
 
@@ -168,24 +168,24 @@ feature -- Access
 			Result := argument_domains.item (i)
 		end
 
-	resolved_argument_type  (i: INTEGER): TYPE_A
+	resolved_argument_type  (i: INTEGER; a_context_type: TYPE_A): TYPE_A
 			-- Type of argument at `i'-th position.
 			-- The resulting type is resolved.
 		require
 			i_valid: is_argument_position_valid (i)
 		do
-			Result := resolved_type_in_context (argument_types.item (i), context.class_)
+			Result := argument_types.item (i).instantiation_in (a_context_type, a_context_type.associated_class.class_id)
 		end
 
 	result_type: TYPE_A
 			-- Type of the result of current function
 			-- The type may not be resovled.
 
-	resolved_result_type: TYPE_A
+	resolved_result_type (a_context_type: TYPE_A): TYPE_A
 			-- Type of the result of current function.
 			-- The type is resolved.
 		do
-			Result := resolved_type_in_context (result_type, context.class_)
+			Result := result_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
 		end
 
 	arity: INTEGER
@@ -224,7 +224,7 @@ feature -- Access
 			until
 				i > arity
 			loop
-				l_replacements.put (curly_brace_surrounded_typed_integer (i, resolved_type_in_context (argument_type (i), l_context_class)), i)
+				l_replacements.put (curly_brace_surrounded_typed_integer (i, argument_type (i)), i)
 				i := i + 1
 			end
 
@@ -237,7 +237,7 @@ feature -- Access
 				l_replacements.forth
 			end
 			Result.append (once ": ")
-			Result.append (resolved_type_in_context (result_type, l_context_class).name)
+			Result.append (result_type.name)
 		end
 
 	types: DS_HASH_SET [TYPE_A]
@@ -253,6 +253,9 @@ feature -- Access
 				Result := types_internal
 			end
 		end
+
+--	context_type: TYPE_A
+--			-- Context type in which types are resolved
 
 feature -- Partial evaluation
 
@@ -419,8 +422,8 @@ feature -- Status report
 			l_resolved_source_type: TYPE_A
 			l_resolved_target_type: TYPE_A
 		do
-			l_resolved_source_type := resolved_type_in_context (a_source_type, context.class_)
-			l_resolved_target_type := resolved_type_in_context (a_target_type, context.class_)
+			l_resolved_source_type := a_source_type
+			l_resolved_target_type := a_target_type
 			Result := l_resolved_source_type.conform_to (context.class_, l_resolved_target_type)
 		end
 
@@ -465,8 +468,8 @@ feature -- Equality
 			l_type_b: TYPE_A
 		do
 			l_context_class := context.class_
-			l_type_a := resolved_type_in_context (a_type, l_context_class)
-			l_type_b := resolved_type_in_context (b_type, l_context_class)
+			l_type_a := a_type
+			l_type_b := b_type
 			Result :=
 				l_type_a.conform_to (l_context_class, l_type_b) and then
 				l_type_b.conform_to (l_context_class, l_type_a)

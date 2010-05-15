@@ -73,11 +73,17 @@ feature -- Access
 		deferred
 		end
 
-	resolved_type: like type
-			-- Resolved type for `type'.
-			-- Should be the same as type if `type' is also resolved.
+	resolved_type (a_context_type: detachable TYPE_A): like type
+			-- Resolved type for `type' in the context of `a_context_type'.
+			-- If `a_context_type' is Void, use `context_class' to do the resolvement.
+		require
+			a_context_valid: a_context_type /= Void implies a_context_type.has_associated_class
 		do
-			Result := resolved_type_in_context (type, context_class)
+			if a_context_type /= Void then
+				Result := type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
+			else
+				Result := resolved_type_in_context (type, context_class)
+			end
 		end
 
 	ast: EXPR_AS
@@ -194,19 +200,19 @@ feature -- Status report
 	is_boolean: BOOLEAN
 			-- Is Current expression of boolean type?
 		do
-			Result := resolved_type.is_boolean
+			Result := resolved_type (Void).is_boolean
 		end
 
 	is_integer: BOOLEAN
 			-- Is Current expression of integer type?
 		do
-			Result := resolved_type.is_integer
+			Result := resolved_type (Void).is_integer
 		end
 
 	is_reference: BOOLEAN
 			-- Is Current expression of reference type?
 		do
-			Result := resolved_type.is_reference
+			Result := resolved_type (Void).is_reference
 		end
 
 	is_result: BOOLEAN
@@ -351,6 +357,16 @@ feature -- Visitor/Process
 	process (a_visitor: EPA_EXPRESSION_VISITOR)
 			-- Process Current using `a_visitor'.
 		deferred
+		end
+
+feature{NONE} -- Implementation
+
+	resolved_type_in_context (a_type: TYPE_A; a_context_class: ClASS_C): TYPE_A
+			-- Resolved type of `a_type' in context `a_context_class'
+		do
+			fixme ("This implementation may not be correct. Check {AUT_CREATE_OBJECT_REQUEST}.operand_types. 11.5.2010 Jasonw")
+			Result := a_type.actual_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
+			Result := actual_type_from_formal_type (Result, a_context_class)
 		end
 
 end

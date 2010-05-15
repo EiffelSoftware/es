@@ -108,6 +108,10 @@ feature -- Status
 
 	should_search_for_query_with_arguments: BOOLEAN
 			-- Should search for queries with arguments?
+			-- Default: True
+
+	should_search_for_query_with_precondition: BOOLEAN
+			-- Should search for queries with preconditions?
 			-- Default: True		
 
 feature -- Setting
@@ -154,6 +158,14 @@ feature -- Setting
 			should_search_for_query_with_arguments := b
 		ensure
 			should_search_for_query_with_arguments_set: should_search_for_query_with_arguments = b
+		end
+
+	set_should_search_for_query_with_precondition (b: BOOLEAN)
+			-- Set `should_search_for_query_with_precondition' with `b'.
+		do
+			should_search_for_query_with_precondition := b
+		ensure
+			should_search_for_query_with_precondition_set: should_search_for_query_with_precondition = b
 		end
 
 feature -- Access
@@ -267,6 +279,7 @@ feature{NONE} -- Implementation
 			l_func: EPA_FUNCTION
 			l_context: like context
 			l_expr_ast: EXPR_AS
+			l_context_type: like context_type
 		do
 			create variable_functions.make (variables.count)
 			variable_functions.set_equality_tester (function_equality_tester)
@@ -275,6 +288,7 @@ feature{NONE} -- Implementation
 			l_feature := l_context.feature_
 			l_variables := variables
 			l_cursor := l_variables.cursor
+			l_context_type := context_type
 			from
 				l_variables.start
 			until
@@ -687,6 +701,7 @@ feature{NONE} -- Implementations
 			l_criteria: LINKED_LIST [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
 			l_cri_array: ARRAY [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
 			i: INTEGER
+			l_agents: LINKED_LIST [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
 		do
 			create Result.make
 			Result.expression_veto_agents.wipe_out
@@ -727,19 +742,23 @@ feature{NONE} -- Implementations
 				Result.expression_veto_agents.put (local_expression_veto_agent, 1)
 			end
 
-			Result.expression_veto_agents.put (
-				anded_agents (<<
-					feature_expression_veto_agent,
-					feature_not_from_any_veto_agent,
-					nested_not_on_basic_veto_agent,
-					feature_with_few_arguments_veto_agent (0)
-					>>), 2)
+			create l_agents.make
+			l_agents.extend (feature_expression_veto_agent)
+			l_agents.extend (feature_not_from_any_veto_agent)
+			l_agents.extend (nested_not_on_basic_veto_agent)
+			l_agents.extend (feature_with_few_arguments_veto_agent (0))
+			if not should_search_for_query_with_precondition then
+				l_agents.extend (feature_without_precondition)
+			end
+			Result.expression_veto_agents.put (anded_agents_with_list (l_agents), 2)
 
 			Result.set_final_expression_veto_agent (Void)
 		end
 
 	single_integer_argument_query_expression_generator: EPA_NESTED_EXPRESSION_GENERATOR
 			-- Expression generator to list all argument-less queries
+		local
+			l_agents: LINKED_LIST [FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]]
 		do
 			create Result.make
 			Result.expression_veto_agents.wipe_out
@@ -752,13 +771,17 @@ feature{NONE} -- Implementations
 					feature_not_from_any_veto_agent>>),
 					 	 1)
 
+			create l_agents.make
+			l_agents.extend (feature_expression_veto_agent)
+			l_agents.extend (feature_not_from_any_veto_agent)
+			l_agents.extend (nested_not_on_basic_veto_agent)
+			l_agents.extend (feature_with_one_integer_argument_veto_agent)
+			if not should_search_for_query_with_precondition then
+				l_agents.extend (feature_without_precondition)
+			end
+
 			Result.expression_veto_agents.put (
-				anded_agents (<<
-					feature_expression_veto_agent,
-					feature_not_from_any_veto_agent,
-					nested_not_on_basic_veto_agent,
-					feature_with_one_integer_argument_veto_agent
-					>>), 2)
+				anded_agents_with_list (l_agents), 2)
 
 			Result.set_final_expression_veto_agent (Void)
 		end
@@ -778,7 +801,7 @@ feature{NONE} -- Implementations
 		local
 			l_bound_checker: EPA_LINEAR_BOUNDED_ARGUMENT_FINDER
 		do
-			create l_bound_checker.make (output_directory)
+			create l_bound_checker.make (output_directory, context_type)
 			l_bound_checker.analyze_bounds (a_class, a_feature)
 			if l_bound_checker.is_bound_found then
 				Result := integer_domain_from_bounds (l_bound_checker.minimal_values, l_bound_checker.maximal_values)

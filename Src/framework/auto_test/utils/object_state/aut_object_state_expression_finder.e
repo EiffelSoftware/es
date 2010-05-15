@@ -66,6 +66,7 @@ feature -- Basic operations
 
 				-- Search for expressions.
 			create l_finder.make_for_variables (variables, Void)
+			l_finder.set_should_search_for_query_with_precondition (False)
 			l_finder.search (Void)
 				-- Analyze result from search.
 			analyze_result (l_finder)
@@ -81,6 +82,7 @@ feature -- Basic operations
 			variables := a_variables
 			create operand_map.make (0)
 			create l_finder.make_for_variables (a_variables, Void)
+			l_finder.set_should_search_for_query_with_precondition (False)
 			l_finder.search (Void)
 
 				-- Analyze result from search.
