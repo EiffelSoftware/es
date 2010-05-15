@@ -104,6 +104,54 @@ feature{NONE} -- Implementation
 								if l_action /= Void then
 									l_action.call ([l_tuple_obj.boolean_item (i)])
 								end
+							elseif l_tuple_obj.is_real_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.real_item (i)])
+								end
+							elseif l_tuple_obj.is_double_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.double_item (i)])
+								end
+							elseif l_tuple_obj.is_character_8_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.character_8_item (i)])
+								end
+							elseif l_tuple_obj.is_character_32_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.character_32_item (i)])
+								end
+							elseif l_tuple_obj.is_integer_8_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.integer_8_item (i)])
+								end
+							elseif l_tuple_obj.is_integer_16_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.integer_16_item (i)])
+								end
+							elseif l_tuple_obj.is_integer_64_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.integer_64_item (i)])
+								end
+							elseif l_tuple_obj.is_natural_8_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.natural_8_item (i)])
+								end
+							elseif l_tuple_obj.is_natural_16_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.natural_16_item (i)])
+								end
+							elseif l_tuple_obj.is_natural_32_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.natural_32_item (i)])
+								end
+							elseif l_tuple_obj.is_natural_64_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.natural_64_item (i)])
+								end
+							elseif l_tuple_obj.is_pointer_item (i) then
+								if l_action /= Void then
+									l_action.call ([l_tuple_obj.pointer_item (i)])
+								end
 							end
 							i := i + 1
 						end
