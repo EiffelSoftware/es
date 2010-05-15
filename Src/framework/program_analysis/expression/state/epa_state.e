@@ -417,7 +417,7 @@ feature{NONE} -- Implementation
 					create {EPA_BOOLEAN_VALUE} l_value.make (a_value.to_boolean)
 				elseif a_value.is_integer then
 					create {EPA_INTEGER_VALUE} l_value.make (a_value.to_integer)
-				elseif a_value.is_equal ({EPA_CONSTANTS}.nonsensical) then
+				elseif a_value.is_equal (nonsensical) then
 					create {EPA_NONSENSICAL_VALUE} l_value
 				end
 			end

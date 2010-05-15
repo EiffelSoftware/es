@@ -45,6 +45,16 @@ feature -- Status report
 		do
 		end
 
+	is_real: BOOLEAN
+			-- Is current a real value?
+		do
+		end
+
+	is_pointer: BOOLEAN
+			-- Is current a pointer value?
+		do
+		end
+
 	is_reference: BOOLEAN
 			-- Is current a reference value?
 		do

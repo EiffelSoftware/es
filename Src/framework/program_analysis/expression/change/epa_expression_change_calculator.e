@@ -151,6 +151,18 @@ feature{NONE} -- Process/Data
 			end
 		end
 
+	process_real_value (a_value: EPA_REAL_VALUE)
+			-- Process `a_value'.
+		do
+			to_implement ("To implement. 15.5.2010 Jasonw")
+		end
+
+	process_pointer_value (a_value: EPA_POINTER_VALUE)
+			-- Process `a_value'.
+		do
+			to_implement ("To implement. 15.5.2010 Jasonw")
+		end
+
 	process_boolean_value (a_value: EPA_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		local

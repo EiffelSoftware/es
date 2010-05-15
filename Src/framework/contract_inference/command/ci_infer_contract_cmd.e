@@ -37,8 +37,7 @@ feature{NONE} -- Initialization
 			config := a_config
 			class_ := first_class_starts_with_name (config.class_name)
 			feature_ := class_.feature_named (config.feature_name_for_test_cases)
-			context_type := class_.actual_type.instantiation_in (system.root_type, system.root_type.associated_class.class_id)
-			context_type := actual_type_from_formal_type (context_type, system.root_type.associated_class)
+			context_type := class_.constraint_actual_type
 			create log_manager.make
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})

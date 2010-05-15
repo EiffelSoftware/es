@@ -13,6 +13,13 @@ inherit
 			is_nonsensical
 		end
 
+	ITP_SHARED_CONSTANTS
+		undefine
+			is_equal,
+			copy,
+			out
+		end
+
 feature -- Access
 
 	type: TYPE_A
@@ -24,13 +31,7 @@ feature -- Access
 	item: STRING
 			-- Value item in current
 		do
-			Result := nonsensical
-		end
-
-	nonsensical: STRING
-			-- Nonsensical value
-		do
-			Result := {EPA_CONSTANTS}.nonsensical
+			Result := nonsensical_value
 		end
 
 feature -- Status report

@@ -236,6 +236,18 @@ feature -- Process
 			output.append_string (a_value.item.out)
 		end
 
+	process_real_value (a_value: EPA_REAL_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item.out)
+		end
+
+	process_pointer_value (a_value: EPA_POINTER_VALUE)
+			-- Process `a_value'.
+		do
+			output.append_string (a_value.item)
+		end
+
 	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		do

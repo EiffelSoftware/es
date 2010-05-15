@@ -24,6 +24,16 @@ feature -- Process
 		deferred
 		end
 
+	process_real_value (a_value: EPA_REAL_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
+	process_pointer_value (a_value: EPA_POINTER_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		deferred

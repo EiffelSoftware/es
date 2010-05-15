@@ -44,7 +44,7 @@ create
 feature{NONE} -- Initialization
 
 	a_pl: LINKED_PRIORITY_QUEUE [INTEGER]
-	
+
 	make (
 		a_config: like config
 		a_fixes: like fixes;
@@ -345,7 +345,7 @@ feature{NONE} -- Implementation
 						if l_value.is_boolean or else l_value.is_integer then
 							fixme ("Only support integer and boolean for the moment. 25.12.2009 Jasonw")
 							l_state_string.append (l_expression)
-							l_state_string.append ({EPA_CONSTANTS}.equation_separator)
+							l_state_string.append (nonsensical)
 							l_state_string.append (l_value)
 							l_state_string.append_character ('%N')
 						end

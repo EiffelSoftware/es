@@ -1,16 +1,16 @@
 note
-	description: "Class that represents an integer value"
+	description: "Class that represents a real value"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EPA_INTEGER_VALUE
+	EPA_REAL_VALUE
 
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_integer
+			is_real
 		end
 
 create
@@ -31,10 +31,10 @@ feature -- Access
 	type: TYPE_A
 			-- Type of current value
 		do
-			Result := integer_type
+			Result := real_64_type
 		end
 
-	item: INTEGER
+	item: DOUBLE
 			-- Value item in current
 		do
 			Result := item_cache
@@ -42,20 +42,20 @@ feature -- Access
 
 feature -- Status report
 
-	is_integer: BOOLEAN is True
-			-- Is current an integer value?
+	is_real: BOOLEAN is True
+			-- Is current a real value?
 
 feature -- Process
 
 	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
-			a_visitor.process_integer_value (Current)
+			a_visitor.process_real_value (Current)
 		end
 
 feature{NONE} -- Implementation
 
-	item_cache: INTEGER
+	item_cache: DOUBLE
 			-- Cache for `item'
 
 end

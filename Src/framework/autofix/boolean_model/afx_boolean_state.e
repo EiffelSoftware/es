@@ -19,6 +19,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	REFACTORING_HELPER
+
 create
     make_for_class
 
@@ -347,6 +349,18 @@ feature{NONE} -- Visitor
 			else
 			    properties_false.set_bit (last_property_index)
 			end
+		end
+
+	process_real_value (a_value: EPA_REAL_VALUE)
+			-- Process `a_value'.
+		do
+			to_implement ("To implement. 15.5.2010 Jasonw")
+		end
+
+	process_pointer_value (a_value: EPA_POINTER_VALUE)
+			-- Process `a_value'.
+		do
+			to_implement ("To implement. 15.5.200 Jasonw")
 		end
 
 	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)

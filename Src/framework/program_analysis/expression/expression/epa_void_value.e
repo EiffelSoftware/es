@@ -14,6 +14,12 @@ inherit
 			item
 		end
 
+	ITP_SHARED_CONSTANTS
+		undefine
+			is_equal,
+			copy,
+			out
+		end
 create
 	make
 
@@ -23,7 +29,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			type := none_type
-			item := once "<Void>"
+			item := void_value
 		end
 
 feature -- Access
