@@ -76,7 +76,7 @@ feature -- Access/Search scope
 	context: EPA_CONTEXT
 			-- Context which provides all available variables.
 
-	operand_map: DS_HASH_TABLE [STRING, INTEGER]
+	operand_map: HASH_TABLE [STRING, INTEGER]
 			-- Map from 0-based operand index to name of variables in `context'
 			-- This a map from operand index to variable name,
 			-- key is operand index in `feature_', 0 means target, 1 means arguments, followed by result, if any,
@@ -489,10 +489,26 @@ feature{NONE} -- Implementation
 
 	build_operand_names
 			-- Build `operand_names'.
+		local
+			l_cursor: CURSOR
+			l_map: like operand_map
+			l_names: like operand_names
 		do
 			create operand_names.make (feature_.argument_count + 2)
-			operand_names.set_equality_tester (string_equality_tester)
-			operand_map.do_all (agent operand_names.force_last)
+			l_names := operand_names
+			l_names.set_equality_tester (string_equality_tester)
+
+			l_map := operand_map
+			l_cursor := l_map.cursor
+			from
+				l_map.start
+			until
+				l_map.after
+			loop
+				l_names.force_last (l_map.item_for_iteration)
+				l_map.forth
+			end
+			l_map.go_to (l_cursor)
 		end
 
 	build_type_tables

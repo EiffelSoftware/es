@@ -21,6 +21,12 @@ feature -- Equality tester
 			create Result
 		end
 
+	expression_value_equality_tester: EPA_EXPRESSION_VALUE_EQUALITY_TESTER
+			-- Equality test for expression values
+		once
+			create Result
+		end
+
 	type_a_equality_tester: AGENT_BASED_EQUALITY_TESTER [TYPE_A]
 			-- Equality tester for TYPE_A objects
 		once

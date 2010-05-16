@@ -240,22 +240,20 @@ feature -- Access
 			Result.append (result_type.name)
 		end
 
-	types: DS_HASH_SET [TYPE_A]
-			-- Set of types from `argument_types' and `result_type'
+	types: LINKED_LIST [TYPE_A]
+			-- List of types from `argument_types' and `result_type'
+			-- The i-th element is the type of the i-th argument, the last element
+			-- is the type of current function
 		do
 			if attached types_internal as l_types then
 				Result := l_types
 			else
-				create types_internal.make (arity + 1)
-				types_internal.set_equality_tester (type_a_equality_tester)
-				argument_types.do_all (agent types_internal.force_last)
-				types_internal.force_last (result_type)
+				create types_internal.make
+				argument_types.do_all (agent types_internal.extend)
+				types_internal.extend (result_type)
 				Result := types_internal
 			end
 		end
-
---	context_type: TYPE_A
---			-- Context type in which types are resolved
 
 feature -- Partial evaluation
 

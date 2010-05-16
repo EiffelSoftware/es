@@ -30,6 +30,7 @@ feature{NONE} -- Initialization
 
 			calculate_break_point_position
 			setup_operand_map (a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
+			setup_variables (test_case_class)
 		end
 
 	make_empty
@@ -57,15 +58,22 @@ feature -- Access
 	after_test_break_point_slot: INTEGER
 			-- Break point slot after the execution of `feature_under_test'
 
+	operand_map: HASH_TABLE [STRING, INTEGER]
+			-- Map from 0-based operand index in `feature_under_test' to locals in `test_feature'
+			-- Key is operand index, value is the name of local in `test_feature'.
+
+	variables: HASH_TABLE [TYPE_A, STRING]
+			-- Variables in current test case
+			-- Key is the case sensitive name of variable,
+			-- value is the type of that variable.
+
+feature -- Status report
+
 	is_feature_under_test_query: BOOLEAN
 			-- Is `feature_under_test' a query?
 
 	is_feature_under_test_creation: BOOLEAN
 			-- Is `feature_under_test' a creation?
-
-	operand_map: DS_HASH_TABLE [STRING, INTEGER]
-			-- Map from 0-based operand index in `feature_under_test' to locals in `test_feature'
-			-- Key is operand index, value is the name of local in `test_feature'.
 
 feature -- Access
 
@@ -156,7 +164,7 @@ feature -- Access
 			until
 				l_indexes.after
 			loop
-				l_tbl.force_last (variable_name (l_indexes.item_for_iteration.to_integer), i)
+				l_tbl.put (variable_name (l_indexes.item_for_iteration.to_integer), i)
 				i := i + 1
 				l_indexes.forth
 			end
@@ -170,5 +178,35 @@ feature -- Access
 			Result.append (once "v_")
 			Result.append (a_index.out)
 		end
+
+	setup_variables (a_test_case_class: CLASS_C)
+			-- Setup `variables' by analyzing the `generated_test_1' feature in `a_test_case_class'.
+		local
+			l_feature_context: ETR_FEATURE_CONTEXT
+			l_locals: HASH_TABLE [ETR_TYPED_VAR, STRING]
+			l_cursor: CURSOR
+			l_variables: like variables
+		do
+			create l_feature_context.make (a_test_case_class.feature_named (test_feature_name), Void)
+			l_locals := l_feature_context.local_by_name
+
+			create l_variables.make (l_locals.count)
+			l_variables.compare_objects
+			variables := l_variables
+
+			l_cursor := l_locals.cursor
+			from
+				l_locals.start
+			until
+				l_locals.after
+			loop
+				l_variables.put (l_locals.item_for_iteration.original_type, l_locals.key_for_iteration)
+				l_locals.forth
+			end
+			l_locals.go_to (l_cursor)
+		end
+
+	test_feature_name: STRING = "generated_test_1"
+			-- Name of the feature used in test case class as test entry
 
 end

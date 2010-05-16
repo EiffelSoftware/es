@@ -14,6 +14,12 @@ inherit
 			out
 		end
 
+	HASHABLE
+		undefine
+			is_equal,
+			out
+		end
+
 feature -- Access
 
 	type: TYPE_A
@@ -96,6 +102,14 @@ feature -- Status report
 			-- Is `item' equal to `other'.`item'?
 		do
 			Result := item ~ other.item
+		end
+
+feature -- Hashing
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := text.hash_code
 		end
 
 feature -- Process

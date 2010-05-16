@@ -19,4 +19,9 @@ feature -- Status report
 		do
 		end
 
+	is_exhaustive: BOOLEAN
+			-- Does current represent an exhaustive domain?
+		do
+		end
+
 end

@@ -11,7 +11,6 @@ inherit
 	EPA_EXPRESSION
 		redefine
 			type,
-			is_equal,
 			is_true_expression,
 			is_false_expression
 		end
@@ -151,13 +150,6 @@ feature -- Status report
 
 	has_type_error: BOOLEAN
 			-- Does Current have type error?
-
-	is_equal (other: like Current): BOOLEAN
-			-- Is `other' attached to an object considered
-			-- equal to current object?
-		do
-			Result := text ~ other.text
-		end
 
 	is_true_expression: BOOLEAN
 			-- Does current expression represent "True"?

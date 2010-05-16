@@ -9,19 +9,39 @@ deferred class
 
 inherit
 	SHARED_TYPES
+		undefine
+			is_equal
+		end
 
 	DEBUG_OUTPUT
-
+		undefine
+			is_equal
+		end
 	HASHABLE
+		redefine
+			is_equal
+		end
 
 	REFACTORING_HELPER
+		undefine
+			is_equal
+		end
 
 	EPA_UTILITY
+		undefine
+			is_equal
+		end
 
 	EPA_TYPE_UTILITY
+		undefine
+			is_equal
+		end
 
 	SHARED_TEXT_ITEMS
-
+		undefine
+			is_equal
+		end
+		
 feature -- Access
 
 	feature_: detachable FEATURE_I
@@ -305,6 +325,15 @@ feature -- Status report
 			-- Is Current a boolean constant?
 		do
 			Result := text.is_boolean
+		end
+
+feature -- Equality
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := text ~ other.text
 		end
 
 feature -- Setting

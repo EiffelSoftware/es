@@ -65,6 +65,8 @@ feature -- Basic operations
 	execute
 			-- Execute current command
 		do
+			initialize_data_structure
+
 				-- Compile project
 			log_manager.put_line_with_time (msg_contract_inference_started)
 			compile_project (eiffel_project, True)
@@ -122,7 +124,7 @@ feature{NONE} -- Implementation
 				l_bp_slot := a_tc_info.after_test_break_point_slot
 			end
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
-			Result.set_breakpoint_with_expression_and_action (l_bp_slot, expressions_to_evaluate (a_tc_info, a_pre_execution), agent on_pre_execution_expression_evaluated (?, ?, a_pre_execution, a_tc_info, Result))
+			Result.set_breakpoint_with_expression_and_action (l_bp_slot, expressions_to_evaluate (a_tc_info, a_pre_execution), agent on_state_expression_evaluated (?, ?, a_pre_execution, a_tc_info, Result))
 		end
 
 	expressions_to_evaluate (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -293,35 +295,92 @@ feature{NONE} -- Actions
 	on_new_test_case_found (a_bp: BREAKPOINT; a_state: EPA_STATE)
 			-- Action to be performed if a new test case is found and about to execute
 		local
-			l_tc_info: CI_TEST_CASE_INFO
 			l_after_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 			l_before_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
 			l_after_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
 		do
 				-- Setup information of the newly found test case.
-			create l_tc_info.make (a_state)
+			create last_test_case_info.make (a_state)
 
 				-- Log information of the newly found test case.
-			log_new_test_case_found (l_tc_info)
+			log_new_test_case_found (last_test_case_info)
 
 				-- Setup break points to evaluate expressions.
-			l_before_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (l_tc_info, True)
-			l_after_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (l_tc_info, False)
+			l_before_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (last_test_case_info, True)
+			l_after_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (last_test_case_info, False)
 
 				-- Enable break points for expression evaluation.
 			l_before_dbg_manager.toggle_breakpoints (True)
 			l_after_dbg_manager.toggle_breakpoints (True)
 		end
 
-	on_pre_execution_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
+	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
 			-- Action to be performed when expressions are evaluated for test case defined in `a_tc_info'.
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
 		do
 			a_bp_manager.toggle_breakpoints (False)
-			log_manager.put_line_with_time ("--------------- " + a_pre_execution.out + " ------------------------%N")
+
+				-- Logging.
+			log_manager.put_line (once "---------------------------------------------------%N")
+			if a_pre_execution then
+				log_manager.put_line_with_time (once "Pre-execution state:")
+			else
+				log_manager.put_line_with_time (once "Post-execution state:")
+			end
 			log_manager.put_line (a_state.debug_output)
+
+				-- Store results.
+			if a_pre_execution then
+				last_pre_execution_evaluations := a_state
+			else
+				last_post_execution_evaluations := a_state
+				build_last_transition
+			end
 		end
+
+feature{NONE} -- Implementation
+
+	initialize_data_structure
+			-- Initialize data structures.
+		do
+			create transitions.make
+		end
+
+	build_last_transition
+			-- Build transition from `last_test_case_info', `last_pre_execution_evaluations' and
+			-- `last_post_execution_evaluations' and store resulting transition in `transitions'.
+		local
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_context: EPA_CONTEXT
+		do
+			create l_context.make (last_test_case_info.variables)
+			create l_transition.make (
+				last_test_case_info.class_under_test,
+				last_test_case_info.feature_under_test,
+				last_test_case_info.operand_map,
+				l_context,
+				last_test_case_info.is_feature_under_test_creation)
+
+			l_transition.set_precondition (last_pre_execution_evaluations)
+			l_transition.set_postcondition (last_post_execution_evaluations)
+
+			transitions.extend (l_transition)
+		end
+
+feature{NONE} -- Results
+
+	last_test_case_info: CI_TEST_CASE_INFO
+			-- Test case info of the last found test case
+
+	last_pre_execution_evaluations: EPA_STATE
+			-- Pre-execution expression evaluations of the last found test case
+
+	last_post_execution_evaluations: EPA_STATE
+			-- Post-execution expression evaluations of the last found test csae
+
+	transitions: LINKED_LIST [SEM_FEATURE_CALL_TRANSITION]
+			-- Transitions describing the state properties of all found test cases
 
 end
