@@ -23,7 +23,7 @@ create
 feature -- Initialization
 
 	make (a_class_name, a_time, a_code, a_operands, a_variables, a_trace, a_hash_code, a_pre_state, a_post_state: STRING;
-				a_pre_serialization, a_post_serialization: ARRAYED_LIST[NATURAL_8])
+				a_pre_serialization: ARRAYED_LIST[NATURAL_8])
 			-- Initialization.
 		do
 			make_summarization (a_class_name, a_code, a_operands, a_trace,
@@ -32,7 +32,7 @@ feature -- Initialization
 			variables_str := a_variables
 			hash_code_str := a_hash_code.twin
 			pre_serialization := a_pre_serialization
-			post_serialization := a_post_serialization
+--			post_serialization := a_post_serialization
 		end
 
 feature -- Access string representation
@@ -41,7 +41,7 @@ feature -- Access string representation
 	variables_str: STRING
 	hash_code_str: STRING
 	pre_serialization: ARRAYED_LIST[NATURAL_8]
-	post_serialization: ARRAYED_LIST[NATURAL_8]
+--	post_serialization: ARRAYED_LIST[NATURAL_8]
 
 feature -- Access
 

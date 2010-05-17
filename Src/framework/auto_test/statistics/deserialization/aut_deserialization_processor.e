@@ -380,6 +380,8 @@ feature{NONE} -- Auxiliary routines
 				last_hash_code := pruned_string (a_block)
 			elseif a_tag ~ pre_state_tag_start then
 				last_pre_state := pruned_string (a_block)
+--				last_post_state := pruned_string (a_block)
+			elseif a_tag ~ post_state_tag_start then
 				last_post_state := pruned_string (a_block)
 			elseif a_tag ~ pre_serialization_length_tag_start then
 				last_length := pruned_string (a_block)
@@ -474,8 +476,8 @@ feature{NONE} -- Auxiliary routines
 						last_hash_code,
 						last_pre_state,
 						last_post_state,
-						last_pre_serialization,
-						last_post_serialization)
+						last_pre_serialization) --,
+--						last_post_serialization)
 				report_serialization_data (l_serialization)
 			end
 			is_inside_serialization := False
@@ -671,6 +673,7 @@ feature{NONE} -- Constants
 				serialization_tags_cache.put (trace_tag_end,        trace_tag_start)
 				serialization_tags_cache.put (hash_code_tag_end,     hash_code_tag_start)
 				serialization_tags_cache.put (pre_state_tag_end, pre_state_tag_start)
+				serialization_tags_cache.put (post_state_tag_end, post_state_tag_start)
 				serialization_tags_cache.put (pre_serialization_length_tag_end,  pre_serialization_length_tag_start)
 				serialization_tags_cache.put (pre_serialization_tag_end,         pre_serialization_tag_start)
 			end

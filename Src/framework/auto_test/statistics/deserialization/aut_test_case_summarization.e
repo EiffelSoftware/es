@@ -12,6 +12,8 @@ inherit
 
 	ITP_VARIABLE_CONSTANTS
 
+	ITP_SHARED_CONSTANTS
+
 	EPA_HASH_CALCULATOR
 
 	ERL_G_TYPE_ROUTINES
@@ -330,6 +332,7 @@ feature{NONE} -- Implementation
 		local
 			l_context: like context
 			l_exp_type: TYPE_A
+			l_expr: EPA_AST_EXPRESSION
 			l_valid_exp: BOOLEAN
 			l_str: STRING
 			l_list: LIST [STRING]
@@ -340,15 +343,17 @@ feature{NONE} -- Implementation
 			l_start_index, l_end_index: INTEGER
 			l_new_var_index: INTEGER
 			l_new_var_name: STRING
-			l_expr: EPA_AST_EXPRESSION
+			l_internal: like internal
 			l_value: EPA_EXPRESSION_VALUE
 			l_equations: HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_AST_EXPRESSION]
 		do
 			l_context := context
+			l_internal := internal
 			l_str := a_state_string.twin
 
 			-- Split types into lines of declarations
 			l_str.prune_all ('%R')
+			l_str.prune_all ('%T')
 			l_str.prune_all_leading ('%N')
 			l_str.prune_all_trailing ('%N')
 			l_list := l_str.split ('%N')
@@ -361,55 +366,52 @@ feature{NONE} -- Implementation
 				l_list.after
 			loop
 				l_line := l_list.item_for_iteration
-
-				if l_line.starts_with ("--|") then
+				if l_line.starts_with ("--") then
+					l_line.remove_head (2)
+				end
+				if not l_line.is_empty then
 					l_valid_exp := True
 					-- Object state.
-					l_start_index := 4
-					l_end_index := l_line.last_index_of ('=', l_line.count) - 1
+					l_start_index := 1
+					l_end_index := l_line.substring_index (query_value_separator, 1)
 
-					if l_end_index /= -1 then
+					if l_end_index /= 0 then
+						check only_one_equality_sign: l_line.substring_index (query_value_separator, l_end_index) = 0 end
 						-- Prepend "var." to the expression
-						l_exp_str := l_var_name.twin
-						l_exp_str.append (once ".")
-						l_exp_str.append (l_line.substring (l_start_index, l_end_index))
+						l_exp_str := l_line.substring (1, l_end_index - 1)
 						l_exp_type := l_context.expression_text_type (l_exp_str)
 						create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
 
 						-- Value of the expression.
-						l_start_index := l_end_index + 2
+						l_start_index := l_end_index + query_value_separator.count
 						l_val_str := l_line.substring (l_start_index, l_line.count)
 						l_val_str.prune_all (' ')
-
-						if l_val_str ~ once "[[Error]]" then
-							-- For example: "--|valid_index_set = [[Error]]"
-							l_valid_exp := False
-						elseif l_val_str.is_integer then
-							create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
-						elseif l_val_str.is_boolean then
-							create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
+						if l_val_str ~ invariant_violation_value or else l_val_str ~ nonsensical_value then
+							create {EPA_NONSENSICAL_VALUE} l_value
+						elseif l_val_str ~ void_value then
+							-- Expression evaluates to "Void".
+							create {EPA_VOID_VALUE} l_value.make
 						else
-							check not_supported: False end
+							if l_exp_type.is_integer then
+								create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
+							elseif l_exp_type.is_boolean then
+								create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
+							elseif l_exp_type.is_real_32 or else l_exp_type.is_real_64 then
+								create {EPA_REAL_VALUE} l_value.make (l_val_str.to_real)
+							elseif l_exp_type.is_pointer then
+								create {EPA_POINTER_VALUE} l_value.make (l_val_str)
+--							elseif l_internal.type_conforms_to (l_expr_type, l_internal.character_type) then
+--								create {EPA_CHARACTER_VALUE} l_value.make (l_val_str)
+							else
+								create {EPA_REFERENCE_VALUE} l_value.make (l_val_str, l_exp_type)
+							end
 						end
-					elseif l_line.substring_index ("[[Void]]", 1) /= -1 then
-						-- "--|[[Void]]"
-						l_exp_str := l_var_name.twin
-						l_exp_type := l_context.expression_text_type (l_exp_str)
-						create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
-						create {EPA_VOID_VALUE} l_value.make
 					end
 
 					-- Store the <expr, value> pair
 					if l_valid_exp and then not l_equations.has (l_expr) then
 						l_equations.put (l_value, l_expr)
 					end
-
-				elseif l_line.starts_with ("--") then
-					-- Object name and type.
-					l_start_index := l_line.index_of ('v', 1)
-					l_end_index := l_line.index_of (':', l_start_index) - 1
-					l_var_name := l_line.substring (l_start_index, l_end_index)
-					l_var_name.prune_all (' ')
 				end
 
 				l_list.forth
@@ -443,6 +445,12 @@ feature{NONE} -- Implementation
 			else
 				check bad_feature_call: False end
 			end
+		end
+
+	internal: INTERNAL
+			-- Internal object for type checking.
+		once
+			create Result
 		end
 
 	key_to_hash: DS_LINEAR [INTEGER]

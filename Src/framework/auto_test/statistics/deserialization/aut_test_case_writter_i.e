@@ -91,7 +91,7 @@ feature{NONE} -- Construction
 			l_class_str.replace_substring_all (ph_operand_table_initializer, tc_operand_table_initializer)
 			l_class_str.replace_substring_all (ph_trace, tc_trace)
 			l_class_str.replace_substring_all (ph_pre_serialization, tc_pre_serialization)
-			l_class_str.replace_substring_all (ph_post_serialization, tc_post_serialization)
+--			l_class_str.replace_substring_all (ph_post_serialization, tc_post_serialization)
 
 			-- Extra information.
 			l_class_str.replace_substring_all (ph_class_under_test, tc_class_under_test)
@@ -253,10 +253,10 @@ feature{NONE} -- Construction
 		deferred
 		end
 
-	tc_post_serialization: STRING
-			-- Serialization data of operands after test.
-		deferred
-		end
+--	tc_post_serialization: STRING
+--			-- Serialization data of operands after test.
+--		deferred
+--		end
 
 	tc_uuid: STRING
 			-- UUID string.
@@ -397,15 +397,15 @@ $(PRE_SERIALIZATION)
 >>
         end
         
-    post_serialization: ARRAY [NATURAL_8]
-    		-- Serialized test case data after the transition.
-    	do
-    		Result := <<
---<post_serialization>
-$(POST_SERIALIZATION)
---</post_serialization>
-			>>
-		end
+--    post_serialization: ARRAY [NATURAL_8]
+--    		-- Serialized test case data after the transition.
+--    	do
+--    		Result := <<
+----<post_serialization>
+--$(POST_SERIALIZATION)
+----</post_serialization>
+--			>>
+--		end
 
 
 note
@@ -436,8 +436,8 @@ end
 	start_pre_object_tag: STRING = "<pre_serialization>"
 	finish_pre_object_tag: STRING = "</pre_serialization>"
 
-	start_post_object_tag: STRING = "<post_serialization>"
-	finish_post_object_tag: STRING = "</post_serialization>"
+--	start_post_object_tag: STRING = "<post_serialization>"
+--	finish_post_object_tag: STRING = "</post_serialization>"
 
 	start_class_under_test_tag: STRING = "<class_under_test>"
 	finish_class_under_test_tag: STRING = "</class_under_test>"
