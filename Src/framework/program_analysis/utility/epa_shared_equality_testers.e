@@ -39,5 +39,12 @@ feature -- Equality tester
 			create Result
 		end
 
+	function_argument_value_map_equality_tester: EPA_FUNCTION_ARGUMENT_VALUE_MAP_EQUALITY_TESTER
+			-- Equality tester for {EPA_FUNCTION_ARGUMENT_VALUE_MAP}
+		once
+			create Result
+		end
+
+
 
 end

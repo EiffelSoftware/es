@@ -43,7 +43,7 @@ feature -- Status report
 					until
 						l_v_types.after or else not Result
 					loop
-						Result := l_v_types.item_for_iteration.is_equivalent (l_u_types.item_for_iteration)
+						Result := l_v_types.item_for_iteration.name ~ l_u_types.item_for_iteration.name
 						l_v_types.forth
 						l_u_types.forth
 					end

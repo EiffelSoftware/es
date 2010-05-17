@@ -354,6 +354,7 @@ feature{NONE} -- Implementation
 		local
 			l_transition: SEM_FEATURE_CALL_TRANSITION
 			l_context: EPA_CONTEXT
+			l_func_analyzer: CI_FUNCTION_ANALYZER
 		do
 			create l_context.make (last_test_case_info.variables)
 			create l_transition.make (
@@ -367,6 +368,15 @@ feature{NONE} -- Implementation
 			l_transition.set_postcondition (last_post_execution_evaluations)
 
 			transitions.extend (l_transition)
+
+			create l_func_analyzer
+			l_func_analyzer.analyze (
+				l_transition.precondition,
+				l_context,
+				last_test_case_info.operand_map,
+				last_test_case_info.class_under_test,
+				last_test_case_info.feature_under_test,
+				last_test_case_info.class_under_test.constraint_actual_type)
 		end
 
 feature{NONE} -- Results

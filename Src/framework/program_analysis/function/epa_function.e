@@ -22,8 +22,8 @@ create
 	make_from_expression,
 	make_from_feature_with_domains,
 --	make_from_feature,
-	make
-
+	make,
+	make_from_expression_value
 feature{NONE} -- Initialization
 
 	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body; a_context: like context)
@@ -109,6 +109,17 @@ feature{NONE} -- Initialization
 
 				-- Setup `body'.
 			body := body_for_feature (a_feature, a_class, 1)
+		end
+
+	make_from_expression_value (a_value: EPA_EXPRESSION_VALUE; a_context: like context)
+			-- Initialize current as a constarnt with `a_value'.
+		do
+			create argument_types.make (1, 0)
+			create argument_domains.make (1, 0)
+
+			context := a_context
+			body := a_value.text.twin
+			result_type := a_value.type
 		end
 
 --	make_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_context: like context)
