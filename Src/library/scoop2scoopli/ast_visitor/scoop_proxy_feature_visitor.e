@@ -195,6 +195,10 @@ feature {NONE} -- Implementation
 			end
 
 			-- process type of feature
+			if attached feature_as as feat then
+				l_type_signature.set_from_formal (parent_result_is_formal (feat.feature_name.name_id))
+			end
+
 			l_type_signature.process_type_replace_current (l_as.type)
 
 
@@ -258,6 +262,26 @@ feature {NONE} -- Implementation
 			end
 			-- Wipe out `feature_object.internal_arguments_to_substitute'
 			feature_object.internal_arguments_to_substitute.wipe_out
+		end
+
+	parent_result_formal (feature_id : INTEGER) : TYPE_A
+		local
+			parents : LIST [CLASS_C]
+			feat : FEATURE_I
+			i : INTEGER
+		do
+			parents := class_c.parents_classes
+			from
+				i := 1
+			until
+				i > parents.count or Result /= Void
+			loop
+				feat := parents [i].feature_table.item_id (feature_id)
+				if attached feat as feat_att then
+					Result := feat_att.type
+				end
+				i := i + 1
+			end
 		end
 
 	add_attribute_proxy_features (l_as: FEATURE_AS)
@@ -476,31 +500,33 @@ feature {NONE} -- Implementation
 			if a_feature.body.internal_arguments /= Void then
 				add_actual_argument_list (a_feature.body.internal_arguments, False, True, true)
 			end
-			add_lock_passing_code
-			context.add_string (
-				"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_synchronous_execute_feature_name + " (" +
-					{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + "," +
-					{SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name +
-				")"
-			)
-			add_lock_revocation_code
-			context.add_string (
-				"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_synchronous_execute_feature_name + " (" +
-					{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + "," +
-					{SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name +
-				")"
-			)
-			context.add_string ("%N%T%T%Tend")
-
+--			add_lock_passing_code
+--			context.add_string (
+--				"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_synchronous_execute_feature_name + " (" +
+--					{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + "," +
+--					{SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name +
+--				")"
+--			)
+--			add_lock_revocation_code
+--			context.add_string (
+--				"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_synchronous_execute_feature_name + " (" +
+--					{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + "," +
+--					{SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name +
+--				")"
+--			)
+--			context.add_string ("%N%T%T%Tend")
+			context.add_string ("%N%T%T%Tscoop_wait_by_necessity_execute (a_caller_, scoop_passing_locks, a_function_to_evaluate)")
 			context.add_string ("%N%T%T%TResult ")
 			context.add_string (":= ")
 			context.add_string ({SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + "." + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_result_query_name)
 
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 			l_type_expression_visitor.resolve_type_in_workbench (a_feature.body.type)
-			if not l_type_expression_visitor.resolved_type.is_expanded then
+			if not (l_type_expression_visitor.resolved_type.is_expanded or
+			       (feature_as /= Void implies parent_result_is_formal (feature_as.feature_name.name_id))) then
 				-- first has prefix
 				if not l_type_expression_visitor.resolved_type.is_separate then
+
 					-- second doesnt have prefix
 					if not is_in_ignored_group (l_type_expression_visitor.resolved_type.associated_class) then
 						if not add_result_substitution then

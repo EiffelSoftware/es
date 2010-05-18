@@ -593,7 +593,8 @@ feature {NONE} -- Implementation
 							-- Yes, we do.
 							-- Is the type of the current formal argument based on an ignored class?
 							if
-								is_in_ignored_group (l_type_expr_visitor.resolved_type.associated_class)
+								is_in_ignored_group (l_type_expr_visitor.resolved_type.associated_class) or
+								(feature_as /= Void implies parent_argument_is_formal (feature_as.feature_name.name_id, i))
 							then
 								-- Yes, it is.
 								-- Ignored classes do not get replaced with a client and a proxy class. We do not have to convert the formal argument.
@@ -726,7 +727,13 @@ feature {NONE} -- Implementation
 								end
 							end
 						end
+
+						if attached feature_as as feat then
+							l_type_signature.set_from_formal (parent_argument_is_formal (feat.feature_name.name_id, i))
+						end
+
 						l_type_signature.process_type (l_argument.type)
+
 						if attached {CLASS_TYPE_AS} l_argument.type as typ then
 							if typ.is_separate then
 								if feature_as /= void then
@@ -746,6 +753,49 @@ feature {NONE} -- Implementation
 				end
 			end
 			context.add_string (")")
+		end
+
+	parent_result_is_formal (feature_id : INTEGER) : BOOLEAN
+		local
+			parents : LIST [CLASS_C]
+			i : INTEGER
+		do
+			parents := class_c.parents_classes
+
+			from
+				i := 1
+			until
+				i > parents.count or Result
+			loop
+				if attached parents [i].feature_table.item_id (feature_id) as feat then
+					Result := attached {FORMAL_A} feat.type
+				end
+				i := i + 1
+			end
+		end
+
+	parent_argument_is_formal (feature_id : INTEGER; arg_num : INTEGER) : BOOLEAN
+		local
+			parents : LIST [CLASS_C]
+			i : INTEGER
+		do
+			parents := class_c.parents_classes
+
+			from
+				i := 1
+			until
+				i > parents.count or Result
+			loop
+				Result := is_inherited_generic (parents [i], feature_id, arg_num)
+				i := i + 1
+			end
+		end
+
+	is_inherited_generic (a_class : CLASS_C; feature_id, arg_num : INTEGER ) : BOOLEAN
+		do
+			if attached a_class.feature_table.item_id (feature_id) as feat then
+				Result := attached {FORMAL_A} feat.arguments [arg_num]
+			end
 		end
 
 	add_lock_passing_code

@@ -30,7 +30,7 @@ feature {NONE} -- Feature implementation
 		do
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 			l_type_expression_visitor.resolve_type_in_workbench (l_as)
-			if l_type_expression_visitor.resolved_type.is_expanded then
+			if l_type_expression_visitor.resolved_type.is_expanded or is_from_formal then
 				is_print_with_prefix := False
 				is_filter_detachable := False
 			else

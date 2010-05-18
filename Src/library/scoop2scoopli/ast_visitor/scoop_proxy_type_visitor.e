@@ -35,9 +35,16 @@ feature -- Initialisation
 			-- Reset some values
 			is_print_with_prefix := False
 			is_filter_detachable := False
+			is_from_formal       := False
 		end
 
 feature -- Access
+	is_from_formal : BOOLEAN
+
+	set_from_formal (b : BOOLEAN)
+		do
+			is_from_formal := b
+		end
 
 	process_type (l_as: TYPE_AS)
 			-- process 'l_as'
