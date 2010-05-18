@@ -1,6 +1,5 @@
 package server;
 
-import java.io.BufferedOutputStream;
 import java.util.Vector;
 
 /**
@@ -10,22 +9,33 @@ import java.util.Vector;
  * Time: 6:24:06 AM
   */
 public class Message {
+
+    public static int QUERY_MSG = 0;
+    public static int INDEX_MSG = 1;
+
     private String header;
     private int headerLength;
-    private int headerId;
+    private int requestId;
+    private int requestType;
+    private int replyNumber;
     private Vector<String> body;
 
-    /**
-     * @param header for the message
-     */
-    public Message(String header) {
-        body = new Vector<String>();
-        String tokes[] = header.split(";");
-        headerLength = Integer.parseInt(tokes[0].split("=")[1]);
-        headerId = Integer.parseInt(tokes[1].split("=")[1]);
 
-        this.header = header;
+  
+
+    public Message(Integer numLines, Integer reqId, Integer reqType, Integer repNumber) {
+        body = new Vector<String>();
+
+        headerLength = numLines;
+        requestId = reqId;
+        requestType = reqType;
+        replyNumber = repNumber;
+
+
+        this.header = "numberOfLines="+numLines.toString()+";requestId="+reqId.toString()+";requestType="+
+                reqType.toString()+";maxResult="+repNumber.toString()+";";
     }
+
 
     /**
      * @param line to be added to the message
@@ -35,16 +45,40 @@ public class Message {
         body.add(line);
     }
 
+    /**
+     * @return the body of the message!
+     */
+    public Vector<String> getBody() {
+        return body;
+    }
 
     public int getBodyLength(){
         return body.size();
     }
 
-    @Override
-    //TODO implement this method
-    public boolean equals(Object obj) {
-        return false;
+
+    /**
+     * @return the request ID
+     */
+    public int getRequestId() {
+        return requestId;
     }
+
+    /**
+     * @return the request type
+     */
+    public int getRequestType() {
+        return requestType;
+    }
+
+    /**
+     * @return the number of possible reply
+     */
+    public int getReplyNumber() {
+        return replyNumber;
+    }
+
+    
 
     @Override
     public String toString() {

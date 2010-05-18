@@ -1,3 +1,4 @@
+import lucene.LuceneEngine;
 import server.LuceneServer;
 import utility.Utility;
 
@@ -13,6 +14,8 @@ public class Main {
     private static Logger  log = Utility.getLogger();
     
     public static void main(String[] args) {
+
+        
         log.info("Application started!");
         LuceneServer luceneServer = new LuceneServer();
         Thread thread = new Thread(luceneServer);

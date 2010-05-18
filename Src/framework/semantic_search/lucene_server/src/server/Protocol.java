@@ -14,6 +14,8 @@ public class Protocol {
        BODY =  TODO
      */
 
+    private static String BODY_FIELD_SEPARATOR = "(=)";
+
 
     /**
      * HEADER FORMAT
@@ -23,7 +25,10 @@ public class Protocol {
      */
     public static boolean validateHeader(String line){
         line = line.toLowerCase();
-        return line.contains("numberoflines") && line.contains("requestid");
+        String[] tokens = line.split(";");
+
+        return tokens[0].contains("numberoflines") && tokens[1].contains("requestid") &&
+                tokens[2].contains("requesttype") && tokens[3].contains("maxresult") ;
     }
 
     

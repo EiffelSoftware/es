@@ -26,7 +26,7 @@ public class LuceneServer implements Runnable {
 
         while(true){
             try {
-                log.info("Started Server at " + Calendar.getInstance().getTime().toString()+ " wating for connection!");
+                log.info("Started Server at " + Calendar.getInstance().getTime().toString()+ " watting for connection!");
                 ServerSocket serverSocket = new ServerSocket(10000);
                 Socket socket = serverSocket.accept();
                 log.info("Client connect at " + Calendar.getInstance().getTime().toString());
@@ -48,15 +48,25 @@ public class LuceneServer implements Runnable {
                             line = line.toLowerCase();
                             log.info("READ LINE "+ line);
                             if (Protocol.validateHeader(line)){
-                                Message msg = new Message(line);
+                                String[] tokens = line.split(";");
+                                Integer numLines = Integer.parseInt(tokens[0].split("=")[1]);
+                                Integer reqId = Integer.parseInt(tokens[1].split("=")[1]);
+                                Integer reqType = Integer.parseInt(tokens[2].split("=")[1]);
+                                Integer repNum = Integer.parseInt(tokens[3].split("=")[1]);
+
+                                Message msg = new Message(numLines,reqId,reqType,repNum);
 
                                 while (!msg.isLengthCorrect()){
                                     msg.addLineToBody(inReader.readLine());
                                 }
+       
+                                //Send reply messages
+                                for (Message result : luceneEngine.processMessage(msg)){
+                                    outWriter.write(result.toString());
+                                    log.info("Reply sent " + result.toString());
+                                };
 
-                                Message result = luceneEngine.processMessage(msg);
-
-
+                                outWriter.flush();
                             }else{
                                 throw new IllegalStateException("The header (" + line + ") of the protocol is invalid!");
                             }
