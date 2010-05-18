@@ -17,7 +17,7 @@ feature -- Initialization
 			-- Creation procedure.
 			local
 				i: INTEGER -- loop iterator
-				a_customer: separate CUSTOMER
+				a_customer: attached separate CUSTOMER
 				l_sep_customer: SEP_CUSTOMER
 			do
 				create shop.make (number_of_chairs)
@@ -54,8 +54,8 @@ feature {NONE} -- Implementation
 	number_of_haircuts: INTEGER is 3 -- how many times each customer wants to get hair cut
 	time_for_hair_cut: INTEGER is 1000
 
-	barber: separate BARBER
-	shop: separate SHOP
+	barber: attached separate BARBER
+	shop: attached separate SHOP
 
 	customers: ARRAY [SEP_CUSTOMER]
 

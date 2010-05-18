@@ -13,10 +13,8 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_shop: separate SHOP; a_time: INTEGER) is
+	make (a_shop: attached separate SHOP; a_time: INTEGER) is
 			-- Creation procedure
-			require
-				a_shop /= void
 			do
 				shop := a_shop
 				hair_cut_time := a_time
@@ -36,7 +34,7 @@ feature {CUSTOMER} -- Basic access
 
 feature {NONE} -- Implementation
 
-	shop: separate SHOP
+	shop: attached separate SHOP
 	hair_cut_time: INTEGER
 
 invariant
