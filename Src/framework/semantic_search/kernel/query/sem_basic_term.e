@@ -9,8 +9,10 @@ class
 
 inherit
 	SEM_TERM
+create
+	make
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make (a_field_name: like field_name; a_value: like value; a_context: like context)
 			-- Initialize `field_name' with `a_field_name' and `value' with `a_value'.

@@ -16,6 +16,8 @@ inherit
 
 	SEM_SHARED_EQUALITY_TESTER
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -30,6 +32,20 @@ feature{NONE} -- Initialization
 		end
 
 feature -- Access
+
+	text, debug_output: STRING
+			-- <precursor>
+		do
+			create Result.make_empty
+			from
+				term_queries.start
+			until
+				term_queries.after
+			loop
+				Result.append (term_queries.key_for_iteration.text+criterion_as_string (term_queries.item_for_iteration)+"%N%N")
+				term_queries.forth
+			end
+		end
 
 	boost: DOUBLE
 			-- Boost value of current query

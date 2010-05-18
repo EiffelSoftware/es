@@ -25,7 +25,7 @@ feature{NONE} -- Initialization
 	make (a_term: like term)
 			-- Initialize `term' with `a_term'.
 		do
-			make_with_boost (term, default_boost_value)
+			make_with_boost (a_term, default_boost_value)
 		ensure
 			term_set: term = a_term
 			boost_st: boost = default_boost_value
@@ -53,10 +53,7 @@ feature -- Access
 	text, debug_output: STRING
 			-- Text representation of current query
 		do
-			create Result.make (64)
-			Result.append (term.text)
-			Result.append_character (' ')
-			Result.append (boost_string)
+			Result := term.field_name+"%NSTRING%N"+term.value+"%N"
 		end
 
 feature -- Access

@@ -218,7 +218,7 @@ feature {NONE} -- Helpers
 			Result := context_from_var_locations (l_concrete_var_locations)
 		end
 
-		transition_inputs: DS_HASH_SET [STRING]
+	transition_inputs: DS_HASH_SET [STRING]
 			-- Inputs of transition
 		local
 			l_variables: LIST[STRING]

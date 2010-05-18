@@ -9,7 +9,8 @@ class
 inherit
 	SEM_DOCUMENT_WRITER
 		redefine
-			write
+			write,
+			queryable
 		end
 create {SEM_DOCUMENT_WRITER}
 	default_create
@@ -22,22 +23,21 @@ feature -- Basic operation
 			l_id: STRING
 			l_file: PLAIN_TEXT_FILE
 			l_file_name: FILE_NAME
-			l_princ_var_index: INTEGER
 			l_calls: LIST[STRING]
 		do
-			transition := a_transition
+			queryable := a_transition
 			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
 				principal_variable_index := 0
 			else
-				principal_variable_index := principal_variable_from_anon_content(transition.content)
+				principal_variable_index := principal_variable_from_anon_content (queryable.content)
 			end
-			principal_variable := transition.reversed_variable_position.item (principal_variable_index)
-			l_calls := calls_on_principal_variable(transition.content, principal_variable_index)
+			principal_variable := queryable.reversed_variable_position.item (principal_variable_index)
+			l_calls := calls_on_principal_variable(queryable.content, principal_variable_index)
 
-			abstract_principal_types := abstract_types (principal_variable.resolved_type (transition.context_type),l_calls)
+			abstract_principal_types := abstract_types (principal_variable.resolved_type (queryable.context_type),l_calls)
 
 			create buffer.make (4096)
-			append_document_type
+			append_document_type (document_type)
 			append_content
 
 			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
@@ -46,20 +46,20 @@ feature -- Basic operation
 				append_export_status
 			end
 
-			append_variables (transition.variables, variables_field, true)
-			append_variables (transition.variables, variable_types_field, false)
-			append_variables (transition.inputs, inputs_field, true)
-			append_variables (transition.inputs, input_types_field, false)
-			append_variables (transition.outputs, outputs_field, true)
-			append_variables (transition.outputs, output_types_field, false)
-			append_variables (transition.intermediate_variables, locals_field, true)
-			append_variables (transition.intermediate_variables, local_types_field, false)
+			append_variables (queryable.variables, variables_field, true)
+			append_variables (queryable.variables, variable_types_field, false)
+			append_variables (queryable.inputs, inputs_field, true)
+			append_variables (queryable.inputs, input_types_field, false)
+			append_variables (queryable.outputs, outputs_field, true)
+			append_variables (queryable.outputs, output_types_field, false)
+			append_variables (queryable.intermediate_variables, locals_field, true)
+			append_variables (queryable.intermediate_variables, local_types_field, false)
 			append_precondition
 			append_postcondition
 			append_changes
 
 			create l_id.make (64)
-			l_id.append (cleaned_type_name (principal_variable.resolved_type (transition.context_type).name))
+			l_id.append (cleaned_type_name (principal_variable.resolved_type (queryable.context_type).name))
 			l_id.append_character ('.')
 			l_id.append (buffer.hash_code.out)
 			append_field (id_field, default_boost, type_string, l_id)
@@ -77,61 +77,17 @@ feature -- Constants
 
 feature {NONE} -- Impelementation
 
-	buffer: STRING
-			-- Buffer to store output content
-
-	transition: SEM_TRANSITION
-			-- Transition to be output
-
-	principal_variable: EPA_EXPRESSION
-			-- The principal variable of this transition
-
-	principal_variable_index: INTEGER
-			-- The index of the principal variable
-
-	abstract_principal_types: LIST[CL_TYPE_A]
-			-- Abstract types of `principal_variable'		
-
-	abstracting_rewriter: SEM_ABSTRACTING_EXPRESSION_REWRITER
-		once
-			create Result.make
-		end
-
-	abstracted_expression_strings (a_expression: EPA_EXPRESSION; a_principal_variable: EPA_EXPRESSION): LIST[STRING]
-		local
-			l_replacements: HASH_TABLE [STRING, STRING]
-		do
-			create l_replacements.make (transition.variables.count*2)
-			l_replacements.compare_objects
-			transition.variables.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_context_type: detachable TYPE_A)
-					local
-						l_type: STRING
-					do
-						l_type := a_expr.resolved_type (a_context_type).name
-						l_type.replace_substring_all (once "?", once "")
-						l_type.prepend_character ('{')
-						l_type.append_character ('}')
-						a_tbl.put (l_type, a_expr.text.as_lower)
-					end (?, l_replacements, transition.context_type))
-
-			Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
-		end
+	queryable: SEM_TRANSITION
+			-- Transition to be output	
 
 feature {NONE} -- Append
-
-	append_document_type
-			-- Append document type
-		do
-			append_field (document_type_field, default_boost, type_string, document_type)
-		end
 
 	append_export_status
 			-- Append export-status
 		local
 			l_value: STRING
 		do
-			if attached {SEM_FEATURE_CALL_TRANSITION}transition as l_ft_call_trans then
+			if attached {SEM_FEATURE_CALL_TRANSITION}queryable as l_ft_call_trans then
 				if l_ft_call_trans.feature_.export_status.is_none then
 					l_value := once "NONE"
 				else
@@ -142,178 +98,37 @@ feature {NONE} -- Append
 		end
 
 	append_class
-			-- Append class of `transition' to `buffer'.
+			-- Append class of `queryable' to `buffer'.
 		do
-			if attached {SEM_FEATURE_CALL_TRANSITION}transition as l_ft_call_trans then
+			if attached {SEM_FEATURE_CALL_TRANSITION}queryable as l_ft_call_trans then
 				append_field (class_field, default_boost, type_string, l_ft_call_trans.class_.name_in_upper)
 			end
 		end
 
 	append_feature
-			-- Append feature of `transition' to `buffer'.
+			-- Append feature of `queryable' to `buffer'.
 		do
-			if attached {SEM_FEATURE_CALL_TRANSITION}transition as l_ft_call_trans then
+			if attached {SEM_FEATURE_CALL_TRANSITION}queryable as l_ft_call_trans then
 				append_field (feature_field, default_boost, type_string, l_ft_call_trans.feature_.feature_name)
 			end
 		end
 
 	append_content
-			-- Append content of `transition' to `buffer'.
+			-- Append content of `queryable' to `buffer'.
 		do
-			append_field (content_field, default_boost, type_string, transition.content)
-		end
-
-	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_pos: BOOLEAN)
-			-- Append operands in `transition' to `buffer'.
-		local
-			l_values: STRING
-			l_pos: INTEGER
-			l_abs_types: LIST[TYPE_A]
-			l_context_type: detachable TYPE_A
-		do
-			if attached a_variables and then not a_variables.is_empty then
-				l_context_type := transition.context_type
-				create l_values.make (128)
-				from
-					a_variables.start
-				until
-					a_variables.after
-				loop
-					l_pos := transition.variable_position (a_variables.item_for_iteration)
-
-					if l_pos = principal_variable_index then
-						-- "principal" object
-						-- add better way to get this ofc
-						from
-							l_abs_types := abstract_principal_types
-							l_abs_types.start
-						until
-							l_abs_types.after
-						loop
-							l_values.append (once "{")
-							l_values.append (cleaned_type_name (l_abs_types.item.name))
-							if a_print_pos then
-								l_values.append (once "}@")
-								l_values.append (l_pos.out)
-							else
-								l_values.append (once "}")
-							end
-							l_values.append (field_value_separator)
-							l_abs_types.forth
-						end
-					end
-
-					l_values.append (once "{")
-					l_values.append (cleaned_type_name (a_variables.item_for_iteration.resolved_type (l_context_type).name))
-					if a_print_pos then
-						l_values.append (once "}@")
-						l_values.append (l_pos.out)
-					else
-						l_values.append (once "}")
-					end
-
-					a_variables.forth
-					if not a_variables.after then
-						l_values.append (field_value_separator)
-					end
-				end
-
-				append_field (a_field, default_boost, type_string, l_values)
-			end
-		end
-
-	append_operand_positions (a_operands: EPA_HASH_SET [EPA_EXPRESSION]; a_field_name: STRING)
-			-- Append inputs from `a_operands' to `buffer'.		
-		local
-			l_values: STRING
-			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
-			l_operands: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
-			i, c: INTEGER
-		do
-			create l_values.make (64)
-			l_operands := transition.variable_positions
-			from
-				i := 1
-				c := a_operands.count
-				l_cursor := a_operands.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_values.append (l_operands.item (l_cursor.item).out)
-				if i < c then
-					l_values.append (field_value_separator)
-				end
-				i := i + 1
-				l_cursor.forth
-			end
-			append_field (a_field_name, default_boost, type_string, l_values)
+			append_field (content_field, default_boost, type_string, queryable.content)
 		end
 
 	append_precondition
-			-- Append precondition in `transition' into `buffer'.
+			-- Append precondition in `queryable' into `buffer'.
 		do
-			append_contracts (transition.precondition, precondition_field_prefix)
+			append_state (queryable.precondition, precondition_field_prefix)
 		end
 
 	append_postcondition
-			-- Append postcondition in `transition' into `buffer'.
+			-- Append postcondition in `queryable' into `buffer'.
 		do
-			append_contracts (transition.postcondition, postcondition_field_prefix)
-		end
-
-	append_contracts (a_state: EPA_STATE; a_field_prefix: STRING)
-			-- Append `a_state' as contract into `buffer'.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
-			l_transition: like transition
-			l_equation: EPA_EQUATION
-			l_expr: EPA_EXPRESSION
-			l_typed_expr: STRING
-			l_anony_expr: STRING
-			l_type_name: STRING
-			l_value: EPA_EXPRESSION_VALUE
-
-			l_abstract_exprs: LIST[STRING]
-		do
-			l_transition := transition
-			from
-				l_cursor := a_state.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_equation := l_cursor.item
-				l_expr := l_equation.expression
-				l_value := l_equation.value
-				if l_value.is_boolean then
-					l_type_name := type_boolean
-				else
-					l_type_name := type_integer
-				end
-
-				l_typed_expr := l_transition.typed_expression_text (l_expr)
-				append_field (a_field_prefix + l_typed_expr, default_boost, l_type_name, l_value.out)
-
-				-- print the typed expressions for all abstract types
-				l_abstract_exprs := abstracted_expression_strings (l_expr, principal_variable)
-				from
-					l_abstract_exprs.start
-				until
-					l_abstract_exprs.after
-				loop
-					if not l_abstract_exprs.item.is_equal (l_typed_expr) then
-						append_field (a_field_prefix + l_abstract_exprs.item, default_boost, l_type_name, l_value.out)
-					end
-
-					l_abstract_exprs.forth
-				end
-
-				l_anony_expr := l_transition.anonymous_expression_text (l_expr)
-				append_field (a_field_prefix + l_anony_expr, default_boost, l_type_name, l_value.out)
-
-				l_cursor.forth
-			end
+			append_state (queryable.postcondition, postcondition_field_prefix)
 		end
 
 	append_changes
@@ -321,14 +136,14 @@ feature {NONE} -- Append
 		local
 			l_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
 			l_changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
-			l_transition: like transition
+			l_transition: like queryable
 			l_expr: EPA_EXPRESSION
 			l_change_list: LIST [EPA_EXPRESSION_CHANGE]
 			l_all_exprs: EPA_HASH_SET [EPA_EXPRESSION]
 			l_not_changed_exprs: EPA_HASH_SET [EPA_EXPRESSION]
 			l_changed_exprs: EPA_HASH_SET [EPA_EXPRESSION]
 		do
-			l_transition := transition
+			l_transition := queryable
 			create l_calculator
 			l_changes := l_calculator.change_set (l_transition.precondition, l_transition.postcondition)
 
@@ -364,8 +179,8 @@ feature {NONE} -- Append
 				agent (a_expr: EPA_EXPRESSION): BOOLEAN
 					do
 						Result :=
-							transition.precondition.has_expression (a_expr) and
-							transition.postcondition.has_expression (a_expr)
+							queryable.precondition.has_expression (a_expr) and
+							queryable.postcondition.has_expression (a_expr)
 					end
 				)
 		end
@@ -375,10 +190,10 @@ feature {NONE} -- Append
 		local
 			l_typed_expr: STRING
 			l_anony_expr: STRING
-			l_transition: like transition
+			l_transition: like queryable
 			l_abstract_exprs: LIST[STRING]
 		do
-			l_transition := transition
+			l_transition := queryable
 			l_typed_expr := l_transition.typed_expression_text (a_expression)
 			-- print the typed expressions for all abstract types
 			l_abstract_exprs := abstracted_expression_strings (a_expression, principal_variable)
@@ -404,7 +219,7 @@ feature {NONE} -- Append
 		local
 			l_typed_expr: STRING
 			l_anony_expr: STRING
-			l_transition: like transition
+			l_transition: like queryable
 			l_typed_content: STRING
 			l_anony_content: STRING
 			l_prefix: STRING
@@ -412,7 +227,7 @@ feature {NONE} -- Append
 			l_type: STRING
 			l_abstract_exprs: LIST[STRING]
 		do
-			l_transition := transition
+			l_transition := queryable
 			l_typed_expr := l_transition.typed_expression_text (a_expression)
 			l_anony_expr := l_transition.anonymous_expression_text (a_expression)
 			l_abstract_exprs := abstracted_expression_strings (a_expression, principal_variable)
@@ -459,26 +274,5 @@ feature {NONE} -- Append
 					append_field (changed_field_prefix + l_anony_expr, a_change.relevance, type_boolean, once "True")
 				end
 			end
-		end
-
-	append_field (a_name: STRING; a_boost: DOUBLE; a_type: STRING; a_value: STRING)
-			-- Append field specified by `a_name' `a_boost', `a_type' and `a_value'
-			-- into `buffer'.
-		require
-			is_type_valid: is_type_valid (a_type)
-		do
-			buffer.append (a_name)
-			buffer.append_character ('%N')
-
-			buffer.append (a_boost.out)
-			buffer.append_character ('%N')
-
-			buffer.append (a_type)
-			buffer.append_character ('%N')
-
-			buffer.append (a_value)
-			buffer.append_character ('%N')
-
-			buffer.append_character ('%N')
 		end
 end
