@@ -103,6 +103,9 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			not_locked: not locked
 			actions.is_empty
 		do
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_collector /= Void then
+				profile_collector.collect_lock (locked_by, Current)
+			end
 			locked_by := a_lock_holder.processor_
 		ensure
 			lock_holder_set: locked_by = a_lock_holder.processor_
@@ -114,6 +117,9 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 			locked: locked
 		do
 			mutex.lock
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_collector /= Void then
+				profile_collector.collect_unlock (locked_by, Current)
+			end
 			locked_by := void
 			mutex.unlock
 		ensure
@@ -138,9 +144,10 @@ feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronizati
 				end
 				actions_mutex.unlock
 			else					-- There are no pending postconditions.
-				mutex.lock
-				locked_by := void
-				mutex.unlock
+--				mutex.lock
+--				locked_by := void
+--				mutex.unlock
+				release_lock
 				scheduler.routine_request_update.set
 			end
 		ensure

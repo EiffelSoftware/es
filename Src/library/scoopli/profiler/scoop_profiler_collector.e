@@ -214,6 +214,21 @@ feature -- Measurement
 			events_increased: events.is_empty
 		end
 
+	collect_join (t1, t2 : SCOOP_PROCESSOR)
+		do
+			io.put_string ("Collecting join%N")
+		end
+
+	collect_lock (t, o : SCOOP_PROCESSOR)
+		do
+			io.put_string ("Collecting lock%N")
+		end
+
+	collect_unlock (t, o : SCOOP_PROCESSOR)
+		do
+			io.put_string ("Collecting unlock%N")
+		end
+
 feature {NONE} -- Serialization
 
 	start_time, stop_time: DATE_TIME
