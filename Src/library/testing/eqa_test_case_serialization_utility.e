@@ -145,24 +145,30 @@ feature{NONE} -- Implementation
 
     deserialized_variable_table (a_serialization: ARRAY [NATURAL_8]): HASH_TABLE [detachable ANY, INTEGER]
             -- Deserialize the objects from 'a_serialization'
-            -- (as object of type {SPECIAL [TUPLE [INTEGER, detachable ANY]]})
+            -- as object of type SPECIAL [detachable ANY] in format:
+            -- [object1_index, object1, object2_index, object2, ... , objectn_index, objectn]
             -- and store the objects into the Result hashtable.
         local
             l_data: STRING
-            l_index: INTEGER
+            l_obj_index: INTEGER
             l_variable_table: HASH_TABLE [detachable ANY, INTEGER]
+            l_count: INTEGER
+            i: INTEGER
         do
             l_data := string_from_array (a_serialization)
-            if attached {SPECIAL [TUPLE [index: INTEGER; var: detachable ANY]]}deserialized_object (l_data) as lt_variable then
+            if attached {SPECIAL [detachable ANY]} deserialized_object (l_data) as lt_variable then
+            	l_count := lt_variable.count
                 from
-                    create l_variable_table.make (lt_variable.count + 1)
+                    create l_variable_table.make (l_count + 1)
                     l_variable_table.compare_objects
-                    l_index := lt_variable.lower
+                    i := 0
                 until
-                    l_index > lt_variable.upper
+                    i = l_count
                 loop
-                    l_variable_table.put (lt_variable[l_index].var, lt_variable[l_index].index)
-                    l_index := l_index + 1
+                	l_obj_index ?= lt_variable.item (i)
+
+                    l_variable_table.put (lt_variable.item (i + 1), l_obj_index)
+                    i := i + 1
                 end
             else
                 create l_variable_table.make (0)
