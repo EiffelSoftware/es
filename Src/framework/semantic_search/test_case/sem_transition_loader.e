@@ -7,6 +7,9 @@ note
 class
 	SEM_TRANSITION_LOADER
 
+inherit
+	REFACTORING_HELPER
+	
 feature -- Access
 
 	last_transitions: LIST [SEM_FEATURE_CALL_TRANSITION]
@@ -52,12 +55,23 @@ feature{NONE} -- Implementation
 
 	load_from_file (a_file: STRING)
 			-- Load transition from test case file `a_file' and store result in `last_transitions'.
+		local
+			l_context: EPA_CONTEXT
+			l_objects: SEM_OBJECTS
 		do
 			loader.load_transition (a_file)
 			if attached {SEM_FEATURE_CALL_TRANSITION} loader.last_transition  as l_transition then
 				l_transition.add_written_precondition
 				l_transition.add_written_postcondition
 				last_transitions.extend (l_transition)
+
+				fixme ("Uncomment the following block when the bug in deserialization is fixed so we can actually test SEM_OBJECTS. 19.5.2010 Jasonw")
+--				if attached {ARRAY [NATURAL_8]} loader.last_pre_serialization as l_serialization then
+--					l_context := l_transition.context
+--					create l_objects.make_with_transition_data (l_context, l_serialization)
+--					l_objects.set_properties (l_transition.precondition)
+--					last_objects.extend (l_objects)
+--				end
 			end
 		end
 

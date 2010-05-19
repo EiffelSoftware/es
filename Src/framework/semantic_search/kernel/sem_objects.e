@@ -16,27 +16,24 @@ inherit
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
 create
-	make
+	make_with_transition_data
 
 feature{NONE} -- Initialization
 
-	make (a_context: EPA_CONTEXT; a_variable_positions: HASH_TABLE [INTEGER, STRING]; a_serializatoin: like serialization)
+	make_with_transition_data (a_context: EPA_CONTEXT; a_serializatoin: like serialization)
 			-- Initialize `context' with `a_context'.
-			-- `a_variable_positions' is a table defining the position of each variable in `a_context'.`variables'.
 			-- Key of the table is variable name, value is the position of that variables.
 			-- `a_serialization' is the serialized data for all objects in `a_context'.`variables'. 			
-			-- The serialized data should be of type SPECIAL [TUPLE [index: INTEGER; object: detachable ANY]].
-			-- `index' of a tuple is the position of that variable,
-			-- `object' of the tuple is the serialized data (the data should be serialized by `independent_store' so the data can be deserialized by
-			-- another application, even in a different platform) for that object.
-
-		require
-			a_variable_positions_valid: is_variable_position_table_valid (a_variable_positions, a_context)
+			-- The serialized data should be of type SPECIAL [detachable ANY], the format is:
+			-- [object1_index, object1, object2_index, object2, ... , objectn_index, objectn]
 		local
 			l_variables: HASH_TABLE [TYPE_A, STRING]
-			l_cursor: CURSOR
 			l_expr: EPA_EXPRESSION
 			l_variable_count: INTEGER
+			l_obj_table: HASH_TABLE [detachable ANY, INTEGER]
+			l_objects: like objects
+			l_obj_index: INTEGER
+			l_obj_name: STRING
 		do
 			context := a_context
 			context_type := context.class_.actual_type
@@ -57,17 +54,24 @@ feature{NONE} -- Initialization
 
 				-- Initialize variables in `a_context' into `variables'.
 
-			l_cursor := l_variables.cursor
+			l_obj_table := deserialized_variable_table (a_serializatoin)
+			create objects.make (l_obj_table.count // 2)
+			objects.compare_objects
+			l_objects := objects
+
 			from
-				l_variables.start
+				l_obj_table.start
 			until
-				l_variables.after
+				l_obj_table.after
 			loop
-				l_expr := variable_expression_from_context (l_variables.key_for_iteration, a_context)
-				extend_variable (l_expr, a_variable_positions.item (l_variables.key_for_iteration))
-				l_variables.forth
+				l_obj_index := l_obj_table.key_for_iteration
+				l_obj_name := once "v_" + l_obj_index.out
+				check l_variables.has (l_obj_name) end
+				l_expr := variable_expression_from_context (l_obj_name, a_context)
+				l_objects.put (l_obj_table.item_for_iteration, l_obj_name)
+				extend_variable (l_expr, l_obj_index)
+				l_obj_table.forth
 			end
-			l_variables.go_to (l_cursor)
 		ensure
 			context_set: context = a_context
 		end
@@ -84,13 +88,9 @@ feature -- Access
 			-- `object' of the tuple is the serialized data (the data should be serialized by `independent_store' so the data can be deserialized by
 			-- another application, even in a different platform) for that object.
 
-	objects: detachable HASH_TABLE [detachable ANY, INTEGER]
+	objects: HASH_TABLE [detachable ANY, STRING]
 			-- Objects deserialized from `serialization'
-			-- Key is object position, value is the object itself.
-			-- Return Void if deserialization failed.
-		do
-			Result := deserialized_variable_table (serialization)
-		end
+			-- Key is object name, value is the object itself.
 
 	boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
 			-- Boost values for equations in `properties'

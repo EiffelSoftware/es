@@ -39,23 +39,23 @@ feature -- Access
 	last_post_serialization_string: detachable STRING
 			-- Last post serialization data as {STRING}.
 
-	last_pre_serialization: detachable ARRAYED_LIST[NATURAL_8]
+	last_pre_serialization: detachable ARRAY [NATURAL_8]
 			-- Serialization data before the test
 		do
 			if last_pre_serialization_string /= Void then
 				if last_pre_serialization_cache = Void then
-					last_pre_serialization_cache := serialization_from_str (last_pre_serialization_string)
+					last_pre_serialization_cache := serialization_from_string (last_pre_serialization_string)
 				end
 				Result := last_pre_serialization_cache
 			end
 		end
 
-	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
+	last_post_serialization: detachable ARRAY [NATURAL_8]
 			-- Serialization data after the test
 		do
 			if last_post_serialization_string /= Void then
 				if last_post_serialization_cache = Void then
-					last_post_serialization_cache := serialization_from_str (last_post_serialization_string)
+					last_post_serialization_cache := serialization_from_string (last_post_serialization_string)
 				end
 				Result := last_post_serialization_cache
 			end
@@ -258,33 +258,37 @@ feature{NONE} -- Implementation
 			last_transition.set_postcondition (last_post_state)
 		end
 
-	serialization_from_str (a_str: STRING): ARRAYED_LIST [NATURAL_8]
+	serialization_from_string (a_str: STRING): ARRAY [NATURAL_8]
 			-- Get the serialized data in array from the string representation.
 		local
 			l_numbers: LIST[STRING]
 			l_num_str: STRING
 			l_num: NATURAL_8
+			i: INTEGER
 		do
 			l_numbers := a_str.split (',')
-			create Result.make (l_numbers.count + 1)
+			create Result.make (1, l_numbers.count)
 
-			from l_numbers.start
-			until l_numbers.after
+			from
+				l_numbers.start
+				i := 1
+			until
+				l_numbers.after
 			loop
 				l_num_str := l_numbers.item_for_iteration
 				l_num_str.prune_all (' ')
 				l_num_str.prune_all ('%N')
 				check l_num_str.is_natural_8 end
-				Result.force (l_num_str.to_natural_8)
-
+				Result.put (l_num_str.to_natural_8, i)
+				i := i + 1
 				l_numbers.forth
 			end
 		end
 
-	last_pre_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
+	last_pre_serialization_cache: like last_pre_serialization
 			-- Cache for `last_pre_serialization'.
 
-	last_post_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
+	last_post_serialization_cache: like last_post_serialization
 			-- Cache for `last_post_serialization'.
 
 feature{NONE} -- Constants
