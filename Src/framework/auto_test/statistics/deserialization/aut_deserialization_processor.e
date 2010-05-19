@@ -24,6 +24,10 @@ inherit
 
 	ITP_TEST_CASE_SERIALIZATION_CONSTANTS
 
+	-- For test only.
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
+
 create
 	make
 
@@ -230,31 +234,38 @@ feature{NONE} -- Implementation
 		local
 			l_start_tag, l_finish_tag: STRING
 			l_length: INTEGER
+			l_retried: BOOLEAN
 		do
-			if a_line.substring_index (test_case_tag_start, 1) /= 0 then
-				start_serialization
-			elseif is_inside_serialization then
-				if a_line.substring_index (test_case_tag_end, 1) /= 0 then
-					finish_serialization
-				elseif is_good_serialization_block then
-					if has_start_tag (a_line) then
-						check last_tag_attached: last_tag /= Void end
-						collect_tag_block (last_tag, a_line, a_stream)
+			if not l_retried then
+				if a_line.substring_index (test_case_tag_start, 1) /= 0 then
+					start_serialization
+				elseif is_inside_serialization then
+					if a_line.substring_index (test_case_tag_end, 1) /= 0 then
+						finish_serialization
+					elseif is_good_serialization_block then
+						if has_start_tag (a_line) then
+							check last_tag_attached: last_tag /= Void end
+							collect_tag_block (last_tag, a_line, a_stream)
 
-						-- Process data tag specially.
-						if last_tag ~ pre_serialization_length_tag_start then
-							if last_length /= Void and then last_length.is_integer then
-								l_length := last_length.to_integer
-								collect_serialization_tag_block (l_length, a_stream, True)
-							else
-								raise ("Bad data length format.")
+							-- Process data tag specially.
+							if last_tag ~ pre_serialization_length_tag_start then
+								if last_length /= Void and then last_length.is_integer then
+									l_length := last_length.to_integer
+									collect_serialization_tag_block (l_length, a_stream, True)
+								else
+									raise ("Bad data length format.")
+								end
 							end
+						else
+							raise ("Missing start tag.")
 						end
-					else
-						raise ("Missing start tag.")
 					end
 				end
 			end
+		rescue
+			l_retried := True
+			is_good_serialization_block := False
+			retry
 		end
 
 	last_class_name: detachable STRING
@@ -398,7 +409,9 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_length: INTEGER
 			l_data: STRING
+			l_serialization_str: STRING
 			l_start_index, l_finish_index: INTEGER
+			l_index: INTEGER
 			l_prefix_count, l_postfix_count: INTEGER
 			l_objects: like last_pre_serialization
 		do
@@ -413,25 +426,35 @@ feature{NONE} -- Auxiliary routines
 			a_stream.read_stream (l_length)
 			l_data := a_stream.last_string
 
+			l_start_index := l_data.substring_index (cdata_tag_start, 1) + cdata_tag_start.count
+			check l_start_index = l_prefix_count + 1 end
+			l_finish_index := l_data.substring_index (cdata_tag_end, 1) - 1
+			check l_finish_index = l_length - l_postfix_count end
+			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
+
+			-- Test if the string can be successfully deserialized into a SPECIAL of TUPLEs.
+            if attached {SPECIAL [TUPLE [index: INTEGER; var: detachable ANY]]}deserialized_object (l_serialization_str) as lt_variable then
+            	check True end
+            else
+            	check False end
+           	end
+
 			-- Convert the values between delimiters into {NATURAL_8}, and save them.
 			if a_is_pre then
-				create last_pre_serialization.make (l_length + 1)
+				create last_pre_serialization.make (a_length + 1)
 				l_objects := last_pre_serialization
 			else
-				create last_post_serialization.make (l_length + 1)
+				create last_post_serialization.make (a_length + 1)
 				l_objects := last_post_serialization
 			end
 
 			from
-				l_start_index := l_data.substring_index (cdata_tag_start, 1) + cdata_tag_start.count
-				check l_start_index = l_prefix_count + 1 end
-				l_finish_index := l_data.substring_index (cdata_tag_end, 1)
-				check l_finish_index = l_length - l_postfix_count + 1 end
+				l_index := 1
 			until
-				l_start_index >= l_finish_index
+				l_index > a_length
 			loop
-				l_objects.extend (l_data[l_start_index].code.as_natural_8)
-				l_start_index := l_start_index + 1
+				l_objects.extend (l_data[l_index].code.as_natural_8)
+				l_index := l_index + 1
 			end
 		end
 

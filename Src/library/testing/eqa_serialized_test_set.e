@@ -19,10 +19,10 @@ feature -- Access
 		deferred
 		end
 
-	post_serialization: ARRAY [NATURAL_8]
-			-- Serialization data for objects after the test case execution.
-		deferred
-		end
+--	post_serialization: ARRAY [NATURAL_8]
+--			-- Serialization data for objects after the test case execution.
+--		deferred
+--		end
 
     pre_variable_table: HASH_TABLE [detachable ANY, INTEGER]
     		-- Table of the feature variable and the variables reachable from these variable.
@@ -41,22 +41,22 @@ feature -- Access
 			Result := keys_from_table (pre_variable_table)
     	end
 
-    post_variable_table: HASH_TABLE [detachable ANY, INTEGER]
-    		-- Table of the feature variable and the variables reachable from these variable.
-    		-- Key: variable index.
-    		-- Value: object.
-    	do
-    		if post_variable_table_cache = Void then
-    			post_variable_table_cache := deserialized_variable_table (post_serialization)
-    		end
-    		Result := post_variable_table_cache
-    	end
+--    post_variable_table: HASH_TABLE [detachable ANY, INTEGER]
+--    		-- Table of the feature variable and the variables reachable from these variable.
+--    		-- Key: variable index.
+--    		-- Value: object.
+--    	do
+--    		if post_variable_table_cache = Void then
+--    			post_variable_table_cache := deserialized_variable_table (post_serialization)
+--    		end
+--    		Result := post_variable_table_cache
+--    	end
 
-    post_variable_indexes: STRING
-    		-- A string containing comma separated indexes of post-state variables.
-		do
-			Result := keys_from_table (post_variable_table)
-    	end
+--    post_variable_indexes: STRING
+--    		-- A string containing comma separated indexes of post-state variables.
+--		do
+--			Result := keys_from_table (post_variable_table)
+--    	end
 
 feature -- Basic operation
 
@@ -75,8 +75,8 @@ feature{NONE} -- Implementation
 	pre_variable_table_cache: detachable like pre_variable_table
 			-- Internal cache for `pre_variable_table'.
 
-	post_variable_table_cache: detachable like post_variable_table
-			-- Internal cache for `post_variable_table'.
+--	post_variable_table_cache: detachable like post_variable_table
+--			-- Internal cache for `post_variable_table'.
 
 feature -- Test case
 
