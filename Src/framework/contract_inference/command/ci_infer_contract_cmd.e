@@ -84,10 +84,15 @@ feature{NONE} -- Implementation
 			-- Debug current project to retrieve system states from test cases.
 		local
 			l_test_case_info_bp_manager: like breakpoint_manager_for_setup_test_case
+			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 		do
 				-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 			remove_breakpoint (debugger_manager, root_class)
+
+			l_app_stop_agent := agent on_application_stopped
+			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
+
 
 				-- Setup break point at the beginning of a test case execution, to query for information of that test case.
 			l_test_case_info_bp_manager := breakpoint_manager_for_setup_test_case
@@ -98,6 +103,7 @@ feature{NONE} -- Implementation
 
 				-- Clean up debugger.
 			l_test_case_info_bp_manager.toggle_breakpoints (False)
+			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
 			remove_debugger_session
 		end
 
@@ -337,6 +343,22 @@ feature{NONE} -- Actions
 			else
 				last_post_execution_evaluations := a_state
 				build_last_transition
+			end
+		end
+
+	on_application_stopped (a_dm: DEBUGGER_MANAGER)
+			-- Action to be performed when application is stopped in the debugger
+		do
+			if a_dm.application_is_executing or a_dm.application_is_stopped then
+				if a_dm.application_status.reason_is_catcall then
+					a_dm.controller.resume_workbench_application
+				elseif a_dm.application_status.reason_is_overflow then
+					a_dm.application.kill
+				else
+					if a_dm.application_status.exception_occurred then
+						a_dm.controller.resume_workbench_application
+					end
+				end
 			end
 		end
 

@@ -314,10 +314,18 @@ feature -- Basic operations
 		
 	execute_test_case (a_test_case: EQA_SERIALIZED_TEST_SET)
 			-- Execute `a_test_case'.
+		local
+			l_retried: BOOLEAN
 		do
-			memory.collection_off
-			a_test_case.generated_test_1
+			if not l_retried then
+				memory.collection_off
+				a_test_case.generated_test_1
+				memory.collection_on
+			end
+		rescue
+			l_retried := True
 			memory.collection_on
+			retry
 		end
 
 	initialize_test_cases

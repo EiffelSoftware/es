@@ -249,8 +249,9 @@ feature{NONE} -- Implementation
 			l_actual_operands := actual_operands
 			create l_function_types.make
 			if l_actual_operands.has (l_target_variable) then
-					-- The target of the expression feature is an actual operand for `feature_', we use the state type(s) of that
+					-- The target of the expression feature is an actual operand for `feature_', we use the static type(s) of that
 					-- operand for the to-be-extracted function(s).
+					-- An operand can have different static types because the same operand can be used as multiple operands.
 				l_operands := l_actual_operands.item (l_target_variable)
 				l_operand_types := operand_types_with_feature (feature_, class_)
 				from
