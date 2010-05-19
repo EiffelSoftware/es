@@ -1,5 +1,5 @@
 note
-	description: "Test case serializer"
+	description: "[Test case serializer]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -220,8 +220,13 @@ feature -- Basic operations
 			end
 
 			l_serialization := object_serialization (True)
-			pre_state_serialization := l_serialization.serialization
-			pre_state_objects := l_serialization.description
+			if l_serialization /= Void then
+				pre_state_serialization := l_serialization.serialization
+				pre_state_objects := l_serialization.description
+			else
+				pre_state_serialization := Void
+				pre_state_objects := Void
+			end
 		end
 
 	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
@@ -254,21 +259,41 @@ feature -- Basic operations
 		local
 			l_lower: INTEGER
 			l_upper: INTEGER
+			l_any: detachable ANY
+			l_retried: BOOLEAN
 		do
-			if is_test_case_setup then
-				if is_creation and then a_pre_state then
-					l_lower := 1
+			if not l_retried then
+				if is_test_case_setup then
+					if is_creation and then a_pre_state then
+						l_lower := 1
+					else
+						l_lower := 0
+					end
+					l_upper := argument_count
+					if is_query and then not a_pre_state then
+						l_upper := l_upper + 1
+					end
+					Result := objects_as_string (operands, l_lower, l_upper)
+						-- Uncomment the following code to check if serialization is done correctly.
+--					l_any ?= deserialized_object (Result.serialization)
+--					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
+--						interpreter.log_message ("Deserialization correct.%N")
+--					else
+--						interpreter.log_message ("Deserialization failed.")
+--						if l_any /= Void then
+--							interpreter.log_message (l_any.generating_type + "%N")
+--						else
+--							interpreter.log_message ("Void %N")
+--						end
+--					end
 				else
-					l_lower := 0
+					Result := Void
 				end
-				l_upper := argument_count
-				if is_query and then not a_pre_state then
-					l_upper := l_upper + 1
-				end
-				Result := objects_as_string (operands, l_lower, l_upper)
-			else
-				Result := Void
 			end
+		rescue
+			l_retried := True
+			Result := Void
+			retry
 		end
 feature{NONE} -- Implementation
 
@@ -386,15 +411,18 @@ feature{NONE} -- Implementation
 			-- Serialized version of objects whose ID are specified by `a_objects' starting from
 			-- position `a_lower' and ending at position `a_upper'.
 			-- `serialization' is the serialized stream for those objects.
+			-- The serialized objects have the format: SPECIAL [detachable ANY]
+			-- The number of elements in this SPECIAL is even, and partitioned into pairs.
+			-- The first two elements are a pair, and the third and fourth elements are another pair, and so on.
+			-- So it looks like this: [(object1_index, object1), (object2_index, object2), ... , (objectn_index, objectn)].
 			-- `description' describes what variables are in the stream and what their vairable IDs are.
 		local
 			l: SPECIAL [INTEGER]
 			i: INTEGER
 			l_obj_list: like recursively_referenced_objects
-			l_objects: SPECIAL [TUPLE [index: INTEGER; object: detachable ANY]]
+			l_objects: SPECIAL [detachable ANY]
 			l_index: INTEGER
 			l_object: detachable ANY
-			l_data: TUPLE [index: INTEGER; object: detachable ANY]
 		do
 				-- Filter out unnecessary objects.
 			create l.make (a_upper - a_lower + 1)
@@ -410,7 +438,7 @@ feature{NONE} -- Implementation
 				-- Recursively traverse object graphs starting from objects given in `l'.
 			if a_lower <= a_upper then
 				l_obj_list := recursively_referenced_objects (l)
-				create l_objects.make (l_obj_list.count)
+				create l_objects.make (l_obj_list.count * 2)
 				from
 					i := 0
 					l_obj_list.start
@@ -419,8 +447,9 @@ feature{NONE} -- Implementation
 				loop
 					l_index := l_obj_list.key_for_iteration
 					l_object := l_obj_list.item_for_iteration
-					l_objects.put ([l_index, l_object], i)
-					i := i + 1
+					l_objects.put (l_object, i)
+					l_objects.put (l_index, i + 1)
+					i := i + 2
 					l_obj_list.forth
 				end
 			else
@@ -606,19 +635,21 @@ feature{NONE} -- Implementation/Test case synthesis
 		do
 			a_buffer.append (all_variables_tag_start)
 			a_buffer.append_character ('%N')
-			from
-				a_objects.start
-			until
-				a_objects.after
-			loop
-				l_index := a_objects.key_for_iteration
-				l_object := a_objects.item_for_iteration
-				if l_object = Void then
-					append_variable_with_type (l_index, once "NONE", a_buffer, True)
-				else
-					append_variable_with_type (l_index, l_object.generating_type, a_buffer, True)
+			if a_objects /= Void then
+				from
+					a_objects.start
+				until
+					a_objects.after
+				loop
+					l_index := a_objects.key_for_iteration
+					l_object := a_objects.item_for_iteration
+					if l_object = Void then
+						append_variable_with_type (l_index, once "NONE", a_buffer, True)
+					else
+						append_variable_with_type (l_index, l_object.generating_type, a_buffer, True)
+					end
+					a_objects.forth
 				end
-				a_objects.forth
 			end
 			a_buffer.append (all_variables_tag_end)
 			a_buffer.append_character ('%N')

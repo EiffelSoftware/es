@@ -12,6 +12,9 @@ feature -- Access
 	last_transitions: LIST [SEM_FEATURE_CALL_TRANSITION]
 			-- Last transitions loaded by last `load'
 
+	last_objects: LIST [SEM_OBJECTS]
+			-- Last objects loaded by last `load'
+
 feature -- Status report
 
 	is_recursive: BOOLEAN
@@ -36,6 +39,7 @@ feature -- Basic operations
 			l_file: PLAIN_TEXT_FILE
 		do
 			create {LINKED_LIST [SEM_FEATURE_CALL_TRANSITION]} last_transitions.make
+			create {LINKED_LIST [SEM_OBJECTS]} last_objects.make
 			create l_file.make (a_location)
 			if l_file.is_directory then
 				load_from_directory (a_location)
@@ -51,8 +55,8 @@ feature{NONE} -- Implementation
 		do
 			loader.load_transition (a_file)
 			if attached {SEM_FEATURE_CALL_TRANSITION} loader.last_transition  as l_transition then
-				l_transition.add_feature_precondition
-				l_transition.add_feature_postcondition
+				l_transition.add_written_precondition
+				l_transition.add_written_postcondition
 				last_transitions.extend (l_transition)
 			end
 		end

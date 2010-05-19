@@ -42,6 +42,8 @@ feature{NONE} -- Initialization
 			is_creation := a_is_creation
 			create precondition.make (20, context.class_, context.feature_)
 			create postcondition.make (20, context.class_, context.feature_)
+			create written_preconditions.make (5, context.class_, context.feature_)
+			create written_postconditions.make (5, context.class_, context.feature_)
 			initialize_boosts
 			initialize (a_operands)
 		end
@@ -133,16 +135,24 @@ feature -- Visitor
 
 feature -- Basic operations
 
-	add_feature_precondition
-			-- Add precondition of `feature_' into `precondition'.
+	add_written_precondition
+			-- Add precondition written in `feature_' into `precondition'.
+		local
+			l_state: EPA_STATE
 		do
-			adapt_state (rewritten_contracts (contract_extractor.precondition_expression_set (class_, feature_), True), precondition)
+			l_state := rewritten_contracts (contract_extractor.precondition_expression_set (class_, feature_), True)
+			adapt_state (l_state, precondition)
+			adapt_state (l_state, written_preconditions)
 		end
 
-	add_feature_postcondition
-			-- Add postcondition of `feature_' into `postcondition'.
+	add_written_postcondition
+			-- Add postcondition written in `feature_' into `postcondition'.
+		local
+			l_state: EPA_STATE
 		do
-			adapt_state (rewritten_contracts (contract_extractor.postcondition_expression_set  (class_, feature_), False), postcondition)
+			l_state := rewritten_contracts (contract_extractor.postcondition_expression_set  (class_, feature_), False)
+			adapt_state (l_state, postcondition)
+			adapt_state (l_state, written_postconditions)
 		end
 
 feature{NONE} -- Implementation

@@ -33,6 +33,33 @@ feature -- Access
 	last_transition: detachable SEM_FEATURE_CALL_TRANSITION
 			-- Transition from last `load_transition' operation.
 
+	last_pre_serialization_string: detachable STRING
+			-- Last pre serialization data as {STRING}.
+
+	last_post_serialization_string: detachable STRING
+			-- Last post serialization data as {STRING}.
+
+	last_pre_serialization: detachable ARRAYED_LIST[NATURAL_8]
+			-- Serialization data before the test
+		do
+			if last_pre_serialization_string /= Void then
+				if last_pre_serialization_cache = Void then
+					last_pre_serialization_cache := serialization_from_str (last_pre_serialization_string)
+				end
+				Result := last_pre_serialization_cache
+			end
+		end
+
+	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
+			-- Serialization data after the test
+		do
+			if last_post_serialization_string /= Void then
+				if last_post_serialization_cache = Void then
+					last_post_serialization_cache := serialization_from_str (last_post_serialization_string)
+				end
+				Result := last_post_serialization_cache
+			end
+		end
 
 feature -- Operation
 
@@ -118,34 +145,6 @@ feature{NONE} -- Implementation
 			Result := last_test_case_summarization.post_state
 		end
 
-	last_pre_serialization: ARRAYED_LIST[NATURAL_8]
-			-- Serialization data before the test.
-		require
-			last_pre_serialization_str_attached: last_pre_serialization_str /= Void
-		do
-			if last_pre_serialization_cache = Void then
-				last_pre_serialization_cache := serialization_from_str (last_pre_serialization_str)
-			end
-			Result := last_pre_serialization_cache
-		end
-
-	last_pre_serialization_str: detachable STRING
-			-- Last pre serialization data as {STRING}.
-
-	last_post_serialization: ARRAYED_LIST[NATURAL_8]
-			-- Serialization data after the test.
-		require
-			last_post_serialization_str_attached: last_post_serialization_str /= Void
-		do
-			if last_post_serialization_cache = Void then
-				last_post_serialization_cache := serialization_from_str (last_post_serialization_str)
-			end
-			Result := last_post_serialization_cache
-		end
-
-	last_post_serialization_str: detachable STRING
-			-- Last post serialization data as {STRING}.
-
 	last_operand_names: detachable HASH_TABLE[STRING, INTEGER]
 			-- Hashtable mapping 0-based operand index to the variable name.
 		require
@@ -195,14 +194,14 @@ feature{NONE} -- Implementation
 			l_reg := Reg_pre_serialization
 			l_reg.match_substring (a_string, l_pos, l_count)
 			check l_reg.has_matched end
-			last_pre_serialization_str := l_reg.captured_substring (1)
+			last_pre_serialization_string := l_reg.captured_substring (1)
 			l_pos := l_reg.captured_end_position (1)
 
 			-- Post serialization
 			l_reg := Reg_post_serialization
 			l_reg.match_substring (a_string, l_pos, l_count)
 			check l_reg.has_matched end
-			last_post_serialization_str := l_reg.captured_substring (1)
+			last_post_serialization_string := l_reg.captured_substring (1)
 
 			-- Extra information
 			l_reg := reg_extra_information

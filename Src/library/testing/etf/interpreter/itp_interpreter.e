@@ -369,7 +369,7 @@ feature {NONE} -- Error Reporting
 			end
 		end
 
-feature {NONE} -- Logging
+feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 
 	log_file: PLAIN_TEXT_FILE
 			-- Log file

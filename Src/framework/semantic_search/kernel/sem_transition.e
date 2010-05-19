@@ -44,6 +44,14 @@ feature -- Access
 			-- Key is an equation in `postcondition', value is the boost number associated with that equation.
 			-- The boost numbers will be used as boost values for a field (in Lucene sense).			
 
+	written_preconditions: EPA_STATE
+			-- Human written preconditions (if any) for current transition
+			-- This is a subset of `preconditions'.
+
+	written_postconditions: EPA_STATE
+			-- Human written postconditions (if any) for current transition
+			-- This is a subset of `postcondition'.
+
 	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
 			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
