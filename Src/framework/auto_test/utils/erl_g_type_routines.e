@@ -168,12 +168,12 @@ feature {NONE} -- Parsing class types
 		do
 			l_name := a_name.twin
 			l_name.replace_substring_all ("%N", "")
-			if attached {CLASS_C} interpreter_class as l_class then
-				Result := base_type_with_context (l_name, l_class)
-			else
-				Result := base_type_with_context (l_name, system.root_type.associated_class)
-			end
-
+			Result := base_type_with_context (l_name, system.root_type.associated_class)
+--			if attached {CLASS_C} interpreter_class as l_class then
+--				Result := base_type_with_context (l_name, l_class)
+--			else
+--				Result := base_type_with_context (l_name, system.root_type.associated_class)
+--			end
 		end
 
 feature{NONE} -- Implementation
