@@ -30,9 +30,18 @@ feature -- Access
 
 	precondition: EPA_STATE assign set_precondition
 			-- Precondition of Current transition
+			-- Assertions may mention variables other than feature operands.
+			-- For a list of assertions only mentioning feature operands, see `interface_precondition'.
+			-- Relationship: `precondition' is a superset of `interface_precondition',
+			-- `interface_preconditoin' is a superset of `written_precondition'.
 
 	postcondition: EPA_STATE assign set_postcondition
 			-- Postcondition of Current transition
+			-- Assertions may mention variables other than feature operands (including result).
+			-- Assertions may mention variables other than feature operands (including result).
+			-- For a list of assertions only mentioning feature operands, see `interface_postcondition'.
+			-- Relationship: `postcondition' is a superset of `interface_postcondition',
+			-- `interface_postconditoin' is a superset of `written_postcondition'.
 
 	precondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
 			-- Boost values for equations in `precondition'
@@ -51,6 +60,20 @@ feature -- Access
 	written_postconditions: EPA_STATE
 			-- Human written postconditions (if any) for current transition
 			-- This is a subset of `postcondition'.
+
+	interface_precondition: EPA_STATE
+			-- Precondition assertions from `precondition' which only mention feature operands
+			-- Note: Recalculation per query, so it is expensive.
+		do
+			Result := interface_assertions (precondition)
+		end
+
+	interface_postcondition: EPA_STATE
+			-- Postcondition assertions from `postcondition' which only mention feature operands (including result)
+			-- Note: Recalculation per query, so it is expensive.
+		do
+			Result := interface_assertions (postcondition)
+		end
 
 	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
 			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
@@ -223,6 +246,48 @@ feature{NONE} -- Implementation
 
 			create outputs.make (5)
 			outputs.set_equality_tester (expression_equality_tester)
+		end
+
+	interface_assertions (a_state: EPA_STATE): EPA_STATE
+			-- Assertions from `a_state' which only mention feature operands (including result)
+		local
+			l_expr_rewriter: like  expression_rewriter
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_equation: EPA_EQUATION
+			l_expr: EPA_EXPRESSION
+			l_value: EPA_EXPRESSION_VALUE
+			l_should_keep: BOOLEAN
+			l_dummy_var_name: STRING
+		do
+				-- Collect the set of intermediate variables.
+			l_dummy_var_name := "{_}"
+			create l_replacements.make (5)
+			l_replacements.compare_objects
+			intermediate_variables.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
+					do
+						a_tbl.put (a_dummy_var_name, a_expr.text)
+					end (?, l_replacements, l_dummy_var_name))
+
+			l_expr_rewriter := expression_rewriter
+			Result := a_state.cloned_object
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				l_equation := Result.item_for_iteration
+				l_expr := l_equation.expression
+				l_value := l_equation.value
+				if
+					l_expr_rewriter.expression_text (l_expr, l_replacements).has_substring (l_dummy_var_name) or else
+					l_expr_rewriter.expression_value_text (l_value, l_replacements).has_substring (l_dummy_var_name)
+				then
+					Result.remove (l_equation)
+				else
+					Result.forth
+				end
+			end
 		end
 
 invariant

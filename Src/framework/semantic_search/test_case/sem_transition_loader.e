@@ -9,7 +9,7 @@ class
 
 inherit
 	REFACTORING_HELPER
-	
+
 feature -- Access
 
 	last_transitions: LIST [SEM_FEATURE_CALL_TRANSITION]
@@ -64,7 +64,6 @@ feature{NONE} -- Implementation
 				l_transition.add_written_precondition
 				l_transition.add_written_postcondition
 				last_transitions.extend (l_transition)
-
 				fixme ("Uncomment the following block when the bug in deserialization is fixed so we can actually test SEM_OBJECTS. 19.5.2010 Jasonw")
 --				if attached {ARRAY [NATURAL_8]} loader.last_pre_serialization as l_serialization then
 --					l_context := l_transition.context

@@ -172,7 +172,6 @@ feature{NONE} -- Implementation
 			l_pre_state_report, l_post_state_report: STRING
 			l_pre_serialization_str, l_post_serialization_str: STRING
 			l_summarization: AUT_TEST_CASE_SUMMARIZATION
-			l_context: EPA_CONTEXT
 			l_pos, l_count: INTEGER
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
 			l_class: CLASS_C

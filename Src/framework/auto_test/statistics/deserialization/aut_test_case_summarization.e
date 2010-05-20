@@ -380,37 +380,40 @@ feature{NONE} -- Implementation
 						-- Prepend "var." to the expression
 						l_exp_str := l_line.substring (1, l_end_index - 1)
 						l_exp_type := l_context.expression_text_type (l_exp_str)
-						create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
+							-- Sometimes, the expression does not type check, we ignore those expressions.
+						if l_exp_type /= Void then
+							create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
 
-						-- Value of the expression.
-						l_start_index := l_end_index + query_value_separator.count
-						l_val_str := l_line.substring (l_start_index, l_line.count)
-						l_val_str.prune_all (' ')
-						if l_val_str ~ invariant_violation_value or else l_val_str ~ nonsensical_value then
-							create {EPA_NONSENSICAL_VALUE} l_value
-						elseif l_val_str ~ void_value then
-							-- Expression evaluates to "Void".
-							create {EPA_VOID_VALUE} l_value.make
-						else
-							if l_exp_type.is_integer then
-								create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
-							elseif l_exp_type.is_boolean then
-								create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
-							elseif l_exp_type.is_real_32 or else l_exp_type.is_real_64 then
-								create {EPA_REAL_VALUE} l_value.make (l_val_str.to_real)
-							elseif l_exp_type.is_pointer then
-								create {EPA_POINTER_VALUE} l_value.make (l_val_str)
---							elseif l_internal.type_conforms_to (l_expr_type, l_internal.character_type) then
---								create {EPA_CHARACTER_VALUE} l_value.make (l_val_str)
+							-- Value of the expression.
+							l_start_index := l_end_index + query_value_separator.count
+							l_val_str := l_line.substring (l_start_index, l_line.count)
+							l_val_str.prune_all (' ')
+							if l_val_str ~ invariant_violation_value or else l_val_str ~ nonsensical_value then
+								create {EPA_NONSENSICAL_VALUE} l_value
+							elseif l_val_str ~ void_value then
+								-- Expression evaluates to "Void".
+								create {EPA_VOID_VALUE} l_value.make
 							else
-								create {EPA_REFERENCE_VALUE} l_value.make (l_val_str, l_exp_type)
+								if l_exp_type.is_integer then
+									create {EPA_INTEGER_VALUE} l_value.make (l_val_str.to_integer)
+								elseif l_exp_type.is_boolean then
+									create {EPA_BOOLEAN_VALUE} l_value.make (l_val_str.to_boolean)
+								elseif l_exp_type.is_real_32 or else l_exp_type.is_real_64 then
+									create {EPA_REAL_VALUE} l_value.make (l_val_str.to_real)
+								elseif l_exp_type.is_pointer then
+									create {EPA_POINTER_VALUE} l_value.make (l_val_str)
+	--							elseif l_internal.type_conforms_to (l_expr_type, l_internal.character_type) then
+	--								create {EPA_CHARACTER_VALUE} l_value.make (l_val_str)
+								else
+									create {EPA_REFERENCE_VALUE} l_value.make (l_val_str, l_exp_type)
+								end
 							end
 						end
-					end
 
-					-- Store the <expr, value> pair
-					if l_valid_exp and then not l_equations.has (l_expr) then
-						l_equations.put (l_value, l_expr)
+						-- Store the <expr, value> pair
+						if l_valid_exp and then not l_equations.has (l_expr) then
+							l_equations.put (l_value, l_expr)
+						end
 					end
 				end
 

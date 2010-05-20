@@ -274,7 +274,7 @@ feature -- Basic operations
 						l_upper := l_upper + 1
 					end
 					Result := objects_as_string (operands, l_lower, l_upper)
-						-- Uncomment the following code to check if serialization is done correctly.
+--						 Uncomment the following code to check if serialization is done correctly.
 --					l_any ?= deserialized_object (Result.serialization)
 --					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
 --						interpreter.log_message ("Deserialization correct.%N")
