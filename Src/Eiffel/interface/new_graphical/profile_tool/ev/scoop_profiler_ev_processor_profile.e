@@ -90,10 +90,17 @@ feature -- Display
 					if l_duration < execution_width then
 						l_diff := l_diff + (execution_width - l_duration)
 					end
+				else
+					l_diff := l_diff + call_width
 				end
 
 				-- Add idle
-				l_duration := (duration_to_milliseconds (calls.item.start_time.duration.minus (l_time.duration)) * application.zoom).truncated_to_integer
+				if attached {SCOOP_PROFILER_FEATURE_CALL_APPLICATION_PROFILE} calls.item as t_call and then (t_call.processor /= Current and not t_call.synchronous) then
+					l_duration := (duration_to_milliseconds (t_call.call_time.duration.minus (l_time.duration)) * application.zoom).truncated_to_integer
+				else
+					l_duration := (duration_to_milliseconds (calls.item.start_time.duration.minus (l_time.duration)) * application.zoom).truncated_to_integer
+				end
+
 				create l_label
 				if l_duration > idle_call_width then
 					l_adjust := l_diff.min (l_duration - idle_call_width)
@@ -116,12 +123,17 @@ feature -- Display
 				-- Add calls
 				if attached {SCOOP_PROFILER_EV_FEATURE_CALL_APPLICATION_PROFILE} calls.item as t_call and then t_call.processor /= Current then
 					Result.extend (t_call.widget_external)
+					if t_call.synchronous then
+						l_time := calls.item.stop_time
+					else
+						l_time := t_call.call_time
+					end
 				else
 					Result.extend (calls.item.widget)
+					l_time := calls.item.stop_time
 				end
 				Result.disable_item_expand (Result.last)
 
-				l_time := calls.item.stop_time
 				calls.forth
 			end
 

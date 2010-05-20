@@ -237,12 +237,16 @@ feature -- Visitor
 
 			if fc /= Void and then (p.id /= fc.caller_processor.id and not (external_call.has (fc.caller_processor.id)
 				and is_same_feature_event (external_call.item (fc.caller_processor.id), a_event))) then
-				--| This is an external call         |--
-				--| but the caller is not ready      |--
+				--| This is an external call           |--
+				--| but the caller is not ready        |--
+				delay (p.id)
+			elseif external_call.has (p.id) then
+				--| We have called an external feature |--
+				--| wait until it returns
 				delay (p.id)
 			else
-				--| This is a local call or          |--
-				--| external and the caller is ready |--
+				--| This is a local call or            |--
+				--| external and the caller is ready   |--
 
 				-- Find call, removing it from the queue
 				fc := find_call (a_event, True)
@@ -284,6 +288,7 @@ feature -- Visitor
 						debug ("SCOOP")
 							io.put_string ("WARN: caller stack empty... not adding!%N")
 						end
+						fc.caller_processor.calls.extend (fc)
 					else
 						flag_root_feature := True
 					end
@@ -336,6 +341,11 @@ feature -- Visitor
 
 			if not is_same_feature (fc, a_event) then
 				--| We should wait for an internal feature |--
+
+				delay (p.id)
+			elseif external_call.has (p.id) then
+				--| We have called an external feature     |--
+				--| wait until it returns                  |--
 
 				delay (p.id)
 			else

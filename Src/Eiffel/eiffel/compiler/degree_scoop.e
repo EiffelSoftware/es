@@ -190,7 +190,7 @@ feature {SYSTEM_I} -- Profiling
 										until
 											l_feature.arguments.after
 										loop
-											if l_feature.arguments.item.actual_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) then
+											if l_feature.arguments.item.actual_type.associated_class.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name) and l_feature.arguments.item.is_attached then
 												l_feature_info.set_has_separate_arguments
 											end
 											l_feature.arguments.forth
