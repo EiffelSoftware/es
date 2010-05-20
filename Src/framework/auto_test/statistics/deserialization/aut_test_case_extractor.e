@@ -437,16 +437,16 @@ feature{NONE} -- Class content
 			-- <Precursor>
 		do
 			Result := current_data.pre_state_str.twin
-			Result.prepend_string ("--")
-			Result.replace_substring_all ("%N", "%N--")
+--			Result.prepend_string ("--")
+--			Result.replace_substring_all ("%N", "%N--")
 		end
 
 	tc_post_state: STRING
 			-- <Precursor>
 		do
 			Result := current_data.post_state_str.twin
-			Result.prepend_string ("--")
-			Result.replace_substring_all ("%N", "%N--")
+--			Result.prepend_string ("--")
+--			Result.replace_substring_all ("%N", "%N--")
 		end
 
 	tc_trace: STRING

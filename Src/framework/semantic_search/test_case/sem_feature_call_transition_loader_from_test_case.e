@@ -36,8 +36,8 @@ feature -- Access
 	last_pre_serialization_string: detachable STRING
 			-- Last pre serialization data as {STRING}.
 
-	last_post_serialization_string: detachable STRING
-			-- Last post serialization data as {STRING}.
+--	last_post_serialization_string: detachable STRING
+--			-- Last post serialization data as {STRING}.
 
 	last_pre_serialization: detachable ARRAY [NATURAL_8]
 			-- Serialization data before the test
@@ -50,16 +50,16 @@ feature -- Access
 			end
 		end
 
-	last_post_serialization: detachable ARRAY [NATURAL_8]
-			-- Serialization data after the test
-		do
-			if last_post_serialization_string /= Void then
-				if last_post_serialization_cache = Void then
-					last_post_serialization_cache := serialization_from_string (last_post_serialization_string)
-				end
-				Result := last_post_serialization_cache
-			end
-		end
+--	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
+--			-- Serialization data after the test
+--		do
+--			if last_post_serialization_string /= Void then
+--				if last_post_serialization_cache = Void then
+--					last_post_serialization_cache := serialization_from_str (last_post_serialization_string)
+--				end
+--				Result := last_post_serialization_cache
+--			end
+--		end
 
 feature -- Operation
 
@@ -197,11 +197,11 @@ feature{NONE} -- Implementation
 			last_pre_serialization_string := l_reg.captured_substring (1)
 			l_pos := l_reg.captured_end_position (1)
 
-			-- Post serialization
-			l_reg := Reg_post_serialization
-			l_reg.match_substring (a_string, l_pos, l_count)
-			check l_reg.has_matched end
-			last_post_serialization_string := l_reg.captured_substring (1)
+--			-- Post serialization
+--			l_reg := Reg_post_serialization
+--			l_reg.match_substring (a_string, l_pos, l_count)
+--			check l_reg.has_matched end
+--			last_post_serialization_str := l_reg.captured_substring (1)
 
 			-- Extra information
 			l_reg := reg_extra_information
@@ -288,8 +288,8 @@ feature{NONE} -- Implementation
 	last_pre_serialization_cache: like last_pre_serialization
 			-- Cache for `last_pre_serialization'.
 
-	last_post_serialization_cache: like last_post_serialization
-			-- Cache for `last_post_serialization'.
+--	last_post_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
+--			-- Cache for `last_post_serialization'.
 
 feature{NONE} -- Constants
 
@@ -313,14 +313,14 @@ feature{NONE} -- Constants
 			Result.compile ("--<pre_serialization>(.*)--</pre_serialization>")
 		end
 
-	Reg_post_serialization: RX_PCRE_REGULAR_EXPRESSION
-		once
-			create Result.make
-			Result.set_caseless (True)
-			Result.set_multiline (True)
-			Result.set_dotall (True)
-			Result.compile ("--<post_serialization>(.*)--</post_serialization>")
-		end
+--	Reg_post_serialization: RX_PCRE_REGULAR_EXPRESSION
+--		once
+--			create Result.make
+--			Result.set_caseless (True)
+--			Result.set_multiline (True)
+--			Result.set_dotall (True)
+--			Result.compile ("--<post_serialization>(.*)--</post_serialization>")
+--		end
 
 	Reg_class_under_test: RX_PCRE_REGULAR_EXPRESSION
 		once

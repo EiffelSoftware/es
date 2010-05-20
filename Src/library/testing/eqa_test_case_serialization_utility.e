@@ -168,7 +168,7 @@ feature{NONE} -- Implementation
                 	l_obj_index ?= lt_variable.item (i)
 
                     l_variable_table.put (lt_variable.item (i + 1), l_obj_index)
-                    i := i + 1
+                    i := i + 2
                 end
             else
                 create l_variable_table.make (0)

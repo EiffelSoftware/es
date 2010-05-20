@@ -94,6 +94,8 @@ feature{NONE} -- Construction
 --			l_class_str.replace_substring_all (ph_post_serialization, tc_post_serialization)
 
 			-- Extra information.
+			l_class_str.replace_substring_all (ph_start_block_string, start_block_string)
+			l_class_str.replace_substring_all (ph_finish_block_string, finish_block_string)
 			l_class_str.replace_substring_all (ph_class_under_test, tc_class_under_test)
 			l_class_str.replace_substring_all (ph_feature_under_test, tc_feature_under_test)
 			l_class_str.replace_substring_all (ph_code, tc_code)
@@ -297,6 +299,8 @@ feature{NONE} -- Constants
 	ph_operand_table_initializer: STRING = "$(OPERAND_TABLE_INITIALIZER)"
 	ph_operand_index: STRING = "$(OPERAND_INDEX)"
 	ph_var_index: STRING = "$(VAR_INDEX)"
+	ph_start_block_string: STRING = "$(START_BLOCK_STRING)"
+	ph_finish_block_string: STRING = "$(FINISH_BLOCK_STRING)"
 
 
 	ph_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
@@ -409,6 +413,8 @@ $(PRE_SERIALIZATION)
 
 
 note
+  extra_information: 
+$(START_BLOCK_STRING)
 --<extra_information>
 --<class_under_test>$(CLASS_UNDER_TEST)</class_under_test>
 --<feature_under_test>$(FEATURE_UNDER_TEST)</feature_under_test>
@@ -423,9 +429,12 @@ $(PRE_STATE)
 $(POST_STATE)
 --</post_state>
 --</extra_information>
-
+$(FINISH_BLOCK_STRING)
 end
 		]"
+
+	start_block_string: STRING = "%"["
+	finish_block_string: STRING = "]%""
 
 	start_extra_information_tag: STRING = "<extra_information>"
 	finish_extra_information_tag: STRING = "</extra_information>"

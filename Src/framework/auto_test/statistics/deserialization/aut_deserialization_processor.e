@@ -251,7 +251,7 @@ feature{NONE} -- Implementation
 							if last_tag ~ pre_serialization_length_tag_start then
 								if last_length /= Void and then last_length.is_integer then
 									l_length := last_length.to_integer
-									collect_serialization_tag_block (l_length, a_stream, True)
+									collect_serialization_tag_block (l_length, a_stream)
 								else
 									raise ("Bad data length format.")
 								end
@@ -401,11 +401,10 @@ feature{NONE} -- Auxiliary routines
 			end
 		end
 
-	collect_serialization_tag_block (a_length: INTEGER; a_stream: RAW_FILE; a_is_pre: BOOLEAN)
+	collect_serialization_tag_block (a_length: INTEGER; a_stream: RAW_FILE)
 			-- Collect the "<![CDATA[...]]" information for <serialization> tag,
-			-- save the result into `last_pre_object' or `last_post_object'.
+			-- save the result into `last_pre_object'.
 			-- The routine should be called right after <pre/post_serialization_length> has been processed.
-			-- 'a_is_pre': is the data for pre object?
 		local
 			l_length: INTEGER
 			l_data: STRING
@@ -416,10 +415,8 @@ feature{NONE} -- Auxiliary routines
 			l_objects: like last_pre_serialization
 		do
 			-- Total length of the block, including the preceding/succeeding tags
-			if a_is_pre then
-				l_prefix_count := pre_serialization_tag_start.count + cdata_tag_start.count
-				l_postfix_count := pre_serialization_tag_end.count + cdata_tag_end.count
-			end
+			l_prefix_count := pre_serialization_tag_start.count + cdata_tag_start.count
+			l_postfix_count := pre_serialization_tag_end.count + cdata_tag_end.count
 			l_length := a_length + l_prefix_count + l_postfix_count
 
 			-- Read the whole block (with delimiters) into a string.
@@ -433,31 +430,41 @@ feature{NONE} -- Auxiliary routines
 			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
 
 			-- Test if the string can be successfully deserialized into a SPECIAL of TUPLEs.
-            if attached {SPECIAL [TUPLE [index: INTEGER; var: detachable ANY]]}deserialized_object (l_serialization_str) as lt_variable then
-            	check True end
-            else
-            	check False end
-           	end
-
-			-- Convert the values between delimiters into {NATURAL_8}, and save them.
-			if a_is_pre then
+            if is_valid_serialization_data (l_serialization_str) then
+				-- Convert the values between delimiters into {NATURAL_8}, and save them.
 				create last_pre_serialization.make (a_length + 1)
 				l_objects := last_pre_serialization
-			else
-				create last_post_serialization.make (a_length + 1)
-				l_objects := last_post_serialization
-			end
 
-			from
-				l_index := 1
-			until
-				l_index > a_length
-			loop
-				l_objects.extend (l_data[l_index].code.as_natural_8)
-				l_index := l_index + 1
-			end
+				from
+					l_index := 1
+				until
+					l_index > a_length
+				loop
+					l_objects.extend (l_serialization_str[l_index].code.as_natural_8)
+					l_index := l_index + 1
+				end
+            else
+            	-- Bad serialization data.
+            	-- Abandon current transition.
+            	last_pre_serialization := Void
+           	end
+
 		end
 
+	is_valid_serialization_data (a_str: STRING): BOOLEAN
+			-- Is 'a_str' encoding a valid serialization data of type {SPECIAL[detachable ANY]}?
+		local
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
+					Result := True
+				end
+			end
+		rescue
+			l_retried := True
+			retry
+		end
 
 	has_start_tag (a_line: STRING): BOOLEAN
 			-- Has `a_line' a start tag?
