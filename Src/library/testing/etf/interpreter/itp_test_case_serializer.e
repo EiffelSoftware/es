@@ -447,8 +447,9 @@ feature{NONE} -- Implementation
 				loop
 					l_index := l_obj_list.key_for_iteration
 					l_object := l_obj_list.item_for_iteration
-					l_objects.put (l_object, i)
-					l_objects.put (l_index, i + 1)
+					l_objects.put (l_index, i)
+					l_objects.put (l_object, i + 1)
+
 					i := i + 2
 					l_obj_list.forth
 				end

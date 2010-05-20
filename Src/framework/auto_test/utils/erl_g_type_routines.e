@@ -168,7 +168,12 @@ feature {NONE} -- Parsing class types
 		do
 			l_name := a_name.twin
 			l_name.replace_substring_all ("%N", "")
-			Result := base_type_with_context (l_name, interpreter_root_class)
+			if attached {CLASS_C} interpreter_class as l_class then
+				Result := base_type_with_context (l_name, l_class)
+			else
+				Result := base_type_with_context (l_name, system.root_type.associated_class)
+			end
+
 		end
 
 feature{NONE} -- Implementation
@@ -379,7 +384,7 @@ feature -- Types
 				a_string.append ("NONE")
 			end
 		end
-		
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
