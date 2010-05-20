@@ -59,7 +59,12 @@ feature -- Basic operation
 			append_changes
 
 			create l_id.make (64)
-			l_id.append (cleaned_type_name (principal_variable.resolved_type (queryable.context_type).name))
+			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
+				l_id.append (queryable.name)
+			else
+				l_id.append (principal_variable.resolved_type (queryable.context_type).associated_class.name_in_upper)
+			end
+
 			l_id.append_character ('.')
 			l_id.append (buffer.hash_code.out)
 			append_field (id_field, default_boost, type_string, l_id)

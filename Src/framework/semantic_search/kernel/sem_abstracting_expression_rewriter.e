@@ -20,8 +20,13 @@ create
 feature -- Basic operations
 
 	abstracted_expression_texts (a_expr, a_principal_variable: EPA_EXPRESSION; a_abstract_types: LIST[CL_TYPE_A]; a_replacements: like replacements): LIST[STRING]
+		local
+			l_trans: ETR_TRANSFORMABLE
+			l_abstract_context: ETR_CLASS_CONTEXT
+			l_trans_in_context: ETR_TRANSFORMABLE
 		do
 			from
+				create l_trans.make (a_expr.ast, create {ETR_CLASS_CONTEXT}.make (a_expr.type.associated_class), true)
 				principal_variable_text := a_principal_variable.text
 				create {LINKED_LIST[STRING]}Result.make
 				replacements := a_replacements
@@ -29,13 +34,16 @@ feature -- Basic operations
 			until
 				a_abstract_types.after
 			loop
+				create l_abstract_context.make (a_abstract_types.item.associated_class)
+				l_trans_in_context := l_trans.as_in_other_context (l_abstract_context)
+
 				output.reset
 				last_was_unqualified := true
 				can_abstract := true
 				replacements.force (once "{" + cleaned_type_name (a_abstract_types.item.name) + once "}", principal_variable_text)
 				current_abstract_class := a_abstract_types.item.associated_class
 
-				a_expr.process (Current)
+				l_trans_in_context.target_node.process (Current)
 				if can_abstract then
 					Result.extend(output.string_representation)
 				end

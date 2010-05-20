@@ -124,83 +124,87 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	ancestor_types (a_class_type: TYPE_A; a_processed: HASH_TABLE[BOOLEAN,INTEGER]): LIST[CL_TYPE_A]
+			-- Ancestor-types of `a_class_type', use `a_processed' to filter duplicates
+		require
+			non_void: a_class_type /= void and a_processed /= void
+			is_class_type: a_class_type.has_associated_class
+		local
+			l_ancestors: LIST[CL_TYPE_A]
+			l_instantiated_type: CL_TYPE_A
+		do
+			create {LINKED_LIST[CL_TYPE_A]}Result.make
+			l_ancestors := a_class_type.associated_class.parents
+
+			from
+				l_ancestors.start
+			until
+				l_ancestors.after
+			loop
+				if not a_processed[l_ancestors.item.class_id] then
+					a_processed.extend (true, l_ancestors.item.class_id)
+					l_instantiated_type := l_ancestors.item.instantiated_in (a_class_type)
+					Result.extend (l_instantiated_type)
+					Result.append (ancestor_types (l_instantiated_type, a_processed))
+				end
+
+				l_ancestors.forth
+			end
+		end
+
 	abstract_types (a_type: TYPE_A; a_feature_list: LIST[STRING]): LIST[CL_TYPE_A]
 			-- Get a list of abstract types of `a_type' that also contain the features in `a_feature_list'
 		require
 			is_class_type: a_type.is_full_named_type
 		local
-			l_feature: E_FEATURE
-			l_precursors: LIST[CLASS_C]
+			l_feature: FEATURE_I
+			l_ancestors: LIST[CL_TYPE_A]
 			l_class: CLASS_C
-			l_first: BOOLEAN
-			l_type: CL_TYPE_A
 			l_has_all: BOOLEAN
-			l_features: LINKED_LIST[FEATURE_I]
+			l_feat_set_list: LINKED_LIST[ROUT_ID_SET]
 		do
 			l_class := a_type.associated_class
+			l_ancestors := ancestor_types (a_type, create {HASH_TABLE[BOOLEAN,INTEGER]}.make(10))
 
-			-- Get all abstract candidates
+			-- Get rout_id_set of all features in the original class
 			from
 				a_feature_list.start
-				l_first := true
-				create l_features.make
-				create {LINKED_LIST[CL_TYPE_A]}Result.make
+				create l_feat_set_list.make
 			until
 				a_feature_list.after
 			loop
-				l_feature := l_class.feature_named (a_feature_list.item).e_feature
-				l_features.extend (l_feature.associated_feature_i)
+				l_feature := l_class.feature_named (a_feature_list.item)
 
-				l_precursors := l_feature.precursors
-
-				from
-					l_precursors.start
-				until
-					l_precursors.after
-				loop
-					if attached {GEN_TYPE_A}a_type as l_gen_type then
-						if attached {EIFFEL_LIST [FORMAL_DEC_AS]} l_precursors.item.generics as l_precursor_generics implies l_gen_type.generics.count /= l_precursor_generics.count then
-							to_implement ("Generics reduced on inheritance")
-						else
-							create {GEN_TYPE_A}l_type.make (l_precursors.item.class_id, l_gen_type.generics)
-						end
-					else
-						l_type := l_precursors.item.actual_type
-					end
-					if l_type /= Void then
-						Result.extend(l_type)
-					end
-
-					l_precursors.forth
+				if l_feature /= void then
+					l_feat_set_list.extend (l_feature.rout_id_set)
 				end
+
 				a_feature_list.forth
 			end
 
-			-- Remove candidates that don't have all the features
+			-- Add all ancestors that have versions of all the features
 			from
-				Result.start
+				l_ancestors.start
+				create {LINKED_LIST[CL_TYPE_A]}Result.make
 			until
-				Result.after
+				l_ancestors.after
 			loop
+				l_has_all := true
 				from
-					l_class := Result.item.associated_class
-					l_has_all := true
-					l_features.start
+					l_feat_set_list.start
 				until
-					l_features.after or not l_has_all
+					l_feat_set_list.after or not l_has_all
 				loop
-					if l_class.feature_of_rout_id_set (l_features.item.rout_id_set) = void then
+					if l_ancestors.item.associated_class.feature_of_rout_id_set (l_feat_set_list.item) = void then
 						l_has_all := false
 					end
-
-					l_features.forth
+					l_feat_set_list.forth
+				end
+				if l_has_all then
+					Result.extend(l_ancestors.item)
 				end
 
-				if not l_has_all then
-					Result.remove
-				else
-					Result.forth
-				end
+				l_ancestors.forth
 			end
 		end
 
@@ -238,7 +242,6 @@ feature {NONE} -- Implementation
 			l_cur_index_str: STRING
 			l_cur_index: INTEGER
 			l_cur_fun: STRING
-			l_char: CHARACTER
 		do
 			from
 				create {LINKED_LIST[STRING]}Result.make
@@ -246,8 +249,7 @@ feature {NONE} -- Implementation
 			until
 				l_pos > a_content.count
 			loop
-				l_char := a_content.item (l_pos)
-				if l_char = '{' then
+				if a_content.item (l_pos) = '{' then
 					l_in_index := true
 					create l_cur_index_str.make (3)
 				elseif l_in_index and a_content.item (l_pos) = '}' then
@@ -261,9 +263,9 @@ feature {NONE} -- Implementation
 						create l_cur_fun.make_empty
 					end
 				elseif l_in_index then
-					l_cur_index_str.extend (l_char)
+					l_cur_index_str.extend (a_content.item (l_pos))
 				elseif l_in_call then
-					if l_char.is_alpha_numeric or l_char = '_' then
+					if a_content.item (l_pos).is_alpha_numeric then
 						l_cur_fun.extend (a_content.item (l_pos))
 					else
 						l_in_call := false
