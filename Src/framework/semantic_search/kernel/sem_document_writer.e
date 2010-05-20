@@ -159,7 +159,7 @@ feature {NONE} -- Implementation
 					l_precursors.after
 				loop
 					if attached {GEN_TYPE_A}a_type as l_gen_type then
-						if l_gen_type.generics.count /= l_precursors.item.generics.count then
+						if attached {EIFFEL_LIST [FORMAL_DEC_AS]} l_precursors.item.generics as l_precursor_generics implies l_gen_type.generics.count /= l_precursor_generics.count then
 							to_implement ("Generics reduced on inheritance")
 						else
 							create {GEN_TYPE_A}l_type.make (l_precursors.item.class_id, l_gen_type.generics)
@@ -167,7 +167,9 @@ feature {NONE} -- Implementation
 					else
 						l_type := l_precursors.item.actual_type
 					end
-					Result.extend(l_type)
+					if l_type /= Void then
+						Result.extend(l_type)
+					end
 
 					l_precursors.forth
 				end
@@ -236,6 +238,7 @@ feature {NONE} -- Implementation
 			l_cur_index_str: STRING
 			l_cur_index: INTEGER
 			l_cur_fun: STRING
+			l_char: CHARACTER
 		do
 			from
 				create {LINKED_LIST[STRING]}Result.make
@@ -243,7 +246,8 @@ feature {NONE} -- Implementation
 			until
 				l_pos > a_content.count
 			loop
-				if a_content.item (l_pos) = '{' then
+				l_char := a_content.item (l_pos)
+				if l_char = '{' then
 					l_in_index := true
 					create l_cur_index_str.make (3)
 				elseif l_in_index and a_content.item (l_pos) = '}' then
@@ -257,9 +261,9 @@ feature {NONE} -- Implementation
 						create l_cur_fun.make_empty
 					end
 				elseif l_in_index then
-					l_cur_index_str.extend (a_content.item (l_pos))
+					l_cur_index_str.extend (l_char)
 				elseif l_in_call then
-					if a_content.item (l_pos).is_alpha_numeric then
+					if l_char.is_alpha_numeric or l_char = '_' then
 						l_cur_fun.extend (a_content.item (l_pos))
 					else
 						l_in_call := false
