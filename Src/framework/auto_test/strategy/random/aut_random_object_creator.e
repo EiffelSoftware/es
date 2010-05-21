@@ -472,64 +472,77 @@ feature {NONE} -- Steps
 			-- `last_constant'.
 		local
 			i: INTEGER
+			l_lower: INTEGER
+			l_upper: INTEGER
+			l_value: INTEGER
 		do
 			random.forth
 			i := (random.item  \\ 27)
 			if i = 0 then
-				create last_constant.make (-1)
+				l_value := -1
 			elseif i = 1 then
-				create last_constant.make (0)
+				l_value := 0
 			elseif i = 2 then
-				create last_constant.make (1)
+				l_value := 1
 			elseif i = 3 then
-				create last_constant.make (2)
+				l_value := 2
 			elseif i = 4 then
-				create last_constant.make (3)
+				l_value := 3
 			elseif i = 5 then
-				create last_constant.make (4)
+				l_value := 4
 			elseif i = 6 then
-				create last_constant.make (5)
+				l_value := 5
 			elseif i = 7 then
-				create last_constant.make (6)
+				l_value := 6
 			elseif i = 8 then
-				create last_constant.make (7)
+				l_value := 7
 			elseif i = 9 then
-				create last_constant.make (8)
+				l_value := 8
 			elseif i = 10 then
-				create last_constant.make (9)
+				l_value := 9
 			elseif i = 11 then
-				create last_constant.make (-1)
+				l_value := -1
 			elseif i = 12 then
-				create last_constant.make (-2)
+				l_value := -2
 			elseif i = 13 then
-				create last_constant.make (-3)
+				l_value := -3
 			elseif i = 14 then
-				create last_constant.make (-4)
+				l_value := -4
 			elseif i = 15 then
-				create last_constant.make (-5)
+				l_value := -5
 			elseif i = 16 then
-				create last_constant.make (-6)
+				l_value := -6
 			elseif i = 17 then
-				create last_constant.make (-7)
+				l_value := -7
 			elseif i = 18 then
-				create last_constant.make (-8)
+				l_value := -8
 			elseif i = 19 then
-				create last_constant.make (-9)
+				l_value := -9
 			elseif i = 20 then
-				create last_constant.make (-2)
+				l_value := -20
 			elseif i = 21 then
-				create last_constant.make (10)
+				l_value := 10
 			elseif i = 22 then
-				create last_constant.make (-10)
+				l_value := -10
 			elseif i = 23 then
-				create last_constant.make (100)
+				l_value := 100
 			elseif i = 24 then
-				create last_constant.make (-100)
+				l_value := -100
 			elseif i = 25 then
-				create last_constant.make ({INTEGER}.Min_value)
+				l_value := {INTEGER}.Min_value
 			elseif i = 26 then
-				create last_constant.make ({INTEGER}.Max_value)
+				l_value := {INTEGER}.Max_value
 			end
+			l_lower := interpreter.configuration.integer_lower_bound
+			if l_value = l_lower or else l_value < l_lower then
+				l_value := l_lower
+			else
+				l_upper := interpreter.configuration.integer_upper_bound
+				if l_value = l_upper or else l_value > l_upper then
+					l_value := l_upper
+				end
+			end
+			create last_constant.make (l_value)
 		ensure
 			last_constant_not_void: last_constant /= Void
 		end
@@ -924,7 +937,7 @@ invariant
 	receiver_defined: receiver /= Void implies interpreter.variable_table.is_variable_defined (receiver)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -551,8 +551,8 @@ feature{NONE} -- Initialization
 					integer_lower_bound := l_strs.first.to_integer
 					integer_upper_bound := l_strs.last.to_integer
 				else
-					integer_lower_bound := -512
-					integer_upper_bound := 512
+					integer_lower_bound := {INTEGER}.min_value
+					integer_upper_bound := {INTEGER}.max_value
 				end
 			end
 
