@@ -801,8 +801,12 @@ feature -- Object state checking
 				output_buffer.wipe_out
 				error_buffer.wipe_out
 				if attached {TUPLE [pre_state_byte_code: STRING; post_state_byte_code: detachable STRING]} last_request as l_request then
+						-- Initialize query result storage
+					initialize_query_value_holders
+
 						-- Load byte-code.
 					l_bcode := l_request.pre_state_byte_code
+
 					if l_bcode.count = 0 then
 						report_error (byte_code_length_error)
 					else
@@ -812,9 +816,6 @@ feature -- Object state checking
 							post_state_retrieveal_byte_code := Void
 						end
 						log_message (once "report_object_state_request start%N")
-
-							-- Initialize query result storage
-						initialize_query_value_holders
 
 							-- Inject received byte-code into byte-code array of Current process.
 						eif_override_byte_code_of_body (
@@ -827,10 +828,10 @@ feature -- Object state checking
 						last_response_flag := normal_response_flag
 						execute_protected
 						log_message (once "report_object_state_request end%N")
-						last_response := [query_values, output_buffer, error_buffer]
-						refresh_last_response_flag
-						send_response_to_socket
 					end
+					last_response := [query_values, output_buffer, error_buffer]
+					refresh_last_response_flag
+					send_response_to_socket
 				else
 					report_error (invalid_object_state_request)
 					last_response := [Void, Void, output_buffer, error_buffer]
