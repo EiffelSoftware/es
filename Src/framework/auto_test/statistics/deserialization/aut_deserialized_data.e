@@ -26,10 +26,9 @@ feature -- Initialization
 				a_pre_serialization: ARRAYED_LIST[NATURAL_8])
 			-- Initialization.
 		do
-			make_summarization (a_class_name, a_code, a_operands, a_trace,
+			make_summarization (a_class_name, a_code, a_operands, a_variables, a_trace,
 					a_pre_state, a_post_state)
 			time_str := a_time.twin
-			variables_str := a_variables
 			hash_code_str := a_hash_code.twin
 			pre_serialization := a_pre_serialization
 --			post_serialization := a_post_serialization
@@ -38,7 +37,6 @@ feature -- Initialization
 feature -- Access string representation
 
 	time_str: STRING
-	variables_str: STRING
 	hash_code_str: STRING
 	pre_serialization: ARRAYED_LIST[NATURAL_8]
 --	post_serialization: ARRAYED_LIST[NATURAL_8]
@@ -65,29 +63,16 @@ feature -- Access
 			Result := trans_hashcode_cache
 		end
 
-	variable_type_table: detachable HASH_TABLE [TYPE_A, ITP_VARIABLE]
-			-- All reachable variables from the operands and their types.
-		do
-			if variable_type_table_cache = Void then
-				variable_type_table_cache := variable_type_table_from_declaration (variables_str)
-			end
-			Result := variable_type_table_cache
-		end
-
 feature{NONE} -- Implementation
 
 	trans_hashcode_cache: detachable STRING
 			-- Cache for `trans_hashcode'.
-
-	variable_type_table_cache: detachable like variable_type_table
-			-- Cache for `variable_type_table'.	
 
 	reset_cache
 			-- <Precursor>
 		do
 			Precursor
 			trans_hashcode_cache := Void
-			variable_type_table_cache := Void
 		end
 
 feature{NONE} -- Variable renaming

@@ -84,17 +84,20 @@ feature{NONE} -- Implementation
 	generate_test_case (a_data: AUT_DESERIALIZED_DATA)
 			-- Generate the test case from 'a_data' and save it into `test_case_dir'.
 		local
-			l_file_name: FILE_NAME
+			l_file_name: STRING
+			l_loader: SEM_FEATURE_CALL_TRANSITION_LOADER_FROM_TEST_CASE
+			l_transition: SEM_FEATURE_CALL_TRANSITION
 		do
 			reset_cache
 			current_data := a_data
 			write_to (test_case_dir)
 
-			create l_file_name.make_from_string (test_case_dir)
-			l_file_name.set_subdirectory (tc_class_under_test)
-			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
-			l_file_name.set_file_name (tc_class_name)
-			l_file_name.add_extension (tc_name_extension)
+--			-- For testing
+--			l_file_name := tc_class_full_path (test_case_dir)
+--			create l_loader.make(error_handler)
+--			l_loader.load_transition (l_file_name)
+--			l_transition := l_loader.last_transition
+
 			current_data := Void
 		end
 

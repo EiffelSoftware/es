@@ -25,13 +25,14 @@ create
 
 feature -- Initialization
 
-	make (a_class_name, a_code, a_operands, a_trace,
+	make (a_class_name, a_code, a_operands, a_variables, a_trace,
 					a_pre_state, a_post_state: STRING;)
 			-- Initialization.
 		do
 			class_name_str := a_class_name
 			code_str := a_code
 			operands_str := a_operands
+			variables_str := a_variables
 			trace_str := a_trace
 			pre_state_str := a_pre_state
 			post_state_str := a_post_state
@@ -44,6 +45,7 @@ feature -- Access
 	class_name_str: STRING
 	code_str: STRING
 	operands_str: STRING
+	variables_str: STRING
 	trace_str: STRING
 	pre_state_str: STRING
 	post_state_str: STRING
@@ -94,28 +96,52 @@ feature -- Query
 			set_summarization_availability (Result /= Void)
 		end
 
-	operand_name_type_in_string_table: HASH_TABLE [STRING, STRING]
-			-- Hashtable mapping operand names to their types, all in {STRING}.
+	variable_type_table: detachable HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			-- All reachable variables from the operands and their types.
+		require
+			summarization_available: is_summarization_available
+		do
+			if variable_type_table_cache = Void then
+				variable_type_table_cache := variable_type_table_from_declaration (variables_str)
+			end
+			Result := variable_type_table_cache
+		end
+
+	all_variable_name_type_in_string_table: HASH_TABLE [STRING, STRING]
+			-- Hashtable mapping all variable names, i.e. both operands and variables, to their types, all in {STRING}.
 		require
 			summarization_available: is_summarization_available
 		local
-			l_operand_type_table: like operand_type_table
+			l_type_table: like operand_type_table
 		do
-			if operand_name_type_in_string_table_cache = Void then
-				l_operand_type_table := operand_type_table
+			if all_variable_name_type_in_string_table_cache = Void then
+				create all_variable_name_type_in_string_table_cache.make (operand_type_table.count + variable_type_table.count + 1)
+
 				from
-					create operand_name_type_in_string_table_cache.make (l_operand_type_table.count + 1)
-					l_operand_type_table.start
+					l_type_table := operand_type_table
+					l_type_table.start
 				until
-					l_operand_type_table.after
+					l_type_table.after
 				loop
-					operand_name_type_in_string_table_cache.put (
-						l_operand_type_table.item_for_iteration.name,
-						l_operand_type_table.key_for_iteration.name (variable_name_prefix))
-					l_operand_type_table.forth
+					all_variable_name_type_in_string_table_cache.put (
+						l_type_table.item_for_iteration.name,
+						l_type_table.key_for_iteration.name (variable_name_prefix))
+					l_type_table.forth
+				end
+
+				from
+					l_type_table := variable_type_table
+					l_type_table.start
+				until
+					l_type_table.after
+				loop
+					all_variable_name_type_in_string_table_cache.put (
+						l_type_table.item_for_iteration.name,
+						l_type_table.key_for_iteration.name (variable_name_prefix))
+					l_type_table.forth
 				end
 			end
-			Result := operand_name_type_in_string_table_cache
+			Result := all_variable_name_type_in_string_table_cache
 			set_summarization_availability (Result /= Void)
 		end
 
@@ -184,7 +210,7 @@ feature -- Query
 			-- Context for type checking the expressions in pre/post_states.
 		do
 			if context_cache = Void then
-				create context_cache.make_with_variable_names (operand_name_type_in_string_table)
+				create context_cache.make_with_variable_names (all_variable_name_type_in_string_table)
 			end
 			Result := context_cache
 		end
@@ -235,8 +261,11 @@ feature{NONE} -- Implementation
 	operand_type_table_cache: detachable like operand_type_table
 			-- Cache for `operand_type_table'.
 
-	operand_name_type_in_string_table_cache: detachable like operand_name_type_in_string_table
-			-- Cache for `operand_name_type_in_string_table'.
+	variable_type_table_cache: detachable like variable_type_table
+			-- Cache for `variable_type_table'.	
+
+	all_variable_name_type_in_string_table_cache: detachable like all_variable_name_type_in_string_table
+			-- Cache for `all_variable_name_type_in_string_table'.
 
 	operand_position_name_table_cache: detachable like operand_position_name_table
 			-- Cache for `operand_position_name_table'.
@@ -257,7 +286,8 @@ feature{NONE} -- Implementation
 			-- Reset all cached data.
 		do
 			operand_type_table_cache := Void
-			operand_name_type_in_string_table_cache := Void
+			variable_type_table_cache := Void
+			all_variable_name_type_in_string_table_cache := Void
 			operand_position_name_table_cache := Void
 			context_cache := Void
 			pre_state_cache := Void
@@ -442,7 +472,7 @@ feature{NONE} -- Implementation
 			if not l_parser.has_error and then attached {AUT_CALL_BASED_REQUEST} l_parser.last_request as lt_call then
 				-- Explictly set the target type, which will be needed when finding out the 'feature_to_call'.
 				if attached {AUT_INVOKE_FEATURE_REQUEST}lt_call as lt_invoke then
-					lt_invoke.set_target_type (base_type_with_context (operand_name_type_in_string_table[lt_invoke.target.name (variable_name_prefix)], l_root_class))
+					lt_invoke.set_target_type (base_type_with_context (all_variable_name_type_in_string_table[lt_invoke.target.name (variable_name_prefix)], l_root_class))
 				end
 				Result := lt_call
 			else

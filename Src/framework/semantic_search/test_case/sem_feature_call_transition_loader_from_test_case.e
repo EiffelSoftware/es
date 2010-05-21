@@ -158,7 +158,7 @@ feature{NONE} -- Implementation
 		require
 			last_test_case_summarization_attached: last_test_case_summarization /= Void
 		do
-			Result := last_test_case_summarization.operand_name_type_in_string_table
+			Result := last_test_case_summarization.all_variable_name_type_in_string_table
 		end
 
 	parse_transition_from_string (a_string: STRING)
@@ -169,6 +169,7 @@ feature{NONE} -- Implementation
 			l_class_under_test, l_feature_under_test: STRING
 			l_code: STRING
 			l_operands_declaration: STRING
+			l_variables_declaration: STRING
 			l_pre_state_report, l_post_state_report: STRING
 			l_pre_serialization_str, l_post_serialization_str: STRING
 			l_summarization: AUT_TEST_CASE_SUMMARIZATION
@@ -238,6 +239,15 @@ feature{NONE} -- Implementation
 			l_operands_declaration.replace_substring_all ("$", "%N")
 			l_pos := l_reg.captured_end_position (1)
 
+			-- Variables declaration
+			l_reg := Reg_variable_declaration
+			l_reg.match_substring (l_string, l_pos, l_count)
+			check l_reg.has_matched end
+			l_variables_declaration := l_reg.captured_substring (1)
+			l_variables_declaration.replace_substring_all ("$", "%N")
+			l_pos := l_reg.captured_end_position (1)
+
+
 			-- Pre state
 			l_reg := reg_pre_state
 			l_reg.match_substring (l_string, l_pos, l_count)
@@ -251,7 +261,7 @@ feature{NONE} -- Implementation
 			check l_reg.has_matched end
 			l_post_state_report := l_reg.captured_substring (1)
 
-			create last_test_case_summarization.make (l_class_under_test, l_code, l_operands_declaration, l_exception_trace, l_pre_state_report, l_post_state_report)
+			create last_test_case_summarization.make (l_class_under_test, l_code, l_operands_declaration, l_variables_declaration, l_exception_trace, l_pre_state_report, l_post_state_report)
 			create last_transition.make (last_class, last_feature, last_operand_names, last_test_case_summarization.context, last_test_case_summarization.is_feature_creation)
 			last_transition.set_precondition (last_pre_state)
 			last_transition.set_postcondition (last_post_state)
