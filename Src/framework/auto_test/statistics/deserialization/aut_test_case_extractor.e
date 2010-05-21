@@ -85,8 +85,6 @@ feature{NONE} -- Implementation
 			-- Generate the test case from 'a_data' and save it into `test_case_dir'.
 		local
 			l_file_name: STRING
-			l_loader: SEM_FEATURE_CALL_TRANSITION_LOADER_FROM_TEST_CASE
-			l_transition: SEM_FEATURE_CALL_TRANSITION
 		do
 			reset_cache
 			current_data := a_data

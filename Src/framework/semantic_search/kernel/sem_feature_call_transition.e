@@ -248,6 +248,9 @@ feature{NONE} -- Implementation
 			l_env_class: CLASS_C
 			l_context: like context
 			l_operand_count: INTEGER
+			l_operand_set: DS_HASH_SET [EPA_EXPRESSION]
+			l_intermediate_vars: DS_HASH_SET [EPA_EXPRESSION]
+			l_variables: HASH_TABLE [TYPE_A, STRING]
 		do
 			l_context := context
 			l_env_feat := l_context.feature_
@@ -256,6 +259,8 @@ feature{NONE} -- Implementation
 			l_is_query := feature_.has_return_value
 
 			initialize_tables
+			create l_operand_set.make (a_operands.count)
+			l_operand_set.set_equality_tester (expression_equality_tester)
 
 				-- Put operands into `variables', `inputs' and `outputs'.
 			l_cursor := a_operands.cursor
@@ -265,6 +270,7 @@ feature{NONE} -- Implementation
 				a_operands.after
 			loop
 				l_expr := variable_expression_from_context (a_operands.item_for_iteration, l_context)
+				l_operand_set.force_last (l_expr)
 				extend_variable (l_expr, a_operands.key_for_iteration)
 				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) then
 					inputs.force_last (l_expr)
@@ -274,6 +280,24 @@ feature{NONE} -- Implementation
 				a_operands.forth
 			end
 			a_operands.go_to (l_cursor)
+
+				-- Initialize intermediate variables.
+			l_variables := l_context.variables
+			l_cursor := l_variables.cursor
+			from
+				l_index := l_operand_set.count + 1
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_expr := variable_expression_from_context (l_variables.key_for_iteration, l_context)
+				if not l_operand_set.has (l_expr) then
+					extend_variable (l_expr, l_index)
+					l_index := l_index + 1
+				end
+				l_variables.forth
+			end
+			l_variables.go_to (l_cursor)
 
 				-- Initialize `content'.
 			content := content_of_transition

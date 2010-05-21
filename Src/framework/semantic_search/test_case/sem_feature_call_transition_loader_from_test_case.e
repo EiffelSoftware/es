@@ -43,23 +43,9 @@ feature -- Access
 			-- Serialization data before the test
 		do
 			if last_pre_serialization_string /= Void then
-				if last_pre_serialization_cache = Void then
-					last_pre_serialization_cache := serialization_from_string (last_pre_serialization_string)
-				end
-				Result := last_pre_serialization_cache
+				Result := serialization_from_string (last_pre_serialization_string)
 			end
 		end
-
---	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
---			-- Serialization data after the test
---		do
---			if last_post_serialization_string /= Void then
---				if last_post_serialization_cache = Void then
---					last_post_serialization_cache := serialization_from_str (last_post_serialization_string)
---				end
---				Result := last_post_serialization_cache
---			end
---		end
 
 feature -- Operation
 
@@ -293,12 +279,6 @@ feature{NONE} -- Implementation
 				l_numbers.forth
 			end
 		end
-
-	last_pre_serialization_cache: like last_pre_serialization
-			-- Cache for `last_pre_serialization'.
-
---	last_post_serialization_cache: detachable ARRAYED_LIST[NATURAL_8]
---			-- Cache for `last_post_serialization'.
 
 feature{NONE} -- Constants
 
