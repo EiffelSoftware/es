@@ -145,7 +145,7 @@ feature -- Access
 				l_cursor.forth
 			end
 			create Result.make (function)
-			set_map (l_new_map)
+			Result.set_map (l_new_map)
 		end
 
 	partially_evaluated (a_argument_index: INTEGER): like Current

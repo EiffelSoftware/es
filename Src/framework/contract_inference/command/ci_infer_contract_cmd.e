@@ -41,6 +41,9 @@ feature{NONE} -- Initialization
 			create log_manager.make
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
+
+			create inferrers.make
+			inferrers.extend (create {CI_SIMPLE_FRAME_CONTRACT_INFERRER})
 		end
 
 feature -- Access
@@ -59,6 +62,9 @@ feature -- Access
 
 	context_type: TYPE_A
 			-- Context type in which types are resolved
+
+	inferrers: LINKED_LIST [CI_INFERRER]
+			-- List of inferrers
 
 feature -- Basic operations
 
@@ -85,14 +91,17 @@ feature{NONE} -- Implementation
 		local
 			l_test_case_info_bp_manager: like breakpoint_manager_for_setup_test_case
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
+			l_app_exited_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 		do
 				-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 			remove_breakpoint (debugger_manager, root_class)
 
 			l_app_stop_agent := agent on_application_stopped
-			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
+			l_app_exited_agent := agent on_application_exited
 
+			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
+			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Setup break point at the beginning of a test case execution, to query for information of that test case.
 			l_test_case_info_bp_manager := breakpoint_manager_for_setup_test_case
@@ -104,6 +113,7 @@ feature{NONE} -- Implementation
 				-- Clean up debugger.
 			l_test_case_info_bp_manager.toggle_breakpoints (False)
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
+			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_exited_agent)
 			remove_debugger_session
 		end
 
@@ -145,7 +155,7 @@ feature{NONE} -- Implementation
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True)
-			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory, a_tc_info.class_under_test.actual_type)
+			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory, a_tc_info.class_under_test.constraint_actual_type)
 			l_expr_finder.set_is_for_pre_execution (a_pre_execution)
 			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
 			l_expr_finder.search (Void)
@@ -362,12 +372,18 @@ feature{NONE} -- Actions
 			end
 		end
 
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
+			-- Action to be performed when application exited.
+		do
+			inferrers.do_all (agent {CI_INFERRER}.infer (transition_data))
+		end
+
 feature{NONE} -- Implementation
 
 	initialize_data_structure
 			-- Initialize data structures.
 		do
-			create transitions.make
+			create transition_data.make
 		end
 
 	build_last_transition
@@ -377,6 +393,9 @@ feature{NONE} -- Implementation
 			l_transition: SEM_FEATURE_CALL_TRANSITION
 			l_context: EPA_CONTEXT
 			l_func_analyzer: CI_FUNCTION_ANALYZER
+			l_pre_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_post_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_transition_info: CI_TRANSITION_INFO
 		do
 			create l_context.make (last_test_case_info.variables)
 			create l_transition.make (
@@ -389,8 +408,7 @@ feature{NONE} -- Implementation
 			l_transition.set_precondition (last_pre_execution_evaluations)
 			l_transition.set_postcondition (last_post_execution_evaluations)
 
-			transitions.extend (l_transition)
-
+				-- Analyze functions in pre-execution state.
 			create l_func_analyzer
 			l_func_analyzer.analyze (
 				l_transition.precondition,
@@ -399,6 +417,22 @@ feature{NONE} -- Implementation
 				last_test_case_info.class_under_test,
 				last_test_case_info.feature_under_test,
 				last_test_case_info.class_under_test.constraint_actual_type)
+			l_pre_valuations := l_func_analyzer.valuations
+
+				-- Analyze functions in post-execution state.
+			create l_func_analyzer
+			l_func_analyzer.analyze (
+				l_transition.postcondition,
+				l_context,
+				last_test_case_info.operand_map,
+				last_test_case_info.class_under_test,
+				last_test_case_info.feature_under_test,
+				last_test_case_info.class_under_test.constraint_actual_type)
+			l_post_valuations := l_func_analyzer.valuations
+
+				-- Fabricate transition info for the last executed test case.
+			create l_transition_info.make (last_test_case_info, l_transition, l_pre_valuations, l_post_valuations)
+			transition_data.extend (l_transition_info)
 		end
 
 feature{NONE} -- Results
@@ -412,7 +446,8 @@ feature{NONE} -- Results
 	last_post_execution_evaluations: EPA_STATE
 			-- Post-execution expression evaluations of the last found test csae
 
-	transitions: LINKED_LIST [SEM_FEATURE_CALL_TRANSITION]
-			-- Transitions describing the state properties of all found test cases
+	transition_data: LINKED_LIST [CI_TRANSITION_INFO]
+			-- Data collected for transitions retrieved from executed test cases
+
 
 end

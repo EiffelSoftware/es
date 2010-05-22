@@ -583,13 +583,13 @@ feature{NONE} -- Implementation
 				-- Add static types of operands in `feature_' in `static_type_table'.
 			if not context.is_dummy_feature_used then
 				from
-					l_opernd_types := operand_types_with_feature (feature_, context_class)
+					l_opernd_types := resolved_operand_types_with_feature (feature_, context_class, l_context_type)
 					l_opernd_types.start
 				until
 					l_opernd_types.after
 				loop
 					l_operand_name := operand_map.item (l_opernd_types.key_for_iteration)
-					l_type := l_opernd_types.item_for_iteration.instantiation_in (l_context_type, l_context_type_class.class_id)
+					l_type := l_opernd_types.item_for_iteration
 					l_static_type_table.force_last (l_type, l_operand_name)
 					l_operand_static_type_table.force_last (l_type, l_operand_name)
 					if l_opernd_types.key_for_iteration = 0 then

@@ -153,6 +153,25 @@ feature -- Access
 	context_type: detachable TYPE_A
 			-- Context type in which types are resolved
 
+	variable_by_name (a_name: STRING): EPA_EXPRESSION
+			-- Variable in `variables' by `a_name'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+
+		do
+			from
+				l_cursor := variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or Result /= Void
+			loop
+				if l_cursor.item.text ~ a_name then
+					Result := l_cursor.item
+				end
+				l_cursor.forth
+			end
+		end
+
 feature -- Status report
 
 	has_variable (a_variable: EPA_EXPRESSION): BOOLEAN

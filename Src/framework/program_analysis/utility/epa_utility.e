@@ -260,7 +260,8 @@ feature -- Class/feature related
 			until
 				Result.after
 			loop
-				l_type := Result.item_for_iteration
+				l_type := Result.item_for_iteration.actual_type
+				l_type := actual_type_from_formal_type (l_type, a_context_type.associated_class)
 				l_type := l_type.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
 				Result.replace (l_type, Result.key_for_iteration)
 				Result.forth
