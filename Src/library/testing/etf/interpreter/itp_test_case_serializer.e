@@ -277,9 +277,9 @@ feature -- Basic operations
 --						 Uncomment the following code to check if serialization is done correctly.
 --					l_any ?= deserialized_object (Result.serialization)
 --					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
---						interpreter.log_message ("Deserialization correct.%N")
+--						interpreter.log_message ("Serialization: Deserialization correct.%N")
 --					else
---						interpreter.log_message ("Deserialization failed.")
+--						interpreter.log_message ("Serialization: Deserialization failed.")
 --						if l_any /= Void then
 --							interpreter.log_message (l_any.generating_type + "%N")
 --						else
@@ -435,8 +435,10 @@ feature{NONE} -- Implementation
 				i := i + 1
 			end
 
+
 				-- Recursively traverse object graphs starting from objects given in `l'.
 			if a_lower <= a_upper then
+--				interpreter.log_message ("Serialization: To-be-serialized objects: ")
 				l_obj_list := recursively_referenced_objects (l)
 				create l_objects.make (l_obj_list.count * 2)
 				from
@@ -449,10 +451,16 @@ feature{NONE} -- Implementation
 					l_object := l_obj_list.item_for_iteration
 					l_objects.put (l_index, i)
 					l_objects.put (l_object, i + 1)
-
+--					interpreter.log_message (l_index.out + ", ")
+--					if l_object /= Void then
+--						interpreter.log_message (l_object.generating_type + ", ")
+--					else
+--						interpreter.log_message ("Void, ")
+--					end
 					i := i + 2
 					l_obj_list.forth
 				end
+--				interpreter.log_message ("%N")
 			else
 				create l_obj_list.make (0)
 				create l_objects.make (0)
@@ -518,12 +526,14 @@ feature{NONE} -- Implementation
 			if attached {INTEGER_32_REF} a_object as l_int then
 				l_index := l_interpreter.store.variable_index (l_int)
 				if l_index > 0 then
-					a_object_table.put (l_int, l_index)
+--					interpreter.log_message ("Serialization: Found an integer%N")
+					a_object_table.put (l_int.item, l_index)
 				end
 			elseif attached {BOOLEAN_REF} a_object as l_bool then
 				l_index := l_interpreter.store.variable_index (l_bool)
 				if l_index > 0 then
-					a_object_table.put (l_bool, l_index)
+--					interpreter.log_message ("Serialization: Found boolean%N")
+					a_object_table.put (l_bool.item, l_index)
 				end
 			else
 				l_index := l_interpreter.store.variable_index (a_object)

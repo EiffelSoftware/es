@@ -909,6 +909,72 @@ feature -- Object state checking
 			end
 		end
 
+	record_integer_function_value (a_query_name: STRING; a_query: FUNCTION [ANY, TUPLE [INTEGER], detachable ANY]; a_argument: INTEGER)
+			-- Evaluate the query specified by `a_query' and record its value into `query_values'
+			-- under the name `a_query_name'.
+			-- `a_query' has an argument, which is given by `a_argument'.
+		require
+			a_query_attached: a_query /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+		do
+			if not l_retried then
+				l_result := a_query.item ([a_argument])
+				record_evaluated_value (a_query_name, l_result)
+			end
+		rescue
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_query_evaluation_failure (a_query_name, a_argument, exception_trace)
+			l_retried := True
+			retry
+		end
+
+	record_boolean_function_value (a_query_name: STRING; a_query: FUNCTION [ANY, TUPLE [BOOLEAN], detachable ANY]; a_argument: BOOLEAN)
+			-- Evaluate the query specified by `a_query' and record its value into `query_values'
+			-- under the name `a_query_name'.
+			-- `a_query' has an argument, which is given by `a_argument'.
+		require
+			a_query_attached: a_query /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+		do
+			if not l_retried then
+				l_result := a_query.item ([a_argument])
+				record_evaluated_value (a_query_name, l_result)
+			end
+		rescue
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_query_evaluation_failure (a_query_name, a_argument, exception_trace)
+			l_retried := True
+			retry
+		end
+
+	record_argumented_function_value (a_query_name: STRING; a_query: FUNCTION [ANY, TUPLE [detachable ANY], detachable ANY]; a_argument: detachable ANY)
+			-- Evaluate the query specified by `a_query' and record its value into `query_values'
+			-- under the name `a_query_name'.
+			-- `a_query' has an argument, which is given by `a_argument'.
+		require
+			a_query_attached: a_query /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+		do
+			if not l_retried then
+				l_result := a_query.item ([a_argument])
+				record_evaluated_value (a_query_name, l_result)
+			end
+		rescue
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_query_evaluation_failure (a_query_name, a_argument, exception_trace)
+			l_retried := True
+			retry
+		end
+
 	record_function_value (a_query_name: STRING; a_query: FUNCTION [ANY, TUPLE, detachable ANY])
 			-- Evaluate the query specified by `a_query' and record its value into `query_values'
 			-- under the name `a_query_name'.
@@ -923,37 +989,29 @@ feature -- Object state checking
 		do
 			if not l_retried then
 				l_result := a_query.item (Void)
-				if l_result = Void then
-					query_values.put (void_value, a_query_name)
-				else
-					l_internal := internal
-					l_type := l_internal.dynamic_type (l_result)
-					if
-						l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
-						l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
-						l_internal.type_conforms_to (l_type, l_internal.real_type) or else
-						l_internal.type_conforms_to (l_type, l_internal.double_type) or else
-						l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
-						l_internal.type_conforms_to (l_type, l_internal.character_type)
-					then
-						l_value := l_result.out
-						query_values.put (l_value, a_query_name)
-						query_value_hash_list.extend (l_value.hash_code)
-					else
-						l_value := ($l_result).out
-						query_values.put (l_value, a_query_name)
-						query_value_hash_list.extend (reference_value.hash_code)
-					end
-				end
+				record_evaluated_value (a_query_name, l_result)
 			end
 		rescue
 			query_values.put (nonsensical_value, a_query_name)
 			query_value_hash_list.extend (nonsensical_value.hash_code)
-			log_message ("-----------------------------------------------%N")
-			log_message (a_query_name + "%N")
-			log_message (exception_trace)
+			log_query_evaluation_failure (a_query_name, Void, exception_trace)
 			l_retried := True
 			retry
+		end
+
+	log_query_evaluation_failure (a_query_name: STRING; a_argument: detachable ANY; a_trace: STRING)
+			-- Log that the evaluation of `a_query_name' with `a_argument' failed with trace `a_trace'.
+		do
+			log_message ("-----------------------------------------------%N")
+			log_message (a_query_name + "%N")
+			if a_argument /= Void then
+				log_message (a_argument.generating_type + "%N")
+			else
+				log_message ("argument is Void.%N")
+			end
+			if a_trace /= Void then
+				log_message (exception_trace)
+			end
 		end
 
 	record_void_value (a_variable_index: INTEGER)
@@ -978,6 +1036,39 @@ feature -- Object state checking
 		do
 			query_values.put (invariant_violation_value, object_name (a_variable_index))
 			query_value_hash_list.extend (invariant_violation_value.hash_code)
+		end
+
+	record_evaluated_value (a_query_name: STRING; a_value: detachable ANY)
+			-- Record evaluated `a_value' for `a_query_name'.
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+			l_internal: like internal
+			l_type: INTEGER
+			l_value: STRING
+		do
+			if a_value = Void then
+				query_values.put (void_value, a_query_name)
+			else
+				l_internal := internal
+				l_type := l_internal.dynamic_type (a_value)
+				if
+					l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.real_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.double_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
+					l_internal.type_conforms_to (l_type, l_internal.character_type)
+				then
+					l_value := a_value.out
+					query_values.put (l_value, a_query_name)
+					query_value_hash_list.extend (l_value.hash_code)
+				else
+					l_value := ($a_value).out
+					query_values.put (l_value, a_query_name)
+					query_value_hash_list.extend (reference_value.hash_code)
+				end
+			end
 		end
 
 	object_name (a_index: INTEGER): STRING

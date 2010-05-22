@@ -53,7 +53,6 @@ feature{NONE} -- Initialization
 			create reversed_variable_position.make (l_variable_count)
 
 				-- Initialize variables in `a_context' into `variables'.
-
 			l_obj_table := deserialized_variable_table (a_serializatoin)
 			create objects.make (l_obj_table.count // 2)
 			objects.compare_objects

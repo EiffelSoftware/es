@@ -27,6 +27,8 @@ inherit
 	-- For test only.
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
+	REFACTORING_HELPER
+
 
 create
 	make
@@ -456,11 +458,13 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_retried: BOOLEAN
 		do
-			if not l_retried then
-	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
-					Result := True
-				end
-			end
+			Result := True
+			fixme ("I have to comment out the following block because it is too often that we have segmentation fault by doing deserialization. If the code is not commented, the deserialization will never succeeded. 21.5.2010 Jasonw")
+--			if not l_retried then
+--	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
+--					Result := True
+--				end
+--			end
 		rescue
 			l_retried := True
 			retry

@@ -2025,8 +2025,6 @@ feature -- Objec state retrieval
 
 				-- Populate `object_state_table'.
 			if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
---WY: The following line has something to do with object state table, which needs adaptation.				
---WY			object_state_table.put_variable (a_variable, create {AUT_OBJECT_STATE}.make (l_object_state_response), l_request.type)
 				populate_object_state_table (l_object_state_response)
 			end
 

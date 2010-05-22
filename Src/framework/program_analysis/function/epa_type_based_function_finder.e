@@ -359,9 +359,8 @@ feature{NONE} -- Implementation
 								--    whose type conforms to the type of that query,
 							l_feature := l_features.item_for_iteration
 							fixme ("We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases. 9.5.2010 Jasonw")
-							if not l_feature.feature_name.is_case_insensitive_equal (once "is_equal") then
+							if is_single_argument_query_valid (l_feature, l_operand_type) then
 								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
-
 
 									-- 4. Compose the query and the selected function in `quasi_constant_functions'.
 								if not l_funcs.is_empty then
@@ -383,6 +382,46 @@ feature{NONE} -- Implementation
 						end
 					end
 					l_operand_cur.forth
+				end
+			end
+		end
+
+	is_single_argument_query_valid (a_feature: FEATURE_I; a_context_type: TYPE_A): BOOLEAN
+			-- Is `a_feature' valid as the feature in a composed query?
+		local
+			l_type: TYPE_A
+			l_class: CLASS_C
+			l_class_id: INTEGER
+			l_system: like system
+		do
+			fixme ("We don't handle the following cases. 21.5.2010 Jasonw")
+
+				-- We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases.
+			Result := not a_feature.feature_name.is_case_insensitive_equal (once "is_equal")
+
+
+				-- Don't handle queries with preconditions.
+			if Result then
+				Result := (should_search_for_query_with_precondition or else all_preconditions (a_feature).is_empty)
+			end
+
+				-- Don't handle agents as argument.
+			if Result then
+				l_class := a_context_type.associated_class
+				Result := l_class /= Void
+				if Result then
+					l_type := a_feature.arguments.first.actual_type.instantiation_in (a_context_type, l_class.class_id)
+					l_class := l_type.associated_class
+					if l_class /= Void then
+						l_class_id := l_class.class_id
+						l_system := system
+						Result :=
+							l_class_id /= l_system.procedure_class_id and then
+							l_class_id /= l_system.function_class_id and then
+							l_class_id /= l_system.predicate_class_id
+					else
+						Result := False
+					end
 				end
 			end
 		end

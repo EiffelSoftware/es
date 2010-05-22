@@ -190,6 +190,15 @@ feature{NONE} -- Implementation
 			l_anony_operand_index: STRING
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_expr_text: STRING
+			l_func_text: STRING
+			l_partial_func: STRING
+			l_lparan_index: INTEGER
+			l_rparan_index: INTEGER
+			l_dot_index: INTEGER
+			l_feature: FEATURE_I
+			l_feat_name: STRING
+			l_target_type: TYPE_A
+			l_argument_type: TYPE_A
 		do
 			l_text := feature_text
 			l_variables := variables
@@ -217,7 +226,7 @@ feature{NONE} -- Implementation
 				l_var_type := l_variables.item (l_var_name)
 				l_operand_index := l_map_cursor.key
 				l_anony_operand_index := anonymous_variable_name (l_operand_index)
-				l_text.append (once "if not vtbl.has (")						-- if not vtbl.has
+				l_text.append (once "if not vtbl.has (")
 				l_text.append (l_anony_operand_index)
 				l_text.append (once ") then%N")
 				l_text.append (once "vtbl.put (0, ")
@@ -274,12 +283,45 @@ feature{NONE} -- Implementation
 						until
 							l_queries.after
 						loop
-							l_text.append (once "record_function_value (%"")
+							l_func_text := l_queries.item_for_iteration.text.twin
 							l_expr_text := expression_text_with_replacement (l_queries.item_for_iteration, l_replacements)
-							l_text.append (l_expr_text)
-							l_text.append (once "%", agent ")
-							l_text.append (l_queries.item_for_iteration.text)
-							l_text.append (")%N")
+							l_lparan_index := l_func_text.index_of ('(', 1)
+							if l_lparan_index > 0 then
+									-- This is a query with argument.
+
+									-- Get the feature of the query.
+								l_dot_index := l_func_text.index_of ('.', 1)
+								l_feat_name := l_func_text.substring (l_dot_index + 1, l_lparan_index - 1)
+								l_feat_name.left_adjust
+								l_feat_name.right_adjust
+								l_target_type := l_variables.item (l_var_name)
+								l_argument_type := l_target_type.associated_class.feature_named (l_feat_name).arguments.first.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+
+									-- Generate different query recordings depending on the type of the argument.
+									-- This is needed (at least for the moment) because otherwise, the agent evaluation
+									-- will fail due to `valid_operands'. 21.5.2010 Jasonw
+								if l_argument_type.is_integer then
+									l_text.append (once "record_integer_function_value (%"")
+								elseif l_argument_type.is_boolean then
+									l_text.append (once "record_boolean_function_value (%"")
+								else
+									l_text.append (once "record_argumented_function_value (%"")
+								end
+								l_rparan_index := l_func_text.index_of (')', l_lparan_index + 1)
+								l_text.append (l_expr_text)
+								l_text.append (once "%", agent ")
+								l_text.append (l_func_text.substring (1, l_lparan_index - 1))
+								l_text.append (once ", ")
+								l_text.append (l_func_text.substring (l_lparan_index + 1, l_rparan_index - 1))
+								l_text.append (once ")%N")
+							else
+									-- This is an argument-less query.
+								l_text.append (once "record_function_value (%"")
+								l_text.append (l_expr_text)
+								l_text.append (once "%", agent ")
+								l_text.append (l_func_text)
+								l_text.append (")%N")
+							end
 							l_queries.forth
 						end
 					end
