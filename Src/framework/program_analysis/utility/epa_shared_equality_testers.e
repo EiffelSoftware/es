@@ -44,7 +44,5 @@ feature -- Equality tester
 		once
 			create Result
 		end
-
-
-
+		
 end

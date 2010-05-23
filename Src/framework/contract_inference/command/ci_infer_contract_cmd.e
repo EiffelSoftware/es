@@ -42,8 +42,7 @@ feature{NONE} -- Initialization
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
 
-			create inferrers.make
-			inferrers.extend (create {CI_SIMPLE_FRAME_CONTRACT_INFERRER})
+			setup_inferrers
 		end
 
 feature -- Access
@@ -127,7 +126,7 @@ feature{NONE} -- Implementation
 			Result.set_breakpoint_with_expression_and_action (1, l_tc_info.test_case_info_expressions, agent on_new_test_case_found)
 		end
 
-	breakpoint_manager_for_pre_execution_evaluation (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+	breakpoint_manager_for_expression_evaluation (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			-- Break point manager for evaluating expressions related to test case defined in `a_tc_info'.
 			-- `a_pre_execution' indicates if those expressions are to be evaluated before the execution
 			-- of the test case.
@@ -162,7 +161,7 @@ feature{NONE} -- Implementation
 			l_functions := nullary_functions (l_expr_finder.functions, l_context)
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
-			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]) do a_set.force_last (a_function.as_expression) end (?, Result))
+			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
 		end
 
 	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
@@ -276,7 +275,7 @@ feature{NONE} -- Implementation
 						i > l_final_upper
 					loop
 						create l_int_expr.make_with_text (a_context.class_, a_context.feature_, i.out, a_context.class_)
-						create l_arg.make_from_expression (l_expr, a_context)
+						create l_arg.make_from_expression (l_expr)
 
 						Result.force_last (a_function.partially_evalauted (l_arg, 1))
 						i := i + 1
@@ -313,8 +312,7 @@ feature{NONE} -- Actions
 		local
 			l_after_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
-			l_before_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
-			l_after_dbg_manager: like breakpoint_manager_for_pre_execution_evaluation
+			l_before_dbg_manager: like breakpoint_manager_for_expression_evaluation
 		do
 				-- Setup information of the newly found test case.
 			create last_test_case_info.make (a_state)
@@ -323,18 +321,18 @@ feature{NONE} -- Actions
 			log_new_test_case_found (last_test_case_info)
 
 				-- Setup break points to evaluate expressions.
-			l_before_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (last_test_case_info, True)
-			l_after_dbg_manager := breakpoint_manager_for_pre_execution_evaluation (last_test_case_info, False)
+			l_before_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
 
 				-- Enable break points for expression evaluation.
 			l_before_dbg_manager.toggle_breakpoints (True)
-			l_after_dbg_manager.toggle_breakpoints (True)
 		end
 
 	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
 			-- Action to be performed when expressions are evaluated for test case defined in `a_tc_info'.
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
+		local
+			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
 		do
 			a_bp_manager.toggle_breakpoints (False)
 
@@ -346,6 +344,12 @@ feature{NONE} -- Actions
 				log_manager.put_line_with_time (once "Post-execution state:")
 			end
 			log_manager.put_line (a_state.debug_output)
+
+				-- Setup post-execution expression evaluator.
+			if a_pre_execution then
+				l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
+				l_after_dbg_manager.toggle_breakpoints (True)
+			end
 
 				-- Store results.
 			if a_pre_execution then
@@ -433,6 +437,17 @@ feature{NONE} -- Implementation
 				-- Fabricate transition info for the last executed test case.
 			create l_transition_info.make (last_test_case_info, l_transition, l_pre_valuations, l_post_valuations)
 			transition_data.extend (l_transition_info)
+		end
+
+	setup_inferrers
+			-- Setup `inferrers'.
+		local
+			l_simple_inferrer: CI_SIMPLE_FRAME_CONTRACT_INFERRER
+		do
+			create inferrers.make
+			create l_simple_inferrer
+			l_simple_inferrer.set_logger (log_manager)
+			inferrers.extend (l_simple_inferrer)
 		end
 
 feature{NONE} -- Results

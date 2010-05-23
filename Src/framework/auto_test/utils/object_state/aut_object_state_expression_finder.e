@@ -156,9 +156,12 @@ feature{NONE} -- Implementation
 			l_body: STRING
 			l_dest: detachable like functions_by_target
 			l_feat: FEATURE_I
+			l_context: EPA_CONTEXT
 		do
 			l_variables := variables
+			create l_context.make (variables)
 			l_functions := a_finder.argumentless_functions.union (a_finder.composed_functions)
+
 
 				-- Setup `expressoins_by_target'.
 			create functions_by_target.make (l_variables.count)
@@ -209,7 +212,7 @@ feature{NONE} -- Implementation
 							l_grouped_exprs.set_equality_tester (expression_equality_tester)
 							l_dest.put (l_grouped_exprs, l_target_var)
 						end
-						l_grouped_exprs.force_last (l_func.as_expression)
+						l_grouped_exprs.force_last (l_func.as_expression (l_context))
 					end
 				end
 				l_functions.forth
@@ -225,7 +228,7 @@ feature{NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				l_variable_exprs.force_last (l_cursor.item.as_expression)
+				l_variable_exprs.force_last (l_cursor.item.as_expression (l_context))
 				l_cursor.forth
 			end
 		end

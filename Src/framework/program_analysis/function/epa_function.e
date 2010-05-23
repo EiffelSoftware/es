@@ -26,7 +26,7 @@ create
 	make_from_expression_value
 feature{NONE} -- Initialization
 
-	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body; a_context: like context)
+	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body)
 			-- Initialize Current.
 		require
 			a_argument_types_attached: a_argument_types /= Void
@@ -37,16 +37,13 @@ feature{NONE} -- Initialization
 			argument_domains := a_argument_domains
 			result_type := a_result_type
 			body := a_body.twin
-			context := a_context
 		ensure
 			argument_types_set: argument_types = a_argument_types
 			argument_domains_set: argument_domains = a_argument_domains
-			result_type_set: is_type_equal (result_type, a_result_type)
 			body_set: body ~ a_body
-			context_set: context = a_context
 		end
 
-	make_from_expression (a_expr: EPA_EXPRESSION; a_context: like context)
+	make_from_expression (a_expr: EPA_EXPRESSION)
 			-- Initialize Current function as a constant with `a_expr' in `a_context'.
 			-- Current is going to be a constant since `a_expr' does not have any argument.
 		require
@@ -55,16 +52,13 @@ feature{NONE} -- Initialization
 			create argument_types.make (1, 0)
 			create argument_domains.make (1, 0)
 			result_type := a_expr.type
-			context := a_context
 			body := a_expr.text.twin
 		ensure
 			good_result: is_constant
-			result_type_correct: is_type_equal (result_type, a_expr.type)
 			body_correct: body ~ a_expr.text
-			context_set: context = a_context
 		end
 
-	make_from_feature_with_domains (a_feature: FEATURE_I; a_class: CLASS_C; a_domains: like argument_domains; a_context: like context)
+	make_from_feature_with_domains (a_feature: FEATURE_I; a_class: CLASS_C; a_domains: like argument_domains)
 			-- Initialize Current function from `a_feature' viewed in `a_class'.
 			-- If `a_feature' has n arguments, then Current function will have n+1 arguments
 			-- because the first argument in Current function represents the target of the feature call.
@@ -78,8 +72,6 @@ feature{NONE} -- Initialization
 			l_cursor: CURSOR
 			i: INTEGER
 		do
-			context := a_context
-
 				-- Setup `result_type'.
 			result_type := a_feature.type
 
@@ -111,13 +103,12 @@ feature{NONE} -- Initialization
 			body := body_for_feature (a_feature, a_class, 1)
 		end
 
-	make_from_expression_value (a_value: EPA_EXPRESSION_VALUE; a_context: like context)
+	make_from_expression_value (a_value: EPA_EXPRESSION_VALUE)
 			-- Initialize current as a constarnt with `a_value'.
 		do
 			create argument_types.make (1, 0)
 			create argument_domains.make (1, 0)
 
-			context := a_context
 			body := a_value.text.twin
 			result_type := a_value.type
 		end
@@ -148,9 +139,6 @@ feature{NONE} -- Initialization
 --		end
 
 feature -- Access
-
-	context: EPA_CONTEXT
-			-- Context of current function
 
 	argument_types: ARRAY [TYPE_A]
 			-- Types of arguments of Current function
@@ -211,12 +199,12 @@ feature -- Access
 			-- "{1}.has ({2})" is a body, {1} and {2} represents the first and
 			-- the second argument.
 
-	as_expression: EPA_EXPRESSION
+	as_expression (a_context: EPA_CONTEXT): EPA_EXPRESSION
 			-- Expression from Current function
 		require
 			fully_evaluated: arity = 0
 		do
-			create {EPA_AST_EXPRESSION} Result.make_with_type (context.class_, context.feature_, ast_from_expression_text (body), context.class_, result_type)
+			create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, ast_from_expression_text (body), a_context.class_, result_type)
 		end
 
 	canonical_form: STRING
@@ -224,9 +212,7 @@ feature -- Access
 		local
 			l_replacements: HASH_TABLE [STRING, INTEGER]
 			i: INTEGER
-			l_context_class: CLASS_C
 		do
-			l_context_class := context.class_
 			create Result.make (64)
 			Result.append (body)
 			create l_replacements.make (arity)
@@ -279,7 +265,7 @@ feature -- Partial evaluation
 			-- a new function "sum_of (product_of (a, b), y)" which has three arguments: a, b and y.
 		require
 			a_position_valid: is_argument_position_valid (a_position)
-			a_argument_has_valid_type: is_conformant_to (a_argument.result_type, argument_type (a_position))
+--			a_argument_has_valid_type: is_conformant_to (a_argument.result_type, argument_type (a_position))
 		local
 			l_tbl: HASH_TABLE [EPA_FUNCTION, INTEGER]
 		do
@@ -354,7 +340,7 @@ feature -- Partial evaluation
 					l_new_args.extend (l_arg_body)
 				else
 					l_arguments.extend (argument_type (l_position))
-					l_domains.extend (argument_domain (i))
+					l_domains.extend (argument_domain (l_position))
 					l_new_args.extend (curly_brace_surrounded_integer (l_position))
 					l_arg_index := l_arg_index + 1
 				end
@@ -388,7 +374,7 @@ feature -- Partial evaluation
 				i := i + 1
 				l_new_args.forth
 			end
-			create Result.make (l_final_args, l_final_domains, result_type, l_final_body, context)
+			create Result.make (l_final_args, l_final_domains, result_type, l_final_body)
 		end
 
 feature -- Status report
@@ -425,64 +411,64 @@ feature -- Status report
 			good_result: Result = (arity = 2)
 		end
 
-	is_conformant_to (a_source_type: TYPE_A; a_target_type: TYPE_A): BOOLEAN
-			-- Is `a_source_type' conformant to `a_target_type'?
-		local
-			l_resolved_source_type: TYPE_A
-			l_resolved_target_type: TYPE_A
-		do
-			l_resolved_source_type := a_source_type
-			l_resolved_target_type := a_target_type
-			Result := l_resolved_source_type.conform_to (context.class_, l_resolved_target_type)
-		end
+--	is_conformant_to (a_source_type: TYPE_A; a_target_type: TYPE_A): BOOLEAN
+--			-- Is `a_source_type' conformant to `a_target_type'?
+--		local
+--			l_resolved_source_type: TYPE_A
+--			l_resolved_target_type: TYPE_A
+--		do
+--			l_resolved_source_type := a_source_type
+--			l_resolved_target_type := a_target_type
+--			Result := l_resolved_source_type.conform_to (context.class_, l_resolved_target_type)
+--		end
 
 feature -- Equality
 
-	is_equivalent (other: like Current): BOOLEAN
-			-- Is `other' attached to an object considered
-			-- equal to current object?
-		do
-			Result :=
-				arity = other.arity and then
-				is_type_equal (result_type, other.result_type) and then
-				body ~ other.body and then
-				is_arguments_equal (other)
-		end
+--	is_equivalent (other: like Current): BOOLEAN
+--			-- Is `other' attached to an object considered
+--			-- equal to current object?
+--		do
+--			Result :=
+--				arity = other.arity and then
+--				is_type_equal (result_type, other.result_type) and then
+--				body ~ other.body and then
+--				is_arguments_equal (other)
+--		end
 
-	is_arguments_equal (other: like Current): BOOLEAN
-			-- Does `other' have the same arguments as Current?
-		local
-			i: INTEGER
-			l_upper: INTEGER
-		do
-			if arity = other.arity then
-				Result := True
-				from
-					i := 1
-					l_upper := arity
-				until
-					i > l_upper or else not Result
-				loop
-					Result := is_type_equal (argument_type (i), other.argument_type (i))
-					i := i + 1
-				end
-			end
-		end
+--	is_arguments_equal (other: like Current): BOOLEAN
+--			-- Does `other' have the same arguments as Current?
+--		local
+--			i: INTEGER
+--			l_upper: INTEGER
+--		do
+--			if arity = other.arity then
+--				Result := True
+--				from
+--					i := 1
+--					l_upper := arity
+--				until
+--					i > l_upper or else not Result
+--				loop
+--					Result := is_type_equal (argument_type (i), other.argument_type (i))
+--					i := i + 1
+--				end
+--			end
+--		end
 
-	is_type_equal (a_type: TYPE_A; b_type: TYPE_A): BOOLEAN
-			-- Is `a_type' equal to `b_type'?
-		local
-			l_context_class: CLASS_C
-			l_type_a: TYPE_A
-			l_type_b: TYPE_A
-		do
-			l_context_class := context.class_
-			l_type_a := a_type
-			l_type_b := b_type
-			Result :=
-				l_type_a.conform_to (l_context_class, l_type_b) and then
-				l_type_b.conform_to (l_context_class, l_type_a)
-		end
+--	is_type_equal (a_type: TYPE_A; b_type: TYPE_A): BOOLEAN
+--			-- Is `a_type' equal to `b_type'?
+--		local
+--			l_context_class: CLASS_C
+--			l_type_a: TYPE_A
+--			l_type_b: TYPE_A
+--		do
+--			l_context_class := context.class_
+--			l_type_a := a_type
+--			l_type_b := b_type
+--			Result :=
+--				l_type_a.conform_to (l_context_class, l_type_b) and then
+--				l_type_b.conform_to (l_context_class, l_type_a)
+--		end
 
 feature -- Access
 

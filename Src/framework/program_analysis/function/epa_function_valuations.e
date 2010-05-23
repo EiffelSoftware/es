@@ -78,8 +78,8 @@ feature -- Access
 			loop
 				create l_value_set.make (10)
 				l_value_set.set_equality_tester (function_equality_tester)
-				i := i + 1
 				Result.put (l_value_set, i)
+				i := i + 1
 			end
 
 				-- Populate Result with values in `map'.

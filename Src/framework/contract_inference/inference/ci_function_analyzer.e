@@ -309,8 +309,7 @@ feature{NONE} -- Implementation
 							context.feature_,
 							l_target_variable,
 							context.class_,
-							context.variables.item (l_target_variable)),
-							context))
+							context.variables.item (l_target_variable))))
 
 				if l_has_argument then
 					create l_argument_types.make (1, 2)
@@ -327,18 +326,17 @@ feature{NONE} -- Implementation
 								context.class_,
 								context.feature_,
 								l_argument_variable,
-								context.class_),
-								context))
+								context.class_)))
 				else
 					create l_argument_types.make (1, 1)
 					l_argument_types.put (l_target_type, 1)
 					create l_argument_domains.make (1, 1)
 					l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
 				end
-				create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body, context)
+				create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
 
 					-- Create value map for function.
-				create l_actual_result.make_from_expression_value (l_value, context)
+				create l_actual_result.make_from_expression_value (l_value)
 				create l_map.make (l_function)
 
 				create l_maped_values.make (2)

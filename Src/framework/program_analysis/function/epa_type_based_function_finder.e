@@ -296,7 +296,7 @@ feature{NONE} -- Implementation
 			loop
 				l_expr_ast := l_context.ast_from_expression_text (l_variables.key_for_iteration)
 				create l_expr.make_with_type (l_context_class, l_feature, l_expr_ast, l_context_class, l_context.expression_type (l_expr_ast))
-				create l_func.make_from_expression (l_expr, l_context)
+				create l_func.make_from_expression (l_expr)
 				quasi_constant_functions.force_last (l_func)
 				variable_functions.force_last (l_func)
 				l_variables.forth
@@ -449,7 +449,7 @@ feature{NONE} -- Implementation
 			until
 				l_expr_gen.accesses.after
 			loop
-				create l_function.make_from_expression (expression_from_access (l_expr_gen.accesses.item_for_iteration), context)
+				create l_function.make_from_expression (expression_from_access (l_expr_gen.accesses.item_for_iteration))
 				l_quasi_functions.force_last (l_function)
 				l_argless_functions.force_last (l_function)
 				l_expr_gen.accesses.forth
@@ -514,7 +514,7 @@ feature{NONE} -- Implementation
 								l_body.append_character ('.')
 								l_body.append (l_feat.feature_name)
 								l_body.append (once " ({1})")
-								create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body, context)
+								create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
 								l_quasi_functions.force_last (l_function)
 							end
 						end
@@ -649,7 +649,7 @@ feature{NONE} -- Implementations
 			l_body.append_character ('.')
 			l_body.append (a_feature.feature_name.as_lower)
 			l_body.append (once " ({1})")
-			create Result.make (l_arg_types, l_arg_domains, l_result_type, l_body, a_context)
+			create Result.make (l_arg_types, l_arg_domains, l_result_type, l_body)
 		end
 
 	argumentable_functions (a_functions: DS_HASH_SET[EPA_FUNCTION]; a_feature: FEATURE_I; a_context_class: CLASS_C; a_context_type: TYPE_A): LIST [EPA_FUNCTION]

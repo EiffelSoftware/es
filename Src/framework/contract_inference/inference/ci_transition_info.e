@@ -35,6 +35,6 @@ feature -- Access
 
 	post_state_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
 			-- Valuations of functions in post-execution state
-			-- Key is a function, value is the argument(s) to value mapping for that function.
+			-- Key is a function, value is the argument(s) to value mapping for that function.		
 
 end
