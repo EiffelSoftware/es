@@ -1,5 +1,7 @@
 package lucene;
 
+import SemanticDocument.SemanticIndexWriter;
+import SemanticDocument.SemanticQueryTranslator;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -85,8 +87,12 @@ public class LuceneEngine {
      */
     private void index(Message msg){
         try {
-            writer =new IndexWriter(directory, new SimpleAnalyzer(), false, IndexWriter.MaxFieldLength.UNLIMITED);
+            writer = new IndexWriter(directory, new SimpleAnalyzer(), false, IndexWriter.MaxFieldLength.UNLIMITED);
 
+            SemanticIndexWriter siw = new SemanticIndexWriter();
+            siw.indexSemanticDocument(msg,writer);
+
+            /*
             log.info("Indexing msg " + msg.getRequestId());
 
             Document doc = new Document();
@@ -101,10 +107,13 @@ public class LuceneEngine {
             writer.commit();
             writer.close();
             log.info("Document " + msg.getRequestId() +" Indexed!");
+        */             
         } catch (IOException e) {
             e.printStackTrace();
             log.severe(e.getMessage());
         }
+
+
 
     }
 
@@ -117,12 +126,17 @@ public class LuceneEngine {
             searcher = new IndexSearcher(directory);
 
             // Build a Query object
-            BooleanQuery query = new BooleanQuery();
+            SemanticQueryTranslator sqt = new SemanticQueryTranslator();
+            BooleanQuery query = sqt.booleanQueryFromStrings(msg);
 
+            //new BooleanQuery();
+
+            /*
             for(String str : msg.getBody()){
                 String[] tokens = str.split("\\(=\\)");
                 query.add((new TermQuery(new Term(tokens[0], tokens[1]))), BooleanClause.Occur.SHOULD);
             }
+            */
 
             // Search for the query
 

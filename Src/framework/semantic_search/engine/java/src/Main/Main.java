@@ -87,58 +87,59 @@ public class Main {
 //		    iwriter.addDocument(doc);
 //
 //		    iwriter.close();
-		    // Query for the document.
-		    // Now search the index:
-		    IndexSearcher isearcher = new IndexSearcher(directory, true); // read-only=true
+            // Query for the document.
+            // Now search the index:
+            IndexSearcher isearcher = new IndexSearcher(directory, true); // read-only=true
 
-		    //Term term1 = new Term("post::{LINKED_LIST}.is_empty", "False");
-		    //Term term2 = new Term("post::{LINKED_LIST}.has({ANY})" , "True");
-		    //Term term3 = new Term("post::{LINKED_LIST}.last" , "{ANY}");
+            //Term term1 = new Term("post::{LINKED_LIST}.is_empty", "False");
+            //Term term2 = new Term("post::{LINKED_LIST}.has({ANY})" , "True");
+            //Term term3 = new Term("post::{LINKED_LIST}.last" , "{ANY}");
+            
 
-		    //Term term1 = new Term("post::{LINKED_LIST}.is_empty", "False");
-		    //Term term2 = new Term("post::{1}.  has({3})" , "True");
+            //Term term1 = new Term("post::{LINKED_LIST}.is_empty", "False");
+            //Term term2 = new Term("post::{1}.  has({3})" , "True");
 
-                    Term term1 = new Term ("pre::LINKED_LIST [ANY].is_empty", "False");
-		    Term term2 = new Term("to::LINKED_LIST [ANY].after" , "True");
-                    Term term3 = new Term("pre::LINKED_LIST [ANY].after" , "False");
+            Term term1 = new Term ("pre::LINKED_LIST [ANY].is_empty", "False");
+            Term term2 = new Term("to::LINKED_LIST [ANY].after" , "True");
+            Term term3 = new Term("pre::LINKED_LIST [ANY].after" , "False");
 
 
-		    TermQuery tq1 = new TermQuery(term1);
-                    TermQuery tq2 = new TermQuery(term2);
-                    TermQuery tq3 = new TermQuery(term3);
+            TermQuery tq1 = new TermQuery(term1);
+            TermQuery tq2 = new TermQuery(term2);
+            TermQuery tq3 = new TermQuery(term3
 
-		    NumericRangeQuery nq = NumericRangeQuery.newIntRange("by::LINKED_LIST [ANY].count", 1, 1, true, true);
+            NumericRangeQuery nq = NumericRangeQuery.newIntRange("by::LINKED_LIST [ANY].count", 1, 1, true, true);
 
 		    
 
-		    BooleanQuery query = new BooleanQuery();
-                    query.add(new BooleanClause(tq1, Occur.SHOULD));
-                    //query.add(new BooleanClause(tq2, Occur.MUST));
-                    //query.add(new BooleanClause(tq3, Occur.MUST));
-                    query.add(new BooleanClause(nq, Occur.MUST));
+            BooleanQuery query = new BooleanQuery();
+            query.add(new BooleanClause(tq1, Occur.SHOULD));
+            //query.add(new BooleanClause(tq2, Occur.MUST));
+            //query.add(new BooleanClause(tq3, Occur.MUST));
+            query.add(new BooleanClause(nq, Occur.MUST));
 
-                    //query.add(new BooleanClause(new TermQuery(term1), Occur.SHOULD));
-		    //query.add(new BooleanClause(new TermQuery(term2), Occur.SHOULD));
-		    //query.add(new BooleanClause(trq, Occur.SHOULD));
-		    //query.add(new BooleanClause(new TermQuery(term3), Occur.SHOULD));
+            //query.add(new BooleanClause(new TermQuery(term1), Occur.SHOULD));
+            //query.add(new BooleanClause(new TermQuery(term2), Occur.SHOULD));
+            //query.add(new BooleanClause(trq, Occur.SHOULD));
+            //query.add(new BooleanClause(new TermQuery(term3), Occur.SHOULD));
 
-		    ScoreDoc[] hits = isearcher.search(query, null, 50).scoreDocs;
+            ScoreDoc[] hits = isearcher.search(query, null, 50).scoreDocs;
 
-                    for(int i=0; i < hits.length; i++) {
-                        Document hitDoc = isearcher.doc(hits[i].doc);
-                        System.out.print(hits[i].score);
-                        System.out.print("\t");
-                        System.out.println(hitDoc.getField("content").stringValue());
-                    }
+            for(int i=0; i < hits.length; i++) {
+                Document hitDoc = isearcher.doc(hits[i].doc);
+                System.out.print(hits[i].score);
+                System.out.print("\t");
+                System.out.println(hitDoc.getField("content").stringValue());
+            }
 
-		    isearcher.close();
-		    directory.close();
+            isearcher.close();
+            directory.close();
 
-		}catch(Exception e) {
+        }catch(Exception e)
 
-		}
+        }
 
-		System.out.println("Finished. OK");
-	}
+        System.out.println("Finished. OK");
+    }
 
 }
