@@ -10,7 +10,8 @@ class
 inherit
 	EPA_RANDOM_VALUE
 		undefine
-			is_boolean
+			is_boolean,
+			as_boolean
 		redefine
 			process
 		end

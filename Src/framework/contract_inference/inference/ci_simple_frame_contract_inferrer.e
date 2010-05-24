@@ -22,6 +22,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	EPA_UTILITY
+
 feature -- Access
 
 	logger: EPA_LOG_MANAGER
@@ -36,6 +38,7 @@ feature -- Basic operations
 			l_suitable_functions: like suitable_functions
 			l_quantified_expressions: like quantified_expressions
 			l_quantifier_free_exressions: like quantifier_free_expressions
+			l_valid_frame_properties: like valid_frame_properties
 		do
 				-- Initialize.
 			transition_data := a_data.twin
@@ -45,7 +48,7 @@ feature -- Basic operations
 			l_suitable_functions := suitable_functions
 			l_quantified_expressions := quantified_expressions (l_suitable_functions, True)
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
-
+			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions)
 		end
 
 	set_logger (a_logger: like logger)
@@ -144,6 +147,28 @@ feature{NONE} -- Implementation
 
 	is_query: BOOLEAN
 			-- Is `feature_under_test' a query?
+
+	data_by_test_case_class_name (a_class_name: STRING): CI_TRANSITION_INFO
+			-- Transition information from test case whose class name is `a_class_name'
+		local
+			l_transitions: like transition_data
+			l_cursor: CURSOR
+		do
+			l_transitions := transition_data
+			l_cursor := l_transitions.cursor
+			from
+				l_transitions.start
+			until
+				l_transitions.after or else Result /= Void
+			loop
+				if l_transitions.item_for_iteration.test_case_info.test_case_class.name_in_upper ~ a_class_name then
+					Result := l_transitions.item_for_iteration
+				else
+					l_transitions.forth
+				end
+			end
+			l_transitions.go_to (l_cursor)
+		end
 
 feature{NONE} -- Implementation
 
@@ -320,7 +345,7 @@ feature{NONE} -- Implementation
 				l_predicate_body.append (l_function.body)
 
 				create l_operand_map.make (1)
-				l_operand_map.put (l_target_index, 2)
+				l_operand_map.put (l_target_index, 1)
 				l_predicate := quantified_function (l_function.argument_types, l_predicate_body)
 				create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
 				Result.force_last (l_quantified_expr)
@@ -365,6 +390,133 @@ feature{NONE} -- Implementation
 			-- Fake nullary function of type `a_result_type' and body `a_body'
 		do
 			create Result.make (<<>>, <<>>, a_result_type, a_body)
+		end
+
+	valid_frame_properties (a_expressions: like quantifier_free_expressions): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
+			-- Set of valid frame properties from `a_expressions'
+			-- A frame property is valid if it evaluates to True in all test cases.
+		local
+			l_tc_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION], STRING_8]
+			l_transition_info: CI_TRANSITION_INFO
+			l_qexpr_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION]
+			l_expr_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_evaluator: CI_EXPRESSION_EVALUATOR
+			l_function: EPA_FUNCTION
+			l_quantified_function: CI_QUANTIFIED_EXPRESSION
+			l_arguments: HASH_TABLE [EPA_FUNCTION, INTEGER]
+			l_valid_candidate_frame_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
+			l_all_qfree_true: BOOLEAN
+			l_valid_status: DS_HASH_TABLE [BOOLEAN, CI_QUANTIFIED_EXPRESSION]
+		do
+			create l_valid_status.make (10)
+			l_valid_status.set_key_equality_tester (ci_quantified_expression_equality_tester)
+
+			create Result.make (5)
+			Result.set_equality_tester (ci_quantified_expression_equality_tester)
+
+			logger.put_line_with_time ("Start evaluating quantifier-free expressions.")
+
+			create l_evaluator
+
+				-- Iterate through all test cases.
+			from
+				l_tc_cursor := a_expressions.new_cursor
+				l_tc_cursor.start
+			until
+				l_tc_cursor.after
+			loop
+				logger.put_string ("Test case: ")
+				logger.put_line (l_tc_cursor.key)
+
+					-- Iterate through all quantified expressions in a test case.
+				l_transition_info := data_by_test_case_class_name (l_tc_cursor.key)
+				from
+					l_qexpr_cursor := l_tc_cursor.item.new_cursor
+					l_qexpr_cursor.start
+				until
+					l_qexpr_cursor.after
+				loop
+						-- Iterate through all quantifier-free expressions for a quantified expression.
+					l_quantified_function := l_qexpr_cursor.key
+						-- We only process new quantified expressions or quantified expressions that are valid so far.
+						-- Quantified expressions that are known to be invalid are ingored immediately.
+					if not l_valid_status.has (l_quantified_function) or else l_valid_status.item (l_quantified_function) then
+							-- Assume a quantified expression is valid.
+						if not l_valid_status.has (l_quantified_function) then
+							l_valid_status.force_last (True, l_quantified_function)
+							Result.force_last (l_quantified_function)
+						end
+
+						from
+						l_all_qfree_true := True
+							l_expr_cursor := l_qexpr_cursor.item.new_cursor
+							l_expr_cursor.start
+						until
+							l_expr_cursor.after or else not l_all_qfree_true
+						loop
+							l_function := l_expr_cursor.item.partially_evaluated_with_arguments (operand_function_table (l_quantified_function, l_transition_info))
+							l_evaluator.evaluate (ast_from_expression_text (l_function.body), l_transition_info)
+							l_all_qfree_true := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
+								-- A quantified expression is evaluated to False or there is an error during evaluation, remove it from candidate set.
+							if not l_all_qfree_true then
+								l_valid_status.replace (False, l_quantified_function)
+								Result.remove (l_quantified_function)
+							end
+
+								-- Logging.
+							logger.put_string (once "%T")
+							logger.put_string (l_function.body)
+							logger.put_string (once " == ")
+							if l_evaluator.has_error then
+								logger.put_line (l_evaluator.error_reason)
+							else
+								logger.put_line (l_evaluator.last_value.out)
+							end
+
+							l_expr_cursor.forth
+						end
+						logger.put_line (once "")
+					end
+					l_qexpr_cursor.forth
+				end
+				l_tc_cursor.forth
+			end
+
+				-- Logging.
+			logger.put_line (once "Valid frame properties:")
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				logger.put_string (once "%T")
+				logger.put_line (Result.item_for_iteration.debug_output)
+				Result.forth
+			end
+		end
+
+	operand_function_table (a_quantified_expression: CI_QUANTIFIED_EXPRESSION; a_transition_data: CI_TRANSITION_INFO): HASH_TABLE [EPA_FUNCTION, INTEGER]
+			-- A table from function operand index to expressions representing that operand in the context of `a_transition_data'
+		local
+			l_cursor: CURSOR
+			l_operand_map: HASH_TABLE [INTEGER, INTEGER]
+			l_transition: SEM_TRANSITION
+			l_arg_func: EPA_FUNCTION
+		do
+			create Result.make (5)
+			l_transition := a_transition_data.transition
+			l_operand_map := a_quantified_expression.operand_map
+			l_cursor := l_operand_map.cursor
+			from
+				l_operand_map.start
+			until
+				l_operand_map.after
+			loop
+				create l_arg_func.make_from_expression (l_transition.reversed_variable_position.item (l_operand_map.item_for_iteration))
+				Result.put (l_arg_func, l_operand_map.key_for_iteration)
+				l_operand_map.forth
+			end
+			l_operand_map.go_to (l_cursor)
 		end
 
 feature{NONE} -- Implementation

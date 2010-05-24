@@ -10,7 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_real
+			is_real,
+			as_real
 		end
 
 create
@@ -38,6 +39,12 @@ feature -- Access
 			-- Value item in current
 		do
 			Result := item_cache
+		end
+
+	as_real: detachable EPA_REAL_VALUE
+			-- Current as integer
+		do
+			Result := Current
 		end
 
 feature -- Status report

@@ -10,7 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_integer
+			is_integer,
+			as_integer
 		end
 
 create
@@ -38,6 +39,12 @@ feature -- Access
 			-- Value item in current
 		do
 			Result := item_cache
+		end
+
+	as_integer: detachable EPA_INTEGER_VALUE
+			-- Current as integer
+		do
+			Result := Current
 		end
 
 feature -- Status report

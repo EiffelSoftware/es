@@ -12,7 +12,8 @@ inherit
 		redefine
 			type,
 			item,
-			is_reference
+			is_reference,
+			as_reference
 		end
 
 	REFACTORING_HELPER
@@ -40,6 +41,12 @@ feature -- Access
 
 	item: STRING
 			-- Value item in current
+
+	as_reference: detachable EPA_REFERENCE_VALUE
+			-- Current as integer
+		do
+			Result := Current
+		end
 
 feature -- Status report
 

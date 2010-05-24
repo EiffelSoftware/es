@@ -10,7 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_pointer
+			is_pointer,
+			as_pointer
 		end
 
 create
@@ -38,6 +39,12 @@ feature -- Access
 			-- Value item in current
 		do
 			Result := item_cache
+		end
+
+	as_pointer: detachable EPA_POINTER_VALUE
+			-- Current as pointer
+		do
+			Result := Current
 		end
 
 feature -- Status report

@@ -10,7 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_boolean
+			is_boolean,
+			as_boolean
 		end
 
 create
@@ -40,10 +41,28 @@ feature -- Access
 			Result := item_cache
 		end
 
+	as_boolean: detachable EPA_BOOLEAN_VALUE
+			-- Current as integer
+		do
+			Result := Current
+		end
+
 feature -- Status report
 
 	is_boolean: BOOLEAN is True
 			-- Is current a boolean value?
+
+	is_true: BOOLEAN
+			-- Is current a True value?
+		do
+			Result := item
+		end
+
+	is_false: BOOLEAN
+			-- Is current a False value?
+		do
+			Result := not item
+		end
 
 feature{NONE} -- Implementation
 

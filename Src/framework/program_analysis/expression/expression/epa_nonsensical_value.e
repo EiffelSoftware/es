@@ -10,7 +10,8 @@ class
 inherit
 	EPA_EXPRESSION_VALUE
 		redefine
-			is_nonsensical
+			is_nonsensical,
+			as_nonsensical
 		end
 
 	ITP_SHARED_CONSTANTS
@@ -32,6 +33,12 @@ feature -- Access
 			-- Value item in current
 		do
 			Result := nonsensical_value
+		end
+
+	as_nonsensical: detachable EPA_NONSENSICAL_VALUE
+			-- Current as nonsensical value
+		do
+			Result := Current
 		end
 
 feature -- Status report

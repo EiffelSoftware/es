@@ -10,7 +10,8 @@ class
 inherit
 	EPA_RANDOM_VALUE
 		undefine
-			is_integer
+			is_integer,
+			as_integer
 		redefine
 			process
 		end

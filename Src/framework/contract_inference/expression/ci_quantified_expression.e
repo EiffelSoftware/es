@@ -28,7 +28,7 @@ feature{NONE} -- Initialization
 			predicate := a_predicate
 			scope := a_scope
 			is_for_all := a_for_all
-			operand_map := a_operand_map
+			operand_map := a_operand_map.twin
 		end
 
 feature -- Access

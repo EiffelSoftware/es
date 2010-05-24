@@ -11,7 +11,9 @@ inherit
 	EPA_EXPRESSION_VALUE
 		redefine
 			type,
-			item
+			item,
+			is_void,
+			as_void
 		end
 
 	ITP_SHARED_CONSTANTS
@@ -39,6 +41,17 @@ feature -- Access
 
 	item: ANY
 			-- Value item in current
+
+	as_void: detachable EPA_VOID_VALUE
+			-- Current as integer
+		do
+			Result := Current
+		end
+
+feature -- Status report
+
+	is_void: BOOLEAN = True
+			-- Is current a Void value?
 
 feature -- Process
 

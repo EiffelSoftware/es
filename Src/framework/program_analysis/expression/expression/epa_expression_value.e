@@ -39,7 +39,83 @@ feature -- Access
 			Result := item.out
 		end
 
+	as_integer: detachable EPA_INTEGER_VALUE
+			-- Current as integer
+		do
+		end
+
+	as_boolean: detachable EPA_BOOLEAN_VALUE
+			-- Current as integer
+		do
+		end
+
+	as_void: detachable EPA_VOID_VALUE
+			-- Current as integer
+		do
+		end
+
+	as_real: detachable EPA_REAL_VALUE
+			-- Current as integer
+		do
+		end
+
+	as_reference: detachable EPA_REFERENCE_VALUE
+			-- Current as integer
+		do
+		end
+
+	as_pointer: detachable EPA_POINTER_VALUE
+			-- Current as pointer
+		do
+		end
+
+	as_nonsensical: detachable EPA_NONSENSICAL_VALUE
+			-- Current as nonsensical value
+		do
+		end
+
+	type_name: STRING
+			-- Type name of current value
+		do
+			if is_void then
+				Result := void_type_name
+			elseif is_integer then
+				Result := integer_type_name
+			elseif is_boolean then
+				Result := boolean_type_name
+			elseif is_real then
+				Result := real_type_name
+			elseif is_reference then
+				Result := reference_type_name
+			elseif is_pointer then
+				Result := pointer_type_name
+			elseif is_nonsensical then
+				Result := nonsensical_type_name
+			end
+		end
+
+feature -- Constants
+
+	boolean_type_name: STRING = "BOOLEAN"
+
+	integer_type_name: STRING = "INTEGER"
+
+	void_type_name: STRING = "NONE"
+
+	real_type_name: STRING = "REAL"
+
+	reference_type_name: STRING = "REFERENCE"
+
+	pointer_type_name: STRING = "POINTER"
+
+	nonsensical_type_name: STRING = "NONSENSICAL"
+
 feature -- Status report
+
+	is_void: BOOLEAN
+			-- Is current a Void value?
+		do
+		end
 
 	is_boolean: BOOLEAN
 			-- Is current a boolean value?
