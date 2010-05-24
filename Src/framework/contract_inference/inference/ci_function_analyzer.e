@@ -54,7 +54,6 @@ feature -- Basic operations
 			create valuations.make (10)
 			valuations.set_key_equality_tester (function_equality_tester)
 			a_state.do_all (agent analyze_equation)
-			io.put_string (dumped_result)
 		end
 
 feature{NONE} -- Implementation
@@ -364,7 +363,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-feature{NONE} -- Implementation
+feature -- Access
 
 	dumped_result: STRING
 			-- String representation of `valuations'

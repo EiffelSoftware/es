@@ -42,6 +42,9 @@ feature{NONE} -- Initialization
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
 
+				-- Enable verbose logging (for debugging purpose)
+				-- When the code is ready, use a concise logging level will save some time.
+			log_manager.set_level_threshold ({EPA_LOG_MANAGER}.fine_level)
 			setup_inferrers
 		end
 
@@ -337,6 +340,7 @@ feature{NONE} -- Actions
 			a_bp_manager.toggle_breakpoints (False)
 
 				-- Logging.
+			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
 			log_manager.put_line (once "---------------------------------------------------%N")
 			if a_pre_execution then
 				log_manager.put_line_with_time (once "Pre-execution state:")
@@ -344,6 +348,7 @@ feature{NONE} -- Actions
 				log_manager.put_line_with_time (once "Post-execution state:")
 			end
 			log_manager.put_line (a_state.debug_output)
+			log_manager.pop_level
 
 				-- Setup post-execution expression evaluator.
 			if a_pre_execution then
@@ -423,6 +428,11 @@ feature{NONE} -- Implementation
 				last_test_case_info.class_under_test.constraint_actual_type)
 			l_pre_valuations := l_func_analyzer.valuations
 
+				-- Logging.
+			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.put_line_with_time ("Function analysis in pre-state:")
+			log_manager.put_line (l_func_analyzer.dumped_result)
+
 				-- Analyze functions in post-execution state.
 			create l_func_analyzer
 			l_func_analyzer.analyze (
@@ -433,6 +443,10 @@ feature{NONE} -- Implementation
 				last_test_case_info.feature_under_test,
 				last_test_case_info.class_under_test.constraint_actual_type)
 			l_post_valuations := l_func_analyzer.valuations
+
+			log_manager.put_line_with_time ("Function analysis in post-state:")
+			log_manager.put_line (l_func_analyzer.dumped_result)
+			log_manager.pop_level
 
 				-- Fabricate transition info for the last executed test case.
 			create l_transition_info.make (last_test_case_info, l_transition, l_pre_valuations, l_post_valuations)

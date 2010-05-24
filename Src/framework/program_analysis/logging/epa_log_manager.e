@@ -20,6 +20,9 @@ feature{NONE} -- Initialization
 			-- Initialize.
 		do
 			create loggers.make
+			create level_stack.make
+			push_level (info_level)
+			set_level_threshold (info_level)
 		end
 
 feature -- Access
@@ -29,6 +32,78 @@ feature -- Access
 
 feature -- Access
 
+	level: INTEGER
+			-- Current logging level
+			-- Default: `info_level'
+		do
+			Result := level_stack.item
+		end
+
+	level_threshold: INTEGER
+			-- Logging level threshold
+			-- Only when `level' >= `level_threshold', messages are actually logged.
+			-- Default: `info_level'
+
+feature -- Logging level constants
+
+	severe_level: INTEGER = 100
+		-- Highest logging level
+
+	info_level: INTEGER = 80
+
+	fine_level: INTEGER = 60
+
+	finer_level: INTEGER = 40
+
+	finest_level: INTEGER = 20
+		-- Lowest logging level
+
+	is_level_valid (a_level: INTEGER): BOOLEAN
+			-- Is `a_level' a valid logging level?
+		do
+			Result :=
+				a_level = severe_level or else
+				a_level = info_level or else
+				a_level = fine_level or else
+				a_level = finer_level or else
+				a_level = finest_level
+		end
+
+	is_logging_needed: BOOLEAN
+			-- Is logging needed?
+			-- Criterion: `level' >= `level_threshold'.
+		do
+			Result := level >= level_threshold
+		end
+
+feature -- Setting
+
+	push_level (a_level: INTEGER)
+			-- Store current `level' in a stack and
+			-- set `level' with `a_level'.
+		require
+			a_level_valid: is_level_valid (a_level)
+		do
+			level_stack.extend (a_level)
+		end
+
+	pop_level
+			-- Pop the last stored log level
+		do
+			if not level_stack.is_empty then
+				level_stack.remove
+			end
+		end
+
+	set_level_threshold (a_level_threshold: INTEGER)
+			-- Set `level_threshold' with `a_leve'.
+		require
+			a_level_threshold_valid: is_level_valid (a_level_threshold)
+		do
+			level_threshold := a_level_threshold
+		ensure
+			level_threshold_set: level_threshold = a_level_threshold
+		end
 
 feature -- Time logging
 
@@ -105,7 +180,9 @@ feature -- Logging
 	put_string (a_string: STRING)
 			-- Log `a_string'.
 		do
-			loggers.do_all (agent {EPA_LOGGER}.put_string (a_string))
+			if is_logging_needed then
+				loggers.do_all (agent {EPA_LOGGER}.put_string (a_string))
+			end
 		end
 
 	put_line (a_string: STRING)
@@ -113,10 +190,12 @@ feature -- Logging
 		local
 			l_str: STRING
 		do
-			create l_str.make (a_string.count + 1)
-			l_str.append (a_string)
-			l_str.append_character ('%N')
-			loggers.do_all (agent {EPA_LOGGER}.put_string (l_str))
+			if is_logging_needed then
+				create l_str.make (a_string.count + 1)
+				l_str.append (a_string)
+				l_str.append_character ('%N')
+				loggers.do_all (agent {EPA_LOGGER}.put_string (l_str))
+			end
 		end
 
 	put_line_with_time (a_string: STRING)
@@ -124,10 +203,12 @@ feature -- Logging
 		local
 			l_str: STRING
 		do
-			create l_str.make (a_string.count + 1)
-			l_str.append (a_string)
-			l_str.append_character ('%N')
-			put_string_with_time (l_str)
+			if is_logging_needed then
+				create l_str.make (a_string.count + 1)
+				l_str.append (a_string)
+				l_str.append_character ('%N')
+				put_string_with_time (l_str)
+			end
 		end
 
 	put_string_with_time (a_string: STRING)
@@ -135,10 +216,12 @@ feature -- Logging
 		local
 			l_str: STRING
 		do
-			create l_str.make (a_string.count + 32)
-			l_str.append (time_prefix)
-			l_str.append (a_string)
-			put_string (l_str)
+			if is_logging_needed then
+				create l_str.make (a_string.count + 32)
+				l_str.append (time_prefix)
+				l_str.append (a_string)
+				put_string (l_str)
+			end
 		end
 
 feature{NONE} -- Impmelentation
@@ -157,5 +240,8 @@ feature{NONE} -- Impmelentation
 
 	start_time_internal: detachable DT_DATE_TIME
 			-- Cache for `start_time'
+
+	level_stack: LINKED_STACK [INTEGER]
+			-- Stack for logging levels
 
 end

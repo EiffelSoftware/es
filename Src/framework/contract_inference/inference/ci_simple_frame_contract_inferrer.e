@@ -99,6 +99,7 @@ feature -- Basic operations
 			l_test_cases.go_to (l_tc_cursor)
 
 				-- Logging.
+			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
 			logger.put_line_with_time (once "Quantifier-free expressions for candidate frame properties:")
 			from
 				Result.start
@@ -129,6 +130,7 @@ feature -- Basic operations
 				logger.put_line (once "")
 				Result.forth
 			end
+			logger.pop_level
 		end
 
 feature{NONE} -- Implementation
@@ -353,6 +355,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
+			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
 			logger.put_line_with_time (once "Candidate frame properties:")
 			from
 				Result.start
@@ -363,6 +366,7 @@ feature{NONE} -- Implementation
 				logger.put_line (once "")
 				Result.forth
 			end
+			logger.pop_level
 		end
 
 	quantified_function (a_argument_types: ARRAY [TYPE_A]; a_body: STRING): EPA_FUNCTION
@@ -414,9 +418,11 @@ feature{NONE} -- Implementation
 			create Result.make (5)
 			Result.set_equality_tester (ci_quantified_expression_equality_tester)
 
-			logger.put_line_with_time ("Start evaluating quantifier-free expressions.")
-
 			create l_evaluator
+
+				-- Logging.
+			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.put_line_with_time ("Start evaluating quantifier-free expressions.")
 
 				-- Iterate through all test cases.
 			from
@@ -483,6 +489,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
+			logger.pop_level
 			logger.put_line (once "Valid frame properties:")
 			from
 				Result.start
