@@ -10,58 +10,68 @@ inherit
 	SEM_DOCUMENT_WRITER
 		redefine
 			write,
-			queryable
+			queryable,
+			set_boost_function
 		end
 create {SEM_DOCUMENT_WRITER}
 	default_create
 
 feature -- Basic operation
 
-	write (a_objects: SEM_OBJECTS; a_folder: STRING)
+	write (a_objects: SEM_OBJECTS; a_folder: detachable STRING)
 			-- Output `a_objects' into a file in `a_folder'
 		local
 			l_id: STRING
 			l_file: PLAIN_TEXT_FILE
 			l_file_name: FILE_NAME
-			l_var_count: INTEGER
 			l_prop_list: STRING
 			l_calls: LIST[STRING]
 		do
 			queryable := a_objects
-			l_var_count := queryable.variables.count
 
-			-- In turn, treat every occuring variable as principal object
+			create buffer.make (4096)
+			append_document_type (document_type)
+			append_variables (queryable.variables, variables_field, true)
+			append_variables (queryable.variables, variable_types_field, false)
+			append_state (queryable.properties, to_field_prefix)
+			append_serialized_data
+
+			create l_id.make (64)
+
 			from
-				l_prop_list := combined_property_list
-				principal_variable_index := 0
+				a_objects.objects.start
 			until
-				principal_variable_index >= l_var_count
+				a_objects.objects.after
 			loop
-				principal_variable := queryable.reversed_variable_position.item (principal_variable_index)
-				l_calls := calls_on_principal_variable (l_prop_list, principal_variable_index)
-				abstract_principal_types := abstract_types (principal_variable.resolved_type (queryable.context_type),l_calls)
+				if a_objects.objects.item_for_iteration /= void then
+					l_id.append (a_objects.objects.item_for_iteration.generating_type)
+				else
+					l_id.append (once "NONE")
+				end
 
-				create buffer.make (4096)
-				append_document_type (document_type)
-				append_variables (queryable.variables, variables_field, true)
-				append_variables (queryable.variables, variable_types_field, false)
-				append_state (queryable.properties, to_field_prefix)
-				append_serialized_data
-
-				create l_id.make (64)
-				l_id.append (cleaned_type_name (principal_variable.resolved_type (queryable.context_type).name))
 				l_id.append_character ('.')
-				l_id.append (buffer.hash_code.out)
-				append_field (id_field, default_boost, type_string, l_id)
 
+				a_objects.objects.forth
+			end
+
+			l_id.append (buffer.hash_code.out)
+			append_field (id_field, default_boost, type_string, l_id)
+
+			last_document := buffer
+
+			if attached a_folder then
 				create l_file_name.make_from_string (a_folder)
 				l_file_name.set_file_name (l_id + ".obj")
 				create l_file.make_create_read_write (l_file_name)
 				l_file.put_string (buffer)
 				l_file.close
-
-				principal_variable_index := principal_variable_index + 1
 			end
+		end
+
+	set_boost_function (a_boost_function: like boost_function)
+			-- Set `boost_function' to `a_boost_function'.
+		do
+			boost_function := a_boost_function
 		end
 
 feature -- Constants
@@ -105,7 +115,7 @@ feature {NONE} -- Output
 					l_serialization_buffer.append (queryable.serialization[l_index].out)
 
 					if l_index < queryable.serialization.upper then
-						l_serialization_buffer.append_character (',')
+						l_serialization_buffer.append_character (serialization_field_array_separator)
 					end
 
 					l_index := l_index+1

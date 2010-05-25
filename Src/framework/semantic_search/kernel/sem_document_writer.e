@@ -20,7 +20,7 @@ inherit
 
 feature -- Basic operation
 
-	write (a_queryable: SEM_QUERYABLE; a_folder: STRING)
+	write (a_queryable: SEM_QUERYABLE; a_folder: detachable STRING)
 			-- Output `a_queryable' into a file in `a_folder'
 		do
 			-- delegate
@@ -32,6 +32,22 @@ feature -- Basic operation
 				to_implement("")
 			end
 		end
+
+	set_boost_function (a_boost_function: like boost_function)
+			-- Set `boost_function' to `a_boost_function'.
+		do
+			boost_function := a_boost_function
+			transition_writer.set_boost_function (boost_function)
+			object_writer.set_boost_function (boost_function)
+		ensure
+			boost_function_set: boost_function = a_boost_function
+		end
+
+feature -- Access
+
+	last_document: STRING
+
+	boost_function: detachable FUNCTION[ANY, TUPLE[SEM_QUERYABLE, STRING, EPA_EQUATION], REAL] assign set_boost_function
 
 feature {NONE} -- Specialized writers
 
@@ -154,8 +170,6 @@ feature {NONE} -- Implementation
 
 	abstract_types (a_type: TYPE_A; a_feature_list: LIST[STRING]): LIST[CL_TYPE_A]
 			-- Get a list of abstract types of `a_type' that also contain the features in `a_feature_list'
-		require
-			is_class_type: a_type.is_full_named_type
 		local
 			l_feature: FEATURE_I
 			l_ancestors: LIST[CL_TYPE_A]
@@ -164,47 +178,51 @@ feature {NONE} -- Implementation
 			l_feat_set_list: LINKED_LIST[ROUT_ID_SET]
 		do
 			l_class := a_type.associated_class
-			l_ancestors := ancestor_types (a_type, create {HASH_TABLE[BOOLEAN,INTEGER]}.make(10))
+			create {LINKED_LIST[CL_TYPE_A]}Result.make
 
-			-- Get rout_id_set of all features in the original class
-			from
-				a_feature_list.start
-				create l_feat_set_list.make
-			until
-				a_feature_list.after
-			loop
-				l_feature := l_class.feature_named (a_feature_list.item)
+			if l_class /= void then
+				l_ancestors := ancestor_types (a_type, create {HASH_TABLE[BOOLEAN,INTEGER]}.make(10))
 
-				if l_feature /= void then
-					l_feat_set_list.extend (l_feature.rout_id_set)
-				end
-
-				a_feature_list.forth
-			end
-
-			-- Add all ancestors that have versions of all the features
-			from
-				l_ancestors.start
-				create {LINKED_LIST[CL_TYPE_A]}Result.make
-			until
-				l_ancestors.after
-			loop
-				l_has_all := true
+				-- Get rout_id_set of all features in the original class
 				from
-					l_feat_set_list.start
+					a_feature_list.start
+					create l_feat_set_list.make
 				until
-					l_feat_set_list.after or not l_has_all
+					a_feature_list.after
 				loop
-					if l_ancestors.item.associated_class.feature_of_rout_id_set (l_feat_set_list.item) = void then
-						l_has_all := false
+					l_feature := l_class.feature_named (a_feature_list.item)
+
+					if l_feature /= void then
+						l_feat_set_list.extend (l_feature.rout_id_set)
 					end
-					l_feat_set_list.forth
-				end
-				if l_has_all then
-					Result.extend(l_ancestors.item)
+
+					a_feature_list.forth
 				end
 
-				l_ancestors.forth
+				-- Add all ancestors that have versions of all the features
+				from
+					l_ancestors.start
+
+				until
+					l_ancestors.after
+				loop
+					l_has_all := true
+					from
+						l_feat_set_list.start
+					until
+						l_feat_set_list.after or not l_has_all
+					loop
+						if l_ancestors.item.associated_class.feature_of_rout_id_set (l_feat_set_list.item) = void then
+							l_has_all := false
+						end
+						l_feat_set_list.forth
+					end
+					if l_has_all then
+						Result.extend(l_ancestors.item)
+					end
+
+					l_ancestors.forth
+				end
 			end
 		end
 
@@ -254,7 +272,7 @@ feature {NONE} -- Implementation
 					create l_cur_index_str.make (3)
 				elseif l_in_index and a_content.item (l_pos) = '}' then
 					l_in_index := false
-					l_cur_index := l_cur_index.to_integer
+					l_cur_index := l_cur_index_str.to_integer
 
 					if l_cur_index = a_princ_var_index and a_content.count>l_pos and a_content.item (l_pos+1) = '.' then
 						l_in_call := true
@@ -293,6 +311,10 @@ feature {NONE} -- Implementation
 	abstracted_expression_strings (a_expression: EPA_EXPRESSION; a_principal_variable: EPA_EXPRESSION): LIST[STRING]
 		local
 			l_replacements: HASH_TABLE [STRING, STRING]
+			l_abstract_types: like abstract_principal_types
+			l_calls: like calls_on_principal_variable
+			l_princ_var: like a_principal_variable
+			l_princ_var_index: like principal_variable_index
 		do
 			create l_replacements.make (queryable.variables.count*2)
 			l_replacements.compare_objects
@@ -301,14 +323,43 @@ feature {NONE} -- Implementation
 					local
 						l_type: STRING
 					do
-						l_type := a_expr.resolved_type (a_context_type).name
+						l_type := a_expr.resolved_type (a_context_type).name.twin
 						l_type.replace_substring_all (once "?", once "")
 						l_type.prepend_character ('{')
 						l_type.append_character ('}')
 						a_tbl.put (l_type, a_expr.text.as_lower)
 					end (?, l_replacements, queryable.context_type))
 
-			Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
+			if a_principal_variable=void then
+				if attached {EXPR_CALL_AS}a_expression.ast as l_expr_call and then attached {NESTED_AS}l_expr_call.call as l_nested then
+					-- Principal variable = target of call
+					l_princ_var := queryable.variable_by_name (l_nested.target.access_name)
+					l_princ_var_index := queryable.variable_position (l_princ_var)
+					l_calls := calls_on_principal_variable (queryable.anonymous_expression_text (a_expression), l_princ_var_index)
+					l_abstract_types := abstract_types (l_princ_var.resolved_type (queryable.context_type), l_calls)
+					Result := abstracting_rewriter.abstracted_expression_texts (a_expression, l_princ_var, l_abstract_types, l_replacements)
+				else
+					create {LINKED_LIST[STRING]}Result.make
+					if attached {BIN_EQ_AS}a_expression.ast as l_bin_eq and then (attached {ACCESS_AS}l_bin_eq.left and attached {ACCESS_AS}l_bin_eq.right) then
+						-- Simple binary expression of the form a /= b
+						create {LINKED_LIST[STRING]}Result.make
+						Result.extend ("{ANY} = {ANY}")
+					elseif attached {BIN_NE_AS}a_expression.ast as l_bin_ne and then (attached {ACCESS_AS}l_bin_ne.left and attached {ACCESS_AS}l_bin_ne.right) then
+						-- Simple binary expression of the form a = b
+						create {LINKED_LIST[STRING]}Result.make
+						Result.extend ("{ANY} /= {ANY}")
+					end
+				end
+			else
+				Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
+			end
+		end
+
+	is_simple_property (a_expr: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_expr' a simple property of the form a = b or a feature call
+		do
+			Result := attached {EXPR_CALL_AS}a_expr.ast or (attached {BIN_EQ_AS}a_expr.ast as l_bin_eq and then (attached {ACCESS_AS}l_bin_eq.left and attached {ACCESS_AS}l_bin_eq.right))
+			or (attached {BIN_NE_AS}a_expr.ast as l_bin_ne and then (attached {ACCESS_AS}l_bin_ne.left and attached {ACCESS_AS}l_bin_ne.right))
 		end
 
 feature {NONE} -- Output
@@ -329,20 +380,21 @@ feature {NONE} -- Output
 			l_pos: INTEGER
 			l_abs_types: LIST[TYPE_A]
 			l_context_type: detachable TYPE_A
+			l_cursor: DS_HASH_SET_CURSOR[EPA_EXPRESSION]
 		do
 			if attached a_variables and then not a_variables.is_empty then
 				l_context_type := queryable.context_type
 				create l_values.make (128)
 				from
-					a_variables.start
+					l_cursor := a_variables.new_cursor
+					l_cursor.start
 				until
-					a_variables.after
+					l_cursor.after
 				loop
-					l_pos := queryable.variable_position (a_variables.item_for_iteration)
+					l_pos := queryable.variable_position (l_cursor.item)
 
 					if l_pos = principal_variable_index then
 						-- "principal" object
-						-- add better way to get this ofc
 						from
 							l_abs_types := abstract_principal_types
 							l_abs_types.start
@@ -363,7 +415,7 @@ feature {NONE} -- Output
 					end
 
 					l_values.append (once "{")
-					l_values.append (cleaned_type_name (a_variables.item_for_iteration.resolved_type (l_context_type).name))
+					l_values.append (cleaned_type_name (l_cursor.item.resolved_type (l_context_type).name))
 					if a_print_pos then
 						l_values.append (once "}@")
 						l_values.append (l_pos.out)
@@ -371,8 +423,8 @@ feature {NONE} -- Output
 						l_values.append (once "}")
 					end
 
-					a_variables.forth
-					if not a_variables.after then
+					l_cursor.forth
+					if not l_cursor.after then
 						l_values.append (field_value_separator)
 					end
 				end
@@ -394,42 +446,53 @@ feature {NONE} -- Output
 			l_value: EPA_EXPRESSION_VALUE
 
 			l_abstract_exprs: LIST[STRING]
+			l_current_boost: REAL
 		do
 			l_transition := queryable
 			from
 				l_cursor := a_state.new_cursor
+				l_current_boost := default_boost
 				l_cursor.start
 			until
 				l_cursor.after
 			loop
 				l_equation := l_cursor.item
 				l_expr := l_equation.expression
-				l_value := l_equation.value
-				if l_value.is_boolean then
-					l_type_name := type_boolean
-				else
-					l_type_name := type_integer
+
+				if attached boost_function then
+					boost_function.call ([queryable, a_field_prefix, l_equation])
+					l_current_boost := boost_function.last_result
 				end
 
-				l_typed_expr := l_transition.typed_expression_text (l_expr)
-				append_field (a_field_prefix + l_typed_expr, default_boost, l_type_name, l_value.out)
-
-				-- print the typed expressions for all abstract types
-				l_abstract_exprs := abstracted_expression_strings (l_expr, principal_variable)
-				from
-					l_abstract_exprs.start
-				until
-					l_abstract_exprs.after
-				loop
-					if not l_abstract_exprs.item.is_equal (l_typed_expr) then
-						append_field (a_field_prefix + l_abstract_exprs.item, default_boost, l_type_name, l_value.out)
+				-- Only continue if the expression represents a simple property
+				if is_simple_property(l_expr) then
+					l_value := l_equation.value
+					if l_value.is_boolean then
+						l_type_name := type_boolean
+					else
+						l_type_name := type_integer
 					end
 
-					l_abstract_exprs.forth
-				end
+					l_typed_expr := l_transition.typed_expression_text (l_expr)
+					append_field (a_field_prefix + l_typed_expr, default_boost, l_type_name, l_value.out)
 
-				l_anony_expr := l_transition.anonymous_expression_text (l_expr)
-				append_field (a_field_prefix + l_anony_expr, default_boost, l_type_name, l_value.out)
+					-- print the typed expressions for all abstract types
+					l_abstract_exprs := abstracted_expression_strings (l_expr, principal_variable)
+					from
+						l_abstract_exprs.start
+					until
+						l_abstract_exprs.after
+					loop
+						if not l_abstract_exprs.item.is_equal (l_typed_expr) then
+							append_field (a_field_prefix + l_abstract_exprs.item, l_current_boost, l_type_name, l_value.out)
+						end
+
+						l_abstract_exprs.forth
+					end
+
+					l_anony_expr := l_transition.anonymous_expression_text (l_expr)
+					append_field (a_field_prefix + l_anony_expr, l_current_boost, l_type_name, l_value.out)
+				end
 
 				l_cursor.forth
 			end

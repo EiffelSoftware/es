@@ -393,6 +393,9 @@ feature{NONE} -- Implementation
 		do
 			l_expr_as := ast_from_expression_text (a_variable_name)
 			l_type := a_context.expression_type (l_expr_as)
+			if l_type=void then
+				create {NONE_A}l_type
+			end
 			create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
 		end
 

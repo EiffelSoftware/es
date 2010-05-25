@@ -8,8 +8,20 @@ class
 inherit
 	SEM_FIELD_NAMES
 	SEM_UTILITY
+	SHARED_WORKBENCH
 
 feature -- Loading
+
+	load_from_file (a_filename: STRING)
+			-- Load from `a_filename'
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_open_read (a_filename)
+			l_file.read_stream (l_file.count)
+			load (l_file.last_string)
+			l_file.close
+		end
 
 	load (a_document: like document)
 			-- Load `a_document' into a queryable
@@ -35,6 +47,8 @@ feature -- Loading
 					-- Snippet
 					load_snippet_transition
 				end
+			elseif fields[document_type_field].is_equal ("objects") then
+				load_object
 			end
 		end
 
@@ -43,6 +57,34 @@ feature -- Access
 	last_queryable: SEM_QUERYABLE
 
 feature {NONE} -- Helpers
+
+	variable_prefix: STRING = "v_"
+
+	serialization_data: ARRAY[NATURAL_8]
+			-- Reads the comma-separated numbers in the serialization-field into an ARRAY[NATURAL]
+		local
+			l_string_serialized: STRING
+			l_slices: LIST[STRING]
+			l_index: INTEGER
+		do
+			l_string_serialized := fields[serialization_field]
+
+			if l_string_serialized /= void then
+				l_slices := l_string_serialized.split (serialization_field_array_separator)
+				create Result.make (1, l_slices.count)
+
+				from
+					l_slices.start
+					l_index := 1
+				until
+					l_slices.after
+				loop
+					Result.force (l_slices.item.to_natural_8, l_index)
+					l_slices.forth
+					l_index := l_index + 1
+				end
+			end
+		end
 
 	variable_locations (a_var_index_list: LIST[STRING]): LIST[TUPLE[type:STRING;position:INTEGER]]
 			-- Extracts types and positions from a list of variables ({type}@position)
@@ -107,7 +149,7 @@ feature {NONE} -- Helpers
 				a_var_loc_list.after
 			loop
 				l_cur_type := type_a_from_string (a_var_loc_list.item.type, l_any)
-				l_var_hash.extend (l_cur_type, "v"+a_var_loc_list.item.position.out)
+				l_var_hash.extend (l_cur_type, variable_prefix+a_var_loc_list.item.position.out)
 				a_var_loc_list.forth
 			end
 			create Result.make (l_var_hash)
@@ -124,7 +166,7 @@ feature {NONE} -- Helpers
 			until
 				l_index >= a_count
 			loop
-				Result.extend("v"+l_index.out, l_index)
+				Result.extend(variable_prefix+l_index.out, l_index)
 				l_index := l_index + 1
 			end
 		end
@@ -145,7 +187,7 @@ feature {NONE} -- Helpers
 					l_change := true
 				elseif a_string.item (l_pos) /= '}' then
 					if l_change then
-						Result.extend ('v')
+						Result.append (variable_prefix)
 						l_change := false
 					end
 
@@ -177,7 +219,7 @@ feature {NONE} -- Helpers
 			until
 				l_index >= a_count
 			loop
-				Result.extend(l_index, "v"+l_index.out)
+				Result.extend(l_index, variable_prefix+l_index.out)
 				l_index := l_index + 1
 			end
 		end
@@ -193,7 +235,7 @@ feature {NONE} -- Helpers
 			until
 				l_index >= a_count
 			loop
-				Result.put ("v"+l_index.out)
+				Result.put (variable_prefix+l_index.out)
 				l_index := l_index + 1
 			end
 		end
@@ -238,7 +280,7 @@ feature {NONE} -- Helpers
 			until
 				l_var_locations.after
 			loop
-				Result.put ("v"+l_var_locations.item.position.out)
+				Result.put (variable_prefix+l_var_locations.item.position.out)
 				l_var_locations.forth
 			end
 		end
@@ -263,9 +305,39 @@ feature {NONE} -- Helpers
 			until
 				l_var_locations.after
 			loop
-				Result.put ("v"+l_var_locations.item.position.out)
+				Result.put (variable_prefix+l_var_locations.item.position.out)
 				l_var_locations.forth
 			end
+		end
+
+	set_properties (a_objects: SEM_OBJECTS)
+		local
+			l_field: STRING
+			l_queries: HASH_TABLE[STRING,STRING]
+			l_properties: EPA_STATE
+			l_current_anon_property, l_current_var_property, l_current_property_value: STRING
+		do
+			from
+				fields.start
+				create l_queries.make (20)
+			until
+				fields.after
+			loop
+				l_field := fields.key_for_iteration
+				if l_field.starts_with (to_field_prefix) then
+					l_current_anon_property := l_field.substring (to_field_prefix.count+1, l_field.count)
+					if is_anonymous_form (l_current_anon_property) then
+						l_current_var_property := variable_form_from_anonymous (l_current_anon_property)
+						l_current_property_value := fields.item_for_iteration
+						l_queries.extend (l_current_property_value, l_current_var_property)
+					end
+				end
+				fields.forth
+			end
+
+			-- Create and set pre- & poststates
+			create l_properties.make_from_object_state (l_queries, system.root_type.associated_class, void)
+			a_objects.set_properties (l_properties)
 		end
 
 	set_pre_post_states (a_transition: SEM_TRANSITION; a_context_class: CLASS_C; a_context_feature: detachable FEATURE_I)
@@ -310,6 +382,24 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- Load
 
+	load_object
+			-- Load SEM_OBJECTS
+		local
+			l_context: EPA_CONTEXT
+			l_objects: SEM_OBJECTS
+			l_ser_data: like serialization_data
+			l_properties: EPA_STATE
+		do
+			l_context := transition_context
+			l_ser_data := serialization_data
+
+			create l_objects.make_with_transition_data (l_context, l_ser_data)
+
+			set_properties (l_objects)
+
+			last_queryable := l_objects
+		end
+
 	load_snippet_transition
 			-- Loads a snippet transition
 		local
@@ -339,7 +429,7 @@ feature {NONE} -- Load
 
 			-- Gather pre- & poststate-queries
 			l_princ_var_index := principal_variable_from_anon_content (l_content)
-			l_princ_var_class := l_context.variables["v"+l_princ_var_index.out].associated_class
+			l_princ_var_class := l_context.variables[variable_prefix+l_princ_var_index.out].associated_class
 
 			set_pre_post_states (l_transition, l_princ_var_class, void)
 

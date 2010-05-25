@@ -111,8 +111,6 @@ feature {AST_EIFFEL} -- Processing
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		local
-			l_changed_arguments: ETR_CT_CHANGED_NAME_TYPE
 		do
 			if last_was_unqualified then
 				process_access_name (l_as.access_name)

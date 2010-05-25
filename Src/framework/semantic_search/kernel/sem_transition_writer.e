@@ -10,14 +10,15 @@ inherit
 	SEM_DOCUMENT_WRITER
 		redefine
 			write,
-			queryable
+			queryable,
+			set_boost_function
 		end
 create {SEM_DOCUMENT_WRITER}
 	default_create
 
 feature -- Basic operation
 
-	write (a_transition: SEM_TRANSITION; a_folder: STRING)
+	write (a_transition: SEM_TRANSITION; a_folder: detachable STRING)
 			-- Output `a_transition' into a file in `a_folder'
 		local
 			l_id: STRING
@@ -34,7 +35,12 @@ feature -- Basic operation
 			principal_variable := queryable.reversed_variable_position.item (principal_variable_index)
 			l_calls := calls_on_principal_variable(queryable.content, principal_variable_index)
 
-			abstract_principal_types := abstract_types (principal_variable.resolved_type (queryable.context_type),l_calls)
+			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition then
+				abstract_principal_types := abstract_types (principal_variable.resolved_type (queryable.context_type),l_calls)
+			else
+				-- Don't abstract for snippets!
+				create {LINKED_LIST[CL_TYPE_A]}abstract_principal_types.make
+			end
 
 			create buffer.make (4096)
 			append_document_type (document_type)
@@ -69,11 +75,21 @@ feature -- Basic operation
 			l_id.append (buffer.hash_code.out)
 			append_field (id_field, default_boost, type_string, l_id)
 
-			create l_file_name.make_from_string (a_folder)
-			l_file_name.set_file_name (l_id + ".tran")
-			create l_file.make_create_read_write (l_file_name)
-			l_file.put_string (buffer)
-			l_file.close
+			last_document := buffer
+
+			if attached a_folder then
+				create l_file_name.make_from_string (a_folder)
+				l_file_name.set_file_name (l_id + ".tran")
+				create l_file.make_create_read_write (l_file_name)
+				l_file.put_string (buffer)
+				l_file.close
+			end
+		end
+
+	set_boost_function (a_boost_function: like boost_function)
+			-- Set `boost_function' to `a_boost_function'.
+		do
+			boost_function := a_boost_function
 		end
 
 feature -- Constants
@@ -127,12 +143,14 @@ feature {NONE} -- Append
 	append_precondition
 			-- Append precondition in `queryable' into `buffer'.
 		do
+			append_state (queryable.written_preconditions, written_precondition_field_prefix)
 			append_state (queryable.precondition, precondition_field_prefix)
 		end
 
 	append_postcondition
 			-- Append postcondition in `queryable' into `buffer'.
 		do
+			append_state (queryable.written_postconditions, written_postcondition_field_prefix)
 			append_state (queryable.postcondition, postcondition_field_prefix)
 		end
 

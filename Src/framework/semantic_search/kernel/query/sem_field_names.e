@@ -25,8 +25,10 @@ feature -- Access
 	changed_field_prefix: STRING = "changed::"
 
 	precondition_field_prefix: STRING = "pre::"
+	written_precondition_field_prefix: STRING = "written_pre::"
 
 	postcondition_field_prefix: STRING = "post::"
+	written_postcondition_field_prefix: STRING = "written_post::"
 
 	variables_field: STRING = "variables"
 
@@ -62,6 +64,8 @@ feature -- Access
 
 feature -- Access
 
+	serialization_field_array_separator: CHARACTER = ','
+
 	field_name_value_separator: STRING = " : "
 			-- Separator to separate field name and field value
 
@@ -84,6 +88,8 @@ feature -- Access
 			Result.force_last (changed_field_prefix)
 			Result.force_last (precondition_field_prefix)
 			Result.force_last (postcondition_field_prefix)
+			Result.force_last (written_precondition_field_prefix)
+			Result.force_last (written_postcondition_field_prefix)
 			Result.force_last (variables_field)
 			Result.force_last (inputs_field)
 			Result.force_last (outputs_field)
@@ -116,6 +122,8 @@ feature -- Access
 			Result.force_last (changed_field_prefix)
 			Result.force_last (precondition_field_prefix)
 			Result.force_last (postcondition_field_prefix)
+			Result.force_last (written_precondition_field_prefix)
+			Result.force_last (written_postcondition_field_prefix)
 			Result.force_last (variables_field)
 			Result.force_last (inputs_field)
 			Result.force_last (outputs_field)
@@ -158,6 +166,8 @@ feature -- Access
 			Result.force_last (changed_field_prefix)
 			Result.force_last (precondition_field_prefix)
 			Result.force_last (postcondition_field_prefix)
+			Result.force_last (written_precondition_field_prefix)
+			Result.force_last (written_postcondition_field_prefix)
 		end
 
 feature -- Status report

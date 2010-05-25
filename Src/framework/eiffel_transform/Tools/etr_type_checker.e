@@ -227,7 +227,7 @@ feature -- Type evaluation
 			end
 		ensure
 			is_explicit: Result.is_explicit
-			has_associated_class: Result.associated_class /= void
+			has_associated_class: Result.associated_class /= void or Result.is_none
 		end
 
 	explicit_type (a_type: TYPE_A; a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I): TYPE_A
@@ -290,7 +290,7 @@ feature -- Type evaluation
 			end
 		ensure
 			is_explicit: Result.is_explicit
-			has_associated_class: Result.associated_class /= void
+			has_associated_class: Result.associated_class /= void or Result.is_none
 		end
 
 	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
