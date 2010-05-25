@@ -19,6 +19,8 @@ inherit
 
 	EPA_ACCESS_AGENT_UTILITY
 
+	SHARED_TYPES
+
 create
 	make_for_feature,
 	make_for_variables
@@ -112,9 +114,22 @@ feature -- Status
 
 	should_search_for_query_with_precondition: BOOLEAN
 			-- Should search for queries with preconditions?
-			-- Default: True		
+			-- Default: True	
+
+	should_include_tilda_expressions: BOOLEAN
+			-- Should tilda expressions be included?
+			-- For example "v1 ~ v2" and "v1 /~ v2".
+			-- Default: False
 
 feature -- Setting
+
+	set_should_include_tilda_expressions (b: BOOLEAN)
+			-- Set `should_include_tilda_expressions' with `b'.
+		do
+			should_include_tilda_expressions := b
+		ensure
+			should_include_tilda_expressions_set: should_include_tilda_expressions = b
+		end
 
 	set_class_and_feature (a_class: like context_class; a_feature: like feature_)
 			-- Set `context_class' and `feature_'.
@@ -191,9 +206,12 @@ feature -- Access
 			-- Composed functions, for example v1.has (v2),
 			-- where v1 and v2 are too operands of `feature_'.
 
+	tilda_functions: DS_HASH_SET [EPA_FUNCTION]
+			-- Set of tilda functions, for example "v1 ~ v2" and "v1 /~ v2"
+
 	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions that are found by last `search'.
-			-- The result is the union of `quasi_constant_functions', `variable_functions', `composed_functions' and `argumentless_functions'.
+			-- The result is the union of `quasi_constant_functions', `variable_functions', `composed_functions', `argumentless_functions' and `tild_functions'.
 
 feature -- Status report	
 
@@ -211,17 +229,7 @@ feature -- Basic operations
 			-- Call `set_class_and_feature' and `set_context' before calling this feature to setup the search scope.
 		do
 				-- Initialize data structures.
-			create quasi_constant_functions.make (100)
-			quasi_constant_functions.set_equality_tester (function_equality_tester)
-
-			create argumentless_functions.make (100)
-			argumentless_functions.set_equality_tester (function_equality_tester)
-
-			create composed_functions.make (100)
-			composed_functions.set_equality_tester (function_equality_tester)
-
-			create functions.make (200)
-			functions.set_equality_tester (function_equality_tester)
+			initialize_data_structures
 
 				-- Search for functions.
 			build_operand_names
@@ -230,11 +238,13 @@ feature -- Basic operations
 			build_single_integer_argument_query_table
 			build_variable_functions
 			build_composed_functions
+			build_tilda_functions
 
 				-- Integrate results into `functions'.
 			functions.merge (quasi_constant_functions)
 			functions.merge (variable_functions)
 			functions.merge (composed_functions)
+			functions.merge (tilda_functions)
 		end
 
 feature{NONE} -- Implementation
@@ -300,6 +310,38 @@ feature{NONE} -- Implementation
 				quasi_constant_functions.force_last (l_func)
 				variable_functions.force_last (l_func)
 				l_variables.forth
+			end
+		end
+
+	build_tilda_functions
+			-- Build `tilda_functions' from `variable_functions'.
+		local
+			l_cursor, l_cursor2: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_var_funcs: like variable_functions
+			l_tilda_functions: like tilda_functions
+			l_function: EPA_FUNCTION
+			l_func_body: STRING
+		do
+			if should_include_tilda_expressions then
+				l_tilda_functions := tilda_functions
+				from
+					l_cursor := variable_functions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					from
+						l_cursor2 := variable_functions.new_cursor
+						l_cursor2.start
+					until
+						l_cursor2.after
+					loop
+						l_tilda_functions.force_last (tilda_function (l_cursor.item, l_cursor2.item, once "~"))
+						l_tilda_functions.force_last (tilda_function (l_cursor.item, l_cursor2.item, once "/~"))
+						l_cursor2.forth
+					end
+					l_cursor.forth
+				end
 			end
 		end
 
@@ -382,46 +424,6 @@ feature{NONE} -- Implementation
 						end
 					end
 					l_operand_cur.forth
-				end
-			end
-		end
-
-	is_single_argument_query_valid (a_feature: FEATURE_I; a_context_type: TYPE_A): BOOLEAN
-			-- Is `a_feature' valid as the feature in a composed query?
-		local
-			l_type: TYPE_A
-			l_class: CLASS_C
-			l_class_id: INTEGER
-			l_system: like system
-		do
-			fixme ("We don't handle the following cases. 21.5.2010 Jasonw")
-
-				-- We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases.
-			Result := not a_feature.feature_name.is_case_insensitive_equal (once "is_equal")
-
-
-				-- Don't handle queries with preconditions.
-			if Result then
-				Result := (should_search_for_query_with_precondition or else all_preconditions (a_feature).is_empty)
-			end
-
-				-- Don't handle agents as argument.
-			if Result then
-				l_class := a_context_type.associated_class
-				Result := l_class /= Void
-				if Result then
-					l_type := a_feature.arguments.first.actual_type.instantiation_in (a_context_type, l_class.class_id)
-					l_class := l_type.associated_class
-					if l_class /= Void then
-						l_class_id := l_class.class_id
-						l_system := system
-						Result :=
-							l_class_id /= l_system.procedure_class_id and then
-							l_class_id /= l_system.function_class_id and then
-							l_class_id /= l_system.predicate_class_id
-					else
-						Result := False
-					end
 				end
 			end
 		end
@@ -868,5 +870,82 @@ feature{NONE} -- Implementations
 			-- Those files are Mathematica scripts, which are used to determine
 			-- the minimal and maximal value of a integer argument constrained in preconditions.
 			-- If Void, no Mathematica files are generated.
+
+	initialize_data_structures
+			-- Initialize data structures.
+		do
+			create quasi_constant_functions.make (100)
+			quasi_constant_functions.set_equality_tester (function_equality_tester)
+
+			create argumentless_functions.make (100)
+			argumentless_functions.set_equality_tester (function_equality_tester)
+
+			create composed_functions.make (100)
+			composed_functions.set_equality_tester (function_equality_tester)
+
+			create functions.make (200)
+			functions.set_equality_tester (function_equality_tester)
+
+			create tilda_functions.make (100)
+			tilda_functions.set_equality_tester (function_equality_tester)
+		end
+
+	is_single_argument_query_valid (a_feature: FEATURE_I; a_context_type: TYPE_A): BOOLEAN
+			-- Is `a_feature' valid as the feature in a composed query?
+		local
+			l_type: TYPE_A
+			l_class: CLASS_C
+			l_class_id: INTEGER
+			l_system: like system
+		do
+			fixme ("We don't handle the following cases. 21.5.2010 Jasonw")
+
+				-- We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases.
+			Result := not a_feature.feature_name.is_case_insensitive_equal (once "is_equal")
+
+
+				-- Don't handle queries with preconditions.
+			if Result then
+				Result := (should_search_for_query_with_precondition or else all_preconditions (a_feature).is_empty)
+			end
+
+				-- Don't handle agents as argument.
+			if Result then
+				l_class := a_context_type.associated_class
+				Result := l_class /= Void
+				if Result then
+					l_type := a_feature.arguments.first.actual_type.instantiation_in (a_context_type, l_class.class_id)
+					l_class := l_type.associated_class
+					if l_class /= Void then
+						l_class_id := l_class.class_id
+						l_system := system
+						Result :=
+							l_class_id /= l_system.procedure_class_id and then
+							l_class_id /= l_system.function_class_id and then
+							l_class_id /= l_system.predicate_class_id
+					else
+						Result := False
+					end
+				end
+			end
+		end
+
+	tilda_function (a_func1, a_func2: EPA_FUNCTION; a_tilda_symbol: STRING): EPA_FUNCTION
+			-- Tilda function connecting `a_func1' and `a_func2' with `a_tilda_symbol'
+		require
+			a_func1_is_constant: a_func1.is_constant
+			a_func2_is_constant: a_func2.is_constant
+			a_tilda_symbol_valid: a_tilda_symbol ~ ti_tilda or a_tilda_symbol ~ "/~"
+		local
+			l_body: STRING
+		do
+			create l_body.make (24)
+			l_body.append (a_func1.body)
+			l_body.append_character (' ')
+			l_body.append (a_tilda_symbol)
+			l_body.append_character (' ')
+			l_body.append (a_func2.body)
+			create Result.make_nullary (boolean_type, l_body)
+		end
 
 end

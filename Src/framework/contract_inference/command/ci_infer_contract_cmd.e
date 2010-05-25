@@ -160,6 +160,7 @@ feature{NONE} -- Implementation
 			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory, a_tc_info.class_under_test.constraint_actual_type)
 			l_expr_finder.set_is_for_pre_execution (a_pre_execution)
 			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
+			l_expr_finder.set_should_include_tilda_expressions (True)
 			l_expr_finder.search (Void)
 			l_functions := nullary_functions (l_expr_finder.functions, l_context)
 			create Result.make (l_functions.count)
@@ -185,10 +186,13 @@ feature{NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_func := l_cursor.item
-				if l_func.is_nullary then
-					Result.force_last (l_func)
-				else
-					Result.append (functions_with_domain_resolved (l_func, a_context))
+				fixme ("We remove expressions with /~ because the debugger will hang evaluating /~ expressions. 25.05.2010 Jasonw")
+				if not l_func.body.has_substring (once "/~") then
+					if l_func.is_nullary then
+						Result.force_last (l_func)
+					else
+						Result.append (functions_with_domain_resolved (l_func, a_context))
+					end
 				end
 				l_cursor.forth
 			end
@@ -339,17 +343,6 @@ feature{NONE} -- Actions
 		do
 			a_bp_manager.toggle_breakpoints (False)
 
-				-- Logging.
-			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
-			log_manager.put_line (once "---------------------------------------------------%N")
-			if a_pre_execution then
-				log_manager.put_line_with_time (once "Pre-execution state:")
-			else
-				log_manager.put_line_with_time (once "Post-execution state:")
-			end
-			log_manager.put_line (a_state.debug_output)
-			log_manager.pop_level
-
 				-- Setup post-execution expression evaluator.
 			if a_pre_execution then
 				l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
@@ -358,11 +351,25 @@ feature{NONE} -- Actions
 
 				-- Store results.
 			if a_pre_execution then
-				last_pre_execution_evaluations := a_state
+				last_pre_execution_evaluations := a_state.cloned_object
+				add_not_tilda_expressions (last_pre_execution_evaluations)
 			else
-				last_post_execution_evaluations := a_state
+				last_post_execution_evaluations := a_state.cloned_object
+				add_not_tilda_expressions (last_post_execution_evaluations)
 				build_last_transition
 			end
+
+				-- Logging.
+			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.put_line (once "---------------------------------------------------%N")
+			if a_pre_execution then
+				log_manager.put_line_with_time (once "Pre-execution state:")
+				log_manager.put_line (last_pre_execution_evaluations.debug_output)
+			else
+				log_manager.put_line_with_time (once "Post-execution state:")
+				log_manager.put_line (last_post_execution_evaluations.debug_output)
+			end
+			log_manager.pop_level
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -462,6 +469,42 @@ feature{NONE} -- Implementation
 			create l_simple_inferrer
 			l_simple_inferrer.set_logger (log_manager)
 			inferrers.extend (l_simple_inferrer)
+		end
+
+	add_not_tilda_expressions (a_state: EPA_STATE)
+			-- Added "/~" expressions into `a_state', based on the expressions which has "~" in `a_state'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_set: DS_HASH_SET [EPA_EQUATION]
+			l_equation: EPA_EQUATION
+			l_expr: EPA_AST_EXPRESSION
+			l_value: EPA_BOOLEAN_VALUE
+			l_expr_text: STRING
+			l_orig_expr: EPA_EXPRESSION
+			l_orig_expr_text: STRING
+		do
+			create l_set.make (10)
+			l_set.set_equality_tester (equation_equality_tester)
+
+			from
+				l_cursor := a_state.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_orig_expr := l_cursor.item.expression
+				l_orig_expr_text := l_orig_expr.text
+				if l_orig_expr_text.has_substring (once "~") and then l_cursor.item.value.is_boolean then
+					l_expr_text := l_orig_expr_text.twin
+					l_expr_text.replace_substring_all ("~", "/~")
+					create l_expr.make_with_text_and_type (l_orig_expr.class_, l_orig_expr.feature_, l_expr_text, l_orig_expr.written_class, l_orig_expr.type)
+					create l_value.make (not l_cursor.item.value.as_boolean.item)
+					create l_equation.make (l_expr, l_value)
+					l_set.force_last (l_equation)
+				end
+				l_cursor.forth
+			end
+			a_state.append (l_set)
 		end
 
 feature{NONE} -- Results

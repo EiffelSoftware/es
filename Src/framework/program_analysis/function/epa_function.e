@@ -23,7 +23,9 @@ create
 	make_from_feature_with_domains,
 --	make_from_feature,
 	make,
-	make_from_expression_value
+	make_from_expression_value,
+	make_nullary
+	
 feature{NONE} -- Initialization
 
 	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body)
@@ -41,6 +43,17 @@ feature{NONE} -- Initialization
 			argument_types_set: argument_types = a_argument_types
 			argument_domains_set: argument_domains = a_argument_domains
 			body_set: body ~ a_body
+		end
+
+	make_nullary (a_result_type: TYPE_A; a_body: STRING)
+			-- Initialize Current as a nullary function with body `a_body' and result type `a_result_type'.
+		local
+			l_arg_types: ARRAY [TYPE_A]
+			l_arg_domains: ARRAY [EPA_FUNCTION_DOMAIN]
+		do
+			create l_arg_types.make (1, 0)
+			create l_arg_domains.make (1, 0)
+			make (l_arg_types, l_arg_domains, a_result_type, a_body)
 		end
 
 	make_from_expression (a_expr: EPA_EXPRESSION)
@@ -341,7 +354,8 @@ feature -- Partial evaluation
 				else
 					l_arguments.extend (argument_type (l_position))
 					l_domains.extend (argument_domain (l_position))
-					l_new_args.extend (curly_brace_surrounded_integer (l_position))
+					l_new_args.extend (curly_brace_surrounded_integer (l_arg_index))
+--					l_new_args.extend (curly_brace_surrounded_integer (l_position))
 					l_arg_index := l_arg_index + 1
 				end
 				l_position := l_position + 1

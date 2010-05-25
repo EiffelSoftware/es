@@ -264,7 +264,7 @@ feature{NONE} -- Implementation
 					l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					if l_feat.argument_count > 0 then
 						l_argument_type := l_feat.arguments.first
-						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+--						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 					else
 						l_argument_type := Void
 					end

@@ -29,7 +29,10 @@ inherit
 			process_bin_minus_as,
 			process_bin_plus_as,
 			process_access_feat_as,
-			process_nested_as
+			process_nested_as,
+			process_un_not_as,
+			process_bin_tilde_as,
+			process_bin_not_tilde_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -155,11 +158,13 @@ feature{NONE} -- Implementation
 		local
 			l_equation: detachable EPA_EQUATION
 		do
-			l_equation := equation_by_expression (a_ast, False)
-			if l_equation /= Void then
-				last_value := l_equation.value
-			else
-				set_has_error (True, msg_missing_expression (a_ast, False))
+			if not has_error then
+				l_equation := equation_by_expression (a_ast, False)
+				if l_equation /= Void then
+					last_value := l_equation.value
+				else
+					set_has_error (True, msg_missing_expression (a_ast, False))
+				end
 			end
 		end
 
@@ -444,6 +449,31 @@ feature{NONE} -- Implementation
 	process_bin_ne_as (l_as: BIN_NE_AS)
 		do
 			process_binary_equality_relation_operator_as (l_as.left, l_as.right, once "/=")
+		end
+
+	process_un_not_as (l_as: UN_NOT_AS)
+		do
+			process_unary_as (l_as)
+			if not has_error then
+				process_boolean_expression (l_as.expr)
+				if not has_error then
+					create {EPA_BOOLEAN_VALUE} last_value.make (not last_value.as_boolean.item)
+				end
+			end
+		end
+
+	process_bin_tilde_as (l_as: BIN_TILDE_AS)
+		do
+			if not has_error then
+				process_expression (l_as)
+			end
+		end
+
+	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS)
+		do
+			if not has_error then
+				process_expression (l_as)
+			end
 		end
 
 feature -- Error messages

@@ -24,6 +24,10 @@ inherit
 
 	EPA_UTILITY
 
+	EPA_CONTRACT_EXTRACTOR
+
+	EPA_STRING_UTILITY
+
 feature -- Access
 
 	logger: EPA_LOG_MANAGER
@@ -260,11 +264,15 @@ feature{NONE} -- Implementation
 					l_function := l_func_cursor.key
 					if
 						l_function.arity = 2 and then 						 -- Function should have one argument.
-						not l_function.argument_type (1).is_integer and then -- Function argument shoult not of type integer, because we handle integer argument differently.
-						l_function.result_type.is_boolean  					 -- Function should return Boolean value.
+						not l_function.argument_type (1).is_integer			 -- Function argument shoult not of type integer, because we handle integer argument differently.
+--						l_function.result_type.is_boolean  					 -- Function should return Boolean value.
 					then
 						l_func_valuations := l_func_cursor.item.projected (1, value_set_for_variable (l_operand_name, l_data.transition))
-						l_func_valuations := l_func_valuations.projected (l_func_valuations.function.arity + 1, true_value_set (l_data.transition))
+
+							-- If `l_function' is a boolean query, we require that there are more than one object which made the query to return True.
+						if l_function.result_type.is_boolean then
+							l_func_valuations := l_func_valuations.projected (l_func_valuations.function.arity + 1, true_value_set (l_data.transition))
+						end
 
 						if l_func_valuations.map.count > 1 then
 							Result.force_last ([l_function, a_operand_index])
@@ -338,19 +346,21 @@ feature{NONE} -- Implementation
 			loop
 				l_function := l_cursor.item.function
 				l_target_index := l_cursor.item.target_variable_index
-				create l_scope.make (l_function, 2, a_pre_state)
-				create l_predicate_body.make (64)
+--				create l_scope.make (l_function, 2, a_pre_state)
+--				create l_predicate_body.make (64)
 
-				l_predicate_body.append (once "old ")
-				l_predicate_body.append (l_function.body)
-				l_predicate_body.append (once " implies ")
-				l_predicate_body.append (l_function.body)
+--				l_predicate_body.append (once "old ")
+--				l_predicate_body.append (l_function.body)
+--				l_predicate_body.append (once " implies ")
+--				l_predicate_body.append (l_function.body)
 
-				create l_operand_map.make (1)
-				l_operand_map.put (l_target_index, 1)
-				l_predicate := quantified_function (l_function.argument_types, l_predicate_body)
-				create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
-				Result.force_last (l_quantified_expr)
+--				create l_operand_map.make (1)
+--				l_operand_map.put (l_target_index, 1)
+--				l_predicate := quantified_function (l_function.argument_types, l_predicate_body)
+--				create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
+--				Result.force_last (l_quantified_expr)
+				forall_query_implies_query_expression (l_function, l_target_index, True, False).do_all (agent Result.force_last)
+				forall_query_implies_query_expression_with_argument (l_function, l_target_index, True, False).do_all (agent Result.force_last)
 				l_cursor.forth
 			end
 
@@ -367,6 +377,166 @@ feature{NONE} -- Implementation
 				Result.forth
 			end
 			logger.pop_level
+		end
+
+	forall_query_implies_query_expression (a_function: EPA_FUNCTION; a_target_variable_index: INTEGER; a_pre_state: BOOLEAN; a_negated_consequent: BOOLEAN): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
+			-- Frame property predicate built from `a_suitable_function' whose target is with `a_target_variable_index'
+			-- If `a_function' is a boolean query, the format of the frame property is:
+			--   (1) "forall o . old a_function (o) implies a_function (o)" if `a_negated_consequent' is False, otherwise,
+			--   (2) "forall o . old a_function (o) implies not a_function (o)"
+			-- If `a_function' is not a boolean query, the format of the frame property is:
+			--   (1) "forall o . old a_function (o) = a_function (o)" if `a_negated_consequent' is False, otherwise,
+			--   (2) "forall o . old a_function (o) /= a_function (o)"			
+			-- `a_pre_state' indicates if the scope of the quantified variable is from pre-execution state or post-execution state.
+		local
+			l_scope: CI_FUNCTION_DOMAIN_QUANTIFIED_SCOPE
+			l_predicate_body: STRING
+			l_quantified_expr: CI_QUANTIFIED_EXPRESSION
+			l_operand_map: HASH_TABLE [INTEGER, INTEGER]
+			l_predicate: EPA_FUNCTION
+		do
+			create Result.make (1)
+			Result.set_equality_tester (ci_quantified_expression_equality_tester)
+
+			create l_scope.make (a_function, 2, a_pre_state)
+			create l_predicate_body.make (64)
+
+			l_predicate_body.append (once "old ")
+			l_predicate_body.append (a_function.body)
+			if a_function.result_type.is_boolean then
+				if a_negated_consequent then
+					l_predicate_body.append (once " implies not ")
+				else
+					l_predicate_body.append (once " implies ")
+				end
+			else
+				if a_negated_consequent then
+					l_predicate_body.append (once " /= ")
+				else
+					l_predicate_body.append (once " = ")
+				end
+			end
+
+			l_predicate_body.append (a_function.body)
+
+			create l_operand_map.make (1)
+			l_operand_map.put (a_target_variable_index, 1)
+			l_predicate := quantified_function (a_function.argument_types, l_predicate_body)
+			create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
+			Result.force_last (l_quantified_expr)
+		end
+
+	forall_query_implies_query_expression_with_argument (a_function: EPA_FUNCTION; a_target_variable_index: INTEGER; a_pre_state: BOOLEAN; a_negated_consequent: BOOLEAN): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
+			-- Frame property predicate built from `a_suitable_function' whose target is with `a_target_variable_index'
+			-- If `a_function' is a boolean query, the format of the frame property is:
+			--   (1) "forall o . old a_function (o) implies a_function (o)" if `a_negated_consequent' is False, otherwise,
+			--   (2) "forall o . old a_function (o) implies not a_function (o)"
+			-- If `a_function' is not a boolean query, the format of the frame property is:
+			--   (1) "forall o . old a_function (o) = a_function (o)" if `a_negated_consequent' is False, otherwise,
+			--   (2) "forall o . old a_function (o) /= a_function (o)"			
+			-- `a_pre_state' indicates if the scope of the quantified variable is from pre-execution state or post-execution state.
+		local
+			l_scope: CI_FUNCTION_DOMAIN_QUANTIFIED_SCOPE
+			l_predicate_body: STRING
+			l_quantified_expr: CI_QUANTIFIED_EXPRESSION
+			l_operand_map: HASH_TABLE [INTEGER, INTEGER]
+			l_predicate: EPA_FUNCTION
+			l_actual_arg_type: TYPE_A
+			l_feat_types: DS_HASH_TABLE [TYPE_A, INTEGER_32]
+			l_func_arg_type: TYPE_A
+			l_argument_types: ARRAY [TYPE_A]
+			l_is_container: BOOLEAN
+			l_templates: LINKED_LIST [TUPLE [header: STRING; trailer: STRING]]
+		do
+			create Result.make (1)
+			Result.set_equality_tester (ci_quantified_expression_equality_tester)
+
+			if feature_under_test.argument_count = 1 and then a_function.arity = 2 then
+				l_is_container := is_class_a_container (class_under_test)
+				l_feat_types := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type)
+				l_actual_arg_type := l_feat_types.item (1)
+				l_func_arg_type := a_function.argument_type (2).actual_type
+				l_func_arg_type := actual_type_from_formal_type (l_func_arg_type, class_under_test)
+
+					-- Create different contract templates depending on whether `class_under_test' is a CONTAINER class.
+				create l_templates.make
+				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
+					l_templates.extend (["old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /~ {2} implies(", "))"])
+					l_templates.extend (["not old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /= {2} implies (", "))"])
+				else
+					l_templates.extend (["{3} /= {2} implies (", ")"])
+				end
+
+				from
+					l_templates.start
+				until
+					l_templates.after
+				loop
+						-- Construct frame property text.
+					create l_predicate_body.make (64)
+					l_predicate_body.append (l_templates.item_for_iteration.header)
+					l_predicate_body.append (once "old ")
+					l_predicate_body.append (a_function.body)
+					if a_negated_consequent then
+						l_predicate_body.append (once " /= ")
+					else
+						l_predicate_body.append (once " = ")
+					end
+					l_predicate_body.append (a_function.body)
+					l_predicate_body.append (l_templates.item_for_iteration.trailer)
+
+						-- Setup frame property scope and operand map.
+					create l_scope.make (a_function, 2, a_pre_state)
+					create l_operand_map.make (1)
+					l_operand_map.put (a_target_variable_index, 1)
+					l_operand_map.put (1, 2)
+
+						-- Setup argument types for the frame property.
+					create l_argument_types.make (1, 3)
+					l_argument_types.put (a_function.argument_type (1), 1)
+					l_argument_types.put (a_function.argument_type (2), 2)
+					l_argument_types.put (feature_under_test.arguments.first, 3)
+					l_predicate := quantified_function (l_argument_types, l_predicate_body)
+
+						-- Create frame property.
+					create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
+					Result.force_last (l_quantified_expr)
+					l_templates.forth
+				end
+
+--				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
+--					create l_scope.make (a_function, 2, a_pre_state)
+--					create l_predicate_body.make (64)
+
+--					if l_is_container then
+--						l_predicate_body.append (once "old ")
+--						l_predicate_body.append (curly_brace_surrounded_integer (a_target_variable_index))
+--						l_predicate_body.append (once ".object_comparison implies (")
+--					end
+--					l_predicate_body.append (once "{3} /= {2} implies (")
+
+--					l_predicate_body.append (once "old ")
+--					l_predicate_body.append (a_function.body)
+--					if a_negated_consequent then
+--						l_predicate_body.append (once " /= ")
+--					else
+--						l_predicate_body.append (once " = ")
+--					end
+
+--					l_predicate_body.append (a_function.body)
+--					l_predicate_body.append (once ")")
+--					create l_operand_map.make (1)
+--					l_operand_map.put (a_target_variable_index, 1)
+--					l_operand_map.put (1, 2)
+--					create l_argument_types.make (1, 3)
+--					l_argument_types.put (a_function.argument_type (1), 1)
+--					l_argument_types.put (a_function.argument_type (2), 2)
+--					l_argument_types.put (feature_under_test.arguments.first, 3)
+--					l_predicate := quantified_function (l_argument_types, l_predicate_body)
+--					create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
+--					Result.force_last (l_quantified_expr)
+--				end
+			end
 		end
 
 	quantified_function (a_argument_types: ARRAY [TYPE_A]; a_body: STRING): EPA_FUNCTION
@@ -524,6 +694,15 @@ feature{NONE} -- Implementation
 				l_operand_map.forth
 			end
 			l_operand_map.go_to (l_cursor)
+		end
+
+	is_class_a_container (a_class: CLASS_C): BOOLEAN
+			-- Is `a_class' a {CONTAINER}?		
+		local
+			l_container_id: INTEGER
+		do
+			l_container_id := first_class_starts_with_name ("CONTAINER").class_id
+			Result := ancestors (a_class).there_exists (agent (c: CLASS_C; a_id: INTEGER): BOOLEAN do Result := c.class_id = a_id end (?, l_container_id))
 		end
 
 feature{NONE} -- Implementation
