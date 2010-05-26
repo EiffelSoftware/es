@@ -54,9 +54,6 @@ feature {NONE} -- Implementation
 		do
 			safe_process (l_as.internal_arguments)
 
-			-- add 'is' keyword
-			context.add_string (" is")
-
 			-- add comment
 			context.add_string ("%N%T%T%T-- Wrapper for non-separate postconditions of enclosing routine `" + feature_object.feature_name  + "'.")
 

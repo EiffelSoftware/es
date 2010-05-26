@@ -525,7 +525,14 @@ feature {NONE} -- Feature redeclaration handling
 							l_id_as.set_index (l_index)
 							safe_process (l_id_as)
 
-							context.add_string (":")
+							context.add_string (": ")
+							-- Added by trosim, 2010-05-26
+							if l_as_type.has_attached_mark then
+								context.add_string ("attached ")
+							elseif l_as_type.has_detachable_mark then
+								context.add_string ("detachable ")
+							end
+
 							last_index := l_as_type.first_token (match_list).index
 							-- Check if we need to substitute the internal argument
 							add_scoop_separate__ := False

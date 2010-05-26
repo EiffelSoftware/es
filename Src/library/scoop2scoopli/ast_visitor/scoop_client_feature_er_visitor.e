@@ -38,7 +38,6 @@ feature -- Access
 			-- print feature name
 			context.add_string ("%N%N%T" + feature_object.feature_name + {SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive)
 			context.add_string (class_c.name.as_lower + {SCOOP_SYSTEM_CONSTANTS}.enclosing_routine_name_additive)
-			context.add_string ("")
 
 			-- process body
 			last_index := l_as.first_token (match_list).index

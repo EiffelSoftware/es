@@ -124,7 +124,6 @@ feature {NONE} -- Type expression processing
 			if l_as.is_separate then
 				process_leading_leaves (l_as.separate_keyword_index)
 				last_index := l_as.class_name.index - 1
-				context.add_string (" ")
 			end
 
 			-- process class name
@@ -148,7 +147,6 @@ feature {NONE} -- Type expression processing
 			if l_as.is_separate then
 				process_leading_leaves (l_as.separate_keyword_index)
 				last_index := l_as.class_name.index - 1
-				context.add_string (" ")
 			end
 
 			-- process class name
@@ -1283,7 +1281,6 @@ feature {NONE} -- Creation handling
 				if is_processing_assertions then
 					-- Print processed items
 					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append (" is")
 					wrapper.append ("%N%T%T")
 					wrapper.append ("-- Wrapper for separate create creation expression")
 					wrapper.append ("%N%T%Tlocal")
@@ -1394,7 +1391,6 @@ feature {NONE} -- Creation handling
 				if is_processing_assertions then
 					-- Print processed items
 					wrapper.append (": "+context.string_representation.substring (context.string_representation.index_of ('{', 1)+1, context.string_representation.index_of ('}', 1)-1))
-					wrapper.append (" is")
 					wrapper.append ("%N%T%T")
 					wrapper.append ("-- Wrapper for create creation expression")
 					wrapper.append ("%N%T%Tlocal")

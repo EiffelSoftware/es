@@ -337,9 +337,6 @@ feature {NONE} -- Visitor implementation
 						l_wrapper_feature.append (l_feature_i.type.name)
 					end
 
-					-- set is keyword
-					l_wrapper_feature.append (" is")
-
 					-- set comment
 					l_wrapper_feature.append ("%N%T%T%T-- Feature wrapper for infix / prefix rename statements.")
 					l_wrapper_feature.append ("%N%T%T%T-- Hack for EiffelStudio 6.3")

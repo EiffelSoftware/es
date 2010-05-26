@@ -324,8 +324,8 @@ feature {NONE} -- Implementation
 			context.add_string ("%N%Nfeature -- default creation instruction wrapper")
 			context.add_string ("%N%N%Tdefault_create_scoop_separate_")
 			context.add_string (class_as.class_name.name.as_lower)
-			context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_client_class_name + ")")
-			context.add_string (" is%N%T%T%T")
+			context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_client_class_name + ")")
+			context.add_string ("%N%T%T%T")
 			context.add_string ("-- Wrapper for creation procedure `default_create'.%N%T%T")
 			context.add_string ("%N%T%Tdo")
 
@@ -373,10 +373,10 @@ feature {NONE} -- Implementation
 					add_formal_argument_list (l_feature_as.body.internal_arguments, true)
 					last_index := l_feature_as.body.internal_arguments.last_token (match_list).index
 				else
-					context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ") ") --CLIENT) ")
+					context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ") ") --CLIENT) ")
 				end
 
-				context.add_string (" is%N%T%T%T")
+				context.add_string ("%N%T%T%T")
 				context.add_string ("-- Wrapper for creation procedure `" + a_feature_name + "'.%N%T%T")
 				context.add_string ("%N%T%Tlocal")
 				add_lock_passing_detection_code (l_feature_as)
@@ -417,7 +417,6 @@ feature {NONE} -- Implementation
 				add_formal_argument_list (l_feature_as.body.internal_arguments, false)
 				last_index := l_feature_as.body.internal_arguments.last_token (match_list).index
 			end
-			context.add_string (" is")
 			context.add_string ("%N%T%T%T-- Wrapper for creation procedure `" + a_feature_name + "'.")
 
 			context.add_string ("%N%T%Tdo")
@@ -685,7 +684,7 @@ feature {NONE} -- Implementation
 		do
 			context.add_string ("(")
 			if a_is_with_a_caller then
-				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + "; ")
+				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + "; ")
 			end
 
 			if a_list.arguments /= Void then
@@ -705,6 +704,12 @@ feature {NONE} -- Implementation
 						j > nbj
 					loop
 						context.add_string (l_argument.item_name (j) + ": ")
+						-- Added by trosim, 2010-05-26
+						if l_argument.type.has_attached_mark then
+							context.add_string ("attached ")
+						elseif l_argument.type.has_detachable_mark then
+							context.add_string ("detachable ")
+						end
 						if attached {GENERIC_CLASS_TYPE_AS}  l_argument.type as gen_typ then
 							create l_assign_finder
 							create interal_argument_to_substitute.default_create

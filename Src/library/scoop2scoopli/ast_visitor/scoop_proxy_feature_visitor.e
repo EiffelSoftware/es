@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 				add_formal_argument_list (l_as.internal_arguments, true)
 				last_index := l_as.internal_arguments.last_token (match_list).index
 			else
-				context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
+				context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
 			end
 
 			safe_process (l_as.colon_symbol (match_list))
@@ -326,13 +326,12 @@ feature {NONE} -- Implementation
 					context.add_string (l_feature_name_str)
 
 					-- set formal argument
-					context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
+					context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
 					context.add_string (": ")
 					-- set type
 					l_type_attribute_wrapper.process_type (l_as.body.type)
 
 					-- keyword is and local declaration
-					context.add_string (" is")
 					context.add_string ("%N%T%Tlocal")
 					add_client_agent_local (l_as)
 
@@ -389,7 +388,7 @@ feature {NONE} -- Implementation
 
 					-- body
 					context.add_string ("%N%T%T%T-- Wrapper for attribute `" + l_feature_name_str + "'.")
-					context.add_string ("%N%T%Tis do%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + l_feature_name_str)
+					context.add_string ("%N%T%Tdo%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + l_feature_name_str)
 					context.add_string ("%N%T%Tend")
 
 					-- no is_keyword, no body, skip indexing clause
@@ -434,14 +433,13 @@ feature {NONE} -- Implementation
 				context.add_string (l_feature_name_str)
 
 				-- set formal argument
-				context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
+				context.add_string (" (" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + ")")
 				context.add_string (": ")
 
 				-- set type
 				l_type_attribute_wrapper.process_type (l_as.body.type)
 
 				-- keyword is and local declaration
-				context.add_string (" is")
 				context.add_string ("%N%T%Tlocal")
 				add_client_agent_local (l_as)
 
@@ -476,7 +474,7 @@ feature {NONE} -- Implementation
 				context.add_string ("%N%T%T%T-- Wrapper for constant `")
 				context.add_string (l_feature_name_str)
 				context.add_string ( "'.")
-				context.add_string ("%N%T%Tis do%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + ".")
+				context.add_string ("%N%T%Tdo%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + ".")
 				context.add_string (l_feature_name_str)
 				context.add_string ("%N%T%Tend")
 
@@ -618,7 +616,7 @@ feature {NONE} -- Implementation
 			-- process type
 			add_result_type (a_feature.body.type, True, l_type_signature)
 
-			context.add_string (" is%N%T%T%T")
+			context.add_string ("%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
@@ -669,7 +667,7 @@ feature {NONE} -- Implementation
 				add_formal_argument_list (a_feature.body.internal_arguments, false)
 				last_index := a_feature.body.internal_arguments.last_token (match_list).index
 			end
-			context.add_string (" is%N%T%T%T")
+			context.add_string ("%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
@@ -719,7 +717,7 @@ feature {NONE} -- Implementation
 				add_formal_argument_list (a_feature.body.internal_arguments, false)
 				last_index := a_feature.body.internal_arguments.last_token (match_list).index
 			end
-			context.add_string (" is%N%T%T%T")
+			context.add_string ("%N%T%T%T")
 			context.add_string ("-- Wrapper for external feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
@@ -773,7 +771,7 @@ feature {NONE} -- Implementation
 				last_index := a_feature.body.internal_arguments.last_token (match_list).index
 			end
 			add_result_type (a_feature.body.type, True, l_type_signature)
-			context.add_string (" is%N%T%T%T")
+			context.add_string ("%N%T%T%T")
 			context.add_string ("-- Wrapper for once feature `" + a_feature_name + "'.")
 			context.add_string ("%N%T%Tdo%N%T%T%TResult := " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + "." + a_feature_name)
 			if a_feature.body.internal_arguments /= void then
@@ -868,7 +866,7 @@ feature {NONE} -- Implementation
 			context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.assigner_mediator_source_formal_argument_name + ": ")
 			l_type_signature.process_type (l_as.body.type)
 			-- second argument is the caller.
-			context.add_string ("; " + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + "; ")
+			context.add_string ("; " + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ": attached " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_separate_type_class_name + "; ")
 			-- now append the arguments of the current feature
 			if l_args /= Void and then
 				l_args.arguments /= Void then

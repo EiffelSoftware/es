@@ -52,9 +52,6 @@ feature {NONE} -- Implementation
 			-- process internal arguments
 			add_formal_argument_list_as_actual_argument_list_with_prefix (feature_as.body, "caller_: SCOOP_SEPARATE_TYPE")
 
-			-- add 'is' keyword
-			context.add_string (" is")
-
 			-- add comment
 			context.add_string ("%N%T%T%T-- Wrapper for separate postcondition clause " + index.out + " of routine `" + feature_object.feature_name + "'.")
 
