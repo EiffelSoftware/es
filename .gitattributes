@@ -4127,6 +4127,7 @@ eweasel/tests/syntax043/notes -text
 eweasel/tests/syntax044/notes -text
 eweasel/tests/syntax046/test.e0 -text
 eweasel/tests/syntax052/Ace -text
+eweasel/tests/table008/Ace -text
 eweasel/tests/term001/notes -text
 eweasel/tests/term002/notes -text
 eweasel/tests/term003/notes -text
