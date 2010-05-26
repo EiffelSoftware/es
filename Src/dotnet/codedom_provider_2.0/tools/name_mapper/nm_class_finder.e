@@ -100,7 +100,7 @@ feature -- Basic Operation
 					end
 					create l_dotnet_names.make_from_array (l_members_mapping.current_keys)
 					l_dotnet_names.sort (Quick_sorter)
-					
+
 					-- Set internal attributes through Attribute_access_mutex
 					Attribute_access_mutex.lock
 					internal_members_mapping := l_members_mapping
@@ -109,7 +109,7 @@ feature -- Basic Operation
 					internal_eiffel_name := l_type_ref.eiffel_name
 					Attribute_access_mutex.unlock
 				else
-	
+
 					-- Set internal attributes through Attribute_access_mutex
 					Attribute_access_mutex.lock
 					internal_eiffel_name := Void
@@ -151,13 +151,13 @@ feature {NONE} -- Private Access
 	internal_dotnet_member_names: LIST [STRING]
 			-- Cache for `dotnet_member_names', must be accessed through
 			-- Attribute_access_mutex
-		
+
 	Attribute_access_mutex: MUTEX
 			-- Mutex to access public attribute
 		once
-			create Result
+			create Result.make
 		end
-		
+
 	type_reference_factory: CODE_TYPE_REFERENCE_FACTORY
 			-- Type reference factory
 
@@ -166,13 +166,13 @@ feature {NONE} -- Private Access
 		once
 			create Result.make (create {KL_COMPARABLE_COMPARATOR [STRING]}.make)
 		end
-	
+
 	Environment: EV_ENVIRONMENT
 			-- Vision2 environment
 		once
 			create Result
 		end
-		
+
 invariant
 	non_void_type_factory: type_reference_factory /= Void
 
