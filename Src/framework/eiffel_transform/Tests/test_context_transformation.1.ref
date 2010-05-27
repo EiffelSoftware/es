@@ -1,0 +1,21 @@
+if True then
+	io.putstring (c_ren.c2_a_ren)
+	io.putstring (Current.c_ren.c2_b)
+	io.putstring (io.putstring (arg_c2_a2.c2_b))
+	io.putstring (a_c.c2_a_ren.out)
+	io.putstring (other.arg_c1_a1.c1_b)
+	io.putstring (a.generating_type)
+	io.putstring ((c_ren + arg_c2_a2.c2_b).out)
+	create str_a1.make_from_string (arg_c2_a2.c2_b)
+	io.putstring (create {STRING}.make_from_string (a_c.c2_a_ren))
+	if attached {like c_ren}other.arg_c1_a1 as l_c then
+		io.putstring (l_c.c2_a_ren)
+	end
+	if attached {like arg_c2_a2}a_c as l_c2 then
+		io.putstring (l_c2.c2_b)
+	end
+	if attached {like Current}c_ren as l_a then
+		io.putstring (l_a.next.next.next.next.c_ren.c2_a_ren)
+		io.putstring (l_a.c_ren.c2_b)
+	end
+end

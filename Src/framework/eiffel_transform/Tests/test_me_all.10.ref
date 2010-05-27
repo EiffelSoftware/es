@@ -1,0 +1,7 @@
+test5 (arg1: INTEGER): INTEGER
+	local
+		l1: INTEGER
+	do
+		l1 := 5
+		extracted (arg1, l1)
+	end

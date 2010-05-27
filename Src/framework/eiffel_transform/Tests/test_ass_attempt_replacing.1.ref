@@ -1,0 +1,41 @@
+test2
+	local
+		list: LIST[X]
+		linked_list: LINKED_LIST[C2]
+		weird_list: LINKED_LIST[LIST[TUPLE[detachable ARRAY[like c_ren], X, TUPLE]]]
+		str: STRING
+		i: INTEGER
+	do
+		if attached {STRING}c_ren as l_c then
+			if attached {STRING_8}l_c as lot_1 then
+				str := lot_1
+			else
+				str := Void
+			end
+			if attached l_c.count as cnt then
+				if attached {INTEGER_32}cnt as lot_2 then
+					i := lot_2
+				end
+			end
+		end
+		if attached {X}c_ren.c2_b as lot_3 then
+			c_ren := lot_3
+		else
+			c_ren := Void
+		end
+		if attached {LINKED_LIST[C2]}list as lot_4 then
+			linked_list := lot_4
+		else
+			linked_list := Void
+		end
+		if attached {LIST[X]}linked_list as lot_5 then
+			list := lot_5
+		else
+			list := Void
+		end
+		if attached {LINKED_LIST[LIST[TUPLE[detachable ARRAY[like c_ren], attached X, TUPLE]]]}linked_list as lot_6 then
+			weird_list := lot_6
+		else
+			weird_list := Void
+		end
+	end

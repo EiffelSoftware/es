@@ -1,0 +1,7 @@
+extracted (arg1: INTEGER_32; l1: INTEGER_32): INTEGER_32
+	do
+		Result := l1
+		if arg1 > 0 then
+			Result := arg1
+		end
+	end

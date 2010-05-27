@@ -1,0 +1,30 @@
+big (arg1, arg2: INTEGER): INTEGER
+	local
+		l1, l2, l3, l4: INTEGER
+	do
+		l1 := 1
+		l3 := 42
+		l1 := 1
+		l1 := l1 + 1
+		l1 := l1 + 1
+		f2 := l3 + arg2
+		l1 := 5
+		Result := 2 * l1
+		Result := 0
+		Result := 0
+		l1 := 5
+		l2 := 5
+		l3 := l1 + l2
+		f2 := 3 * l3
+		l1 := 5
+		l2 := l1 + arg1
+		l3 := 2 * arg1
+		f2 := f2 + 1
+		l4 := f2 + f2
+		l1 := l1 + 1
+		f2 := l4
+		l3 := l1
+		l1 := 5
+		l2 := l1 + 2
+		l2 := l2 * l2
+	end

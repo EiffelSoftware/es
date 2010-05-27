@@ -1,0 +1,13 @@
+test (a_var_a1: INTEGER; arg_c1_a1: C1)
+	local
+		a_renamed_local_c: like c
+		a: like Current
+		str_a1: STRING
+	do
+		create c
+		create a_renamed_local_c
+		io.putstring (c.c1_a_renamed)
+		io.put_new_line
+		io.putstring (arg_c1_a1.c1_b)
+		io.put_new_line
+	end

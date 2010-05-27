@@ -1,0 +1,30 @@
+class
+	DEF_B
+	
+inherit
+	DEF_A
+		rename
+			test as test_a
+		redefine
+			test_a
+		end
+
+feature 
+
+	test_a
+		require else
+			in_def_b: True
+		do
+		ensure then
+			in_def_b: True
+		end
+	
+	test_b
+		require
+			in_def_b: True
+		do
+		ensure
+			in_def_b: True
+		end
+
+end

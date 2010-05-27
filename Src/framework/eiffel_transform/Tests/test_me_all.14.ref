@@ -1,0 +1,10 @@
+test7 (arg1: STRING): INTEGER
+	local
+		l1: INTEGER
+	do
+		if attached arg1.count as cnt then
+			l1 := 5
+			l1 := extracted (l1, cnt)
+		end
+		f2 := l1
+	end

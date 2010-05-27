@@ -1,0 +1,7 @@
+extracted (l1: INTEGER_32; cnt: INTEGER_32): INTEGER_32
+	do
+		Result := l1
+		if Result > 5 then
+			Result := cnt
+		end
+	end

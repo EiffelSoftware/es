@@ -1,0 +1,19 @@
+test (arg1, arg2: INTEGER)
+	local
+		l1, l2, l3: INTEGER
+		l: LIST[STRING_8]
+	do
+		if l.for_all (agent  (x: STRING_8): BOOLEAN
+				do
+					Result := x /= Void
+				end) then
+		end
+		l1 := extracted
+		if l1 > arg1 then
+			l2 := l1 + arg1
+			l3 := l2 + 42
+		else
+			l3 := 42
+		end
+		f2 := l3 + arg2
+	end

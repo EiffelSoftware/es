@@ -24,6 +24,30 @@ feature -- Visitor
 		deferred
 		end
 
+feature -- Identification
+
+	path: detachable AST_PATH assign set_path
+			-- Path to this ast node
+
+	breakpoint_slot: INTEGER assign set_breakpoint_slot
+			-- Breakpoint slot this node belongs to
+
+	set_breakpoint_slot (a_breakpoint_slot: like breakpoint_slot)
+			-- Set `breakpoint_slot' to `a_breakpoint_slot'.
+		do
+			breakpoint_slot := a_breakpoint_slot
+		ensure
+			breakpoint_slot_set: breakpoint_slot = a_breakpoint_slot
+		end
+
+	set_path(a_path: like path)
+			-- Set `path' to `a_path'
+		do
+			path := a_path
+		ensure
+			path_set: path = a_path
+		end
+
 feature -- Comparison
 
 	is_equivalent (other: like Current): BOOLEAN
@@ -427,7 +451,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

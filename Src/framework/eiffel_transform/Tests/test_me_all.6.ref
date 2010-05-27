@@ -1,0 +1,8 @@
+test3 (arg1: INTEGER): INTEGER
+	local
+		l1, l2: INTEGER
+	do
+		l1 := 5
+		l2 := 5
+		extracted (l1, l2)
+	end

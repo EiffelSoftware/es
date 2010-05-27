@@ -1,0 +1,14 @@
+extracted (l1: INTEGER_32; arg1: INTEGER_32): INTEGER_32
+	local
+		l2: INTEGER_32
+		l3: INTEGER_32
+	do
+		l2 := l1 + arg1
+		l3 := 2 * arg1
+		if l2 > l3 then
+			f2 := f2 + 1
+		else
+			f2 := f2 - 1
+		end
+		Result := f2 + f2
+	end
