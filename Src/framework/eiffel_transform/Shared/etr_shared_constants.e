@@ -11,7 +11,7 @@ feature {NONE} -- Constants
 	syntax_version: NATURAL_8
 			-- Syntax version used
 		once
-			Result := {CONF_OPTION}.syntax_index_transitional
+			Result := {CONF_OPTION}.syntax_index_standard
 		end
 
 feature {NONE} -- Class-relative paths

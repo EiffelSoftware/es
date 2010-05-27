@@ -539,54 +539,12 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 			end
 		end
 
-	process_loop_expr_as (l_as: LOOP_EXPR_AS)
-		do
-			output.append_string(ti_across_keyword+ti_New_line)
-			process_child_block (l_as.iteration, l_as, 1)
-
-			if processing_needed (l_as.full_invariant_list, l_as, 2) then
-				output.append_string (ti_invariant_keyword+ti_New_line)
-				process_child_block_list(l_as.full_invariant_list, void, l_as, 2)
-				output.append_string (ti_New_line)
-			end
-
-			if processing_needed (l_as.exit_condition, l_as, 3) then
-				output.append_string (ti_until_keyword+ti_New_line)
-				process_child_block(l_as.exit_condition, l_as, 3)
-				output.append_string (ti_New_line)
-			end
-
-			if l_as.is_all then
-				output.append_string (ti_all_keyword+ti_new_line)
-			else
-				output.append_string (ti_some_keyword+ti_new_line)
-			end
-			process_child_block(l_as.expression, l_as, 4)
-			output.append_string (ti_New_line)
-
-			if processing_needed (l_as.variant_part, l_as, 5) then
-				output.append_string (ti_variant_keyword+ti_New_line)
-				process_child_block(l_as.variant_part, l_as, 5)
-				output.append_string (ti_New_line)
-			end
-
-			output.append_string (ti_End_keyword+ti_New_line)
-		end
-
-	process_iteration_as (l_as: ITERATION_AS)
-		do
-			process_child (l_as.expression, l_as, 1)
-
-			output.append_string (ti_space+ti_as_keyword+ti_space)
-			process_child (l_as.identifier, l_as, 2)
-			output.append_string (ti_new_line)
-		end
-
 	process_loop_as (l_as: LOOP_AS)
 		do
 			if processing_needed (l_as.iteration, l_as, 6) then
 				output.append_string(ti_across_keyword+ti_New_line)
 				process_child_block(l_as.iteration, l_as, 6)
+				output.append_string (ti_New_line)
 			end
 
 			if processing_needed (l_as.from_part, l_as, 1) or not processing_needed (l_as.iteration, l_as, 6) then
@@ -609,9 +567,11 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 				output.append_string (ti_New_line)
 			end
 
-			output.append_string (ti_until_keyword+ti_New_line)
-			process_child_block (l_as.stop, l_as, 3)
-			output.append_string (ti_New_line)
+			if processing_needed (l_as.stop, l_as, 3)  then
+				output.append_string (ti_until_keyword+ti_New_line)
+				process_child_block (l_as.stop, l_as, 3)
+				output.append_string (ti_New_line)
+			end
 
 			output.append_string (ti_loop_keyword+ti_New_line)
 
@@ -1022,6 +982,41 @@ feature {AST_EIFFEL} -- Roundtrip: Expressions
 			end
 		end
 
+	process_loop_expr_as (l_as: LOOP_EXPR_AS)
+		do
+			output.append_string(ti_across_keyword+ti_space)
+			process_child_block (l_as.iteration, l_as, 1)
+			output.append_string (ti_space)
+
+			if processing_needed (l_as.full_invariant_list, l_as, 2) then
+				output.append_string (ti_invariant_keyword+ti_space)
+				process_child_block_list(l_as.full_invariant_list, void, l_as, 2)
+				output.append_string (ti_space)
+			end
+
+			if processing_needed (l_as.exit_condition, l_as, 3) then
+				output.append_string (ti_until_keyword+ti_space)
+				process_child_block(l_as.exit_condition, l_as, 3)
+				output.append_string (ti_space)
+			end
+
+			if l_as.is_all then
+				output.append_string (ti_all_keyword+ti_space)
+			else
+				output.append_string (ti_some_keyword+ti_space)
+			end
+			process_child_block(l_as.expression, l_as, 4)
+			output.append_string (ti_space)
+
+			if processing_needed (l_as.variant_part, l_as, 5) then
+				output.append_string (ti_variant_keyword+ti_space)
+				process_child_block(l_as.variant_part, l_as, 5)
+				output.append_string (ti_space)
+			end
+
+			output.append_string (ti_End_keyword)
+		end
+
 feature {AST_EIFFEL} -- Roundtrip: Access
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
@@ -1113,6 +1108,14 @@ feature {AST_EIFFEL} -- Roundtrip: Inheritance clauses
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Misc
+
+	process_iteration_as (l_as: ITERATION_AS)
+		do
+			process_child (l_as.expression, l_as, 1)
+
+			output.append_string (ti_space+ti_as_keyword+ti_space)
+			process_child (l_as.identifier, l_as, 2)
+		end
 
 	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
 		do

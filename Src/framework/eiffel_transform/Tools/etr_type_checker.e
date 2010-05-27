@@ -16,6 +16,8 @@ inherit
 		export
 			{NONE} all
 			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition
+		redefine
+			set_routine_ids
 		end
 
 	SHARED_AST_CONTEXT
@@ -44,8 +46,12 @@ feature {NONE} -- Creation
 	make
 			-- Initialize type checker
 		do
-			-- Make sure interal type checkers are initialized
-			init (void)
+			-- Create interal type checkers
+			create type_a_checker
+			create inherited_type_a_checker
+			create type_a_generator
+			create byte_anchor
+			context := ast_context
 		end
 
 feature -- Output
@@ -296,11 +302,11 @@ feature -- Type evaluation
 	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
 			-- Local information for `a_feature' in `a_class'.
 		do
-			init (ast_context)
 			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_class, a_class.actual_type)
 			ast_context.set_current_feature (a_feature)
 			ast_context.set_written_class (a_feature.written_class)
+			init (ast_context)
 			current_feature := a_feature
 			if a_feature.is_routine then
 				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
@@ -374,11 +380,11 @@ feature -- Type checking
 			if etr_expr_parser.error_count > 0 then
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else
-				init (ast_context)
 				context.clear_all
 				ast_context.set_is_ignoring_export (True)
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type)
 				ast_context.set_written_class (a_context.class_context.written_class)
+				init (ast_context)
 				if attached {ETR_FEATURE_CONTEXT}a_context as l_feat_context then
 					l_feat := l_feat_context.written_feature
 					initialize_object_test_locals (l_feat_context, a_path)
@@ -389,6 +395,12 @@ feature -- Type checking
 		end
 
 feature {NONE} -- Implementation
+
+	set_routine_ids (ids: ID_SET; a: ID_SET_ACCESSOR)
+			-- <precursor>
+		do
+			-- This feature would change the original class-ast in the system
+		end
 
 	initialize_object_test_locals (a_feature_context: ETR_FEATURE_CONTEXT; a_path: detachable AST_PATH)
 			-- Init with object test locals from `a_feature_context'
