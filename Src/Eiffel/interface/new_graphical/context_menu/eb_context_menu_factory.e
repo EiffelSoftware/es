@@ -1117,6 +1117,15 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.extend (dev_window.refactoring_manager.rename_command.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.rename_command).drop_class (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.make_effective_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.make_effective_command).drop_class (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.pretty_print_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pretty_print_command).drop_class (a_stone))
+
 --			l_menu.extend (new_menu_item ("Move"))
 			--| FIXME IEK There is no dialog for moving a class?
 		end
@@ -1138,6 +1147,18 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu.extend (dev_window.refactoring_manager.pull_command.new_menu_item_unmanaged)
 			l_menu.last.select_actions.wipe_out
 			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pull_command).drop_feature (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.pretty_print_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.pretty_print_command).drop_feature (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.create_setter_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.create_setter_command).drop_feature (a_stone))
+
+			l_menu.extend (dev_window.refactoring_manager.create_custom_setter_command.new_menu_item_unmanaged)
+			l_menu.last.select_actions.wipe_out
+			l_menu.last.select_actions.extend (agent (dev_window.refactoring_manager.create_custom_setter_command).drop_feature (a_stone))
 		end
 
 	extend_debug_class_menus (a_menu: EV_MENU; a_class_c: CLASS_C)
@@ -2034,7 +2055,7 @@ invariant
 	dev_window_not_void: dev_window /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

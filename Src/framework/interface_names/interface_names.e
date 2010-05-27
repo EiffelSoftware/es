@@ -36,6 +36,11 @@ inherit
 
 feature -- Button texts
 
+	b_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	b_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	b_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	b_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
+
 	b_Abort: STRING_32							do Result := locale.translation("Abort")	end
 	b_Add: STRING_32 							do Result := locale.translation("Add")	end
 	b_Add_text: STRING_32 						do Result := locale.translation("Add ->")	end
@@ -333,6 +338,11 @@ feature -- File names
 	default_stack_file_name: STRING =			"stack"
 
 feature -- Accelerator, focus label and menu name
+
+	f_refactoring_extract_method: STRING_32		do Result := locale.translation("Extract Method")	end
+	f_refactoring_pretty_print: STRING_32		do Result := locale.translation("Pretty print")	end
+	f_refactoring_make_effective: STRING_32		do Result := locale.translation("Make effective")	end
+	f_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 
 	m_About: STRING_32
 		once
@@ -1027,6 +1037,16 @@ feature -- Context menu
 	m_View: STRING_32					do Result := locale.translation("&View")	end
 
 feature -- Label texts
+
+	l_start_line_not_in_a_feature: STRING_32 			do Result := locale.translation ("Start line is not in a feature") end
+	l_invalid_start_position: STRING_32 			do Result := locale.translation ("Invalid start position") end
+	l_invalid_end_position: STRING_32 			do Result := locale.translation ("Invalid end position") end
+	l_invalid_line_numbers: STRING_32 			do Result := locale.translation ("Line numbers are not in the same instruction-block") end
+	l_swapped_line_numbers: STRING_32 			do Result := locale.translation ("End-line is before start-line") end
+	l_start_line: STRING_32				do Result := locale.translation ("Start line:") end
+	l_end_line: STRING_32				do Result := locale.translation ("End line:") end
+	l_extracted_method_name: STRING_32	do Result := locale.translation ("Name of extracted method:") end
+	l_class_name_text: STRING_32		do Result := locale.translation ("Class name:") end
 
 	l_Ace_file_for_frame: STRING_32		do Result := locale.translation("Configuration file")	end
 	l_action_colon: STRING_32			do Result := locale.translation("Action:")	end
@@ -2373,6 +2393,7 @@ feature -- Title part
 	t_refactoring_feature_rename: STRING_32	do Result := locale.translation("Refactor: Feature Rename (Compiled Classes)")	end
 	t_refactoring_class_select: STRING_32 do Result := locale.translation("Select Class")	end
 	t_refactoring_class_rename: STRING_32 do Result := locale.translation("Refactor: Class Rename")	end
+	t_refactoring_extract_method: STRING_32	do Result := locale.translation("Refactoring: Extract Method")	end
 	t_select_working_directory: STRING_32 do Result := locale.translation("Select working directory")	end
 
 	t_Breakpoints_tool: STRING_32				do Result := locale.translation ("Breakpoints")	end

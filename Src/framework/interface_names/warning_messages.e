@@ -813,6 +813,10 @@ feature -- Refactoring
 	w_Feature_not_written_in_class: STRING_32 do Result := locale.translation ("Feature is not written in selected class.") end
 	w_Select_class_feature_to_rename: STRING_32 do Result := locale.translation ("Select class or feature to rename.%NEither use pick and drop or target the editor to the feature or class.") end
 	w_Select_feature_to_pull: STRING_32 do Result := locale.translation ("Select a feature to pull up.%NEither use pick and drop or target the editor to the feature to pull up.") end
+	w_Select_feature_to_pretty_print: STRING_32 do Result := locale.translation ("Select a feature to pretty-print.%NEither use pick and drop or target the editor to the feature.") end
+	w_Select_attribute_for_setter: STRING_32 do Result := locale.translation ("Select an attribute to create a setter for.%NEither use pick and drop or target the editor to the feature.") end
+	w_Select_deferred_class: STRING_32 do Result := locale.translation ("Select a deferred class to make effective.%NEither use pick and drop or target the editor to the class.") end
+	w_Class_not_compiled: STRING_32 do Result := locale.translation ("Make sure the selected class is compiled.") end
 
 feature -- Contract tool
 
