@@ -7,6 +7,12 @@
 
 source_path	$BUGS
 
+-- Capture/Replay tests
+
+test	external-call			caprep001 tcf pass capture replay
+test	simple-agent			caprep002 tcf pass capture replay
+
+
 
 -- EiffelTime tests
 
