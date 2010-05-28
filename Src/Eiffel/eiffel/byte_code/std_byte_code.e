@@ -1302,6 +1302,11 @@ end
 					not l_ext.is_built_in
 				then
 					l_inside := False
+				elseif
+					l_feat.written_class.name_in_upper.is_equal ("IDENTIFIED_ROUTINES") or
+					l_feat.written_class.name_in_upper.is_equal ("EV_ANY_IMP")
+				then
+					l_inside := False
 				end
 			elseif l_feat.written_class.name_in_upper.is_equal ("MANAGED_POINTER") then
 				if
