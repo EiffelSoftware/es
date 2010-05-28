@@ -428,8 +428,10 @@ rt_public int is_inside_rt_eiffel_code = 0;
 TODO: doc
 */
 rt_public uint32 cr_cross_depth = 0;
+rt_public uint32 cr_call_depth = 0;
 rt_public struct stcrchunk *cr_top_object = (struct stcrchunk *) NULL;
 rt_public FILE *cr_file = (FILE *) NULL;
+rt_public int cr_suppress_event = 0;
 #endif
 
 

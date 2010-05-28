@@ -47,6 +47,10 @@ doc:<file name="hector.c" header="eif_hector.h" version="$Id$" summary="Handling
 #include "rt_hector.h"
 #include "rt_assert.h"
 
+#ifdef WORKBENCH
+#include "eif_capture_replay.h"
+#endif
+
 #ifdef ISE_GC
 #ifndef EIF_THREADS
 /*
@@ -273,6 +277,11 @@ rt_public EIF_REFERENCE eif_wean(EIF_OBJECT object)
 	}
 	EIFMTX_UNLOCK;
 
+#ifdef WORKBENCH
+	if (is_capturing)
+		cr_register_wean (ret);
+#endif
+
 	return ret;				/* return unprotected address */
 }
 
@@ -364,6 +373,12 @@ rt_public EIF_OBJECT eif_protect(EIF_REFERENCE object)
 	eif_access(address) = object;		/* Record object's physical address */
 
 	EIFMTX_UNLOCK;
+
+#ifdef WORKBENCH
+	if (is_capturing)
+		cr_register_protect (object);
+#endif
+
 	return address;			/* Location in Hector table */
 }
 

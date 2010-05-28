@@ -127,8 +127,10 @@ typedef struct tag_eif_globals		/* Structure containing all global variables to 
 #ifdef WORKBENCH
 		/* capture replay */
 	uint32 cr_cross_depth_cx;
+	uint32 cr_call_depth_cx;
 	struct stcrchunk *cr_top_object_cx;
 	FILE *cr_file_cx;			/* File to/from which log is written/read */
+	int cr_suppress_event_cx;			/* Is the current event caused by capture/replay and should not be logged? */
 #endif
 
 } eif_global_context_t;
@@ -236,8 +238,10 @@ rt_private eif_global_context_t * eif_thr_getspecific (EIF_TSD_TYPE global_key) 
 #ifdef WORKBENCH
 /* Capture/Replay variables */
 #define cr_cross_depth		(eif_globals->cr_cross_depth_cx)
+#define cr_call_depth		(eif_globals->cr_call_depth_cx)
 #define cr_top_object           (eif_globals->cr_top_object_cx)
 #define cr_file			(eif_globals->cr_file_cx)
+#define cr_suppress_event       (eif_globals->cr_suppress_event_cx)
 #endif
 
 #ifdef EIF_TLS_WRAP

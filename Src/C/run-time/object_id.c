@@ -49,6 +49,9 @@ doc:<file name="object_id.c" header="eif_object_id.h" version="$Id$" summary="Ob
 #include "rt_globals.h"
 #include "rt_malloc.h"
 
+#ifdef WORKBENCH
+#include "eif_capture_replay.h"
+#endif
 
 /*#define DEBUG 2 */		/* Debug level */
 
@@ -281,6 +284,12 @@ rt_private EIF_INTEGER private_object_id(EIF_REFERENCE object, struct stack *st,
 #ifdef DEBUG
 	dprintf (2) ("eif_object_id %d %lx %lx\n", Result, address, object);
 #endif
+
+#ifdef WORKBENCH
+	if (is_capturing)
+		cr_register_protect(object);
+#endif
+
 	return Result;
 }
 
@@ -329,6 +338,10 @@ rt_private EIF_INTEGER private_general_object_id(EIF_REFERENCE object, struct st
 			/* Reuse free location */
 		*free_location = object;
 		ENSURE ("free_id_computed", free_id >= 0);
+#ifdef WORKBENCH
+		if (is_capturing)
+			cr_register_protect (object);
+#endif
 		return free_id;
 	} else
 			/* Object not found, allocate new value */
@@ -398,6 +411,11 @@ rt_private void private_object_id_free(EIF_INTEGER id, struct stack *st, EIF_INT
 	for (;stack_number != i; i++)
 		if ((end = end->sk_next) == (struct stchunk *) 0)
 			return;		/* Not that many chunks */
+
+#ifdef WORKBENCH
+	if (is_capturing)
+		cr_register_wean (eif_access((char *)((char **)end->sk_arena + (id % STACK_SIZE))));
+#endif
 
 		/* add offset to the end of chunk */
 	eif_access((char *)((char **)end->sk_arena + (id % STACK_SIZE))) = (EIF_REFERENCE) 0;

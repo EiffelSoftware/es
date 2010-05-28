@@ -1323,11 +1323,14 @@ RT_LNK void eif_exit_eiffel_code(void);
  *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
  *     s: size of area if Result is a TYPED_POINTER
  */
+#define RTCRD { int i; for (i=0;i<cr_call_depth;i++)printf(" "); }
 #ifdef WORKBENCH
 #define RTCRI (!(cr_cross_depth%2))
 #define RTCRC(x,y) \
 	int cr_cross = (RTCRI != (x)) && (is_capturing || is_replaying); \
 	EIF_TYPED_VALUE cr_result; \
+	cr_call_depth++; \
+	/*RTCRD; printf ("%s\n", exvect->ex_rout); */ \
 	if (cr_cross) { \
 		cr_cross_depth++; \
 		if (!(is_replaying && RTCRI)) { \
@@ -1356,7 +1359,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 		cr_replay (&cr_result); \
 		Result = cr_result.f; \
 	} \
-	if (cr_cross) cr_cross_depth--;
+	if (cr_cross) cr_cross_depth--; \
+	cr_call_depth--;
 
 #define RTCRV \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
@@ -1367,7 +1371,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 	else if (cr_cross) { \
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
-	if (cr_cross) cr_cross_depth--;
+	if (cr_cross) cr_cross_depth--; \
+	cr_call_depth--;
 
 #else
 

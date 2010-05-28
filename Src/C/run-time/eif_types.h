@@ -495,13 +495,14 @@ struct pgcontext {				/* Program context */
 /* eif_capture_replay.h */
 
 typedef union tag_EIF_CR_REFERENCE {
-	EIF_REFERENCE *o;                  /* FIXME: should be an EIF_OBJECT.. */
-	EIF_POINTER p;
+	EIF_REFERENCE *o;                  /* Pointer to EIF_REFERENCE */
+	EIF_POINTER p;                     /* Pointer to memory area */
 } EIF_CR_REFERENCE;
 
 
 struct cr_object {                         /* Area being observed by capture/replay framework */
 	int is_current;                    /* True if object represents the bottom object of an observed stack frame */
+	int is_protected;                  /* Positive if ref.o was protected or ID'd by user code (possibly recursive) */
 	EIF_CR_REFERENCE ref;              /* Reference pointing to actual object/memory area */
 	size_t size;                       /* 0 if ref points to an Eiffel object, otherwise the size of the memory ref points to */
 

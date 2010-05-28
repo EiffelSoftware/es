@@ -47,6 +47,10 @@
 #include "eif_traverse.h"
 #include "eif_macros.h"
 
+#ifdef WORKBENCH
+#include "eif_capture_replay.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -188,6 +192,15 @@ extern "C" {
 /* WEL_IDENTIFIED class */
 #define eif_builtin_WEL_IDENTIFIED_eif_current_object_id(object)	eif_reference_id(object)
 #define eif_builtin_WEL_IDENTIFIED_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
+
+
+/* RT_CAPTURE_REPLAY class */
+#ifdef WORKBENCH
+#define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)                  eif_printf(string)
+#else
+#define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)
+#endif
+
 
 #ifdef __cplusplus
 }
