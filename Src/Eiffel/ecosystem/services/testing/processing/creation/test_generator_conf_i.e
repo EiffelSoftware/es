@@ -404,7 +404,23 @@ feature -- CITADEL
 		deferred
 		end
 
-note
+feature -- Exclusion
+
+	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
+			-- List of features excluded from being tested
+		do
+			if excluded_features_cache = Void then
+				create excluded_features_cache.make
+			end
+			Result := excluded_features_cache
+		end
+		
+feature{NONE} -- Implementation
+
+	excluded_features_cache: like excluded_features
+			-- Cache for `excluded_features'
+
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

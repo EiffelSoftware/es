@@ -21,6 +21,8 @@ inherit
 
 	ERL_G_TYPE_ROUTINES
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 
 	make
@@ -40,6 +42,8 @@ feature {NONE} -- Initialization
 			create priority_table.make_default
 			create tester.make
 			priority_table.set_key_equality_tester (tester)
+			create excluded_features.make (10)
+			excluded_features.set_equality_tester (string_equality_tester)
 		ensure
 			system_set: system = a_system
 		end
@@ -95,6 +99,10 @@ feature -- Access
 			end
 		end
 
+	excluded_features: DS_HASH_SET [STRING]
+			-- Features to be excluded from being tested
+			-- format: CLASS_NAME.feature_name
+
 feature -- Changing Priority
 
 	set_static_priority_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_priority: INTEGER)
@@ -106,28 +114,32 @@ feature -- Changing Priority
 		local
 			pair: DS_PAIR [INTEGER, INTEGER]
 			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+			l_feat_name: STRING
 		do
-			priority_table.search (a_feature)
-			if priority_table.found then
-				priority_table.found_item.put_first (a_priority)
-			else
-				create pair.make (a_priority, a_priority)
-				if highest_dynamic_priority < a_priority then
-					highest_dynamic_priority := a_priority
-				end
-				priority_table.force (pair, a_feature)
-				feature_list_table.search (a_priority)
-				if feature_list_table.found then
-					list := feature_list_table.found_item
-					check
-						feature_not_included: not list.has (a_feature)
-					end
-					list.force_last (a_feature)
+			l_feat_name := a_feature.type.associated_class.name_in_upper + "." + a_feature.feature_.feature_name.as_lower
+			if not excluded_features.has (l_feat_name) then
+				priority_table.search (a_feature)
+				if priority_table.found then
+					priority_table.found_item.put_first (a_priority)
 				else
-					create list.make_equal
-					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
-					list.force_last (a_feature)
-					feature_list_table.force (list, a_priority)
+					create pair.make (a_priority, a_priority)
+					if highest_dynamic_priority < a_priority then
+						highest_dynamic_priority := a_priority
+					end
+					priority_table.force (pair, a_feature)
+					feature_list_table.search (a_priority)
+					if feature_list_table.found then
+						list := feature_list_table.found_item
+						check
+							feature_not_included: not list.has (a_feature)
+						end
+						list.force_last (a_feature)
+					else
+						create list.make_equal
+						list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
+						list.force_last (a_feature)
+						feature_list_table.force (list, a_priority)
+					end
 				end
 			end
 		end
@@ -179,6 +191,24 @@ feature -- Changing Priority
 			if l_added = 0 and then not l_exported_creators.is_empty then
 				l_exported_creators.do_all (agent register_feature (?, a_type, True, a_priority))
 			end
+		end
+
+	set_excluded_features (a_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]])
+			-- Set `excluded_features' with `a_features'.
+		local
+			l_cursor: CURSOR
+		do
+			excluded_features.wipe_out
+			l_cursor := a_features.cursor
+			from
+				a_features.start
+			until
+				a_features.after
+			loop
+				excluded_features.force_last (a_features.item_for_iteration.class_name + "." + a_features.item_for_iteration.feature_name)
+				a_features.forth
+			end
+			a_features.go_to (l_cursor)
 		end
 
 feature -- Basic routines
@@ -418,7 +448,7 @@ invariant
 	tables_valid: are_tables_valid
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

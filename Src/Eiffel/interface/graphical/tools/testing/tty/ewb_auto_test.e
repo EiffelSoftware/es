@@ -212,6 +212,8 @@ feature -- Execution
 
 				l_conf.set_is_post_state_serialized (l_ap.is_post_state_serialized)
 
+				l_conf.excluded_features.append (l_ap.excluded_features)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

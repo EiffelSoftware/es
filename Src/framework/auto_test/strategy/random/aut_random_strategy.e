@@ -51,6 +51,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
 			create queue.make (system)
+			queue.set_excluded_features (a_interpreter.configuration.excluded_features)
 			create types_under_test.make_default
 			create classes_under_test.make_default
 			classes_under_test.set_equality_tester (create {AUT_CLASS_EQUALITY_TESTER})

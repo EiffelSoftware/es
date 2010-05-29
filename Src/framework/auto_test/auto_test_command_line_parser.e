@@ -78,10 +78,11 @@ feature{NONE} -- Initialization
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
 			l_duplicated_test_case_serialization_option: AP_FLAG
-			l_strs: LIST [STRING]
+			l_strs, l_strs2: LIST [STRING]
 			l_word: STRING
 			l_log_has_basic: BOOLEAN
 			l_post_state_serialization_option: AP_FLAG
+			l_exclude_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -278,6 +279,10 @@ feature{NONE} -- Initialization
 			create l_post_state_serialization_option.make_with_long_form ("serialize-post-state")
 			l_post_state_serialization_option.set_description ("Enable post-state information serialization? Normally only pre-state information is necessary because the test case can be re-executed to observe the post-state. But when post-state information is available, you don't need to re-execute the test case. Default: not enabled")
 			parser.options.force_last (l_post_state_serialization_option)
+
+			create l_exclude_option.make_with_long_form ("exclude")
+			l_exclude_option.set_description ("Exclude the specidifed features from being tested. Format CLASS_NAME.feature_name[,CLASS_NAME.feature_name]+.")
+			parser.options.force_last (l_exclude_option)
 
 			parser.parse_list (a_arguments)
 
@@ -681,6 +686,24 @@ feature{NONE} -- Initialization
 				is_post_state_serialized := l_post_state_serialization_option.was_found
 			end
 
+			if not error_handler.has_error then
+				create excluded_features.make
+				if l_exclude_option.was_found then
+					l_strs := l_exclude_option.parameter.split (',')
+					from
+						l_strs.start
+					until
+						l_strs.after
+					loop
+						l_strs2 := l_strs.item_for_iteration.split ('.')
+						if l_strs2.count = 2 then
+							excluded_features.extend ([l_strs2.first.as_upper, l_strs2.last.as_lower])
+						end
+						l_strs.forth
+					end
+				end
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -951,6 +974,9 @@ feature -- Status report
 	is_post_state_serialized: BOOLEAN
 			-- Should post-state information be serialized?
 			-- Default: False
+
+	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
+			-- List of features that are excluded from being tested.
 
 feature {NONE} -- Constants
 
