@@ -115,9 +115,11 @@ feature -- Changing Priority
 			pair: DS_PAIR [INTEGER, INTEGER]
 			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			l_feat_name: STRING
+			l_class_feat_name: STRING
 		do
-			l_feat_name := a_feature.type.associated_class.name_in_upper + "." + a_feature.feature_.feature_name.as_lower
-			if not excluded_features.has (l_feat_name) then
+			l_class_feat_name := a_feature.type.associated_class.name_in_upper + "." + a_feature.feature_.feature_name.as_lower
+			l_feat_name := a_feature.feature_.feature_name.as_lower
+			if not excluded_features.has (l_feat_name) and then not excluded_features.has (l_class_feat_name) then
 				priority_table.search (a_feature)
 				if priority_table.found then
 					priority_table.found_item.put_first (a_priority)
@@ -205,7 +207,11 @@ feature -- Changing Priority
 			until
 				a_features.after
 			loop
-				excluded_features.force_last (a_features.item_for_iteration.class_name + "." + a_features.item_for_iteration.feature_name)
+				if a_features.item_for_iteration.class_name.is_empty then
+					excluded_features.force_last (a_features.item_for_iteration.feature_name)
+				else
+					excluded_features.force_last (a_features.item_for_iteration.class_name + "." + a_features.item_for_iteration.feature_name)
+				end
 				a_features.forth
 			end
 			a_features.go_to (l_cursor)

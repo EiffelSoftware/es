@@ -281,7 +281,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_post_state_serialization_option)
 
 			create l_exclude_option.make_with_long_form ("exclude")
-			l_exclude_option.set_description ("Exclude the specidifed features from being tested. Format CLASS_NAME.feature_name[,CLASS_NAME.feature_name]+.")
+			l_exclude_option.set_description ("Exclude the specidifed features from being tested. Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name (no matter from which class that feature comes, it will not be tested.")
 			parser.options.force_last (l_exclude_option)
 
 			parser.parse_list (a_arguments)
@@ -696,8 +696,11 @@ feature{NONE} -- Initialization
 						l_strs.after
 					loop
 						l_strs2 := l_strs.item_for_iteration.split ('.')
+
 						if l_strs2.count = 2 then
 							excluded_features.extend ([l_strs2.first.as_upper, l_strs2.last.as_lower])
+						elseif l_strs2.count = 1 then
+							excluded_features.extend (["", l_strs2.first.as_lower])
 						end
 						l_strs.forth
 					end
