@@ -56,8 +56,6 @@ feature{NONE} -- Initialization
 			create mock_heap.make_default
 			create expected_object_states.make_default
 			create last_model.make_default
-
-			create transition_summary.make
 		end
 
 feature -- Process
@@ -98,7 +96,6 @@ feature -- Process
 				l_log_parser.add_observer (Current)
 				l_log_parser.parse_stream (l_log_stream)
 				l_log_stream.close
-				transition_summary.store_transitions (configuration.log_file_path)
 
 					-- Construct state transition model.
 	   			create l_state_transition_model.make (100)
@@ -260,8 +257,6 @@ feature{NONE} -- Process
     							    l_model_state.extract_state (mock_heap, last_call_based_request, False)
     								last_transition.set_destination (l_model_state)
     								last_model.add_transition (last_transition)
-    								transition_summary.add_semantic_document (last_call_based_request.target_type, last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
---    								transition_summary.add_transition (last_call_based_request.class_of_target_type, last_call_based_request.feature_to_call, last_transition.source, last_transition.destination)
 
     									-- Prepare for next transition
     								last_call_based_request := Void
@@ -438,9 +433,6 @@ feature{NONE} -- implementation
 
 	expected_object_states: DS_ARRAYED_LIST [TUPLE[ob_type: TYPE_A; ob_id: INTEGER] ]
 			-- List of expected object states to finish the last call transition.
-
-	transition_summary: AFX_TRANSITION_SUMMARY
-			-- Transition summary
 
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
