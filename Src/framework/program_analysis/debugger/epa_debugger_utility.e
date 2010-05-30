@@ -47,30 +47,58 @@ feature -- Access
 
 feature -- Basic operations
 
-	start_debugger (a_dm: DEBUGGER_MANAGER; a_arguments: STRING; a_working_directory: STRING)
+	start_debugger (a_dm: DEBUGGER_MANAGER; a_arguments: STRING; a_working_directory: STRING; a_ignore_breakpont: BOOLEAN)
 			-- Start `a_dm', which is a debugger manager by launching
 			-- the debuggee in `a_working_directory'.
+			-- `a_ignore_breakpoint' indicates if break points should be ignored.
 		require
 			a_dm /= Void
 		local
 			ctlr: DEBUGGER_CONTROLLER
 			wdir: STRING
-			param: DEBUGGER_EXECUTION_PARAMETERS
+			param: DEBUGGER_EXECUTION_RESOLVED_PROFILE
+			prof: DEBUGGER_EXECUTION_PROFILE
 		do
 			remove_debugger_session
 			if wdir = Void or else wdir.is_empty then
 				wdir := Eiffel_project.lace.directory_name
-						--Execution_environment.current_working_directory
+					--Execution_environment.current_working_directory
 			end
 			ctlr := a_dm.controller
-			create param
-			param.set_arguments (a_arguments)
-			param.set_working_directory (a_working_directory)
-			a_dm.set_execution_ignoring_breakpoints (False)
+
+			create prof.make
+			prof.set_arguments (a_arguments)
+			prof.set_working_directory (wdir)
+			a_dm.set_execution_ignoring_breakpoints (a_ignore_breakpont)
 			a_dm.set_catcall_detection_in_console (False)
 			a_dm.set_catcall_detection_in_debugger (False)
+			create param.make_from_profile (prof)
 			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
+
+--	start_debugger (a_exec_mode: INTEGER; ign_bp: BOOLEAN)
+--		require
+--			debugger_manager /= Void
+--		local
+--			ctlr: DEBUGGER_CONTROLLER
+--			wdir: STRING
+--			prof: DEBUGGER_EXECUTION_PROFILE
+--			param: DEBUGGER_EXECUTION_RESOLVED_PROFILE
+--		do
+--			wdir := param_working_directory
+--			if wdir = Void or else wdir.is_empty then
+--				wdir := Eiffel_project.lace.directory_name
+--						--Execution_environment.current_working_directory
+--			end
+--			ctlr := debugger_manager.controller
+--			create prof.make
+--			prof.set_arguments (param_args)
+--			prof.set_working_directory (wdir)
+--			prof.set_environment_variables (param_env_variables)
+--			debugger_manager.set_execution_ignoring_breakpoints (ign_bp)
+--			create param.make_from_profile (prof)
+--			ctlr.debug_application (param, a_exec_mode)
+--		end
 
 	remove_debugger_session
 			-- Remove the debugger serssion file for currently loaded projects.

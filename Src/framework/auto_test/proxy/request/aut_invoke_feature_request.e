@@ -92,6 +92,81 @@ feature -- Access
 			definition: Result = class_of_target_type.feature_named (feature_name)
 		end
 
+	operand_indexes: SPECIAL [INTEGER] is
+			-- Indexes of operands for the feature call
+			-- in current
+		local
+			l_count: INTEGER
+		do
+			l_count := 1
+			if is_feature_query then
+				l_count := l_count + 1
+			end
+			if argument_list /= Void then
+				l_count := l_count + argument_list.count
+			end
+
+			create Result.make_empty (l_count)
+			Result.put (target.index, 0)
+
+			if argument_list /= Void then
+				argument_list.do_all_with_index (agent (a_var: ITP_VARIABLE; a_index: INTEGER; a_result: SPECIAL [INTEGER]) do a_result.put (a_var.index, a_index) end (?, ?, Result))
+			end
+
+			if is_feature_query then
+				Result.put (receiver.index, l_count - 1)
+			end
+		end
+
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
+		local
+			l_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			l_target_type: TYPE_A
+			i: INTEGER
+			l_type: TYPE_A
+		do
+			l_target_type := target_type
+			l_count := 1
+			if is_feature_query then
+				l_count := l_count + 1
+			end
+			if argument_list /= Void then
+				l_count := l_count + argument_list.count
+			end
+
+			create Result.make_empty (l_count)
+			Result.put (l_target_type, 0)
+
+			if argument_count > 0 then
+				l_args := feature_to_call.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+					Result.put (l_type, i)
+					l_args.forth
+					i := i + 1
+				end
+				l_args.go_to (l_cursor)
+			end
+
+			if is_feature_query then
+				l_type := feature_to_call.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+				l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+				Result.put (l_type, l_count - 1)
+			end
+		end
+
 feature -- Settings
 
 	set_target_type (a_type: like target_type)
@@ -122,4 +197,35 @@ invariant
 	class_has_a_feature: target_type /= Void implies target_type.associated_class.feature_named (feature_name) /= Void
 	no_argument_void: not argument_list.has (Void)
 
+note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

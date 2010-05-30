@@ -176,6 +176,9 @@ feature {NONE}
 	testing_results_directory: STRING = "Testing"
 			-- Directory EIFGENs/[target]/Testing
 
+	contract_inference_results_directory: STRING = "Contract_inference"
+			-- Directory EIFGENs/[target]/Contract_inference
+
 feature-- Versioning
 
 	Compiler_version_number: CONF_VERSION
@@ -241,7 +244,7 @@ feature {AUXILIARY_FILES} -- Versioning
 			-- Tags used in project file header.
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

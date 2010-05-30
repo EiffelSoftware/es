@@ -28,13 +28,23 @@ inherit
 
 	REFACTORING_HELPER
 
+feature -- Access
+
+	epa_feature_checker: EPA_FEATURE_CHECKER_GENERATOR
+			-- Visitor to check code of a routine
+		once
+			create Result
+		ensure
+			feature_checker_not_void: Result /= Void
+		end
+
 feature -- Basic operations
 
 	compile_project (a_eiffel_project: E_PROJECT; a_c_compilaiton: BOOLEAN)
 			-- Compile `a_eiffel_project' when needed.
 			-- `a_c_compilation' indicates if C compiler is to be launched.
 		do
-			a_eiffel_project.quick_melt
+			a_eiffel_project.quick_melt (False, False, True)
 			a_eiffel_project.freeze
 			if a_c_compilaiton then
 				a_eiffel_project.call_finish_freezing_and_wait (True)
@@ -51,7 +61,7 @@ feature -- Basic operations
 			a_feature_attached: a_feature /= Void
 --			a_written_class_valid: a_written_class.types.count = 1
 		local
-			l_feature_checker: like feature_checker
+			l_feature_checker: like epa_feature_checker
 			l_context: like context
 			l_byte_array: like byte_array
 			l_result: detachable STRING
@@ -70,11 +80,12 @@ feature -- Basic operations
 
 				l_ast_context := a_written_class.ast_context
 				l_ast_context.clear_feature_context
-				l_ast_context.initialize (a_written_class, a_written_class.actual_type, a_written_class.feature_table)
+				l_ast_context.initialize (a_written_class, a_written_class.actual_type)
+--				l_ast_context.initialize (a_written_class, a_written_class.actual_type, a_written_class.feature_table)
 				l_ast_context.set_current_feature (a_feature)
 				l_ast_context.set_written_class (a_written_class)
 				l_ast_context.set_is_ignoring_export (a_ignore_export)
-				l_feature_checker := feature_checker
+				l_feature_checker := epa_feature_checker
 				l_feature_checker.init (l_ast_context)
 				l_feature_checker.type_check_and_code (a_feature, True, False)
 				if attached l_feature_checker.byte_code as l_byte_code then

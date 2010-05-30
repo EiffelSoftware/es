@@ -16,7 +16,8 @@ inherit
 			make as make_request,
 			feature_to_call as creation_procedure
 		redefine
-			creation_procedure
+			creation_procedure,
+			is_creation
 		end
 
 create
@@ -79,6 +80,83 @@ feature -- Access
 			-- If the default creation procedure should be used to create the object
 			-- `creation_procecure' will be Void.
 
+	operand_indexes: SPECIAL [INTEGER] is
+			-- Indexes of operands (indexes are used in object pool) for the feature call
+			-- in current
+		do
+			if argument_list /= Void then
+				create Result.make_empty (argument_list.count + 1)
+				Result.put (target.index, 0)
+				argument_list.do_all_with_index (agent (a_var: ITP_VARIABLE; a_index: INTEGER; a_result: SPECIAL [INTEGER]) do a_result.put (a_var.index, a_index) end (?, ?, Result))
+			else
+				create Result.make_empty (1)
+				Result.put (target.index, 0)
+			end
+		end
+
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
+		local
+			l_count: INTEGER
+			l_args: FEAT_ARG
+			l_cursor: CURSOR
+			l_target_type: TYPE_A
+			i: INTEGER
+			l_type: TYPE_A
+		do
+			l_target_type := target_type
+			l_count := argument_list.count + 1
+
+			create Result.make_empty (l_count)
+			Result.put (l_target_type, 0)
+
+			if argument_count > 0 then
+				l_args := creation_procedure.arguments
+				l_cursor := l_args.cursor
+				from
+					i := 1
+					l_args.start
+				until
+					l_args.after
+				loop
+					l_type := l_args.item_for_iteration.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+					l_type := actual_type_from_formal_type (l_type, interpreter_root_class)
+					Result.put (l_type, i)
+					l_args.forth
+					i := i + 1
+				end
+				l_args.go_to (l_cursor)
+			end
+		end
+
+	operand_type_table: HASH_TABLE [TYPE_A, INTEGER]
+			-- A table for opernad indexes and their associated types
+			-- Key is 0-based operand index, value is type of that operand.
+		local
+			l_opd_types: like operand_types
+			i: INTEGER
+			c: INTEGER
+		do
+			l_opd_types := operand_types
+			c := l_opd_types.count
+			create Result.make (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (l_opd_types.item (i), i)
+				i := i + 1
+			end
+		end
+
+feature -- Status report
+
+	is_creation: BOOLEAN = True
+			-- Is Current a creation procedure request?
+
 feature -- Processing
 
 	process (a_processor: AUT_REQUEST_PROCESSOR)
@@ -97,4 +175,35 @@ invariant
 	no_argument_void: argument_list /= Void implies  not argument_list.has (Void)
 --	is_default_creatable: default_creation implies is_default_creatable (type.base_class, system)
 
+note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

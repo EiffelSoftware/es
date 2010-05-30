@@ -271,6 +271,17 @@ feature -- Directories
 			end
 		end
 
+	contract_inference_results_path: DIRECTORY_NAME
+			-- Path to store contract inference related output files
+		do
+			Result := internal_contract_inference_results_path
+			if Result = Void then
+				create Result.make_from_string (target_path)
+				Result.extend (contract_inference_results_directory)
+				internal_contract_inference_results_path := Result
+			end
+		end
+
 feature -- Files
 
 	project_file_name: FILE_NAME
@@ -589,6 +600,9 @@ feature {NONE} -- Implementation: Access
 	internal_project_file_name: like project_file_name
 			-- Placeholders for storing filename.
 
+	internal_contract_inference_results_path: like contract_inference_results_path
+			-- Placeholders for storing path.
+
 invariant
 	location_not_void: location /= Void
 	location_not_empty: not location.is_empty
@@ -596,7 +610,7 @@ invariant
 	target_not_empty: not target.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

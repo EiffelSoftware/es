@@ -168,7 +168,9 @@ feature -- Access
 			debugger_message (debugger_names.t_paused)
 
 				--| Activate user interaction
-			raise_dbg_running_menu (False)
+			if should_menu_be_raised_when_application_stopped then
+				raise_dbg_running_menu (False)
+			end
 		end
 
 	on_debugging_terminated (was_executing: BOOLEAN)
@@ -696,7 +698,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

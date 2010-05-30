@@ -13,6 +13,12 @@ inherit
 	ERL_G_TYPE_ROUTINES
 		export {NONE} all end
 
+	EPA_TYPE_UTILITY
+		undefine
+			system,
+			type_a_generator
+		end
+
 feature -- Access
 
 	target: ITP_VARIABLE
@@ -61,6 +67,66 @@ feature -- Access
 				(feature_to_call = Void implies Result = 0)
 		end
 
+	feature_id: INTEGER
+			-- Id of the feature to call
+			-- This is an ID used for predicate evaluation
+
+	operand_indexes: SPECIAL [INTEGER] is
+			-- Indexes of operands for the feature call in current
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
+		deferred
+		end
+
+	operand_type_names: SPECIAL [STRING] is
+			-- Type names of operands
+		local
+			l_types: like operand_types
+			i: INTEGER
+			c: INTEGER
+		do
+			l_types := operand_types
+			c := l_types.count
+			create Result.make_empty (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (l_types.item (i).name, i)
+				i := i + 1
+			end
+		end
+
+	operand_types: SPECIAL [TYPE_A]
+			-- Types of operands
+			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
+			-- The result object (if any) is placed in (Result.count - 1)-th position.
+		deferred
+		end
+
+	operand_variable_index_table: HASH_TABLE [INTEGER, INTEGER]
+			-- Table for the mapping from 0-based operand indexes to object indexes of those operands.
+			-- Key is 0-based operand indexes (0 for target, 1 for the first argument, and so on, followed by possible result).
+			-- Value is the index of the object for that operand in the object pool.
+		local
+			l_opd_indexes: like operand_indexes
+			i: INTEGER
+			c: INTEGER
+		do
+			l_opd_indexes := operand_indexes
+			c := l_opd_indexes.count
+			create Result.make (c)
+			from
+				i := 0
+			until
+				i = c
+			loop
+				Result.put (l_opd_indexes.item (i), i)
+				i := i + 1
+			end
+		end
+
 feature -- Status report
 
 	is_setup_ready: BOOLEAN
@@ -88,8 +154,25 @@ feature -- Status report
 			good_result: Result = (argument_count > 0)
 		end
 
+	is_creation: BOOLEAN
+			-- Is Current a creation procedure request?
+		do
+		end
+
+feature -- Setting
+
+	set_feature_id (a_id: INTEGER) is
+			-- Set `feature_id' with `a_id'.
+		require
+			a_id_valid: a_id >= 0
+		do
+			feature_id := a_id
+		ensure
+			feature_id_set: feature_id = a_id
+		end
+
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

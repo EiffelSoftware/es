@@ -89,9 +89,8 @@ feature{NONE} -- Implementation
 	cleaned_type_name (a_type_name: STRING): STRING
 			-- A copy from `a_type_name', with all "?" removed.
 		do
-			fixme ("Not needed for 6.5 and above. 21.4.2010 Jasonw")
-			create Result.make_from_string (a_type_name)
-			Result.replace_substring_all (once "?", once "")
+			fixme ("To be removed. 30.5.2010 Jasonw")
+			Result := a_type_name.twin
 		end
 
 end
