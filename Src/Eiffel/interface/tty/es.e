@@ -1280,6 +1280,11 @@ feature -- Update
 			elseif option.is_equal ("-auto_test") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				create {EWB_AUTO_TEST} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-auto_fix") then
+				create l_at_args.make
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_AUTO_FIX} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-contract_inference") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1

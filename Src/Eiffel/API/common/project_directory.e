@@ -271,6 +271,17 @@ feature -- Directories
 			end
 		end
 
+	fixing_results_path: DIRECTORY_NAME
+			-- Path to store AutoFix related output files
+		do
+			Result := internal_fixing_results_path
+			if Result = Void then
+				create Result.make_from_string (target_path)
+				Result.extend (fixing_results_directory)
+				internal_fixing_results_path := Result
+			end
+		end
+
 	contract_inference_results_path: DIRECTORY_NAME
 			-- Path to store contract inference related output files
 		do
@@ -600,6 +611,7 @@ feature {NONE} -- Implementation: Access
 	internal_project_file_name: like project_file_name
 			-- Placeholders for storing filename.
 
+	internal_fixing_results_path: like fixing_results_path
 	internal_contract_inference_results_path: like contract_inference_results_path
 			-- Placeholders for storing path.
 

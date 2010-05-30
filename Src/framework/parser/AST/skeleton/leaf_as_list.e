@@ -641,6 +641,14 @@ feature -- Modifier operation
 			Result := modifier_list.has (a_modifier)
 		end
 
+	remove_modifications
+			-- Remove all modifications.
+		do
+			undo_modifications
+			modifier_list.wipe_out
+			modifier_applied := True
+		end
+
 feature -- Comment extraction
 
 	extract_comment (a_region: ERT_TOKEN_REGION): EIFFEL_COMMENTS
@@ -902,7 +910,7 @@ invariant
 	trunks_not_empty: not trunks.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

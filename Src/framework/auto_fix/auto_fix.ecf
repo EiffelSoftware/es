@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="autofix_library" uuid="197D2624-6547-4BAB-904B-131A4FA4EA73" library_target="auto_fix">
+	<target name="auto_fix">
+		<root all_classes="true"/>
+		<option warning="false" is_attached_by_default="false" void_safety="none">
+			<assertions/>
+		</option>
+		<setting name="multithreaded" value="true"/>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
+		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
+		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
+		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
+		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
+		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
+		<library name="eiffel_identifier" location="$EIFFEL_SRC\framework\eiffel_identifier\eiffel_identifier.ecf" readonly="false"/>
+		<library name="eiffel_transform" location="$EIFFEL_SRC\framework\eiffel_transform\eiffel_transform.ecf" readonly="false"/>
+		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="fixing" location="$ISE_LIBRARY\library\fixing\fixing.ecf" readonly="false"/>
+		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
+		<library name="gobo_argument" location="$ISE_LIBRARY\library\gobo\gobo_argument.ecf"/>
+		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
+		<library name="gobo_tools" location="$ISE_LIBRARY\library\gobo\gobo_tools.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
+		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
+		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="parser_extension" location="$EIFFEL_SRC\framework\parser_extension\parser_extension.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
+		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<cluster name="auto_fix" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/unix$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/Clib$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/boolean_state_transition_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/model_transformation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/state_transition_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/boolean_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/query_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/query_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/boolean_model$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/model_transformation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/strategies$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/behavior_constructor$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/program_fix$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/exception_explanation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/exception_analysis$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/graph/graph$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/state_retrieval/state/expression_value$</exclude>
+			</file_rule>
+			<cluster name="query_model" location="$EIFFEL_SRC\framework\auto_fix\query_model\"/>
+			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\auto_fix\boolean_model\"/>
+			<cluster name="model_transformation" location="$EIFFEL_SRC\framework\auto_fix\model_transformation\"/>
+			<cluster name="behavior_constructor" location="$EIFFEL_SRC\framework\auto_fix\behavior_constructor\"/>
+			<cluster name="program_fix" location="$EIFFEL_SRC\framework\auto_fix\program_fix\"/>
+		</cluster>
+	</target>
+</system>
