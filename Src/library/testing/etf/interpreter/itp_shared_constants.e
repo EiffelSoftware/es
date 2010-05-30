@@ -9,6 +9,9 @@ note
 class
 	ITP_SHARED_CONSTANTS
 
+inherit
+	ERL_CONSTANTS
+
 feature -- AutoTest socket request flags
 
 	start_request_flag: NATURAL_8 = 1
@@ -23,6 +26,15 @@ feature -- AutoTest socket request flags
 	type_request_flag: NATURAL_8 = 4
 			-- Flag for "type" request
 
+	object_state_request_flag: NATURAL_8 = 5
+			-- Flag for "state" request
+
+	precondition_evaluation_request_flag: NATURAL_8 = 6
+			-- Flag for "precondition" request
+
+	predicate_evaluation_request_flag: NATURAL_8 = 7
+			-- Flag for "predicate" request			
+
 feature -- AutoTest socket reponse flags
 
 	normal_response_flag: NATURAL_8 = 1
@@ -36,8 +48,37 @@ feature -- AutoTest socket reponse flags
 			-- Flag to indicate that there is an internal error
 			-- in the interpreter.
 
-note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	object_is_void_flag: NATURAL_8 = 4
+			-- Flag to indicate that the object involed in state query is void
+
+feature -- Index for extra data
+
+	extra_data_index_precondition_satisfaction: INTEGER is 1
+			-- Index for precondition satisfaction
+
+	extra_data_index_test_case_serialization: INTEGER is 2
+			-- Index for test case serialization on the fly
+
+feature -- Strings
+
+	nonsensical_value: STRING = "[[nonsensical]]"
+			-- Nonsensical value, when there is an exception during expression evaluation
+
+	invariant_violation_value: STRING = "[[invariant_violation]]"
+			-- Value when trying to evaluate an expression on an object which violates
+			-- its class invariants
+
+	void_value: STRING = "[[void]]"
+			-- Value when an expression evaluates to Void
+
+	reference_value: STRING = "[[reference]]"
+			-- Reference value
+
+	query_value_separator: STRING = " == "
+			-- String to separate query name and its value
+
+;note
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
