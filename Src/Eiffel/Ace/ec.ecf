@@ -49,6 +49,7 @@
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
 		<library name="xml_utility" location="$EIFFEL_SRC\framework\xml_utility\xml_utility.ecf" readonly="false"/>
+		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>		
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>
