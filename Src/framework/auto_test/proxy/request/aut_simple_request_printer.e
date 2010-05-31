@@ -34,6 +34,19 @@ feature -- Access
 			Result := string
 		end
 
+	configuration: detachable TEST_GENERATOR
+			-- Configuration
+
+feature -- Setting
+
+	set_configuration (a_configuration: like configuration)
+			-- Set `configuration' to `a_configuration'.
+		do
+			configuration := a_configuration
+		ensure
+			configuration_set: configuration = a_configuration
+		end
+
 feature {NONE} -- Access
 
 	string: STRING
@@ -45,57 +58,87 @@ feature {NONE} -- Access
 feature {AUT_REQUEST} -- Visitors
 
 	process_start_request (a_request: AUT_START_REQUEST)
-			-- <Precursor>
+			-- <Precursor>		
 		do
-			wipe_out_string
-			string.append ("start")
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				string.append ("start")
+			end
 		end
 
 	process_stop_request (a_request: AUT_STOP_REQUEST)
 			-- <Precursor>
 		do
-			wipe_out_string
-			string.append ("stop")
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				string.append ("stop")
+			end
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 			-- <Precursor>
 		do
-			wipe_out_string
-			string.append_string ("create {")
-			string.append_string (type_name (a_request.target_type, a_request.creation_procedure))
-			string.append_string ("} ")
-			a_request.target.process (expression_printer)
-			string.append_string (".")
-			string.append_string (a_request.creation_procedure.feature_name)
-			append_arguments (a_request)
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				string.append_string ("create {")
+				string.append_string (type_name (a_request.target_type, a_request.creation_procedure))
+				string.append_string ("} ")
+				a_request.target.process (expression_printer)
+				string.append_string (".")
+				string.append_string (a_request.creation_procedure.feature_name)
+				append_arguments (a_request)
+			end
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 			-- <Precursor>
 		do
-			wipe_out_string
-			a_request.target.process (expression_printer)
-			string.append_string (".")
-			string.append_string (a_request.feature_name)
-			append_arguments (a_request)
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				a_request.target.process (expression_printer)
+				string.append_string (".")
+				string.append_string (a_request.feature_name)
+				append_arguments (a_request)
+			end
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
 			-- <Precursor>
 		do
-			wipe_out_string
-			a_request.receiver.process (expression_printer)
-			string.append_string (" := ")
-			a_request.expression.process (expression_printer)
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				a_request.receiver.process (expression_printer)
+				string.append_string (" := ")
+				a_request.expression.process (expression_printer)
+			end
 		end
 
 	process_type_request (a_request: AUT_TYPE_REQUEST)
 			-- <Precursor>
 		do
-			wipe_out_string
-			string.append_string ("type of ")
-			a_request.variable.process (expression_printer)
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				wipe_out_string
+				string.append_string ("type of ")
+				a_request.variable.process (expression_printer)
+			end
+		end
+
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
 		end
 
 feature {NONE} -- Implementation
@@ -134,7 +177,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -23,13 +23,18 @@ inherit
 
 	ERL_G_TYPE_ROUTINES
 
+	EPA_CONTRACT_EXTRACTOR
+		undefine
+			system
+		end
+
 create
 
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_interpreter: like interpreter; a_queue: like queue; a_error_handler: like error_handler; a_feature_table: like feature_table)
+	make (a_system: like system; an_interpreter: like interpreter; a_queue: like queue; a_error_handler: like error_handler; a_feature_table: like feature_table; a_feat: like feature_)
 			-- Create new feature caller.
 		require
 			a_system_not_void: a_system /= Void
@@ -43,6 +48,8 @@ feature {NONE} -- Initialization
 			error_handler := a_error_handler
 			steps_completed := True
 			feature_table := a_feature_table
+			any_class := system.any_class.compiled_representation
+			feature_ := a_feat
 		ensure
 			system_set: system = a_system
 			interpreter_set: interpreter = an_interpreter
@@ -50,6 +57,8 @@ feature {NONE} -- Initialization
 			error_handler_set: error_handler = a_error_handler
 			steps_completed: steps_completed
 			feature_table_set: feature_table = a_feature_table
+			any_class_set: any_class = system.any_class.compiled_representation
+			feature_set: feature_ = a_feat
 		end
 
 feature -- Status
@@ -96,6 +105,12 @@ feature -- Access
 
 	error_handler: AUT_ERROR_HANDLER
 			-- Error handler
+
+	arguments: DS_LIST [ITP_EXPRESSION]
+			-- List of expressions used as arguments to the feature call
+
+	feature_: AUT_FEATURE_OF_TYPE
+			-- Feature to be called
 
 feature -- Change
 
@@ -147,7 +162,10 @@ feature -- Execution
 				target_creator.step
 			elseif not is_feature_and_type_rechecked then
 				is_feature_and_type_rechecked := True
-					-- Recheck `type' and `feature'.
+					-- Recheck `type' and `feature'.	
+				if not target_creator.receivers.is_empty then
+					target := target_creator.receivers.first
+				end
 				recheck_type_and_feature
 
 					-- Create or select objects as arguments of the feature call.
@@ -158,17 +176,38 @@ feature -- Execution
 				argument_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
 				feature_caller.step
+			elseif precondition_evaluator = Void then
+				if argument_creator /= Void and then (argument_creator.receivers = Void or else argument_creator.receivers.count /= feature_to_call.argument_count) then
+					cancel
+				else
+					create_precondition_evaluator
+				end
+			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
+				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
-					invoke
+					set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_operands)
+					interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, feature_to_call)
+					if arguments.count = feature_to_call.argument_count then
+						invoke
+					else
+						internal_finish
+					end
 				end
-				steps_completed := True
+
+				if interpreter.configuration.is_object_state_exploration_enabled and then
+					interpreter.object_state_table.untried_object_states (feature_to_call, type).count > 0
+				then
+					target_creator := Void
+				else
+					internal_finish
+				end
 			end
 		end
 
 	cancel
 		do
-			steps_completed := True
+			internal_finish
 		end
 
 feature {NONE} -- Implementation
@@ -213,8 +252,12 @@ feature {NONE} -- Steps
 			type_not_void: type /= Void
 			feature_not_void: feature_to_call /= Void
 		do
-			create target_creator.make (system,interpreter, feature_table)
-			target_creator.add_type (type)
+			if interpreter.configuration.is_object_state_exploration_enabled then
+				target_creator := create {AUT_RANDOM_UNTRIED_SOURCE_OBJECT_STATE_INPUT_CREATOR}.make (system, interpreter, feature_table, feature_to_call, type)
+			else
+				create target_creator.make (system,interpreter, feature_table)
+				target_creator.add_type (type)
+			end
 			target_creator.start
 		end
 
@@ -237,44 +280,63 @@ feature {NONE} -- Steps
 			type_not_expanded: not type.is_expanded
 			feature_not_void: feature_to_call /= Void
 			input_creator_not_void: target_creator /= Void
-			input_creator_done: feature_to_call.arguments /= Void and target /= Void implies target_creator.receivers.count = feature_to_call.arguments.count
-			input_creator_done: feature_to_call.arguments /= Void and target = Void implies target_creator.receivers.count = feature_to_call.arguments.count + 1
+			input_creator_done: feature_to_call.arguments /= Void and target /= Void implies arguments.count = feature_to_call.arguments.count
+--			input_creator_done: feature_to_call.arguments /= Void and target = Void implies arguments.count = feature_to_call.arguments.count + 1
 		local
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE
 		do
 			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
-				list := argument_creator.receivers
+				list := arguments
 			else
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
 			end
 
-				-- Before calling the routine, we make sure it's target is attached and input for the
-				-- arguments was succesfully created.
-			if
-				target /= Void and then not interpreter.variable_table.variable_type (target).is_none and then
-				feature_to_call.argument_count = list.count
-			then
-				if feature_to_call.type /= void_type then
-					receiver := interpreter.variable_table.new_variable
-					interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)
-				else
-					interpreter.invoke_feature (type, feature_to_call, target, list)
-				end
-				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
-				if not interpreter.last_response.is_bad and not interpreter.last_response.is_error then
-					normal_response ?= interpreter.last_response
-					if normal_response /= Void then
-						if normal_response.exception /= Void and then not normal_response.exception.is_test_invalid then
-							interpreter.log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
-						end
+			if is_variable_defined (target) and then list.for_all (agent is_variable_defined) then
+					-- Before calling the routine, we make sure it's target is attached and input for the
+					-- arguments was succesfully created.
+				if
+					target /= Void and then
+					not interpreter.variable_table.variable_type (target).is_none and then
+					feature_to_call.argument_count = list.count
+				then
+					interpreter.set_precondition_evaluator (precondition_evaluator)
+					if feature_to_call.type /= void_type then
+						receiver := interpreter.variable_table.new_variable
+						interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list, feature_)
 					else
-						check
-							dead_end: False
+						interpreter.invoke_feature (type, feature_to_call, target, list, feature_)
+					end
+					queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+					if not interpreter.last_response.is_bad and not interpreter.last_response.is_error then
+						normal_response ?= interpreter.last_response
+						if normal_response /= Void then
+--							if normal_response.exception /= Void and then not normal_response.exception.is_test_invalid then
+--								interpreter.log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
+--										-- Ilinca, "number of faults law" experiment
+--								interpreter.failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
+--							end
+						else
+							check
+								dead_end: False
+							end
 						end
 					end
 				end
 			end
+		end
+
+	internal_finish is
+			-- Finish curent task.
+		do
+			if target /= Void and then interpreter.variable_table.is_variable_defined (target) then
+				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+			elseif type /= Void then
+				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type))
+			end
+			steps_completed := True
+		ensure
+			good_result: not has_next_step
 		end
 
 feature {NONE} -- Implementation
@@ -298,7 +360,7 @@ feature {NONE} -- Implementation
 				i := (random.item  \\ count) + 1
 				feature_to_call := l_feature_table.item (class_).item (i)
 			else
-				steps_completed := True
+				internal_finish
 			end
 		ensure
 			end_or_feature_not_void: not has_next_step xor (feature_to_call /= Void)
@@ -319,13 +381,15 @@ feature {NONE} -- Implementation
 			l_feature: FEATURE_I
 			i: INTEGER
 			l_any_class: CLASS_C
+			l_cursor: CURSOR
 		do
 			if not a_table.has (a_class) then
 				create l_feats.make (1, a_class.feature_table.count)
 				l_any_class := system.any_class.compiled_class
+				l_feature_table := a_class.feature_table
+				l_cursor := l_feature_table.cursor
 				from
 					i := 1
-					l_feature_table := a_class.feature_table
 					l_feature_table.start
 				until
 					l_feature_table.after
@@ -341,6 +405,7 @@ feature {NONE} -- Implementation
 					end
 					l_feature_table.forth
 				end
+				l_feature_table.go_to (l_cursor)
 			end
 		ensure
 			a_class_in_table: a_table.has (a_class)
@@ -361,17 +426,116 @@ feature {NONE} -- Implementation
 		local
 			l_target_type: TYPE_A
 		do
-			if not target_creator.receivers.is_empty and then attached {ITP_VARIABLE} target_creator.receivers.first as l_target then
-				l_target_type := interpreter.variable_table.variable_type (l_target)
-				if l_target_type.is_none then
+			if target /= Void then
+				l_target_type := interpreter.variable_table.variable_type (target)
+				fixme ("Rmove some of the Void tests and debug why there are some call on Void target. For the moment, I just cannot reproduce them. Jasonw 2009.7.27")
+				if l_target_type = Void or else l_target_type.is_none or else l_target_type.is_basic or else not l_target_type.has_associated_class or else not l_target_type.conform_to (interpreter.interpreter_root_class, type) then
 					cancel
 				else
-					target := l_target
-					set_feature_and_type (l_target_type.associated_class.feature_with_rout_id (feature_to_call.rout_id_set.first).associated_feature_i, l_target_type)
+					if attached {ROUT_ID_SET} feature_to_call.rout_id_set as l_rout_id_set then
+						if attached {E_FEATURE} l_target_type.associated_class.feature_with_rout_id (l_rout_id_set.first) as l_e_feature then
+							if l_e_feature.is_exported_to (any_class) then
+								set_feature_and_type (l_e_feature.associated_feature_i, l_target_type)
+							else
+								cancel
+							end
+						else
+							cancel
+						end
+					else
+						cancel
+					end
 				end
 			else
 				cancel
 			end
+		end
+
+	any_class: CLASS_C
+			-- Class for {ANY}
+
+feature -- Precondition evaluation
+
+	precondition_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
+			-- Precondition evaluator
+
+	create_precondition_evaluator is
+			-- Create `precondition_evaluator'.
+		local
+			l_vars: DS_LINKED_LIST [ITP_VARIABLE]
+		do
+			create l_vars.make
+			l_vars.force_last (target)
+			if argument_creator /= Void and then argument_creator.receivers /= Void then
+				l_vars.append_last (argument_creator.receivers)
+			end
+			create precondition_evaluator.make (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type), l_vars, interpreter)
+			precondition_evaluator.start
+		end
+
+	set_target_and_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
+			-- Set `target' and `arguments' from `a_variables'.
+		require
+			a_variables_attached: a_variables /= Void
+			a_variables_index_valid: a_variables.lower = 0 and then a_variables.upper = feature_to_call.argument_count
+		do
+			create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (a_variables)
+			target ?= arguments.first
+			arguments.start
+			arguments.remove_at
+			recheck_type_and_feature
+		end
+
+	set_target_and_argument_from_candiate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE]) is
+			-- Set `target' and `arguments' with `a_candidate'.		
+		local
+			i: INTEGER
+			l_upper: INTEGER
+			l_vars: ARRAY [ITP_EXPRESSION]
+			l_var_count: INTEGER
+			l_cursor: DS_LIST_CURSOR [ITP_VARIABLE]
+		do
+			l_var_count := feature_to_call.argument_count + 1
+			create l_vars.make (0, l_var_count - 1)
+			if target_creator.receivers /= Void and then not target_creator.receivers.is_empty then
+				l_vars.put (target_creator.receivers.first, 0)
+			end
+
+			if argument_creator /= Void and then argument_creator.receivers /= Void then
+				from
+					l_cursor := argument_creator.receivers.new_cursor
+					i := 1
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_vars.put (l_cursor.item, i)
+					i := i + 1
+					l_cursor.forth
+				end
+			end
+
+			if a_candidate /= Void then
+				from
+					i := a_candidate.lower
+					l_upper := a_candidate.upper
+				until
+					i > l_upper
+				loop
+					if attached {ITP_VARIABLE} a_candidate.item (i) as l_variable then
+						l_vars.put (l_variable, i)
+					end
+					i := i + 1
+				end
+			end
+
+			set_target_and_arguments_from_array (l_vars)
+		end
+
+	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN is
+			-- Is `a_variable' defined in object pool?
+		do
+			Result := a_variable /= Void and then interpreter.typed_object_pool.is_variable_defined (a_variable)
 		end
 
 invariant
@@ -384,7 +548,7 @@ invariant
 	error_handler_not_void: error_handler /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

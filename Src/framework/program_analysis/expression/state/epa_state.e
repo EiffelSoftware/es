@@ -122,6 +122,7 @@ feature{NONE} -- Initialization
 		    l_feature_table: FEATURE_TABLE
 		    l_feature_name_set: DS_HASH_SET[STRING]
 		    l_feature: FEATURE_I
+		    l_cursor: CURSOR
 		do
 		    make_set (a_state.count)
 		    class_ := a_type.associated_class
@@ -130,6 +131,7 @@ feature{NONE} -- Initialization
 		    l_feature_table := class_.feature_table
 		    create l_feature_name_set.make_default
 		    l_feature_name_set.set_equality_tester (string_equality_tester)
+		    l_cursor := l_feature_table.cursor
 		    from l_feature_table.start
 		    until l_feature_table.after
 		    loop
@@ -139,6 +141,7 @@ feature{NONE} -- Initialization
 		        end
 		        l_feature_table.forth
 		    end
+		    l_feature_table.go_to (l_cursor)
 
 		    from a_state.start
 		    until a_state.after

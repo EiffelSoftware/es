@@ -275,17 +275,17 @@ feature -- Basic operations
 					end
 					Result := objects_as_string (operands, l_lower, l_upper)
 --						 Uncomment the following code to check if serialization is done correctly.
---					l_any ?= deserialized_object (Result.serialization)
---					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
---						interpreter.log_message ("Serialization: Deserialization correct.%N")
---					else
---						interpreter.log_message ("Serialization: Deserialization failed.")
---						if l_any /= Void then
---							interpreter.log_message (l_any.generating_type + "%N")
---						else
---							interpreter.log_message ("Void %N")
---						end
---					end
+					l_any ?= deserialized_object (Result.serialization)
+					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
+						interpreter.log_message ("Serialization: Deserialization correct.%N")
+					else
+						interpreter.log_message ("Serialization: Deserialization failed.")
+						if l_any /= Void then
+							interpreter.log_message (l_any.generating_type + "%N")
+						else
+							interpreter.log_message ("Void %N")
+						end
+					end
 				else
 					Result := Void
 				end
@@ -425,7 +425,7 @@ feature{NONE} -- Implementation
 			l_object: detachable ANY
 		do
 				-- Filter out unnecessary objects.
-			create l.make_filled (a_upper - a_lower + 1, 0)
+			create l.make_filled (0, a_upper - a_lower + 1)
 			from
 				i := a_lower
 			until
@@ -440,7 +440,7 @@ feature{NONE} -- Implementation
 			if a_lower <= a_upper then
 --				interpreter.log_message ("Serialization: To-be-serialized objects: ")
 				l_obj_list := recursively_referenced_objects (l)
-				create l_objects.make_filled (l_obj_list.count * 2, 0)
+				create l_objects.make_filled (0, l_obj_list.count * 2)
 				from
 					i := 0
 					l_obj_list.start
@@ -462,9 +462,9 @@ feature{NONE} -- Implementation
 				end
 --				interpreter.log_message ("%N")
 			else
-				create l_objects.make_filled (0, 0)
+				create l_objects.make_filled (0, 1)
 			end
-			Result := [serialized_object (l_objects), l_obj_list]
+			Result := [serialized_object_through_file (l_objects, interpreter.temp_serialization_file), l_obj_list]
 		end
 
 	recursively_referenced_objects (a_roots: SPECIAL [INTEGER]): HASH_TABLE [detachable ANY, INTEGER]

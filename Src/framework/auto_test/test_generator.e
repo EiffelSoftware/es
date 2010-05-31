@@ -41,6 +41,11 @@ inherit
 			{NONE} all
 		end
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -63,6 +68,7 @@ feature {NONE} -- Initialization
 			output_dirname := file_system.pathname (etest_suite.project_access.project.project_directory.testing_results_path, "auto_test")
 			set_seed ((create {TIME}.make_now).milli_second.as_natural_32)
 			create error_handler.make (system)
+			error_handler.set_configuration (Current)
 		end
 
 feature -- Access
@@ -111,7 +117,8 @@ feature -- Access: options
 	is_slicing_enabled: BOOLEAN
 			-- Should test cases be minimized via slicing?
 
-	is_ddmin_enabled: BOOLEAN
+
+	is_ddmin_enabled: BOOLEAN assign set_is_ddmin_enabled
 			-- Should test cases be minimized via ddmin?
 
 	proxy_time_out: NATURAL
@@ -119,6 +126,343 @@ feature -- Access: options
 
 	is_debugging: BOOLEAN
 			-- True if debugging output should be written to log.
+
+	log_file_path: detachable STRING
+			-- Path for the log file to load
+		do
+			Result := log_file_path_cache
+		ensure then
+			result_set: Result = log_file_path_cache
+		end
+
+	log_processor: detachable STRING
+			-- Name of the specified log processor
+		do
+			Result := log_processor_cache
+		ensure then
+			good_result: Result = log_processor_cache
+		end
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+		do
+			Result := log_processor_output_cache
+		ensure then
+			good_result: Result = log_processor_output_cache
+		end
+
+--	is_deserializing: BOOLEAN
+--			-- <Precursor>
+--		do
+--			Result := is_deserializing_cache
+--		ensure then
+--			good_result: Result = is_deserializing_cache
+--		end
+
+	is_recursive: BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_recursive_cache
+		ensure then
+			good_result: Result = is_recursive_cache
+		end
+
+	data_input: detachable STRING
+			-- <Precursor>
+		do
+			Result := data_input_cache
+		ensure then
+			good_result: Result = data_input_cache
+		end
+
+	data_output: detachable STRING
+			-- <Precursor>
+		do
+			Result := data_output_cache
+		ensure then
+			good_result: Result = data_output_cache
+		end
+
+	max_precondition_search_tries: INTEGER
+			-- Max times to search for an object combination satisfying precondition of a feature.
+			-- 0 means search until a satisfying object combination is found.
+		do
+			Result := max_precondition_search_tries_cache
+		ensure then
+			good_result: max_precondition_search_tries = max_precondition_search_tries_cache
+		end
+
+	max_precondition_search_time: INTEGER
+			-- <Precursor>
+		do
+			Result := max_precondition_search_time_cache
+		ensure then
+			good_result: max_precondition_search_time = max_precondition_search_time_cache
+		end
+
+	max_candidate_count: INTEGER
+			-- Max number of returned candidates that satisfy the precondition
+			-- of the feature to call.
+			-- 0 means no limit.
+		do
+			Result := max_candidate_count_cache
+		ensure then
+			good_result: Result = max_candidate_count_cache
+		end
+
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
+		do
+			Result := object_selection_for_precondition_satisfaction_rate_cache
+		ensure then
+			good_result: Result = object_selection_for_precondition_satisfaction_rate_cache
+		end
+
+	smt_enforce_old_value_rate: INTEGER is
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
+			-- Default is 25
+		do
+			Result := smt_enforce_old_value_rate_cache
+		ensure then
+			good_result: Result = smt_enforce_old_value_rate_cache
+		end
+
+	smt_use_predefined_value_rate: INTEGER is
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
+			-- Default is 25
+		do
+			Result := smt_use_predefined_value_rate_cache
+		ensure then
+			good_result: Result = smt_use_predefined_value_rate_cache
+		end
+
+	integer_lower_bound: INTEGER is
+			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is -512.
+		do
+			Result := integer_lower_bound_cache
+		ensure then
+			good_result: Result = integer_lower_bound_cache
+		end
+
+	integer_upper_bound: INTEGER is
+			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is 512.
+		do
+			Result := integer_upper_bound_cache
+		ensure then
+			good_result: Result = integer_upper_bound_cache
+		end
+
+	is_random_cursor_used: BOOLEAN is
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+		do
+			Result := is_random_cursor_used_cache
+		ensure then
+			good_result: Result = is_random_cursor_used_cache
+		end
+
+	is_interpreter_log_enabled: BOOLEAN
+			-- Should messages from the interpreter be logged?
+			-- Default: False
+		do
+			Result := is_interpreter_log_enabled_cache
+		ensure then
+			good_result: Result = is_interpreter_log_enabled_cache
+		end
+
+	is_on_the_fly_test_case_generation_enabled: BOOLEAN
+			-- Is test case generation on the fly enabled?
+		do
+			Result := is_on_the_fly_test_case_generation_enabled_cache
+		ensure then
+			good_result: Result = is_on_the_fly_test_case_generation_enabled_cache
+		end
+
+	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
+			-- Proxy log options.
+			-- Key is the type name, value indicates if messages of that type is logged.
+			-- Missing types are treated as not to be logged.
+		do
+			Result := proxy_log_options_cache
+		ensure then
+			good_result: Result = proxy_log_options_cache
+		end
+
+	is_console_output_enabled: BOOLEAN
+			-- Is console output enabled?
+			-- Default: True
+		do
+			Result := is_console_output_enabled_cache
+		ensure then
+			good_result: Result = is_console_output_enabled_cache
+		end
+
+	is_post_state_serialized: BOOLEAN
+			-- Should post-state information be serialized as well?
+			-- Normally, only pre-state information is necessary, because
+			-- we can re-execute the test case to observe the post-state.
+		do
+			Result := is_post_state_serialized_cache
+		ensure then
+			good_result: Result = is_post_state_serialized_cache
+		end
+
+	is_all_query_state_enabled: BOOLEAN
+			-- Is state retrieval enabled for all queries?
+		do
+			Result := attached {AUT_OBJECT_STATE_CONFIG} object_state_config as l_config and then l_config.is_all
+		end
+
+	is_only_argumentless_query_state_enabled: BOOLEAN
+
+		do
+			Result := attached {AUT_OBJECT_STATE_CONFIG} object_state_config as l_config and then l_config.is_only_argumentless
+		end
+
+	is_test_case_deserialization_enabled: BOOLEAN
+			-- Is test case deserialization enabled?
+		do
+			Result := is_passing_test_case_deserialization_enabled or is_failing_test_case_deserialization_enabled
+		end
+
+	is_test_case_serialization_enabled: BOOLEAN
+			-- Is test case serialization enabled?
+		do
+			Result := is_passing_test_case_serialization_enabled or is_failing_test_case_serialization_enabled
+		end
+
+	is_object_state_retrieval_enabled: BOOLEAN is
+			-- Should object state be retrieved?
+		do
+			Result :=
+				is_all_query_state_enabled or else
+				is_only_argumentless_query_state_enabled
+		end
+
+	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
+			-- Configuration related to object states retrieval
+
+feature -- Precondition satisfaction
+
+	is_precondition_checking_enabled: BOOLEAN is
+			-- Is precondition checking before feature call enabled?
+		do
+			Result := precondition_evaluation_cache
+		ensure then
+			good_result: Result = precondition_evaluation_cache
+		end
+
+	is_linear_constraint_solving_enabled: BOOLEAN is
+			-- Is linear constraint solving for integers enabled?
+		do
+			Result := linear_solving_cache
+		ensure then
+			good_result: Result = linear_solving_cache
+		end
+
+	is_pool_statistics_logged: BOOLEAN is
+			-- Should statistics of object pool and predicate be logged?
+			-- Default: False
+		do
+			Result := proxy_log_options.has ("statistics")
+		end
+
+	is_precondition_satisfaction_logged: BOOLEAN
+			-- Should messaged related to precondition satisfaction be logged?
+			-- Default: False
+		do
+			Result := proxy_log_options_cache.has ("precondition")
+		end
+
+	is_smt_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is SMT-LIB based linear constraint solver enabled?
+			-- Default: True
+		do
+			Result := is_smt_linear_constraint_solver_enabled_cache
+		ensure then
+			good_result: Result = is_smt_linear_constraint_solver_enabled_cache
+		end
+
+	is_lpsolve_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is lp_solve based linear constraint solver enabled?
+			-- Default: False
+		do
+			Result := is_lpsolve_linear_constraint_solver_enabled_cache
+		ensure then
+			good_result: Result = is_lpsolve_linear_constraint_solver_enabled_cache
+		end
+
+feature -- Object State Exploration
+
+	is_object_state_exploration_enabled: BOOLEAN is
+			-- Is object state exploration enabled?
+		do
+			Result := object_state_exploration_cache
+		ensure then
+			good_result: Result = object_state_exploration_cache
+		end
+
+	is_citadel_test_generation_enabled: BOOLEAN
+			-- Is random testing enabled?
+		do
+			Result := is_citadel_test_generation_enabled_cache
+		ensure then
+			result_set: Result = is_citadel_test_generation_enabled_cache
+		end
+
+feature -- Test case serialization
+
+	is_passing_test_case_serialization_enabled: BOOLEAN is
+			-- Is passing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+		do
+			Result := is_passing_test_case_serialization_enabled_cache
+		end
+
+	is_failing_test_case_serialization_enabled: BOOLEAN is
+			-- Is failing test case serialization enabled?
+			-- Only has effect if `is_test_case_serialization_enabled' is True.
+		do
+			Result := is_failing_test_case_serialization_enabled_cache
+		end
+
+	is_duplicated_test_case_serialized: BOOLEAN
+			-- Should duplicated test case be serialized?
+			-- Two test cases are considered duplicated if their operands have
+			-- the same abstract states.
+		do
+			Result := is_duplicated_test_case_serialized_cache
+		end
+
+feature -- Test case deserialization
+
+	is_passing_test_case_deserialization_enabled: BOOLEAN is
+			-- <Precursor>
+		do
+			Result := is_passing_test_case_deserialization_enabled_cache
+		end
+
+	is_failing_test_case_deserialization_enabled: BOOLEAN is
+			-- <Precursor>
+		do
+			Result := is_failing_test_case_deserialization_enabled_cache
+		end
+
+	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
+			-- List of features excluded from being tested
+		do
+			if excluded_features_cache = Void then
+				create excluded_features_cache.make
+			end
+			Result := excluded_features_cache
+		end
+
+	types_under_test: DS_LIST [CL_TYPE_A]
+			-- Types under test
 
 feature -- Access: session
 
@@ -236,6 +580,14 @@ feature -- Status setting
 			is_slicing_enabled := True
 		end
 
+	set_is_slicing_enabled (b: BOOLEAN)
+			-- Set `is_slicing_enabled' with `b'.
+		do
+			is_slicing_enabled := b
+		ensure
+			is_slicing_enabled_set: is_slicing_enabled = b
+		end
+
 	enable_ddmin
 			-- Enable ddmin.
 		require
@@ -243,6 +595,14 @@ feature -- Status setting
 			not_running: not has_next_step
 		do
 			is_ddmin_enabled := True
+		end
+
+	set_is_ddmin_enabled (b: like is_ddmin_enabled)
+			-- Set `is_ddmin_enabled' to `a_is_ddmin_enabled'.
+		do
+			is_ddmin_enabled := b
+		ensure
+			is_ddmin_enabled_set: is_ddmin_enabled = b
 		end
 
 	set_text_statistics (a_text_statistics: like is_text_statistics_format_enabled)
@@ -298,6 +658,300 @@ feature -- Status setting
 			end
 		end
 
+	set_load_file_path (a_path: like log_file_path) is
+			-- Set `log_file_path' with `a_path'.
+		do
+			log_file_path_cache := a_path
+		ensure
+			log_file_path_set: log_file_path = a_path
+		end
+
+	set_is_random_testing_enabled (b: BOOLEAN) is
+			-- Set `is_random_testing_enabled' with `b'.
+		do
+			is_random_testing_enabled_cache := b
+		ensure
+			is_random_testing_enabled_set: is_random_testing_enabled = b
+		end
+
+	set_is_evolutionary_testing_enabled (b: BOOLEAN) is
+			-- Set `is_evolutionary_testing_enabled' with `b'.
+		do
+			is_evolutionary_testing_enabled_cache := b
+		ensure
+			is_evolutionary_testing_enabled_set: is_evolutionary_testing_enabled = b
+		end
+
+	set_object_state_config (a_config: like object_state_config) is
+			-- Set `object_state_config' with `a_config'.
+		do
+			object_state_config := a_config
+		ensure
+			object_state_config_set: object_state_config = a_config
+		end
+
+	set_is_precondition_evaluation_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			precondition_evaluation_cache := b
+		ensure
+			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+		end
+
+	set_is_citadel_test_generation_enabled (b: BOOLEAN) is
+			-- Set `is_citadel_test_generation_enabled' with `b'.
+		do
+			is_citadel_test_generation_enabled_cache := b
+		ensure
+			is_citadel_test_generation_enabled_set: is_citadel_test_generation_enabled = b
+		end
+
+
+	set_is_linear_solving_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			linear_solving_cache := b
+		ensure
+			is_linear_solving_enabled_set: is_linear_constraint_solving_enabled = b
+		end
+
+	set_is_object_state_exploration_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			object_state_exploration_cache := b
+		ensure
+			is_object_state_exploration_enabled_set: is_object_state_exploration_enabled = b
+		end
+
+	set_log_processor (a_processor: like log_processor) is
+			-- Set `log_processor' with `a_processor'.
+		do
+			if a_processor /= Void then
+				create log_processor_cache.make_from_string (a_processor)
+			else
+				log_processor_cache := Void
+			end
+		end
+
+	set_log_processor_output (a_processor_output: like log_processor_output) is
+			-- Set `log_processor_output' with `a_processor_output'.
+		do
+			if a_processor_output /= Void then
+				create log_processor_output_cache.make_from_string (a_processor_output)
+			else
+				log_processor_output_cache := Void
+			end
+		end
+
+	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries) is
+			-- Set `max_precondition_search_tries' with `a_tries'.
+		do
+			max_precondition_search_tries_cache := a_tries
+		ensure
+			good_result: max_precondition_search_tries = a_tries
+		end
+
+	set_max_precondition_search_time (a_time: like max_precondition_search_time) is
+			-- Set `max_precondition_search_time' with `a_time'.
+		do
+			max_precondition_search_time_cache := a_time
+		ensure
+			good_result: max_precondition_search_time = a_time
+		end
+
+	set_max_candidate_count (a_count: like max_candidate_count) is
+			-- Set `is_object_state_request_logged' with `a_count'.
+		do
+			max_candidate_count_cache := a_count
+		ensure
+			max_candidate_count_cache_set: max_candidate_count_cache = a_count
+		end
+
+	set_is_smt_linear_constraint_solver_enabled (b: BOOLEAN) is
+			-- Set `is_smt_linear_constraint_solver_enabled' with `b'.
+		do
+			is_smt_linear_constraint_solver_enabled_cache := b
+		ensure
+			is_smt_linear_constraint_solver_enabled_set: is_smt_linear_constraint_solver_enabled = b
+		end
+
+	set_is_lpsolve_linear_constraint_solver_enabled (b: BOOLEAN) is
+			-- Set `is_lpsolve_linear_constraint_solver_enabled' with `b'.
+		do
+			is_lpsolve_linear_constraint_solver_enabled_cache := b
+		ensure
+			is_lpsolve_linear_constraint_solver_enabled_set: is_lpsolve_linear_constraint_solver_enabled = b
+		end
+
+	set_object_selection_for_precondition_satisfaction_rate (a_value: INTEGER) is
+			-- Set `object_selection_for_precondition_satisfaction_rate' with `a_value'.
+		do
+			object_selection_for_precondition_satisfaction_rate_cache := a_value
+		ensure
+			object_selection_for_precondition_satisfaction_rate_set: object_selection_for_precondition_satisfaction_rate = a_value
+		end
+
+	set_smt_enforce_old_value_rate (a_rate: INTEGER) is
+			-- Set `smt_enforce_old_value_rate' with `a_rate'.
+		do
+			smt_enforce_old_value_rate_cache := a_rate
+		ensure
+			smt_enforce_old_value_rate_set: smt_enforce_old_value_rate_cache = a_rate
+		end
+
+	set_smt_use_predefined_value_rate (a_rate: INTEGER) is
+			-- Set `smt_use_predefined_value_rate' with `a_rate'.
+		do
+			smt_use_predefined_value_rate_cache := a_rate
+		ensure
+			good_result: smt_use_predefined_value_rate = a_rate
+		end
+
+	set_integer_lower_bound (a_bound: INTEGER) is
+			-- Set `integer_lower_bound' with `a_bound'.
+		do
+			integer_lower_bound_cache := a_bound
+		ensure
+			integer_lower_bound_set: integer_lower_bound = a_bound
+		end
+
+	set_integer_upper_bound (a_bound: INTEGER) is
+			-- Set `integer_upper_bound' with `a_bound'.
+		do
+			integer_upper_bound_cache := a_bound
+		ensure
+			integer_upper_bound_set: integer_upper_bound = a_bound
+		end
+
+	set_is_random_cursor_used (b: BOOLEAN) is
+			-- Set `is_random_cursor_used' with `b'.
+		do
+			is_random_cursor_used_cache := b
+		ensure
+			is_random_cursor_used_set: is_random_cursor_used = b
+		end
+
+	set_is_passing_test_case_serialization_enabled (b: BOOLEAN) is
+			-- Set `is_passing_test_case_serialization_enabled' with `b'.
+		do
+			is_passing_test_case_serialization_enabled_cache := b
+		ensure
+			is_passing_test_case_serialization_enabled_set: is_passing_test_case_serialization_enabled = b
+		end
+
+	set_is_failing_test_case_serialization_enabled (b: BOOLEAN) is
+			-- Set `is_failing_test_case_serialization_enabled' with `b'.
+		do
+			is_failing_test_case_serialization_enabled_cache := b
+		ensure
+			is_failing_test_case_serialization_enabled_set: is_failing_test_case_serialization_enabled = b
+		end
+
+	set_is_passing_test_case_deserialization_enabled (b: BOOLEAN) is
+			-- Set `is_passing_test_case_deserialization_enabled' with `b'.
+		do
+			is_passing_test_case_deserialization_enabled_cache := b
+		ensure
+			is_passing_test_case_deserialization_enabled_set: is_passing_test_case_deserialization_enabled = b
+		end
+
+	set_is_failing_test_case_deserialization_enabled (b: BOOLEAN) is
+			-- Set `is_failing_test_case_deserialization_enabled' with `b'.
+		do
+			is_failing_test_case_deserialization_enabled_cache := b
+		ensure
+			is_failing_test_case_deserialization_enabled_set: is_failing_test_case_deserialization_enabled = b
+		end
+
+	set_recursive (b: BOOLEAN)
+			-- Set `is_recursive_cache' with 'b'.
+		do
+			is_recursive_cache := b
+		ensure
+			is_recursive_set: is_recursive = b
+		end
+
+	set_data_input (a_input: detachable STRING)
+			-- Set `data_input' with 'a_input'.
+		do
+			if a_input = Void then
+				data_input_cache := Void
+			else
+				data_input_cache := a_input.twin
+			end
+		ensure
+			data_input_set: a_input = Void implies data_input_cache = Void
+						and then a_input /= Void implies data_input_cache ~ a_input
+		end
+
+	set_data_output (a_output: detachable STRING)
+			-- Set `data_output' with 'a_output'.
+		do
+			if a_output = Void then
+				data_output_cache := Void
+			else
+				data_output_cache := a_output.twin
+			end
+		ensure
+			data_output_set: a_output = Void implies data_output_cache = Void
+						and then a_output /= Void implies data_output_cache ~ a_output
+		end
+
+	set_is_interpreter_log_enabled (b: BOOLEAN)
+			-- Set `is_interpreter_log_enabled' with `b'.
+		do
+			is_interpreter_log_enabled_cache := b
+		ensure
+			is_interpreter_log_enabled_set: is_interpreter_log_enabled = b
+		end
+
+	set_is_on_the_fly_test_case_generation_enabled (b: BOOLEAN)
+			-- Set `on_the_fly_test_case_generation_enabled' with `b'.
+		do
+			is_on_the_fly_test_case_generation_enabled_cache := b
+		ensure
+			on_the_fly_test_case_generation_enabled_set: is_on_the_fly_test_case_generation_enabled = b
+		end
+
+	set_is_duplicated_test_case_serialized (b: BOOLEAN)
+			-- Set `is_duplicated_test_case_serialized' with `b'.
+		do
+			is_duplicated_test_case_serialized_cache := b
+		ensure
+			is_duplicated_test_case_serialized_set: is_duplicated_test_case_serialized = b
+		end
+
+	set_proxy_log_options (b: like proxy_log_options)
+			-- Set `proxy_log_options' with `b'.
+		do
+			proxy_log_options_cache := b.twin
+		ensure
+			proxy_log_options_set: proxy_log_options ~ b
+		end
+
+	set_is_console_output_enabled (b: BOOLEAN)
+			-- Set `is_console_output_enabled'.
+		do
+			is_console_output_enabled_cache := b
+		ensure
+			is_console_output_enabled_set: is_console_output_enabled = b
+		end
+
+	set_is_post_state_serialized (b: BOOLEAN)
+			-- Set `is_post_state_serialized' with `b'.
+		do
+			is_post_state_serialized_cache := b
+		ensure
+			is_post_state_serialized_set: is_post_state_serialized = b
+		end
+
+	set_types_under_test (a_types: like types_under_test) is
+			-- Set `types_under_test' with `a_types'.
+		do
+			create {DS_ARRAYED_LIST [CL_TYPE_A]} types_under_test.make (a_types.count)
+			types_under_test.append_last (a_types)
+		end
+
 feature -- Basic operations
 
 	step
@@ -331,15 +985,23 @@ feature {NONE} -- Basic operations
 						system.make_update (False)
 						compute_interpreter_root_class
 						if attached interpreter_root_class then
-							create l_test_task.make_random (Current, class_names)
-							l_test_task.start
-							sub_task := l_test_task
+							if is_random_testing_enabled then
+								create l_test_task.make_random (Current, class_names)
+								l_test_task.start
+								sub_task := l_test_task
+							elseif is_load_log_enabled then
+								load_log (log_file_path)
+							elseif is_test_case_deserialization_enabled then
+								process_deserialization
+							end
 						end
 					end
 				elseif attached {ETEST_GENERATION_TESTING} sub_task as l_task then
-					create l_stat_task.make (Current)
-					l_stat_task.start (l_task.result_repository, l_task.classes_under_test)
-					sub_task := l_stat_task
+					if is_html_statistics_format_enabled then
+						create l_stat_task.make (Current)
+						l_stat_task.start (l_task.result_repository, l_task.classes_under_test)
+						sub_task := l_stat_task
+					end
 				end
 			end
 			if not has_next_step then
@@ -391,6 +1053,10 @@ feature {NONE} -- Implementation
 			if is_debugging then
 				l_error_handler.set_debug_to_file (output_stream)
 			end
+
+			find_types_under_test
+			setup_for_precondition_evaluation
+
 			compile_project (class_names)
 		end
 
@@ -418,7 +1084,7 @@ feature {NONE} -- Implementation
 				l_system.force_rebuild
 			end
 			l_file.recursive_open_write
-			create l_source_writer
+			create l_source_writer.make (Current)
 			if l_file.is_open_write then
 				l_source_writer.write_class (l_file, a_class_name_list, l_system)
 				l_file.flush
@@ -535,7 +1201,426 @@ feature {NONE} -- Constants
 	max_tests_per_class: NATURAL = 9
 			-- Maximal number of test routines in a single class
 
-note
+feature -- Precondition satisfaction
+
+	find_types_under_test is
+			-- Find types under test and add them into `configuration'.`types_under_test'.
+		do
+			set_types_under_test (types_under_test_from_names (class_names, system.root_type.associated_class))
+		end
+
+	types_under_test_from_names (a_list: detachable DS_HASH_SET [STRING_8]; a_context: CLASS_C): DS_LINKED_LIST [CL_TYPE_A]
+			-- Types under test from class names in `a_list'.
+			-- classes_under_test with list of class names.
+			--
+			-- `a_list': List of class/type names, can be void or empty to indicate that all classes in the
+			--           system should be tested.
+		local
+			l_tester: KL_STRING_EQUALITY_TESTER_A [STRING_8]
+			l_class_set: SEARCH_TABLE [CLASS_I]
+			l_class_cur: INTEGER
+			l_type: TYPE_A
+			l_class_name_set: DS_HASH_SET [STRING_8]
+			l_name_cur: DS_HASH_SET_CURSOR [STRING_8]
+			l_name: STRING_8
+		do
+			fixme ("Duplicated code with {AUT_RANDOM_STRATEGY}.`add_class_names'. 17.06.2009 Jasonw")
+			create Result.make
+			create l_tester
+			if a_list /= Void and then not a_list.is_empty then
+				create l_class_name_set.make (a_list.count)
+				l_class_name_set.set_equality_tester (l_tester)
+				l_class_name_set.append (a_list)
+			else
+				l_class_set := system.universe.all_classes
+				create l_class_name_set.make (l_class_set.count)
+				l_class_name_set.set_equality_tester (l_tester)
+				from
+					l_class_cur := l_class_set.cursor
+					l_class_set.start
+				until
+					l_class_set.after
+				loop
+					l_name := l_class_set.item_for_iteration.name
+					check
+						l_name /= Void
+					end
+					l_class_name_set.force_last (l_name)
+					l_class_set.forth
+				end
+				l_class_set.go_to (l_class_cur)
+			end
+			from
+				l_name_cur := l_class_name_set.new_cursor
+				l_name_cur.start
+			until
+				l_name_cur.after
+			loop
+				l_type := base_type_with_context (l_name_cur.item, a_context)
+				if l_type /= Void then
+					if l_type.associated_class.is_generic then
+						if not attached {GEN_TYPE_A} l_type as l_gen_type then
+							if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
+								l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
+							else
+								check
+									dead_end: False
+								end
+							end
+						end
+					end
+					if attached {CL_TYPE_A} l_type as l_class_type then
+						if l_class_type.associated_class /= Void then
+							if not interpreter_related_classes.has (l_class_type.name) then
+								Result.force_last (l_class_type)
+							end
+						end
+					else
+						check
+							dead_end: False
+						end
+					end
+				end
+				l_name_cur.forth
+			end
+		end
+
+	setup_for_precondition_evaluation is
+			-- Setup for precondition evaluation.
+		do
+			if is_precondition_checking_enabled then
+					-- Get the list of all features under test.
+				class_types_under_test.append_last (types_under_test)
+				features_under_test.append_last (testable_features_from_types (class_types_under_test, system))
+				setup_feature_id_table
+
+					-- Find out all preconditions.
+				find_precondition_predicates
+
+					-- Find out relevant predicates for every feature in `features_under_test'.
+				find_relevant_predicates
+				build_relevant_predicate_with_operand_table
+
+					-- Setup predicate pool.	
+				predicate_pool.setup_predicates (predicates)
+			end
+		end
+
+	setup_feature_id_table is
+			-- Setup `feature_id_table'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_FEATURE_OF_TYPE]
+			l_id: INTEGER
+		do
+			from
+				l_cursor := features_under_test.new_cursor
+				l_id := 1
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				feature_id_table.force_last (l_id, l_cursor.item.full_name)
+				l_id := l_id + 1
+				l_cursor.forth
+			end
+		end
+
+	build_relevant_predicate_with_operand_table is
+			-- Build `relevant_predicate_with_operand_table'.
+		local
+			l_feat_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE]
+			l_pred_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_predicates: DS_LINKED_LIST [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
+			l_index_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_indexes: SPECIAL [INTEGER]
+		do
+			from
+				l_feat_cursor := relevant_predicates_of_feature.new_cursor
+				l_feat_cursor.start
+			until
+				l_feat_cursor.after
+			loop
+				create l_predicates.make
+				from
+					l_pred_cursor := l_feat_cursor.item.new_cursor
+					l_pred_cursor.start
+				until
+					l_pred_cursor.after
+				loop
+					from
+						l_index_cursor := l_pred_cursor.item.new_cursor
+						l_index_cursor.start
+					until
+						l_index_cursor.after
+					loop
+						create l_indexes.make_filled (0, l_index_cursor.item.count)
+						l_index_cursor.item.do_all_with_index (
+							agent (a_pos: AUT_FEATURE_SIGNATURE_TYPE; a_index: INTEGER; a_ops: SPECIAL [INTEGER])
+								do
+									a_ops.put (a_pos.position, a_index - 1)
+								end (?, ?, l_indexes))
+
+						l_index_cursor.forth
+					end
+					l_predicates.force_last ([l_pred_cursor.key.id, l_indexes])
+					l_pred_cursor.forth
+				end
+				if not l_predicates.is_empty then
+					relevant_predicate_with_operand_table.force_last (l_predicates.to_array, l_feat_cursor.key.id)
+				end
+				l_feat_cursor.forth
+			end
+		end
+
+	find_precondition_predicates is
+			-- Find precondition predicates from `features_under_test',
+			-- store those predicates into `predicates', and store
+			-- the access patterns of those predicates into
+			-- `precondition_access_pattern'.
+		local
+			l_visitor: AUT_PRECONDITION_ANALYZER
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+		do
+			l_features := features_under_test
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+					-- Get preconditions from `l_feature'.
+				l_feature := l_features.item_for_iteration
+				create l_visitor.make
+				l_visitor.generate_precondition_predicates (l_feature)
+
+					-- Store predicates and their access patterns.
+				if not l_visitor.last_predicates.is_empty then
+					l_visitor.last_predicates.do_if (agent put_predicate, agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not predicates.has (a_pred) end (?))
+					put_precondition_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
+					put_precondition_of_feature (l_feature, l_visitor.last_predicates)
+					l_visitor.last_predicates.do_all (agent put_predicate_in_feature_table (?, l_feature))
+				end
+				l_features.forth
+			end
+		end
+
+	find_relevant_predicates is
+			-- For each feature in `features_under_test',
+			-- find relevant predicates that needs to be reevalated
+			-- every time when that feature is executed.
+		local
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+			l_arranger: AUT_PREDICATE_ARGUMENT_ARRANGER
+			l_predicates: like predicates
+			l_relevant: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_arrangements: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_predicate_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
+		do
+			l_features := features_under_test
+			l_predicates := predicates
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+				l_feature := l_features.item_for_iteration
+				create l_relevant.make (10)
+				l_relevant.set_key_equality_tester (predicate_equality_tester)
+				relevant_predicates_of_feature.force_last (l_relevant, l_feature)
+				from
+					l_predicate_cursor := l_predicates.new_cursor
+					l_predicate_cursor.start
+				until
+					l_predicate_cursor.after
+				loop
+					create l_arranger.make (l_predicate_cursor.item, system)
+					l_arrangements := l_arranger.arrangements_for_feature (l_feature)
+					if not l_arrangements.is_empty then
+						l_relevant.force_last (l_arrangements, l_predicate_cursor.item)
+					end
+					l_predicate_cursor.forth
+				end
+				l_features.forth
+			end
+		end
+
+feature -- Log processor
+
+	load_log (a_log_file: STRING)
+			-- Load log in `a_log_file'.
+		local
+			l_processor_name: detachable STRING
+			l_processor: AUT_LOG_PROCESSOR
+		do
+			l_processor_name := log_processor
+			if l_processor_name /= Void then
+				 l_processor_name.to_lower
+				 if log_processors.has (l_processor_name) then
+					l_processor := log_processors.item (l_processor_name)
+					l_processor.set_configuration (Current)
+					l_processor.process
+				 end
+			end
+		end
+
+	log_processors: HASH_TABLE [AUT_LOG_PROCESSOR, STRING]
+			-- Table of registered log processors
+			-- [Log processor, name of the processor]
+		do
+			if log_processors_internal = Void then
+				create log_processors_internal.make (5)
+				log_processors_internal.compare_objects
+				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (system, Current), "ps")
+			end
+			Result := log_processors_internal
+		end
+
+	log_processors_internal: like log_processors
+			-- Implementation of `log_processors'
+
+	process_deserialization
+			-- Test case deserialization.
+		local
+			l_processor: AUT_DESERIALIZATION_PROCESSOR
+		do
+			create l_processor.make (system, Current)
+			l_processor.process
+		end
+
+feature -- Option caches
+
+	is_evolutionary_testing_enabled_cache: like is_evolutionary_testing_enabled assign set_is_evolutionary_testing_enabled
+			-- Cache for `is_evolutionary_testing_enabled'
+
+	log_file_path_cache: like log_file_path assign set_load_file_path
+			-- Cache for `log_file_path'
+
+	precondition_evaluation_cache: like is_precondition_checking_enabled
+			-- Cache for `is_precondition_checking_enabled'
+
+	linear_solving_cache: like is_linear_constraint_solving_enabled
+			-- Cache for `is_linear_constraint_solving_enabled'
+
+	object_state_exploration_cache: like is_object_state_exploration_enabled
+			-- Cache for `is_object_state_exploration_enabled'
+
+	log_processor_cache: like log_processor
+			-- Cache for `log_processor'
+
+	log_processor_output_cache: like log_processor_output
+			-- Cache for `log_processor_output'
+
+	data_input_cache: like data_input
+			-- Cache for `data_input'.
+
+	data_output_cache: like data_output
+			-- Cache for `data_output'.
+
+	is_recursive_cache: BOOLEAN
+			-- Cache for `is_recursive'.
+
+	max_precondition_search_tries_cache: like max_precondition_search_tries
+			-- Cache for `max_precondition_search_tries'
+
+	max_precondition_search_time_cache: like max_precondition_search_time
+			-- Cache for `max_precondition_search_time'
+
+	is_citadel_test_generation_enabled_cache: like is_citadel_test_generation_enabled assign set_is_citadel_test_generation_enabled
+			-- Cache for `is_citadel_test_generation_enabled'
+
+	max_candidate_count_cache: like max_candidate_count
+			-- Cache for `max_candidate_count'
+
+	is_lpsolve_linear_constraint_solver_enabled_cache: like is_lpsolve_linear_constraint_solver_enabled
+			-- Cache for `is_lpsolve_linear_constraint_solver_enabled'
+
+	is_smt_linear_constraint_solver_enabled_cache: like is_smt_linear_constraint_solver_enabled
+			-- Cache for `is_smt_linear_constraint_solver_enabled'
+
+	object_selection_for_precondition_satisfaction_rate_cache: INTEGER
+			-- Cache for `object_selection_for_precondition_satisfaction_rate'
+
+	smt_enforce_old_value_rate_cache: INTEGER
+			-- Cache for `smt_enforce_old_value_rate'
+
+	smt_use_predefined_value_rate_cache: INTEGER
+			-- Cache for `smt_use_predefined_value_rate'
+
+	integer_lower_bound_cache: INTEGER
+			-- Cache for `integer_lower_bound'
+
+	integer_upper_bound_cache: INTEGER
+			-- Cache for `integer_upper_bound'
+
+	is_random_cursor_used_cache: BOOLEAN
+			-- Cache for `is_random_cursor_used'
+
+	is_passing_test_case_serialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_serialization_enabled_cache'
+
+	is_failing_test_case_serialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_serialization_enabled_cache'
+
+	is_passing_test_case_deserialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_deserialization_enabled_cache'
+
+	is_failing_test_case_deserialization_enabled_cache: BOOLEAN
+			-- Cache for `is_passing_test_case_deserialization_enabled_cache'
+
+	is_interpreter_log_enabled_cache: BOOLEAN
+			-- Cache for `is_interpreter_log_enabled'
+
+	is_on_the_fly_test_case_generation_enabled_cache: BOOLEAN
+			-- Cache for `on_the_fly_test_case_generation_enabled_cache'	
+
+	proxy_log_options_cache: like proxy_log_options
+			-- Cache for `is_proxy_log_options'	
+
+	is_console_output_enabled_cache: BOOLEAN
+			-- Cache for `is_console_output_enabled'		
+
+	is_duplicated_test_case_serialized_cache: BOOLEAN
+			-- Cache for `is_duplicated_test_case_serialized_cache'
+
+	is_post_state_serialized_cache: BOOLEAN
+			-- Cache for `is_post_state_serialized_cache'
+
+	is_load_log_enabled: BOOLEAN is
+			-- Should a specified load file be loaded?
+		do
+			Result := log_file_path /= Void
+		end
+
+--	is_processing_serialization: BOOLEAN
+--			-- <Precursor>
+--		do
+--			Result := serialization_filters /= Void and then is_load_log_enabled
+--		end
+
+	is_random_testing_enabled: BOOLEAN
+			-- Is random testing enabled?
+		do
+			Result := is_random_testing_enabled_cache
+		ensure then
+			result_set: Result = is_random_testing_enabled_cache
+		end
+
+	is_evolutionary_testing_enabled: BOOLEAN
+			-- Is evolutionary testing enabled?
+		do
+			Result := is_evolutionary_testing_enabled_cache
+		ensure then
+			result_set: Result = is_evolutionary_testing_enabled_cache
+		end
+
+	is_random_testing_enabled_cache: like is_random_testing_enabled assign set_is_random_testing_enabled
+			-- Cache for `is_random_testing_enabled'		
+
+	excluded_features_cache: like excluded_features
+			-- Cache for `excluded_features'		
+
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

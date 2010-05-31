@@ -75,7 +75,7 @@ feature -- Generation
 			file_system_routines.copy_recursive (pathnames.runtime_dirname, file_system.pathname (a_pathname, "runtime"))
 		end
 
-	create_interpreter (a_log_dirname: STRING)
+	create_interpreter (a_log_dirname: STRING; a_config: TEST_GENERATOR)
 			-- Create interpreter proxy based on executable found in `a_pathname'
 			-- and make it available via `last_interpreter'.
 			--
@@ -98,7 +98,9 @@ feature -- Generation
 					system,
 					file_system.pathname (a_log_dirname, "interpreter_log.txt"),
 					file_system.pathname (a_log_dirname, "proxy_log.txt"),
-					session.error_handler)
+					file_system.pathname (a_log_dirname, "serialization.txt"),
+					session.error_handler,
+					a_config)
 				l_new.add_observer (session.error_handler)
 				l_new.set_timeout (session.proxy_time_out.as_integer_32)
 			end
@@ -106,7 +108,7 @@ feature -- Generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

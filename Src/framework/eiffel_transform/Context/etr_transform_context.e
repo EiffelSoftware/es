@@ -87,6 +87,7 @@ feature -- Transformations
 			l_source_class_context, l_target_class_context: ETR_CLASS_CONTEXT
 			l_ot_local_finder: ETR_OBJECT_TEST_LOCAL_FINDER
 			l_ot_local_list: LINKED_LIST[ETR_OBJECT_TEST_LOCAL]
+			l_cursor: CURSOR
 		do
 			transformation_result := void
 
@@ -101,8 +102,9 @@ feature -- Transformations
 
 				-- class to class transformation
 				-- loop through features and check for renamings
+				l_source_feat_table := l_source_class_context.written_class.feature_table
+				l_cursor := l_source_feat_table.cursor
 				from
-					l_source_feat_table := l_source_class_context.written_class.feature_table
 					l_source_feat_table.start
 				until
 					l_source_feat_table.after
@@ -147,7 +149,7 @@ feature -- Transformations
 
 					l_source_feat_table.forth
 				end
-
+				l_source_feat_table.go_to (l_cursor)
 				-- Find object-test locals in the snippet
 				create l_ot_local_list.make
 				create l_ot_local_finder.make (l_source_context, l_ot_local_list)

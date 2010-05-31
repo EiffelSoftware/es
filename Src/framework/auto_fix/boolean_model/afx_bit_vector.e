@@ -34,9 +34,9 @@ feature{NONE} -- Initialization
 			count := a_bit_count
 			if count /= 0 then
     			if count \\ 32 = 0 then
-    				create storage.make_empty (count // 32)
+    				create storage.make_filled (0, count // 32)
     			else
-    				create storage.make_empty (count // 32 + 1)
+    				create storage.make_filled (0, count // 32 + 1)
     			end
     			from
     				i := 0
@@ -50,7 +50,7 @@ feature{NONE} -- Initialization
 
     			compute_unused_bits_mask
     		else
-    		    create storage.make_empty (1)
+    		    create storage.make_filled (0, 1)
     		    storage.put (0, 0)
     		end
 		ensure
@@ -459,7 +459,7 @@ feature{NONE} -- Implementation
 			l_map: NATURAL_32
 			i: INTEGER
 		once
-			create Result.make_empty (32)
+			create Result.make_filled (0, 32)
 			from
 				l_map := 1
 				i := 0
@@ -481,7 +481,7 @@ feature{NONE} -- Implementation
 			l_max: NATURAL_32
 			i: INTEGER
 		once
-			create Result.make_empty (32)
+			create Result.make_filled (0, 32)
 			from
 				l_max := {NATURAL_32}.max_value
 				l_map := 1

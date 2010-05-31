@@ -30,6 +30,39 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_WORKBENCH
+
+	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
+		export
+			{NONE} all
+		end
+
+	AUT_SHARED_TYPE_FORMATTER
+		rename
+			type_printer as old_type_output_strategy
+		end
+
+	ERL_G_TYPE_ROUTINES
+
+	AUT_PREDICATE_UTILITY
+
+	AUT_SHARED_PREDICATE_CONTEXT
+
+	AUT_SOURCE_WRITER_UTILITY
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_config: like configuration) is
+			-- Initialize `configuration' with `a_config'.
+		do
+			configuration := a_config
+		ensure
+			configuration_set: configuration = a_config
+		end
+
 feature -- Access
 
 	class_name: STRING = "ITP_INTERPRETER_ROOT"
@@ -43,6 +76,9 @@ feature -- Access
 		do
 			Result := << "ITP_INTERPRETER" >>
 		end
+
+	configuration: TEST_GENERATOR
+			-- Configuration associated with current AutoTest run
 
 feature {NONE} -- Access
 
@@ -76,6 +112,9 @@ feature -- Basic operations
 					end
 				end
 			end
+
+				-- Generate predicate related routines
+			put_predicate_related_routines
 
 			put_class_footer
 			stream := Void
@@ -205,9 +244,73 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature -- Precondition satisfaction
+
+	predicate_text (a_predicate: AUT_PREDICATE_ACCESS_PATTERN): STRING is
+			-- Name of predicate
+		local
+			l_text: STRING
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
+		do
+			l_text := a_predicate.predicate.text.twin
+
+			from
+				l_cursor := a_predicate.access_pattern.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_text.replace_substring_all ("{" + l_cursor.key.out + "}", argument_name (l_cursor.item))
+				l_cursor.forth
+			end
+			Result := l_text
+		end
+
+	argument_name (a_index: INTEGER): STRING is
+			-- Name of argument with `a_index'
+		do
+			Result := "l_arg" + a_index.out
+		end
+
+	append_type_dec (a_argument_index: INTEGER; a_type: TYPE_A; a_feature: FEATURE_I) is
+			-- Append a type declaration in `stream'.
+		do
+			stream.put_string (argument_name (a_argument_index))
+			stream.put_string (": ")
+			stream.put_string (type_name (a_type, a_feature))
+		end
+
+	feature_identifier (a_feature: AUT_FEATURE_OF_TYPE): STRING is
+			-- Identifier of `a_feature'
+		do
+			create Result.make (30)
+			Result.append (a_feature.associated_class.name_in_upper)
+			Result.append ("__")
+			Result.append (a_feature.feature_.feature_name.as_lower)
+		end
+
+	precondition_evaluator_name (a_feature: AUT_FEATURE_OF_TYPE): STRING is
+			-- Name of the precondition evaluator for `a_feature's
+		do
+			create Result.make (48)
+			Result.append ("satisfied_objects__")
+			Result.append (feature_identifier (a_feature))
+		end
+
+feature -- Predicate evaluation
+
+	put_predicate_related_routines is
+			-- Geneate routines for predicate monitoring.
+		local
+			l_writer: AUT_PREDICATE_SOURCE_WRITER
+		do
+			create l_writer.make (configuration, stream)
+			l_writer.generate_predicates
+		end
+
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.

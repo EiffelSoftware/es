@@ -914,7 +914,9 @@ feature{NONE} -- Implementations
 				l_class := a_context_type.associated_class
 				Result := l_class /= Void
 				if Result then
-					l_type := a_feature.arguments.first.actual_type.instantiation_in (a_context_type, l_class.class_id)
+					l_type := a_feature.arguments.first.actual_type
+					l_type := actual_type_from_formal_type (l_type, l_class)
+					l_type := l_type.instantiation_in (a_context_type, l_class.class_id)
 					l_class := l_type.associated_class
 					if l_class /= Void then
 						l_class_id := l_class.class_id

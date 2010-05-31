@@ -215,6 +215,30 @@ feature {NONE} -- Handlers
 			end
 		end
 
+	report_object_state_request (a_variables: HASH_TABLE [TYPE_A, STRING])
+			-- Report state request for variables specified in `a_variables'.
+			-- `a_variables' is a table, key is variable name, value is type of that variable.
+		local
+			l_variables: HASH_TABLE [TYPE_A, INTEGER]
+			l_var_name: STRING
+			l_obj_index: INTEGER
+		do
+			create l_variables.make (a_variables.count)
+			from
+				a_variables.start
+			until
+				a_variables.after
+			loop
+				l_var_name := a_variables.key_for_iteration
+				l_obj_index := l_var_name.substring (3, l_var_name.count).to_integer
+				l_variables.put (a_variables.item_for_iteration, l_obj_index)
+				a_variables.forth
+			end
+
+			create {AUT_OBJECT_STATE_OBJECT_REQUEST} last_request.make_with_objects (l_variables, Void)
+		end
+
+
 feature {NONE} -- Error Reporting
 
 	report_error (a_reason: STRING)
@@ -252,7 +276,7 @@ invariant
 	filename_not_void: filename /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

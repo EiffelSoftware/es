@@ -188,7 +188,10 @@ feature{NONE} -- Implementation
 					l_new := accesses_of_feature (a_prefix, a_class, l_feat, a_args, a_veto_agent)
 					Result.append (l_new)
 				end
-				l_feats.forth
+				fixme ("Wield program that `l_feats'.after is True here. 31.5.2010 Jasonw")
+				if not l_feats.after then
+					l_feats.forth
+				end
 			end
 			l_feats.go_to (l_cursor)
 		end
@@ -231,8 +234,10 @@ feature{NONE} -- Implementation
 					if j <= a_terms.count then
 						l_term := a_terms.i_th (j)
 						l_arg_type := a_feature.arguments.i_th (l_arg_index).instantiation_in (a_class.actual_type, a_class.class_id).actual_type
+						l_arg_type := actual_type_from_formal_type (l_arg_type, a_class)
+						l_arg_type := l_arg_type.associated_class.constraint_actual_type
 						fixme ("This implementation is slow, to make it faster, type information of l_term can be cached. 2.11.2009 Jasonw")
-						if l_term.type.conform_to (context_class, l_arg_type) then
+						if l_term.type.conform_to (a_class, l_arg_type) then
 							l_args.put (l_term, l_arg_index)
 							l_checked.put (j, l_arg_index)
 							if l_arg_index = a_feature.argument_count then

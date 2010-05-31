@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Create new repository.
 		do
-			create class_equality_tester.make
+			create class_equality_tester
 			create result_table.make_default
 			result_table.set_key_equality_tester (class_equality_tester)
 			create witnesses.make_default
@@ -117,12 +117,12 @@ feature -- Access
 			results_not_void: Result /= Void
 		end
 
-	witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
+	witnesses: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 		-- All witnesses used by results
 
 feature -- Element change
 
-	add_witness (a_witness: AUT_WITNESS)
+	add_witness (a_witness: AUT_ABS_WITNESS)
 			-- Add `a_witness' to `witnesses'.
 		require
 			a_witness_not_void: a_witness /= Void
@@ -180,7 +180,7 @@ invariant
 	no_witness_void: not witnesses.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

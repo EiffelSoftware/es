@@ -85,11 +85,11 @@ feature -- Access
 			-- in current
 		do
 			if argument_list /= Void then
-				create Result.make_empty (argument_list.count + 1)
+				create Result.make_filled (0, argument_list.count + 1)
 				Result.put (target.index, 0)
 				argument_list.do_all_with_index (agent (a_var: ITP_VARIABLE; a_index: INTEGER; a_result: SPECIAL [INTEGER]) do a_result.put (a_var.index, a_index) end (?, ?, Result))
 			else
-				create Result.make_empty (1)
+				create Result.make_filled (0, 1)
 				Result.put (target.index, 0)
 			end
 		end
@@ -109,7 +109,7 @@ feature -- Access
 			l_target_type := target_type
 			l_count := argument_list.count + 1
 
-			create Result.make_empty (l_count)
+			create Result.make_filled (Void, l_count)
 			Result.put (l_target_type, 0)
 
 			if argument_count > 0 then

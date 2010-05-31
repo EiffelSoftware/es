@@ -71,9 +71,15 @@ feature -- Basic operations
 			l_last_bpslot: INTEGER
 			l_cursor: CURSOR
 			l_type: detachable CLASS_TYPE
+			l_tmp_server: TMP_AST_SERVER
 		do
 			fixme ("Code adapted from ETEST_EVALUATOR_BYTE_CODE_FACTORY, refactoring needed. 23.12.2009 Jasonw")
 			if attached feature_as_with_text (a_text, a_written_class) as l_feature then
+				l_tmp_server := a_feature.tmp_ast_server
+				if l_tmp_server.has (a_written_class.class_id) or else l_tmp_server.system.ast_server.has (a_written_class.class_id) then
+					l_tmp_server.load (a_written_class)
+				end
+
 				l_body_id := a_feature.body_index
 				l_old_ast := a_feature.body
 				a_feature.tmp_ast_server.body_force (l_feature, l_body_id)

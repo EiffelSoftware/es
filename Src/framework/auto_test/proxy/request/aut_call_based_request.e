@@ -87,7 +87,7 @@ feature -- Access
 		do
 			l_types := operand_types
 			c := l_types.count
-			create Result.make_empty (c)
+			create Result.make_filled ("", c)
 			from
 				i := 0
 			until

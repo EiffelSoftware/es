@@ -43,7 +43,7 @@ feature -- Status report
 
 feature -- Access
 
-	response: AUT_RESPONSE
+	response: AUT_RESPONSE assign set_response
 			-- Interpreter's response to current request;
 			-- Void if request is without response.
 
@@ -55,6 +55,41 @@ feature -- Access
 			-- the `test_case_index'-th test case in associated test run
 			-- A 0 value means that current request is not a test case request.
 			-- only creation request and execute request are test case request.
+
+	duration: INTEGER is
+			-- Duration in milliseconds of executing current request
+		do
+			Result := end_time - start_time
+		ensure
+			good_result: Result = end_time - start_time
+		end
+
+	time: DT_DATE_TIME_DURATION
+			-- Duration of current request
+
+	set_time (a_time: like time) is
+			-- Set `time' with `a_time'.
+		do
+			time := a_time
+		ensure
+			time_set: time = a_time
+		end
+
+	start_time: INTEGER
+			-- Start time in millisecond relative to current AutoTest run
+
+	end_time: INTEGER is
+			-- End time in millisecond relative to current AutoTest run
+		do
+				-- Sometimes, the end time is not correctly set, because
+				-- if AutoTest ends immediately after a feature call.
+				-- In that case, we use 0 as the duration.
+			if start_time > end_time_internal then
+				Result := start_time
+			else
+				Result := end_time_internal
+			end
+		end
 
 feature -- Change
 
@@ -86,6 +121,22 @@ feature -- Change
 			test_case_index_set: test_case_index = a_index
 		end
 
+	set_start_time (a_start_time: like start_time) is
+			-- Set `start_time' with `a_start_time'.
+		do
+			start_time := a_start_time
+		ensure
+			start_time_set: start_time = a_start_time
+		end
+
+	set_end_time (a_end_time: like end_time) is
+			-- Set `end_time' with `a_end_time'.
+		do
+			end_time_internal := a_end_time
+		ensure
+			end_time_internal_set: end_time_internal = a_end_time
+		end
+
 feature {AUT_PROXY_EVENT_PRODUCER} -- Basic operations
 
 	publish (a_producer: AUT_PROXY_EVENT_PRODUCER; a_observer: AUT_PROXY_EVENT_OBSERVER)
@@ -114,6 +165,11 @@ feature -- Duplication
 		ensure
 			fresh_twin_not_void: Result /= Void
 		end
+
+feature{NONE} -- Implementation
+
+	end_time_internal: INTEGER
+			-- Implementation for `end_time'
 
 invariant
 

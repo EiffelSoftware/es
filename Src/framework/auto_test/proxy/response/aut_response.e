@@ -50,6 +50,27 @@ feature -- Status report
 		do
 		end
 
+	is_precondition_violation: BOOLEAN is
+			-- Does response contain a precondition violation from the testee feature?
+			-- True means current test case is invalid.
+		do
+		end
+
+	is_postcondition_violation: BOOLEAN is
+			-- Does response contain a postcondition violation from the testee feature?
+		do
+		end
+
+	is_class_invariant_violation_on_entry: BOOLEAN is
+			-- Does response contain a class invariant violation on feature entry?
+		do
+		end
+
+	is_class_invariant_violation_on_exit: BOOLEAN is
+			-- Does response contain a class invariant violation on feature exit?
+		do
+		end
+
 feature -- Access
 
 	text: STRING
@@ -58,6 +79,19 @@ feature -- Access
 			Result := raw_text
 		ensure
 			result_attached: Result /= Void
+		end
+	time: DT_DATE_TIME_DURATION
+			-- Time (in seconds) elapsed since the beginning of the testing session when this response was received
+			-- (NOTE: is currently only recorded for thrown exceptions)
+
+	set_time (a_time: like time)
+			-- Set `time' to `a_time'.
+		require
+			a_time_not_void: a_time /= Void
+		do
+			time := a_time
+		ensure
+			time_set: time = a_time
 		end
 
 feature {AUT_PROXY_EVENT_PRODUCER} -- Basic operations

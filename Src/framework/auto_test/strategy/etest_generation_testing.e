@@ -60,7 +60,9 @@ feature {NONE} -- Initialization
 			make (a_generation)
 
 			l_itp := new_interpreter
-			l_itp.add_observer (result_repository_builder)
+			if a_generation.is_html_statistics_format_enabled or a_generation.is_minimization_enabled then
+				l_itp.add_observer (result_repository_builder)
+			end
 			l_itp.set_is_logging_enabled (True)
 
 			create l_task.make (l_itp, generation.system, generation.error_handler)
@@ -145,7 +147,7 @@ feature {NONE} -- Access
 
 feature {NONE} -- Access: witness minimization
 
-	used_witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
+	used_witnesses: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
 			-- Witness which have been minimized and for which a test was created
 
 	last_minimized_witness: INTEGER
@@ -271,8 +273,8 @@ feature {NONE} -- Status setting
 			not_minimizing: sub_task /= minimize_task or not has_next_step
 		local
 			l_repo: AUT_TEST_CASE_RESULT_REPOSITORY
-			l_witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
-			l_witness: AUT_WITNESS
+			l_witnesses: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
+			l_witness: AUT_ABS_WITNESS
 			l_task: like minimize_task
 		do
 			l_repo := result_repository_builder.result_repository
@@ -281,11 +283,12 @@ feature {NONE} -- Status setting
 				last_minimized_witness := last_minimized_witness + 1
 				l_witness := l_witnesses.item (last_minimized_witness)
 				if
-					l_witness.is_fail and then
-					not used_witnesses.there_exists (agent {AUT_WITNESS}.is_same_bug (l_witness))
+					attached {AUT_WITNESS} l_witness as l_wit and then
+					l_wit.is_fail and then
+					not used_witnesses.there_exists (agent {AUT_ABS_WITNESS}.is_same_bug (l_wit))
 				then
 					l_task := minimize_task
-					l_task.set_witness (l_witness)
+					l_task.set_witness (l_wit)
 					l_task.start
 					sub_task := l_task
 				end
@@ -344,7 +347,7 @@ feature {NONE} -- Factory
 			l_itp_gen: AUT_INTERPRETER_GENERATOR
 		do
 			l_itp_gen := interpreter_generator
-			l_itp_gen.create_interpreter (file_system.pathname (generation.output_dirname, "log"))
+			l_itp_gen.create_interpreter (file_system.pathname (generation.output_dirname, "log"), generation)
 
 				-- FIXME: ensure `last_interpreter' is attached, even if executable does not exist!
 			Result := l_itp_gen.last_interpreter
@@ -402,7 +405,7 @@ invariant
 	minimizing_implies_test_task_has_next_step: minimize_task_cache = sub_task implies test_task.has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -30,13 +30,14 @@ feature -- Operations
 			l_new_features: LINKED_LIST[FEATURE_I]
 			l_visitor: ETR_ECG_VISITOR
 			l_output: ETR_AST_STRING_OUTPUT
+			l_cursor: CURSOR
 		do
 			l_written_class := a_class.context.class_context.written_class
 			l_ft := l_written_class.feature_table
 
 			create l_new_features.make
 			create {LINKED_LIST[STRING]}pulled_down_features.make
-
+			l_cursor := l_ft.cursor
 			from
 				l_ft.start
 			until
@@ -55,6 +56,7 @@ feature -- Operations
 
 				l_ft.forth
 			end
+			l_ft.go_to (l_cursor)
 
 			create l_output.make
 			create l_visitor.make (l_output, l_new_features)

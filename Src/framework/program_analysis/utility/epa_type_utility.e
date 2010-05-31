@@ -89,8 +89,8 @@ feature{NONE} -- Implementation
 	cleaned_type_name (a_type_name: STRING): STRING
 			-- A copy from `a_type_name', with all "?" removed.
 		do
-			fixme ("To be removed. 30.5.2010 Jasonw")
 			Result := a_type_name.twin
+			Result.replace_substring_all (once "?", once "detachable ")
 		end
 
 end

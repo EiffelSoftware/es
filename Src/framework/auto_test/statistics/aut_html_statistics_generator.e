@@ -387,6 +387,7 @@ feature {NONE} -- HTML Generation
 			cs: DS_ARRAYED_LIST_CURSOR [INTEGER]
 			l_feat_table: FEATURE_TABLE
 			feature_i: FEATURE_I
+			l_cursor: CURSOR
 		do
 			filename := class_summary_file_name (a_class)
 			absolute_filename := file_system.pathname (output_dirname, filename)
@@ -440,6 +441,7 @@ feature {NONE} -- HTML Generation
 				file.close
 				create child_id_list.make (a_class.feature_table.count)
 				l_feat_table := a_class.feature_table
+				l_cursor := l_feat_table.cursor
 --				if not is_manual_test_class (a_class) then
 --					from
 --						l_feat_table.start
@@ -469,6 +471,7 @@ feature {NONE} -- HTML Generation
 					end
 					l_feat_table.forth
 				end
+				l_feat_table.go_to (l_cursor)
 
 				tree_content_file.put_string ("class_")
 				tree_content_file.put_string (a_class.name)
@@ -673,7 +676,7 @@ feature {NONE} -- HTML Generation
 			a_stream.put_line ("Result:<br/>")
 			a_stream.put_line ("<pre class='witness'>")
 			create response_printer.make (a_stream)
-			a_result.witness.item (a_result.witness.count).response.process (response_printer)
+			a_result.witness.request.response.process (response_printer)
 			a_stream.put_line ("</pre>")
 			a_stream.put_line ("<br/>")
 		end
@@ -949,7 +952,7 @@ invariant
 	test_case_printer_not_void: test_case_printer /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

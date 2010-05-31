@@ -179,7 +179,7 @@ feature -- Basic operations
 			process.redirect_output_to_agent (a_output_handler)
 
 			process.launch
-			
+
 			launch_thread
 		ensure
 			launched: is_launched
@@ -201,6 +201,7 @@ feature {NONE} -- Basic operations
 					l_exp := condition_variable.wait_with_timeout (mutex, timeout * 1000)
 					if not l_exp then
 						terminate_directly
+						l_done := True
 					end
 				end
 				if process.has_exited then
@@ -225,10 +226,10 @@ feature {NONE} -- Implementation
 				if not process.force_terminated then
 					process.terminate_tree
 				end
-				process.wait_for_exit
+				process.wait_for_exit_with_timeout (5000)
 			else
 				if process.launched and then not process.has_exited then
-					process.wait_for_exit
+					process.wait_for_exit_with_timeout (5000)
 				end
 			end
 		end
@@ -237,7 +238,7 @@ invariant
 	timeout_not_negative: timeout >= 0
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -261,10 +262,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -60,6 +60,7 @@ feature -- Generate
 			l_feature: FEATURE_I
 			l_any_class_id: INTEGER
 			l_suitable_features: LINKED_LIST [FEATURE_I]
+			l_cursor: CURSOR
 		do
 			create last_invariants.make (10)
 			last_invariants.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
@@ -70,6 +71,7 @@ feature -- Generate
 			create l_suitable_features.make
 
 				-- Select suitable features.
+			l_cursor := l_feat_table.cursor
 			from
 				l_feat_table.start
 			until
@@ -85,6 +87,7 @@ feature -- Generate
 				end
 				l_feat_table.forth
 			end
+			l_feat_table.go_to (l_cursor)
 
 				-- Generate invariant clauses from postconditions
 				-- of features in `l_suitable_features'.

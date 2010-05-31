@@ -64,10 +64,12 @@ feature -- Access
 			l_list: DS_ARRAYED_LIST [FEATURE_I]
 			l_tester: AGENT_BASED_EQUALITY_TESTER [FEATURE_I]
 			l_sorter: DS_QUICK_SORTER [FEATURE_I]
+			l_cursor: CURSOR
 		do
 			l_feat_table := a_context_class.feature_table
 			create Result.make
 			create l_list.make (10)
+			l_cursor := l_feat_table.cursor
 			from
 				l_feat_table.start
 			until
@@ -83,6 +85,7 @@ feature -- Access
 				end
 				l_feat_table.forth
 			end
+			l_feat_table.go_to (l_cursor)
 			create l_tester.make (agent (a, b: FEATURE_I):  BOOLEAN do Result := a.feature_name < b.feature_name end)
 			create l_sorter.make (l_tester)
 			l_sorter.sort (l_list)

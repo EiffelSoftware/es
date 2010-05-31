@@ -111,6 +111,10 @@ feature -- Parsing
 			quit_keyword_count: INTEGER
 			type_keyword_count: INTEGER
 			execute_keyword_count: INTEGER
+			state_keyword_count: INTEGER
+			l_var_name: STRING
+			l_var_type: TYPE_A
+			l_state_vars: HASH_TABLE [TYPE_A, STRING]
 		do
 			if end_of_input then
 				report_and_set_error_at_position ("Expected something, not end of input. Don't be so stingy!", position)
@@ -122,6 +126,7 @@ feature -- Parsing
 					quit_keyword_count := quit_keyword.count
 					type_keyword_count := type_keyword.count
 					execute_keyword_count := execute_keyword.count
+					state_keyword_count := state_keyword.count
 					if
 							-- Process ":quit" request.
 						input.count - 1 = quit_keyword_count and then
@@ -151,6 +156,57 @@ feature -- Parsing
 							if not has_error then
 								report_type_request (last_string.twin)
 							end
+						end
+					elseif
+							-- Process ":state" request.
+						input.count > state_keyword_count and then
+						substring (2, 1 + state_keyword_count).is_case_insensitive_equal (state_keyword)
+					then
+						position := position + state_keyword_count
+						skip_whitespace
+						create l_state_vars.make (5)
+						l_state_vars.compare_objects
+							-- A state request can have no variable, for example, a pre-execution state for a creation procedure without argument.
+						if not end_of_input then
+							from
+							until
+								end_of_input or has_error
+							loop
+								skip_whitespace
+								if not has_error then
+									parse_identifier
+									if not has_error then
+										l_var_name := last_string.twin
+										parse_symbol (':')
+										if not has_error then
+											skip_whitespace
+											if not has_error then
+												parse_type_name_in_braces
+												if not has_error then
+													l_var_type := base_type (last_string.twin)
+													l_state_vars.put (l_var_type, l_var_name)
+													parse_symbol (';')
+													if has_error then
+														report_and_set_error_at_position ("Expected symbol %";%", but end of input is reached.", position)
+													end
+												else
+													report_and_set_error_at_position ("Expected variable type, but not found.", position)
+												end
+											else
+												report_and_set_error_at_position ("Expected variable type, but end of input is reached.", position)
+											end
+										else
+											report_and_set_error_at_position ("Expected symbol %":%", but not found.", position)
+										end
+									else
+										report_and_set_error_at_position ("Expected variable name, but not found.", position)
+									end
+								end
+								skip_whitespace
+							end
+						end
+						if not has_error then
+							report_object_state_request (l_state_vars)
 						end
 					else
 						report_and_set_error_at_position ("Unknown meta request.", position)
@@ -236,6 +292,12 @@ feature {NONE} -- Handlers
 
 	report_start_request
 			-- Report a "start" request.
+		deferred
+		end
+
+	report_object_state_request (a_variables: HASH_TABLE [TYPE_A, STRING])
+			-- Report state request for variables specified in `a_variables'.
+			-- `a_variables' is a table, key is variable name, value is type of that variable.
 		deferred
 		end
 
@@ -706,6 +768,22 @@ feature {NONE} -- Parsing
 		ensure
 			no_whitespace: not end_of_input implies not is_whitespace (item)
 			no_error: not has_error
+		end
+
+	parse_symbol (a_symbol: CHARACTER)
+			-- Parse `a_symbol' at current input position.
+		require
+			input: input /= Void
+			not_end_of_input: not end_of_input
+			no_error: not has_error
+		do
+			last_string.wipe_out
+			if item = a_symbol then
+				last_string.append_character (a_symbol)
+				forth
+			else
+				report_and_set_error_at_position ("No %" " + a_symbol.out + "%" is found.", position)
+			end
 		end
 
 	parse_integer
@@ -1226,6 +1304,9 @@ feature {NONE} -- Implementation
 	comment_prefix: STRING = "--"
 			-- Line comment prefix
 
+	state_keyword: STRING = "state"
+			-- 'state' keyword
+
 invariant
 
 	valid_position: input /= Void implies (position >= 0 and position <= input.count + 1)
@@ -1234,7 +1315,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -66,7 +66,7 @@ feature -- Status report
 			Result := debug_file /= null_output_stream
 		end
 
-	has_error: BOOLEAN
+	has_error: BOOLEAN assign reset_error_status
 			-- Has an error occured?
 
 	is_benchmarking: BOOLEAN
@@ -122,6 +122,19 @@ feature -- Access
 			--
 			-- Note: default value is `null_output_stream'
 
+	configuration: detachable TEST_GENERATOR
+			-- Configuration
+
+feature -- Setting
+
+	set_configuration (a_config: like configuration)
+			-- Set `a_config' into `request_printer' and `response_printer'.
+		do
+			configuration := a_config
+			request_printer.set_configuration (a_config)
+			response_printer.set_configuration (a_config)
+		end
+
 feature {NONE} -- Access
 
 	request_printer: AUT_SIMPLE_REQUEST_PRINTER
@@ -158,6 +171,12 @@ feature -- Status setting
 		do
 			start_count := a_start_count
 			counter := a_start_count
+		end
+
+	reset_error_status (a_status: BOOLEAN)
+			-- Set `has_error' with `a_status'.
+		do
+			has_error := a_status
 		end
 
 	set_start_time (a_start_time: like start_time)
@@ -238,8 +257,10 @@ feature -- Basic operations
 	report_info_message (an_info: STRING_8)
 			-- <Precursor>
 		do
-			Precursor (an_info)
-			info_file.flush
+			if not an_info.is_empty then
+				Precursor (an_info)
+				info_file.flush
+			end
 		end
 
 	report_debug_message (a_debug_info: STRING_8)
@@ -287,33 +308,41 @@ feature -- Report events
 			l_msg: STRING
 		do
 			-- TODO: possible info/debug output describing the received response?
-			if attached {AUT_CALL_BASED_REQUEST} last_testing_request as l_caller then
-				create l_msg.make (100)
-				if attached remaining_time as l_time then
-					l_time.time_duration.append_to_string (l_msg)
-					l_msg.append_string (": ")
-				end
-				if start_count > 0 then
-					l_msg.append_natural_32 (counter)
-					l_msg.append_string (": ")
-				end
-				if attached {AUT_CREATE_OBJECT_REQUEST} l_caller then
-					l_msg.append_string ("create ")
-				end
-				l_msg.append_string (type_name (l_caller.target_type, l_caller.feature_to_call))
-				l_msg.append_character ('.')
-				l_msg.append_string (l_caller.feature_to_call.feature_name)
-				l_msg.append_character (' ')
-				a_response.process (response_printer)
-				l_msg.append_string (response_printer.last_string)
-				report_info_message (l_msg)
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				if attached {AUT_CALL_BASED_REQUEST} last_testing_request as l_caller then
+					create l_msg.make (100)
+					if attached remaining_time as l_time then
+						l_time.time_duration.append_to_string (l_msg)
+						l_msg.append_string (": ")
+					end
+					if start_count > 0 then
+						l_msg.append_natural_32 (counter)
+						l_msg.append_string (": ")
+					end
+					if attached {AUT_CREATE_OBJECT_REQUEST} l_caller then
+						l_msg.append_string ("create ")
+					end
+					l_msg.append_string (type_name (l_caller.target_type, l_caller.feature_to_call))
+					l_msg.append_character ('.')
+					l_msg.append_string (l_caller.feature_to_call.feature_name)
+					l_msg.append_character (' ')
+					a_response.process (response_printer)
+					l_msg.append_string (response_printer.last_string)
+					report_info_message (l_msg)
 
-					-- Decrement test counter
-				if counter > 0 then
-					counter := counter - 1
+						-- Decrement test counter
+					if counter > 0 then
+						counter := counter - 1
+					end
 				end
 			end
 			last_testing_request := Void
+		end
+
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			-- Do nothing.		
 		end
 
 feature -- Reporting messages
@@ -616,12 +645,20 @@ feature -- Reporting errors
 			report_error_message ("Could not create file '" + a_filename + "' for writing.")
 		end
 
+	report_linear_constraint_solver_name_error (a_name: STRING)
+			-- Report invalid `a_name' for linear constraint solver.
+		require
+			a_name_attached: a_name /= Void
+		do
+			report_error_message ("Linear constraint solver name %"" + a_name + "%" is not supported.")
+		end
+
 invariant
 	remaining_time_not_negative: remaining_time /= Void implies remaining_time.second_count >= 0
 	system_attached: system /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

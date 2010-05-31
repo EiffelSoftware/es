@@ -19,6 +19,10 @@ inherit
 
 	REFACTORING_HELPER
 
+	ERL_G_TYPE_ROUTINES
+
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 
 	make
@@ -38,6 +42,8 @@ feature {NONE} -- Initialization
 			create priority_table.make_default
 			create tester.make
 			priority_table.set_key_equality_tester (tester)
+			create excluded_features.make (10)
+			excluded_features.set_equality_tester (string_equality_tester)
 		ensure
 			system_set: system = a_system
 		end
@@ -79,6 +85,24 @@ feature -- Access
 	highest_dynamic_priority: INTEGER
 			-- Highest dynamic priority
 
+	features_under_test: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+			-- List of features under test
+		do
+			create Result.make
+			from
+				feature_list_table.start
+			until
+				feature_list_table.after
+			loop
+				feature_list_table.item_for_iteration.do_all (agent Result.force_last)
+				feature_list_table.forth
+			end
+		end
+
+	excluded_features: DS_HASH_SET [STRING]
+			-- Features to be excluded from being tested
+			-- format: CLASS_NAME.feature_name
+
 feature -- Changing Priority
 
 	set_static_priority_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_priority: INTEGER)
@@ -90,28 +114,34 @@ feature -- Changing Priority
 		local
 			pair: DS_PAIR [INTEGER, INTEGER]
 			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+			l_feat_name: STRING
+			l_class_feat_name: STRING
 		do
-			priority_table.search (a_feature)
-			if priority_table.found then
-				priority_table.found_item.put_first (a_priority)
-			else
-				create pair.make (a_priority, a_priority)
-				if highest_dynamic_priority < a_priority then
-					highest_dynamic_priority := a_priority
-				end
-				priority_table.force (pair, a_feature)
-				feature_list_table.search (a_priority)
-				if feature_list_table.found then
-					list := feature_list_table.found_item
-					check
-						feature_not_included: not list.has (a_feature)
-					end
-					list.force_last (a_feature)
+			l_class_feat_name := a_feature.type.associated_class.name_in_upper + "." + a_feature.feature_.feature_name.as_lower
+			l_feat_name := a_feature.feature_.feature_name.as_lower
+			if not excluded_features.has (l_feat_name) and then not excluded_features.has (l_class_feat_name) then
+				priority_table.search (a_feature)
+				if priority_table.found then
+					priority_table.found_item.put_first (a_priority)
 				else
-					create list.make_equal
-					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
-					list.force_last (a_feature)
-					feature_list_table.force (list, a_priority)
+					create pair.make (a_priority, a_priority)
+					if highest_dynamic_priority < a_priority then
+						highest_dynamic_priority := a_priority
+					end
+					priority_table.force (pair, a_feature)
+					feature_list_table.search (a_priority)
+					if feature_list_table.found then
+						list := feature_list_table.found_item
+						check
+							feature_not_included: not list.has (a_feature)
+						end
+						list.force_last (a_feature)
+					else
+						create list.make_equal
+						list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
+						list.force_last (a_feature)
+						feature_list_table.force (list, a_priority)
+					end
 				end
 			end
 		end
@@ -131,11 +161,13 @@ feature -- Changing Priority
 			l_any_class: CLASS_C
 			l_added: INTEGER
 			l_exported_creators: LINKED_LIST [FEATURE_I]
+			l_cursor: CURSOR
 		do
 			l_any_class := system.any_class.compiled_class
 			class_ := a_type.associated_class
 			l_feat_table := class_.feature_table
 			create l_exported_creators.make
+			l_cursor := l_feat_table.cursor
 			from
 				l_feat_table.start
 			until
@@ -161,12 +193,35 @@ feature -- Changing Priority
 				end
 				l_feat_table.forth
 			end
+			l_feat_table.go_to (l_cursor)
 
 				-- We added exported features as candidate feature under test when there is
 				-- no non-creator feature (except those from ANY) to test in `a_type'.
 			if l_added = 0 and then not l_exported_creators.is_empty then
 				l_exported_creators.do_all (agent register_feature (?, a_type, True, a_priority))
 			end
+		end
+
+	set_excluded_features (a_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]])
+			-- Set `excluded_features' with `a_features'.
+		local
+			l_cursor: CURSOR
+		do
+			excluded_features.wipe_out
+			l_cursor := a_features.cursor
+			from
+				a_features.start
+			until
+				a_features.after
+			loop
+				if a_features.item_for_iteration.class_name.is_empty then
+					excluded_features.force_last (a_features.item_for_iteration.feature_name)
+				else
+					excluded_features.force_last (a_features.item_for_iteration.class_name + "." + a_features.item_for_iteration.feature_name)
+				end
+				a_features.forth
+			end
+			a_features.go_to (l_cursor)
 		end
 
 feature -- Basic routines
@@ -320,9 +375,7 @@ feature {NONE} -- Implementation
 			feature_i: FEATURE_I
 		do
 			create feature_.make (a_feature, a_type)
-			if a_creator then
-				feature_.set_is_creator (True)
-			end
+			feature_.set_is_creator (a_creator)
 
 			if a_feature.written_class.name.is_case_insensitive_equal ("ANY") then
 				if a_creator then
@@ -334,36 +387,6 @@ feature {NONE} -- Implementation
 				end
 			else
 				set_static_priority_of_feature (feature_, a_priority)
-			end
-		end
-
-	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
-			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
-		require
-			a_feature_attached: a_feature /= Void
-			a_type_attached: a_type /= Void
-		local
-			l_class: CLASS_C
-		do
-			if
-				a_type.has_associated_class and then
-				a_type.associated_class.creators /= Void and then
-				a_type.associated_class.creators.has (a_feature.feature_name)
-			then
-				Result := a_type.associated_class.creators.item (a_feature.feature_name).is_all
-			end
-
-			if a_type.has_associated_class then
-				l_class := a_type.associated_class
-
-				if l_class.creators /= Void and then l_class.creators.has (a_feature.feature_name) then
-						-- For normal creators.
-					Result := l_class.creators.item (a_feature.feature_name).is_all
-
-				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
-						-- For default creators.
-					Result := True
-				end
 			end
 		end
 
@@ -438,7 +461,7 @@ invariant
 	tables_valid: are_tables_valid
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

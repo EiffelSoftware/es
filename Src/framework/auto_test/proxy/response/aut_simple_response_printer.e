@@ -1,6 +1,6 @@
 note
 	description: "[
-		Simple response printer creating textual representation of a response.	
+		Simple response printer creating textual representation of a response.
 	]"
 	author: ""
 	date: "$Date$"
@@ -31,6 +31,20 @@ feature -- Access
 			Result := string
 		end
 
+
+	configuration: detachable TEST_GENERATOR
+			-- Configuration
+
+feature -- Setting
+
+	set_configuration (a_configuration: like configuration)
+			-- Set `configuration' to `a_configuration'.
+		do
+			configuration := a_configuration
+		ensure
+			configuration_set: configuration = a_configuration
+		end
+
 feature {NONE} -- Access
 
 	string: STRING
@@ -41,34 +55,58 @@ feature {AUT_RESPONSE} -- Visitors
 	process_normal_response (a_response: AUT_NORMAL_RESPONSE)
 			-- <Precursor>
 		do
-			string.wipe_out
-			if a_response.has_exception then
-				if a_response.exception.is_test_invalid then
-					string.append ("(invalid test)")
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				string.wipe_out
+				if a_response.has_exception then
+					if a_response.exception.is_test_invalid then
+						string.append ("(invalid test)")
+					else
+						string.append ("(failed)")
+					end
 				else
-					string.append ("(failed)")
+					string.append ("(passed)")
 				end
-			else
-				string.append ("(passed)")
 			end
 		end
 
 	process_error_response (a_response: AUT_ERROR_RESPONSE)
 			-- <Precursor>
 		do
-			string.wipe_out
-			string.append ("(interpreter encountered error)")
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				string.wipe_out
+				string.append ("(interpreter encountered error)")
+			end
 		end
 
 	process_bad_response (a_response: AUT_BAD_RESPONSE)
 			-- <Precursor>
 		do
-			string.wipe_out
-			string.append ("(invalid response)")
+			if attached {TEST_GENERATOR} configuration as l_config implies l_config.is_console_output_enabled then
+				string.wipe_out
+				string.append ("(invalid response)")
+			end
+		end
+
+	process_object_state_response (a_response: AUT_OBJECT_STATE_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
+		end
+
+	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_response (a_response: AUT_PREDICATE_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- Do nothing.
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

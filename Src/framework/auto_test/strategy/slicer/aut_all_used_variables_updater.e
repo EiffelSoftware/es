@@ -79,7 +79,8 @@ feature{AUT_REQUEST} -- Processing
 			l_name: STRING
 		do
 			if a_request.receiver /= Void and then not variables.has (a_request.receiver) then
-				l_type := a_request.feature_to_call.type.actual_type.instantiation_in (a_request.target_type, a_request.feature_to_call.written_in)
+				l_type := a_request.feature_to_call.type.actual_type.instantiation_in (a_request.target_type, a_request.target_type.associated_class.class_id)
+--				l_type := a_request.feature_to_call.type.actual_type.instantiation_in (a_request.target_type, a_request.feature_to_call.written_in)
 				l_name := type_name_with_context (l_type, interpreter_root_class, Void)
 				variables.force ([l_type, l_name, True, False], a_request.receiver.deep_twin)
 			end
@@ -157,6 +158,24 @@ feature{AUT_REQUEST} -- Processing
 				end
 				cs.forth
 			end
+		end
+
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
 		end
 
 invariant

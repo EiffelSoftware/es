@@ -60,6 +60,8 @@ feature  -- Parsing
 			-- request has been sent.
 		local
 			output: STRING
+			l_index, num_seconds: INTEGER
+			l_time: DT_DATE_TIME_DURATION
 		do
 			create last_response_text.make (default_response_length)
 			try_parse_multi_line_value
@@ -84,13 +86,29 @@ feature  -- Parsing
 							create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
 						else
 							create {AUT_NORMAL_RESPONSE} last_response.make_exception (output, last_exception)
+
+								-- Ilinca, "number of faults law" experiment
+							parse_done
+							if last_string = Void then
+								create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+							else
+								try_read_line
+								if last_string /= Void and then last_string.has_substring (exception_thrown_message) then
+									num_seconds := last_string.substring (last_string.index_of (':', 1) + 2, last_string.count).to_integer
+									create l_time.make_canonical_definite (num_seconds)
+									last_response.set_time (l_time)
+								end
+							end
+
 						end
 					end
 				end
 				if not last_response.is_bad then
-					parse_done
-					if last_string = Void then
-						create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+					if not last_response.is_exception then -- Ilinca, "number of faults law" experiment
+						parse_done
+						if last_string = Void then
+							create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+						end
 					end
 				end
 			end
@@ -166,6 +184,51 @@ feature  -- Parsing
 		do
 		end
 
+	parse_object_state_response
+			-- Parse the response issued by the interpreter after a
+			-- object state request has been sent.
+		local
+			output: STRING
+		do
+			create last_response_text.make (default_response_length)
+			try_parse_multi_line_value
+			if last_string = Void then
+				parse_error
+				if last_string = Void then
+					create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+				else
+					create {AUT_ERROR_RESPONSE} last_response.make (last_string.twin)
+				end
+			else
+				output := last_string.twin
+				parse_object_state_status
+				if last_string = Void or else not is_status_success_message (last_string) then
+					create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+				else
+					if is_status_success_message (last_string) then
+						create {AUT_NORMAL_RESPONSE} last_response.make (output)
+					else
+						parse_exception
+						if last_exception = Void then
+							create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+						else
+							create {AUT_NORMAL_RESPONSE} last_response.make_exception (output, last_exception)
+						end
+					end
+				end
+				if not last_response.is_bad then
+					parse_done
+					if last_string = Void then
+						create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+					end
+				end
+			end
+			last_response_text := Void
+		ensure then
+			last_response_not_void: last_response /= Void
+		end
+
+
 	retrieve_response
 			-- Retrieve response from the interpreter,
 			-- store it in `last_raw_response'.
@@ -218,6 +281,31 @@ feature {NONE} -- Implementation
 		ensure
 			status_parsed_or_error: last_string = Void or else (is_status_success_message (last_string) or
 									is_status_exception_message (last_string))
+		end
+
+	parse_object_state_status
+			-- Parse "status:" response.
+			-- Have `last_string' have the textual version of the parsed intput,
+			-- or `Void' in case of an error.
+		require
+			last_response_text_not_void: last_response_text /= Void
+		do
+			try_read_line
+			if last_string /= Void then
+				if
+					not is_status_success_message (last_string) and
+					not is_status_exception_message (last_string) and
+					not is_status_object_is_void_message (last_string) and
+					not is_status_class_invariant_message (last_string)
+				then
+					last_string := Void
+				end
+			end
+		ensure
+			status_parsed_or_error: last_string = Void or else (is_status_success_message (last_string) or
+									is_status_exception_message (last_string)) or
+									is_status_class_invariant_message (last_string) or
+									is_status_object_is_void_message (last_string)
 		end
 
 	parse_error
@@ -403,6 +491,28 @@ feature {NONE} -- Implementation
 			definition: Result = a_string.is_equal ("status: exception")
 		end
 
+	is_status_class_invariant_message (a_string: STRING): BOOLEAN
+			-- Is `a_string' a valid status message indicating that
+			-- class invariant is violated during "state" request?
+		require
+			a_string_not_void: a_string /= Void
+		do
+			Result := a_string.is_equal ("status: class_invariant_violation")
+		ensure
+			definition: Result = a_string.is_equal ("status: class_invariant_violation")
+		end
+
+	is_status_object_is_void_message (a_string: STRING): BOOLEAN
+			-- Is `a_string' a valid status message indicating that
+			-- the object is void during "state" request?
+		require
+			a_string_not_void: a_string /= Void
+		do
+			Result := a_string.is_equal ("status: object_is_void")
+		ensure
+			definition: Result = a_string.is_equal ("status: object_is_void")
+		end
+
 	default_response_length: INTEGER = 1024
 
 invariant
@@ -411,7 +521,7 @@ invariant
 	input_stream_open_read: input_stream.is_open_read
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

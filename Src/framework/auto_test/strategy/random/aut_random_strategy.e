@@ -30,6 +30,16 @@ inherit
 			{NONE} all
 		end
 
+	AUT_PREDICATE_UTILITY
+		undefine
+			system
+		end
+
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 
 	make
@@ -41,9 +51,10 @@ feature {NONE} -- Initialization
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
 			create queue.make (system)
+			queue.set_excluded_features (a_interpreter.configuration.excluded_features)
 			create types_under_test.make_default
 			create classes_under_test.make_default
-			classes_under_test.set_equality_tester (create {AUT_CLASS_EQUALITY_TESTER}.make)
+			classes_under_test.set_equality_tester (create {AUT_CLASS_EQUALITY_TESTER})
 		end
 
 feature -- Status
@@ -170,7 +181,7 @@ feature -- Execution
 				interpreter.stop
 			end
 			if not interpreter.is_running then
-				if sub_task /= Void then
+				if sub_task /= Void and then sub_task.has_next_step then
 					sub_task.cancel
 				end
 				interpreter.start
@@ -197,7 +208,14 @@ feature {NONE} -- Implementation
 			l_selected_type: TYPE_A
 			l_selected_feature: FEATURE_I
 		do
-			queue.select_next
+			if interpreter.configuration.is_precondition_checking_enabled and then not high_priority_features.is_empty then
+				selected_feature := high_priority_features.item
+				set_enforce_precondition_satisfaction (True)
+				unmark_feature_as_high_priority
+			else
+				set_enforce_precondition_satisfaction (False)
+				queue.select_next
+			end
 
 			selected_feature := queue.last_feature
 			l_selected_feature := selected_feature.feature_
@@ -208,7 +226,7 @@ feature {NONE} -- Implementation
 				creator.set_creation_procedure (l_selected_feature)
 				sub_task := creator
 			else
-				create caller.make (system, interpreter, queue, error_handler, feature_table)
+				create caller.make (system, interpreter, queue, error_handler, feature_table, selected_feature)
 				caller.set_feature_and_type (l_selected_feature, l_selected_type)
 				sub_task := caller
 			end
@@ -253,7 +271,7 @@ invariant
 	interpreter_not_in_replay_mode: not interpreter.is_replaying
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

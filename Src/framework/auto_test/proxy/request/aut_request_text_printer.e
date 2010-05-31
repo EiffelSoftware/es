@@ -25,19 +25,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_output_stream: like output_stream)
+	make (a_system: like system; an_output_stream: like output_stream; a_config: like configuration)
 			-- Create new request.
 		require
 			a_system_not_void: a_system /= Void
 			an_output_stream_not_void: an_output_stream /= Void
 			an_output_stream_is_writable: an_output_stream.is_open_write
+			a_config_attached: a_config /= Void
 		do
 			system := a_system
 			set_output_stream (an_output_stream)
+			configuration := a_config
 			create expression_printer.make (output_stream)
 		ensure
 			system_set: system = a_system
 			output_stream_set: output_stream = an_output_stream
+			configuration_set: configuration = a_config
 		end
 
 feature -- Access
@@ -47,6 +50,9 @@ feature -- Access
 
 	output_stream: KI_TEXT_OUTPUT_STREAM
 			-- Stream that printer writes to
+
+	configuration: TEST_GENERATOR
+			-- Configuration
 
 feature -- Setting
 
@@ -74,7 +80,6 @@ feature {AUT_REQUEST} -- Processing
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
-			print_test_case_index (a_request)
 			output_stream.put_string (execute_request_header)
 			output_stream.put_string ("create {")
 			output_stream.put_string (type_name (a_request.target_type, a_request.creation_procedure))
@@ -90,7 +95,6 @@ feature {AUT_REQUEST} -- Processing
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 		do
-			print_test_case_index (a_request)
 			output_stream.put_string (execute_request_header)
 			if a_request.is_feature_query then
 				output_stream.put_string (a_request.receiver.name (variable_name_prefix))
@@ -124,6 +128,45 @@ feature {AUT_REQUEST} -- Processing
 			output_stream.put_line (a_request.variable.name (variable_name_prefix))
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_variables: HASH_TABLE [TYPE_A, INTEGER]
+			l_cursor: CURSOR
+			l_stream: like output_stream
+		do
+			l_stream := output_stream
+			l_stream.put_string (once ":state ")
+			l_variables := a_request.variables
+			l_cursor := l_variables.cursor
+			from
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_stream.put_string (variable_name_prefix)
+				l_stream.put_string (l_variables.key_for_iteration.out)
+				l_stream.put_string (once ": {")
+				l_stream.put_string (l_variables.item_for_iteration.name)
+				l_stream.put_string (once "}; ")
+				l_variables.forth
+			end
+			l_stream.put_line (once "")
+			l_variables.go_to (l_cursor)
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature {NONE} -- Printing
 
 	print_argument_list (an_argument_list: DS_LINEAR [ITP_EXPRESSION])
@@ -154,17 +197,6 @@ feature {NONE} -- Printing
 			end
 		end
 
-	print_test_case_index (a_request: AUT_REQUEST) is
-			-- Print test case index from `a_request'.
-		require
-			a_request_attached: a_request /= Void
-		do
-			if a_request.test_case_index > 0 then
-				output_stream.put_string ("-- test case No." + a_request.test_case_index.out)
-				output_stream.put_new_line
-			end
-		end
-
 	expression_printer: AUT_EXPRESSION_PRINTER
 			-- Expression printer
 
@@ -177,7 +209,7 @@ invariant
 	output_stream_is_writable: output_stream.is_open_write
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

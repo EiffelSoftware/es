@@ -34,6 +34,7 @@ feature {NONE} -- Initialization
 			create variable_type_table.make_default
 			variable_type_table.set_key_equality_tester (tester)
 			system := a_system
+			create invalid_objects.make (default_invalid_objects_size)
 		ensure
 			system_set: system = a_system
 		end
@@ -46,6 +47,14 @@ feature -- Status report
 			a_variable_not_void: a_variable /= Void
 		do
 			Result := variable_type_table.has (a_variable)
+		end
+
+	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN is
+			-- Is variable with `a_index' defined?
+		require
+			a_index_valid: a_index > 0
+		do
+			Result := is_variable_defined (create {ITP_VARIABLE}.make (a_index))
 		end
 
 	are_expressions_valid (a_list: DS_LINEAR [ITP_EXPRESSION]): BOOLEAN
@@ -162,8 +171,10 @@ feature -- Access
 		local
 			cs: DS_HASH_TABLE_CURSOR [TYPE_A, ITP_VARIABLE]
 			l_type: TYPE_A
+			l_invalid_objects: like invalid_objects
 		do
 			create {DS_ARRAYED_LIST [ITP_VARIABLE]} Result.make (variable_type_table.count)
+			l_invalid_objects := invalid_objects
 			from
 				cs := variable_type_table.new_cursor
 				cs.start
@@ -172,7 +183,7 @@ feature -- Access
 			loop
 				l_type := cs.item.actual_type
 					-- We only allow Void conforms to a non expanded type.
-				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) then
+				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) and then not l_invalid_objects.has (cs.key.index) then
 					Result.force_last (cs.key)
 				end
 				cs.forth
@@ -204,6 +215,9 @@ feature -- Element change
 			a_type_attached: a_type /= Void
 		do
 			variable_type_table.force (a_type, a_variable)
+			if defining_variable_action /= Void then
+				defining_variable_action.call ([a_variable, a_type])
+			end
 		ensure
 			variable_defined: is_variable_defined (a_variable)
 			variable_has_valid_type: variable_type (a_variable) = a_type
@@ -216,7 +230,10 @@ feature -- Removal
 		do
 			create name_generator.make_with_string_stream (variable_name_prefix)
 			variable_type_table.wipe_out
+			invalid_objects.wipe_out
+			wipe_out_actions.do_all (agent {PROCEDURE [ANY, TUPLE]}.call (Void))
 		ensure
+			invalid_objects_wiped_out: invalid_objects.is_empty
 			variable_type_table_empty: variable_type_table.is_empty
 		end
 
@@ -225,6 +242,66 @@ feature -- Removal
 
 	variable_type_table: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			-- Table mapping interprteter variables to their type
+
+feature -- Class invariant violation management
+
+	invalid_objects: DS_HASH_SET [INTEGER]
+			-- Indexes of objects which violate their invariants
+
+	default_invalid_objects_size: INTEGER is 1000
+			-- Default size of `invalid_objects'
+
+	mark_invalid_object (a_index: INTEGER) is
+			-- Mark that object with index `a_index' violates it class invariant.
+		require
+			a_index_positive: a_index > 0
+		do
+			invalid_objects.force_last (a_index)
+			if object_marked_invalid_action /= Void then
+				object_marked_invalid_action.call ([a_index])
+			end
+		ensure
+			object_marked: invalid_objects.has (a_index)
+		end
+
+	object_marked_invalid_action: detachable PROCEDURE [ANY, TUPLE [a_index: INTEGER]]
+			-- Action to be performed when object with index `a_index' is
+			-- marked as class invariant violating
+
+	set_object_marked_invalid_action (a_action: like object_marked_invalid_action) is
+			-- Set `object_marked_invalid_action' with `a_action'.
+		do
+			object_marked_invalid_action := a_action
+		ensure
+			object_marked_invalid_action_set: object_marked_invalid_action = a_action
+		end
+
+feature -- Actions
+
+	defining_variable_action: detachable PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
+			-- Action to be called if a new variable is defined
+
+	wipe_out_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE]] is
+			-- Action to be performed when current is wiped out
+		do
+			if internal_wipe_out_actions = Void then
+				create internal_wipe_out_actions.make
+			end
+			Result := internal_wipe_out_actions
+		ensure
+			result_attached: Result /= Void
+		end
+
+	set_defining_variable_action (a_action: like defining_variable_action) is
+			-- Set `defining_variable_action' with `a_action'.
+		do
+			defining_variable_action := a_action
+		end
+
+feature{NONE} -- Implementation
+
+	internal_wipe_out_actions: like wipe_out_actions
+			-- Cache for `wipe_out_actions'
 
 invariant
 

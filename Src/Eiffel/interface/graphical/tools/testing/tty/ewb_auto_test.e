@@ -86,6 +86,7 @@ feature -- Execution
 				--l_ap.process_arguments (l_args)
 
 				create l_generator.make (a_test_suite, etest_suite)
+				l_error_handler.set_configuration (l_generator)
 
 					-- Types
 				create l_types.make (200)
@@ -95,6 +96,7 @@ feature -- Execution
 					l_ap.class_names.after
 				loop
 					l_type := l_ap.class_names.item_for_iteration
+					l_generator.add_class_name (l_type)
 					if not l_types.is_empty then
 						l_types.append_character (',')
 					end
@@ -119,15 +121,12 @@ feature -- Execution
 				end
 
 					-- Minimization
-				if l_ap.is_slicing_enabled then
-					l_generator.enable_slicing
-				end
-				if l_ap.is_ddmin_enabled then
-					l_generator.enable_ddmin
-				end
+				l_generator.set_is_slicing_enabled (l_ap.is_slicing_enabled)
+				l_generator.set_is_ddmin_enabled (l_ap.is_ddmin_enabled)
 
 					-- Output
 				l_generator.set_html_statistics (l_ap.is_html_statistics_format_enabled)
+				l_generator.set_text_statistics (l_ap.is_text_statistics_format_enabled)
 				l_root_group := l_project.system.system.root_creators.first.cluster
 
 				if l_root_group.is_cluster then
@@ -138,6 +137,90 @@ feature -- Execution
 				end
 				l_generator.set_class_name ("NEW_AUTO_TEST")
 				l_generator.set_debugging (l_ap.is_debugging)
+
+					-- Log file loading
+				l_generator.set_load_file_path (l_ap.log_file_path)
+
+					-- Object state retrieval config
+				l_generator.set_object_state_config (l_ap.object_state_config)
+
+					-- Should automatic testing be enabled?
+				l_generator.set_is_random_testing_enabled (l_ap.is_automatic_testing_enabled)
+
+				        -- Should evolutionary algorithm be used?
+				l_generator.set_is_evolutionary_testing_enabled (l_ap.is_evolutionary_enabled)
+
+					-- Should precondition checking be enabled?
+				l_generator.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
+
+					-- Should linear constraint solving be enabled?
+				l_generator.set_is_linear_solving_enabled (l_ap.is_smt_linear_constraint_solver_enabled or l_ap.is_lpsolve_contraint_linear_solver_enabled)
+
+					-- Should object state exploration be enabled?
+				l_generator.set_is_object_state_exploration_enabled (l_ap.is_object_state_exploration_enabled)
+
+					-- Set log processor.
+				l_generator.set_log_processor (l_ap.log_processor)
+				l_generator.set_log_processor_output (l_ap.log_processor_output)
+
+					-- Set max tries for precondition search.
+				l_generator.set_max_precondition_search_tries (l_ap.max_precondition_search_tries)
+
+					-- Set max time for precondition search.
+				l_generator.set_max_precondition_search_time (l_ap.max_precondition_search_time)
+
+					-- Set seed.
+				if l_ap.is_seed_provided then
+					l_generator.set_seed (l_ap.seed.as_natural_32)
+				end
+
+					-- Should AutoTest generate tests for CITADEL from the given proxy log?
+				l_generator.set_is_citadel_test_generation_enabled (l_ap.prepare_citadel_tests)
+
+					-- Set max candidates count for precondition evaluation
+				l_generator.set_max_candidate_count (l_ap.max_candidate_count)
+
+					-- Set linear constraint solver to be used.
+				l_generator.set_is_smt_linear_constraint_solver_enabled (l_ap.is_smt_linear_constraint_solver_enabled)
+				l_generator.set_is_lpsolve_linear_constraint_solver_enabled (l_ap.is_lpsolve_contraint_linear_solver_enabled)
+
+					-- Set smart object selection rate
+				l_generator.set_object_selection_for_precondition_satisfaction_rate (l_ap.object_selection_for_precondition_satisfaction_rate)
+
+				l_generator.set_smt_enforce_old_value_rate (l_ap.smt_enforce_old_value_rate)
+				l_generator.set_smt_use_predefined_value_rate (l_ap.smt_use_predefined_value_rate)
+
+					-- Set lower/upper bound for linearly solvable arguments.
+				l_generator.set_integer_lower_bound (l_ap.integer_lower_bound)
+				l_generator.set_integer_upper_bound (l_ap.integer_upper_bound)
+
+				l_generator.set_is_random_cursor_used (l_ap.is_random_cursor_used)
+
+					-- Set test case serialization arguments.
+				l_generator.set_is_passing_test_case_serialization_enabled (l_ap.is_passing_test_cases_serialization_enabled)
+				l_generator.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
+
+					-- Set test case deserialization arguments.
+				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
+				l_generator.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
+
+				l_generator.set_recursive (l_ap.is_recursive)
+
+				l_generator.set_data_input (l_ap.data_input)
+				l_generator.set_data_output (l_ap.data_output)
+
+				l_generator.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
+				l_generator.set_is_console_output_enabled (l_ap.is_console_log_enabled)
+
+				l_generator.set_is_on_the_fly_test_case_generation_enabled (l_ap.is_on_the_fly_test_case_generation_enabled)
+
+				l_generator.set_proxy_log_options (l_ap.log_types)
+
+				l_generator.set_is_duplicated_test_case_serialized (l_ap.is_duplicated_test_case_serialized)
+
+				l_generator.set_is_post_state_serialized (l_ap.is_post_state_serialized)
+
+				l_generator.excluded_features.append (l_ap.excluded_features)
 
 				a_test_suite.launch_session (l_generator)
 			else

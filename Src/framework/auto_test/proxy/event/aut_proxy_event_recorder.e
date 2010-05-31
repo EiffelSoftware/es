@@ -72,9 +72,15 @@ feature -- Basic operations
 				process_request (l_request)
 				last_request := Void
 			else
-				check response_without_request: False end
+--				check response_without_request: False end
 			end
 			last_response := Void
+		end
+
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			-- Do nothing.
 		end
 
 	cleanup
@@ -118,7 +124,7 @@ feature {NONE} -- Implementation
 	process_start_request (a_request: AUT_START_REQUEST)
 			-- <Precursor>
 		do
-			check last_response = Void end
+--			check last_response = Void end
 			a_request.set_response (create {AUT_NORMAL_RESPONSE}.make (""))
 			variable_table.wipe_out
 		end
@@ -180,15 +186,17 @@ feature {NONE} -- Implementation
 		local
 			l_last_response: AUT_RESPONSE
 			l_response_stream: KL_STRING_INPUT_STREAM
+			l_text: STRING
 		do
 			if a_request.response = Void then
 				if attached last_response as l_response then
 					l_last_response := l_response
 					if l_last_response.is_normal then
 						if not l_last_response.is_exception then
+							l_text := l_last_response.text.split ('%N').first
 							variable_table.define_variable (
 								a_request.variable,
-								base_type (l_last_response.text))
+								base_type (l_text))
 						end
 					end
 				else
@@ -198,13 +206,43 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_state_response: AUT_OBJECT_STATE_RESPONSE
+		do
+			if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
+				if attached {AUT_OBJECT_STATE_RESPONSE} l_normal_response as l_sresponse then
+					l_state_response := l_sresponse
+				else
+					create l_state_response.make_from_normal_response (l_normal_response)
+				end
+			else
+				create l_state_response.make_empty
+			end
+			a_request.set_response (l_state_response)
+		end
+
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
+
 invariant
 	variable_table_not_void: variable_table /= Void
 	request_history_not_void: request_history /= Void
 	no_void_request_in_history: not request_history.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

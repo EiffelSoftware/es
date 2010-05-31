@@ -53,6 +53,7 @@ feature {NONE} -- Initialization
 			byte_code_feature_body_id := argument (3).to_integer
 			byte_code_feature_pattern_id := argument (4).to_integer
 			l_log_filename := argument (5)
+			interpreter_log_directory := l_log_filename.substring (1, l_log_filename.count - 19)
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
@@ -199,6 +200,9 @@ feature -- Access
 		do
 			Result := store.variable_value (a_index)
 		end
+
+	interpreter_log_directory: STRING
+			-- Directory to store file interpreter_log.txt
 
 feature {NONE} -- Handlers
 
@@ -1081,6 +1085,9 @@ feature -- Object state checking
 	post_state_retrieveal_byte_code: detachable STRING
 			-- Byte code used to retrieve post-execute object states
 
+	hash_table_type: TYPE [HASH_TABLE [INTEGER, INTEGER]]
+			-- Type anchor
+
 feature -- Function types
 
 --	function0: FUNCTION [ANY, TUPLE, INTEGER]
@@ -1313,7 +1320,7 @@ feature -- Predicate evaluation
 
 					l_args := l_argument_holder.item (l_arity)
 					if l_arity = 0 then
-						create l_pred_response.make_filled (1, 0)
+						create l_pred_response.make_filled (0, 1)
 					else
 						create l_pred_response.make_empty (l_count // l_arity)
 
@@ -1501,7 +1508,20 @@ feature -- Test case serialization
 			-- Is test case serialization enabled?
 
 	is_duplicated_test_case_serialized: BOOLEAN
-			-- Should duplicated test case be serialized?		
+			-- Should duplicated test case be serialized?
+
+	temp_serialization_file: FILE_NAME
+			-- File name for the temp serialization file
+		do
+			if temp_serialization_file_cache = Void then
+				create temp_serialization_file_cache.make_from_string (interpreter_log_directory)
+				temp_serialization_file.set_file_name ("serial.dat")
+			end
+			Result := temp_serialization_file_cache
+		end
+
+	temp_serialization_file_cache: detachable like temp_serialization_file
+			-- Cache for `temp_serialization_file'
 
 invariant
 	log_file_open_write: log_file.is_open_write

@@ -18,6 +18,8 @@ inherit
 
 	AUT_SHARED_INTERPRETER_INFO
 
+	COMPILER_EXPORTER
+
 feature -- Byte node generation
 
 	new_local_b (a_position: INTEGER): LOCAL_B
@@ -176,6 +178,145 @@ feature -- Byte node generation
 			a_call_attached: a_call /= Void
 		do
 			create Result.make (a_call, 1)
+		end
+
+	new_argumentless_agent (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): ROUTINE_CREATION_B is
+			-- New node for agent creation
+			-- `a_target_type' is the type of the target object for the agent.
+			-- `a_feature' is the feature wrapped by the agent.
+		local
+			l_result_type: GEN_TYPE_A
+			l_feat_type: TYPE_A
+			l_is_qualified_call: BOOLEAN
+			l_type: TYPE_A
+			l_generics: ARRAY [TYPE_A]
+			l_current_class_void_safe: BOOLEAN
+			l_arg_count: INTEGER
+			l_open_count: INTEGER
+			l_oidx: INTEGER
+			l_cidx: INTEGER
+			l_target_closed: BOOLEAN
+			l_oargtypes, l_cargtypes: ARRAY [TYPE_A]
+			l_closed_count: INTEGER
+			l_tuple_type: TUPLE_TYPE_A
+			l_expressions: BYTE_LIST [BYTE_NODE]
+			l_expr: EXPR_B
+			l_operand_node: OPERAND_B
+			l_tuple_node: TUPLE_CONST_B
+			l_array_of_opens: detachable ARRAY_CONST_B
+			l_last_open_positions: detachable ARRAYED_LIST [INTEGER]
+		do
+			l_feat_type := a_feature.type.actual_type
+
+			l_is_qualified_call := True
+			l_type := l_feat_type.instantiation_in (a_target_type.as_implicitly_detachable, a_target_type.associated_class.class_id)
+			l_type := l_type.deep_actual_type
+
+			if l_type.actual_type.is_boolean then
+				create l_generics.make (1, 2)
+				create l_result_type.make (System.predicate_class_id, l_generics)
+			else
+				create l_generics.make (1, 3)
+				l_generics.put (l_type, 3)
+				create l_result_type.make (System.function_class_id, l_generics)
+			end
+
+			l_current_class_void_safe := False
+			l_type := a_target_type
+
+			if not l_type.is_attached then
+					-- Type of the first actual generic parameter of the routine type
+					-- should always be attached.
+				if l_current_class_void_safe then
+					l_type := l_type.as_attached_type
+				elseif not l_type.is_implicitly_attached then
+					l_type := l_type.as_implicitly_attached
+				end
+			end
+
+			l_generics.put (l_type, 1)
+
+			l_arg_count := 1
+
+			l_open_count := 0
+			l_oidx := 1
+			l_target_closed := True
+
+			create l_oargtypes.make (1, l_open_count)
+
+			l_closed_count := l_arg_count - l_open_count
+			create l_cargtypes.make (1, l_closed_count)
+
+			l_cargtypes.put (a_target_type, 1)
+			l_cidx := 2
+
+			create l_tuple_type.make (System.tuple_id, l_oargtypes)
+			l_current_class_void_safe := interpreter_root_class.lace_class.is_void_safe_call
+
+			if not l_tuple_type.is_attached then
+					-- Type of an argument tuple is always attached.
+				if l_current_class_void_safe then
+					l_tuple_type := l_tuple_type.as_attached_type
+				elseif not l_tuple_type.is_implicitly_attached then
+					l_tuple_type := l_tuple_type.as_implicitly_attached
+				end
+			end
+
+				-- Insert it as second generic parameter of ROUTINE.
+			l_generics.put (l_tuple_type, 2)
+
+				-- Type of an agent is always attached.
+			if l_current_class_void_safe then
+				l_result_type := l_result_type.as_attached_type
+			else
+				l_result_type := l_result_type.as_implicitly_attached
+			end
+
+				-- Byte node creation
+			create Result
+			create l_expressions.make_filled (l_closed_count)
+			l_expressions.start
+
+			if a_target_node /= Void then
+					-- A target was specified, we need to check if it is an open argument or not
+					-- by simply checking that its byte node is not an instance of OPERAND_B.
+				l_expr ?= a_target_node
+				l_operand_node ?= l_expr
+				if l_operand_node = Void then
+					l_expressions.put (l_expr)
+					l_expressions.forth
+				end
+			end
+
+				-- Create TUPLE_CONST_B instance which holds all closed arguments.
+			l_expressions.start
+			create l_tuple_type.make (System.tuple_id, l_cargtypes)
+			create l_tuple_node.make (l_expressions, l_tuple_type, l_tuple_type.create_info)
+
+				-- We need to instantiate the closed TUPLE type of the agent otherwise it
+				-- causes eweasel test#agent007 to fail.
+			system.instantiator.dispatch (l_tuple_node.type, interpreter_root_class)
+
+				-- Initialize ROUTINE_CREATION_B instance
+				-- We need to use the conformence_type since it could be a like_current type which would
+				-- be a problem with inherited assertions. See eweasel test execX10
+			Result.init (a_target_type.conformance_type, a_target_type.associated_class.class_id,
+				a_feature, l_result_type, l_tuple_node, l_array_of_opens, l_last_open_positions,
+				a_feature.is_inline_agent, l_target_closed, a_target_type.associated_class.is_precompiled,
+				a_target_type.associated_class.is_basic)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	new_agent_as_parameter (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): PARAMETER_B is
+			-- New agent call as parameter
+		local
+			l_routine_creation: ROUTINE_CREATION_B
+		do
+			create Result
+			l_routine_creation := new_argumentless_agent (a_target_type, a_feature, a_target_node)
+			Result.set_expression (l_routine_creation)
+			Result.set_attachment_type (l_routine_creation.type)
 		end
 
 note

@@ -106,7 +106,7 @@ feature -- Access
 				l_count := l_count + argument_list.count
 			end
 
-			create Result.make_empty (l_count)
+			create Result.make_filled (0, l_count)
 			Result.put (target.index, 0)
 
 			if argument_list /= Void then
@@ -139,7 +139,7 @@ feature -- Access
 				l_count := l_count + argument_list.count
 			end
 
-			create Result.make_empty (l_count)
+			create Result.make_filled (Void, l_count)
 			Result.put (l_target_type, 0)
 
 			if argument_count > 0 then
