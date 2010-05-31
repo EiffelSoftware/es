@@ -10,8 +10,7 @@ inherit
 	SEM_DOCUMENT_WRITER
 		redefine
 			write,
-			queryable,
-			set_boost_function
+			queryable
 		end
 create {SEM_DOCUMENT_WRITER}
 	default_create
@@ -66,12 +65,6 @@ feature -- Basic operation
 				l_file.put_string (buffer)
 				l_file.close
 			end
-		end
-
-	set_boost_function (a_boost_function: like boost_function)
-			-- Set `boost_function' to `a_boost_function'.
-		do
-			boost_function := a_boost_function
 		end
 
 feature -- Constants

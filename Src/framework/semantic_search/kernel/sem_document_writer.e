@@ -33,21 +33,9 @@ feature -- Basic operation
 			end
 		end
 
-	set_boost_function (a_boost_function: like boost_function)
-			-- Set `boost_function' to `a_boost_function'.
-		do
-			boost_function := a_boost_function
-			transition_writer.set_boost_function (boost_function)
-			object_writer.set_boost_function (boost_function)
-		ensure
-			boost_function_set: boost_function = a_boost_function
-		end
-
 feature -- Access
 
 	last_document: STRING
-
-	boost_function: detachable FUNCTION[ANY, TUPLE[SEM_QUERYABLE, STRING, EPA_EQUATION], REAL] assign set_boost_function
 
 feature {NONE} -- Specialized writers
 
@@ -330,7 +318,7 @@ feature {NONE} -- Implementation
 						a_tbl.put (l_type, a_expr.text.as_lower)
 					end (?, l_replacements, queryable.context_type))
 
-			if a_principal_variable=void then
+			if a_principal_variable=void then -- SEM_OBJECTS
 				if attached {EXPR_CALL_AS}a_expression.ast as l_expr_call and then attached {NESTED_AS}l_expr_call.call as l_nested then
 					-- Principal variable = target of call
 					l_princ_var := queryable.variable_by_name (l_nested.target.access_name)
@@ -392,11 +380,19 @@ feature {NONE} -- Output
 					l_cursor.after
 				loop
 					l_pos := queryable.variable_position (l_cursor.item)
+					l_abs_types := void
 
 					if l_pos = principal_variable_index then
 						-- "principal" object
+						l_abs_types := abstract_principal_types
+					elseif attached {SEM_OBJECTS}queryable then
+						-- for SEM_OBJECTS do full abstraction
+						l_abs_types := ancestor_types (l_cursor.item.resolved_type (l_context_type), create {HASH_TABLE [BOOLEAN, INTEGER]}.make(20))
+					end
+
+					if l_abs_types /= void then
 						from
-							l_abs_types := abstract_principal_types
+
 							l_abs_types.start
 						until
 							l_abs_types.after
@@ -459,13 +455,17 @@ feature {NONE} -- Output
 				l_equation := l_cursor.item
 				l_expr := l_equation.expression
 
-				if attached boost_function then
-					boost_function.call ([queryable, a_field_prefix, l_equation])
-					l_current_boost := boost_function.last_result
-				end
-
 				-- Only continue if the expression represents a simple property
-				if is_simple_property(l_expr) then
+				if is_simple_property(l_expr) or attached {SEM_TRANSITION}queryable then
+					-- Use custom boosts for pre- and postconditions
+					if attached {SEM_TRANSITION}queryable as l_trans then
+						if a_field_prefix.has_substring (precondition_field_prefix) then
+							l_current_boost := l_trans.precondition_boosts.item (l_equation)
+						elseif a_field_prefix.has_substring (postcondition_field_prefix) then
+							l_current_boost := l_trans.postcondition_boosts.item (l_equation)
+						end
+					end
+
 					l_value := l_equation.value
 					if l_value.is_boolean then
 						l_type_name := type_boolean
