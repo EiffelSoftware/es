@@ -264,26 +264,6 @@ feature {NONE} -- Implementation
 			feature_object.internal_arguments_to_substitute.wipe_out
 		end
 
-	parent_result_formal (feature_id : INTEGER) : TYPE_A
-		local
-			parents : LIST [CLASS_C]
-			feat : FEATURE_I
-			i : INTEGER
-		do
-			parents := class_c.parents_classes
-			from
-				i := 1
-			until
-				i > parents.count or Result /= Void
-			loop
-				feat := parents [i].feature_table.item_id (feature_id)
-				if attached feat as feat_att then
-					Result := feat_att.type
-				end
-				i := i + 1
-			end
-		end
-
 	add_attribute_proxy_features (l_as: FEATURE_AS)
 			-- Process `l_as'.
 		local
@@ -354,7 +334,13 @@ feature {NONE} -- Implementation
 
 					l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 					l_type_expression_visitor.resolve_type_in_workbench (l_as.body.type)
-					if not l_type_expression_visitor.resolved_type.is_expanded then
+					if
+						not (
+							l_type_expression_visitor.resolved_type.is_expanded or
+							l_type_Expression_visitor.is_resolved_type_based_on_formal_generic_parameter or
+							(feature_as /= Void and then parent_result_is_formal (feature_as.feature_name.name_id))
+						)
+					then
 						-- first has prefix
 						if not l_type_expression_visitor.resolved_type.is_separate then
 							-- second doesnt have prefix
@@ -520,8 +506,13 @@ feature {NONE} -- Implementation
 
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 			l_type_expression_visitor.resolve_type_in_workbench (a_feature.body.type)
-			if not (l_type_expression_visitor.resolved_type.is_expanded or
-			       (feature_as /= Void implies parent_result_is_formal (feature_as.feature_name.name_id))) then
+			if
+				not (
+					l_type_expression_visitor.resolved_type.is_expanded or
+					l_type_expression_visitor.is_resolved_type_based_on_formal_generic_parameter or
+					(feature_as /= Void and then parent_result_is_formal (feature_as.feature_name.name_id))
+				)
+			then
 				-- first has prefix
 				if not l_type_expression_visitor.resolved_type.is_separate then
 

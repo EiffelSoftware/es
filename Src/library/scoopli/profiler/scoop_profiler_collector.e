@@ -216,17 +216,17 @@ feature -- Measurement
 
 	collect_join (t1, t2 : SCOOP_PROCESSOR)
 		do
-			io.put_string ("Collecting join%N")
+			-- TODO: Implement
 		end
 
 	collect_lock (t, o : SCOOP_PROCESSOR)
 		do
-			io.put_string ("Collecting lock%N")
+			-- TODO: Implement
 		end
 
 	collect_unlock (t, o : SCOOP_PROCESSOR)
 		do
-			io.put_string ("Collecting unlock%N")
+			-- TODO: Implement
 		end
 
 feature {NONE} -- Serialization

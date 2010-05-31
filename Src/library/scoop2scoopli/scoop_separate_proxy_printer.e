@@ -592,8 +592,7 @@ feature {NONE} -- Implementation
 							-- Yes, we do.
 							-- Is the type of the current formal argument based on an ignored class?
 							if
-								is_in_ignored_group (l_type_expr_visitor.resolved_type.associated_class) or
-								(feature_as /= Void implies parent_argument_is_formal (feature_as.feature_name.name_id, i))
+								is_in_ignored_group (l_type_expr_visitor.resolved_type.associated_class)
 							then
 								-- Yes, it is.
 								-- Ignored classes do not get replaced with a client and a proxy class. We do not have to convert the formal argument.
@@ -636,7 +635,10 @@ feature {NONE} -- Implementation
 									else
 										-- No it isn't.
 										-- Is the type of the current formal argument based on a formal generic parameter?
-										if l_type_expr_visitor.is_resolved_type_based_on_formal_generic_parameter then
+										if
+											l_type_expr_visitor.is_resolved_type_based_on_formal_generic_parameter or
+											(feature_as /= Void and then parent_argument_is_formal (feature_as.feature_name.name_id, i))
+										then
 											-- Yes, it is.
 											-- Formal generic parameters are always non-separate in proxy classes. No conversion is necessary.
 											context.add_string (l_formal_argument_group.item_name (j))
