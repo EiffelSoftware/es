@@ -88,8 +88,25 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	scoop_wait_by_necessity_execute (a_caller_: SCOOP_SEPARATE_TYPE; a_pass_locks : BOOLEAN;
+	scoop_async_call (a_caller_: SCOOP_SEPARATE_TYPE; a_pass_locks : BOOLEAN;
+	                  a_function_to_evaluate : ROUTINE [ANY, TUPLE])
+		do
+			scoop_perform_call (a_caller_, a_pass_locks, a_function_to_evaluate, False)
+		end
+
+
+	scoop_wait_call (a_caller_: SCOOP_SEPARATE_TYPE; a_pass_locks : BOOLEAN;
 									a_function_to_evaluate : ROUTINE [ANY, TUPLE])
+		do
+			scoop_perform_call (a_caller_, a_pass_locks, a_function_to_evaluate, True)
+
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and processor_.profile_collector /= Void then
+				processor_.profile_collector.collect_join (processor_, a_caller_.processor_)
+			end
+		end
+
+	scoop_perform_call (a_caller_: SCOOP_SEPARATE_TYPE; a_pass_locks : BOOLEAN;
+					    a_function_to_evaluate : ROUTINE [ANY, TUPLE] ; is_synchronous : BOOLEAN)
 		local
 			scoop_locked_processors_stack_size: INTEGER
 			scoop_synchronous_processors_stack_size: INTEGER
@@ -97,17 +114,17 @@ feature {NONE} -- Basic operations
 			if a_pass_locks then
 				scoop_locked_processors_stack_size := processor_.locked_processors_count
 				scoop_synchronous_processors_stack_size := processor_.synchronous_processors_count
-				processor_.locked_processors_push_whole_stack(a_caller_.processor_.locked_processors)
-				processor_.synchronous_processors_push_whole_stack(a_caller_.processor_.synchronous_processors)
-				scoop_synchronous_execute (a_caller_,a_function_to_evaluate)
+				processor_.locked_processors_push_whole_stack (a_caller_.processor_.locked_processors)
+				processor_.synchronous_processors_push_whole_stack (a_caller_.processor_.synchronous_processors)
+				scoop_synchronous_execute (a_caller_, a_function_to_evaluate)
 				processor_.synchronous_processors_trim (scoop_synchronous_processors_stack_size)
 				processor_.locked_processors_trim (scoop_locked_processors_stack_size)
 			else
-				scoop_synchronous_execute (a_caller_,a_function_to_evaluate)
-			end
-
-			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and processor_.profile_collector /= Void then
-				processor_.profile_collector.collect_join (processor_, a_caller_.processor_)
+				if is_synchronous then
+					scoop_synchronous_execute (a_caller_,a_function_to_evaluate)
+				else
+					scoop_asynchronous_execute (a_caller_, a_function_to_evaluate)
+				end
 			end
 		end
 
