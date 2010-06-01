@@ -275,17 +275,17 @@ feature -- Basic operations
 					end
 					Result := objects_as_string (operands, l_lower, l_upper)
 --						 Uncomment the following code to check if serialization is done correctly.
-					l_any ?= deserialized_object (Result.serialization)
-					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
-						interpreter.log_message ("Serialization: Deserialization correct.%N")
-					else
-						interpreter.log_message ("Serialization: Deserialization failed.")
-						if l_any /= Void then
-							interpreter.log_message (l_any.generating_type + "%N")
-						else
-							interpreter.log_message ("Void %N")
-						end
-					end
+--					l_any ?= deserialized_object (Result.serialization)
+--					if attached {SPECIAL [detachable ANY]} l_any as l_obj then
+--						interpreter.log_message ("Serialization: Deserialization correct.%N")
+--					else
+--						interpreter.log_message ("Serialization: Deserialization failed.")
+--						if l_any /= Void then
+--							interpreter.log_message (l_any.generating_type + "%N")
+--						else
+--							interpreter.log_message ("Void %N")
+--						end
+--					end
 				else
 					Result := Void
 				end
@@ -438,11 +438,11 @@ feature{NONE} -- Implementation
 
 				-- Recursively traverse object graphs starting from objects given in `l'.
 			if a_lower <= a_upper then
-				interpreter.log_message ("Serialization: To-be-serialized objects: ")
-				if pre_state_object_summary /= Void then
-					interpreter.log_message (pre_state_object_summary)
-					interpreter.log_message ("%N")
-				end
+--				interpreter.log_message ("Serialization: To-be-serialized objects: ")
+--				if pre_state_object_summary /= Void then
+--					interpreter.log_message (pre_state_object_summary)
+--					interpreter.log_message ("%N")
+--				end
 				l_obj_list := recursively_referenced_objects (l)
 				create l_objects.make_filled (Void, l_obj_list.count * 2)
 				from
@@ -455,20 +455,20 @@ feature{NONE} -- Implementation
 					l_object := l_obj_list.item_for_iteration
 					l_objects.put (l_index, i)
 					l_objects.put (l_object, i + 1)
-					interpreter.log_message (l_index.out + ", ")
-					if l_object /= Void then
-						l_type_name := l_object.generating_type
-						if l_type_name ~ "INTEGER_32" or l_type_name ~ "BOOLEAN" then
-							interpreter.log_message ("(" + l_object.out + ")")
-						end
-						interpreter.log_message (l_type_name + ", ")
-					else
-						interpreter.log_message ("Void, ")
-					end
+--					interpreter.log_message (l_index.out + ", ")
+--					if l_object /= Void then
+--						l_type_name := l_object.generating_type
+--						if l_type_name ~ "INTEGER_32" or l_type_name ~ "BOOLEAN" then
+--							interpreter.log_message ("(" + l_object.out + ")")
+--						end
+--						interpreter.log_message (l_type_name + ", ")
+--					else
+--						interpreter.log_message ("Void, ")
+--					end
 					i := i + 2
 					l_obj_list.forth
 				end
-				interpreter.log_message ("%N")
+--				interpreter.log_message ("%N")
 			else
 				create l_objects.make_filled (0, 1)
 			end

@@ -70,9 +70,33 @@ feature{NONE} -- Implementation
 								i = nb
 							loop
 								l_field := l_sp.item (i)
-								if l_field /= Void and then not l_int.is_marked (l_field) then
-									l_int.mark (l_field)
-									l_objects_to_visit.put (l_field)
+								if l_field /= Void then
+									if
+										attached {INTEGER_32} l_field or else
+										attached {BOOLEAN} l_field or else
+										attached {INTEGER_8} l_field or else
+										attached {INTEGER_16} l_field or else
+										attached {INTEGER_64} l_field or else
+										attached {NATURAL_8} l_field or else
+										attached {NATURAL_16} l_field or else
+										attached {NATURAL_32} l_field or else
+										attached {NATURAL_64} l_field or else
+										attached {CHARACTER_8} l_field or else
+										attached {CHARACTER_32} l_field or else
+										attached {DOUBLE} l_field or else
+										attached {REAL} l_field or else
+										attached {POINTER} l_field
+									then
+											-- We report that a field of primitive type is visited.
+										l_field := l_int.field (i, l_object)
+										if l_field /= Void and then l_action /= Void then
+											l_action.call ([l_field])
+										end
+									elseif not l_int.is_marked (l_field) then
+										l_int.mark (l_field)
+										l_objects_to_visit.put (l_field)
+									end
+
 								end
 								i := i + 1
 							end
