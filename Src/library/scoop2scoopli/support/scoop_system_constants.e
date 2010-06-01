@@ -14,119 +14,123 @@ inherit
 feature -- Scoop system constants
 	original_code_processor_class_name: STRING is "PROCESSOR"
 
-	general_generated_entity_name: STRING is "scoop_object_"
+	general_generated_entity_name: STRING = "scoop_object_"
 
-	proxy_class_prefix: STRING is "SCOOP_SEPARATE__"
+	proxy_class_prefix: STRING = "SCOOP_SEPARATE__"
 
-	proxy_conversion_feature_name: STRING is "proxy_"
+	proxy_conversion_feature_name: STRING = "proxy_"
 
-	override_cluster_name: STRING is "scoop_override_cluster"
+	override_cluster_name: STRING = "scoop_override_cluster"
 
-	caller_formal_argument_name: STRING is "a_caller_"
+	caller_formal_argument_name: STRING = "a_caller_"
 
-	scoop_library_name: STRING is "scoopli"
+	scoop_library_name: STRING = "scoopli"
 
-	scoop_library_path: STRING is "$ISE_LIBRARY\library\scoopli\scoopli.ecf"
+	scoop_library_path: STRING = "$ISE_LIBRARY\library\scoopli\scoopli.ecf"
 
-	scoop_library_processor_setter_name: STRING is "set_processor_"
+	scoop_library_processor_setter_name: STRING = "set_processor_"
 
-	scoop_library_processor_getter_name: STRING is "processor_"
+	scoop_library_processor_getter_name: STRING = "processor_"
 
-	scoop_library_locked_processors_query_name: STRING is "locked_processors"
+	scoop_library_locked_processors_query_name: STRING = "locked_processors"
 
-	scoop_library_synchronous_processors_query_name: STRING is "synchronous_processors"
+	scoop_library_synchronous_processors_query_name: STRING = "synchronous_processors"
 
-	scoop_library_locked_processors_has_query_name: STRING is "locked_processors_has"
+	scoop_library_locked_processors_has_query_name: STRING = "locked_processors_has"
 
-	scoop_library_locked_processors_count_query_name: STRING is "locked_processors_count"
+	scoop_library_locked_processors_count_query_name: STRING = "locked_processors_count"
 
-	scoop_library_synchronous_processors_count_query_name: STRING is "synchronous_processors_count"
+	scoop_library_synchronous_processors_count_query_name: STRING = "synchronous_processors_count"
 
-	scoop_library_locked_processors_push_whole_stack_command_name: STRING is "locked_processors_push_whole_stack"
+	scoop_library_locked_processors_push_whole_stack_command_name: STRING = "locked_processors_push_whole_stack"
 
-	scoop_library_locked_processors_trim_command_name: STRING is "locked_processors_trim"
+	scoop_library_locked_processors_trim_command_name: STRING = "locked_processors_trim"
 
-	scoop_library_synchronous_processors_push_whole_stack_command_name: STRING is "synchronous_processors_push_whole_stack"
+	scoop_library_synchronous_processors_push_whole_stack_command_name: STRING = "synchronous_processors_push_whole_stack"
 
-	scoop_library_synchronous_processors_trim_command_name: STRING is "synchronous_processors_trim"
+	scoop_library_synchronous_processors_trim_command_name: STRING = "synchronous_processors_trim"
 
-	scoop_library_implementation_getter_name: STRING is "implementation_"
+	scoop_library_implementation_getter_name: STRING = "implementation_"
 
-	scoop_library_implementation_setter_name: STRING is "set_implementation_"
+	scoop_library_implementation_setter_name: STRING = "set_implementation_"
 
-	scoop_library_asynchronous_execute_feature_name: STRING is "scoop_asynchronous_execute"
+	scoop_library_asynchronous_execute_feature_name: STRING = "scoop_asynchronous_execute"
 
-	scoop_library_synchronous_execute_feature_name: STRING is "scoop_synchronous_execute"
+	scoop_library_synchronous_execute_feature_name: STRING = "scoop_synchronous_execute"
 
-	scoop_library_separate_type_class_name: STRING is "SCOOP_SEPARATE_TYPE"
+	scoop_library_separate_type_class_name: STRING = "SCOOP_SEPARATE_TYPE"
 
-	scoop_library_separate_client_class_name: STRING is "SCOOP_SEPARATE_CLIENT"
+	scoop_library_separate_client_class_name: STRING = "SCOOP_SEPARATE_CLIENT"
 
-	scoop_library_separate_proxy_class_name: STRING is "SCOOP_SEPARATE_PROXY"
+	scoop_library_separate_proxy_class_name: STRING = "SCOOP_SEPARATE_PROXY"
 
-	scoop_library_starter_class_name: STRING is "SCOOP_STARTER"
+	scoop_library_starter_class_name: STRING = "SCOOP_STARTER"
 
-	scoop_library_starter_feature_name: STRING is "make"
+	scoop_library_starter_feature_name: STRING = "make"
 
-	scoop_library_proxy_any_default_create_feature_name: STRING is "any_default_create_"
+	scoop_library_proxy_any_default_create_feature_name: STRING = "any_default_create_"
 
-	lock_passing_detector_local_name: STRING is "scoop_passing_locks"
+	lock_passing_detector_local_name: STRING = "scoop_passing_locks"
 
-	lock_passing_detector_local_type: STRING is "BOOLEAN"
+	lock_passing_detector_local_type: STRING = "BOOLEAN"
 
-	locked_processors_stack_size_local_name: STRING is "scoop_locked_processors_stack_size"
+	locked_processors_stack_size_local_name: STRING = "scoop_locked_processors_stack_size"
 
-	locked_processors_stack_size_local_type: STRING is "INTEGER"
+	locked_processors_stack_size_local_type: STRING = "INTEGER"
 
-	synchronous_processors_stack_size_local_name: STRING is "scoop_synchronous_processors_stack_size"
+	synchronous_processors_stack_size_local_name: STRING = "scoop_synchronous_processors_stack_size"
 
-	synchronous_processors_stack_size_local_type: STRING is "INTEGER"
+	synchronous_processors_stack_size_local_type: STRING = "INTEGER"
 
-	thread_library_name: STRING is "thread"
+	thread_library_name: STRING = "thread"
 
-	thread_library_path: STRING is "$ISE_LIBRARY\library\thread\thread.ecf"
+	thread_library_path: STRING = "$ISE_LIBRARY\library\thread\thread.ecf"
 
-	multithreading_enabled_setting: STRING is "True"
+	multithreading_enabled_setting: STRING = "True"
 
-	base_precompile_filename: STRING is "base.ecf"
+	base_precompile_filename: STRING = "base.ecf"
 
-	base_mt_precompile_filename: STRING is "base-mt.ecf"
+	base_mt_precompile_filename: STRING = "base-mt.ecf"
 
-	base_library_name: STRING is "base"
+	base_library_name: STRING = "base"
 
 	net_library_name: STRING = "net"
 
-	nonseparate_result: STRING is "nonseparate_result"
+	nonseparate_result: STRING = "nonseparate_result"
 
-	creation_object: STRING is "creation_object"
+	creation_object: STRING = "creation_object"
 
-	create_creation_wrapper: STRING is "create_creation_wrapper"
+	create_creation_wrapper: STRING = "create_creation_wrapper"
 
-	general_wrapper_name_additive: STRING is "_scoop_separate_"
+	general_wrapper_name_additive: STRING = "_scoop_separate_"
 
-	individual_separate_postcondition_wrapper_name_additive: STRING is "_spc_"
+	individual_separate_postcondition_wrapper_name_additive: STRING = "_spc_"
 
-	unseparated_postcondition_attribute_name_additive: STRING is "_unseparated_postconditions"
+	unseparated_postcondition_attribute_name_additive: STRING = "_unseparated_postconditions"
 
-	unseparated_postcondition_attribute_type: STRING is "LINKED_LIST [ROUTINE [ANY, TUPLE]]"
+	unseparated_postcondition_attribute_type: STRING = "LINKED_LIST [ROUTINE [ANY, TUPLE]]"
 
-	enclosing_routine_name_additive: STRING is "_enclosing_routine"
+	enclosing_routine_name_additive: STRING = "_enclosing_routine"
 
-	wait_condition_wrapper_name_additive: STRING is "_wait_condition"
+	wait_condition_wrapper_name_additive: STRING = "_wait_condition"
 
-	separate_postcondition_wrapper_name_additive: STRING is "_separate_postcondition"
+	separate_postcondition_wrapper_name_additive: STRING = "_separate_postcondition"
 
-	non_separate_postcondition_wrapper_name_additive: STRING is "_non_separate_postcondition"
+	non_separate_postcondition_wrapper_name_additive: STRING = "_non_separate_postcondition"
 
-	effective_creation_routine_wrapper_name_additive: STRING is "effective_"
+	effective_creation_routine_wrapper_name_additive: STRING = "effective_"
 
-	assigner_mediator_name_additive: STRING is "assigner_"
+	assigner_mediator_name_additive: STRING = "assigner_"
 
-	assigner_mediator_source_formal_argument_name: STRING is "assign_source_"
+	assigner_mediator_source_formal_argument_name: STRING = "assign_source_"
 
-	client_agent_local_name: STRING is "a_function_to_evaluate"
+	client_agent_local_name: STRING = "a_function_to_evaluate"
 
-	client_agent_local_result_query_name: STRING is "last_result"
+	client_agent_local_result_query_name: STRING = "last_result"
+
+	async_call_name: STRING = "scoop_async_call"
+
+	wait_call_name: STRING = "scoop_wait_call"
 
 note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
