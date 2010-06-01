@@ -379,34 +379,22 @@ feature {NONE} -- Implementation
 				context.add_string ("%N%T%T%T")
 				context.add_string ("-- Wrapper for creation procedure `" + a_feature_name + "'.%N%T%T")
 				context.add_string ("%N%T%Tlocal")
+				context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + ": " + system.procedure_class.name + "[" + system.any_class.name + ", " + system.tuple_class.name + "]")
 				add_lock_passing_detection_code (l_feature_as)
-				add_lock_passing_code
-				context.add_string (
-					"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_synchronous_execute_feature_name +
-					" (" +
-						{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ", " +
-						"agent " + {SCOOP_SYSTEM_CONSTANTS}.effective_creation_routine_wrapper_name_additive + a_feature_name + {SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive + class_as.class_name.name.as_lower)
-						if l_feature_as.body.internal_arguments /= Void then
-							context.add_string (" ")
-							add_actual_argument_list (l_feature_as.body.internal_arguments, False, True, False)
-						end
-				context.add_string (
-					")"
-				)
-				add_lock_revocation_code
-				context.add_string (
-					"%N%T%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_asynchronous_execute_feature_name +
-					" (" +
-						{SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name + ", " +
-						"agent " + {SCOOP_SYSTEM_CONSTANTS}.effective_creation_routine_wrapper_name_additive + a_feature_name + {SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive + class_as.class_name.name.as_lower)
-						if l_feature_as.body.internal_arguments /= Void then
-							context.add_string (" ")
-							add_actual_argument_list (l_feature_as.body.internal_arguments, False, True, False)
-						end
-				context.add_string (
-					")"
-				)
-				context.add_string ("%N%T%T%Tend")
+
+				context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + " := agent ") -- + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + ".")
+				context.add_string ({SCOOP_SYSTEM_CONSTANTS}.effective_creation_routine_wrapper_name_additive + a_feature_name + {SCOOP_SYSTEM_CONSTANTS}.general_wrapper_name_additive + class_as.class_name.name.as_lower)
+
+				if l_feature_as.body.internal_arguments /= Void then
+					add_actual_argument_list (l_feature_as.body.internal_arguments, False, True, False)
+				end
+
+				context.add_string ("%N%T%T%T"+{SCOOP_SYSTEM_CONSTANTS}.async_call_name)
+				context.add_string ("(" + {SCOOP_SYSTEM_CONSTANTS}.caller_formal_argument_name)
+				context.add_string ("," + {SCOOP_SYSTEM_CONSTANTS}.lock_passing_detector_local_name)
+				context.add_string ("," + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name)
+				context.add_string (")")
+
 				context.add_string ("%N%T%Tend")
 			end
 
@@ -506,8 +494,6 @@ feature {NONE} -- Implementation
 		do
 			-- Add locals used for lock passing.
 			context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.lock_passing_detector_local_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.lock_passing_detector_local_type)
-			context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.locked_processors_stack_size_local_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.locked_processors_stack_size_local_type)
-			context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.synchronous_processors_stack_size_local_name + ": " + {SCOOP_SYSTEM_CONSTANTS}.synchronous_processors_stack_size_local_type)
 
 			-- Add the do keyword.
 			context.add_string ("%N%T%Tdo")
