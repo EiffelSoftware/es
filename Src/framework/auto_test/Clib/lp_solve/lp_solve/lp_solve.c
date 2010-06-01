@@ -2,6 +2,7 @@
 #include <time.h>
 #include <signal.h>
 #include <math.h>
+#include <ctype.h>
 #include "lp_lib.h"
 
 #ifdef FORTIFY
@@ -39,7 +40,10 @@ void print_help(char *argv[])
 #if defined PARSER_LP
   printf("-lp\t\tread from LP file (default)\n");
 #endif
-  printf("-mps\t\tread from MPS file in fixed format\n");
+  printf("-mps\t\tread from MPS file, default in fixed format\n");
+  printf("-mps_free\t\tuse free format\n");
+  printf("-mps_ibm\t\tinterprete integers accoring to ibm format\n");
+  printf("-mps_negobjconst\tnegate objective constant\n");
   printf("-fmps\t\tread from MPS file in free format\n");
   printf("-rpar filename\tread parameters from filename.\n");
   printf("-rparopt options\n\t\toptions for parameter file:\n");
@@ -237,8 +241,8 @@ void print_cpu_times(const char *info)
 
   new_time = clock();
   fprintf(stderr, "CPU Time for %s: %gs (%gs total since program start)\n",
-	  info, (new_time - last_time) / (double) CLOCKS_PER_SEC,
-	  new_time / (double) CLOCKS_PER_SEC);
+          info, (new_time - last_time) / (double) CLOCKS_PER_SEC,
+          new_time / (double) CLOCKS_PER_SEC);
   last_time = new_time;
 }
 
@@ -333,7 +337,7 @@ static void minmax1(REAL value0, REAL factor, REAL *minmax, int *nminmax, int ro
   value = fabs(value0) * factor;
   for (i = 0; (i < *nminmax) && (value <= fabs(minmax[i]) * factor); i++)
     if (value == fabs(minmax[i]) * factor)
-	  return;
+      return;
   if (i >= nstats)
     return;
   n = *nminmax;
@@ -367,12 +371,12 @@ static void printminmax1(lprec *lp, char *s, REAL *minmax, int nminmax, int *row
   for (i = 0; i < nminmax; i++) {
     printf(" %s(", s);
     if (rowminmax != NULL)
-	  printf("%s", get_row_name(lp, rowminmax[i]));
-	if ((rowminmax != NULL) && (colminmax != NULL))
-	  printf(", ");
-	if (colminmax != NULL)
-	  printf("%s", get_col_name(lp, colminmax[i]));
-	printf(") = %.8f\n", minmax[i]);
+      printf("%s", get_row_name(lp, rowminmax[i]));
+    if ((rowminmax != NULL) && (colminmax != NULL))
+      printf(", ");
+    if (colminmax != NULL)
+      printf("%s", get_col_name(lp, colminmax[i]));
+    printf(") = %.8f\n", minmax[i]);
   }
 }
 
@@ -394,34 +398,34 @@ static void printminmax(lprec *lp, char *s, REAL *minima, REAL *maxima, int nmin
     nminmax = nmaxima;
   for (i = 0; i < nminmax; i++) {
     n = 0;
-	if (i < nminima) {
+    if (i < nminima) {
       n += printf("%s(", s);
       if (rowmin != NULL)
-	    n+= printf("%s", get_row_name(lp, rowmin[i]));
-	  if ((rowmin != NULL) && (colmin != NULL))
-	    n += printf(", ");
-	  if (colmin != NULL)
-	    n += printf("%s", get_col_name(lp, colmin[i]));
-	  n += printf(") = %.8f", minima[i]);
-	}
-	if (n < 40)
-	  n = 40 - n;
-	else
-	  n = 1;
-	printf("%*.*s", n, n, "");
+        n+= printf("%s", get_row_name(lp, rowmin[i]));
+      if ((rowmin != NULL) && (colmin != NULL))
+        n += printf(", ");
+      if (colmin != NULL)
+        n += printf("%s", get_col_name(lp, colmin[i]));
+      n += printf(") = %.8f", minima[i]);
+    }
+    if (n < 40)
+      n = 40 - n;
+    else
+      n = 1;
+    printf("%*.*s", n, n, "");
 
     if (i < nmaxima) {
       n += printf("%s(", s);
       if (rowmax != NULL)
-	    n+= printf("%s", get_row_name(lp, rowmax[i]));
-	  if ((rowmax != NULL) && (colmax != NULL))
-	    n += printf(", ");
-	  if (colmax != NULL)
-	    n += printf("%s", get_col_name(lp, colmax[i]));
-	  n += printf(") = %.8f", maxima[i]);
-	}
+        n+= printf("%s", get_row_name(lp, rowmax[i]));
+      if ((rowmax != NULL) && (colmax != NULL))
+        n += printf(", ");
+      if (colmax != NULL)
+        n += printf("%s", get_col_name(lp, colmax[i]));
+      n += printf(") = %.8f", maxima[i]);
+    }
 
-	printf("\n");
+    printf("\n");
   }
 }
 
@@ -468,10 +472,10 @@ static void print_statistics(lprec *lp)
 
   for (j = 1; j <= n; j++) {
     ret = get_columnex(lp, j, col, nz);
-	for (i = 0; i < ret; i++)
-	  if (nz[i] == 0)
+    for (i = 0; i < ret; i++)
+      if (nz[i] == 0)
         minmax(col[i], OBJmin, OBJmax, &nOBJmin, &nOBJmax, 0, NULL, NULL, j, colOBJmin, colOBJmax);
-	  else
+      else
         minmax(col[i], MATmin, MATmax, &nMATmin, &nMATmax, nz[i], rowMATmin, rowMATmax, j, colMATmin, colMATmax);
   }
 
@@ -479,11 +483,11 @@ static void print_statistics(lprec *lp)
   printf("Variables  : %d\n", get_Ncolumns(lp));
   for (j = k = l = 0, i = n; i >= 1; i--) {
     if (is_int(lp, i))
-	  j++;
-	if (is_semicont(lp, i))
-	  k++;
-	if (is_SOS_var(lp, i))
-	  l++;
+      j++;
+    if (is_semicont(lp, i))
+      k++;
+    if (is_SOS_var(lp, i))
+      l++;
   }
   printf("Integers   : %d\n", j);
   printf("Semi-cont  : %d\n", k);
@@ -587,6 +591,9 @@ int main(int argc, char *argv[])
   char *wparname = NULL;
   char *wparoptions = NULL;
   char obj_in_basis = -1;
+  char mps_ibm = FALSE;
+  char mps_negobjconst = FALSE;
+  char mps_free = FALSE;
   MYBOOL ok;
 # define SCALINGTHRESHOLD 0.03
 
@@ -612,8 +619,8 @@ int main(int argc, char *argv[])
       print_sol = TRUE;
     else if(strcmp(argv[i], "-ia") == 0)
       print_sol = AUTOMATIC;
-	else if(strcmp(argv[i], "-stat") == 0)
-	  print_stats = TRUE;
+    else if(strcmp(argv[i], "-stat") == 0)
+      print_stats = TRUE;
     else if(strcmp(argv[i], "-nonames") == 0)
       nonames = TRUE;
     else if(strcmp(argv[i], "-norownames") == 0)
@@ -677,9 +684,9 @@ int main(int argc, char *argv[])
     else if((strcmp(argv[i], "-e") == 0) && (i + 1 < argc)) {
       epsint = atof(argv[++i]);
       if((epsint <= 0.0) || (epsint >= 0.5)) {
-	fprintf(stderr, "Invalid tolerance %g; 0 < epsilon < 0.5\n",
-		(double)epsint);
-	EndOfPgr(FORCED_EXIT);
+        fprintf(stderr, "Invalid tolerance %g; 0 < epsilon < 0.5\n",
+                (double)epsint);
+        EndOfPgr(FORCED_EXIT);
       }
     }
     else if((strcmp(argv[i], "-r") == 0) && (i + 1 < argc))
@@ -719,40 +726,40 @@ int main(int argc, char *argv[])
       scaling = SCALE_MEAN;
       if (argv[i][2]) {
         switch (atoi(argv[i] + 2)) {
-	case 0:
-	  scaling = SCALE_NONE;
-	  break;
+        case 0:
+          scaling = SCALE_NONE;
+          break;
         case 1:
-	  set_value(&scalemode1, SCALE_GEOMETRIC);
-	  break;
-	case 2:
-	  set_value(&scalemode1, SCALE_CURTISREID);
-	  break;
-	case 3:
-	  set_value(&scalemode1, SCALE_EXTREME);
-	  break;
+          set_value(&scalemode1, SCALE_GEOMETRIC);
+          break;
+        case 2:
+          set_value(&scalemode1, SCALE_CURTISREID);
+          break;
+        case 3:
+          set_value(&scalemode1, SCALE_EXTREME);
+          break;
         case 4:
-	  set_value(&scalemode1, SCALE_MEAN);
-	  break;
-	case 5:
-	  set_value(&scalemode1, SCALE_MEAN | SCALE_LOGARITHMIC);
-	  break;
+          set_value(&scalemode1, SCALE_MEAN);
+          break;
+        case 5:
+          set_value(&scalemode1, SCALE_MEAN | SCALE_LOGARITHMIC);
+          break;
         case 6:
-	  set_value(&scalemode1, SCALE_RANGE);
-	  break;
-	case 7:
-	  set_value(&scalemode1, SCALE_MEAN | SCALE_QUADRATIC);
-	  break;
+          set_value(&scalemode1, SCALE_RANGE);
+          break;
+        case 7:
+          set_value(&scalemode1, SCALE_MEAN | SCALE_QUADRATIC);
+          break;
         }
       }
       else
         set_value(&scalemode1, SCALE_MEAN);
       if((i + 1 < argc) && (isNum(argv[i + 1])))
-	scaleloop = atoi(argv[++i]);
+        scaleloop = atoi(argv[++i]);
     }
     else if(strncmp(argv[i], "-C", 2) == 0)
       crashmode = atoi(argv[i] + 2);
-	else if((strcmp(argv[i],"-gbas") == 0) && (i + 1 < argc))
+    else if((strcmp(argv[i],"-gbas") == 0) && (i + 1 < argc))
       guessbasis = argv[++i];
     else if(strcmp(argv[i], "-t") == 0)
       tracing = TRUE;
@@ -794,7 +801,7 @@ int main(int argc, char *argv[])
       if (argv[i][4])
         set_value(&pivoting1, atoi(argv[i] + 4));
       else
-	set_value(&pivoting1, PRICER_DEVEX | PRICE_ADAPTIVE);
+    set_value(&pivoting1, PRICER_DEVEX | PRICE_ADAPTIVE);
     }
 #if defined PARSER_LP
     else if(strcmp(argv[i],"-lp") == 0)
@@ -802,10 +809,16 @@ int main(int argc, char *argv[])
 #endif
     else if((strcmp(argv[i],"-wlp") == 0) && (i + 1 < argc))
       wlp = argv[++i];
-	else if(strcmp(argv[i],"-plp") == 0)
+    else if(strcmp(argv[i],"-plp") == 0)
       plp = TRUE;
     else if(strcmp(argv[i],"-mps") == 0)
       filetype = filetypeMPS;
+    else if(strcmp(argv[i],"-mps_ibm") == 0)
+      mps_ibm = TRUE;
+    else if(strcmp(argv[i],"-mps_negobjconst") == 0)
+      mps_negobjconst = TRUE;
+    else if(strcmp(argv[i],"-mps_free") == 0)
+      mps_free = TRUE;
     else if(strcmp(argv[i],"-fmps") == 0)
       filetype = filetypeFREEMPS;
     else if((strcmp(argv[i],"-wmps") == 0) && (i + 1 < argc))
@@ -838,9 +851,9 @@ int main(int argc, char *argv[])
       or_value(&anti_degen2, ANTIDEGEN_BOUNDFLIP);
     else if(strcmp(argv[i],"-time") == 0) {
       if(clock() == -1)
-	fprintf(stderr, "CPU times not available on this machine\n");
+        fprintf(stderr, "CPU times not available on this machine\n");
       else
-	print_timing = TRUE;
+        print_timing = TRUE;
     }
     else if((strcmp(argv[i],"-bfp") == 0) && (i + 1 < argc))
       bfp = argv[++i];
@@ -945,19 +958,19 @@ int main(int argc, char *argv[])
       i++;
     else if((strcmp(argv[i],"-wparopt") == 0) && (i + 1 < argc))
       i++;
-	else if(strcmp(argv[i],"-o0") == 0)
-	  obj_in_basis = FALSE;
-	else if(strcmp(argv[i],"-o1") == 0)
-	  obj_in_basis = TRUE;
+    else if(strcmp(argv[i],"-o0") == 0)
+      obj_in_basis = FALSE;
+    else if(strcmp(argv[i],"-o1") == 0)
+      obj_in_basis = TRUE;
     else if(fpin == stdin) {
       filen = argv[i];
       if(*filen == '<')
         filen++;
       if((fpin = fopen(filen, "r")) == NULL) {
-	print_help(argv);
-	fprintf(stderr,"\nError, Unable to open input file '%s'\n",
-		argv[i]);
-	EndOfPgr(FORCED_EXIT);
+        print_help(argv);
+        fprintf(stderr,"\nError, Unable to open input file '%s'\n",
+                argv[i]);
+        EndOfPgr(FORCED_EXIT);
       }
     }
     else {
@@ -965,7 +978,7 @@ int main(int argc, char *argv[])
       if(*filen != '>') {
         print_help(argv);
         fprintf(stderr, "\nError, Unrecognized command line argument '%s'\n",
-		argv[i]);
+                argv[i]);
         EndOfPgr(FORCED_EXIT);
       }
     }
@@ -973,21 +986,27 @@ int main(int argc, char *argv[])
 
   signal(SIGABRT,/* (void (*) OF((int))) */ SIGABRT_func);
 
-  switch(filetype) {
-#if defined PARSER_LP
-  case filetypeLP:
-    lp = read_lp(fpin, verbose, NULL);
-    break;
-#endif
-  case filetypeMPS:
-    lp = read_mps(fpin, verbose);
-    break;
-  case filetypeFREEMPS:
-    lp = read_freemps(fpin, verbose);
-    break;
-  case filetypeXLI:
-    lp = read_XLI(rxliname, rxli, rxlidata, rxlioptions, verbose);
-    break;
+  if ((filetype != filetypeXLI) && (fpin == NULL)) {
+    lp = NULL;
+    fprintf(stderr, "Cannot combine -rxli option with -lp, -mps, -fmps.\n");
+  }
+  else {
+    switch(filetype) {
+  #if defined PARSER_LP
+    case filetypeLP:
+      lp = read_lp(fpin, verbose, NULL);
+      break;
+  #endif
+    case filetypeMPS:
+      lp = read_mps(fpin, verbose | (mps_free ? MPS_FREE : 0) | (mps_ibm ? MPS_IBM : 0) | (mps_negobjconst ? MPS_NEGOBJCONST : 0));
+      break;
+    case filetypeFREEMPS:
+      lp = read_freemps(fpin, verbose | (mps_ibm ? MPS_IBM : 0) | (mps_negobjconst ? MPS_NEGOBJCONST : 0));
+      break;
+    case filetypeXLI:
+      lp = read_XLI(rxliname, rxli, rxlidata, rxlioptions, verbose);
+      break;
+    }
   }
 
   if((fpin != NULL) && (fpin != stdin))
@@ -1004,11 +1023,11 @@ int main(int argc, char *argv[])
   for(i = 1; i < argc; i++) {
     if((strcmp(argv[i],"-rpar") == 0) && (i + 1 < argc)) {
       if(rparname != NULL) {
-	if(!read_params(lp, rparname, rparoptions)) {
-	  fprintf(stderr, "Unable to read parameter file (%s)\n", rparname);
-	  delete_lp(lp);
-	  EndOfPgr(FORCED_EXIT);
-	}
+        if(!read_params(lp, rparname, rparoptions)) {
+          fprintf(stderr, "Unable to read parameter file (%s)\n", rparname);
+          delete_lp(lp);
+          EndOfPgr(FORCED_EXIT);
+        }
       }
       rparname = argv[++i];
     }
@@ -1046,8 +1065,8 @@ int main(int argc, char *argv[])
     for(i = get_Ncolumns(lp); i >= 1; i--) {
       if(is_SOS_var(lp, i)) {
         fprintf(stderr, "Unable to remove integer conditions because there is at least one SOS constraint\n");
-	delete_lp(lp);
-	EndOfPgr(FORCED_EXIT);
+        delete_lp(lp);
+        EndOfPgr(FORCED_EXIT);
       }
       set_semicont(lp, i, FALSE);
       set_int(lp, i, FALSE);
@@ -1172,51 +1191,51 @@ int main(int argc, char *argv[])
 
   if(guessbasis != NULL) {
     REAL *guessvector, a;
-	int *basisvector;
-	int Nrows = get_Nrows(lp);
-	int Ncolumns = get_Ncolumns(lp);
-	int col;
-	char buf[50], *ptr;
-	FILE *fp;
+    int *basisvector;
+    int Nrows = get_Nrows(lp);
+    int Ncolumns = get_Ncolumns(lp);
+    int col;
+    char buf[50], *ptr;
+    FILE *fp;
 
-	if ((fp = fopen(guessbasis, "r")) != NULL) {
-	  guessvector = (REAL *) calloc(1+Ncolumns, sizeof(*guessvector));
-	  basisvector = (int *) malloc((1+Nrows+Ncolumns)*sizeof(*basisvector));
-	  if ((guessvector != NULL) && (basisvector != NULL)) {
-	    while ((!feof(fp)) && (fgets(buf, sizeof(buf), fp) != NULL)) {
-  		  ptr = strrchr(buf, ':');
-		  if (ptr == NULL) {
-			printf("Mallformed line: %s\n", buf);
-		  }
-		  else {
-		    a = atof(ptr + 1);
-		    while ((ptr > buf) && (isspace(ptr[-1])))
-			  ptr--;
-		    *ptr = 0;
-			col = get_nameindex(lp, buf, FALSE);
-			if (col < 1)
-			  printf("guess_basis: Unknown variable name %s\n", buf);
-			else
-		      guessvector[col] = a;
-		  }
-		}
-	    if (guess_basis(lp, guessvector, basisvector)) {
-	      if (!set_basis(lp, basisvector, TRUE))
-		    printf("Unable to set guessed basis.\n");
-	    }
-	    else
-	      printf("Unable to guess basis from provided variables.\n");
-	  }
-	  else
-	    printf("guess_basis: Out of memory.\n");
-	  if (basisvector != NULL)
-	    free(basisvector);
-	  if (guessvector != NULL)
-	    free(guessvector);
-	  fclose(fp);
-	}
-	else
-	  printf("Unable to open file %s\n", guessbasis);
+    if ((fp = fopen(guessbasis, "r")) != NULL) {
+      guessvector = (REAL *) calloc(1+Ncolumns, sizeof(*guessvector));
+      basisvector = (int *) malloc((1+Nrows+Ncolumns)*sizeof(*basisvector));
+      if ((guessvector != NULL) && (basisvector != NULL)) {
+        while ((!feof(fp)) && (fgets(buf, sizeof(buf), fp) != NULL)) {
+          ptr = strrchr(buf, ':');
+          if (ptr == NULL) {
+            printf("Mallformed line: %s\n", buf);
+          }
+          else {
+            a = atof(ptr + 1);
+            while ((ptr > buf) && (isspace(ptr[-1])))
+              ptr--;
+            *ptr = 0;
+            col = get_nameindex(lp, buf, FALSE);
+            if (col < 1)
+              printf("guess_basis: Unknown variable name %s\n", buf);
+            else
+              guessvector[col] = a;
+          }
+        }
+        if (guess_basis(lp, guessvector, basisvector)) {
+          if (!set_basis(lp, basisvector, TRUE))
+            printf("Unable to set guessed basis.\n");
+        }
+        else
+          printf("Unable to guess basis from provided variables.\n");
+      }
+      else
+        printf("guess_basis: Out of memory.\n");
+      if (basisvector != NULL)
+        free(basisvector);
+      if (guessvector != NULL)
+        free(guessvector);
+      fclose(fp);
+    }
+    else
+      printf("Unable to open file %s\n", guessbasis);
   }
 
   if(rbasname != NULL)
@@ -1289,8 +1308,8 @@ int main(int argc, char *argv[])
 
     if(tracing)
       fprintf(stderr,
-      "Branch & Bound depth: %d\nNodes processed: %.0f\nSimplex pivots: %.0f\nNumber of equal solutions: %d\n",
-	      get_max_level(lp), (REAL) get_total_nodes(lp), (REAL) get_total_iter(lp), get_solutioncount(lp));
+              "Branch & Bound depth: %d\nNodes processed: %.0f\nSimplex pivots: %.0f\nNumber of equal solutions: %d\n",
+              get_max_level(lp), (REAL) get_total_nodes(lp), (REAL) get_total_iter(lp), get_solutioncount(lp));
     break;
   case NOMEMORY:
     if (PRINT_SOLUTION >= 1)

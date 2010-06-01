@@ -448,7 +448,7 @@ STATIC int scan_lineFREE(lprec *lp, int section, char* line, char *field1, char 
   return(items);
 }
 
-STATIC int addmpscolumn(lprec *lp, MYBOOL Int_section, MYBOOL *Column_ready,
+STATIC int addmpscolumn(lprec *lp, MYBOOL Int_section, int typeMPS, MYBOOL *Column_ready,
                         int *count, REAL *Last_column, int *Last_columnno, char *Last_col_name)
 {
   int ok = TRUE;
@@ -458,8 +458,11 @@ STATIC int addmpscolumn(lprec *lp, MYBOOL Int_section, MYBOOL *Column_ready,
     if (ok) {
       ok = set_col_name(lp, lp->columns, Last_col_name);
     }
-    if (ok)
+    if (ok) {
       set_int(lp, lp->columns, Int_section);
+      if ((Int_section) && (typeMPS & MPSIBM))
+        set_bounds(lp, lp->columns, 10.0 / DEF_INFINITE, DEF_INFINITE / 10.0);
+    }
   }
   *Column_ready = FALSE;
   *count = 0;
@@ -562,17 +565,15 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
   else
     lp = *newlp;
 
-  switch(typeMPS) {
-    case MPSFIXED:
-      scan_line = scan_lineFIXED;
-      break;
-    case MPSFREE:
-      scan_line = scan_lineFREE;
-      break;
-    default:
-      report(lp, IMPORTANT, "MPS_readfile: Unrecognized MPS line type.\n");
+  if((typeMPS & MPSFIXED) == MPSFIXED)
+    scan_line = scan_lineFIXED;
+  else if((typeMPS & MPSFREE) == MPSFREE)
+    scan_line = scan_lineFREE;
+  else {
+    report(lp, IMPORTANT, "MPS_readfile: Unrecognized MPS line type.\n");
+    if (*newlp == NULL)
       delete_lp(lp);
-      return( CompleteStatus );
+    return( CompleteStatus );
   }
 
   if (lp != NULL) {
@@ -611,11 +612,11 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
           if (!set_lp_name(lp, probname))
             break;
         }
-        else if((typeMPS == MPSFREE) && (strcmp(tmp, "OBJSENSE") == 0)) {
+        else if(((typeMPS & MPSFREE) == MPSFREE) && (strcmp(tmp, "OBJSENSE") == 0)) {
           section = MPSOBJSENSE;
           report(lp, FULL, "Switching to OBJSENSE section\n");
         }
-        else if((typeMPS == MPSFREE) && (strcmp(tmp, "OBJNAME") == 0)) {
+        else if(((typeMPS & MPSFREE) == MPSFREE) && (strcmp(tmp, "OBJNAME") == 0)) {
           section = MPSOBJNAME;
           report(lp, FULL, "Switching to OBJNAME section\n");
         }
@@ -633,7 +634,7 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
           report(lp, FULL, "Switching to COLUMNS section\n");
         }
         else if(strcmp(tmp, "RHS") == 0) {
-          if (!addmpscolumn(lp, Int_section, &Column_ready, &count, Last_column, Last_columnno, Last_col_name))
+          if (!addmpscolumn(lp, Int_section, typeMPS, &Column_ready, &count, Last_column, Last_columnno, Last_col_name))
             break;
           section = MPSRHS;
           report(lp, FULL, "Switching to RHS section\n");
@@ -763,7 +764,7 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
                 }
 
                 if(Column_ready) {  /* Added ability to handle non-standard "same as above" column name */
-                  if (addmpscolumn(lp, Int_section, &Column_ready, &count, Last_column, Last_columnno, Last_col_name)) {
+                  if (addmpscolumn(lp, Int_section, typeMPS, &Column_ready, &count, Last_column, Last_columnno, Last_col_name)) {
                     strcpy(Last_col_name, field2);
                     NZ = 0;
                   }
@@ -837,11 +838,15 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
           }
 
           if((row = find_row(lp, field3, Unconstrained_rows_found)) >= 0) {
+            if ((row == 0) && ((typeMPS & MPSNEGOBJCONST) == MPSNEGOBJCONST))
+              field4 = -field4;
             set_rh(lp, row, (REAL)field4);
           }
 
           if(items == 6) {
             if((row = find_row(lp, field5, Unconstrained_rows_found)) >= 0) {
+              if ((row == 0) && ((typeMPS & MPSNEGOBJCONST) == MPSNEGOBJCONST))
+                field6 = -field6;
               set_rh(lp, row, (REAL)field6);
             }
           }
@@ -859,7 +864,7 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
           var = find_var(lp, field3, FALSE);
           if(var < 0){ /* bound on undefined var in COLUMNS section ... */
             Column_ready = TRUE;
-            if (!addmpscolumn(lp, FALSE, &Column_ready, &count, Last_column, Last_columnno, field3))
+            if (!addmpscolumn(lp, FALSE, typeMPS, &Column_ready, &count, Last_column, Last_columnno, field3))
               break;
             Column_ready = TRUE;
             var = find_var(lp, field3, TRUE);
@@ -1110,7 +1115,7 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
             var = find_var(lp, field, FALSE);  /* Native lp_solve and XPRESS formats */
             if(var < 0){ /* SOS on undefined var in COLUMNS section ... */
               Column_ready = TRUE;
-              if (!addmpscolumn(lp, FALSE, &Column_ready, &count, Last_column, Last_columnno, field))
+              if (!addmpscolumn(lp, FALSE, typeMPS, &Column_ready, &count, Last_column, Last_columnno, field))
                 break;
               Column_ready = TRUE;
               var = find_var(lp, field, TRUE);
@@ -1135,10 +1140,29 @@ MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func 
       CompleteStatus = FALSE;
     }
 
-    if(CompleteStatus == FALSE)
-      delete_lp(lp);
-    else
+    if(CompleteStatus == FALSE) {
+      if (*newlp == NULL)
+        delete_lp(lp);
+    }
+    else {
+      if (typeMPS & MPSIBM) {
+        REAL lower, upper;
+
+        for (var = 1; var <= lp->columns; var++)
+          if (is_int(lp, var)) {
+            lower = get_lowbo(lp, var);
+            upper = get_upbo(lp, var);
+            if ((lower == 10.0 / DEF_INFINITE) && (upper == DEF_INFINITE / 10.0))
+              upper = 1.0;
+            if (lower == 10.0 / DEF_INFINITE)
+              lower = 0.0;
+            if (upper == DEF_INFINITE / 10.0)
+              upper = lp->infinite;
+            set_bounds(lp, var, lower, upper);
+          }
+      }
       *newlp = lp;
+    }
     if(Last_column != NULL)
       FREE(Last_column);
     if(Last_columnno != NULL)
@@ -1282,27 +1306,21 @@ MYBOOL __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *userhandle, write_
   char numberbuffer[15];
   char name0[9];
 
-  if(lp->matA->is_roworder) {
-    report(lp, IMPORTANT, "MPS_writefile: Cannot write to MPS file while in row entry mode.\n");
-    return(FALSE);
+  if((typeMPS & MPSFIXED) == MPSFIXED) {
+    MPSname = MPSnameFIXED;
+    ChangeSignObj = is_maxim(lp);
   }
-
-  switch(typeMPS) {
-    case MPSFIXED:
-      MPSname = MPSnameFIXED;
-      ChangeSignObj = is_maxim(lp);
-      break;
-    case MPSFREE:
-      MPSname = MPSnameFREE;
-      break;
-    default:
-      report(lp, IMPORTANT, "MPS_writefile: unrecognized MPS name type.\n");
-      return(FALSE);
+  else if((typeMPS & MPSFREE) == MPSFREE) {
+    MPSname = MPSnameFREE;
+  }
+  else {
+    report(lp, IMPORTANT, "MPS_writefile: unrecognized MPS name type.\n");
+    return(FALSE);
   }
 
   names_used = lp->names_used;
 
-  if(typeMPS == MPSFIXED) {
+  if((typeMPS & MPSFIXED) == MPSFIXED) {
     /* Check if there is no variable name where the first 8 charachters are equal to the first 8 characters of anothe variable */
     if(names_used)
       for(i = 1; (i <= lp->columns) && (ok); i++)
@@ -1338,7 +1356,7 @@ MYBOOL __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *userhandle, write_
 
   /* Write the MPS content */
   write_data(userhandle, write_modeldata, "NAME          %s\n", MPSname(name0, get_lp_name(lp)));
-  if((typeMPS == MPSFREE) && (is_maxim(lp)))
+  if(((typeMPS & MPSFREE) == MPSFREE) && (is_maxim(lp)))
     write_data(userhandle, write_modeldata, "OBJSENSE\n MAX\n");
   write_data(userhandle, write_modeldata, "ROWS\n");
   for(i = 0; i <= lp->rows; i++) {
@@ -1408,6 +1426,8 @@ MYBOOL __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *userhandle, write_
     a = lp->orig_rhs[i];
     if(a) {
       a = unscaled_value(lp, a, i);
+      if ((i == 0) && ((typeMPS & MPSNEGOBJCONST) == MPSNEGOBJCONST))
+        a = -a;
       if((i == 0) || is_chsign(lp, i))
         a = my_flipsign(a);
       k = 1 - k;
@@ -1656,16 +1676,13 @@ MYBOOL MPS_readBAS(lprec *lp, int typeMPS, char *filename, char *info)
   int    (*scan_line)(lprec *lp, int section, char* line, char *field1, char *field2, char *field3,
                       double *field4, char *field5, double *field6);
 
-  switch(typeMPS) {
-    case MPSFIXED:
-      scan_line = scan_lineFIXED;
-      break;
-    case MPSFREE:
-      scan_line = scan_lineFREE;
-      break;
-    default:
-      report(lp, IMPORTANT, "MPS_readBAS: unrecognized MPS line type.\n");
-      return(FALSE);
+  if((typeMPS & MPSFIXED) == MPSFIXED)
+    scan_line = scan_lineFIXED;
+  else if((typeMPS & MPSFREE) == MPSFREE)
+    scan_line = scan_lineFREE;
+  else {
+    report(lp, IMPORTANT, "MPS_readBAS: unrecognized MPS line type.\n");
+    return(FALSE);
   }
 
   ok = (MYBOOL) ((filename != NULL) && ((input = fopen(filename,"r")) != NULL));
@@ -1715,7 +1732,7 @@ MYBOOL MPS_readBAS(lprec *lp, int typeMPS, char *filename, char *info)
       }
     }
     else { /* normal line, process */
-      items = scan_line(lp, MPSRHS, line, field1, field2, field3, &field4, field5, &field6);
+      items = scan_line(lp, /* MPSRHS */ MPSBOUNDS, line, field1, field2, field3, &field4, field5, &field6);
       if(items < 0){
         report(lp, IMPORTANT, "Syntax error on line %d: %s\n", Lineno, line);
         break;
@@ -1778,16 +1795,13 @@ MYBOOL MPS_writeBAS(lprec *lp, int typeMPS, char *filename)
   char name0[9];
 
   /* Set name formatter */
-  switch(typeMPS) {
-    case MPSFIXED:
-      MPSname = MPSnameFIXED;
-      break;
-    case MPSFREE:
-      MPSname = MPSnameFREE;
-      break;
-    default:
-      report(lp, IMPORTANT, "MPS_writeBAS: unrecognized MPS name type.\n");
-      return(FALSE);
+  if((typeMPS & MPSFIXED) == MPSFIXED)
+    MPSname = MPSnameFIXED;
+  else if((typeMPS & MPSFREE) == MPSFREE)
+    MPSname = MPSnameFREE;
+  else {
+    report(lp, IMPORTANT, "MPS_writeBAS: unrecognized MPS name type.\n");
+    return(FALSE);
   }
 
   /* Open the file for writing */

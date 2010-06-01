@@ -192,7 +192,7 @@
 #define MAJORVERSION             5
 #define MINORVERSION             5
 #define RELEASE                  0
-#define BUILD                   14
+#define BUILD                   15
 #define BFPVERSION              12       /* Checked against bfp_compatible() */
 #define XLIVERSION              12       /* Checked against xli_compatible() */
 /* Note that both BFPVERSION and XLIVERSION typically have to be incremented
@@ -336,6 +336,12 @@
 /* MPS file types */
 #define MPSFIXED                 1
 #define MPSFREE                  2
+#define MPSIBM                   4
+#define MPSNEGOBJCONST           8
+
+#define MPS_FREE                 (MPSFREE<<2)
+#define MPS_IBM                  (MPSIBM<<2)
+#define MPS_NEGOBJCONST          (MPSNEGOBJCONST<<2)
 
 /* MPS defines (internal) */
 #define MPSUNDEF                -4
@@ -956,8 +962,8 @@ typedef void (__WINAPI put_bb_nodefunc_func)(lprec *lp, lphandleint_intfunc newn
 typedef void (__WINAPI put_bb_branchfunc_func)(lprec *lp, lphandleint_intfunc newbranch, void *bbbranchhandle);
 typedef void (__WINAPI put_logfunc_func)(lprec *lp, lphandlestr_func newlog, void *loghandle);
 typedef void (__WINAPI put_msgfunc_func)(lprec *lp, lphandleint_func newmsg, void *msghandle, int mask);
-typedef MYBOOL (__WINAPI read_LPhandle_func)(lprec **lp, FILE *filehandle, int verbose, char *lp_name);
-typedef MYBOOL (__WINAPI read_MPShandle_func)(lprec **lp, FILE *filehandle, int typeMPS, int verbose);
+typedef lprec * (__WINAPI read_LP_func)(char *filename, int verbose, char *lp_name);
+typedef lprec * (__WINAPI read_MPS_func)(char *filename, int options);
 typedef lprec * (__WINAPI read_XLI_func)(char *xliname, char *modelname, char *dataname, char *options, int verbose);
 typedef MYBOOL (__WINAPI read_basis_func)(lprec *lp, char *filename, char *info);
 typedef void (__WINAPI reset_basis_func)(lprec *lp);
@@ -1215,7 +1221,7 @@ struct _lprec
   is_binary_func                *is_binary;
   is_break_at_first_func        *is_break_at_first;
   is_constr_type_func           *is_constr_type;
-  is_debug_func                 *is_debug_;
+  is_debug_func                 *is_debug;
   is_feasible_func              *is_feasible;
   is_infinite_func              *is_infinite;
   is_int_func                   *is_int;
@@ -1252,8 +1258,8 @@ struct _lprec
   put_bb_branchfunc_func        *put_bb_branchfunc;
   put_logfunc_func              *put_logfunc;
   put_msgfunc_func              *put_msgfunc;
-  read_LPhandle_func            *read_LPhandle;
-  read_MPShandle_func           *read_MPShandle;
+  read_LP_func                  *read_LP;
+  read_MPS_func                 *read_MPS;
   read_XLI_func                 *read_XLI;
   read_params_func              *read_params;
   read_basis_func               *read_basis;
@@ -1930,10 +1936,10 @@ MYBOOL __EXPORT_TYPE __WINAPI get_ptr_lambda(lprec *lp, REAL **lambda);
 /* Get the primal, dual/reduced costs and Lambda vectors */
 
 /* Read an MPS file */
-lprec __EXPORT_TYPE * __WINAPI read_MPS(char *filename, int verbose);
-lprec __EXPORT_TYPE * __WINAPI read_mps(FILE *filename, int verbose);
-lprec __EXPORT_TYPE * __WINAPI read_freeMPS(char *filename, int verbose);
-lprec __EXPORT_TYPE * __WINAPI read_freemps(FILE *filename, int verbose);
+lprec __EXPORT_TYPE * __WINAPI read_MPS(char *filename, int options);
+lprec __EXPORT_TYPE * __WINAPI read_mps(FILE *filename, int options);
+lprec __EXPORT_TYPE * __WINAPI read_freeMPS(char *filename, int options);
+lprec __EXPORT_TYPE * __WINAPI read_freemps(FILE *filename, int options);
 
 /* Write a MPS file to output */
 MYBOOL __EXPORT_TYPE __WINAPI write_mps(lprec *lp, char *filename);
@@ -1989,7 +1995,7 @@ void __EXPORT_TYPE __WINAPI set_print_sol(lprec *lp, int print_sol);
 int __EXPORT_TYPE __WINAPI get_print_sol(lprec *lp);
 
 void __EXPORT_TYPE __WINAPI set_debug(lprec *lp, MYBOOL debug);
-MYBOOL __EXPORT_TYPE __WINAPI is_debug_(lprec *lp);
+MYBOOL __EXPORT_TYPE __WINAPI is_debug(lprec *lp);
 
 void __EXPORT_TYPE __WINAPI set_trace(lprec *lp, MYBOOL trace);
 MYBOOL __EXPORT_TYPE __WINAPI is_trace(lprec *lp);
@@ -2126,14 +2132,14 @@ int __EXPORT_TYPE __WINAPI get_Ncolumns(lprec *lp);
 
 typedef int (__WINAPI read_modeldata_func)(void *userhandle, char *buf, int max_size);
 typedef int (__WINAPI write_modeldata_func)(void *userhandle, char *buf);
-MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func read_modeldata, int typeMPS, int verbose);
+MYBOOL __WINAPI MPS_readex(lprec **newlp, void *userhandle, read_modeldata_func read_modeldata, int typeMPS, int options);
 
 /* #if defined develop */
 lprec __EXPORT_TYPE * __WINAPI read_lpex(void *userhandle, read_modeldata_func read_modeldata, int verbose, char *lp_name);
 MYBOOL __EXPORT_TYPE __WINAPI write_lpex(lprec *lp, void *userhandle, write_modeldata_func write_modeldata);
 
-lprec __EXPORT_TYPE * __WINAPI read_mpsex(void *userhandle, read_modeldata_func read_modeldata, int verbose);
-lprec __EXPORT_TYPE * __WINAPI read_freempsex(void *userhandle, read_modeldata_func read_modeldata, int verbose);
+lprec __EXPORT_TYPE * __WINAPI read_mpsex(void *userhandle, read_modeldata_func read_modeldata, int options);
+lprec __EXPORT_TYPE * __WINAPI read_freempsex(void *userhandle, read_modeldata_func read_modeldata, int options);
 
 MYBOOL __EXPORT_TYPE __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *userhandle, write_modeldata_func write_modeldata);
 /* #endif */
@@ -2195,7 +2201,7 @@ void   __WINAPI set_action(int *actionvar, int actionmask);
 void   __WINAPI clear_action(int *actionvar, int actionmask);
 MYBOOL __WINAPI is_action(int actionvar, int testmask);
 
-INLINE MYBOOL is_bb_rule(lprec *lp, int bb_rule);
+/* INLINE */ MYBOOL is_bb_rule(lprec *lp, int bb_rule);
 /* INLINE */ MYBOOL is_bb_mode(lprec *lp, int bb_mask);
 /* INLINE */ int get_piv_rule(lprec *lp);
 STATIC char *get_str_piv_rule(int rule);
@@ -2257,7 +2263,8 @@ STATIC void varmap_addcolumn(lprec *lp);
 STATIC void varmap_delete(lprec *lp, int base, int delta, LLrec *varmap);
 STATIC void varmap_compact(lprec *lp, int prev_rows, int prev_cols);
 STATIC MYBOOL varmap_validate(lprec *lp, int varno);
-STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, hashtable *ht, int varnr, LLrec *varmap);
+/* STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, hashtable *ht, int varnr, LLrec *varmap); */
+ STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, int items, hashtable *ht, int varnr, LLrec *varmap);
 
 /* Pseudo-cost routines (internal) */
 STATIC BBPSrec *init_pseudocost(lprec *lp, int pseudotype);

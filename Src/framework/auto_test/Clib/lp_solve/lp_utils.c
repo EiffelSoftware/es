@@ -6,6 +6,7 @@
 #include "lp_utils.h"
 #include <time.h>
 #include <sys/timeb.h>
+#include "lp_bit.h"
 
 #ifdef FORTIFY
 # include "lp_fortify.h"
@@ -149,20 +150,6 @@ STATIC MYBOOL allocFREE(lprec *lp, void **ptr)
 #include "lp_utils.h"
 /* alloc-routines should always be before this line! */
 
-#if !defined INLINE
-void set_biton(MYBOOL *bitarray, int item)
-{
-  bitarray[item / 8] |= (1 << (item % 8));
-}
-void set_bitoff(MYBOOL *bitarray, int item)
-{
-  bitarray[item / 8] &= ~(1 << (item % 8));
-}
-MYBOOL is_biton(MYBOOL *bitarray, int item)
-{
-  return( (MYBOOL) ((bitarray[item / 8] & (1 << (item % 8))) != 0) );
-}
-#endif
 int comp_bits(MYBOOL *bitarray1, MYBOOL *bitarray2, int items)
 {
   int            i, items4, left = 0, right = 0;

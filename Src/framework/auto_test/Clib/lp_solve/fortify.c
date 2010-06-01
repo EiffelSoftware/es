@@ -373,7 +373,7 @@ static void WaitIfstdOutput()
         {
                 char *ptr;
 
-                ptr=malloc(Nchars+1);
+                ptr=(char *) malloc(Nchars+1);
                 if (ptr!=NULL)
                 {
                         int n=0,l=0;
@@ -1113,13 +1113,13 @@ _Fortify_Disable(char *file,unsigned long line,int how)
 {
 	int result;
 
-        if (how == 0)
+        if (how <= 0)
         {
     	    stdOutput = 0;
 
     	    FORTIFY_LOCK();
 
-    	    if(st_Head)
+    	    if((st_Head) && (how == 0))
     	    {
     		    sprintf(st_Buffer, "Fortify: %s.%d\n", file, line);
     		    st_Output(st_Buffer);
@@ -1131,7 +1131,7 @@ _Fortify_Disable(char *file,unsigned long line,int how)
     	    }
     	    else
     	    {
-    		    st_Disabled = 1;
+    		    st_Disabled = (how >= -1 ? 1 : 0);
     		    result = 1;
     	    }
 

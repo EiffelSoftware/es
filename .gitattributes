@@ -2530,6 +2530,7 @@ Src/framework/auto_test/Clib/lp_solve/lpsolve55/ccc -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/ccc.aix -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/ccc.hp-ux -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/ccc.osx -text
+Src/framework/auto_test/Clib/lp_solve/lpsolve55/ccc.solaris -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/cccLUSOL.osx -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/dll.sln -text
 Src/framework/auto_test/Clib/lp_solve/lpsolve55/dll.vcproj -text

@@ -6,7 +6,7 @@ c=cc
 >/tmp/platform.c
 echo '#include <stdlib.h>'>>/tmp/platform.c
 echo '#include <stdio.h>'>>/tmp/platform.c
-echo 'main(){printf("osx%d", (int) (sizeof(void *)*8));}'>>/tmp/platform.c
+echo 'main(){printf("ux%d", (int) (sizeof(void *)*8));}'>>/tmp/platform.c
 $c /tmp/platform.c -o /tmp/platform
 PLATFORM=`/tmp/platform`
 rm /tmp/platform /tmp/platform.c >/dev/null 2>&1
@@ -30,15 +30,16 @@ def=
 dl=-ldl
 so=y
 
-opts='-idirafter /usr/include/sys -O3 -DINTEGERTIME -Wno-long-double'
+opts='-O3'
 
 $c -s -c -I.. -I../shared -I../bfp -I../bfp/bfp_LUSOL -I../bfp/bfp_LUSOL/LUSOL -I../colamd $opts $def $NOISNAN -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine $src
-libtool -static -o bin/$PLATFORM/liblpsolve55.a `echo $src|sed s/[.]c/.o/g|sed 's/[^ ]*\///g'`
+ar rv bin/$PLATFORM/liblpsolve55.a `echo $src|sed s/[.]c/.o/g|sed 's/[^ ]*\///g'`
+ranlib bin/$PLATFORM/liblpsolve55.a
 
 if [ "$so" != "" ]
 then
-  $c -fPIC -fno-common -s -c -I.. -I../shared -I../bfp -I../bfp/bfp_LUSOL -I../bfp/bfp_LUSOL/LUSOL -I../colamd -I. $opts $NOISNAN -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine $src
-  $c -dynamiclib bin/$PLATFORM/liblpsolve55.a -compatibility_version 5.5.0 -current_version 5.5.0 -o bin/$PLATFORM/liblpsolve55.dylib `echo $src|sed s/[.]c/.o/g|sed 's/[^ ]*\///g'` -lc
+  $c -fpic -s -c -I.. -I../shared -I../bfp -I../bfp/bfp_LUSOL -I../bfp/bfp_LUSOL/LUSOL -I../colamd -I. $opts $NOISNAN -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine $src
+  $c -G -R,-Bsymbolic -Wl,-h,liblpsolve55.so -o bin/$PLATFORM/liblpsolve55.so `echo $src|sed s/[.]c/.o/g|sed 's/[^ ]*\///g'` -lc -lm -ldl
 fi
 
 rm *.o 2>/dev/null

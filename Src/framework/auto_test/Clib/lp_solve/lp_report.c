@@ -515,11 +515,6 @@ void REPORT_lp(lprec *lp)
   if(lp->outstream == NULL)
     return;
 
-  if(lp->matA->is_roworder) {
-    report(lp, IMPORTANT, "REPORT_lp: Cannot print lp while in row entry mode.\n");
-    return;
-  }
-
   fprintf(lp->outstream, "Model name: %s\n", get_lp_name(lp));
   fprintf(lp->outstream, "          ");
 

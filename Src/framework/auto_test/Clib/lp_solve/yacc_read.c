@@ -81,7 +81,7 @@ struct rside /* contains relational operator and rhs value */
   struct rside  *next;
   short         relat;
   short         range_relat;
-  char		negate;
+  char          negate;
   short         SOStype;
 };
 
@@ -348,11 +348,12 @@ int set_sos_type(parse_parm *pp, int SOStype)
 
 int set_sos_weight(parse_parm *pp, double weight, int sos_decl)
 {
-  if(pp->LastSOS != NULL)
+  if(pp->LastSOS != NULL) {
     if(sos_decl==1)
       pp->LastSOS->weight = (int) (weight+.1);
     else
       pp->LastSOS->LastSOSvars->weight = weight;
+  }
   return(TRUE);
 }
 
@@ -432,12 +433,12 @@ void null_tmp_store(parse_parm *pp, int init_Lin_term_count)
  *            A(row, variable).
  * Sign     : (global)  determines the sign of value.
  * store()  : stores value in matrix
- *	      A(row, variable). If A(row, variable) already contains data,
- *	      value is added to the existing value.
+ *            A(row, variable). If A(row, variable) already contains data,
+ *            value is added to the existing value.
  */
 static int store(parse_parm *pp, char *variable,
-		  int row,
-		  REAL value)
+                 int row,
+                 REAL value)
 {
   hashelem *h_tab_p;
   struct column *col_p;
@@ -507,14 +508,14 @@ static int storefirst(parse_parm *pp)
 
     if(pp->tmp_store.name != NULL) {
       if(pp->tmp_store.value != 0) {
-	if (!store(pp, pp->tmp_store.name, pp->tmp_store.row, pp->tmp_store.value))
-	  return(FALSE);
+        if (!store(pp, pp->tmp_store.name, pp->tmp_store.row, pp->tmp_store.value))
+          return(FALSE);
       }
       else {
-	char buf[256];
+        char buf[256];
 
-	sprintf(buf, "Warning, variable %s has an effective coefficient of 0, ignored", pp->tmp_store.name);
-	error(pp, NORMAL, buf);
+        sprintf(buf, "Warning, variable %s has an effective coefficient of 0, ignored", pp->tmp_store.name);
+        error(pp, NORMAL, buf);
       }
     }
     null_tmp_store(pp, FALSE);
@@ -644,10 +645,10 @@ int rhs_store(parse_parm *pp, REAL value, int HadConstraint, int HadVar, int Had
          (pp->rs->value < value)) ||
         ((pp->rs->relat == GE) && (pp->rs->range_relat == LE) &&
          (pp->rs->value > value)) ||
-	((pp->rs->relat == EQ) || (pp->rs->range_relat == EQ))) {
+        ((pp->rs->relat == EQ) || (pp->rs->range_relat == EQ))) {
         pp->rs->range_relat = -2;
-	error(pp, CRITICAL, "Error: range restriction conflicts");
-	return(FALSE);
+        error(pp, CRITICAL, "Error: range restriction conflicts");
+        return(FALSE);
       }
       else
         pp->rs->range_value += value;
@@ -720,9 +721,9 @@ int store_bounds(parse_parm *pp, int warn)
     if(pp->tmp_store.value < 0) { /* divide by negative number, */
       /* relational operator may change */
       if(pp->tmp_store.relat == GE)
-	pp->tmp_store.relat = LE;
+        pp->tmp_store.relat = LE;
       else if(pp->tmp_store.relat == LE)
-	pp->tmp_store.relat = GE;
+        pp->tmp_store.relat = GE;
     }
 
     boundvalue = pp->tmp_store.rhs_value / pp->tmp_store.value;
@@ -744,13 +745,13 @@ int store_bounds(parse_parm *pp, int warn)
     /* bound seems to be sane, add it */
     if((pp->tmp_store.relat == GE) || (pp->tmp_store.relat == EQ)) {
       if(boundvalue > pp->coldata[h_tab_p->index].lowbo - tol)
-	pp->coldata[h_tab_p->index].lowbo = boundvalue;
+        pp->coldata[h_tab_p->index].lowbo = boundvalue;
       else if(warn)
         error(pp, NORMAL, "Ineffective lower bound, ignored");
     }
     if((pp->tmp_store.relat == LE) || (pp->tmp_store.relat == EQ)) {
       if(boundvalue < pp->coldata[h_tab_p->index].upbo + tol)
-	pp->coldata[h_tab_p->index].upbo  = boundvalue;
+        pp->coldata[h_tab_p->index].upbo  = boundvalue;
       else if (warn)
         error(pp, NORMAL, "Ineffective upper bound, ignored");
     }
@@ -768,13 +769,13 @@ int store_bounds(parse_parm *pp, int warn)
        ((pp->tmp_store.rhs_value > 0) && (pp->tmp_store.relat == LE)) ||
        ((pp->tmp_store.rhs_value < 0) && (pp->tmp_store.relat == GE))) {
       sprintf(buf, "Variable %s has an effective coefficient of 0 in bound, ignored",
-	      pp->tmp_store.name);
+              pp->tmp_store.name);
       if(warn)
         error(pp, NORMAL, buf);
     }
     else {
       sprintf(buf, "Error, variable %s has an effective coefficient of 0 in bound",
-	      pp->tmp_store.name);
+              pp->tmp_store.name);
       error(pp, CRITICAL, buf);
       return(FALSE);
     }
@@ -893,10 +894,10 @@ static int readinput(parse_parm *pp, lprec *lp)
           rp->relat = EQ;
           rp->range_relat = EQ;
         }
-	if(i) {
+        if(i) {
           set_constr_type(lp, i, rp->relat);
-	  pp->relat[i] = rp->relat;
-	}
+          pp->relat[i] = rp->relat;
+        }
         set_rh(lp, i, rp->value);
         if (rp->range_relat >= 0)
           set_rh_range(lp, i, rp->range_value - rp->value);
@@ -952,52 +953,52 @@ static int readinput(parse_parm *pp, lprec *lp)
         if(lp != NULL) {
           if (negateAndSOS[cp->row] <= 0) {
             rowno[count] = cp->row;
-  	    a = cp->value;
-  	    if (negateAndSOS[cp->row])
-  	      a = -a;
+              a = cp->value;
+              if (negateAndSOS[cp->row])
+                a = -a;
             row[count++] = a;
           }
-	  else {
-	    if (MALLOC(SOSrow, 1, struct SOSrow) == NULL) {
+          else {
+            if (MALLOC(SOSrow, 1, struct SOSrow) == NULL) {
               FREE(SOSrowdata);
               FREE(negateAndSOS);
               FREE(row);
               FREE(rowno);
               return(FALSE);
-	    }
-	    if(SOSrowdata[cp->row].SOSrow == NULL)
-	      SOSrowdata[cp->row].name = strdup(get_row_name(lp, cp->row));
-	    SOSrow->next = SOSrowdata[cp->row].SOSrow;
-	    SOSrowdata[cp->row].SOSrow = SOSrow;
-	    SOSrowdata[cp->row].type = negateAndSOS[cp->row];
-	    SOSrow->col = col;
-	    SOSrow->value = cp->value;
-	  }
-	}
-	tcp = cp;
-	/* cp = cp->next; */
-	cp = cp->prev;
-	free(tcp); /* free memory when data has been read */
+            }
+            if(SOSrowdata[cp->row].SOSrow == NULL)
+              SOSrowdata[cp->row].name = strdup(get_row_name(lp, cp->row));
+            SOSrow->next = SOSrowdata[cp->row].SOSrow;
+            SOSrowdata[cp->row].SOSrow = SOSrow;
+            SOSrowdata[cp->row].type = negateAndSOS[cp->row];
+            SOSrow->col = col;
+            SOSrow->value = cp->value;
+          }
+        }
+        tcp = cp;
+        /* cp = cp->next; */
+        cp = cp->prev;
+        free(tcp); /* free memory when data has been read */
       }
 
       if(lp != NULL) {
         add_columnex(lp, count, row, rowno);
         /* check for bound */
         if(pp->coldata[hp->index].lowbo == -DEF_INFINITE * 10.0)
-  	  /* lp->orig_lowbo[pp->Rows+index] = 0.0; */
+          /* lp->orig_lowbo[pp->Rows+index] = 0.0; */
           set_lowbo(lp, index, 0);
         else
-  	  /* lp->orig_lowbo[pp->Rows+index] = pp->coldata[hp->index].lowbo; */
+          /* lp->orig_lowbo[pp->Rows+index] = pp->coldata[hp->index].lowbo; */
           set_lowbo(lp, index, pp->coldata[hp->index].lowbo);
         /* lp->orig_upbo[pp->Rows+index] = pp->coldata[hp->index].upbo; */
-		if(pp->coldata[hp->index].upbo >= DEF_INFINITE)
-		  set_upbo(lp, index, DEF_INFINITE);
-		else
+        if(pp->coldata[hp->index].upbo >= DEF_INFINITE)
+          set_upbo(lp, index, DEF_INFINITE);
+        else
           set_upbo(lp, index, pp->coldata[hp->index].upbo);
 
         /* check if it must be an integer variable */
         if(pp->coldata[hp->index].must_be_int) {
-  	  /* lp->must_be_int[pp->Rows + index]=TRUE; */
+          /* lp->must_be_int[pp->Rows + index]=TRUE; */
           set_int(lp, index, TRUE);
         }
         if(pp->coldata[hp->index].must_be_sec) {
@@ -1009,10 +1010,10 @@ static int readinput(parse_parm *pp, lprec *lp)
 
         /* copy name of column variable */
         if (!set_col_name(lp, index, hp->name)) {
-	  FREE(SOSrowdata);
+          FREE(SOSrowdata);
           FREE(negateAndSOS);
           FREE(row);
-	  FREE(rowno);
+          FREE(rowno);
           return(FALSE);
         }
 
@@ -1041,34 +1042,34 @@ static int readinput(parse_parm *pp, lprec *lp)
     for(i = 1; i <= pp->Rows; i++) {
       SOSrow = SOSrowdata[i].SOSrow;
       if(SOSrow != NULL) {
-	if(MALLOC(structSOS, 1, struct structSOS) == NULL) {
-	  FREE(SOSrowdata);
+        if(MALLOC(structSOS, 1, struct structSOS) == NULL) {
+          FREE(SOSrowdata);
           FREE(negateAndSOS);
           FREE(row);
-	  FREE(rowno);
+          FREE(rowno);
           return(FALSE);
-	}
-	structSOS->Nvars = 0;
-	structSOS->type = SOSrowdata[i].type;
-	structSOS->weight = ++SOSweight;
-	structSOS->name = strdup(SOSrowdata[i].name);
-	structSOS->LastSOSvars = NULL;
-	structSOS->next = pp->FirstSOS;
-	pp->FirstSOS = structSOS;
-	SOSvars = NULL;
+        }
+        structSOS->Nvars = 0;
+        structSOS->type = SOSrowdata[i].type;
+        structSOS->weight = ++SOSweight;
+        structSOS->name = strdup(SOSrowdata[i].name);
+        structSOS->LastSOSvars = NULL;
+        structSOS->next = pp->FirstSOS;
+        pp->FirstSOS = structSOS;
+        SOSvars = NULL;
         while(SOSrow != NULL) {
-	  SOSvars1 = SOSvars;
-	  MALLOC(SOSvars, 1, struct structSOSvars);
-	  SOSvars->next = SOSvars1;
-	  SOSvars->col = SOSrow->col;
-	  SOSvars->weight = SOSrow->value;
-	  SOSvars->name = NULL;
-	  structSOS->Nvars++;
+          SOSvars1 = SOSvars;
+          MALLOC(SOSvars, 1, struct structSOSvars);
+          SOSvars->next = SOSvars1;
+          SOSvars->col = SOSrow->col;
+          SOSvars->weight = SOSrow->value;
+          SOSvars->name = NULL;
+          structSOS->Nvars++;
           SOSrow1 = SOSrow->next;
-	  FREE(SOSrow);
-	  SOSrow = SOSrow1;
-	}
-	structSOS->SOSvars = SOSvars;
+          FREE(SOSrow);
+          SOSrow = SOSrow1;
+        }
+        structSOS->SOSvars = SOSvars;
       }
     }
     FREE(SOSrowdata);
@@ -1099,13 +1100,13 @@ static int readinput(parse_parm *pp, lprec *lp)
       SOSvars = SOSvars->next;
       if(lp != NULL) {
         col = SOSvars1->col;
-	if(col == 0)
+        if(col == 0)
           if((hp = findhash(SOSvars1->name, lp->colname_hashtab)) != NULL)
-	    col = hp->index;
-	if (col) {
+            col = hp->index;
+        if (col) {
           sosvars[n] = col;
-	  weights[n++] = SOSvars1->weight;
-	}
+          weights[n++] = SOSvars1->weight;
+        }
       }
       FREE(SOSvars1->name);
       FREE(SOSvars1);
@@ -1148,13 +1149,13 @@ static int readinput(parse_parm *pp, lprec *lp)
     printf("ROWS\n");
     for(i = 0; i <= pp->Rows; i++) {
       if(pp->relat[i] == LE)
-	printf(" L  ");
+        printf(" L  ");
       else if(pp->relat[i] == EQ)
-	printf(" E  ");
+        printf(" E  ");
       else if(pp->relat[i] == GE)
-	printf(" G  ");
+        printf(" G  ");
       else if(pp->relat[i] == OF)
-	printf(" N  ");
+        printf(" N  ");
       printf("%s\n", get_row_name(lp, i));
     }
 
@@ -1162,26 +1163,26 @@ static int readinput(parse_parm *pp, lprec *lp)
     j = 0;
     for(i = 0; i < pp->Non_zeros; i++) {
       if(i == lp->col_end[j])
-	j++;
+        j++;
       printf("    %-8s  %-8s  %g\n", get_col_name(lp, j),
-	     get_row_name(lp, lp->mat[i].row_nr), (double)lp->mat[i].value);
+             get_row_name(lp, lp->mat[i].row_nr), (double)lp->mat[i].value);
     }
 
     printf("RHS\n");
     for(i = 0; i <= pp->Rows; i++) {
       printf("    RHS       %-8s  %g\n", get_row_name(lp, i),
-	     (double)lp->orig_rhs[i]);
+             (double)lp->orig_rhs[i]);
     }
 
     printf("RANGES\n");
     for(i = 1; i <= pp->Rows; i++)
       if((lp->orig_upbo[i] != lp->infinite) && (lp->orig_upbo[i] != 0)) {
-	printf("    RGS       %-8s  %g\n", get_row_name(lp, i),
-	       (double)lp->orig_upbo[i]);
+        printf("    RGS       %-8s  %g\n", get_row_name(lp, i),
+               (double)lp->orig_upbo[i]);
       }
       else if((lp->orig_lowbo[i] != 0)) {
-	printf("    RGS       %-8s  %g\n", get_row_name(lp, i),
-	       (double)-lp->orig_lowbo[i]);
+        printf("    RGS       %-8s  %g\n", get_row_name(lp, i),
+               (double)-lp->orig_lowbo[i]);
       }
 
     printf("BOUNDS\n");
@@ -1193,11 +1194,11 @@ static int readinput(parse_parm *pp, lprec *lp)
       }
       else {
         if(lp->orig_upbo[i] < lp->infinite)
-  	  printf(" UP BND       %-8s  %g\n", get_col_name(lp, i - pp->Rows),
-  		 (double)lp->orig_upbo[i]);
+            printf(" UP BND       %-8s  %g\n", get_col_name(lp, i - pp->Rows),
+                   (double)lp->orig_upbo[i]);
         if(lp->orig_lowbo[i] > 0)
-  	  printf(" LO BND       %-8s  %g\n", get_col_name(lp, i - pp->Rows),
-  		 (double)lp->orig_lowbo[i]);
+            printf(" LO BND       %-8s  %g\n", get_col_name(lp, i - pp->Rows),
+                   (double)lp->orig_lowbo[i]);
       }
     }
 
@@ -1237,8 +1238,8 @@ lprec *yacc_read(lprec *lp, int verbose, char *lp_name, int (*parse) (parse_parm
       else {
         int NRows;
 
-	for(NRows = get_Nrows(lp); NRows < pp->Rows; NRows++)
-	  add_constraintex(lp, 0, NULL, NULL, LE, 0);
+        for(NRows = get_Nrows(lp); NRows < pp->Rows; NRows++)
+          add_constraintex(lp, 0, NULL, NULL, LE, 0);
       }
     }
     else
@@ -1249,26 +1250,26 @@ lprec *yacc_read(lprec *lp, int verbose, char *lp_name, int (*parse) (parse_parm
       }
 
       if (!readinput(pp, lp)) {
-	if((lp != NULL) && (lp0 == NULL))
+        if((lp != NULL) && (lp0 == NULL))
           delete_lp(lp);
-	lp = NULL;
+        lp = NULL;
       }
 
       if(lp != NULL) {
-	set_lp_name(lp, pp->title);
-	if(pp->Maximise)
-	  set_maxim(lp);
+        set_lp_name(lp, pp->title);
+        if(pp->Maximise)
+          set_maxim(lp);
 
-	if(pp->Rows) {
-	  int row;
+        if(pp->Rows) {
+          int row;
 
-	  MALLOCCPY(orig_upbo, lp->orig_upbo, 1 + pp->Rows, REAL);
-	  for(row = 1; row <= pp->Rows; row++)
-	    set_constr_type(lp, row, pp->relat[row]);
+          MALLOCCPY(orig_upbo, lp->orig_upbo, 1 + pp->Rows, REAL);
+          for(row = 1; row <= pp->Rows; row++)
+            set_constr_type(lp, row, pp->relat[row]);
 
-	  memcpy(lp->orig_upbo, orig_upbo, (1 + pp->Rows) * sizeof(*orig_upbo)); /* restore upper bounds (range) */
-	  FREE(orig_upbo);
-	}
+          memcpy(lp->orig_upbo, orig_upbo, (1 + pp->Rows) * sizeof(*orig_upbo)); /* restore upper bounds (range) */
+          FREE(orig_upbo);
+        }
       }
       if((pp->title != NULL) && (pp->title != lp_name))
         free(pp->title);

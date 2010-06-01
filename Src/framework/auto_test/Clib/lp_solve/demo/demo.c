@@ -43,7 +43,7 @@ int main(void)
   press_ret();
   printf("\nWe start by creating a new problem with 4 variables and 0 constraints\n");
   printf("We use: lp=make_lp(0,4);\n");
-  if ((lp=make_lp(0,4)) == NULL)
+  if ((lp = make_lp(0,4)) == NULL)
     ERROR();
   press_ret();
 
@@ -51,22 +51,31 @@ int main(void)
   print_lp(lp);
   press_ret();
   printf("Now we add some constraints\n");
-  printf("str_add_constraint(lp, \"3 2 2 1\" ,LE,4)\n");
-  printf("This is the string version of add_constraint. For the normal version\n");
-  printf("of add_constraint see the help file\n");
-  if (!str_add_constraint(lp, "3 2 2 1", LE, 4))
-    ERROR();
+  printf("add_constraint(lp, {0, 3, 2, 2, 1}, LE, 4)\n");
+  {
+    double row[] = {0, 3, 2, 2, 1};
+    if (!add_constraint(lp, row, LE, 4))
+      ERROR();
+  }
   print_lp(lp);
   press_ret();
-  printf("str_add_constraint(lp, \"0 4 3 1\" ,GE,3)\n");
-  if (!str_add_constraint(lp, "0 4 3 1", GE, 3))
-    ERROR();
+  printf("add_constraintex is now used to add a row. Only the npn-zero values must be specfied with this call.\n");
+  printf("add_constraintex(lp, 3, {4, 3, 1}, {2, 3, 4}, GE, 3)\n");
+  {
+    int colno[] = {2, 3, 4};
+    double row[] = {4, 3, 1};
+    if (!add_constraintex(lp, sizeof(colno) / sizeof(*colno), row, colno, GE, 3))
+      ERROR();
+  }
   print_lp(lp);
   press_ret();
   printf("Set the objective function\n");
-  printf("str_set_obj_fn(lp, \"2 3 -2 3\")\n");
-  if (!str_set_obj_fn(lp, "2 3 -2 3"))
-    ERROR();
+  printf("set_obj_fn(lp, {0, 2, 3, -2, 3})\n");
+  {
+    double row[] = {0, 2, 3, -2, 3};
+    if (!set_obj_fn(lp, row))
+      ERROR();
+  }
   print_lp(lp);
   press_ret();
   printf("Now solve the problem with printf(solve(lp));\n");
@@ -136,14 +145,20 @@ int main(void)
   del_constraint(lp,1);
   print_lp(lp);
   printf("Add an equality constraint\n");
-  if (!str_add_constraint(lp, "1 2 1 4", EQ, 8))
-    ERROR();
+  {
+    double row[] = {0, 1, 2, 1, 4};
+    if (!add_constraint(lp, row, EQ, 8))
+      ERROR();
+  }
   print_lp(lp);
   press_ret();
   printf("A column can be added with:\n");
-  printf("str_add_column(lp,\"3 2 2\");\n");
-  if (!str_add_column(lp,"3 2 2"))
-    ERROR();
+  printf("add_column(lp,{3, 2, 2});\n");
+  {
+    double col[] = {3, 2, 2};
+    if (!add_column(lp, col))
+      ERROR();
+  }
   print_lp(lp);
   press_ret();
   printf("A column can be removed with:\n");
@@ -163,9 +178,9 @@ int main(void)
   printf("Notice that get_mat returns the value of the original unscaled problem\n");
   press_ret();
   printf("If there are any integer type variables, then only the rows are scaled\n");
-  printf("set_int(lp,3,FALSE);\n");
   printf("set_scaling(lp, SCALE_MEAN);\n");
   set_scaling(lp, SCALE_MEAN);
+  printf("set_int(lp,3,FALSE);\n");
   set_int(lp,3,FALSE);
   print_lp(lp);
   press_ret();
