@@ -199,7 +199,14 @@ feature {NONE} -- Parameter list processing
 			safe_process (l_as.lparan_symbol (match_list))
 
 			-- add additional argument 'Current'
-			if (previous_level_exists and then previous_level.is_separate) or add_prefix_current_cc then
+			if
+				(
+					previous_level_exists and then
+					previous_level.is_separate and
+					not is_in_ignored_group (previous_level.type.associated_class)
+				) or
+				add_prefix_current_cc
+			then
 				add_prefix_current_cc := False
 				context.add_string ("Current, ")
 			end
@@ -238,7 +245,14 @@ feature {NONE} -- Parameter list processing
 				-- add additional argument 'Current' if last target was separate
 				-- add a 'dummy level' so that the next target has no type information as basis
 				process_parameter_list_as (l_as)
-			elseif (previous_level_exists and then previous_level.is_separate) or add_prefix_current_cc then
+			elseif
+				(
+					previous_level_exists and then
+					previous_level.is_separate and
+					not is_in_ignored_group (previous_level.type.associated_class)
+				) or
+				add_prefix_current_cc
+			then
 				-- add additional argument 'Current' if last target was separate
 				context.add_string (" (Current)")
 			end

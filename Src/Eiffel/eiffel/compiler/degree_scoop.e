@@ -410,8 +410,10 @@ feature -- Element Change and Removal
 	remove_class (a_class: CLASS_C)
 			-- Remove `a_class'.
 		do
-			a_class.remove_from_degree_scoop
-			count := count - 1
+			if a_class.degree_scoop_needed then
+				a_class.remove_from_degree_scoop
+				count := count - 1
+			end
 		end
 
 	wipe_out

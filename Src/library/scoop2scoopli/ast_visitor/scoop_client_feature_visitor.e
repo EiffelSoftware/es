@@ -715,7 +715,14 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.lparan_symbol (match_list))
 
 			-- add additional argument 'Current'
-			if (previous_level_exists and then previous_level.is_separate) or add_prefix_current_cc then
+			if
+				(
+					previous_level_exists and then
+					previous_level.is_separate and
+					not is_in_ignored_group (previous_level.type.associated_class)
+				) or
+				add_prefix_current_cc
+			then
 				add_prefix_current_cc := False
 				context.add_string ("Current")
 				if l_as.parameters /= void and then not l_as.parameters.is_empty then
