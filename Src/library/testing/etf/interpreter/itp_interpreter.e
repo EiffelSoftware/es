@@ -1510,19 +1510,6 @@ feature -- Test case serialization
 	is_duplicated_test_case_serialized: BOOLEAN
 			-- Should duplicated test case be serialized?
 
-	temp_serialization_file: FILE_NAME
-			-- File name for the temp serialization file
-		do
-			if temp_serialization_file_cache = Void then
-				create temp_serialization_file_cache.make_from_string (interpreter_log_directory)
-				temp_serialization_file.set_file_name ("serial.dat")
-			end
-			Result := temp_serialization_file_cache
-		end
-
-	temp_serialization_file_cache: detachable like temp_serialization_file
-			-- Cache for `temp_serialization_file'
-
 invariant
 	log_file_open_write: log_file.is_open_write
 	store_not_void: store /= Void

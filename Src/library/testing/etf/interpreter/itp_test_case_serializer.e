@@ -423,6 +423,7 @@ feature{NONE} -- Implementation
 			l_objects: SPECIAL [detachable ANY]
 			l_index: INTEGER
 			l_object: detachable ANY
+			l_type_name: STRING
 		do
 				-- Filter out unnecessary objects.
 			create l.make_filled (0, a_upper - a_lower + 1)
@@ -435,12 +436,15 @@ feature{NONE} -- Implementation
 				i := i + 1
 			end
 
-
 				-- Recursively traverse object graphs starting from objects given in `l'.
 			if a_lower <= a_upper then
---				interpreter.log_message ("Serialization: To-be-serialized objects: ")
+				interpreter.log_message ("Serialization: To-be-serialized objects: ")
+				if pre_state_object_summary /= Void then
+					interpreter.log_message (pre_state_object_summary)
+					interpreter.log_message ("%N")
+				end
 				l_obj_list := recursively_referenced_objects (l)
-				create l_objects.make_filled (0, l_obj_list.count * 2)
+				create l_objects.make_filled (Void, l_obj_list.count * 2)
 				from
 					i := 0
 					l_obj_list.start
@@ -451,20 +455,24 @@ feature{NONE} -- Implementation
 					l_object := l_obj_list.item_for_iteration
 					l_objects.put (l_index, i)
 					l_objects.put (l_object, i + 1)
---					interpreter.log_message (l_index.out + ", ")
---					if l_object /= Void then
---						interpreter.log_message (l_object.generating_type + ", ")
---					else
---						interpreter.log_message ("Void, ")
---					end
+					interpreter.log_message (l_index.out + ", ")
+					if l_object /= Void then
+						l_type_name := l_object.generating_type
+						if l_type_name ~ "INTEGER_32" or l_type_name ~ "BOOLEAN" then
+							interpreter.log_message ("(" + l_object.out + ")")
+						end
+						interpreter.log_message (l_type_name + ", ")
+					else
+						interpreter.log_message ("Void, ")
+					end
 					i := i + 2
 					l_obj_list.forth
 				end
---				interpreter.log_message ("%N")
+				interpreter.log_message ("%N")
 			else
 				create l_objects.make_filled (0, 1)
 			end
-			Result := [serialized_object_through_file (l_objects, interpreter.temp_serialization_file), l_obj_list]
+			Result := [serialized_object (l_objects), l_obj_list]
 		end
 
 	recursively_referenced_objects (a_roots: SPECIAL [INTEGER]): HASH_TABLE [detachable ANY, INTEGER]
@@ -522,13 +530,13 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 		do
 			l_interpreter := interpreter
-			if attached {INTEGER_32_REF} a_object as l_int then
+			if attached {INTEGER} a_object as l_int then
 				l_index := l_interpreter.store.variable_index (l_int)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found an integer%N")
 					a_object_table.put (l_int.item, l_index)
 				end
-			elseif attached {BOOLEAN_REF} a_object as l_bool then
+			elseif attached {BOOLEAN} a_object as l_bool then
 				l_index := l_interpreter.store.variable_index (l_bool)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found boolean%N")

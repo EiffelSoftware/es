@@ -55,29 +55,27 @@ feature -- Access
 			-- Once this is fixed, use the following commented `deserialize' feature. Jasonw 2009.10.12
 		local
 			l_stream: STREAM
---			l_mptr: MANAGED_POINTER
 			l_count: INTEGER
---			i: INTEGER
 			l_cstring: C_STRING
 		do
 			l_count := a_string.count
 			create l_stream.make_with_size (l_count)
 			create l_cstring.make_shared_from_pointer_and_count (l_stream.item, l_count)
 			l_cstring.set_string (a_string)
-
---			create l_mptr.share_from_pointer (l_stream.item, l_count)
---			
---			from
---				i := 0
---			until
---				i = l_count
---			loop
---				l_mptr.put_character (a_string.item (i + 1), i)
---				i := i + 1
---			end
-
 			Result := l_stream.retrieved
 			l_stream.close
+		end
+
+	deserialized_object_through_file (a_file_name: STRING): detachable ANY is
+			-- Object deserialized from `a_string'
+			-- FIXME: This is a walkaround for the problem that the serialization through
+			-- FIXME: STREAM does not work. 31.5.2010 Jasonw			
+		local
+			l_file: RAW_FILE
+		do
+			create l_file.make_open_read (a_file_name)
+			Result ?= l_file.retrieved
+			l_file.close
 		end
 
 --	serialized_object (a_object: ANY): STRING is

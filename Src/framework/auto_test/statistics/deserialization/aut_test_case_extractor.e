@@ -276,7 +276,7 @@ feature{NONE} -- Class content
 			if tc_uuid_cache = Void then
 				update_uuid
 			end
-			Result := tc_uuid_cache
+			Result := tc_uuid_cache.hash_code.out
 		end
 
 	tc_summary: STRING

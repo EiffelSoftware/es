@@ -62,7 +62,6 @@ feature{NONE} -- Initialization
 			l_filters: LIST [STRING]
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
 			l_max_precondition_time_op: AP_INTEGER_OPTION
-			l_prepare_citadel_tests_option: AP_STRING_OPTION
 			l_candidate_count_option: AP_INTEGER_OPTION
 			l_linear_constraint_solver_option: AP_STRING_OPTION
 			l_smart_selection_rate_option: AP_INTEGER_OPTION
@@ -73,7 +72,6 @@ feature{NONE} -- Initialization
 			l_test_case_serialization_option: AP_STRING_OPTION
 			l_test_case_deserialization_option: AP_STRING_OPTION
 			l_interpreter_log_enabled: AP_STRING_OPTION
-			l_on_the_fly_tc_flag: AP_FLAG
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
 			l_duplicated_test_case_serialization_option: AP_FLAG
@@ -215,10 +213,6 @@ feature{NONE} -- Initialization
 			l_max_precondition_time_op.set_description ("Maximal time that can be spent in searching for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
 			parser.options.force_last (l_max_precondition_time_op)
 
-			create l_prepare_citadel_tests_option.make_with_long_form ("citadel")
-			l_prepare_citadel_tests_option.set_description ("Generate, from an existing proxy log given as next parameter, tests which CITADEL can use.")
-			parser.options.force_last (l_prepare_citadel_tests_option)
-
 			create l_candidate_count_option.make_with_long_form ("max-candidates")
 			l_candidate_count_option.set_description ("Max number of candidates to search for which satisfy the precondition of the feature to call. 0 means no limit. Only have effect when precondition satisfaction is enabled through %"-p%" option. Default is 1.")
 			parser.options.force_last (l_candidate_count_option)
@@ -258,10 +252,6 @@ feature{NONE} -- Initialization
 			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
 			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
 			parser.options.force_last (l_interpreter_log_enabled)
-
-			create l_on_the_fly_tc_flag.make_with_long_form ("on-the-fly-tc")
-			l_on_the_fly_tc_flag.set_description ("Is on-the-fly test case generation enabled? Default: False")
-			parser.options.force_last (l_on_the_fly_tc_flag)
 
 			create l_proxy_log_option.make_with_long_form ("proxy-log")
 			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state, precondition, pool-statistics, basic, all. Basic is equal to passing, failing, invalid, bad, error, type, expr-assign. Default: basic")
@@ -488,14 +478,6 @@ feature{NONE} -- Initialization
 			end
 
 			if not error_handler.has_error then
-				if l_prepare_citadel_tests_option.was_found then
-					prepare_citadel_tests := True
-					is_automatic_testing_enabled := False
-					log_file_path := l_prepare_citadel_tests_option.parameter
-				end
-			end
-
-			if not error_handler.has_error then
 				if l_candidate_count_option.was_found then
 					max_candidate_count := l_candidate_count_option.parameter
 				else
@@ -619,10 +601,6 @@ feature{NONE} -- Initialization
 				if l_console_log_option.was_found then
 					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal ("on")
 				end
-			end
-
-			if not error_handler.has_error then
-				is_on_the_fly_test_case_generation_enabled := l_on_the_fly_tc_flag.was_found
 			end
 
 			if not error_handler.has_error then
@@ -870,9 +848,6 @@ feature -- Status report
 			-- Provided seed
 			-- Only have effect if `is_seed_provided' is True.
 
-	prepare_citadel_tests: BOOLEAN
-			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
-
 	max_candidate_count: INTEGER
 			-- Max number of candidates that satisfy the precondition of
 			-- the feature to call.
@@ -930,10 +905,6 @@ feature -- Status report
 
 	is_interpreter_log_enabled: BOOLEAN
 			-- Is the messages from the interpreter logged?
-			-- Default: False
-
-	is_on_the_fly_test_case_generation_enabled: BOOLEAN
-			-- Is on-the-fly test case generation enabled?
 			-- Default: False
 
 	is_console_log_enabled: BOOLEAN

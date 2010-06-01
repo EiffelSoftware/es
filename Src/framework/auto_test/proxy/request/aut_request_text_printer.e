@@ -20,6 +20,11 @@ inherit
 
 	ITP_VARIABLE_CONSTANTS
 
+	EPA_TYPE_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -147,7 +152,7 @@ feature {AUT_REQUEST} -- Processing
 				l_stream.put_string (variable_name_prefix)
 				l_stream.put_string (l_variables.key_for_iteration.out)
 				l_stream.put_string (once ": {")
-				l_stream.put_string (l_variables.item_for_iteration.name)
+				l_stream.put_string (cleaned_type_name (l_variables.item_for_iteration.name))
 				l_stream.put_string (once "}; ")
 				l_variables.forth
 			end

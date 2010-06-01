@@ -85,7 +85,7 @@ feature -- Access
 			end
 		end
 
-feature -- Access: options
+feature -- Options: basic
 
 	output_dirname: STRING
 			-- Name of output directory
@@ -127,6 +127,82 @@ feature -- Access: options
 	is_debugging: BOOLEAN
 			-- True if debugging output should be written to log.
 
+	integer_lower_bound: INTEGER is
+			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is -512.
+		do
+			Result := integer_lower_bound_cache
+		ensure then
+			good_result: Result = integer_lower_bound_cache
+		end
+
+	integer_upper_bound: INTEGER is
+			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is 512.
+		do
+			Result := integer_upper_bound_cache
+		ensure then
+			good_result: Result = integer_upper_bound_cache
+		end
+
+	is_console_output_enabled: BOOLEAN
+			-- Is console output enabled?
+			-- Default: True
+		do
+			Result := is_console_output_enabled_cache
+		ensure then
+			good_result: Result = is_console_output_enabled_cache
+		end
+
+	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
+			-- List of features excluded from being tested
+		do
+			if excluded_features_cache = Void then
+				create excluded_features_cache.make
+			end
+			Result := excluded_features_cache
+		end
+
+	types_under_test: DS_LIST [CL_TYPE_A]
+			-- Types under test
+
+feature -- Options: logging
+
+	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
+			-- Proxy log options.
+			-- Key is the type name, value indicates if messages of that type is logged.
+			-- Missing types are treated as not to be logged.
+		do
+			Result := proxy_log_options_cache
+		ensure then
+			good_result: Result = proxy_log_options_cache
+		end
+
+	is_interpreter_log_enabled: BOOLEAN
+			-- Should messages from the interpreter be logged?
+			-- Default: False
+		do
+			Result := is_interpreter_log_enabled_cache
+		ensure then
+			good_result: Result = is_interpreter_log_enabled_cache
+		end
+
+	is_pool_statistics_logged: BOOLEAN
+			-- Should statistics of object pool and predicate be logged?
+			-- Default: False
+		do
+			Result := proxy_log_options.has ("statistics")
+		end
+
+	is_precondition_satisfaction_logged: BOOLEAN
+			-- Should messaged related to precondition satisfaction be logged?
+			-- Default: False
+		do
+			Result := proxy_log_options_cache.has ("precondition")
+		end
+
+feature -- Options: log loading
+
 	log_file_path: detachable STRING
 			-- Path for the log file to load
 		do
@@ -151,37 +227,7 @@ feature -- Access: options
 			good_result: Result = log_processor_output_cache
 		end
 
---	is_deserializing: BOOLEAN
---			-- <Precursor>
---		do
---			Result := is_deserializing_cache
---		ensure then
---			good_result: Result = is_deserializing_cache
---		end
-
-	is_recursive: BOOLEAN
-			-- <Precursor>
-		do
-			Result := is_recursive_cache
-		ensure then
-			good_result: Result = is_recursive_cache
-		end
-
-	data_input: detachable STRING
-			-- <Precursor>
-		do
-			Result := data_input_cache
-		ensure then
-			good_result: Result = data_input_cache
-		end
-
-	data_output: detachable STRING
-			-- <Precursor>
-		do
-			Result := data_output_cache
-		ensure then
-			good_result: Result = data_output_cache
-		end
+feature -- Options: precondition satisfaction
 
 	max_precondition_search_tries: INTEGER
 			-- Max times to search for an object combination satisfying precondition of a feature.
@@ -238,24 +284,6 @@ feature -- Access: options
 			good_result: Result = smt_use_predefined_value_rate_cache
 		end
 
-	integer_lower_bound: INTEGER is
-			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
-			-- Default is -512.
-		do
-			Result := integer_lower_bound_cache
-		ensure then
-			good_result: Result = integer_lower_bound_cache
-		end
-
-	integer_upper_bound: INTEGER is
-			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
-			-- Default is 512.
-		do
-			Result := integer_upper_bound_cache
-		ensure then
-			good_result: Result = integer_upper_bound_cache
-		end
-
 	is_random_cursor_used: BOOLEAN is
 			-- When searching in predicate pool, should random cursor be used?
 			-- Default: False
@@ -265,41 +293,60 @@ feature -- Access: options
 			good_result: Result = is_random_cursor_used_cache
 		end
 
-	is_interpreter_log_enabled: BOOLEAN
-			-- Should messages from the interpreter be logged?
-			-- Default: False
+	is_precondition_checking_enabled: BOOLEAN
+			-- Is precondition checking before feature call enabled?
 		do
-			Result := is_interpreter_log_enabled_cache
+			Result := precondition_evaluation_cache
 		ensure then
-			good_result: Result = is_interpreter_log_enabled_cache
+			good_result: Result = precondition_evaluation_cache
 		end
 
-	is_on_the_fly_test_case_generation_enabled: BOOLEAN
-			-- Is test case generation on the fly enabled?
+	is_linear_constraint_solving_enabled: BOOLEAN
+			-- Is linear constraint solving for integers enabled?
 		do
-			Result := is_on_the_fly_test_case_generation_enabled_cache
+			Result := linear_solving_cache
 		ensure then
-			good_result: Result = is_on_the_fly_test_case_generation_enabled_cache
+			good_result: Result = linear_solving_cache
 		end
 
-	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
-			-- Proxy log options.
-			-- Key is the type name, value indicates if messages of that type is logged.
-			-- Missing types are treated as not to be logged.
-		do
-			Result := proxy_log_options_cache
-		ensure then
-			good_result: Result = proxy_log_options_cache
-		end
-
-	is_console_output_enabled: BOOLEAN
-			-- Is console output enabled?
+	is_smt_linear_constraint_solver_enabled: BOOLEAN
+			-- Is SMT-LIB based linear constraint solver enabled?
 			-- Default: True
 		do
-			Result := is_console_output_enabled_cache
+			Result := is_smt_linear_constraint_solver_enabled_cache
 		ensure then
-			good_result: Result = is_console_output_enabled_cache
+			good_result: Result = is_smt_linear_constraint_solver_enabled_cache
 		end
+
+	is_lpsolve_linear_constraint_solver_enabled: BOOLEAN
+			-- Is lp_solve based linear constraint solver enabled?
+			-- Default: False
+		do
+			Result := is_lpsolve_linear_constraint_solver_enabled_cache
+		ensure then
+			good_result: Result = is_lpsolve_linear_constraint_solver_enabled_cache
+		end
+
+feature -- Options: object State exploration
+
+	is_object_state_exploration_enabled: BOOLEAN is
+			-- Is object state exploration enabled?
+		do
+			Result := object_state_exploration_cache
+		ensure then
+			good_result: Result = object_state_exploration_cache
+		end
+
+	is_object_state_retrieval_enabled: BOOLEAN
+			-- Should object state be retrieved?
+		do
+			Result :=
+				is_all_query_state_enabled or else
+				is_only_argumentless_query_state_enabled
+		end
+
+	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
+			-- Configuration related to object states retrieval
 
 	is_post_state_serialized: BOOLEAN
 			-- Should post-state information be serialized as well?
@@ -323,109 +370,24 @@ feature -- Access: options
 			Result := attached {AUT_OBJECT_STATE_CONFIG} object_state_config as l_config and then l_config.is_only_argumentless
 		end
 
-	is_test_case_deserialization_enabled: BOOLEAN
-			-- Is test case deserialization enabled?
-		do
-			Result := is_passing_test_case_deserialization_enabled or is_failing_test_case_deserialization_enabled
-		end
+feature -- Options: test case serialization
 
 	is_test_case_serialization_enabled: BOOLEAN
 			-- Is test case serialization enabled?
 		do
-			Result := is_passing_test_case_serialization_enabled or is_failing_test_case_serialization_enabled
-		end
-
-	is_object_state_retrieval_enabled: BOOLEAN is
-			-- Should object state be retrieved?
-		do
 			Result :=
-				is_all_query_state_enabled or else
-				is_only_argumentless_query_state_enabled
+				is_passing_test_case_serialization_enabled or
+				is_failing_test_case_serialization_enabled
 		end
 
-	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
-			-- Configuration related to object states retrieval
-
-feature -- Precondition satisfaction
-
-	is_precondition_checking_enabled: BOOLEAN is
-			-- Is precondition checking before feature call enabled?
-		do
-			Result := precondition_evaluation_cache
-		ensure then
-			good_result: Result = precondition_evaluation_cache
-		end
-
-	is_linear_constraint_solving_enabled: BOOLEAN is
-			-- Is linear constraint solving for integers enabled?
-		do
-			Result := linear_solving_cache
-		ensure then
-			good_result: Result = linear_solving_cache
-		end
-
-	is_pool_statistics_logged: BOOLEAN is
-			-- Should statistics of object pool and predicate be logged?
-			-- Default: False
-		do
-			Result := proxy_log_options.has ("statistics")
-		end
-
-	is_precondition_satisfaction_logged: BOOLEAN
-			-- Should messaged related to precondition satisfaction be logged?
-			-- Default: False
-		do
-			Result := proxy_log_options_cache.has ("precondition")
-		end
-
-	is_smt_linear_constraint_solver_enabled: BOOLEAN is
-			-- Is SMT-LIB based linear constraint solver enabled?
-			-- Default: True
-		do
-			Result := is_smt_linear_constraint_solver_enabled_cache
-		ensure then
-			good_result: Result = is_smt_linear_constraint_solver_enabled_cache
-		end
-
-	is_lpsolve_linear_constraint_solver_enabled: BOOLEAN is
-			-- Is lp_solve based linear constraint solver enabled?
-			-- Default: False
-		do
-			Result := is_lpsolve_linear_constraint_solver_enabled_cache
-		ensure then
-			good_result: Result = is_lpsolve_linear_constraint_solver_enabled_cache
-		end
-
-feature -- Object State Exploration
-
-	is_object_state_exploration_enabled: BOOLEAN is
-			-- Is object state exploration enabled?
-		do
-			Result := object_state_exploration_cache
-		ensure then
-			good_result: Result = object_state_exploration_cache
-		end
-
-	is_citadel_test_generation_enabled: BOOLEAN
-			-- Is random testing enabled?
-		do
-			Result := is_citadel_test_generation_enabled_cache
-		ensure then
-			result_set: Result = is_citadel_test_generation_enabled_cache
-		end
-
-feature -- Test case serialization
-
-	is_passing_test_case_serialization_enabled: BOOLEAN is
+	is_passing_test_case_serialization_enabled: BOOLEAN
 			-- Is passing test case serialization enabled?
-			-- Only has effect if `is_test_case_serialization_enabled' is True.
 		do
 			Result := is_passing_test_case_serialization_enabled_cache
 		end
 
-	is_failing_test_case_serialization_enabled: BOOLEAN is
+	is_failing_test_case_serialization_enabled: BOOLEAN
 			-- Is failing test case serialization enabled?
-			-- Only has effect if `is_test_case_serialization_enabled' is True.
 		do
 			Result := is_failing_test_case_serialization_enabled_cache
 		end
@@ -438,7 +400,13 @@ feature -- Test case serialization
 			Result := is_duplicated_test_case_serialized_cache
 		end
 
-feature -- Test case deserialization
+feature -- Options: test case deserialization
+
+	is_test_case_deserialization_enabled: BOOLEAN
+			-- Is test case deserialization enabled?
+		do
+			Result := is_passing_test_case_deserialization_enabled or is_failing_test_case_deserialization_enabled
+		end
 
 	is_passing_test_case_deserialization_enabled: BOOLEAN is
 			-- <Precursor>
@@ -452,17 +420,29 @@ feature -- Test case deserialization
 			Result := is_failing_test_case_deserialization_enabled_cache
 		end
 
-	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
-			-- List of features excluded from being tested
+	is_recursive: BOOLEAN
+			-- Is searching for serialization files recursive in sub-directories?
 		do
-			if excluded_features_cache = Void then
-				create excluded_features_cache.make
-			end
-			Result := excluded_features_cache
+			Result := is_recursive_cache
+		ensure then
+			good_result: Result = is_recursive_cache
 		end
 
-	types_under_test: DS_LIST [CL_TYPE_A]
-			-- Types under test
+	data_input: detachable STRING
+			-- Directory or file name of the serialization files.
+		do
+			Result := data_input_cache
+		ensure then
+			good_result: Result = data_input_cache
+		end
+
+	data_output: detachable STRING
+			-- Directory to store deserialized test cases.
+		do
+			Result := data_output_cache
+		ensure then
+			good_result: Result = data_output_cache
+		end
 
 feature -- Access: session
 
@@ -698,15 +678,6 @@ feature -- Status setting
 			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
 		end
 
-	set_is_citadel_test_generation_enabled (b: BOOLEAN) is
-			-- Set `is_citadel_test_generation_enabled' with `b'.
-		do
-			is_citadel_test_generation_enabled_cache := b
-		ensure
-			is_citadel_test_generation_enabled_set: is_citadel_test_generation_enabled = b
-		end
-
-
 	set_is_linear_solving_enabled (b: BOOLEAN) is
 			-- Set `is_precondition_checking_enabled' with `b'.
 		do
@@ -905,14 +876,6 @@ feature -- Status setting
 			is_interpreter_log_enabled_set: is_interpreter_log_enabled = b
 		end
 
-	set_is_on_the_fly_test_case_generation_enabled (b: BOOLEAN)
-			-- Set `on_the_fly_test_case_generation_enabled' with `b'.
-		do
-			is_on_the_fly_test_case_generation_enabled_cache := b
-		ensure
-			on_the_fly_test_case_generation_enabled_set: is_on_the_fly_test_case_generation_enabled = b
-		end
-
 	set_is_duplicated_test_case_serialized (b: BOOLEAN)
 			-- Set `is_duplicated_test_case_serialized' with `b'.
 		do
@@ -990,7 +953,7 @@ feature {NONE} -- Basic operations
 								l_test_task.start
 								sub_task := l_test_task
 							elseif is_load_log_enabled then
-								load_log (log_file_path)
+								load_log
 							elseif is_test_case_deserialization_enabled then
 								process_deserialization
 							end
@@ -1287,197 +1250,25 @@ feature -- Precondition satisfaction
 
 	setup_for_precondition_evaluation is
 			-- Setup for precondition evaluation.
-		do
-			if is_precondition_checking_enabled then
-					-- Get the list of all features under test.
-				class_types_under_test.append_last (types_under_test)
-				features_under_test.append_last (testable_features_from_types (class_types_under_test, system))
-				setup_feature_id_table
-
-					-- Find out all preconditions.
-				find_precondition_predicates
-
-					-- Find out relevant predicates for every feature in `features_under_test'.
-				find_relevant_predicates
-				build_relevant_predicate_with_operand_table
-
-					-- Setup predicate pool.	
-				predicate_pool.setup_predicates (predicates)
-			end
-		end
-
-	setup_feature_id_table is
-			-- Setup `feature_id_table'.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AUT_FEATURE_OF_TYPE]
-			l_id: INTEGER
+			l_initializer: AUT_PRECONDITION_SATISFACTION_INITIALIZER
 		do
-			from
-				l_cursor := features_under_test.new_cursor
-				l_id := 1
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				feature_id_table.force_last (l_id, l_cursor.item.full_name)
-				l_id := l_id + 1
-				l_cursor.forth
-			end
-		end
-
-	build_relevant_predicate_with_operand_table is
-			-- Build `relevant_predicate_with_operand_table'.
-		local
-			l_feat_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE]
-			l_pred_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
-			l_predicates: DS_LINKED_LIST [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
-			l_index_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
-			l_indexes: SPECIAL [INTEGER]
-		do
-			from
-				l_feat_cursor := relevant_predicates_of_feature.new_cursor
-				l_feat_cursor.start
-			until
-				l_feat_cursor.after
-			loop
-				create l_predicates.make
-				from
-					l_pred_cursor := l_feat_cursor.item.new_cursor
-					l_pred_cursor.start
-				until
-					l_pred_cursor.after
-				loop
-					from
-						l_index_cursor := l_pred_cursor.item.new_cursor
-						l_index_cursor.start
-					until
-						l_index_cursor.after
-					loop
-						create l_indexes.make_filled (0, l_index_cursor.item.count)
-						l_index_cursor.item.do_all_with_index (
-							agent (a_pos: AUT_FEATURE_SIGNATURE_TYPE; a_index: INTEGER; a_ops: SPECIAL [INTEGER])
-								do
-									a_ops.put (a_pos.position, a_index - 1)
-								end (?, ?, l_indexes))
-
-						l_index_cursor.forth
-					end
-					l_predicates.force_last ([l_pred_cursor.key.id, l_indexes])
-					l_pred_cursor.forth
-				end
-				if not l_predicates.is_empty then
-					relevant_predicate_with_operand_table.force_last (l_predicates.to_array, l_feat_cursor.key.id)
-				end
-				l_feat_cursor.forth
-			end
-		end
-
-	find_precondition_predicates is
-			-- Find precondition predicates from `features_under_test',
-			-- store those predicates into `predicates', and store
-			-- the access patterns of those predicates into
-			-- `precondition_access_pattern'.
-		local
-			l_visitor: AUT_PRECONDITION_ANALYZER
-			l_features: like features_under_test
-			l_feature: AUT_FEATURE_OF_TYPE
-		do
-			l_features := features_under_test
-			from
-				l_features.start
-			until
-				l_features.after
-			loop
-					-- Get preconditions from `l_feature'.
-				l_feature := l_features.item_for_iteration
-				create l_visitor.make
-				l_visitor.generate_precondition_predicates (l_feature)
-
-					-- Store predicates and their access patterns.
-				if not l_visitor.last_predicates.is_empty then
-					l_visitor.last_predicates.do_if (agent put_predicate, agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not predicates.has (a_pred) end (?))
-					put_precondition_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
-					put_precondition_of_feature (l_feature, l_visitor.last_predicates)
-					l_visitor.last_predicates.do_all (agent put_predicate_in_feature_table (?, l_feature))
-				end
-				l_features.forth
-			end
-		end
-
-	find_relevant_predicates is
-			-- For each feature in `features_under_test',
-			-- find relevant predicates that needs to be reevalated
-			-- every time when that feature is executed.
-		local
-			l_features: like features_under_test
-			l_feature: AUT_FEATURE_OF_TYPE
-			l_arranger: AUT_PREDICATE_ARGUMENT_ARRANGER
-			l_predicates: like predicates
-			l_relevant: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
-			l_arrangements: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
-			l_predicate_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
-		do
-			l_features := features_under_test
-			l_predicates := predicates
-			from
-				l_features.start
-			until
-				l_features.after
-			loop
-				l_feature := l_features.item_for_iteration
-				create l_relevant.make (10)
-				l_relevant.set_key_equality_tester (predicate_equality_tester)
-				relevant_predicates_of_feature.force_last (l_relevant, l_feature)
-				from
-					l_predicate_cursor := l_predicates.new_cursor
-					l_predicate_cursor.start
-				until
-					l_predicate_cursor.after
-				loop
-					create l_arranger.make (l_predicate_cursor.item, system)
-					l_arrangements := l_arranger.arrangements_for_feature (l_feature)
-					if not l_arrangements.is_empty then
-						l_relevant.force_last (l_arrangements, l_predicate_cursor.item)
-					end
-					l_predicate_cursor.forth
-				end
-				l_features.forth
-			end
+			create l_initializer
+			l_initializer.initialize (Current)
 		end
 
 feature -- Log processor
 
-	load_log (a_log_file: STRING)
+	load_log
 			-- Load log in `a_log_file'.
 		local
-			l_processor_name: detachable STRING
-			l_processor: AUT_LOG_PROCESSOR
+			l_log_loader: AUT_LOG_LOADER
 		do
-			l_processor_name := log_processor
-			if l_processor_name /= Void then
-				 l_processor_name.to_lower
-				 if log_processors.has (l_processor_name) then
-					l_processor := log_processors.item (l_processor_name)
-					l_processor.set_configuration (Current)
-					l_processor.process
-				 end
-			end
+			create l_log_loader.make (Current)
+			l_log_loader.load
 		end
 
-	log_processors: HASH_TABLE [AUT_LOG_PROCESSOR, STRING]
-			-- Table of registered log processors
-			-- [Log processor, name of the processor]
-		do
-			if log_processors_internal = Void then
-				create log_processors_internal.make (5)
-				log_processors_internal.compare_objects
-				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (system, Current), "ps")
-			end
-			Result := log_processors_internal
-		end
-
-	log_processors_internal: like log_processors
-			-- Implementation of `log_processors'
+feature -- Deserialization
 
 	process_deserialization
 			-- Test case deserialization.
@@ -1526,9 +1317,6 @@ feature -- Option caches
 	max_precondition_search_time_cache: like max_precondition_search_time
 			-- Cache for `max_precondition_search_time'
 
-	is_citadel_test_generation_enabled_cache: like is_citadel_test_generation_enabled assign set_is_citadel_test_generation_enabled
-			-- Cache for `is_citadel_test_generation_enabled'
-
 	max_candidate_count_cache: like max_candidate_count
 			-- Cache for `max_candidate_count'
 
@@ -1570,9 +1358,6 @@ feature -- Option caches
 
 	is_interpreter_log_enabled_cache: BOOLEAN
 			-- Cache for `is_interpreter_log_enabled'
-
-	is_on_the_fly_test_case_generation_enabled_cache: BOOLEAN
-			-- Cache for `on_the_fly_test_case_generation_enabled_cache'	
 
 	proxy_log_options_cache: like proxy_log_options
 			-- Cache for `is_proxy_log_options'	

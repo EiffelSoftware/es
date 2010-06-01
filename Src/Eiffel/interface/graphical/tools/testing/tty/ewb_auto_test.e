@@ -174,9 +174,6 @@ feature -- Execution
 					l_generator.set_seed (l_ap.seed.as_natural_32)
 				end
 
-					-- Should AutoTest generate tests for CITADEL from the given proxy log?
-				l_generator.set_is_citadel_test_generation_enabled (l_ap.prepare_citadel_tests)
-
 					-- Set max candidates count for precondition evaluation
 				l_generator.set_max_candidate_count (l_ap.max_candidate_count)
 
@@ -211,8 +208,6 @@ feature -- Execution
 
 				l_generator.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
 				l_generator.set_is_console_output_enabled (l_ap.is_console_log_enabled)
-
-				l_generator.set_is_on_the_fly_test_case_generation_enabled (l_ap.is_on_the_fly_test_case_generation_enabled)
 
 				l_generator.set_proxy_log_options (l_ap.log_types)
 
