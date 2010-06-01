@@ -55,13 +55,23 @@ feature -- Access
 			-- Once this is fixed, use the following commented `deserialize' feature. Jasonw 2009.10.12
 		local
 			l_stream: STREAM
+			l_mptr: MANAGED_POINTER
 			l_count: INTEGER
-			l_cstring: C_STRING
+			i: INTEGER
 		do
 			l_count := a_string.count
 			create l_stream.make_with_size (l_count)
-			create l_cstring.make_shared_from_pointer_and_count (l_stream.item, l_count)
-			l_cstring.set_string (a_string)
+			create l_mptr.share_from_pointer (l_stream.item, l_count)
+
+			from
+				i := 0
+			until
+				i = l_count
+			loop
+				l_mptr.put_character (a_string.item (i + 1), i)
+				i := i + 1
+			end
+
 			Result := l_stream.retrieved
 			l_stream.close
 		end
@@ -126,8 +136,10 @@ feature{NONE} -- Implementation
 		local
 			l_cstring: C_STRING
 		do
+			io.error.put_string ("Start string_from_pointer%N")
 			create l_cstring.make_shared_from_pointer_and_count (a_pointer, a_size)
 			Result := l_cstring.substring (1, a_size)
+			io.error.put_string ("End string_from_pointer%N")
 		ensure
 			result_attached: Result /= Void
 			result_valid: Result.count = a_size
