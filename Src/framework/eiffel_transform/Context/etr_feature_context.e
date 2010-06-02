@@ -5,12 +5,18 @@ note
 
 class
 	ETR_FEATURE_CONTEXT
+
 inherit
 	ETR_CONTEXT
+		redefine
+			context_class
+		end
+
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
 		end
+
 	ETR_SHARED_TOOLS
 
 create
@@ -22,6 +28,7 @@ convert
 	to_feature_i: {FEATURE_I}
 
 feature {NONE} -- Creation
+
 	make_from_other (a_other: like Current)
 			-- Make from `a_other'
 		require
@@ -301,6 +308,12 @@ feature -- Access
 
 	object_test_locals: LIST[ETR_OBJECT_TEST_LOCAL]
 			-- Object-test locals in the feature
+
+	context_class: detachable CLASS_C
+			-- Context class
+		do
+			Result := class_context.written_class
+		end
 
 invariant
 	locals_valid: has_locals implies attached locals

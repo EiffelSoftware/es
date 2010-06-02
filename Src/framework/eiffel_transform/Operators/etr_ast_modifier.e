@@ -68,7 +68,7 @@ feature -- Operations
 			create l_printer.make (output, modifications)
 			l_printer.print_ast_to_output (a_transformable.target_node)
 
-			parsing_helper.parse_printed_ast(a_transformable.target_node, output.string_representation)
+			parsing_helper.parse_printed_ast(a_transformable.target_node, output.string_representation, a_transformable.context.context_class)
 
 			if attached parsing_helper.parsed_ast then
 				create modified_transformable.make (parsing_helper.parsed_ast, a_transformable.context, false)

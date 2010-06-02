@@ -77,7 +77,7 @@ feature -- New (Universe-Independant)
 			instr_attached: a_instr /= void
 			context_attached: a_context /= void
 		do
-			parsing_helper.parse_instruction (a_instr)
+			parsing_helper.parse_instruction (a_instr, a_context.context_class)
 
 			if parsing_helper.parsed_instruction /= void then
 				create Result.make (parsing_helper.parsed_instruction, a_context, false)
@@ -93,7 +93,7 @@ feature -- New (Universe-Independant)
 			expr_attached: a_expr /= void
 			context_attached: a_context /= void
 		do
-			parsing_helper.parse_expr (a_expr)
+			parsing_helper.parse_expr (a_expr, a_context.context_class)
 
 			if parsing_helper.parsed_expr /= void then
 				create Result.make (parsing_helper.parsed_expr, a_context, false)

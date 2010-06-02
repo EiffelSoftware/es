@@ -373,11 +373,14 @@ feature -- Type checking
 		local
 			l_ast_string: STRING
 			l_feat: FEATURE_I
+			l_parser: like etr_expr_parser
 		do
 			-- reparse the ast as expression, so it can be type-checked correctly
 			l_ast_string := ast_tools.ast_to_string(an_ast)
-			etr_expr_parser.parse_from_string("check "+l_ast_string,void)
-			if etr_expr_parser.error_count > 0 then
+			l_parser := etr_expr_parser
+			setup_formal_parameters (l_parser, a_context.context_class)
+			l_parser.parse_from_string("check "+l_ast_string, a_context.context_class)
+			if l_parser.error_count > 0 then
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else
 				context.clear_all
@@ -390,7 +393,7 @@ feature -- Type checking
 					initialize_object_test_locals (l_feat_context, a_path)
 				end
 
-				check_expr_type (a_context, etr_expr_parser.expression_node)
+				check_expr_type (a_context, l_parser.expression_node)
 			end
 		end
 

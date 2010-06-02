@@ -5,10 +5,16 @@ note
 
 class
 	ETR_CLASS_CONTEXT
+
 inherit
 	ETR_CONTEXT
+		redefine
+			context_class
+		end
+
 create
 	make
+
 convert
 	to_class_c: {CLASS_C}
 
@@ -79,6 +85,12 @@ feature -- Access
 			non_void: a_feature /= void
 		do
 			Result := feature_of_rout_id_set(a_feature.rout_id_set)
+		end
+
+	context_class: detachable CLASS_C
+			-- Context class
+		do
+			Result := written_class
 		end
 
 feature {NONE} -- Implementation

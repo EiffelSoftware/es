@@ -61,7 +61,7 @@ feature -- Operations
 			create l_output.make
 			create l_visitor.make (l_output, l_new_features)
 			l_visitor.print_ast_to_output(a_class.target_node)
-			parsing_helper.parse_printed_ast (a_class.target_node, l_output.string_representation)
+			parsing_helper.parse_printed_ast (a_class.target_node, l_output.string_representation, l_written_class)
 
 			create transformation_result.make (parsing_helper.parsed_ast, a_class.context, false)
 		end

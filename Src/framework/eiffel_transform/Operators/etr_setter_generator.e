@@ -38,12 +38,12 @@ feature -- Operation
 					error_handler.add_error(Current, "generate_setter", "%""+a_arg_name+"%" is not a valid name.")
 				end
 
-				parsing_helper.parse_instruction (a_assignment)
+				parsing_helper.parse_instruction (a_assignment, a_transformable.context.context_class)
 				if parsing_helper.parsed_instruction = void then
 					error_handler.add_error(Current, "generate_setter", "%""+a_assignment+"%" is not a valid instruction.")
 				end
 
-				parsing_helper.parse_expr (a_postcond)
+				parsing_helper.parse_expr (a_postcond, a_transformable.context.context_class)
 				if parsing_helper.parsed_expr = void then
 					error_handler.add_error(Current, "generate_setter", "%""+a_postcond+"%" is not a valid expression.")
 				end

@@ -269,7 +269,7 @@ feature -- Transformations
 			-- Print the ast to output
 			l_transformer.print_ast_to_output (a_transformable.target_node)
 			-- Reparse it
-			parsing_helper.parse_printed_ast (a_transformable.target_node, l_output.string_representation)
+			parsing_helper.parse_printed_ast (a_transformable.target_node, l_output.string_representation, a_transformable.context.context_class)
 
 			if attached parsing_helper.parsed_ast then
 				create transformation_result.make(parsing_helper.parsed_ast, a_target_context, false)

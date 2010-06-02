@@ -97,6 +97,7 @@ feature -- Basic operation
 			l_solvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_unsolvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_not_void_pred: like target_not_void_predicate_and_access_pattern
+			l_assert_text: STRING
 		do
 			last_predicates.wipe_out
 			last_predicate_access_patterns.wipe_out
@@ -113,9 +114,15 @@ feature -- Basic operation
 				l_asserts.after
 			loop
 				l_assertion := l_asserts.item_for_iteration
-					-- We ignore "require else" for the moment.
-				fixme ("Support require else in the future. 2009.6.11 Jasonw")
-				if not l_assertion.is_require_else then
+
+					-- We ignore "require else", type expressions such as "{G}" for the moment.
+				l_assert_text := l_assertion.text
+				fixme ("Support require else, type expressions in the future. 2009.6.11 Jasonw")
+				if
+					not l_assertion.is_require_else and then
+					not l_assert_text.has ('{') and then
+					not l_assert_text.has_substring (once "attached")
+				then
 					current_break_point_slot := l_asserts.index
 					check_assertion (l_assertion, a_feature)
 				end

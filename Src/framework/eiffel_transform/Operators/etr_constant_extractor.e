@@ -236,7 +236,7 @@ feature -- Operations
 				l_constant_type_as := parsing_helper.parsed_type
 				l_constant_type := type_checker.written_type_from_type_as (l_constant_type_as, l_source_feature, l_source_class)
 
-				parsing_helper.parse_feature (a_constant_name+":"+l_constant_kind+" = "+a_constant.out)
+				parsing_helper.parse_feature (a_constant_name + ":" + l_constant_kind + " = " + a_constant.out, Void)
 				create l_feat_list.make (1)
 				l_feat_list.extend (parsing_helper.parsed_feature)
 				create l_feat_clause.initialize (l_clients, l_feat_list, create {KEYWORD_AS}.make_null, 0)

@@ -514,7 +514,7 @@ feature {NONE} -- Implementation (Printing)
 			l_feature_output_text.append (l_body_output.string_representation)
 			l_feature_output_text.append (ti_end_keyword)
 
-			parsing_helper.parse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text)
+			parsing_helper.parse_printed_ast (context.written_feature.e_feature.ast, l_feature_output_text, context.context_class)
 			if parsing_helper.parsed_ast /= void then
 				create extracted_method.make (parsing_helper.parsed_ast, context.class_context, false)
 			end
@@ -557,7 +557,7 @@ feature {NONE} -- Implementation (Printing)
 			create l_old_method_printer.make (l_feat_output, obsolete_locals, a_start_path, a_end_path, l_instr_text)
 			l_old_method_printer.print_feature (a_feature_ast)
 
-			parsing_helper.parse_printed_ast (a_feature_ast, l_feat_output.string_representation)
+			parsing_helper.parse_printed_ast (a_feature_ast, l_feat_output.string_representation, context.context_class)
 			if parsing_helper.parsed_ast /= void then
 				create old_method.make (parsing_helper.parsed_ast, context, false)
 			end

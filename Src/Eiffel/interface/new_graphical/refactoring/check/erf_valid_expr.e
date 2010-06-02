@@ -37,7 +37,7 @@ feature -- Basic operation
 	execute
             -- Execute a check.
         do
-        	parsing_helper.parse_expr (expr)
+        	parsing_helper.parse_expr (expr, Void)
 
         	success := parsing_helper.parsed_expr /= void
         end

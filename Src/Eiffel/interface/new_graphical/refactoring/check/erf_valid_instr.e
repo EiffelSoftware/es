@@ -33,7 +33,7 @@ feature -- Basic operation
 	execute
             -- Execute a check.
         do
-        	parsing_helper.parse_instruction(instr)
+        	parsing_helper.parse_instruction(instr, Void)
 
         	success := parsing_helper.parsed_instruction /= void
         end

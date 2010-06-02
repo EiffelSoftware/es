@@ -62,6 +62,24 @@ feature {NONE} -- Parser
 				Result := parsing_helper.etr_non_compiler_feat_parser
 			end
 		end
+
+feature -- Utilities
+
+	setup_formal_parameters (a_parser: EIFFEL_PARSER; a_context_class: detachable CLASS_C)
+			-- Setup formal parameters from `a_context_class' into `a_parser'.
+		do
+			a_parser.formal_parameters.wipe_out
+			if a_context_class /= Void and then a_context_class.is_generic then
+				if attached {EIFFEL_LIST [FORMAL_DEC_AS]} a_context_class.generics as l_generics then
+					l_generics.do_all (
+						agent (a_formal: FORMAL_DEC_AS; a_list: LIST [FORMAL_AS])
+							do
+								a_list.extend (a_formal.formal)
+							end (?, a_parser.formal_parameters))
+				end
+			end
+		end
+		
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

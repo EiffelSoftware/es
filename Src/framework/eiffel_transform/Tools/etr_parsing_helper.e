@@ -46,7 +46,7 @@ feature -- Operations
 			is_using_compiler_factory := a_state
 		end
 
-	parse_printed_ast (a_root_type: AST_EIFFEL; a_printed_ast: STRING)
+	parse_printed_ast (a_root_type: AST_EIFFEL; a_printed_ast: STRING; a_context_class: detachable CLASS_C)
 			-- parse an ast of type `a_root_type'
 		require
 			non_void: a_root_type /= Void and a_printed_ast /= Void
@@ -55,13 +55,13 @@ feature -- Operations
 			if attached {CLASS_AS}a_root_type then
 				parse_class (a_printed_ast)
 			elseif attached {FEATURE_AS}a_root_type then
-				parse_feature (a_printed_ast)
+				parse_feature (a_printed_ast, a_context_class)
 			elseif attached {INSTRUCTION_AS}a_root_type then
-				parse_instruction (a_printed_ast)
+				parse_instruction (a_printed_ast, a_context_class)
 			elseif attached {EIFFEL_LIST[INSTRUCTION_AS]}a_root_type then
-				parse_instruction_list (a_printed_ast)
+				parse_instruction_list (a_printed_ast, a_context_class)
 			elseif attached {EXPR_AS}a_root_type then
-				parse_expr (a_printed_ast)
+				parse_expr (a_printed_ast, a_context_class)
 			elseif attached {TYPE_AS}a_root_type then
 				parse_type (a_printed_ast)
 			else
@@ -69,55 +69,65 @@ feature -- Operations
 			end
 		end
 
-	parse_expr (a_printed_ast: STRING_8)
+	parse_expr (a_printed_ast: STRING_8; a_context_class: detachable CLASS_C)
 			-- Extracted from `parse_printed_ast'
+		local
+			l_parser: like etr_expr_parser
 		do
 			parsed_expr := void
 			parsed_ast := void
-
-			etr_expr_parser.set_syntax_version (syntax_version)
-			etr_expr_parser.parse_from_string ("check " + a_printed_ast, Void)
-			if etr_expr_parser.error_count > 0 or etr_expr_parser.expression_node = void then
+			l_parser := etr_expr_parser
+			setup_formal_parameters (l_parser, a_context_class)
+			l_parser.set_syntax_version (syntax_version)
+			l_parser.parse_from_string ("check " + a_printed_ast, a_context_class)
+			if l_parser.error_count > 0 or l_parser.expression_node = void then
 				error_handler.add_error (Current, "parse_expr", "Expression parsing failed")
 				logger.log_error (a_printed_ast)
 			else
-				parsed_expr := etr_expr_parser.expression_node
+				parsed_expr := l_parser.expression_node
 				parsed_ast := parsed_expr
 			end
 		end
 
-	parse_instruction_list (a_printed_ast: STRING_8)
+	parse_instruction_list (a_printed_ast: STRING_8; a_context_class: detachable CLASS_C)
 			-- Extracted from `parse_printed_ast'
+		local
+			l_parser: like etr_feat_parser
 		do
 			parsed_instruction_list := void
 			parsed_ast := void
 
-			etr_feat_parser.set_syntax_version (syntax_version)
-			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
-			if etr_feat_parser.error_count > 0 or etr_feat_parser.feature_node = void then
+			l_parser := etr_feat_parser
+			l_parser.set_syntax_version (syntax_version)
+			setup_formal_parameters (l_parser, a_context_class)
+			l_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
+			if l_parser.error_count > 0 or etr_feat_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_instruction_list", "Instruction-list parsing failed")
 				logger.log_error (a_printed_ast)
 			else
-				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+				if attached l_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 					parsed_instruction_list := body.compound
 					parsed_ast := parsed_instruction_list
 				end
 			end
 		end
 
-	parse_instruction (a_printed_ast: STRING_8)
+	parse_instruction (a_printed_ast: STRING_8; a_context_class: detachable CLASS_C)
 			-- Extracted from `parse_printed_ast'
+		local
+			l_parser: like etr_feat_parser
 		do
 			parsed_instruction := void
 			parsed_ast := void
 
-			etr_feat_parser.set_syntax_version (syntax_version)
-			etr_feat_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
-			if etr_feat_parser.error_count > 0 or etr_feat_parser.feature_node = void then
+			l_parser := etr_feat_parser
+			l_parser.set_syntax_version (syntax_version)
+			l_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", a_context_class)
+			if l_parser.error_count > 0 or l_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_instruction", "Instruction parsing failed")
 				logger.log_error (a_printed_ast)
 			else
-				if attached etr_feat_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
+				if attached l_parser.feature_node as fn and then attached {DO_AS}fn.body.as_routine.routine_body as body then
 					if body.compound.count>1 then
 						error_handler.add_error (Current, "parse_instruction", "Instruction parsing failed")
 					else
@@ -128,19 +138,22 @@ feature -- Operations
 			end
 		end
 
-	parse_feature (a_printed_ast: STRING_8)
+	parse_feature (a_printed_ast: STRING_8; a_context_class: detachable CLASS_C)
 			-- Extracted from `parse_printed_ast'
+		local
+			l_parser: like etr_feat_parser
 		do
 			parsed_feature := void
 			parsed_ast := void
 
-			etr_feat_parser.set_syntax_version (syntax_version)
-			etr_feat_parser.parse_from_string ("feature " + a_printed_ast, Void)
-			if etr_feat_parser.error_count > 0 or etr_feat_parser.feature_node = void then
+			l_parser := etr_feat_parser
+			l_parser.set_syntax_version (syntax_version)
+			l_parser.parse_from_string ("feature " + a_printed_ast, Void)
+			if l_parser.error_count > 0 or l_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_feature", "Feature parsing failed")
 				logger.log_error (a_printed_ast)
 			else
-				parsed_feature := etr_feat_parser.feature_node
+				parsed_feature := l_parser.feature_node
 				parsed_ast := parsed_feature
 			end
 		end
