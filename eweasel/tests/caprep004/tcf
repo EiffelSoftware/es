@@ -1,5 +1,5 @@
 
-test_name 	capturei-incall-assertions
+test_name 	capture-incall-assertions
 test_description A program that performs an INCALL to a routine with contracts
 
 copy_sub 	Ace $TEST Ace

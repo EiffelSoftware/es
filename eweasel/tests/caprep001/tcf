@@ -1,5 +1,5 @@
 
-test_name 	external-call
+test_name 	capture-external-call
 test_description A simple program calling an external routine which prints a line to STDOUT
 
 copy_sub 	Ace $TEST Ace
