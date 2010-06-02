@@ -1309,69 +1309,122 @@ RT_LNK void eif_exit_eiffel_code(void);
 #endif
 
 /* Macros used for the capture replay mechanism.
- * RTCRI 1 if current thread is inside of the captured boundary, 0 otherwise.
- * RTCRC(x,y) capture replay hook in routine which decides what to do
+ *
+ * RTCRI          1 if current thread is inside of the captured boundary, 0 otherwise.
+ *
+ * RTCRFS(x)      hook at feature start which decides what to do
  *     x: 1 if routine is "inside", 0 otherwise
+ *
+ * RTCRBS1(y)   hook at body start which captures `Current'
  *     y: Number of arguments for this routine
- * RTCRA(a,s)    register argument for capture/replay
+ *
+ * RTCRA(a,s)     register argument for capture/replay
  *     a: argument value (EIF_TYPED_VALUE)
  *     s: size of area if a is a TYPED_POINTER
- * RTCRE       execute actual feature body
- * RTCRV       end capture replay clause without Result
- * RTCRR(t,f,s)    end capture replay clause with Result
- *     t: type of result (e.g. SK_BOOL, ...)
+ *
+ * RTCRBS2        hook at feature start after last registered argument
+ *
+ * RTCRBS         hook indicating feature body start
+ *
+ * RTCRBER(t,f,s) hook indicating feature body end
+ *     t: type of result (e.g. SK_BOOL, ... or SK_INVALID if no return value)
  *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
  *     s: size of area if Result is a TYPED_POINTER
+ *
+ * RTCRBEV        hook indicating feature body end without result
+ *
+ * RTCRFE         hook indicating feature end
+ *
  */
-#define RTCRD { int i; for (i=0;i<cr_call_depth;i++)printf(" "); }
+
+#define RTCRD { int i; for (i=0;i<cr_call_depth;i++) fprintf(stderr," "); }
+
+/* Note: enabling the following will print every feature invocation to STDERR */
+#if 0
+#define RTCRDBG(x) { RTCRD; fprintf x; }
+#else
+#define RTCRDBG(x)
+#endif
+
 #ifdef WORKBENCH
+
 #define RTCRI (!(cr_cross_depth%2))
-#define RTCRC(x,y) \
-	int cr_cross = (RTCRI != (x)) && (is_capturing || is_replaying); \
+
+#define RTCRFS(x) \
+	int cr_side = RTCRI; \
+	int cr_cross = (cr_side != (x)) && (is_capturing || is_replaying); \
 	EIF_TYPED_VALUE cr_result; \
+	jmp_buf cr_jbuf; \
+	int cr_exception = 0; \
 	cr_call_depth++; \
-	/*RTCRD; printf ("%s\n", exvect->ex_rout); */ \
-	if (cr_cross) { \
+	if (cr_cross && !cr_side) { \
 		cr_cross_depth++; \
+		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", exvect->ex_rout, exvect->ex_bodyid)); \
+	} \
+	else if (!cr_cross) {\
+		RTCRDBG((stderr, "%s\n", exvect->ex_rout)); \
+	} \
+	else { \
+		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", exvect->ex_rout, exvect->ex_bodyid)); \
+	} \
+
+#define RTCRBS1(y) \
+	if (cr_cross) { \
+		if (cr_side) cr_cross_depth++; \
 		if (!(is_replaying && RTCRI)) { \
 			cr_init (exvect, y); \
 
 #define RTCRA(a,s) \
 			cr_register_argument (a,s);
 
-#define RTCRE \
+#define RTCRBS2 \
+		} \
+		if (is_capturing && !RTCRI) { \
+			exvect->ex_jbuf = &cr_jbuf; \
+			cr_exception = setjmp(cr_jbuf); \
 		} \
 	} \
-	if (is_capturing || RTCRI || !is_replaying) {
+	if (!cr_exception && (is_capturing || RTCRI || !is_replaying)) {
 
 /*
  * Routine body comes here!
  */
 
-#define RTCRR(t,f,s) \
+#define RTCRBER(t,f,s) \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = t; \
 			cr_result.f = Result; \
 			cr_register_result (exvect, cr_result, s); \
 		} \
 	} \
+	else if (cr_exception) { \
+		printf("Exception yeah!\n"); exit(1);\
+	} \
 	else if (cr_cross) { \
 		cr_replay (&cr_result); \
 		Result = cr_result.f; \
 	} \
-	if (cr_cross) cr_cross_depth--; \
-	cr_call_depth--;
+	if (cr_cross && cr_side) cr_cross_depth--; \
 
-#define RTCRV \
+#define RTCRBEV \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = SK_INVALID; \
 			cr_register_result (exvect, cr_result, (size_t) 0);  \
 		} \
 	} \
+	else if (cr_exception) { \
+		printf("Exception yeah!\n");\
+		exvect->ex_jbuf = (jmp_buf *) NULL; \
+		cr_cross_depth--; \
+		ereturn(); \
+	} \
 	else if (cr_cross) { \
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
-	if (cr_cross) cr_cross_depth--; \
+	if (cr_cross && cr_side) cr_cross_depth--; \
+
+#define RTCRFE \
+	if (cr_cross && !cr_side) cr_cross_depth--; \
 	cr_call_depth--;
 
 #else

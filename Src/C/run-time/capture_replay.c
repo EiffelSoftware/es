@@ -47,17 +47,6 @@
 #define ARG_MASK 0x0F
 
 
-#if 0
-#define PRINTFDBG(x) \
-	{ \
-		RTCRD; \
-		printf x; \
-	}
-#else
-#define PRINTFDBG(x)
-#endif
-
-
 /*
  * Type definitions
  */
@@ -209,9 +198,6 @@ rt_private void cr_push_object (EIF_VALUE val, size_t size, int is_current)
 	cr_top_object = chunk;
 
 	chunk->object.is_current = is_current;
-	if (is_current) {
-		PRINTFDBG(("PUSH_CURRENT\n"));
-	}	
 	chunk->object.ref = ref;
 	chunk->object.size = size;
 	chunk->object.is_protected = 0;
@@ -300,8 +286,6 @@ rt_private void cr_capture_mutations ()
 				bwrite((char *) src, src_size);
 
 				memcpy(chunk->object.copy, src, src_size);
-
-				PRINTFDBG(("MEMMUT (%d, %d, %d)\n", (int) src_size, (int) start, (int) end));
 			}
 		}
 		chunk = chunk->sk_prev;
@@ -344,8 +328,6 @@ rt_private void cr_pop_objects ()
 				 /* chunk is removed from stack */
 			*tail = old->sk_prev;
 
-			PRINTFDBG(("POP %d", id));
-
 			if (old->object.size == 0) {
 				cr_suppress_event = 1;
 				eif_wean (old->object.ref.o);
@@ -357,8 +339,6 @@ rt_private void cr_pop_objects ()
 		}
 		id++;
 	}
-
-	PRINTFDBG(("POP_CURRENT from %d to %d\n", count, cr_object_count ()));
 
 }
 
@@ -594,11 +574,9 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 		/* Initialize descriptor */
 	if (RTCRI) {
 		type = (char) INCALL;
-		PRINTFDBG(("INCALL to %s (%d) (count: %d)\n", vect->ex_rout, vect->ex_bodyid, cr_object_count()));
 	}
 	else {
 		type = (char) OUTCALL;
-		PRINTFDBG(("OUTCALL to %s (%d) (count: %d)\n", vect->ex_rout, vect->ex_bodyid, cr_object_count()));
 	}
 	type |= (char) num_args;
 
@@ -620,14 +598,12 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 		bread(&rtype, sizeof(char));
 
 		if (rtype != type) {
-			PRINTFDBG(("%x <> %x\n", rtype, type));
 			cr_raise ("Expected OUTCALL but read different event from log");
 		}
 
 		bread((char *) &bid, sizeof(BODY_INDEX));
 		
 		if (bid != (vect->ex_bodyid)) {
-			PRINTFDBG(("%d != %d\n", bid, vect->ex_bodyid));
 			cr_raise("Expected OUTCALL to different routine");
 		}
 	}
@@ -686,8 +662,6 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	v.r = obj;
 	cr_push_object (v, (size_t) 0, 0);
 
-	PRINTFDBG(("NEWOBJ %s\n", System(dftype).cn_generator));
-
 }
 
 rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result, size_t size) {
@@ -702,8 +676,6 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 	if (RTCRI) {
 		type = (char) INRET;
 		flags = CV_PUSH | CV_RECURSIVE;
-
-		PRINTFDBG(("INRET %s (%d, count %d)\n", vect->ex_rout, vect->ex_bodyid, cr_object_count ()));
 	}
 	else {
 		type = (char) OUTRET;
@@ -712,18 +684,6 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 			/* We only capture changes done during OUTCALL */
 		if (is_capturing)
 			cr_capture_mutations();
-
-		if (Result.type != SK_INVALID) {
-			if ((Result.type & SK_HEAD) != SK_REF) {
-				PRINTFDBG(("OUTRET (type %x, value %lx, count %d)\n", (unsigned int) Result.type, (long unsigned int) Result.it_n8, cr_object_count ()));
-			}
-			else {
-				PRINTFDBG(("OUTRET (type %x, count %d)\n", (unsigned int) Result.type, cr_object_count ()));
-			}
-		}
-		else {
-			PRINTFDBG(("OUTRET (count %d)\n", cr_object_count ()));
-		}
 	}
 
 	if (Result.type != SK_INVALID) {
@@ -737,8 +697,7 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 			// We must be returning an Eiffel in-call
 		bread(&rtype, 1);
 		if (rtype != type) {
-			PRINTFDBG(("%x <> %x\n", rtype, type));
-			cr_raise("Replay missmatch");
+			cr_raise("Replay mismatch");
 		}
 	}
 
@@ -758,9 +717,11 @@ rt_public void cr_register_protect (EIF_REFERENCE obj)
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
-	REQUIRE("not_inside", !RTCRI);
 
 	if (!cr_suppress_event) {
+
+		REQUIRE("not_inside", !RTCRI);
+
 		uint32 id = cr_id_of_object (obj, (size_t) 0);
 
 		if (id == 0)
@@ -775,8 +736,6 @@ rt_public void cr_register_protect (EIF_REFERENCE obj)
 
 		cr_obj->is_protected++;
 
-		PRINTFDBG(("PRTOBJ\n"));
-
 	}
 }
 
@@ -787,9 +746,11 @@ rt_public void cr_register_wean (EIF_REFERENCE obj)
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
-	REQUIRE("not_inside", !RTCRI);
 
 	if (!cr_suppress_event) {
+
+		REQUIRE("not_inside", !RTCRI);
+
 		printf ("wean %lx\n", (long unsigned int) obj);
 	}
 }
@@ -823,7 +784,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 	char type;
 
 	BODY_INDEX body_id;
-	EIF_TYPED_VALUE target, arg1, arg2, arg3;
+	EIF_TYPED_VALUE target, arg1, arg2, arg3 ,arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12;
 	EIF_REFERENCE Current;
 	EIF_TYPE_INDEX dftype;
 	EIF_VALUE v;
@@ -839,18 +800,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				if ((type & ARG_MASK) > 0)
 					cr_retrieve_value (Result);
 
-				if (Result) {
-					if ((Result->type & SK_HEAD) != SK_REF) {
-						PRINTFDBG(("OUTRET (type %x, value %lx, count %d)\n", (unsigned int) Result->type, (long unsigned int) Result->it_n8, cr_object_count ()));
-					}
-					else {
-						PRINTFDBG(("OUTRET (type %x, count %d)\n", (unsigned int) Result->type, cr_object_count ()));
-					}
-				}
-				else {
-					PRINTFDBG(("OUTRET (count %d)\n", cr_object_count ()));
-				}
-
 				cr_pop_objects();
 
 				return;
@@ -858,14 +807,12 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 			case INCALL:
 
 				bread((char *) &body_id, sizeof(BODY_INDEX));
-			
+
 				cr_retrieve_value (&target);
 				if ((target.type & SK_HEAD) != SK_REF)
 					cr_raise ("Replay mismatch: retrieved target not valid for incall");
 
 				Current = target.it_r;
-
-				PRINTFDBG(("INCALL to (%d, count %d): %lx\n", body_id, cr_object_count (), (long unsigned int) Current));
 
 				if ((type & ARG_MASK) == 0) {
 					(FUNCTION_CAST(void, (EIF_REFERENCE)) featref(body_id))(Current);
@@ -874,23 +821,102 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 				cr_retrieve_value(&arg1);
 				if ((type & ARG_MASK) == 1) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE)) featref(body_id))(Current, arg1);
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1);
 					continue;
 				}
 
 				cr_retrieve_value(&arg2);
 				if ((type & ARG_MASK) == 2) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE)) featref(body_id))(Current, arg1, arg2);
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2);
 					continue;
 				}
 
 				cr_retrieve_value(&arg3);
 				if ((type & ARG_MASK) == 3) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE)) featref(body_id))(Current, arg1, arg2, arg3);
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3);
+					continue;
+				}
+
+				cr_retrieve_value(&arg4);
+				if ((type & ARG_MASK) == 4) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4);
+					continue;
+				}
+				
+				cr_retrieve_value(&arg5);
+				if ((type & ARG_MASK) == 5) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5);
+					continue;
+				}
+
+				cr_retrieve_value(&arg6);
+				if ((type & ARG_MASK) == 6) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6);
+					continue;
+				}
+
+				cr_retrieve_value(&arg7);
+				if ((type & ARG_MASK) == 7) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+					continue;
+				}
+				
+				cr_retrieve_value(&arg8);
+				if ((type & ARG_MASK) == 8) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+					continue;
+				}
+				
+				cr_retrieve_value(&arg9);
+				if ((type & ARG_MASK) == 9) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+					continue;
+				}
+				
+				cr_retrieve_value(&arg10);
+				if ((type & ARG_MASK) == 10) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+					continue;
+				}
+
+				cr_retrieve_value(&arg11);
+				if ((type & ARG_MASK) == 11) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+					continue;
+				}
+				
+				cr_retrieve_value(&arg12);
+				if ((type & ARG_MASK) == 12) {
+					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+							EIF_TYPED_VALUE))
+						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 					continue;
 				}
 				else {
-					PRINTFDBG(("\n%d args for INCALL\n\n", (type&ARG_MASK)));
 					cr_raise("Too many args for INCALL");
 				}
 
@@ -907,8 +933,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 				cr_push_object (v, (size_t) 0, 0);
 
-				PRINTFDBG(("NEWOBJ %s\n", System(dftype).cn_generator));
-
 				break;
 
 			case PRTOBJ:
@@ -919,8 +943,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 					cr_raise("Invalid ID for PRTOBJ");
 
 				object->is_protected++;
-
-				PRINTFDBG(("PRTOBJ\n"));
 
 				break;
 
@@ -948,8 +970,6 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 					bread((char *) Current, size);
 				}
-
-				PRINTFDBG(("MEMMUT (%d, %d, %d)\n", (int) size, (int) start, (int) end));
 
 				break;
 			default:

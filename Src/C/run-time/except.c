@@ -1613,6 +1613,10 @@ rt_private jmp_buf *backtrack(void)
 #endif
 		expop(&eif_stack);			/* Vector no longer needed on stack */
 
+#ifdef WORKBENCH
+		cr_call_depth--;
+#endif
+
 		/* Now analyze the contents of the topmost exception vector. If it is
 		 * a call or a retry vector, it may hold a valid setjmp buffer. In that
 		 * case, we finished our processing and may return that address.
