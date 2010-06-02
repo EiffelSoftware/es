@@ -1622,7 +1622,7 @@ feature -- Externals
 			"gtk_tree_path_free ((GtkTreePath*) $a_tree_path)"
 		end
 
-	frozen gtk_tree_view_get_path_at_pos (a_tree_view: POINTER; a_x, a_y: INTEGER; a_tree_path, a_tree_column: POINTER; a_cell_x, a_cell_y: POINTER): BOOLEAN
+	frozen gtk_tree_view_get_path_at_pos (a_tree_view: POINTER; a_x, a_y: INTEGER; a_tree_path, a_tree_column: TYPED_POINTER [POINTER]; a_cell_x, a_cell_y: POINTER): BOOLEAN
 		external
 			"C inline use <gtk/gtk.h>"
 		alias
@@ -3364,7 +3364,7 @@ feature -- Externals
 			"C signature (GtkImage*, GdkPixbuf*) use <gtk/gtk.h>"
 		end
 
-	frozen gtk_image_get_pixmap (a_image: POINTER; a_pixmap: POINTER; a_mask: POINTER)
+	frozen gtk_image_get_pixmap (a_image: POINTER; a_pixmap: TYPED_POINTER [POINTER]; a_mask: TYPED_POINTER [POINTER])
 		external
 			"C signature (GtkImage*, GdkPixmap**, GdkBitmap**) use <gtk/gtk.h>"
 		end

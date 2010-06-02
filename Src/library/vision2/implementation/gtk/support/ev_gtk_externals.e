@@ -1539,32 +1539,32 @@ feature
 			"C (GCompletion*, GList*) | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_clear (a_datalist: POINTER)
+	frozen g_datalist_clear (a_datalist: TYPED_POINTER [POINTER])
 		external
 			"C (GData**) | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_foreach (a_datalist: POINTER; a_func: POINTER; a_user_data: POINTER)
+	frozen g_datalist_foreach (a_datalist: TYPED_POINTER [POINTER]; a_func: POINTER; a_user_data: POINTER)
 		external
 			"C (GData**, GDataForeachFunc, gpointer) | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_id_get_data (a_datalist: POINTER; a_key_id: INTEGER): POINTER
+	frozen g_datalist_id_get_data (a_datalist: TYPED_POINTER [POINTER]; a_key_id: INTEGER): POINTER
 		external
 			"C (GData**, GQuark): gpointer | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_id_remove_no_notify (a_datalist: POINTER; a_key_id: INTEGER)
+	frozen g_datalist_id_remove_no_notify (a_datalist: TYPED_POINTER [POINTER]; a_key_id: INTEGER)
 		external
 			"C (GData**, GQuark) | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_id_set_data_full (a_datalist: POINTER; a_key_id: INTEGER; a_data: POINTER; a_destroy_func: POINTER)
+	frozen g_datalist_id_set_data_full (a_datalist: TYPED_POINTER [POINTER]; a_key_id: INTEGER; a_data: POINTER; a_destroy_func: POINTER)
 		external
 			"C (GData**, GQuark, gpointer, GDestroyNotify) | <gtk/gtk.h>"
 		end
 
-	frozen g_datalist_init (a_datalist: POINTER)
+	frozen g_datalist_init (a_datalist: TYPED_POINTER [POINTER])
 		external
 			"C (GData**) | <gtk/gtk.h>"
 		end
@@ -1889,7 +1889,7 @@ feature
 			"C (GHashTable*, gconstpointer): gpointer | <gtk/gtk.h>"
 		end
 
-	frozen g_hash_table_lookup_extended (a_hash_table: POINTER; a_lookup_key: POINTER; a_orig_key: POINTER; a_value: POINTER): BOOLEAN
+	frozen g_hash_table_lookup_extended (a_hash_table: POINTER; a_lookup_key: POINTER; a_orig_key: TYPED_POINTER [POINTER]; a_value: TYPED_POINTER [POINTER]): BOOLEAN
 		external
 			"C (GHashTable*, gconstpointer, gpointer*, gpointer*): gboolean | <gtk/gtk.h>"
 		end
@@ -2749,7 +2749,7 @@ feature
 			"C (guint): guint | <gtk/gtk.h>"
 		end
 
-	frozen g_static_mutex_get_mutex_impl (a_mutex: POINTER): POINTER
+	frozen g_static_mutex_get_mutex_impl (a_mutex: TYPED_POINTER [POINTER]): POINTER
 		external
 			"C (GMutex**): GMutex* | <gtk/gtk.h>"
 		end
@@ -3764,7 +3764,7 @@ feature
 			"C (GdkWindow*, GdkBitmap**, GdkColor*, gchar*): GdkPixmap* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_pixmap_create_from_xpm_d (a_window: POINTER; a_mask: POINTER; a_transparent_color: POINTER; a_data: POINTER): POINTER
+	frozen gdk_pixmap_create_from_xpm_d (a_window: POINTER; a_mask: TYPED_POINTER [POINTER]; a_transparent_color: POINTER; a_data: POINTER): POINTER
 		external
 			"C (GdkWindow*, GdkBitmap**, GdkColor*, gchar**): GdkPixmap* | <gtk/gtk.h>"
 		end
@@ -4169,7 +4169,7 @@ feature
 			"C (GdkWindow*): GdkWindowType | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_user_data (a_window: POINTER; a_data: POINTER)
+	frozen gdk_window_get_user_data (a_window: POINTER; a_data: TYPED_POINTER [POINTER])
 		external
 			"C (GdkWindow*, gpointer*) | <gtk/gtk.h>"
 		end
