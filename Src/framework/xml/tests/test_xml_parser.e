@@ -19,9 +19,6 @@ feature {NONE} -- Initialization
 		local
 			resolver: detachable XML_NAMESPACE_RESOLVER
 			tree: detachable XML_CALLBACKS_TREE
-			xml_tree: detachable XML_CALLBACKS_TREE
-			parser: XML_PARSER
-			vis: detachable XML_NODE_VISITOR_PRINT
 		do
 			create {XML_CUSTOM_PARSER} parser.make
 
@@ -32,13 +29,13 @@ feature {NONE} -- Initialization
 			when debug_mode then
 				parser.set_callbacks (create {XML_CALLBACKS_DEBUG})
 			when tree_mode then
-				create tree.make
+				create tree.make_null
 				tree.set_source_parser (parser)
 				create resolver.set_next (tree)
 				resolver.set_forward_xmlns (True)
 				parser.set_callbacks (resolver)
 			when xml_tree_mode, xml_tree_vis_mode then
-				create xml_tree.make
+				create xml_tree.make_null
 				xml_tree.set_source_parser (parser)
 				create resolver.set_next (xml_tree)
 				resolver.set_forward_xmlns (True)
@@ -48,14 +45,25 @@ feature {NONE} -- Initialization
 			end
 
 --			parser.set_entity_mapping (html_entity_mapping)
-			if attached filename as fn then
-				if file_as_string_mode then
-					test_file_content (fn, parser)
-				else
-					test_file (fn, parser)
-				end
-			end
 
+			if attached filename as fn then
+				test (fn)
+			end
+		end
+
+	xml_tree: detachable XML_CALLBACKS_TREE
+		note option: stable attribute end
+
+	parser: XML_PARSER
+
+	last_error_position: detachable XML_POSITION
+
+	last_error_message: detachable STRING
+
+	after_test_entry (fn: STRING)
+		local
+			vis: detachable XML_NODE_VISITOR_PRINT
+		do
 			if
 				parser_mode = xml_tree_vis_mode and then
 				attached xml_tree as t and then
@@ -68,18 +76,17 @@ feature {NONE} -- Initialization
 			print ("%N")
 
 			if attached last_error_position as pos then
-				print ("Error occurred: ")
+				print ("[Error occurred] ")
+				if attached last_error_message as msg then
+					print (msg)
+				end
+				print (" : ")
 				print (pos)
 				print ("%N")
 			end
-
-			report_chrono
-
 		end
 
-	last_error_position: detachable XML_POSITION
-
-	test_file (fn: STRING; a_parser: XML_PARSER)
+	test_file (fn: STRING)
 		local
 			f: RAW_FILE
 		do
@@ -90,17 +97,18 @@ feature {NONE} -- Initialization
 			f.open_read
 			print ("Start%N")
 			start_chrono
---			a_parser.set_error_ignored (True)
-			a_parser.parse_from_file (f)
+--			parser.set_error_ignored (True)
+			parser.parse_from_file (f)
 			stop_chrono
 			print ("End%N")
-			if a_parser.error_occurred then
-				last_error_position := a_parser.error_position
+			if parser.error_occurred then
+				last_error_position := parser.error_position
+				last_error_message := parser.error_message
 			end
 			f.close
 		end
 
-	test_file_content (fn: STRING; a_parser: XML_PARSER)
+	test_file_content (fn: STRING)
 		local
 			s: STRING
 		do
@@ -111,12 +119,13 @@ feature {NONE} -- Initialization
 			print ("Parsing " + fn + " as string%N")
 			print ("Start%N")
 			start_chrono
---			a_parser.set_error_ignored (True)
-			a_parser.parse_from_string (s)
+--			parser.set_error_ignored (True)
+			parser.parse_from_string (s)
 			stop_chrono
 			print ("End%N")
-			if a_parser.error_occurred then
-				last_error_position := a_parser.error_position
+			if parser.error_occurred then
+				last_error_position := parser.error_position
+				last_error_message := parser.error_message
 			end
 		end
 

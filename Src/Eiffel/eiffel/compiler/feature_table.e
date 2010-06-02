@@ -986,7 +986,7 @@ end
 							desc.set_attribute_name_id (opo_info.called_name_id)
 							desc.set_feature_id (opo_info.called_feature_id)
 							desc.set_rout_id (opo_info.called_routine_id)
-							desc.set_is_transient (l_once_i.is_transient)
+							desc.set_is_transient (opo_info.is_transient)
 							desc.set_is_hidden (True)
 							Result.extend (desc)
 							system.rout_info_table.put (desc.rout_id, l_associated_class)
@@ -1016,7 +1016,7 @@ end
 							desc.set_attribute_name_id (opo_info.exception_name_id)
 							desc.set_feature_id (opo_info.exception_feature_id)
 							desc.set_rout_id (opo_info.exception_routine_id)
-							desc.set_is_transient (l_once_i.is_transient)
+							desc.set_is_transient (opo_info.is_transient)
 							desc.set_is_hidden (True)
 							Result.extend (desc)
 							system.rout_info_table.put (desc.rout_id, l_associated_class)
@@ -1038,7 +1038,7 @@ end
 								desc.set_attribute_name_id (opo_info.result_name_id)
 								desc.set_feature_id (opo_info.result_feature_id)
 								desc.set_rout_id (opo_info.result_routine_id)
-								desc.set_is_transient (l_once_i.is_transient)
+								desc.set_is_transient (opo_info.is_transient)
 								desc.set_is_hidden (True)
 								Result.extend (desc)
 
@@ -1069,13 +1069,9 @@ end
 					old_opo_info_table.after
 				loop
 					opo_info := old_opo_info_table.item_for_iteration
-					print ("CLEANING OLD Once per object info: ")
-					print (opo_info.once_routine.feature_name)
-					print ("%N")
 					opo_info.clean
 					old_opo_info_table.forth
 				end
-				print ("%N")
 			end
 			if l_attribute_count > 0 then
 				from

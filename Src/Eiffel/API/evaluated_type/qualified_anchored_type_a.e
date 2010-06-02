@@ -27,20 +27,23 @@ inherit
 create
 	make
 
-feature -- Initialization and reinitialization
+feature {NONE} -- Initialization and reinitialization
 
-	make (q: like qualifier; c: like chain)
-			-- Creation
+	make (q: like qualifier; c: like chain; w: like class_id)
+			-- Cr
 		require
 			q_attached: attached q
 			c_attached: attached c
 			c_not_empty: c.count > 0
+			valid_w: system.classes.has (w)
 		do
 			qualifier := q
 			chain := c
+			class_id := w
 		ensure
 			qualifier_set: qualifier = q
 			chain_set: chain = c
+			class_id_set: class_id = w
 		end
 
 feature -- Visitor
@@ -59,6 +62,9 @@ feature -- Properties
 
 	chain: SPECIAL [INTEGER_32]
 			-- Feature name IDs of the second part of the type, after the `qualifier'
+
+	class_id: INTEGER
+			-- ID if a class where this type is written
 
 feature -- Status Report
 
@@ -110,20 +116,32 @@ feature -- Access
 			end
 		end
 
+feature -- Modification
+
+	set_qualifier (q: like qualifier)
+			-- Set `qualifier' to `q'.
+		require
+			q_attached: attached q
+		do
+			qualifier := q
+		ensure
+			qualifier_set: qualifier = q
+		end
+
 feature -- Generic conformance
 
 	initialize_info (an_info: like shared_create_info)
 		do
-			-- TODO
+			an_info.make (Current, system.class_of_id (class_id))
 		end
 
-	create_info: CREATE_FEAT
+	create_info: CREATE_QUALIFIED
 		do
 			initialize_info (shared_create_info)
 			Result := shared_create_info.twin
 		end
 
-	shared_create_info: CREATE_FEAT
+	shared_create_info: CREATE_QUALIFIED
 		once
 			create Result
 		end
@@ -236,32 +254,34 @@ feature -- Output
 feature -- Primitives
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): QUALIFIED_ANCHORED_TYPE_A
+			-- <Precursor>
 		local
-			c: CLASS_C
-			f: FEATURE_I
 			i: INTEGER
-			n: like chain
+			c: like chain
 			q: TYPE_A
 		do
 			if a_ancestor /= a_descendant then
 					-- Compute new feature names.
-				create n.make_filled (0, chain.count)
+				create c.make_filled (0, chain.count)
 				from
-					c := qualifier.associated_class
-					q := qualifier.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature)
+					q := qualifier
+					create Result.make (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature), c, a_descendant.class_id)
 				until
 					i >= chain.count
 				loop
-					if attached c then
-						f := c.feature_table.item_id (chain [i])
-						if attached f then
-							n [i] := q.associated_class.feature_of_rout_id (f.rout_id_set.first).feature_name_id
-							c := f.type.associated_class
-						end
+						-- Find a corresponding feature in the current class and in the descendant.
+					feature_finder.find (chain [i], q, context.written_class)
+					check
+						is_ancestor_feature_found: attached feature_finder.found_feature as f
+						is_descendant_feature_found: attached q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature).associated_class.feature_of_rout_id (f.rout_id_set.first) as g
+					then
+						c [i] := g.feature_name_id
+						q := f.type.instantiated_in (q)
 					end
 					i := i + 1
 				end
-				create Result.make (q, n)
+					-- `q' holds the type relative to `a_ancestor'.
+				Result.set_actual_type (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature))
 				if has_attached_mark then
 					Result.set_attached_mark
 				elseif has_detachable_mark then
@@ -294,6 +314,16 @@ feature -- Comparison
 					chain ~ o.chain and then
 					has_same_attachment_marks (o)
 			end
+		end
+
+feature {NONE} -- Lookup
+
+	feature_finder: TYPE_A_FEATURE_FINDER
+			-- Lookup facility
+		once
+			create Result
+		ensure
+			feature_finder_attached: Result /= Void
 		end
 
 note

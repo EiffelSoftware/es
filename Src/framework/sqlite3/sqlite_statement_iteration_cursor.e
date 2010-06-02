@@ -13,9 +13,10 @@ class
 inherit
 	ITERATION_CURSOR [SQLITE_RESULT_ROW]
 		rename
-			make as iteration_make
+			make as iteration_make,
+			cursor_index as index
 		redefine
-			start, forth, off
+			start, forth, after
 		end
 
 	ITERABLE [SQLITE_RESULT_ROW]
@@ -101,9 +102,6 @@ feature -- Access
 			Result := l_result
 		end
 
-	index: INTEGER
-			-- <Precursor>
-
 feature {NONE} -- Access
 
 	last_result: INTEGER
@@ -111,7 +109,7 @@ feature {NONE} -- Access
 
 feature -- Status report
 
-	off: BOOLEAN
+	after: BOOLEAN
 			-- <Precursor>
 		do
 			Result := not sqlite_success (last_result) or else last_result = {SQLITE_RESULT_CODE}.done
@@ -136,6 +134,7 @@ feature -- Cursor movement
 			l_arg_id: C_STRING
 			l_arg_index: INTEGER
 		do
+			Precursor
 				-- Reset the iternal item
 			internal_item := Void
 
@@ -216,14 +215,8 @@ feature -- Cursor movement
 			l_result: INTEGER
 			l_done: BOOLEAN
 			l_locked: BOOLEAN
-			l_row: SQLITE_RESULT_ROW
-			i_upper, i: INTEGER
-			l_arg_variable: IMMUTABLE_STRING_8
-			l_arg_id: C_STRING
-			l_arg_index: INTEGER
-			l_total_count: NATURAL
 		do
-			index := index + 1
+			Precursor
 
 			l_api := sqlite_api
 			l_stmt := statement.internal_stmt

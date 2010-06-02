@@ -201,7 +201,7 @@ feature -- Events
 			l_point_array: like point_array
 			pa, pb: EV_COORDINATE
 		do
-			if attached internal_bounding_box as l_internal_bounding_box then
+			if attached internal_bounding_box as l_internal_bounding_box and then l_internal_bounding_box.has_area then
 				Result := l_internal_bounding_box.twin
 			else
 				l_point_array := point_array
@@ -230,7 +230,11 @@ feature -- Events
 				w := as_integer ((max_x - min_x) + lw2) + 1
 				h := as_integer ((max_y - min_y) + lw2) + 1
 				create Result.make (lx, ly, w, h)
-				internal_bounding_box := Result.twin
+				if attached internal_bounding_box as l_internal_bounding_box then
+					l_internal_bounding_box.copy (Result)
+				else
+					internal_bounding_box := Result.twin
+				end
 			end
 		end
 

@@ -2,7 +2,7 @@
 	description: "Eiffel retrieve mechanism."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2009, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2010, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -1722,9 +1722,7 @@ rt_public EIF_REFERENCE grt_nmake(long int objectCount)
 			if (rt_kind_version < GENERAL_STORE_6_4) {
 					/* We read `elm_size' even if we actually don't use it. */
 				buffer_read((char *) &elm_size, sizeof(uint32));
-				capacity = count;
-			} else if (rt_kind_properties & STORE_OLD_SPECIAL_SEMANTIC) {
-					/* New storable format using old special semantic, in this case
+					/* Storable format using old special semantic, in this case
 					 * capacity and count are the same. */
 				capacity = count;
 			} else {
@@ -1919,9 +1917,7 @@ rt_private EIF_REFERENCE rrt_nmake (long int objectCount)
 			if (rt_kind_version < INDEPENDENT_STORE_6_4) {
 					/* We read `elm_size' even if we actually don't use it. */
 				ridr_norm_int (&elm_size);
-				capacity = count;
-			} else if (rt_kind_properties & STORE_OLD_SPECIAL_SEMANTIC) {
-					/* New storable format using old special semantic, in this case
+					/* Storable format using old special semantic, in this case
 					 * capacity and count are the same. */
 				capacity = count;
 			} else {
@@ -2631,8 +2627,13 @@ rt_shared char *name_of_attribute_type (EIF_TYPE_INDEX **type)
 		dftype = **type;
 		sprintf (buffer, "G#%d", dftype);
 	} else {
-		CHECK ("Not an anchor", (dftype != LIKE_CURRENT_TYPE) && (dftype != LIKE_PFEATURE_TYPE) &&
-			(dftype != LIKE_FEATURE_TYPE) && (dftype != LIKE_ARG_TYPE));
+		CHECK ("Not an anchor",
+			(dftype != LIKE_CURRENT_TYPE) &&
+			(dftype != LIKE_PFEATURE_TYPE) &&
+			(dftype != LIKE_FEATURE_TYPE) &&
+			(dftype != QUALIFIED_PFEATURE_TYPE) &&
+			(dftype != QUALIFIED_FEATURE_TYPE) &&
+			(dftype != LIKE_ARG_TYPE));
 	}
 	return buffer;
 }
@@ -2666,8 +2667,13 @@ rt_private char *name_of_old_attribute_type (EIF_TYPE_INDEX **type)
 		dftype = **type;
 		sprintf (buffer, "G#%d", dftype);
 	} else {
-		CHECK ("Not an anchor", (dftype != LIKE_CURRENT_TYPE) && (dftype != LIKE_PFEATURE_TYPE) &&
-			(dftype != LIKE_FEATURE_TYPE) && (dftype != LIKE_ARG_TYPE));
+		CHECK ("Not an anchor",
+			(dftype != LIKE_CURRENT_TYPE) &&
+			(dftype != LIKE_PFEATURE_TYPE) &&
+			(dftype != LIKE_FEATURE_TYPE) &&
+			(dftype != QUALIFIED_PFEATURE_TYPE) &&
+			(dftype != QUALIFIED_FEATURE_TYPE) &&
+			(dftype != LIKE_ARG_TYPE));
 	}
 	return buffer;
 }

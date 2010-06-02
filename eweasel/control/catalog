@@ -52,6 +52,7 @@ test	merging-compatible-arrayed-list	list011 tcf pass list
 test	sorted-two-way-list-invariant-violation	list012 tcf pass list
 test	do-all-with-index-arrayed-list	list013 tcf pass list
 test	two-way-list-merge		list014 tcf pass list
+test	chain-move			list015 tcf pass list
 
 test	priority-queue-basics	queue001 tcf pass queue
 test	heap-priority-queue-remove	queue002 tcf pass queue
@@ -80,10 +81,12 @@ test	replace_key_replace_item	table004 tcf pass table
 test	iteration-with-default-key	table005 tcf pass table iteration
 test	infinite-loop-on-removal-then-addition	table006 tcf pass table
 test	remove-default-key		table007 tcf pass table
+test	current_keys_void_safe	table008 tcf pass table
 
 test	recursive-delete-with-symlinks	directory001 tcf pass directory
 
 test	basic-iterations		iteration001 tcf pass iteration
+test	iteration-cursor-two-generics	iteration002 tcf pass iteration formal generic
 
 -- EiffelNet test
 test	net-out-of-descriptor	net001 tcf pass net
@@ -127,6 +130,10 @@ test	last-exception-not-cleared		except034 tcf fail exception
 test	code-compatible-io-failure		except035 tcf fail exception
 test	original_routines_in_exceptions		except036 tcf pass exception
 test	exception_cause				except037 tcf pass exception
+
+-- Unicode
+test unicode_manifest_string_char_and_constants unicode001 tcf pass unicode
+test unicode_free_operator unicode002 tcf pass unicode
 
 -- Non Conforming Inheritance
 test basic-non-conforming-inheritance			noncon001 tcf pass non-conforming
@@ -230,6 +237,7 @@ test	attached-syntax				syntax056 tcf pass syntax attached
 test	external-with-invalid-use	syntax057 tcf pass syntax
 test	bracket-expression-on-manifest-type	syntax058 tcf pass syntax bracket_expression
 test	across-loop-syntax		syntax059 tcf pass syntax loop variant invariant across iteration
+test	object-test-expression	syntax060 tcf pass syntax object_test
 
 
 -- Validity tests
@@ -898,6 +906,8 @@ test	is-expanded-crash			incr346 tcf fail incrementality
 test	class-removal-crash-freeze		incr347 tcf fail incrementality
 test	melted-agent-creation-crash		incr348 tcf fail incrementality
 test	storable-version-update			incr349 tcf fail incrementality reflection storable
+test	formal-creation-crash			incr350 tcf pass incrementality
+test	inline-agent-invariant-crash	incr351 tcf pass incrementality agents
 
 
 -- Melting
@@ -1001,6 +1011,7 @@ test	wrong-line-number-in-trace	melt095  tcf fail execution melting
 test	bad-melted-infix		melt096  tcf pass execution melting
 test	new-type-type-melted	melt097  tcf pass execution melting
 test	melted-type-of-generic	melt098  tcf pass execution melting reflection
+test	melted-tuple-expression-order melt099 tcf pass execution melting tuple
 
 -- Freezing
 
@@ -1143,6 +1154,7 @@ test	overflow-special-resizing		runtime012	tcf pass runtime special manual
 test	overflow-special-expanded-resizing		runtime013	tcf pass runtime special expanded
 if WINDOWS test	console-in-windows-dll	runtime014	tcf pass runtime windows console input output dll
 test	array-allocation-failure		runtime015	tcf pass runtime special expanded array memory allocation exception
+test	special-copy-data				runtime016	tcf pass runtime special memory
 
 -- Thread
 test	cond-timedwait-failure		thread001	tcf pass multithreaded
@@ -1487,6 +1499,7 @@ test	check-instruction-smoke-test	exec321 tcf pass execution check instruction e
 test	ieee-arithmetic					exec322 tcf pass execution ieee
 test	eiffel-ieee-comparison			exec323 tcf pass execution ieee
 test	do-nothing-optimization			exec324 tcf pass execution
+test	assertion-incorrect-type		exec325 tcf pass execution
 
 -- Once specific
 
@@ -2328,6 +2341,7 @@ test	conversion-from-cap-attached				attach068 tcf pass void_safe attached_types
 test	attached-special-creation						attach069 tcf pass attached_types special
 test	stable-attribute-in-rescue				attach070 tcf pass void_safe validity stable attribute scope
 test	self-init-attribute-non-void-safe			attach071 tcf fail attached_types self_init void_safe
+test	default-create-missing-check			attach072 tcf pass attached_types void_safe
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2350,7 +2364,15 @@ test	storable-version-data			reflection006 tcf pass reflection storable
 
 -- Tests for anchored types
 test	qat-evaluation-order			anchor001 tcf pass anchored_type
-test	qat-redeclaration-check			anchor002 tcf pass anchored_type redeclaration validity conformance
+test	qat-redeclaration-check			anchor002 tcf pass anchored_type redeclaration validity conformance incrementality
+test	inherited-qat-failure			anchor003 tcf pass anchored_type system-validity
+test	delayed-check-failure-with-infix	anchor004 tcf pass anchored_type termination
+test	qat-creation-with-deferred              anchor005 tcf pass anchored_type creation execution
+test	qat-creation-with-like-current		anchor006 tcf pass anchored_type creation execution
+test	qat-creation-with-generic		anchor007 tcf pass anchored_type creation execution formal generic
+test	qat-multi-formal-conformance		anchor008 tcf pass anchored_type multiconstraint formal generic conformance validity
+test	qat-crash-in-local				anchor009 tcf pass anchored_type
+test	qat-crash-in-local-2			anchor010 tcf pass anchored_type
 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet

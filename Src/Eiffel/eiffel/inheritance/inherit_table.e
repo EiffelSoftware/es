@@ -1146,7 +1146,7 @@ end;
 						until
 							l_features.after or else inherit_feat /= Void
 						loop
-							if l_features.item.a_feature.alias_name_id = feature_name_id then
+							if l_features.item.a_feature_alias_name_id = feature_name_id then
 								inherit_feat := item_for_iteration
 							end
 							l_features.forth
@@ -1238,14 +1238,14 @@ end;
 					create vmfn;
 					vmfn.set_class (a_class);
 					vmfn.set_a_feature (feature_i);
-					vmfn.set_inherited_feature (inherited_info.a_feature);
+					vmfn.set_inherited_feature (inherited_info.internal_a_feature);
 					Error_handler.insert_error (vmfn);
 				else
 						-- Name clash: a non-deferred feature is inherited
 					create vmfn1;
 					vmfn1.set_class (a_class);
 					vmfn1.set_a_feature (feature_i);
-					vmfn1.set_inherited_feature (inherited_info.a_feature);
+					vmfn1.set_inherited_feature (inherited_info.internal_a_feature);
 					vmfn1.set_parent (inherited_info.parent.parent);
 					Error_handler.insert_error (vmfn1);
 				end;
@@ -1361,10 +1361,7 @@ end;
 
 							-- Found a feature of same name and written in the
 							-- same class.
-						check
-							has_body: body_server.server_has (body_index)
-						end
-						old_description := Body_server.server_item (body_index)
+						old_description := fetch_description (body_index)
 						if old_description = Void then
 								-- This should not happen, but if it does.
 							is_the_same := False
@@ -1983,6 +1980,26 @@ feature {NONE} -- Implementation
 				vfav.set_inherited_feature (inherited_features.item_alias_id (f.alias_name_id))
 				Error_handler.insert_error (vfav)
 			end
+		end
+
+	fetch_description (a_body_index: INTEGER): FEATURE_AS
+			-- Fetch previous version of `a_body_index' in `body_server'.
+			--| Currently this does not work all the time due to EIFGENs corruption,
+			--| when this happens, we simply return True. That way we provide a quick
+			--| workaround when it crashes at later degrees by simply telling them
+			--| to resave the class that causes the failure. During debugging we should
+			--| get the exception which would hopefully help us fix that bug.
+		require
+			has_body: body_server.server_has (a_body_index)
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				Result := body_server.server_item (a_body_index)
+			end
+		rescue
+			retried := True
+			retry
 		end
 
 feature {NONE} -- Temporary body index

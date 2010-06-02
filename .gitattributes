@@ -2697,11 +2697,14 @@ Src/framework/web/xebra/www/xebrahome/images/header_bar.gif -text
 Src/framework/web/xebra/www/xebrahome/images/li.gif -text
 Src/framework/web/xebra/www/xebrahome/translation_conf.xml -text
 Src/framework/web/xebra/www/xmlrpc_demo/config-DISABLED-wapp -text
-Src/framework/xml/dom/README.TXT -text
-Src/framework/xml/dom/license.lic -text
+Src/framework/xml/gobo/README.TXT -text
+Src/framework/xml/gobo/license.lic -text
 Src/framework/xml/parser/callbacks/README.TXT -text
 Src/framework/xml/parser/license.lic -text
 Src/framework/xml/tests/license.lic -text
+Src/framework/xml/tree/README.TXT -text
+Src/framework/xml/tree/license.lic -text
+Src/framework/xml/utility/xml_utility.lic -text
 Src/framework/xml_utility/xml_utility.lic -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
 Src/help/wizards/estore1/bmp/essai2.bmp -text
@@ -3008,6 +3011,7 @@ Src/library/wel/extra/h2e2.ico svneol=native#unset
 Src/library/wel/wel-safe.lic -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_setup.eant -text
+Src/scripts/check_trunk_head_compilation_validity -text
 Src/scripts/tools/_inc/_f_code_tpl_ -text
 Src/tools/button_clicker/button_clicker.ico -text
 Src/tools/button_clicker/button_clicker.lic -text
@@ -3230,7 +3234,6 @@ eweasel/results/classic/iphone-arm -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
-eweasel/tests/DONT_DELETE -text
 eweasel/tests/agent010/Ace -text
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
@@ -3778,6 +3781,7 @@ eweasel/tests/incr067/notes -text
 eweasel/tests/incr068/notes -text
 eweasel/tests/incr069/notes -text
 eweasel/tests/incr070/notes -text
+eweasel/tests/incr071/exception.e-dotnet -text
 eweasel/tests/incr072/notes -text
 eweasel/tests/incr073/notes -text
 eweasel/tests/incr074/notes -text
@@ -3975,6 +3979,7 @@ eweasel/tests/lib020/file.txt -text
 eweasel/tests/lib023/file.txt -text
 eweasel/tests/lib024/file.txt -text
 eweasel/tests/lib027/file.txt -text svneol=native#application/octet-stream
+eweasel/tests/list015/Ace -text
 eweasel/tests/melt001/notes -text
 eweasel/tests/melt002/notes -text
 eweasel/tests/melt003/notes -text
@@ -4049,8 +4054,6 @@ eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
 eweasel/tests/once001/Ace -text
 eweasel/tests/once002/Ace -text
-eweasel/tests/once003/Ace -text
-eweasel/tests/once003/output_2 -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
@@ -4130,6 +4133,7 @@ eweasel/tests/syntax043/notes -text
 eweasel/tests/syntax044/notes -text
 eweasel/tests/syntax046/test.e0 -text
 eweasel/tests/syntax052/Ace -text
+eweasel/tests/table008/Ace -text
 eweasel/tests/term001/notes -text
 eweasel/tests/term002/notes -text
 eweasel/tests/term003/notes -text

@@ -1367,6 +1367,8 @@ feature -- Status setting
 
 	activate_execution_replay_mode (b: BOOLEAN)
 			-- Activate or Deactivate execution replay mode
+		require
+			valid_exec_recording_context: rt_extension_available and is_classic_project
 		local
 			levlim: INTEGER
 			status_changed: BOOLEAN
@@ -1392,7 +1394,9 @@ feature -- Status setting
 					toggle_exec_replay_recording_mode_cmd.enable_sensitive
 					toggle_exec_replay_mode_cmd.enable_sensitive
 				end
-				call_stack_tool.activate_execution_replay_mode (b, levlim)
+				if call_stack_tool /= Void then
+					call_stack_tool.activate_execution_replay_mode (b, levlim)
+				end
 				update_execution_replay
 			end
 		end
@@ -1871,7 +1875,6 @@ feature -- Debugging events
 			into_cmd.enable_sensitive
 			set_critical_stack_depth_cmd.enable_sensitive
 			assertion_checking_handler_cmd.enable_sensitive
-			enable_ignore_contract_violation_if_possible
 
  			if rt_extension_available then
 				if is_classic_project then --| For now only classic
@@ -1925,6 +1928,8 @@ feature -- Debugging events
 			if application_status.reason_is_overflow then
 				on_overflow_detected
 			end
+
+			enable_ignore_contract_violation_if_possible
 
 			debug ("debugger_interface")
 				io.put_string ("Application Stopped End (dixit EB_DEBUGGER_MANAGER)%N")
@@ -2022,10 +2027,13 @@ feature -- Debugging events
 				--| Clean and reset debugging tools
 			reset_tools
 			assertion_checking_handler_cmd.reset
-			activate_execution_replay_mode (False)
-			toggle_exec_replay_mode_cmd.reset
 			if rt_extension_available and is_classic_project then
+				activate_execution_replay_mode (False)
+				toggle_exec_replay_mode_cmd.reset
 				toggle_exec_replay_recording_mode_cmd.enable_sensitive
+			else
+				toggle_exec_replay_mode_cmd.disable_sensitive
+				toggle_exec_replay_recording_mode_cmd.disable_sensitive
 			end
 
 			if was_executing then
@@ -2471,25 +2479,41 @@ feature {NONE} -- Implementation
 	enable_ignore_contract_violation_if_possible
 			-- Enable/disable ignore contract violation command base on debuggee statues
 		local
-			l_exception_type, l_short_description: STRING
+			l_exception_type: STRING
+			l_confirm: ES_DISCARDABLE_WARNING_PROMPT
+			l_buttons: ES_DIALOG_BUTTONS
 		do
 			if application_status.exception_occurred then
 				if attached {APPLICATION_STATUS_DOTNET} application_status as l_status then
 					-- Dotnet mode
 					-- Have to update exception info with following two lines. Otherwise the value is void
 					l_status.update_on_stopped_state
-					l_short_description := application_status.exception.short_description
 				end
 				l_exception_type := application_status.exception_type_name
 
-				if l_exception_type ~ ({CHECK_VIOLATION}).out or else
-					l_exception_type ~ ({PRECONDITION_VIOLATION}).out or else
-					l_exception_type ~ ({POSTCONDITION_VIOLATION}).out or else
-					l_exception_type ~ ({INVARIANT_VIOLATION}).out or else
-					l_exception_type ~ ({VARIANT_VIOLATION}).out or else
-					l_exception_type ~ ({LOOP_INVARIANT_VIOLATION}).out
+				if attached l_exception_type and then
+					(l_exception_type.same_string (({CHECK_VIOLATION}).out) or else
+					l_exception_type.same_string (({PRECONDITION_VIOLATION}).out) or else
+					l_exception_type.same_string (({POSTCONDITION_VIOLATION}).out) or else
+					l_exception_type.same_string (({INVARIANT_VIOLATION}).out) or else
+					l_exception_type.same_string (({VARIANT_VIOLATION}).out) or else
+					l_exception_type.same_string (({LOOP_INVARIANT_VIOLATION}).out))
 				then
 					ignore_contract_violation.enable_sensitive
+
+					-- Display ignore contract violation dialog
+					create l_buttons
+					create l_confirm.make (ignore_contract_violation.description, l_buttons.yes_no_cancel_buttons,
+							l_buttons.yes_button, l_buttons.yes_button, l_buttons.yes_button,
+							interface_names.l_Discard_ignore_contract_violation_dialog,
+							create {ES_BOOLEAN_PREFERENCE_SETTING}.make (dialog_data.confirm_ignore_contract_violation_preference, True)
+						)
+					l_confirm.set_button_text (l_buttons.yes_button, interface_names.b_break)
+					l_confirm.set_button_text (l_buttons.no_button, interface_names.b_continue)
+					l_confirm.set_button_text (l_buttons.cancel_button, interface_names.b_ignore)
+					l_confirm.set_button_action (l_confirm.dialog_buttons.no_button, agent debug_run_cmd.execute)
+					l_confirm.set_button_action (l_confirm.dialog_buttons.cancel_button, agent ignore_contract_violation.execute)
+					l_confirm.show_on_active_window
 				else
 					ignore_contract_violation.disable_sensitive
 				end

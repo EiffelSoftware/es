@@ -59,6 +59,8 @@ feature -- Button texts
 	b_Create: STRING_32							do Result := locale.translation("Create")	end
 	b_Create_folder: STRING_32					do Result := locale.translation("Create Folder...")	end
 	b_Delete_command: STRING_32					do Result := locale.translation("Delete")	end
+	b_Unset_command: STRING_32					do Result := locale.translation("Unset")	end
+
 	b_Descendant_time: STRING_32					do Result := locale.translation("Descendant Time")	end
 	b_Execution_parameters: STRING_32			do Result := locale.translation ("Execution Parameters") end
 	b_Discard_assertions: STRING_32				do Result := locale.translation("Discard Assertions")	end
@@ -77,6 +79,7 @@ feature -- Button texts
 	b_go_to: STRING_32							do Result := locale.translation ("Go to") end
 	b_Keep_assertions: STRING_32					do Result := locale.translation("Keep Assertions")	end
 	b_eval_keep_assertion_checking: STRING_32	do Result := locale.translation("Keep Assertion Checking")	end
+	b_eval_detailled_error_message: STRING_32	do Result := locale.translation("Full Error Message")	end
 	b_Load_ace: STRING_32						do Result := locale.translation("Load From...")	end
 	b_Move_to_folder: STRING_32					do Result := locale.translation("Move to Folder...")	end
 	b_New_ace: STRING_32							do Result := locale.translation("Reset")	end
@@ -116,6 +119,7 @@ feature -- Button texts
 	b_Compile: STRING_32							do Result := locale.translation("Compile")	end
 	b_Launch: STRING_32							do Result := locale.translation("Start")	end
 	b_Restart: STRING_32							do Result := locale.translation("Restart") end
+	b_Break: STRING_32							do Result := locale.translation("Break")	end
 	b_Continue: STRING_32						do Result := locale.translation("Continue")	end
 	b_Finalize: STRING_32						do Result := locale.translation("Finalize")	end
 	b_Freeze: STRING_32							do Result := locale.translation("Freeze")	end
@@ -470,12 +474,12 @@ feature -- Accelerator, focus label and menu name
 
 	l_diagram_supplier_visibility: STRING_32 do Result := locale.translation("Toggle visibility of supplier links")	end
 
-	l_diagram_add_ancestors: STRING_32 	do Result := locale.translation("Add class ancestors to diagram")	end
-	l_diagram_add_descendents: STRING_32 do Result := locale.translation("Add class descendants to diagram")	end
-	l_diagram_add_suppliers: STRING_32 	do Result := locale.translation("Add class suppliers to diagram")	end
-	l_diagram_add_clients: STRING_32 	do Result := locale.translation("Add class clients to diagram")	end
-	l_diagram_new_class: STRING_32		do Result := locale.translation("Create new class in current cluster and add to diagram") end
-	l_diagram_existing_class: STRING_32		do Result := locale.translation("Add existing class to diagram") end
+	l_diagram_add_ancestors: STRING_32 	do Result := locale.translation("Add class ancestors")	end
+	l_diagram_add_descendents: STRING_32 do Result := locale.translation("Add class descendants")	end
+	l_diagram_add_suppliers: STRING_32 	do Result := locale.translation("Add class suppliers")	end
+	l_diagram_add_clients: STRING_32 	do Result := locale.translation("Add class clients")	end
+	l_diagram_new_class: STRING_32		do Result := locale.translation("Create new class in current cluster") end
+	l_diagram_existing_class: STRING_32		do Result := locale.translation("Add existing class") end
 
 	f_diagram_hide_labels: STRING_32		do Result := locale.translation("Hide labels")	end
 	f_diagram_show_labels: STRING_32		do Result := locale.translation("Show labels")	end
@@ -504,8 +508,7 @@ feature -- Accelerator, focus label and menu name
 	f_diagram_remove: STRING_32			do Result := locale.translation("Hide figure")	end
 	l_diagram_remove: STRING_32			do Result := locale.translation("Delete graphical items")	end
 	f_diagram_create_supplier_links: STRING_32	do Result := locale.translation("Client-Supplier / Feature Creation Mode (Pick from client class and drop on desired supplier class)")	end
-	f_diagram_create_conforming_inheritance_links: STRING_32 do Result := locale.translation("Conforming Inheritance Creation Mode (Pick from child class and drop on desired conforming parent class)")	end
-	f_diagram_create_non_conforming_inheritance_links: STRING_32 do Result := locale.translation("Non-Conforming Inheritance Creation Mode (Pick from child class and drop on desired non-conforming parent class)")	end
+	f_diagram_create_inheritance_links: STRING_32 do Result := locale.translation("Inheritance Creation Mode (Pick from child class and drop on desired parent class)")	end
 	l_diagram_create_links: STRING_32	do Result := locale.translation("Select type of new links")	end
 	f_diagram_new_class: STRING_32		do Result := locale.translation("Add a new class")	end
 	f_diagram_change_header: STRING_32	do Result := locale.translation("Change class name and generics")	end
@@ -1213,6 +1216,7 @@ feature -- Label texts
 	l_Discard_finalize_assertions: STRING_32 	do Result := locale.translation("always discard assertions when finalizing.")	end
 	l_Discard_finalize_precompile_dialog: STRING_32 do Result := locale.translation("always finalize.")	end
 	l_Discard_freeze_dialog: STRING_32			do Result := locale.translation("always compile C/++ code.")	end
+	l_Discard_ignore_contract_violation_dialog: STRING_32 do Result := locale.translation("always break into debugger on contract violation.")	end
 	l_Discard_save_before_compile_dialog: STRING_32	do Result := locale.translation("always save files before compiling.")	end
 	l_Discard_starting_dialog: STRING_32			do Result := locale.translation("Hide this dialog at startup")	end
 	l_Discard_replace_all_warning_dialog: STRING_32 do Result := locale.translation("always replace all.")	end
@@ -1768,6 +1772,14 @@ feature -- Label texts
 			a_file_name_not_void: a_file_name /= Void
 		do
 			Result := locale.formatted_string (locale.translation ("$1(not an Eiffel class file)   located in $2"), [a_stone_signature, a_file_name])
+		end
+
+	l_empty_development_window_header (a_system_name, a_target_name: STRING_GENERAL): STRING_32
+		require
+			a_system_name_not_void: a_system_name /= Void
+			a_target_name_not_void: a_target_name /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("$1 - Empty Development Tool"), [l_system_and_target (a_system_name, a_target_name)])
 		end
 
 	l_classi_header (a_system_name, a_target_name, a_group_name, a_sig, a_file_name: STRING_GENERAL): STRING_32
@@ -2549,7 +2561,7 @@ feature -- Description texts
 	e_Exec_kill: STRING_32				do Result := locale.translation("Stop execution")	end
 	e_Exec_into: STRING_32				do Result := locale.translation("Step into a routine")	end
 	e_Exec_no_stop: STRING_32			do Result := locale.translation("Run without stopping at breakpoints")	end
-	e_Exec_ignore_contract_violation: STRING_32	do Result := locale.translation("Ignore current contract violation")	end
+	e_Exec_ignore_contract_violation: STRING_32	do Result := locale.translation("Contract violation occurred. Do you want to%N - [break] into debugger,%N - or [continue] to let the application handle the violation,%N - or [ignore] the violation and continue as if it was not violated? %N%NNote: You can always ignore contract violation later using the drop down menu from %"Run%" button.")	end
 	e_Exec_out: STRING_32				do Result := locale.translation("Step out of a routine")	end
 	e_Exec_step: STRING_32				do Result := locale.translation("Execute execution one step at a time")	end
 	e_Exec_stop: STRING_32				do Result := locale.translation("Pause execution at current point")	end

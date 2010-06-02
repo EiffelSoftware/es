@@ -2,7 +2,7 @@
 	description: "Byte code reader."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2009, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2010, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -207,8 +207,8 @@ static  char    *names [] = {
 "BC_END_CATCALL" ,
 "BC_IS_ATTACHED" ,
 "BC_SPECIAL_EXTEND" ,
-"BC_NOTUSED_161" ,
-"BC_NOTUSED_162" ,
+"BC_QLIKE" ,
+"BC_PQLIKE" ,
 "BC_NOTUSED_163" ,
 "BC_NOTUSED_164" ,
 "BC_NOTUSED_165" ,
@@ -840,19 +840,33 @@ static  void    print_instructions (void)
 
 			case BC_CREATE :
 			case BC_CREATE_TYPE:
-				/* Kind of creation */
+				{
+					int is_type_creation = (code == BC_CREATE_TYPE);
 
-					/* Do we need to duplicate top object or is it a BIT type creation? */
-				cval = get_char8(&ip);
+						/* Do we need to duplicate top object or is it a BIT type creation? */
+					cval = get_char8(&ip);
 
-				if (cval == BC_BIT) {
-					fprintf (ofp, " (BC_BIT %d)", get_int32(&ip));
-					break;
-				} else if (cval == (char) 1) {
-					fprintf (ofp," dup_top_object ");
+					if (cval == BC_BIT) {
+						fprintf (ofp, " (BC_BIT %d)", get_int32(&ip));
+						break;
+					} else if (cval == (char) 1) {
+						fprintf (ofp," dup_top_object ");
+					}
+
+					get_creation_type ();
+
+					if (is_type_creation) {
+						if (get_bool(&ip)) {
+								/* Type has an attachment mark */
+							if (get_bool(&ip)) {
+								/* Type is attached. */
+							} else {
+								/* Type is detachable */
+							}
+						} else {
+						}
+					}
 				}
-
-				get_creation_type ();
 				break;
 
 			case BC_SPCREATE:
@@ -1454,11 +1468,31 @@ static void get_creation_type (void)
 			/* Anchor id */
 			fprintf (ofp,"%d", get_int32(&ip));
 			break;
+		case  BC_QLIKE :
+			/* Qualified anchor */
+			/* creation type */
+			fprintf (ofp, " (BC_QLIKE) {");
+			get_creation_type ();
+			fprintf (ofp, "}.");
+			print_ctype (get_int16(&ip));
+			/* Anchor id */
+			fprintf (ofp,"%d", get_int32(&ip));
+			break;
 		case  BC_PCLIKE :
 			/* like precompiled feature */
-			/* Org. id */
 			fprintf (ofp, " (BC_PCTYPE) ");
-
+			print_ctype (get_int16(&ip));
+			/* Org. id */
+			fprintf (ofp,"oid %d ", get_int32(&ip));
+			/* Org. offset */
+			fprintf (ofp,"ooff %d", get_int32(&ip));
+			break;
+		case  BC_PQLIKE :
+			/* Qualified anchor (precompiled) */
+			fprintf (ofp, " (BC_PQLIKE) {");
+			get_creation_type ();
+			fprintf (ofp, "}.");
+			/* Org. id */
 			print_ctype (get_int16(&ip));
 			fprintf (ofp,"oid %d ", get_int32(&ip));
 			/* Org. offset */

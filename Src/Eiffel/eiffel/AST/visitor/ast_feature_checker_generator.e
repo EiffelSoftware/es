@@ -1878,7 +1878,10 @@ feature {NONE} -- Implementation
 									create l_veen
 									context.init_error (l_veen)
 									l_veen.set_identifier (l_feature_name.name)
-									l_veen.set_parameter_count (l_actual_count)
+									l_veen.set_target_type (l_last_type)
+									if system.il_generation then
+										l_veen.set_parameter_count (l_actual_count)
+									end
 									l_veen.set_location (l_feature_name)
 									error_handler.insert_error (l_veen)
 								end
@@ -3895,7 +3898,7 @@ feature {NONE} -- Implementation
 								compute_routine (l_table, l_feature, not l_feature.type.is_void,l_feature.has_arguments,
 											l_class.class_id, l_target_type, l_feature.type, l_as, l_access, l_target_node)
 							end
-							System.instantiator.dispatch (last_type, context.current_class)
+							instantiator.dispatch (last_type, context.current_class)
 						end
 					end
 				end
@@ -6925,7 +6928,7 @@ feature {NONE} -- Implementation
 						else
 								-- Evaluate a type of a cursor.
 							iteration_cursor_type := c.actual_type.evaluated_type_in_descendant
-								(i, iteration_cursor_type.associated_class, Void).instantiation_in (iteration_cursor_type, i.class_id)
+								(i, iteration_cursor_type.associated_class, Void).instantiated_in (iteration_cursor_type)
 						end
 						if current_feature.written_in = context.current_class.class_id then
 							Instantiator.dispatch (local_type, context.current_class)
@@ -9001,7 +9004,7 @@ feature {NONE} -- Agents
 
 					-- We need to instantiate the closed TUPLE type of the agent otherwise it
 					-- causes eweasel test#agent007 to fail.
-				system.instantiator.dispatch (l_tuple_node.type, context.current_class)
+				instantiator.dispatch (l_tuple_node.type, context.current_class)
 
 					-- Setup l_last_open_positions
 
@@ -9176,7 +9179,7 @@ feature {NONE} -- Agents
 
 				-- We need to instantiate the closed TUPLE type of the agent otherwise it
 				-- causes eweasel test#agent007 to fail.
-			system.instantiator.dispatch (l_tuple_type, context.current_class)
+			instantiator.dispatch (l_tuple_type, context.current_class)
 
 			create l_tuple_node.make (l_closed_args, l_tuple_type, l_tuple_type.create_info)
 
@@ -10116,7 +10119,7 @@ feature {NONE} -- Implementation: catcall check
 											-- `A [G]' and descendant is `B [G -> STRING]', and if parent
 											-- type is `A [INTEGER]' then `B [INTEGER]' would not make sense.
 										l_descendant_type.reset_constraint_error_list
-										safe_check_constraints (l_parent_type, l_descendant_type)
+										l_descendant_type.check_constraints (context.current_class, context.current_feature, l_descendant_type.is_expanded)
 										if
 											not l_descendant_type.constraint_error_list.is_empty and then
 											(l_fail_if_constraint_not_met or l_descendant_type.is_expanded)
@@ -10159,26 +10162,6 @@ feature {NONE} -- Implementation: catcall check
 					create Result.make (0)
 				end
 			end
-		end
-
-	safe_check_constraints (a_parent_type, a_type: TYPE_A)
-			--
-		require
-			a_parent_type_not_void: a_parent_type /= Void
-			a_type_not_void: a_type /= Void
-		local
-			retried: BOOLEAN
-		do
-			if not retried then
-				a_type.check_constraints (context.current_class, context.current_feature, a_type.is_expanded)
-			else
-				print ("Failure is with parent " + a_parent_type.dump + "%N")
-				print (" and with type " + a_type.dump + "%N")
-				a_type.constraint_error_list.extend (Void)
-			end
-		rescue
-			retried := True
-			retry
 		end
 
 feature {INSPECT_CONTROL} -- AST modification

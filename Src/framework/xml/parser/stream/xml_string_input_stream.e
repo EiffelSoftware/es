@@ -68,7 +68,6 @@ feature -- Basic operation
 
 			if last_character = '%N' then
 				line := line + 1
-				previous_line_count := column
 				column := 0
 			else
 				column := column + 1
@@ -78,27 +77,12 @@ feature -- Basic operation
 			end_of_input := source_index > count
 		end
 
-	rewind
-		do
-			source_index := source_index - 1
-			last_character := source.item (source_index)
-			if last_character = '%N' then
-				line := line - 1
-				column := previous_line_count
-				previous_line_count := 0 --| if we rewind more than one line, too bad
-			else
-				column := column - 1
-			end
-			end_of_input := source_index > count
-		end
-
 	start
 		do
 			source_index := 1
 			end_of_input := source_index > count
 			line := 1
 			column := 0
-			previous_line_count := 0
 		end
 
 	close
@@ -106,10 +90,6 @@ feature -- Basic operation
 		end
 
 feature {NONE} -- Implementation
-
-	previous_line_count: INTEGER
-			-- Keep previous line's length
-			-- to set the `column' during `rewind'
 
 	source_index: INTEGER
 

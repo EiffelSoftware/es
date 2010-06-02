@@ -632,7 +632,7 @@ feature -- Update
 --			tools.class_tool.invalidate
 --			tools.features_relation_tool.invalidate
 			if eiffel_layout.has_diagram then
-					-- Target diagram stone to root cluster if no stone is set.
+					-- Target diagram stone to root class or cluster if no stone is set.
 				if
 					tools.diagram_tool.last_stone = Void and then
 					l_system /= Void and then
@@ -641,7 +641,11 @@ feature -- Update
 					not l_system.root_creators.is_empty
 				then
 					l_root := l_system.root_creators.first
-					tools.diagram_tool.set_stone (create {CLUSTER_STONE}.make (l_root.cluster))
+					if l_root.root_class /= Void and then l_root.root_class.compiled_class /= Void then
+						tools.diagram_tool.set_stone (create {CLASSC_STONE}.make (l_root.root_class.compiled_class))
+					else
+						tools.diagram_tool.set_stone (create {CLUSTER_STONE}.make (l_root.cluster))
+					end
 				end
 			end
 
@@ -2143,23 +2147,6 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER, EB_DEVELOPMENT_WINDOW_PART,
 				attached flatf.widget as ftw and then
 				widget_has_recursive_focus (ftw)
 			then
-				if attached {CLICKABLE_TEXT} flatf.editor.text_displayed as ftxt then
-					from
-						i := 1
-					until
-						i > ftxt.number_of_lines
-					loop
-						if attached {EIFFEL_EDITOR_LINE} ftxt.line (i) as l_line then
-							if attached {EDITOR_TOKEN_BREAKPOINT} l_line.breakpoint_token as l_bp then
-								if attached {BREAKABLE_STONE} l_bp.pebble as l_stone then
-									print (l_stone.index.out + "%N")
-								end
-							end
-						end
-						i := i + 1
-					end
-				end
-
 				create l_bp_dialog.make_with_editor (flatf.editor)
 				l_bp_dialog.show_on_active_window
 			end

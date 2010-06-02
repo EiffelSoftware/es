@@ -97,7 +97,7 @@ feature -- Events
 			l_item: EV_COORDINATE
 			grow: INTEGER
 		do
-			if attached internal_bounding_box as l_internal_bounding_box then
+			if attached internal_bounding_box as l_internal_bounding_box and then l_internal_bounding_box.has_area then
 				Result := l_internal_bounding_box.twin
 			else
 				if point_count = 0 then
@@ -133,7 +133,11 @@ feature -- Events
 					h := as_integer (max_y) - ay + lw + 2--.truncated_to_integer - ay + lw + 2
 					create Result.make (ax - grow, ay - grow, w, h)
 				end
-				internal_bounding_box := Result.twin
+				if attached internal_bounding_box as l_internal_bounding_box then
+					l_internal_bounding_box.copy (Result)
+				else
+					internal_bounding_box := Result.twin
+				end
 			end
 		end
 
