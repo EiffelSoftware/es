@@ -192,11 +192,11 @@ d_tls='undef'
 #Check value for next 2
 mtccflags="$ccflags -DEIF_THREADS -DEIF_LINUXTHREADS"
 mtcppflags="$cppflags -DEIF_THREADS -DEIF_LINUXTHREADS"
-optimize="-g -O0"
+optimize="-O3"
 voidflags='15'
 #Check value for next 1
 warning_level='-Wall -pedantic -std=gnu99'
-wkoptimize="-g -O0"
+wkoptimize="-O0"
 
 #Makefiles
 ar='ar'
