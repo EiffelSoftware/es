@@ -358,6 +358,9 @@ feature -- Analyzis
 				-- Generate execution trace information (RTEAA)
 			generate_execution_trace
 
+				-- Generate capture/replay feature start hook
+			generate_capture_replay_feature_start
+
 				-- Generate trace macro (start)
 			generate_trace_start
 
@@ -397,6 +400,9 @@ feature -- Analyzis
 				l_context.generate_body_label
 			end
 
+				-- Capture/Replay entry hook
+			generate_capture_replay_body_start
+
 				-- If necessary, generate the once stuff (i.e. check if
 				-- the value of the once was already set within the same
 				-- thread).  That way we do not enter the body of the
@@ -425,14 +431,15 @@ feature -- Analyzis
 				-- Generate old variables
 			generate_old_variables
 
-				-- Capture/Replay entry hook
-			generate_capture_replay_enter
-
 				-- Now we want the body
 			generate_compound
 
-				-- Capture/Replay exit hook
-			generate_capture_replay_exit
+
+				-- We do not generate the capture/replay body hook here in case of onces as
+				-- the postconditions are also enclosed by the once prologue.
+			if not attached {ONCE_BYTE_CODE} Current then
+				generate_capture_replay_body_end
+			end
 
 				-- Now the postcondition
 			generate_postcondition
@@ -455,6 +462,14 @@ feature -- Analyzis
 
 				-- Generate termination for once routine
 			generate_once_epilogue (generated_c_feature_name)
+
+				-- Capture/Replay body exit hook
+			if attached {ONCE_BYTE_CODE} Current then
+				generate_capture_replay_body_end
+			end
+
+				-- Capture/Replay feature exit hook
+			generate_capture_replay_feature_end
 
 			if compound = Void or else not compound.last.last_all_in_result then
 					-- Remove the GC hooks we've been generated.
@@ -1271,21 +1286,17 @@ end
 			end
 		end
 
-	generate_capture_replay_enter
-			-- Generate enter hook for capture replay
+	generate_capture_replay_feature_start
+			-- Generate body start hook for capture replay mechanism
 		local
 			buf: like buffer
 			l_feat: FEATURE_I
-			l_args: like arguments
-			i: INTEGER
 			l_inside: BOOLEAN
 		do
 			buf := buffer
-
-			l_args := arguments
-
 			buf.put_new_line
-			buf.put_string ("RTCRC(")
+			buf.put_string ("RTCRFS(")
+
 			l_feat := context.current_feature
 
 			l_inside := True
@@ -1323,7 +1334,22 @@ end
 				buf.put_integer (0)
 			end
 
-			buf.put_character (',')
+			buf.put_two_character (')', ';')
+		end
+
+	generate_capture_replay_body_start
+			-- Generate body start hook for capture replay mechanism
+		local
+			buf: like buffer
+			l_args: like arguments
+			i: INTEGER
+		do
+			buf := buffer
+
+			l_args := arguments
+
+			buf.put_new_line
+			buf.put_string ("RTCRBS1(")
 
 			if l_args /= Void then
 				buf.put_integer (l_args.count)
@@ -1357,11 +1383,11 @@ end
 			end
 
 			buf.put_new_line
-			buf.put_string ("RTCRE;")
+			buf.put_string ("RTCRBS2;")
 		end
 
-	generate_capture_replay_exit
-			-- Generate exit hook for capture replay
+	generate_capture_replay_body_end
+			-- Generate feature end hook for capture/replay mechanism
 		local
 			buf: like buffer
 			type_c: TYPE_C
@@ -1371,10 +1397,10 @@ end
 			buf.put_new_line
 			l_rtype := result_type
 			if l_rtype.is_void then
-				buf.put_string ("RTCRV;")
+				buf.put_string ("RTCRBEV;")
 			else
+				buf.put_string ("RTCRBER(")
 				type_c := real_type (l_rtype).c_type
-				buf.put_string ("RTCRR(")
 				type_c.generate_sk_value (buf)
 				buf.put_character (',')
 				type_c.generate_typed_field (buf)
@@ -1392,6 +1418,16 @@ end
 				end
 				buf.put_two_character (')', ';')
 			end
+		end
+
+	generate_capture_replay_feature_end
+			-- Generate exit hook for capture replay
+		local
+			buf: like buffer
+		do
+			buf := buffer
+			buf.put_new_line
+			buf.put_string ("RTCRFE;")
 		end
 
 	generate_rtdbgd_enter
