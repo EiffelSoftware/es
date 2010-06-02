@@ -63,80 +63,6 @@ feature -- Basic operations
 			logger_set: logger = a_logger
 		end
 
-	quantifier_free_expressions (a_quantifier_expressions: like quantified_expressions): DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION], STRING]
-			-- Quantifier expressions from `a_quantifier_expressions'
-			-- Result is hash table, key is test case name, value is a table of quantifier-free expression resolved in that test case.	
-			-- Key of the inner hash table is a quantified-expression, value is a set of quantifier-free expression resovled in the test case.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
-			l_test_cases: like transition_data
-			l_tc_cursor: CURSOR
-			l_qf_exprs: DS_HASH_SET [EPA_FUNCTION]
-			l_qf_tbl: DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION]
-		do
-			create Result.make (10)
-			Result.set_key_equality_tester (string_equality_tester)
-
-			l_test_cases := transition_data
-			l_tc_cursor := l_test_cases.cursor
-			from
-				l_test_cases.start
-			until
-				l_test_cases.after
-			loop
-				create l_qf_tbl.make (10)
-				l_qf_tbl.set_key_equality_tester (ci_quantified_expression_equality_tester)
-				Result.force_last (l_qf_tbl, l_test_cases.item_for_iteration.test_case_info.test_case_class.name_in_upper)
-
-				from
-					l_cursor := a_quantifier_expressions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					l_qf_exprs := l_cursor.item.quantifier_free_functions (l_test_cases.item_for_iteration)
-					l_qf_tbl.force_last (l_qf_exprs, l_cursor.item)
-					l_cursor.forth
-				end
-				l_test_cases.forth
-			end
-			l_test_cases.go_to (l_tc_cursor)
-
-				-- Logging.
-			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
-			logger.put_line_with_time (once "Quantifier-free expressions for candidate frame properties:")
-			from
-				Result.start
-			until
-				Result.after
-			loop
-				logger.put_string (once "Test case: ")
-				logger.put_line (Result.key_for_iteration)
-				l_qf_tbl := Result.item_for_iteration
-				from
-					l_qf_tbl.start
-				until
-					l_qf_tbl.after
-				loop
-					logger.put_string (once "%T")
-					logger.put_line (l_qf_tbl.key_for_iteration.debug_output)
-					from
-						l_qf_tbl.item_for_iteration.start
-					until
-						l_qf_tbl.item_for_iteration.after
-					loop
-						logger.put_string (once "%T%T")
-						logger.put_line (l_qf_tbl.item_for_iteration.item_for_iteration.body)
-						l_qf_tbl.item_for_iteration.forth
-					end
-					l_qf_tbl.forth
-				end
-				logger.put_line (once "")
-				Result.forth
-			end
-			logger.pop_level
-		end
-
 feature{NONE} -- Implementation
 
 	transition_data: LINKED_LIST [CI_TRANSITION_INFO]
@@ -346,19 +272,6 @@ feature{NONE} -- Implementation
 			loop
 				l_function := l_cursor.item.function
 				l_target_index := l_cursor.item.target_variable_index
---				create l_scope.make (l_function, 2, a_pre_state)
---				create l_predicate_body.make (64)
-
---				l_predicate_body.append (once "old ")
---				l_predicate_body.append (l_function.body)
---				l_predicate_body.append (once " implies ")
---				l_predicate_body.append (l_function.body)
-
---				create l_operand_map.make (1)
---				l_operand_map.put (l_target_index, 1)
---				l_predicate := quantified_function (l_function.argument_types, l_predicate_body)
---				create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
---				Result.force_last (l_quantified_expr)
 				forall_query_implies_query_expression (l_function, l_target_index, True, False).do_all (agent Result.force_last)
 				forall_query_implies_query_expression_with_argument (l_function, l_target_index, True, False).do_all (agent Result.force_last)
 				l_cursor.forth
@@ -426,8 +339,82 @@ feature{NONE} -- Implementation
 			Result.force_last (l_quantified_expr)
 		end
 
+	quantifier_free_expressions (a_quantifier_expressions: like quantified_expressions): DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION], STRING]
+			-- Quantifier expressions from `a_quantifier_expressions'
+			-- Result is hash table, key is test case name, value is a table of quantifier-free expression resolved in that test case.	
+			-- Key of the inner hash table is a quantified-expression, value is a set of quantifier-free expression resovled in the test case.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
+			l_test_cases: like transition_data
+			l_tc_cursor: CURSOR
+			l_qf_exprs: DS_HASH_SET [EPA_FUNCTION]
+			l_qf_tbl: DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION]
+		do
+			create Result.make (10)
+			Result.set_key_equality_tester (string_equality_tester)
+
+			l_test_cases := transition_data
+			l_tc_cursor := l_test_cases.cursor
+			from
+				l_test_cases.start
+			until
+				l_test_cases.after
+			loop
+				create l_qf_tbl.make (10)
+				l_qf_tbl.set_key_equality_tester (ci_quantified_expression_equality_tester)
+				Result.force_last (l_qf_tbl, l_test_cases.item_for_iteration.test_case_info.test_case_class.name_in_upper)
+
+				from
+					l_cursor := a_quantifier_expressions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_qf_exprs := l_cursor.item.quantifier_free_functions (l_test_cases.item_for_iteration)
+					l_qf_tbl.force_last (l_qf_exprs, l_cursor.item)
+					l_cursor.forth
+				end
+				l_test_cases.forth
+			end
+			l_test_cases.go_to (l_tc_cursor)
+
+				-- Logging.
+			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.put_line_with_time (once "Quantifier-free expressions for candidate frame properties:")
+			from
+				Result.start
+			until
+				Result.after
+			loop
+				logger.put_string (once "Test case: ")
+				logger.put_line (Result.key_for_iteration)
+				l_qf_tbl := Result.item_for_iteration
+				from
+					l_qf_tbl.start
+				until
+					l_qf_tbl.after
+				loop
+					logger.put_string (once "%T")
+					logger.put_line (l_qf_tbl.key_for_iteration.debug_output)
+					from
+						l_qf_tbl.item_for_iteration.start
+					until
+						l_qf_tbl.item_for_iteration.after
+					loop
+						logger.put_string (once "%T%T")
+						logger.put_line (l_qf_tbl.item_for_iteration.item_for_iteration.body)
+						l_qf_tbl.item_for_iteration.forth
+					end
+					l_qf_tbl.forth
+				end
+				logger.put_line (once "")
+				Result.forth
+			end
+			logger.pop_level
+		end
+
 	forall_query_implies_query_expression_with_argument (a_function: EPA_FUNCTION; a_target_variable_index: INTEGER; a_pre_state: BOOLEAN; a_negated_consequent: BOOLEAN): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
-			-- Frame property predicate built from `a_suitable_function' whose target is with `a_target_variable_index'
+			-- Frame property predicate built from `a_function' whose target is with `a_target_variable_index'
 			-- If `a_function' is a boolean query, the format of the frame property is:
 			--   (1) "forall o . old a_function (o) implies a_function (o)" if `a_negated_consequent' is False, otherwise,
 			--   (2) "forall o . old a_function (o) implies not a_function (o)"
@@ -451,7 +438,7 @@ feature{NONE} -- Implementation
 			create Result.make (1)
 			Result.set_equality_tester (ci_quantified_expression_equality_tester)
 
-			if feature_under_test.argument_count = 1 and then a_function.arity = 2 then
+			if feature_under_test.argument_count = 1 and then a_function.arity = 2 and then not a_function.argument_type (2).is_integer then
 				l_is_container := is_class_a_container (class_under_test)
 				l_feat_types := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type)
 				l_actual_arg_type := l_feat_types.item (1)

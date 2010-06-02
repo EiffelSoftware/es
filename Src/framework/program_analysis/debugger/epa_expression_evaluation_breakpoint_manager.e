@@ -37,7 +37,7 @@ feature -- Access
 			-- Key is the breakpoint, value is the state consisting expressions to be evaluated
 			-- at the breakpoint.
 
-	hit_actions: HASH_TABLE [LINKED_LIST [EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION], BREAKPOINT_LOCATION]
+	hit_actions: HASH_TABLE [LINKED_LIST [EPA_BREAKPOINT_WHEN_HITS_ACTION_EVALUATION], BREAKPOINT_LOCATION]
 			-- Actions to perform when a breakpoint is hit.
 			-- Key is the breakpoint, value is a list of actions to perform when that breakpoint is hit.
 			-- When a break point is hit, the expressions registered in `expressions' for that break point are evaluated,
@@ -87,34 +87,45 @@ feature -- Basic operations
 			expressions.force (a_expressions, l_bp_location)
 		end
 
---	set_all_breakpoints (a_state: DS_HASH_SET [EPA_EXPRESSION])
---			-- Set breakpoints in all breakpoints slots in `a_feature' to evaluate
---			-- expressions in `a_state'.
---		local
---			l_bp_location: BREAKPOINT_LOCATION
---			l_slot_count: INTEGER
---			i: INTEGER
---		do
---			l_slot_count := feature_.number_of_breakpoint_slots
---			from
---				i := 1
---			until
---				i > l_slot_count
---			loop
---				set_breakpoint (a_state, i)
---				i := i + 1
---			end
---		end
+	set_breakpoint_with_agent_and_action (a_bpslot: INTEGER; a_expression_retriever: FUNCTION [ANY, TUPLE, DS_HASH_SET [EPA_EXPRESSION]]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
+			-- Set `a_action' to `a_bpslot'-th break point in `a_feature'.
+			-- Every time when the breakpoint is hit, all expressions returned by `a_expression_retriever' are evaluated and
+			-- their values are passed to `a_action' through the argument `a_state'.
+		local
+			l_bp_location: BREAKPOINT_LOCATION
+			l_slot_count: INTEGER
+			l_act_list: LINKED_LIST [EPA_BREAKPOINT_WHEN_HITS_ACTION_EVALUATION]
+			l_action:EPA_BREAKPOINT_WHEN_HITS_ACTION_AGENT_EVALUATION
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+		do
+			create l_act_list.make
+			create l_action.make (a_expression_retriever, class_, feature_)
+			l_action.on_hit_actions.extend (a_action)
+			l_act_list.extend (l_action)
+			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
+			hit_actions.force (l_act_list, l_bp_location)
+			create l_exprs.make (0)
+			expressions.force (l_exprs, l_bp_location)
+		end
 
---	set_breakpoint (a_state: DS_HASH_SET [EPA_EXPRESSION]; a_bpslot: INTEGER)
---			-- Set breakpoint at slot `a_bpslot' in `feature_' to evaluate expressions
---			-- in `a_state'.
---		local
---			l_bp_location: BREAKPOINT_LOCATION
---		do
---			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
---			breakpoints.put (a_state, l_bp_location)
---		end
+	set_all_breakpoints_with_agent_and_actions (a_expression_retriever: FUNCTION [ANY, TUPLE, DS_HASH_SET [EPA_EXPRESSION]]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
+			-- Set `a_action' to all break points to `a_feature'.
+			-- Every time when the breakpoint is hit, all expressions in `a_expressions' are evaluated and
+			-- their values are passed to `a_action' through the argument `a_state'.
+		local
+			l_slot_count: INTEGER
+			i: INTEGER
+		do
+			l_slot_count := feature_.number_of_breakpoint_slots
+			from
+				i := 1
+			until
+				i > l_slot_count
+			loop
+				set_breakpoint_with_agent_and_action (i, a_expression_retriever, a_action)
+				i := i + 1
+			end
+		end
 
 	wipe_out
 			-- Clear `expressions' and `hit_actions'.

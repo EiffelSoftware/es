@@ -9,8 +9,22 @@ deferred class
 
 inherit
 	EQA_TEST_SET
+		redefine
+			default_create
+		end
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
+		undefine
+			default_create
+		end
+
+feature{NONE} -- Initialization
+
+	default_create
+			-- Initialize Current.
+		do
+			-- Do nothing here.
+		end
 
 feature -- Access
 

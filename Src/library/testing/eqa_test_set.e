@@ -17,7 +17,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	frozen default_create
+	default_create
 			-- <Precursor>
 		local
 			l_info: EQA_EVALUATION_INFO

@@ -138,6 +138,12 @@ feature -- Evaluation
 			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression.text))
 		end
 
+	evaluated_string_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: STRING): EPA_EXPRESSION_VALUE
+			-- Value of `a_expression' evaluated through debugger
+		do
+			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression))
+		end
+
 	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): EPA_EXPRESSION_VALUE
 			-- Expression value from `a_dump_value'
 		do

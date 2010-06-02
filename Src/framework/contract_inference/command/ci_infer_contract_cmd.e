@@ -142,7 +142,10 @@ feature{NONE} -- Implementation
 				l_bp_slot := a_tc_info.after_test_break_point_slot
 			end
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
-			Result.set_breakpoint_with_expression_and_action (l_bp_slot, expressions_to_evaluate (a_tc_info, a_pre_execution), agent on_state_expression_evaluated (?, ?, a_pre_execution, a_tc_info, Result))
+			Result.set_breakpoint_with_agent_and_action (
+				l_bp_slot,
+				agent expressions_to_evaluate (a_tc_info, a_pre_execution),
+				agent on_state_expression_evaluated (?, ?, a_pre_execution, a_tc_info, Result))
 		end
 
 	expressions_to_evaluate (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -198,6 +201,16 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	target_of_function (a_function: EPA_FUNCTION): STRING
+			-- Target expression of `a_function', assuming that `a_function' is a qualified feature call
+		local
+			l_body: STRING
+		do
+			fixme ("Assume that `a_function' is a qualified feature call and the target is a name (local, argument, Current, Result. 2.6.2010 Jasonw")
+			l_body := a_function.body
+			Result := l_body.substring (1, l_body.index_of ('.', 1) - 1)
+		end
+
 	functions_with_domain_resolved (a_function: EPA_FUNCTION; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
 			-- Functions from `a_fucntion' with its domain resolved
 		require
@@ -216,6 +229,7 @@ feature{NONE} -- Implementation
 			i: INTEGER
 			l_arg: EPA_FUNCTION
 			l_int_expr: EPA_AST_EXPRESSION
+			l_value_text: STRING
 		do
 			create Result.make (10)
 			Result.set_equality_tester (function_equality_tester)
@@ -233,10 +247,11 @@ feature{NONE} -- Implementation
 					l_lowers.after or l_has_error
 				loop
 					l_expr := l_lowers.item_for_iteration
-					if l_expr.is_integer then
-						l_resolved_lowers.extend (l_expr.text.to_integer)
+					l_value_text := l_expr.text
+					if l_value_text.is_integer then
+						l_resolved_lowers.extend (l_value_text.to_integer)
 					else
-						l_value := evaluated_value_from_debugger (debugger_manager, l_expr)
+						l_value := evaluated_string_from_debugger (debugger_manager, target_of_function (a_function) + once "." + l_value_text)
 						l_has_error := not l_value.is_integer
 						if not l_has_error then
 							l_resolved_lowers.extend (l_value.out.to_integer)
@@ -256,10 +271,11 @@ feature{NONE} -- Implementation
 						l_uppers.after or l_has_error
 					loop
 						l_expr := l_uppers.item_for_iteration
-						if l_expr.is_integer then
-							l_resolved_uppers.extend (l_expr.text.to_integer)
+						l_value_text := l_expr.text
+						if l_value_text.is_integer then
+							l_resolved_uppers.extend (l_value_text.to_integer)
 						else
-							l_value := evaluated_value_from_debugger (debugger_manager, l_expr)
+							l_value := evaluated_string_from_debugger (debugger_manager, target_of_function (a_function) + once "." + l_value_text)
 							l_has_error := not l_value.is_integer
 							if not l_has_error then
 								l_resolved_uppers.extend (l_value.out.to_integer)
@@ -282,7 +298,7 @@ feature{NONE} -- Implementation
 						i > l_final_upper
 					loop
 						create l_int_expr.make_with_text (a_context.class_, a_context.feature_, i.out, a_context.class_)
-						create l_arg.make_from_expression (l_expr)
+						create l_arg.make_from_expression (l_int_expr)
 
 						Result.force_last (a_function.partially_evalauted (l_arg, 1))
 						i := i + 1

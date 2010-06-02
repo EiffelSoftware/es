@@ -11,7 +11,7 @@ class
 	EPA_BREAKPOINT_WHEN_HITS_ACTION_EXPR_EVALUATION
 
 inherit
-	BREAKPOINT_WHEN_HITS_ACTION_I
+	EPA_BREAKPOINT_WHEN_HITS_ACTION_EVALUATION
 
 	EPA_DEBUGGER_UTILITY
 
@@ -37,17 +37,6 @@ feature -- Access
 
 	expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions to be evaluate
-
-	on_hit_actions: ACTION_SEQUENCE [TUPLE [a_breakpoint: BREAKPOINT; a_state: EPA_STATE]]
-			-- List of actions to be performed when current is hit
-
-	class_: CLASS_C
-			-- Class from which Current state is derived
-
-	feature_: detachable FEATURE_I
-			-- Feature from which Current state is derived
-			-- If Void, it means that Current state is derived for the whole class,
-			-- instead of particular feature.
 
 feature -- Basic operations
 
