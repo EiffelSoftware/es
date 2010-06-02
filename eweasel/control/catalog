@@ -9,8 +9,10 @@ source_path	$BUGS
 
 -- Capture/Replay tests
 
-test	external-call			caprep001 tcf pass capture replay
-test	simple-agent			caprep002 tcf pass capture replay
+test	capture-external-call		caprep001 tcf pass capture replay
+test	capture-simple-agent		caprep002 tcf pass capture replay
+test	capture-external-exception	caprep003 tcf pass capture replay
+test	capture-incall-assertions	caprep004 tcf pass capture replay
 
 
 

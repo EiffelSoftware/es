@@ -1,6 +1,6 @@
 
-test_name 	capture-simple-agent
-test_description A program that calls a routine with no arguments through an agent
+test_name 	capture-external-exception
+test_description Capture and replay an exception that occurs outside of the boundaries
 
 copy_sub 	Ace $TEST Ace
 copy_raw 	test.e $CLUSTER test.e

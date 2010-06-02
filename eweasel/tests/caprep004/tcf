@@ -1,6 +1,6 @@
 
-test_name 	capture-simple-agent
-test_description A program that calls a routine with no arguments through an agent
+test_name 	capturei-incall-assertions
+test_description A program that performs an INCALL to a routine with contracts
 
 copy_sub 	Ace $TEST Ace
 copy_raw 	test.e $CLUSTER test.e
