@@ -3664,12 +3664,12 @@ feature
 			"C (GdkImage*, gint, gint, guint32) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_init (a_argc: POINTER; a_argv: POINTER)
+	frozen gdk_init (a_argc: TYPED_POINTER [INTEGER]; a_argv: TYPED_POINTER [POINTER])
 		external
 			"C (gint*, gchar***) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_init_check (a_argc: POINTER; a_argv: POINTER): BOOLEAN
+	frozen gdk_init_check (a_argc: TYPED_POINTER [INTEGER]; a_argv: TYPED_POINTER [POINTER]): BOOLEAN
 		external
 			"C (gint*, gchar***): gboolean | <gtk/gtk.h>"
 		end
@@ -3799,7 +3799,7 @@ feature
 			"C (guint32) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_query_visual_types (a_visual_types: POINTER; a_count: POINTER)
+	frozen gdk_query_visual_types (a_visual_types: POINTER; a_count: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkVisualType**, gint*) | <gtk/gtk.h>"
 		end
@@ -3964,7 +3964,7 @@ feature
 			"C (gboolean) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_string_extents (a_font: POINTER; a_string: POINTER; a_lbearing: POINTER; a_rbearing: POINTER; a_width: POINTER; a_ascent: POINTER; a_descent: POINTER)
+	frozen gdk_string_extents (a_font: POINTER; a_string: POINTER; a_lbearing: TYPED_POINTER [INTEGER]; a_rbearing: TYPED_POINTER [INTEGER]; a_width: TYPED_POINTER [INTEGER]; a_ascent: TYPED_POINTER [INTEGER]; a_descent: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkFont*, gchar*, gint*, gint*, gint*, gint*, gint*) | <gtk/gtk.h>"
 		end
@@ -3979,7 +3979,7 @@ feature
 			"C (GdkFont*, gchar*): gint | <gtk/gtk.h>"
 		end
 
-	frozen gdk_string_to_compound_text (a_str: POINTER; a_encoding: POINTER; a_format: POINTER; a_ctext: POINTER; a_length: POINTER): INTEGER
+	frozen gdk_string_to_compound_text (a_str: POINTER; a_encoding: POINTER; a_format: TYPED_POINTER [INTEGER]; a_ctext: POINTER; a_length: TYPED_POINTER [INTEGER]): INTEGER
 		external
 			"C (gchar*, GdkAtom*, gint*, guchar**, gint*): gint | <gtk/gtk.h>"
 		end
@@ -3989,12 +3989,12 @@ feature
 			"C (GdkFont*, gchar*): gint | <gtk/gtk.h>"
 		end
 
-	frozen gdk_text_extents (a_font: POINTER; a_text: POINTER; a_text_length: INTEGER; a_lbearing: POINTER; a_rbearing: POINTER; a_width: POINTER; a_ascent: POINTER; a_descent: POINTER)
+	frozen gdk_text_extents (a_font: POINTER; a_text: POINTER; a_text_length: INTEGER; a_lbearing: TYPED_POINTER [INTEGER]; a_rbearing: TYPED_POINTER [INTEGER]; a_width: TYPED_POINTER [INTEGER]; a_ascent: TYPED_POINTER [INTEGER]; a_descent: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkFont*, gchar*, gint, gint*, gint*, gint*, gint*, gint*) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_text_extents_wc (a_font: POINTER; a_text: POINTER; a_text_length: INTEGER; a_lbearing: POINTER; a_rbearing: POINTER; a_width: POINTER; a_ascent: POINTER; a_descent: POINTER)
+	frozen gdk_text_extents_wc (a_font: POINTER; a_text: POINTER; a_text_length: INTEGER; a_lbearing: TYPED_POINTER [INTEGER]; a_rbearing: TYPED_POINTER [INTEGER]; a_width: TYPED_POINTER [INTEGER]; a_ascent: TYPED_POINTER [INTEGER]; a_descent: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkFont*, GdkWChar*, gint, gint*, gint*, gint*, gint*, gint*) | <gtk/gtk.h>"
 		end
@@ -4074,7 +4074,7 @@ feature
 			"C (GdkWindow*, GdkFilterFunc, gpointer) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_at_pointer (a_win_x: POINTER; a_win_y: POINTER): POINTER
+	frozen gdk_window_at_pointer (a_win_x: TYPED_POINTER [INTEGER]; a_win_y: TYPED_POINTER [INTEGER]): POINTER
 		external
 			"C (gint*, gint*): GdkWindow* | <gtk/gtk.h>"
 		end
@@ -4109,7 +4109,7 @@ feature
 			"C (GdkWindow*): GdkColormap* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_deskrelative_origin (a_window: POINTER; a_x: POINTER; a_y: POINTER): BOOLEAN
+	frozen gdk_window_get_deskrelative_origin (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]): BOOLEAN
 		external
 			"C (GdkWindow*, gint*, gint*): gboolean | <gtk/gtk.h>"
 		end
@@ -4119,12 +4119,12 @@ feature
 			"C (GdkWindow*): GdkEventMask | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_geometry (a_window: POINTER; a_x: POINTER; a_y: POINTER; a_width: POINTER; a_height: POINTER; a_depth: POINTER)
+	frozen gdk_window_get_geometry (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]; a_width: TYPED_POINTER [INTEGER]; a_height: TYPED_POINTER [INTEGER]; a_depth: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkWindow*, gint*, gint*, gint*, gint*, gint*) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_origin (a_window: POINTER; a_x: POINTER; a_y: POINTER): INTEGER
+	frozen gdk_window_get_origin (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]): INTEGER
 		external
 			"C (GdkWindow*, gint*, gint*): gint | <gtk/gtk.h>"
 		end
@@ -4134,22 +4134,22 @@ feature
 			"C (GdkWindow*): GdkWindow* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_pointer (a_window: POINTER; a_x: POINTER; a_y: POINTER; a_mask: POINTER): POINTER
+	frozen gdk_window_get_pointer (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]; a_mask: POINTER): POINTER
 		external
 			"C (GdkWindow*, gint*, gint*, GdkModifierType*): GdkWindow* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_position (a_window: POINTER; a_x: POINTER; a_y: POINTER)
+	frozen gdk_window_get_position (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkWindow*, gint*, gint*) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_root_origin (a_window: POINTER; a_x: POINTER; a_y: POINTER)
+	frozen gdk_window_get_root_origin (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkWindow*, gint*, gint*) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_size (a_window: POINTER; a_width: POINTER; a_height: POINTER)
+	frozen gdk_window_get_size (a_window: POINTER; a_width: TYPED_POINTER [INTEGER]; a_height: TYPED_POINTER [INTEGER])
 		external
 			"C (GdkWindow*, gint*, gint*) | <gtk/gtk.h>"
 		end
@@ -4764,7 +4764,7 @@ feature
 			"C (GtkCList*, gint): gboolean | <gtk/gtk.h>"
 		end
 
-	frozen gtk_clist_get_selection_info (a_clist: POINTER; a_x: INTEGER; a_y: INTEGER; a_row: POINTER; a_column: POINTER): INTEGER
+	frozen gtk_clist_get_selection_info (a_clist: POINTER; a_x: INTEGER; a_y: INTEGER; a_row: TYPED_POINTER [INTEGER]; a_column: TYPED_POINTER [INTEGER]): INTEGER
 		external
 			"C (GtkCList*, gint, gint, gint*, gint*): gint | <gtk/gtk.h>"
 		end
@@ -5739,7 +5739,7 @@ feature
 			"C (): GtkType | <gtk/gtk.h>"
 		end
 
-	frozen gtk_editable_insert_text (a_editable: POINTER; a_new_text: POINTER; a_new_text_length: INTEGER; a_position: POINTER)
+	frozen gtk_editable_insert_text (a_editable: POINTER; a_new_text: POINTER; a_new_text_length: INTEGER; a_position: TYPED_POINTER [INTEGER])
 		external
 			"C (GtkEditable*, gchar*, gint, gint*) | <gtk/gtk.h>"
 		end
@@ -7732,7 +7732,7 @@ feature
 			"C (GtkWidget*): GdkWindow* | <gtk/gtk.h>"
 		end
 
-	frozen gtk_widget_get_pointer (a_widget: POINTER; a_x: POINTER; a_y: POINTER)
+	frozen gtk_widget_get_pointer (a_widget: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER])
 		external
 			"C (GtkWidget*, gint*, gint*) | <gtk/gtk.h>"
 		end

@@ -60,7 +60,7 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Position retrieval
 			a_x: INTEGER
 			a_aux_info: POINTER
 			i: INTEGER
-			l_null: POINTER
+			l_null: TYPED_POINTER [INTEGER]
 		do
 			if is_displayed then
 					i := {EV_GTK_EXTERNALS}.gdk_window_get_origin (
@@ -81,7 +81,7 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Position retrieval
 			a_y: INTEGER
 			a_aux_info: POINTER
 			i: INTEGER
-			l_null: POINTER
+			l_null: TYPED_POINTER [INTEGER]
 		do
 			if is_displayed then
 					i := {EV_GTK_EXTERNALS}.gdk_window_get_origin (

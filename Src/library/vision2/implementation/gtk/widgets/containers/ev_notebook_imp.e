@@ -72,10 +72,11 @@ feature -- Access
 			i: INTEGER
 			gdkwin, mouse_ptr_wid, tab_label: POINTER
 			a_wid: detachable EV_WIDGET_IMP
+			l_null: TYPED_POINTER [INTEGER]
 		do
 			from
 				i := 1
-				gdkwin := {EV_GTK_EXTERNALS}.gdk_window_at_pointer (default_pointer, default_pointer)
+				gdkwin := {EV_GTK_EXTERNALS}.gdk_window_at_pointer (l_null, l_null)
 				if gdkwin /= default_pointer then
 					{EV_GTK_EXTERNALS}.gdk_window_get_user_data (gdkwin, $mouse_ptr_wid)
 					a_wid ?= eif_object_from_c (mouse_ptr_wid)
