@@ -76,30 +76,6 @@ feature -- Basic operations
 			ctlr.debug_application (param, {EXEC_MODES}.run)
 		end
 
---	start_debugger (a_exec_mode: INTEGER; ign_bp: BOOLEAN)
---		require
---			debugger_manager /= Void
---		local
---			ctlr: DEBUGGER_CONTROLLER
---			wdir: STRING
---			prof: DEBUGGER_EXECUTION_PROFILE
---			param: DEBUGGER_EXECUTION_RESOLVED_PROFILE
---		do
---			wdir := param_working_directory
---			if wdir = Void or else wdir.is_empty then
---				wdir := Eiffel_project.lace.directory_name
---						--Execution_environment.current_working_directory
---			end
---			ctlr := debugger_manager.controller
---			create prof.make
---			prof.set_arguments (param_args)
---			prof.set_working_directory (wdir)
---			prof.set_environment_variables (param_env_variables)
---			debugger_manager.set_execution_ignoring_breakpoints (ign_bp)
---			create param.make_from_profile (prof)
---			ctlr.debug_application (param, a_exec_mode)
---		end
-
 	remove_debugger_session
 			-- Remove the debugger serssion file for currently loaded projects.
 		local
@@ -166,7 +142,7 @@ feature -- Evaluation
 					end
 				end
 				if Result = Void then
-					create {EPA_ANY_VALUE} Result.make (a_dump_value.address.as_string)
+					create {EPA_REFERENCE_VALUE} Result.make (a_dump_value.address.as_string, system.any_type)
 				end
 			else
 				check False end

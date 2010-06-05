@@ -42,7 +42,7 @@ feature -- Access
 		end
 
 	item: ANY
-			-- Value item in current
+			-- Value item in current		
 
 feature -- Process
 

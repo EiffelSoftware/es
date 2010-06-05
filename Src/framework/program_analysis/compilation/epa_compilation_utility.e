@@ -44,7 +44,7 @@ feature -- Basic operations
 			-- Compile `a_eiffel_project' when needed.
 			-- `a_c_compilation' indicates if C compiler is to be launched.
 		do
-			a_eiffel_project.quick_melt (False, False, True)
+			a_eiffel_project.quick_melt (True, True, True)
 			a_eiffel_project.freeze
 			if a_c_compilaiton then
 				a_eiffel_project.call_finish_freezing_and_wait (True)

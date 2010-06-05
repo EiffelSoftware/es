@@ -9,7 +9,7 @@ deferred class
 
 feature -- Access
 
-	scope (a_context: CI_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
+	scope (a_context: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
 			-- Values in current scope
 		deferred
 		end

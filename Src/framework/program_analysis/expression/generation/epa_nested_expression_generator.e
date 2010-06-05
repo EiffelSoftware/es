@@ -211,6 +211,7 @@ feature{NONE} -- Implementation
 			l_checked: ARRAY [INTEGER]
 			l_list: LINKED_LIST [EPA_ACCESS]
 			l_nested: EPA_ACCESS_NESTED
+			l_term_type: TYPE_A
 		do
 			create Result.make (initial_capacity)
 
@@ -233,11 +234,14 @@ feature{NONE} -- Implementation
 				loop
 					if j <= a_terms.count then
 						l_term := a_terms.i_th (j)
+						l_term_type := l_term.type.actual_type
+						l_term_type := actual_type_from_formal_type (l_term_type, a_class)
+						l_term_type := l_term_type.associated_class.constraint_actual_type
 						l_arg_type := a_feature.arguments.i_th (l_arg_index).instantiation_in (a_class.actual_type, a_class.class_id).actual_type
 						l_arg_type := actual_type_from_formal_type (l_arg_type, a_class)
 						l_arg_type := l_arg_type.associated_class.constraint_actual_type
 						fixme ("This implementation is slow, to make it faster, type information of l_term can be cached. 2.11.2009 Jasonw")
-						if l_term.type.conform_to (a_class, l_arg_type) then
+						if l_term_type.conform_to (a_class, l_arg_type) then
 							l_args.put (l_term, l_arg_index)
 							l_checked.put (j, l_arg_index)
 							if l_arg_index = a_feature.argument_count then

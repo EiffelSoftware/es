@@ -25,7 +25,7 @@ create
 	make,
 	make_from_expression_value,
 	make_nullary
-	
+
 feature{NONE} -- Initialization
 
 	make (a_argument_types: like argument_types; a_argument_domains: like argument_domains; a_result_type: like result_type; a_body: like body)
@@ -234,7 +234,9 @@ feature -- Access
 			until
 				i > arity
 			loop
-				l_replacements.put (curly_brace_surrounded_typed_integer (i, argument_type (i)), i)
+				l_replacements.put (curly_brace_surrounded_integer (i), i)
+					-- For longer format with type information, use the following line.
+--				l_replacements.put (curly_brace_surrounded_typed_integer (i, argument_type (i)), i)
 				i := i + 1
 			end
 

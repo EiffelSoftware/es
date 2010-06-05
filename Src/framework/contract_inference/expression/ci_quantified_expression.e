@@ -52,7 +52,7 @@ feature -- Access
 			-- Map from 1-based operand index in `predicate' to 0-based operand index in the feature under test
 			-- Key is 1-based operand index of `predicate', value is 0-based operand index in the feature under test
 
-	quantifier_free_functions (a_context: CI_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
+	quantifier_free_functions (a_context: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
 			-- Set of quantifier free expressions
 			-- with the quantifier replaced with a value in `scope' in `a_context'
 		local

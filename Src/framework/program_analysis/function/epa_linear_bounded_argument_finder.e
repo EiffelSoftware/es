@@ -138,10 +138,13 @@ feature{NONE} -- Implementation
 			l_constraining_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_min: LINKED_LIST [EPA_EXPRESSION]
 			l_max: LINKED_LIST [EPA_EXPRESSION]
+			l_set1, l_set2: DS_HASH_SET [EPA_EXPRESSION]
 		do
 				-- Get candidate assertions.
-			l_relevant_assertions :=
-				contract_extractor.precondition_expression_set (a_context_class, a_feature).union (contract_extractor.invariant_expression_set (a_context_class, True))
+			l_set1 := contract_extractor.precondition_expression_set (a_context_class, a_feature)
+			l_set2 := contract_extractor.invariant_expression_set (a_context_class, True)
+			l_relevant_assertions := l_set1.union (l_set2)
+--				contract_extractor.precondition_expression_set (a_context_class, a_feature).union (contract_extractor.invariant_expression_set (a_context_class, True))
 
 				-- Find assertions relevant to `a_constraint'.
 			create l_finder

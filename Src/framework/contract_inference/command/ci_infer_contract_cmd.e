@@ -137,7 +137,7 @@ feature{NONE} -- Implementation
 			l_bp_slot: INTEGER
 		do
 			if a_pre_execution then
-				l_bp_slot := a_tc_info.before_test_break_point_slot
+				l_bp_slot := a_tc_info.before_test_break_point_slot + 1
 			else
 				l_bp_slot := a_tc_info.after_test_break_point_slot
 			end
@@ -157,6 +157,7 @@ feature{NONE} -- Implementation
 			l_context: EPA_CONTEXT
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
+			l_current_expr: EPA_AST_EXPRESSION
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True)
@@ -165,17 +166,22 @@ feature{NONE} -- Implementation
 			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
 			l_expr_finder.set_should_include_tilda_expressions (True)
 			l_expr_finder.search (Void)
-			l_functions := nullary_functions (l_expr_finder.functions, l_context)
+			l_functions := nullary_functions (l_expr_finder.functions, l_context, a_pre_execution)
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
+
+--			Result.wipe_out
+--			create l_current_expr.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "v_57", a_tc_info.test_case_class)
+--			Result.force_last (l_current_expr)
 		end
 
-	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
+	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
 			-- Nullary version of functions in `a_functions'
 			-- For functions that are already nullary, those functions are directly put into the resulting set.
 			-- For functions whose domain needs dynamic evaluation, we evaluate the domain and use the evaluated
 			-- domain to form nullary functions.
+			-- `a_pre_execution' indicates if the computation is for a pre-execution state or a post-execution state.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
 			l_func: EPA_FUNCTION
@@ -194,7 +200,7 @@ feature{NONE} -- Implementation
 					if l_func.is_nullary then
 						Result.force_last (l_func)
 					else
-						Result.append (functions_with_domain_resolved (l_func, a_context))
+						Result.append (functions_with_domain_resolved (l_func, a_context, a_pre_execution))
 					end
 				end
 				l_cursor.forth
@@ -211,13 +217,15 @@ feature{NONE} -- Implementation
 			Result := l_body.substring (1, l_body.index_of ('.', 1) - 1)
 		end
 
-	functions_with_domain_resolved (a_function: EPA_FUNCTION; a_context: EPA_CONTEXT): DS_HASH_SET [EPA_FUNCTION]
+	functions_with_domain_resolved (a_function: EPA_FUNCTION; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
 			-- Functions from `a_fucntion' with its domain resolved
+			-- `a_pre_execution' indicates if the computation is for a pre-execution state or a post-execution state.
 		require
 			a_function_has_unresolved_domain: a_function.arity = 1 and then a_function.argument_domain (1).is_integer_range
 		local
 			l_lowers: LINKED_LIST [EPA_EXPRESSION]
 			l_uppers: LINKED_LIST [EPA_EXPRESSION]
+			l_constant_uppers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_resolved_lowers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_resolved_uppers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_cursor: CURSOR
@@ -230,11 +238,20 @@ feature{NONE} -- Implementation
 			l_arg: EPA_FUNCTION
 			l_int_expr: EPA_AST_EXPRESSION
 			l_value_text: STRING
+			l_target_of_function: STRING
+			l_function_name: STRING
+			l_func_with_domain: CI_FUNCTION_WITH_INTEGER_DOMAIN
 		do
 			create Result.make (10)
 			Result.set_equality_tester (function_equality_tester)
+			create l_constant_uppers.make
 
 			if attached {EPA_INTEGER_RANGE_DOMAIN} a_function.argument_domain (1) as l_domain then
+				l_target_of_function := target_of_function (a_function)
+				l_function_name := a_function.body.substring (l_target_of_function.count + 2, a_function.body.index_of ('(', 1) - 1)
+				l_function_name.left_adjust
+				l_function_name.right_adjust
+
 				l_lowers := l_domain.lower_bounds
 				l_uppers := l_domain.upper_bounds
 
@@ -251,7 +268,7 @@ feature{NONE} -- Implementation
 					if l_value_text.is_integer then
 						l_resolved_lowers.extend (l_value_text.to_integer)
 					else
-						l_value := evaluated_string_from_debugger (debugger_manager, target_of_function (a_function) + once "." + l_value_text)
+						l_value := evaluated_string_from_debugger (debugger_manager, l_target_of_function + "." + l_value_text)
 						l_has_error := not l_value.is_integer
 						if not l_has_error then
 							l_resolved_lowers.extend (l_value.out.to_integer)
@@ -273,9 +290,9 @@ feature{NONE} -- Implementation
 						l_expr := l_uppers.item_for_iteration
 						l_value_text := l_expr.text
 						if l_value_text.is_integer then
-							l_resolved_uppers.extend (l_value_text.to_integer)
+							l_constant_uppers.extend (l_value_text.out.to_integer)
 						else
-							l_value := evaluated_string_from_debugger (debugger_manager, target_of_function (a_function) + once "." + l_value_text)
+							l_value := evaluated_string_from_debugger (debugger_manager, l_target_of_function + "." + l_value_text)
 							l_has_error := not l_value.is_integer
 							if not l_has_error then
 								l_resolved_uppers.extend (l_value.out.to_integer)
@@ -290,18 +307,42 @@ feature{NONE} -- Implementation
 				if not l_has_error then
 					l_resolved_lowers.sort
 					l_resolved_uppers.sort
-					l_final_lower := l_resolved_lowers.first
-					l_final_upper := l_resolved_uppers.last
-					from
-						i := l_final_lower
-					until
-						i > l_final_upper
-					loop
-						create l_int_expr.make_with_text (a_context.class_, a_context.feature_, i.out, a_context.class_)
-						create l_arg.make_from_expression (l_int_expr)
+					l_constant_uppers.sort
+					l_final_lower := l_resolved_lowers.min
+					if l_resolved_uppers.min < l_constant_uppers.max then
+						l_final_upper := l_resolved_uppers.min
+					else
+						l_final_upper := l_resolved_uppers.max
+					end
+					if l_final_lower <= l_final_upper then
+						from
+							i := l_final_lower
+						until
+							i > l_final_upper
+						loop
+							create l_int_expr.make_with_text (a_context.class_, a_context.feature_, i.out, a_context.class_)
+							create l_arg.make_from_expression (l_int_expr)
+							Result.force_last (a_function.partially_evalauted (l_arg, 1))
 
-						Result.force_last (a_function.partially_evalauted (l_arg, 1))
-						i := i + 1
+								-- Register functions with bounded integer domain.
+							create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context)
+							if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
+								last_pre_execution_bounded_functions.force_last (l_func_with_domain)
+							end
+							if not a_pre_execution and then not last_post_execution_bounded_functions.has (l_func_with_domain) then
+								last_post_execution_bounded_functions.force_last (l_func_with_domain)
+							end
+							i := i + 1
+						end
+					else
+							-- Register functions with an EMPTY bounded integer domain.
+						create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context)
+						if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
+							last_pre_execution_bounded_functions.force_last (l_func_with_domain)
+						end
+						if not a_pre_execution and then not last_post_execution_bounded_functions.has (l_func_with_domain) then
+							last_post_execution_bounded_functions.force_last (l_func_with_domain)
+						end
 					end
 				end
 			end
@@ -334,20 +375,27 @@ feature{NONE} -- Actions
 			-- Action to be performed if a new test case is found and about to execute
 		local
 			l_after_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
-			l_functions: DS_HASH_SET [EPA_FUNCTION]
 			l_before_dbg_manager: like breakpoint_manager_for_expression_evaluation
+			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
+			l_functions: DS_HASH_SET [EPA_FUNCTION]
 		do
 				-- Setup information of the newly found test case.
 			create last_test_case_info.make (a_state)
+			create last_pre_execution_bounded_functions.make (5)
+			last_pre_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			create last_post_execution_bounded_functions.make (5)
+			last_post_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
 
 				-- Log information of the newly found test case.
 			log_new_test_case_found (last_test_case_info)
 
 				-- Setup break points to evaluate expressions.
 			l_before_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
+			l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
 
 				-- Enable break points for expression evaluation.
 			l_before_dbg_manager.toggle_breakpoints (True)
+			l_after_dbg_manager.toggle_breakpoints (True)
 		end
 
 	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
@@ -355,15 +403,10 @@ feature{NONE} -- Actions
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
 		local
-			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
-		do
-			a_bp_manager.toggle_breakpoints (False)
 
-				-- Setup post-execution expression evaluator.
-			if a_pre_execution then
-				l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
-				l_after_dbg_manager.toggle_breakpoints (True)
-			end
+		do
+			io.put_string ("break point : " + a_bp.location.breakable_line_number.out + "%N")
+			a_bp_manager.toggle_breakpoints (False)
 
 				-- Store results.
 			if a_pre_execution then
@@ -427,7 +470,7 @@ feature{NONE} -- Implementation
 			l_func_analyzer: CI_FUNCTION_ANALYZER
 			l_pre_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
 			l_post_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
-			l_transition_info: CI_TRANSITION_INFO
+			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
 		do
 			create l_context.make (last_test_case_info.variables)
 			create l_transition.make (
@@ -472,7 +515,14 @@ feature{NONE} -- Implementation
 			log_manager.pop_level
 
 				-- Fabricate transition info for the last executed test case.
-			create l_transition_info.make (last_test_case_info, l_transition, l_pre_valuations, l_post_valuations)
+			create l_transition_info.make (
+				last_test_case_info,
+				l_transition,
+				l_pre_valuations,
+				l_post_valuations,
+				last_pre_execution_bounded_functions,
+				last_post_execution_bounded_functions)
+
 			transition_data.extend (l_transition_info)
 		end
 
@@ -480,11 +530,17 @@ feature{NONE} -- Implementation
 			-- Setup `inferrers'.
 		local
 			l_simple_inferrer: CI_SIMPLE_FRAME_CONTRACT_INFERRER
+			l_sequence_inferrer: CI_SEQUENCE_PROPERTY_INFERRER
 		do
 			create inferrers.make
+
 			create l_simple_inferrer
 			l_simple_inferrer.set_logger (log_manager)
-			inferrers.extend (l_simple_inferrer)
+--			inferrers.extend (l_simple_inferrer)
+
+			create l_sequence_inferrer
+			l_sequence_inferrer.set_logger (log_manager)
+			inferrers.extend (l_sequence_inferrer)
 		end
 
 	add_not_tilda_expressions (a_state: EPA_STATE)
@@ -523,6 +579,51 @@ feature{NONE} -- Implementation
 			a_state.append (l_set)
 		end
 
+--	hex_adjusted_state (a_state: EPA_STATE; a_pre_state: EPA_STATE): EPA_STATE
+--			-- Adjusted state.
+--		local
+--			l_cur: DS_HASH_SET_CURSOR [EPA_EQUATION]
+--			l_ref: EPA_REFERENCE_VALUE
+--			l_old_current_value: EPA_EXPRESSION_VALUE
+--			l_new_current_value: EPA_EXPRESSION_VALUE
+--			l_old_current_addr: NATURAL_64
+--			l_new_current_addr: NATURAL_64
+--			l_is_old_larger: BOOLEAN
+--			l_diff: NATURAL_64
+--		do
+--			create Result.make (a_state.count, a_state.class_, a_state.feature_)
+--			Result.set_equality_tester (equation_equality_tester)
+--			l_old_current_value := a_pre_state.item_with_expression_text (ti_current).value
+--			l_new_current_value := a_state.item_with_expression_text (ti_current).value
+--			l_old_current_addr := hex_to_dec (l_old_current_value.out)
+--			l_new_current_addr := hex_to_dec (l_new_current_value.out)
+--			if l_old_current_addr > l_new_current_addr then
+--				l_is_old_larger := True
+--				l_diff := l_old_current_addr - l_new_current_addr
+--			else
+--				l_diff := l_new_current_addr - l_old_current_addr
+--			end
+--			from
+--				l_cur := a_state.new_cursor
+--				l_cur.start
+--			until
+--				l_cur.after
+--			loop
+--				if l_cur.item.value.is_reference then
+--					if l_is_old_larger then
+--						create l_ref.make (dec_to_hex (hex_to_dec (l_cur.item.value.out) + l_diff), l_cur.item.value.type)
+--					else
+--						create l_ref.make (dec_to_hex (hex_to_dec (l_cur.item.value.out) - l_diff), l_cur.item.value.type)
+--					end
+
+--					Result.force_last (create {EPA_EQUATION}.make (l_cur.item.expression, l_ref))
+--				else
+--					Result.force_last (l_cur.item)
+--				end
+--				l_cur.forth
+--			end
+--		end
+
 feature{NONE} -- Results
 
 	last_test_case_info: CI_TEST_CASE_INFO
@@ -534,7 +635,13 @@ feature{NONE} -- Results
 	last_post_execution_evaluations: EPA_STATE
 			-- Post-execution expression evaluations of the last found test csae
 
-	transition_data: LINKED_LIST [CI_TRANSITION_INFO]
+	last_pre_execution_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
+			-- Functions with bounded integer domain in pre-execution state
+
+	last_post_execution_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
+			-- Functions with bounded integer domain in post-execution state
+
+	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
 			-- Data collected for transitions retrieved from executed test cases
 
 

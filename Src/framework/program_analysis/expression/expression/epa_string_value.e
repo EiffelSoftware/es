@@ -12,7 +12,9 @@ inherit
 		rename
 			make as old_make
 		redefine
-			text, out
+			text, out,
+			as_string,
+			is_string
 		end
 
 create
@@ -38,5 +40,16 @@ feature -- Access
 		do
 			Result := string_value
 		end
+
+	as_string: detachable EPA_STRING_VALUE
+			-- Current as string value
+		do
+			Result := Current
+		end
+
+feature -- Status report
+
+	is_string: BOOLEAN = True
+			-- Is current a string value?	
 
 end

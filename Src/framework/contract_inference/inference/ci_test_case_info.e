@@ -12,6 +12,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	HASHABLE
+
 create
 	make,
 	make_empty
@@ -31,11 +33,13 @@ feature{NONE} -- Initialization
 			calculate_break_point_position
 			setup_operand_map (a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
 			setup_variables (test_case_class)
+			hash_code := test_case_class.name_in_upper.hash_code
 		end
 
 	make_empty
 			-- Initialize Current, but don't populate test case related attributes
 		do
+			hash_code := 0
 		end
 
 feature -- Access
@@ -66,6 +70,9 @@ feature -- Access
 			-- Variables in current test case
 			-- Key is the case sensitive name of variable,
 			-- value is the type of that variable.
+
+	hash_code: INTEGER
+			-- Hash code
 
 feature -- Status report
 
@@ -141,8 +148,8 @@ feature -- Access
 
 			create l_bp_finder
 			l_bp_finder.find_break_points (l_transformable.to_ast)
-			before_test_break_point_slot := l_bp_finder.before_test_break_point_slot + 1
-			after_test_break_point_slot := l_bp_finder.after_test_break_point_slot + 1
+			before_test_break_point_slot := l_bp_finder.before_test_break_point_slot
+			after_test_break_point_slot := l_bp_finder.after_test_break_point_slot
 		end
 
 	setup_operand_map (a_operands: STRING)

@@ -91,6 +91,10 @@ inherit
 		export
 			{NONE}
 				clear_all, wipe_out, extend
+		redefine
+			cursor,
+			go_to,
+			valid_cursor
 		end
 
 create
@@ -387,17 +391,23 @@ feature -- Access: compatibility
 			Result := item_alias_id (names_heap.id_of (alias_name))
 		end
 
-feature -- Traversal
-
-	start
-			-- Start iteration
+	cursor: CURSOR
+			-- Cursor
 		do
 			if feature_table /= Void then
-				feature_table.start
+				Result := feature_table.cursor
 			else
-					-- Load all the features in memory. It makes sense, since
-					-- the traversal will need to go through all the items.
-				internal_features.start
+				Result := internal_features.cursor
+			end
+		end
+
+	valid_cursor (c: CURSOR): BOOLEAN
+			-- Can cursor be moved to position `c'?
+		do
+			if feature_table /= Void then
+				Result := feature_table.valid_cursor (c)
+			else
+				Result := internal_features.valid_cursor (c)
 			end
 		end
 
@@ -414,6 +424,20 @@ feature -- Traversal
 			end
 		end
 
+feature -- Traversal
+
+	start
+			-- Start iteration
+		do
+			if feature_table /= Void then
+				feature_table.start
+			else
+					-- Load all the features in memory. It makes sense, since
+					-- the traversal will need to go through all the items.
+				internal_features.start
+			end
+		end
+
 	forth
 			-- Are we off?
 		do
@@ -421,6 +445,17 @@ feature -- Traversal
 				feature_table.forth
 			else
 				internal_table_forth
+			end
+		end
+
+	go_to (c: CURSOR)
+			-- Move to position `c'.
+			-- (from HASH_TABLE)
+		do
+			if feature_table /= Void then
+				feature_table.go_to (c)
+			else
+				internal_features.go_to (c)
 			end
 		end
 

@@ -176,6 +176,22 @@ feature -- Access
 	transition_feature_name: STRING = "dummy__feature"
 			-- Name of the fake feature used to type check feature transitions
 
+	variable_type (a_name: STRING): TYPE_A
+			-- Type of variable named `a_name' in Current
+		require
+			a_name_exists: has_variable_named (a_name)
+		do
+			Result := variables.item (a_name)
+		end
+
+	variable_class (a_name: STRING): detachable CLASS_C
+			-- Class of variable named `a_name' in Current
+		require
+			a_name_exists: has_variable_named (a_name)
+		do
+			Result := variables.item (a_name).associated_class
+		end
+
 feature -- Status report
 
 	is_variables_valid (a_variables: HASH_TABLE [STRING, STRING]; a_context_class: CLASS_C): BOOLEAN

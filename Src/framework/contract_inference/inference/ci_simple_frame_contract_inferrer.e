@@ -28,14 +28,9 @@ inherit
 
 	EPA_STRING_UTILITY
 
-feature -- Access
-
-	logger: EPA_LOG_MANAGER
-			-- Logger
-
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TRANSITION_INFO])
+	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		local
@@ -55,17 +50,9 @@ feature -- Basic operations
 			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions)
 		end
 
-	set_logger (a_logger: like logger)
-			-- Set `logger' with `a_logger'.
-		do
-			logger := a_logger
-		ensure
-			logger_set: logger = a_logger
-		end
-
 feature{NONE} -- Implementation
 
-	transition_data: LINKED_LIST [CI_TRANSITION_INFO]
+	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
 			-- Transition data from which contracts are inferred
 
 	feature_under_test: FEATURE_I
@@ -80,7 +67,7 @@ feature{NONE} -- Implementation
 	is_query: BOOLEAN
 			-- Is `feature_under_test' a query?
 
-	data_by_test_case_class_name (a_class_name: STRING): CI_TRANSITION_INFO
+	data_by_test_case_class_name (a_class_name: STRING): CI_TEST_CASE_TRANSITION_INFO
 			-- Transition information from test case whose class name is `a_class_name'
 		local
 			l_transitions: like transition_data
@@ -150,7 +137,7 @@ feature{NONE} -- Implementation
 			--  for the target of that function.
 		local
 			l_transitions: like transition_data
-			l_data: CI_TRANSITION_INFO
+			l_data: CI_TEST_CASE_TRANSITION_INFO
 			l_cursor: CURSOR
 			l_operand_name: STRING
 			l_tc_info: CI_TEST_CASE_INFO
@@ -558,7 +545,7 @@ feature{NONE} -- Implementation
 			-- A frame property is valid if it evaluates to True in all test cases.
 		local
 			l_tc_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION], STRING_8]
-			l_transition_info: CI_TRANSITION_INFO
+			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
 			l_qexpr_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_SET [EPA_FUNCTION], CI_QUANTIFIED_EXPRESSION]
 			l_expr_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
 			l_evaluator: CI_EXPRESSION_EVALUATOR
@@ -659,7 +646,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	operand_function_table (a_quantified_expression: CI_QUANTIFIED_EXPRESSION; a_transition_data: CI_TRANSITION_INFO): HASH_TABLE [EPA_FUNCTION, INTEGER]
+	operand_function_table (a_quantified_expression: CI_QUANTIFIED_EXPRESSION; a_transition_data: CI_TEST_CASE_TRANSITION_INFO): HASH_TABLE [EPA_FUNCTION, INTEGER]
 			-- A table from function operand index to expressions representing that operand in the context of `a_transition_data'
 		local
 			l_cursor: CURSOR

@@ -144,6 +144,7 @@ feature -- Basic operations
 			l_routine: E_FEATURE
 			l_bpslot: INTEGER
 			l_actions: detachable LINKED_LIST [BREAKPOINT_WHEN_HITS_ACTION_I]
+			l_breakpoint: BREAKPOINT
 		do
 			l_bp_manager := debugger_manager.breakpoints_manager
 			l_bps := expressions
@@ -158,16 +159,17 @@ feature -- Basic operations
 				l_actions := hit_actions.item (l_bp)
 				if b then
 					l_bp_manager.set_user_breakpoint (l_routine, l_bpslot)
-					l_bp_manager.breakpoint_at (l_bp, False).set_continue_execution (True)
-
+					l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp)
+					l_breakpoint.set_continue_execution (True)
 					if l_actions /= Void then
-						l_actions.do_all (agent (l_bp_manager.breakpoint_at (l_bp, False)).add_when_hits_action)
+						l_actions.do_all (agent l_breakpoint.add_when_hits_action)
 					end
+					l_bp_manager.add_breakpoint (l_breakpoint)
 				else
-					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
 					if l_actions /= Void then
 						l_actions.do_all (agent (l_bp_manager.breakpoint_at (l_bp, False)).remove_when_hits_action)
 					end
+					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
 				end
 				l_bps.forth
 			end

@@ -143,7 +143,7 @@ feature -- Test routines
 				"a := a - b %N"+
 			"else %N"+
 				"b := b - a %N"+
-			"end")
+			"end", Void)
 
 			assert("Invalid result", are_asts_equal(parsing_helper.parsed_ast, modifier.modified_transformable.target_node))
 		end

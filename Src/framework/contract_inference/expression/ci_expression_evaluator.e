@@ -41,9 +41,14 @@ inherit
 
 	SHARED_TEXT_ITEMS
 
+	ETR_PARSING_HELPER
+		select
+			error_handler
+		end
+
 feature -- Access
 
-	transition_context: CI_TRANSITION_INFO
+	transition_context: CI_TEST_CASE_TRANSITION_INFO
 			-- Context in which expressions are evaluated
 
 	missing_expressions: DS_HASH_SET [EPA_EXPRESSION]
@@ -103,6 +108,19 @@ feature -- Basic operations
 			transition_context := a_context
 			initialize_data_structures
 			a_expr.process (Current)
+		end
+
+	evaluate_string (a_string: STRING; a_context: like transition_context)
+			-- Evaluate `a_string' in `a_context'.
+			-- See comment of `evaluate' for details.
+		local
+			l_parser: like etr_expr_parser
+		do
+			l_parser := etr_expr_parser
+			setup_formal_parameters (l_parser, a_context.test_case_info.class_under_test)
+			l_parser.parse_from_string (once "check " + a_string, a_context.test_case_info.class_under_test)
+			check l_parser.expression_node /= Void end
+			evaluate (l_parser.expression_node, a_context)
 		end
 
 feature{NONE} -- Implementation

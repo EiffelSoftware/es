@@ -30,7 +30,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	scope (a_context: CI_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
+	scope (a_context: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [EPA_FUNCTION]
 			-- Values in current scope
 		local
 			l_state: like state_valuations
@@ -55,7 +55,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	state_valuations (a_context: CI_TRANSITION_INFO; a_pre_state: BOOLEAN): DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+	state_valuations (a_context: CI_TEST_CASE_TRANSITION_INFO; a_pre_state: BOOLEAN): DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
 			-- Expression valuation from `a_context'
 			-- `a_pre_state' indicates whether the expressions are evaluated before or
 			-- after test case execution.

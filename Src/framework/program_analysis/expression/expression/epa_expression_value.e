@@ -74,6 +74,11 @@ feature -- Access
 		do
 		end
 
+	as_string: detachable EPA_STRING_VALUE
+			-- Current as string value
+		do
+		end
+
 	type_name: STRING
 			-- Type name of current value
 		do
@@ -178,6 +183,11 @@ feature -- Status report
 			-- Is `item' equal to `other'.`item'?
 		do
 			Result := item ~ other.item
+		end
+
+	is_string: BOOLEAN
+			-- Is current a string value?
+		do
 		end
 
 feature -- Hashing

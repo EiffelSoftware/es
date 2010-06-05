@@ -50,7 +50,7 @@ feature -- Access
 			Result := eiffel_system.root_type.associated_class
 		end
 
-	data_directory: STRING is
+	data_directory: STRING
 			-- Directory for AutoFix data
 		local
 			l_path: FILE_NAME
@@ -61,7 +61,7 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
-	log_directory: STRING is
+	log_directory: STRING
 			-- Directory for AutoFix logs
 		local
 			l_path: FILE_NAME
@@ -72,7 +72,7 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
-	output_directory: STRING is
+	output_directory: STRING
 			-- Directory for output
 		local
 			l_path: FILE_NAME
@@ -82,7 +82,7 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
-	working_directory: STRING is
+	working_directory: STRING
 			-- Working directory of the project
 		do
 			Result := Execution_environment.current_working_directory
