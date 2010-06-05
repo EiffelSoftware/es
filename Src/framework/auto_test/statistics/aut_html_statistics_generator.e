@@ -38,6 +38,8 @@ inherit
 
 	AUT_TASK
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 
 	make

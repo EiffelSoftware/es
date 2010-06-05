@@ -24,6 +24,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Query
 
 	class_comments (a_class: attached CLASS_I): detachable EIFFEL_COMMENTS

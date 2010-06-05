@@ -14,6 +14,8 @@ inherit
 
 	AFX_SOLVER_FACTORY
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make,
 	make_with_feature

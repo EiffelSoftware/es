@@ -5,6 +5,7 @@ note
 
 class
 	ETR_ASS_ATTMPT_REPL_VISITOR
+
 inherit
 	AST_ITERATOR
 		export
@@ -13,13 +14,20 @@ inherit
 			process_reverse_as,
 			process_feature_as
 		end
+
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
+
 	ETR_SHARED_TOOLS
+
 	ETR_SHARED_BASIC_OPERATORS
+
 	ETR_SHARED_ERROR_HANDLER
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 create
 	make
 

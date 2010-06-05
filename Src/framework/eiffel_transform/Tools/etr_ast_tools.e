@@ -6,6 +6,9 @@ note
 class
 	ETR_AST_TOOLS
 
+inherit
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 feature {NONE} -- Implementation
 
 	printer: ETR_AST_STRUCTURE_PRINTER

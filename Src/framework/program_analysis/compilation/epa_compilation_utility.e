@@ -28,6 +28,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	epa_feature_checker: EPA_FEATURE_CHECKER_GENERATOR

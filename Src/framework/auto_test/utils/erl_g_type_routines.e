@@ -26,6 +26,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	has_feature (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN

@@ -1,45 +1,50 @@
 note
-	description: "Global flag that specifies what is the default value of options."
-	legal: "See notice at end of class."
+	description: "Shared encoding converter."
 	status: "See notice at end of class."
+	legal: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CONF_DEFAULT_OPTION_SETTING
+	SHARED_ENCODING_CONVERTER
 
 feature -- Access
 
-	is_63_compatible: BOOLEAN
-			-- Are default options initialized in 6.3 or older compatibility mode?
+	encoding_converter: ENCODING_CONVERTER
+			-- Encoding converter
+		require
+			converter_set: is_encoding_converter_set
 		do
-			Result := is_63_compatible_cell.item
+			Result := encoding_converter_cell.item
 		end
 
-feature -- Setting
+feature -- Query
 
-	set_is_63_compatible (v: like is_63_compatible)
-			-- Set `is_63_compatible' with `v'.
+	is_encoding_converter_set: BOOLEAN
+			-- Is encoding converter set?
 		do
-			is_63_compatible_cell.put (v)
-		ensure
-			set: is_63_compatible = v
+			Result := attached encoding_converter_cell.item
+		end
+
+feature -- Element change
+
+	set_encoding_converter (a_converter: like encoding_converter)
+			-- Set `encoding_converter' with `a_converter'
+		do
+			encoding_converter_cell.put (a_converter)
 		end
 
 feature {NONE} -- Implementation
 
-	is_63_compatible_cell: CELL [BOOLEAN]
-			-- Storage for `is_63_compatible'.
+	encoding_converter_cell: CELL [detachable ENCODING_CONVERTER]
+			-- Cell to hold the converter.
 		once
-				-- By default we are not 6.3 compatible.
-			create Result.put (False)
-		ensure
-			is_63_compatible_cell_not_void: Result /= Void
+			create Result.put (Void)
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -68,4 +73,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

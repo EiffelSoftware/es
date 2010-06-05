@@ -57,9 +57,9 @@ feature {NONE} -- Initialization
 			system := a_system
 			variable_table := a_variable_table
 
-			load_object_feature := interpreter_root_class.feature_named (load_object_feature_name)
-			store_object_feature := interpreter_root_class.feature_named (store_object_feature_name)
-			check_object_invariant_feature := interpreter_root_class.feature_named (check_object_invariant_feature_name)
+			load_object_feature := interpreter_root_class.feature_named_32 (load_object_feature_name)
+			store_object_feature := interpreter_root_class.feature_named_32 (store_object_feature_name)
+			check_object_invariant_feature := interpreter_root_class.feature_named_32 (check_object_invariant_feature_name)
 			record_query_feature := interpreter_class.feature_named (record_query_feature_name)
 
 			create expression_type_visitor.make (system, variable_table)

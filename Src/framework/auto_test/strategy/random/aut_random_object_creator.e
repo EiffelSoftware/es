@@ -230,7 +230,7 @@ feature {NONE} -- Steps
 			count := l_exported_creators.count
 			random.forth
 			i := (random.item  \\ count) + 1
-			creation_procedure := class_.feature_named (l_exported_creators.i_th (i))
+			creation_procedure := class_.feature_named_32 (l_exported_creators.i_th (i))
 			create feature_.make (creation_procedure, type)
 		ensure
 			has_creation_procedure: creation_procedure /= Void

@@ -22,6 +22,12 @@ inherit
 		    is_equal
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		undefine
+		    copy,
+		    is_equal
+		end
+		
 create
     make
 

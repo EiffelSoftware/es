@@ -18,6 +18,8 @@ inherit
 			process_id_as
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	before_test_break_point_slot: INTEGER

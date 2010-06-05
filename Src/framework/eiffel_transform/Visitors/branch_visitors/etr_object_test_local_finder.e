@@ -5,6 +5,7 @@ note
 
 class
 	ETR_OBJECT_TEST_LOCAL_FINDER
+
 inherit
 	AST_ITERATOR
 		export
@@ -12,8 +13,11 @@ inherit
 		redefine
 			process_object_test_as
 		end
+
 	ETR_SHARED_TOOLS
+
 	ETR_SHARED_LOGGER
+	
 create
 	make
 

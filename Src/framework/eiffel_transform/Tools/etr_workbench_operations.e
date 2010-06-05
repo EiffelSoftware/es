@@ -11,6 +11,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	system_defined: BOOLEAN

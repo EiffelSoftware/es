@@ -10,6 +10,8 @@ class
 inherit
 	HASHABLE
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 

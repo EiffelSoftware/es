@@ -12,6 +12,8 @@ inherit
 
    	SHARED_TYPES
 
+   	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
     default_create
 

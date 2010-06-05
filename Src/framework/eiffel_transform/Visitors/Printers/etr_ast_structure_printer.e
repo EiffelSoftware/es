@@ -118,10 +118,14 @@ inherit
 			process_loop_expr_as,
 			process_iteration_as
 		end
+
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 create
 	make_with_output
 

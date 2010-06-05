@@ -6,9 +6,12 @@ note
 
 class
 	AFX_DAIKON_GENERATOR
-	create
-		make
 
+inherit
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
+create
+	make
 
 feature -- creator
 	make is

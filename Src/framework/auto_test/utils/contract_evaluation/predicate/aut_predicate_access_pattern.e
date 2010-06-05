@@ -37,6 +37,11 @@ inherit
 			is_equal
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		undefine
+			is_equal
+		end
+
 create
 	make
 

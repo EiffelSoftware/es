@@ -6,6 +6,9 @@ note
 class
 	ETR_SHARED_TOOLS
 
+inherit
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 feature {NONE} -- Shared
 
 	contract_tools: ETR_CONTRACT_TOOLS

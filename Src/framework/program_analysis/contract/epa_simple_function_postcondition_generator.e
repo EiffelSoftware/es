@@ -21,6 +21,8 @@ inherit
 			process_nested_as
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	last_postcondition: detachable STRING

@@ -26,10 +26,13 @@ inherit
 			process_inline_agent_creation_as,
 			process_bracket_as
 		end
+
 	SHARED_TEXT_ITEMS
 		export
 			{NONE} all
 		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
 
 feature -- Access
 

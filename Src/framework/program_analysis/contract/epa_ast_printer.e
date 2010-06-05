@@ -38,6 +38,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Basic operations
 
 	print_in_context (a_ast: AST_EIFFEL; a_context: ROUNDTRIP_CONTEXT)

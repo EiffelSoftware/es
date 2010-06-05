@@ -93,6 +93,11 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export
+			{NONE} all
+		end
+
 feature -- Initialization
 
 	init (a_context: AST_CONTEXT)
@@ -2214,17 +2219,24 @@ feature {NONE} -- Implementation
 			t: like last_type
 		do
 				-- Constants are always of an attached type
-			t := string_type
-			if t /= Void then
-				t := t.as_attached_in (context.current_class)
+			if l_as.type = Void then
+					-- Default to STRING_8, if not specified in the code.
+				t := string_type
+				last_type := t
+			else
+				check_type (l_as.type)
 			end
-			last_type := t
-			if is_byte_node_enabled then
-				if l_as.is_once_string then
-					once_manifest_string_index := once_manifest_string_index + 1
-					create {ONCE_STRING_B} last_byte_node.make (l_as.value, once_manifest_string_index)
-				else
-					create {STRING_B} last_byte_node.make (l_as.value)
+				-- |FIXME: Should report error if the type is not expected.
+			if last_type /= Void then
+				t := last_type.as_attached_in (context.current_class)
+				last_type := t
+				if is_byte_node_enabled then
+					if l_as.is_once_string then
+						once_manifest_string_index := once_manifest_string_index + 1
+						create {ONCE_STRING_B} last_byte_node.make (l_as.value, t /= string_type, once_manifest_string_index)
+					else
+						create {STRING_B} last_byte_node.make (l_as.value, t /= string_type)
+					end
 				end
 			end
 		end
@@ -8016,7 +8028,7 @@ feature {NONE} -- Implementation
 						error_handler.insert_error (l_veen)
 					end
 					if not l_has_error and is_byte_node_enabled then
-						l_expressions.extend ([create {STRING_B}.make (l_name.value), l_expr_b])
+						l_expressions.extend ([create {STRING_B}.make (l_name.value, False), l_expr_b])
 					end
 					a_tuple.expressions.forth
 				end
@@ -10119,7 +10131,7 @@ feature {NONE} -- Implementation: catcall check
 											-- `A [G]' and descendant is `B [G -> STRING]', and if parent
 											-- type is `A [INTEGER]' then `B [INTEGER]' would not make sense.
 										l_descendant_type.reset_constraint_error_list
-										safe_check_constraints (l_parent_type, l_descendant_type)
+										l_descendant_type.check_constraints (context.current_class, context.current_feature, l_descendant_type.is_expanded)
 										if
 											not l_descendant_type.constraint_error_list.is_empty and then
 											(l_fail_if_constraint_not_met or l_descendant_type.is_expanded)
@@ -10162,26 +10174,6 @@ feature {NONE} -- Implementation: catcall check
 					create Result.make (0)
 				end
 			end
-		end
-
-	safe_check_constraints (a_parent_type, a_type: TYPE_A)
-			--
-		require
-			a_parent_type_not_void: a_parent_type /= Void
-			a_type_not_void: a_type /= Void
-		local
-			retried: BOOLEAN
-		do
-			if not retried then
-				a_type.check_constraints (context.current_class, context.current_feature, a_type.is_expanded)
-			else
-				print ("Failure is with parent " + a_parent_type.dump + "%N")
-				print (" and with type " + a_type.dump + "%N")
-				a_type.constraint_error_list.extend (Void)
-			end
-		rescue
-			retried := True
-			retry
 		end
 
 feature {INSPECT_CONTROL} -- AST modification

@@ -18,6 +18,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	actual_type_from_formal_type (a_type: TYPE_A; a_context: CLASS_C): TYPE_A

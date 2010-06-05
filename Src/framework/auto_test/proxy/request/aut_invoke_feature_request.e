@@ -87,9 +87,9 @@ feature -- Access
 	feature_to_call: FEATURE_I
 			-- Feature to invoke
 		do
-			Result := class_of_target_type.feature_named (feature_name)
+			Result := class_of_target_type.feature_named_32 (feature_name)
 		ensure then
-			definition: Result = class_of_target_type.feature_named (feature_name)
+			definition: Result = class_of_target_type.feature_named_32 (feature_name)
 		end
 
 	operand_indexes: SPECIAL [INTEGER] is
@@ -174,7 +174,7 @@ feature -- Settings
 		require
 			a_type_not_void: a_type /= Void
 			a_type_associated_with_class: a_type.has_associated_class
-			a_type.associated_class.feature_named (feature_name) /= Void
+			a_type.associated_class.feature_named_32 (feature_name) /= Void
 		do
 			target_type := a_type
 		ensure
@@ -194,7 +194,7 @@ invariant
 	feature_name_not_void: feature_name /= Void
 	target_not_void: target /= Void
 	argument_list_not_void: argument_list /= Void
-	class_has_a_feature: target_type /= Void implies target_type.associated_class.feature_named (feature_name) /= Void
+	class_has_a_feature: target_type /= Void implies target_type.associated_class.feature_named_32 (feature_name) /= Void
 	no_argument_void: not argument_list.has (Void)
 
 note

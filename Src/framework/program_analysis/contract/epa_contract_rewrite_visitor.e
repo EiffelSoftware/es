@@ -16,6 +16,8 @@ inherit
 			append_string
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- String
 
 	assertion: STRING

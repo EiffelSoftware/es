@@ -7,7 +7,6 @@ note
 class
 	AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST
 
-
 inherit
 
 	KL_EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]
@@ -20,6 +19,8 @@ inherit
 			system
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 create
 	make
 

@@ -15,6 +15,8 @@ inherit
 
 	EPA_AGENT_UTILITY [FEATURE_I]
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	argumentless_primitive_queries (a_type: TYPE_A): LIST [FEATURE_I] is

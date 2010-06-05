@@ -31,6 +31,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 	SHARED_DEGREES
 	SHARED_INSTANTIATOR
 
@@ -917,7 +919,7 @@ feature {NONE} -- Implementation
 					-- Error because of cycle
 				last_type := Void
 				if has_error_reporting then
-					create l_vtat1.make (t, f.feature_name)
+					create l_vtat1.make (t, f.feature_name_32)
 					l_vtat1.set_class (current_class)
 					l_vtat1.set_feature (current_feature)
 					error_handler.insert_error (l_vtat1)
@@ -925,7 +927,7 @@ feature {NONE} -- Implementation
 			else
 				l_like_control.put_routine_id (l_rout_id)
 					-- Process type referenced by anchor.
-				if last_type = current_actual_type then
+				if last_type.same_as (current_actual_type) then
 					r := f.type
 				else
 					r := f.type.instantiated_in (last_type)
@@ -940,7 +942,7 @@ feature {NONE} -- Implementation
 					last_type := Void
 					if has_error_reporting then
 						fixme ("What is the error for an anchor to a procedure")
-						create l_vtat1.make (t, f.feature_name)
+						create l_vtat1.make (t, f.feature_name_32)
 						l_vtat1.set_class (current_class)
 						l_vtat1.set_feature (current_feature)
 						error_handler.insert_error (l_vtat1)

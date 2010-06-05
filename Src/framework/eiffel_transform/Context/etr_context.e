@@ -5,6 +5,10 @@ note
 
 class
 	ETR_CONTEXT
+
+inherit
+	INTERNAL_COMPILER_STRING_EXPORTER
+	
 create
 	make_empty
 

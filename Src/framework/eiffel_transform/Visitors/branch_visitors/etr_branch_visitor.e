@@ -98,6 +98,8 @@ inherit
 			process_iteration_as
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature {NONE} -- Implementation
 
 	process_branch (a_parent: AST_EIFFEL; a_branches: ARRAY[detachable AST_EIFFEL])

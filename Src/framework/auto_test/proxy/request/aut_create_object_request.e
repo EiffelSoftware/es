@@ -20,6 +20,8 @@ inherit
 			is_creation
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 --	make

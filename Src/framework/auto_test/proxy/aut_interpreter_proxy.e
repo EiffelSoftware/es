@@ -110,8 +110,8 @@ feature {NONE} -- Initialization
 			make_response_parser (a_system)
 
 				-- You can only do this after the compilation of the interpreter.
-			injected_feature_body_id := l_itp_class.feature_named (feature_name_for_byte_code_injection).real_body_id (l_itp_class.types.first)
-			injected_feature_pattern_id := l_itp_class.feature_named (feature_name_for_byte_code_injection).real_pattern_id (l_itp_class.types.first)
+			injected_feature_body_id := l_itp_class.feature_named_32 (feature_name_for_byte_code_injection).real_body_id (l_itp_class.types.first)
+			injected_feature_pattern_id := l_itp_class.feature_named_32 (feature_name_for_byte_code_injection).real_pattern_id (l_itp_class.types.first)
 
 				-- Setup socket data printer.
 			create socket_data_printer.make (system, variable_table, Current)
