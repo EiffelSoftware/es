@@ -12,6 +12,7 @@ JILCFLAGS = $(CFLAGS) $mtccflags $optimize -DEIF_IL_DLL
 LN = copy
 MV = $mv
 RM = RD /S /Q
+DEL = del
 MKDIR_TARGET = $mkdir_target
 LINK = $link32
 DLL_FLAGS = $dll_flags
@@ -54,3 +55,4 @@ lib_dir: ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)$(DIR)lib
 
 clean:
 	$(RM) lp_solve$(DIR)lpsolve55$(DIR)bin
+	$(DEL) lp_solve$(DIR)lpsolve55$(DIR)lpsolve.RES
