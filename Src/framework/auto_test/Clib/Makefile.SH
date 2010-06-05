@@ -42,9 +42,6 @@ $spitshell >>Makefile <<'!NO!SUBS!'
 
 
 all: build_lpsolve_$(PLATFORM)
-	$(MKDIR) ../spec/include
-	$(CP) lp_solve/*.h ../spec/include
-	$(MKDIR) ../spec/$(PLATFORM)/lib
 	$(MAKE) clobber
 
 build_lpsolve_linux-x86-64:
