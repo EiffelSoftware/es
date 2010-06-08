@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="jstar_proofs" uuid="40AFE5A8-BD02-4B04-A77F-84D0456AA2BB" library_target="jstar_proofs">
+	<target name="jstar_proofs">
+		<root all_classes="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
+		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
+		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_time" location="$ISE_LIBRARY\library\gobo\gobo_time.ecf"/>
+		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
+		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>		
+		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
+		<library name="uuid" location="$EIFFEL_SRC\library\uuid\uuid.ecf"/>
+		<cluster name="jstar_proofs" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/examples$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/jimple_generation$</exclude>
+				<exclude>^/utilities$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/spec_generation$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/logic_and_abstraction$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/jstar_interaction$</exclude>
+			</file_rule>
+			<cluster name="jimple_generation" location="$EIFFEL_SRC\framework\jstar_proofs\jimple_generation\"/>
+			<cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
+			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\">
+				<cluster name="visitors" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\visitors\"/>
+				<cluster name="parsing" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\parsing\"/>
+				<cluster name="ast" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\ast\"/>
+			</cluster>
+			<cluster name="logic_and_abstraction" location="$EIFFEL_SRC\framework\jstar_proofs\logic_and_abstraction\"/>
+			<cluster name="jstar_interaction" location="$EIFFEL_SRC\framework\jstar_proofs\jstar_interaction\"/>
+		</cluster>
+	</target>
+</system>
+

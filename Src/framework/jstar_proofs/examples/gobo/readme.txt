@@ -1,0 +1,1 @@
+There is only one logic file and one abstraction file for the example, and these are stored in the current directory. If ProveIt says that the logic or abstraction file is missing, please copy it or create a symlink.

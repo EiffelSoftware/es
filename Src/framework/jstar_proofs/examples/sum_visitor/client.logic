@@ -1,0 +1,53 @@
+//Basic definitions of fields
+import "field_logic";
+
+//Constants for booleans
+import "boolean_logic";
+
+//Definitions for builtin_plus
+import "builtin_plus_logic";
+
+//Definitions of sum
+import "sum.logic";
+
+
+//Datatype definition for abstract syntax tree
+import "plus_const_datatype.logic";
+
+
+rewrite a_simple_sum:
+    builtin_plus(numeric_const(0), builtin_plus(numeric_const(30), builtin_plus(numeric_const(40), builtin_plus(numeric_const(50), numeric_const(60))))) = numeric_const(180)
+
+rewrite a_simple_sum2:
+    builtin_plus(numeric_const(0), builtin_plus(numeric_const(30), builtin_plus(numeric_const(40), builtin_plus(numeric_const(50), numeric_const(65))))) = numeric_const(185)
+
+
+/******************************************* 
+ *  Subeq hacks
+ ********************************************/
+
+rule sub_eq_hack : 
+| | |- | subeq({content=?x},{content=?y})
+if
+| | |- ?x=?y| 
+
+
+rule arg_record_hack :
+|||- {context=?t;content=?x} = {content=?y;context=?s} |
+if
+|||- ?t=?s * ?x=?y|
+
+rule subeq_forget :
+|||- |subeq(?x,?y) 
+if
+|||- ?x=?y |
+
+
+/*********************************************
+ *   Visitor hacks
+ ********************************************/
+rule exists_foo_Visitor :
+  | | Visitor(?x,?y) |- | Visitor(?x,?z) 
+if
+ Visitor(?x,?y) | | |- ?y=?z |
+

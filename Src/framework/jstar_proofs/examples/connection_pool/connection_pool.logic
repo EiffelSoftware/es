@@ -1,0 +1,140 @@
+import "field_logic";
+
+/*
+For boolean conditions
+*/
+
+rule eq_eq_true_left :
+  | builtin_eq(?x,?y) = numeric_const("1") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("0") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_eq_false_left :
+  | builtin_eq(?x,?y) = numeric_const("0") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- |
+
+rule neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("1") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- | 
+
+
+/*
+For lists
+*/
+
+
+rule ls_val_exists :
+| | list(?x,?y,?v) |- | list(?x,?y,?v2)
+if
+list(?x,?y,?v) | | |- ?v2=?v| 
+
+rule ls_tail_exists :
+| | list(?x,?y,?v) |- | list(?x,?y2,?v)
+if
+list(?x,?y,?v) | | |- ?y2=?y |
+
+/*
+rule ls_not_empty :
+list(?x,?y,?as) | | |- ?as=cons(_b,_bs) |
+if
+list(?x,?y,?as) | | |- length(?as) != numeric_const(0) | 
+*/
+
+
+/****************
+ *  setof
+ *  converts lists to sets. 
+ ****************/
+rewrite app_setof :
+setof(app(?x,?y)) = union(setof(?x),setof(?y))
+
+rewrite cons_setof :
+setof(cons(?x,?y)) = add(?x,setof(?y))
+
+rewrite emp_setof :
+setof(empty()) = empty()
+
+rewrite union_add_1 :
+union(add(?x,?y),?z) = add(?x,union(?y,?z))
+
+rewrite union_add_2 :
+union(?z,add(?x,?y)) = add(?x,union(?z,?y))
+
+rule setof :
+| | |- setof(?x) = setof(?y) |
+without 
+  ?x!=?y
+if
+| | |- ?x=?y |
+or
+| | |- setof(?x) = setof(?y) * ?x!=?y |
+
+
+
+/******************************
+ *  Iterated Resrouces
+ *
+ *  DBset(xs, t)  is 
+ *  forall* x in xs.  DBConnection(x,t)
+ *
+ *  The following rules implement this  
+ *  wrt the set notation used. 
+ ********************************/
+
+rule iterresleft_add:
+| | DBSet(add(?x,?y),?t) |- |
+if
+| | DBSet(?y,?t) * DBConnection(?x,{connection = ?t}) |- |
+
+rule iterresright_add:
+| | |- | DBSet(add(?x,?y),?t)
+if
+| | |- | DBSet(?y,?t) * DBConnection(?x,{connection = ?t}) 
+
+rule iterresleft_union:
+| | DBSet(union(?x,?y),?t) |- |
+if
+| | DBSet(?y,?t) * DBSet(?x,?t) |- |
+
+rule iterresright_union:
+| | |- | DBSet(union(?x,?y),?t) 
+if
+| | |- | DBSet(?y,?t) * DBSet(?x,?t) 
+
+rule iterresright_empty:
+| | |- | DBSet(empty(),?t) 
+if
+| | |- | 
+
+rule iterresleft_empty:
+| | DBSet(empty(),?t) |- | 
+if
+| | |- | 
+
+rule DBSet :
+  | | DBSet(?x,?y) |- | DBSet(?z,?y)
+without
+ ?x!=?z
+if
+  DBSet(?x,?y) | | |- ?x=?z | 
+or
+  | | DBSet(?x,?y) |- ?x!=?z | DBSet(?z,?y)
+
+
+
+

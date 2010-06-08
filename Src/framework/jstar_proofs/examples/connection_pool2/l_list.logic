@@ -1,0 +1,79 @@
+import "field_logic";
+
+/********************************************
+ *   This rule guesses exists
+ ********************************************/
+/*
+rule llist_l_list_match1 :
+  | LList$L_LIST(?x,{list=?l1;lastremoved=?r1}) |- LList$L_LIST(?x,{list=?l2;lastremoved=?r2})
+without
+  |- (?l1 != ?l2 || ?l1 = ?l2)
+if
+  | LList$L_LIST(?x,{list=?l1;lastremoved=?r1}) |- ?l1=?l2 * LList$L_LIST(?x,{list=?l1;lastremoved=?r2})
+or
+  | LList$L_LIST(?x,{list=?l1;lastremoved=?r1}) |- ?l1!=?l2 * LList$L_LIST(?x,{list=?l1;lastremoved=?r2})
+
+rule llist_l_list_match2 :
+  | LList$L_LIST(?x,{list=?l;lastremoved=?r1}) |- LList$L_LIST(?x,{list=?l;lastremoved=?r2})
+without
+  |- ?r1 != ?r2
+if
+  LList$L_LIST(?x,{list=?l;lastremoved=?r1}) | |- ?r1=?r2
+or
+  | LList$L_LIST(?x,{list=?l;lastremoved=?r1}) |- ?r1!=?r2 * LList$L_LIST(?x,{list=?l;lastremoved=?r2})
+*/
+
+rule llist_l_list_match :
+  | LList$L_LIST(?x,?y) |- LList$L_LIST(?x,?z)
+without
+  |- ?y != ?z
+if
+  LList$L_LIST(?x,?y) | |- ?y=?z
+or
+  | LList$L_LIST(?x,?y) |-  ?y!=?z * LList$L_LIST(?x,?z) 
+
+
+rule empty_list_length_zero:
+ | | |- numeric_const("0")=length(?x) |
+if
+ | | |- ?x=empty() |
+
+rule empty_sll:
+ | | |- | sll(?x, {last=?y;list=empty()})
+if
+ | | |- ?x=?y |
+
+
+rule asdf:
+ | | sll(?n, {last=?z; list=cons(?x, ?xs)}) |- | Node(?n, {item=?i; next=?m})
+if
+ | ?n!=?q | Node(?n, {item=?x; next=?q}) * sll(?q, {last=?z; list=?xs}) |- | Node(?n, {item=?i; next=?m})
+// Node(?n, {item=?i; next=?m}) | | sll(?m, {last=?z; list=?xs}) |- ?i=?x |
+
+rule tweak2:
+ | | Node(?n1, {item=?i1; next=?m1}) |- | Node(?n1, {item=?i2; next=?m2})
+if
+ Node(?n1, {item=?i1; next=?m1}) | | |- ?i1=?i2 * ?m1=?m2 |
+
+rule tweak3:
+ | | |-  builtin_minus(length(cons(?a, ?as)), numeric_const("1"))=length(?as) |
+if
+ | | |- | 
+
+rule tweakn:
+ | | |- builtin_plus(length(?xs), numeric_const("1"))=length(cons(?x, ?xs)) |
+if
+ | | |- | 
+
+rule tweak4:
+ | | Node(?x, {item=?a; next=?n}) * sll(?n, {last=?z; list=?as}) |- | sll(?x, {last=?z; list=?l})
+if
+ sll(?x, {last=?z; list=?l}) | | |- ?l=cons(?a, ?as) |
+
+/*
+-- The following predicate cannot be unfolded and folded by jStar. It's completely redundant, and used only for documentation purposes.
+	sl_predicate: "[
+		sll(n, {last=z; list=l}) = | ( n = z * l = empty() | || n /= z * l = cons(_i, _t) | Node(n, {item=_i; next=_m}) * sll(_m, {last=z; list=_t}) )
+	]"
+
+*/

@@ -1,0 +1,61 @@
+pred_define ::= identifier L_PAREN lvariable paramlist_question_mark R_PAREN EQUALS formula SEMICOLON
+
+lvariable ::=
+ at_identifier | identifier | QUESTIONMARK identifier
+              // token for @this:, @parameter0, etc.
+
+paramlist_question_mark ::=
+ COMMA paramlist | /* empty */
+
+
+
+
+formula ::= pure_list OR spatial_list
+
+
+pure_list ::= /* empty */ | pure | pure MULT pure_list
+
+pure ::= identifier L_PAREN argument_list R_PAREN | argument EQUALS argument | argument CMPNE argument | argument COLON identifier 
+
+argument_list ::=
+ /*empty*/  | argument | argument COMMA argument_list_question_mark
+
+
+
+argument_list_question_mark ::=
+ argument_list | /* empty */
+
+
+argument ::=
+ lvariable | identifier L_PAREN argument_list R_PAREN | INTEGER_CONSTANT | STRING_CONSTANT | field_signature | L_BRACE fldlist R_BRACE		// Why field_signature here??? Due to their modeling of fields as field(var, field_signature, value)
+
+field_signature ::=
+ CMPLT class_name COLON jtype name CMPGT
+
+class_name ::= quoted_name | identifier | full_identifier
+
+jtype ::= VOID | nonvoid_type
+
+nonvoid_type ::= base_type_no_name array_brackets_list_star | quoted_name array_brackets_list_star | identifier array_brackets_list_star | full_identifier array_brackets_list_star
+
+array_brackets_list_star ::= /* empty */ | L_BRACKET R_BRACKET array_brackets_list_star
+// There might be an issue with this. Matthew wrote Dino something about this nonterminal
+
+base_type_no_name ::= BOOLEAN | BYTE | CHAR | SHORT | INT | LONG | FLOAT | DOUBLE | NULL
+
+name ::= quoted_name | identifier
+
+quoted_name ::= QUOTED_NAME
+
+full_identifier ::= FULL_IDENTIFIER
+
+fldlist ::= identifier EQUALS argument  | /*empty*/ | identifier EQUALS argument SEMICOLON fldlist
+
+
+
+
+spatial_list ::= /*empty*/  | spatial | spatial MULT spatial_list
+
+spatial ::= argument DOT field_signature MAPSTO  argument | identifier L_PAREN argument_list R_PAREN | L_PAREN combine R_PAREN
+
+combine ::= formula OROR formula | formula WAND formula
