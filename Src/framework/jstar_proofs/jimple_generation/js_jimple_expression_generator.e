@@ -68,8 +68,6 @@ inherit
 	SHARED_BYTE_CONTEXT
 		export {NONE} all end
 
-	JS_HELPER_ROUTINES
-
 create
 	make
 

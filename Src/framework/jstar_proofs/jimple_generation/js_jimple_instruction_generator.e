@@ -21,9 +21,6 @@ inherit
 			process_reverse_b
 		end
 
-	JS_HELPER_ROUTINES
-		export {NONE} all end
-
 create
 	make
 

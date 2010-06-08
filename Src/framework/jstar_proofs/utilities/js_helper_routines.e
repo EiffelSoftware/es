@@ -14,6 +14,9 @@ inherit
 	DOCUMENTATION_EXPORT
 		export {NONE} all end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export {NONE} all end
+
 feature {NONE}
 
 	name_for_argument (a_argument: !ARGUMENT_B): STRING

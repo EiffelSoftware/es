@@ -14,6 +14,9 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
+	JS_HELPER_ROUTINES
+		export {NONE} all end
+
 feature {BYTE_NODE} -- Visitors
 
 	process_access_expr_b (a_node: ACCESS_EXPR_B)
@@ -318,6 +321,12 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.expr)
 		end
 
+	process_guard_b (a_node: GUARD_B)
+			-- Process `a_node'.
+		do
+			unsupported ("Guard statements.")
+		end
+
 	process_hector_b (a_node: HECTOR_B)
 			-- Process `a_node'.
 		do
@@ -398,6 +407,11 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.invariant_part)
 			safe_process (a_node.variant_part)
 			safe_process (a_node.compound)
+		end
+
+	process_loop_expr_b (a_node: LOOP_EXPR_B)
+		do
+			unsupported ("Across statements.")
 		end
 
 	process_nat64_val_b (a_node: NAT64_VAL_B)

@@ -35,7 +35,7 @@ feature
 			l_process.set_on_fail_launch_handler (agent failed_jstar_launch)
 			l_process.launch
 			l_process.wait_for_exit_with_timeout (30 * 1000) -- Wait at most 30 seconds for jStar to finish
-			if not l_process.is_last_wait_timeout then
+			if l_process.is_last_wait_timeout then
 				l_process.terminate
 				l_process.wait_for_exit
 				timed_out := True
