@@ -50,7 +50,7 @@ build_lpsolve_linux-x86-64:
 	$(MV) lp_solve/lpsolve55/bin/ux64/* ../spec/$(PLATFORM)/lib
 
 
-build_lpsolve_linux-x86-32:
+build_lpsolve_linux-x86:
 	cd lp_solve/lpsolve55 ; $(SHELL) ccc
 	$(MKDIR) ../spec/$(PLATFORM)/lib
 	$(MV) lp_solve/lpsolve55/bin/ux32/* ../spec/$(PLATFORM)/lib
