@@ -11,12 +11,15 @@ inherit
 	ARRAYED_LIST [ARRAYED_LIST [STRING]]
 		rename
 			make as old_make
+		redefine
+			out
 		end
 
 	DEBUG_OUTPUT
 		undefine
 			is_equal,
-			copy
+			copy,
+			out
 		end
 
 create
@@ -51,6 +54,72 @@ feature -- Access
 
 	comment: STRING
 			-- Comments to be located after the relation name, before attribute declaration	
+
+	trailing_comment: STRING
+			-- Comments that appear at the end of the file
+
+	out, as_string: STRING
+			-- Current weka relation as string
+		local
+			l_cursor: CURSOR
+			l_lines: LIST [STRING]
+		do
+			create Result.make (8192)
+
+				-- Output the relation name part.
+			Result.append_string (relation_header)
+			Result.append_character (' ')
+			Result.append_string (name)
+			Result.append_character ('%N')
+			Result.append_character ('%N')
+
+				-- Output comment.
+			l_lines := comment.split ('%N')
+			from
+				l_lines.start
+			until
+				l_lines.after
+			loop
+				Result.append_character ('%%')
+				Result.append_string (l_lines.item_for_iteration)
+				Result.append_character ('%N')
+				l_lines.forth
+			end
+
+				-- Output attributes.
+			l_cursor := attributes.cursor
+			from
+				attributes.start
+			until
+				attributes.after
+			loop
+				Result.append_string (attributes.item_for_iteration.signature)
+				Result.append_character ('%N')
+				attributes.forth
+			end
+			attributes.go_to (l_cursor)
+			Result.append_character ('%N')
+
+				-- Output instances data.
+			Result.append_string (data_header)
+			Result.append_character ('%N')
+			l_cursor := cursor
+			from
+				start
+			until
+				after
+			loop
+				Result.append_string (instance_string)
+				Result.append_character ('%N')
+				forth
+			end
+			go_to (l_cursor)
+			Result.append_character ('%N')
+
+				-- Append trailing comment.
+			Result.append_character ('%N')
+			Result.append (trailing_comment)
+		end
 
 feature -- Status report
 
@@ -127,63 +196,23 @@ feature -- Basic operations
 			end
 		end
 
-	to_medium (a_media: IO_MEDIUM)
-			-- Store current relation in `a_media'.
-		require
-			a_media_is_ready: a_media.is_open_write
-		local
-			l_cursor: CURSOR
-			l_lines: LIST [STRING]
+	set_trailing_comment (a_trailing_comment: STRING)
+			-- Set `trailing_comment' with `a_trailing_comment'.
+			-- Make a copy from `a_trailing_comment'.
 		do
-				-- Output the relation name part.
-			a_media.put_string (relation_header)
-			a_media.put_character (' ')
-			a_media.put_string (name)
-			a_media.put_character ('%N')
-			a_media.put_character ('%N')
-
-				-- Output comment.
-			l_lines := comment.split ('%N')
-			from
-				l_lines.start
-			until
-				l_lines.after
-			loop
-				a_media.put_character ('%%')
-				a_media.put_string (l_lines.item_for_iteration)
-				a_media.put_character ('%N')
-				l_lines.forth
+			if a_trailing_comment = Void then
+				trailing_comment := ""
+			else
+				trailing_comment := a_trailing_comment.twin
 			end
+		end
 
-				-- Output attributes.
-			l_cursor := attributes.cursor
-			from
-				attributes.start
-			until
-				attributes.after
-			loop
-				a_media.put_string (attributes.item_for_iteration.signature)
-				a_media.put_character ('%N')
-				attributes.forth
-			end
-			attributes.go_to (l_cursor)
-			a_media.put_character ('%N')
-
-				-- Output instances data.
-			a_media.put_string (data_header)
-			a_media.put_character ('%N')
-			l_cursor := cursor
-			from
-				start
-			until
-				after
-			loop
-				a_media.put_string (instance_string)
-				a_media.put_character ('%N')
-				forth
-			end
-			go_to (l_cursor)
-			a_media.put_character ('%N')
+	to_medium (a_medium: IO_MEDIUM)
+			-- Store current relation in `a_medium'.
+		require
+			a_medium_is_ready: a_medium.is_open_write
+		do
+			a_medium.put_string (as_string)
 		end
 
 	extend_instance (a_instance: like item)

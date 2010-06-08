@@ -188,7 +188,7 @@ feature{NONE} -- Implementation
                     l_variable_table.compare_objects
                     i := 0
                 until
-                    i = l_count
+                    i >= l_count - 1
                 loop
                 	l_obj_index ?= lt_variable.item (i)
 

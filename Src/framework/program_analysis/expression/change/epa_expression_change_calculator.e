@@ -29,7 +29,7 @@ feature -- Basic operation
 
 	change_set (a_source_state: EPA_STATE; a_target_state: EPA_STATE): DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			-- Change set from `a_source_state' to `a_target_state'
-			-- Key of the resulting table is the expression in the state model,
+			-- Key of the resulting table is an expression in the state model,
 			-- value is the list of changes of that expression.
 		local
 			l_exprs: EPA_HASH_SET [EPA_EXPRESSION]
@@ -46,6 +46,22 @@ feature -- Basic operation
 			l_exprs.do_if (
 				agent put_expression_change (?, a_source_state, a_target_state, Result),
 				agent should_change_be_calculated (?, a_source_state, a_target_state))
+		end
+
+feature -- Status report	
+
+	is_integer_change_relaxation_enabled: BOOLEAN
+			-- Is integer change relaxation enabled?
+			-- Default: False
+
+feature -- Setting
+
+	set_is_integer_change_relaxation_enabled (b: BOOLEAN)
+			-- Set `is_integer_change_relaxation_enabled' with `b'.
+		do
+			is_integer_change_relaxation_enabled := b
+		ensure
+			is_integer_change_relaxation_enabled_set: is_integer_change_relaxation_enabled = b
 		end
 
 feature{NONE} -- Implementation
@@ -123,6 +139,7 @@ feature{NONE} -- Process/Data
 		local
 			l_equation: detachable EPA_EQUATION
 			l_delta_expr: EPA_AST_EXPRESSION
+			l_absolute_result_expr: EPA_AST_EXPRESSION
 			l_changes: EPA_EXPRESSION_CHANGE_VALUE_SET
 			l_change: EPA_EXPRESSION_CHANGE
 			l_change_list: LINKED_LIST [EPA_EXPRESSION_CHANGE]
@@ -137,14 +154,18 @@ feature{NONE} -- Process/Data
 
 					create l_delta_expr.make_with_text (expression.class_, expression.feature_, l_delta.out, expression.written_class)
 					l_change_list.extend (new_expression_change (expression, new_single_value_change_set (l_delta_expr), True, 1.0))
+					create l_absolute_result_expr.make_with_text (expression.class_, expression.feature_, a_value.out, expression.written_class)
+					l_change_list.extend (new_expression_change (expression, new_single_value_change_set (l_absolute_result_expr), False, 1.0))
 
 						-- Integer delta relaxation
-					if l_delta > 0 then
-						l_changes := create {EPA_INTEGER_RANGE}.make_with_lower_bound (expression.class_, 1, True)
-					else
-						l_changes := create {EPA_INTEGER_RANGE}.make_with_upper_bound (expression.class_, -1, True)
+					if is_integer_change_relaxation_enabled then
+						if l_delta > 0 then
+							l_changes := create {EPA_INTEGER_RANGE}.make_with_lower_bound (expression.class_, 1, True)
+						else
+							l_changes := create {EPA_INTEGER_RANGE}.make_with_upper_bound (expression.class_, -1, True)
+						end
+						l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 					end
-					l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 
 					expression_change_set.force_last (l_change_list, expression)
 				end

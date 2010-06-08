@@ -172,6 +172,8 @@ feature {NONE} -- Implementation
 		do
 			if attached {STRING} replacements.item (a_name.as_lower) as l_new_name then
 				output.append_string (l_new_name)
+			else
+				output.append_string (a_name)
 			end
 		end
 

@@ -53,4 +53,5 @@ feature -- Status report
 				Result := a_value.is_boolean
 			end
 		end
+
 end

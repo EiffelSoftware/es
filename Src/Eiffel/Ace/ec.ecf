@@ -175,7 +175,7 @@
 		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf" readonly="false"/>
-		<library name="jstar_proofs" location="\home\stephan\EVE\Src\framework\jstar_proofs\jstar_proofs.ecf" readonly="false"/>
+		<library name="jstar_proofs" location="$ISE_LIBRARY\framework\jstar_proofs\jstar_proofs.ecf" readonly="false"/>
 		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
 		<library name="memory_analyzer" location="$ISE_LIBRARY\library\memory_analyzer\memory_analyzer.ecf" readonly="false"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf" readonly="false"/>
@@ -192,6 +192,7 @@
 		</library>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
+		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="tagging-ev" location="$EIFFEL_SRC\framework\tagging\ev\tagging-ev.ecf" readonly="false"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false"/>
@@ -239,9 +240,9 @@
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>/overrides$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>^/tty$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>/overrides$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

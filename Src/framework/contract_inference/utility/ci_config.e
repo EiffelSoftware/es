@@ -72,15 +72,15 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
-	output_directory: STRING
-			-- Directory for output
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.contract_inference_results_path)
-			Result := l_path
-			safe_recursive_create_directory (l_path)
-		end
+--	contract_output_directory: STRING
+--			-- Directory for output
+--		local
+--			l_path: FILE_NAME
+--		do
+--			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.contract_inference_results_path)
+--			Result := l_path
+--			safe_recursive_create_directory (l_path)
+--		end
 
 	working_directory: STRING
 			-- Working directory of the project
@@ -88,18 +88,54 @@ feature -- Access
 			Result := Execution_environment.current_working_directory
 		end
 
+	output_directory: STRING
+			-- Directory to output generated files
+			-- Serveral options use this output_directory, including:
+			-- `generate-weka'.
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
 			-- Should project be built to contain infrastructure for contract inference?
-		do
-			Result := attached test_case_directory
-		end
 
 	should_infer_contracts: BOOLEAN
 			-- Should contracts be inferred?
 
+	should_generate_weka_relations: BOOLEAN
+			-- Should Weka relations be generated?
+
+feature -- Weka relation generation
+
+	weka_assertion_selection_mode: INTEGER
+			-- The assertion selection mode,
+
+	weka_assertion_union_selection_mode: INTEGER = 1
+			-- If multiple transitions for the same feature have different assertions,
+			-- those assertions are unioned together.
+
+	weka_assertion_intersection_selection_mode: INTEGER = 0
+			-- If multiple transitions for the same feature have different assertions,
+			-- those assertions will be ignored, only assertions common to all transitions
+			-- will be kept.
+			-- This is the default.
+
+	is_weka_assertion_selection_mode_valid (a_mode: INTEGER): BOOLEAN
+			-- Is `a_mode' a valid Weka assertion selection mode?
+		do
+			Result :=
+				a_mode = weka_assertion_intersection_selection_mode or
+				a_mode =weka_assertion_union_selection_mode
+		end
+
 feature -- Setting
+
+	set_should_build_project (b: BOOLEAN)
+			-- Set `should_build_project' with `b'.
+		do
+			should_build_project := b
+		ensure
+			should_build_project_set: should_build_project = b
+		end
 
 	set_test_case_directory (a_dir: like test_case_directory)
 			-- Set `test_case_directory' with `a_dir'.
@@ -135,6 +171,31 @@ feature -- Setting
 			should_infer_contracts := b
 		ensure
 			should_infer_contracts_set: should_infer_contracts = b
+		end
+
+	set_should_generate_weka_relations (b: BOOLEAN)
+			-- Set `should_generate_weka_relations' with `b'.
+		do
+			should_generate_weka_relations := b
+		ensure
+			should_generate_weka_relations_set: should_generate_weka_relations = b
+		end
+
+	set_weka_assertion_selection_mode (i: INTEGER)
+			-- Set `weka_assertion_selection_mode' with `i'.
+		require
+			i_valid: is_weka_assertion_selection_mode_valid (i)
+		do
+			weka_assertion_selection_mode := i
+		ensure
+			weka_assertion_selection_mode_set: weka_assertion_selection_mode = i
+		end
+
+	set_output_directory (a_directory: like output_directory)
+			-- Set `output_directory' with `a_directory'.
+			-- Make a new copy of `a_directory'.
+		do
+			output_directory := a_directory.twin
 		end
 
 feature{NONE} -- Implementation

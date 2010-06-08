@@ -9,6 +9,9 @@ class
 
 inherit
 	WEKA_ARFF_ATTRIBUTE
+		redefine
+			is_nominal
+		end
 
 create
 	make
@@ -22,6 +25,7 @@ feature{NONE} -- Initialization
 			no_void: not a_values.has (Void)
 			no_space: a_values.for_all (agent (a_value: STRING): BOOLEAN do Result := a_value.has_substring (" ") end)
 		do
+			name := a_name.twin
 			create values.make
 			values.compare_objects
 			a_values.do_all (agent (a_value: STRING; a_set: like values) do a_set.extend (a_value.twin) end (?, values))
@@ -47,7 +51,8 @@ feature -- Access
 			loop
 				Result.append (values.item_for_iteration)
 				if values.index < values.count then
-					Result.append (once ", ")
+					Result.append_character (',')
+					Result.append_character (' ')
 				end
 				values.forth
 			end
@@ -59,7 +64,7 @@ feature -- Access
 	value (a_value: STRING): STRING
 			-- Value from `a_value', possibly processed to fit the type of current attribute
 		do
-			if a_value /= Void then
+			if a_value /= Void and then values.has (a_value) then
 				Result := a_value
 			else
 				Result := missing_value
@@ -67,6 +72,9 @@ feature -- Access
 		end
 
 feature -- Status report
+
+	is_nominal: BOOLEAN = True
+			-- Is current attribute of norminal type?
 
 	is_valid_value (a_value: STRING): BOOLEAN
 			-- Is `a_value' a valid value for current attribute?

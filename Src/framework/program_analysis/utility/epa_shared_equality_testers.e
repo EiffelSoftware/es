@@ -27,6 +27,12 @@ feature -- Equality tester
 			create Result
 		end
 
+	partial_expression_change_equality_tester: EPA_EXPRESSION_CHANGE_PARTIAL_EQUALITY_TESTER
+			-- Partial equality tester for {EPA_EXPRESSION_CHANGE}
+		once
+			create Result
+		end
+
 	type_a_equality_tester: AGENT_BASED_EQUALITY_TESTER [TYPE_A]
 			-- Equality tester for TYPE_A objects
 		once
@@ -44,5 +50,5 @@ feature -- Equality tester
 		once
 			create Result
 		end
-		
+
 end

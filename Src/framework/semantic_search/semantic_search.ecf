@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="semantic_search" uuid="197D2624-6547-4BAB-90AB-131ABFA4EABB" library_target="semantic_search">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="semantic_search" uuid="197D2624-6547-4BAB-90AB-131ABFA4EABB" library_target="semantic_search">
 	<target name="semantic_search">
 		<root all_classes="true"/>
-		<option warning="false" is_attached_by_default="false" void_safety="none">
+		<option warning="false" is_attached_by_default="false" void_safety="none" syntax="provisional">
 			<assertions/>
 		</option>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>

@@ -14,6 +14,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	HASHABLE
+
 create
 	make
 
@@ -21,6 +23,8 @@ feature{NONE} -- Initialization
 
 	make (a_expression: like expression; a_values: like values; a_relative: BOOLEAN)
 			-- Initialize Current.
+		local
+			l_hash_str: STRING
 		do
 			expression := a_expression
 
@@ -28,6 +32,12 @@ feature{NONE} -- Initialization
 			values := a_values
 			set_is_relative (a_relative)
 			set_relevance (1.0)
+
+			create l_hash_str.make (64)
+			l_hash_str.append (is_relative.out)
+			l_hash_str.append_character (',')
+			l_hash_str.append (expression.text)
+			hash_code := l_hash_str.hash_code
 		end
 
 feature -- Access
@@ -42,6 +52,9 @@ feature -- Access
 			-- Relevance of Current change
 			-- Maybe used as a boost value in search engine
 			-- Default: 1.0
+
+	hash_code: INTEGER
+			-- Hash code value
 
 feature -- Status report	
 

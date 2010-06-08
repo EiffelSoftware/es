@@ -766,6 +766,7 @@ feature{NONE} -- Implementations
 			if is_for_feature then
 				create l_criteria.make
 				l_criteria.extend (argument_expression_veto_agent)
+				l_criteria.extend (feature_exported_to_any_agent)
 					-- Extend different expression selection criteria into `l_criteria' depending on
 					-- the value of `is_for_pre_execution', `is_creation' and `is_query'.
 				if is_for_pre_execution then
@@ -804,8 +805,9 @@ feature{NONE} -- Implementations
 			l_agents.extend (feature_not_from_any_veto_agent)
 			l_agents.extend (nested_not_on_basic_veto_agent)
 			l_agents.extend (feature_with_few_arguments_veto_agent (0))
+			l_agents.extend (feature_exported_to_any_agent)
 			if not should_search_for_query_with_precondition then
-				l_agents.extend (feature_without_precondition)
+				l_agents.extend (feature_without_precondition_agent)
 			end
 			Result.expression_veto_agents.put (anded_agents_with_list (l_agents), 2)
 
@@ -832,9 +834,10 @@ feature{NONE} -- Implementations
 			l_agents.extend (feature_expression_veto_agent)
 			l_agents.extend (feature_not_from_any_veto_agent)
 			l_agents.extend (nested_not_on_basic_veto_agent)
+			l_agents.extend (feature_exported_to_any_agent)
 			l_agents.extend (feature_with_one_integer_argument_veto_agent)
 			if not should_search_for_query_with_precondition then
-				l_agents.extend (feature_without_precondition)
+				l_agents.extend (feature_without_precondition_agent)
 			end
 
 			Result.expression_veto_agents.put (
@@ -901,12 +904,19 @@ feature{NONE} -- Implementations
 			fixme ("We don't handle the following cases. 21.5.2010 Jasonw")
 
 				-- We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases.
-			Result := not a_feature.feature_name.is_case_insensitive_equal (once "is_equal")
+			Result :=
+				not a_feature.feature_name.is_case_insensitive_equal (once "is_equal") and then
+				not a_feature.feature_name.is_case_insensitive_equal (once "sequential_occurrences")
 
 
 				-- Don't handle queries with preconditions.
 			if Result then
 				Result := (should_search_for_query_with_precondition or else all_preconditions (a_feature).is_empty)
+			end
+
+				-- Don't handle non-exported features.
+			if Result then
+				Result := a_feature.is_exported_for (system.any_class.compiled_representation)
 			end
 
 				-- Don't handle agents as argument.

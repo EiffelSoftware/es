@@ -12,7 +12,9 @@ inherit
 		export {NONE} all end
 
 create
-	make
+	make,
+	make_with_loggers,
+	make_with_logger_array
 
 feature{NONE} -- Initialization
 
@@ -23,6 +25,20 @@ feature{NONE} -- Initialization
 			create level_stack.make
 			push_level (info_level)
 			set_level_threshold (info_level)
+		end
+
+	make_with_loggers (a_loggers: LINEAR [EPA_LOGGER])
+			-- Initialize current with `a_loggers'.
+		do
+			make
+			a_loggers.do_all (agent extend_logger)
+		end
+
+	make_with_logger_array (a_loggers: ARRAY [EPA_LOGGER])
+			-- Initialize current with `a_loggers'.
+		do
+			make
+			a_loggers.do_all (agent extend_logger)
 		end
 
 feature -- Access
@@ -42,7 +58,7 @@ feature -- Access
 	level_threshold: INTEGER
 			-- Logging level threshold
 			-- Only when `level' >= `level_threshold', messages are actually logged.
-			-- Default: `info_level'
+			-- Default: `info_level'			
 
 feature -- Logging level constants
 
@@ -87,6 +103,41 @@ feature -- Setting
 			level_stack.extend (a_level)
 		end
 
+	push_severe_level
+			-- Store current `level' in a stack and
+			-- set `level' with `severe_level'.
+		do
+			push_level (severe_level)
+		end
+
+	push_info_level
+			-- Store current `level' in a stack and
+			-- set `level' with `info_level'.
+		do
+			push_level (info_level)
+		end
+
+	push_fine_level
+			-- Store current `level' in a stack and
+			-- set `level' with `fine_level'.
+		do
+			push_level (fine_level)
+		end
+
+	push_finer_level
+			-- Store current `level' in a stack and
+			-- set `level' with `finer_level'.
+		do
+			push_level (finer_level)
+		end
+
+	push_finest_level
+			-- Store current `level' in a stack and
+			-- set `level' with `finest_level'.
+		do
+			push_level (finest_level)
+		end
+
 	pop_level
 			-- Pop the last stored log level
 		do
@@ -105,6 +156,42 @@ feature -- Setting
 			level_threshold_set: level_threshold = a_level_threshold
 		end
 
+	set_level_threshold_to_severe
+			-- Set `level_threshold' to `severe_level'.
+		do
+			set_level_threshold (severe_level)
+		end
+
+	set_level_threshold_to_info
+			-- Set `level_threshold' to `info_level'.
+		do
+			set_level_threshold (info_level)
+		end
+
+	set_level_threshold_to_fine
+			-- Set `level_threshold' to `fine_level'.
+		do
+			set_level_threshold (fine_level)
+		end
+
+	set_level_threshold_to_finer
+			-- Set `level_threshold' to `finer_level'.
+		do
+			set_level_threshold (finer_level)
+		end
+
+	set_level_threshold_to_finest
+			-- Set `level_threshold' to `fine_level'.
+		do
+			set_level_threshold (finest_level)
+		end
+
+	extend_logger (a_logger: EPA_LOGGER)
+			-- Extend `a_logger' into `loggers'.
+		do
+			loggers.extend (a_logger)
+		end
+
 feature -- Time logging
 
 	time_logging_mode: INTEGER
@@ -120,6 +207,18 @@ feature -- Time logging
 			time_logging_mode := a_mode
 		ensure
 			time_logging_mode_set: time_logging_mode = a_mode
+		end
+
+	set_duration_time_mode
+			-- Set `time_logging_mode' to `duration_time_logging_mode'.
+		do
+			set_time_logging_mode (duration_time_logging_mode)
+		end
+
+	set_absolute_time_mode
+			-- Set `time_logging_mode' to `absolute_time_logging_mode'.
+		do
+			set_time_logging_mode (absolute_time_logging_mode)
 		end
 
 	start_time: DT_DATE_TIME
@@ -232,10 +331,12 @@ feature{NONE} -- Impmelentation
 			create Result.make (32)
 			if time_logging_mode = duration_time_logging_mode then
 				Result.append (duration_until_now.out)
+				Result.append (once ": ")
 			elseif time_logging_mode = absolute_time_logging_mode then
 				Result.append (system_clock.date_time_now.out)
+				Result.append (once ": ")
 			end
-			Result.append (once ": ")
+
 		end
 
 	start_time_internal: detachable DT_DATE_TIME

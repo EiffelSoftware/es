@@ -41,6 +41,8 @@ feature -- Basic operations
 			l_feature_name_option: AP_STRING_OPTION
 			l_class_name_option: AP_STRING_OPTION
 			l_infer_option: AP_FLAG
+			l_generate_weka_option: AP_FLAG
+			l_weka_assertion_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -63,8 +65,22 @@ feature -- Basic operations
 			l_infer_option.set_description ("Infer contracts for feature specified with %"feature%" option in class specified in %"class%" option.")
 			l_parser.options.force_last (l_infer_option)
 
+			create l_generate_weka_option.make_with_long_form ("generate-weka")
+			l_generate_weka_option.set_description (
+				"Generate Weka relations from test cases. %N%
+				%Format --class <CLASS_NAME> --generate-weka <test case directory> <weka relation output directory>. %N%
+				%<test case directory> can be a directory for a single feature or a directory  for a class. In the first case, a single Weka%
+				%relation will be generated; in the second case, multiple Weka relations will be generated, one for each feature in the same class.%N%
+				%<CLASS_NAME> specifies the class whose Weka relations are to be generated.")
+			l_parser.options.force_last (l_generate_weka_option)
+
+			create l_weka_assertion_option.make_with_long_form ("weka-assertion-selection")
+			l_weka_assertion_option.set_description ("Mode to select assertions as Weka attributes in the relations. Valid values are %"union%" and %"intersection%". If this option is not specified, the default is %"intersection%".")
+			l_parser.options.force_last (l_weka_assertion_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
+				config.set_should_build_project (True)
 				config.set_test_case_directory (l_build_project_option.parameter)
 			end
 
@@ -77,6 +93,37 @@ feature -- Basic operations
 			end
 
 			config.set_should_infer_contracts (l_infer_option.was_found)
+
+			if l_generate_weka_option.was_found then
+				setup_generate_weka (config, l_parser.parameters)
+			end
+
+			if l_weka_assertion_option.was_found then
+				setup_weka_assertion_selection (config, l_weka_assertion_option.parameter)
+			else
+				setup_weka_assertion_selection (config, Void)
+			end
+		end
+
+feature{NONE} -- Implementation
+
+	setup_generate_weka (a_config: CI_CONFIG; a_parameters: DS_LIST [STRING])
+			-- Setup `a_config' using data given in `a_parser' for Weka relation generation.
+		do
+			a_config.set_should_generate_weka_relations (True)
+			check a_parameters.count = 2 end
+			config.set_test_case_directory (a_parameters.first)
+			config.set_output_directory (a_parameters.last)
+		end
+
+	setup_weka_assertion_selection (a_config: CI_CONFIG; a_mode: detachable STRING)
+			-- Setup `a_cnofig' using `a_mode' for weka assertion selection mode.
+		do
+			if a_mode /= Void and then a_mode.is_case_insensitive_equal ("union") then
+				a_config.set_weka_assertion_selection_mode ({CI_CONFIG}.weka_assertion_union_selection_mode)
+			else
+				a_config.set_weka_assertion_selection_mode ({CI_CONFIG}.weka_assertion_intersection_selection_mode)
+			end
 		end
 
 note

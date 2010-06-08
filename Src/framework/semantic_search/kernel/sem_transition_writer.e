@@ -157,7 +157,7 @@ feature {NONE} -- Append
 	append_changes
 			-- Append state changes into `buffer'.
 		local
-			l_calculator: SEM_UNRELAXED_EXPRESSION_CHANGE_CALCULATOR
+			l_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
 			l_changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_transition: like queryable
 			l_expr: EPA_EXPRESSION

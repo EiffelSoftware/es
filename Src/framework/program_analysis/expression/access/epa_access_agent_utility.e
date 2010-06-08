@@ -195,7 +195,7 @@ feature -- Expression veto agents
 				end
 		end
 
-	feature_without_precondition: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+	feature_without_precondition_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
 			-- An agent to select features without precondition
 		do
 			Result := agent (a_access: EPA_ACCESS): BOOLEAN
@@ -205,6 +205,20 @@ feature -- Expression veto agents
 					if attached {EPA_ACCESS_NESTED} a_access as l_nested then
 						l_feat := l_nested.right.feature_
 						Result := precondition_of_feature (l_feat, l_feat.written_class).is_empty
+					end
+				end
+		end
+
+	feature_exported_to_any_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select features that are exported to {ANY}.
+		do
+			Result := agent (a_access: EPA_ACCESS): BOOLEAN
+				local
+					l_feat: FEATURE_I
+				do
+					if attached {EPA_ACCESS_NESTED} a_access as l_nested then
+						l_feat := l_nested.right.feature_
+						Result := l_feat.is_exported_for (system.any_class.compiled_representation)
 					end
 				end
 		end
