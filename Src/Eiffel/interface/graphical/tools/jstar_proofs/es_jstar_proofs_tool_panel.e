@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	ES_PROOF_ASSISTANT_TOOL_PANEL
+	ES_JSTAR_PROOFS_TOOL_PANEL
 
 inherit
 

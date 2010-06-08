@@ -6,10 +6,10 @@ indexing
 
 
 class
-	ES_PROOF_ASSISTANT_TOOL
+	ES_JSTAR_PROOFS_TOOL
 
 inherit
-	ES_STONABLE_TOOL [ES_PROOF_ASSISTANT_TOOL_PANEL]
+	ES_STONABLE_TOOL [ES_JSTAR_PROOFS_TOOL_PANEL]
 
 create {NONE}
 	default_create
@@ -39,7 +39,7 @@ feature -- Access
 
 feature {NONE} -- Factory
 
-	new_tool: ES_PROOF_ASSISTANT_TOOL_PANEL
+	new_tool: ES_JSTAR_PROOFS_TOOL_PANEL
 			-- Creates the tool for first use on the development `window'
 		do
 			create Result.make (window, Current)
