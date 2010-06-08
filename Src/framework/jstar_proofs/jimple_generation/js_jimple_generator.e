@@ -787,6 +787,8 @@ feature {NONE}
 			end
 			Context.set_current_feature (a_feature)
 			Context.set_byte_code (Result)
+				-- The next line is an ugly hack. If I don't have it, then I get an assertion violation deep in the supplier code. This is somehow related to object test locals.
+			Context.set_final_mode
 			Result.setup_local_variables (False)
 		end
 
