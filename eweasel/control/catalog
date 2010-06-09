@@ -13,6 +13,8 @@ test	capture-external-call		caprep001 tcf pass capture replay
 test	capture-simple-agent		caprep002 tcf pass capture replay
 test	capture-external-exception	caprep003 tcf pass capture replay
 test	capture-incall-assertions	caprep004 tcf pass capture replay
+test	capture-memory-routines		caprep005 tcf pass capture replay
+test	capture-simple-weak-pointer	caprep006 tcf pass capture replay
 
 
 

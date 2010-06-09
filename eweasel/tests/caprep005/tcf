@@ -1,0 +1,20 @@
+
+test_name 	capture-memory-routines
+test_description A program that performs an INCALL to a routine with contracts
+
+copy_sub 	Ace $TEST Ace
+copy_raw 	test.e $CLUSTER test.e
+compile_frozen
+compile_result 	ok
+c_compile_work
+c_compile_result	ok
+
+
+execute_work 	NONE 	exec_capture_output -eif_capture
+execute_result 	ok
+
+execute_work	NONE	exec_replay_output -eif_replay
+execute_result	ok
+compare		exec_replay_output exec_capture_output
+
+test_end
