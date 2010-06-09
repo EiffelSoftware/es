@@ -1319,13 +1319,13 @@ end
 				then
 					l_inside := False
 				end
-			elseif l_feat.written_class.name_in_upper.is_equal ("MANAGED_POINTER") then
-				if
-					l_feat.feature_name.starts_with ("put_") or
-					l_feat.feature_name.starts_with ("read_")
-				then
-					l_inside := False
-				end
+--			elseif l_feat.written_class.name_in_upper.is_equal ("MANAGED_POINTER") then
+--				if
+--					l_feat.feature_name.starts_with ("put_") or
+--					l_feat.feature_name.starts_with ("read_")
+--				then
+--					l_inside := False
+--				end
 			end
 
 			if l_inside then

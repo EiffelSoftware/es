@@ -1040,21 +1040,31 @@ feature {NONE} -- C code generation
 			inspect
 				f_type
 			when memory_move then
-				buffer.put_string ("memmove((void *)")
+				buffer.put_string ("RTCRMMV((void *)")
 			when memory_copy then
-				buffer.put_string ("memcpy((void *)")
+				buffer.put_string ("RTCRMCPY((void *)")
 			when memory_set then
-				buffer.put_string ("memset((void *)")
+				buffer.put_string ("RTCRMSET((void *)")
 			when memory_alloc then
-				buffer.put_string ("malloc((size_t)")
+				buffer.put_string ("RTCRMMAL((size_t)")
 			when memory_calloc then
-				buffer.put_string ("calloc((size_t)")
+				buffer.put_string ("RTCRMCAL((size_t)")
 			when memory_free then
-				buffer.put_string ("free(")
+				buffer.put_string ("RTCRMFRE(")
 			end
 
 			if f_type /= memory_alloc and f_type /= memory_calloc then
 				target.print_register
+				if f_type = memory_copy or f_type = memory_move or f_type = memory_set then
+					buffer.put_character (',')
+					if attached {TYPED_POINTER_I} target.c_type as l_target then
+						buffer.put_string ("sizeof(")
+						buffer.put_string (l_target.type.c_string)
+						buffer.put_character (')')
+					else
+						buffer.put_string ("(size_t) 0")
+					end
+				end
 			end
 
 			inspect
