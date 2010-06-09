@@ -5,6 +5,7 @@ note
 
 class
 	SEM_DOCUMENT_WRITER
+
 inherit
 	EPA_EXPRESSION_CHANGE_VALUE_SET_VISITOR
 
@@ -26,8 +27,10 @@ feature -- Basic operation
 			-- delegate
 			if attached {SEM_TRANSITION}a_queryable as l_trans then
 				transition_writer.write (l_trans, a_folder)
+				last_file_path := transition_writer.last_file_path
 			elseif attached {SEM_OBJECTS}a_queryable as l_obj then
 				object_writer.write (l_obj, a_folder)
+				last_file_path := object_writer.last_file_path
 			else
 				to_implement("")
 			end
@@ -46,6 +49,10 @@ feature -- Basic operation
 feature -- Access
 
 	last_document: STRING
+			-- Content of last written document
+
+	last_file_path: STRING
+			-- Full path of last created document
 
 	boost_function: detachable FUNCTION[ANY, TUPLE[SEM_QUERYABLE, STRING, EPA_EQUATION], REAL] assign set_boost_function
 

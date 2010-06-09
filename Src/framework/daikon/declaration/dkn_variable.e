@@ -132,7 +132,7 @@ feature -- Status report
 		do
 			if a_value ~ daikon_nonsensical_value then
 				Result := True
-			elseif rep_type ~ int_rep_type then
+			elseif rep_type ~ integer_rep_type then
 				Result := a_value.is_integer
 			elseif rep_type ~ boolean_rep_type then
 				Result := a_value.is_boolean

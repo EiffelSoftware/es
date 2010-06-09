@@ -264,7 +264,7 @@ feature{NONE} -- Implementation
 
 					elseif l_part.starts_with (once "TAG_") then
 						tag := l_part.substring (5, l_part.count)
-					elseif l_part.item (1).is_digit then
+					elseif l_parts.islast and then l_part.item (1).is_digit then
 						uuid := l_part.twin
 					end
 				end

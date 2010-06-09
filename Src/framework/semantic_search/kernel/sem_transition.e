@@ -108,6 +108,9 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	uuid: detachable STRING
+			-- UUID of current transition
+
 feature -- Status setting
 
 	set_precondition (a_pre: like precondition)
@@ -150,6 +153,16 @@ feature -- Status setting
 			description := a_description.twin
 		ensure
 			description_set: description ~ a_description
+		end
+
+	set_uuid (a_uuid: like uuid)
+			-- Set `uuid' with `a_uuid'.
+		do
+			if a_uuid = Void then
+				uuid := Void
+			else
+				uuid := a_uuid.twin
+			end
 		end
 
 feature -- Status report

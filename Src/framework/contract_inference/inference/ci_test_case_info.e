@@ -22,6 +22,8 @@ feature{NONE} -- Initialization
 
 	make (a_info_state: EPA_STATE)
 			-- Initialize current with `a_inf_state', which contains information of a test case.
+		local
+			l_parts: LIST [STRING]
 		do
 			test_case_class := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_name).value.out)
 			class_under_test := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_under_test).value.out)
@@ -34,6 +36,14 @@ feature{NONE} -- Initialization
 			setup_operand_map (a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
 			setup_variables (test_case_class)
 			hash_code := test_case_class.name_in_upper.hash_code
+
+
+			l_parts := string_slices (test_case_class.name_in_upper, "__")
+			if l_parts.last.item (1).is_digit then
+				uuid := l_parts.last.twin
+			else
+				uuid := ""
+			end
 		end
 
 	make_empty
@@ -73,6 +83,9 @@ feature -- Access
 
 	hash_code: INTEGER
 			-- Hash code
+
+	uuid: STRING
+			-- UUID of `test_case_class'
 
 feature -- Status report
 

@@ -129,8 +129,8 @@ feature{NONE} -- Actions
 			-- Generate a weka relation from `a_test_cases' of feature named `a_feature_name', and
 			-- store the relation in `config'.`output_directory'.
 		local
-			l_cursor: like a_test_cases.new_cursor
-			l_generator: SEM_TRANSITION_TO_WEKA_PRINTER
+			l_cursor: DS_HASH_SET_CURSOR [STRING]
+			l_generator: CI_TRANSITION_TO_WEKA_PRINTER
 			l_transition_loader: SEM_TRANSITION_LOADER
 			l_relation: WEKA_ARFF_RELATION
 			l_file: PLAIN_TEXT_FILE

@@ -84,6 +84,9 @@ feature -- Basic operations
 			debug_project
 
 			log_manager.put_line_with_time (msg_contract_inference_ended)
+
+				-- Store transitions in files
+			store_transition_in_files
 		end
 
 feature{NONE} -- Implementation
@@ -479,6 +482,7 @@ feature{NONE} -- Implementation
 				last_test_case_info.operand_map,
 				l_context,
 				last_test_case_info.is_feature_under_test_creation)
+			l_transition.set_uuid (last_test_case_info.uuid)
 
 			l_transition.set_precondition (last_pre_execution_evaluations)
 			l_transition.set_postcondition (last_post_execution_evaluations)
@@ -577,6 +581,23 @@ feature{NONE} -- Implementation
 				l_cursor.forth
 			end
 			a_state.append (l_set)
+		end
+
+	store_transition_in_files
+			-- Store transitions in `transition_data' into files.
+		local
+			l_writer: SEM_DOCUMENT_WRITER
+			l_reader: SEM_DOCUMENT_LOADER
+		do
+			create l_writer
+			create l_reader
+			across transition_data as l_cursor loop
+				l_writer.write (l_cursor.item.transition, config.transition_directory)
+				l_reader.load_from_file (l_writer.last_file_path)
+				if attached {SEM_FEATURE_CALL_TRANSITION} l_reader.last_queryable as l_transition then
+					io.put_string (l_transition.debug_output)
+				end
+			end
 		end
 
 --	hex_adjusted_state (a_state: EPA_STATE; a_pre_state: EPA_STATE): EPA_STATE

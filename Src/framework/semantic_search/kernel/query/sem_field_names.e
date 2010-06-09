@@ -50,6 +50,8 @@ feature -- Access
 
 	id_field: STRING = "id"
 
+	uuid_field: STRING = "uuid"
+
 	export_status_field: STRING = "export_status"
 
 	feature_clause_field: STRING = "feature_clause"

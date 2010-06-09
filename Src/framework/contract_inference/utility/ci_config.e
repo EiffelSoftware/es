@@ -55,8 +55,19 @@ feature -- Access
 		local
 			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (output_directory)
+			create l_path.make_from_string (contract_output_directory)
 			l_path.extend (once "data")
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
+	transition_directory: STRING
+			-- Directory for AutoFix data
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (contract_output_directory)
+			l_path.extend (once "transition")
 			Result := l_path
 			safe_recursive_create_directory (l_path)
 		end
@@ -66,21 +77,21 @@ feature -- Access
 		local
 			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (output_directory)
+			create l_path.make_from_string (contract_output_directory)
 			l_path.extend ("log")
 			Result := l_path
 			safe_recursive_create_directory (l_path)
 		end
 
---	contract_output_directory: STRING
---			-- Directory for output
---		local
---			l_path: FILE_NAME
---		do
---			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.contract_inference_results_path)
---			Result := l_path
---			safe_recursive_create_directory (l_path)
---		end
+	contract_output_directory: STRING
+			-- Directory for output
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.contract_inference_results_path)
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
 
 	working_directory: STRING
 			-- Working directory of the project

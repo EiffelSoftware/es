@@ -68,7 +68,7 @@ feature -- Variable var-kind
 feature -- Variable rep-type
 
 	boolean_rep_type: STRING = "boolean"
-	int_rep_type: STRING = "int"
+	integer_rep_type: STRING = "int"
 	hashcode_rep_type: STRING = "hashcode"
 	double_rep_type: STRING = "double"
 	string_rep_type: STRING = "java.lang.String"
@@ -80,7 +80,7 @@ feature -- Variable rep-type
 			create Result.make
 			Result.compare_objects
 			Result.extend (boolean_rep_type)
-			Result.extend (int_rep_type)
+			Result.extend (integer_rep_type)
 			Result.extend (hashcode_rep_type)
 			Result.extend (double_rep_type)
 			Result.extend (string_rep_type)
@@ -118,5 +118,7 @@ feature -- Misc
 	rep_type_string: STRING = "rep-type"
 	comparability_string: STRING = "comparability"
 	variable_string: STRING = "variable"
-	
+
+	daikon_version_string: STRING = "decl-version 2.0"
+
 end

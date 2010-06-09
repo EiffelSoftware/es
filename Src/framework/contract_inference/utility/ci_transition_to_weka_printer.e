@@ -5,18 +5,38 @@ note
 	revision: "$Revision$"
 
 class
-	SEM_TRANSITION_TO_WEKA_PRINTER
+	CI_TRANSITION_TO_WEKA_PRINTER
 
 inherit
 	SEM_TRANSITION_PRINTER
+		redefine
+			make
+		end
 
 	SEM_FIELD_NAMES
 
 	EPA_STRING_UTILITY
 
 create
-	make,
-	make_with_selection_function
+	make
+
+feature{NONE} -- Initialization
+
+	make
+			-- Initialize current
+		do
+			Precursor
+
+				-- Only select equations that are of type boolean or integer.
+			set_equation_selection_function (
+				agent (a_equation: EPA_EQUATION): BOOLEAN
+					local
+						l_type: TYPE_A
+					do
+						l_type := a_equation.expression.type
+						Result := l_type.is_boolean or else l_type.is_integer
+					end)
+		end
 
 feature -- Access
 
@@ -24,8 +44,8 @@ feature -- Access
 			-- Weka ARFF relation from Current
 		local
 			l_weka_attrs: ARRAYED_LIST [WEKA_ARFF_ATTRIBUTE]
-			l_pres: like precondition_attributes
-			l_posts: like postcondition_attributes
+			l_pres: like pre_state_expressions
+			l_posts: like post_state_expressions
 			l_pre_count: INTEGER
 			l_attrs: LINKED_LIST [STRING]
 			l_attr: WEKA_ARFF_ATTRIBUTE
@@ -44,13 +64,15 @@ feature -- Access
 			l_is_value_table_generated: BOOLEAN
 			l_row: STRING
 			l_id_attr: WEKA_ARFF_NUMERIC_ATTRIBUTE
+			l_uuid_attr: WEKA_ARFF_STRING_ATTRIBUTE
+			l_uuid_str: STRING
 		do
 			l_transition_changes := transition_changes
 
 				-- Calculate all the attributes.
-			l_pres := precondition_attributes
+			l_pres := pre_state_expressions
 			l_pre_count := l_pres.count
-			l_posts := postcondition_attributes
+			l_posts := post_state_expressions
 
 			create l_attrs.make
 			l_pres.keys.do_all (agent l_attrs.extend)
@@ -64,7 +86,9 @@ feature -- Access
 
 			create l_weka_attrs.make (100)
 			create l_id_attr.make (id_field)
+			create l_uuid_attr.make (uuid_field)
 			l_weka_attrs.extend (l_id_attr)
+			l_weka_attrs.extend (l_uuid_attr)
 			from
 				i := 1
 				l_attrs.start
@@ -87,7 +111,6 @@ feature -- Access
 				elseif l_type.is_integer then
 					create {WEKA_ARFF_NUMERIC_ATTRIBUTE} l_attr.make (l_attr_name)
 				else
-					io.put_string ("Bad")
 					check not_supported: False end
 				end
 				l_weka_attrs.extend (l_attr)
@@ -133,12 +156,22 @@ feature -- Access
 				l_transition := transitions.item_for_iteration
 				create l_instance.make (l_weka_attrs.count)
 				l_instance.extend (transitions.index.out)
+
+				if attached {STRING} l_transition.uuid as l_uuid and then not l_uuid.is_empty then
+					l_uuid_str := l_uuid.twin
+				else
+					l_uuid_str := not_applicable_value.twin
+				end
+				l_instance.extend (l_uuid_str)
 				l_row := l_value_table_rows.item (l_id_attr.name)
 				l_row.append (transitions.index.out)
 				l_row.append_character ('%T')
+				l_row := l_value_table_rows.item (l_uuid_attr.name)
+				l_row.append (l_uuid_str)
+				l_row.append_character ('%T')
 				from
 					i := 1
-					l_weka_attrs.go_i_th (2)
+					l_weka_attrs.go_i_th (3)
 					l_attrs.start
 				until
 					l_attrs.after
@@ -295,91 +328,77 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	precondition_attributes: DS_HASH_TABLE [TYPE_A, STRING]
-			-- Attributes that are used as preconditions
-			-- Elements in Result is anonymous expression names for those attributes.
-		do
-			Result := attributes (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_precondition end)
-		end
+--	selected_assertions (a_attributes_retriever: FUNCTION [ANY, TUPLE [SEM_TRANSITION], EPA_STATE]): DS_HASH_TABLE [TYPE_A, STRING]
+--			-- Set of expressions that are to be translated into Weka attributes
+--			-- Elements in Result is anonymous expression names for those attributes.
+--		local
+--			l_frequence_tbl: DS_HASH_TABLE [INTEGER, STRING]
+--			l_type_tbl: DS_HASH_TABLE [TYPE_A, STRING]
+--			l_cursor: CURSOR
+--			l_state_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+--			l_selection_function: like equation_selection_function
+--			l_expression: EPA_EXPRESSION
+--			l_union_mode: BOOLEAN
+--			l_count: INTEGER
+--			l_anonymous_expr: STRING
+--			l_transition: SEM_TRANSITION
+--			l_state: EPA_STATE
+--			l_type: TYPE_A
+--		do
+--			l_selection_function := equation_selection_function
+--			create l_frequence_tbl.make (100)
+--			l_frequence_tbl.set_key_equality_tester (string_equality_tester)
+--			create l_type_tbl.make (100)
+--			l_type_tbl.set_key_equality_tester (string_equality_tester)
 
-	postcondition_attributes: DS_HASH_TABLE [TYPE_A, STRING]
-			-- Attributes that are used as postconditions
-			-- Elements in Result is anonymous expression names for those attributes.
-		do
-			Result := attributes (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_postcondition end)
-		end
+--				-- Collect the number of times that each expression appears in all transitions.
+--			l_cursor := transitions.cursor
+--			from
+--				transitions.start
+--			until
+--				transitions.after
+--			loop
+--				from
+--					l_transition := transitions.item_for_iteration
+--					l_state := a_attributes_retriever.item ([l_transition])
+--					l_state_cursor := l_state.new_cursor
+--					l_state_cursor.start
+--				until
+--					l_state_cursor.after
+--				loop
+--					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
+--						l_expression :=	l_state_cursor.item.expression
+--						l_type := l_expression.type
+--						fixme ("We only handle boolean and integer expressions for the moment. 9.6.2010 Jasonw")
+--						if l_type.is_boolean or l_type.is_integer then
+--							l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
+--							l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
+--							l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
+--						end
+--					end
+--					l_state_cursor.forth
+--				end
+--				transitions.forth
+--			end
+--			transitions.go_to (l_cursor)
 
-	attributes (a_attributes_retriever: FUNCTION [ANY, TUPLE [SEM_TRANSITION], EPA_STATE]): DS_HASH_TABLE [TYPE_A, STRING]
-			-- Set of expressions that are to be translated into Weka attributes
-			-- Elements in Result is anonymous expression names for those attributes.
-		local
-			l_frequence_tbl: DS_HASH_TABLE [INTEGER, STRING]
-			l_type_tbl: DS_HASH_TABLE [TYPE_A, STRING]
-			l_cursor: CURSOR
-			l_state_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
-			l_selection_function: like equation_selection_function
-			l_expression: EPA_EXPRESSION
-			l_union_mode: BOOLEAN
-			l_count: INTEGER
-			l_anonymous_expr: STRING
-			l_transition: SEM_TRANSITION
-			l_state: EPA_STATE
-			l_type: TYPE_A
-		do
-			l_selection_function := equation_selection_function
-			create l_frequence_tbl.make (100)
-			l_frequence_tbl.set_key_equality_tester (string_equality_tester)
-			create l_type_tbl.make (100)
-			l_type_tbl.set_key_equality_tester (string_equality_tester)
+--				-- Collect all the expressions to be translated as attributes.
+--			create Result.make (l_frequence_tbl.count)
+--			Result.set_key_equality_tester (string_equality_tester)
+--			l_union_mode := is_union_mode
 
-				-- Collect the number of times that each expression appears in all transitions.
-			l_cursor := transitions.cursor
-			from
-				transitions.start
-			until
-				transitions.after
-			loop
-				from
-					l_transition := transitions.item_for_iteration
-					l_state := a_attributes_retriever.item ([l_transition])
-					l_state_cursor := l_state.new_cursor
-					l_state_cursor.start
-				until
-					l_state_cursor.after
-				loop
-					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
-						l_expression :=	l_state_cursor.item.expression
-						l_type := l_expression.type
-						fixme ("We only handle boolean and integer expressions for the moment. 9.6.2010 Jasonw")
-						if l_type.is_boolean or l_type.is_integer then
-							l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
-							l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
-							l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
-						end
-					end
-					l_state_cursor.forth
-				end
-				transitions.forth
-			end
-			transitions.go_to (l_cursor)
-
-				-- Collect all the expressions to be translated as attributes.
-			create Result.make (l_frequence_tbl.count)
-			Result.set_key_equality_tester (string_equality_tester)
-			l_union_mode := is_union_mode
-
-			from
-				l_count := transitions.count
-				l_frequence_tbl.start
-			until
-				l_frequence_tbl.after
-			loop
-				if l_union_mode or else (l_frequence_tbl.item_for_iteration = l_count) then
-					Result.force_last (l_type_tbl.item (l_frequence_tbl.key_for_iteration), l_frequence_tbl.key_for_iteration)
-				end
-				l_frequence_tbl.forth
-			end
-		end
+--			from
+--				l_count := transitions.count
+--				l_frequence_tbl.start
+--			until
+--				l_frequence_tbl.after
+--			loop
+--				if l_union_mode or else (l_frequence_tbl.item_for_iteration = l_count) then
+--					Result.force_last (l_type_tbl.item (l_frequence_tbl.key_for_iteration), l_frequence_tbl.key_for_iteration)
+--				end
+--				l_frequence_tbl.forth
+--			end
+--		end
 
 	attribute_name_for_change (a_change: EPA_EXPRESSION_CHANGE; a_transition: SEM_TRANSITION): STRING
 			-- Name of the Weka attribute representing `a_change' in `a_transition'
@@ -595,7 +614,7 @@ feature{NONE} -- Implementation
 			l_row: STRING
 		do
 			create Result.make (1024 * 16)
-			Result.append ("%%This is an easier to read format consisting the same data as the above section.%N")
+			Result.append ("%%This is an easier to read format consisting of the same data as the above section.%N")
 			across a_attributes as l_cursor loop
 				create l_row.make (1024)
 				l_row.append_character ('%%')

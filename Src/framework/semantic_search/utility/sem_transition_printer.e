@@ -10,6 +10,8 @@ deferred class
 inherit
 	EPA_SHARED_EQUALITY_TESTERS
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 feature{NONE} -- Initialization
 
 	make
@@ -124,6 +126,91 @@ feature -- Setting
 			a_transitions.do_all (agent extend_transition)
 		ensure
 			a_transitions_extended: a_transitions.for_all (agent transitions.has)
+		end
+
+feature{NONE} -- Implementation
+
+	pre_state_expressions: DS_HASH_TABLE [TYPE_A, STRING]
+			-- Expressions that are used as preconditions
+			-- Key is anonymous text representation, such as {0}.has ({1}), for those expressions.
+			-- Value is type of the expression.
+		do
+			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_precondition end)
+		end
+
+	post_state_expressions: DS_HASH_TABLE [TYPE_A, STRING]
+			-- Expressions that are used as postconditions
+			-- Key is anonymous text representation, such as {0}.has ({1}), for those expressions.
+			-- Value is type of the expression.
+		do
+			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_postcondition end)
+		end
+
+	selected_assertions (a_attributes_retriever: FUNCTION [ANY, TUPLE [SEM_TRANSITION], EPA_STATE]): DS_HASH_TABLE [TYPE_A, STRING]
+			-- Set of expressions that are to be translated into Weka attributes
+			-- Elements in Result is anonymous expression names for those attributes.
+		local
+			l_frequence_tbl: DS_HASH_TABLE [INTEGER, STRING]
+			l_type_tbl: DS_HASH_TABLE [TYPE_A, STRING]
+			l_cursor: CURSOR
+			l_state_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_selection_function: like equation_selection_function
+			l_expression: EPA_EXPRESSION
+			l_union_mode: BOOLEAN
+			l_count: INTEGER
+			l_anonymous_expr: STRING
+			l_transition: SEM_TRANSITION
+			l_state: EPA_STATE
+		do
+			l_selection_function := equation_selection_function
+			create l_frequence_tbl.make (100)
+			l_frequence_tbl.set_key_equality_tester (string_equality_tester)
+			create l_type_tbl.make (100)
+			l_type_tbl.set_key_equality_tester (string_equality_tester)
+
+				-- Collect the number of times that each expression appears in all transitions.
+			l_cursor := transitions.cursor
+			from
+				transitions.start
+			until
+				transitions.after
+			loop
+				from
+					l_transition := transitions.item_for_iteration
+					l_state := a_attributes_retriever.item ([l_transition])
+					l_state_cursor := l_state.new_cursor
+					l_state_cursor.start
+				until
+					l_state_cursor.after
+				loop
+					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
+						l_expression := l_state_cursor.item.expression
+						l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
+						l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
+						l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
+					end
+					l_state_cursor.forth
+				end
+				transitions.forth
+			end
+			transitions.go_to (l_cursor)
+
+				-- Collect all the expressions to be translated as attributes.
+			create Result.make (l_frequence_tbl.count)
+			Result.set_key_equality_tester (string_equality_tester)
+			l_union_mode := is_union_mode
+
+			from
+				l_count := transitions.count
+				l_frequence_tbl.start
+			until
+				l_frequence_tbl.after
+			loop
+				if l_union_mode or else (l_frequence_tbl.item_for_iteration = l_count) then
+					Result.force_last (l_type_tbl.item (l_frequence_tbl.key_for_iteration), l_frequence_tbl.key_for_iteration)
+				end
+				l_frequence_tbl.forth
+			end
 		end
 
 end

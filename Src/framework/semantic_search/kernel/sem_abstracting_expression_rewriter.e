@@ -25,30 +25,32 @@ feature -- Basic operations
 			l_trans: ETR_TRANSFORMABLE
 			l_trans_in_context: ETR_TRANSFORMABLE
 		do
-			from
-				create l_trans.make (a_expr.ast, create {ETR_CLASS_CONTEXT}.make (a_expr.type.associated_class), true)
-				principal_variable_text := a_principal_variable.text
-				create {LINKED_LIST[STRING]}Result.make
-				replacements := a_replacements
-				a_abstract_types.start
-			until
-				a_abstract_types.after
-			loop
-				create abstract_context.make (a_abstract_types.item.associated_class)
-				l_trans_in_context := l_trans.as_in_other_context (abstract_context)
+			create {LINKED_LIST[STRING]}Result.make
+			if not a_expr.type.is_none then
+				from
+					create l_trans.make (a_expr.ast, create {ETR_CLASS_CONTEXT}.make (a_expr.type.associated_class), true)
+					principal_variable_text := a_principal_variable.text
+					replacements := a_replacements
+					a_abstract_types.start
+				until
+					a_abstract_types.after
+				loop
+					create abstract_context.make (a_abstract_types.item.associated_class)
+					l_trans_in_context := l_trans.as_in_other_context (abstract_context)
 
-				output.reset
-				last_was_unqualified := true
-				can_abstract := true
-				replacements.force (once "{" + cleaned_type_name (a_abstract_types.item.name) + once "}", principal_variable_text)
-				current_abstract_class := a_abstract_types.item.associated_class
+					output.reset
+					last_was_unqualified := true
+					can_abstract := true
+					replacements.force (once "{" + cleaned_type_name (a_abstract_types.item.name) + once "}", principal_variable_text)
+					current_abstract_class := a_abstract_types.item.associated_class
 
-				l_trans_in_context.target_node.process (Current)
-				if can_abstract then
-					Result.extend(output.string_representation)
+					l_trans_in_context.target_node.process (Current)
+					if can_abstract then
+						Result.extend(output.string_representation)
+					end
+
+					a_abstract_types.forth
 				end
-
-				a_abstract_types.forth
 			end
 		end
 

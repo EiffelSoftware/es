@@ -58,7 +58,12 @@ feature -- Operation
 			l_length: INTEGER
 			l_content, l_line: STRING
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
+			l_class_name: STRING
+			l_tc_info: EPA_TEST_CASE_INFO
 		do
+			l_class_name := a_file.split ((create {OPERATING_ENVIRONMENT}).directory_separator).last
+			l_class_name.remove_tail (2)
+			create l_tc_info.make_with_string (l_class_name)
 			last_transition := Void
 			l_handler := error_handler
 
@@ -78,6 +83,7 @@ feature -- Operation
 					end
 
 					parse_transition_from_string (l_content)
+					last_transition.set_uuid (l_tc_info.uuid)
 				else
 					l_handler.report_error_message ("Error opening file to read: " + a_file)
 				end

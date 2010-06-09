@@ -10,6 +10,7 @@
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
+		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
 		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
 		<library name="eiffel_identifier" location="$EIFFEL_SRC\framework\eiffel_identifier\eiffel_identifier.ecf" readonly="false"/>
@@ -33,7 +34,6 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
-		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
 			<condition>
 				<platform value="windows"/>

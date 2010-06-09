@@ -5,9 +5,12 @@ note
 
 class
 	SEM_DOCUMENT_LOADER
+
 inherit
 	SEM_FIELD_NAMES
+
 	SEM_UTILITY
+
 	SHARED_WORKBENCH
 
 feature -- Loading

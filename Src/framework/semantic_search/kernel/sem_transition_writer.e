@@ -72,14 +72,20 @@ feature -- Basic operation
 			end
 
 			l_id.append_character ('.')
-			l_id.append (buffer.hash_code.out)
+			if attached {STRING} a_transition.uuid as l_uuid and then not l_uuid.is_empty then
+				l_id.append (l_uuid)
+			else
+				l_id.append (buffer.hash_code.out)
+			end
 			append_field (id_field, default_boost, type_string, l_id)
 
 			last_document := buffer
+			last_file_path := Void
 
 			if attached a_folder then
 				create l_file_name.make_from_string (a_folder)
 				l_file_name.set_file_name (l_id + ".tran")
+				last_file_path := l_file_name
 				create l_file.make_create_read_write (l_file_name)
 				l_file.put_string (buffer)
 				l_file.close

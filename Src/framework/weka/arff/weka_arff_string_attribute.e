@@ -13,6 +13,18 @@ inherit
 			is_string
 		end
 
+create
+	make
+
+
+feature{NONE} -- Initialization
+
+	make (a_name: like name)
+			-- Initialize current nominal attribute with `a_name'.
+		do
+			name := a_name.twin
+		end
+
 feature -- Access
 
 	type_string: STRING = "STRING"
@@ -35,7 +47,7 @@ feature -- Status report
 
 	is_valid_value (a_value: STRING): BOOLEAN
 			-- Is `a_value' a valid value for current attribute?
-		do	
+		do
 			if a_value /= Void then
 				if a_value.has (' ') or a_value.has ('%T') then
 					Result := a_value.item (1) = '%"' and a_value.item (a_value.count) = '%"'

@@ -285,7 +285,7 @@ feature{NONE} -- Implementation
 			l_variables := l_context.variables
 			l_cursor := l_variables.cursor
 			from
-				l_index := l_operand_set.count + 1
+				l_index := l_operand_set.count
 				l_variables.start
 			until
 				l_variables.after
