@@ -15,14 +15,14 @@ feature
 			p, cp, rp: POINTER
 		do
 			p := p.memory_alloc (pointer_size)
-			{RT_CAPTURE_REPLAY}.print_string ("p: " + p.out + "%N")
+			{RT_CAPTURE_REPLAY}.print_string ("p /= default_pointer: " + (p /= default_pointer).out + "%N")
 			p.memory_free()
 
 			cp := cp.memory_alloc (pointer_size)
-			{RT_CAPTURE_REPLAY}.print_string ("cp: " + cp.out + "%N")
+			{RT_CAPTURE_REPLAY}.print_string ("cp /= default_pointer: " + (cp /= default_pointer).out + "%N")
 			
 			rp := cp.memory_realloc (16*pointer_size)
-			{RT_CAPTURE_REPLAY}.print_string ("rp: " + rp.out + "%N")
+			{RT_CAPTURE_REPLAY}.print_string ("rp /= default_pointer: " + (rp /= default_pointer).out + "%N")
 			rp.memory_free()
 		end
 
