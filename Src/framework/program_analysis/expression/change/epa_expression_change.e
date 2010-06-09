@@ -69,6 +69,12 @@ feature -- Status report
 			Result := not is_relative
 		end
 
+	is_no_change: BOOLEAN
+			-- Does current represent if there is no change to `expression'?
+		do
+			Result := attached {EPA_EXPRESSION_NO_CHANGE_SET} values
+		end
+
 feature -- Setting
 
 	set_is_relative (b: BOOLEAN)

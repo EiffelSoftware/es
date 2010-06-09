@@ -54,6 +54,12 @@ feature -- Status report
 			-- Is integer change relaxation enabled?
 			-- Default: False
 
+	is_no_change_included: BOOLEAN
+			-- Is no change included?
+			-- If True, even when an expression is not changed in post-state,
+			-- an instance of {EPA_EXPRESSION_NOCHANGE_SET} will be included.
+			-- Default: False
+
 feature -- Setting
 
 	set_is_integer_change_relaxation_enabled (b: BOOLEAN)
@@ -62,6 +68,14 @@ feature -- Setting
 			is_integer_change_relaxation_enabled := b
 		ensure
 			is_integer_change_relaxation_enabled_set: is_integer_change_relaxation_enabled = b
+		end
+
+	set_is_no_change_included (b: BOOLEAN)
+			-- Set `is_no_change_included' with `b'.
+		do
+			is_no_change_included := b
+		ensure
+			is_no_change_included_set: is_no_change_included = b
 		end
 
 feature{NONE} -- Implementation
@@ -144,6 +158,7 @@ feature{NONE} -- Process/Data
 			l_change: EPA_EXPRESSION_CHANGE
 			l_change_list: LINKED_LIST [EPA_EXPRESSION_CHANGE]
 			l_delta: INTEGER
+			l_no_change: EPA_EXPRESSION_NO_CHANGE_SET
 		do
 			l_equation := source_state.item_with_expression (expression)
 
@@ -167,6 +182,11 @@ feature{NONE} -- Process/Data
 						l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 					end
 
+					expression_change_set.force_last (l_change_list, expression)
+				elseif is_no_change_included then
+					create l_no_change.make (0)
+					create l_change_list.make
+					l_change_list.extend (new_expression_change (expression, l_no_change, True, 0.1))
 					expression_change_set.force_last (l_change_list, expression)
 				end
 			end
@@ -192,6 +212,7 @@ feature{NONE} -- Process/Data
 			l_changes: EPA_EXPRESSION_CHANGE_VALUE_SET
 			l_change_list: LINKED_LIST [EPA_EXPRESSION_CHANGE]
 			l_is_changed: BOOLEAN
+			l_no_change: EPA_EXPRESSION_NO_CHANGE_SET
 		do
 			l_equation := source_state.item_with_expression (expression)
 			if  l_equation = Void or else not l_equation.value.is_boolean then
@@ -209,6 +230,11 @@ feature{NONE} -- Process/Data
 				create l_change_list.make
 				l_changes := new_single_value_change_set (l_expr)
 				l_change_list.extend (new_expression_change (expression, l_changes, False, 1.0))
+				expression_change_set.force_last (l_change_list, expression)
+			elseif is_no_change_included then
+				create l_no_change.make (0)
+				create l_change_list.make
+				l_change_list.extend (new_expression_change (expression, l_no_change, False, 0.1))
 				expression_change_set.force_last (l_change_list, expression)
 			end
 		end

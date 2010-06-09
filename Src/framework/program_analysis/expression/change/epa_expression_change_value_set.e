@@ -44,6 +44,11 @@ feature -- Status report
 			Result := is_empty
 		end
 
+	is_no_change: BOOLEAN
+			-- Does Current represent a change set that contains no change?
+		do
+		end
+
 feature -- Status report
 
 	debug_output: STRING

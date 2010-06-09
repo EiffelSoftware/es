@@ -8,7 +8,7 @@ class
 	SEM_TRANSITION_TO_WEKA_PRINTER
 
 inherit
-	EPA_SHARED_EQUALITY_TESTERS
+	SEM_TRANSITION_PRINTER
 
 	SEM_FIELD_NAMES
 
@@ -18,31 +18,7 @@ create
 	make,
 	make_with_selection_function
 
-feature{NONE} -- Initialization
-
-	make
-			-- Initialize current
-		do
-			set_is_union_mode (False)
-			create transitions.make
-		end
-
-	make_with_selection_function (a_function: like equation_selection_function)
-			-- Initialize Current.
-		do
-			make
-			set_equation_selection_function (a_function)
-		end
-
 feature -- Access
-
-	transitions: LINKED_LIST [SEM_TRANSITION]
-			-- Transitions to be translated as instances into Weka
-
-	equation_selection_function: detachable PREDICATE [ANY, TUPLE [EPA_EQUATION]]
-			-- Action to only select some expressions from a transition
-			-- If this function returns True, the equation is selected, otherwise, not selected.
-			-- If Void, all expressions from any transition is selected.
 
 	as_weka_relation: WEKA_ARFF_RELATION
 			-- Weka ARFF relation from Current
@@ -111,6 +87,7 @@ feature -- Access
 				elseif l_type.is_integer then
 					create {WEKA_ARFF_NUMERIC_ATTRIBUTE} l_attr.make (l_attr_name)
 				else
+					io.put_string ("Bad")
 					check not_supported: False end
 				end
 				l_weka_attrs.extend (l_attr)
@@ -169,14 +146,13 @@ feature -- Access
 					if l_attrs.item.starts_with (by_field_prefix) or l_attrs.item.starts_with (to_field_prefix) then
 							-- Found a change definition, either "by::" or "to::".						
 						if attached {like changes_by_transition} changes_by_transition (l_transition) as l_changes then
-							if attached {EPA_EXPRESSION} l_changes.item (l_attrs.item_for_iteration) as l_value then
-								l_last_value := l_weka_attrs.item_for_iteration.value (l_value.text)
-							elseif l_weka_attrs.item_for_iteration.is_boolean then
-								l_last_value := not_applicable_value
-							elseif l_weka_attrs.item_for_iteration.is_numeric then
-								l_last_value := "0"
-							elseif l_weka_attrs.item_for_iteration.is_nominal then
-								l_last_value := not_applicable_value
+							l_changes.search (l_attrs.item_for_iteration)
+							if l_changes.found then
+								if attached {EPA_EXPRESSION} l_changes.found_item as l_found_value then
+									l_last_value := l_weka_attrs.item_for_iteration.value (l_found_value.text)
+								else
+									l_last_value := not_applicable_value
+								end
 							else
 								l_last_value := {WEKA_ARFF_ATTRIBUTE}.missing_value
 							end
@@ -203,7 +179,7 @@ feature -- Access
 						if l_last_value /= Void then
 							l_row.append (l_last_value)
 						else
-							l_row.append_character ('?')
+							l_row.append ({WEKA_ARFF_ATTRIBUTE}.missing_value)
 						end
 						l_row.append_character ('%T')
 					end
@@ -222,28 +198,6 @@ feature -- Access
 		end
 
 feature -- Status report
-
-	is_union_mode: BOOLEAN
-			-- If `transitions' have different pre-/postcondition expressions,
-			-- should the Weka relation contain the union of all the different expressions?
-			-- Attributes that do not appear in certain transitions are treated as missing values.
-
-	is_intersection_mode: BOOLEAN
-			-- If `transitions' have different pre-/postcondition expression,
-			-- should the Weka relation only contain the intersection of all the expression?
-		do
-			Result := not is_union_mode
-		ensure
-			good_result: Result = not is_union_mode
-		end
-
-	is_absolute_change_included: BOOLEAN
-			-- Should absolute changes be included as Weka attributes?
-			-- Default: False
-
-	is_relative_change_included: BOOLEAN
-			-- Should relative changed be included as Weka attributes?
-			-- Default: False
 
 	is_transition_valid (a_transition: SEM_TRANSITION): BOOLEAN
 			-- Is `a_transition' valid to be added into Current?
@@ -277,65 +231,6 @@ feature -- Basic operations
 			is_value_table_generated := b
 		ensure
 			is_value_table_generated_set: is_value_table_generated = b
-		end
-
-	set_is_union_mode (b: BOOLEAN)
-			-- Set `is_union_mode' with `b'.
-		do
-			is_union_mode := b
-		ensure
-			is_union_mode_set: is_union_mode = b
-		end
-
-	set_equation_selection_function (a_function: like equation_selection_function)
-			-- Set `equation_selection_function' with `a_function'.
-		do
-			equation_selection_function := a_function
-		ensure
-			equation_selection_function_set: equation_selection_function = a_function
-		end
-
-	set_is_absolute_change_included (b: BOOLEAN)
-			-- Set `is_absolute_change_included' with `b'.
-		do
-			is_absolute_change_included := b
-		ensure
-			is_absolute_change_included_set: is_absolute_change_included = b
-		end
-
-	set_is_relative_change_included (b: BOOLEAN)
-			-- Set `is_relative_change_included' with `b'.
-		do
-			is_relative_change_included := b
-		ensure
-			is_relative_change_included_set: is_relative_change_included = b
-		end
-
-	set_transitions (a_transitions: LINEAR [SEM_TRANSITION])
-			-- Set `transitions' with `a_transitions'.
-		do
-			transitions.wipe_out
-			extend_transitions (a_transitions)
-		end
-
-	extend_transition (a_transition: SEM_TRANSITION)
-			-- Extend `a_transition' in Current as an instance in the target Weka relation.
-		require
-			a_transitio_valid: is_transition_valid (a_transition)
-		do
-			transitions.extend (a_transition)
-		ensure
-			a_transition_extended: transitions.has (a_transition)
-		end
-
-	extend_transitions (a_transitions: LINEAR [SEM_TRANSITION])
-			-- Extend `a_transitions' in Current as instances in the target Weka relation.
-		require
-			a_transitions_valid: a_transitions.for_all (agent is_transition_valid)
-		do
-			a_transitions.do_all (agent extend_transition)
-		ensure
-			a_transitions_extended: a_transitions.for_all (agent transitions.has)
 		end
 
 feature{NONE} -- Implementation
@@ -429,6 +324,7 @@ feature{NONE} -- Implementation
 			l_anonymous_expr: STRING
 			l_transition: SEM_TRANSITION
 			l_state: EPA_STATE
+			l_type: TYPE_A
 		do
 			l_selection_function := equation_selection_function
 			create l_frequence_tbl.make (100)
@@ -453,9 +349,13 @@ feature{NONE} -- Implementation
 				loop
 					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
 						l_expression :=	l_state_cursor.item.expression
-						l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
-						l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
-						l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
+						l_type := l_expression.type
+						fixme ("We only handle boolean and integer expressions for the moment. 9.6.2010 Jasonw")
+						if l_type.is_boolean or l_type.is_integer then
+							l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
+							l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
+							l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
+						end
 					end
 					l_state_cursor.forth
 				end
@@ -506,9 +406,10 @@ feature{NONE} -- Implementation
 			l_tran_changes: like transition_changes
 			l_change_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION_CHANGE]
 			l_attr_name: STRING
-			l_changes: HASH_TABLE [EPA_EXPRESSION, STRING]
+			l_changes: HASH_TABLE [detachable EPA_EXPRESSION, STRING]
 			l_change: EPA_EXPRESSION_CHANGE
 			l_attributes_for_changes: like attributes_for_changes
+			l_zero_expression: EPA_AST_EXPRESSION
 		do
 			create l_tran_changes.make
 			create l_frequence_tbl.make (100)
@@ -522,6 +423,7 @@ feature{NONE} -- Implementation
 				-- Calculate `transition_changes'.
 			across transitions as l_cursor loop
 				l_transition := l_cursor.item
+				create l_zero_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "0", l_transition.context.class_)
 				l_change_set := transition_change_set (l_transition)
 				create l_changes.make (20)
 				l_changes.compare_objects
@@ -535,9 +437,17 @@ feature{NONE} -- Implementation
 					l_change := l_change_cursor.item
 					l_attr_name := attribute_name_for_change (l_change, l_transition)
 					l_frequence_tbl.force (l_frequence_tbl.item (l_attr_name) + 1, l_attr_name)
-					l_changes.put (l_change.values.first, l_attr_name)
+					if l_change.is_no_change then
+						if l_change.expression.type.is_integer then
+							l_changes.put (l_zero_expression, l_attr_name)
+						else
+							l_changes.put (Void, l_attr_name)
+						end
+					else
+						l_changes.put (l_change.values.first, l_attr_name)
+					end
 					if not l_type_tbl.has (l_attr_name) then
-						l_type_tbl.put (l_change.values.first.type, l_attr_name)
+						l_type_tbl.put (l_change.expression.resolved_type (l_transition.context_type), l_attr_name)
 					end
 					l_change_cursor.forth
 				end
@@ -578,6 +488,7 @@ feature{NONE} -- Implementation
 			l_post_state: EPA_STATE
 			l_result_name: STRING
 			l_expr_name: STRING
+			l_type: TYPE_A
 		do
 			l_is_absoluted_change_included := is_absolute_change_included
 			l_is_relative_change_included := is_relative_change_included
@@ -599,6 +510,7 @@ feature{NONE} -- Implementation
 					until
 						l_post_state.after
 					loop
+						l_type := l_post_state.item_for_iteration.expression.type
 						l_expr_name := a_transition.anonymous_expression_text (l_post_state.item_for_iteration.expression)
 						if l_expr_name.has_substring (l_result_name) then
 							l_post_state.remove (l_post_state.item_for_iteration)
@@ -607,6 +519,7 @@ feature{NONE} -- Implementation
 						end
 					end
 				end
+				l_change_calculator.set_is_no_change_included (True)
 				l_cursor := l_change_calculator.change_set (l_pre_state, l_post_state).new_cursor
 				l_cursor.start
 			until
@@ -614,11 +527,19 @@ feature{NONE} -- Implementation
 			loop
 				across l_cursor.item as l_change_cursor loop
 					l_change := l_change_cursor.item
-					if
-						((l_is_absoluted_change_included and l_change.is_absolute) or (l_is_relative_change_included and l_change.is_relative)) and then
-						l_change.values.count = 1
-					then
-						Result.force_last (l_change)
+					l_type := l_change.expression.type
+					fixme ("We only handle boolean and integer types for the moment. 9.6.2010 Jasonw")
+					if l_type.is_boolean or l_type.is_integer then
+						if l_change.is_no_change then
+							Result.force_last (l_change)
+						else
+							if
+								((l_is_absoluted_change_included and l_change.is_absolute) or (l_is_relative_change_included and l_change.is_relative)) and then
+								l_change.values.count = 1
+							then
+								Result.force_last (l_change)
+							end
+						end
 					end
 				end
 				l_cursor.forth
