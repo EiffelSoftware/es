@@ -536,9 +536,10 @@ doc:	</attribute>
 */
 rt_private EIF_INTEGER instance_type = 0;
 
-
+#ifdef WORKBENCH
 rt_private EIF_POINTER is_instance_pointer = NULL;
 rt_private int is_instance_result = 0;
+#endif
 
 /*
 doc:	<routine name="find_referers" return_type="EIF_REFERENCE" export="shared">
@@ -628,7 +629,7 @@ rt_public EIF_REFERENCE find_all_instances (EIF_INTEGER result_type)
 
 
 
-
+#ifdef WORKBENCH
 rt_private void internal_is_instance (EIF_REFERENCE enclosing, EIF_REFERENCE compare_to)
 {
 	
@@ -668,7 +669,7 @@ rt_public int is_instance (EIF_POINTER pointer)
 	return result;
 }
 
-
+#endif /* WORKBENCH */
 
 /*
 doc:	<attribute name="found_collection" return_type="struct obj_array *" export="private">
