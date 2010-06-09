@@ -494,20 +494,20 @@ struct pgcontext {				/* Program context */
 
 /* eif_capture_replay.h */
 
-typedef union tag_EIF_CR_REFERENCE {
-	EIF_REFERENCE *o;                  /* Pointer to EIF_REFERENCE */
-	EIF_POINTER p;                     /* Pointer to memory area */
+typedef struct tag_EIF_CR_REFERENCE {
+	union {
+		EIF_REFERENCE r;           /* Regular Eiffel object reference */
+		EIF_REFERENCE *o;          /* Pointer to a memory location holding an EIF_REFERENCE */
+		EIF_POINTER p;             /* Pointer to an regular C memory area */
+	} item;
+	uint32 size;                        /* CR_GLOBAL_REF, CR_OBJECT_REF or size of memory area item.p points to */
 } EIF_CR_REFERENCE;
 
-
 struct cr_object {                         /* Area being observed by capture/replay framework */
-	int is_current;                    /* True if object represents the bottom object of an observed stack frame */
-	int is_protected;                  /* Positive if ref.o was protected or ID'd by user code (possibly recursive) */
-	EIF_CR_REFERENCE ref;              /* Reference pointing to actual object/memory area */
-	size_t size;                       /* 0 if ref points to an Eiffel object, otherwise the size of the memory ref points to */
+	EIF_CR_REFERENCE ref;              /* Reference to object */
 
 		/* Only used when capturing */
-	void *copy;                      /* pointer to copy of ref, NULL if ref points to a non-special Eiffel object */
+	void *copy;                        /* pointer to copy of ref, NULL if ref points to a non-special Eiffel object */
 
 		/* meaning of size/copy
 			size == 0 && copy == 0 : ref is an regular Eiffel object or a SPECIAL we do not observe
@@ -515,6 +515,8 @@ struct cr_object {                         /* Area being observed by capture/rep
 			size != 0 && copy == 0 : ref points to a C area we are not observing
 			size != 0 && copy != 0 : ref points to an observed C area
 		*/
+
+	struct cr_object *next;                   /* Next object in list */
 };
 
 /*
@@ -523,7 +525,7 @@ struct cr_object {                         /* Area being observed by capture/rep
 
 struct stcrchunk {
         struct stcrchunk *sk_prev;       /* Previous chunk in stack, null if none */
-        struct cr_object object;         /* Arena where objects are stored */
+        struct cr_object *first;         /* Arena where objects are stored */
 };
 
 #endif /* WORKBENCH */

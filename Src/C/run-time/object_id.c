@@ -287,7 +287,7 @@ rt_private EIF_INTEGER private_object_id(EIF_REFERENCE object, struct stack *st,
 
 #ifdef WORKBENCH
 	if (is_capturing)
-		cr_register_protect(object);
+		cr_register_protect((EIF_REFERENCE *) address);
 #endif
 
 	return Result;
@@ -340,7 +340,7 @@ rt_private EIF_INTEGER private_general_object_id(EIF_REFERENCE object, struct st
 		ENSURE ("free_id_computed", free_id >= 0);
 #ifdef WORKBENCH
 		if (is_capturing)
-			cr_register_protect (object);
+			cr_register_protect (free_location);
 #endif
 		return free_id;
 	} else
@@ -414,7 +414,7 @@ rt_private void private_object_id_free(EIF_INTEGER id, struct stack *st, EIF_INT
 
 #ifdef WORKBENCH
 	if (is_capturing)
-		cr_register_wean (eif_access((char *)((char **)end->sk_arena + (id % STACK_SIZE))));
+		cr_register_wean ((char **)((char **)end->sk_arena + (id % STACK_SIZE)));
 #endif
 
 		/* add offset to the end of chunk */

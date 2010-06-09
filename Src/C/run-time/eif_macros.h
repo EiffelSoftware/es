@@ -1335,6 +1335,16 @@ RT_LNK void eif_exit_eiffel_code(void);
  *
  * RTCRFE         hook indicating feature end
  *
+ * RTCRMCPY(d,ds,s,c)   memcpy
+ * RTCRMMV(d,ds,s,c)    memmove
+ * RTCRMSET(d,ds,v,c)   memset
+ * RTCRMCMP(d,s,c)   memcmp
+ * RTCRMMAL(c)       malloc
+ * RTCRMCAL(n,c)     calloc
+ * RTCRMRAL(s,c)     realloc
+ * RTCRMFRE(s)       free
+ *                Wrapper for memory routines defined in POINTER_REF
+ *
  */
 
 #define RTCRD { int i; for (i=0;i<cr_call_depth;i++) fprintf(stderr," "); }
@@ -1350,29 +1360,35 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRI (!(cr_cross_depth%2))
 
-#define RTCRFS(x) \
+#define RTCRFS(x) RTCRAFS(x,exvect->ex_rout,exvect->ex_bodyid)
+
+#define RTCRAFS(x,rout,bodyid) \
 	int cr_side = RTCRI; \
 	int cr_cross = (cr_side != (x)) && (is_capturing || is_replaying); \
-	EIF_TYPED_VALUE cr_result; \
-	jmp_buf cr_jbuf; \
+	EIF_TYPED_VALUE cr_current, cr_result; \
+	jmp_buf cr_jbuf, *cr_old_jbuf; \
 	int cr_exception = 0; \
 	cr_call_depth++; \
 	if (cr_cross && !cr_side) { \
 		cr_cross_depth++; \
-		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", exvect->ex_rout, exvect->ex_bodyid)); \
+		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); \
 	} \
 	else if (!cr_cross) {\
-		RTCRDBG((stderr, "%s\n", exvect->ex_rout)); \
+		RTCRDBG((stderr, "%s\n", rout)); \
 	} \
 	else { \
-		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", exvect->ex_rout, exvect->ex_bodyid)); \
+		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); \
 	} \
 
-#define RTCRBS1(y) \
+#define RTCRBS1(y) RTCRABS1(SK_REF, it_r, (size_t) 0, exvect->ex_bodyid, y)
+
+#define RTCRABS1(t,f,size,bodyid,y) \
 	if (cr_cross) { \
 		if (cr_side) cr_cross_depth++; \
 		if (!(is_replaying && RTCRI)) { \
-			cr_init (exvect, y); \
+			cr_current.type = t; \
+			cr_current.f = Current; \
+			cr_init (cr_current, size, bodyid, y); \
 
 #define RTCRA(a,s) \
 			cr_register_argument (a,s);
@@ -1380,6 +1396,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRBS2 \
 		} \
 		if (is_capturing && !RTCRI) { \
+			cr_old_jbuf = exvect->ex_jbuf; \
 			exvect->ex_jbuf = &cr_jbuf; \
 			cr_exception = setjmp(cr_jbuf); \
 		} \
@@ -1390,11 +1407,13 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Routine body comes here!
  */
 
-#define RTCRBER(t,f,s) \
+#define RTCRBER(t,f,s) RTCRABER(t,f,s,exvect->ex_rout)
+
+#define RTCRABER(t,f,s,rout) \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = t; \
 			cr_result.f = Result; \
-			cr_register_result (exvect, cr_result, s); \
+			cr_register_result (cr_result, s); \
 		} \
 	} \
 	else if (cr_exception) { \
@@ -1405,16 +1424,19 @@ RT_LNK void eif_exit_eiffel_code(void);
 		Result = cr_result.f; \
 	} \
 	if (cr_cross && cr_side) cr_cross_depth--; \
+	if ((t & SK_HEAD) != SK_REF) { RTCRDBG((stderr, "ret %s: %lx\n", rout, (long unsigned int) Result)); } \
+	else { RTCRDBG((stderr, "ret %s\n", rout)); }
 
-#define RTCRBEV \
+#define RTCRBEV RTCRABEV(exvect->ex_rout)
+#define RTCRABEV(rout) \
 		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
 			cr_result.type = SK_INVALID; \
-			cr_register_result (exvect, cr_result, (size_t) 0);  \
+			cr_register_result (cr_result, (size_t) 0);  \
 		} \
 	} \
 	else if (cr_exception) { \
 		printf("Exception yeah!\n");\
-		exvect->ex_jbuf = (jmp_buf *) NULL; \
+		exvect->ex_jbuf = cr_old_jbuf; \
 		cr_cross_depth--; \
 		ereturn(); \
 	} \
@@ -1422,10 +1444,21 @@ RT_LNK void eif_exit_eiffel_code(void);
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
 	if (cr_cross && cr_side) cr_cross_depth--; \
+	RTCRDBG((stderr, "ret %s\n", rout));
 
 #define RTCRFE \
 	if (cr_cross && !cr_side) cr_cross_depth--; \
 	cr_call_depth--;
+
+
+#define RTCRMCPY(d,ds,s,c)  cr_memcpy(exvect,d,ds,s,c)
+#define RTCRMMV(d,ds,s,c)   cr_memmove(exvect,d,ds,s,c)
+#define RTCRMSET(d,ds,v,c)  cr_memset(exvect,d,ds,v,c)
+#define RTCRMCMP(d,s,c)  cr_memcmp(exvect,d,s,c)
+#define RTCRMMAL(c)      cr_malloc(exvect,c)
+#define RTCRMCAL(n,c)    cr_calloc(exvect,n,c)
+#define RTCRMRAL(s,c)    cr_realloc(exvect,s,c)
+#define RTCRMFRE(s)      cr_free(exvect,s)
 
 #else
 
@@ -1435,6 +1468,16 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRE
 #define RTCRR(t,f,s)
 #define RTCRV
+
+#define RTCRMCPY(d,ds,s,c)  memcpy(d,s,c)
+#define RTCRMMV(d,ds,s,c)   memmove(d,s,c)
+#define RTCRMSET(d,ds,v,c)  memset(d,v,c)
+#define RTCRMCMP(d,s,c)  memcmp(d,s,c)
+#define RTCRMMAL(c)      malloc(c)
+#define RTCRMCAL(n,c)    calloc(n,c)
+#define RTCRMRAL(s,c)    realloc(s,c)
+#define RTCRMFRE(s)      free(s)
+
 #endif
 
  /*

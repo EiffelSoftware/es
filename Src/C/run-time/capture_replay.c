@@ -46,7 +46,6 @@
 
 #define ARG_MASK 0x0F
 
-
 /*
  * Type definitions
  */
@@ -100,138 +99,169 @@ rt_private void bread (char *buffer, size_t nbytes)
  * Object/Memory observing
  */
 
-rt_private int cr_object_count ()
+
+#define CR_GLOBAL_REF 0xFFFFFFFF           /* Special size value indicating that the reference is an Eiffel object on the global stack */
+#define CR_OBJECT_REF 0x00000000           /* Special size value indicating that reference points to an Eiffel object on the local stack */
+
+
+#define CR_IS_REFERENCE(r) ((r).size == CR_GLOBAL_REF || (r).size == CR_OBJECT_REF)
+#define CR_ACCESS(ref) ((ref).size == CR_GLOBAL_REF ? *((ref).item.o) : ((ref).item.r))
+
+
+
+
+#define CR_INVALID_ID 0x00000000         /* Flag for indicating an id for the global stack */
+
+typedef union tag_EIF_CR_ID {
+	EIF_NATURAL_64 value;           /* 8 word representation of the id which can be stored to the log */
+	struct {
+		uint32 size;            /* size information of the corresponding object/pointer */
+		uint32 id;              /* the actual id, possibly flagged with CR_GLOBAL_ID */
+	} item;
+} EIF_CR_ID;
+
+#define cr_is_valid_id(cr_id) ((cr_id).item.id != CR_INVALID_ID)
+
+rt_private EIF_CR_ID cr_id_of_object (EIF_CR_REFERENCE ref)
 {
-	EIF_GET_CONTEXT
-	int count = 0;
-	struct stcrchunk *chunk = cr_top_object;
-
-	while (chunk != NULL) {
-		chunk = chunk->sk_prev;
-		count++;
-	}
-
-	return count;
-}
-
-rt_private uint32 cr_id_of_object (EIF_POINTER p, size_t size)
-{
-
-	/*
-		size == 0 will return any reference that matches...
-	*/
 
 	EIF_GET_CONTEXT
 
-	struct stcrchunk *chunk = cr_top_object;
-	
+	REQUIRE("has_stack_frame", cr_top_object != NULL);
+	REQUIRE("not_global", ref.size != CR_GLOBAL_REF);
+
+	struct cr_object *object = cr_top_object->first;
+
+	EIF_CR_ID cr_id;
+	cr_id.item.id = 0;
+	cr_id.item.size = ref.size;
 
 	uint32 id = 1;
-	while (chunk != NULL) {
+	while (object != NULL) {
 		int same_ref = 0;
-		if (chunk->object.size > 0)
-			same_ref = chunk->object.ref.p == p;
-		else
-			same_ref = eif_access(chunk->object.ref.o) == (EIF_REFERENCE) p;
+		if (ref.size > 0) {
+			same_ref = object->ref.item.p == ref.item.p;
+		}
+		else {
+			same_ref = CR_ACCESS(object->ref) == ref.item.r;
+		}
 
-		if (same_ref && (size == 0 || chunk->object.size == size))
-			return id;
+		if (same_ref && object->ref.size == cr_id.item.size) {
+			cr_id.item.id = id;
+			break;
+		}
 
-		chunk = chunk->sk_prev;
-		id++;
+		object = object->next;
+		if (object == NULL && cr_id.item.size == CR_OBJECT_REF) {
+			/* Check global objects */
+			cr_id.item.size = CR_GLOBAL_REF;
+			object = cr_global_objects;
+			id = 1;
+		}
+		else {
+			id++;
+		}
 	}
 
 	 /* No object for that pointer */
-	return 0;
+	return cr_id;
 
 }
 
 
-rt_private struct cr_object *cr_object_of_id (uint32 id)
-{
-
-	REQUIRE("valid_id", id > 0);
-
-	EIF_GET_CONTEXT
-
-	uint32 curr_id = id;
-	struct stcrchunk *chunk = cr_top_object;
-
-	while (curr_id-- > 1) {
-		chunk = chunk->sk_prev;
-		if (chunk == NULL)
-			return NULL;
-	}
-
-	return &(chunk->object);
-}
-
-rt_private void cr_push_object (EIF_VALUE val, size_t size, int is_current)
+rt_private EIF_CR_REFERENCE cr_object_of_id (EIF_CR_ID cr_id)
 {
 
 	EIF_GET_CONTEXT
 
-	struct stcrchunk *chunk;
-	void *src = NULL;
-	size_t src_size = 0;
-	uint32 id;
+	REQUIRE("valid_id", cr_is_valid_id(cr_id));
+	REQUIRE("has_stack_frame", cr_top_object != NULL);
 
+	struct cr_object *object;
 	EIF_CR_REFERENCE ref;
+	uint32 id = cr_id.item.id;
 
-		/* Get id if `ref' has already been pushed to stack  */
-	if (size > 0) {
-		ref.p = val.p;
-		id = cr_id_of_object (ref.p, size);
+	ref.size = cr_id.item.size;
+	if (ref.size == CR_GLOBAL_REF) {
+		object = cr_global_objects;
+		ref.item.o = (EIF_REFERENCE *) NULL; /* FIXME: this should be a valid pointer to a null pointer! */
 	}
 	else {
-		cr_suppress_event = 1;
-		ref.o = eif_protect(val.r);
-		cr_suppress_event = 0;
-		id = cr_id_of_object (val.r, (size_t) 0);
+		object = cr_top_object->first;
+		ref.item.p = (EIF_POINTER) NULL;
 	}
 
-	chunk = (struct stcrchunk *) cmalloc(sizeof(struct stcrchunk));
-	if (chunk == NULL)
+	while (object != NULL) {
+		id--;
+		if (id == 0) {
+			if (ref.size == object->ref.size)
+				ref.item = object->ref.item;
+			break;
+		}
+		object = object->next;
+	}
+
+	ENSURE("valid_size", ref.size == cr_id.item.size);
+
+	return ref;
+}
+
+rt_private void cr_push_object (EIF_CR_REFERENCE ref)
+{
+
+	EIF_GET_CONTEXT
+
+	struct stcrchunk *chunk = cr_top_object;
+
+	REQUIRE("chunk_not_null", chunk != (struct stcrchunk *) NULL);
+
+	struct cr_object *object;
+	void *src = NULL;
+	size_t src_size = 0;
+	EIF_REFERENCE r;
+
+	object = (struct cr_object *) cmalloc(sizeof(struct cr_object));
+	if (object == NULL)
 		enomem();
 
-	chunk->sk_prev = cr_top_object;
-	cr_top_object = chunk;
+	/* Insert new object into observed list */
+	if (ref.size == CR_GLOBAL_REF) {
+		object->next = cr_global_objects;
+		cr_global_objects = object;
+	}
+	else {
+		object->next = chunk->first;
+		chunk->first = object;
+	}
 
-	chunk->object.is_current = is_current;
-	chunk->object.ref = ref;
-	chunk->object.size = size;
-	chunk->object.is_protected = 0;
-	chunk->object.copy = NULL;
+	object->ref = ref;
+	object->copy = NULL;
 
 		/* when replaying we do not observe objects */
 	if (is_replaying)
 		return;
 
-		/* return if ref is already being observed by a different area */
-	if (id > 0)
-		return;
-
 		/* check if we need to do any observation */
-	if (size == 0) {
-		EIF_REFERENCE r = eif_access(ref.o);
+	if (CR_IS_REFERENCE(ref)) {
+		r = CR_ACCESS(ref);
 		union overhead *zone = HEADER(r);
 			// FIXME: make sure r is a basic typed SPECIAL!
 		if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
 			src = (void *) r;
-			src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
+			src_size = (size_t) RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
 		}
 	}
 	else {
-		src = (void *) ref.p;
-		src_size = size;
+		src = (void *) ref.item.p;
+		src_size = (size_t) ref.size;
 	}
 
 	if (src_size > 0 && src != NULL) {
-		chunk->object.copy = cmalloc(src_size);
+		object->copy = cmalloc(src_size);
 
-		if (chunk->object.copy == NULL)
+		if (object->copy == NULL)
 			enomem();
-		memcpy(chunk->object.copy, src, src_size);
+		memcpy(object->copy, src, src_size);
 	}
 
 	return;
@@ -245,51 +275,63 @@ rt_private void cr_capture_mutations ()
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
+	REQUIRE("has_chunk", cr_top_object != (struct stcrchunk *) NULL);
 
-	struct stcrchunk *chunk;
+	struct cr_object *object;
 	uint32 id = 1;
+	EIF_CR_ID cr_id;
 
-	chunk = cr_top_object;
-	while (chunk != NULL) {
+	object = cr_top_object->first;
+	while (object != NULL) {
 
 		void *src;
-		size_t src_size = chunk->object.size;
-		if (src_size == 0) {
-			EIF_REFERENCE r = eif_access(chunk->object.ref.o);
-			union overhead *zone = HEADER(r);
-			if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
-				src = (void *) r;
-				src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
+		size_t src_size = (size_t) object->ref.size;
+		if (CR_IS_REFERENCE(object->ref)) {
+			EIF_REFERENCE r = CR_ACCESS(object->ref);
+			if (r != (EIF_REFERENCE) NULL) {
+				union overhead *zone = HEADER(r);
+				if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
+					src = (void *) r;
+					src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
+				}
 			}
 		}
 		else {
-			src = chunk->object.ref.p;
+			src = object->ref.item.p;
 		}
 
-		void *copy = chunk->object.copy;
+		void *copy = object->copy;
 
 		if (src_size > 0 && copy != NULL) {
 			if (memcmp(src, copy, src_size)) {
 
 				char type = (char) MEMMUT;
 				bwrite(&type, 1);
-				bwrite((char *) &id, sizeof(uint32));
+				cr_id.item.id = id;
+				cr_id.item.size = (uint32) src_size;
+				bwrite((char *) &cr_id, sizeof(EIF_CR_ID));
 
-				size_t start, end;
+				uint32 start, end;
 
 					// TODO: optimize start/end values
 				start = 0;
 				end = src_size-1;
 
-				bwrite((char *) &start, sizeof(size_t));
-				bwrite((char *) &end, sizeof(size_t));
+				bwrite((char *) &start, sizeof(uint32));
+				bwrite((char *) &end, sizeof(uint32));
 				bwrite((char *) src, src_size);
 
-				memcpy(chunk->object.copy, src, src_size);
+				memcpy(object->copy, src, src_size);
 			}
 		}
-		chunk = chunk->sk_prev;
-		id++;
+		object = object->next;
+		if (object == NULL && src_size != CR_GLOBAL_REF) {
+			object = cr_global_objects;
+			id = 1;
+		}
+		else {
+			id++;
+		}
 	}
 
 }
@@ -301,44 +343,23 @@ rt_private void cr_pop_objects ()
 
 	REQUIRE("top_not_null", cr_top_object != NULL);
 
-	struct stcrchunk *chunk = cr_top_object;
-	struct stcrchunk **tail = &cr_top_object;
+	struct stcrchunk *top = cr_top_object;
+	struct cr_object *object = top->first;
+	struct cr_object *old;
 
-	int count = cr_object_count ();
-	int id = 1;
+	while (object != NULL) {
 
-	while (chunk != NULL) {
+		old = object;
+		object = object->next;
 
-		struct stcrchunk *old = chunk;
-		if (old->object.is_current) {
-			chunk = NULL;
-		}
-		else {
-			chunk = old->sk_prev;
-			CHECK ("not_null", chunk != NULL);
-		}
-		if (old->object.is_protected) {
-				/* chunk will remain in stack */
-			*tail = old;
-			tail = &(old->sk_prev);
-				/* If chunk was bottom of stack but remains, it no longer represents a `Current' */
-			old->object.is_current = 0;
-		}
-		else {
-				 /* chunk is removed from stack */
-			*tail = old->sk_prev;
+		if (old->copy != NULL)
+			eif_rt_xfree (old->copy);
 
-			if (old->object.size == 0) {
-				cr_suppress_event = 1;
-				eif_wean (old->object.ref.o);
-				cr_suppress_event = 0;
-			}
-			if (old->object.copy != NULL)
-				eif_rt_xfree (old->object.copy);
-			eif_rt_xfree (old);
-		}
-		id++;
+		eif_rt_xfree (old);
 	}
+
+	cr_top_object = top->sk_prev;
+	eif_rt_xfree (top);
 
 }
 
@@ -350,23 +371,14 @@ rt_private void cr_pop_objects ()
  */
 
 
-/* Special EIF_VALUE for storing the size and id of an EIF_CR_REFERENCE */
-typedef union EIF_CR_VALUE_tag {
-	EIF_NATURAL_64 n8;
-	struct {
-		uint32 size;
-		uint32 id;
-	} n4;
-} EIF_CR_VALUE;
-
 rt_private void cr_store_value (EIF_TYPED_VALUE value);
 rt_private void cr_read_value (EIF_TYPED_VALUE *value);
 
-rt_private void cr_capture_object (EIF_VALUE value, EIF_TYPE_INDEX dtype, size_t size, char flag);
+rt_private void cr_capture_object (EIF_CR_REFERENCE ref, char flag);
 rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag);
 
 rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value);
-rt_private struct cr_object * cr_retrieve_object ();
+rt_private EIF_CR_REFERENCE cr_retrieve_object ();
 
 
 rt_private void cr_store_value (EIF_TYPED_VALUE value)
@@ -382,49 +394,47 @@ rt_private void cr_read_value (EIF_TYPED_VALUE *value)
 
 #define CV_PUSH		0x01
 #define CV_RECURSIVE	0x02
-#define CV_CURRENT	0x04
 
 
-rt_private void cr_capture_object (EIF_VALUE val, EIF_TYPE_INDEX dtype, size_t size, char flag)
+rt_private void cr_capture_object (EIF_CR_REFERENCE ref, char flag)
 {
 
 	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
 	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
-	REQUIRE("size_or_dtype", size == 0 || dtype == 0);
 	
 	EIF_TYPED_VALUE tvalue, rtvalue;
-	EIF_CR_VALUE item;
-	uint32 id = 0;
-
-	item.n4.size = size;
+	EIF_CR_ID cr_id;
+	EIF_REFERENCE r = CR_IS_REFERENCE(ref) ? CR_ACCESS(ref) : (EIF_REFERENCE) NULL;
 
 	if (flag & CV_PUSH) {
-		id = 0;
-		// TODO: recursively push TUPLE [..] objects and store subitems in `id'
-
-		cr_push_object (val, size, flag & CV_CURRENT);
+		cr_id.item.size = ref.size;
+		cr_id.item.id = CR_INVALID_ID;
+		cr_push_object (ref);
 	}
 	else {
-		id = cr_id_of_object (val.p, size);
 
-		if (id == 0) {
+		cr_id = cr_id_of_object (ref);
+
+		if (!cr_is_valid_id(cr_id)) {
 				/* FIXME: generalize the access to once variables in run-time, such as the exception manager ... */
-			if (val.r == except_mnger)
-				id = 0xFFFFFFFF;
+			if (r == except_mnger) {
+				cr_id.item.id = 0xFFFFFFFF;
+				cr_id.item.size = CR_GLOBAL_REF;
+			}
 		}
 
-		if (id == 0) {
-			printf("Unknown reference %lx\n", (long unsigned int) val.p);
+		if (!cr_is_valid_id(cr_id)) {
+			printf("Unknown reference %lx\n", (long unsigned int) r);
 			cr_raise ("Passing unknown reference to Eiffel");
 		}
 
 	}
 
-	item.n4.size = size;
-	item.n4.id = id;
-
-	tvalue.type = SK_REF | dtype;
-	tvalue.it_n8 = item.n8;
+	tvalue.type = SK_REF;
+	if (r != (EIF_REFERENCE) NULL) {
+		tvalue.type |= HEADER(r)->ov_dftype;
+	}
+	tvalue.it_n8 = cr_id.value;
 
 	if (is_capturing) {
 		cr_store_value (tvalue);
@@ -438,10 +448,10 @@ rt_private void cr_capture_object (EIF_VALUE val, EIF_TYPE_INDEX dtype, size_t s
 			cr_raise("Replay mismatch: passed reference size differs from one when capturing");
 	}
 
-	if ((flag & (CV_PUSH | CV_RECURSIVE)) && size == 0) {
-		if (HEADER(val.r)->ov_flags & EO_TUPLE) {
-			EIF_TYPED_VALUE *titem = (EIF_TYPED_VALUE *) val.r;
-			uint32 count = RT_SPECIAL_COUNT (val.r);
+	if ((flag & (CV_PUSH | CV_RECURSIVE)) && r != (EIF_REFERENCE) NULL) {
+		if (HEADER(r)->ov_flags & EO_TUPLE) {
+			EIF_TYPED_VALUE *titem = (EIF_TYPED_VALUE *) r;
+			uint32 count = RT_SPECIAL_COUNT (r);
 			unsigned int i;
 			titem++;
 			for (i = 1; i < count; i++) {
@@ -458,15 +468,19 @@ rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag)
 
 	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
 	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
-	REQUIRE("not_current", !(flag & CV_CURRENT));
 
 	EIF_TYPED_VALUE rvalue;
+	EIF_CR_REFERENCE ref;
 
 	if ((value.type & SK_HEAD) == SK_REF && (value.it_r != (EIF_REFERENCE) NULL)) {
-		cr_capture_object (value.item, (EIF_TYPE_INDEX) value.type & SK_DTYPE, (size_t) 0, flag);
+		ref.item.r = value.it_r;
+		ref.size = CR_OBJECT_REF;
+		cr_capture_object (ref, flag);
 	}
 	else if ((value.type & SK_POINTER) && value.it_p != NULL && is_instance (value.it_p)) {
-		cr_capture_object (value.item, HEADER(value.it_r)->ov_dftype, (size_t) 0, flag);
+		ref.item.p = value.it_p;
+		ref.size = CR_OBJECT_REF;
+		cr_capture_object (ref, flag);
 	}
 	else {
 		if (is_capturing)
@@ -491,32 +505,29 @@ rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value)
 
 	REQUIRE("replaying", is_replaying);
 
-	EIF_CR_VALUE item;
-	struct cr_object *object;
+	EIF_CR_ID cr_id;
+	EIF_CR_REFERENCE ref;
 
 	cr_read_value (value);
 
 	if ((value->type & SK_HEAD) == SK_REF) {
 
-		item.n8 = value->it_n8;
-		if (item.n4.id > 0) {
+		cr_id.value = value->it_n8;
+		if (cr_id.item.id > 0) {
 				/* FIXME: generalize once references... */
-			if (item.n4.id == 0xFFFFFFFF) {
+			if (cr_id.item.id == 0xFFFFFFFF) {
 				value->it_r = except_mnger;
 				value->type = SK_REF;
 			}
-			else {
-				object = cr_object_of_id (item.n4.id);
-				if (object == NULL)
-					cr_raise ("Replay mismatch: requested reference for unknown ID");
-			
-				if (object->size > 0) {
-					value->type = SK_POINTER;
-					value->it_p = object->ref.p;
+			else if (cr_is_valid_id(cr_id)) {
+				ref = cr_object_of_id (cr_id);
+				if (CR_IS_REFERENCE(ref)) {
+					value->it_r = CR_ACCESS(ref);
+					value->type = SK_REF | ((EIF_TYPE_INDEX) HEADER(value->it_r)->ov_dftype);
 				}
 				else {
-					value->it_r = eif_access (object->ref.o);
-					value->type = SK_REF | (EIF_TYPE_INDEX) HEADER(value->it_r)->ov_dftype;
+					value->type = SK_POINTER;
+					value->it_p = ref.item.p;
 				}
 			}
 		}
@@ -528,20 +539,22 @@ rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value)
 
 }
 
-rt_private struct cr_object * cr_retrieve_object ()
+
+rt_private EIF_CR_REFERENCE cr_retrieve_object ()
 {
 
 	REQUIRE("replaying", is_replaying);
 
-	uint32 id;
+	EIF_CR_ID id;
 
-	bread((char *) &id, sizeof(id));
+	bread((char *) &id, sizeof(EIF_CR_ID));
 	
-	if (id == 0)
+	if (cr_is_valid_id(id) == 0)
 		cr_raise("Replay mismatch: read invalid id from log");
 
 	return cr_object_of_id (id);
 }
+
 
 
 /*
@@ -549,7 +562,7 @@ rt_private struct cr_object * cr_retrieve_object ()
  */
 
 
-rt_public void cr_init (struct ex_vect* vect, int num_args)
+rt_public void cr_init (EIF_TYPED_VALUE Current, uint32 size, BODY_INDEX bodyid, int num_args)
 {
 
 	EIF_GET_CONTEXT
@@ -565,7 +578,6 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 	}
 
 	char type, rtype;
-	EIF_VALUE v;
 	BODY_INDEX bid;
 
 	if (num_args > 15)
@@ -580,8 +592,6 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 	}
 	type |= (char) num_args;
 
-	v.r = vect->ex_id;
-
 	if (is_capturing) {
 
 
@@ -590,7 +600,7 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 			cr_capture_mutations();
 
 		bwrite(&type, sizeof(char));
-		bwrite((char *) &(vect->ex_bodyid), sizeof(BODY_INDEX));
+		bwrite((char *) &(bodyid), sizeof(BODY_INDEX));
 
 	}
 	else {
@@ -603,23 +613,34 @@ rt_public void cr_init (struct ex_vect* vect, int num_args)
 
 		bread((char *) &bid, sizeof(BODY_INDEX));
 		
-		if (bid != (vect->ex_bodyid)) {
+		if (bid != bodyid) {
 			cr_raise("Expected OUTCALL to different routine");
 		}
 	}
 
-	cr_capture_object (v, HEADER(v.r)->ov_dftype, (size_t) 0, RTCRI ? (char) 0 : CV_CURRENT | CV_PUSH | CV_RECURSIVE);
+	if (!RTCRI) {
+		/* Add new object list to stack */
+		struct stcrchunk *chunk = (struct stcrchunk *) cmalloc(sizeof(struct stcrchunk));
+		if (chunk == NULL)
+			enomem();
+		chunk->sk_prev = cr_top_object;
+		chunk->first = (struct cr_object *) NULL;
+		cr_top_object = chunk;
+	}
+
+	cr_register_argument (Current, size);
 
 }
 
 
-rt_public void cr_register_argument (EIF_TYPED_VALUE arg, size_t size)
+rt_public void cr_register_argument (EIF_TYPED_VALUE arg, uint32 size)
 {
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
-	REQUIRE("valid_size", size == 0 || arg.type == SK_POINTER);
+	REQUIRE("valid_size", size == 0 || (arg.type == SK_POINTER && size < CR_GLOBAL_REF));
 
+	EIF_CR_REFERENCE ref;
 	char flags;
 	if (RTCRI) {
 			/* We must be capturing the arguments of an incall */
@@ -630,7 +651,9 @@ rt_public void cr_register_argument (EIF_TYPED_VALUE arg, size_t size)
 	}
 
 	if (size > 0) {
-		cr_capture_object (arg.item, (EIF_TYPE_INDEX) 0, size, flags);
+		ref.size = size;
+		ref.item.p = arg.it_p;
+		cr_capture_object (ref, flags);
 	}
 	else {
 		cr_capture_value (arg, flags);
@@ -649,7 +672,9 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 
 	union overhead *zone = HEADER(obj);
 	char type = NEWOBJ;
-	EIF_VALUE v;
+	EIF_CR_REFERENCE ref;
+	ref.size = CR_OBJECT_REF;
+	ref.item.r = obj;
 
 	if ((zone->ov_flags) & EO_NEW)
 		type |= 0x1;
@@ -659,12 +684,11 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	bwrite (&type, 1);
 	bwrite ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
 
-	v.r = obj;
-	cr_push_object (v, (size_t) 0, 0);
+	cr_push_object (ref);
 
 }
 
-rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result, size_t size) {
+rt_public void cr_register_result (EIF_TYPED_VALUE Result, uint32 size) {
 
 	EIF_GET_CONTEXT
 
@@ -672,6 +696,7 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 	REQUIRE("size_implies_pointer", size == 0 || (Result.type == SK_POINTER));
 
 	char type, rtype, flags;
+	EIF_CR_REFERENCE ref;
 
 	if (RTCRI) {
 		type = (char) INRET;
@@ -702,8 +727,11 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 	}
 
 	if (Result.type != SK_INVALID) {
-		if (size > 0)
-			cr_capture_object (Result.item, (EIF_TYPE_INDEX) 0, size, flags);
+		if (size > 0) {
+			ref.size = size;
+			ref.item.p = Result.it_p;
+			cr_capture_object (ref, flags);
+		}
 		else
 			cr_capture_value (Result, flags);
 	}
@@ -712,47 +740,51 @@ rt_public void cr_register_result (struct ex_vect* vect, EIF_TYPED_VALUE Result,
 		cr_pop_objects();
 }
 
-rt_public void cr_register_protect (EIF_REFERENCE obj)
+rt_public void cr_register_protect (EIF_REFERENCE *obj)
 {
 	EIF_GET_CONTEXT
 
+	REQUIRE("valid_object", obj != NULL);
 	REQUIRE("capturing", is_capturing);
+	REQUIRE("not_inside", !RTCRI);
 
-	if (!cr_suppress_event) {
+	EIF_CR_REFERENCE ref, newref;
+	ref.item.r = *obj;
+	ref.size = CR_OBJECT_REF;
 
-		REQUIRE("not_inside", !RTCRI);
+	EIF_CR_ID id = cr_id_of_object (ref);
 
-		uint32 id = cr_id_of_object (obj, (size_t) 0);
+	if (!cr_is_valid_id(id))
+		cr_raise ("Trying to protect unknown reference");
 
-		if (id == 0)
-			cr_raise ("Trying to protect unknown reference");
+	char type = (char) PRTOBJ;
+	bwrite(&type, (size_t) 1);
+	bwrite((char *) &id, sizeof(EIF_CR_ID));
 
-		char type = (char) PRTOBJ;
-		bwrite(&type, (size_t) 1);
-		bwrite((char *) &id, sizeof(uint32));
-	
-		struct cr_object * cr_obj = cr_object_of_id (id);
-		CHECK("not_null", cr_obj != NULL);
+	newref.item.o = obj;
+	newref.size = CR_GLOBAL_REF;
 
-		cr_obj->is_protected++;
+	cr_push_object (newref);
 
-	}
 }
 
 
-rt_public void cr_register_wean (EIF_REFERENCE obj)
+rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
 
-	if (!cr_suppress_event) {
 
-		REQUIRE("not_inside", !RTCRI);
+	REQUIRE("not_inside", !RTCRI);
 
-		printf ("wean %lx\n", (long unsigned int) obj);
-	}
+	/*
+		FIXME: remove object from global list...
+
+	printf ("wean %lx\n", (long unsigned int) obj);
+
+	*/
 }
 
 
@@ -787,9 +819,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 	EIF_TYPED_VALUE target, arg1, arg2, arg3 ,arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12;
 	EIF_REFERENCE Current;
 	EIF_TYPE_INDEX dftype;
-	EIF_VALUE v;
-	struct cr_object *object;
-
+	EIF_CR_REFERENCE ref, newref;
 
 	while (1) {
 		bread (&type, 1);
@@ -927,43 +957,62 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				bread ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
 
 				if ((type & ARG_MASK) == 1)
-					v.r = emalloc(dftype);
+					ref.item.r = emalloc(dftype);
 				else
-					v.r = emalloc_as_old(dftype);
+					ref.item.r = emalloc_as_old(dftype);
 
-				cr_push_object (v, (size_t) 0, 0);
+				ref.size = CR_OBJECT_REF;
+
+				cr_push_object (ref);
 
 				break;
 
 			case PRTOBJ:
 
-				object = cr_retrieve_object();
+				ref = cr_retrieve_object();
 
-				if (object == NULL)
+				if (!CR_IS_REFERENCE(ref))
+					cr_raise("Trying to protect pointer");
+
+				Current = CR_ACCESS(ref);
+
+				if (Current == (EIF_REFERENCE) NULL)
 					cr_raise("Invalid ID for PRTOBJ");
 
+				newref.item.p = eif_protect(CR_ACCESS(ref));
+				newref.size = CR_GLOBAL_REF;
+
+				cr_push_object (newref);
+
+				/* 
+					FIXME: insert object into global list...
 				object->is_protected++;
+
+				*/
 
 				break;
 
 			case MEMMUT:
 
-				object = cr_retrieve_object();
+				ref = cr_retrieve_object();
 
-				if (object == NULL)
-					cr_raise("Invalid ID for MEMMUT");
+				uint32 start, end;
+				size_t size;
+				bread((char *) &start, sizeof(uint32));
+				bread((char *) &end, sizeof(uint32));
+				size = (size_t) (end - start + 1);
 
-				size_t start, end, size;
-				bread((char *) &start, sizeof(size_t));
-				bread((char *) &end, sizeof(size_t));
-				size = end - start + 1;
+				if (!CR_IS_REFERENCE(ref)) {
+					if (ref.item.p == NULL)
+						cr_raise("Invalid pointer ID for MEMMUT");
 
-				if (object->size > 0) {
-					CHECK("valid_size", size <= object->size);
-					bread((char *) object->ref.p, size);
+					CHECK("valid_size", size <= ref.size);
+					bread((char *) ref.item.p, size);
 				}
 				else {
-					Current = eif_access(object->ref.o);
+					Current = CR_ACCESS(ref);
+					if (Current == (EIF_REFERENCE) NULL)
+						cr_raise("Invalid object ID for MEMMUT");
 
 					CHECK("is_special", ((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
 					CHECK("valid_size", size <= RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current));
@@ -972,11 +1021,181 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				}
 
 				break;
+
 			default:
 				cr_raise("Corrupted log");
 		}
 
 	}
+
+}
+
+
+/* Special feature body id */
+#define SF_BODY_ID 0xFFFFFFFF
+
+rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_memcpy";
+	EIF_POINTER Current = (EIF_POINTER) dest;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	memcpy (dest, source, count);
+
+	RTCRABEV(l_feature_name);
+	RTCRFE;
+
+}
+
+rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count)
+{
+
+	EIF_GET_CONTEXT
+	
+	char *l_feature_name = "cr_memmove";
+	EIF_POINTER Current = (EIF_POINTER) dest;
+	
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
+	RTCRBS2;
+	
+	memmove(dest, source, count);
+
+	RTCRABEV(l_feature_name);
+	RTCRFE;	
+
+}
+
+rt_public void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, int value, size_t count)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_memset";
+
+	EIF_POINTER Current = (EIF_POINTER) dest;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	memset(dest, value, count);
+
+	RTCRABEV(l_feature_name);
+	RTCRFE;
+
+}
+
+rt_public int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t count)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_memcmp";
+	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_INTEGER Result;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	Result = (EIF_INTEGER) memcmp(dest, other, count);
+
+	RTCRABER(SK_INT32, it_i4, 0, l_feature_name);
+	RTCRFE;
+
+	return (int) Result;
+}
+
+rt_public void *cr_malloc(struct ex_vect *exvect, size_t size)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_malloc";
+	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_POINTER Result;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	Result = (EIF_POINTER) malloc(size);
+
+	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
+	RTCRFE;
+
+	return (void *) Result;
+}
+
+
+rt_public void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_calloc";
+	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_POINTER Result;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	Result = (EIF_POINTER) calloc(nmemb, size);
+	
+	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
+	RTCRFE;
+
+	return (void *) Result;
+}
+
+
+rt_public void *cr_realloc(struct ex_vect *exvect, void *source, size_t size)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_realloc";
+	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_POINTER Result;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	Result = (EIF_POINTER) realloc(source, size);
+	
+	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
+	RTCRFE;
+
+	return (void *) Result;
+}
+
+
+rt_public void cr_free (struct ex_vect *exvect, void *dest)
+{
+
+	EIF_GET_CONTEXT
+
+	char *l_feature_name = "cr_free";
+
+	EIF_POINTER Current = (EIF_POINTER) NULL;
+
+	RTCRAFS(0, l_feature_name, SF_BODY_ID);
+	RTCRABS1(SK_POINTER, it_p, (size_t) 0, SF_BODY_ID, 0);
+	RTCRBS2;
+
+	free(dest);
+
+	RTCRABEV(l_feature_name);
+	RTCRFE;
 
 }
 

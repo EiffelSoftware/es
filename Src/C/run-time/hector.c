@@ -262,6 +262,10 @@ rt_public EIF_REFERENCE eif_wean(EIF_OBJECT object)
 			}
 		}
 		ret = eif_access(object);
+#ifdef WORKBENCH
+		if (is_capturing)
+			cr_register_wean(object);
+#endif
 		eif_access(object) = (EIF_REFERENCE) 0;		/* Reset hector's entry */
 	} else {
 			/* For some reasons, we are in case of double free. OK, I've put a check statement so that
@@ -276,11 +280,6 @@ rt_public EIF_REFERENCE eif_wean(EIF_OBJECT object)
 		CHECK("NULL object inside", ret == eif_access(object));
 	}
 	EIFMTX_UNLOCK;
-
-#ifdef WORKBENCH
-	if (is_capturing)
-		cr_register_wean (ret);
-#endif
 
 	return ret;				/* return unprotected address */
 }
@@ -376,7 +375,7 @@ rt_public EIF_OBJECT eif_protect(EIF_REFERENCE object)
 
 #ifdef WORKBENCH
 	if (is_capturing)
-		cr_register_protect (object);
+		cr_register_protect (address);
 #endif
 
 	return address;			/* Location in Hector table */
