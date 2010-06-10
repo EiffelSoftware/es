@@ -110,18 +110,26 @@ feature -- Evaluation
 
 	evaluated_value_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: EPA_EXPRESSION): EPA_EXPRESSION_VALUE
 			-- Value of `a_expression' evaluated through debugger
+		local
+			l_expr: STRING
 		do
-			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression.text))
+			l_expr := a_expression.text
+			Result := expression_value_from_dump (a_dm.expression_evaluation (l_expr), l_expr)
 		end
 
 	evaluated_string_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: STRING): EPA_EXPRESSION_VALUE
 			-- Value of `a_expression' evaluated through debugger
 		do
-			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression))
+			Result := expression_value_from_dump (a_dm.expression_evaluation (a_expression), a_expression)
 		end
 
-	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE): EPA_EXPRESSION_VALUE
+	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE; a_expression_text: STRING): EPA_EXPRESSION_VALUE
 			-- Expression value from `a_dump_value'
+		local
+			l_address: DBG_ADDRESS
+			l_dtype: CLASS_C
+			l_dtype_id: INTEGER
+			l_system: SYSTEM_I
 		do
 			if a_dump_value = Void or else a_dump_value.is_invalid_value then
 				create {EPA_NONSENSICAL_VALUE} Result
@@ -136,13 +144,33 @@ feature -- Evaluation
 				create {EPA_VOID_VALUE} Result.make
 
 			elseif a_dump_value.is_type_object then
-				if attached {CLASS_C} a_dump_value.dynamic_class as l_class then
-					if l_class.name_in_upper ~ once "STRING_8" then
-						create {EPA_STRING_VALUE} Result.make (a_dump_value.address.as_string, a_dump_value.string_representation)
+				l_dtype := a_dump_value.dynamic_class
+
+				if l_dtype /= Void then
+					l_dtype_id := l_dtype.class_id
+					l_system := system
+					if l_dtype_id = l_system.string_32_id or else l_dtype_id = l_system.string_8_id then
+						l_address := a_dump_value.address
+						create {EPA_STRING_VALUE} Result.make (l_address.physical_addr (l_address).as_string, a_dump_value.string_representation)
+
+					elseif l_dtype_id = l_system.boolean_class.compiled_representation.class_id then
+						create {EPA_BOOLEAN_VALUE} Result.make (debugger_manager.expression_evaluation (a_expression_text + once ".out").output_for_debugger.to_boolean)
+
+					elseif
+						l_dtype_id = l_system.integer_32_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.integer_8_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.integer_16_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.integer_64_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.natural_32_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.natural_8_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.natural_16_class.compiled_representation.class_id or else
+						l_dtype_id = l_system.natural_64_class.compiled_representation.class_id then
+						create {EPA_INTEGER_VALUE} Result.make (debugger_manager.expression_evaluation (a_expression_text + once ".out").output_for_debugger.to_integer)
 					end
 				end
 				if Result = Void then
-					create {EPA_REFERENCE_VALUE} Result.make (a_dump_value.address.as_string, system.any_type)
+					l_address := a_dump_value.address
+					create {EPA_REFERENCE_VALUE} Result.make (l_address.physical_addr (l_address).as_string, system.any_type)
 				end
 			else
 				check False end

@@ -33,18 +33,24 @@ feature{NONE} -- Initialization
 
 	make (a_config: CI_CONFIG)
 			-- Initialize Current.
+		local
+			l_file_name: FILE_NAME
 		do
 			config := a_config
 			class_ := first_class_starts_with_name (config.class_name)
 			feature_ := class_.feature_named (config.feature_name_for_test_cases)
 			context_type := class_.constraint_actual_type
 			create log_manager.make
+			create l_file_name.make_from_string (config.log_directory)
+			l_file_name.set_file_name ("log.txt")
+			create log_file.make_create_read_write (l_file_name)
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
+			log_manager.loggers.extend (create {EPA_FILE_LOGGER}.make (log_file))
 
 				-- Enable verbose logging (for debugging purpose)
 				-- When the code is ready, use a concise logging level will save some time.
-			log_manager.set_level_threshold ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.set_level_threshold_to_fine
 			setup_inferrers
 		end
 
@@ -68,6 +74,9 @@ feature -- Access
 	inferrers: LINKED_LIST [CI_INFERRER]
 			-- List of inferrers
 
+	log_file: PLAIN_TEXT_FILE
+			-- File used for logging
+
 feature -- Basic operations
 
 	execute
@@ -87,6 +96,10 @@ feature -- Basic operations
 
 				-- Store transitions in files
 			store_transition_in_files
+
+			if log_file /= Void and then log_file.is_open_write then
+				log_file.close
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -174,9 +187,8 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
 
---			Result.wipe_out
---			create l_current_expr.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "v_57", a_tc_info.test_case_class)
---			Result.force_last (l_current_expr)
+			create l_current_expr.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "Current", a_tc_info.test_case_class)
+			Result.force_last (l_current_expr)
 		end
 
 	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
@@ -405,9 +417,14 @@ feature{NONE} -- Actions
 			-- Action to be performed when expressions are evaluated for test case defined in `a_tc_info'.
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
-		local
-
 		do
+			if a_pre_execution then
+				log_manager.put_line ("Pre  Current = " + a_state.item_with_expression_text ("Current").value.out)
+			else
+				log_manager.put_line ("Post Current = " + a_state.item_with_expression_text ("Current").value.out)
+			end
+			a_state.remove (a_state.item_with_expression_text ("Current"))
+
 			a_bp_manager.toggle_breakpoints (False)
 
 				-- Store results.

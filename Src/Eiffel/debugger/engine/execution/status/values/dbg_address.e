@@ -32,6 +32,13 @@ inherit
 			out, is_equal
 		end
 
+	OBJECT_ADDR
+		export{ANY}
+			physical_addr
+		redefine
+			out, is_equal
+		end
+
 create
 	make_from_address,
 	make_void,
@@ -280,7 +287,7 @@ invariant
 	not_default_value_implies_not_is_void: value /= Default_pointer implies not is_void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
