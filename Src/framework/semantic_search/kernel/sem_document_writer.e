@@ -330,15 +330,14 @@ feature {NONE} -- Implementation
 					local
 						l_type: STRING
 					do
-						l_type := a_expr.resolved_type (a_context_type).name.twin
-						l_type.replace_substring_all (once "?", once "")
+						l_type := cleaned_type_name (a_expr.resolved_type (a_context_type).name)
 						l_type.prepend_character ('{')
 						l_type.append_character ('}')
 						a_tbl.put (l_type, a_expr.text.as_lower)
 					end (?, l_replacements, queryable.context_type))
 
-			if a_principal_variable=void then
-				if attached {EXPR_CALL_AS}a_expression.ast as l_expr_call and then attached {NESTED_AS}l_expr_call.call as l_nested then
+			if a_principal_variable = void then
+				if attached {EXPR_CALL_AS} a_expression.ast as l_expr_call and then attached {NESTED_AS} l_expr_call.call as l_nested then
 					-- Principal variable = target of call
 					l_princ_var := queryable.variable_by_name (l_nested.target.access_name)
 					l_princ_var_index := queryable.variable_position (l_princ_var)
@@ -346,27 +345,88 @@ feature {NONE} -- Implementation
 					l_abstract_types := abstract_types (l_princ_var.resolved_type (queryable.context_type), l_calls)
 					Result := abstracting_rewriter.abstracted_expression_texts (a_expression, l_princ_var, l_abstract_types, l_replacements)
 				else
-					create {LINKED_LIST[STRING]}Result.make
-					if attached {BIN_EQ_AS}a_expression.ast as l_bin_eq and then (attached {ACCESS_AS}l_bin_eq.left and attached {ACCESS_AS}l_bin_eq.right) then
-						-- Simple binary expression of the form a /= b
-						create {LINKED_LIST[STRING]}Result.make
-						Result.extend ("{ANY} = {ANY}")
-					elseif attached {BIN_NE_AS}a_expression.ast as l_bin_ne and then (attached {ACCESS_AS}l_bin_ne.left and attached {ACCESS_AS}l_bin_ne.right) then
-						-- Simple binary expression of the form a = b
-						create {LINKED_LIST[STRING]}Result.make
-						Result.extend ("{ANY} /= {ANY}")
-					end
+					Result := equality_based_abstraction (a_expression.ast)
 				end
 			else
-				Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
+				if attached {EXPR_CALL_AS} a_expression.ast or attached {NESTED_AS} a_expression.ast then
+					Result := abstracting_rewriter.abstracted_expression_texts (a_expression, a_principal_variable, abstract_principal_types, l_replacements)
+				else
+					Result := equality_based_abstraction (a_expression.ast)
+				end
+			end
+		end
+
+	equality_based_abstraction (a_expr: EXPR_AS): LINKED_LIST [STRING]
+			-- Abstracted expressions for `a_expr' if and only if
+			-- `a_expr' is "a = b", "a /= b", "a ~ b" or "a /~ b".
+			-- Otherwise, return an empty list.
+		local
+			l_expr: STRING
+		do
+			create Result.make
+			if
+				attached {BIN_EQ_AS} a_expr or else
+				attached {BIN_NE_AS} a_expr or else
+				attached {BIN_TILDE_AS} a_expr or else
+				attached {BIN_NOT_TILDE_AS} a_expr
+			then
+				if attached {BINARY_AS} a_expr as l_bin_as then
+					create l_expr.make (24)
+					l_expr.append (once "{ANY} ")
+					l_expr.append (l_bin_as.op_name.name)
+					l_expr.append (once " {ANY}")
+					Result.extend (l_expr)
+				end
 			end
 		end
 
 	is_simple_property (a_expr: EPA_EXPRESSION): BOOLEAN
 			-- Is `a_expr' a simple property of the form a = b or a feature call
 		do
-			Result := attached {EXPR_CALL_AS}a_expr.ast or (attached {BIN_EQ_AS}a_expr.ast as l_bin_eq and then (attached {ACCESS_AS}l_bin_eq.left and attached {ACCESS_AS}l_bin_eq.right))
-			or (attached {BIN_NE_AS}a_expr.ast as l_bin_ne and then (attached {ACCESS_AS}l_bin_ne.left and attached {ACCESS_AS}l_bin_ne.right))
+			Result :=
+				is_simple_expression (a_expr.ast)
+		end
+
+	is_simple_expression (a_expr: EXPR_AS): BOOLEAN
+			-- Is `a_expr' simple?
+		do
+			Result :=
+				attached {EXPR_CALL_AS}a_expr or else
+				is_binary_expression_simple (a_expr) or else
+				is_negation_expression_simple (a_expr)
+		end
+
+	is_negation_expression_simple (a_expr: EXPR_AS): BOOLEAN
+			-- Is `a_expr' a simple expression starting with a "not"?
+		do
+			if attached {UN_NOT_AS} a_expr as l_negation then
+				Result := is_simple_expression (l_negation.expr)
+			end
+		end
+
+	is_binary_expression_simple (a_binary_expr: EXPR_AS): BOOLEAN
+			-- Is `a_binary_expr' simple?
+		do
+			if
+				attached {BIN_EQ_AS} a_binary_expr or else
+				attached {BIN_NE_AS} a_binary_expr or else
+				attached {BIN_TILDE_AS} a_binary_expr or else
+				attached {BIN_NOT_TILDE_AS} a_binary_expr
+			then
+				if attached {BINARY_AS} a_binary_expr as l_bin_as then
+					Result :=
+						is_expr_simple (l_bin_as.left) and then
+						is_expr_simple (l_bin_as.right)
+				end
+			end
+		end
+
+	is_expr_simple (a_expr_as: EXPR_AS): BOOLEAN
+			-- Is `a_expr_as' simple?
+		do
+			Result :=
+				attached {ACCESS_AS} a_expr_as or else
+				attached {EXPR_CALL_AS} a_expr_as
 		end
 
 feature {NONE} -- Output
@@ -476,8 +536,14 @@ feature {NONE} -- Output
 					l_value := l_equation.value
 					if l_value.is_boolean then
 						l_type_name := type_boolean
-					else
+					elseif l_value.is_integer then
 						l_type_name := type_integer
+					elseif l_value.is_reference then
+						l_type_name := type_reference
+					elseif l_value.is_void then
+						l_type_name := type_void
+					elseif l_value.is_nonsensical then
+						l_type_name := type_nonsensical
 					end
 
 					l_typed_expr := l_transition.typed_expression_text (l_expr)
@@ -538,21 +604,35 @@ feature {NONE} -- Output
 			-- into `buffer'.
 		require
 			is_type_valid: is_type_valid (a_type)
+		local
+			l_field: STRING
 		do
-			buffer.append (a_name)
-			buffer.append_character ('%N')
+			create l_field.make (128)
 
-			buffer.append (a_boost.out)
-			buffer.append_character ('%N')
+			l_field.append (a_name)
+			l_field.append_character ('%N')
 
-			buffer.append (a_type)
-			buffer.append_character ('%N')
+			l_field.append (a_boost.out)
+			l_field.append_character ('%N')
 
-			buffer.append (a_value)
-			buffer.append_character ('%N')
+			l_field.append (a_type)
+			l_field.append_character ('%N')
 
-			buffer.append_character ('%N')
+			l_field.append (a_value)
+			l_field.append_character ('%N')
+
+			l_field.append_character ('%N')
+
+			if not added_fields.has (l_field) then
+				added_fields.force_last (l_field)
+				buffer.append (l_field)
+			end
 		end
+
+	added_fields: DS_HASH_SET [STRING]
+			-- Set of fields that are already added,
+			-- used for duplication detection.
+
 feature {NONE} -- Constants
 
 	default_boost: DOUBLE = 1.0
@@ -563,6 +643,12 @@ feature {NONE} -- Constants
 
 	type_integer: STRING = "INTEGER"
 			-- Type integer
+
+	type_reference: STRING = "REFERENCE"
+
+	type_void: STRING = "VOID"
+
+	type_nonsensical: STRING = "NONSENSICAL"
 
 	is_type_valid (a_type: STRING): BOOLEAN
 			-- Is `a_type' valid?

@@ -422,6 +422,12 @@ feature{NONE} -- Implementation
 					create {EPA_INTEGER_VALUE} l_value.make (a_value.to_integer)
 				elseif a_value.is_equal (nonsensical) then
 					create {EPA_NONSENSICAL_VALUE} l_value
+				elseif a_value.is_equal (void_value) then
+					create {EPA_VOID_VALUE} l_value.make
+				elseif a_value.starts_with (once "0x") then
+					create {EPA_REFERENCE_VALUE} l_value.make (a_value.twin, l_expr.type)
+				else
+					check not_suported_not: False end
 				end
 			end
 			create Result.make (l_expr, l_value)

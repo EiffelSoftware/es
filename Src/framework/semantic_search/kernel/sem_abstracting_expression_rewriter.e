@@ -13,8 +13,11 @@ inherit
 			process_nested_as,
 			process_access_feat_as
 		end
+
 	EPA_TYPE_UTILITY
+
 	ETR_SHARED_TOOLS
+	
 create
 	make
 

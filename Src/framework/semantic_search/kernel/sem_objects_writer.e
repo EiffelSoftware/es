@@ -27,6 +27,10 @@ feature -- Basic operation
 			l_prop_list: STRING
 			l_calls: LIST[STRING]
 		do
+				-- Initialize `added_fields' used for duplicated field detection.
+			create added_fields.make (100)
+			added_fields.set_equality_tester (string_equality_tester)
+
 			queryable := a_objects
 
 			create buffer.make (4096)
@@ -120,7 +124,7 @@ feature {NONE} -- Output
 						l_serialization_buffer.append_character (serialization_field_array_separator)
 					end
 
-					l_index := l_index+1
+					l_index := l_index + 1
 				end
 
 				append_field (serialization_field, default_boost, type_string, l_serialization_buffer)

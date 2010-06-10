@@ -26,6 +26,10 @@ feature -- Basic operation
 			l_file_name: FILE_NAME
 			l_calls: LIST[STRING]
 		do
+				-- Initialize `added_fields' used for duplicated field detection.
+			create added_fields.make (100)
+			added_fields.set_equality_tester (string_equality_tester)
+
 			queryable := a_transition
 			if attached {SEM_FEATURE_CALL_TRANSITION}a_transition as l_fc_trans then
 				principal_variable_index := 0

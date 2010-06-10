@@ -89,7 +89,7 @@ feature {NONE} -- Helpers
 			end
 		end
 
-	variable_locations (a_var_index_list: LIST[STRING]): LIST[TUPLE[type:STRING;position:INTEGER]]
+	variable_locations (a_var_index_list: LIST[STRING]): LIST[TUPLE[type: STRING; position: INTEGER]]
 			-- Extracts types and positions from a list of variables ({type}@position)
 		local
 			l_cur_var: LIST[STRING]
