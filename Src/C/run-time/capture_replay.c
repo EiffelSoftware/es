@@ -39,7 +39,7 @@
 
 #define MEMMUT  0x90    /* Memory area mutation */
 
-#define PRTOBJ  0xA0    /* Keep reference to Eiffel object on stack */
+#define PROTOBJ  0xA0    /* Keep reference to Eiffel object on stack */
 #define WEANOBJ 0xB0    /* Remove reference to Eiffel object from stack */
 
 /* The other 4 bits can be used for argument count etc. */
@@ -128,18 +128,24 @@ rt_private EIF_CR_ID cr_id_of_object (EIF_CR_REFERENCE ref)
 	EIF_GET_CONTEXT
 
 	REQUIRE("has_stack_frame", cr_top_object != NULL);
-	REQUIRE("not_global", ref.size != CR_GLOBAL_REF);
-
-	struct cr_object *object = cr_top_object->first;
 
 	EIF_CR_ID cr_id;
 	cr_id.item.id = 0;
 	cr_id.item.size = ref.size;
-
 	uint32 id = 1;
+
+	struct cr_object *object = cr_top_object->first;
+	if (object == (struct cr_object *) NULL || ref.size == CR_GLOBAL_REF) {
+		object = cr_global_objects;
+		cr_id.item.size = CR_GLOBAL_REF;
+	}
+
 	while (object != NULL) {
 		int same_ref = 0;
-		if (ref.size > 0) {
+		if (ref.size == CR_GLOBAL_REF) {
+			same_ref = object->ref.item.o == ref.item.o;
+		}
+		else if (ref.size > 0) {
 			same_ref = object->ref.item.p == ref.item.p;
 		}
 		else {
@@ -268,7 +274,6 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 
 }
 
-
 rt_private void cr_capture_mutations ()
 {
 
@@ -282,6 +287,10 @@ rt_private void cr_capture_mutations ()
 	EIF_CR_ID cr_id;
 
 	object = cr_top_object->first;
+	if (object == (struct cr_object *) NULL) {
+		object = cr_global_objects;
+	}
+
 	while (object != NULL) {
 
 		void *src;
@@ -363,7 +372,43 @@ rt_private void cr_pop_objects ()
 
 }
 
+rt_private void cr_remove_object (EIF_CR_ID cr_id)
+{
 
+	EIF_GET_CONTEXT
+
+	REQUIRE("valid_id", cr_is_valid_id(cr_id));
+	REQUIRE("has_stack_frame", cr_top_object != NULL);
+
+	struct cr_object **object, *old;
+	uint32 id = cr_id.item.id;
+
+	if (cr_id.item.size == CR_GLOBAL_REF) {
+		object = &cr_global_objects;
+	}
+	else {
+		object = &(cr_top_object->first);
+	}
+
+	while (object != NULL) {
+		id--;
+		if (id == 0) {
+			old = *object;
+			*object = old->next;
+			if (old->copy != NULL)
+				eif_rt_xfree (old->copy);
+				
+			eif_rt_xfree (old);
+			
+			return;
+		}
+		object = &((*object)->next);
+		
+	}
+
+	cr_raise("tried to remove object for invalid id");
+
+}
 
 
 /*
@@ -661,8 +706,6 @@ rt_public void cr_register_argument (EIF_TYPED_VALUE arg, uint32 size)
 
 }
 
-
-
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 {
 
@@ -757,9 +800,11 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 	if (!cr_is_valid_id(id))
 		cr_raise ("Trying to protect unknown reference");
 
-	char type = (char) PRTOBJ;
+	char type = (char) PROTOBJ;
 	bwrite(&type, (size_t) 1);
 	bwrite((char *) &id, sizeof(EIF_CR_ID));
+
+	cr_remove_object (id);
 
 	newref.item.o = obj;
 	newref.size = CR_GLOBAL_REF;
@@ -768,39 +813,49 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 }
 
-
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
-
-
 	REQUIRE("not_inside", !RTCRI);
 
-	/*
-		FIXME: remove object from global list...
+	EIF_CR_REFERENCE ref, newref;
+	EIF_CR_ID id = cr_id_of_object (ref);
 
-	printf ("wean %lx\n", (long unsigned int) obj);
+	ref.item.o = obj;
+	ref.size = CR_GLOBAL_REF;
 
-	*/
+	id = cr_id_of_object (ref);
+
+	if (!cr_is_valid_id(id))
+		cr_raise ("Trying to wean unknown reference");
+
+	char type = (char) WEANOBJ;
+	bwrite(&type, (size_t) 1);
+	bwrite((char *) &id, sizeof(EIF_CR_ID));
+
+	cr_remove_object (id);
+
+	newref.item.p = *(obj);
+	newref.size = CR_OBJECT_REF;
+
+	cr_push_object (newref);
+
 }
-
-
-
-
-
 
 rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 {
-	EIF_GET_CONTEXT
 
-	if (egc_frozen[body_id])
+	if (egc_frozen[body_id]) {
 		return egc_frozen[body_id];
+	}
 	else {
-		IC = melt[body_id];
-		return pattern[MPatId(body_id)].toi;
+		cr_raise("Trying to replay melted routine");
+
+			/* Not reached */
+		return (EIF_REFERENCE_FUNCTION) NULL;
 	}
 }
 
@@ -820,6 +875,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 	EIF_REFERENCE Current;
 	EIF_TYPE_INDEX dftype;
 	EIF_CR_REFERENCE ref, newref;
+	EIF_CR_ID id;
 
 	while (1) {
 		bread (&type, 1);
@@ -967,7 +1023,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 
 				break;
 
-			case PRTOBJ:
+			case PROTOBJ:
 
 				ref = cr_retrieve_object();
 
@@ -977,7 +1033,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				Current = CR_ACCESS(ref);
 
 				if (Current == (EIF_REFERENCE) NULL)
-					cr_raise("Invalid ID for PRTOBJ");
+					cr_raise("Invalid ID for PROTOBJ");
 
 				newref.item.p = eif_protect(CR_ACCESS(ref));
 				newref.size = CR_GLOBAL_REF;
@@ -989,6 +1045,26 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 				object->is_protected++;
 
 				*/
+
+				break;
+
+			case WEANOBJ:
+
+				bread((char *) &id, sizeof(EIF_CR_ID));
+
+				if (!cr_is_valid_id(id))
+					cr_raise("Trying to wean unknown object");
+
+				ref = cr_object_of_id (id);
+				cr_remove_object (id);
+
+				if (!CR_IS_REFERENCE(ref))
+					cr_raise("Trying to wean pointer reference");
+
+				newref.item.r = CR_ACCESS(ref);
+				newref.size = CR_OBJECT_REF;
+
+				cr_push_object (newref);
 
 				break;
 

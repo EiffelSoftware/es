@@ -1350,7 +1350,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRD { int i; for (i=0;i<cr_call_depth;i++) fprintf(stderr," "); }
 
 /* Note: enabling the following will print every feature invocation to STDERR */
-#if 0
+#if 1
 #define RTCRDBG(x) { RTCRD; fprintf x; }
 #else
 #define RTCRDBG(x)

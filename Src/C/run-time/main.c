@@ -1003,7 +1003,7 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 	// For now we disable garbage collection as the capture/replay mechanism identifies
 	// objects through their address in memory
 	//
-	eif_gc_stop();
+	//eif_gc_stop();
 #endif
 
 }
