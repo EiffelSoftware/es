@@ -47,11 +47,6 @@ feature
 			{RT_CAPTURE_REPLAY}.print_string("a: " + a.out + " b: " + b.out + "%N")
 		end
 
-	test_typed_pointer_external
-		local
-		do
-		end
-
 feature {NONE}
 
 	pointer_size: INTEGER = 4
