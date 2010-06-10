@@ -1444,7 +1444,7 @@ feature
 			"C () | <gtk/gtk.h>"
 		end
 
-	frozen g_byte_array_append (a_array: POINTER; a_data: POINTER; a_len: INTEGER): POINTER
+	frozen g_byte_array_append (a_array: POINTER; a_data: TYPED_POINTER [NATURAL_8]; a_len: INTEGER): POINTER
 		external
 			"C (GByteArray*, guint8*, guint): GByteArray* | <gtk/gtk.h>"
 		end
@@ -1459,7 +1459,7 @@ feature
 			"C (): GByteArray* | <gtk/gtk.h>"
 		end
 
-	frozen g_byte_array_prepend (a_array: POINTER; a_data: POINTER; a_len: INTEGER): POINTER
+	frozen g_byte_array_prepend (a_array: POINTER; a_data: TYPED_POINTER [NATURAL_8]; a_len: INTEGER): POINTER
 		external
 			"C (GByteArray*, guint8*, guint): GByteArray* | <gtk/gtk.h>"
 		end
@@ -3134,7 +3134,7 @@ feature
 			"C (GdkColormap*, GdkColor*, gboolean, gboolean): gboolean | <gtk/gtk.h>"
 		end
 
-	frozen gdk_colormap_alloc_colors (a_colormap: POINTER; a_colors: POINTER; a_ncolors: INTEGER; a_writeable: BOOLEAN; a_best_match: BOOLEAN; a_success: POINTER): INTEGER
+	frozen gdk_colormap_alloc_colors (a_colormap: POINTER; a_colors: POINTER; a_ncolors: INTEGER; a_writeable: BOOLEAN; a_best_match: BOOLEAN; a_success: TYPED_POINTER [INTEGER_32]): INTEGER
 		external
 			"C (GdkColormap*, GdkColor*, gint, gboolean, gboolean, gboolean*): gint | <gtk/gtk.h>"
 		end
@@ -4399,7 +4399,7 @@ feature
 			"C (guint, GdkModifierType): gchar* | <gtk/gtk.h>"
 		end
 
-	frozen gtk_accelerator_parse (a_accelerator: POINTER; a_accelerator_key: POINTER; a_accelerator_mods: POINTER)
+	frozen gtk_accelerator_parse (a_accelerator: POINTER; a_accelerator_key: TYPED_POINTER [INTEGER_32]; a_accelerator_mods: POINTER)
 		external
 			"C (gchar*, guint*, GdkModifierType*) | <gtk/gtk.h>"
 		end
@@ -4534,7 +4534,7 @@ feature
 			"C (GtkBox*, GtkWidget*) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_box_query_child_packing (a_box: POINTER; a_child: POINTER; a_expand: POINTER; a_fill: POINTER; a_padding: POINTER; a_pack_type: POINTER)
+	frozen gtk_box_query_child_packing (a_box: POINTER; a_child: POINTER; a_expand: TYPED_POINTER [INTEGER_32]; a_fill: TYPED_POINTER [INTEGER_32]; a_padding: TYPED_POINTER [INTEGER_32]; a_pack_type: POINTER)
 		external
 			"C (GtkBox*, GtkWidget*, gboolean*, gboolean*, guint*, GtkPackType*) | <gtk/gtk.h>"
 		end
@@ -4744,7 +4744,7 @@ feature
 			"C (GtkCList*, gint, gint, GdkPixmap**, GdkBitmap**): gint | <gtk/gtk.h>"
 		end
 
-	frozen gtk_clist_get_pixtext (a_clist: POINTER; a_row: INTEGER; a_column: INTEGER; a_text: POINTER; a_spacing: POINTER; a_pixmap: POINTER; a_mask: POINTER): INTEGER
+	frozen gtk_clist_get_pixtext (a_clist: POINTER; a_row: INTEGER; a_column: INTEGER; a_text: POINTER; a_spacing: TYPED_POINTER [NATURAL_8]; a_pixmap: POINTER; a_mask: POINTER): INTEGER
 		external
 			"C (GtkCList*, gint, gint, gchar**, guint8*, GdkPixmap**, GdkBitmap**): gint | <gtk/gtk.h>"
 		end
@@ -5249,7 +5249,7 @@ feature
 			"C (GtkCTree*, GtkCTreeRow*): GtkCTreeNode* | <gtk/gtk.h>"
 		end
 
-	frozen gtk_ctree_get_node_info (a_ctree: POINTER; a_node: POINTER; a_text: POINTER; a_spacing: POINTER; a_pixmap_closed: POINTER; a_mask_closed: POINTER; a_pixmap_opened: POINTER; a_mask_opened: POINTER; a_is_leaf: POINTER; a_expanded: POINTER): INTEGER
+	frozen gtk_ctree_get_node_info (a_ctree: POINTER; a_node: POINTER; a_text: POINTER; a_spacing: TYPED_POINTER [NATURAL_8]; a_pixmap_closed: POINTER; a_mask_closed: POINTER; a_pixmap_opened: POINTER; a_mask_opened: POINTER; a_is_leaf: TYPED_POINTER [INTEGER_32]; a_expanded: TYPED_POINTER [INTEGER_32]): INTEGER
 		external
 			"C (GtkCTree*, GtkCTreeNode*, gchar**, guint8*, GdkPixmap**, GdkBitmap**, GdkPixmap**, GdkBitmap**, gboolean*, gboolean*): gint | <gtk/gtk.h>"
 		end
@@ -5319,7 +5319,7 @@ feature
 			"C (GtkCTree*, GtkCTreeNode*, gint, GdkPixmap**, GdkBitmap**): gint | <gtk/gtk.h>"
 		end
 
-	frozen gtk_ctree_node_get_pixtext (a_ctree: POINTER; a_node: POINTER; a_column: INTEGER; a_text: POINTER; a_spacing: POINTER; a_pixmap: POINTER; a_mask: POINTER): INTEGER
+	frozen gtk_ctree_node_get_pixtext (a_ctree: POINTER; a_node: POINTER; a_column: INTEGER; a_text: POINTER; a_spacing: TYPED_POINTER [NATURAL_8]; a_pixmap: POINTER; a_mask: POINTER): INTEGER
 		external
 			"C (GtkCTree*, GtkCTreeNode*, gint, gchar**, guint8*, GdkPixmap**, GdkBitmap**): gint | <gtk/gtk.h>"
 		end
@@ -6627,7 +6627,7 @@ feature
 			"C (GtkNotebook*) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_notebook_query_tab_label_packing (a_notebook: POINTER; a_child: POINTER; a_expand: POINTER; a_fill: POINTER; a_pack_type: POINTER)
+	frozen gtk_notebook_query_tab_label_packing (a_notebook: POINTER; a_child: POINTER; a_expand: TYPED_POINTER [INTEGER_32]; a_fill: TYPED_POINTER [INTEGER_32]; a_pack_type: POINTER)
 		external
 			"C (GtkNotebook*, GtkWidget*, gboolean*, gboolean*, GtkPackType*) | <gtk/gtk.h>"
 		end
@@ -7647,7 +7647,7 @@ feature
 			"C (GtkWidget*, gint) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_widget_class_path (a_widget: POINTER; a_path_length: POINTER; a_path: POINTER; a_path_reversed: POINTER)
+	frozen gtk_widget_class_path (a_widget: POINTER; a_path_length: TYPED_POINTER [INTEGER_32]; a_path: POINTER; a_path_reversed: POINTER)
 		external
 			"C (GtkWidget*, guint*, gchar**, gchar**) | <gtk/gtk.h>"
 		end
@@ -7802,7 +7802,7 @@ feature
 			"C (GtkWidget*, GtkRcStyle*) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_widget_path (a_widget: POINTER; a_path_length: POINTER; a_path: POINTER; a_path_reversed: POINTER)
+	frozen gtk_widget_path (a_widget: POINTER; a_path_length: TYPED_POINTER [INTEGER_32]; a_path: POINTER; a_path_reversed: POINTER)
 		external
 			"C (GtkWidget*, guint*, gchar**, gchar**) | <gtk/gtk.h>"
 		end
