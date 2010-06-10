@@ -1350,7 +1350,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRD { int i; for (i=0;i<cr_call_depth;i++) fprintf(stderr," "); }
 
 /* Note: enabling the following will print every feature invocation to STDERR */
-#if 1
+#if 0
 #define RTCRDBG(x) { RTCRD; fprintf x; }
 #else
 #define RTCRDBG(x)
@@ -1374,7 +1374,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); \
 	} \
 	else if (!cr_cross) {\
-		RTCRDBG((stderr, "%s\n", rout)); \
+		if (is_capturing || is_replaying) { RTCRDBG((stderr, "%s\n", rout)); } \
 	} \
 	else { \
 		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); \
@@ -1424,8 +1424,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 		Result = cr_result.f; \
 	} \
 	if (cr_cross && cr_side) cr_cross_depth--; \
+	if (is_capturing || is_replaying) { \
 	if ((t & SK_HEAD) != SK_REF) { RTCRDBG((stderr, "ret %s: %lx\n", rout, (long unsigned int) Result)); } \
-	else { RTCRDBG((stderr, "ret %s\n", rout)); }
+	else { RTCRDBG((stderr, "ret %s\n", rout)); } }
 
 #define RTCRBEV RTCRABEV(exvect->ex_rout)
 #define RTCRABEV(rout) \
@@ -1444,7 +1445,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
 	} \
 	if (cr_cross && cr_side) cr_cross_depth--; \
-	RTCRDBG((stderr, "ret %s\n", rout));
+	if (is_capturing || is_replaying) { RTCRDBG((stderr, "ret %s\n", rout)) };
 
 #define RTCRFE \
 	if (cr_cross && !cr_side) cr_cross_depth--; \
