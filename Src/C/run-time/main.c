@@ -998,14 +998,6 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 #endif
 	init_emnger();					/* Initialize ISE_EXCEPTION_MANAGER */
 
-#ifdef WORKBENCH
-	//
-	// For now we disable garbage collection as the capture/replay mechanism identifies
-	// objects through their address in memory
-	//
-	//eif_gc_stop();
-#endif
-
 }
 
 rt_public void failure(void)
