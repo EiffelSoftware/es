@@ -16,6 +16,7 @@ test	capture-incall-assertions	caprep004 tcf pass capture replay
 test	capture-memory-routines		caprep005 tcf pass capture replay
 test	capture-simple-weak-pointer	caprep006 tcf pass capture replay
 test	capture-result-pointer-change	caprep007 tcf pass capture replay
+test	capture-protect-wean		caprep008 tcf pass capture replay
 
 
 -- EiffelTime tests
