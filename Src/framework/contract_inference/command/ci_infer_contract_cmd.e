@@ -173,7 +173,6 @@ feature{NONE} -- Implementation
 			l_context: EPA_CONTEXT
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
-			l_current_expr: EPA_AST_EXPRESSION
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True)
@@ -186,9 +185,6 @@ feature{NONE} -- Implementation
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
-
-			create l_current_expr.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "Current", a_tc_info.test_case_class)
-			Result.force_last (l_current_expr)
 		end
 
 	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
@@ -418,13 +414,6 @@ feature{NONE} -- Actions
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
 		do
-			if a_pre_execution then
-				log_manager.put_line ("Pre  Current = " + a_state.item_with_expression_text ("Current").value.out)
-			else
-				log_manager.put_line ("Post Current = " + a_state.item_with_expression_text ("Current").value.out)
-			end
-			a_state.remove (a_state.item_with_expression_text ("Current"))
-
 			a_bp_manager.toggle_breakpoints (False)
 
 				-- Store results.
@@ -551,16 +540,21 @@ feature{NONE} -- Implementation
 		local
 			l_simple_inferrer: CI_SIMPLE_FRAME_CONTRACT_INFERRER
 			l_sequence_inferrer: CI_SEQUENCE_PROPERTY_INFERRER
+			l_composite_frame_inferrer: CI_COMPOSITE_FRAME_PROPERTY_INFERRER
 		do
 			create inferrers.make
 
 			create l_simple_inferrer
 			l_simple_inferrer.set_logger (log_manager)
---			inferrers.extend (l_simple_inferrer)
+			inferrers.extend (l_simple_inferrer)
 
-			create l_sequence_inferrer
-			l_sequence_inferrer.set_logger (log_manager)
-			inferrers.extend (l_sequence_inferrer)
+--			create l_sequence_inferrer
+--			l_sequence_inferrer.set_logger (log_manager)
+--			inferrers.extend (l_sequence_inferrer)
+
+--			create l_composite_frame_inferrer
+--			l_composite_frame_inferrer.set_logger (log_manager)
+--			inferrers.extend (l_composite_frame_inferrer)
 		end
 
 	add_not_tilda_expressions (a_state: EPA_STATE)
@@ -614,51 +608,6 @@ feature{NONE} -- Implementation
 --				end
 --			end
 		end
-
---	hex_adjusted_state (a_state: EPA_STATE; a_pre_state: EPA_STATE): EPA_STATE
---			-- Adjusted state.
---		local
---			l_cur: DS_HASH_SET_CURSOR [EPA_EQUATION]
---			l_ref: EPA_REFERENCE_VALUE
---			l_old_current_value: EPA_EXPRESSION_VALUE
---			l_new_current_value: EPA_EXPRESSION_VALUE
---			l_old_current_addr: NATURAL_64
---			l_new_current_addr: NATURAL_64
---			l_is_old_larger: BOOLEAN
---			l_diff: NATURAL_64
---		do
---			create Result.make (a_state.count, a_state.class_, a_state.feature_)
---			Result.set_equality_tester (equation_equality_tester)
---			l_old_current_value := a_pre_state.item_with_expression_text (ti_current).value
---			l_new_current_value := a_state.item_with_expression_text (ti_current).value
---			l_old_current_addr := hex_to_dec (l_old_current_value.out)
---			l_new_current_addr := hex_to_dec (l_new_current_value.out)
---			if l_old_current_addr > l_new_current_addr then
---				l_is_old_larger := True
---				l_diff := l_old_current_addr - l_new_current_addr
---			else
---				l_diff := l_new_current_addr - l_old_current_addr
---			end
---			from
---				l_cur := a_state.new_cursor
---				l_cur.start
---			until
---				l_cur.after
---			loop
---				if l_cur.item.value.is_reference then
---					if l_is_old_larger then
---						create l_ref.make (dec_to_hex (hex_to_dec (l_cur.item.value.out) + l_diff), l_cur.item.value.type)
---					else
---						create l_ref.make (dec_to_hex (hex_to_dec (l_cur.item.value.out) - l_diff), l_cur.item.value.type)
---					end
-
---					Result.force_last (create {EPA_EQUATION}.make (l_cur.item.expression, l_ref))
---				else
---					Result.force_last (l_cur.item)
---				end
---				l_cur.forth
---			end
---		end
 
 feature{NONE} -- Results
 

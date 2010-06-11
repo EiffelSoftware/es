@@ -10,24 +10,6 @@ class
 inherit
 	CI_INFERRER
 
-	EPA_SHARED_EQUALITY_TESTERS
-
-	SHARED_WORKBENCH
-
-	SHARED_TEXT_ITEMS
-
-	SHARED_TYPES
-
-	CI_SHARED_EQUALITY_TESTERS
-
-	KL_SHARED_STRING_EQUALITY_TESTER
-
-	EPA_UTILITY
-
-	EPA_CONTRACT_EXTRACTOR
-
-	EPA_STRING_UTILITY
-
 feature -- Basic operations
 
 	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
@@ -41,10 +23,10 @@ feature -- Basic operations
 		do
 				-- Initialize.
 			transition_data := a_data.twin
-			setup_data_strutures
+			setup_data_structures
 
 				-- Find building blocks for frame conditions.
-			l_suitable_functions := suitable_functions
+			l_suitable_functions := suitable_functions (True, agent is_function_suitable)
 			l_quantified_expressions := quantified_expressions (l_suitable_functions, True)
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
 			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions)
@@ -52,188 +34,30 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
-			-- Transition data from which contracts are inferred
-
-	feature_under_test: FEATURE_I
-			-- Feature under test
-
-	class_under_test: CLASS_C
-			-- Class where `feature_under_test' comes
-
-	is_creation: BOOLEAN
-			-- Is `featue_under_test' tested as a creation procedure?
-
-	is_query: BOOLEAN
-			-- Is `feature_under_test' a query?
-
-	data_by_test_case_class_name (a_class_name: STRING): CI_TEST_CASE_TRANSITION_INFO
-			-- Transition information from test case whose class name is `a_class_name'
+	is_function_suitable (a_function: EPA_FUNCTION; a_valuations: EPA_FUNCTION_VALUATIONS; a_target_variable_index: INTEGER; a_transition: SEM_TRANSITION): BOOLEAN
+			-- Is `a_function' whose valuations in `a_transition' suitable as a building block for frame properties?
+			-- `a_target_variable_index' is the 0-based operand index which is supposed to be the target of `a_function'.
 		local
-			l_transitions: like transition_data
-			l_cursor: CURSOR
-		do
-			l_transitions := transition_data
-			l_cursor := l_transitions.cursor
-			from
-				l_transitions.start
-			until
-				l_transitions.after or else Result /= Void
-			loop
-				if l_transitions.item_for_iteration.test_case_info.test_case_class.name_in_upper ~ a_class_name then
-					Result := l_transitions.item_for_iteration
-				else
-					l_transitions.forth
-				end
-			end
-			l_transitions.go_to (l_cursor)
-		end
-
-feature{NONE} -- Implementation
-
-	suitable_functions: DS_HASH_SET [TUPLE [function: EPA_FUNCTION; target_variable_index: INTEGER]]
-			-- Functions that are suitable as frame condition building blocks found by last `find_suitable_functions'.
-			-- `function' is that function, `target_variable_index' is the 0-based operand index (0 for qualified target, 1 for the first argument, and so on)
-			--  for the target of that function.
-			-- For a function whose target is an operand of the feature under test, if there are more than one object which are
-			-- used as argument of that function in at least test case, that function is a candidate for frame condition.
-			-- Store result in `suitable_functions'
-		local
-			l_operand_lower: INTEGER
-			l_operand_upper: INTEGER
-			l_operand_index: INTEGER
-			l_suitable_functions: like suitable_functions
-		do
-				-- Calculate indexes of the first and the last operand on which frame conditions can be inferred.
-			if is_creation then
-				l_operand_lower := 1
-			else
-				l_operand_lower := 0
-			end
-			l_operand_upper := feature_under_test.argument_count
-			if is_query then
-				l_operand_upper := l_operand_upper + 1
-			end
-
-				-- Iterate through all valid operands to see if frame conditions can be build on queries of that operand.
-			create Result.make (10)
-			Result.set_equality_tester (function_candidate_equality_tester)
-
-			from
-				l_operand_index := l_operand_lower
-			until
-				l_operand_index > l_operand_upper
-			loop
-				suitable_functions_for_operand (l_operand_index).do_all (agent Result.force_last)
-				l_operand_index := l_operand_index + 1
-			end
-		end
-
-	suitable_functions_for_operand (a_operand_index: INTEGER): like suitable_functions
-			-- Search `transition_data' to find suitable functions on which
-			-- frame condition can be built for operand with `a_operand_index'.
-			-- Result is a list of functions which are candidates for frame conditions.
-			-- `function' is that function, `target_variable_index' is the 0-based operand index (0 for qualified target, 1 for the first argument, and so on)
-			--  for the target of that function.
-		local
-			l_transitions: like transition_data
-			l_data: CI_TEST_CASE_TRANSITION_INFO
-			l_cursor: CURSOR
-			l_operand_name: STRING
-			l_tc_info: CI_TEST_CASE_INFO
-			l_pre_valuation: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
-			l_func_cursor: DS_HASH_TABLE_CURSOR [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
-			l_done: BOOLEAN
 			l_func_valuations: EPA_FUNCTION_VALUATIONS
-			l_function: EPA_FUNCTION
 		do
-			create Result.make (10)
-			Result.set_equality_tester (function_candidate_equality_tester)
+				-- We are only interested in boolean queries with one argument,
+				-- together with the target, the arity of that function
+				-- should be 2.		
+			if
+				a_function.arity = 2 and then 						 -- Function should have one argument.
+				not a_function.argument_type (1).is_integer			 -- Function argument shoult not of type integer, because we handle integer argument differently.
+			then
+				l_func_valuations := a_valuations.projected (1, value_set_for_variable (a_transition.reversed_variable_position.item (a_target_variable_index).text, a_transition))
 
-			l_transitions := transition_data
-			l_cursor := l_transitions.cursor
-			from
-				l_transitions.start
-			until
-				l_transitions.after
-			loop
-				l_data := l_transitions.item_for_iteration
-				l_tc_info := l_data.test_case_info
-				l_operand_name := l_tc_info.operand_map.item (a_operand_index)
-				l_pre_valuation := l_data.pre_state_valuations
-
-					-- Iterate through all pre-state functions to see if there is a query,
-					-- whose target is `l_operand_name' and which has more than one object as
-					-- argument.
-				from
-					l_func_cursor := l_pre_valuation.new_cursor
-					l_func_cursor.start
-				until
-					l_func_cursor.after
-				loop
-						-- We are only interested in boolean queries with one argument,
-						-- together with the target, the arity of that function
-						-- should be 2.
-					l_function := l_func_cursor.key
-					if
-						l_function.arity = 2 and then 						 -- Function should have one argument.
-						not l_function.argument_type (1).is_integer			 -- Function argument shoult not of type integer, because we handle integer argument differently.
---						l_function.result_type.is_boolean  					 -- Function should return Boolean value.
-					then
-						l_func_valuations := l_func_cursor.item.projected (1, value_set_for_variable (l_operand_name, l_data.transition))
-
-							-- If `l_function' is a boolean query, we require that there are more than one object which made the query to return True.
-						if l_function.result_type.is_boolean then
-							l_func_valuations := l_func_valuations.projected (l_func_valuations.function.arity + 1, true_value_set (l_data.transition))
-						end
-
-						if l_func_valuations.map.count > 1 then
-							Result.force_last ([l_function, a_operand_index])
-						end
-					end
-					l_func_cursor.forth
+					-- If `a_function' is a boolean query, we require that there are more than one object which made the query to return True.
+				if a_function.result_type.is_boolean then
+					l_func_valuations := l_func_valuations.projected (l_func_valuations.function.arity + 1, true_value_set (a_transition))
 				end
-				l_transitions.forth
+
+				if l_func_valuations.map.count > 1 then
+					Result := True
+				end
 			end
-			l_transitions.go_to (l_cursor)
-		end
-
-	function_for_variable (a_variable_name: STRING; a_transition: SEM_TRANSITION): EPA_FUNCTION
-			-- Function for variable named `a_variable_name' in the context of `a_transition'
-		do
-			create Result.make_from_expression (a_transition.variable_by_name (a_variable_name))
-		end
-
-	value_set_for_variable (a_variable_name: STRING; a_transition: SEM_TRANSITION): DS_HASH_SET [EPA_FUNCTION]
-			-- Value set containing the function for variable named `a_variable_name' in the context of `a_transition'
-		do
-			create Result.make (1)
-			Result.set_equality_tester (function_equality_tester)
-			Result.force_last (function_for_variable (a_variable_name, a_transition))
-		end
-
-	true_value_set (a_transition: SEM_TRANSITION): DS_HASH_SET [EPA_FUNCTION]
-			-- Value set which only contains a True value
-		local
-			l_true_expr: EPA_AST_EXPRESSION
-		do
-			create Result.make (1)
-			Result.set_equality_tester (function_equality_tester)
-			create l_true_expr.make_with_text_and_type (a_transition.context.class_, a_transition.context.feature_, ti_true_keyword, a_transition.context.class_, boolean_type)
-			Result.force_last (create {EPA_FUNCTION}.make_from_expression (l_true_expr))
-		end
-
-
-	setup_data_strutures
-			-- Setup data structures
-		local
-			l_tc_info: CI_TEST_CASE_INFO
-		do
-			l_tc_info := transition_data.first.test_case_info
-			feature_under_test := l_tc_info.feature_under_test
-			class_under_test := l_tc_info.class_under_test
-			is_creation := l_tc_info.is_feature_under_test_creation
-			is_query := l_tc_info.is_feature_under_test_query
 		end
 
 	quantified_expressions (a_suitable_functions: like suitable_functions; a_pre_state: BOOLEAN): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
@@ -477,39 +301,6 @@ feature{NONE} -- Implementation
 					Result.force_last (l_quantified_expr)
 					l_templates.forth
 				end
-
---				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
---					create l_scope.make (a_function, 2, a_pre_state)
---					create l_predicate_body.make (64)
-
---					if l_is_container then
---						l_predicate_body.append (once "old ")
---						l_predicate_body.append (curly_brace_surrounded_integer (a_target_variable_index))
---						l_predicate_body.append (once ".object_comparison implies (")
---					end
---					l_predicate_body.append (once "{3} /= {2} implies (")
-
---					l_predicate_body.append (once "old ")
---					l_predicate_body.append (a_function.body)
---					if a_negated_consequent then
---						l_predicate_body.append (once " /= ")
---					else
---						l_predicate_body.append (once " = ")
---					end
-
---					l_predicate_body.append (a_function.body)
---					l_predicate_body.append (once ")")
---					create l_operand_map.make (1)
---					l_operand_map.put (a_target_variable_index, 1)
---					l_operand_map.put (1, 2)
---					create l_argument_types.make (1, 3)
---					l_argument_types.put (a_function.argument_type (1), 1)
---					l_argument_types.put (a_function.argument_type (2), 2)
---					l_argument_types.put (feature_under_test.arguments.first, 3)
---					l_predicate := quantified_function (l_argument_types, l_predicate_body)
---					create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
---					Result.force_last (l_quantified_expr)
---				end
 			end
 		end
 
@@ -534,11 +325,11 @@ feature{NONE} -- Implementation
 			create Result.make (a_argument_types, l_arg_domain, boolean_type, a_body)
 		end
 
-	fake_nullary_function (a_result_type: TYPE_A; a_body: STRING): EPA_FUNCTION
-			-- Fake nullary function of type `a_result_type' and body `a_body'
-		do
-			create Result.make (<<>>, <<>>, a_result_type, a_body)
-		end
+--	fake_nullary_function (a_result_type: TYPE_A; a_body: STRING): EPA_FUNCTION
+--			-- Fake nullary function of type `a_result_type' and body `a_body'
+--		do
+--			create Result.make (<<>>, <<>>, a_result_type, a_body)
+--		end
 
 	valid_frame_properties (a_expressions: like quantifier_free_expressions): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
 			-- Set of valid frame properties from `a_expressions'
@@ -677,22 +468,6 @@ feature{NONE} -- Implementation
 		do
 			l_container_id := first_class_starts_with_name ("CONTAINER").class_id
 			Result := ancestors (a_class).there_exists (agent (c: CLASS_C; a_id: INTEGER): BOOLEAN do Result := c.class_id = a_id end (?, l_container_id))
-		end
-
-feature{NONE} -- Implementation
-
-	is_function_candidate_equal (a_candidate, b_candidate: TUPLE [function: EPA_FUNCTION; target_variable_index: INTEGER]): BOOLEAN
-			-- Is `a_candidate' and `b_candidate' equal?
-		do
-			Result :=
-				a_candidate.target_variable_index = b_candidate.target_variable_index and then
-				function_equality_tester.test (a_candidate.function, b_candidate.function)
-		end
-
-	function_candidate_equality_tester: AGENT_BASED_EQUALITY_TESTER [TUPLE [function: EPA_FUNCTION; target_variable_index: INTEGER]]
-			-- Equality tester for function candidates
-		once
-			create Result.make (agent is_function_candidate_equal)
 		end
 
 end

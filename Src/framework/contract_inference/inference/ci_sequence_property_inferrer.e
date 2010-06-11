@@ -9,8 +9,9 @@ class
 
 inherit
 	CI_INFERRER
-
-	CI_SHARED_EQUALITY_TESTERS
+		redefine
+			setup_data_structures
+		end
 
 	EPA_SHARED_MATH
 
@@ -28,9 +29,6 @@ feature -- Basic operations
 		end
 
 feature -- Access
-
-	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
-			-- Transition data collected in test case execution
 
 	pre_state_sequences: DS_HASH_TABLE [DS_HASH_SET [CI_SEQUENCE [EPA_EXPRESSION_VALUE]], CI_TEST_CASE_TRANSITION_INFO]
 			-- Sequences from pre-state
@@ -52,6 +50,7 @@ feature{NONE} -- Implementation
 	setup_data_structures
 			-- Setup data structures.
 		do
+			Precursor
 			create sequences.make (10)
 			sequences.set_key_equality_tester (ci_test_case_transition_info_equality_tester)
 

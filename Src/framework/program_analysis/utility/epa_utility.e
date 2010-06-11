@@ -400,6 +400,26 @@ feature -- Class/feature related
 			create Result
 		end
 
+	operand_index_set (a_feature: FEATURE_I; a_include_target: BOOLEAN; a_include_result: BOOLEAN): INTEGER_INTERVAL
+			-- Operand index interval for `a_feature'
+			-- `a_include_target' indicates if the target operand 0 is included in the result interval.
+			-- `a_include_result' indicates if the result (if any) operand is included in the result internal.
+		local
+			l_lower: INTEGER
+			l_upper: INTEGER
+		do
+			if a_include_target then
+				l_lower := 0
+			else
+				l_lower := 1
+			end
+			l_upper := a_feature.argument_count
+			if a_include_result and then a_feature.has_return_value then
+				l_upper := l_upper + 1
+			end
+			create Result.make (l_lower, l_upper)
+		end
+
 feature -- String manipulation
 
 	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]

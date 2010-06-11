@@ -441,24 +441,34 @@ feature -- Query
 feature -- Traversal
 
 	cursor: CURSOR
-			-- Cursor
+			-- <Precursor>
 		do
-			if feature_table /= Void then
-				Result := feature_table.cursor
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.cursor
 			else
-				Result := internal_features.cursor
+				Result := Precursor
 			end
 		end
 
 	valid_cursor (c: CURSOR): BOOLEAN
-			-- Can cursor be moved to position `c'?
+			-- <Precursor>
 		do
-			if feature_table /= Void then
-				Result := feature_table.valid_cursor (c)
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.valid_cursor (c)
 			else
-				Result := internal_features.valid_cursor (c)
+				Result := Precursor (c)
 			end
 		end
+
+     go_to (c: CURSOR)
+ 			-- <Precursor>
+          do
+             if attached feature_table as l_feat_tbl then
+                 l_Feat_tbl.go_to (c)
+             else
+                 Precursor (c)
+             end
+         end
 
 	after: BOOLEAN
 			-- Are we off?
@@ -494,17 +504,6 @@ feature -- Traversal
 				feature_table.forth
 			else
 				internal_table_forth
-			end
-		end
-
-	go_to (c: CURSOR)
-			-- Move to position `c'.
-			-- (from HASH_TABLE)
-		do
-			if feature_table /= Void then
-				feature_table.go_to (c)
-			else
-				internal_features.go_to (c)
 			end
 		end
 
