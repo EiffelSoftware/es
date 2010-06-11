@@ -519,15 +519,6 @@ struct cr_object {                         /* Area being observed by capture/rep
 	struct cr_object *next;                   /* Next object in list */
 };
 
-/*
- * Stack of observed areas
- */
-
-struct stcrchunk {
-        struct stcrchunk *sk_prev;       /* Previous chunk in stack, null if none */
-        struct cr_object *first;         /* Arena where objects are stored */
-};
-
 #endif /* WORKBENCH */
 
 #ifdef __cplusplus

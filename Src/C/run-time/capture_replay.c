@@ -14,7 +14,6 @@
 #include "eif_project.h"
 #include "eif_traverse.h"
 
-/* FIXME: remove */
 #include "eif_macros.h"
 
 
@@ -39,7 +38,7 @@
 
 #define MEMMUT  0x90    /* Memory area mutation */
 
-#define PROTOBJ  0xA0    /* Keep reference to Eiffel object on stack */
+#define PROTOBJ 0xA0    /* Keep reference to Eiffel object on stack */
 #define WEANOBJ 0xB0    /* Remove reference to Eiffel object from stack */
 
 /* The other 4 bits can be used for argument count etc. */
@@ -127,14 +126,12 @@ rt_private EIF_CR_ID cr_id_of_object (EIF_CR_REFERENCE ref)
 
 	EIF_GET_CONTEXT
 
-	REQUIRE("has_stack_frame", cr_top_object != NULL);
-
 	EIF_CR_ID cr_id;
 	cr_id.item.id = 0;
 	cr_id.item.size = ref.size;
 	uint32 id = 1;
 
-	struct cr_object *object = cr_top_object->first;
+	struct cr_object *object = cr_local_objects;
 	if (object == (struct cr_object *) NULL || ref.size == CR_GLOBAL_REF) {
 		object = cr_global_objects;
 		cr_id.item.size = CR_GLOBAL_REF;
@@ -181,7 +178,6 @@ rt_private EIF_CR_REFERENCE cr_object_of_id (EIF_CR_ID cr_id)
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_id", cr_is_valid_id(cr_id));
-	REQUIRE("has_stack_frame", cr_top_object != NULL);
 
 	struct cr_object *object;
 	EIF_CR_REFERENCE ref;
@@ -193,7 +189,7 @@ rt_private EIF_CR_REFERENCE cr_object_of_id (EIF_CR_ID cr_id)
 		ref.item.o = (EIF_REFERENCE *) NULL; /* FIXME: this should be a valid pointer to a null pointer! */
 	}
 	else {
-		object = cr_top_object->first;
+		object = cr_local_objects;
 		ref.item.p = (EIF_POINTER) NULL;
 	}
 
@@ -217,10 +213,6 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 
 	EIF_GET_CONTEXT
 
-	struct stcrchunk *chunk = cr_top_object;
-
-	REQUIRE("chunk_not_null", chunk != (struct stcrchunk *) NULL);
-
 	struct cr_object *object;
 	void *src = NULL;
 	size_t src_size = 0;
@@ -236,8 +228,8 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 		cr_global_objects = object;
 	}
 	else {
-		object->next = chunk->first;
-		chunk->first = object;
+		object->next = cr_local_objects;
+		cr_local_objects = object;
 	}
 
 	object->ref = ref;
@@ -252,6 +244,9 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 		r = CR_ACCESS(ref);
 		union overhead *zone = HEADER(r);
 			// FIXME: make sure r is a basic typed SPECIAL!
+		if (zone->ov_dftype == egc_str_dtype) {
+			/* We are pushing a string, so lets make a copy of its area */
+		}
 		if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
 			src = (void *) r;
 			src_size = (size_t) RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
@@ -280,13 +275,12 @@ rt_private void cr_capture_mutations ()
 	EIF_GET_CONTEXT
 
 	REQUIRE("capturing", is_capturing);
-	REQUIRE("has_chunk", cr_top_object != (struct stcrchunk *) NULL);
 
 	struct cr_object *object;
 	uint32 id = 1;
 	EIF_CR_ID cr_id;
 
-	object = cr_top_object->first;
+	object = cr_local_objects;
 	if (object == (struct cr_object *) NULL) {
 		object = cr_global_objects;
 	}
@@ -350,10 +344,8 @@ rt_private void cr_pop_objects ()
 
 	EIF_GET_CONTEXT
 
-	REQUIRE("top_not_null", cr_top_object != NULL);
-
-	struct stcrchunk *top = cr_top_object;
-	struct cr_object *object = top->first;
+	struct cr_object *object = cr_local_objects;
+	cr_local_objects = (struct cr_object *) NULL;
 	struct cr_object *old;
 
 	while (object != NULL) {
@@ -367,9 +359,6 @@ rt_private void cr_pop_objects ()
 		eif_rt_xfree (old);
 	}
 
-	cr_top_object = top->sk_prev;
-	eif_rt_xfree (top);
-
 }
 
 rt_private void cr_remove_object (EIF_CR_ID cr_id)
@@ -378,7 +367,6 @@ rt_private void cr_remove_object (EIF_CR_ID cr_id)
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_id", cr_is_valid_id(cr_id));
-	REQUIRE("has_stack_frame", cr_top_object != NULL);
 
 	struct cr_object **object, *old;
 	uint32 id = cr_id.item.id;
@@ -387,7 +375,7 @@ rt_private void cr_remove_object (EIF_CR_ID cr_id)
 		object = &cr_global_objects;
 	}
 	else {
-		object = &(cr_top_object->first);
+		object = &cr_local_objects;
 	}
 
 	while (object != NULL) {
@@ -664,13 +652,7 @@ rt_public void cr_init (EIF_TYPED_VALUE Current, uint32 size, BODY_INDEX bodyid,
 	}
 
 	if (!RTCRI) {
-		/* Add new object list to stack */
-		struct stcrchunk *chunk = (struct stcrchunk *) cmalloc(sizeof(struct stcrchunk));
-		if (chunk == NULL)
-			enomem();
-		chunk->sk_prev = cr_top_object;
-		chunk->first = (struct cr_object *) NULL;
-		cr_top_object = chunk;
+		/* FIXME: clear stack */
 	}
 
 	cr_register_argument (Current, size);
@@ -709,7 +691,9 @@ rt_public void cr_register_argument (EIF_TYPED_VALUE arg, uint32 size)
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("valid_context", is_capturing && !RTCRI);
 
@@ -785,7 +769,10 @@ rt_public void cr_register_result (EIF_TYPED_VALUE Result, uint32 size) {
 
 rt_public void cr_register_protect (EIF_REFERENCE *obj)
 {
+
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("valid_object", obj != NULL);
 	REQUIRE("capturing", is_capturing);
@@ -816,7 +803,9 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -863,8 +852,9 @@ rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 {
 
-		// FIXME: remove once printf is no longer done
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("valid_context", is_replaying && !RTCRI);
 
@@ -1115,7 +1105,8 @@ rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, c
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_memcpy";
+	char *l_feature_name;
+	l_feature_name = "cr_memcpy";
 	EIF_POINTER Current = (EIF_POINTER) dest;
 
 	RTCRAFS(0, l_feature_name, SF_BODY_ID);
@@ -1134,7 +1125,8 @@ rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, 
 
 	EIF_GET_CONTEXT
 	
-	char *l_feature_name = "cr_memmove";
+	char *l_feature_name;
+	l_feature_name = "cr_memmove";
 	EIF_POINTER Current = (EIF_POINTER) dest;
 	
 	RTCRAFS(0, l_feature_name, SF_BODY_ID);
@@ -1153,7 +1145,8 @@ rt_public void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, i
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_memset";
+	char *l_feature_name;
+	l_feature_name = "cr_memset";
 
 	EIF_POINTER Current = (EIF_POINTER) dest;
 
@@ -1173,7 +1166,9 @@ rt_public int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t 
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_memcmp";
+	char *l_feature_name;
+	l_feature_name = "cr_memcmp";
+
 	EIF_POINTER Current = (EIF_POINTER) NULL;
 	EIF_INTEGER Result;
 
@@ -1194,7 +1189,9 @@ rt_public void *cr_malloc(struct ex_vect *exvect, size_t size)
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_malloc";
+	char *l_feature_name;
+	l_feature_name = "cr_malloc";
+
 	EIF_POINTER Current = (EIF_POINTER) NULL;
 	EIF_POINTER Result;
 
@@ -1216,7 +1213,9 @@ rt_public void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size)
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_calloc";
+	char *l_feature_name;
+	l_feature_name = "cr_calloc";
+
 	EIF_POINTER Current = (EIF_POINTER) NULL;
 	EIF_POINTER Result;
 
@@ -1238,7 +1237,9 @@ rt_public void *cr_realloc(struct ex_vect *exvect, void *source, size_t size)
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_realloc";
+	char *l_feature_name;
+	l_feature_name = "cr_realloc";
+
 	EIF_POINTER Current = (EIF_POINTER) NULL;
 	EIF_POINTER Result;
 
@@ -1260,7 +1261,8 @@ rt_public void cr_free (struct ex_vect *exvect, void *dest)
 
 	EIF_GET_CONTEXT
 
-	char *l_feature_name = "cr_free";
+	char *l_feature_name;
+	l_feature_name = "cr_free";
 
 	EIF_POINTER Current = (EIF_POINTER) NULL;
 
