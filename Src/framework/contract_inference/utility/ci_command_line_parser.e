@@ -43,6 +43,7 @@ feature -- Basic operations
 			l_infer_option: AP_FLAG
 			l_generate_weka_option: AP_FLAG
 			l_weka_assertion_option: AP_STRING_OPTION
+			l_max_tc_option: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -54,7 +55,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_build_project_option)
 
 			create l_feature_name_option.make_with_long_form ("feature")
-			l_feature_name_option.set_description ("Format: feature <feature_name>. Specify that when building project for contract inference, only test cases for <feature_name> is used. When this option is not present, test cases for all features in the class are used. Only have effect when used with option %"build-from%" or %"infer%".")
+			l_feature_name_option.set_description ("Format: feature <feature_name[,feature_name]+>. Specify that when building project for contract inference, only test cases for <feature_name> is used. When this option is not present, test cases for all features in the class are used. Only have effect when used with option %"build-from%" or %"infer%".")
 			l_parser.options.force_last (l_feature_name_option)
 
 			create l_class_name_option.make_with_long_form ("class")
@@ -77,6 +78,10 @@ feature -- Basic operations
 			create l_weka_assertion_option.make_with_long_form ("weka-assertion-selection")
 			l_weka_assertion_option.set_description ("Mode to select assertions as Weka attributes in the relations. Valid values are %"union%" and %"intersection%". If this option is not specified, the default is %"intersection%".")
 			l_parser.options.force_last (l_weka_assertion_option)
+
+			create l_max_tc_option.make_with_long_form ("max-tc-number")
+			l_max_tc_option.set_description ("Set the maximal number of test cases to execute. Format --max-tc-number <number>. <number> must be a non-negative integer. Default is 0. 0 means execute all test cases.")
+			l_parser.options.force_last (l_max_tc_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -102,6 +107,14 @@ feature -- Basic operations
 				setup_weka_assertion_selection (config, l_weka_assertion_option.parameter)
 			else
 				setup_weka_assertion_selection (config, Void)
+			end
+
+			if l_max_tc_option.was_found then
+				if l_max_tc_option.parameter > 0 then
+					config.set_max_test_case_to_execute (l_max_tc_option.parameter)
+				else
+					config.set_max_test_case_to_execute (0)
+				end
 			end
 		end
 

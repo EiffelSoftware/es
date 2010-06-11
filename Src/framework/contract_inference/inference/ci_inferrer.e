@@ -139,7 +139,8 @@ feature{NONE} -- Function selection
 		do
 			Result :=
 				a_candidate.target_variable_index = b_candidate.target_variable_index and then
-				function_equality_tester.test (a_candidate.function, b_candidate.function)
+				a_candidate.function.body ~ b_candidate.function.body
+--				function_equality_tester.test (a_candidate.function, b_candidate.function)
 		end
 
 	function_candidate_equality_tester: AGENT_BASED_EQUALITY_TESTER [TUPLE [function: EPA_FUNCTION; target_variable_index: INTEGER]]

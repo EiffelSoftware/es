@@ -39,4 +39,10 @@ feature -- Access
 			create Result
 		end
 
+	ci_single_arg_function_signature_equality_tester: CI_SINGLE_ARG_FUNCTION_SIGNATURE_EQUALITY_TESTER
+			-- Equality tester for {CI_SINGLE_ARG_FUNCTION_SIGNATURE_EQUALITY_TESTER}
+		once
+			create Result
+		end
+
 end

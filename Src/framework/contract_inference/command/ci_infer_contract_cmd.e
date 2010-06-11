@@ -38,7 +38,7 @@ feature{NONE} -- Initialization
 		do
 			config := a_config
 			class_ := first_class_starts_with_name (config.class_name)
-			feature_ := class_.feature_named (config.feature_name_for_test_cases)
+			feature_ := class_.feature_named (config.feature_name_for_test_cases.first)
 			context_type := class_.constraint_actual_type
 			create log_manager.make
 			create l_file_name.make_from_string (config.log_directory)
@@ -390,23 +390,26 @@ feature{NONE} -- Actions
 			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 		do
-				-- Setup information of the newly found test case.
-			create last_test_case_info.make (a_state)
-			create last_pre_execution_bounded_functions.make (5)
-			last_pre_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
-			create last_post_execution_bounded_functions.make (5)
-			last_post_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			if config.max_test_case_to_execute > 0 implies test_case_count >= config.max_test_case_to_execute then
+			else
+					-- Setup information of the newly found test case.
+				create last_test_case_info.make (a_state)
+				create last_pre_execution_bounded_functions.make (5)
+				last_pre_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+				create last_post_execution_bounded_functions.make (5)
+				last_post_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
 
-				-- Log information of the newly found test case.
-			log_new_test_case_found (last_test_case_info)
+					-- Log information of the newly found test case.
+				log_new_test_case_found (last_test_case_info)
 
-				-- Setup break points to evaluate expressions.
-			l_before_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
-			l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
+					-- Setup break points to evaluate expressions.
+				l_before_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
+				l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
 
-				-- Enable break points for expression evaluation.
-			l_before_dbg_manager.toggle_breakpoints (True)
-			l_after_dbg_manager.toggle_breakpoints (True)
+					-- Enable break points for expression evaluation.
+				l_before_dbg_manager.toggle_breakpoints (True)
+				l_after_dbg_manager.toggle_breakpoints (True)
+			end
 		end
 
 	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
@@ -544,17 +547,17 @@ feature{NONE} -- Implementation
 		do
 			create inferrers.make
 
-			create l_simple_inferrer
-			l_simple_inferrer.set_logger (log_manager)
-			inferrers.extend (l_simple_inferrer)
+--			create l_simple_inferrer
+--			l_simple_inferrer.set_logger (log_manager)
+--			inferrers.extend (l_simple_inferrer)
 
 --			create l_sequence_inferrer
 --			l_sequence_inferrer.set_logger (log_manager)
 --			inferrers.extend (l_sequence_inferrer)
 
---			create l_composite_frame_inferrer
---			l_composite_frame_inferrer.set_logger (log_manager)
---			inferrers.extend (l_composite_frame_inferrer)
+			create l_composite_frame_inferrer
+			l_composite_frame_inferrer.set_logger (log_manager)
+			inferrers.extend (l_composite_frame_inferrer)
 		end
 
 	add_not_tilda_expressions (a_state: EPA_STATE)

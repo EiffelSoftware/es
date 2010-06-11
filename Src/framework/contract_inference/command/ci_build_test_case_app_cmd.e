@@ -79,7 +79,7 @@ feature{NONE} -- Implementation
 					l_sections := string_slices (l_subdir_name, once "__")
 					if l_sections.count = 2 then
 						l_feature_name := l_sections.first
-						if l_feature_specified implies l_feature_name ~ config.feature_name_for_test_cases then
+						if l_feature_specified implies config.feature_name_for_test_cases.has (l_feature_name) then
 							if test_cases.has (l_feature_name) then
 								l_test_tbl := test_cases.item (l_feature_name)
 							else

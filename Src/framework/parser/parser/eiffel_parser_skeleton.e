@@ -260,7 +260,7 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Parsing
 		require
 			a_file_not_void: a_file /= Void
 			a_file_open_read: a_file.is_open_read
-			a_file_has_utf8_content: encoding_converter.file_in_utf8 (a_file)
+--			a_file_has_utf8_content: encoding_converter.file_in_utf8 (a_file)
 		local
 			l_ast_factory: like ast_factory
 			l_input_buffer: YY_FILE_BUFFER

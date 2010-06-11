@@ -10,6 +10,8 @@ class
 inherit
 	SHARED_EXEC_ENVIRONMENT
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 	make
 
@@ -34,9 +36,16 @@ feature -- Access
 	class_name: STRING
 			-- Name of class whose contracts are to be inferred
 
-	feature_name_for_test_cases: detachable STRING
-			-- Name of the feature whose test cases are used for contract inference.
-			-- If Void, test cases for all features in the class are considered.
+	feature_name_for_test_cases: DS_HASH_SET [STRING]
+			-- Name of the features whose test cases are used for contract inference.
+			-- If empty, test cases for all features in the class are considered.
+		do
+			if feature_name_for_test_cases_cache = Void then
+				create feature_name_for_test_cases_cache.make (10)
+				feature_name_for_test_cases_cache.set_equality_tester (string_equality_tester)
+			end
+			Result := feature_name_for_test_cases_cache
+		end
 
 	project_directory: STRING
 			-- Directory of current project
@@ -104,6 +113,16 @@ feature -- Access
 			-- Serveral options use this output_directory, including:
 			-- `generate-weka'.
 
+	max_test_case_to_execute: INTEGER
+			-- The maximal number of test cases to execute.
+			-- This is for debug reason, because execute a test case and
+			-- evaluate all expressions is expensive, sometimes, you only
+			-- want to execute a small number of test cases in a directory
+			-- containing many test cases.
+			-- Note: There is no control over which test cases will be selected.
+			-- 0 means execute all test cases in that directory.
+			-- Default: 0
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -159,14 +178,21 @@ feature -- Setting
 			end
 		end
 
-	set_feature_name_for_test_cases (a_name: like feature_name_for_test_cases)
-			-- Set `feature_name_for_test_cases' with `a_name'.
-			-- Make a copy of `a_name'
+	set_feature_name_for_test_cases (a_feature_names: STRING)
+			-- Set `feature_name_for_test_cases' with feature names specified in `a_feature_name'.
+			-- `a_feature_names' is a comma-separated string, each part is a feature name.
+		local
+			l_name: STRING
 		do
-			if a_name = Void then
-				feature_name_for_test_cases := Void
-			else
-				feature_name_for_test_cases := a_name.twin
+			feature_name_for_test_cases.wipe_out
+			across a_feature_names.split (',') as l_cursor loop
+				l_name := l_cursor.item
+				l_name.left_adjust
+				l_name.right_adjust
+				l_name.to_lower
+				if not l_name.is_empty then
+					feature_name_for_test_cases.force_last (l_name)
+				end
 			end
 		end
 
@@ -209,6 +235,16 @@ feature -- Setting
 			output_directory := a_directory.twin
 		end
 
+	set_max_test_case_to_execute (i: INTEGER)
+			-- Set `max_test_case_to_execute' with `i'.
+		require
+			i_non_negative: i >= 0
+		do
+			max_test_case_to_execute := i
+		ensure
+			max_test_case_to_execute_set: max_test_case_to_execute = i
+		end
+
 feature{NONE} -- Implementation
 
 	safe_recursive_create_directory (a_dir: STRING)
@@ -221,5 +257,8 @@ feature{NONE} -- Implementation
 				l_dir.recursive_create_directory
 			end
 		end
+
+	feature_name_for_test_cases_cache: detachable like feature_name_for_test_cases
+			-- Cache for `feature_name_for_test_cases'
 
 end
