@@ -326,7 +326,7 @@ feature -- Element change
 		do
 			append_integer_32 (a_offset)
 		end
-		
+
 	append_feature_id (a_id: INTEGER)
 			-- Append feature ID `a_id'.
 		require
@@ -410,6 +410,25 @@ feature -- Element change
 				i > nb
 			loop
 				append (s.item (i))
+				i := i + 1
+			end
+			append ('%U')
+		end
+
+	append_raw_string_32 (s: STRING_32)
+			-- Append string `s'.
+		require
+			good_argument: s /= Void
+		local
+			i, l_count: INTEGER
+		do
+			from
+				l_count := s.count
+				i := 1
+			until
+				i > l_count
+			loop
+				append_character_32 (s [i])
 				i := i + 1
 			end
 			append ('%U')
