@@ -44,6 +44,7 @@ feature -- Basic operations
 			l_generate_weka_option: AP_FLAG
 			l_weka_assertion_option: AP_STRING_OPTION
 			l_max_tc_option: AP_INTEGER_OPTION
+			l_max_premise_option: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -83,6 +84,14 @@ feature -- Basic operations
 			l_max_tc_option.set_description ("Set the maximal number of test cases to execute. Format --max-tc-number <number>. <number> must be a non-negative integer. Default is 0. 0 means execute all test cases.")
 			l_parser.options.force_last (l_max_tc_option)
 
+			create l_max_premise_option.make_with_long_form ("max-premise-number")
+			l_max_premise_option.set_description (
+				"Set the maximal number of premises in a implication frame property. Format --max-premise-number <non-negative integer>%
+				%0 means no limit. Default is 0.%
+				%For example, is `max_premise_number' is 2, the longest implication could look like%
+				%premise_1 and premise_2 implies consequent.")
+			l_parser.options.force_last (l_max_premise_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -115,6 +124,12 @@ feature -- Basic operations
 				else
 					config.set_max_test_case_to_execute (0)
 				end
+			end
+
+			if l_max_premise_option.was_found and then l_max_premise_option.parameter >= 0 then
+				config.set_max_premise_number (l_max_premise_option.parameter)
+			else
+				config.set_max_premise_number (0)
 			end
 		end
 

@@ -557,6 +557,7 @@ feature{NONE} -- Implementation
 
 			create l_composite_frame_inferrer
 			l_composite_frame_inferrer.set_logger (log_manager)
+			l_composite_frame_inferrer.set_config (config)
 			inferrers.extend (l_composite_frame_inferrer)
 		end
 

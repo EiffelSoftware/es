@@ -304,27 +304,6 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	quantified_function (a_argument_types: ARRAY [TYPE_A]; a_body: STRING): EPA_FUNCTION
-			-- Quantified function
-		local
-			l_arg_domain: ARRAY [EPA_FUNCTION_DOMAIN]
-			i: INTEGER
-			c: INTEGER
-		do
-			c := a_argument_types.count
-			create l_arg_domain.make (1, c)
-			from
-				i := 1
-			until
-				i > c
-			loop
-				l_arg_domain.put (create {EPA_UNSPECIFIED_DOMAIN}, i)
-				i := i + 1
-			end
-
-			create Result.make (a_argument_types, l_arg_domain, boolean_type, a_body)
-		end
-
 --	fake_nullary_function (a_result_type: TYPE_A; a_body: STRING): EPA_FUNCTION
 --			-- Fake nullary function of type `a_result_type' and body `a_body'
 --		do

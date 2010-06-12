@@ -123,6 +123,12 @@ feature -- Access
 			-- 0 means execute all test cases in that directory.
 			-- Default: 0
 
+	max_premise_number: INTEGER
+			-- The maximal number of premises in a implication frame property
+			-- 0 means no limit. Default is 0.
+			-- For example, is `max_premise_number' is 2, the longest implication could look like
+			-- premise_1 and premise_2 implies consequent.
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -243,6 +249,16 @@ feature -- Setting
 			max_test_case_to_execute := i
 		ensure
 			max_test_case_to_execute_set: max_test_case_to_execute = i
+		end
+
+	set_max_premise_number (i: INTEGER)
+			-- Set `max_premise_number' with `i'.
+		require
+			i_non_negative: i >= 0
+		do
+			max_premise_number := i
+		ensure
+			max_premise_number_set: max_premise_number = i
 		end
 
 feature{NONE} -- Implementation

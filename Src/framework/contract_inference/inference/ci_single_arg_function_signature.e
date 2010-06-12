@@ -52,4 +52,17 @@ feature -- Access
 			Result.append (result_type.name)
 		end
 
+feature -- Status report
+
+	is_result_boolean: BOOLEAN
+			-- Is `result_type' a boolean type?
+		do
+			Result := result_type.is_boolean
+		end
+
+	is_result_integer: BOOLEAN
+			-- Is `result_type' an integer type?
+		do
+			Result := result_type.is_integer
+		end
 end

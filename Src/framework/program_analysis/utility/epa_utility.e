@@ -555,5 +555,4 @@ feature -- Expressions
 			Result := expression_rewriter.expression_text (a_expression, a_replacements)
 		end
 
-
 end

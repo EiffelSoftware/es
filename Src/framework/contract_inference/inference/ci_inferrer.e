@@ -31,6 +31,9 @@ feature -- Access
 	logger: EPA_LOG_MANAGER
 			-- Logger
 
+	config: CI_CONFIG
+			-- Configuration
+
 feature -- Basic operations
 
 	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
@@ -47,6 +50,14 @@ feature -- Setting
 			logger := a_logger
 		ensure
 			logger_set: logger = a_logger
+		end
+
+	set_config (a_config: like config)
+			-- Set `config' with `a_config'.
+		do
+			config := a_config
+		ensure
+			config_set: config = a_config
 		end
 
 feature{NONE} -- Implementation
@@ -198,6 +209,27 @@ feature{NONE} -- Implementation
 			class_under_test := l_tc_info.class_under_test
 			is_creation := l_tc_info.is_feature_under_test_creation
 			is_query := l_tc_info.is_feature_under_test_query
+		end
+
+	quantified_function (a_argument_types: ARRAY [TYPE_A]; a_body: STRING): EPA_FUNCTION
+			-- Quantified function
+		local
+			l_arg_domain: ARRAY [EPA_FUNCTION_DOMAIN]
+			i: INTEGER
+			c: INTEGER
+		do
+			c := a_argument_types.count
+			create l_arg_domain.make (1, c)
+			from
+				i := 1
+			until
+				i > c
+			loop
+				l_arg_domain.put (create {EPA_UNSPECIFIED_DOMAIN}, i)
+				i := i + 1
+			end
+
+			create Result.make (a_argument_types, l_arg_domain, boolean_type, a_body)
 		end
 
 end
