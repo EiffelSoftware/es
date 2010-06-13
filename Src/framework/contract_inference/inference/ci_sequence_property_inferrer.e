@@ -81,8 +81,17 @@ feature{NONE} -- Implementation
 			l_sequence: like sequence_from_integer_bounded_function
 			l_seq_set: DS_HASH_SET [CI_SEQUENCE [EPA_EXPRESSION_VALUE]]
 			l_sequences: detachable like sequences
-			l_seq_text: STRING
+			l_operand_types: like resolved_operand_types_with_feature
+			l_sequence_type: TYPE_A
+			l_opd_types: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
+			l_opd_type: TYPE_A
+			l_opd_sequence: CI_SEQUENCE [EPA_EXPRESSION_VALUE]
+			l_evaluator: like evaluator
+			l_var_name: STRING
+			l_opd_value: LINKED_LIST [EPA_EXPRESSION_VALUE]
 		do
+			l_operand_types := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type)
+			l_evaluator := evaluator
 			l_sequences := sequences
 			from
 				l_funcs_cur := a_tc_info.integer_bounded_functions [a_pre_state].new_cursor
@@ -101,14 +110,50 @@ feature{NONE} -- Implementation
 					-- Construct the sequence.
 				l_sequence := sequence_from_integer_bounded_function (l_funcs_cur.item, a_tc_info, a_pre_state)
 				if l_sequence /= Void and then not l_seq_set.has (l_sequence) then
-					l_seq_text := l_sequence.out
-					if l_seq_text.item (1) = '[' then
-						l_seq_text.prepend (once "    ")
-					end
-					log_message (once "%T Found sequence: " + l_seq_text, False, True)
+					log_message (once "%T Found sequence: " + text_of_sequence (l_sequence), False, True)
 					l_seq_set.force_last (l_sequence)
+
+						-- Check if some operand of `feature_under_test' can form a single element sequence too.
+					l_sequence_type := l_funcs_cur.item.result_type
+					from
+						l_opd_types := l_operand_types.new_cursor
+						l_opd_types.start
+					until
+						l_opd_types.after
+					loop
+						l_opd_type := l_opd_types.item
+						if l_opd_type.same_type (l_sequence_type) and then l_opd_type.is_equivalent (l_sequence_type) then
+							l_var_name := a_tc_info.transition.reversed_variable_position.item (l_opd_types.key).text
+							if a_pre_state then
+								l_evaluator.evaluate_string (once "old " + l_var_name, a_tc_info)
+							else
+								l_evaluator.evaluate_string (l_var_name, a_tc_info)
+							end
+							if not l_evaluator.has_error then
+								create l_opd_value.make
+								l_opd_value.extend (l_evaluator.last_value)
+								create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, a_pre_state, a_tc_info.transition.context)
+									-- Found a new single element sequence made from an operand variable.
+								if not l_seq_set.has (l_opd_sequence) then
+									log_message (once "%T Found sequence: " + text_of_sequence (l_opd_sequence), False, True)
+									l_seq_set.force_last (l_opd_sequence)
+								end
+							end
+						end
+						l_opd_types.forth
+					end
 				end
 				l_funcs_cur.forth
+			end
+		end
+
+	text_of_sequence (a_sequence: CI_SEQUENCE [EPA_EXPRESSION_VALUE]): STRING
+			-- Text of `a_sequence'
+		do
+			create Result.make (64)
+			Result.append (a_sequence.out)
+			if Result.item (1) = '[' then
+				Result.prepend (once "    ")
 			end
 		end
 

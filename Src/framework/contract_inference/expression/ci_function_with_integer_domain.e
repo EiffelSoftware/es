@@ -9,8 +9,24 @@ class
 
 inherit
 	HASHABLE
+		undefine
+			out
+		end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
+		undefine
+			out
+		end
+
+	EPA_TYPE_UTILITY
+		undefine
+			out
+		end
+
+	DEBUG_OUTPUT
+		redefine
+			out
+		end
 
 create
 	make
@@ -61,9 +77,31 @@ feature -- Access
 			Result := target_variable_class.feature_named (function_name)
 		end
 
+	result_type: TYPE_A
+			-- Result type of `function'
+			-- Result type is resolved using `target_variable_class'.
+		do
+			Result := function.type.actual_type
+			Result := actual_type_from_formal_type (Result, target_variable_class)
+			Result := Result.instantiation_in (target_variable_class.actual_type, target_variable_class.class_id)
+		end
 
 	hash_code: INTEGER
 			-- Hash code value
+
+	out, debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (64)
+			Result.append (target_variable_class.name_in_upper)
+			Result.append_character ('.')
+			Result.append (function.feature_name)
+			Result.append (once " (")
+			Result.append (lower_bound.out)
+			Result.append (once " - ")
+			Result.append (upper_bound.out)
+			Result.append_character (')')
+		end
 
 feature -- Status report
 
