@@ -28,7 +28,8 @@ feature -- Status report
 			else
 				Result :=
 					u.is_for_all = v.is_for_all and then
-					function_equality_tester.test (u.predicate, v.predicate)
+					u.out ~ v.out
+--					function_equality_tester.test (u.predicate, v.predicate)
 			end
 		end
 

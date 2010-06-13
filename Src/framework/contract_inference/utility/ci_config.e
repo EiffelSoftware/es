@@ -123,11 +123,90 @@ feature -- Access
 			-- 0 means execute all test cases in that directory.
 			-- Default: 0
 
-	max_premise_number: INTEGER
+	composite_max_premise_number: INTEGER
 			-- The maximal number of premises in a implication frame property
-			-- 0 means no limit. Default is 0.
-			-- For example, is `max_premise_number' is 2, the longest implication could look like
+			-- 0 means no limit. Default is 2.
+			-- For example, is `composite_max_premise_number' is 2, the longest implication could look like
 			-- premise_1 and premise_2 implies consequent.
+			-- Only has effect when `is_composite_property_enabled' is True.
+
+	composite_min_premise_number: INTEGER
+			-- The minimal number of premises in a implication frame property			
+			-- For example, is `composite_max_premise_number' is 2, the longest implication could look like
+			-- premise_1 and premise_2 implies consequent.
+			-- Minimal value is 1. Default is 1.
+			-- Only has effect when `is_composite_property_enabled' is True.
+
+	composite_boolean_premise_connectors: LINKED_SET [STRING]
+			-- Set of operators which can connect two boolean premise in a composite frame property
+			-- Valid values: "and", "or"
+			-- Default: "and", "or"
+			-- Only has effect when `is_composite_property_enabled' is True.
+		do
+			if composite_boolean_premise_connectors_cache = Void then
+				create composite_boolean_premise_connectors_cache.make
+				composite_boolean_premise_connectors_cache.compare_objects
+			end
+			Result := composite_boolean_premise_connectors_cache
+		end
+
+	composite_boolean_connectors: LINKED_SET [STRING]
+			-- Set of operators which can connect the premises and consequant in a composite frame property whose premise is of type boolean
+			-- Valid values : "implies", "="
+			-- Default: "implies", "="
+			-- Only has effect when `is_composite_property_enabled' is True.
+		do
+			if composite_boolean_connectors_cache = Void then
+				create composite_boolean_connectors_cache.make
+				composite_boolean_connectors_cache.compare_objects
+			end
+			Result := composite_boolean_connectors_cache
+		end
+
+	composite_integer_premise_connectors: LINKED_SET [STRING]
+			-- Set of operators which can connect two integer left-hand components in a composite frame property
+			-- Valid values: "+", "-"
+			-- Default: "+"
+			-- Only has effect when `is_composite_property_enabled' is True.
+		do
+			if composite_integer_premise_connectors_cache = Void then
+				create composite_integer_premise_connectors_cache.make
+				composite_integer_premise_connectors_cache.compare_objects
+			end
+			Result := composite_integer_premise_connectors_cache
+		end
+
+	composite_integer_connectors: LINKED_SET [STRING]
+			-- Set of operators which can connect the premises and consequant in a composite frame property whose premise is of type integer
+			-- Valid values : "=", ">", "<", ">=", "<=", "/="
+			-- Default: "="
+			-- Only has effect when `is_composite_property_enabled' is True.
+		do
+			if composite_integer_connectors_cache = Void then
+				create composite_integer_connectors_cache.make
+				composite_integer_connectors_cache.compare_objects
+			end
+			Result := composite_integer_connectors_cache
+		end
+
+	is_composite_negation_boolean_premise_enabled: BOOLEAN
+			-- Is negation enabled for premises in composite frame properties.			
+			-- Default: False.
+			-- For example, if this attribute is True, frame property candidates
+			-- may include expression such as: not old {1}.has ({2}) implies {1}.has ({2})
+			-- Only has effect when `is_composite_property_enabled' is True.
+
+	is_composite_property_enabled: BOOLEAN
+			-- Should composite frame properties be inferred?
+			-- Default: True
+
+	is_sequence_property_enabled: BOOLEAN
+			-- Should sequence based frame properties be inferred?
+			-- Default: True
+
+	is_simple_property_enabled: BOOLEAN
+			-- Should simple frame properties be infferd?
+			-- Default: True
 
 feature -- Status report
 
@@ -138,7 +217,7 @@ feature -- Status report
 			-- Should contracts be inferred?
 
 	should_generate_weka_relations: BOOLEAN
-			-- Should Weka relations be generated?
+			-- Should Weka relations be generated?			
 
 feature -- Weka relation generation
 
@@ -251,14 +330,56 @@ feature -- Setting
 			max_test_case_to_execute_set: max_test_case_to_execute = i
 		end
 
-	set_max_premise_number (i: INTEGER)
-			-- Set `max_premise_number' with `i'.
+	set_composite_max_premise_number (i: INTEGER)
+			-- Set `composite_max_premise_number' with `i'.
 		require
 			i_non_negative: i >= 0
 		do
-			max_premise_number := i
+			composite_max_premise_number := i
 		ensure
-			max_premise_number_set: max_premise_number = i
+			max_premise_number_set: composite_max_premise_number = i
+		end
+
+	set_composite_min_premise_number (i: INTEGER)
+			-- Set `composite_min_premise_number' with `i'.
+		require
+			i_non_negative: i >= 0
+		do
+			composite_min_premise_number := i
+		ensure
+			min_premise_number_set: composite_min_premise_number = i
+		end
+
+	set_is_composite_negation_boolean_premise_enabled (b: BOOLEAN)
+			-- Set `is_composite_negation_boolean_premise_enabled' with `b'.
+		do
+			is_composite_negation_boolean_premise_enabled := b
+		ensure
+			is_composite_negation_premise_enabled_set: is_composite_negation_boolean_premise_enabled = b
+		end
+
+	set_is_composite_property_enabled (b: BOOLEAN)
+			-- Set `is_composite_property_enabled' with `b'.
+		do
+			is_composite_property_enabled := b
+		ensure
+			is_composite_property_enabled_set: is_composite_property_enabled = b
+		end
+
+	set_is_sequence_property_enabled (b: BOOLEAN)
+			-- Set `is_sequence_property_enabled' with `b'.
+		do
+			is_sequence_property_enabled := b
+		ensure
+			is_sequence_property_enabled_set: is_sequence_property_enabled = b
+		end
+
+	set_is_simple_property_enabled (b: BOOLEAN)
+			-- Set `is_simple_property_enabled' with `b'.
+		do
+			is_simple_property_enabled := b
+		ensure
+			is_simple_property_enabled_set: is_simple_property_enabled = b
 		end
 
 feature{NONE} -- Implementation
@@ -277,4 +398,15 @@ feature{NONE} -- Implementation
 	feature_name_for_test_cases_cache: detachable like feature_name_for_test_cases
 			-- Cache for `feature_name_for_test_cases'
 
+	composite_boolean_premise_connectors_cache: detachable like composite_boolean_premise_connectors
+			-- Cache of `composite_boolean_premise_connector'
+
+	composite_integer_premise_connectors_cache: detachable like composite_integer_premise_connectors
+			-- Cache of `composite_integer_premise_connector'
+
+	composite_boolean_connectors_cache: detachable like composite_boolean_connectors
+			-- Cache of `composite_boolean_connector'
+
+	composite_integer_connectors_cache: detachable like composite_integer_connectors
+			-- Cache of `composite_integer_connector'
 end

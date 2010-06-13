@@ -21,7 +21,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		require
 			function_valid: is_function_with_single_integer_argument (a_target_variable_name, a_function_name, a_context)
-			range_valid: a_lower_bound <= a_upper_bound
+			range_valid: a_lower_bound <= a_upper_bound + 1
 		do
 			target_variable_name := a_target_variable_name.twin
 			function_name := a_function_name.twin

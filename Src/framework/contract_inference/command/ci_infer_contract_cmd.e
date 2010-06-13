@@ -547,18 +547,24 @@ feature{NONE} -- Implementation
 		do
 			create inferrers.make
 
---			create l_simple_inferrer
---			l_simple_inferrer.set_logger (log_manager)
---			inferrers.extend (l_simple_inferrer)
+			if config.is_simple_property_enabled then
+				create l_simple_inferrer
+				l_simple_inferrer.set_logger (log_manager)
+				inferrers.extend (l_simple_inferrer)
+			end
 
---			create l_sequence_inferrer
---			l_sequence_inferrer.set_logger (log_manager)
---			inferrers.extend (l_sequence_inferrer)
+			if config.is_sequence_property_enabled then
+				create l_sequence_inferrer
+				l_sequence_inferrer.set_logger (log_manager)
+				inferrers.extend (l_sequence_inferrer)
+			end
 
-			create l_composite_frame_inferrer
-			l_composite_frame_inferrer.set_logger (log_manager)
-			l_composite_frame_inferrer.set_config (config)
-			inferrers.extend (l_composite_frame_inferrer)
+			if config.is_composite_property_enabled then
+				create l_composite_frame_inferrer
+				l_composite_frame_inferrer.set_logger (log_manager)
+				l_composite_frame_inferrer.set_config (config)
+				inferrers.extend (l_composite_frame_inferrer)
+			end
 		end
 
 	add_not_tilda_expressions (a_state: EPA_STATE)

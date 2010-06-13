@@ -44,7 +44,14 @@ feature -- Basic operations
 			l_generate_weka_option: AP_FLAG
 			l_weka_assertion_option: AP_STRING_OPTION
 			l_max_tc_option: AP_INTEGER_OPTION
-			l_max_premise_option: AP_INTEGER_OPTION
+			l_premise_number_option: AP_STRING_OPTION
+			l_composite_property_option: AP_STRING_OPTION
+			l_composite_boolean_premise_connector_option: AP_STRING_OPTION
+			l_composite_boolean_connector_option: AP_STRING_OPTION
+			l_composite_integer_premise_connector_option: AP_STRING_OPTION
+			l_composite_integer_connector_option: AP_STRING_OPTION
+			l_sequence_property_option: AP_STRING_OPTION
+			l_simple_property_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -84,13 +91,60 @@ feature -- Basic operations
 			l_max_tc_option.set_description ("Set the maximal number of test cases to execute. Format --max-tc-number <number>. <number> must be a non-negative integer. Default is 0. 0 means execute all test cases.")
 			l_parser.options.force_last (l_max_tc_option)
 
-			create l_max_premise_option.make_with_long_form ("max-premise-number")
-			l_max_premise_option.set_description (
-				"Set the maximal number of premises in a implication frame property. Format --max-premise-number <non-negative integer>%
-				%0 means no limit. Default is 0.%
-				%For example, is `max_premise_number' is 2, the longest implication could look like%
-				%premise_1 and premise_2 implies consequent.")
-			l_parser.options.force_last (l_max_premise_option)
+			create l_premise_number_option.make_with_long_form ("composite-premise-number")
+			l_premise_number_option.set_description (
+				"Set the minimal and maximal number of premises in a implication frame property. Format --max-premise-number min_value,max_value%
+				%min_value is the minimal number of premise, max_value is the maximal number of premise.%
+				%0 means no limit. Default is 1,2.")
+			l_parser.options.force_last (l_premise_number_option)
+
+			create l_composite_property_option.make_with_long_form ("composite-property")
+			l_composite_property_option.set_description ("Should composite frame properties by inferred? Foramt: --composite-property [on|off]%NDefault: on.")
+			l_parser.options.force_last (l_composite_property_option)
+
+			create l_composite_boolean_connector_option.make_with_long_form ("boolean-composite-connector")
+			l_composite_boolean_connector_option.set_description (
+				"Connectors between the premises and consequent of a boolean composite property.%N%
+				%Format: --boolean-composite-premise-connector connector[,connector]+%N%
+				%Valid connectors are: %"=%", %"implies%"%N%
+				%Default: =%N.%
+				%Only have effect when the composite-property option is on.")
+			l_parser.options.force_last (l_composite_boolean_connector_option)
+
+			create l_composite_boolean_premise_connector_option.make_with_long_form ("boolean-composite-premise-connector")
+			l_composite_boolean_connector_option.set_description (
+				"Connectors between premises of a boolean composite property.%N%
+				%Format: --boolean-composite-premise-connector connector[,connector]+%N%
+				%Valid connectors are: %"and%", %"or%"%N%
+				%Default: and,or%N.%
+				%Only have effect when the composite-property option is on.")
+			l_parser.options.force_last (l_composite_boolean_premise_connector_option)
+
+			create l_composite_integer_connector_option.make_with_long_form ("integer-composite-connector")
+			l_composite_integer_connector_option.set_description (
+				"Connectors between the premises and consequent of an integer composite property.%N%
+				%Format: --integer-composite-premise-connector connector[,connector]+%N%
+				%Valid connectors are: %"=%", %"/=%", %">%", %">=%", %"<%", %"<=%"%N%
+				%Default: =%N.%
+				%Only have effect when the composite-property option is on.")
+			l_parser.options.force_last (l_composite_integer_connector_option)
+
+			create l_composite_integer_premise_connector_option.make_with_long_form ("integer-composite-premise-connector")
+			l_composite_integer_connector_option.set_description (
+				"Connectors between premises of an integer composite property.%N%
+				%Format: --integer-composite-premise-connector connector[,connector]+%N%
+				%Valid connectors are: %"+%", %"-%"%N%
+				%Default: +%N.%
+				%Only have effect when the composite-property option is on.")
+			l_parser.options.force_last (l_composite_integer_premise_connector_option)
+
+			create l_sequence_property_option.make_with_long_form ("sequence-property")
+			l_sequence_property_option.set_description ("Shoudl sequence-based frame properties be inferred?%N Format: --sequence-property [on|off].%NDefault: on")
+			l_parser.options.force_last (l_sequence_property_option)
+
+			create l_simple_property_option.make_with_long_form ("simple-property")
+			l_simple_property_option.set_description ("Shoudl simple-based frame properties be inferred?%N Format: --simple-property [on|off].%NDefault: on")
+			l_parser.options.force_last (l_simple_property_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -126,14 +180,168 @@ feature -- Basic operations
 				end
 			end
 
-			if l_max_premise_option.was_found and then l_max_premise_option.parameter >= 0 then
-				config.set_max_premise_number (l_max_premise_option.parameter)
+			if l_premise_number_option.was_found then
+				setup_composite_premise_number (config, l_premise_number_option.parameter)
 			else
-				config.set_max_premise_number (0)
+				setup_composite_premise_number (config, Void)
 			end
+
+			if l_composite_property_option.was_found then
+				setup_composite_property (config, l_composite_property_option.parameter)
+			else
+				setup_composite_property (config, Void)
+			end
+
+			if l_composite_boolean_connector_option.was_found then
+				setup_composite_boolean_connectors (config, l_composite_boolean_connector_option.parameter)
+			else
+				setup_composite_boolean_connectors (config, Void)
+			end
+
+			if l_composite_integer_connector_option.was_found then
+				setup_composite_integer_connectors (config, l_composite_integer_connector_option.parameter)
+			else
+				setup_composite_integer_connectors (config, Void)
+			end
+
+			if l_composite_boolean_premise_connector_option.was_found then
+				setup_composite_boolean_premise_connectors (config, l_composite_boolean_premise_connector_option.parameter)
+			else
+				setup_composite_boolean_premise_connectors (config, Void)
+			end
+
+			if l_composite_integer_premise_connector_option.was_found then
+				setup_composite_integer_premise_connectors (config, l_composite_integer_premise_connector_option.parameter)
+			else
+				setup_composite_integer_premise_connectors (config, Void)
+			end
+
+			if l_sequence_property_option.was_found then
+				setup_sequence_property (config, l_sequence_property_option.parameter)
+			else
+				setup_sequence_property (config, Void)
+			end
+
+			if l_simple_property_option.was_found then
+				setup_simple_property (config, l_simple_property_option.parameter)
+			else
+				setup_simple_property (config, Void)
+			end
+
 		end
 
 feature{NONE} -- Implementation
+
+	setup_simple_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if simple frame property are to be inferred?
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_simple_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_simple_property_enabled (False)
+			end
+		end
+
+	setup_sequence_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if sequence frame property are to be inferred?
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_sequence_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_sequence_property_enabled (False)
+			end
+		end
+
+	setup_composite_boolean_premise_connectors (a_config: CI_CONFIG; a_parameter: detachable STRING)
+		local
+			l_connector: STRING
+		do
+			if a_parameter = Void then
+				config.composite_boolean_premise_connectors.extend ("and")
+				config.composite_boolean_premise_connectors.extend ("or")
+			else
+				across a_parameter.split (',') as l_connectors loop
+					l_connector := l_connectors.item.as_lower
+					if
+						(l_connector ~ "and") or else
+						(l_connector ~ "or")
+					then
+						config.composite_boolean_premise_connectors.extend (l_connector)
+					end
+				end
+			end
+		end
+
+	setup_composite_boolean_connectors (a_config: CI_CONFIG; a_parameter: detachable STRING)
+		local
+			l_connector: STRING
+		do
+			if a_parameter = Void then
+				config.composite_boolean_connectors.extend ("=")
+			else
+				across a_parameter.split (',') as l_connectors loop
+					l_connector := l_connectors.item.as_lower
+					if
+						(l_connector ~ "=") or else
+						(l_connector ~ "implies")
+					then
+						config.composite_boolean_connectors.extend (l_connector)
+					end
+				end
+			end
+		end
+
+	setup_composite_integer_premise_connectors (a_config: CI_CONFIG; a_parameter: detachable STRING)
+		local
+			l_connector: STRING
+		do
+			if a_parameter = Void then
+				config.composite_integer_premise_connectors.extend ("+")
+			else
+				across a_parameter.split (',') as l_connectors loop
+					l_connector := l_connectors.item.as_lower
+					if
+						(l_connector ~ "+") or else
+						(l_connector ~ "-")
+					then
+						config.composite_integer_premise_connectors.extend (l_connector)
+					end
+				end
+			end
+		end
+
+	setup_composite_integer_connectors (a_config: CI_CONFIG; a_parameter: detachable STRING)
+		local
+			l_connector: STRING
+		do
+			if a_parameter = Void then
+				config.composite_integer_connectors.extend ("=")
+			else
+				across a_parameter.split (',') as l_connectors loop
+					l_connector := l_connectors.item.as_lower
+					if
+						(l_connector ~ "=") or else
+						(l_connector ~ "/=") or else
+						(l_connector ~ ">") or else
+						(l_connector ~ ">=") or else
+						(l_connector ~ "<") or else
+						(l_connector ~ "<=")
+					then
+						config.composite_integer_connectors.extend (l_connector)
+					end
+				end
+			end
+		end
+
+	setup_composite_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if composite frame property are to be inferred?
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_composite_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_composite_property_enabled (False)
+			end
+		end
 
 	setup_generate_weka (a_config: CI_CONFIG; a_parameters: DS_LIST [STRING])
 			-- Setup `a_config' using data given in `a_parser' for Weka relation generation.
@@ -151,6 +359,32 @@ feature{NONE} -- Implementation
 				a_config.set_weka_assertion_selection_mode ({CI_CONFIG}.weka_assertion_union_selection_mode)
 			else
 				a_config.set_weka_assertion_selection_mode ({CI_CONFIG}.weka_assertion_intersection_selection_mode)
+			end
+		end
+
+	setup_composite_premise_number (a_config: CI_CONFIG; a_bounds: detachable STRING)
+			-- Set `aconfig' using `a_bounds' for min and max number of premises used in
+			-- composite frame property inference.
+		local
+			l_parts: LIST [STRING]
+			l_min, l_max: INTEGER
+			l_ok: BOOLEAN
+		do
+			if a_bounds /= Void then
+				l_parts := a_bounds.split (',')
+				if l_parts.count = 2 and then l_parts.first.is_integer and then l_parts.last.is_integer then
+					l_min := l_parts.first.to_integer
+					l_max := l_parts.last.to_integer
+					if l_min > 0 and then l_max >= 0 then
+						l_ok := True
+						a_config.set_composite_min_premise_number (l_min)
+						a_config.set_composite_max_premise_number (l_max)
+					end
+				end
+			end
+			if not l_ok then
+				a_config.set_composite_min_premise_number (1)
+				a_config.set_composite_max_premise_number (2)
 			end
 		end
 

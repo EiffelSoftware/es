@@ -23,6 +23,9 @@ feature -- Basic operations
 		local
 			l_quantified_expressions: like quantified_expressions
 			l_sig_cursor: like base_signatures.new_cursor
+			l_quantifier_free_exressions: like quantifier_free_expressions
+			l_valid_frame_properties: like valid_frame_properties
+			l_valid_prop_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
 		do
 			transition_data := a_data
 			setup_data_structures
@@ -44,9 +47,89 @@ feature -- Basic operations
 			end
 			log_built_quantified_expressions (l_quantified_expressions)
 
+				-- Validate quantified frame properties.
+			create evaluation_distribution.make (100)
+			evaluation_distribution.set_key_equality_tester (ci_quantified_expression_equality_tester)
+			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
+			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions, agent on_property_evaluated)
+
+				-- Filter out properties which only evaluated to true or only evaluated to false over all test cases.
+			from
+				l_valid_frame_properties.start
+			until
+				l_valid_frame_properties.after
+			loop
+				evaluation_distribution.search (l_valid_frame_properties.item_for_iteration)
+				if evaluation_distribution.found implies (evaluation_distribution.found_item.true_times > 0 and evaluation_distribution.found_item.false_times > 0) then
+					l_valid_frame_properties.forth
+				else
+					l_valid_frame_properties.remove (l_valid_frame_properties.item_for_iteration)
+				end
+			end
+
+				-- Logging.
+			logger.push_info_level
+			logger.put_line (once "Valid frame properties:")
+			from
+				l_valid_frame_properties.start
+			until
+				l_valid_frame_properties.after
+			loop
+				logger.put_string (once "%T")
+				logger.put_line (l_valid_frame_properties.item_for_iteration.debug_output)
+				l_valid_frame_properties.forth
+			end
+			logger.pop_level
 		end
 
 feature{NONE} -- Implementation
+
+	evaluation_distribution: DS_HASH_TABLE [TUPLE [true_times: INTEGER; false_times: INTEGER], CI_QUANTIFIED_EXPRESSION]
+			-- Evaluation distribution of quantified expression
+			-- Key is a quantified expression, value is the evaluation distribution for that quantified expression.
+			-- `true_times' is the number of times that the premise of the quantified expression evaluates to True.
+			-- `false_times' is the number of times that the premise of the quantified expression evaluates to False.
+
+	on_property_evaluated (a_quantified_expr: CI_QUANTIFIED_EXPRESSION; a_resolved_expr: STRING; a_evaluator: CI_EXPRESSION_EVALUATOR; a_tc_info: CI_TEST_CASE_TRANSITION_INFO)
+			-- Action to be performed when the resolved form `a_resolved_expr' of the quantified expression `a_quantified_expr' is validated
+			-- in `a_tc_info' using `a_evaluator'.
+		local
+			l_premise_as: detachable EXPR_AS
+			l_distribution: TUPLE [true_times: INTEGER; false_times: INTEGER]
+		do
+			check attached {EXPR_AS} ast_from_expression_text (a_resolved_expr) as l_as then
+				if attached {BIN_EQ_AS} l_as as l_equal_as then
+						-- Handle the case when `a_quantified_expr' is an implication.
+					l_premise_as := l_equal_as.left
+				elseif attached {BIN_IMPLIES_AS} l_as as l_implies_as then
+						-- Handle the case when `a_quantified_expr' is an equation.
+					l_premise_as := l_implies_as.left
+				end
+
+					-- Only handle the case when premise is of type boolean.
+				if l_premise_as /= Void and then a_tc_info.transition.context.expression_type (l_premise_as).is_boolean then
+					a_evaluator.evaluate (l_premise_as, a_tc_info)
+					if not a_evaluator.has_error then
+						if attached {EPA_BOOLEAN_VALUE} a_evaluator.last_value as l_bool_value then
+							evaluation_distribution.search (a_quantified_expr)
+							if evaluation_distribution.found then
+								l_distribution := evaluation_distribution.found_item
+							else
+								l_distribution := [0, 0]
+								evaluation_distribution.force_last (l_distribution, a_quantified_expr)
+							end
+
+								-- Increase distribution counter.
+							if l_bool_value.item then
+								l_distribution.put_integer (l_distribution.true_times + 1, 1)
+							else
+								l_distribution.put_integer (l_distribution.false_times + 1, 2)
+							end
+						end
+					end
+				end
+			end
+		end
 
 	base_functions: like suitable_functions
 			-- Functions that are used as building blocks of more complicated frame properties.
@@ -93,7 +176,7 @@ feature{NONE} -- Implementation
 				-- should be 2.		
 			if
 				a_function.arity = 2 and then 						 -- Function should have one argument.
-				not a_function.argument_type (1).is_integer	and then -- Function argument shoult not of type integer, because we handle integer argument differently.
+				not a_function.argument_type (2).is_integer	and then -- Function argument shoult not of type integer, because we handle integer argument differently.
 				((a_function.result_type.is_integer) or (a_function.result_type.is_boolean)) -- Function should return an integer or a boolean
 			then
 				l_func_valuations := a_valuations.projected (1, value_set_for_variable (a_transition.reversed_variable_position.item (a_target_variable_index).text, a_transition))
@@ -325,25 +408,45 @@ feature{NONE} -- Implementation
 			l_premises.append_last (a_premise_functions)
 
 				-- Decide the max number of premise used in implication based frame properties.
-			if config.max_premise_number > 0 then
-				l_max_premise_num := config.max_premise_number.min (l_premises.count)
+			if config.composite_max_premise_number > 0 then
+				l_max_premise_num := config.composite_max_premise_number.min (l_premises.count)
 			else
 				l_max_premise_num := l_premises.count
 			end
 
 				-- Iterate through all premise possibilities to generate frame property candidates.
-			across integer_interval (1, l_max_premise_num) as l_premise_num loop
+			across integer_interval (config.composite_min_premise_number, l_max_premise_num) as l_premise_num loop
 				across l_premises.combinations (l_premise_num.item) as l_cursor loop
 					if a_signature.is_result_boolean then
-						Result.append_last (boolean_quantified_expressions (l_cursor.item, a_consequent_function, a_signature))
+						Result.append_last (
+							quantified_expressions_internal (
+								l_cursor.item,
+								a_consequent_function,
+								a_signature,
+								config.is_composite_negation_boolean_premise_enabled,
+								config.composite_boolean_premise_connectors,
+								config.composite_boolean_connectors))
 					elseif a_signature.is_result_integer then
-						Result.append_last (integer_quantified_expressions (l_cursor.item, a_consequent_function, a_signature))
+						Result.append_last (
+							quantified_expressions_internal (
+								l_cursor.item,
+								a_consequent_function,
+								a_signature,
+								False,
+								config.composite_integer_premise_connectors,
+								config.composite_integer_connectors))
 					end
 				end
 			end
 		end
 
-	boolean_quantified_expressions (a_premises: EPA_HASH_SET [like function_type_anchor]; a_consequent: like function_type_anchor; a_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE): like quantified_expressions
+	quantified_expressions_internal (
+		a_premises: EPA_HASH_SET [like function_type_anchor];
+		a_consequent: like function_type_anchor;
+		a_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE;
+		a_premise_negation_enabled: BOOLEAN;
+		a_premise_connectors: LINKED_SET [STRING]
+		a_premise_consequent_connectors: LINKED_SET [STRING]): like quantified_expressions
 			-- Quantified expressions built from `a_premises' and `a_consequent'
 			-- Functions in `a_premises' and `a_consequent' are of boolean type and they have
 			-- signature of `a_signature'.
@@ -362,6 +465,7 @@ feature{NONE} -- Implementation
 			l_func_body: STRING
 			l_quantifier_index: INTEGER
 			l_quantifier_text: STRING
+			l_dquantifier_text: STRING
 			l_columns_num: INTEGER
 			l_consequent_text: STRING
 			l_index_tbl: HASH_TABLE [INTEGER, INTEGER] -- Table from target variable index in premise/consequent functions to operand index in the final frame property predicate
@@ -372,8 +476,12 @@ feature{NONE} -- Implementation
 			l_predicate: EPA_FUNCTION
 			l_pred_arg_types: ARRAY [TYPE_A]
 			l_operand_types: like operand_types_with_feature
-
+			l_connector: STRING
+			l_actual_predicate_body: STRING
 		do
+			create Result.make (10)
+			Result.set_equality_tester (ci_quantified_expression_equality_tester)
+
 			l_curly1 := curly_brace_surrounded_integer (1)
 			l_curly2 := curly_brace_surrounded_integer (2)
 				-- Construct the set of premise functions along with their negations.
@@ -387,18 +495,22 @@ feature{NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_function := l_cursor.item.function
-				create l_negated_function.make (l_function.argument_types.twin, l_function.argument_domains.twin, l_function.result_type, once "not old " + l_function.body)
+				if a_premise_negation_enabled then
+					create l_negated_function.make (l_function.argument_types.twin, l_function.argument_domains.twin, l_function.result_type, once "not old " + l_function.body)
+				end
 				create l_function.make (l_function.argument_types.twin, l_function.argument_domains.twin, l_function.result_type, once "old " + l_function.body)
 				create l_func_set.make (2)
 				l_func_set.set_equality_tester (function_candidate_equality_tester)
-				l_func_set.force_last (l_cursor.item)
-				l_func_set.force_last ([l_negated_function, l_cursor.item.target_variable_index])
+				l_func_set.force_last ([l_function, l_cursor.item.target_variable_index])
+				if a_premise_negation_enabled then
+					l_func_set.force_last ([l_negated_function, l_cursor.item.target_variable_index])
+				end
 				l_premises.extend (l_func_set)
-				l_cursor.forth
 				if not l_index_tbl.has (l_cursor.item.target_variable_index) then
 					l_index_tbl.put (l_opd_index, l_cursor.item.target_variable_index)
 					l_opd_index := l_opd_index + 1
 				end
+				l_cursor.forth
 			end
 			if not l_index_tbl.has (a_consequent.target_variable_index) then
 				l_index_tbl.put (l_opd_index, a_consequent.target_variable_index)
@@ -406,11 +518,12 @@ feature{NONE} -- Implementation
 			end
 
 				-- Setup `l_pred_arg_types'.
-			create l_pred_arg_types.make (1, l_opd_index - 1)
+			create l_pred_arg_types.make (1, l_opd_index)
 			l_operand_types := operand_types_with_feature (feature_under_test, class_under_test)
 			across l_index_tbl as l_index_cursor loop
 				l_pred_arg_types.put (l_operand_types.item (l_index_cursor.key), l_index_cursor.item)
 			end
+			l_pred_arg_types.put (a_premises.first.function.argument_type (2), l_opd_index)
 
 			l_actual_premises := cartesian_product (l_premises)
 			l_columns_num := l_actual_premises.width
@@ -418,8 +531,9 @@ feature{NONE} -- Implementation
 				-- Iterate through all actual premises and generate frame property candidates.
 			l_quantifier_index := l_opd_index
 			l_quantifier_text := curly_brace_surrounded_integer (l_quantifier_index)
-			across <<" and ", " or ">> as l_operators loop
-				l_operator_name := l_operators.item
+			l_dquantifier_text := double_square_surrounded_integer (l_quantifier_index)
+			across a_premise_connectors as l_operators loop
+				l_operator_name := once " " + l_operators.item + once " "
 				across integer_interval (1, l_actual_premises.height) as l_rows loop
 					l_row := l_rows.item
 					create l_predicate_body.make (128)
@@ -430,38 +544,35 @@ feature{NONE} -- Implementation
 						check attached {like function_type_anchor} l_actual_premises.item (l_row, l_column) as l_premise_func then
 							l_operand_map.put (l_premise_func.target_variable_index, l_index_tbl.item (l_premise_func.target_variable_index))
 							l_func_body := l_premise_func.function.body.twin
-							l_func_body.replace_substring_all (l_curly1, curly_brace_surrounded_integer (l_index_tbl.item (l_premise_func.target_variable_index)))
 							l_func_body.replace_substring_all (l_curly2, l_quantifier_text)
+							l_func_body.replace_substring_all (l_curly1, curly_brace_surrounded_integer (l_index_tbl.item (l_premise_func.target_variable_index)))
 							l_predicate_body.append (l_func_body)
 							if l_column < l_columns_num then
 								l_predicate_body.append (l_operator_name)
 							end
 						end
 					end
-					l_predicate_body.append (once " implies ")
+					l_predicate_body.prepend (once "(")
+					l_predicate_body.append (once ")")
+					across a_premise_consequent_connectors as l_connectors loop
+						l_connector := once " " + l_connectors.item + once " "
+						l_actual_predicate_body := l_predicate_body + l_connector
+							-- Setup consequent.
+						l_operand_map.put (a_consequent.target_variable_index, l_index_tbl.item (a_consequent.target_variable_index))
+						create l_consequent_text.make (32)
+						l_consequent_text.append (a_consequent.function.body)
+						l_consequent_text.replace_substring_all (l_curly2, l_quantifier_text)
+						l_consequent_text.replace_substring_all (l_curly1, curly_brace_surrounded_integer (l_index_tbl.item (a_consequent.target_variable_index)))
+						l_actual_predicate_body.append (l_consequent_text)
 
-						-- Setup consequent.
-					create l_consequent_text.make (32)
-					l_consequent_text.append (a_consequent.function.body)
-					l_consequent_text.replace_substring_all (l_curly1, curly_brace_surrounded_integer (l_index_tbl.item (a_consequent.target_variable_index)))
-					l_consequent_text.replace_substring_all (l_curly2, l_quantifier_text)
-					l_predicate_body.append (l_consequent_text)
-
-						-- Create quantified expression as the frame property.
-					create l_scope.make (a_premises.first.function, a_premises.first.target_variable_index, True)
-					l_predicate := quantified_function (l_pred_arg_types, l_predicate_body)
-					create l_quantified_expr.make (l_quantifier_index, l_predicate, l_scope, True, l_operand_map)
-					Result.force_last (l_quantified_expr)
+							-- Create quantified expression as the frame property.
+						create l_scope.make (a_premises.first.function, 2, True)
+						l_predicate := quantified_function (l_pred_arg_types, l_actual_predicate_body)
+						create l_quantified_expr.make (l_quantifier_index, l_predicate, l_scope, True, l_operand_map)
+						Result.force_last (l_quantified_expr)
+					end
 				end
 			end
-		end
-
-	integer_quantified_expressions (a_premises: EPA_HASH_SET [like function_type_anchor]; a_consequent: like function_type_anchor; a_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE): like quantified_expressions
-			-- Quantified expressions built from `a_premises' and `a_consequent'
-			-- Functions in `a_premises' and `a_consequent' are of integer type and they have
-			-- signature of `a_signature'.
-		do
-
 		end
 
 	function_type_anchor: TUPLE [function: EPA_FUNCTION; target_variable_index: INTEGER]
@@ -497,24 +608,26 @@ feature{NONE} -- Implementation
 			across a_sets as l_set_cursor loop
 				l_repitition_factor := l_repititions.i_th (l_column)
 				l_set := l_set_cursor.item
-				from
-					l_row := 1
-					l_item_cursor := l_set.new_cursor
-					l_item_cursor.start
-				until
-					l_item_cursor.after
-				loop
-					l_item := l_item_cursor.item
+				l_row := 1
+				across integer_interval (1, l_rows // l_repitition_factor // l_set_cursor.item.count) as l_times loop
 					from
-						i := 1
+						l_item_cursor := l_set.new_cursor
+						l_item_cursor.start
 					until
-						i > l_repitition_factor
+						l_item_cursor.after
 					loop
-						Result.put (l_item, l_row, l_column)
-						i := i + 1
-						l_row := l_row + 1
+						l_item := l_item_cursor.item
+						from
+							i := 1
+						until
+							i > l_repitition_factor
+						loop
+							Result.put (l_item, l_row, l_column)
+							i := i + 1
+							l_row := l_row + 1
+						end
+						l_item_cursor.forth
 					end
-					l_item_cursor.forth
 				end
 				l_column := l_column + 1
 			end

@@ -261,14 +261,16 @@ feature{NONE} -- Implementation
 					l_target_type := l_operand_types.item (l_operands.item_for_iteration)
 					l_target_type := l_target_type.instantiation_in (context_type, context_type.associated_class.class_id)
 					l_feat := l_target_type.associated_class.feature_of_rout_id_set (l_dyna_feat.rout_id_set)
-					l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-					if l_feat.argument_count > 0 then
-						l_argument_type := l_feat.arguments.first
---						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-					else
-						l_argument_type := Void
+					if l_feat /= Void then
+						l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+						if l_feat.argument_count > 0 then
+							l_argument_type := l_feat.arguments.first
+	--						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+						else
+							l_argument_type := Void
+						end
+						l_function_types.extend ([l_target_type, l_argument_type, l_feat.feature_name, l_result_type])
 					end
-					l_function_types.extend ([l_target_type, l_argument_type, l_feat.feature_name, l_result_type])
 					l_operands.forth
 				end
 			else

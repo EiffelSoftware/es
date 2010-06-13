@@ -9,12 +9,24 @@ class
 
 inherit
 	EPA_SHARED_EQUALITY_TESTERS
+		undefine
+			out
+		end
 
 	HASHABLE
+		undefine
+			out
+		end
 
 	DEBUG_OUTPUT
+		redefine
+			out
+		end
 
 	EPA_STRING_UTILITY
+		undefine
+			out
+		end
 
 create
 	make
@@ -107,7 +119,7 @@ feature -- Status report
 
 feature -- Debug
 
-	debug_output: STRING
+	out, debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
 			create Result.make (64)
