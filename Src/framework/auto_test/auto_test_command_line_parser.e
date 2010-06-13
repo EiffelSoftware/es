@@ -80,6 +80,7 @@ feature{NONE} -- Initialization
 			l_log_has_basic: BOOLEAN
 			l_post_state_serialization_option: AP_FLAG
 			l_exclude_option: AP_STRING_OPTION
+			l_collect_interface_related_classes_option: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -272,6 +273,10 @@ feature{NONE} -- Initialization
 			create l_exclude_option.make_with_long_form ("exclude")
 			l_exclude_option.set_description ("Exclude the specidifed features from being tested. Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name (no matter from which class that feature comes, it will not be tested.")
 			parser.options.force_last (l_exclude_option)
+
+			create l_collect_interface_related_classes_option.make_with_long_form ("collect-interface")
+			l_collect_interface_related_classes_option.set_description ("Collect interface related (non-deferred) classes.")
+			parser.options.force_last (l_collect_interface_related_classes_option)
 
 			parser.parse_list (a_arguments)
 
@@ -695,6 +700,11 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				is_collecting_interface_related_classes := l_collect_interface_related_classes_option.was_found
+			end
+
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -936,6 +946,9 @@ feature -- Status report
 
 	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
 			-- List of features that are excluded from being tested.
+
+	is_collecting_interface_related_classes: BOOLEAN
+			-- Is this AutoTest session for collecting interface related classes?
 
 feature {NONE} -- Constants
 

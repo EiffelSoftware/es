@@ -455,7 +455,7 @@ feature{NONE} -- Class content
 		do
 			Result := "%"[%N"
 			Result.append (current_data.trace_str)
-			Result.append ("]%"")
+			Result.append ("%N]%"")
 		end
 
 	tc_pre_serialization: STRING

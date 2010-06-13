@@ -21,6 +21,7 @@ feature{NONE} -- Initialization
 			-- Initialize `eiffel_system' with `a_system'.
 		do
 			eiffel_system := a_system
+			set_is_using_model_based_strategy (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -256,6 +257,22 @@ feature -- Fix generation
 
 feature -- Status report
 
+	is_using_model_based_strategy: BOOLEAN
+			-- Is current fixing process using model-based strategy?
+		do
+			Result := is_using_model_based_strategy_cache
+		ensure
+			same_as_cache: Result = is_using_model_based_strategy_cache
+		end
+
+	is_using_random_based_strategy: BOOLEAN
+			-- Is current fixing process using random-based strategy?
+		do
+			Result := is_using_random_based_strategy_cache
+		ensure
+			same_as_cache: Result = is_using_random_based_strategy_cache
+		end
+
 	should_retrieve_state: BOOLEAN
 			-- Should state of the system be retrieved?
 		do
@@ -271,6 +288,20 @@ feature -- Status report
 			-- Should test cases first be built?
 
 feature -- Setting
+
+	set_is_using_random_based_strategy (b: BOOLEAN)
+			-- Set `is_using_random_based_strategy_cache' with 'b'.
+		do
+			is_using_random_based_strategy_cache := b
+			is_using_model_based_strategy_cache := not b
+		end
+
+	set_is_using_model_based_strategy (b: BOOLEAN)
+			-- Set `is_using_model_based_strategy_cache' with 'b'.
+		do
+			is_using_model_based_strategy_cache := b
+			is_using_random_based_strategy_cache := not b
+		end
 
 	set_should_retrieve_state (b: BOOLEAN)
 			-- Set `should_retrieve_state' with `b'.
@@ -427,6 +458,14 @@ feature{NONE} -- Implementation
 	state_recipient_cache: detachable FEATURE_I
 			-- Cache for `state_recipient'
 
+	is_using_model_based_strategy_cache: BOOLEAN
+			-- Cache for `is_using_model_based_strategy'.
+
+	is_using_random_based_strategy_cache: BOOLEAN
+			-- Cache for `is_using_random_based_strategy'.
+
+
+
 feature{NONE} -- Implementation
 
 	first_test_case_class_name: detachable STRING is
@@ -473,5 +512,9 @@ feature{NONE} -- Implementation
 				state_recipient_cache := feature_from_class (l_tc_info.recipient_class, l_tc_info.recipient)
 			end
 		end
+
+invariant
+
+	one_fixing_strategy_specified: is_using_model_based_strategy xor is_using_random_based_strategy
 
 end

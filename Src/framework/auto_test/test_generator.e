@@ -444,6 +444,11 @@ feature -- Options: test case deserialization
 			good_result: Result = data_output_cache
 		end
 
+feature -- Options: Interface related class collection
+
+	is_collecting_interface_related_classes: BOOLEAN
+			-- Is generator collecting interface related classes?
+
 feature -- Access: session
 
 	system: SYSTEM_I
@@ -915,6 +920,14 @@ feature -- Status setting
 			types_under_test.append_last (a_types)
 		end
 
+	set_collecting_interface_related_classes (b: BOOLEAN)
+			-- Set `is_collecting_interface_related_classes'.
+		do
+			is_collecting_interface_related_classes := b
+		ensure
+			status_set: is_collecting_interface_related_classes = b
+		end
+
 feature -- Basic operations
 
 	step
@@ -956,6 +969,8 @@ feature {NONE} -- Basic operations
 								load_log
 							elseif is_test_case_deserialization_enabled then
 								process_deserialization
+							elseif is_collecting_interface_related_classes then
+								collect_interface_related_classes
 							end
 						end
 					end
@@ -1277,6 +1292,33 @@ feature -- Deserialization
 		do
 			create l_processor.make (system, Current)
 			l_processor.process
+		end
+
+feature -- Collect interface related classes
+
+	collect_interface_related_classes
+			-- Collect non-deferred classes that are used in the interfaces of `class_names'.
+		local
+			l_related_class_collector: AUT_INTERFACE_RELATED_CLASS_COLLECTOR
+			l_path: DIRECTORY_NAME
+			l_directory: DIRECTORY
+			l_file_name: FILE_NAME
+		do
+			create l_related_class_collector.make (class_names)
+			l_related_class_collector.collect
+
+			-- Prepare output file name.
+			if data_output /= Void and then not data_output.is_empty then
+				-- Use the output file path specified in the argument.
+				create l_file_name.make_from_string (data_output)
+			else
+				-- Save result to the testing result path.
+				l_path := system.eiffel_project.project_directory.testing_results_path
+				create l_file_name.make_from_string (l_path)
+				l_file_name.set_file_name ("related_classes.txt")
+			end
+
+			l_related_class_collector.save_names (l_file_name)
 		end
 
 feature -- Option caches

@@ -40,6 +40,7 @@ feature -- Basic operations
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
+			l_fix_strategy: AP_STRING_OPTION
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
@@ -62,6 +63,10 @@ feature -- Basic operations
 			create l_parser.make
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
+
+			create l_fix_strategy.make_with_long_form ("strategy")
+			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model and random.")
+			l_parser.options.force_last (l_fix_strategy)
 
 			create l_retrieve_state_option.make ('s', "retrieve-state")
 			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
@@ -159,6 +164,19 @@ feature -- Basic operations
 				config.set_max_test_case_execution_time (l_max_tc_time.parameter)
 			else
 				config.set_max_test_case_execution_time (5)
+			end
+
+			if l_fix_strategy.was_found then
+				if attached l_fix_strategy.parameter as lt_strategy then
+					lt_strategy.to_lower
+					if lt_strategy ~ "model" then
+						config.set_is_using_model_based_strategy (True)
+					elseif lt_strategy ~ "random" then
+						config.set_is_using_random_based_strategy (True)
+					else
+						-- Use the default strategy: model
+					end
+				end
 			end
 
 			if l_fix_skeleton.was_found then

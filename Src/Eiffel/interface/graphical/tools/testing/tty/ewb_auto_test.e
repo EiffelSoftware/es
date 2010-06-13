@@ -217,6 +217,8 @@ feature -- Execution
 
 				l_generator.excluded_features.append (l_ap.excluded_features)
 
+				l_generator.set_collecting_interface_related_classes (l_ap.is_collecting_interface_related_classes)
+
 				a_test_suite.launch_session (l_generator)
 			else
 
