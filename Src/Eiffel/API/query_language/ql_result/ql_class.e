@@ -331,7 +331,7 @@ feature{NONE} -- Implementation
 			not_compiled: not is_compiled
 		local
 			l_retried: BOOLEAN
-			l_text: STRING
+			l_text: STRING_32
 		do
 			if not l_retried then
 				l_text := class_i.text

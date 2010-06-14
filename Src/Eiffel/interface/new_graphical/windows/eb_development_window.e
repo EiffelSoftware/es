@@ -1818,8 +1818,8 @@ feature {EB_STONE_CHECKER, EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -
 			a_location_attached: a_location /= Void
 			a_displayed_class_attached: a_displayed_class /= Void
 		local
-			class_text: STRING
-			tmp_text: STRING
+			class_text: STRING_32
+			tmp_text: STRING_32
 			begin_offset: INTEGER
 			end_offset: INTEGER
 			a_start_pos, a_end_pos: INTEGER
@@ -2132,7 +2132,6 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER, EB_DEVELOPMENT_WINDOW_PART,
 		local
 			l_dialog: EB_GOTO_DIALOG
 			l_bp_dialog: ES_BREAKABLE_INDEX_GOTO_DIALOG
-			i: INTEGER
 		do
 			if
 				attached editors_manager.current_editor as ed and then

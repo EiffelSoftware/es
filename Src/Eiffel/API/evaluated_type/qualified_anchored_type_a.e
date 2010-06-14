@@ -12,7 +12,9 @@ inherit
 	LIKE_TYPE_A
 		redefine
 			dispatch_anchors,
+			error_generics,
 			evaluated_type_in_descendant,
+			good_generics,
 			initialize_info,
 			is_explicit,
 			is_syntactically_equal,
@@ -66,6 +68,11 @@ feature -- Properties
 	class_id: INTEGER
 			-- ID if a class where this type is written
 
+feature {TYPE_A_CHECKER} -- Properties
+
+	routine_id: SPECIAL [INTEGER_32]
+			-- Routine IDs of the second part of the type, after the `qualifier'
+
 feature -- Status Report
 
 	is_explicit: BOOLEAN
@@ -89,6 +96,22 @@ feature -- Access
 					qualifier.same_as (o.qualifier) and then
 					chain ~ o.chain and then
 					has_same_attachment_marks (o)
+			end
+		end
+
+	good_generics: BOOLEAN
+			-- <Precursor>
+		do
+			Result := qualifier.good_generics and then Precursor
+		end
+
+	error_generics: VTUG
+			-- <Precursor>
+		do
+			if qualifier.good_generics then
+				Result := Precursor
+			else
+				Result := qualifier.error_generics
 			end
 		end
 
@@ -126,6 +149,33 @@ feature -- Modification
 			qualifier := q
 		ensure
 			qualifier_set: qualifier = q
+		end
+
+feature {TYPE_A_CHECKER} -- Modification
+
+	set_chain (n: like chain; c: CLASS_C)
+			-- Set `chain' to the value relative to class `c'.
+		require
+			n_attached: attached n
+			n_same_count: n.count = chain.count
+			c_attached: attached c
+		do
+			chain := n
+			class_id := c.class_id
+		ensure
+			chain_set: chain = n
+			class_id_set: class_id = c.class_id
+		end
+
+	set_routine_id (r: like routine_id)
+			-- Set `routine_id' to `r'.
+		require
+			r_attached: attached r
+			r_same_count: r.count = chain.count
+		do
+			routine_id := r
+		ensure
+			routine_id_set: routine_id = r
 		end
 
 feature -- Generic conformance
@@ -239,8 +289,10 @@ feature -- Output
 				n := names_heap.item (chain [i])
 				if attached f then
 					st.add_feature (f, n)
-				else
+				elseif attached q then
 					st.add_feature_name (n, q)
+				else
+					st.process_feature_name_text (n, Void)
 				end
 				i := i + 1
 			end
@@ -259,13 +311,15 @@ feature -- Primitives
 			i: INTEGER
 			c: like chain
 			q: TYPE_A
+			d: TYPE_A
 		do
 			if a_ancestor /= a_descendant then
 					-- Compute new feature names.
 				create c.make_filled (0, chain.count)
 				from
 					q := qualifier
-					create Result.make (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature), c, a_descendant.class_id)
+					d := q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature)
+					create Result.make (d, c, a_descendant.class_id)
 				until
 					i >= chain.count
 				loop
@@ -277,11 +331,13 @@ feature -- Primitives
 					then
 						c [i] := g.feature_name_id
 						q := f.type.instantiated_in (q)
+						d := g.type.instantiated_in (d)
 					end
 					i := i + 1
 				end
 					-- `q' holds the type relative to `a_ancestor'.
-				Result.set_actual_type (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature))
+					-- `d' holds the type relative to `a_descendant'.
+				Result.set_actual_type (d)
 				if has_attached_mark then
 					Result.set_attached_mark
 				elseif has_detachable_mark then
