@@ -180,6 +180,9 @@ feature -- Query
 	find_class_or_cluster_command: attached ES_FIND_CLASS_OR_CLUSTER_CMD
 			-- Command used to locate a class or cluster
 
+	eve_proofs_command: attached EB_EVE_PROOFS_COMMAND
+			-- EVE Proofs command
+
 feature -- Commands
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
@@ -636,6 +639,14 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			find_class_or_cluster_command_set: find_class_or_cluster_command = a_command
 		end
 
+	set_eve_proofs_command (a_command: like eve_proofs_command)
+			-- Sets `eve_proofs_command' with `a_command'.
+		do
+			eve_proofs_command := a_command
+		ensure
+			eve_proofs_command_set: eve_proofs_command = a_command
+		end
+
 feature -- Recycle
 
 	internal_recycle
@@ -755,7 +766,7 @@ feature -- Recycle
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

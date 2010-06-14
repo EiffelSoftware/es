@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="presentation" uuid="9A0C8B21-F44C-4B34-B178-F81061F6C015">
+	<target name="presentation">
+		<root all_classes="true"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
+		<cluster name="presentation" location=".\">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+			<cluster name="command" location="command\"/>
+			<cluster name="account" location="account\"/>
+			<cluster name="sequence" location="sequence\"/>
+			<cluster name="errors" location="..\errors\"/>
+			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="archiver" location="..\archiver\"/>
+			<cluster name="visitor" location="visitor\"/>
+			<cluster name="strategy" location="strategy\"/>
+		</cluster>
+	</target>
+</system>

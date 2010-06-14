@@ -332,6 +332,8 @@ Src/dotnet/consumer/*.wb
 Src/dotnet/consumer/EIFGENs
 Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
 Src/examples/docking/simple/EIFGENs
+Src/examples/proofs/account/EIFGENs
+Src/examples/proofs/demo/EIFGENs
 Src/examples/store/convert/EIFGENs
 Src/examples/store/insert/EIFGENs
 Src/examples/store/nesting/EIFGENs

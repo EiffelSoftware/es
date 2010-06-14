@@ -164,6 +164,7 @@ feature -- Command
 
 			l_edit_contracts_command: ES_EDIT_CONTRACTS_COMMAND
 			l_find_class_or_cluster_command: ES_FIND_CLASS_OR_CLUSTER_CMD
+			l_eve_proofs_command: EB_EVE_PROOFS_COMMAND
 
 			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
@@ -398,6 +399,10 @@ feature -- Command
 
 			create l_find_class_or_cluster_command.make (develop_window)
 			l_dev_commands.set_find_class_or_cluster_command (l_find_class_or_cluster_command)
+
+				-- EVE Proofs command
+			create l_eve_proofs_command.make
+			l_dev_commands.set_eve_proofs_command (l_eve_proofs_command)
 
 				-- Add history commands to toolbarable_commands.
 				-- Setup its accelerators.
