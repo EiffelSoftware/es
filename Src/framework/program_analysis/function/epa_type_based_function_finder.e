@@ -488,41 +488,43 @@ feature{NONE} -- Implementation
 					l_cursor.after
 				loop
 					l_type := l_cursor.item
-					check l_type.associated_class /= Void end
-					l_class := l_type.associated_class
-					l_feat_tbl := l_class.feature_table
-					l_tbl_cursor := l_feat_tbl.cursor
-					from
-						l_feat_tbl.start
-					until
-						l_feat_tbl.after
-					loop
-						l_feat := l_feat_tbl.item_for_iteration
-						if
-							l_feat.has_return_value and then
-							l_feat.written_class.class_id /= l_any_id and then
-							l_feat.argument_count = 1 and then
-							l_feat.arguments.i_th (1).is_integer
-						then
-							l_range := integer_bounds (context_class, l_feat)
-							if l_range /= Void then
-								create l_argument_types.make (1, 1)
-								create l_argument_domains.make (1, 1)
-								l_argument_types.put (integer_type, 1)
-								l_argument_domains.put (l_range, 1)
-								l_result_type := l_feat.type.actual_type.instantiation_in (l_type, l_class.class_id)
-								create l_body.make (32)
-								l_body.append (l_cursor.key)
-								l_body.append_character ('.')
-								l_body.append (l_feat.feature_name)
-								l_body.append (once " ({1})")
-								create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
-								l_quasi_functions.force_last (l_function)
+					if not l_type.is_basic then
+						check l_type.associated_class /= Void end
+						l_class := l_type.associated_class
+						l_feat_tbl := l_class.feature_table
+						l_tbl_cursor := l_feat_tbl.cursor
+						from
+							l_feat_tbl.start
+						until
+							l_feat_tbl.after
+						loop
+							l_feat := l_feat_tbl.item_for_iteration
+							if
+								l_feat.has_return_value and then
+								l_feat.written_class.class_id /= l_any_id and then
+								l_feat.argument_count = 1 and then
+								l_feat.arguments.i_th (1).is_integer
+							then
+								l_range := integer_bounds (context_class, l_feat)
+								if l_range /= Void then
+									create l_argument_types.make (1, 1)
+									create l_argument_domains.make (1, 1)
+									l_argument_types.put (integer_type, 1)
+									l_argument_domains.put (l_range, 1)
+									l_result_type := l_feat.type.actual_type.instantiation_in (l_type, l_class.class_id)
+									create l_body.make (32)
+									l_body.append (l_cursor.key)
+									l_body.append_character ('.')
+									l_body.append (l_feat.feature_name)
+									l_body.append (once " ({1})")
+									create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
+									l_quasi_functions.force_last (l_function)
+								end
 							end
+							l_feat_tbl.forth
 						end
-						l_feat_tbl.forth
+						l_feat_tbl.go_to (l_tbl_cursor)
 					end
-					l_feat_tbl.go_to (l_tbl_cursor)
 					l_cursor.forth
 				end
 			end

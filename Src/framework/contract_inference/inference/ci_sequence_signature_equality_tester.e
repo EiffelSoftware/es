@@ -1,14 +1,14 @@
 note
-	description: "Equality tester for {CI_SEQUENCE_EQUALITY_TESTER}"
+	description: "Equality tester for {CI_SEQUENCE_SIGNATURE}"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CI_SEQUENCE_EQUALITY_TESTER [G]
+	CI_SEQUENCE_SIGNATURE_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [CI_SEQUENCE [G]]
+	KL_EQUALITY_TESTER [CI_SEQUENCE_SIGNATURE]
 		redefine
 			test
 		end
@@ -17,7 +17,7 @@ inherit
 
 feature -- Status report
 
-	test (v, u: CI_SEQUENCE [G]): BOOLEAN
+	test (v, u: CI_SEQUENCE_SIGNATURE): BOOLEAN
 		do
 			if v = u then
 				Result := True

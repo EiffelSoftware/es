@@ -25,10 +25,4 @@ feature -- Math operations
 			end
 		end
 
-	integer_interval (a_min, a_max: INTEGER): INTEGER_INTERVAL
-			-- Integer interval [`a_min', `a_max']
-		do
-			create Result.make (a_min, a_max)
-		end
-
 end

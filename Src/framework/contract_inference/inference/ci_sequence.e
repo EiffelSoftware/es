@@ -23,22 +23,30 @@ inherit
 			out
 		end
 
+	SHARED_TEXT_ITEMS
+		undefine
+			out
+		end
+
 create
 	make,
 	make_from_function
 
+convert
+	content: {MML_FINITE_SEQUENCE [G]}
+
 feature{NONE} -- Initialization
 
-	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_is_pre_state: BOOLEAN; a_context: like context)
+	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_context: like context; a_count_expressions_name: STRING; a_target_variable_position: INTEGER)
 			-- Initialize Current with `a_array'.
 		local
 			l_cursor: CURSOR
 			l_hash_str: STRING
 		do
 			target_variable_name := a_target_varaible_name.twin
-			is_pre_state := a_is_pre_state
 			context := a_context
-			function_name := a_function_name.twin
+			count_expressions_name := a_count_expressions_name.twin
+			create signature.make (a_target_variable_position, a_function_name)
 
 				-- Initialize `content'.
 			create l_hash_str.make (64)
@@ -58,19 +66,28 @@ feature{NONE} -- Initialization
 			hash_code := l_hash_str.hash_code
 		end
 
-	make_from_function (a_function: CI_FUNCTION_WITH_INTEGER_DOMAIN; a_is_pre_state: BOOLEAN; a_content: lINKED_LIST [G])
+	make_from_function (a_function: CI_FUNCTION_WITH_INTEGER_DOMAIN; a_count_expressions_name: STRING; a_content: LINKED_LIST [G]; a_target_variable_position: INTEGER)
 			-- Initialize Current.
 		do
-			make (a_content, a_function.target_variable_name, a_function.function_name, a_is_pre_state, a_function.context)
+			make (a_content, a_function.target_variable_name, a_function.function_name, a_function.context, a_count_expressions_name, a_target_variable_position)
 		end
 
 feature -- Access
+
+	signature: CI_SEQUENCE_SIGNATURE
+			-- Signature of current
 
 	content: MML_FINITE_SEQUENCE [G]
 			-- Content of current sequence
 
 	target_variable_name: STRING
 			-- Name of the target variable which Current represents
+
+	target_variable_index: INTEGER
+			-- 0-based operand position of `target_variable_name'
+		do
+			Result := signature.target_variable_index
+		end
 
 	target_variable_type: TYPE_A
 			-- Type of the target varaible
@@ -87,6 +104,9 @@ feature -- Access
 
 	function_name: STRING
 			-- Name of the function whose range forms the elements in `content'
+		do
+			Result := signature.function_name
+		end
 
 	context: EPA_CONTEXT
 			-- Context in which Current exists
@@ -94,15 +114,24 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 
+	count_expressions_name: STRING
+			-- Name of the expression on `target_variable_name' to get the count of current sequence
+			-- Format: surpose `target_variable_name' is v_1, then: v_1.count + 1, or v_1.count.
+
 feature -- Status
 
-	is_pre_state: BOOLEAN
-			-- Is current sequence evalauted in pre test case execution state?
-
-	is_post_state: BOOLEAN
-			-- Is current sequence evalauted in post test case execution state?
+	is_special: BOOLEAN
+			-- Is current sequence special?
+			-- A sequence is special if and only if it is made out of
+			-- a single element.
 		do
-			Result := not is_pre_state
+			Result := function_name ~ ti_current
+		end
+
+	is_model_equal alias "|=|" (other: like Current): BOOLEAN
+			-- Is this model mathematically equal to `other'?
+		do
+			Result := content |=| other.content
 		end
 
 feature -- Status report
@@ -115,10 +144,6 @@ feature -- Status report
 			l_count: INTEGER
 		do
 			create Result.make (128)
-			if is_pre_state then
-				Result.append (ti_old_keyword)
-				Result.append_character (' ')
-			end
 			Result.append_character ('[')
 
 			l_content := content

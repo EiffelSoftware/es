@@ -323,6 +323,86 @@ feature -- Logging
 			end
 		end
 
+	put_line_with_level_and_time (a_string: STRING; a_level: INTEGER)
+			-- Log `a_string' at `a_level' with time.
+		require
+			a_level_valid: is_level_valid (a_level)
+		do
+			push_level (a_level)
+			put_line_with_time (a_string)
+			pop_level
+		end
+
+	put_line_with_level (a_string: STRING; a_level: INTEGER)
+			-- Log `a_string' at `a_level'.
+		require
+			a_level_valid: is_level_valid (a_level)
+		do
+			push_level (a_level)
+			put_line (a_string)
+			pop_level
+		end
+
+	put_line_with_time_at_info_level (a_string: STRING)
+			-- Log `a_string' at `info_leve' with time.
+		do
+			put_line_with_level_and_time (a_string, info_level)
+		end
+
+	put_line_at_info_level (a_string: STRING)
+			-- Log `a_string' at `info_leve'.
+		do
+			put_line_with_level (a_string, info_level)
+		end
+
+	put_line_with_time_at_severe_level (a_string: STRING)
+			-- Log `a_string' at `severe_leve' with time.
+		do
+			put_line_with_level_and_time (a_string, severe_level)
+		end
+
+	put_line_at_severe_level (a_string: STRING)
+			-- Log `a_string' at `severe_leve'.
+		do
+			put_line_with_level (a_string, severe_level)
+		end
+
+	put_line_with_time_at_fine_level (a_string: STRING)
+			-- Log `a_string' at `fine_leve' with time.
+		do
+			put_line_with_level_and_time (a_string, fine_level)
+		end
+
+	put_line_at_fine_level (a_string: STRING)
+			-- Log `a_string' at `fine_leve'.
+		do
+			put_line_with_level (a_string, fine_level)
+		end
+
+	put_line_with_time_at_finer_level (a_string: STRING)
+			-- Log `a_string' at `finer_leve' with time.
+		do
+			put_line_with_level_and_time (a_string, finer_level)
+		end
+
+	put_line_at_finer_level (a_string: STRING)
+			-- Log `a_string' at `finer_leve'.
+		do
+			put_line_with_level (a_string, finer_level)
+		end
+
+	put_line_with_time_at_finest_level (a_string: STRING)
+			-- Log `a_string' at `finest_leve' with time.
+		do
+			put_line_with_level_and_time (a_string, finest_level)
+		end
+
+	put_line_at_finest_level (a_string: STRING)
+			-- Log `a_string' at `finest_leve'.
+		do
+			put_line_with_level (a_string, finest_level)
+		end
+
 feature{NONE} -- Impmelentation
 
 	time_prefix: STRING

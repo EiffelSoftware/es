@@ -32,7 +32,10 @@ inherit
 			process_nested_as,
 			process_un_not_as,
 			process_bin_tilde_as,
-			process_bin_not_tilde_as
+			process_bin_not_tilde_as,
+			process_tuple_as,
+			process_un_free_as,
+			process_bin_free_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -45,6 +48,8 @@ inherit
 		select
 			error_handler
 		end
+
+	CI_SEQUENCE_OPERATOR_NAMES
 
 feature -- Access
 
@@ -72,6 +77,12 @@ feature -- Access
 			Result := transition_context.transition.postcondition
 		end
 
+	extra_pre_state_values: detachable EPA_STATE
+			-- Extra pre-state values
+
+	extra_post_state_values: detachable EPA_STATE
+			-- Extra post-state values			
+
 	state_values (a_pre_state: BOOLEAN): EPA_STATE
 			-- State values from pre-execution if `a_pre_state' is True,
 			-- otherwise, from post-execution.
@@ -80,6 +91,29 @@ feature -- Access
 				Result := pre_state_values
 			else
 				Result := post_state_values
+			end
+		end
+
+	extra_state_values (a_pre_state: BOOLEAN): detachable EPA_STATE
+			-- Extra state values from pre-execution if `a_pre_state' is True,
+			-- otherwise, from post-execution.
+		do
+			if a_pre_state then
+				Result := extra_pre_state_values
+			else
+				Result := extra_post_state_values
+			end
+		end
+
+	sequence_value (a_value: EPA_EXPRESSION_VALUE): detachable MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]
+			-- Sequence value out of `a_value'
+		do
+			if attached {EPA_ANY_VALUE} a_value as l_value then
+				if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
+					Result := l_sequence.content
+				elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
+					Result := l_sequence
+				end
 			end
 		end
 
@@ -93,7 +127,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	evaluate (a_expr: AST_EIFFEL; a_context: like transition_context)
+	evaluate (a_expr: AST_EIFFEL)
 			-- Evaluate `a_expr' in the context of `transition_context',
 			-- make result available in `last_value'.
 			-- Store missing expressions (if any) in `missing_expressions'.
@@ -105,22 +139,41 @@ feature -- Basic operations
 		require
 			a_expr_attached: a_expr /= Void
 		do
-			transition_context := a_context
 			initialize_data_structures
 			a_expr.process (Current)
 		end
 
-	evaluate_string (a_string: STRING; a_context: like transition_context)
-			-- Evaluate `a_string' in `a_context'.
+	evaluate_string (a_string: STRING)
+			-- Evaluate `a_string' in `transition_context'.
 			-- See comment of `evaluate' for details.
 		local
 			l_parser: like etr_expr_parser
 		do
 			l_parser := etr_expr_parser
-			setup_formal_parameters (l_parser, a_context.test_case_info.class_under_test)
-			l_parser.parse_from_string (once "check " + a_string, a_context.test_case_info.class_under_test)
+			setup_formal_parameters (l_parser, transition_context.test_case_info.class_under_test)
+			l_parser.parse_from_string (once "check " + a_string, transition_context.test_case_info.class_under_test)
 			check l_parser.expression_node /= Void end
-			evaluate (l_parser.expression_node, a_context)
+			evaluate (l_parser.expression_node)
+		end
+
+feature -- Setting
+
+	set_transition_context (a_context: like transition_context)
+			-- Set `transition_context' with `a_context'.
+		do
+			transition_context := a_context
+		end
+
+	set_extra_pre_state_values (a_values: like extra_pre_state_values)
+			-- Set `extra_pre_state_values' with `a_values'
+		do
+			extra_pre_state_values := a_values
+		end
+
+	set_extra_post_state_values (a_values: like extra_post_state_values)
+			-- Set `extra_post_state_values' with `a_values'
+		do
+			extra_post_state_values := a_values
 		end
 
 feature{NONE} -- Implementation
@@ -131,12 +184,10 @@ feature{NONE} -- Implementation
 			last_value := Void
 			create missing_expressions.make (5)
 			missing_expressions.set_equality_tester (expression_equality_tester)
---			set_is_in_old_expression (False)
 		end
 
 	set_has_error (b: BOOLEAN; a_reason: STRING)
 			-- Set `has_error' with `b'.
-			--
 		do
 			has_error := b
 			error_reason := a_reason.twin
@@ -144,27 +195,62 @@ feature{NONE} -- Implementation
 			has_error_set: has_error = b
 		end
 
-	equation_by_expression (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): detachable EPA_EQUATION
+	equation_by_expression_ast (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): detachable EPA_EQUATION
 			-- Equation whose expression is equal to `a_expr_as'
 			-- in pre-execution state if `a_pre_state' is True, otherwise,
 			-- in post-execution state.
 			-- Void if no such equation is found.
 		do
-			Result := state_values (a_pre_state).item_with_expression_text (text_from_ast (a_expr_as))
+			Result := equation_by_expression (text_from_ast (a_expr_as), a_pre_state)
+		end
+
+	equation_by_expression (a_expr: STRING; a_pre_state: BOOLEAN): detachable EPA_EQUATION
+			-- Equation whose expression is equal to `a_expr'
+			-- in pre-execution state if `a_pre_state' is True, otherwise,
+			-- in post-execution state.
+			-- Void if no such equation is found.
+		do
+			Result := state_values (a_pre_state).item_with_expression_text (a_expr)
+			if Result = Void then
+				if attached {EPA_STATE} extra_state_values (a_pre_state) as l_state then
+					Result := l_state.item_with_expression_text (a_expr)
+				end
+			end
+		end
+
+	evalute_unary_sequence_operator (a_sequence: MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]; a_operator_name: STRING)
+			-- Evaluate `a_sequence' on operator `a_operator_name',
+			-- Make result available in `last_value'.
+		require
+			a_operator_name_valid: sequence_un_operators.has (a_operator_name)
+		do
+			if a_operator_name ~ sequence_is_empty_un_operator then
+				create {EPA_BOOLEAN_VALUE} last_value.make (a_sequence.is_empty)
+			end
+		end
+
+	evalute_binary_sequence_operator (a_left, a_right: MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]; a_operator_name: STRING)
+			-- Evaluate `a_sequence' on operator `a_operator_name',
+			-- Make result available in `last_value'.
+		require
+			a_operator_name_valid: sequence_bin_operators.has (a_operator_name)
+		local
+			l_sequence: CI_SEQUENCE [EPA_EXPRESSION_VALUE]
+		do
+			if a_operator_name ~ sequence_is_equal_bin_operator then
+				create {EPA_BOOLEAN_VALUE} last_value.make (a_left |=| a_right)
+
+			elseif a_operator_name ~ sequence_is_prefix_of_bin_operator then
+				create {EPA_BOOLEAN_VALUE} last_value.make (a_left.is_prefix_of (a_right))
+
+			elseif a_operator_name ~ sequence_concatenation_bin_operator then
+				create {EPA_ANY_VALUE} last_value.make (a_left |+| a_right)
+			else
+				set_has_error (True, msg_free_binary_operator_not_supported (a_operator_name))
+			end
 		end
 
 feature{NONE} -- Implementation
-
---	is_in_old_expression: BOOLEAN
---			-- Is processing in old expression?
-
---	set_is_in_old_expression (b: BOOLEAN)
---			-- Set `is_in_old_expression' with `b'.
---		do
---			is_in_old_expression := b
---		ensure
---			is_in_old_expression_set: is_in_old_expression = b
---		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do
@@ -177,7 +263,7 @@ feature{NONE} -- Implementation
 			l_equation: detachable EPA_EQUATION
 		do
 			if not has_error then
-				l_equation := equation_by_expression (a_ast, False)
+				l_equation := equation_by_expression_ast (a_ast, False)
 				if l_equation /= Void then
 					last_value := l_equation.value
 				else
@@ -197,7 +283,7 @@ feature{NONE} -- Implementation
 			l_equation: detachable EPA_EQUATION
 		do
 			if not has_error then
-				l_equation := equation_by_expression (l_as.expr, True)
+				l_equation := equation_by_expression_ast (l_as.expr, True)
 				if l_equation /= Void then
 					last_value := l_equation.value
 				else
@@ -494,6 +580,62 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	process_tuple_as (l_as: TUPLE_AS)
+		do
+			process_expression (l_as)
+		end
+
+	process_un_free_as (l_as: UN_FREE_AS)
+		local
+			l_sequence: like sequence_value
+			l_operator: STRING
+		do
+			if not has_error then
+				l_operator := l_as.operator_name
+				process_unary_as (l_as)
+				if not has_error and then sequence_un_operators.has (l_operator) then
+					l_sequence := sequence_value (last_value)
+					if l_sequence /= Void then
+						evalute_unary_sequence_operator (l_sequence, l_operator)
+					else
+						set_has_error (True, msg_sequence_value_expected (l_operator, last_value))
+					end
+				else
+					set_has_error (True, msg_free_unary_operator_not_supported (l_operator))
+				end
+			end
+		end
+
+	process_bin_free_as (l_as: BIN_FREE_AS)
+		local
+			l_left, l_right: like sequence_value
+			l_operator: STRING
+		do
+			if not has_error then
+				l_operator := l_as.op_name.name
+				if sequence_bin_operators.has (l_operator) then
+					l_as.left.process (Current)
+					if not has_error then
+						l_left := sequence_value (last_value)
+						if l_left /= Void then
+							l_as.right.process (Current)
+							if not has_error then
+								l_right := sequence_value (last_value)
+								if l_right /= Void then
+									evalute_binary_sequence_operator (l_left, l_right, l_operator)
+								else
+									set_has_error (True, msg_sequence_value_expected (l_operator, last_value))
+								end
+							end
+						else
+							set_has_error (True, msg_sequence_value_expected (l_operator, last_value))
+						end
+					end
+				else
+					set_has_error (True, msg_free_binary_operator_not_supported (l_operator))
+				end
+			end
+		end
 feature -- Error messages
 
 	msg_missing_expression (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): STRING
@@ -512,12 +654,42 @@ feature -- Error messages
 			create Result.make (64)
 			Result.append (once "Type error: type of expression %"")
 			Result.append (text_from_ast (a_expr_as))
---			Result.append (once "%" in ")
---			Result.append (state_phase_name (is_in_old_expression))
 			Result.append (once "should be ")
 			Result.append (a_expected_type)
 			Result.append (once ", but it is ")
 			Result.append (a_actual_type)
+		end
+
+	msg_sequence_value_expected (a_operator: STRING; a_value: detachable EPA_EXPRESSION_VALUE): STRING
+			-- Message reporting that a required value of type sequence is missing
+		local
+			l_value: STRING
+		do
+			if a_value = Void then
+				l_value := "Void"
+			else
+				l_value := a_value.out
+			end
+			create Result.make (64)
+			Result.append ("For sequence operator %"" + a_operator + "%", a value of type sequence is expected, but got " + l_value)
+		end
+
+	msg_free_unary_operator_not_supported (a_operator: STRING): STRING
+			-- Message reporting that free unary operator `a_operator' is not supported.
+		do
+			create Result.make (64)
+			Result.append ("Free unary operator %"")
+			Result.append (a_operator)
+			Result.append ("%" is not supported.")
+		end
+
+	msg_free_binary_operator_not_supported (a_operator: STRING): STRING
+			-- Message reporting that free binary operator `a_operator' is not supported.
+		do
+			create Result.make (64)
+			Result.append ("Free binary operator %"")
+			Result.append (a_operator)
+			Result.append ("%" is not supported.")
 		end
 
 	state_phase_name (a_pre_state: BOOLEAN): STRING

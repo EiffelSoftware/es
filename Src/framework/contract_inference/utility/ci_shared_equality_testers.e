@@ -27,6 +27,12 @@ feature -- Access
 			create Result
 		end
 
+	ci_sequence_signature_equality_tester: CI_SEQUENCE_SIGNATURE_EQUALITY_TESTER
+			-- Equality tester for {CI_SEQUENCE_SIGNATURE}
+		once
+			create Result
+		end
+
 	ci_test_case_info_equality_tester: CI_TEST_CASE_INFO_EQUALITY_TESTER
 			-- Equality tester for {CI_TEST_CASE_INFO}
 		once

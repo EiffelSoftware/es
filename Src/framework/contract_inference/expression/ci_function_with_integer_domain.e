@@ -33,7 +33,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target_variable_name: like target_variable_name; a_function_name: like function_name; a_lower_bound: INTEGER; a_upper_bound: INTEGER; a_context: like context)
+	make (a_target_variable_name: like target_variable_name; a_function_name: like function_name; a_lower_bound: INTEGER; a_upper_bound: INTEGER; a_context: like context; a_lower_bound_expression: STRING; a_upper_bound_expression: STRING)
 			-- Initialize Current.
 		require
 			function_valid: is_function_with_single_integer_argument (a_target_variable_name, a_function_name, a_context)
@@ -45,6 +45,8 @@ feature{NONE} -- Initialization
 			upper_bound := a_upper_bound
 			context := a_context
 			hash_code := (target_variable_name + once "." + function_name).hash_code
+			lower_bound_expression := a_lower_bound_expression.twin
+			upper_bound_expression := a_upper_bound_expression.twin
 		end
 
 feature -- Access
@@ -102,6 +104,12 @@ feature -- Access
 			Result.append (upper_bound.out)
 			Result.append_character (')')
 		end
+
+	lower_bound_expression: STRING
+			-- Expression to get lower bound
+
+	upper_bound_expression: STRING
+			-- Expression to get upper bound		
 
 feature -- Status report
 

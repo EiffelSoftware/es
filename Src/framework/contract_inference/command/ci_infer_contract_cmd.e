@@ -236,8 +236,13 @@ feature{NONE} -- Implementation
 		local
 			l_lowers: LINKED_LIST [EPA_EXPRESSION]
 			l_uppers: LINKED_LIST [EPA_EXPRESSION]
+			l_constant_lower_map: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_resolved_lower_map: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_constant_upper_map: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_resolved_upper_map: HASH_TABLE [EPA_EXPRESSION, INTEGER]
 			l_constant_uppers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_resolved_lowers: SORTED_TWO_WAY_LIST [INTEGER]
+			l_constant_lowers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_resolved_uppers: SORTED_TWO_WAY_LIST [INTEGER]
 			l_cursor: CURSOR
 			l_expr: EPA_EXPRESSION
@@ -252,10 +257,17 @@ feature{NONE} -- Implementation
 			l_target_of_function: STRING
 			l_function_name: STRING
 			l_func_with_domain: CI_FUNCTION_WITH_INTEGER_DOMAIN
+			l_final_lower_expr: EPA_EXPRESSION
+			l_final_upper_expr: EPA_EXPRESSION
 		do
 			create Result.make (10)
 			Result.set_equality_tester (function_equality_tester)
 			create l_constant_uppers.make
+			create l_constant_lowers.make
+			create l_constant_upper_map.make (2)
+			create l_resolved_upper_map.make (2)
+			create l_constant_lower_map.make (2)
+			create l_resolved_lower_map.make (2)
 
 			if attached {EPA_INTEGER_RANGE_DOMAIN} a_function.argument_domain (1) as l_domain then
 				l_target_of_function := target_of_function (a_function)
@@ -277,12 +289,15 @@ feature{NONE} -- Implementation
 					l_expr := l_lowers.item_for_iteration
 					l_value_text := l_expr.text
 					if l_value_text.is_integer then
-						l_resolved_lowers.extend (l_value_text.to_integer)
+						l_constant_lowers.extend (l_value_text.to_integer)
+						l_constant_lower_map.force (l_expr, l_value_text.to_integer)
 					else
+						fixme ("The following way of making a qualified call may not be valid in general. 14.6.2010 Jasonw")
 						l_value := evaluated_string_from_debugger (debugger_manager, l_target_of_function + "." + l_value_text)
 						l_has_error := not l_value.is_integer
 						if not l_has_error then
 							l_resolved_lowers.extend (l_value.out.to_integer)
+							l_resolved_lower_map.force (l_expr, l_value.out.to_integer)
 						end
 					end
 					l_lowers.forth
@@ -302,11 +317,14 @@ feature{NONE} -- Implementation
 						l_value_text := l_expr.text
 						if l_value_text.is_integer then
 							l_constant_uppers.extend (l_value_text.out.to_integer)
+							l_resolved_upper_map.force (l_expr, l_value_text.out.to_integer)
 						else
+							fixme ("The following way of making a qualified call may not be valid in general. 14.6.2010 Jasonw")
 							l_value := evaluated_string_from_debugger (debugger_manager, l_target_of_function + "." + l_value_text)
 							l_has_error := not l_value.is_integer
 							if not l_has_error then
 								l_resolved_uppers.extend (l_value.out.to_integer)
+								l_resolved_upper_map.force (l_expr, l_value.out.to_integer)
 							end
 						end
 						l_uppers.forth
@@ -319,12 +337,38 @@ feature{NONE} -- Implementation
 					l_resolved_lowers.sort
 					l_resolved_uppers.sort
 					l_constant_uppers.sort
-					l_final_lower := l_resolved_lowers.min
-					if l_resolved_uppers.min < l_constant_uppers.max then
-						l_final_upper := l_resolved_uppers.min
+					l_constant_lowers.sort
+					if l_resolved_lowers.is_empty then
+						l_final_lower := l_constant_lowers.first
+						l_final_lower_expr := l_constant_lower_map.item (l_final_lower)
+					elseif l_constant_lowers.is_empty then
+						l_final_lower := l_resolved_lowers.first
+						l_final_lower_expr := l_resolved_lower_map.item (l_final_lower)
 					else
-						l_final_upper := l_resolved_uppers.max
+						if l_resolved_lowers.first > l_constant_lowers.last then
+							l_final_lower := l_resolved_lowers.first
+							l_final_lower_expr := l_resolved_lower_map.item (l_final_lower)
+						else
+							l_final_lower := l_constant_lowers.last
+							l_final_lower_expr := l_constant_lower_map.item (l_final_lower)
+						end
 					end
+
+					if l_resolved_uppers.is_empty then
+						l_final_upper := l_constant_uppers.first
+						l_final_upper_expr := l_constant_upper_map.item (l_final_upper)
+					elseif l_constant_uppers.is_empty then
+						l_final_upper := l_resolved_lowers.first
+						l_final_upper_expr := l_resolved_upper_map.item (l_final_upper)
+					else
+						if l_resolved_uppers.min < l_constant_uppers.max then
+							l_final_upper := l_resolved_uppers.min
+						else
+							l_final_upper := l_resolved_uppers.max
+						end
+						l_final_upper_expr := l_resolved_upper_map.item (l_final_upper)
+					end
+
 					if l_final_lower <= l_final_upper then
 						from
 							i := l_final_lower
@@ -336,7 +380,7 @@ feature{NONE} -- Implementation
 							Result.force_last (a_function.partially_evalauted (l_arg, 1))
 
 								-- Register functions with bounded integer domain.
-							create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context)
+							create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
 							if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
 								last_pre_execution_bounded_functions.force_last (l_func_with_domain)
 							end
@@ -347,7 +391,7 @@ feature{NONE} -- Implementation
 						end
 					else
 							-- Register functions with an EMPTY bounded integer domain.
-						create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context)
+						create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
 						if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
 							last_pre_execution_bounded_functions.force_last (l_func_with_domain)
 						end

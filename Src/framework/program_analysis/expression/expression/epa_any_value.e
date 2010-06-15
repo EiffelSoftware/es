@@ -41,7 +41,7 @@ feature -- Access
 			Result := system.any_class.compiled_representation.actual_type
 		end
 
-	item: ANY
+	item: detachable ANY
 			-- Value item in current		
 
 feature -- Process

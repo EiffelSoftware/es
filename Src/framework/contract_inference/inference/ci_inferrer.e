@@ -348,6 +348,7 @@ feature{NONE} -- Implementation
 
 					-- Iterate through all quantified expressions in a test case.
 				l_transition_info := data_by_test_case_class_name (l_tc_cursor.key)
+				l_evaluator.set_transition_context (l_transition_info)
 				from
 					l_qexpr_cursor := l_tc_cursor.item.new_cursor
 					l_qexpr_cursor.start
@@ -373,7 +374,7 @@ feature{NONE} -- Implementation
 							l_expr_cursor.after or else not l_all_qfree_true
 						loop
 							l_function := l_expr_cursor.item.partially_evaluated_with_arguments (operand_function_table (l_quantified_function, l_transition_info))
-							l_evaluator.evaluate (ast_from_expression_text (l_function.body), l_transition_info)
+							l_evaluator.evaluate (ast_from_expression_text (l_function.body))
 							l_all_qfree_true := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
 								-- A quantified expression is evaluated to False or there is an error during evaluation, remove it from candidate set.
 							if l_all_qfree_true then

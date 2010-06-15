@@ -108,7 +108,7 @@ feature{NONE} -- Implementation
 
 					-- Only handle the case when premise is of type boolean.
 				if l_premise_as /= Void and then a_tc_info.transition.context.expression_type (l_premise_as).is_boolean then
-					a_evaluator.evaluate (l_premise_as, a_tc_info)
+					a_evaluator.evaluate (l_premise_as)
 					if not a_evaluator.has_error then
 						if attached {EPA_BOOLEAN_VALUE} a_evaluator.last_value as l_bool_value then
 							evaluation_distribution.search (a_quantified_expr)
@@ -415,7 +415,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Iterate through all premise possibilities to generate frame property candidates.
-			across integer_interval (config.composite_min_premise_number, l_max_premise_num) as l_premise_num loop
+			across config.composite_min_premise_number |..| l_max_premise_num as l_premise_num loop
 				across l_premises.combinations (l_premise_num.item) as l_cursor loop
 					if a_signature.is_result_boolean then
 						Result.append_last (
@@ -534,12 +534,12 @@ feature{NONE} -- Implementation
 			l_dquantifier_text := double_square_surrounded_integer (l_quantifier_index)
 			across a_premise_connectors as l_operators loop
 				l_operator_name := once " " + l_operators.item + once " "
-				across integer_interval (1, l_actual_premises.height) as l_rows loop
+				across 1 |..| l_actual_premises.height as l_rows loop
 					l_row := l_rows.item
 					create l_predicate_body.make (128)
 					create l_operand_map.make (l_columns_num)
 						-- Setup premises.
-					across integer_interval (1, l_actual_premises.width) as l_columns loop
+					across 1 |..| l_actual_premises.width as l_columns loop
 						l_column := l_columns.item
 						check attached {like function_type_anchor} l_actual_premises.item (l_row, l_column) as l_premise_func then
 							l_operand_map.put (l_premise_func.target_variable_index, l_index_tbl.item (l_premise_func.target_variable_index))
@@ -609,7 +609,7 @@ feature{NONE} -- Implementation
 				l_repitition_factor := l_repititions.i_th (l_column)
 				l_set := l_set_cursor.item
 				l_row := 1
-				across integer_interval (1, l_rows // l_repitition_factor // l_set_cursor.item.count) as l_times loop
+				across 1 |..| (l_rows // l_repitition_factor // l_set_cursor.item.count) as l_times loop
 					from
 						l_item_cursor := l_set.new_cursor
 						l_item_cursor.start

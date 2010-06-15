@@ -87,6 +87,14 @@ feature -- Access
 			Result := variable_positions.item (a_variable)
 		end
 
+	variable_position_by_name (a_variable: STRING): INTEGER
+			-- Position of `a_variable'
+		require
+			has_a_variable: variable_by_name (a_variable) /= Void
+		do
+			Result := variable_positions.item (variable_by_name (a_variable))
+		end
+
 	anonymous_expression_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
 			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
