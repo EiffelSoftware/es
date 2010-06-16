@@ -53,8 +53,8 @@ inherit
 
 feature -- Access
 
-	log_manager: detachable EPA_LOG_MANAGER
-			-- Logger
+--	log_manager: detachable EPA_LOG_MANAGER
+--			-- Logger
 
 	transition_context: CI_TEST_CASE_TRANSITION_INFO
 			-- Context in which expressions are evaluated
@@ -182,11 +182,11 @@ feature -- Setting
 			extra_post_state_values := a_values
 		end
 
-	set_log_manager (a_logger: like log_manager)
-			-- Set `log_manager' with `a_logger'.
-		do
-			log_manager := a_logger
-		end
+--	set_log_manager (a_logger: like log_manager)
+--			-- Set `log_manager' with `a_logger'.
+--		do
+--			log_manager := a_logger
+--		end
 
 feature{NONE} -- Implementation
 
@@ -226,17 +226,17 @@ feature{NONE} -- Implementation
 			if Result = Void then
 				if attached {EPA_STATE} extra_state_values (a_pre_state) as l_state then
 					Result := l_state.item_with_expression_text (a_expr)
-					if Result /= Void and then attached {EPA_ANY_VALUE} Result.value as l_any then
-						if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
-							if log_manager /= Void then
-								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
-							end
-						elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
-							if log_manager /= Void then
-								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
-							end
-						end
-					end
+--					if Result /= Void and then attached {EPA_ANY_VALUE} Result.value as l_any then
+--						if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+--							if log_manager /= Void then
+--								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+--							end
+--						elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+--							if log_manager /= Void then
+--								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+--							end
+--						end
+--					end
 				end
 			end
 		end
