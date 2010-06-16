@@ -51,4 +51,10 @@ feature -- Access
 			create Result
 		end
 
+	ci_integer_query_equality_tester: CI_INTEGER_QUERY_EQUALITY_TESTER
+			-- Equality tester for {CI_INTEGER_QUERY}
+		once
+			create Result
+		end
+
 end

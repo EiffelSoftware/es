@@ -223,4 +223,13 @@ feature -- Expression veto agents
 				end
 		end
 
+	true_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- An agent to select all passed in access
+		do
+			Result := agent (a_access: EPA_ACCESS): BOOLEAN
+				do
+					Result := True
+				end
+		end
+
 end

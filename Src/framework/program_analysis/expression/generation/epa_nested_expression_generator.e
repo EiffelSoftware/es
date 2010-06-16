@@ -188,10 +188,7 @@ feature{NONE} -- Implementation
 					l_new := accesses_of_feature (a_prefix, a_class, l_feat, a_args, a_veto_agent)
 					Result.append (l_new)
 				end
-				fixme ("Wield program that `l_feats'.after is True here. 31.5.2010 Jasonw")
-				if not l_feats.after then
-					l_feats.forth
-				end
+				l_feats.forth
 			end
 			l_feats.go_to (l_cursor)
 		end

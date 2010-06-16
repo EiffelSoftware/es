@@ -53,6 +53,9 @@ inherit
 
 feature -- Access
 
+	log_manager: detachable EPA_LOG_MANAGER
+			-- Logger
+
 	transition_context: CI_TEST_CASE_TRANSITION_INFO
 			-- Context in which expressions are evaluated
 
@@ -105,8 +108,8 @@ feature -- Access
 			end
 		end
 
-	sequence_value (a_value: EPA_EXPRESSION_VALUE): detachable MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]
-			-- Sequence value out of `a_value'
+	sequence_value (a_value: EPA_EXPRESSION_VALUE): detachable ANY
+			-- Sequence value out of `a_value', if not possible, return the original `a_value'
 		do
 			if attached {EPA_ANY_VALUE} a_value as l_value then
 				if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
@@ -114,6 +117,9 @@ feature -- Access
 				elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
 					Result := l_sequence
 				end
+			end
+			if Result = Void then
+				Result := a_value
 			end
 		end
 
@@ -176,6 +182,12 @@ feature -- Setting
 			extra_post_state_values := a_values
 		end
 
+	set_log_manager (a_logger: like log_manager)
+			-- Set `log_manager' with `a_logger'.
+		do
+			log_manager := a_logger
+		end
+
 feature{NONE} -- Implementation
 
 	initialize_data_structures
@@ -214,6 +226,17 @@ feature{NONE} -- Implementation
 			if Result = Void then
 				if attached {EPA_STATE} extra_state_values (a_pre_state) as l_state then
 					Result := l_state.item_with_expression_text (a_expr)
+					if Result /= Void and then attached {EPA_ANY_VALUE} Result.value as l_any then
+						if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+							if log_manager /= Void then
+								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+							end
+						elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+							if log_manager /= Void then
+								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+							end
+						end
+					end
 				end
 			end
 		end
@@ -226,10 +249,12 @@ feature{NONE} -- Implementation
 		do
 			if a_operator_name ~ sequence_is_empty_un_operator then
 				create {EPA_BOOLEAN_VALUE} last_value.make (a_sequence.is_empty)
+			elseif a_operator_name ~ sequence_count_un_operator then
+				create {EPA_INTEGER_VALUE} last_value.make (a_sequence.count)
 			end
 		end
 
-	evalute_binary_sequence_operator (a_left, a_right: MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]; a_operator_name: STRING)
+	evalute_binary_sequence_operator (a_left, a_right: ANY; a_operator_name: STRING)
 			-- Evaluate `a_sequence' on operator `a_operator_name',
 			-- Make result available in `last_value'.
 		require
@@ -238,13 +263,53 @@ feature{NONE} -- Implementation
 			l_sequence: CI_SEQUENCE [EPA_EXPRESSION_VALUE]
 		do
 			if a_operator_name ~ sequence_is_equal_bin_operator then
-				create {EPA_BOOLEAN_VALUE} last_value.make (a_left |=| a_right)
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_right as l_right
+				then
+					create {EPA_BOOLEAN_VALUE} last_value.make (l_left |=| l_right)
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
 
 			elseif a_operator_name ~ sequence_is_prefix_of_bin_operator then
-				create {EPA_BOOLEAN_VALUE} last_value.make (a_left.is_prefix_of (a_right))
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_right as l_right
+				then
+					create {EPA_BOOLEAN_VALUE} last_value.make (l_left.is_prefix_of (l_right))
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
 
 			elseif a_operator_name ~ sequence_concatenation_bin_operator then
-				create {EPA_ANY_VALUE} last_value.make (a_left |+| a_right)
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_right as l_right
+				then
+					create {EPA_ANY_VALUE} last_value.make (l_left |+| l_right)
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
+
+			elseif a_operator_name ~ sequence_head_bin_operator then
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {EPA_INTEGER_VALUE} a_right as l_right
+				then
+					create {EPA_ANY_VALUE} last_value.make (l_left.front (l_right.item))
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
+			elseif a_operator_name ~ sequence_tail_bin_operator then
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {EPA_INTEGER_VALUE} a_right as l_right
+				then
+					create {EPA_ANY_VALUE} last_value.make (l_left.tail (l_right.item))
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
 			else
 				set_has_error (True, msg_free_binary_operator_not_supported (a_operator_name))
 			end
@@ -587,15 +652,13 @@ feature{NONE} -- Implementation
 
 	process_un_free_as (l_as: UN_FREE_AS)
 		local
-			l_sequence: like sequence_value
 			l_operator: STRING
 		do
 			if not has_error then
 				l_operator := l_as.operator_name
 				process_unary_as (l_as)
 				if not has_error and then sequence_un_operators.has (l_operator) then
-					l_sequence := sequence_value (last_value)
-					if l_sequence /= Void then
+					if attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} sequence_value (last_value) as l_sequence then
 						evalute_unary_sequence_operator (l_sequence, l_operator)
 					else
 						set_has_error (True, msg_sequence_value_expected (l_operator, last_value))
@@ -691,6 +754,8 @@ feature -- Error messages
 			Result.append (a_operator)
 			Result.append ("%" is not supported.")
 		end
+
+	msg_type_error_sequence_expected: STRING = "A sequence value is expected."
 
 	state_phase_name (a_pre_state: BOOLEAN): STRING
 			-- State phase name

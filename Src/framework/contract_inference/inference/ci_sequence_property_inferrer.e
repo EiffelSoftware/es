@@ -19,6 +19,8 @@ inherit
 
 	CI_SEQUENCE_OPERATOR_NAMES
 
+	EPA_ACCESS_AGENT_UTILITY
+
 feature -- Basic operations
 
 	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
@@ -50,6 +52,9 @@ feature -- Basic operations
 					signature_set (True, True, True, True),
 					signature_set (False, False, True, False),
 					<<sequence_concatenation_bin_operator>>, True)
+
+				calculate_integer_queries
+				generate_2_sequences_and_1_integer_properties
 
 				validate_properties
 
@@ -752,6 +757,7 @@ feature{NONE} -- Contract template generation
 
 			l_test_cases := transition_data
 			l_evaluator := evaluator
+			l_evaluator.set_log_manager (logger)
 
 				-- Iterate through both pre-state and post-state.
 			across <<True, False>> as l_states loop
@@ -779,7 +785,7 @@ feature{NONE} -- Contract template generation
 						l_evaluator.set_transition_context (l_tc)
 						l_evaluator.set_extra_pre_state_values (sequences_as_state (l_tc, True))
 						l_evaluator.set_extra_post_state_values (sequences_as_state (l_tc, False))
-						l_evaluator.evaluate_string (l_property)
+						l_evaluator.evaluate_string (resolved_property (l_property, l_tc))
 						l_is_valid := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
 
 							-- Logging.
@@ -803,7 +809,382 @@ feature{NONE} -- Contract template generation
 					end
 				end
 			end
+		end
 
+	resolved_property (a_property: STRING; a_test_case: CI_TEST_CASE_TRANSITION_INFO): STRING
+			-- Property from `a_property' will place holders resolved in `a_test_case'
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_int_queries: like integer_queries.new_cursor
+			l_old_str: STRING
+			l_new_str: STRING
+			l_target_variable_index: INTEGER
+			l_is_argument: BOOLEAN
+			l_dot_index: INTEGER
+			l_feature_name: STRING
+			l_query: CI_INTEGER_QUERY
+			l_target_variable: EPA_EXPRESSION
+		do
+			Result := a_property.twin
+			if not integer_queries.is_empty then
+					-- Setup replacements.
+				create l_replacements.make (integer_queries.count)
+				l_replacements.compare_objects
+				from
+					l_int_queries := integer_queries.new_cursor
+					l_int_queries.start
+				until
+					l_int_queries.after
+				loop
+					l_query := l_int_queries.item
+					l_old_str := l_query.out
+					l_target_variable := a_test_case.transition.reversed_variable_position.item (l_query.target_operand_index)
+					create l_new_str.make (32)
+					l_new_str.append (once "(old ")
+					l_new_str.append (l_target_variable.text)
+					if not l_query.is_target_integer_query then
+						l_new_str.append_character ('.')
+						l_new_str.append (l_query.final_feature_name (l_target_variable.type))
+					end
+					l_new_str.append_character (')')
+					l_replacements.put (l_new_str, l_old_str)
+					l_int_queries.forth
+				end
+
+					-- Perform replacments.
+				across l_replacements as l_replaces loop
+					Result.replace_substring_all (l_replaces.key, l_replaces.item)
+				end
+			end
+		end
+
+	argumentless_integer_query_generator: EPA_NESTED_EXPRESSION_GENERATOR
+			-- Generator to return feature that satisfy all the following criteria:
+			-- * argument-less integer queries
+			-- * no precondition for those queries
+		do
+			create Result.make
+			Result.expression_veto_agents.wipe_out
+			Result.set_final_expression_veto_agent (integer_expression_veto_agent)
+			Result.expression_veto_agents.force (
+				ored_agents (
+					<<current_expression_veto_agent,
+					  argument_expression_veto_agent>>), 1)
+
+			Result.expression_veto_agents.force (
+				anded_agents (
+					<<feature_not_from_any_veto_agent,
+					  feature_with_few_arguments_veto_agent (0),
+				      nested_not_on_basic_veto_agent,
+				      integer_expression_veto_agent>>), 2)
+		end
+
+	integer_queries: DS_HASH_SET [CI_INTEGER_QUERY]
+			-- Integer queries used to infer properties mentioning integers
+
+	calculate_integer_queries
+			-- Calculate integer queries from current test cases and
+			-- store result in `integer_queries'.
+		local
+			l_gen: like argumentless_integer_query_generator
+		do
+			create integer_queries.make (5)
+			integer_queries.set_equality_tester (ci_integer_query_equality_tester)
+
+				-- Generate argument-less integer queries.
+			l_gen := argumentless_integer_query_generator
+			l_gen.generate (class_under_test, feature_under_test)
+			across l_gen.accesses as l_accesses loop
+				integer_queries.force_last (integer_query_from_access (l_accesses.item, feature_under_test, class_under_test))
+			end
+		end
+
+	integer_query_from_access (a_access: EPA_ACCESS; a_feature: FEATURE_I; a_class: CLASS_C): CI_INTEGER_QUERY
+			-- Integer query from `a_access'
+			-- `a_access' is derived from `a_feature' viewed in `a_class'.
+		local
+			l_static_type: TYPE_A
+			l_target_operand_index: INTEGER
+		do
+			if attached {EPA_ACCESS_ARGUMENT} a_access as l_argument then
+				create Result.make (l_argument.index, integer_type, Void)
+
+			elseif attached {EPA_ACCESS_NESTED} a_access as l_nested then
+				if l_nested.left.is_current then
+					l_target_operand_index := 0
+				elseif attached {EPA_ACCESS_ARGUMENT} l_nested.left as l_argument then
+					l_target_operand_index := l_argument.index
+				end
+				l_static_type := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type).item (l_target_operand_index)
+				create Result.make (l_target_operand_index, l_static_type, l_nested.right.text)
+			end
+		end
+
+	generate_2_sequences_and_1_integer_properties
+			-- Generate sequence properties mentioning two sequences and one integer.
+			-- Store results in `properties'.
+		local
+			l_pre_sigs: like signature_set
+			l_post_sigs: like signature_set
+			l_pre_sig_cursor: like signature_set.new_cursor
+			l_post_sig_cursor: like signature_set.new_cursor
+			l_first_sig, l_second_sig: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]
+			l_integer: CI_INTEGER_QUERY
+			l_integers: DS_HASH_SET_CURSOR [CI_INTEGER_QUERY]
+			l_property: STRING
+			l_properties: like post_state_properties
+		do
+			create l_properties.make (10)
+			l_properties.set_equality_tester (string_equality_tester)
+
+			l_pre_sigs := signature_set (True, False, False, False)
+			l_post_sigs := signature_set (False, False, True, False)
+
+			if
+				not l_pre_sigs.is_empty and then
+				not l_post_sigs.is_empty and then
+				not integer_queries.is_empty
+			then
+					-- Iterate through all supported binary operators.
+				across <<sequence_head_bin_operator, sequence_tail_bin_operator>> as l_operators loop
+						-- Iterate through the first set of signatures.
+					from
+						l_pre_sig_cursor := l_pre_sigs.new_cursor
+						l_pre_sig_cursor.start
+					until
+						l_pre_sig_cursor.after
+					loop
+						l_first_sig := l_pre_sig_cursor.item
+							-- Iterate through the second set of signatures.
+						from
+							l_post_sig_cursor := l_post_sigs.new_cursor
+							l_post_sig_cursor.start
+						until
+							l_post_sig_cursor.after
+						loop
+							l_second_sig := l_post_sig_cursor.item
+								-- Iterate through all found integer queries.
+							from
+								l_integers := integer_queries.new_cursor
+								l_integers.start
+							until
+								l_integers.after
+							loop
+								l_integer := l_integers.item
+								l_properties.force_last (sequence2_integer_property1 (l_first_sig, l_second_sig, l_integer, sequence_head_bin_operator))
+								l_properties.force_last (sequence2_integer_property2 (l_first_sig, l_second_sig, l_integer))
+								l_properties.force_last (sequence2_integer_property3 (l_first_sig, l_second_sig, l_integer))
+								l_properties.force_last (sequence2_integer_property4 (l_first_sig, l_second_sig, l_integer))
+								l_integers.forth
+							end
+							l_post_sig_cursor.forth
+						end
+						l_pre_sig_cursor.forth
+					end
+				end
+			end
+
+			post_state_properties.append_last (l_properties)
+
+				-- Logging.
+			log_message ("Sequence-based frame property candidates:", False, True)
+			from
+				l_properties.start
+			until
+				l_properties.after
+			loop
+				log_message (once "    " + l_properties.item_for_iteration, False, True)
+				l_properties.forth
+			end
+		end
+
+	sequence2_integer_property1 (a_first_signature, a_second_signature: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]; a_integer: CI_INTEGER_QUERY; a_operator_name: STRING): STRING
+			--
+		do
+				-- Template:
+				-- (s1 |head| i) |=| s2
+				-- (s1 |tail| i) |=| s2
+			create Result.make (64)
+			Result.append_character ('(')
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (a_operator_name)
+			Result.append (ti_space)
+			Result.append (a_integer.out)
+			Result.append (once ") ")
+			Result.append (sequence_is_equal_bin_operator)
+			Result.append (ti_space)
+			Result.append (signature_in_property (a_second_signature.signature, a_second_signature.pre_state))
+		end
+
+	sequence2_integer_property2 (a_first_signature, a_second_signature: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]; a_integer: CI_INTEGER_QUERY): STRING
+			--
+		do
+				-- Template:
+				-- (s1 |head| (i-1)) |+| (s1 |tail| (i + 1)) |=| s2
+				-- For LINKED_LIST.remove.
+			create Result.make (64)
+			Result.append_character ('(')
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_head_bin_operator)
+			Result.append (ti_space)
+			Result.append ("(")
+			Result.append (a_integer.out)
+			Result.append (once " - 1)) |+| (")
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_tail_bin_operator)
+			Result.append (once " (")
+			Result.append (a_integer.out)
+			Result.append (once " + 1))")
+			Result.append (ti_space)
+			Result.append (sequence_is_equal_bin_operator)
+			Result.append (ti_space)
+			Result.append (signature_in_property (a_second_signature.signature, a_second_signature.pre_state))
+		end
+
+	sequence2_integer_property3 (a_first_signature, a_second_signature: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]; a_integer: CI_INTEGER_QUERY): STRING
+			--
+		do
+				-- Template:
+				-- (s1 |head| (i-2)) |+| (s1 |tail| i) |=| s2
+				-- For LINKED_LIST.remove_left.
+			create Result.make (64)
+			Result.append_character ('(')
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_head_bin_operator)
+			Result.append (ti_space)
+			Result.append ("(")
+			Result.append (a_integer.out)
+			Result.append (once " - 2)) |+| (")
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_tail_bin_operator)
+			Result.append (ti_space)
+			Result.append (a_integer.out)
+			Result.append (once ")")
+			Result.append (ti_space)
+			Result.append (sequence_is_equal_bin_operator)
+			Result.append (ti_space)
+			Result.append (signature_in_property (a_second_signature.signature, a_second_signature.pre_state))
+		end
+
+	sequence2_integer_property4 (a_first_signature, a_second_signature: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]; a_integer: CI_INTEGER_QUERY): STRING
+			--
+		do
+				-- Template:
+				-- (s1 |head| i) |+| (s1 |tail| (i + 2)) |=| s2
+				-- For LINKED_LIST.remove_right.
+			create Result.make (64)
+			Result.append_character ('(')
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_head_bin_operator)
+			Result.append (ti_space)
+			Result.append (a_integer.out)
+			Result.append (once ") |+| (")
+			Result.append (signature_in_property (a_first_signature.signature, a_first_signature.pre_state))
+			Result.append (ti_space)
+			Result.append (sequence_tail_bin_operator)
+			Result.append (ti_space)
+			Result.append (once "(")
+			Result.append (a_integer.out)
+			Result.append (once " + 2))")
+			Result.append (ti_space)
+			Result.append (sequence_is_equal_bin_operator)
+			Result.append (ti_space)
+			Result.append (signature_in_property (a_second_signature.signature, a_second_signature.pre_state))
+		end
+
+	generate_3_sequences_and_1_integer_properties
+			-- Generate sequence properties mentioning three sequences and one integer.
+			-- Store results in `properties'.
+		local
+			l_pre1_sigs: like signature_set
+			l_pre2_sigs: like signature_set
+			l_post_sigs: like signature_set
+			l_pre1_sig_cursor: like signature_set.new_cursor
+			l_pre2_sig_cursor: like signature_set.new_cursor
+			l_post_sig_cursor: like signature_set.new_cursor
+			l_first_sig, l_second_sig, l_third_sig: TUPLE [signature: CI_SEQUENCE_SIGNATURE; pre_state: BOOLEAN]
+			l_integer: CI_INTEGER_QUERY
+			l_integers: DS_HASH_SET_CURSOR [CI_INTEGER_QUERY]
+			l_property: STRING
+			l_properties: like post_state_properties
+		do
+			create l_properties.make (10)
+			l_properties.set_equality_tester (string_equality_tester)
+
+			l_pre1_sigs := signature_set (True, True, False, False)
+			l_pre2_sigs := signature_set (True, True, False, False)
+			l_post_sigs := signature_set (False, False, True, False)
+
+			if
+				not l_pre1_sigs.is_empty and then
+				not l_pre2_sigs.is_empty and then
+				not l_post_sigs.is_empty and then
+				not integer_queries.is_empty
+			then
+					-- Iterate through all supported binary operators.
+				across <<sequence_head_bin_operator, sequence_tail_bin_operator>> as l_operators loop
+						-- Iterate through the first set of signatures.
+					from
+						l_pre1_sig_cursor := l_pre1_sigs.new_cursor
+						l_pre1_sig_cursor.start
+					until
+						l_pre1_sig_cursor.after
+					loop
+						l_first_sig := l_pre1_sig_cursor.item
+						from
+							l_pre2_sig_cursor := l_pre2_sigs.new_cursor
+							l_pre2_sig_cursor.start
+						until
+							l_pre2_sig_cursor.after
+						loop
+							l_second_sig := l_pre2_sig_cursor.item
+								-- Iterate through the second set of signatures.
+							from
+								l_post_sig_cursor := l_post_sigs.new_cursor
+								l_post_sig_cursor.start
+							until
+								l_post_sig_cursor.after
+							loop
+								l_third_sig := l_post_sig_cursor.item
+									-- Iterate through all found integer queries.
+								from
+									l_integers := integer_queries.new_cursor
+									l_integers.start
+								until
+									l_integers.after
+								loop
+									l_integer := l_integers.item
+									l_integer := l_integers.item
+									l_integers.forth
+								end
+								l_post_sig_cursor.forth
+							end
+							l_pre2_sig_cursor.forth
+						end
+
+						l_pre1_sig_cursor.forth
+					end
+				end
+			end
+
+			post_state_properties.append_last (l_properties)
+
+				-- Logging.
+			log_message ("Sequence-based frame property candidates:", False, True)
+			from
+				l_properties.start
+			until
+				l_properties.after
+			loop
+				log_message (once "    " + l_properties.item_for_iteration, False, True)
+				l_properties.forth
+			end
 		end
 
 end

@@ -10,6 +10,9 @@ class
 
 inherit
 	MML_SEQUENCE [G]
+		redefine
+			out
+		end
 
 create
 	empty
@@ -89,6 +92,27 @@ feature -- Access
 				end
 				i := i + 1
 			end
+		end
+
+	out: STRING
+			-- String representation
+		local
+			i: INTEGER
+		do
+			create Result.make (64)
+			Result.append_character ('[')
+			from
+				i := 1
+			until
+				i > count
+			loop
+				Result.append (item (i).out)
+				if i < count then
+					Result.append (once ", ")
+				end
+				i := i + 1
+			end
+			Result.append_character (']')
 		end
 
 feature -- Search
