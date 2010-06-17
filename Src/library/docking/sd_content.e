@@ -1,5 +1,5 @@
 note
-	description: "A content which has client prgrammer's widgets managed by docking library."
+	description: "A content which has client programmer's widgets managed by docking library."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -29,6 +29,9 @@ feature {NONE} -- Initialization
 
 	make_with_widget_title_pixmap (a_widget: EV_WIDGET; a_pixmap: EV_PIXMAP; a_unique_title: STRING_GENERAL)
 			-- Creation method
+			-- `a_widget' is the main widget displayed in Current
+			-- `a_pixmap' is the icon displayed in auto hide tab, notebook tab
+			-- `a_unique_title' is the unique title for Current
 		require
 			a_widget_not_void: a_widget /= Void
 			a_pixmap_not_void: a_pixmap /= Void
@@ -64,6 +67,8 @@ feature {NONE} -- Initialization
 
 	make_with_widget (a_widget: EV_WIDGET; a_unique_title: STRING_GENERAL)
 			-- Creation method
+			-- `a_widget' is the main widget displayed in Current
+			-- `a_unique_title' is the unique title for Current	
 		require
 			a_widget_not_void: a_widget /= Void
 		local
@@ -76,16 +81,21 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	user_widget: attached like internal_user_widget
+	user_widget: EV_WIDGET
 			-- Client programmer's widget
+			-- This is the main widget in Current for client programmers
 		require
 			set: is_user_widget_set
 		local
-			l_result: detachable like user_widget
+			l_result: like internal_user_widget
 		do
 			l_result := internal_user_widget
-			check l_result /= Void end -- Implied by precondition `set'
-			Result := l_result
+			check
+				-- Implied by precondition `set'
+				l_result /= Void
+			then
+				Result := l_result
+			end
 		ensure
 			not_void: Result /= Void
 			result_valid: Result = internal_user_widget
@@ -102,15 +112,15 @@ feature -- Access
 
 	long_title: STRING_32
 			-- Client programmer's widget's long title
-			-- The long title is used in all title bars where are enough space
+			-- The long title is used in all title bars where are enough spaces
 
 	short_title: STRING_32
 			-- Client programmer's widget's short title
-			-- The short title is used in all tabs where are not enough space
+			-- The short title is used in all tabs where are not enough spaces
 
 	pixmap: like internal_pixmap
 			-- Client programmer's widget's pixmap
-			-- The icon showing on content notebook tab and auto hide tab if Gdi+ not available on Windows platform
+			-- The icon showing on content notebook tab and auto hide tab if Gdi+ not available on Windows
 		do
 			Result := internal_pixmap
 		ensure
@@ -118,16 +128,17 @@ feature -- Access
 		end
 
 	description: detachable STRING_32
-			-- When show zone navigation dialog, we use this description if exist
+			-- When show zone navigation dialog (by `ctrl+tab'), we use this description string if exists
 
 	detail: detachable STRING_32
-			-- When show zone navigation dialog, we use this detail if exist
+			-- When show zone navigation dialog, we use this detail string if exists
 
 	tab_tooltip: detachable STRING_32
 			-- Tool tip displayed on notebook tab
 
 	pixel_buffer: like internal_pixel_buffer
 			-- Client programmer's widget's pixel buffer
+			-- The icon showing on content notebook tab and auto hide tab if Gdi+ available on Windows
 		do
 			Result := internal_pixel_buffer
 		ensure
@@ -135,7 +146,7 @@ feature -- Access
 		end
 
 	mini_toolbar: like internal_mini_toolbar
-			-- Mini toolbar
+			-- Mini toolbar shown in the top right bar of Current
 		do
 			Result := internal_mini_toolbar
 		ensure
@@ -143,19 +154,19 @@ feature -- Access
 		end
 
 	type: INTEGER
-			-- Type of Current.
-			-- One value from SD_SHARED type_editor or type_tool
+			-- Type of Current
+			-- One value from {SD_ENUMERATION}
 		do
 			Result := internal_type
 		end
 
 	is_visible: BOOLEAN
 			-- If Current visible?
-			-- Note: if current is auto-hide (`user_widget' NOT dispalyed, only a tab stub is displayed), the value is True.
+			-- Note: if current is in auto hide statues (`user_widget' NOT dispalyed, only a tab stub is displayed), the value is True.
 
 	is_floating: BOOLEAN
 			-- If Current floating?
-			-- Note: Maybe Current not visible but floating
+			-- Note: Maybe Current not visible but floating (hide in floating window)
 		do
 			if docking_manager /= Void then
 				Result := docking_manager.query.is_floating (Current)
@@ -163,13 +174,13 @@ feature -- Access
 		end
 
 	has_focus: BOOLEAN
-			-- If Current content has focus?
+			-- If Current content has keyboard focus?
 		do
 			Result := docking_manager.focused_content = Current
 		end
 
 	is_title_unique_except_current (a_title: STRING_GENERAL): BOOLEAN
-			-- If `a_title' unique?
+			-- If `a_title' unique in all docking manager's contents' titles?
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
 			l_title32: STRING_32
@@ -212,32 +223,23 @@ feature -- Access
 		end
 
 	state_value: INTEGER
-			-- Current state.
+			-- Current state
 			-- Note, it's possible result is {SD_ENUMERATION}.auto_hide, but `is_visible' return False. See bug#13339.
-		local
-			l_void: detachable SD_STATE_VOID
-			l_docking: detachable SD_DOCKING_STATE
-			l_tab: detachable SD_TAB_STATE
-			l_auto_hide: detachable SD_AUTO_HIDE_STATE
 		do
-			l_void ?= state
-			l_docking ?= state
-			l_tab ?= state
-			l_auto_hide ?= state
-			if l_void /= Void then
+			if attached {SD_STATE_VOID} state then
 				Result := {SD_ENUMERATION}.state_void
-			elseif l_docking /= Void then
+			elseif attached {SD_DOCKING_STATE} state then
 				Result := {SD_ENUMERATION}.docking
-			elseif l_tab /= Void then
+			elseif attached {SD_TAB_STATE} state then
 				Result := {SD_ENUMERATION}.tab
-			elseif l_auto_hide /= Void then
+			elseif attached {SD_AUTO_HIDE_STATE} state then
 				Result := {SD_ENUMERATION}.auto_hide
 			end
 		ensure
 			vaild: (create {SD_ENUMERATION}).is_state_valid (Result)
 		end
 
-feature -- Set
+feature -- Settings
 
 	set_long_title (a_long_title: STRING_GENERAL)
 			-- Set `long_title'
@@ -274,7 +276,7 @@ feature -- Set
 		end
 
 	set_pixmap (a_pixmap: like internal_pixmap)
-			-- Set the pixmap which shown on unique_title bar
+			-- Set the pixmap which shown on auto hide tab stub or notebook tab
 		require
 			a_pixmap_not_void: a_pixmap /= Void
 		do
@@ -285,7 +287,7 @@ feature -- Set
 		end
 
 	set_description (a_description: like description)
-			-- Set `a_description' to `description'
+			-- Set `description' with `a_description'
 		require
 			a_description_not_void: a_description /= Void
 		do
@@ -295,7 +297,7 @@ feature -- Set
 		end
 
 	set_detail (a_detail: like detail)
-			-- Set `a_detail' to `detail'
+			-- Set `detail' with `a_detail'
 		require
 			a_detail_not_void: a_detail /= Void
 		do
@@ -305,7 +307,7 @@ feature -- Set
 		end
 
 	set_tab_tooltip (a_text: like tab_tooltip)
-			-- Set `a_text' to `tab_tooltip'
+			-- Set `tab_tooltip' with `a_text'
 		do
 			tab_tooltip := a_text
 			state.change_tab_tooltip (a_text)
@@ -314,7 +316,7 @@ feature -- Set
 		end
 
 	set_pixel_buffer (a_buffer: like internal_pixel_buffer)
-			-- Set `internal_pixel_buffer'
+			-- Set `internal_pixel_buffer' with `a_buffer'
 		require
 			a_buffer_not_void: a_buffer /= Void
 		do
@@ -326,7 +328,7 @@ feature -- Set
 		end
 
 	set_mini_toolbar (a_bar: like internal_mini_toolbar)
-			-- Set mini toolbar
+			-- Set mini toolbar with `a_bar'
 		require
 			a_bar_not_void: a_bar /= Void
 		do
@@ -337,7 +339,7 @@ feature -- Set
 		end
 
 	set_type (a_type: INTEGER)
-			-- Set `internal_type'
+			-- Set `internal_type' with `a_type'
 		require
 			a_type_valid: (create {SD_ENUMERATION}).is_type_valid (a_type)
 		do
@@ -360,7 +362,7 @@ feature -- Set
 		end
 
 	set_focus_no_maximized (a_zone: EV_WIDGET)
-			-- Same as `set_focus', but only do things when no maximized zone in dock area which has `a_zone'
+			-- Same as `set_focus', but only do things when no maximized zone in dock area which contains `a_zone'
 		require
 			not_destroyed: not is_destroyed
 			docking_manager_attached: is_docking_manager_attached
@@ -385,7 +387,7 @@ feature -- Set
 		end
 
 	set_floating_width (a_width: INTEGER)
-			-- Set `floating_width'
+			-- Set `floating_width' with `a_width'
 		require
 			valid: a_width >= 0
 		do
@@ -395,7 +397,7 @@ feature -- Set
 		end
 
 	set_floating_height (a_height: INTEGER)
-			-- Set `floating_height'
+			-- Set `floating_height' with `a_height'
 		require
 			vaild: a_height >= 0
 		do
@@ -407,7 +409,7 @@ feature -- Set
 feature -- Set Position
 
 	set_relative (a_relative: SD_CONTENT; a_direction: INTEGER)
-			-- Set `Current' to dock at `a_direction' side of `a_relative'
+			-- Dock `Current' at `a_direction' side of `a_relative' content
 		require
 			a_relative_not_void: a_relative /= Void
 			a_relative_zone_not_void: is_content_zone_set (a_relative)
@@ -426,7 +428,7 @@ feature -- Set Position
 			if attached a_relative.state.zone as l_target_zone then
 				state.change_zone_split_area (l_target_zone, a_direction)
 			else
-				check False end -- Implied by precondition `a_relative_zone_not_void'
+				check a_relative_zone_not_void: False end -- Implied by precondition `a_relative_zone_not_void'
 			end
 
 			if not l_old_is_visible then
@@ -437,7 +439,7 @@ feature -- Set Position
    		end
 
 	set_top (a_direction: INTEGER)
-			-- Set `Current' dock at top level of a main docking area at `a_direction' side
+			-- Dock `Current' at top level of a main docking area (in main window) at `a_direction' side
 		require
 			docking_manager_attached: is_docking_manager_attached
 			manager_has_content: manager_has_content (Current)
@@ -460,7 +462,7 @@ feature -- Set Position
 		end
 
 	set_auto_hide (a_direction: INTEGER)
-			-- Set `Current' dock at main container's `a_direction' auto hide bar
+			-- Dock `Current' at main container's (in main window) auto hide bar at `a_direction'
 		require
 			docking_manager_attached: is_docking_manager_attached
 			manager_has_content: manager_has_content (Current)
@@ -473,7 +475,7 @@ feature -- Set Position
 		end
 
 	set_floating (a_screen_x, a_screen_y: INTEGER)
-			-- Set `Current' floating at position `a_screen_x', `a_screen_y'
+			-- Float `Current' at position `a_screen_x', `a_screen_y'
 		require
 			docking_manager_attached: is_docking_manager_attached
 			manager_has_content: manager_has_content (Current)
@@ -494,7 +496,7 @@ feature -- Set Position
 		end
 
 	set_tab_with (a_content: SD_CONTENT; a_left: BOOLEAN)
-			-- Set `Current' tab with `a_content'
+			-- Dock `Current' with `a_content' in a notebook
 			-- If `a_left' then put new tab at left, otherwise put new tab at right
 		require
 			docking_manager_attached: is_docking_manager_attached
@@ -502,20 +504,15 @@ feature -- Set Position
 			manager_has_a_content: manager_has_content (a_content)
 			target_content_zone_parent_exist: target_content_zone_parent_exist (a_content)
 			not_destroyed: not is_destroyed
-		local
-			l_tab_zone: detachable SD_TAB_ZONE
-			l_docking_zone: detachable SD_DOCKING_ZONE
 		do
 			set_visible (True)
-			l_tab_zone ?= a_content.state.zone
-			l_docking_zone ?= a_content.state.zone
-			if l_tab_zone /= Void then
+			if attached {SD_TAB_ZONE} a_content.state.zone as l_tab_zone then
 				if not a_left then
 				 	state.move_to_tab_zone (l_tab_zone, l_tab_zone.count + 1)
 				 else
 				 	state.move_to_tab_zone (l_tab_zone, 1)
 				end
-			elseif l_docking_zone /= Void then
+			elseif attached {SD_DOCKING_ZONE} a_content.state.zone as l_docking_zone then
 				state.move_to_docking_zone (l_docking_zone, a_left)
 			else
 				-- `a_content' is auto hide state, zone is void
@@ -525,7 +522,9 @@ feature -- Set Position
 		end
 
 	set_default_editor_position
-			-- Set editor to default editor position
+			-- Dock editor to default editor position
+			-- Default editor position means the position of editor place holder area
+			-- Do not call this feature if editor place holder area not available
 		require
 			docking_manager_attached: is_docking_manager_attached
 			manager_has_content: manager_has_content (Current)
@@ -551,7 +550,7 @@ feature -- Set Position
 		end
 
 	set_split_proportion (a_proportion: REAL)
-			-- If current content is docking or tabbed, set parent splitter proportion to `a_proportion'
+			-- If current content is docked or tabbed (in notebook), set parent splitter proportion to `a_proportion'
 		require
 			docking_manager_attached: is_docking_manager_attached
 			valid: 0 <= a_proportion and a_proportion <= 1
@@ -563,17 +562,15 @@ feature -- Set Position
 feature -- Actions
 
 	focus_in_actions: EV_NOTIFY_ACTION_SEQUENCE
-			-- Actions to be performed when keyboard focus is gained
-		local
-			l_actions: like internal_focus_in_actions
+			-- Actions to be performed when keyboard focus just gained
 		do
 			if not is_ignore_actions then
-				l_actions := internal_focus_in_actions
-				if l_actions = Void then
-					create l_actions
-					internal_focus_in_actions := l_actions
+				if attached internal_focus_in_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_focus_in_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -582,17 +579,15 @@ feature -- Actions
 		end
 
 	focus_out_actions: EV_NOTIFY_ACTION_SEQUENCE
-			-- Actions to be performed when keyboard focus is lost
-		local
-			l_actions: like internal_focus_out_actions
+			-- Actions to be performed when keyboard focus just lost
 		do
 			if not is_ignore_actions then
-				l_actions := internal_focus_out_actions
-				if l_actions = Void then
-					create l_actions
-					internal_focus_out_actions := l_actions
+				if attached internal_focus_out_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_focus_out_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -602,16 +597,14 @@ feature -- Actions
 
 	close_request_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Actions to perfrom when close requested
-		local
-			l_actions: like internal_close_request_actions
 		do
 			if not is_ignore_actions then
-				l_actions := internal_close_request_actions
-				if l_actions = Void then
-					create l_actions
-					internal_close_request_actions := l_actions
+				if attached internal_close_request_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_close_request_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -621,16 +614,14 @@ feature -- Actions
 
 	drop_actions: EV_PND_ACTION_SEQUENCE
 			-- Drop actions to performed when user drop a pebble on notebook tab
-		local
-			l_actions: like internal_drop_actions
 		do
 			if not is_ignore_actions then
-				l_actions := internal_drop_actions
-				if l_actions = Void then
-					create l_actions
-					internal_drop_actions := l_actions
+				if attached internal_drop_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_drop_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -639,17 +630,15 @@ feature -- Actions
 		end
 
 	show_actions: EV_NOTIFY_ACTION_SEQUENCE
-			-- Actions to perform when `user_widget' is shown
-		local
-			l_actions: like internal_show_actions
+			-- Actions to perform when `user_widget' just shown
 		do
 			if not is_ignore_actions then
-				l_actions := internal_show_actions
-				if l_actions = Void then
-					create l_actions
-					internal_show_actions := l_actions
+				if attached internal_show_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_show_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -660,16 +649,14 @@ feature -- Actions
 	tab_bar_right_blank_area_double_click_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Actions to perform when user double click on notebook tab bar right side blank area
 			-- Only work for up-side notebook tab bar
-		local
-			l_actions: like internal_tab_bar_right_blank_area_double_click_actions
 		do
 			if not is_ignore_actions then
-				l_actions := internal_tab_bar_right_blank_area_double_click_actions
-				if not attached l_actions then
-					create l_actions
-					internal_tab_bar_right_blank_area_double_click_actions := l_actions
+				if attached internal_tab_bar_right_blank_area_double_click_actions as l_actions then
+					Result := l_actions
+				else
+					create Result
+					internal_tab_bar_right_blank_area_double_click_actions := Result
 				end
-				Result := l_actions
 			else
 				create Result
 			end
@@ -680,7 +667,7 @@ feature -- Actions
 feature -- Command
 
 	close
-			-- Destroy `Current', only destroy zone. Prune Current from SD_DOCKING_MANAGER
+			-- Destroy `Current', only destroy zone. And prune Current from SD_DOCKING_MANAGER
 		require
 			not_destroyed: not is_destroyed
 		do
@@ -697,7 +684,7 @@ feature -- Command
 		end
 
 	hide
-			-- Hide zone which has `Current'
+			-- Hide zone which contains `Current'
 		require
 			not_destroyed: not is_destroyed
 			docking_manager_attached: is_docking_manager_attached
@@ -710,7 +697,7 @@ feature -- Command
 		end
 
 	show
-			-- Show zone which has `Current'
+			-- Show zone which contains `Current'
 		require
 			not_destroyed: not is_destroyed
 			docking_manager_attached: is_docking_manager_attached
@@ -720,7 +707,7 @@ feature -- Command
 		end
 
 	minimize
-			-- Minimize if possible
+			-- Minimize current zone if possible
 		require
 			not_destroyed: not is_destroyed
 			docking_manager_attached: is_docking_manager_attached
@@ -744,8 +731,8 @@ feature -- Command
 		end
 
 	destroy
-			-- When a SD_DOCKING_MANAGER destroy, all SD_CONTENTs in it will be destroyed
 			-- Clear all resources and all references
+			-- When a SD_DOCKING_MANAGER destroy, all SD_CONTENTs belong to it will be destroyed			
 		do
 			if not is_destroyed then
 				is_destroyed := True
@@ -801,7 +788,7 @@ feature -- States report
 		end
 
 	four_direction (a_direction: INTEGER): BOOLEAN
-			-- If `a_direction' is one of four direction?
+			-- If `a_direction' is one value of four directions' values?
 		do
 			Result := (create {SD_ENUMERATION}).is_direction_valid (a_direction)
 		end
@@ -823,7 +810,7 @@ feature -- States report
 		end
 
 	target_content_zone_parent_exist (a_target_content: SD_CONTENT): BOOLEAN
-			-- If `a_target_content''s zone parent not void if exists
+			-- Is `a_target_content''s zone parent not void and exists ?
 		local
 			l_zone: detachable SD_ZONE
 		do
@@ -841,38 +828,42 @@ feature -- States report
 		end
 
 	is_destroyed: BOOLEAN
-			-- If Current destroyed? Not useable anymore?
+			-- Is Current destroyed? Not useable anymore?
 
 	is_user_widget_set: BOOLEAN
 			-- If `internal_user_widget' has been set?
 		do
-			Result := attached internal_user_widget
+			Result := internal_user_widget /= Void
 		end
 
 	is_state_set: BOOLEAN
 			-- If `internal_state' has been set?
 		do
-			Result := attached internal_state
+			Result := internal_state /= Void
 		end
 
 	is_content_zone_set (a_content: SD_CONTENT): BOOLEAN
-			-- If `a_content' has a relative {SD_ZONE} object?
+			-- If `a_content' has a {SD_ZONE} (which contain current's `user_widget') ?
 		do
-			Result := attached a_content.state.zone
+			Result := a_content.state.zone /= Void
 		end
 
 feature {SD_ACCESS} -- State
 
-	state: attached like internal_state
-			-- Current state
+	state: SD_STATE
+			-- Current docking state
 		require
 			set: is_state_set
 		local
 			l_result: like internal_state
 		do
 			l_result := internal_state
-			check l_result /= Void end -- Implied by precondition `set'
-			Result := l_result
+			check
+				-- Implied by precondition `set'
+				l_result /= Void
+			then
+				Result := l_result
+			end
 		ensure
 			not_void: Result /= Void
 		end
@@ -888,7 +879,7 @@ feature {SD_DOCKING_MANAGER_AGENTS, SD_DOCKING_MANAGER_ZONES}
 			if a_docking_manager = Void and is_docking_manager_attached then
 				internal_clear_docking_manager_property
 			end
-			precursor {SD_DOCKING_MANAGER_HOLDER} (a_docking_manager)
+			Precursor {SD_DOCKING_MANAGER_HOLDER} (a_docking_manager)
 			l_state_void ?= state
 			if l_state_void /= Void then
 				l_state_void.set_docking_manager (docking_manager)
@@ -905,13 +896,14 @@ feature {SD_STATE} -- implementation
 			end
 		end
 
-	internal_state: detachable SD_STATE
-			-- SD_STATE instacne, which will be changed base on different states
+	internal_state: detachable like state
+			-- SD_STATE instacne, which will be changed base on different docking states
 
 feature {SD_STATE, SD_DOCKING_MANAGER, SD_TAB_STATE_ASSISTANT, SD_OPEN_CONFIG_MEDIATOR} -- Change the SD_STATE base on the states
 
 	change_state (a_state: SD_STATE)
-			-- Called by SD_RESOTRE, change current state object
+			-- Change current docking state object
+			-- State pattern
 		require
 			a_state_not_void: a_state /= Void
 		do
@@ -924,7 +916,7 @@ feature {SD_STATE, SD_DOCKING_MANAGER, SD_TAB_STATE_ASSISTANT, SD_OPEN_CONFIG_ME
 feature {SD_STATE, SD_OPEN_CONFIG_MEDIATOR}
 
 	set_visible (a_bool: BOOLEAN)
-			-- Set `is_visible'
+			-- Set `is_visible' with `a_bool'
 		do
 			is_visible := a_bool
 			if is_user_widget_set and then not user_widget.is_displayed then
@@ -951,44 +943,44 @@ feature {NONE}  -- Implemention
 			Result := is_docking_manager_attached and then docking_manager.is_closing_all
 		end
 
-	internal_user_widget: detachable EV_WIDGET
-			-- Client programmer's widget
+	internal_user_widget: detachable like user_widget
+			-- Client programmer's main widget managed by Current
 
 	internal_unique_title: STRING_32
-			-- The internal_user_widget's internal_unique_title
+			-- internal_user_widget's internal_unique_title
 
 	internal_pixmap: EV_PIXMAP
-			-- The internal_pixmap at the head of internal_unique_title
+			-- internal_pixmap at auto hide tab stub or notebook tab
 
 	internal_pixel_buffer: detachable EV_PIXEL_BUFFER
-			-- The pixel buffer at the head of `internal_unique_title'
+			-- The pixel buffer at auto hide tab stub or notebook tab
 
 	internal_mini_toolbar: detachable EV_WIDGET
-			-- Mini toolbar at the titlt bar
+			-- Mini toolbar at right side of Current's titlt bar
 
 	internal_shared: SD_SHARED
 			-- All singletons
 
 	internal_type: INTEGER
-			-- The type of `Current'. One value from SD_SHARED
+			-- Type of `Current'. One value from {SD_ENUMERATION}
 
 	internal_focus_out_actions: detachable EV_NOTIFY_ACTION_SEQUENCE
-			-- Mouse focus out actions
+			-- Keyboard focus out actions
 
 	internal_drop_actions: detachable EV_PND_ACTION_SEQUENCE
-			-- Drop actions to performed when user drop a pebble on notebook tab
+			-- Drop actions to perform just after user drop a pebble on notebook tab
 
 	internal_show_actions: detachable EV_NOTIFY_ACTION_SEQUENCE
-			-- Actions to perform when `user_widget' is shown
+			-- Actions to perform just `user_widget' shown
 
 	internal_focus_in_actions: detachable EV_NOTIFY_ACTION_SEQUENCE
-			-- Mouse focus in actions
+			-- Keyboard focus in actions
 
 	internal_close_request_actions: detachable EV_NOTIFY_ACTION_SEQUENCE
 			-- Actions to perfrom when close requested
 
 	internal_tab_bar_right_blank_area_double_click_actions: detachable EV_NOTIFY_ACTION_SEQUENCE
-			-- Actions to perform when user double click on notebook tab bar right side blank area
+			-- Actions to perform when user double click on notebook tab bar's right side blank area
 
 	internal_clear_docking_manager_property
 			-- Clear stuffs related with Current in {SD_DOCKING_MANAGER_PROPERTY}
@@ -1015,10 +1007,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
-
-
-
-
 
 end

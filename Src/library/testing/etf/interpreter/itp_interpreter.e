@@ -166,7 +166,7 @@ feature -- Status report
 	should_quit: BOOLEAN
 			-- Should main loop quit?
 
-	is_request_type_valid (a_type: NATURAL_32): BOOLEAN is
+	is_request_type_valid (a_type: NATURAL_32): BOOLEAN
 			-- Is `a_type' a valid request type?
 		do
 			Result :=
@@ -333,7 +333,7 @@ feature {NONE} -- Handlers
 			send_response_to_socket
 		end
 
-	refresh_last_response_flag is
+	refresh_last_response_flag
 			-- Refresh the value of `last_response_flag' according to current status.
 		do
 			if has_error then

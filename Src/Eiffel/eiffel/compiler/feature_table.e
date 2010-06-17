@@ -92,9 +92,7 @@ inherit
 			{NONE}
 				clear_all, wipe_out, extend
 		redefine
-			cursor,
-			go_to,
-			valid_cursor
+			cursor, valid_cursor, go_to
 		end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -309,6 +307,36 @@ feature -- HASH_TABLE like feature
 			end
 		end
 
+	cursor: CURSOR
+			-- <Precursor>
+		do
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.cursor
+			else
+				Result := Precursor
+			end
+		end
+
+	valid_cursor (c: CURSOR): BOOLEAN
+			-- <Precursor>
+		do
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.valid_cursor (c)
+			else
+				Result := Precursor (c)
+			end
+		end
+
+     go_to (c: CURSOR)
+ 			-- <Precursor>
+          do
+             if attached feature_table as l_feat_tbl then
+                 l_feat_tbl.go_to (c)
+             else
+                 Precursor (c)
+             end
+         end
+
 feature {NONE} -- HASH_TABLE like features
 
 	remove (key: INTEGER)
@@ -440,35 +468,17 @@ feature -- Query
 
 feature -- Traversal
 
-	cursor: CURSOR
-			-- <Precursor>
+	start
+			-- Start iteration
 		do
-			if attached feature_table as l_feat_tbl then
-				Result := l_feat_tbl.cursor
+			if feature_table /= Void then
+				feature_table.start
 			else
-				Result := Precursor
+					-- Load all the features in memory. It makes sense, since
+					-- the traversal will need to go through all the items.
+				internal_features.start
 			end
 		end
-
-	valid_cursor (c: CURSOR): BOOLEAN
-			-- <Precursor>
-		do
-			if attached feature_table as l_feat_tbl then
-				Result := l_feat_tbl.valid_cursor (c)
-			else
-				Result := Precursor (c)
-			end
-		end
-
-     go_to (c: CURSOR)
- 			-- <Precursor>
-          do
-             if attached feature_table as l_feat_tbl then
-                 l_Feat_tbl.go_to (c)
-             else
-                 Precursor (c)
-             end
-         end
 
 	after: BOOLEAN
 			-- Are we off?
@@ -480,20 +490,6 @@ feature -- Traversal
 			end
 			if Result and then is_flushed then
 				feature_table := Void
-			end
-		end
-
-feature -- Traversal
-
-	start
-			-- Start iteration
-		do
-			if feature_table /= Void then
-				feature_table.start
-			else
-					-- Load all the features in memory. It makes sense, since
-					-- the traversal will need to go through all the items.
-				internal_features.start
 			end
 		end
 
