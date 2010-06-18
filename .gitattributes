@@ -195,6 +195,8 @@ Delivery/studio/help/errors/VRVA -text
 Delivery/studio/help/errors/short/VRVA1 -text
 Delivery/studio/help/errors/short/VRVA2 -text
 Delivery/studio/help/errors/short/VSRP3 -text
+Delivery/studio/help/errors/short/VVOK1 -text
+Delivery/studio/help/errors/short/VVOK2 -text
 Delivery/studio/lang/mo_files/de_DE.mo -text
 Delivery/studio/lang/mo_files/en_US.mo -text
 Delivery/studio/lang/mo_files/fr_FR.mo -text
@@ -4050,6 +4052,7 @@ eweasel/tests/melt073/notes -text
 eweasel/tests/once001/Ace -text
 eweasel/tests/once002/Ace -text
 eweasel/tests/once004/Ace -text
+eweasel/tests/once005/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
