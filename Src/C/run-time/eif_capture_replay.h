@@ -12,18 +12,18 @@ extern "C" {
 
 /* Capture routines */
 
-void cr_init (EIF_TYPED_VALUE Current, uint32 size, BODY_INDEX bodyid, int num_args);
-void cr_register_argument (EIF_TYPED_VALUE value, uint32 size);
-void cr_register_result (EIF_TYPED_VALUE Result, uint32 size);
-void cr_register_emalloc (EIF_REFERENCE obj);
+RT_LNK void cr_register_call (int num_args, BODY_INDEX bodyid);
+RT_LNK void cr_register_return (int num_args);
+RT_LNK void cr_register_value (void *value, uint32 *type, size_t pointed_size);
 
-void cr_register_protect (EIF_REFERENCE *obj);
-void cr_register_wean (EIF_REFERENCE *obj);
+RT_LNK void cr_register_emalloc (EIF_REFERENCE obj);
+RT_LNK void cr_register_protect (EIF_REFERENCE *obj);
+RT_LNK void cr_register_wean (EIF_REFERENCE *obj);
+
 
 /* Replay routines */
 
-void cr_replay (EIF_TYPED_VALUE *Result);
-
+RT_LNK void cr_replay ();
 
 /* RT_CAPTURE_REPLAY routines */
 

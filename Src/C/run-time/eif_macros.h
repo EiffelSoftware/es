@@ -1312,28 +1312,17 @@ RT_LNK void eif_exit_eiffel_code(void);
  *
  * RTCRI          1 if current thread is inside of the captured boundary, 0 otherwise.
  *
- * RTCRFS(x)      hook at feature start which decides what to do
+ * RTCRCS(x,y)    hook at beginning of crossing call
  *     x: 1 if routine is "inside", 0 otherwise
+ *     y: Number of values for call, including Current
+ * RTCRCE         hook at end of crossing call
+ * RTCRRS(y)      hook at beginning of crossing return
+ *     y: Number of values for return, including Current
+ * RTCRRE         hook at end of crossing return
  *
- * RTCRBS1(y)   hook at body start which captures `Current'
- *     y: Number of arguments for this routine
- *
- * RTCRA(a,s)     register argument for capture/replay
- *     a: argument value (EIF_TYPED_VALUE)
- *     s: size of area if a is a TYPED_POINTER
- *
- * RTCRBS2        hook at feature start after last registered argument
- *
- * RTCRBS         hook indicating feature body start
- *
- * RTCRBER(t,f,s) hook indicating feature body end
- *     t: type of result (e.g. SK_BOOL, ... or SK_INVALID if no return value)
- *     f: field name of EIF_VALUE to store Result (e.g. it_b, ...)
- *     s: size of area if Result is a TYPED_POINTER
- *
- * RTCRBEV        hook indicating feature body end without result
- *
- * RTCRFE         hook indicating feature end
+ * RTCRRC         register Current (EIF_REFERENCE)
+ * RTCRRV(a,s)    register argument of EIF_TYPED_VALUE
+ * RTCRRR(t,s)    register Result
  *
  * RTCRMCPY(d,ds,s,c)   memcpy
  * RTCRMMV(d,ds,s,c)    memmove
@@ -1360,97 +1349,82 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRI (!(cr_cross_depth%2))
 
-#define RTCRFS(x) RTCRAFS(x,exvect->ex_rout,exvect->ex_bodyid)
-
-#define RTCRAFS(x,rout,bodyid) \
-	int cr_side = RTCRI; \
-	int cr_cross = (cr_side != (x)) && (is_capturing || is_replaying); \
-	EIF_TYPED_VALUE cr_current, cr_result; \
-	jmp_buf cr_jbuf, *cr_old_jbuf; \
-	int cr_exception = 0; \
+#define RTCRCSI(y,bodyid,rout) \
+	int cr_cross = (RTCRI != (1)) && (is_capturing || is_replaying); \
 	cr_call_depth++; \
-	if (cr_cross && !cr_side) { \
+	if (cr_cross) { \
 		cr_cross_depth++; \
 		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); \
-	} \
-	else if (!cr_cross) {\
-		if (is_capturing || is_replaying) { RTCRDBG((stderr, "%s\n", rout)); } \
-	} \
-	else { \
-		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); \
-	} \
+		cr_register_call (y, bodyid);
 
-#define RTCRBS1(y) RTCRABS1(SK_REF, it_r, (size_t) 0, exvect->ex_bodyid, y)
-
-#define RTCRABS1(t,f,size,bodyid,y) \
+#define RTCRCSO(y,bodyid,rout) \
+	int cr_cross = (RTCRI != (0)) && (is_capturing || is_replaying); \
+	int cr_exception = 0; \
+	jmp_buf cr_jbuf, *cr_old_jbuf; \
+	cr_call_depth++; \
 	if (cr_cross) { \
-		if (cr_side) cr_cross_depth++; \
-		if (!(is_replaying && RTCRI)) { \
-			cr_current.type = t; \
-			cr_current.f = Current; \
-			cr_init (cr_current, size, bodyid, y); \
+		cr_cross_depth++; \
+		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); \
+		cr_register_call (y, bodyid); \
 
-#define RTCRA(a,s) \
-			cr_register_argument (a,s);
+/* Call values and exception setup come here */
 
-#define RTCRBS2 \
-		} \
+#define RTCRES \
 		if (is_capturing && !RTCRI) { \
 			cr_old_jbuf = exvect->ex_jbuf; \
 			exvect->ex_jbuf = &cr_jbuf; \
 			cr_exception = setjmp(cr_jbuf); \
 		} \
-	} \
-	if (!cr_exception && (is_capturing || RTCRI || !is_replaying)) {
 
-/*
- * Routine body comes here!
- */
+#define RTCRCEI(rout) \
+	} \
+	else {\
+		if (is_capturing || is_replaying) { RTCRDBG((stderr, "%s\n", rout)); } \
+	} \
 
-#define RTCRBER(t,f,s) RTCRABER(t,f,s,exvect->ex_rout)
+#define RTCRCEO(rout) \
+	RTCRCEI(rout); \
+	if (!cr_exception && (is_capturing || !is_replaying)) {
 
-#define RTCRABER(t,f,s,rout) \
-		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
-			cr_result.type = t; \
-			cr_result.f = Result; \
-			cr_register_result (cr_result, s); \
-		} \
-	} \
-	else if (cr_exception) { \
-		printf("Exception yeah!\n"); exit(1);\
-	} \
-	else if (cr_cross) { \
-		cr_replay (&cr_result); \
-		Result = cr_result.f; \
-	} \
-	if (cr_cross && cr_side) cr_cross_depth--; \
-	if (is_capturing || is_replaying) { \
-	if ((t & SK_HEAD) != SK_REF) { RTCRDBG((stderr, "ret %s: %lx\n", rout, (long unsigned int) Result)); } \
-	else { RTCRDBG((stderr, "ret %s\n", rout)); } }
+/* Routine body comes here! */
 
-#define RTCRBEV RTCRABEV(exvect->ex_rout)
-#define RTCRABEV(rout) \
-		if (cr_cross && (is_capturing || (is_replaying && RTCRI))) { \
-			cr_result.type = SK_INVALID; \
-			cr_register_result (cr_result, (size_t) 0);  \
-		} \
-	} \
-	else if (cr_exception) { \
-		printf("Exception yeah!\n");\
-		exvect->ex_jbuf = cr_old_jbuf; \
+#define RTCRRSI(y) \
+	if (cr_cross) { \
 		cr_cross_depth--; \
-		ereturn(); \
-	} \
-	else if (cr_cross) { \
-		cr_replay ((EIF_TYPED_VALUE *) NULL);  \
-	} \
-	if (cr_cross && cr_side) cr_cross_depth--; \
-	if (is_capturing || is_replaying) { RTCRDBG((stderr, "ret %s\n", rout)) };
+		cr_register_return(y);
 
-#define RTCRFE \
-	if (cr_cross && !cr_side) cr_cross_depth--; \
+#define RTCRRSO(y) \
+		if (cr_cross) { \
+			cr_cross_depth--; \
+			cr_register_return(y); \
+		} \
+	} \
+	else if (cr_cross && !cr_exception) {\
+		cr_replay (); \
+		cr_cross_depth--; \
+	} \
+	if (cr_cross) {\
+
+/* Return values and exception handling come here */
+
+#define RTCREE \
+		if (cr_exception) { \
+			printf("Outside exception!\n"); exit(1); \
+		} \
+
+#define RTCRRE \
+	}\
+	if (is_capturing || is_replaying) { \
+		RTCRDBG((stderr, "ret\n")); \
+	} \
 	cr_call_depth--;
 
+//#define RTCRRC { uint32 cr_type = SK_REF | RTCRI ? 0x0 : HEADER(Current)->ov_dftype; cr_register_value ((void *) &Current, &cr_type, 0); }
+#define RTCRRC { uint32 cr_type = SK_REF; cr_register_value ((void *) &Current, &cr_type, 0); }
+
+#define RTCRRV(a,s) cr_register_value ((void *) &((a).item), &((a).type), s);
+
+#define RTCRRR(t,s) { uint32 cr_type = t; cr_register_value ((void *) &Result, &cr_type, s);} 
 
 #define RTCRMCPY(d,ds,s,c)  cr_memcpy(exvect,d,ds,s,c)
 #define RTCRMMV(d,ds,s,c)   cr_memmove(exvect,d,ds,s,c)

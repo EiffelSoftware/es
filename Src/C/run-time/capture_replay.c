@@ -24,12 +24,9 @@
 
 #define TYPE_MASK 0xF0
 
-#define OUTCALL 0x00	/* A C routine is called from Eiffel */
-#define OUTRET  0x10	/* A C routine returns to Eiffel */
-#define OUTEXC  0x20	/* An exception occured in C and gets propagated back to Eiffel */
-
-#define INCALL  0x30	/* An Eiffel routine is called from the C side */
-#define INRET   0x40	/* An Eiffel routine returns to C */
+#define CR_CALL 0xF0	/* A C routine is called from Eiffel */
+#define CR_RET  0x10
+#define CR_EX   0x20	/* An exception occured in C and gets propagated back to Eiffel */
 
 #define NEWOBJ	0x50	/* A Eiffel object is created in C */
 #define NEWSPL	0x60
@@ -166,7 +163,6 @@ rt_private EIF_CR_ID cr_id_of_object (EIF_CR_REFERENCE ref)
 		}
 	}
 
-	 /* No object for that pointer */
 	return cr_id;
 
 }
@@ -404,172 +400,27 @@ rt_private void cr_remove_object (EIF_CR_ID cr_id)
  */
 
 
-rt_private void cr_store_value (EIF_TYPED_VALUE value);
-rt_private void cr_read_value (EIF_TYPED_VALUE *value);
+rt_private size_t cr_value_size (uint32 type) {
 
-rt_private void cr_capture_object (EIF_CR_REFERENCE ref, char flag);
-rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag);
-
-rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value);
-rt_private EIF_CR_REFERENCE cr_retrieve_object ();
-
-
-rt_private void cr_store_value (EIF_TYPED_VALUE value)
-{
-	bwrite((char *) &value, sizeof(EIF_TYPED_VALUE));
-}
-
-rt_private void cr_read_value (EIF_TYPED_VALUE *value)
-{
-	bread((char *) value, sizeof(EIF_TYPED_VALUE));
-}
-
-
-#define CV_PUSH		0x01
-#define CV_RECURSIVE	0x02
-
-
-rt_private void cr_capture_object (EIF_CR_REFERENCE ref, char flag)
-{
-
-	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
-	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
-	
-	EIF_TYPED_VALUE tvalue, rtvalue;
-	EIF_CR_ID cr_id;
-	EIF_REFERENCE r = CR_IS_REFERENCE(ref) ? CR_ACCESS(ref) : (EIF_REFERENCE) NULL;
-
-	if (flag & CV_PUSH) {
-		cr_id.item.size = ref.size;
-		cr_id.item.id = CR_INVALID_ID;
-		cr_push_object (ref);
+	switch (type & SK_HEAD) {
+		case SK_BOOL:    return sizeof (EIF_BOOLEAN);
+		case SK_CHAR8:   return sizeof (EIF_CHARACTER_8);
+		case SK_CHAR32:  return sizeof (EIF_CHARACTER_32);
+		case SK_INT8:    return sizeof (EIF_INTEGER_8);
+		case SK_INT16:   return sizeof (EIF_INTEGER_16);
+		case SK_INT32:   return sizeof (EIF_INTEGER_32);
+		case SK_INT64:   return sizeof (EIF_INTEGER_64);
+		case SK_UINT8:   return sizeof (EIF_NATURAL_8);
+		case SK_UINT16:  return sizeof (EIF_NATURAL_16);
+		case SK_UINT32:  return sizeof (EIF_NATURAL_32);
+		case SK_UINT64:  return sizeof (EIF_NATURAL_64);
+		case SK_REAL32:  return sizeof (EIF_REAL_32);
+		case SK_REAL64:  return sizeof (EIF_REAL_64);
+		case SK_POINTER: return sizeof (EIF_POINTER);
+		case SK_REF:     return sizeof (EIF_REFERENCE);
+		default: break;
 	}
-	else {
-
-		cr_id = cr_id_of_object (ref);
-
-		if (!cr_is_valid_id(cr_id)) {
-				/* FIXME: generalize the access to once variables in run-time, such as the exception manager ... */
-			if (r == except_mnger) {
-				cr_id.item.id = 0xFFFFFFFF;
-				cr_id.item.size = CR_GLOBAL_REF;
-			}
-		}
-
-		if (!cr_is_valid_id(cr_id)) {
-			printf("Unknown reference %lx\n", (long unsigned int) r);
-			cr_raise ("Passing unknown reference to Eiffel");
-		}
-
-	}
-
-	tvalue.type = SK_REF;
-	if (r != (EIF_REFERENCE) NULL) {
-		tvalue.type |= HEADER(r)->ov_dftype;
-	}
-	tvalue.it_n8 = cr_id.value;
-
-	if (is_capturing) {
-		cr_store_value (tvalue);
-	}
-	else {
-		cr_read_value (&rtvalue);
-		if (tvalue.type != rtvalue.type)
-			cr_raise("Replay mismatch: passed type differs from one when capturing");
-
-		if (tvalue.it_n8 != rtvalue.it_n8)
-			cr_raise("Replay mismatch: passed reference size differs from one when capturing");
-	}
-
-	if ((flag & (CV_PUSH | CV_RECURSIVE)) && r != (EIF_REFERENCE) NULL) {
-		if (HEADER(r)->ov_flags & EO_TUPLE) {
-			EIF_TYPED_VALUE *titem = (EIF_TYPED_VALUE *) r;
-			uint32 count = RT_SPECIAL_COUNT (r);
-			unsigned int i;
-			titem++;
-			for (i = 1; i < count; i++) {
-				cr_capture_value (*titem, CV_PUSH);
-				titem++;
-			}
-		}
-	}
-
-}
-
-rt_private void cr_capture_value (EIF_TYPED_VALUE value, char flag)
-{
-
-	REQUIRE("capturing_or_replaying", is_capturing || is_replaying);
-	REQUIRE("replaying_implies_pushing", !is_replaying || (flag & CV_PUSH));
-
-	EIF_TYPED_VALUE rvalue;
-	EIF_CR_REFERENCE ref;
-
-	if ((value.type & SK_HEAD) == SK_REF && (value.it_r != (EIF_REFERENCE) NULL)) {
-		ref.item.r = value.it_r;
-		ref.size = CR_OBJECT_REF;
-		cr_capture_object (ref, flag);
-	}
-	else if ((value.type & SK_POINTER) && value.it_p != NULL && is_instance (value.it_p)) {
-		ref.item.p = value.it_p;
-		ref.size = CR_OBJECT_REF;
-		cr_capture_object (ref, flag);
-	}
-	else {
-		if (is_capturing)
-			cr_store_value (value);
-		else {
-			cr_read_value (&rvalue);
-
-			if (value.type != rvalue.type)
-				cr_raise("Replay mismatch: passed basic type differs from one when capturing");
-
-			// FIXME: compare the basic values and at least provide warning
-
-			// FIXME: if previous captured object was a reference type/tuple, provide warning and push dummy reference to stack
-			
-		}
-	}
-}
-
-
-rt_private void cr_retrieve_value (EIF_TYPED_VALUE *value)
-{
-
-	REQUIRE("replaying", is_replaying);
-
-	EIF_CR_ID cr_id;
-	EIF_CR_REFERENCE ref;
-
-	cr_read_value (value);
-
-	if ((value->type & SK_HEAD) == SK_REF) {
-
-		cr_id.value = value->it_n8;
-		if (cr_id.item.id > 0) {
-				/* FIXME: generalize once references... */
-			if (cr_id.item.id == 0xFFFFFFFF) {
-				value->it_r = except_mnger;
-				value->type = SK_REF;
-			}
-			else if (cr_is_valid_id(cr_id)) {
-				ref = cr_object_of_id (cr_id);
-				if (CR_IS_REFERENCE(ref)) {
-					value->it_r = CR_ACCESS(ref);
-					value->type = SK_REF | ((EIF_TYPE_INDEX) HEADER(value->it_r)->ov_dftype);
-				}
-				else {
-					value->type = SK_POINTER;
-					value->it_p = ref.item.p;
-				}
-			}
-		}
-		else {
-			value->it_p = NULL;
-		}
-
-	}
-
+	return (size_t) 0;
 }
 
 
@@ -594,13 +445,11 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
  * Public capture/replay routines
  */
 
-
-rt_public void cr_init (EIF_TYPED_VALUE Current, uint32 size, BODY_INDEX bodyid, int num_args)
+rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 {
-
 	EIF_GET_CONTEXT
 
-	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
+	REQUIRE("valid_context", is_capturing || is_replaying);
 
 	// FIXME: To be done during some (thread) initialization
 	if (cr_file == (FILE *) NULL) {
@@ -614,78 +463,261 @@ rt_public void cr_init (EIF_TYPED_VALUE Current, uint32 size, BODY_INDEX bodyid,
 	BODY_INDEX bid;
 
 	if (num_args > 15)
-		cr_raise ("To many arguments");
+		cr_raise ("Too many arguments for call");
 
 		/* Initialize descriptor */
-	if (RTCRI) {
-		type = (char) INCALL;
-	}
-	else {
-		type = (char) OUTCALL;
-	}
-	type |= (char) num_args;
+	type = (char) CR_CALL | (char) num_args;
+
+
+	/* TODO: clear stack */
+
 
 	if (is_capturing) {
 
-
 			/* We only capture changes done during external OUTCALL */
-		if (RTCRI)
+		if (RTCRI) {
 			cr_capture_mutations();
-
+		}
+		else {
+			// TODO: cr_update_mutations();
+			cr_pop_objects();
+		}
+		
 		bwrite(&type, sizeof(char));
 		bwrite((char *) &(bodyid), sizeof(BODY_INDEX));
 
 	}
-	else {
-			// If we are not capturing, it must be an outcall
+	else if (!RTCRI) {
+
+			// If we are not capturing, it must only read from the log in case of an outcall
 		bread(&rtype, sizeof(char));
 
-		if (rtype != type) {
-			cr_raise ("Expected OUTCALL but read different event from log");
-		}
+		if ((rtype & TYPE_MASK) != (type & TYPE_MASK))
+			cr_raise ("Expected CR_CALL but read different event from log");
+
+		if ((rtype & ARG_MASK) != (type & ARG_MASK))
+			cr_raise ("Expected CR_CALL with different number of arguments");
 
 		bread((char *) &bid, sizeof(BODY_INDEX));
 		
-		if (bid != bodyid) {
-			cr_raise("Expected OUTCALL to different routine");
-		}
+		if (bid != bodyid)
+			cr_raise("Expected CR_CALL to different routine");
 	}
-
-	if (!RTCRI) {
-		/* FIXME: clear stack */
-	}
-
-	cr_register_argument (Current, size);
 
 }
 
-
-rt_public void cr_register_argument (EIF_TYPED_VALUE arg, uint32 size)
+rt_public void cr_register_return (int num_args)
 {
+
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
-	REQUIRE("valid_size", size == 0 || (arg.type == SK_POINTER && size < CR_GLOBAL_REF));
 
-	EIF_CR_REFERENCE ref;
-	char flags;
-	if (RTCRI) {
-			/* We must be capturing the arguments of an incall */
-		flags = (char) 0;
+	char type, log_type;
+
+	if (num_args > 15)
+		cr_raise ("Too many return values");
+
+	type = (char) CR_RET | (char) num_args;
+
+	if (is_capturing) {
+		if (!RTCRI) {
+			// TODO: cr_update_mutations();
+			cr_pop_objects();
+		}
+		else {
+			//cr_pop_objects();
+			cr_capture_mutations();
+		}
+
+		bwrite(&type, sizeof(char));
 	}
 	else {
-		flags = CV_PUSH | CV_PUSH;
+		bread(&log_type, sizeof(char));
+
+		if ((log_type & TYPE_MASK) != (type & TYPE_MASK))
+			cr_raise ("Expected CR_RET but read different event from log");
+
+		if ((log_type & ARG_MASK) != (type & ARG_MASK))
+			cr_raise ("Expected CR_RET with different number of arguments");
+
+	}
+}
+
+rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t pointed_size, int recursive)
+{
+
+	EIF_GET_CONTEXT
+
+	REQUIRE("value_pointer_not_null", value != NULL);
+	REQUIRE("type_pointer_not_null", type != NULL);
+	REQUIRE("valid_context", is_capturing || is_replaying);
+	REQUIRE("valid_type_and_size", type == SK_POINTER || area_size == 0);
+
+	uint32 log_type;
+	char log_value[8];
+	EIF_CR_REFERENCE ref, log_ref;
+	EIF_CR_ID cr_id;
+
+	/* `use_value' indicates whether value and type point to live memory locations and whether their
+	 * should be used by the capture/replay mechanism or restored
+	 */
+	int use_value = (is_capturing || (is_replaying && !RTCRI));
+
+	/* Initialize ref to NULL */
+	ref.item.p = (EIF_POINTER) NULL;
+	ref.size = CR_OBJECT_REF;
+
+	/* Check if value points to a reference */
+	if (use_value) {
+
+		/* Check if value represents a reference */
+		/* FIXME: what do we do with NULL references/pointers? */
+		if ((*type & SK_HEAD) == SK_REF) {
+			ref.item.r = * (EIF_REFERENCE *) value;
+		}
+		else if (pointed_size > 0) {
+			ref.item.p = * (EIF_POINTER *) value;
+			ref.size = pointed_size;
+		}
+		else if (*type == SK_POINTER && is_instance (*(EIF_POINTER *) value)) {
+			ref.item.r = * (EIF_REFERENCE *) value;
+		}
+
 	}
 
-	if (size > 0) {
-		ref.size = size;
-		ref.item.p = arg.it_p;
-		cr_capture_object (ref, flags);
+	if (is_replaying) {
+
+		/* We need to read type and value from the log */
+		bread((char *) &log_type, sizeof(uint32));
+
+		if (use_value) {
+			/* Lets see if we got the same type as originally */
+			if (*type != log_type) {
+				if (((*type) & SK_HEAD) == SK_REF && (log_type & SK_HEAD) == SK_REF) {
+					/* FIXME: not sure to what extend we should check the dynamic type here */
+				}
+				else if (*type == SK_POINTER && log_type == SK_REF && ref.item.r != NULL) {
+					/* This is the special case where a regular pointer points to an Eiffel object */
+				}
+				else {
+					/* Otherwise we throw an exception */
+
+					/* TODO: try to be more flexible and if possible only provide a warning */
+
+					cr_raise ("Type mismatch");
+				}
+			}
+		}
+		else {
+			/* Restore type information */
+			*type = log_type;
+		}
+
+		bread(log_value, cr_value_size(log_type));
+
+		if (use_value) {
+			/* We also check whether we got the same value */
+			if (ref.item.p != NULL && !memcmp(value, log_value, cr_value_size(log_type))) {
+				cr_raise ("Different value");
+			}
+
+			/* If it is a reference type it will later be pushed to the stack */
+		}
+		else {
+			if ((log_type & SK_HEAD) == SK_REF) {
+				/* We are restoring a reference type */
+				cr_id.value = * (EIF_INTEGER_64 *) log_value;
+				if (cr_is_valid_id (cr_id)) {
+					if (cr_id.item.id == 0xFFFFFFFF) {
+						*(EIF_REFERENCE *) value = except_mnger;
+					}
+					else {
+						log_ref = cr_object_of_id (cr_id);
+						if (CR_IS_REFERENCE(log_ref)) {
+							* (EIF_REFERENCE *) value = CR_ACCESS(log_ref);
+							*type = SK_REF;
+						}
+						else {
+							* (EIF_POINTER *) value = log_ref.item.p;
+							*type = SK_POINTER;
+						}
+					}
+				}
+				else {
+					* (EIF_REFERENCE *) value = (EIF_REFERENCE) NULL;
+				}
+			}
+			else {
+				/* We are restoring a basic type which we can simply copy */
+				memcpy(value, log_value, cr_value_size(log_type));
+			}
+		}
 	}
 	else {
-		cr_capture_value (arg, flags);
+		if (ref.item.r != NULL) {
+			/* FIXME: same as above, we might want to store the dynamic type along... */
+			log_type = SK_REF;
+			if (RTCRI) {
+				cr_id = cr_id_of_object (ref);
+				if (!cr_is_valid_id(cr_id)) {
+					if (CR_IS_REFERENCE(ref) && (CR_ACCESS(ref) == except_mnger)) {
+						cr_id.item.id = 0xFFFFFFFF;
+						cr_id.item.size = CR_GLOBAL_REF;
+					}
+					else {
+						if (CR_IS_REFERENCE(ref)) {
+							printf("Unknown reference %lx\n", (long unsigned int) CR_ACCESS(ref));
+						}
+						else {
+							printf("Unknown reference %lx\n", (long unsigned int) ref.item.p);
+						}
+						cr_raise ("Passing unknown reference to Eiffel");
+					}
+				}
+				* (EIF_INTEGER_64 *) log_value = cr_id.value;
+			}
+			else {
+				/* In this case an ID does not make sense as we will simply push the reference. As an
+				 * optimization the log_value could be completely ommitted in order to reduce the log
+				 * size by a few bytes */
+				* (EIF_INTEGER_64 *) log_value = (EIF_INTEGER_64) 0;
+			}
+		}
+		else {
+			log_type = *type;
+			memcpy(log_value, value, cr_value_size(log_type));
+		}
+
+		bwrite((char *) &log_type, sizeof(uint32));
+		bwrite(log_value, cr_value_size(log_type));
 	}
 
+	if (ref.item.r != NULL && !RTCRI) {
+		/* this implies use_value */
+		cr_push_object (ref);
+
+		/* Finally, if value points to a tuple we want to register its items */
+		if (recursive && CR_IS_REFERENCE(ref)) {
+			EIF_REFERENCE tup = CR_ACCESS(ref);
+			if ((tup != (EIF_REFERENCE) NULL) && HEADER(tup)->ov_flags & EO_TUPLE) {
+				uint32 count = RT_SPECIAL_COUNT (tup);
+				EIF_TYPED_VALUE *tup_item = (EIF_TYPED_VALUE *) tup;
+				int i;
+				tup_item++;
+				for (i = 1; i < count; i++) {
+					cr_register_value_recursive (&(tup_item->item), &(tup_item->type), 0, 0);
+					tup_item++;
+				}
+			}
+		}
+	}
+
+}
+
+rt_public void cr_register_value (void *value, uint32 *type, size_t pointed_size)
+{
+	cr_register_value_recursive (value, type, pointed_size, 1);
 }
 
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
@@ -701,7 +733,7 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	char type = NEWOBJ;
 	EIF_CR_REFERENCE ref;
 	ref.size = CR_OBJECT_REF;
-	ref.item.r = obj;
+	ref.item.p = obj;
 
 	if ((zone->ov_flags) & EO_NEW)
 		type |= 0x1;
@@ -715,57 +747,6 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 
 }
 
-rt_public void cr_register_result (EIF_TYPED_VALUE Result, uint32 size) {
-
-	EIF_GET_CONTEXT
-
-	REQUIRE("valid_context", is_capturing || (is_replaying && RTCRI));
-	REQUIRE("size_implies_pointer", size == 0 || (Result.type == SK_POINTER));
-
-	char type, rtype, flags;
-	EIF_CR_REFERENCE ref;
-
-	if (RTCRI) {
-		type = (char) INRET;
-		flags = CV_PUSH | CV_RECURSIVE;
-	}
-	else {
-		type = (char) OUTRET;
-		flags = (char) 0;
-
-			/* We only capture changes done during OUTCALL */
-		if (is_capturing)
-			cr_capture_mutations();
-	}
-
-	if (Result.type != SK_INVALID) {
-		type |= 0x1;
-	}
-
-	if (is_capturing) {
-		bwrite (&type, 1);
-	}
-	else {
-			// We must be returning an Eiffel in-call
-		bread(&rtype, 1);
-		if (rtype != type) {
-			cr_raise("Replay mismatch");
-		}
-	}
-
-	if (Result.type != SK_INVALID) {
-		if (size > 0) {
-			ref.size = size;
-			ref.item.p = Result.it_p;
-			cr_capture_object (ref, flags);
-		}
-		else
-			cr_capture_value (Result, flags);
-	}
-
-	if (!RTCRI)
-		cr_pop_objects();
-}
 
 rt_public void cr_register_protect (EIF_REFERENCE *obj)
 {
@@ -811,7 +792,7 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	REQUIRE("not_inside", !RTCRI);
 
 	EIF_CR_REFERENCE ref, newref;
-	EIF_CR_ID id = cr_id_of_object (ref);
+	EIF_CR_ID id;
 
 	ref.item.o = obj;
 	ref.size = CR_GLOBAL_REF;
@@ -849,7 +830,7 @@ rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 }
 
 
-rt_public void cr_replay (EIF_TYPED_VALUE *Result)
+rt_public void cr_replay ()
 {
 
 #ifdef EIF_ASSERTIONS
@@ -861,7 +842,7 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 	char type;
 
 	BODY_INDEX body_id;
-	EIF_TYPED_VALUE target, arg1, arg2, arg3 ,arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12;
+	EIF_TYPED_VALUE arg1, arg2, arg3 ,arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12;
 	EIF_REFERENCE Current;
 	EIF_TYPE_INDEX dftype;
 	EIF_CR_REFERENCE ref, newref;
@@ -871,129 +852,85 @@ rt_public void cr_replay (EIF_TYPED_VALUE *Result)
 		bread (&type, 1);
 
 		switch (type & TYPE_MASK) {
-			case OUTRET:
-
-				if ((type & ARG_MASK) > 0)
-					cr_retrieve_value (Result);
-
-				cr_pop_objects();
+			case CR_RET:
 
 				return;
 
-			case INCALL:
+			case CR_CALL:
 
 				bread((char *) &body_id, sizeof(BODY_INDEX));
 
-				cr_retrieve_value (&target);
-				if ((target.type & SK_HEAD) != SK_REF)
-					cr_raise ("Replay mismatch: retrieved target not valid for incall");
-
-				Current = target.it_r;
-
-				if ((type & ARG_MASK) == 0) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE)) featref(body_id))(Current);
-					continue;
-				}
-
-				cr_retrieve_value(&arg1);
-				if ((type & ARG_MASK) == 1) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1);
-					continue;
-				}
-
-				cr_retrieve_value(&arg2);
-				if ((type & ARG_MASK) == 2) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2);
-					continue;
-				}
-
-				cr_retrieve_value(&arg3);
-				if ((type & ARG_MASK) == 3) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3);
-					continue;
-				}
-
-				cr_retrieve_value(&arg4);
-				if ((type & ARG_MASK) == 4) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4);
-					continue;
-				}
-				
-				cr_retrieve_value(&arg5);
-				if ((type & ARG_MASK) == 5) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5);
-					continue;
-				}
-
-				cr_retrieve_value(&arg6);
-				if ((type & ARG_MASK) == 6) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6);
-					continue;
-				}
-
-				cr_retrieve_value(&arg7);
-				if ((type & ARG_MASK) == 7) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-					continue;
-				}
-				
-				cr_retrieve_value(&arg8);
-				if ((type & ARG_MASK) == 8) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-					continue;
-				}
-				
-				cr_retrieve_value(&arg9);
-				if ((type & ARG_MASK) == 9) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-					continue;
-				}
-				
-				cr_retrieve_value(&arg10);
-				if ((type & ARG_MASK) == 10) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-					continue;
-				}
-
-				cr_retrieve_value(&arg11);
-				if ((type & ARG_MASK) == 11) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-					continue;
-				}
-				
-				cr_retrieve_value(&arg12);
-				if ((type & ARG_MASK) == 12) {
-					(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
-							EIF_TYPED_VALUE))
-						featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
-					continue;
-				}
-				else {
-					cr_raise("Too many args for INCALL");
+				switch (type & ARG_MASK) {
+					case 0:
+						cr_raise("INCALL requires Current as an argument");
+						break;
+					case 1:
+						(FUNCTION_CAST(void, (EIF_REFERENCE)) featref(body_id))(Current);
+						break;
+					case 2:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1);
+						break;
+					case 3:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2);
+						break;
+					case 4:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3);
+						break;
+					case 5:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4);
+						break;
+					case 6:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5);
+						break;
+					case 7:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6);
+						break;
+					case 8:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+						break;
+					case 9:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+						break;
+					case 10:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+						break;
+					case 11:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+						break;
+					case 12:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+						break;
+					case 13:
+						(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE,
+								EIF_TYPED_VALUE))
+							featref(body_id))(Current, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+						break;
+					default:
+						cr_raise("Too many args for INCALL");
 				}
 
 				break;
@@ -1107,16 +1044,28 @@ rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, c
 
 	char *l_feature_name;
 	l_feature_name = "cr_memcpy";
-	EIF_POINTER Current = (EIF_POINTER) dest;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
-	RTCRBS2;
+	EIF_TYPED_VALUE arg1, arg2, arg3;
+	
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) dest;
+	arg2.type = SK_POINTER;
+	arg2.it_p = (EIF_POINTER) source;
+	arg3.type = SK_INT32;
+	arg3.it_i4 = (EIF_INTEGER) count;
+
+	RTCRCSO(3,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,dest_size);
+	RTCRRV(arg2,0);
+	RTCRRV(arg3,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	memcpy (dest, source, count);
 
-	RTCRABEV(l_feature_name);
-	RTCRFE;
+	RTCREE;
+	RTCRRSO(0);
+	RTCRRE;
 
 }
 
@@ -1127,16 +1076,28 @@ rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, 
 	
 	char *l_feature_name;
 	l_feature_name = "cr_memmove";
-	EIF_POINTER Current = (EIF_POINTER) dest;
+
+	EIF_TYPED_VALUE arg1, arg2, arg3;
 	
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
-	RTCRBS2;
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) dest;
+	arg2.type = SK_POINTER;
+	arg2.it_p = (EIF_POINTER) source;
+	arg3.type = SK_INT32;
+	arg3.it_i4 = (EIF_INTEGER) count;
+
+	RTCRCSO(3,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,dest_size);
+	RTCRRV(arg2,0);
+	RTCRRV(arg3,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 	
 	memmove(dest, source, count);
 
-	RTCRABEV(l_feature_name);
-	RTCRFE;	
+	RTCREE;
+	RTCRRSO(0);
+	RTCRRE;
 
 }
 
@@ -1148,16 +1109,27 @@ rt_public void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, i
 	char *l_feature_name;
 	l_feature_name = "cr_memset";
 
-	EIF_POINTER Current = (EIF_POINTER) dest;
+	EIF_TYPED_VALUE arg1, arg2, arg3;
+	
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) dest;
+	arg2.type = SK_INT32;
+	arg2.it_i4 = (EIF_INTEGER) value;
+	arg3.type = SK_INT32;
+	arg3.it_i4 = (EIF_INTEGER) count;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, dest_size, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(3,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,dest_size);
+	RTCRRV(arg2,0);
+	RTCRRV(arg3,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	memset(dest, value, count);
 
-	RTCRABEV(l_feature_name);
-	RTCRFE;
+	RTCREE;
+	RTCRRSO(0);
+	RTCRRE;
 
 }
 
@@ -1169,17 +1141,29 @@ rt_public int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t 
 	char *l_feature_name;
 	l_feature_name = "cr_memcmp";
 
-	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_TYPED_VALUE arg1, arg2, arg3;
 	EIF_INTEGER Result;
+	
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) dest;
+	arg2.type = SK_POINTER;
+	arg2.it_p = (EIF_POINTER) other;
+	arg3.type = SK_INT32;
+	arg3.it_i4 = (EIF_INTEGER) count;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(3,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,0);
+	RTCRRV(arg2,0);
+	RTCRRV(arg3,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	Result = (EIF_INTEGER) memcmp(dest, other, count);
 
-	RTCRABER(SK_INT32, it_i4, 0, l_feature_name);
-	RTCRFE;
+	RTCREE;
+	RTCRRSO(1);
+	RTCRRR(SK_INT32,0);
+	RTCRRE;
 
 	return (int) Result;
 }
@@ -1192,19 +1176,26 @@ rt_public void *cr_malloc(struct ex_vect *exvect, size_t size)
 	char *l_feature_name;
 	l_feature_name = "cr_malloc";
 
-	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_TYPED_VALUE arg1;
 	EIF_POINTER Result;
+	
+	arg1.type = SK_INT32;
+	arg1.it_i4 = (EIF_INTEGER) size;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(1,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,0);
+	RTCREE;
+	RTCRCEO(l_feature_name);
 
 	Result = (EIF_POINTER) malloc(size);
 
-	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
-	RTCRFE;
+	RTCRES;
+	RTCRRSO(1);
+	RTCRRR(SK_POINTER,0);
+	RTCRRE;
 
 	return (void *) Result;
+	
 }
 
 
@@ -1216,17 +1207,26 @@ rt_public void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size)
 	char *l_feature_name;
 	l_feature_name = "cr_calloc";
 
-	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_TYPED_VALUE arg1, arg2;
 	EIF_POINTER Result;
+	
+	arg1.type = SK_INT32;
+	arg1.it_i4 = (EIF_INTEGER) nmemb;
+	arg2.type = SK_INT32;
+	arg2.it_i4 = (EIF_INTEGER) size;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(2,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,0);
+	RTCRRV(arg2,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	Result = (EIF_POINTER) calloc(nmemb, size);
 	
-	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
-	RTCRFE;
+	RTCREE;
+	RTCRRSO(1);
+	RTCRRR(SK_POINTER,0);
+	RTCRRE;
 
 	return (void *) Result;
 }
@@ -1240,18 +1240,26 @@ rt_public void *cr_realloc(struct ex_vect *exvect, void *source, size_t size)
 	char *l_feature_name;
 	l_feature_name = "cr_realloc";
 
-	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_TYPED_VALUE arg1, arg2;
 	EIF_POINTER Result;
+	
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) source;
+	arg2.type = SK_INT32;
+	arg2.it_i4 = (EIF_INTEGER) size;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, 0, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(2,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,0);
+	RTCRRV(arg2,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	Result = (EIF_POINTER) realloc(source, size);
 	
-	RTCRABER(SK_POINTER, it_p, 0, l_feature_name);
-	RTCRFE;
-
+	RTCREE;
+	RTCRRSO(1);
+	RTCRRR(SK_POINTER,0);
+	RTCRRE;
 	return (void *) Result;
 }
 
@@ -1264,16 +1272,21 @@ rt_public void cr_free (struct ex_vect *exvect, void *dest)
 	char *l_feature_name;
 	l_feature_name = "cr_free";
 
-	EIF_POINTER Current = (EIF_POINTER) NULL;
+	EIF_TYPED_VALUE arg1;
+	
+	arg1.type = SK_POINTER;
+	arg1.it_p = (EIF_POINTER) dest;
 
-	RTCRAFS(0, l_feature_name, SF_BODY_ID);
-	RTCRABS1(SK_POINTER, it_p, (size_t) 0, SF_BODY_ID, 0);
-	RTCRBS2;
+	RTCRCSO(1,SF_BODY_ID,l_feature_name);
+	RTCRRV(arg1,0);
+	RTCRES;
+	RTCRCEO(l_feature_name);
 
 	free(dest);
 
-	RTCRABEV(l_feature_name);
-	RTCRFE;
+	RTCREE;
+	RTCRRSO(0);
+	RTCRRE;
 
 }
 
