@@ -267,6 +267,7 @@ feature -- Analyzis
 			i: INTEGER
 			keep: BOOLEAN
 			l_context: like context
+			l_inside: like is_inside_capture_replay_boundary
 		do
 			buf := buffer
 			l_is_process_or_thread_relative_once := is_process_or_thread_relative_once
@@ -331,6 +332,12 @@ feature -- Analyzis
 			buf.generate_block_open
 			buf.put_gtcx
 
+			-- Generate capture/replay feature start hook
+			l_inside := is_inside_capture_replay_boundary (context.current_feature)
+			if l_inside then
+				generate_capture_replay_call (l_inside)
+			end
+
 				-- Declaration of all the local entities, such as
 				-- Eiffel local variables, Result, temporary registers...
 			generate_execution_declarations
@@ -357,9 +364,6 @@ feature -- Analyzis
 
 				-- Generate execution trace information (RTEAA)
 			generate_execution_trace
-
-				-- Generate capture/replay feature start hook
-			generate_capture_replay_feature_start
 
 				-- Generate trace macro (start)
 			generate_trace_start
@@ -401,7 +405,9 @@ feature -- Analyzis
 			end
 
 				-- Capture/Replay entry hook
-			generate_capture_replay_body_start
+			if not l_inside then
+				generate_capture_replay_call (l_inside)
+			end
 
 				-- If necessary, generate the once stuff (i.e. check if
 				-- the value of the once was already set within the same
@@ -437,8 +443,8 @@ feature -- Analyzis
 
 				-- We do not generate the capture/replay body hook here in case of onces as
 				-- the postconditions are also enclosed by the once prologue.
-			if not attached {ONCE_BYTE_CODE} Current then
-				generate_capture_replay_body_end
+			if not l_inside and not attached {ONCE_BYTE_CODE} Current then
+				generate_capture_replay_return (l_inside)
 			end
 
 				-- Now the postcondition
@@ -463,13 +469,10 @@ feature -- Analyzis
 				-- Generate termination for once routine
 			generate_once_epilogue (generated_c_feature_name)
 
-				-- Capture/Replay body exit hook
-			if attached {ONCE_BYTE_CODE} Current then
-				generate_capture_replay_body_end
-			end
-
 				-- Capture/Replay feature exit hook
-			generate_capture_replay_feature_end
+			if l_inside or attached {ONCE_BYTE_CODE} Current then
+				generate_capture_replay_return (l_inside)
+			end
 
 			if compound = Void or else not compound.last.last_all_in_result then
 					-- Remove the GC hooks we've been generated.
@@ -1286,81 +1289,47 @@ end
 			end
 		end
 
-	generate_capture_replay_feature_start
-			-- Generate body start hook for capture replay mechanism
+	generate_capture_replay_call (a_is_inside: BOOLEAN)
+			-- Generate capture/replay call hook.
 		local
 			buf: like buffer
-			l_feat: FEATURE_I
-			l_inside: BOOLEAN
-		do
-			buf := buffer
-			buf.put_new_line
-			buf.put_string ("RTCRFS(")
-
-			l_feat := context.current_feature
-
-			l_inside := True
-			if l_feat.is_external then
---				io.put_string (l_feat.written_class.name)
---				io.put_character ('.')
---				io.put_string (l_feat.feature_name)
---				io.put_new_line
-
-				if
-					not l_feat.written_class.name_in_upper.is_equal ("TUPLE") and then
-					attached {EXTERNAL_I} l_feat as l_ext_i and then
-					attached {EXTERNAL_EXT_I} l_ext_i.extension as l_ext and then
-					not l_ext.is_built_in
-				then
-					l_inside := False
-				elseif
-					l_feat.written_class.name_in_upper.is_equal ("IDENTIFIED_ROUTINES") or
-					l_feat.written_class.name_in_upper.is_equal ("EV_ANY_IMP")
-				then
-					l_inside := False
-				end
---			elseif l_feat.written_class.name_in_upper.is_equal ("MANAGED_POINTER") then
---				if
---					l_feat.feature_name.starts_with ("put_") or
---					l_feat.feature_name.starts_with ("read_")
---				then
---					l_inside := False
---				end
-			end
-
-			if l_inside then
-				buf.put_integer (1)
-			else
-				buf.put_integer (0)
-			end
-
-			buf.put_two_character (')', ';')
-		end
-
-	generate_capture_replay_body_start
-			-- Generate body start hook for capture replay mechanism
-		local
-			buf: like buffer
-			l_args: like arguments
 			i: INTEGER
+			l_args: like arguments
 		do
 			buf := buffer
-
 			l_args := arguments
 
 			buf.put_new_line
-			buf.put_string ("RTCRBS1(")
+			buf.put_string ("RTCRCS")
+			if a_is_inside then
+				buf.put_character ('I')
+			else
+				buf.put_character ('O')
+			end
+			buf.put_character ('(')
 
 			if l_args /= Void then
-				buf.put_integer (l_args.count)
-				buf.put_two_character (')', ';')
+				buf.put_integer (l_args.count + 1)
+			else
+				buf.put_integer (1)
+			end
+			buf.put_character (',')
+			buf.put_real_body_id (real_body_id)
+			buf.put_character (',')
+			buf.put_string_literal (context.current_feature.feature_name)
+			buf.put_string (");")
+
+			buf.put_new_line
+			buf.put_string ("RTCRRC;")
+
+			if l_args /= Void then
 				from
 					i := l_args.lower
 				until
 					i > l_args.upper
 				loop
 					buf.put_new_line
-					buf.put_string ("RTCRA(arg");
+					buf.put_string ("RTCRRV(arg");
 					buf.put_integer (i - l_args.lower + 1)
 					buf.put_two_character ('x', ',')
 					if
@@ -1377,33 +1346,76 @@ end
 					buf.put_two_character (')', ';')
 					i := i + 1
 				end
-			else
-				buf.put_integer (0)
-				buf.put_two_character (')', ';')
+			end
+
+			if not a_is_inside then
+				buf.put_new_line
+				buf.put_string ("RTCRES;")
 			end
 
 			buf.put_new_line
-			buf.put_string ("RTCRBS2;")
+			buf.put_string ("RTCRCE")
+			if a_is_inside then
+				buf.put_character ('I')
+			else
+				buf.put_character ('O')
+			end
+			buf.put_character ('(')
+			buf.put_string_literal (context.current_feature.feature_name)
+			buf.put_string (");")
 		end
 
-	generate_capture_replay_body_end
-			-- Generate feature end hook for capture/replay mechanism
+	generate_capture_replay_return (a_is_inside: BOOLEAN)
+			-- Generate capture/replay return hook.
 		local
 			buf: like buffer
-			type_c: TYPE_C
 			l_rtype: like result_type
+			type_c: TYPE_C
+			l_reg_current, l_reg_result: BOOLEAN
 		do
 			buf := buffer
-			buf.put_new_line
 			l_rtype := result_type
-			if l_rtype.is_void then
-				buf.put_string ("RTCRBEV;")
+
+				-- Do we need to register `Current'?
+			l_reg_current := a_is_inside
+
+				-- Do we need to register the result?
+			l_reg_result := not l_rtype.is_void
+
+
+			buf.put_new_line
+			buf.put_string ("RTCRRS")
+			if a_is_inside then
+				buf.put_character ('I')
 			else
-				buf.put_string ("RTCRBER(")
+				buf.put_character ('O')
+			end
+			buf.put_character ('(')
+
+			if l_reg_current and l_reg_result then
+				buf.put_integer (2)
+			elseif l_reg_current or l_reg_result then
+				buf.put_integer (1)
+			else
+				buf.put_integer (0)
+			end
+			buf.put_two_character (')', ';')
+
+			if not a_is_inside then
+				buf.put_new_line
+				buf.put_string ("RTCREE;")
+			end
+
+			if l_reg_current then
+				buf.put_new_line
+				buf.put_string ("RTCRRC;")
+			end
+
+			if l_reg_result then
+				buf.put_new_line
+				buf.put_string ("RTCRRR(")
 				type_c := real_type (l_rtype).c_type
 				type_c.generate_sk_value (buf)
-				buf.put_character (',')
-				type_c.generate_typed_field (buf)
 				buf.put_character (',')
 				if
 					attached {TYPED_POINTER_A} l_rtype as l_tpointer and then
@@ -1418,16 +1430,9 @@ end
 				end
 				buf.put_two_character (')', ';')
 			end
-		end
 
-	generate_capture_replay_feature_end
-			-- Generate exit hook for capture replay
-		local
-			buf: like buffer
-		do
-			buf := buffer
 			buf.put_new_line
-			buf.put_string ("RTCRFE;")
+			buf.put_string ("RTCRRE;")
 		end
 
 	generate_rtdbgd_enter
@@ -1916,6 +1921,30 @@ feature -- Inlining
 				inliner.reset
 			else
 				Result := Current
+			end
+		end
+
+feature {NONE} -- Query
+
+	is_inside_capture_replay_boundary (a_feature: FEATURE_I): BOOLEAN
+			-- Is given feature considered inside of the capture/replay boundary?
+		do
+
+			Result := True
+			if a_feature.is_external then
+				if
+					not a_feature.written_class.name_in_upper.is_equal ("TUPLE") and then
+					attached {EXTERNAL_I} a_feature as l_ext_i and then
+					attached {EXTERNAL_EXT_I} l_ext_i.extension as l_ext and then
+					not l_ext.is_built_in
+				then
+					Result := False
+				elseif
+					a_feature.written_class.name_in_upper.is_equal ("IDENTIFIED_ROUTINES") or
+					a_feature.written_class.name_in_upper.is_equal ("EV_ANY_IMP")
+				then
+					Result := False
+				end
 			end
 		end
 
