@@ -241,7 +241,12 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 		union overhead *zone = HEADER(r);
 			// FIXME: make sure r is a basic typed SPECIAL!
 		if (zone->ov_dftype == egc_str_dtype) {
-			/* We are pushing a string, so lets make a copy of its area */
+			/* We are pushing a string which has an initialized area, make r point to the area
+			 * so it will be treated as a special object */
+			if (* (EIF_REFERENCE *) r != NULL) {
+				r = * (EIF_REFERENCE *) r;
+				zone = HEADER(r);
+			}
 		}
 		if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
 			src = (void *) r;
@@ -284,11 +289,18 @@ rt_private void cr_capture_mutations (int register_mutations)
 	while (object != NULL) {
 
 		void *src;
-		size_t src_size = (size_t) object->ref.size;
+		size_t src_size;
 		if (CR_IS_REFERENCE(object->ref)) {
+			src_size = 0;
 			EIF_REFERENCE r = CR_ACCESS(object->ref);
 			if (r != (EIF_REFERENCE) NULL) {
 				union overhead *zone = HEADER(r);
+				if (zone->ov_dftype == egc_str_dtype) {
+					if (* (EIF_REFERENCE *) r != NULL) {
+						r = * (EIF_REFERENCE *) r;
+						zone = HEADER(r);
+					}
+				}
 				if ((zone->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC) {
 					src = (void *) r;
 					src_size = RT_SPECIAL_CAPACITY(r)*RT_SPECIAL_ELEM_SIZE(r);
@@ -297,17 +309,25 @@ rt_private void cr_capture_mutations (int register_mutations)
 		}
 		else {
 			src = object->ref.item.p;
+			src_size = object->ref.size;
 		}
 
 		void *copy = object->copy;
+		cr_id.item.id = id;
+		cr_id.item.size = object->ref.size;
 
-		if (src_size > 0 && copy != NULL) {
-			if (register_mutations && memcmp(src, copy, src_size)) {
+		if (src_size > 0) {
+			/* If no copy has been made yet, we create it now */
+			if (copy == NULL) {
+				object->copy = cmalloc(src_size);
+				if (object->copy == NULL)
+					enomem();
+			}
+
+			if (register_mutations && (copy == NULL || memcmp(src, copy, src_size))) {
 
 				char type = (char) MEMMUT;
 				bwrite(&type, 1);
-				cr_id.item.id = id;
-				cr_id.item.size = (uint32) src_size;
 				bwrite((char *) &cr_id, sizeof(EIF_CR_ID));
 
 				uint32 start, end;
@@ -326,7 +346,7 @@ rt_private void cr_capture_mutations (int register_mutations)
 			memcpy(object->copy, src, src_size);
 		}
 		object = object->next;
-		if (object == NULL && src_size != CR_GLOBAL_REF) {
+		if (object == NULL && cr_id.item.size != CR_GLOBAL_REF) {
 			object = cr_global_objects;
 			id = 1;
 		}
@@ -1013,8 +1033,17 @@ rt_public void cr_replay ()
 					if (Current == (EIF_REFERENCE) NULL)
 						cr_raise("Invalid object ID for MEMMUT");
 
-					CHECK("is_special", ((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC);
-					CHECK("valid_size", size <= RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current));
+					if (HEADER(Current)->ov_dftype == egc_str_dtype) {
+                                	        if (* (EIF_REFERENCE *) Current != NULL) {
+                        	                        Current = * (EIF_REFERENCE *) Current;
+        	                                }
+	                                }
+
+					if (!((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC)
+						cr_raise("Invalid object type for MEMMUT");
+
+					if (size != RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current))
+						cr_raise("Invalid special size for MEMMUT");
 
 					bread((char *) Current, size);
 				}
