@@ -265,7 +265,7 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 
 }
 
-rt_private void cr_capture_mutations ()
+rt_private void cr_capture_mutations (int register_mutations)
 {
 
 	EIF_GET_CONTEXT
@@ -302,7 +302,7 @@ rt_private void cr_capture_mutations ()
 		void *copy = object->copy;
 
 		if (src_size > 0 && copy != NULL) {
-			if (memcmp(src, copy, src_size)) {
+			if (register_mutations && memcmp(src, copy, src_size)) {
 
 				char type = (char) MEMMUT;
 				bwrite(&type, 1);
@@ -320,8 +320,10 @@ rt_private void cr_capture_mutations ()
 				bwrite((char *) &end, sizeof(uint32));
 				bwrite((char *) src, src_size);
 
-				memcpy(object->copy, src, src_size);
 			}
+
+			/* In any case we copy the current content to the copy */
+			memcpy(object->copy, src, src_size);
 		}
 		object = object->next;
 		if (object == NULL && src_size != CR_GLOBAL_REF) {
@@ -474,14 +476,11 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 
 	if (is_capturing) {
 
-			/* We only capture changes done during external OUTCALL */
-		if (RTCRI) {
-			cr_capture_mutations();
-		}
-		else {
-			// TODO: cr_update_mutations();
+		if (!RTCRI) {
 			cr_pop_objects();
 		}
+		/* We only capture changes done during external OUTCALL */
+		cr_capture_mutations(RTCRI);
 		
 		bwrite(&type, sizeof(char));
 		bwrite((char *) &(bodyid), sizeof(BODY_INDEX));
@@ -521,14 +520,11 @@ rt_public void cr_register_return (int num_args)
 	type = (char) CR_RET | (char) num_args;
 
 	if (is_capturing) {
+
 		if (!RTCRI) {
-			// TODO: cr_update_mutations();
 			cr_pop_objects();
 		}
-		else {
-			//cr_pop_objects();
-			cr_capture_mutations();
-		}
+		cr_capture_mutations(RTCRI);
 
 		bwrite(&type, sizeof(char));
 	}
