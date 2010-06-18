@@ -18,6 +18,7 @@ test	capture-simple-weak-pointer	caprep006 tcf pass capture replay
 test	capture-result-pointer-change	caprep007 tcf pass capture replay
 test	capture-protect-wean		caprep008 tcf pass capture replay
 test	capture-string-modification	caprep009 tcf pass capture replay
+test	create-external-string		caprep010 tcf pass capture replay
 
 
 -- EiffelTime tests
