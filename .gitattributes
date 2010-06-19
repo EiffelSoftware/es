@@ -3261,6 +3261,8 @@ eweasel/tests/caprep001/capture_output -text
 eweasel/tests/caprep001/replay_output -text
 eweasel/tests/caprep002/Ace -text
 eweasel/tests/caprep003/Ace -text
+eweasel/tests/caprep003/capture_output -text
+eweasel/tests/caprep003/replay_output -text
 eweasel/tests/caprep004/Ace -text
 eweasel/tests/caprep005/Ace -text
 eweasel/tests/caprep006/Ace -text
