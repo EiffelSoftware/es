@@ -818,7 +818,9 @@ rt_private void correct_object_mismatch (
 		if (collecting) {
 			eif_gc_run ();
 		}
-		RT_GC_WEAN_N(2);
+		RT_GC_WEAN(values);
+		RT_GC_WEAN(object);
+		/*RT_GC_WEAN_N(2);*/
 		ereturn ();
 	} else {
 		set_mismatch_information (object, values, conversions);
@@ -830,7 +832,9 @@ rt_private void correct_object_mismatch (
 		if (collecting)
 			eif_gc_run ();
 		c_check_assert (asserting);
-		RT_GC_WEAN_N(2);
+		RT_GC_WEAN(values);
+		RT_GC_WEAN(object);
+		/*RT_GC_WEAN_N(2);*/
 		expop(&eif_stack);
 	}
 }
@@ -851,7 +855,9 @@ rt_private void correct_one_mismatch (
 	excatch(&exenv);
 	if (setjmp(exenv)) {
 			/* Wean protected variable.*/
-		RT_GC_WEAN_N(2);
+		RT_GC_WEAN(values);
+		RT_GC_WEAN(object);
+		/* RT_GC_WEAN_N(2); */
 		ereturn ();
 	} else {
 #ifdef RECOVERABLE_DEBUG
@@ -895,7 +901,9 @@ rt_private void correct_one_mismatch (
 		} else {
 			correct_object_mismatch (object, values, conversions);
 		}
-		RT_GC_WEAN_N(2);
+		RT_GC_WEAN(values);
+		RT_GC_WEAN(object);
+		/*RT_GC_WEAN_N(2);*/
 		expop(&eif_stack);
 	}
 }
@@ -1817,7 +1825,9 @@ rt_private void add_mismatch (EIF_REFERENCE object, EIF_REFERENCE old_values)
 		RT_GC_PROTECT(object);
 		RT_GC_PROTECT(old_values);
 		grow_mismatch_table ();
-		RT_GC_WEAN_N(2);
+		RT_GC_WEAN(old_values);
+		RT_GC_WEAN(object);
+		/*RT_GC_WEAN_N(2);*/
 	}
 
 	spec = eif_access (mismatches->values);

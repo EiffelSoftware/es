@@ -168,7 +168,9 @@ rt_public EIF_REFERENCE argarr(int argc, char **argv)
 #ifdef WORKBENCH
 	UNDISCARD_BREAKPOINTS; /* the debugger can now stop again */
 #endif
-	RT_GC_WEAN_N(2);		/* Remove protection for the area and the array */
+	RT_GC_WEAN(sp);
+	RT_GC_WEAN(array);
+	/*RT_GC_WEAN_N(2);*/		/* Remove protection for the area and the array */
 	return array;
 }
 
@@ -341,7 +343,13 @@ rt_public EIF_REFERENCE striparr(EIF_REFERENCE curr, int dtype, char **items, lo
 		((EIF_REFERENCE *) sp)[offset_bis++] = new_obj;
 		}
 	}
-	RT_GC_WEAN_N(6);		/* Remove protection for Eiffel objects*/
+	RT_GC_PROTECT(attr);
+	RT_GC_PROTECT(new_obj);
+	RT_GC_PROTECT(o_ref);
+	RT_GC_PROTECT(sp);
+	RT_GC_PROTECT(array);
+	RT_GC_PROTECT(curr);
+	/*RT_GC_WEAN_N(6);*/		/* Remove protection for Eiffel objects*/
 	return array;
 }
 

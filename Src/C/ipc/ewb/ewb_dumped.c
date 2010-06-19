@@ -139,7 +139,9 @@ rt_public void c_recv_rout_info (EIF_OBJ target)
 							);
 
 							/* Remove 2 protections */
-						RT_GC_WEAN_N(2);
+						RT_GC_WEAN(obj_addr);
+						RT_GC_WEAN(eif_rout_name);
+						/*RT_GC_WEAN_N(2);*/
 						return;
 					default:
 						break; /* send error */

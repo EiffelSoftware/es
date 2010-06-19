@@ -222,32 +222,34 @@ rt_public void rout_obj_call_procedure_dynamic (
 	EIF_TYPED_VALUE* first_arg = NULL;
 	EIF_INTEGER* open_positions = NULL;
 
+		/* Protected references in this routine, allowing us to replace RT_GC_WEAN_N */
+	EIF_REFERENCE *protected[5];
+
 	REQUIRE("valid_closed_args", (closed_count == 0) || closed_args);
 	REQUIRE("valid_open_args", (open_count == 0) || open_args);
 
 	excatch(&exenv);	/* Record pseudo execution vector */
 	if (setjmp(exenv)) {
 			/* Unprotect protected locals. */
-		if (nb_protected) {
-			RT_GC_WEAN_N(nb_protected);
-		}
+		while (nb_protected > 0) { RT_GC_WEAN(*protected[nb_protected--]); }
+		/* if (nb_protected) { RT_GC_WEAN_N(nb_protected); } */
 		ereturn ();
 	} else {
 		if (closed_count > 0) {
 			RT_GC_PROTECT(closed_args); /* iget() may call GC */
-			nb_protected++;
+			protected[nb_protected++] = (EIF_REFERENCE *) &closed_args;
 		}
 
 		if (open_count > 0) {
 			open_positions = (EIF_INTEGER*)(*(EIF_REFERENCE*)open_map);
 			RT_GC_PROTECT(open_args);
-			nb_protected++;
+			protected[nb_protected++] = (EIF_REFERENCE *) &open_args;
 			RT_GC_PROTECT(open_map);
-			nb_protected++;
+			protected[nb_protected++] = &open_map;
 			if (open_positions [0] == 1) {
 				first_arg = &(open_args [1]);
 				RT_GC_PROTECT (first_arg);
-				nb_protected++;
+				protected[nb_protected++] = (EIF_REFERENCE *) &first_arg;
 				open_idx = 2;
 				if (open_count > 1) {
 					next_open = open_positions [1];
@@ -259,7 +261,7 @@ rt_public void rout_obj_call_procedure_dynamic (
 		if (first_arg == NULL) {
 			first_arg = &(closed_args [1]);
 			RT_GC_PROTECT (first_arg);
-			nb_protected++;
+			protected[nb_protected++] = (EIF_REFERENCE *) &first_arg;
 			closed_idx = 2;
 		}
 		while (i <= args_count) {
@@ -282,7 +284,8 @@ rt_public void rout_obj_call_procedure_dynamic (
 		fill_it (iget(), first_arg);
 		nb_pushed++;
 
-		RT_GC_WEAN_N(nb_protected);
+		while (nb_protected > 0) { RT_GC_WEAN(*protected[nb_protected--]); }
+		/*RT_GC_WEAN_N(nb_protected); */
 		nb_protected = 0;
 
 			/* We are calling a feature through an agent, in this case, we consider all calls

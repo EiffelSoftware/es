@@ -144,7 +144,9 @@ rt_public EIF_REFERENCE eif_twin (EIF_REFERENCE Current)
 #endif
 	c_check_assert (a);
 
-	RT_GC_WEAN_N(2);		/* Remove protection */
+	RT_GC_WEAN(Result);
+	RT_GC_WEAN(Current);
+	/* RT_GC_WEAN_N(2); */		/* Remove protection */
 
 	return Result;
 }
@@ -173,7 +175,9 @@ rt_public EIF_REFERENCE eif_standard_twin (EIF_REFERENCE Current)
 	ecopy (Result, Current);
 	c_check_assert (a);
 
-	RT_GC_WEAN_N(2);		/* Remove protection */
+	RT_GC_WEAN(Result);
+	RT_GC_WEAN(Current);
+	/* RT_GC_WEAN_N(2); */		/* Remove protection */
 
 	return Result;
 }
@@ -367,7 +371,9 @@ rt_public EIF_REFERENCE rtclone(EIF_REFERENCE source)
 	result = eclone (source);	/* Clone object */
 	ecopy (source, result);		/* Performs copy from `source' to `result' */
 
-	RT_GC_WEAN_N(2);				/* Remove protection */
+	RT_GC_WEAN(result);
+	RT_GC_WEAN(source);
+	/*RT_GC_WEAN_N(2);*/				/* Remove protection */
 
 	ENSURE ("result_created", result);
 	return result;					/* Pointer to the cloned object */

@@ -1110,6 +1110,16 @@ rt_public void eraise(char *tag, long num)
 	 */
 	RT_GET_CONTEXT
 	EIF_GET_CONTEXT
+
+#ifdef WORKBENCH
+	if ((is_capturing || is_replaying) && !RTCRI) {
+		if (is_capturing) {
+			cr_register_exception(tag, num);
+		}
+		cr_cross_depth++;
+	}
+#endif
+
 	struct ex_vect	*trace = NULL;			/* The stack trace entry */
 	struct ex_vect	*vector;		/* The stack trace entry */
 	char 			*tg;
@@ -1290,6 +1300,7 @@ rt_public void eraise(char *tag, long num)
 #ifndef NOHOOK
 	exception(PG_RAISE);	/* Debugger hook -- explicitly raised exception */
 #endif
+
 	ereturn();				/* Go back to last recorded rescue entry */
 	/* NOTREACHED */
 }
