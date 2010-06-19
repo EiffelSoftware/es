@@ -1350,6 +1350,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRI (!(cr_cross_depth%2))
 
 #define RTCRCSI(y,bodyid,rout) \
+	int cr_old_depth = cr_cross_depth; \
 	int cr_cross = (RTCRI != (1)) && (is_capturing || is_replaying); \
 	cr_call_depth++; \
 	if (cr_cross) { \
@@ -1358,9 +1359,10 @@ RT_LNK void eif_exit_eiffel_code(void);
 		cr_register_call (y, bodyid);
 
 #define RTCRCSO(y,bodyid,rout) \
+	int cr_old_depth = cr_cross_depth; \
 	int cr_cross = (RTCRI != (0)) && (is_capturing || is_replaying); \
 	int cr_exception = 0; \
-	jmp_buf cr_jbuf, *cr_old_jbuf; \
+	jmp_buf cr_jbuf, *cr_old_jbuf = (jmp_buf *) NULL; \
 	cr_call_depth++; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
@@ -1370,11 +1372,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 /* Call values and exception setup come here */
 
 #define RTCRES \
-		if (is_capturing && !RTCRI) { \
-			cr_old_jbuf = exvect->ex_jbuf; \
-			exvect->ex_jbuf = &cr_jbuf; \
-			cr_exception = setjmp(cr_jbuf); \
-		} \
+		cr_old_jbuf = exvect->ex_jbuf; \
+		exvect->ex_jbuf = &cr_jbuf; \
+		cr_exception = setjmp(cr_jbuf); \
 
 #define RTCRCEI(rout) \
 	} \
@@ -1390,18 +1390,18 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRRSI(y) \
 	if (cr_cross) { \
-		cr_cross_depth--; \
+		cr_cross_depth = cr_old_depth; \
 		cr_register_return(y);
 
 #define RTCRRSO(y) \
 		if (cr_cross) { \
-			cr_cross_depth--; \
+			cr_cross_depth = cr_old_depth; \
 			cr_register_return(y); \
 		} \
 	} \
-	else if (cr_cross && !cr_exception) {\
-		cr_replay (); \
-		cr_cross_depth--; \
+	else if (cr_cross) { \
+		if (!cr_exception) { cr_replay(); } \
+		cr_cross_depth = cr_old_depth; \
 	} \
 	if (cr_cross) {\
 
@@ -1409,7 +1409,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCREE \
 		if (cr_exception) { \
-			printf("Outside exception!\n"); exit(1); \
+			exvect->ex_jbuf = cr_old_jbuf; \
+			ereturn(); \
 		} \
 
 #define RTCRRE \
@@ -1437,12 +1438,18 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #else
 
-#define RTCRI (1)
-#define RTCRC(x,y)
-#define RTCRA(a,s)
-#define RTCRE
-#define RTCRR(t,f,s)
-#define RTCRV
+#define RTCRCSI(y,bodyid,rout)
+#define RTCRCSO(y,bodyid,rout)
+#define RTCRES
+#define RTCRCEI(rout)
+#define RTCRCEO(rout)
+#define RTCRRSI(y)
+#define RTCRRSO(y)
+#define RTCREE
+#define RTCRRE
+#define RTCRRC
+#define RTCRRV(a,s)
+#define RTCRRR(t,s) 
 
 #define RTCRMCPY(d,ds,s,c)  memcpy(d,s,c)
 #define RTCRMMV(d,ds,s,c)   memmove(d,s,c)

@@ -81,13 +81,21 @@ extern "C" {
 /* RT_GC_WEAN_N(n)	pop `n' items from `loc_stack'. */
 
 #ifdef ISE_GC
+#ifdef WORKBENCH
+#define RT_GC_PROTECT(a)        cr_epush(&loc_stack, (EIF_REFERENCE *) &a)
+/*#define RT_GC_PROTECT(a)        epush(&loc_stack,(EIF_REFERENCE) &a) */
+#define RT_GC_WEAN(a)           cr_epop(&loc_stack,&a)
+/*#define RT_GC_WEAN(a)           epop(&loc_stack,1) } */
+/*#define RT_GC_WEAN_N(n)         epop(&loc_stack,n)*/
+#else
 #define RT_GC_PROTECT(a)	epush(&loc_stack,(EIF_REFERENCE) &a)
 #define RT_GC_WEAN(a)		epop(&loc_stack,1)
-#define RT_GC_WEAN_N(n)		epop(&loc_stack,n)
+/*#define RT_GC_WEAN_N(n)		epop(&loc_stack,n)*/
+#endif
 #else
 #define RT_GC_PROTECT(a)
 #define RT_GC_WEAN(a)
-#define RT_GC_WEAN_N(n)
+/*#define RT_GC_WEAN_N(n)*/
 #endif
 
 /* Macro used to get info about SPECIAL objects.

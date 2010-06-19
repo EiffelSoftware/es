@@ -19,7 +19,10 @@ RT_LNK void cr_register_value (void *value, uint32 *type, size_t pointed_size);
 RT_LNK void cr_register_emalloc (EIF_REFERENCE obj);
 RT_LNK void cr_register_protect (EIF_REFERENCE *obj);
 RT_LNK void cr_register_wean (EIF_REFERENCE *obj);
+RT_LNK void cr_register_exception (char *tag, long code);
 
+RT_LNK int cr_epush(register struct stack *stk, EIF_REFERENCE *obj);
+RT_LNK void cr_epop(struct stack *stk, EIF_REFERENCE *obj);
 
 /* Replay routines */
 

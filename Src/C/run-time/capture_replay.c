@@ -13,6 +13,7 @@
 #include "eif_malloc.h"
 #include "eif_project.h"
 #include "eif_traverse.h"
+#include "rt_garcol.h"
 
 #include "eif_macros.h"
 
@@ -24,9 +25,9 @@
 
 #define TYPE_MASK 0xF0
 
-#define CR_CALL 0xF0	/* A C routine is called from Eiffel */
+#define CR_CALL 0x00	/* A C routine is called from Eiffel */
 #define CR_RET  0x10
-#define CR_EX   0x20	/* An exception occured in C and gets propagated back to Eiffel */
+#define CR_EXC  0x20	/* An exception occured in C and gets propagated back to Eiffel */
 
 #define NEWOBJ	0x50	/* A Eiffel object is created in C */
 #define NEWSPL	0x60
@@ -73,6 +74,8 @@ rt_private void bwrite (char *buffer, size_t nbytes)
 	if (nbytes != fwrite(buffer, sizeof(char), nbytes, cr_file))
 		cr_raise("Unable to write to capture log");
 
+	RTCRDBG((stderr, "r/w %d %x bytes\n", nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
+
 }
 
 rt_private void bread (char *buffer, size_t nbytes)
@@ -85,6 +88,8 @@ rt_private void bread (char *buffer, size_t nbytes)
 
 	if (nbytes != fread(buffer, sizeof(char), nbytes, cr_file))
 		cr_raise("Unable to read from capture log");
+
+	RTCRDBG((stderr, "r/w %d %x bytes\n", nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
 
 }
 
@@ -231,6 +236,8 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 	object->ref = ref;
 	object->copy = NULL;
 
+	RTCRDBG((stderr, "push object %s\n", ref.size == CR_GLOBAL_REF ? "gobal" : "local"));
+
 		/* when replaying we do not observe objects */
 	if (is_replaying)
 		return;
@@ -371,6 +378,8 @@ rt_private void cr_pop_objects ()
 		old = object;
 		object = object->next;
 
+		RTCRDBG((stderr, "pop object\n"));
+
 		if (old->copy != NULL)
 			eif_rt_xfree (old->copy);
 
@@ -403,7 +412,9 @@ rt_private void cr_remove_object (EIF_CR_ID cr_id)
 			*object = old->next;
 			if (old->copy != NULL)
 				eif_rt_xfree (old->copy);
-				
+
+			RTCRDBG((stderr, "remove object\n"));
+
 			eif_rt_xfree (old);
 			
 			return;
@@ -493,6 +504,8 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 
 	/* TODO: clear stack */
 
+	if (!RTCRI)
+		cr_pop_objects();
 
 	if (is_capturing) {
 
@@ -539,11 +552,11 @@ rt_public void cr_register_return (int num_args)
 
 	type = (char) CR_RET | (char) num_args;
 
+	if (!RTCRI)
+		cr_pop_objects();
+
 	if (is_capturing) {
 
-		if (!RTCRI) {
-			cr_pop_objects();
-		}
 		cr_capture_mutations(RTCRI);
 
 		bwrite(&type, sizeof(char));
@@ -831,6 +844,49 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 
 }
 
+rt_public void cr_register_exception (char *tag, long code)
+{
+
+	REQUIRE("capturing", is_capturing);
+	REQUIRE("not_inside", !RTCRI);
+
+	char type = (char) CR_EXC;
+	uint32 length = strlen(tag);
+
+	cr_capture_mutations(1);
+//	cr_pop_objects();
+
+	bwrite(&type, sizeof(char));
+	bwrite((char *) &code, sizeof(long));
+
+	bwrite((char *) &length, sizeof(uint32));
+	bwrite(tag, length);
+
+}
+
+
+rt_public int cr_epush(register struct stack *stk, EIF_REFERENCE *obj)
+{
+	EIF_GET_CONTEXT
+
+	if (is_capturing && !RTCRI) {
+		cr_register_protect (obj);
+	}
+	return epush(stk, (EIF_REFERENCE) obj);
+}
+
+
+rt_public void cr_epop(struct stack *stk, EIF_REFERENCE *obj)
+{
+	EIF_GET_CONTEXT
+
+	if (is_capturing && !RTCRI) {
+		cr_register_wean (obj);
+	}
+	epop(stk, 1);
+}
+
+
 rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 {
 
@@ -863,6 +919,9 @@ rt_public void cr_replay ()
 	EIF_TYPE_INDEX dftype;
 	EIF_CR_REFERENCE ref, newref;
 	EIF_CR_ID id;
+	long excpt_code;
+	uint32 excpt_length;
+	char *excpt_tag;
 
 	while (1) {
 		bread (&type, 1);
@@ -968,7 +1027,13 @@ rt_public void cr_replay ()
 
 			case PROTOBJ:
 
-				ref = cr_retrieve_object();
+
+ 				bread((char *) &id, sizeof(EIF_CR_ID));
+
+				if (cr_is_valid_id(id) == 0)
+					cr_raise("Replay mismatch: read invalid id from log");
+
+				ref = cr_object_of_id(id);
 
 				if (!CR_IS_REFERENCE(ref))
 					cr_raise("Trying to protect pointer");
@@ -978,16 +1043,12 @@ rt_public void cr_replay ()
 				if (Current == (EIF_REFERENCE) NULL)
 					cr_raise("Invalid ID for PROTOBJ");
 
+				cr_remove_object(id);
+
 				newref.item.p = eif_protect(CR_ACCESS(ref));
 				newref.size = CR_GLOBAL_REF;
 
 				cr_push_object (newref);
-
-				/* 
-					FIXME: insert object into global list...
-				object->is_protected++;
-
-				*/
 
 				break;
 
@@ -1039,15 +1100,34 @@ rt_public void cr_replay ()
         	                                }
 	                                }
 
-					if (!((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) == EO_SPEC)
+					if (((HEADER(Current)->ov_flags) & (EO_SPEC | EO_TUPLE)) != EO_SPEC) {
 						cr_raise("Invalid object type for MEMMUT");
+					}
 
-					if (size != RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current))
+					if (size != RT_SPECIAL_CAPACITY(Current)*RT_SPECIAL_ELEM_SIZE(Current)) {
 						cr_raise("Invalid special size for MEMMUT");
+					}
 
 					bread((char *) Current, size);
 				}
 
+				break;
+
+			case CR_EXC:
+
+				bread((char *) &excpt_code, sizeof(long));
+				bread((char *) &excpt_length, sizeof(uint32));
+				
+				excpt_tag = cmalloc((size_t) excpt_length + 1);
+				if (excpt_tag == (char *) NULL)
+					enomem();
+
+				bread(excpt_tag, excpt_length);
+				excpt_tag[excpt_length] = '\0';
+
+				eraise(excpt_tag, excpt_code);
+
+				/* NOT REACHED */
 				break;
 
 			default:
