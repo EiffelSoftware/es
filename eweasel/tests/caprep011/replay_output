@@ -1,0 +1,6 @@
+try external
+catch 1
+try eiffel
+catch 2
+try nothing
+Execution completed
