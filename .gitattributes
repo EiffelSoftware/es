@@ -3273,6 +3273,7 @@ eweasel/tests/caprep010/Ace -text
 eweasel/tests/caprep011/Ace -text
 eweasel/tests/caprep011/capture_output -text
 eweasel/tests/caprep011/replay_output -text
+eweasel/tests/caprep012/Ace -text
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
