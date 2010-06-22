@@ -1928,20 +1928,29 @@ feature {NONE} -- Query
 
 	is_inside_capture_replay_boundary (a_feature: FEATURE_I): BOOLEAN
 			-- Is given feature considered inside of the capture/replay boundary?
+		local
+			l_class: STRING
 		do
 
 			Result := True
 			if a_feature.is_external then
+				l_class := a_feature.written_class.name_in_upper
 				if
-					not a_feature.written_class.name_in_upper.is_equal ("TUPLE") and then
+					l_class.same_string ("TUPLE") or
+					l_class.same_string ("MEMORY") or
+					l_class.same_string ("MEM_INFO")
+				then
+						-- The external routines of the above classes are executed in any case
+					Result := True
+				elseif
 					attached {EXTERNAL_I} a_feature as l_ext_i and then
 					attached {EXTERNAL_EXT_I} l_ext_i.extension as l_ext and then
 					not l_ext.is_built_in
 				then
 					Result := False
 				elseif
-					a_feature.written_class.name_in_upper.is_equal ("IDENTIFIED_ROUTINES") or
-					a_feature.written_class.name_in_upper.is_equal ("EV_ANY_IMP")
+					l_class.is_equal ("IDENTIFIED_ROUTINES") or
+					l_class.is_equal ("EV_ANY_IMP")
 				then
 					Result := False
 				end
