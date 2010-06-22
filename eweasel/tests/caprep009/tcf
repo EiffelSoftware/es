@@ -2,13 +2,15 @@
 test_name 	capture-string-modification
 test_description Capture and replay changes to string objects performed on the C side
 
+define MULTITHREADED "false"
+define PRECOMPILE "$PRECOMPILED_BASE"
+
 copy_sub 	Ace $TEST Ace
 copy_raw 	test.e $CLUSTER test.e
 compile_frozen
 compile_result 	ok
 c_compile_work
 c_compile_result	ok
-
 
 execute_work 	NONE 	exec_capture_output -eif_capture
 execute_result 	ok
@@ -17,5 +19,26 @@ compare		exec_capture_output output
 execute_work	NONE	exec_replay_output -eif_replay
 execute_result	ok
 compare		exec_replay_output output
+
+cleanup_compile
+
+
+define MULTITHREADED "true"
+define PRECOMPILE "$PRECOMPILED_BASE_MT"
+
+copy_sub        Ace $TEST Ace
+copy_raw        test.e $CLUSTER test.e
+compile_frozen
+compile_result  ok
+c_compile_work
+c_compile_result        ok
+
+execute_work    NONE    exec_capture_output -eif_capture
+execute_result  ok
+compare         exec_capture_output output
+
+execute_work    NONE    exec_replay_output -eif_replay
+execute_result  ok
+compare         exec_replay_output output
 
 test_end
