@@ -208,6 +208,10 @@ feature -- Access
 			-- Should simple frame properties be infferd?
 			-- Default: True
 
+	is_daikon_enabled: BOOLEAN
+			-- Should Daikon be used as an inferrer?
+			-- Default: True
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -380,6 +384,14 @@ feature -- Setting
 			is_simple_property_enabled := b
 		ensure
 			is_simple_property_enabled_set: is_simple_property_enabled = b
+		end
+
+	set_is_daikon_enabled (b: BOOLEAN)
+			-- Set `is_daikon_enabled' with `b'.
+		do
+			is_daikon_enabled := b
+		ensure
+			is_daikon_enabled_set: is_daikon_enabled = b
 		end
 
 feature{NONE} -- Implementation

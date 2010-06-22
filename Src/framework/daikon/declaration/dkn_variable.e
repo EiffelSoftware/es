@@ -28,6 +28,11 @@ inherit
 			out
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			out
+		end
+
 create
 	make
 
@@ -82,6 +87,7 @@ feature -- Access
 			Result.append (variable_string)
 			Result.append_character (' ')
 			Result.append (daikon_name)
+			Result.append_character ('%N')
 
 			Result.append_character ('%T')
 			Result.append (var_kind_string)
@@ -105,6 +111,7 @@ feature -- Access
 			Result.append (comparability_string)
 			Result.append_character (' ')
 			Result.append (comparability.out)
+			Result.append_character ('%N')
 			Result.append_character ('%N')
 		end
 

@@ -184,7 +184,8 @@ feature{NONE} -- Process/Data
 
 					expression_change_set.force_last (l_change_list, expression)
 				elseif is_no_change_included then
-					create l_no_change.make (0)
+					check l_equation /= Void end
+					create l_no_change.make_with_original_value (l_equation.value)
 					create l_change_list.make
 					l_change_list.extend (new_expression_change (expression, l_no_change, True, 0.1))
 					expression_change_set.force_last (l_change_list, expression)
@@ -232,7 +233,9 @@ feature{NONE} -- Process/Data
 				l_change_list.extend (new_expression_change (expression, l_changes, False, 1.0))
 				expression_change_set.force_last (l_change_list, expression)
 			elseif is_no_change_included then
-				create l_no_change.make (0)
+				check l_equation /= Void end
+				create l_no_change.make_with_original_value (l_equation.value)
+
 				create l_change_list.make
 				l_change_list.extend (new_expression_change (expression, l_no_change, False, 0.1))
 				expression_change_set.force_last (l_change_list, expression)

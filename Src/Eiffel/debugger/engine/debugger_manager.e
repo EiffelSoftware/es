@@ -1047,6 +1047,31 @@ feature -- Expression evaluation
 			end
 		end
 
+	expression_evaluation_with_assertion_checking (a_expr: STRING; a_checking_assertion: BOOLEAN): DUMP_VALUE
+			-- Expression evaluation's result for `a_expr' in current context
+			-- (note: Result = Void implies an error occurred)
+			-- `a_checking_assertion' indicate if assertions associated with `a_expr' are checked
+			-- during expression evaluation.
+		require
+			safe_application_is_stopped: safe_application_is_stopped
+		local
+			exp: DBG_EXPRESSION
+			eval: DBG_EXPRESSION_EVALUATION
+		do
+			if safe_application_is_stopped then
+				create exp.make_with_context (a_expr)
+				exp.set_keep_assertion_checking (a_checking_assertion)
+				if not exp.error_occurred then
+					create eval.make (exp)
+					eval.evaluate
+					if not eval.error_occurred then
+						Result := eval.value
+					end
+					eval.destroy
+				end
+			end
+		end
+
 feature -- Helpers
 
 	current_debugging_feature_as: FEATURE_AS
@@ -1715,7 +1740,7 @@ feature -- Status report
 		ensure
 			should_menu_be_raised_when_application_stopped_set: should_menu_be_raised_when_application_stopped = b
 		end
-		
+
 invariant
 
 	dbg_storage_attached: dbg_storage /= Void

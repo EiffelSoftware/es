@@ -86,6 +86,11 @@ feature -- Access/Search scope
 			-- `operand_map' is needed because for a given test case, which variables are used as which operands in the called
 			-- feature is already fixed, the same ordering needs to be consistent with the generated functions.
 
+	reversed_operand_map: HASH_TABLE [DS_HASH_SET [INTEGER], STRING]
+			-- A map from variable names to indexes of operands the variable is used in `feature_'.
+			-- Key is name of a variable, value is the set of operand indexes that varaible is used in
+			-- `feature_'.
+
 	context_type: TYPE_A
 			-- Context type where types are resolved
 
@@ -114,22 +119,15 @@ feature -- Status
 
 	should_search_for_query_with_precondition: BOOLEAN
 			-- Should search for queries with preconditions?
-			-- Default: True	
+			-- Default: False	
 
-	should_include_tilda_expressions: BOOLEAN
-			-- Should tilda expressions be included?
-			-- For example "v1 ~ v2" and "v1 /~ v2".
+	should_include_operand_and_expression_comparison: BOOLEAN
+			-- Should expressions comparing equality between two operands, one operand and an argument-less query,
+			-- or two argument-less queries be generated?
+			-- For example, "v_0 = v_1.item", where v_0 and v_1 are operands.
 			-- Default: False
 
 feature -- Setting
-
-	set_should_include_tilda_expressions (b: BOOLEAN)
-			-- Set `should_include_tilda_expressions' with `b'.
-		do
-			should_include_tilda_expressions := b
-		ensure
-			should_include_tilda_expressions_set: should_include_tilda_expressions = b
-		end
 
 	set_class_and_feature (a_class: like context_class; a_feature: like feature_)
 			-- Set `context_class' and `feature_'.
@@ -146,6 +144,7 @@ feature -- Setting
 		do
 			context := a_context
 			operand_map := a_operand_map
+			initialize_reversed_operand_map
 		ensure
 			context_set: context = a_context
 			operand_map_set: operand_map = a_operand_map
@@ -183,6 +182,14 @@ feature -- Setting
 			should_search_for_query_with_precondition_set: should_search_for_query_with_precondition = b
 		end
 
+	set_should_include_operand_and_expression_comparison (b: BOOLEAN)
+			-- Set `should_include_operand_and_expression_comparison' with `b'.
+		do
+			should_include_operand_and_expression_comparison := b
+		ensure
+			should_include_operand_and_expression_comparison_set: should_include_operand_and_expression_comparison = b
+		end
+
 feature -- Access
 
 	quasi_constant_functions: DS_HASH_SET [EPA_FUNCTION]
@@ -198,6 +205,11 @@ feature -- Access
 			-- quasi_constant_functions.is_superset (variable_functions)
 			-- `variable_functions', argumentless_functions and `composed_functions' are disjoint.
 
+	operand_functions: DS_HASH_SET [EPA_FUNCTION]
+			-- Functions for operands (including result, if any) of `feature_' in `context'.
+			-- `operand_functions' is a subset of `variable_functions' because `varaible_functions' may
+			-- include objects that are not operands of `feature_'.
+
 	argumentless_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions representing a qualified argumentless query,
 			-- the target is one of `variable_functions'
@@ -206,12 +218,17 @@ feature -- Access
 			-- Composed functions, for example v1.has (v2),
 			-- where v1 and v2 are too operands of `feature_'.
 
-	tilda_functions: DS_HASH_SET [EPA_FUNCTION]
+	equality_comparision_functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Set of tilda functions, for example "v1 ~ v2" and "v1 /~ v2"
 
 	functions: DS_HASH_SET [EPA_FUNCTION]
 			-- Functions that are found by last `search'.
-			-- The result is the union of `quasi_constant_functions', `variable_functions', `composed_functions', `argumentless_functions' and `tild_functions'.
+			-- The result is the union of `quasi_constant_functions', `variable_functions', `composed_functions', `argumentless_functions' and `equality_comparision_functions'.
+
+	operand_function_table: HASH_TABLE [EPA_FUNCTION, INTEGER]
+			-- Table from 0-based operand index to the function representation of that operand
+			-- Key is index of operand (including result) of `feature_', value is the
+			-- function representation of that operand.
 
 feature -- Status report	
 
@@ -238,13 +255,13 @@ feature -- Basic operations
 			build_single_integer_argument_query_table
 			build_variable_functions
 			build_composed_functions
-			build_tilda_functions
+			build_operand_and_expression_comparisons
 
 				-- Integrate results into `functions'.
 			functions.merge (quasi_constant_functions)
 			functions.merge (variable_functions)
 			functions.merge (composed_functions)
-			functions.merge (tilda_functions)
+			functions.merge (equality_comparision_functions)
 		end
 
 feature{NONE} -- Implementation
@@ -290,58 +307,44 @@ feature{NONE} -- Implementation
 			l_context: like context
 			l_expr_ast: EXPR_AS
 			l_context_type: like context_type
+			l_var_name: STRING
+			l_reversed: like reversed_operand_map
+			l_cursor2: DS_HASH_SET_CURSOR [INTEGER]
+			l_operand_function_table: like operand_function_table
 		do
-			create variable_functions.make (variables.count)
-			variable_functions.set_equality_tester (function_equality_tester)
 			l_context := context
 			l_context_class := l_context.class_
 			l_feature := l_context.feature_
 			l_variables := variables
 			l_cursor := l_variables.cursor
 			l_context_type := context_type
+			l_reversed := reversed_operand_map
+			l_operand_function_table := operand_function_table
 			from
 				l_variables.start
 			until
 				l_variables.after
 			loop
-				l_expr_ast := l_context.ast_from_expression_text (l_variables.key_for_iteration)
+				l_var_name := l_variables.key_for_iteration
+				l_expr_ast := l_context.ast_from_expression_text (l_var_name)
 				create l_expr.make_with_type (l_context_class, l_feature, l_expr_ast, l_context_class, l_context.expression_type (l_expr_ast))
 				create l_func.make_from_expression (l_expr)
 				quasi_constant_functions.force_last (l_func)
 				variable_functions.force_last (l_func)
-				l_variables.forth
-			end
-		end
-
-	build_tilda_functions
-			-- Build `tilda_functions' from `variable_functions'.
-		local
-			l_cursor, l_cursor2: DS_HASH_SET_CURSOR [EPA_FUNCTION]
-			l_var_funcs: like variable_functions
-			l_tilda_functions: like tilda_functions
-			l_function: EPA_FUNCTION
-			l_func_body: STRING
-		do
-			if should_include_tilda_expressions then
-				l_tilda_functions := tilda_functions
-				from
-					l_cursor := variable_functions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
+				if l_reversed.has (l_var_name) then
+					operand_functions.force_last (l_func)
 					from
-						l_cursor2 := variable_functions.new_cursor
+						l_cursor2 := reversed_operand_map.item (l_var_name).new_cursor
 						l_cursor2.start
 					until
 						l_cursor2.after
 					loop
-						l_tilda_functions.force_last (tilda_function (l_cursor.item, l_cursor2.item, once "~"))
-						l_tilda_functions.force_last (tilda_function (l_cursor.item, l_cursor2.item, once "/~"))
+						l_operand_function_table.force (l_func, l_cursor2.item)
 						l_cursor2.forth
 					end
-					l_cursor.forth
+
 				end
+				l_variables.forth
 			end
 		end
 
@@ -400,7 +403,7 @@ feature{NONE} -- Implementation
 								-- 3. For each such query, iterate through all functions in `variable_functions', select those
 								--    whose type conforms to the type of that query,
 							l_feature := l_features.item_for_iteration
-							fixme ("We don't handle is_equal for the moment because between any two given variables, you can test if they are eqaul, then we have too many cases. 9.5.2010 Jasonw")
+							fixme ("We don't handle is_equal for the moment because between any two given variables, because there are too many cases. 9.5.2010 Jasonw")
 							if is_single_argument_query_valid (l_feature, l_operand_type) then
 								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
 
@@ -628,6 +631,122 @@ feature{NONE} -- Implementation
 				l_variables.forth
 			end
 			l_variables.go_to (l_cursor)
+		end
+
+	build_operand_and_expression_comparisons
+			-- Build expressions consisting of an equality comparison between
+			-- two operands, one operand and an argument-less query or
+			-- two argument-less queries.
+		local
+			l_cursor, l_cursor2: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_var_funcs: like variable_functions
+			l_tilda_functions: like equality_comparision_functions
+			l_function: EPA_FUNCTION
+			l_func_body: STRING
+			l_type1, l_type2: TYPE_A
+
+			l_operand_function: EPA_FUNCTION
+			l_operand_name: STRING
+			l_type_tbl: like variable_type_table
+			l_opd_type: TYPE_A
+			l_fun_type: TYPE_A
+		do
+			if should_include_operand_and_expression_comparison then
+				l_tilda_functions := equality_comparision_functions
+				from
+					l_cursor := variable_functions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					from
+						l_cursor2 := variable_functions.new_cursor
+						l_cursor2.start
+					until
+						l_cursor2.after
+					loop
+						l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
+						l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+						l_cursor2.forth
+					end
+					l_cursor.forth
+				end
+
+					-- Build comparisons between an operand and an argument-less query.
+					-- The operand and the argument-less query must have the same type, and this type is non-basic.
+				l_type_tbl := variable_type_table
+				across operand_function_table as l_operand_functions loop
+					l_operand_function := l_operand_functions.item
+					l_operand_name := l_operand_function.body
+					l_opd_type := l_type_tbl.item (l_operand_name)
+					from
+						l_cursor2 := argumentless_functions.new_cursor
+						l_cursor2.start
+					until
+						l_cursor2.after
+					loop
+						l_fun_type := l_cursor2.item.result_type
+						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
+							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
+							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
+						end
+						l_cursor2.forth
+					end
+				end
+
+					-- Build comparisons between two argument-less queries.
+					-- Those two argument-less queries must have integer type.
+				from
+					l_cursor := argumentless_functions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_type1 := l_cursor.item.result_type
+					from
+						l_cursor2 := argumentless_functions.new_cursor
+						l_cursor2.start
+					until
+						l_cursor2.after
+					loop
+						if l_cursor.item /= l_cursor2.item then
+							l_type2 := l_cursor2.item.result_type
+							if
+								(l_type1.is_integer and then l_type2.is_integer)
+--								(l_type1.is_boolean and then l_type2.is_boolean)
+							then
+--								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
+								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+							end
+						end
+						l_cursor2.forth
+					end
+					l_cursor.forth
+				end
+
+					-- Build comparisions between an operand and a single argument query.
+					-- The operand and the single argument query must have the same type, and that
+					-- type is non-basic.
+				l_type_tbl := variable_type_table
+				across operand_function_table as l_operand_functions loop
+					l_operand_function := l_operand_functions.item
+					l_operand_name := l_operand_function.body
+					l_opd_type := l_type_tbl.item (l_operand_name)
+					from
+						l_cursor2 := composed_functions.new_cursor
+						l_cursor2.start
+					until
+						l_cursor2.after
+					loop
+						l_fun_type := l_cursor2.item.result_type
+						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
+							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
+							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
+						end
+						l_cursor2.forth
+					end
+				end
+			end
 		end
 
 feature{NONE} -- Implementations
@@ -891,8 +1010,16 @@ feature{NONE} -- Implementations
 			create functions.make (200)
 			functions.set_equality_tester (function_equality_tester)
 
-			create tilda_functions.make (100)
-			tilda_functions.set_equality_tester (function_equality_tester)
+			create equality_comparision_functions.make (100)
+			equality_comparision_functions.set_equality_tester (function_equality_tester)
+
+			create variable_functions.make (variables.count)
+			variable_functions.set_equality_tester (function_equality_tester)
+
+			create operand_functions.make (10)
+			operand_functions.set_equality_tester (function_equality_tester)
+
+			create operand_function_table.make (10)
 		end
 
 	is_single_argument_query_valid (a_feature: FEATURE_I; a_context_type: TYPE_A): BOOLEAN
@@ -944,7 +1071,7 @@ feature{NONE} -- Implementations
 			end
 		end
 
-	tilda_function (a_func1, a_func2: EPA_FUNCTION; a_tilda_symbol: STRING): EPA_FUNCTION
+	equality_comparision_function (a_func1, a_func2: EPA_FUNCTION; a_tilda_symbol: STRING): EPA_FUNCTION
 			-- Tilda function connecting `a_func1' and `a_func2' with `a_tilda_symbol'
 		require
 			a_func1_is_constant: a_func1.is_constant
@@ -960,6 +1087,30 @@ feature{NONE} -- Implementations
 			l_body.append_character (' ')
 			l_body.append (a_func2.body)
 			create Result.make_nullary (boolean_type, l_body)
+		end
+
+	initialize_reversed_operand_map
+			-- Initialize `reversed_operand_map' using `operand_map'.
+		local
+			l_var_name: STRING
+			l_opd_set: DS_HASH_SET [INTEGER]
+			l_reversed: like reversed_operand_map
+		do
+			create l_reversed.make (operand_map.count)
+			l_reversed.compare_objects
+			reversed_operand_map := l_reversed
+
+			across operand_map as l_operand_map loop
+				l_var_name := l_operand_map.item
+				l_reversed.search (l_var_name)
+				if l_reversed.found then
+					l_opd_set := l_reversed.found_item
+				else
+					create l_opd_set.make (2)
+					l_reversed.put (l_opd_set, l_var_name)
+				end
+				l_opd_set.force_last (l_operand_map.key)
+			end
 		end
 
 end

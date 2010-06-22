@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="program_analysis" uuid="197D2624-6547-4BAB-904B-131ABFA4EABB" library_target="program_analysis">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="program_analysis" uuid="197D2624-6547-4BAB-904B-131ABFA4EABB" library_target="program_analysis">
 	<target name="program_analysis">
 		<root all_classes="true"/>
-		<option warning="false" is_attached_by_default="false" void_safety="none">
+		<option warning="false" is_attached_by_default="false" void_safety="none" syntax="provisional">
 			<assertions/>
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
@@ -25,9 +25,9 @@
 		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="parser_extension" location="$EIFFEL_SRC\framework\parser_extension\parser_extension.ecf"/>
+		<library name="process" location="$EIFFEL_SRC\library\process\process.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
-		<library name="process" location="$EIFFEL_SRC\library\process\process.ecf"/>
 		<cluster name="program_analysis" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/.svn$</exclude>

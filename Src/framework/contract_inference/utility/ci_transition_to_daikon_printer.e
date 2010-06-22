@@ -16,6 +16,10 @@ inherit
 
 	DKN_CONSTANTS
 
+create
+	make,
+	make_with_selection_function
+
 feature -- Access
 
 	last_declarations: DKN_DECLARATION
@@ -35,13 +39,16 @@ feature -- Status report
 
 feature -- Generate
 
-	generate
+	generate (a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Generate `last_declarations' and `last_trace' from `transitions'.
 		local
 			l_enter_ppt: DKN_PROGRAM_POINT
 			l_exit_ppt: DKN_PROGRAM_POINT
 			l_ppt_name: STRING
 		do
+			class_ := a_class
+			feature_ := a_feature
+
 				-- Inititalize result.
 			create last_declarations.make (20)
 			create last_trace.make
@@ -53,6 +60,9 @@ feature -- Generate
 			calculate_declarations (l_enter_ppt, pre_state_expressions)
 			calculate_declarations (l_exit_ppt, post_state_expressions)
 
+			last_declarations.force_last (l_enter_ppt)
+			last_declarations.force_last (l_exit_ppt)
+			
 		end
 
 feature{NONE} -- Implementation
@@ -77,6 +87,8 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, STRING_8]
 			l_variable: like variable_declaraction
 		do
+			create Result.make (100)
+			Result.set_equality_tester (daikon_variable_equality_tester)
 			from
 				l_cursor := a_variable_names.new_cursor
 				l_cursor.start
@@ -84,6 +96,7 @@ feature{NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_variable := variable_declaraction (l_cursor.key, l_cursor.item)
+				Result.force_last (l_variable)
 				l_cursor.forth
 			end
 		end

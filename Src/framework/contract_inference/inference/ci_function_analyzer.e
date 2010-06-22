@@ -147,9 +147,12 @@ feature{NONE} -- Implementation
 
 	is_expression_qualified_call (a_expr: EPA_EXPRESSION): BOOLEAN
 			-- Is `a_expr' a qualified call?
+		local
+			l_text: STRING
 		do
 			fixme ("Very naive checking, refactoring needed. 17.5.2010 Jasonw")
-			Result := a_expr.text.has ('.')
+			l_text := a_expr.text
+			Result := l_text.has ('.') and then not l_text.has ('~') and then not l_text.has ('=')
 		end
 
 	info_in_expression (a_expr: EPA_EXPRESSION): TUPLE [target_name: STRING; feature_name: STRING; argument_name: detachable STRING]

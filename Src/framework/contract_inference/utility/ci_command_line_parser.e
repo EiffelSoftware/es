@@ -52,6 +52,7 @@ feature -- Basic operations
 			l_composite_integer_connector_option: AP_STRING_OPTION
 			l_sequence_property_option: AP_STRING_OPTION
 			l_simple_property_option: AP_STRING_OPTION
+			l_daikon_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -139,12 +140,16 @@ feature -- Basic operations
 			l_parser.options.force_last (l_composite_integer_premise_connector_option)
 
 			create l_sequence_property_option.make_with_long_form ("sequence-property")
-			l_sequence_property_option.set_description ("Shoudl sequence-based frame properties be inferred?%N Format: --sequence-property [on|off].%NDefault: on")
+			l_sequence_property_option.set_description ("Should sequence-based frame properties be inferred?%N Format: --sequence-property [on|off].%NDefault: on")
 			l_parser.options.force_last (l_sequence_property_option)
 
 			create l_simple_property_option.make_with_long_form ("simple-property")
-			l_simple_property_option.set_description ("Shoudl simple-based frame properties be inferred?%N Format: --simple-property [on|off].%NDefault: on")
+			l_simple_property_option.set_description ("Should simple-based frame properties be inferred?%N Format: --simple-property [on|off].%NDefault: on")
 			l_parser.options.force_last (l_simple_property_option)
+
+			create l_daikon_option.make_with_long_form ("daikon")
+			l_daikon_option.set_description ("Should Daikon be used as an inferrer?%N Format: --daikon [on|off].%NDefault: on")
+			l_parser.options.force_last (l_daikon_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -228,9 +233,24 @@ feature -- Basic operations
 				setup_simple_property (config, Void)
 			end
 
+			if l_daikon_option.was_found then
+				setup_daikon_property (config, l_daikon_option.parameter)
+			else
+				setup_daikon_property (config, Void)
+			end
 		end
 
 feature{NONE} -- Implementation
+
+	setup_daikon_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if Daikon is used?
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_daikon_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_daikon_enabled (False)
+			end
+		end
 
 	setup_simple_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup if simple frame property are to be inferred?

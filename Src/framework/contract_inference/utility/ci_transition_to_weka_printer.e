@@ -66,6 +66,7 @@ feature -- Access
 			l_id_attr: WEKA_ARFF_NUMERIC_ATTRIBUTE
 			l_uuid_attr: WEKA_ARFF_STRING_ATTRIBUTE
 			l_uuid_str: STRING
+			l_value_text: STRING
 		do
 			l_transition_changes := transition_changes
 
@@ -182,9 +183,16 @@ feature -- Access
 							l_changes.search (l_attrs.item_for_iteration)
 							if l_changes.found then
 								if attached {EPA_EXPRESSION} l_changes.found_item as l_found_value then
-									l_last_value := l_weka_attrs.item_for_iteration.value (l_found_value.text)
+									l_value_text := l_found_value.text.twin
+									if l_value_text.item (1) = '%"' then
+										l_value_text.remove_head (1)
+									end
+									if l_value_text.item (l_value_text.count) = '%"' then
+										l_value_text.remove_tail (1)
+									end
+									l_last_value := l_weka_attrs.item_for_iteration.value (l_value_text)
 								else
-									l_last_value := not_applicable_value
+									l_last_value := {WEKA_ARFF_ATTRIBUTE}.missing_value
 								end
 							else
 								l_last_value := {WEKA_ARFF_ATTRIBUTE}.missing_value
@@ -243,7 +251,9 @@ feature -- Status report
 						Result :=
 							attached equation_selection_function as l_function implies l_function.item ([a_equation]) and
 							((a_equation.value.is_boolean or
-							a_equation.value.is_integer)) and
+							  a_equation.value.is_nonsensical or
+							  a_equation.value.is_void or
+							  a_equation.value.is_integer)) and
 							a_equation.value.is_deterministic
 					end
 
@@ -429,6 +439,8 @@ feature{NONE} -- Implementation
 			l_change: EPA_EXPRESSION_CHANGE
 			l_attributes_for_changes: like attributes_for_changes
 			l_zero_expression: EPA_AST_EXPRESSION
+			l_stay_true_expression: EPA_AST_EXPRESSION
+			l_stay_false_expression: EPA_AST_EXPRESSION
 		do
 			create l_tran_changes.make
 			create l_frequence_tbl.make (100)
@@ -443,6 +455,8 @@ feature{NONE} -- Implementation
 			across transitions as l_cursor loop
 				l_transition := l_cursor.item
 				create l_zero_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "0", l_transition.context.class_)
+				create l_stay_true_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_true_value + once "%"", l_transition.context.class_)
+				create l_stay_false_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_false_value + once "%"", l_transition.context.class_)
 				l_change_set := transition_change_set (l_transition)
 				create l_changes.make (20)
 				l_changes.compare_objects
@@ -456,9 +470,16 @@ feature{NONE} -- Implementation
 					l_change := l_change_cursor.item
 					l_attr_name := attribute_name_for_change (l_change, l_transition)
 					l_frequence_tbl.force (l_frequence_tbl.item (l_attr_name) + 1, l_attr_name)
-					if l_change.is_no_change then
+
+					if attached {EPA_EXPRESSION_NO_CHANGE_SET} l_change.values as l_no_change then
 						if l_change.expression.type.is_integer then
 							l_changes.put (l_zero_expression, l_attr_name)
+						elseif l_change.expression.type.is_boolean then
+							if l_no_change.original_value.as_boolean.is_true then
+								l_changes.put (l_stay_true_expression, l_attr_name)
+							else
+								l_changes.put (l_stay_false_expression, l_attr_name)
+							end
 						else
 							l_changes.put (Void, l_attr_name)
 						end
@@ -594,13 +615,20 @@ feature{NONE} -- Implementation
 				weka_boolean_values_cache.compare_objects
 				weka_boolean_values_cache.extend ("True")
 				weka_boolean_values_cache.extend ("False")
-				weka_boolean_values_cache.extend (not_applicable_value)
+				weka_boolean_values_cache.extend (stay_true_value)
+				weka_boolean_values_cache.extend (stay_false_value)
 			end
 			Result := weka_boolean_values_cache
 		end
 
 	not_applicable_value: STRING = "NA"
 			-- Not applicable value
+
+	stay_true_value: STRING = "STAY_TRUE"
+			-- A value indicating that a boolean attributes stays True.
+
+	stay_false_value: STRING = "STAY_FALSE"
+			-- A value indicating that a boolean attributes stays False.
 
 	weka_boolean_values_cache: detachable like weka_boolean_values
 			-- Cache for `weka_boolean_values'

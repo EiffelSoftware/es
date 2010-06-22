@@ -110,8 +110,6 @@ feature -- Setting
 
 	extend_transition (a_transition: SEM_TRANSITION)
 			-- Extend `a_transition' in Current as an instance in the target Weka relation.
-		require
-			a_transitio_valid: is_transition_valid (a_transition)
 		do
 			transitions.extend (a_transition)
 		ensure
@@ -120,8 +118,6 @@ feature -- Setting
 
 	extend_transitions (a_transitions: LINEAR [SEM_TRANSITION])
 			-- Extend `a_transitions' in Current as instances in the target Weka relation.
-		require
-			a_transitions_valid: a_transitions.for_all (agent is_transition_valid)
 		do
 			a_transitions.do_all (agent extend_transition)
 		ensure

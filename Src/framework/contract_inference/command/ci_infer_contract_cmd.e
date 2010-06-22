@@ -179,7 +179,12 @@ feature{NONE} -- Implementation
 			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory, a_tc_info.class_under_test.constraint_actual_type)
 			l_expr_finder.set_is_for_pre_execution (a_pre_execution)
 			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
-			l_expr_finder.set_should_include_tilda_expressions (True)
+--			l_expr_finder.set_should_include_tilda_expressions (True)
+			l_expr_finder.set_should_include_operand_and_expression_comparison (True)
+
+				-- We enable evaluating queries with preconditions.
+				-- Even though this will cause a lot of expressions to be [[nonsensical]].
+			l_expr_finder.set_should_search_for_query_with_precondition (True)
 			l_expr_finder.search (Void)
 			l_functions := nullary_functions (l_expr_finder.functions, l_context, a_pre_execution)
 			create Result.make (l_functions.count)
@@ -206,13 +211,10 @@ feature{NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_func := l_cursor.item
-				fixme ("We remove expressions with /~ because the debugger will hang evaluating /~ expressions. 25.05.2010 Jasonw")
-				if not l_func.body.has_substring (once "/~") then
-					if l_func.is_nullary then
-						Result.force_last (l_func)
-					else
-						Result.append (functions_with_domain_resolved (l_func, a_context, a_pre_execution))
-					end
+				if l_func.is_nullary then
+					Result.force_last (l_func)
+				else
+					Result.append (functions_with_domain_resolved (l_func, a_context, a_pre_execution))
 				end
 				l_cursor.forth
 			end
@@ -466,10 +468,10 @@ feature{NONE} -- Actions
 				-- Store results.
 			if a_pre_execution then
 				last_pre_execution_evaluations := a_state.cloned_object
-				add_not_tilda_expressions (last_pre_execution_evaluations)
+				mutate_equality_comparision_expressions (last_pre_execution_evaluations)
 			else
 				last_post_execution_evaluations := a_state.cloned_object
-				add_not_tilda_expressions (last_post_execution_evaluations)
+				mutate_equality_comparision_expressions (last_post_execution_evaluations)
 				build_last_transition
 			end
 
@@ -588,6 +590,7 @@ feature{NONE} -- Implementation
 			l_simple_inferrer: CI_SIMPLE_FRAME_CONTRACT_INFERRER
 			l_sequence_inferrer: CI_SEQUENCE_PROPERTY_INFERRER
 			l_composite_frame_inferrer: CI_COMPOSITE_FRAME_PROPERTY_INFERRER
+			l_daikon_inferrer: CI_DAIKON_INFERRER
 		do
 			create inferrers.make
 
@@ -609,22 +612,43 @@ feature{NONE} -- Implementation
 				l_composite_frame_inferrer.set_config (config)
 				inferrers.extend (l_composite_frame_inferrer)
 			end
+
+			if config.is_daikon_enabled then
+				create l_daikon_inferrer
+				l_daikon_inferrer.set_config (config)
+				l_daikon_inferrer.set_logger (log_manager)
+				inferrers.extend (l_daikon_inferrer)
+			end
 		end
 
-	add_not_tilda_expressions (a_state: EPA_STATE)
-			-- Added "/~" expressions into `a_state', based on the expressions which has "~" in `a_state'.
+	mutate_equality_comparision_expressions (a_state: EPA_STATE)
+			-- Mutate equality comparision related expressions in `a_state'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_set: DS_HASH_SET [EPA_EQUATION]
 			l_equation: EPA_EQUATION
 			l_expr: EPA_AST_EXPRESSION
-			l_value: EPA_BOOLEAN_VALUE
 			l_expr_text: STRING
 			l_orig_expr: EPA_EXPRESSION
 			l_orig_expr_text: STRING
+			l_left, l_right: STRING
+			l_connector: STRING
+			l_negated_connector: STRING
+			l_parts: LIST [STRING]
+			l_connector_tbl: HASH_TABLE [STRING, STRING]
+			l_orig_value: EPA_EXPRESSION_VALUE
+			l_value1: EPA_EXPRESSION_VALUE
+			l_value2: EPA_EXPRESSION_VALUE
+			l_value3: EPA_EXPRESSION_VALUE
+			l_bool: BOOLEAN
 		do
 			create l_set.make (10)
 			l_set.set_equality_tester (equation_equality_tester)
+
+			create l_connector_tbl.make (2)
+			l_connector_tbl.compare_objects
+			l_connector_tbl.put (once " /~ ", once " ~ ")
+			l_connector_tbl.put (once " /= ", once " = ")
 
 			from
 				l_cursor := a_state.new_cursor
@@ -634,13 +658,55 @@ feature{NONE} -- Implementation
 			loop
 				l_orig_expr := l_cursor.item.expression
 				l_orig_expr_text := l_orig_expr.text
-				if l_orig_expr_text.has_substring (once "~") and then l_cursor.item.value.is_boolean then
-					l_expr_text := l_orig_expr_text.twin
-					l_expr_text.replace_substring_all ("~", "/~")
-					create l_expr.make_with_text_and_type (l_orig_expr.class_, l_orig_expr.feature_, l_expr_text, l_orig_expr.written_class, l_orig_expr.type)
-					create l_value.make (not l_cursor.item.value.as_boolean.item)
-					create l_equation.make (l_expr, l_value)
-					l_set.force_last (l_equation)
+				if l_cursor.item.expression.is_boolean then
+					l_orig_value := l_cursor.item.value
+					across l_connector_tbl as l_connectors loop
+						l_connector := l_connectors.key
+						l_negated_connector := l_connectors.item
+
+						if l_orig_expr_text.has_substring (l_connector) then
+							l_parts := string_slices (l_orig_expr_text, l_connector)
+							check l_parts.count = 2 end
+							l_left := l_parts.first
+							l_right := l_parts.last
+							if l_orig_value.is_boolean then
+								l_bool := l_orig_value.as_boolean.item
+								l_value1 := l_orig_value
+								create {EPA_BOOLEAN_VALUE} l_value2.make (not l_bool)
+								create {EPA_BOOLEAN_VALUE} l_value3.make (not l_bool)
+							else
+								l_value1 := l_orig_value
+								l_value2 := l_orig_value
+								l_value3 := l_orig_value
+							end
+							across <<[l_right, l_left, l_connector, l_value1], [l_left, l_right, l_negated_connector, l_value2], [l_right, l_left, l_negated_connector, l_value3]>> as l_exprs loop
+								if
+									attached {STRING} l_exprs.item.reference_item (1) as l_new_left and then
+									attached {STRING} l_exprs.item.reference_item (2) as l_new_right and then
+									attached {STRING} l_exprs.item.reference_item (3) as l_new_connector and then
+									attached {EPA_EXPRESSION_VALUE} l_exprs.item.reference_item (4) as l_new_value
+								then
+									create l_expr_text.make (64)
+									l_expr_text.append (l_new_left)
+									l_expr_text.append (l_new_connector)
+									l_expr_text.append (l_new_right)
+
+									create l_expr.make_with_text_and_type (l_orig_expr.class_, l_orig_expr.feature_, l_expr_text, l_orig_expr.written_class, l_orig_expr.type)
+									create l_equation.make (l_expr, l_new_value)
+									l_set.force_last (l_equation)
+								end
+							end
+						end
+					end
+
+--					if l_orig_expr_text.has_substring (once " ~ ") then
+--						l_expr_text := l_orig_expr_text.twin
+--						l_expr_text.replace_substring_all ("~", "/~")
+--						create l_expr.make_with_text_and_type (l_orig_expr.class_, l_orig_expr.feature_, l_expr_text, l_orig_expr.written_class, l_orig_expr.type)
+--						create l_value.make (not l_cursor.item.value.as_boolean.item)
+--						create l_equation.make (l_expr, l_value)
+--						l_set.force_last (l_equation)
+--					end
 				end
 				l_cursor.forth
 			end
