@@ -475,6 +475,65 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
 
 
 /*
+ * Private capture/replay routines
+ */
+
+
+
+rt_private char cr_schedule()
+{
+
+	EIF_GET_CONTEXT
+
+	EIF_CR_ID id;
+	EIF_CR_REFERENCE ref, newref;
+	char next_action;
+
+	while (1) {
+
+		bread(&next_action, sizeof(char));
+
+		if ((next_action & TYPE_MASK) == WEANOBJ) {
+
+			bread((char *) &id, sizeof(EIF_CR_ID));
+
+			if (!cr_is_valid_id(id))
+				cr_raise("Trying to wean unknown object");
+
+			ref = cr_object_of_id (id);
+
+			if (ref.size != CR_GLOBAL_REF)
+				cr_raise("Trying to wean non global object");
+
+			RTCRDBG((stderr, "wean %lx\n", (unsigned long) ref.item.o));
+			newref.item.r = eif_wean((EIF_OBJECT) ref.item.o);
+
+			cr_remove_object (id);
+
+			if (!CR_IS_REFERENCE(ref))
+				cr_raise("Trying to wean pointer reference");
+
+			newref.size = CR_OBJECT_REF;
+
+			cr_push_object (newref);
+
+		}
+		else {
+			break;
+		}
+	}
+
+	return next_action;
+
+}
+
+
+
+
+
+
+
+/*
  * Public capture/replay routines
  */
 
@@ -483,6 +542,9 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || is_replaying);
+
+	if (cr_suppress)
+		return;
 
 	// FIXME: To be done during some (thread) initialization
 	if (cr_file == (FILE *) NULL) {
@@ -522,15 +584,14 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 	else if (!RTCRI) {
 
 			// If we are not capturing, it must only read from the log in case of an outcall
-		bread(&rtype, sizeof(char));
+		rtype = cr_schedule();
+		bread((char *) &bid, sizeof(BODY_INDEX));
 
 		if ((rtype & TYPE_MASK) != (type & TYPE_MASK))
 			cr_raise ("Expected CR_CALL but read different event from log");
 
 		if ((rtype & ARG_MASK) != (type & ARG_MASK))
 			cr_raise ("Expected CR_CALL with different number of arguments");
-
-		bread((char *) &bid, sizeof(BODY_INDEX));
 		
 		if (bid != bodyid)
 			cr_raise("Expected CR_CALL to different routine");
@@ -547,6 +608,9 @@ rt_public void cr_register_return (int num_args)
 
 	char type, log_type;
 
+	if (cr_suppress)
+		return;
+
 	if (num_args > 15)
 		cr_raise ("Too many return values");
 
@@ -562,7 +626,7 @@ rt_public void cr_register_return (int num_args)
 		bwrite(&type, sizeof(char));
 	}
 	else {
-		bread(&log_type, sizeof(char));
+		log_type = cr_schedule();
 
 		if ((log_type & TYPE_MASK) != (type & TYPE_MASK))
 			cr_raise ("Expected CR_RET but read different event from log");
@@ -582,6 +646,9 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 	REQUIRE("type_pointer_not_null", type != NULL);
 	REQUIRE("valid_context", is_capturing || is_replaying);
 	REQUIRE("valid_type_and_size", type == SK_POINTER || area_size == 0);
+
+	if (cr_suppress)
+		return;
 
 	uint32 log_type;
 	char log_value[8];
@@ -752,11 +819,12 @@ rt_public void cr_register_value (void *value, uint32 *type, size_t pointed_size
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("valid_context", is_capturing && !RTCRI);
+
+	if (cr_suppress)
+		return;
 
 	union overhead *zone = HEADER(obj);
 	char type = NEWOBJ;
@@ -780,13 +848,14 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 rt_public void cr_register_protect (EIF_REFERENCE *obj)
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("valid_object", obj != NULL);
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
+
+	if (cr_suppress)
+		return;
 
 	EIF_CR_REFERENCE ref, newref;
 	ref.item.r = *obj;
@@ -803,6 +872,8 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 	cr_remove_object (id);
 
+	RTCRDBG((stderr, "protect %lx\n", (unsigned long) obj));
+
 	newref.item.o = obj;
 	newref.size = CR_GLOBAL_REF;
 
@@ -813,9 +884,14 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
+
+	/* Note: here we might still want to register the event as currently this
+	 * causes a memory leak because the corresponding object is not removed
+	 * from the global stack.
+	 */
+	//if (cr_suppress)
+	//	return;
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -835,6 +911,8 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	bwrite(&type, (size_t) 1);
 	bwrite((char *) &id, sizeof(EIF_CR_ID));
 
+	RTCRDBG((stderr, "wean %lx\n", (unsigned long) obj));
+
 	cr_remove_object (id);
 
 	newref.item.p = *(obj);
@@ -847,14 +925,19 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 rt_public void cr_register_exception (char *tag, long code)
 {
 
+	EIF_GET_CONTEXT
+
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
+
+	/* Note: exception in a call to dispose? Not sure what to do here */
+	if (cr_suppress)
+		return;
 
 	char type = (char) CR_EXC;
 	uint32 length = strlen(tag);
 
 	cr_capture_mutations(1);
-//	cr_pop_objects();
 
 	bwrite(&type, sizeof(char));
 	bwrite((char *) &code, sizeof(long));
@@ -905,9 +988,7 @@ rt_private EIF_REFERENCE_FUNCTION featref (BODY_INDEX body_id)
 rt_public void cr_replay ()
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("valid_context", is_replaying && !RTCRI);
 
@@ -923,8 +1004,12 @@ rt_public void cr_replay ()
 	uint32 excpt_length;
 	char *excpt_tag;
 
+	if (cr_suppress)
+		return;
+
 	while (1) {
-		bread (&type, 1);
+
+		type = cr_schedule();
 
 		switch (type & TYPE_MASK) {
 			case CR_RET:
@@ -1045,28 +1130,11 @@ rt_public void cr_replay ()
 
 				cr_remove_object(id);
 
-				newref.item.p = eif_protect(CR_ACCESS(ref));
+				newref.item.o = (EIF_REFERENCE *) eif_protect(CR_ACCESS(ref));
+
+				RTCRDBG((stderr, "protect %lx\n", (unsigned long) newref.item.o));
+
 				newref.size = CR_GLOBAL_REF;
-
-				cr_push_object (newref);
-
-				break;
-
-			case WEANOBJ:
-
-				bread((char *) &id, sizeof(EIF_CR_ID));
-
-				if (!cr_is_valid_id(id))
-					cr_raise("Trying to wean unknown object");
-
-				ref = cr_object_of_id (id);
-				cr_remove_object (id);
-
-				if (!CR_IS_REFERENCE(ref))
-					cr_raise("Trying to wean pointer reference");
-
-				newref.item.r = CR_ACCESS(ref);
-				newref.size = CR_OBJECT_REF;
 
 				cr_push_object (newref);
 

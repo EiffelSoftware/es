@@ -430,6 +430,7 @@ TODO: doc
 rt_public uint32 cr_cross_depth = 0;
 rt_public uint32 cr_call_depth = 0;
 rt_public struct cr_object *cr_local_objects = (struct cr_object *) NULL;
+rt_public int cr_suppress = 0;
 rt_public FILE *cr_file = (FILE *) NULL;
 #endif
 

@@ -59,6 +59,7 @@ RT_LNK int in_assertion;                  /* Value of the assertion level */
 RT_LNK uint32 cr_cross_depth;             /* How many IN-/OUTCALLs are currently on the stack? */
 RT_LNK uint32 cr_call_depth;
 RT_LNK struct cr_object *cr_local_objects; /* Unprotected objects available to capture/replay mechanism */
+RT_LNK int cr_suppress;
 RT_LNK FILE *cr_file;
 #endif
 #ifdef WORKBENCH

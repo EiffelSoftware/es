@@ -1273,17 +1273,6 @@ rt_public void reclaim(void)
 	if (!has_reclaim_been_called) {
 		has_reclaim_been_called = 1;
 
-#ifdef WORKBENCH
-		if (is_capturing) {
-			is_capturing = 0;
-				/* TODO: flush buffers, close files... */
-		}
-		else if (is_replaying) {
-			return;
-		}
-#endif
-
-
 #if ! defined CUSTOM || defined NEED_OPTION_H
 		if (egc_prof_enabled) {
 			exitprf();			/* Store profile information */

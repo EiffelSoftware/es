@@ -1355,7 +1355,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 	cr_call_depth++; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
-		RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); \
+		if (!cr_suppress) { RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); } \
 		cr_register_call (y, bodyid);
 
 #define RTCRCSO(y,bodyid,rout) \
@@ -1366,7 +1366,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 	cr_call_depth++; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
-		RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); \
+		if (!cr_suppress) { RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); } \
 		cr_register_call (y, bodyid); \
 
 /* Call values and exception setup come here */
@@ -1379,7 +1379,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRCEI(rout) \
 	} \
 	else {\
-		if (is_capturing || is_replaying) { RTCRDBG((stderr, "%s\n", rout)); } \
+		if ((is_capturing || is_replaying) && !cr_suppress) { RTCRDBG((stderr, "%s\n", rout)); } \
 	} \
 
 #define RTCRCEO(rout) \
@@ -1415,9 +1415,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRRE \
 	}\
-	if (is_capturing || is_replaying) { \
-		RTCRDBG((stderr, "ret\n")); \
-	} \
+	if ((is_capturing || is_replaying) && !cr_suppress) { RTCRDBG((stderr, "ret\n")); } \
 	cr_call_depth--;
 
 //#define RTCRRC { uint32 cr_type = SK_REF | RTCRI ? 0x0 : HEADER(Current)->ov_dftype; cr_register_value ((void *) &Current, &cr_type, 0); }

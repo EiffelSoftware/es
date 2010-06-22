@@ -5569,10 +5569,16 @@ rt_shared void call_disp(EIF_TYPE_INDEX dtype, EIF_REFERENCE object)
 	 * routine for `object' with dynamic type `dtype'.
 	 */
 	EIF_GET_CONTEXT
+
+	int cr_old_suppress = cr_suppress;
+	cr_suppress = 1;
+
 	unsigned char *OLD_IC;
 	OLD_IC = IC;
 	(wdisp (dtype))(object);
 	IC = OLD_IC;
+
+	cr_suppress = cr_old_suppress;
 }
 
 rt_shared void call_copy (EIF_TYPE_INDEX dtype, EIF_REFERENCE Current, EIF_REFERENCE other)
