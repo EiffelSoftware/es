@@ -20,6 +20,7 @@ RT_LNK void cr_register_emalloc (EIF_REFERENCE obj);
 RT_LNK void cr_register_protect (EIF_REFERENCE *obj);
 RT_LNK void cr_register_wean (EIF_REFERENCE *obj);
 RT_LNK void cr_register_exception (char *tag, long code);
+RT_LNK void cr_register_retrieve (EIF_REFERENCE ref);
 
 RT_LNK int cr_epush(register struct stack *stk, EIF_REFERENCE *obj);
 RT_LNK void cr_epop(struct stack *stk, EIF_REFERENCE *obj);

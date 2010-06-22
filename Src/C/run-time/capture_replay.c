@@ -14,6 +14,7 @@
 #include "eif_project.h"
 #include "eif_traverse.h"
 #include "rt_garcol.h"
+#include "eif_store.h"
 
 #include "eif_macros.h"
 
@@ -39,14 +40,11 @@
 #define PROTOBJ 0xA0    /* Keep reference to Eiffel object on stack */
 #define WEANOBJ 0xB0    /* Remove reference to Eiffel object from stack */
 
+#define CR_RTV  0xC0
+
 /* The other 4 bits can be used for argument count etc. */
 
 #define ARG_MASK 0x0F
-
-/*
- * Type definitions
- */
-
 
 
 
@@ -93,6 +91,11 @@ rt_private void bread (char *buffer, size_t nbytes)
 
 }
 
+rt_private int cr_bread_wrapper (char *buffer, int nbytes)
+{
+	bread (buffer, (size_t) nbytes);
+	return nbytes;
+}
 
 
 
@@ -483,7 +486,9 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
 rt_private char cr_schedule()
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	EIF_CR_ID id;
 	EIF_CR_REFERENCE ref, newref;
@@ -863,8 +868,10 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 	EIF_CR_ID id = cr_id_of_object (ref);
 
-	if (!cr_is_valid_id(id))
-		cr_raise ("Trying to protect unknown reference");
+	if (!cr_is_valid_id(id)) {
+		/* Instead of rising an exception we just ignore this protect. */
+		return;
+	}
 
 	char type = (char) PROTOBJ;
 	bwrite(&type, (size_t) 1);
@@ -884,14 +891,14 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	/* Note: here we might still want to register the event as currently this
 	 * causes a memory leak because the corresponding object is not removed
 	 * from the global stack.
 	 */
-	//if (cr_suppress)
-	//	return;
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -904,8 +911,10 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 
 	id = cr_id_of_object (ref);
 
-	if (!cr_is_valid_id(id))
-		cr_raise ("Trying to wean unknown reference");
+	if (!cr_is_valid_id(id)) {
+		/* Instead of rising an exception we just ignore this wean */
+		return;
+	}
 
 	char type = (char) WEANOBJ;
 	bwrite(&type, (size_t) 1);
@@ -944,6 +953,48 @@ rt_public void cr_register_exception (char *tag, long code)
 
 	bwrite((char *) &length, sizeof(uint32));
 	bwrite(tag, length);
+
+}
+
+rt_public void cr_register_retrieve (EIF_REFERENCE obj)
+{
+
+#ifdef EIF_ASSERTIONS
+	EIF_GET_CONTEXT
+#endif
+
+	REQUIRE("capturing", is_capturing);
+	REQUIRE("not_inside", !RTCRI);
+	REQUIRE("not_inside_dispose", !cr_suppress);
+
+	char type = (char) CR_RTV;
+
+	FILE *file = tmpfile();
+	sstore (file_fd(file), obj);
+	
+
+	/* Write event type to log */
+	bwrite(&type, sizeof(char));
+
+	/* Write stored object to buffer */
+	char buffer[1024];
+	rewind(file);
+	do {
+		size_t nbytes = fread (buffer, 1, 1024, file);
+
+		if (ferror(file) != 0)
+			cr_raise ("Could not store object");
+
+		bwrite(buffer, nbytes);
+
+	} while (!feof(file));
+
+	fclose(file);
+
+	EIF_CR_REFERENCE ref;
+	ref.size = CR_OBJECT_REF;
+	ref.item.r = obj;
+	cr_push_object (ref);
 
 }
 
@@ -1178,6 +1229,17 @@ rt_public void cr_replay ()
 
 					bread((char *) Current, size);
 				}
+
+				break;
+
+			case CR_RTV:
+
+				Current = portable_retrieve(cr_bread_wrapper);
+
+				ref.size = CR_OBJECT_REF;
+				ref.item.r = Current;
+
+				cr_push_object (ref);
 
 				break;
 

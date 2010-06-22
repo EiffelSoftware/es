@@ -79,6 +79,10 @@ doc:<file name="retrieve.c" header="eif_retrieve.h" version="$Id$" summary="Retr
 #include <winsock.h>
 #endif
 
+#ifdef WORKBENCH
+#include "eif_capture_replay.h"
+#endif
+
 #ifdef RECOVERABLE_DEBUG
 #define EIF_OBJECT_TYPE(obj)    eif_typename (Dftype (obj))
 #ifdef PRINT_OBJECT
@@ -1158,6 +1162,11 @@ rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)
 		 * free the mutex. */
 	GC_THREAD_PROTECT(eif_synchronize_gc(rt_globals));
 
+#ifdef WORKBENCH
+	int cr_old_suppress = cr_suppress;
+	cr_suppress = 1;
+#endif
+
 	excatch(&exenv);	/* Record pseudo execution vector */
 	if (setjmp(exenv)) {
 		GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
@@ -1167,6 +1176,13 @@ rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)
 		GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
 	}
 	expop(&eif_stack);
+
+#ifdef WORKBENCH
+	cr_suppress = cr_old_suppress;
+	if (is_capturing)
+		cr_register_retrieve (result);
+#endif
+
 	return result;
 #else
 	return eif_unsafe_portable_retrieve(char_read_function);
