@@ -20,6 +20,8 @@ test	capture-protect-wean		caprep008 tcf pass capture replay
 test	capture-string-modification	caprep009 tcf pass capture replay
 test	create-external-string		caprep010 tcf pass capture replay
 test	capture-replay-exceptions	caprep011 tcf pass capture replay
+test	capture-replay-disposal		caprep012 tcf pass capture replay
+test	capture-replay-suppress-dispose	caprep013 tcf pass capture replay
 
 
 -- EiffelTime tests

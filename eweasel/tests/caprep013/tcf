@@ -1,0 +1,21 @@
+
+test_name 	capture-replay-suppress-dispose
+test_description Capture/replay should not log any events other then CR_WEAN during a call to dispose
+
+copy_sub 	Ace $TEST Ace
+copy_raw 	test.e $CLUSTER test.e
+compile_frozen
+compile_result 	ok
+c_compile_work
+c_compile_result	ok
+
+
+execute_work 	NONE 	exec_capture_output -eif_capture
+execute_result 	ok
+compare		exec_capture_output capture_output
+
+execute_work	NONE	exec_replay_output -eif_replay
+execute_result	ok
+compare		exec_replay_output replay_output
+
+test_end
