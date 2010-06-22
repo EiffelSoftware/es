@@ -1,6 +1,6 @@
 
 test_name 	capture-replay-disposal
-test_description Capture/replay should not capture and replay calls to the dispose routine
+test_description Capture/replay delays the collection of objects which have been eif_wean'ed during disposal, making sure replay does not cause memory leaks
 
 copy_sub 	Ace $TEST Ace
 copy_raw 	test.e $CLUSTER test.e
@@ -12,10 +12,10 @@ c_compile_result	ok
 
 execute_work 	NONE 	exec_capture_output -eif_capture
 execute_result 	ok
-compare		exec_capture_output output
+compare		exec_capture_output capture_output
 
 execute_work	NONE	exec_replay_output -eif_replay
 execute_result	ok
-compare		exec_replay_output output
+compare		exec_replay_output replay_output
 
 test_end
