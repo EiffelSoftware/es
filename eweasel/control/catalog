@@ -22,6 +22,7 @@ test	create-external-string		caprep010 tcf pass capture replay
 test	capture-replay-exceptions	caprep011 tcf pass capture replay
 test	capture-replay-disposal		caprep012 tcf pass capture replay
 test	capture-replay-suppress-dispose	caprep013 tcf pass capture replay
+test	capture-replay-retrieve		caprep014 tcf pass capture replay
 
 
 -- EiffelTime tests
