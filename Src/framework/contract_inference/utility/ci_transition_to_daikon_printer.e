@@ -60,9 +60,8 @@ feature -- Generate
 			calculate_declarations (l_enter_ppt, pre_state_expressions)
 			calculate_declarations (l_exit_ppt, post_state_expressions)
 
-			last_declarations.force_last (l_enter_ppt)
-			last_declarations.force_last (l_exit_ppt)
-			
+			calculate_traces (l_enter_ppt, True)
+			calculate_traces (l_exit_ppt, False)
 		end
 
 feature{NONE} -- Implementation
@@ -75,10 +74,46 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
+	trace_record (a_ppt: DKN_PROGRAM_POINT; a_transition: SEM_TRANSITION; a_precondition: BOOLEAN): DKN_TRACE_RECORD
+			-- Trace record for program point `a_ppt'
+			-- Variable valuations are from `a_state'.
+		local
+			l_variables: DS_HASH_SET_CURSOR [DKN_VARIABLE]
+			l_var: DKN_VARIABLE
+			l_value: DKN_VARIABLE_VALUE
+			l_expr_value: EPA_EXPRESSION_VALUE
+			l_modified_flog: INTEGER
+		do
+			create Result.make (a_ppt)
+
+			from
+				l_variables := a_ppt.variables.new_cursor
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_var := l_variables.item
+				if attached {EPA_EQUATION} a_transition.assertion_by_anonymouse_expression_text (l_var.name, a_precondition) as l_equation then
+					l_expr_value := l_equation.value
+					if l_expr_value.is_nonsensical then
+						l_modified_flog := modified_flag_2
+					else
+						l_modified_flog := modified_flag_0
+					end
+					create l_value.make (l_var, daikon_value (l_equation.value), l_modified_flog)
+				else
+					create l_value.make (l_var, daikon_nonsensical_value, modified_flag_2)
+				end
+				Result.values.force_last (l_value, l_var)
+				l_variables.forth
+			end
+		end
+
 	calculate_declarations (a_ppt: DKN_PROGRAM_POINT; a_variables: like pre_state_expressions)
 			-- Calculate variable declaractions from `a_variables' for program point `a_ppt'.
 		do
 			a_ppt.variables.append (variable_declaractions (a_variables))
+			last_declarations.force_last (a_ppt)
 		end
 
 	variable_declaractions (a_variable_names: like pre_state_expressions): DS_HASH_SET [DKN_VARIABLE]
@@ -111,7 +146,8 @@ feature{NONE} -- Implementation
 		do
 			if a_type.is_boolean then
 				l_rep_type := boolean_rep_type
-				l_comparability := boolean_comparability
+--				l_comparability := boolean_comparability
+				l_comparability := a_var_name.hash_code
 			elseif a_type.is_integer then
 				l_rep_type := integer_rep_type
 				l_comparability := integer_comparability
@@ -125,6 +161,32 @@ feature{NONE} -- Implementation
 			l_dec_type := l_rep_type
 			l_var_kind := variable_var_kind
 			create Result.make (a_var_name, l_rep_type, l_var_kind, l_dec_type, l_comparability)
+		end
+
+	calculate_traces (a_ppt: DKN_PROGRAM_POINT; a_precondition: BOOLEAN)
+			-- Calculate traces for `a_ppt', store result in `last_trace'.
+		do
+			across transitions as l_transitions loop
+				last_trace.extend (trace_record (a_ppt, l_transitions.item, a_precondition))
+			end
+		end
+
+	daikon_value (a_value: EPA_EXPRESSION_VALUE): STRING
+			-- Daikon variable value from `a_value'
+		do
+			if a_value.is_nonsensical then
+				Result := daikon_nonsensical_value
+			elseif attached {EPA_BOOLEAN_VALUE} a_value as l_bool then
+				if l_bool.item then
+					Result := once "1"
+				else
+					Result := once "0"
+				end
+			elseif a_value.is_void then
+				Result := once "null"
+			else
+				Result := a_value.out.twin
+			end
 		end
 
 feature{NONE} -- Implementation
