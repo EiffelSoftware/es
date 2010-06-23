@@ -103,7 +103,6 @@ feature -- Access
 				Result.append (l_cursor.item.out)
 				l_cursor.forth
 			end
-			
 			Result.append_character ('%N')
 		end
 

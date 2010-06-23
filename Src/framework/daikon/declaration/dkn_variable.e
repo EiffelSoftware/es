@@ -112,7 +112,6 @@ feature -- Access
 			Result.append_character (' ')
 			Result.append (comparability.out)
 			Result.append_character ('%N')
-			Result.append_character ('%N')
 		end
 
 	hash_code: INTEGER

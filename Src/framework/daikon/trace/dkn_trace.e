@@ -25,7 +25,7 @@ create
 
 feature -- Access
 
-	out, debug_output: STRING
+	out: STRING
 			-- New string containing terse printable representation
 			-- of current object
 		do
@@ -35,6 +35,12 @@ feature -- Access
 					do
 						a_result.append (a_record.out)
 					end (?, Result))
+		end
+
+	debug_output: STRING
+			-- Debug output
+		do
+			Result := out
 		end
 
 end

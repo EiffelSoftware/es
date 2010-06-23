@@ -50,33 +50,43 @@ feature -- Access
 	values: DS_HASH_TABLE [DKN_VARIABLE_VALUE, DKN_VARIABLE]
 			-- Values of variables at current trace record
 
-	out, debug_output: STRING
+	out: STRING
 			-- String representation of current.
 		local
 			l_cursor: like values.new_cursor
 			l_value: DKN_VARIABLE_VALUE
+			l_cur: like program_point.variables.new_cursor
+			l_values: like values
 		do
 			create Result.make (4096)
 
 			Result.append (program_point.daikon_name)
 			Result.append_character ('%N')
 
+			l_values := values
 			from
-				l_cursor := values.new_cursor
-				l_cursor.start
+				l_cur := program_point.variables.new_cursor
+				l_cur.start
 			until
-				l_cursor.after
+				l_cur.after
 			loop
-				Result.append (l_cursor.key.daikon_name)
+				Result.append (l_cur.item.daikon_name)
 				Result.append_character ('%N')
-				l_value := l_cursor.item
+				l_value := l_values.item (l_cur.item)
 				Result.append (l_value.value)
 				Result.append_character ('%N')
 				Result.append (l_value.modification_flag.out)
 				Result.append_character ('%N')
-				l_cursor.forth
+
+				l_cur.forth
 			end
 			Result.append_character ('%N')
+		end
+
+	debug_output: STRING
+			-- Debug output
+		do
+			Result := out
 		end
 
 feature -- Status report

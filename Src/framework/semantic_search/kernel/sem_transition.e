@@ -75,6 +75,17 @@ feature -- Access
 			Result := interface_assertions (postcondition)
 		end
 
+	assertion_by_anonymouse_expression_text (a_expr_text: STRING; a_precondition: BOOLEAN): detachable EPA_EQUATION
+			-- Precondition equation from `precondition' by anonymouse `a_expr_text' if `a_precondition' is True,
+			-- otherwise, postcondition equation.
+		do
+			if a_precondition then
+				Result := precondition_by_anonymous_expression_text (a_expr_text)
+			else
+				Result := postcondition_by_anonymous_expression_text (a_expr_text)
+			end
+		end
+
 	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
 			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".

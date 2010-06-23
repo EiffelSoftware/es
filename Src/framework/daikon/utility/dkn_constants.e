@@ -9,7 +9,7 @@ class
 
 feature -- Escape strings
 
-	escaped_space: STRING = "\_"
+	escaped_space: STRING = "__"
 			-- Encoded space string
 
 	space: STRING = " "
@@ -42,7 +42,7 @@ feature -- Program point types
 feature -- Program point suffixes
 
 	enter_program_point_suffix: STRING = ":::ENTER"
-	exit_program_point_suffix: STRINg = ":::EXIT"
+	exit_program_point_suffix: STRINg = ":::EXIT1"
 
 feature -- Variable var-kind
 
@@ -119,6 +119,6 @@ feature -- Misc
 	comparability_string: STRING = "comparability"
 	variable_string: STRING = "variable"
 
-	daikon_version_string: STRING = "decl-version 2.0"
+	daikon_version_string: STRING = "decl-version 2.0%N"
 
 end
