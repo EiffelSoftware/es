@@ -32,7 +32,9 @@ RT_LNK void cr_replay ();
 /* RT_CAPTURE_REPLAY routines */
 
 RT_LNK void eif_printf (EIF_REFERENCE string);
-
+#ifdef EIF_THREADS
+RT_LNK EIF_NATURAL_64 eif_cr_thread_id ();
+#endif
 
 RT_LNK void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count);
 RT_LNK void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count);

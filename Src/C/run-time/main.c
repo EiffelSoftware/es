@@ -431,7 +431,6 @@ rt_public uint32 cr_cross_depth = 0;
 rt_public uint32 cr_call_depth = 0;
 rt_public struct cr_object *cr_local_objects = (struct cr_object *) NULL;
 rt_public int cr_suppress = 0;
-rt_public FILE *cr_file = (FILE *) NULL;
 #endif
 
 
@@ -508,6 +507,10 @@ rt_public void set_debug_mode (int v){
 #ifdef WORKBENCH
 rt_public int is_capturing = 0;      /* By default we do not capture */
 rt_public int is_replaying = 0;      /* By default we do not replay */
+#ifdef EIF_THREADS
+rt_public EIF_NATURAL_64 cr_thread_count = 0;
+#endif
+rt_public FILE *cr_file = (FILE *) NULL;
 rt_public struct cr_object* cr_global_objects = (struct cr_object *) NULL;
 #endif
 

@@ -196,9 +196,19 @@ extern "C" {
 
 /* RT_CAPTURE_REPLAY class */
 #ifdef WORKBENCH
+
 #define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)                  eif_printf(string)
+#ifdef EIF_THREADS
+#define eif_builtin_RT_CAPTURE_REPLAY_thread_id(obj)				eif_cr_thread_id()
 #else
+#define eif_builtin_RT_CAPTURE_REPLAY_thread_id(obj)				((EIF_NATURAL_64) 0)
+#endif /*EIF_THREADS*/
+
+#else
+
 #define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)
+#define eif_builtin_RT_CAPTURE_REPLAY_thread_id(obj)				((EIF_NATURAL_64) 0)
+
 #endif
 
 

@@ -1,6 +1,6 @@
 
 
-
+#include "eif_main.h"
 #include "eif_types.h"
 #include "eif_globals.h"
 #include "rt_struct.h"
@@ -64,7 +64,9 @@ rt_private void cr_raise (char *msg) {
 rt_private void bwrite (char *buffer, size_t nbytes)
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_capturing", is_capturing);
@@ -79,7 +81,9 @@ rt_private void bwrite (char *buffer, size_t nbytes)
 rt_private void bread (char *buffer, size_t nbytes)
 {
 
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_replaying", is_replaying);
@@ -338,6 +342,9 @@ rt_private void cr_capture_mutations (int register_mutations)
 
 				char type = (char) MEMMUT;
 				bwrite(&type, 1);
+#ifdef EIF_THREADS
+				bwrite((char *) &cr_thread_id, sizeof(EIF_NATURAL_64));
+#endif
 				bwrite((char *) &cr_id, sizeof(EIF_CR_ID));
 
 				uint32 start, end;
@@ -486,17 +493,25 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
 rt_private char cr_schedule()
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	EIF_CR_ID id;
 	EIF_CR_REFERENCE ref, newref;
 	char next_action;
 
+#ifdef EIF_THREADS
+	EIF_NATURAL_64 tid;
+#endif
+
 	while (1) {
 
 		bread(&next_action, sizeof(char));
+#ifdef EIF_THREADS
+		bread((char *) &tid, sizeof(EIF_NATURAL_64));
+		if (tid != cr_thread_id)
+			cr_raise("Invalid thread ID");
+#endif
+
 
 		if ((next_action & TYPE_MASK) == WEANOBJ) {
 
@@ -532,6 +547,24 @@ rt_private char cr_schedule()
 
 }
 
+rt_private void cr_write_event_type (char type)
+{
+
+#ifdef EIF_THREADS
+	EIF_GET_CONTEXT
+#endif
+
+	bwrite(&type, sizeof(char));
+
+#ifdef EIF_THREADS
+	if (cr_thread_id == 0) {
+		/* This is the first event for this thread so we need to assign it a thread id */
+		cr_thread_id = ++cr_thread_count;
+	}
+	bwrite((char *) &cr_thread_count, sizeof(EIF_NATURAL_64));
+#endif
+
+}
 
 
 
@@ -559,6 +592,11 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 			cr_file = fopen("./capture.log", "r");
 	}
 
+#ifdef EIF_THREADS
+	if (cr_thread_id == 0)
+		cr_thread_id = ++cr_thread_count;
+#endif
+
 	char type, rtype;
 	BODY_INDEX bid;
 
@@ -582,8 +620,8 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 		/* We only capture changes done during external OUTCALL */
 		cr_capture_mutations(RTCRI);
 		
-		bwrite(&type, sizeof(char));
-		bwrite((char *) &(bodyid), sizeof(BODY_INDEX));
+		cr_write_event_type (type);
+		bwrite((char *) &bodyid, sizeof(BODY_INDEX));
 
 	}
 	else if (!RTCRI) {
@@ -628,7 +666,8 @@ rt_public void cr_register_return (int num_args)
 
 		cr_capture_mutations(RTCRI);
 
-		bwrite(&type, sizeof(char));
+		cr_write_event_type (type);
+
 	}
 	else {
 		log_type = cr_schedule();
@@ -842,7 +881,7 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 
 	EIF_TYPE_INDEX dftype = zone->ov_dftype;
 
-	bwrite (&type, 1);
+	cr_write_event_type (type);
 	bwrite ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
 
 	cr_push_object (ref);
@@ -874,7 +913,7 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 	}
 
 	char type = (char) PROTOBJ;
-	bwrite(&type, (size_t) 1);
+	cr_write_event_type (type);
 	bwrite((char *) &id, sizeof(EIF_CR_ID));
 
 	cr_remove_object (id);
@@ -917,7 +956,7 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	}
 
 	char type = (char) WEANOBJ;
-	bwrite(&type, (size_t) 1);
+	cr_write_event_type (type);
 	bwrite((char *) &id, sizeof(EIF_CR_ID));
 
 	RTCRDBG((stderr, "wean %lx\n", (unsigned long) obj));
@@ -948,7 +987,7 @@ rt_public void cr_register_exception (char *tag, long code)
 
 	cr_capture_mutations(1);
 
-	bwrite(&type, sizeof(char));
+	cr_write_event_type (type);
 	bwrite((char *) &code, sizeof(long));
 
 	bwrite((char *) &length, sizeof(uint32));
@@ -959,6 +998,8 @@ rt_public void cr_register_exception (char *tag, long code)
 rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 {
 
+	/* For now we simply store `obj' to a temporary file and then copy
+	 * the contents of the file to the log. */
 #ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
 #endif
@@ -974,7 +1015,7 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 	
 
 	/* Write event type to log */
-	bwrite(&type, sizeof(char));
+	cr_write_event_type (type);
 
 	/* Write stored object to buffer */
 	char buffer[1024];
@@ -1538,6 +1579,12 @@ rt_public void eif_printf (EIF_REFERENCE string)
 
 }
 
+#ifdef EIF_THREADS
+rt_public EIF_NATURAL_64 eif_cr_thread_id ()
+{
+	EIF_GET_CONTEXT
 
+	return cr_thread_id;
 
-
+}
+#endif

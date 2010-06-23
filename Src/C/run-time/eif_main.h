@@ -60,7 +60,6 @@ RT_LNK uint32 cr_cross_depth;             /* How many IN-/OUTCALLs are currently
 RT_LNK uint32 cr_call_depth;
 RT_LNK struct cr_object *cr_local_objects; /* Unprotected objects available to capture/replay mechanism */
 RT_LNK int cr_suppress;
-RT_LNK FILE *cr_file;
 #endif
 #ifdef WORKBENCH
 RT_LNK int is_inside_rt_eiffel_code;
@@ -93,6 +92,10 @@ RT_LNK void set_debug_mode (int);
 RT_LNK int is_capturing;                /* Are we capturing anything? */
 RT_LNK int is_replaying;                /* Are we replaying anything? Note: although not implemeted yet,       */
 					/* it is conceptually possible to capture and replay at the same time  */
+RT_LNK FILE *cr_file;
+#ifdef EIF_THREADS
+RT_LNK EIF_NATURAL_64 cr_thread_count;	/* Thread count for assigning unique ID to each captured thread */
+#endif
 
 /* Stack containing objects which are available to the runtime either by
    previously calling eif_protec or assigning an object id */

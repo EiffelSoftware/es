@@ -130,7 +130,7 @@ typedef struct tag_eif_globals		/* Structure containing all global variables to 
 	uint32 cr_call_depth_cx;
 	struct cr_object *cr_local_objects_cx;
 	int cr_suppress_cx;			/* Suppress any capturing or replaying of any events */
-	FILE *cr_file_cx;			/* File to/from which log is written/read */
+	EIF_NATURAL_64 cr_thread_id_cx;			/* Capture/replay specific thread id for current thread */
 #endif
 
 } eif_global_context_t;
@@ -241,7 +241,7 @@ rt_private eif_global_context_t * eif_thr_getspecific (EIF_TSD_TYPE global_key) 
 #define cr_call_depth		(eif_globals->cr_call_depth_cx)
 #define cr_local_objects	(eif_globals->cr_local_objects_cx)
 #define cr_suppress		(eif_globals->cr_suppress_cx)
-#define cr_file			(eif_globals->cr_file_cx)
+#define cr_thread_id		(eif_globals->cr_thread_id_cx)
 #endif
 
 #ifdef EIF_TLS_WRAP
