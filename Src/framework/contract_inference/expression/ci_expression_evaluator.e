@@ -53,9 +53,6 @@ inherit
 
 feature -- Access
 
---	log_manager: detachable EPA_LOG_MANAGER
---			-- Logger
-
 	transition_context: CI_TEST_CASE_TRANSITION_INFO
 			-- Context in which expressions are evaluated
 

@@ -386,7 +386,7 @@ feature{NONE} -- Implementation
 						until
 							l_expr_cursor.after or else not l_all_qfree_true
 						loop
-							l_function := l_expr_cursor.item.partially_evaluated_with_arguments (operand_function_table (l_quantified_function, l_transition_info))
+							l_function := l_expr_cursor.item.partially_evaluated_with_arguments (operand_function_table (l_quantified_function.operand_map, l_transition_info))
 							l_evaluator.evaluate (ast_from_expression_text (l_function.body))
 							l_all_qfree_true := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
 								-- A quantified expression is evaluated to False or there is an error during evaluation, remove it from candidate set.
@@ -420,28 +420,27 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	operand_function_table (a_quantified_expression: CI_QUANTIFIED_EXPRESSION; a_transition_data: CI_TEST_CASE_TRANSITION_INFO): HASH_TABLE [EPA_FUNCTION, INTEGER]
+	operand_function_table (a_operand_map: HASH_TABLE [INTEGER, INTEGER]; a_transition_data: CI_TEST_CASE_TRANSITION_INFO): HASH_TABLE [EPA_FUNCTION, INTEGER]
 			-- A table from function operand index to expressions representing that operand in the context of `a_transition_data'
+			-- `a_operand_map' is a map 1-based argument index in a function to 0-based operand indexes in `a_transition_data'.
 		local
 			l_cursor: CURSOR
-			l_operand_map: HASH_TABLE [INTEGER, INTEGER]
 			l_transition: SEM_TRANSITION
 			l_arg_func: EPA_FUNCTION
 		do
 			create Result.make (5)
 			l_transition := a_transition_data.transition
-			l_operand_map := a_quantified_expression.operand_map
-			l_cursor := l_operand_map.cursor
+			l_cursor := a_operand_map.cursor
 			from
-				l_operand_map.start
+				a_operand_map.start
 			until
-				l_operand_map.after
+				a_operand_map.after
 			loop
-				create l_arg_func.make_from_expression (l_transition.reversed_variable_position.item (l_operand_map.item_for_iteration))
-				Result.put (l_arg_func, l_operand_map.key_for_iteration)
-				l_operand_map.forth
+				create l_arg_func.make_from_expression (l_transition.reversed_variable_position.item (a_operand_map.item_for_iteration))
+				Result.put (l_arg_func, a_operand_map.key_for_iteration)
+				a_operand_map.forth
 			end
-			l_operand_map.go_to (l_cursor)
+			a_operand_map.go_to (l_cursor)
 		end
 
 	setup_last_contracts
