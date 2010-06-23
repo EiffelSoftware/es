@@ -255,8 +255,8 @@ feature{NONE} -- Implementation
 
 			create last_test_case_summarization.make (l_class_under_test, l_code, l_operands_declaration, l_variables_declaration, l_exception_trace, l_pre_state_report, l_post_state_report)
 			create last_transition.make (last_class, last_feature, last_operand_names, last_test_case_summarization.context, last_test_case_summarization.is_feature_creation)
-			last_transition.set_precondition (last_pre_state)
-			last_transition.set_postcondition (last_post_state)
+			last_transition.set_preconditions (last_pre_state)
+			last_transition.set_postconditions (last_post_state)
 		end
 
 	serialization_from_string (a_str: STRING): ARRAY [NATURAL_8]

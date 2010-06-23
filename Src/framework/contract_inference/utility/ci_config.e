@@ -212,6 +212,15 @@ feature -- Access
 			-- Should Daikon be used as an inferrer?
 			-- Default: True
 
+	is_dnf_property_enabled: BOOLEAN
+			-- Should properties in DNF format be inferred?
+			-- Default: True
+
+	max_dnf_clause: INTEGER
+			-- Maximal number of clauses in DNF style properties
+			-- Only have effect if `is_dnf_property_enabled' is True.
+			-- Default: 2
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -392,6 +401,24 @@ feature -- Setting
 			is_daikon_enabled := b
 		ensure
 			is_daikon_enabled_set: is_daikon_enabled = b
+		end
+
+	set_is_dnf_property_enabled (b: BOOLEAN)
+			-- Set `is_dnf_property_enabled' with `b'.
+		do
+			is_dnf_property_enabled := b
+		ensure
+			is_dnf_property_enabled_set: is_dnf_property_enabled = b
+		end
+
+	set_max_dnf_clause (i: INTEGER)
+			-- Set `max_dnf_clause' with `i'.
+		require
+			i_positive: i > 0
+		do
+			max_dnf_clause := i
+		ensure
+			max_dnf_clause_set: max_dnf_clause = i
 		end
 
 feature{NONE} -- Implementation

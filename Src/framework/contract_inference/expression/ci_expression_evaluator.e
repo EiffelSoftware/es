@@ -71,13 +71,13 @@ feature -- Access
 	pre_state_values: EPA_STATE
 			-- Expressions values from pre-execution state
 		do
-			Result := transition_context.transition.precondition
+			Result := transition_context.transition.preconditions
 		end
 
 	post_state_values: EPA_STATE
 			-- Expressions values from pre-execution state
 		do
-			Result := transition_context.transition.postcondition
+			Result := transition_context.transition.postconditions
 		end
 
 	extra_pre_state_values: detachable EPA_STATE
@@ -131,6 +131,11 @@ feature -- Status report
 	error_reason: detachable STRING
 			-- Reason for the last error
 
+	is_ternary_logic_enabled: BOOLEAN
+			-- Is ternary logic enabled?
+			-- So nonsensical values can be used in boolean algebra?
+			-- Default: False
+
 feature -- Basic operations
 
 	evaluate (a_expr: AST_EIFFEL)
@@ -182,11 +187,13 @@ feature -- Setting
 			extra_post_state_values := a_values
 		end
 
---	set_log_manager (a_logger: like log_manager)
---			-- Set `log_manager' with `a_logger'.
---		do
---			log_manager := a_logger
---		end
+	set_is_ternary_logic_enabled (b: BOOLEAN)
+			-- Set `is_ternary_logic_enabled' with `b'.
+		do
+			is_ternary_logic_enabled := b
+		ensure
+			is_ternary_logic_enabled_set: is_ternary_logic_enabled = b
+		end
 
 feature{NONE} -- Implementation
 
@@ -348,7 +355,12 @@ feature{NONE} -- Implementation
 			l_equation: detachable EPA_EQUATION
 		do
 			if not has_error then
-				l_equation := equation_by_expression_ast (l_as.expr, True)
+				if attached {PARAN_AS} l_as.expr as l_paran then
+					l_equation := equation_by_expression_ast (l_paran.expr, True)
+				else
+					l_equation := equation_by_expression_ast (l_as.expr, True)
+				end
+
 				if l_equation /= Void then
 					last_value := l_equation.value
 				else
@@ -381,49 +393,91 @@ feature{NONE} -- Implementation
 	process_binary_boolean_operator_as (a_left: EXPR_AS; a_right: EXPR_AS; a_operator_name: STRING)
 			-- Process binary boolean operator.
 		local
-			l_left_value: detachable EPA_BOOLEAN_VALUE
-			l_right_value: detachable EPA_BOOLEAN_VALUE
+			l_left_value: like last_value
+			l_right_value: like last_value
 			l_value: BOOLEAN
 		do
 			if not has_error then
 					-- Process left.
 				process_boolean_expression (a_left)
 				if not has_error then
-					l_left_value := last_value.as_boolean
+					l_left_value := last_value
 				end
 
 					-- Process right.
 				if not has_error then
 					process_boolean_expression (a_right)
 					if not has_error then
-						l_right_value := last_value.as_boolean
+						l_right_value := last_value
 					end
 				end
 
 				if not has_error then
-						-- Evaluate expression
-					if a_operator_name ~ ti_and_keyword then
-						l_value := l_left_value.item and l_right_value.item
-					elseif a_operator_name ~ ti_or_keyword then
-						l_value := l_left_value.item or l_right_value.item
-					elseif a_operator_name ~ ti_implies_keyword then
-						l_value := l_left_value.item implies l_right_value.item
-					elseif a_operator_name ~ ti_xor_keyword then
-						l_value := l_left_value.item xor l_right_value.item
-					end
+					if l_left_value.is_boolean and then l_right_value.is_boolean then
+							-- Evaluate expression
+						if a_operator_name ~ ti_and_keyword then
+							l_value := l_left_value.as_boolean.item and l_right_value.as_boolean.item
+						elseif a_operator_name ~ ti_or_keyword then
+							l_value := l_left_value.as_boolean.item or l_right_value.as_boolean.item
+						elseif a_operator_name ~ ti_implies_keyword then
+							l_value := l_left_value.as_boolean.item implies l_right_value.as_boolean.item
+						elseif a_operator_name ~ ti_xor_keyword then
+							l_value := l_left_value.as_boolean.item xor l_right_value.as_boolean.item
+						end
 
-					create {EPA_BOOLEAN_VALUE} last_value.make (l_value)
+						create {EPA_BOOLEAN_VALUE} last_value.make (l_value)
+					elseif is_ternary_logic_enabled then
+						if l_left_value.is_nonsensical and then l_right_value.is_nonsensical then
+							create {EPA_NONSENSICAL_VALUE} last_value
+						elseif l_left_value.is_nonsensical and then l_right_value.is_boolean then
+							if a_operator_name ~ ti_and_keyword then
+								create {EPA_NONSENSICAL_VALUE} last_value
+							elseif a_operator_name ~ ti_or_keyword or a_operator_name ~ ti_implies_keyword then
+								if l_right_value.as_boolean.is_true then
+									create {EPA_BOOLEAN_VALUE} last_value.make (True)
+								else
+									create {EPA_NONSENSICAL_VALUE} last_value
+								end
+							elseif a_operator_name ~ ti_xor_keyword then
+								create {EPA_NONSENSICAL_VALUE} last_value
+							end
+						elseif l_left_value.is_boolean and then l_right_value.is_nonsensical then
+							if a_operator_name ~ ti_and_keyword then
+								create {EPA_NONSENSICAL_VALUE} last_value
+							elseif a_operator_name ~ ti_or_keyword then
+								if l_left_value.as_boolean.is_true then
+									create {EPA_BOOLEAN_VALUE} last_value.make (True)
+								else
+									create {EPA_NONSENSICAL_VALUE} last_value
+								end
+							elseif a_operator_name ~ ti_implies_keyword then
+								if l_left_value.as_boolean.is_false then
+									create {EPA_BOOLEAN_VALUE} last_value.make (True)
+								else
+									create {EPA_NONSENSICAL_VALUE} last_value
+								end
+							elseif a_operator_name ~ ti_xor_keyword then
+								create {EPA_NONSENSICAL_VALUE} last_value
+							end
+						else
+							set_has_error (True, msg_type_error_boolean_value_expected)
+						end
+					end
 				end
 			end
 		end
 
 	process_boolean_expression (a_expr: EXPR_AS)
 			-- Process `a_expr' as if it is a boolean expression
+		local
+			l_value: like last_value
 		do
 			if not has_error then
 				a_expr.process (Current)
 				if not has_error then
-					if not last_value.is_boolean then
+					l_value := last_value
+					if l_value.is_boolean or else (l_value.is_nonsensical and then is_ternary_logic_enabled) then
+					else
 						set_has_error (True, msg_type_error (a_expr, {EPA_EXPRESSION_VALUE}.boolean_type_name, last_value.type_name))
 					end
 				end
@@ -611,22 +665,48 @@ feature{NONE} -- Implementation
 
 	process_bin_eq_as (l_as: BIN_EQ_AS)
 		local
+			l_equation: detachable EPA_EQUATION
 		do
-			process_binary_equality_relation_operator_as (l_as.left, l_as.right, once "=")
+			if not has_error then
+				l_equation := equation_by_expression_ast (l_as, False)
+				if l_equation /= Void then
+					last_value := l_equation.value
+				else
+					process_binary_equality_relation_operator_as (l_as.left, l_as.right, once "=")
+				end
+			end
 		end
 
 	process_bin_ne_as (l_as: BIN_NE_AS)
+		local
+			l_equation: detachable EPA_EQUATION
 		do
-			process_binary_equality_relation_operator_as (l_as.left, l_as.right, once "/=")
+			if not has_error then
+				l_equation := equation_by_expression_ast (l_as, False)
+				if l_equation /= Void then
+					last_value := l_equation.value
+				else
+					process_binary_equality_relation_operator_as (l_as.left, l_as.right, once "/=")
+				end
+			end
 		end
 
 	process_un_not_as (l_as: UN_NOT_AS)
+		local
+			l_value: like last_value
 		do
 			process_unary_as (l_as)
 			if not has_error then
 				process_boolean_expression (l_as.expr)
+				l_value := last_value
 				if not has_error then
-					create {EPA_BOOLEAN_VALUE} last_value.make (not last_value.as_boolean.item)
+					if l_value.is_boolean then
+						create {EPA_BOOLEAN_VALUE} last_value.make (not last_value.as_boolean.item)
+					elseif l_value.is_nonsensical and then is_ternary_logic_enabled then
+						create {EPA_NONSENSICAL_VALUE} last_value
+					else
+						set_has_error (True, msg_type_error_boolean_value_expected)
+					end
 				end
 			end
 		end
@@ -756,6 +836,8 @@ feature -- Error messages
 		end
 
 	msg_type_error_sequence_expected: STRING = "A sequence value is expected."
+
+	msg_type_error_boolean_value_expected: STRING = "A boolean value is expected."
 
 	state_phase_name (a_pre_state: BOOLEAN): STRING
 			-- State phase name

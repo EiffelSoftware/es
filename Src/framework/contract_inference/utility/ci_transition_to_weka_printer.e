@@ -258,8 +258,8 @@ feature -- Status report
 					end
 
 			Result :=
-				a_transition.precondition.for_all (l_agent) and then
-				a_transition.postcondition.for_all (l_agent)
+				a_transition.preconditions.for_all (l_agent) and then
+				a_transition.postconditions.for_all (l_agent)
 		end
 
 	is_value_table_generated: BOOLEAN
@@ -539,8 +539,8 @@ feature{NONE} -- Implementation
 			create l_change_calculator
 
 			from
-				l_pre_state := a_transition.interface_precondition.subtraction (a_transition.written_preconditions)
-				l_post_state := a_transition.interface_postcondition.subtraction (a_transition.written_postconditions)
+				l_pre_state := a_transition.interface_preconditions.subtraction (a_transition.written_preconditions)
+				l_post_state := a_transition.interface_postconditions.subtraction (a_transition.written_postconditions)
 					-- If `a_transition' is a query feature call transition, we remove the postconditions which mention "Result"
 					-- from being used for change calculation.
 				if attached {SEM_FEATURE_CALL_TRANSITION} a_transition as l_feat_transition and then l_feat_transition.feature_.has_return_value then

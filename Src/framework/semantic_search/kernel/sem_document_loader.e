@@ -379,8 +379,8 @@ feature {NONE} -- Helpers
 			-- Create and set pre- & poststates
 			create l_prestate.make_from_object_state (l_prestate_queries, a_context_class, a_context_feature)
 			create l_poststate.make_from_object_state (l_poststate_queries, a_context_class, a_context_feature)
-			a_transition.set_precondition (l_prestate)
-			a_transition.set_postcondition (l_poststate)
+			a_transition.set_preconditions (l_prestate)
+			a_transition.set_postconditions (l_poststate)
 		end
 
 feature {NONE} -- Load

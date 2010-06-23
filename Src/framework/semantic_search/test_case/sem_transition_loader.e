@@ -67,7 +67,7 @@ feature{NONE} -- Implementation
 				if attached {ARRAY [NATURAL_8]} loader.last_pre_serialization as l_serialization then
 					l_context := l_transition.context
 					create l_objects.make_with_transition_data (l_context, l_serialization)
-					l_objects.set_properties (l_transition.precondition)
+					l_objects.set_properties (l_transition.preconditions)
 					last_objects.extend (l_objects)
 				end
 			end

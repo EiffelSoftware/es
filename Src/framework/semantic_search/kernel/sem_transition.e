@@ -28,30 +28,52 @@ feature -- Access
 			Result := variables.subtraction (inputs).subtraction (outputs)
 		end
 
-	precondition: EPA_STATE assign set_precondition
+	preconditions: EPA_STATE assign set_preconditions
 			-- Precondition of Current transition
 			-- Assertions may mention variables other than feature operands.
-			-- For a list of assertions only mentioning feature operands, see `interface_precondition'.
-			-- Relationship: `precondition' is a superset of `interface_precondition',
+			-- For a list of assertions only mentioning feature operands, see `interface_preconditions'.
+			-- Relationship: `preconditions' is a superset of `interface_preconditions',
 			-- `interface_preconditoin' is a superset of `written_precondition'.
 
-	postcondition: EPA_STATE assign set_postcondition
+	postconditions: EPA_STATE assign set_postconditions
 			-- Postcondition of Current transition
 			-- Assertions may mention variables other than feature operands (including result).
 			-- Assertions may mention variables other than feature operands (including result).
-			-- For a list of assertions only mentioning feature operands, see `interface_postcondition'.
-			-- Relationship: `postcondition' is a superset of `interface_postcondition',
+			-- For a list of assertions only mentioning feature operands, see `interface_postconditions'.
+			-- Relationship: `postconditions' is a superset of `interface_postconditions',
 			-- `interface_postconditoin' is a superset of `written_postcondition'.
 
+	assertions (a_precondition: BOOLEAN): like preconditions
+			-- Return `preconditions' if `a_precondition' is True,
+			-- otherwise, return `postconditions'.
+		do
+			if a_precondition then
+				Result := preconditions
+			else
+				Result := postconditions
+			end
+		end
+
 	precondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
-			-- Boost values for equations in `precondition'
-			-- Key is an equation in `precondition', value is the boost number associated with that equation.
+			-- Boost values for equations in `preconditions'
+			-- Key is an equation in `preconditions', value is the boost number associated with that equation.
 			-- The boost numbers will be used as boost values for a field (in Lucene sense).
 
 	postcondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
-			-- Boost values for equations in `postcondition'
-			-- Key is an equation in `postcondition', value is the boost number associated with that equation.
+			-- Boost values for equations in `postconditions'
+			-- Key is an equation in `postconditions', value is the boost number associated with that equation.
 			-- The boost numbers will be used as boost values for a field (in Lucene sense).			
+
+	assertion_boosts (a_precondition: BOOLEAN): like precondition_boosts
+			-- Return `precondition_boosts' if `a_precondition' is True,
+			-- otherwise, return `postcondition_boosts'.
+		do
+			if a_precondition then
+				Result := precondition_boosts
+			else
+				Result := postcondition_boosts
+			end
+		end
 
 	written_preconditions: EPA_STATE
 			-- Human written preconditions (if any) for current transition
@@ -59,24 +81,46 @@ feature -- Access
 
 	written_postconditions: EPA_STATE
 			-- Human written postconditions (if any) for current transition
-			-- This is a subset of `postcondition'.
+			-- This is a subset of `postconditions'.
 
-	interface_precondition: EPA_STATE
-			-- Precondition assertions from `precondition' which only mention feature operands
-			-- Note: Recalculation per query, so it is expensive.
+	written_assertions (a_precondition: BOOLEAN): like written_preconditions
+			-- Return `written_preconditions' if `a_precondition' is True,
+			-- otherwise, return `written_postconditions'.
 		do
-			Result := interface_assertions (precondition)
+			if a_precondition then
+				Result := written_preconditions
+			else
+				Result := written_postconditions
+			end
 		end
 
-	interface_postcondition: EPA_STATE
-			-- Postcondition assertions from `postcondition' which only mention feature operands (including result)
+	interface_preconditions: EPA_STATE
+			-- Precondition assertions from `preconditions' which only mention feature operands
 			-- Note: Recalculation per query, so it is expensive.
 		do
-			Result := interface_assertions (postcondition)
+			Result := interface_assertions_internal (preconditions)
+		end
+
+	interface_postconditions: EPA_STATE
+			-- Postcondition assertions from `postconditions' which only mention feature operands (including result)
+			-- Note: Recalculation per query, so it is expensive.
+		do
+			Result := interface_assertions_internal (postconditions)
+		end
+
+	interface_assertions (a_precondition: BOOLEAN): like interface_preconditions
+			-- Return `interface_preconditions' if `a_precondition' is True,
+			-- otherwise, return `interface_postconditions'.
+		do
+			if a_precondition then
+				Result := interface_preconditions
+			else
+				Result := interface_postconditions
+			end
 		end
 
 	assertion_by_anonymouse_expression_text (a_expr_text: STRING; a_precondition: BOOLEAN): detachable EPA_EQUATION
-			-- Precondition equation from `precondition' by anonymouse `a_expr_text' if `a_precondition' is True,
+			-- Precondition equation from `preconditions' by anonymouse `a_expr_text' if `a_precondition' is True,
 			-- otherwise, postcondition equation.
 		do
 			if a_precondition then
@@ -87,19 +131,19 @@ feature -- Access
 		end
 
 	precondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
-			-- Precondition equation from `precondition' by anonymouse `a_expr_text' in
+			-- Precondition equation from `preconditions' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
 		do
-			Result := equation_by_anonymous_expression_text (a_expr_text, precondition)
+			Result := equation_by_anonymous_expression_text (a_expr_text, preconditions)
 		end
 
 	postcondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
-			-- Precondition equation from `postcondition' by anonymouse `a_expr_text' in
+			-- Precondition equation from `postconditions' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
 		do
-			Result := equation_by_anonymous_expression_text (a_expr_text, postcondition)
+			Result := equation_by_anonymous_expression_text (a_expr_text, postconditions)
 		end
 
 	name: STRING
@@ -124,16 +168,16 @@ feature -- Access
 
 feature -- Status setting
 
-	set_precondition (a_pre: like precondition)
-			-- Set `precondition' with 'a_pre'.
+	set_preconditions (a_pre: like preconditions)
+			-- Set `preconditions' with 'a_pre'.
 		do
-			set_state (a_pre, precondition)
+			set_state (a_pre, preconditions)
 		end
 
-	set_postcondition (a_post: like postcondition)
-			-- Set `postcondition' with 'a_post'.
+	set_postconditions (a_post: like postconditions)
+			-- Set `postconditions' with 'a_post'.
 		do
-			set_state (a_post, postcondition)
+			set_state (a_post, postconditions)
 		end
 
 	set_precondition_boosts (a_precondition_boosts: like precondition_boosts)
@@ -214,19 +258,19 @@ feature -- Status report
 feature -- Setting
 
 	extend_ast_precondition_equation (a_equation: EPA_EQUATION)
-			-- Extend `a_equation' into `precondition'.
+			-- Extend `a_equation' into `preconditions'.
 		require
 			a_expr_valid: is_valid_precondition (a_equation)
 		do
-			precondition.force_last (a_equation)
+			preconditions.force_last (a_equation)
 		end
 
 	extend_ast_postcondition_equation (a_equation: EPA_EQUATION)
-			-- Extend `a_equation' into `postcondition'.
+			-- Extend `a_equation' into `postconditions'.
 		require
 			a_expr_valid: is_valid_postcondition (a_equation)
 		do
-			postcondition.force_last (a_equation)
+			postconditions.force_last (a_equation)
 		end
 
 	put_variable (a_variable: EPA_EXPRESSION; a_position: INTEGER; a_input: BOOLEAN; a_output: BOOLEAN)
@@ -272,7 +316,7 @@ feature{NONE} -- Implementation
 			outputs.set_equality_tester (expression_equality_tester)
 		end
 
-	interface_assertions (a_state: EPA_STATE): EPA_STATE
+	interface_assertions_internal (a_state: EPA_STATE): EPA_STATE
 			-- Assertions from `a_state' which only mention feature operands (including result)
 		local
 			l_expr_rewriter: like  expression_rewriter
@@ -319,12 +363,12 @@ invariant
 	outputs_valid: outputs.for_all (agent variables.has)
 	inputs_equality_tester_valid: inputs.equality_tester = expression_equality_tester
 	outputs_equality_tester_valid: outputs.equality_tester = expression_equality_tester
-	precondition_equality_tester_valid: precondition.equality_tester = equation_equality_tester
-	postcondition_equality_tester_valid: postcondition.equality_tester = equation_equality_tester
-	precondition_boosts_valid: precondition_boosts.keys.for_all (agent precondition.has)
+	precondition_equality_tester_valid: preconditions.equality_tester = equation_equality_tester
+	postcondition_equality_tester_valid: postconditions.equality_tester = equation_equality_tester
+	precondition_boosts_valid: precondition_boosts.keys.for_all (agent preconditions.has)
 	precondition_boosts_key_equality_tester_valid: precondition_boosts.key_equality_tester = equation_equality_tester
-	postcondition_boosts_valid: postcondition_boosts.keys.for_all (agent postcondition.has)
+	postcondition_boosts_valid: postcondition_boosts.keys.for_all (agent postconditions.has)
 	postcondition_boosts_key_equality_tester_valid: postcondition_boosts.key_equality_tester = equation_equality_tester
-	precondition_postcondition_consistent: precondition.class_ = postcondition.class_ and precondition.feature_ = postcondition.feature_
+	precondition_postcondition_consistent: preconditions.class_ = postconditions.class_ and preconditions.feature_ = postconditions.feature_
 
 end

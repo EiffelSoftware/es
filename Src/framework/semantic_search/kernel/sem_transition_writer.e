@@ -154,14 +154,14 @@ feature {NONE} -- Append
 			-- Append precondition in `queryable' into `buffer'.
 		do
 			append_state (queryable.written_preconditions, written_precondition_field_prefix)
-			append_state (queryable.precondition, precondition_field_prefix)
+			append_state (queryable.preconditions, precondition_field_prefix)
 		end
 
 	append_postcondition
 			-- Append postcondition in `queryable' into `buffer'.
 		do
 			append_state (queryable.written_postconditions, written_postcondition_field_prefix)
-			append_state (queryable.postcondition, postcondition_field_prefix)
+			append_state (queryable.postconditions, postcondition_field_prefix)
 		end
 
 	append_changes
@@ -178,7 +178,7 @@ feature {NONE} -- Append
 		do
 			l_transition := queryable
 			create l_calculator
-			l_changes := l_calculator.change_set (l_transition.precondition, l_transition.postcondition)
+			l_changes := l_calculator.change_set (l_transition.preconditions, l_transition.postconditions)
 
 			from
 				l_changes.start
@@ -200,7 +200,7 @@ feature {NONE} -- Append
 
 				-- Calculate expressions that are not changed in current transition, and
 				-- add corresponding information into the semantic document.
-			l_all_exprs := l_transition.precondition.expressions.union (l_transition.postcondition.expressions)
+			l_all_exprs := l_transition.preconditions.expressions.union (l_transition.postconditions.expressions)
 			create l_changed_exprs.make (l_all_exprs.count)
 			l_changed_exprs.set_equality_tester (expression_equality_tester)
 			l_changes.keys.do_all (agent l_changed_exprs.force_last)
@@ -212,8 +212,8 @@ feature {NONE} -- Append
 				agent (a_expr: EPA_EXPRESSION): BOOLEAN
 					do
 						Result :=
-							queryable.precondition.has_expression (a_expr) and
-							queryable.postcondition.has_expression (a_expr)
+							queryable.preconditions.has_expression (a_expr) and
+							queryable.postconditions.has_expression (a_expr)
 					end
 				)
 		end

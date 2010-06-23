@@ -18,9 +18,15 @@ feature -- Basic operations
 		do
 			transition_data := a_data
 			setup_data_structures
-
-			build_interface_transitions
+			interface_transitions := interface_transitions_from_test_cases (transition_data)
 			generate_daikon_files
+
+				-- Setup results.
+			create last_preconditions.make (10)
+			last_preconditions.set_equality_tester (expression_equality_tester)
+			create last_postconditions.make (10)
+			last_postconditions.set_equality_tester (expression_equality_tester)
+			setup_last_contracts
 		end
 
 	generate_daikon_files
@@ -67,35 +73,5 @@ feature{NONE} -- Implementation
 
 	daikon_printer: CI_TRANSITION_TO_DAIKON_PRINTER
 			-- Printer to output `interface_transitions' into Daikon input file
-
-feature{NONE} -- Implementation
-
-	build_interface_transitions
-			-- Build `interface_transitions' from `transition_data'.
-		local
-			l_transition: SEM_FEATURE_CALL_TRANSITION
-			l_test_case: CI_TEST_CASE_TRANSITION_INFO
-			l_original_transition: SEM_FEATURE_CALL_TRANSITION
-		do
-			create interface_transitions.make (transition_data.count)
-			interface_transitions.set_key_equality_tester (ci_test_case_transition_info_equality_tester)
-
-				-- Iterate through all test cases in `transition_data',
-				-- for each test case, build the corresponding interface transition.
-			across transition_data as l_test_cases loop
-				l_test_case := l_test_cases.item
-				l_original_transition := l_test_case.transition
-				create l_transition.make (
-					l_test_case.test_case_info.class_under_test,
-					l_test_case.test_case_info.feature_under_test,
-					l_test_case.test_case_info.operand_map,
-					l_test_case.transition.context,
-					l_test_case.transition.is_creation)
-				l_transition.set_uuid (l_original_transition.uuid)
-				l_transition.set_precondition (l_original_transition.interface_precondition.subtraction (l_original_transition.written_preconditions))
-				l_transition.set_postcondition (l_original_transition.interface_postcondition.subtraction (l_original_transition.written_postconditions))
-				interface_transitions.force_last (l_transition, l_test_case)
-			end
-		end
 
 end

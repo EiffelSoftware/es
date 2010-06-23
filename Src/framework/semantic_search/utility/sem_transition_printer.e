@@ -131,7 +131,7 @@ feature{NONE} -- Implementation
 			-- Key is anonymous text representation, such as {0}.has ({1}), for those expressions.
 			-- Value is type of the expression.
 		do
-			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_precondition end)
+			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_preconditions end)
 		end
 
 	post_state_expressions: DS_HASH_TABLE [TYPE_A, STRING]
@@ -139,7 +139,7 @@ feature{NONE} -- Implementation
 			-- Key is anonymous text representation, such as {0}.has ({1}), for those expressions.
 			-- Value is type of the expression.
 		do
-			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_postcondition end)
+			Result := selected_assertions (agent (a_transition: SEM_TRANSITION): EPA_STATE do Result := a_transition.interface_postconditions end)
 		end
 
 	selected_assertions (a_attributes_retriever: FUNCTION [ANY, TUPLE [SEM_TRANSITION], EPA_STATE]): DS_HASH_TABLE [TYPE_A, STRING]

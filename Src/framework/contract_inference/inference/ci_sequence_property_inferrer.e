@@ -63,6 +63,12 @@ feature -- Basic operations
 					-- Validate property candidates.
 				validate_properties
 				log_properties ("Valid properties:", properties)
+
+				create last_preconditions.make (10)
+				last_preconditions.set_equality_tester (expression_equality_tester)
+				create last_postconditions.make (10)
+				last_postconditions.set_equality_tester (expression_equality_tester)
+				setup_last_contracts
 			end
 		end
 

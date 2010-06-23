@@ -665,8 +665,10 @@ feature{NONE} -- Implementation
 					until
 						l_cursor2.after
 					loop
-						l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
-						l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+						if l_cursor.item /= l_cursor2.item then
+							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
+							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+						end
 						l_cursor2.forth
 					end
 					l_cursor.forth

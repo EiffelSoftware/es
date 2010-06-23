@@ -31,6 +31,13 @@ feature -- Basic operations
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
 			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions, Void)
 
+				-- Setup results.
+			create last_preconditions.make (10)
+			last_preconditions.set_equality_tester (expression_equality_tester)
+			create last_postconditions.make (10)
+			last_postconditions.set_equality_tester (expression_equality_tester)
+			setup_last_contracts
+
 				-- Logging.
 			logger.push_info_level
 			logger.put_line (once "Valid frame properties:")

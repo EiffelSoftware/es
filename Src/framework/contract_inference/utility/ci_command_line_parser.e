@@ -53,6 +53,8 @@ feature -- Basic operations
 			l_sequence_property_option: AP_STRING_OPTION
 			l_simple_property_option: AP_STRING_OPTION
 			l_daikon_option: AP_STRING_OPTION
+			l_dnf_option: AP_STRING_OPTION
+			l_max_dnf_clause_option: AP_INTEGER_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -151,6 +153,14 @@ feature -- Basic operations
 			l_daikon_option.set_description ("Should Daikon be used as an inferrer?%N Format: --daikon [on|off].%NDefault: on")
 			l_parser.options.force_last (l_daikon_option)
 
+			create l_dnf_option.make_with_long_form ("dnf-property")
+			l_dnf_option.set_description ("Should properties in DNF format be inferred?%N Format: --daikon [on|off].%NDefault: on")
+			l_parser.options.force_last (l_dnf_option)
+
+			create l_max_dnf_clause_option.make_with_long_form ("max-dfn-clause")
+			l_max_dnf_clause_option.set_description ("Set maximal number of clauses for properties in DNF format.%NFormat: --max-dnf-clause <integer>, <integer> must be a positive integer. Default: 2")
+			l_parser.options.force_last (l_max_dnf_clause_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -238,9 +248,31 @@ feature -- Basic operations
 			else
 				setup_daikon_property (config, Void)
 			end
+
+			if l_dnf_option.was_found then
+				setup_dnf_property (config, l_dnf_option.parameter)
+			else
+				setup_dnf_property (config, Void)
+			end
+
+			if l_max_dnf_clause_option.was_found and then l_max_dnf_clause_option.parameter > 0 then
+				config.set_max_dnf_clause (l_max_dnf_clause_option.parameter)
+			else
+				config.set_max_dnf_clause (2)
+			end
 		end
 
 feature{NONE} -- Implementation
+
+	setup_dnf_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if Daikon is used?
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_dnf_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_dnf_property_enabled (False)
+			end
+		end
 
 	setup_daikon_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup if Daikon is used?

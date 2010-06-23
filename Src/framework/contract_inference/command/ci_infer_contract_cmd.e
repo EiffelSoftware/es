@@ -77,10 +77,29 @@ feature -- Access
 	log_file: PLAIN_TEXT_FILE
 			-- File used for logging
 
+feature -- Access
+
+	last_preconditions: DS_HASH_SET [EPA_EXPRESSION]
+			-- Precconditions inferred by last invocation to `infer'
+		do
+			Result := last_contracts.item (True)
+		end
+
+	last_postconditions: DS_HASH_SET [EPA_EXPRESSION]
+			-- Postconditions inferred by last invocation to `infer'
+		do
+			Result := last_contracts.item (False)
+		end
+
+	last_contracts: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], BOOLEAN]
+			-- Contracts inferred by last invocation to `infer'.
+			-- Key is a boolean indicating precondition or postcondition,
+			-- value is the set of assertions of that kind.	
+
 feature -- Basic operations
 
 	execute
-			-- Execute current command
+			-- Infer contracts, make results available in `last_preconditions' and `last_postconditions'.
 		do
 			initialize_data_structure
 
@@ -436,7 +455,7 @@ feature{NONE} -- Actions
 			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 		do
-			if config.max_test_case_to_execute > 0 implies test_case_count >= config.max_test_case_to_execute then
+			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 					-- Setup information of the newly found test case.
 				create last_test_case_info.make (a_state)
@@ -506,8 +525,28 @@ feature{NONE} -- Actions
 
 	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application exited.
+		local
+			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
+			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
 		do
+				-- Infer contracts using all registered inferrers.
 			inferrers.do_all (agent {CI_INFERRER}.infer (transition_data))
+
+				-- Setup results.
+			create l_preconditions.make (100)
+			l_preconditions.set_equality_tester (expression_equality_tester)
+			create l_postconditions.make (100)
+			l_postconditions.set_equality_tester (expression_equality_tester)
+
+				-- Iterate through all inferrers to collect inferred contracts.
+			across inferrers as l_inferrers loop
+				l_preconditions.append_last (l_inferrers.item.last_preconditions)
+				l_postconditions.append_last (l_inferrers.item.last_postconditions)
+			end
+
+			create last_contracts.make (2)
+			last_contracts.put (l_preconditions, True)
+			last_contracts.put (l_postconditions, False)
 		end
 
 feature{NONE} -- Implementation
@@ -538,13 +577,13 @@ feature{NONE} -- Implementation
 				last_test_case_info.is_feature_under_test_creation)
 			l_transition.set_uuid (last_test_case_info.uuid)
 
-			l_transition.set_precondition (last_pre_execution_evaluations)
-			l_transition.set_postcondition (last_post_execution_evaluations)
+			l_transition.set_preconditions (last_pre_execution_evaluations)
+			l_transition.set_postconditions (last_post_execution_evaluations)
 
 				-- Analyze functions in pre-execution state.
 			create l_func_analyzer
 			l_func_analyzer.analyze (
-				l_transition.precondition,
+				l_transition.preconditions,
 				l_context,
 				last_test_case_info.operand_map,
 				last_test_case_info.class_under_test,
@@ -560,7 +599,7 @@ feature{NONE} -- Implementation
 				-- Analyze functions in post-execution state.
 			create l_func_analyzer
 			l_func_analyzer.analyze (
-				l_transition.postcondition,
+				l_transition.postconditions,
 				l_context,
 				last_test_case_info.operand_map,
 				last_test_case_info.class_under_test,
@@ -591,6 +630,7 @@ feature{NONE} -- Implementation
 			l_sequence_inferrer: CI_SEQUENCE_PROPERTY_INFERRER
 			l_composite_frame_inferrer: CI_COMPOSITE_FRAME_PROPERTY_INFERRER
 			l_daikon_inferrer: CI_DAIKON_INFERRER
+			l_dnf_inferrer: CI_DNF_INFERRER
 		do
 			create inferrers.make
 
@@ -618,6 +658,13 @@ feature{NONE} -- Implementation
 				l_daikon_inferrer.set_config (config)
 				l_daikon_inferrer.set_logger (log_manager)
 				inferrers.extend (l_daikon_inferrer)
+			end
+
+			if config.is_dnf_property_enabled then
+				create l_dnf_inferrer
+				l_dnf_inferrer.set_config (config)
+				l_dnf_inferrer.set_logger (log_manager)
+				inferrers.extend (l_dnf_inferrer)
 			end
 		end
 

@@ -16,6 +16,8 @@ inherit
 
 	DKN_CONSTANTS
 
+	REFACTORING_HELPER
+
 create
 	make,
 	make_with_selection_function
@@ -150,7 +152,12 @@ feature{NONE} -- Implementation
 				l_comparability := a_var_name.hash_code
 			elseif a_type.is_integer then
 				l_rep_type := integer_rep_type
-				l_comparability := integer_comparability
+				fixme ("This is a hack to avoid comparing irrelevant integer expressions. We ignore all feature calls with arguments. 23.6.2010 Jasonw")
+				if a_var_name.has ('(') then
+					l_comparability := a_var_name.hash_code
+				else
+					l_comparability := integer_comparability
+				end
 			elseif a_type.is_real_32 or a_type.is_real_64 then
 				l_rep_type := double_rep_type
 				l_comparability := double_comparability
