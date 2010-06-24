@@ -41,6 +41,7 @@
 #define WEANOBJ 0xB0    /* Remove reference to Eiffel object from stack */
 
 #define CR_RTV  0xC0
+#define CR_VAL	0xD0
 
 /* The other 4 bits can be used for argument count etc. */
 
@@ -101,6 +102,26 @@ rt_private int cr_bread_wrapper (char *buffer, int nbytes)
 	return nbytes;
 }
 
+
+
+/*
+ * Thread synchronization
+ */
+
+#ifdef EIF_THREADS
+
+rt_private EIF_CS_TYPE *cr_event_mutex = NULL;
+
+//#define CR_EVENT_MUTEX_LOCK(where)	RT_TRACE(eif_pthread_cs_lock(cr_event_mutex)); printf("lock %ld %s\n", (long unsigned int) cr_thread_id, where)
+//#define CR_EVENT_MUTEX_UNLOCK(where)	printf("unlock %ld %s\n", (long unsigned int) cr_thread_id, where); RT_TRACE(eif_pthread_cs_unlock(cr_event_mutex))
+
+#define CR_EVENT_MUTEX_LOCK(where)      RT_TRACE(eif_pthread_cs_lock(cr_event_mutex))
+#define CR_EVENT_MUTEX_UNLOCK(where)	RT_TRACE(eif_pthread_cs_unlock(cr_event_mutex))
+
+#else
+#define CR_EVENT_MUTEX_LOCK(where)
+#define CR_EVENT_MUTEX_UNLOCK(where)
+#endif
 
 
 /*
@@ -575,6 +596,27 @@ rt_private void cr_write_event_type (char type)
  * Public capture/replay routines
  */
 
+
+rt_public void cr_init ()
+{
+
+	EIF_GET_CONTEXT
+
+	if (is_capturing)
+		cr_file = fopen("./capture.log", "w");
+	else if (is_replaying)
+		cr_file = fopen("./capture.log", "r");
+
+#ifdef EIF_THREADS
+	if (is_capturing || is_replaying) {
+		RT_TRACE(eif_pthread_cs_create(&cr_event_mutex, 4000)); /* TODO: possibly choose a better spin count */
+		cr_thread_id = ++cr_thread_count;
+	}
+#endif
+
+}
+
+
 rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 {
 	EIF_GET_CONTEXT
@@ -583,19 +625,6 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 
 	if (cr_suppress)
 		return;
-
-	// FIXME: To be done during some (thread) initialization
-	if (cr_file == (FILE *) NULL) {
-		if (is_capturing)
-			cr_file = fopen("./capture.log", "w");
-		else
-			cr_file = fopen("./capture.log", "r");
-	}
-
-#ifdef EIF_THREADS
-	if (cr_thread_id == 0)
-		cr_thread_id = ++cr_thread_count;
-#endif
 
 	char type, rtype;
 	BODY_INDEX bid;
@@ -612,11 +641,11 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 	if (!RTCRI)
 		cr_pop_objects();
 
+
 	if (is_capturing) {
 
-		if (!RTCRI) {
-			cr_pop_objects();
-		}
+		CR_EVENT_MUTEX_LOCK("call");
+
 		/* We only capture changes done during external OUTCALL */
 		cr_capture_mutations(RTCRI);
 		
@@ -625,6 +654,8 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 
 	}
 	else if (!RTCRI) {
+
+		CR_EVENT_MUTEX_LOCK("call");
 
 			// If we are not capturing, it must only read from the log in case of an outcall
 		rtype = cr_schedule();
@@ -639,6 +670,11 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 		if (bid != bodyid)
 			cr_raise("Expected CR_CALL to different routine");
 	}
+	else {
+		/* No need to lock the mutex, as it is an incall and cr_replay already locked it */
+	}
+
+	CR_EVENT_MUTEX_UNLOCK("call");
 
 }
 
@@ -662,6 +698,8 @@ rt_public void cr_register_return (int num_args)
 	if (!RTCRI)
 		cr_pop_objects();
 
+	CR_EVENT_MUTEX_LOCK("ret");
+
 	if (is_capturing) {
 
 		cr_capture_mutations(RTCRI);
@@ -679,6 +717,9 @@ rt_public void cr_register_return (int num_args)
 			cr_raise ("Expected CR_RET with different number of arguments");
 
 	}
+
+	CR_EVENT_MUTEX_UNLOCK("ret");
+
 }
 
 rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t pointed_size, int recursive)
@@ -694,6 +735,8 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 	if (cr_suppress)
 		return;
 
+	char event_type = (char) CR_VAL;
+	char rtype;
 	uint32 log_type;
 	char log_value[8];
 	EIF_CR_REFERENCE ref, log_ref;
@@ -720,13 +763,22 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 			ref.item.p = * (EIF_POINTER *) value;
 			ref.size = pointed_size;
 		}
-		else if (*type == SK_POINTER && is_instance (*(EIF_POINTER *) value)) {
+		else if (recursive && *type == SK_POINTER && is_instance (*(EIF_POINTER *) value)) {
 			ref.item.r = * (EIF_REFERENCE *) value;
 		}
 
 	}
 
+	if (recursive) {
+		CR_EVENT_MUTEX_LOCK("value");
+	}
+
 	if (is_replaying) {
+
+		rtype = cr_schedule();
+
+		if (event_type != rtype)
+			cr_raise ("Expected value event but retrieved different event from log");
 
 		/* We need to read type and value from the log */
 		bread((char *) &log_type, sizeof(uint32));
@@ -829,9 +881,17 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 			memcpy(log_value, value, cr_value_size(log_type));
 		}
 
+		cr_write_event_type (event_type);
+
 		bwrite((char *) &log_type, sizeof(uint32));
 		bwrite(log_value, cr_value_size(log_type));
 	}
+
+	/* FIXME: the following can be problematic if we receive a different tuple from the one
+	 *        registered when capturing. Possibly the dynamic type could be used to detect
+	 *        such a difference and at least raise an exception. Best would be to continue
+	 *        with the same local object stack even if it contains null pointers.
+	 */
 
 	if (ref.item.r != NULL && !RTCRI) {
 		/* this implies use_value */
@@ -853,10 +913,15 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 		}
 	}
 
+	if (recursive) {
+		CR_EVENT_MUTEX_UNLOCK("value");
+	}
+
 }
 
 rt_public void cr_register_value (void *value, uint32 *type, size_t pointed_size)
 {
+
 	cr_register_value_recursive (value, type, pointed_size, 1);
 }
 
@@ -881,8 +946,12 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 
 	EIF_TYPE_INDEX dftype = zone->ov_dftype;
 
+	CR_EVENT_MUTEX_LOCK("malloc");
+
 	cr_write_event_type (type);
 	bwrite ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
+
+	CR_EVENT_MUTEX_UNLOCK("malloc");
 
 	cr_push_object (ref);
 
@@ -905,10 +974,13 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 	ref.item.r = *obj;
 	ref.size = CR_OBJECT_REF;
 
+	CR_EVENT_MUTEX_LOCK("protect");
+
 	EIF_CR_ID id = cr_id_of_object (ref);
 
 	if (!cr_is_valid_id(id)) {
 		/* Instead of rising an exception we just ignore this protect. */
+		CR_EVENT_MUTEX_UNLOCK("protect");
 		return;
 	}
 
@@ -925,14 +997,14 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 	cr_push_object (newref);
 
+	CR_EVENT_MUTEX_UNLOCK("protect");
+
 }
 
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	/* Note: here we might still want to register the event as currently this
 	 * causes a memory leak because the corresponding object is not removed
@@ -948,10 +1020,13 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	ref.item.o = obj;
 	ref.size = CR_GLOBAL_REF;
 
+	CR_EVENT_MUTEX_LOCK("wean");
+
 	id = cr_id_of_object (ref);
 
 	if (!cr_is_valid_id(id)) {
 		/* Instead of rising an exception we just ignore this wean */
+		CR_EVENT_MUTEX_UNLOCK("wean");
 		return;
 	}
 
@@ -962,6 +1037,8 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	RTCRDBG((stderr, "wean %lx\n", (unsigned long) obj));
 
 	cr_remove_object (id);
+
+	CR_EVENT_MUTEX_UNLOCK("wean");
 
 	newref.item.p = *(obj);
 	newref.size = CR_OBJECT_REF;
@@ -985,6 +1062,8 @@ rt_public void cr_register_exception (char *tag, long code)
 	char type = (char) CR_EXC;
 	uint32 length = strlen(tag);
 
+	CR_EVENT_MUTEX_LOCK("exception");
+
 	cr_capture_mutations(1);
 
 	cr_write_event_type (type);
@@ -993,6 +1072,8 @@ rt_public void cr_register_exception (char *tag, long code)
 	bwrite((char *) &length, sizeof(uint32));
 	bwrite(tag, length);
 
+	CR_EVENT_MUTEX_UNLOCK("exception");
+
 }
 
 rt_public void cr_register_retrieve (EIF_REFERENCE obj)
@@ -1000,9 +1081,7 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 
 	/* For now we simply store `obj' to a temporary file and then copy
 	 * the contents of the file to the log. */
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -1013,6 +1092,7 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 	FILE *file = tmpfile();
 	sstore (file_fd(file), obj);
 	
+	CR_EVENT_MUTEX_LOCK("retrieve");
 
 	/* Write event type to log */
 	cr_write_event_type (type);
@@ -1024,11 +1104,13 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 		size_t nbytes = fread (buffer, 1, 1024, file);
 
 		if (ferror(file) != 0)
-			cr_raise ("Could not store object");
+			cr_raise ("Could not write retrieved object to log");
 
 		bwrite(buffer, nbytes);
 
 	} while (!feof(file));
+
+	CR_EVENT_MUTEX_UNLOCK("retrieve");
 
 	fclose(file);
 
@@ -1101,10 +1183,14 @@ rt_public void cr_replay ()
 
 	while (1) {
 
+		CR_EVENT_MUTEX_LOCK("replay");
+
 		type = cr_schedule();
 
 		switch (type & TYPE_MASK) {
 			case CR_RET:
+
+				CR_EVENT_MUTEX_UNLOCK("ret");
 
 				return;
 
@@ -1185,11 +1271,15 @@ rt_public void cr_replay ()
 						cr_raise("Too many args for INCALL");
 				}
 
+				/* Note: MUTEX is unlocked by the called routine */
+
 				break;
 
 			case NEWOBJ:
 
 				bread ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
+
+				CR_EVENT_MUTEX_UNLOCK("malloc");
 
 				if ((type & ARG_MASK) == 1)
 					ref.item.r = emalloc(dftype);
@@ -1229,6 +1319,8 @@ rt_public void cr_replay ()
 				newref.size = CR_GLOBAL_REF;
 
 				cr_push_object (newref);
+
+				CR_EVENT_MUTEX_UNLOCK("protect");
 
 				break;
 
@@ -1271,11 +1363,15 @@ rt_public void cr_replay ()
 					bread((char *) Current, size);
 				}
 
+				CR_EVENT_MUTEX_UNLOCK("memmut");
+
 				break;
 
 			case CR_RTV:
 
 				Current = portable_retrieve(cr_bread_wrapper);
+
+				CR_EVENT_MUTEX_UNLOCK("retrieve");
 
 				ref.size = CR_OBJECT_REF;
 				ref.item.r = Current;
@@ -1294,6 +1390,9 @@ rt_public void cr_replay ()
 					enomem();
 
 				bread(excpt_tag, excpt_length);
+
+				CR_EVENT_MUTEX_UNLOCK("exception");
+
 				excpt_tag[excpt_length] = '\0';
 
 				eraise(excpt_tag, excpt_code);

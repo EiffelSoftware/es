@@ -1002,6 +1002,10 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 #endif
 	init_emnger();					/* Initialize ISE_EXCEPTION_MANAGER */
 
+#ifdef WORKBENCH
+	cr_init();
+#endif
+
 }
 
 rt_public void failure(void)

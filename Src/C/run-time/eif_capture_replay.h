@@ -10,6 +10,9 @@ extern "C" {
 #endif
 
 
+
+RT_LNK void cr_init ();
+
 /* Capture routines */
 
 RT_LNK void cr_register_call (int num_args, BODY_INDEX bodyid);
