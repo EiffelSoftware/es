@@ -195,6 +195,8 @@ Delivery/studio/help/errors/VRVA -text
 Delivery/studio/help/errors/short/VRVA1 -text
 Delivery/studio/help/errors/short/VRVA2 -text
 Delivery/studio/help/errors/short/VSRP3 -text
+Delivery/studio/help/errors/short/VVOK1 -text
+Delivery/studio/help/errors/short/VVOK2 -text
 Delivery/studio/lang/mo_files/de_DE.mo -text
 Delivery/studio/lang/mo_files/en_US.mo -text
 Delivery/studio/lang/mo_files/fr_FR.mo -text
@@ -2896,11 +2898,7 @@ Src/framework/web/xebra/www/xebrahome/translation_conf.xml -text
 Src/framework/web/xebra/www/xmlrpc_demo/config-DISABLED-wapp -text
 Src/framework/xml/gobo/README.TXT -text
 Src/framework/xml/gobo/license.lic -text
-Src/framework/xml/parser/callbacks/README.TXT -text
-Src/framework/xml/parser/license.lic -text
 Src/framework/xml/tests/license.lic -text
-Src/framework/xml/tree/README.TXT -text
-Src/framework/xml/tree/license.lic -text
 Src/framework/xml/utility/xml_utility.lic -text
 Src/framework/xml_utility/xml_utility.lic -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
@@ -3186,6 +3184,10 @@ Src/library/store/dbms/rdbms/mysql/Readme -text
 Src/library/testing/testing-safe.lic -text
 Src/library/testing/testing.lic -text
 Src/library/testing/tests/tests.lic -text
+Src/library/text/parser/xml/parser/callbacks/README.TXT -text
+Src/library/text/parser/xml/parser/license.lic -text
+Src/library/text/parser/xml/tree/README.TXT -text
+Src/library/text/parser/xml/tree/license.lic -text
 Src/library/thread/tests/tests.lic -text
 Src/library/thread/thread-safe.lic -text
 Src/library/thread/thread.lic -text
@@ -4246,6 +4248,7 @@ eweasel/tests/melt073/notes -text
 eweasel/tests/once001/Ace -text
 eweasel/tests/once002/Ace -text
 eweasel/tests/once004/Ace -text
+eweasel/tests/once005/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text

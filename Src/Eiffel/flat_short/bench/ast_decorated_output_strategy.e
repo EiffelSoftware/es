@@ -648,38 +648,80 @@ feature {NONE} -- Implementation
 		end
 
 	process_char_as (l_as: CHAR_AS)
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
 		do
-			if not expr_type_visiting then
-				text_formatter_decorator.process_character_text (l_as.string_value_32)
+			l_text_formatter_decorator := text_formatter_decorator
+			if attached l_as.type as l_type then
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+				end
+				l_type.process (Current)
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_r_curly)
+				end
+			else
+				last_type := character_type
 			end
-			last_type := character_type
+			if not expr_type_visiting then
+				l_text_formatter_decorator.process_character_text (l_as.string_value_32)
+			end
 		end
 
 	process_string_as (l_as: STRING_AS)
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
+			l_text_formatter_decorator := text_formatter_decorator
 			if not expr_type_visiting then
-				l_text_formatter_decorator := text_formatter_decorator
 				if l_as.is_once_string then
 					l_text_formatter_decorator.process_keyword_text (ti_once_keyword, Void)
 					l_text_formatter_decorator.put_space
 				end
+			end
+
+			if attached l_as.type as l_type then
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+				end
+				l_type.process (Current)
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_r_curly)
+				end
+			else
+				last_type := string_type
+			end
+
+			if not expr_type_visiting then
 				l_text_formatter_decorator.put_string_item (l_as.string_value_32)
 			end
-			last_type := string_type
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
+			l_text_formatter_decorator := text_formatter_decorator
 			if not expr_type_visiting then
-				l_text_formatter_decorator := text_formatter_decorator
 				if l_as.is_once_string then
 					l_text_formatter_decorator.process_keyword_text (ti_once_keyword, Void)
 					l_text_formatter_decorator.put_space
 				end
+			end
+
+			if attached l_as.type as l_type then
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+				end
+				l_type.process (Current)
+				if not expr_type_visiting then
+					l_text_formatter_decorator.process_symbol_text (ti_r_curly)
+				end
+			else
+				last_type := string_type
+			end
+
+			if not expr_type_visiting then
 				l_text_formatter_decorator.put_string_item ("%"" + l_as.verbatim_marker)
 				if l_as.is_indentable then
 					l_text_formatter_decorator.put_string_item ("[")
@@ -697,7 +739,6 @@ feature {NONE} -- Implementation
 				end
 				l_text_formatter_decorator.process_string_text (l_as.verbatim_marker + "%"", Void)
 			end
-			last_type := string_type
 		end
 
 	process_body_as (l_as: BODY_AS)
@@ -735,7 +776,7 @@ feature {NONE} -- Implementation
 					l_feat := current_assigner_feature
 				end
 				if not has_error_internal then
-					l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+					l_feat.append_name (l_text_formatter_decorator)
 				else
 					l_text_formatter_decorator.process_basic_text (l_as.assigner.name_8)
 				end
@@ -1509,7 +1550,7 @@ feature {NONE} -- Implementation
 						end
 					l_feat := feature_in_class (current_class, l_feature.rout_id_set)
 					if not has_error_internal then
-						l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+						l_feat.append_name (l_text_formatter_decorator)
 					else
 						l_text_formatter_decorator.process_basic_text (l_feature.feature_name_32)
 					end
@@ -1549,7 +1590,7 @@ feature {NONE} -- Implementation
 						l_text_formatter_decorator.process_symbol_text (ti_r_curly)
 						l_text_formatter_decorator.process_symbol_text (ti_dot)
 						l_feat := l_type.associated_class.feature_with_rout_id (l_info.routine_id)
-						l_text_formatter_decorator.add_feature (l_feat, l_feat.name_32)
+						l_feat.append_name (l_text_formatter_decorator)
 						l_text_formatter_decorator.process_symbol_text (ti_space)
 						l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
 						l_as.expr.process (Current)
@@ -1562,7 +1603,7 @@ feature {NONE} -- Implementation
 						if not expr_type_visiting then
 							l_as.expr.process (Current)
 							l_text_formatter_decorator.process_symbol_text (ti_dot)
-							l_text_formatter_decorator.add_feature (l_feat, l_feat.name_32)
+							l_feat.append_name (l_text_formatter_decorator)
 						end
 					else
 						set_error_message ("Could not find routine of a given routine ID in an inherited conversion")
@@ -1717,7 +1758,7 @@ feature {NONE} -- Implementation
 					has_error_internal := True
 				end
 				if not has_error_internal then
-					l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+					l_feat.append_name (l_text_formatter_decorator)
 				else
 					l_text_formatter_decorator.process_basic_text (l_as.feature_name.name_32)
 				end
@@ -1816,7 +1857,7 @@ feature {NONE} -- Implementation
 					l_as.expr.process (Current)
 					if not expr_type_visiting then
 						l_text_formatter_decorator.process_symbol_text (ti_dot)
-						l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+						l_feat.append_name (l_text_formatter_decorator)
 					end
 				end
 			else
@@ -1981,9 +2022,8 @@ feature {NONE} -- Implementation
 						check l_feat_is_not_procedure: not l_feat.is_procedure end
 						l_as.right.process (Current)
 					else
-						l_name := l_feat.name_32
 						l_text_formatter_decorator.process_symbol_text (ti_dot)
-						l_text_formatter_decorator.process_feature_text (l_name, l_feat, False)
+						l_feat.append_name (l_text_formatter_decorator)
 						l_text_formatter_decorator.put_space
 						l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
 						l_as.right.process (Current)
@@ -2403,7 +2443,7 @@ feature {NONE} -- Implementation
 					if processing_formal_dec then
 						l_text_formatter_decorator.process_feature_text (l_as.visual_name_32, l_feat, False)
 					else
-						l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+						l_feat.append_name (l_text_formatter_decorator)
 					end
 				end
 			else
@@ -2435,7 +2475,7 @@ feature {NONE} -- Implementation
 					l_text_formatter_decorator.process_symbol_text (ti_double_quote)
 				else
 					if not has_error_internal then
-						l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+						l_feat.append_name (l_text_formatter_decorator)
 					else
 						l_text_formatter_decorator.process_basic_text (l_as.visual_name_32)
 					end
@@ -2526,7 +2566,7 @@ feature {NONE} -- Implementation
 						if processing_formal_dec then
 							l_text_formatter_decorator.process_feature_text (l_as.visual_name_32, l_feat, False)
 						else
-							l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+							l_feat.append_name (l_text_formatter_decorator)
 						end
 					end
 				else
@@ -2558,7 +2598,7 @@ feature {NONE} -- Implementation
 						l_text_formatter_decorator.process_symbol_text (ti_double_quote)
 					else
 						if not has_error_internal then
-							l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+							l_feat.append_name (l_text_formatter_decorator)
 						else
 							l_text_formatter_decorator.process_basic_text (l_as.visual_name_32)
 						end
@@ -2608,7 +2648,7 @@ feature {NONE} -- Implementation
 				l_text_formatter_decorator.put_space
 			end
 			if not has_error_internal then
-				l_text_formatter_decorator.process_feature_text (l_feat.name_32, l_feat, False)
+				l_feat.append_name (l_text_formatter_decorator)
 			else
 				l_text_formatter_decorator.process_basic_text (l_as.visual_name_32)
 			end
