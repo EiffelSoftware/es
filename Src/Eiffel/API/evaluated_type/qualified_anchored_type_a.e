@@ -3,7 +3,7 @@ note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
-	revision: "$Revision $"
+	revision: "$Revision$"
 
 class
 	QUALIFIED_ANCHORED_TYPE_A
@@ -17,6 +17,7 @@ inherit
 			evaluated_type_in_descendant,
 			good_generics,
 			initialize_info,
+			instantiated_in,
 			is_explicit,
 			is_syntactically_equal,
 			skeleton_adapted_in,
@@ -93,11 +94,21 @@ feature -- Comparison
 	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		do
-			if attached {QUALIFIED_ANCHORED_TYPE_A} other as o then
-				Result :=
-					qualifier.same_as (o.qualifier) and then
-					chain ~ o.chain and then
-					has_same_attachment_marks (o)
+			if
+				attached {QUALIFIED_ANCHORED_TYPE_A} other as o and then
+				qualifier.same_as (o.qualifier) and then
+				chain ~ o.chain and then
+				has_same_attachment_marks (o)
+			then
+				if attached actual_type as a then
+					Result :=
+						is_valid and then
+						o.is_valid and then
+						attached o.actual_type as oa and then
+						a.same_as (oa)
+				else
+					Result := not attached o.actual_type
+				end
 			end
 		end
 
@@ -337,6 +348,17 @@ feature -- Output
 		end
 
 feature -- Primitives
+
+	instantiated_in (class_type: TYPE_A): TYPE_A
+			-- <Precursor>
+		local
+			t: like Current
+		do
+			t := twin
+			t.set_actual_type (actual_type.instantiated_in (class_type).actual_type)
+			t.set_qualifier (qualifier.instantiated_in (class_type))
+			Result := t
+		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): QUALIFIED_ANCHORED_TYPE_A
 			-- <Precursor>
