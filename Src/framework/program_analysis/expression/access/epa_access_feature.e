@@ -72,7 +72,7 @@ feature -- Access
 			end
 		end
 
-	length: INTEGER is
+	length: INTEGER
 			-- Length of current access
 		do
 			Result := 1
@@ -80,7 +80,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_feature: BOOLEAN is True
+	is_feature: BOOLEAN = True
 			-- Is Current access a feature?
 
 end

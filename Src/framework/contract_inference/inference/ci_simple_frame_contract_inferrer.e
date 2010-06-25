@@ -36,6 +36,7 @@ feature -- Basic operations
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
+			generate_inferred_contracts (l_valid_frame_properties)
 			setup_last_contracts
 
 				-- Logging.
@@ -239,23 +240,17 @@ feature{NONE} -- Implementation
 						-- Setup argument types for the frame property.
 					create l_argument_types.make (1, 3)
 					l_argument_types.put (a_function.argument_type (1), 1)
-					l_argument_types.put (a_function.argument_type (2), 2)
-					l_argument_types.put (feature_under_test.arguments.first, 3)
+					l_argument_types.put (feature_under_test.arguments.first, 2)
+					l_argument_types.put (a_function.argument_type (2), 3)
 					l_predicate := quantified_function (l_argument_types, l_predicate_body)
 
 						-- Create frame property.
-					create l_quantified_expr.make (2, l_predicate, l_scope, True, l_operand_map)
+					create l_quantified_expr.make (3, l_predicate, l_scope, True, l_operand_map)
 					Result.force_last (l_quantified_expr)
 					l_templates.forth
 				end
 			end
 		end
-
---	fake_nullary_function (a_result_type: TYPE_A; a_body: STRING): EPA_FUNCTION
---			-- Fake nullary function of type `a_result_type' and body `a_body'
---		do
---			create Result.make (<<>>, <<>>, a_result_type, a_body)
---		end
 
 	is_class_a_container (a_class: CLASS_C): BOOLEAN
 			-- Is `a_class' a {CONTAINER}?		
@@ -264,6 +259,25 @@ feature{NONE} -- Implementation
 		do
 			l_container_id := first_class_starts_with_name ("CONTAINER").class_id
 			Result := ancestors (a_class).there_exists (agent (c: CLASS_C; a_id: INTEGER): BOOLEAN do Result := c.class_id = a_id end (?, l_container_id))
+		end
+
+	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION])
+			-- Generate final inferred contracts from `candidate_properties' and
+			-- store result in `last_postconditions'.
+		local
+			l_properties: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+		do
+			from
+				l_properties := a_valid_properties.new_cursor
+				l_properties.start
+			until
+				l_properties.after
+			loop
+				l_expr := expression_from_quantified_expression (l_properties.item, class_under_test, feature_under_test)
+				last_postconditions.force_last (l_expr)
+				l_properties.forth
+			end
 		end
 
 end

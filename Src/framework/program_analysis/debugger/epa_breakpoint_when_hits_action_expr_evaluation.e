@@ -20,7 +20,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_expressions: like expressions; a_class: like class_; a_feature: like feature_) is
+	make (a_expressions: like expressions; a_class: like class_; a_feature: like feature_)
 			-- Initialize Current.
 		require
 			a_expressions_attached: a_expressions /= Void

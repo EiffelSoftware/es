@@ -16,7 +16,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_pattern (a_pattern: STRING) is
+	make_with_pattern (a_pattern: STRING)
 			-- Prepare current searcher using regular expression `a_pattern' to match files.
 		require
 			a_pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
@@ -89,7 +89,7 @@ feature -- Basic operations
 
 feature -- Setting
 
-	set_is_search_recursive (b: BOOLEAN) is
+	set_is_search_recursive (b: BOOLEAN)
 			-- Set `is_search_recursive' with `b'.
 		do
 			is_search_recursive := b
@@ -97,7 +97,7 @@ feature -- Setting
 			is_search_recursive_set: is_search_recursive = b
 		end
 
-	set_is_dir_matched (b: BOOLEAN) is
+	set_is_dir_matched (b: BOOLEAN)
 			-- Set `is_dir_matched' with `b'.
 		do
 			is_dir_matched := b
@@ -107,7 +107,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	set_veto_file_function (a_function: like veto_file_function) is
+	set_veto_file_function (a_function: like veto_file_function)
 			-- Set `veto_file_function' with `a_func'.
 		do
 			veto_file_function := a_function
@@ -115,7 +115,7 @@ feature{NONE} -- Implementation
 			veto_file_function_set: veto_file_function = a_function
 		end
 
-	search_files (a_start_location: STRING) is
+	search_files (a_start_location: STRING)
 			-- Search for files matching `file_pattern' in location `a_start_location'.
 			-- Depending on `is_search_recursive', subdirectories of `a_start_location' will be searched.
 		require
@@ -173,7 +173,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	match_location (a_location: STRING; a_name: STRING) is
+	match_location (a_location: STRING; a_name: STRING)
 			-- Try to match `a_location' against `veto_file_function'.
 			-- If matched, call `file_found_actions'.
 		require
@@ -187,7 +187,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	is_file_matched (a_file_path: STRING; a_matcher: RX_PCRE_REGULAR_EXPRESSION): BOOLEAN is
+	is_file_matched (a_file_path: STRING; a_matcher: RX_PCRE_REGULAR_EXPRESSION): BOOLEAN
 			-- Does `a_file_path' match `a_matcher'?
 		require
 			a_file_path_attached: a_file_path /= Void

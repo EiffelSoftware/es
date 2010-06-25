@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_nonsensical: BOOLEAN is True
+	is_nonsensical: BOOLEAN = True
 			-- Is current a nonsensical value?
 
 feature -- Process

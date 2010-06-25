@@ -45,6 +45,7 @@ feature -- Basic operations
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
+			generate_inferred_contracts
 			setup_last_contracts
 		end
 
@@ -466,6 +467,31 @@ feature{NONE} -- Implementation
 			end
 
 			logger.pop_level
+		end
+
+	generate_inferred_contracts
+			-- Generate final inferred contracts from `candidate_properties' and
+			-- store result in `last_postconditions'.
+		local
+			l_candidates: like candidate_properties.new_cursor
+			l_operand_map_tables: like operand_map_table
+			l_postconditions: like last_postconditions
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+		do
+			l_operand_map_tables := operand_map_table
+			l_postconditions := last_postconditions
+			l_class := class_under_test
+			l_feature := feature_under_test
+			from
+				l_candidates := candidate_properties.new_cursor
+				l_candidates.start
+			until
+				l_candidates.after
+			loop
+				l_postconditions.force_last (expression_from_function (l_candidates.item, Void, l_operand_map_tables.item (l_candidates.item), l_class, l_feature))
+				l_candidates.forth
+			end
 		end
 
 feature{NONE} -- Logging

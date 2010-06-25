@@ -5,11 +5,13 @@ note
 
 class
 	ETR_AST_STRING_OUTPUT
+
 inherit
 	ETR_AST_STRUCTURE_OUTPUT_I
 		redefine
 			set_block_depth
 		end
+		
 create
 	make,
 	make_with_indentation_string

@@ -50,7 +50,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_reference: BOOLEAN is True
+	is_reference: BOOLEAN = True
 			-- Is current a reference value?
 
 feature -- Process

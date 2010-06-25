@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_real: BOOLEAN is True
+	is_real: BOOLEAN = True
 			-- Is current a real value?
 
 feature -- Process

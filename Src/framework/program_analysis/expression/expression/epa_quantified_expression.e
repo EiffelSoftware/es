@@ -54,8 +54,8 @@ feature -- Access
 				l_variables.after
 			loop
 				Result.append (l_variables.key_for_iteration)
-				Result.append (once ": ")
-				Result.append (l_variables.item_for_iteration.name)
+--				Result.append (once ": ")
+--				Result.append (l_variables.item_for_iteration.name)
 				if i < c then
 					Result.append (once ", ")
 				end
@@ -97,7 +97,7 @@ feature -- Status report
 			end
 		end
 
-feature{NONE} -- Implementation
+feature -- Access
 
 	quantifier_name: STRING
 			-- Name of the quantifier

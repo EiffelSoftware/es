@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_boolean: BOOLEAN is True
+	is_boolean: BOOLEAN = True
 			-- Is current a boolean value?
 
 	is_true: BOOLEAN

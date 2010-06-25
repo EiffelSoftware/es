@@ -17,7 +17,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_expression_retriever: like expression_retriever; a_class: like class_; a_feature: like feature_) is
+	make (a_expression_retriever: like expression_retriever; a_class: like class_; a_feature: like feature_)
 			-- Initialize Current.
 		do
 			class_ := a_class

@@ -268,6 +268,31 @@ feature -- Class/feature related
 			end
 		end
 
+	operand_name_index_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): HASH_TABLE [STRING, INTEGER]
+			-- Table from 0-based operand (including result, if any) index to the corresponding operand names.
+			-- Key is operand index, value is the name of that operand. "Current" for target, "Result" for result.
+		local
+			l_operand_count: INTEGER
+			l_args: FEAT_ARG
+		do
+			l_operand_count := 1 + a_feature.argument_count
+			if a_feature.has_return_value then
+				l_operand_count := l_operand_count + 1
+			end
+			create Result.make (l_operand_count)
+			Result.put (ti_current, 0)
+			if a_feature.has_return_value then
+				Result.put (ti_result, l_operand_count - 1)
+			end
+
+			if a_feature.argument_count > 0 then
+				l_args := a_feature.arguments
+				across 1 |..| a_feature.argument_count as l_arg_indexes loop
+					Result.put (l_args.item_name (l_arg_indexes.item), l_arg_indexes.item)
+				end
+			end
+		end
+
 	operand_name_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
 			-- Types of operands of `a_feature' in the context of `a_context_class'.
 			-- Result is a table, key is operand name, such as "Current", "Result", and arguments.

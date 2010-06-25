@@ -37,7 +37,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target_variable_index: INTEGER; a_function_name: like function_name)
+	make (a_target_variable_index: INTEGER; a_function_name: like function_name; a_function_type: TYPE_A; a_lower_bound_expr, a_upper_bound_expr: STRING)
 			-- Initialize Current.
 		do
 			target_variable_index := a_target_variable_index
@@ -49,6 +49,9 @@ feature{NONE} -- Initialization
 			out.append (a_function_name)
 			out.append (once "%"]")
 			hash_code := out.hash_code
+
+			lower_bound_expression := a_lower_bound_expr.twin
+			upper_bound_expression := a_upper_bound_expr.twin
 		end
 
 feature -- Access
@@ -59,11 +62,26 @@ feature -- Access
 	function_name: STRING
 			-- Name of the function from which the sequence is extracted
 
-	out, debug_output: STRING
+	function_type: TYPE_A
+			-- Type of `function_name'
+
+	out: STRING
 			-- String that should be displayed in debugger to represent `Current'.
+
+	debug_output: STRING
+			-- Debug output
+		do
+			Result := out
+		end
 
 	hash_code: INTEGER
 			-- Hash code of current
+
+	upper_bound_expression: STRING
+			-- Expression to get upper bound
+
+	lower_bound_expression: STRING
+			-- Expression to get lower bound
 
 feature -- Status report
 

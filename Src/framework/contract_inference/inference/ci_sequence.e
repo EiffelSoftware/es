@@ -37,7 +37,7 @@ convert
 
 feature{NONE} -- Initialization
 
-	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_context: like context; a_count_expressions_name: STRING; a_target_variable_position: INTEGER)
+	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_function_type: TYPE_A; a_context: like context; a_count_expressions_name: STRING; a_target_variable_position: INTEGER; a_lower_bound_expr, a_upper_bound_expr: STRING)
 			-- Initialize Current with `a_array'.
 		local
 			l_cursor: CURSOR
@@ -46,7 +46,7 @@ feature{NONE} -- Initialization
 			target_variable_name := a_target_varaible_name.twin
 			context := a_context
 			count_expressions_name := a_count_expressions_name.twin
-			create signature.make (a_target_variable_position, a_function_name)
+			create signature.make (a_target_variable_position, a_function_name, a_function_type, a_lower_bound_expr, a_upper_bound_expr)
 
 				-- Initialize `content'.
 			create l_hash_str.make (64)
@@ -66,10 +66,10 @@ feature{NONE} -- Initialization
 			hash_code := l_hash_str.hash_code
 		end
 
-	make_from_function (a_function: CI_FUNCTION_WITH_INTEGER_DOMAIN; a_count_expressions_name: STRING; a_content: LINKED_LIST [G]; a_target_variable_position: INTEGER)
+	make_from_function (a_function: CI_FUNCTION_WITH_INTEGER_DOMAIN; a_count_expressions_name: STRING; a_content: LINKED_LIST [G]; a_target_variable_position: INTEGER; a_lower_bound_expr, a_upper_bound_expr: detachable STRING)
 			-- Initialize Current.
 		do
-			make (a_content, a_function.target_variable_name, a_function.function_name, a_function.context, a_count_expressions_name, a_target_variable_position)
+			make (a_content, a_function.target_variable_name, a_function.function_name, a_function.result_type, a_function.context, a_count_expressions_name, a_target_variable_position, a_lower_bound_expr, a_upper_bound_expr)
 		end
 
 feature -- Access
@@ -108,6 +108,12 @@ feature -- Access
 			Result := signature.function_name
 		end
 
+	function_type: TYPE_A
+			-- Type of `function_name'
+		do
+			Result := signature.function_type
+		end
+
 	context: EPA_CONTEXT
 			-- Context in which Current exists
 
@@ -117,6 +123,18 @@ feature -- Access
 	count_expressions_name: STRING
 			-- Name of the expression on `target_variable_name' to get the count of current sequence
 			-- Format: surpose `target_variable_name' is v_1, then: v_1.count + 1, or v_1.count.
+
+	lower_bound_expression: detachable STRING
+			-- Expression to get lower bound
+		do
+			Result := signature.lower_bound_expression
+		end
+
+	upper_bound_expression: detachable STRING
+			-- Expression to get upper bound
+		do
+			Result := signature.upper_bound_expression
+		end
 
 feature -- Status
 

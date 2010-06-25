@@ -173,7 +173,7 @@ feature{NONE} -- Function selection
 			create Result.make (agent is_function_candidate_equal)
 		end
 
-feature{NONE} -- Implementation
+feature -- Access
 
 	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
 			-- Transition data from which contracts are inferred
@@ -189,6 +189,8 @@ feature{NONE} -- Implementation
 
 	is_query: BOOLEAN
 			-- Is `feature_under_test' a query?
+
+feature{NONE} -- Implementation
 
 	data_by_test_case_class_name (a_class_name: STRING): CI_TEST_CASE_TRANSITION_INFO
 			-- Transition information from test case whose class name is `a_class_name'
@@ -482,4 +484,56 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	expression_from_function (a_function: EPA_FUNCTION; a_function_type: detachable TYPE_A; a_operand_map: HASH_TABLE [INTEGER, INTEGER]; a_class: CLASS_C; a_feature: FEATURE_I): EPA_EXPRESSION
+			-- An expression from `a_function'
+			-- `a_function_type' is the type of `a_function', if Void, type check `a_function' to get the real type.
+			-- The resulting expression is understood in the context of `a_feature' in `a_class'.
+			-- `a_operand_map' is a table from 1-based function argument index to 0-based operand index in `a_feature'.
+		local
+			l_arg_index: INTEGER
+			l_arg_str: STRING
+			l_opd_str: STRING
+			l_body: STRING
+			l_operand_strs: HASH_TABLE [STRING, INTEGER]
+		do
+				-- Translate 1-based argument indexes in `a_function'.`body' into 0-based operand indexes in `a_feature'.
+			l_operand_strs := operand_name_index_with_feature (feature_under_test, class_under_test)
+			l_body := a_function.body.twin
+			across 1 |..| a_function.arity as l_argument_indexes loop
+				l_arg_index := l_argument_indexes.item
+				l_arg_str := curly_brace_surrounded_integer (l_arg_index)
+				l_body.replace_substring_all (l_arg_str, l_operand_strs.item (a_operand_map.item (l_arg_index)))
+			end
+			if a_function_type /= Void then
+				create {EPA_AST_EXPRESSION} Result.make_with_text_and_type (a_class, a_feature, l_body, a_class, a_function_type)
+			else
+				create {EPA_AST_EXPRESSION} Result.make_with_text (a_class, a_feature, l_body, a_class)
+			end
+		end
+
+	expression_from_quantified_expression (a_quantified_expr: CI_QUANTIFIED_EXPRESSION; a_class: CLASS_C; a_feature: FEATURE_I): EPA_EXPRESSION
+			-- An expression from `a_quantified_expr'
+			-- The resulting expression is understood in the context of `a_feature' in `a_class'.		
+		local
+			l_var_name: STRING
+			l_forall: EPA_UNIVERSAL_QUANTIFIED_EXPRESSION
+			l_predicate: EPA_EXPRESSION
+			l_text: STRING
+			l_func: EPA_FUNCTION
+			l_new_pred_func: EPA_FUNCTION
+		do
+
+			l_var_name := a_quantified_expr.quantified_variable_name (a_feature, a_class)
+			l_func := a_quantified_expr.predicate
+			l_text := l_func.body.twin
+			l_text.replace_substring_all (curly_brace_surrounded_integer (a_quantified_expr.quantified_variable_argument_index), l_var_name)
+			create l_new_pred_func.make (l_func.argument_types, l_func.argument_domains, l_func.result_type, l_text)
+			if a_quantified_expr.is_for_all then
+				l_predicate := expression_from_function (l_new_pred_func, l_new_pred_func.result_type, a_quantified_expr.operand_map, a_class, a_feature)
+				create l_forall.make (l_var_name, a_quantified_expr.quantified_variabale_type, l_predicate, a_class, a_feature, a_class)
+				Result := l_forall
+			else
+				check not_supported_yet: False end
+			end
+		end
 end

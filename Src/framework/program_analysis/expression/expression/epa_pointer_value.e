@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_pointer: BOOLEAN is True
+	is_pointer: BOOLEAN = True
 			-- Is current a pointer value?
 
 feature -- Process

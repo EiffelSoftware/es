@@ -44,9 +44,9 @@ feature{NONE} -- Implementation
 			Result.append (once "}}")
 		end
 
-	expression_place_holder: STRING is "{{e}}"
+	expression_place_holder: STRING = "{{e}}"
 
-	value_place_holder: STRING is "{{v}}"
+	value_place_holder: STRING = "{{v}}"
 
 	class_: CLASS_C
 			-- Context class

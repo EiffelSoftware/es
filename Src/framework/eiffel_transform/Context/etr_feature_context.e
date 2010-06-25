@@ -315,6 +315,21 @@ feature -- Access
 			Result := class_context.written_class
 		end
 
+feature -- Access
+
+	has_argument (a_name: STRING): BOOLEAN
+			-- Does current feature has an argument named `a_name'?
+		do
+			Result := arg_by_name /= Void and then arg_by_name.has (a_name)
+		end
+
+	has_local (a_name: STRING): BOOLEAN
+			-- Does current feature has a local named `a_name'?
+		do
+			Result := local_by_name /= Void and then local_by_name.has (a_name)
+		end
+
+
 invariant
 	locals_valid: has_locals implies attached locals
 	arguments_valid: has_arguments implies attached arguments

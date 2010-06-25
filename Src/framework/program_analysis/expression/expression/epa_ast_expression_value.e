@@ -42,7 +42,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_ast_expression_value: BOOLEAN is True
+	is_ast_expression_value: BOOLEAN = True
 			-- Is current an AST expression value?
 
 	is_item_equal (other: like Current): BOOLEAN

@@ -12,11 +12,11 @@ inherit
 		rename
 			make as make_feature
 		undefine
-			type,
-			length
+			type
 		redefine
 			text,
-			is_nested
+			is_nested,
+			length
 		end
 
 create
@@ -74,7 +74,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_nested: BOOLEAN is True
+	is_nested: BOOLEAN = True
 			-- Is Current access nested?
 
 end

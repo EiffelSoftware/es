@@ -38,12 +38,12 @@ feature -- Access
 			good_result: Result.is_equal ("Result")
 		end
 
-	length: INTEGER is 1
+	length: INTEGER = 1
 			-- Length of current access
 
 feature -- Status report
 
-	is_result: BOOLEAN is True
+	is_result: BOOLEAN = True
 			-- Is current access a result?
 
 end

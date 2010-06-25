@@ -19,7 +19,7 @@ inherit
 
 feature -- Access
 
-	argumentless_primitive_queries (a_type: TYPE_A): LIST [FEATURE_I] is
+	argumentless_primitive_queries (a_type: TYPE_A): LIST [FEATURE_I]
 			-- List of argumentless queries with primitive return types such as INTEGER, BOOLEAN in `a_type'
 		do
 			create {LINKED_LIST [FEATURE_I]} Result.make
@@ -96,7 +96,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LINKED_LIST [FEATURE_I] is
+	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LINKED_LIST [FEATURE_I]
 			-- List of features satisfying `a_criterion' from `a_type'.
 			-- `a_criterion' is a filter function used to selected wanted features: all the features causing
 			-- `a_criterion' to return true are kept in the result.
@@ -111,7 +111,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	final_feature (a_feature_name: STRING; a_written_class: CLASS_C; a_context_class: CLASS_C): detachable FEATURE_I is
+	final_feature (a_feature_name: STRING; a_written_class: CLASS_C; a_context_class: CLASS_C): detachable FEATURE_I
 			-- Final feature name for `a_feature_name' (which is written in `a_written_class') in `a_context_class'
 			-- A Void return value means that the feature doesn't exist in `a_context_class'.
 		require
@@ -129,7 +129,7 @@ feature -- Access
 			end
 		end
 
-	final_argument_index (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): INTEGER is
+	final_argument_index (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): INTEGER
 			-- 1-based argument index of an argument `a_name' in feature `a_feature'.
 			-- Resolve `a_name' in case that the argument name changes in inherited features.
 			-- If there is no argument called `a_name' in `a_feature', return 0.
@@ -170,7 +170,7 @@ feature -- Access
 
 feature -- Feature criteria
 
-	is_boolean_query (a_feature: FEATURE_I): BOOLEAN is
+	is_boolean_query (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' a boolean query?
 		require
 			a_feature_attached: a_feature /= Void
@@ -178,7 +178,7 @@ feature -- Feature criteria
 			Result := a_feature.type /= Void and then a_feature.type.is_boolean
 		end
 
-	is_integer_query (a_feature: FEATURE_I): BOOLEAN is
+	is_integer_query (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' an integer query?
 		require
 			a_feature_attached: a_feature /= Void
@@ -186,7 +186,7 @@ feature -- Feature criteria
 			Result := a_feature.type /= Void and then a_feature.type.is_integer
 		end
 
-	is_argumentless_query (a_feature: FEATURE_I): BOOLEAN is
+	is_argumentless_query (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' an argumentless query?
 		require
 			a_feature_attached: a_feature /= Void
@@ -194,7 +194,7 @@ feature -- Feature criteria
 			Result := a_feature.type /= Void and then a_feature.argument_count = 0
 		end
 
-	is_exported_to_any (a_feature: FEATURE_I): BOOLEAN is
+	is_exported_to_any (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' exported to {ANY}?
 		require
 			a_feature_attached: a_feature /= Void
@@ -202,7 +202,7 @@ feature -- Feature criteria
 			Result := a_feature.export_status.is_exported_to (system.any_class.compiled_class)
 		end
 
-	is_non_any_feature (a_feature: FEATURE_I): BOOLEAN is
+	is_non_any_feature (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' not written in class ANY?
 		require
 			a_feature_attached: a_feature /= Void

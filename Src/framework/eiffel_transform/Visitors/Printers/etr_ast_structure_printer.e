@@ -5,11 +5,13 @@ note
 
 class
 	ETR_AST_STRUCTURE_PRINTER
+
 inherit
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
 		end
+		
 	AST_ITERATOR
 		export
 			{AST_EIFFEL} all
@@ -125,7 +127,7 @@ inherit
 		end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
-	
+
 create
 	make_with_output
 

@@ -547,6 +547,30 @@ feature{NONE} -- Actions
 			create last_contracts.make (2)
 			last_contracts.put (l_preconditions, True)
 			last_contracts.put (l_postconditions, False)
+
+			log_final_contracts
+		end
+
+	log_final_contracts
+			-- Log final contracts in `last_postconditions'.
+		local
+			l_cursor: like last_postconditions.new_cursor
+			l_printer: CI_EXPRESSION_PRINTER
+		do
+				-- Logging.
+			create l_printer.make
+			log_manager.push_info_level
+			log_manager.put_line_with_time ("Found the following final postconditions:")
+			from
+				l_cursor := last_postconditions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
+				l_cursor.forth
+			end
+			log_manager.pop_level
 		end
 
 feature{NONE} -- Implementation

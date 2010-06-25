@@ -366,18 +366,20 @@ feature -- Partial evaluation
 				-- Fabricate the final function.
 			create l_final_args.make (1, l_final_arity)
 			create l_final_domains.make (1, l_final_arity)
-			from
-				i := 1
-				l_arguments.start
-				l_domains.start
-			until
-				l_arguments.after
-			loop
-				l_final_args.put (l_arguments.item_for_iteration, i)
-				l_final_domains.put (l_domains.item_for_iteration, i)
-				i := i + 1
-				l_arguments.forth
-				l_domains.forth
+			if l_final_arity > 0 then
+				from
+					i := 1
+					l_arguments.start
+					l_domains.start
+				until
+					l_arguments.after
+				loop
+					l_final_args.put (l_arguments.item_for_iteration, i)
+					l_final_domains.put (l_domains.item_for_iteration, i)
+					i := i + 1
+					l_arguments.forth
+					l_domains.forth
+				end
 			end
 			l_final_body := body.twin
 			from
@@ -504,6 +506,12 @@ feature -- Status report
 
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := canonical_form
+		end
+
+	text: STRING
+			-- Text
 		do
 			Result := canonical_form
 		end

@@ -27,7 +27,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize Current.
 		do
 			type := none_type

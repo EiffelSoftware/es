@@ -223,7 +223,7 @@ feature{NONE} -- Implementation
 			has_type_error_set: has_type_error = b
 		end
 
-	check_type is
+	check_type
 			-- Check type of `ast', store type in `type'.
 		require
 			syntax_correct: not has_syntax_error
@@ -247,7 +247,7 @@ feature{NONE} -- Implementation
 			type_attached: not has_type_error implies type /= Void
 		end
 
-	parse_text (a_text: STRING) is
+	parse_text (a_text: STRING)
 			-- Parse `a_text' and set `ast' with the parsing result.
 			-- Set `has_syntax_error' to True if `a_text' contains syntax error.
 		require

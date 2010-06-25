@@ -49,12 +49,12 @@ feature -- Access
 	text: STRING
 			-- Text of current access
 
-	length: INTEGER is 1
+	length: INTEGER = 1
 			-- Length of current access
 
 feature -- Status report
 
-	is_argument: BOOLEAN is True
+	is_argument: BOOLEAN = True
 			-- Is Current access an argument?
 
 end

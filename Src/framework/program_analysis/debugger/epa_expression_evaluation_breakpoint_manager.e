@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_class: like class_; a_feature: like feature_) is
+	make (a_class: like class_; a_feature: like feature_)
 			-- Initialize Current.
 		do
 			class_ := a_class
@@ -178,7 +178,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	initial_capacity: INTEGER is 10
+	initial_capacity: INTEGER = 10
 			-- Initial capacity for `breakpoints' and `hit_actions'
 
 invariant

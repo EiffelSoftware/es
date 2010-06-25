@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION] is
+	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION]
 			-- List of invariant clauses of `a_class'.
 			-- `ast' is the TAGGED_AS for an invariant clause, and `written_class' is the class
 			-- where that invariant clause is written.
@@ -44,7 +44,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION] is
+	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION]
 			-- List of preconditions of `a_feature' in `a_context_class'
 		local
 			l_assertions: like preconditions
@@ -73,7 +73,7 @@ feature -- Access
 			end
 		end
 
-	postcondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION] is
+	postcondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable EPA_EXPRESSION]
 			-- List of postcondition of `a_feature' in `a_context_class'
 		local
 			l_assertions: like preconditions
@@ -175,7 +175,7 @@ feature -- Contract extraction
 
 feature{NONE} -- Implementation
 
-	tags (a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION] is
+	tags (a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION]
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void

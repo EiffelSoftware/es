@@ -41,7 +41,7 @@ inherit
 		undefine
 			is_equal
 		end
-		
+
 feature -- Access
 
 	feature_: detachable FEATURE_I
@@ -362,7 +362,7 @@ feature -- Setting
 			written_class_set: written_class = a_written_class
 		end
 
-	set_is_require_else (b: BOOLEAN) is
+	set_is_require_else (b: BOOLEAN)
 			-- Set `is_require_else' with `b'.
 		do
 			is_require_else := b

@@ -221,6 +221,10 @@ feature -- Access
 			-- Only have effect if `is_dnf_property_enabled' is True.
 			-- Default: 2
 
+	is_tilda_enabled: BOOLEAN
+			-- Is contract mentioning "~" enabled?
+			-- Default: False
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -419,6 +423,14 @@ feature -- Setting
 			max_dnf_clause := i
 		ensure
 			max_dnf_clause_set: max_dnf_clause = i
+		end
+
+	set_is_tilda_enabled (b: BOOLEAN)
+			-- Set `is_tilda_enabled' with `b'.
+		do
+			is_tilda_enabled := b
+		ensure
+			is_tilda_enabled_set: is_tilda_enabled = b
 		end
 
 feature{NONE} -- Implementation

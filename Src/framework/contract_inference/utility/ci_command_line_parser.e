@@ -55,6 +55,7 @@ feature -- Basic operations
 			l_daikon_option: AP_STRING_OPTION
 			l_dnf_option: AP_STRING_OPTION
 			l_max_dnf_clause_option: AP_INTEGER_OPTION
+			l_tilda_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -161,6 +162,10 @@ feature -- Basic operations
 			l_max_dnf_clause_option.set_description ("Set maximal number of clauses for properties in DNF format.%NFormat: --max-dnf-clause <integer>, <integer> must be a positive integer. Default: 2")
 			l_parser.options.force_last (l_max_dnf_clause_option)
 
+			create l_tilda_option.make_with_long_form ("tilda")
+			l_tilda_option.set_description ("Is contract mentioning %"~%" enabled? Default: False")
+			l_parser.options.force_last (l_tilda_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -260,6 +265,8 @@ feature -- Basic operations
 			else
 				config.set_max_dnf_clause (2)
 			end
+
+			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation

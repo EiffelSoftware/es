@@ -35,12 +35,12 @@ feature -- Access
 			good_result: Result.is_equal ("Current")
 		end
 
-	length: INTEGER is 1
+	length: INTEGER = 1
 			-- Length of current access
 
 feature -- Status report
 
-	is_current: BOOLEAN is True
+	is_current: BOOLEAN = True
 			-- Is current access is "Current"?
 
 end

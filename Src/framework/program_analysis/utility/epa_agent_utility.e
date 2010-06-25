@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	ored_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+	ored_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN]
 			-- Agent to ored result of agents in `a_agents'
 		require
 			a_agents_attached: a_agents /= Void
@@ -33,7 +33,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	anded_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+	anded_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN]
 			-- Agent to anded result of agents in `a_agents'
 		require
 			a_agents_attached: a_agents /= Void
@@ -58,7 +58,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	ored_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+	ored_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN]
 			-- Agent to ored result of agents in `a_agents'
 		require
 			a_agents_attached: a_agents /= Void
@@ -80,7 +80,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	anded_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN] is
+	anded_agents_with_list (a_agents: LIST [FUNCTION [ANY, TUPLE [G], BOOLEAN]]): FUNCTION [ANY, TUPLE [G], BOOLEAN]
 			-- Agent to anded result of agents in `a_agents'
 		require
 			a_agents_attached: a_agents /= Void

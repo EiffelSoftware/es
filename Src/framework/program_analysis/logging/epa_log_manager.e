@@ -230,7 +230,7 @@ feature -- Time logging
 			Result := start_time_internal
 		end
 
-	duration_until_now: DT_DATE_TIME_DURATION is
+	duration_until_now: DT_DATE_TIME_DURATION
 			-- Duration from the start of current AutoTest run until now
 		local
 			time_now: DT_DATE_TIME

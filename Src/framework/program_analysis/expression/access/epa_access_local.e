@@ -44,12 +44,12 @@ feature -- Access
 	text: STRING
 			-- Text of current access
 
-	length: INTEGER is 1
+	length: INTEGER = 1
 			-- Length of current access
 
 feature -- Status report
 
-	is_local: BOOLEAN is True
+	is_local: BOOLEAN = True
 			-- Is current access a local?
 
 

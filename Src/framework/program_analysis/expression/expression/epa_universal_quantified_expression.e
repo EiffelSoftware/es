@@ -33,7 +33,7 @@ feature{NONE} -- Initialization
 			set_written_class (a_written_class)
 			predicate := a_predicate
 			text := text_with_predicate (predicate.text)
-			create {BOOLEAN_A} type
+			type := boolean_type
 		end
 
 feature -- Access

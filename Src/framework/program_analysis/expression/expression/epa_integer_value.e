@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_integer: BOOLEAN is True
+	is_integer: BOOLEAN = True
 			-- Is current an integer value?
 
 feature -- Process

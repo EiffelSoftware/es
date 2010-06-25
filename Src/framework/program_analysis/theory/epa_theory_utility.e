@@ -9,7 +9,7 @@ class
 
 feature -- Equality tester
 
-	class_with_prefix_equality_tester: AGENT_BASED_EQUALITY_TESTER [EPA_CLASS_WITH_PREFIX] is
+	class_with_prefix_equality_tester: AGENT_BASED_EQUALITY_TESTER [EPA_CLASS_WITH_PREFIX]
 			-- Equality test for predicate access pattern
 		do
 			create Result.make (agent (a, b: EPA_CLASS_WITH_PREFIX): BOOLEAN do Result := a.is_equal (b) end)

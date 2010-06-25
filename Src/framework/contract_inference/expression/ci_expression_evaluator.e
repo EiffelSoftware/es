@@ -192,6 +192,13 @@ feature -- Setting
 			is_ternary_logic_enabled_set: is_ternary_logic_enabled = b
 		end
 
+	wipe_out_error
+			-- Wipe all error
+		do
+			has_error := False
+			error_reason := ""
+		end
+
 feature{NONE} -- Implementation
 
 	initialize_data_structures
@@ -200,6 +207,7 @@ feature{NONE} -- Implementation
 			last_value := Void
 			create missing_expressions.make (5)
 			missing_expressions.set_equality_tester (expression_equality_tester)
+			wipe_out_error
 		end
 
 	set_has_error (b: BOOLEAN; a_reason: STRING)

@@ -27,7 +27,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize Current.
 		do
 			level := 2
@@ -328,7 +328,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	initial_capacity: INTEGER is 20
+	initial_capacity: INTEGER = 20
 			-- Initial capacity for `accesses'
 
 	context_class: CLASS_C
@@ -344,7 +344,7 @@ feature{NONE} -- Implementation
 				anded_agents (<<feature_expression_veto_agent, feature_not_from_any_veto_agent, nested_not_on_basic_veto_agent>>)
 		end
 
-	initialize_expression_veto_agents is
+	initialize_expression_veto_agents
 			-- Initialize `expression_veto_agents' and `final_expression_veto_agent'
 		do
 			expression_veto_agents.put (

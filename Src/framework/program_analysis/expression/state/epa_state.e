@@ -65,7 +65,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (n: INTEGER; a_class: like class_; a_feature: like feature_) is
+	make (n: INTEGER; a_class: like class_; a_feature: like feature_)
 			-- Create an empty container and allocate
 			-- memory space for at least `n' items.
 			-- Set equality tester to {AFX_PREDICATE_EQUALITY_TESTER}.			

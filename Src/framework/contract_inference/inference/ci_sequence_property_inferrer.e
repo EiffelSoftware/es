@@ -296,7 +296,7 @@ feature{NONE} -- Implementation
 							if not l_evaluator.has_error then
 								create l_opd_value.make
 								l_opd_value.extend (l_evaluator.last_value)
-								create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, a_tc_info.transition.context, "", l_opd_types.key)
+								create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, l_opd_type, a_tc_info.transition.context, "", l_opd_types.key, Void, Void)
 									-- Found a new single element sequence made from an operand variable.
 								if not l_seq_set.has (l_opd_sequence.signature) then
 									log_message (once "%T Found sequence: " + text_of_sequence (l_opd_sequence) + l_in_state, False, True)
@@ -934,7 +934,7 @@ feature{NONE} -- Implementation
 				l_count_expression.append_character (')')
 
 				l_transition := a_tc_info.transition
-				create Result.make_from_function (a_function, l_count_expression, l_values, l_transition.variable_position_by_name (l_target_variable_name))
+				create Result.make_from_function (a_function, l_count_expression, l_values, l_transition.variable_position_by_name (l_target_variable_name), a_function.lower_bound_expression, a_function.upper_bound_expression)
 			end
 		end
 
