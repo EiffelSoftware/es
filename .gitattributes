@@ -475,6 +475,7 @@ Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/run-time/include/gc_pthread_redirects.h -text
 Src/C/shell/bin/cat.exe -text
 Src/C/shell/bin/chmod.exe -text
+Src/C/shell/bin/mkdir.exe -text
 Src/C/shell/bin/msys-1.0.dll -text
 Src/C/shell/bin/mv.exe -text
 Src/C/shell/bin/rt_converter.exe -text
