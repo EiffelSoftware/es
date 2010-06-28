@@ -524,6 +524,7 @@ Src/tools/eiffel_image_embedder/EIFGENs
 Src/tools/eiffel_matrix_code_generator/*.exe
 Src/tools/estudio/*.wb
 Src/tools/estudio/EIFGENs
+Src/tools/estudio/config/EIFGENs
 Src/tools/estudio/estudio.rc
 Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
