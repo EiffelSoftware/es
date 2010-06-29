@@ -12,7 +12,7 @@ feature {NONE} -- Constants
 	Log_pid: INTEGER
 			-- Log the pid with each message
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_PID;"
 		end
@@ -20,7 +20,7 @@ feature {NONE} -- Constants
 	Log_cons: INTEGER
 			-- Log on the console if errors in sending
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_CONS;"
 		end
@@ -28,7 +28,7 @@ feature {NONE} -- Constants
 	Log_odelay: INTEGER
 			-- Delay open until first call to `sys_log' (default)
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_ODELAY;"
 		end
@@ -36,7 +36,7 @@ feature {NONE} -- Constants
 	Log_ndelay: INTEGER
 			-- Don't delay open
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_NDELAY;"
 		end
@@ -44,7 +44,7 @@ feature {NONE} -- Constants
 	Log_nowait: INTEGER
 			-- Don't wait for console forks: DEPRECATED
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_NOWAIT;"
 		end
@@ -52,21 +52,20 @@ feature {NONE} -- Constants
 	Log_perror: INTEGER
 			-- Log to stderr as well
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_PERROR;"
 		end
 
 note
-	copyright:	"Copyright (c) 2010, ITPassion Ltd, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 %
-				%(see http://www.eiffel.com/licensing/forum.txt)"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source:		"[
-					ITPassion Ltd.
-					5 Anstice Close, Chiswick, Middlesex, W4 2RJ, UK
-					Telephone 44-800-678-3248 Fax 44-208-742-3468
-					Website http://www.itpassion.com
-					Customer support https://powerdesk.itpassion.com
-				]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end
