@@ -16,6 +16,15 @@ feature -- Output
 			"built_in"
 		end
 
+	frozen thread_id: NATURAL_64
+			-- Thread ID for current thread
+			--
+			-- Note: is zero if application is not thread capable or current thread has
+			--       not triggered any capture/replay event yet.
+		external
+			"built_in"
+		end
+
 note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
