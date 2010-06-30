@@ -10,7 +10,7 @@ class
 inherit
 	WEKA_ARFF_ATTRIBUTE
 		redefine
-			is_norminal
+			is_nominal
 		end
 
 create
@@ -41,7 +41,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_norminal: BOOLEAN = True
+	is_nominal: BOOLEAN = True
 			-- Is current attribute of norminal type?
 
 	is_valid_value (a_value: STRING): BOOLEAN

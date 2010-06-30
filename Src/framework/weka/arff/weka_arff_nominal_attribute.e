@@ -80,7 +80,7 @@ feature -- Status report
 			-- Is `a_value' a valid value for current attribute?
 		do
 			if a_value /= Void then
-				Result := values.has (a_value)
+				Result := values.has (a_value) or a_value ~ "?"
 			else
 				Result := True
 			end

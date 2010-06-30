@@ -9,7 +9,9 @@ deferred class
 
 inherit
 	HASHABLE
-
+		redefine
+			is_equal
+		end
 feature -- Access
 
 	name: STRING
@@ -36,7 +38,13 @@ feature -- Access
 			create Result.make (128)
 			Result.append (attribute_header)
 			Result.append_character (' ')
-			Result.append (name)
+			if name.has (' ') then
+				Result.append_character('"')
+				Result.append (name)
+				Result.append_character('"')
+			else
+				Result.append (name)
+			end
 			Result.append_character ('%T')
 			Result.append (type_string)
 		end
@@ -97,6 +105,13 @@ feature -- Status report
 			Result := a_value ~ missing_value
 		ensure
 			good_result: Result = (a_value ~ missing_value)
+		end
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := name ~ other.name
 		end
 
 invariant

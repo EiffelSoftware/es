@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 
 			name := "noname"
 			comment := ""
+			trailing_comment := ""
 
 			old_make (initiail_data_capacity)
 		end
@@ -67,7 +68,7 @@ feature -- Access
 			create Result.make (8192)
 
 				-- Output the relation name part.
-			Result.append_string (relation_header)
+			Result.append_string ({WEKA_CONSTANTS}.relation)
 			Result.append_character (' ')
 			Result.append_string (name)
 			Result.append_character ('%N')
@@ -101,7 +102,7 @@ feature -- Access
 			Result.append_character ('%N')
 
 				-- Output instances data.
-			Result.append_string (data_header)
+			Result.append_string ({WEKA_CONSTANTS}.data)
 			Result.append_character ('%N')
 			l_cursor := cursor
 			from
@@ -119,6 +120,39 @@ feature -- Access
 				-- Append trailing comment.
 			Result.append_character ('%N')
 			Result.append (trailing_comment)
+		end
+
+feature -- hash table generators
+
+	item_as_hash_table: HASH_TABLE[STRING, STRING]
+			-- Returns a hash table where the keys are the attribute names and the values comes from the current item
+		require
+			valid_item: not off
+		do
+			Result := data_as_hash_table(item)
+		ensure
+			attributes.for_all (
+				agent (a_attr: WEKA_ARFF_ATTRIBUTE; a_result: HASH_TABLE [STRING, STRING]): BOOLEAN
+					do
+						Result := a_result.has (a_attr.name)
+					end (?, Result))
+			-- every_attribute_included: attributes.for_all (Result.has)
+		end
+
+	i_th_as_hash_table(a_i:INTEGER): HASH_TABLE[STRING, STRING]
+			-- returns a hash table where the keys are the attribute names and the values comes from the ith item
+		do
+			Result := data_as_hash_table(i_th (a_i))
+		end
+
+	attributes_as_hash_table: HASH_TABLE[STRING, STRING]
+			-- returns a hash table where the keys are the attributes and the values are void
+		do
+			create Result.make(attributes.count)
+			from attributes.start until attributes.after loop
+				Result[attributes.item_for_iteration.name] := Void
+				attributes.forth
+			end
 		end
 
 feature -- Status report
@@ -225,13 +259,22 @@ feature -- Basic operations
 
 feature -- Constants
 
-	relation_header: STRING = "@RELATION"
-	data_header: STRING = "@DATA"
-
 	initiail_data_capacity: INTEGER = 100
 			-- The initial capacity of `data'
 
 feature{NONE} -- Implementation
+
+	data_as_hash_table(a_list: LIST[STRING]): HASH_TABLE[STRING, STRING]
+			-- returns an hash table where the attribute names are the keys and tha data comes from the array
+		do
+			create Result.make (attributes.count)
+			Result.compare_objects
+			from attributes.start; a_list.start until attributes.after or a_list.after loop
+				Result[attributes.item_for_iteration.name] := a_list.item_for_iteration
+				attributes.forth
+				a_list.forth
+			end
+		end
 
 	instance_string: STRING
 			-- String for the data in current `item'
