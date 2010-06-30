@@ -27,6 +27,8 @@ feature -- Process
 		do
 			create l_prc_factory
 			l_prc := l_prc_factory.process_launcher_with_command_line (a_command, a_working_directory)
+			l_prc.set_detached_console (False)
+			l_prc.set_hidden (True)
 			create Result.make (1024)
 			l_prc.redirect_output_to_agent (agent Result.append ({STRING}?))
 			if a_input_file /= Void then
