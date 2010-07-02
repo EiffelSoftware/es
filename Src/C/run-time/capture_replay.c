@@ -15,8 +15,14 @@
 #include "eif_traverse.h"
 #include "rt_garcol.h"
 #include "eif_store.h"
-
+#include "eif_misc.h"
 #include "eif_macros.h"
+
+
+#ifdef EIF_THREADS
+#include "eif_threads.h"
+#endif
+
 
 
 #include <stdio.h>
@@ -30,18 +36,27 @@
 #define CR_RET  0x10
 #define CR_EXC  0x20	/* An exception occured in C and gets propagated back to Eiffel */
 
-#define NEWOBJ	0x50	/* A Eiffel object is created in C */
+#define NEWOBJ	0x30	/* A Eiffel object is created in C */
+/*
+
+ Add type of object to argument
+
 #define NEWSPL	0x60
 #define NEWTPL	0x70
 #define NEWBIT	0x80
+*/
 
-#define MEMMUT  0x90    /* Memory area mutation */
+#define MEMMUT  0x40    /* Memory area mutation */
 
-#define PROTOBJ 0xA0    /* Keep reference to Eiffel object on stack */
-#define WEANOBJ 0xB0    /* Remove reference to Eiffel object from stack */
+#define PROTOBJ 0x50    /* Keep reference to Eiffel object on stack */
+#define WEANOBJ 0x60    /* Remove reference to Eiffel object from stack */
 
-#define CR_RTV  0xC0
-#define CR_VAL	0xD0
+#define CR_RTV  0x70	/* Retrieve object */
+#define CR_VAL	0x80	/* Register value (object or basic type) */
+
+#define CR_NEWTHR 0x90	/* Initialize new thread */
+#define CR_ENDTHR 0xA0	/* Cleanup thread */
+
 
 /* The other 4 bits can be used for argument count etc. */
 
@@ -65,9 +80,6 @@ rt_private void cr_raise (char *msg) {
 rt_private void bwrite (char *buffer, size_t nbytes)
 {
 
-#ifdef EIF_ASSERTIONS
-	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_capturing", is_capturing);
@@ -82,9 +94,6 @@ rt_private void bwrite (char *buffer, size_t nbytes)
 rt_private void bread (char *buffer, size_t nbytes)
 {
 
-#ifdef EIF_ASSERTIONS
-	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_replaying", is_replaying);
@@ -122,7 +131,6 @@ rt_private EIF_CS_TYPE *cr_event_mutex = NULL;
 #define CR_EVENT_MUTEX_LOCK(where)
 #define CR_EVENT_MUTEX_UNLOCK(where)
 #endif
-
 
 /*
  * Object/Memory observing
@@ -509,6 +517,54 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
  * Private capture/replay routines
  */
 
+#ifdef EIF_THREADS
+
+/*
+rt_private void cr_log_event (unsigned char type, EIF_NATURAL_64 tid)
+{
+	char *types = NULL;
+
+	switch (type & TYPE_MASK) {
+		case CR_CALL: types = "CR_CALL"; break;
+		case CR_RET: types = "CR_RET"; break;
+		case CR_EXC: types = "CR_EXC"; break;
+		case NEWOBJ: types = "NEWOBJ"; break;
+		case MEMMUT: types = "MEMMUT"; break;
+		case PROTOBJ: types = "PROTOBJ"; break;
+		case WEANOBJ: types = "WEANOBJ"; break;
+		case CR_RTV: types = "CR_RTV"; break;
+		case CR_VAL: types = "CR_VAL"; break;
+		case CR_NEWTHR: types = "CR_NEWTHR"; break;
+		case CR_ENDTHR: types = "CR_ENDTHR"; break;
+		default: types =  "?";
+	}
+
+
+	fprintf(stderr, "%s %ld\n", types, (long int) tid);
+}
+*/
+
+rt_private void cr_start_thread(EIF_REFERENCE Current)
+{
+
+	EIF_GET_CONTEXT
+
+	REQUIRE("thread_id_not_initialized", cr_thread_id == 0);
+
+	CR_EVENT_MUTEX_LOCK("start_thread");
+
+	cr_thread_id = ++cr_thread_count;
+
+	CR_EVENT_MUTEX_UNLOCK("start_thread");
+
+	cr_cross_depth = 1;
+	cr_replay();
+	cr_cross_depth = 0;
+
+	/* TODO: cleanup thread... */
+}
+
+#endif
 
 
 rt_private char cr_schedule()
@@ -516,25 +572,60 @@ rt_private char cr_schedule()
 
 	EIF_GET_CONTEXT
 
+#ifdef EIF_THREADS
+	REQUIRE("valid_thread_id", cr_thread_id != 0);
+
+/*	EIF_THR_ATTR_TYPE attr;*/
+#endif
+
 	EIF_CR_ID id;
 	EIF_CR_REFERENCE ref, newref;
 	char next_action;
 
-#ifdef EIF_THREADS
-	EIF_NATURAL_64 tid;
-#endif
-
 	while (1) {
 
-		bread(&next_action, sizeof(char));
 #ifdef EIF_THREADS
-		bread((char *) &tid, sizeof(EIF_NATURAL_64));
-		if (tid != cr_thread_id)
-			cr_raise("Invalid thread ID");
+
+		if (cr_next_thread_id == 0) {
+			/* Event has not been read yet */
+			bread(&cr_next_event, sizeof(char));
+			bread((char *) &cr_next_thread_id, sizeof(EIF_NATURAL_64));
+		}
+
+		if (cr_next_thread_id == cr_thread_id || (cr_next_event & TYPE_MASK) == CR_NEWTHR) {
+			next_action = cr_next_event;
+		}
+		else {
+
+			CR_EVENT_MUTEX_UNLOCK("yield");
+
+			RTGC;
+			/* TODO: use proper condition variables for scheduling, currently only spinning */
+			eif_sleep (100);
+
+			CR_EVENT_MUTEX_LOCK("yield");
+
+			continue;
+
+		}
+
+		/* Reset event variables to indicate that this event has been worked off */
+		cr_next_thread_id = 0;
+		cr_next_event = (char) 0;
+#else
+
+		/* In single thread mode we simply read the event type and move on */
+
+		bread(&next_action, sizeof(char));
 #endif
 
 
 		if ((next_action & TYPE_MASK) == WEANOBJ) {
+
+			/* WEANOBJ events must be performed here as they can also occur outside of a cr_replay().
+			 * The reason for this is that cr_register_wean records the event even if cr_suppress is
+			 * true (usually during disposal. However it is still important we perform the wean in
+			 * the correct thread as the reference is put back on the local object stack. */
 
 			bread((char *) &id, sizeof(EIF_CR_ID));
 
@@ -559,6 +650,28 @@ rt_private char cr_schedule()
 			cr_push_object (newref);
 
 		}
+#ifdef EIF_THREADS
+		else if ((next_action & TYPE_MASK) == CR_NEWTHR) {
+
+			/* CR_NEWTHR also have to be executed here as they can be replayed by any thread id */
+
+			bread((char *) &id, sizeof(EIF_CR_ID));
+			
+			if (!cr_is_valid_id(id))
+				cr_raise("Invalid THREAD object ID");
+
+			ref = cr_object_of_id (id);
+			if (ref.size != CR_GLOBAL_REF)
+				cr_raise("Invalid THREAD object");
+
+			/*
+			bread((char *) &attr.priority, sizeof(rt_uint_ptr));
+			bread((char *) &attr.stack_size, sizeof(rt_uint_ptr));
+			*/
+
+			eif_thr_create_with_attr((EIF_OBJECT) ref.item.o, (EIF_PROCEDURE) cr_start_thread, NULL);
+		}
+#endif
 		else {
 			break;
 		}
@@ -571,19 +684,17 @@ rt_private char cr_schedule()
 rt_private void cr_write_event_type (char type)
 {
 
-#ifdef EIF_THREADS
-	EIF_GET_CONTEXT
-#endif
-
 	bwrite(&type, sizeof(char));
 
 #ifdef EIF_THREADS
-	if (cr_thread_id == 0) {
-		/* This is the first event for this thread so we need to assign it a thread id */
-		cr_thread_id = ++cr_thread_count;
-	}
-	bwrite((char *) &cr_thread_count, sizeof(EIF_NATURAL_64));
+
+	EIF_GET_CONTEXT
+
+	if (cr_thread_id == 0)
+		cr_raise ("Current thread has not been initialized");
+	bwrite((char *) &cr_thread_id, sizeof(EIF_NATURAL_64));
 #endif
+
 
 }
 
@@ -727,10 +838,15 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 
 	EIF_GET_CONTEXT
 
+	/* `use_value' indicates whether value and type point to live memory locations and whether their
+	* should be used by the capture/replay mechanism or restored
+	*/
+	int use_value = (is_capturing || (is_replaying && !RTCRI));
+
 	REQUIRE("value_pointer_not_null", value != NULL);
 	REQUIRE("type_pointer_not_null", type != NULL);
 	REQUIRE("valid_context", is_capturing || is_replaying);
-	REQUIRE("valid_type_and_size", type == SK_POINTER || area_size == 0);
+	REQUIRE("valid_type_and_size", !use_value || (*type == SK_POINTER || pointed_size == 0));
 
 	if (cr_suppress)
 		return;
@@ -741,11 +857,6 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 	char log_value[8];
 	EIF_CR_REFERENCE ref, log_ref;
 	EIF_CR_ID cr_id;
-
-	/* `use_value' indicates whether value and type point to live memory locations and whether their
-	 * should be used by the capture/replay mechanism or restored
-	 */
-	int use_value = (is_capturing || (is_replaying && !RTCRI));
 
 	/* Initialize ref to NULL */
 	ref.item.p = (EIF_POINTER) NULL;
@@ -1003,12 +1114,12 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
-
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
-	/* Note: here we might still want to register the event as currently this
-	 * causes a memory leak because the corresponding object is not removed
-	 * from the global stack.
+	/* Note: we register a wean event even if cr_suppress is true, otherwise we miss freeing an object which
+	 * causes a memory leak during replay.
 	 */
 
 	REQUIRE("capturing", is_capturing);
@@ -1081,7 +1192,10 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 
 	/* For now we simply store `obj' to a temporary file and then copy
 	 * the contents of the file to the log. */
+
+#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
+#endif
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -1120,6 +1234,63 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 	cr_push_object (ref);
 
 }
+
+#ifdef EIF_THREADS
+
+rt_public void cr_register_thread_start (EIF_REFERENCE thr_root_obj, EIF_THR_ATTR_TYPE *attr)
+{
+
+	EIF_CR_REFERENCE ref;
+	EIF_CR_ID id;
+
+	EIF_GET_CONTEXT
+
+	if (cr_thread_id != 0)
+		cr_raise("Current thread has already been initialized");
+
+	CR_EVENT_MUTEX_LOCK("thread_start");
+
+	cr_thread_id = ++cr_thread_count;
+	cr_cross_depth = 1;
+
+	ref.item.r = thr_root_obj;
+	ref.size = CR_OBJECT_REF;
+
+	id = cr_id_of_object (ref);
+
+	if (!cr_is_valid_id(id))
+		cr_raise("Unknown thread object");
+
+	if (id.item.size != CR_GLOBAL_REF)
+		cr_raise("Invalid thread object");
+
+	cr_write_event_type ((char) CR_NEWTHR);
+
+	bwrite((char *) &id.value, sizeof(EIF_NATURAL_64));
+/*	bwrite((char *) &(attr->priority), sizeof(rt_uint_ptr));
+	bwrite((char *) &(attr->stack_size), sizeof(rt_uint_ptr)); */
+
+	CR_EVENT_MUTEX_UNLOCK("thread_start");
+
+}
+
+rt_public void cr_register_thread_end ()
+{
+
+	EIF_GET_CONTEXT
+
+	CR_EVENT_MUTEX_LOCK("thread_end");
+
+	cr_write_event_type ((char) CR_ENDTHR);
+
+	CR_EVENT_MUTEX_UNLOCK("thread_end");
+
+	cr_thread_id = 0;
+	cr_cross_depth = 0;
+
+}
+
+#endif
 
 
 rt_public int cr_epush(register struct stack *stk, EIF_REFERENCE *obj)
@@ -1189,6 +1360,7 @@ rt_public void cr_replay ()
 
 		switch (type & TYPE_MASK) {
 			case CR_RET:
+			case CR_ENDTHR:
 
 				CR_EVENT_MUTEX_UNLOCK("ret");
 

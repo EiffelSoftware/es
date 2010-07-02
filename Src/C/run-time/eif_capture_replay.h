@@ -25,6 +25,11 @@ RT_LNK void cr_register_wean (EIF_REFERENCE *obj);
 RT_LNK void cr_register_exception (char *tag, long code);
 RT_LNK void cr_register_retrieve (EIF_REFERENCE ref);
 
+#ifdef EIF_THREADS
+RT_LNK void cr_register_thread_start (EIF_REFERENCE thr_root_obj, EIF_THR_ATTR_TYPE *attr);
+RT_LNK void cr_register_thread_end ();
+#endif
+
 RT_LNK int cr_epush(register struct stack *stk, EIF_REFERENCE *obj);
 RT_LNK void cr_epop(struct stack *stk, EIF_REFERENCE *obj);
 

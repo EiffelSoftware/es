@@ -70,6 +70,10 @@ doc:<file name="eif_thread.c" header="eif_thread.h" version="$Id$" summary="Thre
 #include "rt_boehm.h"
 #endif
 
+#ifdef WORKBENCH
+#include "eif_capture_replay.h"
+#endif
+
 #include <string.h>
 
 
@@ -797,6 +801,11 @@ rt_private void eif_thr_entry (void *arg)
 		exvect = new_exset((char *) 0, 0, (char *) 0, 0, 0, 0);
 		exvect->ex_jbuf = &exenv;
 
+#ifdef WORKBENCH
+		if (is_capturing)
+			cr_register_thread_start(eif_access(routine_ctxt->current), NULL);
+#endif
+
 #ifdef _CRAY
 		if (setjmp(exenv))
 			failure();
@@ -888,6 +897,12 @@ rt_public void eif_thr_exit(void)
 				eif_free (eif_thr_context->parent_context);
 				eif_thr_context->parent_context = NULL;
 			}
+
+#ifdef WORKBENCH
+			if (is_capturing)
+				cr_register_thread_end();
+#endif
+
 		} else {
 			EIF_ENTER_C;
 		}

@@ -95,6 +95,9 @@ RT_LNK int is_replaying;                /* Are we replaying anything? Note: alth
 RT_LNK FILE *cr_file;
 #ifdef EIF_THREADS
 RT_LNK EIF_NATURAL_64 cr_thread_count;	/* Thread count for assigning unique ID to each captured thread */
+
+RT_LNK EIF_NATURAL_64 cr_next_thread_id;	/* Event and thread id if they have already been read from the log by a different thread */
+RT_LNK char cr_next_event;
 #endif
 
 /* Stack containing objects which are available to the runtime either by

@@ -509,6 +509,8 @@ rt_public int is_capturing = 0;      /* By default we do not capture */
 rt_public int is_replaying = 0;      /* By default we do not replay */
 #ifdef EIF_THREADS
 rt_public EIF_NATURAL_64 cr_thread_count = 0;
+rt_public EIF_NATURAL_64 cr_next_thread_id = 0;
+rt_public char cr_next_event = (char) 0;
 #endif
 rt_public FILE *cr_file = (FILE *) NULL;
 rt_public struct cr_object* cr_global_objects = (struct cr_object *) NULL;
