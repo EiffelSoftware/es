@@ -10,6 +10,8 @@ class EVE_PROOFS
 
 inherit
 
+	EBB_TOOL
+
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
@@ -317,6 +319,24 @@ feature {NONE} -- Implementation
 					Result := l_result2
 				end
 			end
+		end
+
+feature -- Blackboard tool
+
+	name: STRING = "EVE Proofs"
+			-- <Precursor>
+
+	configurations: LIST [EBB_TOOL_CONFIGURATION]
+			-- <Precursor>
+		do
+			create {LINKED_LIST [EBB_TOOL_CONFIGURATION]} Result.make
+			Result.extend (create {EBB_TOOL_CONFIGURATION})
+		end
+
+	run (a_input: EBB_TOOL_INPUT; a_configuration: EBB_TOOL_CONFIGURATION)
+			-- <Precursor>
+		do
+			
 		end
 
 end

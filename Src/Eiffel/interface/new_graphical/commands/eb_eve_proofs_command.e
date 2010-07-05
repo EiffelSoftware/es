@@ -160,14 +160,14 @@ feature {NONE} -- Basic operations
 			end
 
 				-- Do verification
-			compiler_output.clear
+			general_output.clear
 			if eve_proofs.classes_to_verify.is_empty then
-				compiler_formatter.add (names.message_no_classes_to_proof)
-				compiler_formatter.add_new_line
+				general_formatter.add (names.message_no_classes_to_proof)
+				general_formatter.add_new_line
 			else
 				eve_proofs.execute_verification
 			end
-			compiler_formatter.end_processing
+			general_formatter.end_processing
 
 				-- Add warninigs and errors
 			error_handler.warning_list.append (warnings)
@@ -401,10 +401,9 @@ feature {NONE} -- Implementation
 	put_output_message (a_string: STRING)
 			-- Put `a_string' to output panel.
 		do
-			compiler_formatter.add_string (a_string)
-			compiler_formatter.add_string (a_string)
-			compiler_formatter.add_new_line
-			compiler_formatter.end_processing
+			general_formatter.add_string (a_string)
+			general_formatter.add_new_line
+			general_formatter.end_processing
 		end
 
 	put_window_message (a_string: STRING)
