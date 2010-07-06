@@ -124,7 +124,7 @@ rt_private EIF_CS_TYPE *cr_event_mutex = NULL;
 //#define CR_EVENT_MUTEX_LOCK(where)	RT_TRACE(eif_pthread_cs_lock(cr_event_mutex)); printf("lock %ld %s\n", (long unsigned int) cr_thread_id, where)
 //#define CR_EVENT_MUTEX_UNLOCK(where)	printf("unlock %ld %s\n", (long unsigned int) cr_thread_id, where); RT_TRACE(eif_pthread_cs_unlock(cr_event_mutex))
 
-#define CR_EVENT_MUTEX_LOCK(where)      RT_TRACE(eif_pthread_cs_lock(cr_event_mutex))
+#define CR_EVENT_MUTEX_LOCK(where)      EIF_ENTER_C; RT_TRACE(eif_pthread_cs_lock(cr_event_mutex)); EIF_EXIT_C; RTGC
 #define CR_EVENT_MUTEX_UNLOCK(where)	RT_TRACE(eif_pthread_cs_unlock(cr_event_mutex))
 
 #else
