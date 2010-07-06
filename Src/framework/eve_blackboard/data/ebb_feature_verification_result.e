@@ -11,4 +11,7 @@ inherit
 
 	EBB_FEATURE_VERIFICATION_STATE
 
+create
+	make
+
 end

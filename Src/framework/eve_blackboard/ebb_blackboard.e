@@ -52,6 +52,7 @@ feature -- Basic operations
 		do
 			across verification_results as l_cursor loop
 				data.feature_data (l_cursor.item.associated_feature).update_with_new_result (l_cursor.item)
+				data.class_data (l_cursor.item.associated_class).verification_state.calculate_confidence
 			end
 			verification_results.wipe_out
 		end

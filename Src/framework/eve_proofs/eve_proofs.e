@@ -336,7 +336,9 @@ feature -- Blackboard tool
 	run (a_input: EBB_TOOL_INPUT; a_configuration: EBB_TOOL_CONFIGURATION)
 			-- <Precursor>
 		do
-			
+			reset
+			add_class_to_verify (a_input.classes.first)
+			execute_verification
 		end
 
 end

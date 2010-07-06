@@ -28,6 +28,8 @@ inherit
 	SHARED_ERROR_TRACER
 		export {NONE} all end
 
+	EBB_SHARED_BLACKBOARD
+
 create {ES_EVE_PROOFS_TOOL}
 	make
 
@@ -256,11 +258,32 @@ feature {NONE} -- User interface items
 
 feature {NONE} -- Events
 
+	update_blackboard (a_event_item: EVENT_LIST_PROOF_ITEM_I)
+		local
+			l_result: EBB_FEATURE_VERIFICATION_RESULT
+		do
+			create l_result.make (a_event_item.context_feature)
+			if is_successful_event (a_event_item) then
+				l_result.is_postcondition_proven.set_proven_to_hold
+				l_result.is_postcondition_proven.set_update
+				l_result.is_class_invariant_proven.set_proven_to_hold
+				l_result.is_class_invariant_proven.set_update
+				blackboard.add_verification_result (l_result)
+				blackboard.commit_results
+			end
+		end
+
 	on_event_item_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
 			-- <Precursor>
 		local
 			l_applicable: BOOLEAN
 		do
+				-- TODO: remove blackboard test
+			if {e: EVENT_LIST_PROOF_ITEM_I} a_event_item then
+				update_blackboard (e)
+			end
+
+
 			l_applicable := is_appliable_event (a_event_item)
 			if l_applicable and not is_initialized then
 					-- We have to perform initialization to set the icon and counter.

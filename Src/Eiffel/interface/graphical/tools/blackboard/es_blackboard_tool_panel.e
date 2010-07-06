@@ -68,14 +68,19 @@ feature {NONE} -- Initialization
 			Result.put (l_button, 1)
 
 			create l_button.make
+			l_button.set_text ("Update")
+			l_button.select_actions.extend (agent on_update)
+			Result.put (l_button, 2)
+
+			create l_button.make
 			l_button.set_text ("Print state")
 			l_button.select_actions.extend (agent on_print_state)
-			Result.put (l_button, 2)
+			Result.put (l_button, 3)
 
 			create l_button.make
 			l_button.set_text ("Run tool")
 			l_button.select_actions.extend (agent on_run_tool)
-			Result.put (l_button, 2)
+			Result.put (l_button, 4)
 		end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
@@ -141,6 +146,13 @@ feature {NONE} -- Events
 			system_panel.update_from_blackboard
 
 			append_debug_text ("initialized.%N")
+		end
+
+	on_update
+			-- Update blackboard data.
+		do
+			system_panel.update_from_blackboard
+			append_debug_text ("updated.%N")
 		end
 
 	on_run_tool

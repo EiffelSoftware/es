@@ -40,14 +40,14 @@ feature -- Access
 	class_data (a_class: CLASS_C): attached EBB_CLASS_DATA
 			-- Blackboard data for class `a_class'.
 		do
-			check class_data_table.has_key (a_class.class_id) end
+--			check class_data_table.has_key (a_class.class_id) end
 			Result := class_data_table.item (a_class.class_id)
 		end
 
 	feature_data (a_feature: FEATURE_I): attached EBB_FEATURE_DATA
 			-- Blackboard data for feature `a_feature'.
 		do
-			check feature_data_table.has_key (a_feature.rout_id_set.first) end
+--			check feature_data_table.has_key (a_feature.rout_id_set.first) end
 			Result := feature_data_table.item (a_feature.rout_id_set.first)
 		end
 

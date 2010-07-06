@@ -95,6 +95,12 @@ feature -- Basic operations
 			-- Merge with data from `a_other'.
 		do
 			-- TODO: merge data
+			if a_result.is_postcondition_proven.is_update then
+				is_postcondition_proven := a_result.is_postcondition_proven
+			end
+			if a_result.is_class_invariant_proven.is_update then
+				is_class_invariant_proven := a_result.is_class_invariant_proven
+			end
 
 			calculate_correctness_confidence
 		end

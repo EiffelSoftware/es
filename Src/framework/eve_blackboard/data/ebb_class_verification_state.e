@@ -52,7 +52,7 @@ feature -- Status report
 	is_tested: BOOLEAN
 			-- Have all feature of this class been tested?
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	calculate_confidence
 			-- Calculate correctness confidence based on confidence of individual features.

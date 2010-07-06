@@ -246,8 +246,10 @@
 		<cluster name="flat_short_ast" location="$EIFFEL_SRC\Eiffel\flat_short\AST\"/>
 		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
-			<option syntax="provisional">
-			</option>
+			<class_option class="ES_BLACKBOARD_TOOL_PANEL" syntax="provisional">
+			</class_option>
+			<class_option class="ES_BLACKBOARD_SYSTEM_GRID" syntax="provisional">
+			</class_option>
 			<file_rule>
 				<exclude>/preferences$</exclude>
 				<exclude>^/tty$</exclude>
