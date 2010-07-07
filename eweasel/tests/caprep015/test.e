@@ -23,11 +23,14 @@ feature
 				create l_prev.make
 				first := l_prev
 			until
-				l_count = 5
+				l_count = 100
 			loop
 				create l_next.make
-				last := l_next;
+				last := l_next
+				mutex.lock;
 				(create {WORKER_THREAD}.make (agent run (l_prev, l_next))).launch
+				l_prev.wait (mutex)
+				mutex.unlock
 				l_prev := l_next
 				l_count := l_count + 1
 			end
@@ -61,9 +64,10 @@ feature {NONE}
 	run (a_prev, a_next: CONDITION_VARIABLE)
 		do
 			mutex.lock;
-			(agent print_something).call (["wait%N"])
+			(agent print_something).call ([{RT_CAPTURE_REPLAY}.thread_id.out + " wait%N"])
 
 			count := count + 1
+			a_prev.signal
 			if a_prev.wait_with_timeout (mutex, timeout) then
 
 				(agent print_something).call ([{RT_CAPTURE_REPLAY}.thread_id.out + " work%N"])
