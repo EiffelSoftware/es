@@ -3485,7 +3485,7 @@ rt_private void interpret(int flag, int where)
 			last->type = SK_REF;
 
 			OLD_IC = IC;
-			RTCOMS32 (last->it_ref, body_index, number, (char *) string, length / 4, 0);
+			RTCOMS32 (last->it_ref, body_index, number, (char *) string, length / sizeof (EIF_CHARACTER_32), 0);
 			IC = OLD_IC;
 
 			if (tagval != stagval) {
@@ -3579,7 +3579,7 @@ rt_private void interpret(int flag, int where)
 			 */
 
 			OLD_IC = IC;
-			str_obj = RTMS32_EX((char *) string, length / 4);
+			str_obj = RTMS32_EX((char *) string, length / sizeof (EIF_CHARACTER_32));
 			IC = OLD_IC;
 
 			last->type = SK_REF;
@@ -3982,6 +3982,14 @@ enter_body:
 				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.called, icur_dtype);
 			}
 			*(EIF_BOOLEAN *)(icurrent->it_ref + offset) = EIF_TRUE;
+
+				/* Init exception storage */
+			if (once_p_obj_info.is_precompiled) {
+				offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
+			} else {
+				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
+			}
+			*(EIF_REFERENCE *)(icurrent->it_ref + offset) = (EIF_REFERENCE)0;
 			
 				/* Record execution vector to catch exception. */
 			exvecto = extre ();

@@ -12,7 +12,7 @@ feature {NONE} -- Constants
 	Log_emerg: INTEGER
 			-- System is unusable
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_EMERG;"
 		end
@@ -20,7 +20,7 @@ feature {NONE} -- Constants
 	Log_alert: INTEGER
 			-- Action must be taken immediately
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_ALERT;"
 		end
@@ -28,7 +28,7 @@ feature {NONE} -- Constants
 	Log_crit: INTEGER
 			-- Critical conditions
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_CRIT;"
 		end
@@ -36,7 +36,7 @@ feature {NONE} -- Constants
 	Log_err: INTEGER
 			-- Error conditions
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_ERR;"
 		end
@@ -44,7 +44,7 @@ feature {NONE} -- Constants
 	Log_warning: INTEGER
 			-- Warning conditions
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_WARNING;"
 		end
@@ -52,7 +52,7 @@ feature {NONE} -- Constants
 	Log_notice: INTEGER
 			-- Normal but significant condition
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_NOTICE;"
 		end
@@ -60,7 +60,7 @@ feature {NONE} -- Constants
 	Log_info: INTEGER
 			-- Informational
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_INFO;"
 		end
@@ -68,20 +68,20 @@ feature {NONE} -- Constants
 	Log_debug: INTEGER
 			-- Debug-level messages
 		external
-			"C [macro <syslog.h>]"
+			"C inline use <syslog.h>"
 		alias
 			"return LOG_DEBUG;"
 		end
 
 note
-	copyright:	"Copyright (c) 2010, ITPassion Ltd, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source:		"[
-					ITPassion Ltd.
-					5 Anstice Close, Chiswick, Middlesex, W4 2RJ, UK
-					Telephone 44-800-678-3248 Fax 44-208-742-3468
-					Website http://www.itpassion.com
-					Customer support https://powerdesk.itpassion.com
-				]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

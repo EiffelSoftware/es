@@ -212,7 +212,7 @@ create
 %type <CONSTRAINT_LIST_AS> Multiple_constraint_list
 %type <CONSTRAINING_TYPE_AS> Single_constraint
 
-%expect 344
+%expect 364
 
 %%
 
@@ -2024,9 +2024,8 @@ Constraint: -- Empty
 			}
 	;
 
-Single_constraint: -- Empty
-			-- { $$ := Void }
-	| Constraint_type {is_constraint_renaming := True} Rename  {is_constraint_renaming := False}  TE_END
+Single_constraint:
+	Constraint_type {is_constraint_renaming := True} Rename  {is_constraint_renaming := False}  TE_END
 			{
 				$$ := ast_factory.new_constraining_type ($1, $3, $5)
 			}
@@ -2038,14 +2037,15 @@ Single_constraint: -- Empty
 
 Constraint_type:
 		Class_or_tuple_type
-			{ $$ := $1 }
-	|	TE_LIKE Identifier_as_lower
 			{
-				report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $2, Void))
+				$$ := $1
+				if attached $1 as t and then t.has_anchor then
+					report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $1))
+				end
 			}
-	|	TE_LIKE TE_CURRENT
+	|	Anchored_type
 			{
-				report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, Void, $2))
+				report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $1))
 			}
 	;
 
