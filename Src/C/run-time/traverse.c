@@ -647,19 +647,34 @@ rt_public int is_instance (EIF_POINTER pointer)
 {
 	RT_GET_CONTEXT
 	EIF_REFERENCE sp = NULL;
-	int result;
+	int result = 0;
 
 #ifdef ISE_GC
 	GC_THREAD_PROTECT(eif_synchronize_gc (rt_globals));
 #else
 	EIF_EO_STORE_LOCK
 #endif
-	is_instance_result = 0;
-	is_instance_pointer = pointer;
-	sp = matching (internal_is_instance, egc_sp_ref);
-	result = is_instance_result;
-	is_instance_pointer = NULL;
-	is_instance_result = 0;
+
+	struct sc_zone zone = sc_from;
+	struct ck_list list = cklst;
+	struct chunk * ck = cklst.ck_head;
+	
+	result = zone.sc_arena <= (char *) pointer && (char *) pointer < zone.sc_top;
+
+	while (!result && ck != NULL) {
+		result = (ck <= (char *) pointer) && ((char *) pointer < (ck + ck->ck_length));
+		ck = ck->ck_next;
+	}
+
+	if (result) {
+		is_instance_result = 0;
+		is_instance_pointer = pointer;
+		sp = matching (internal_is_instance, egc_sp_ref);
+		result = is_instance_result;
+		is_instance_pointer = NULL;
+		is_instance_result = 0;
+	}
+
 #ifdef ISE_GC
 	GC_THREAD_PROTECT(eif_unsynchronize_gc (rt_globals));
 #else
