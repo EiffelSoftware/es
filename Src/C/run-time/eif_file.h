@@ -169,7 +169,7 @@ RT_LNK EIF_REAL_32 file_grb(FILE *f);
 RT_LNK EIF_REAL_64 file_gdb(FILE *f);
 RT_LNK EIF_CHARACTER_8 file_gc(FILE *f);
 RT_LNK EIF_INTEGER file_gs(FILE *f, char *s, EIF_INTEGER bound, EIF_INTEGER start);
-RT_LNK EIF_INTEGER file_gss(FILE *f, char *s, EIF_INTEGER bound);
+RT_LNK EIF_INTEGER file_gss(FILE *f, char *s, EIF_INTEGER bound, void *);
 RT_LNK EIF_INTEGER file_gw(FILE *f, char *s, EIF_INTEGER bound, EIF_INTEGER start);
 RT_LNK EIF_CHARACTER_8 file_lh(FILE *f);
 RT_LNK void file_chown(char *name, int uid);

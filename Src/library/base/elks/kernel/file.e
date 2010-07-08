@@ -1414,7 +1414,7 @@ feature -- Input
 			l := last_string
 			l.grow (nb_char)
 			str_area := l.area
-			new_count := file_gss (file_pointer, $str_area, nb_char)
+			new_count := file_gss (file_pointer, $str_area, nb_char, $str_area)
 			l.set_count (new_count)
 		end
 
@@ -1430,7 +1430,7 @@ feature -- Input
 			l_str := last_string
 			l_buffer := read_data_buffer
 			l_buffer.set_count (nb_char)
-			new_count := file_gss_ta (file_pointer, l_buffer.item, nb_char)
+			new_count := file_gss_ta (file_pointer, l_buffer.item, nb_char, default_pointer)
 			l_buffer.set_count (new_count)
 			l_str.grow (new_count)
 			l_str.set_count (new_count)
@@ -1445,7 +1445,7 @@ feature -- Input
 			p_large_enough: p.count >= nb_bytes + start_pos
 			is_readable: file_readable
 		do
-			bytes_read := file_gss (file_pointer, p.item + start_pos, nb_bytes)
+			bytes_read := file_gss (file_pointer, p.item + start_pos, nb_bytes, p.item)
 		end
 
 	read_word, readword
@@ -1706,12 +1706,12 @@ feature {NONE} -- Implementation
 			"C signature (FILE *, char *, EIF_INTEGER, EIF_INTEGER): EIF_INTEGER use %"eif_file.h%""
 		end
 
-	file_gss (file: POINTER; a_string: POINTER; length: INTEGER): INTEGER
+	file_gss (file: POINTER; a_string: POINTER; length: INTEGER; a_obj: POINTER): INTEGER
 			-- Read min (`length', remaining bytes in file) characters
 			-- into `a_string'. If it does not fit, result is `length' + 1.
 			-- Otherwise, result is the number of characters read.
 		external
-			"C signature (FILE *, char *, EIF_INTEGER): EIF_INTEGER use %"eif_file.h%""
+			"C signature (FILE *, char *, EIF_INTEGER, void *): EIF_INTEGER use %"eif_file.h%""
 		end
 
 	file_gw (file: POINTER; a_string: POINTER; length, begin: INTEGER): INTEGER
@@ -1734,12 +1734,12 @@ feature {NONE} -- Implementation
 			"file_gs"
 		end
 
-	file_gss_ta (file: POINTER; a_string: POINTER; length: INTEGER): INTEGER
+	file_gss_ta (file: POINTER; a_string: POINTER; length: INTEGER; a_obj: POINTER): INTEGER
 			-- Same as `file_gss' but it won't prevent garbage collection from occurring
 			-- while blocked waiting for data.			
 
 		external
-			"C blocking signature (FILE *, char *, EIF_INTEGER): EIF_INTEGER use %"eif_file.h%""
+			"C blocking signature (FILE *, char *, EIF_INTEGER, void *): EIF_INTEGER use %"eif_file.h%""
 		alias
 			"file_gss"
 		end

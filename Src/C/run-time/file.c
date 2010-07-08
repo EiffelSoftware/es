@@ -806,7 +806,7 @@ rt_public EIF_INTEGER file_gs(FILE *f, char *s, EIF_INTEGER bound, EIF_INTEGER s
 	return bound - start + 1;			/* Error condition */
 }
 
-rt_public EIF_INTEGER file_gss(FILE *f, char *s, EIF_INTEGER bound)
+rt_public EIF_INTEGER file_gss(FILE *f, char *s, EIF_INTEGER bound, void * dummy_obj)
         		/* File stream descriptor */
         		/* Target buffer where read characters are written */
                   		/* Size of the target buffer */

@@ -263,7 +263,7 @@ rt_public EIF_INTEGER console_readstream(FILE *f, char *s, EIF_INTEGER bound)
 #ifdef EIF_WINDOWS
 	eif_show_console ();
 #endif
-	return file_gss (f, s, bound);
+	return file_gss (f, s, bound, NULL);
 }
 
 rt_public EIF_INTEGER console_readword(FILE *f, char *s, EIF_INTEGER bound, EIF_INTEGER start)
