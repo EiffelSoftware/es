@@ -1034,7 +1034,6 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, uint32 p
 
 rt_public void cr_register_value (void *value, uint32 *type, uint32 pointed_type)
 {
-
 	cr_register_value_recursive (value, type, pointed_type, 1);
 }
 
@@ -1605,8 +1604,8 @@ rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, uint32 dest_type, c
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
 	RTCRRV(arg1,dest_type);
-	RTCRRV(arg2,0);
-	RTCRRV(arg3,0);
+	RTCRRV(arg2,SK_INVALID);
+	RTCRRV(arg3,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 
@@ -1637,8 +1636,8 @@ rt_public void cr_memmove(struct ex_vect *exvect, void *dest, uint32 dest_type, 
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
 	RTCRRV(arg1,dest_type);
-	RTCRRV(arg2,0);
-	RTCRRV(arg3,0);
+	RTCRRV(arg2,SK_INVALID);
+	RTCRRV(arg3,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 	
@@ -1669,8 +1668,8 @@ rt_public void cr_memset(struct ex_vect *exvect, void *dest, uint32 dest_type, i
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
 	RTCRRV(arg1,dest_type);
-	RTCRRV(arg2,0);
-	RTCRRV(arg3,0);
+	RTCRRV(arg2,SK_INVALID);
+	RTCRRV(arg3,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 
@@ -1701,9 +1700,9 @@ rt_public int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t 
 	arg3.it_i4 = (EIF_INTEGER) count;
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,0);
-	RTCRRV(arg2,0);
-	RTCRRV(arg3,0);
+	RTCRRV(arg1,SK_INVALID);
+	RTCRRV(arg2,SK_INVALID);
+	RTCRRV(arg3,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 
@@ -1711,7 +1710,7 @@ rt_public int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t 
 
 	RTCREE;
 	RTCRRSO(1);
-	RTCRRR(SK_INT32,0);
+	RTCRRR(SK_INT32,SK_INVALID);
 	RTCRRE;
 
 	return (int) Result;
@@ -1732,7 +1731,7 @@ rt_public void *cr_malloc(struct ex_vect *exvect, size_t size)
 	arg1.it_i4 = (EIF_INTEGER) size;
 
 	RTCRCSO(1,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,0);
+	RTCRRV(arg1,SK_INVALID);
 	RTCREE;
 	RTCRCEO(l_feature_name);
 
@@ -1740,7 +1739,7 @@ rt_public void *cr_malloc(struct ex_vect *exvect, size_t size)
 
 	RTCRES;
 	RTCRRSO(1);
-	RTCRRR(SK_POINTER,0);
+	RTCRRR(SK_POINTER,SK_INVALID);
 	RTCRRE;
 
 	return (void *) Result;
@@ -1765,8 +1764,8 @@ rt_public void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size)
 	arg2.it_i4 = (EIF_INTEGER) size;
 
 	RTCRCSO(2,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,0);
-	RTCRRV(arg2,0);
+	RTCRRV(arg1,SK_INVALID);
+	RTCRRV(arg2,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 
@@ -1774,7 +1773,7 @@ rt_public void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size)
 	
 	RTCREE;
 	RTCRRSO(1);
-	RTCRRR(SK_POINTER,0);
+	RTCRRR(SK_POINTER,SK_INVALID);
 	RTCRRE;
 
 	return (void *) Result;
@@ -1798,8 +1797,8 @@ rt_public void *cr_realloc(struct ex_vect *exvect, void *source, size_t size)
 	arg2.it_i4 = (EIF_INTEGER) size;
 
 	RTCRCSO(2,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,0);
-	RTCRRV(arg2,0);
+	RTCRRV(arg1,SK_INVALID);
+	RTCRRV(arg2,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 
@@ -1807,7 +1806,7 @@ rt_public void *cr_realloc(struct ex_vect *exvect, void *source, size_t size)
 	
 	RTCREE;
 	RTCRRSO(1);
-	RTCRRR(SK_POINTER,0);
+	RTCRRR(SK_POINTER,SK_INVALID);
 	RTCRRE;
 	return (void *) Result;
 }
@@ -1827,7 +1826,7 @@ rt_public void cr_free (struct ex_vect *exvect, void *dest)
 	arg1.it_p = (EIF_POINTER) dest;
 
 	RTCRCSO(1,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,0);
+	RTCRRV(arg1,SK_INVALID);
 	RTCRES;
 	RTCRCEO(l_feature_name);
 

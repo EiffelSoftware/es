@@ -1419,7 +1419,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 	cr_call_depth--;
 
 //#define RTCRRC { uint32 cr_type = SK_REF | RTCRI ? 0x0 : HEADER(Current)->ov_dftype; cr_register_value ((void *) &Current, &cr_type, 0); }
-#define RTCRRC { uint32 cr_type = SK_REF; cr_register_value ((void *) &Current, &cr_type, 0); }
+#define RTCRRC { uint32 cr_type = SK_REF; cr_register_value ((void *) &Current, &cr_type, SK_INVALID); }
 
 #define RTCRRV(a,s) cr_register_value ((void *) &((a).item), &((a).type), s);
 
