@@ -833,7 +833,7 @@ rt_public void cr_register_return (int num_args)
 
 }
 
-rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t pointed_size, int recursive)
+rt_private void cr_register_value_recursive (void *value, uint32 *type, uint32 pointed_type, int recursive)
 {
 
 	EIF_GET_CONTEXT
@@ -846,7 +846,7 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 	REQUIRE("value_pointer_not_null", value != NULL);
 	REQUIRE("type_pointer_not_null", type != NULL);
 	REQUIRE("valid_context", is_capturing || is_replaying);
-	REQUIRE("valid_type_and_size", !use_value || (*type == SK_POINTER || pointed_size == 0));
+	REQUIRE("valid_type_and_size", !use_value || (*type == SK_POINTER || pointed_type == SK_INVALID));
 
 	if (cr_suppress)
 		return;
@@ -870,12 +870,14 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 		if ((*type & SK_HEAD) == SK_REF) {
 			ref.item.r = * (EIF_REFERENCE *) value;
 		}
-		else if (pointed_size > 0) {
-			ref.item.p = * (EIF_POINTER *) value;
-			ref.size = pointed_size;
-		}
-		else if (recursive && *type == SK_POINTER && is_instance (*(EIF_POINTER *) value)) {
-			ref.item.r = * (EIF_REFERENCE *) value;
+		else if (*type == SK_POINTER) {
+			if ((pointed_type & SK_HEAD) == SK_REF) {
+				ref.item.r = * (EIF_REFERENCE *) value;
+			}
+			else if (pointed_type != SK_INVALID) {
+				ref.item.p = * (EIF_POINTER *) value;
+				ref.size = cr_value_size (pointed_type);
+			}
 		}
 
 	}
@@ -1017,7 +1019,7 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 				int i;
 				tup_item++;
 				for (i = 1; i < count; i++) {
-					cr_register_value_recursive (&(tup_item->item), &(tup_item->type), 0, 0);
+					cr_register_value_recursive (&(tup_item->item), &(tup_item->type), SK_INVALID, 0);
 					tup_item++;
 				}
 			}
@@ -1030,10 +1032,10 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, size_t p
 
 }
 
-rt_public void cr_register_value (void *value, uint32 *type, size_t pointed_size)
+rt_public void cr_register_value (void *value, uint32 *type, uint32 pointed_type)
 {
 
-	cr_register_value_recursive (value, type, pointed_size, 1);
+	cr_register_value_recursive (value, type, pointed_type, 1);
 }
 
 rt_public void cr_register_emalloc (EIF_REFERENCE obj)
@@ -1584,7 +1586,7 @@ rt_public void cr_replay ()
 /* Special feature body id */
 #define SF_BODY_ID 0xFFFFFFFF
 
-rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count)
+rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, uint32 dest_type, const void *source, size_t count)
 {
 
 	EIF_GET_CONTEXT
@@ -1602,7 +1604,7 @@ rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, c
 	arg3.it_i4 = (EIF_INTEGER) count;
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,dest_size);
+	RTCRRV(arg1,dest_type);
 	RTCRRV(arg2,0);
 	RTCRRV(arg3,0);
 	RTCRES;
@@ -1616,7 +1618,7 @@ rt_public void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, c
 
 }
 
-rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count)
+rt_public void cr_memmove(struct ex_vect *exvect, void *dest, uint32 dest_type, const void *source, size_t count)
 {
 
 	EIF_GET_CONTEXT
@@ -1634,7 +1636,7 @@ rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, 
 	arg3.it_i4 = (EIF_INTEGER) count;
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,dest_size);
+	RTCRRV(arg1,dest_type);
 	RTCRRV(arg2,0);
 	RTCRRV(arg3,0);
 	RTCRES;
@@ -1648,7 +1650,7 @@ rt_public void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, 
 
 }
 
-rt_public void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, int value, size_t count)
+rt_public void cr_memset(struct ex_vect *exvect, void *dest, uint32 dest_type, int value, size_t count)
 {
 
 	EIF_GET_CONTEXT
@@ -1666,7 +1668,7 @@ rt_public void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, i
 	arg3.it_i4 = (EIF_INTEGER) count;
 
 	RTCRCSO(3,SF_BODY_ID,l_feature_name);
-	RTCRRV(arg1,dest_size);
+	RTCRRV(arg1,dest_type);
 	RTCRRV(arg2,0);
 	RTCRRV(arg3,0);
 	RTCRES;

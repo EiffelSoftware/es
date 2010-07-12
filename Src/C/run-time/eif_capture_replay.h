@@ -17,7 +17,7 @@ RT_LNK void cr_init ();
 
 RT_LNK void cr_register_call (int num_args, BODY_INDEX bodyid);
 RT_LNK void cr_register_return (int num_args);
-RT_LNK void cr_register_value (void *value, uint32 *type, size_t pointed_size);
+RT_LNK void cr_register_value (void *value, uint32 *type, uint32 pointed_type);
 
 RT_LNK void cr_register_emalloc (EIF_REFERENCE obj);
 RT_LNK void cr_register_protect (EIF_REFERENCE *obj);
@@ -44,9 +44,9 @@ RT_LNK void eif_printf (EIF_REFERENCE string);
 RT_LNK EIF_NATURAL_64 eif_cr_thread_id ();
 #endif
 
-RT_LNK void cr_memcpy(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count);
-RT_LNK void cr_memmove(struct ex_vect *exvect, void *dest, size_t dest_size, const void *source, size_t count);
-RT_LNK void cr_memset(struct ex_vect *exvect, void *dest, size_t dest_size, int value, size_t count);
+RT_LNK void cr_memcpy(struct ex_vect *exvect, void *dest, uint32 dest_type, const void *source, size_t count);
+RT_LNK void cr_memmove(struct ex_vect *exvect, void *dest, uint32 dest_type, const void *source, size_t count);
+RT_LNK void cr_memset(struct ex_vect *exvect, void *dest, uint32 dest_type, int value, size_t count);
 RT_LNK int cr_memcmp(struct ex_vect *exvect, void *dest, void *other, size_t count);
 RT_LNK void *cr_malloc(struct ex_vect *exvect, size_t size);
 RT_LNK void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size);
