@@ -1335,13 +1335,11 @@ end
 					if
 						attached {TYPED_POINTER_A} l_args[i] as l_tpointer and then
 						attached l_tpointer.pointed_type as l_gen_type and then
-						l_gen_type.is_basic
+						(l_gen_type.is_basic or l_gen_type.is_reference)
 					then
-						buf.put_string ("sizeof(")
-						buf.put_string (real_type (l_gen_type).c_type.c_string)
-						buf.put_character (')')
+						real_type (l_gen_type).c_type.generate_sk_value (buf)
 					else
-						buf.put_character ('0')
+						buf.put_string ({SK_CONST}.sk_invalid_string)
 					end
 					buf.put_two_character (')', ';')
 					i := i + 1
@@ -1420,13 +1418,11 @@ end
 				if
 					attached {TYPED_POINTER_A} l_rtype as l_tpointer and then
 					attached l_tpointer.pointed_type as l_gen_type and then
-					l_gen_type.is_basic
+					(l_gen_type.is_basic or l_gen_type.is_reference)
 				then
-					buf.put_string ("sizeof(")
-					buf.put_string (real_type (l_gen_type).c_type.c_string)
-					buf.put_character (')')
+					real_type (l_gen_type).c_type.generate_sk_value (buf)
 				else
-					buf.put_character ('0')
+					buf.put_string ({SK_CONST}.sk_invalid_string)
 				end
 				buf.put_two_character (')', ';')
 			end
@@ -1949,8 +1945,9 @@ feature {NONE} -- Query
 				then
 					Result := False
 				elseif
-					l_class.is_equal ("IDENTIFIED_ROUTINES") or
-					l_class.is_equal ("EV_ANY_IMP")
+					l_class.same_string ("IDENTIFIED_ROUTINES") or
+					l_class.same_string ("EV_ANY_IMP") or
+					l_class.same_string ("ARGUMENTS")
 				then
 					Result := False
 				end

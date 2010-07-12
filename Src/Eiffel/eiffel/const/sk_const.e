@@ -87,6 +87,10 @@ feature -- Access
 	sk_dtype_string: STRING = "SK_DTYPE";
 			-- Defined in eif_struct.h as SK_DTYPE
 
+	sk_invalid: NATURAL_32 = 0xffffffff
+	sk_invalid_string: STRING = "SK_INVALID"
+			-- Defined in eif_struct.h as SK_INVALID
+
 	--| -----------------------------
 	--| also defined in eif_struct.h:
 	--| SK_BMASK		0x07ffffff

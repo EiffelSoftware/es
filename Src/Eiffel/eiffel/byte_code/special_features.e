@@ -1058,9 +1058,7 @@ feature {NONE} -- C code generation
 				if f_type = memory_copy or f_type = memory_move or f_type = memory_set then
 					buffer.put_character (',')
 					if attached {TYPED_POINTER_I} target.c_type as l_target and then not l_target.type.is_reference then
-						buffer.put_string ("sizeof(")
-						buffer.put_string (l_target.type.c_string)
-						buffer.put_character (')')
+						l_target.type.generate_sk_value (buffer)
 					elseif
 						attached {ACCESS_EXPR_B} target as l_expr and then
 						attached {HECTOR_B} l_expr.expr as l_hector and then
@@ -1069,11 +1067,9 @@ feature {NONE} -- C code generation
 					then
 							-- This is workaround for the fact that the expression $Result is not
 							-- treated as a TYPED_POINTER, but a regular POINTER
-						buffer.put_string ("sizeof(")
-						buffer.put_string (l_result.c_type.c_string)
-						buffer.put_character (')')
+						l_result.type.c_type.generate_sk_value (buffer)
 					else
-						buffer.put_string ("(size_t) 0")
+						buffer.put_string ({SK_CONST}.sk_invalid_string)
 					end
 				end
 			end
