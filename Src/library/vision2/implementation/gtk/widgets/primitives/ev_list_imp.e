@@ -305,7 +305,7 @@ feature -- PND
 			a_column_ptr := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_column (tree_view, 0)
 			a_cell_rend_list := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_get_cell_renderers (a_column_ptr)
 			a_cell_rend := {EV_GTK_EXTERNALS}.g_list_nth_data (a_cell_rend_list, 0)
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_cell_renderer_get_fixed_size (a_cell_rend, null, $Result)
+			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_cell_renderer_get_fixed_size (a_cell_rend, ({TYPED_POINTER [INTEGER]}).default, $Result)
 			a_gtk_c_str := once "vertical-separator"
 			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_widget_style_get_integer (tree_view, a_gtk_c_str.item, $a_vert_sep)
 			Result := Result + a_vert_sep

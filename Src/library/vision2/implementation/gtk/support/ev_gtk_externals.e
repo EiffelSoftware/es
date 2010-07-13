@@ -3219,7 +3219,7 @@ feature
 			"C (GdkWindow*, GList*): GdkDragContext* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_selection_property_get (a_window: POINTER; a_data: TYPED_POINTER [POINTER]; a_target: POINTER; prop_type: TYPED_POINTER [INTEGER]): INTEGER
+	frozen gdk_selection_property_get (a_window: POINTER; a_data: TYPED_POINTER [POINTER]; a_target, prop_type: TYPED_POINTER [INTEGER]): INTEGER
 		external
 			"C signature (GdkWindow*, guchar**, GdkAtom*, gint*): gint use <gtk/gtk.h>"
 		end
@@ -3314,7 +3314,7 @@ feature
 			"C (GdkDrawable*, GdkGC*, gint, gint, gint, gint) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_draw_lines (a_drawable: POINTER; a_gc: POINTER; a_points: POINTER; a_npoints: INTEGER)
+	frozen gdk_draw_lines (a_drawable: POINTER; a_gc: POINTER; a_points: TYPED_POINTER [SPECIAL [INTEGER]]; a_npoints: INTEGER)
 		external
 			"C (GdkDrawable*, GdkGC*, GdkPoint*, gint) | <gtk/gtk.h>"
 		end
@@ -3329,12 +3329,12 @@ feature
 			"C (GdkDrawable*, GdkGC*, gint, gint) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_draw_points (a_drawable: POINTER; a_gc: POINTER; a_points: POINTER; a_npoints: INTEGER)
+	frozen gdk_draw_points (a_drawable: POINTER; a_gc: POINTER; a_points: TYPED_POINTER [SPECIAL [INTEGER]]; a_npoints: INTEGER)
 		external
 			"C (GdkDrawable*, GdkGC*, GdkPoint*, gint) | <gtk/gtk.h>"
 		end
 
-	frozen gdk_draw_polygon (a_drawable: POINTER; a_gc: POINTER; a_filled: INTEGER; a_points: POINTER; a_npoints: INTEGER)
+	frozen gdk_draw_polygon (a_drawable: POINTER; a_gc: POINTER; a_filled: INTEGER; a_points: TYPED_POINTER [SPECIAL [INTEGER]]; a_npoints: INTEGER)
 		external
 			"C (GdkDrawable*, GdkGC*, gint, GdkPoint*, gint) | <gtk/gtk.h>"
 		end
@@ -4134,7 +4134,7 @@ feature
 			"C (GdkWindow*): GdkWindow* | <gtk/gtk.h>"
 		end
 
-	frozen gdk_window_get_pointer (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]; a_mask: POINTER): POINTER
+	frozen gdk_window_get_pointer (a_window: POINTER; a_x: TYPED_POINTER [INTEGER]; a_y: TYPED_POINTER [INTEGER]; a_mask: TYPED_POINTER [NATURAL]): POINTER
 		external
 			"C (GdkWindow*, gint*, gint*, GdkModifierType*): GdkWindow* | <gtk/gtk.h>"
 		end
@@ -4534,7 +4534,7 @@ feature
 			"C (GtkBox*, GtkWidget*) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_box_query_child_packing (a_box: POINTER; a_child: POINTER; a_expand: TYPED_POINTER [INTEGER_32]; a_fill: TYPED_POINTER [INTEGER_32]; a_padding: TYPED_POINTER [INTEGER_32]; a_pack_type: POINTER)
+	frozen gtk_box_query_child_packing (a_box: POINTER; a_child: POINTER; a_expand, a_fill, a_padding, a_pack_type: TYPED_POINTER [INTEGER_32])
 		external
 			"C (GtkBox*, GtkWidget*, gboolean*, gboolean*, guint*, GtkPackType*) | <gtk/gtk.h>"
 		end

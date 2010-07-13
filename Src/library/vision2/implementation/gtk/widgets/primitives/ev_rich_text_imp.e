@@ -856,14 +856,14 @@ feature {NONE} -- Implementation
 				"gtk_text_view_get_iter_at_location ((GtkTextView*) $a_text_view, (GtkTextIter*) $a_text_iter, (gint) $buffer_x, (gint) $buffer_y)"
 			end
 
-	gtk_text_view_window_to_buffer_coords (a_text_view: POINTER; window_x, window_y: INTEGER; buffer_x, buffer_y: POINTER)
+	gtk_text_view_window_to_buffer_coords (a_text_view: POINTER; window_x, window_y: INTEGER; buffer_x, buffer_y: TYPED_POINTER [INTEGER])
 			external
 				"C inline use <gtk/gtk.h>"
 			alias
 				"gtk_text_view_window_to_buffer_coords ((GtkTextView*) $a_text_view, GTK_TEXT_WINDOW_TEXT, (gint) $window_x, (gint) $window_y, (gint *) $buffer_x, (gint *) $buffer_y)"
 			end
 
-	gtk_text_view_buffer_to_window_coords (a_text_view: POINTER; buffer_x, buffer_y: INTEGER; window_x, window_y: POINTER)
+	gtk_text_view_buffer_to_window_coords (a_text_view: POINTER; buffer_x, buffer_y: INTEGER; window_x, window_y: TYPED_POINTER [INTEGER])
 			external
 				"C inline use <gtk/gtk.h>"
 			alias

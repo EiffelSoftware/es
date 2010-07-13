@@ -1186,7 +1186,7 @@ feature {NONE} -- Implementation
 			"C (GdkGC*) | <gtk/gtk.h>"
 		end
 
-	set_dashes_pattern (a_gc, dash_pattern: POINTER)
+	set_dashes_pattern (a_gc: POINTER; dash_pattern: TYPED_POINTER [INTEGER_16])
 			-- Set the dashes pattern for gc `a_gc', `dash_pattern' is a pointer to a two count gint8[]] denoting the pattern.
 		external
 			"C inline use <gtk/gtk.h>"

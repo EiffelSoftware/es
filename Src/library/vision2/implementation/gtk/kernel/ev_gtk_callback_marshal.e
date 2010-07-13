@@ -290,7 +290,7 @@ feature {NONE} -- Tuple optimizations.
 feature {EV_GTK_CALLBACK_MARSHAL} -- Externals
 
 	frozen c_ev_gtk_callback_marshal_init (
-		object: POINTER; a_marshal: POINTER
+		object: TYPED_POINTER [ANY]; a_marshal: POINTER
 		)
 			-- See ev_gtk_callback_marshal.c
 		external

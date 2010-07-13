@@ -460,7 +460,7 @@ feature -- Implementation
 					if a_pnd_deferred_item_parent /= Void then
 							-- We need to explicitly search for PND deferred items
 							-- A server roundtrip is needed to get the coordinates relative to the PND target parent..
-						gdkwin := {EV_GTK_EXTERNALS}.gdk_window_get_pointer ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (a_wid_imp.c_object), $a_x, $a_y, default_pointer)
+						gdkwin := {EV_GTK_EXTERNALS}.gdk_window_get_pointer ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (a_wid_imp.c_object), $a_x, $a_y, ({TYPED_POINTER [NATURAL]}).default)
 						a_pnd_item := a_pnd_deferred_item_parent.item_from_coords (a_x, a_y)
 						if a_pnd_item /= Void and then l_app_imp.pnd_targets.has (a_pnd_item.attached_interface.object_id) then
 							Result := a_pnd_item.interface
@@ -480,7 +480,8 @@ feature -- Implementation
 	pointer_position: EV_COORDINATE
 			-- Position of the screen pointer relative to `Current'.
 		local
-			x, y, s: INTEGER
+			x, y: INTEGER
+			s: NATURAL
 			child: POINTER
 		do
 			child := {EV_GTK_EXTERNALS}.gdk_window_get_pointer ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), $x, $y, $s)
