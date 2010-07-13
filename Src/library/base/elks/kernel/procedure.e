@@ -43,9 +43,9 @@ feature -- Calls
 feature {NONE} -- Implementation
 
 	fast_call (a_rout_disp, a_calc_rout_addr: POINTER;
-		       a_closed_operands: POINTER; a_operands: POINTER;
+		       a_closed_operands: TYPED_POINTER [TUPLE]; a_operands: TYPED_POINTER [TUPLE];
 			   a_class_id, a_feature_id: INTEGER; a_is_precompiled, a_is_basic, a_is_inline_agent: BOOLEAN;
-			   a_closed_count, a_open_count: INTEGER; a_open_map: POINTER)
+			   a_closed_count, a_open_count: INTEGER; a_open_map: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_rout_obj.h%""
 		alias
@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 			#ifdef WORKBENCH
 				if ($a_rout_disp != 0) {
 					(FUNCTION_CAST(void, (EIF_POINTER, EIF_REFERENCE, EIF_REFERENCE)) $a_rout_disp)(
-						$a_calc_rout_addr, $a_closed_operands, $a_operands);
+						$a_calc_rout_addr, (EIF_REFERENCE) $a_closed_operands, (EIF_REFERENCE) $a_operands);
 				} else {
 					rout_obj_call_procedure_dynamic (
 						$a_class_id,
@@ -61,15 +61,15 @@ feature {NONE} -- Implementation
 						$a_is_precompiled,
 						$a_is_basic,
 						$a_is_inline_agent,
-						$a_closed_operands,
+						(EIF_POINTER) $a_closed_operands,
 						$a_closed_count,
-						$a_operands,
+						(EIF_POINTER) $a_operands,
 						$a_open_count,
-						$a_open_map);
+						(EIF_REFERENCE) $a_open_map);
 				}
 			#else
 				(FUNCTION_CAST(void, (EIF_POINTER, EIF_REFERENCE, EIF_REFERENCE)) $a_rout_disp)(
-					$a_calc_rout_addr, $a_closed_operands, $a_operands);
+					$a_calc_rout_addr, (EIF_REFERENCE) $a_closed_operands, (EIF_REFERENCE) $a_operands);
 			#endif
 			]"
 		end

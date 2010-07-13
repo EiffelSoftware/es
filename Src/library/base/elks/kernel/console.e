@@ -355,7 +355,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *): EIF_CHARACTER use %"eif_console.h%""
 		end
 
-	console_ps (file: POINTER; s_name: POINTER; length: INTEGER)
+	console_ps (file: POINTER; s_name: TYPED_POINTER [ANY]; length: INTEGER)
 			-- Write string `s' at end of `file'
 		external
 			"C signature (FILE *, char *, EIF_INTEGER) use %"eif_console.h%""

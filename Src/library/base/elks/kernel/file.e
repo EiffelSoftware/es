@@ -1445,7 +1445,7 @@ feature -- Input
 			p_large_enough: p.count >= nb_bytes + start_pos
 			is_readable: file_readable
 		do
-			bytes_read := file_gss (file_pointer, p.item + start_pos, nb_bytes, p.item)
+			bytes_read := file_gss (file_pointer, p.item + start_pos, nb_bytes, ({TYPED_POINTER [ANY]}).default)
 		end
 
 	read_word, readword
@@ -1641,19 +1641,19 @@ feature {NONE} -- Implementation
 			buffered_file_info.update (name)
 		end
 
-	file_link (from_name, to_name: POINTER)
+	file_link (from_name, to_name: TYPED_POINTER [ANY])
 			-- Link `to_name' to `from_name'
 		external
 			"C signature (char *, char *) use %"eif_file.h%""
 		end
 
-	file_unlink (fname: POINTER)
+	file_unlink (fname: TYPED_POINTER [ANY])
 			-- Delete file `fname'.
 		external
 			"C signature (char *) use %"eif_file.h%""
 		end
 
-	file_open (f_name: POINTER; how: INTEGER): POINTER
+	file_open (f_name: TYPED_POINTER [ANY]; how: INTEGER): POINTER
 			-- File pointer for file `f_name', in mode `how'.
 		external
 			"C signature (char *, int): EIF_POINTER use %"eif_file.h%""
@@ -1666,7 +1666,7 @@ feature {NONE} -- Implementation
 			"C signature (int, int): EIF_POINTER use %"eif_file.h%""
 		end
 
-	file_reopen (f_name: POINTER; how: INTEGER; file: POINTER): POINTER
+	file_reopen (f_name: TYPED_POINTER [ANY]; how: INTEGER; file: POINTER): POINTER
 			-- File pointer to `file', reopened to have new name `f_name'
 			-- in a mode specified by `how'.
 		external
@@ -1697,7 +1697,7 @@ feature {NONE} -- Implementation
 			"C blocking signature (FILE *): EIF_CHARACTER use %"eif_file.h%""
 		end
 
-	file_gs (file: POINTER; a_string: POINTER; length, begin: INTEGER): INTEGER
+	file_gs (file: POINTER; a_string: TYPED_POINTER [ANY]; length, begin: INTEGER): INTEGER
 			-- `a_string' updated with characters read from `file'
 			-- until new line, with `begin' characters already read.
 			-- If it does not fit, result is `length' - `begin' + 1.
@@ -1706,7 +1706,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *, char *, EIF_INTEGER, EIF_INTEGER): EIF_INTEGER use %"eif_file.h%""
 		end
 
-	file_gss (file: POINTER; a_string: POINTER; length: INTEGER; a_obj: POINTER): INTEGER
+	file_gss (file: POINTER; a_string: POINTER; length: INTEGER; a_obj: TYPED_POINTER [ANY]): INTEGER
 			-- Read min (`length', remaining bytes in file) characters
 			-- into `a_string'. If it does not fit, result is `length' + 1.
 			-- Otherwise, result is the number of characters read.
@@ -1714,7 +1714,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *, char *, EIF_INTEGER, void *): EIF_INTEGER use %"eif_file.h%""
 		end
 
-	file_gw (file: POINTER; a_string: POINTER; length, begin: INTEGER): INTEGER
+	file_gw (file: POINTER; a_string: TYPED_POINTER [ANY]; length, begin: INTEGER): INTEGER
 			-- Read a string excluding white space and stripping
 			-- leading white space from `file' into `a_string'.
 			-- White space characters are: blank, new_line,
@@ -1780,19 +1780,19 @@ feature {NONE} -- Implementation
 			"C signature (FILE *): EIF_INTEGER use %"eif_file.h%""
 		end
 
-	file_touch (f_name: POINTER)
+	file_touch (f_name: TYPED_POINTER [ANY])
 			-- Touch file `f_name'.
 		external
 			"C signature (char *) use %"eif_file.h%""
 		end
 
-	file_rename (old_name, new_name: POINTER)
+	file_rename (old_name, new_name: TYPED_POINTER [ANY])
 			-- Change file name from `old_name' to `new_name'.
 		external
 			"C signature (char *, char *) use %"eif_file.h%""
 		end
 
-	file_perm (f_name, who, what: POINTER; flag: INTEGER)
+	file_perm (f_name, who, what: TYPED_POINTER [ANY]; flag: INTEGER)
 			-- Change permissions for `f_name' to `who' and `what'.
 			-- `flag' = 1 -> add permissions,
 			-- `flag' = 0 -> remove permissions.
@@ -1800,25 +1800,25 @@ feature {NONE} -- Implementation
 			"C signature (char *, char *, char *, int) use %"eif_file.h%""
 		end
 
-	file_chmod (f_name: POINTER; mask: INTEGER)
+	file_chmod (f_name: TYPED_POINTER [ANY]; mask: INTEGER)
 			-- Change mode of `f_name' to `mask'.
 		external
 			"C signature (char *, int) use %"eif_file.h%""
 		end
 
-	file_chown (f_name: POINTER; new_owner: INTEGER)
+	file_chown (f_name: TYPED_POINTER [ANY]; new_owner: INTEGER)
 			-- Change owner of `f_name' to `new_owner'
 		external
 			"C signature (char *, int) use %"eif_file.h%""
 		end
 
-	file_chgrp (f_name: POINTER; new_group: INTEGER)
+	file_chgrp (f_name: TYPED_POINTER [ANY]; new_group: INTEGER)
 			-- Change group of `f_name' to `new_group'
 		external
 			"C signature (char *, int) use %"eif_file.h%""
 		end
 
-	file_utime (f_name: POINTER; time, how: INTEGER)
+	file_utime (f_name: TYPED_POINTER [ANY]; time, how: INTEGER)
 			-- Set access, modification time or both (`how' = 0,1,2) on
 			-- `f_name', using `time' as time stamp.
 		external
@@ -1873,25 +1873,25 @@ feature {NONE} -- Implementation
 			"C signature (FILE *): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_exists (f_name: POINTER): BOOLEAN
+	file_exists (f_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Does `f_name' exist.
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_path_exists (f_name: POINTER): BOOLEAN
+	file_path_exists (f_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Does `f_name' exist.
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_access (f_name: POINTER; which: INTEGER): BOOLEAN
+	file_access (f_name: TYPED_POINTER [ANY]; which: INTEGER): BOOLEAN
 			-- Perform access test `which' on `f_name' using real UID.
 		external
 			"C signature (char *, EIF_INTEGER): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_creatable (f_name: POINTER; n: INTEGER): BOOLEAN
+	file_creatable (f_name: TYPED_POINTER [ANY]; n: INTEGER): BOOLEAN
 			-- Is `f_name' of count `n' creatable.
 		external
 			"C signature (char *, EIF_INTEGER): EIF_BOOLEAN use %"eif_file.h%""
@@ -1906,7 +1906,7 @@ feature {NONE} -- Implementation
 			"eretrieve"
 		end
 
-	c_basic_store (file_handle: INTEGER; object: POINTER)
+	c_basic_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
@@ -1915,7 +1915,7 @@ feature {NONE} -- Implementation
 			"estore"
 		end
 
-	c_general_store (file_handle: INTEGER; object: POINTER)
+	c_general_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
@@ -1924,7 +1924,7 @@ feature {NONE} -- Implementation
 			"eestore"
 		end
 
-	c_independent_store (file_handle: INTEGER; object: POINTER)
+	c_independent_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external

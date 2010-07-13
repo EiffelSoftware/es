@@ -105,22 +105,22 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Externals
 
-	eif_append_file_name (s, p, v: POINTER)
+	eif_append_file_name (s, p, v: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_REFERENCE, EIF_CHARACTER *, EIF_CHARACTER *) use %"eif_path_name.h%""
 		end
 
-	eif_is_file_name_valid (p: POINTER): BOOLEAN
+	eif_is_file_name_valid (p: TYPED_POINTER [ANY]): BOOLEAN
 		external
 			"C signature (EIF_CHARACTER *): EIF_BOOLEAN use %"eif_path_name.h%""
 		end
 
-	eif_is_extension_valid (p: POINTER): BOOLEAN
+	eif_is_extension_valid (p: TYPED_POINTER [ANY]): BOOLEAN
 		external
 			"C signature (EIF_CHARACTER *): EIF_BOOLEAN use %"eif_path_name.h%""
 		end
 
-	eif_is_file_valid (p: POINTER): BOOLEAN
+	eif_is_file_valid (p: TYPED_POINTER [ANY]): BOOLEAN
 		external
 			"C signature (EIF_CHARACTER *): EIF_BOOLEAN use %"eif_path_name.h%""
 		end

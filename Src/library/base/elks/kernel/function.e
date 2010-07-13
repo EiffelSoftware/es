@@ -115,9 +115,9 @@ feature -- Removal
 feature {NONE} -- Implementation
 
 	fast_item (a_rout_disp, a_calc_rout_addr: POINTER
-		       a_closed_operands: POINTER; a_operands: POINTER
+		       a_closed_operands: TYPED_POINTER [TUPLE]; a_operands: TYPED_POINTER [TUPLE];
 			   a_class_id, a_feature_id: INTEGER; a_is_precompiled, a_is_basic, a_is_inline_agent: BOOLEAN
-			   a_closed_count, a_open_count: INTEGER; a_open_map: POINTER): RESULT_TYPE
+			   a_closed_count, a_open_count: INTEGER; a_open_map: TYPED_POINTER [ANY]): RESULT_TYPE
 		external
 			"C inline use %"eif_rout_obj.h%""
 		alias
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 				$$_result_type result;
 				if ($a_rout_disp != 0) {
 					return (FUNCTION_CAST(EIF_TYPED_VALUE, (EIF_POINTER, EIF_REFERENCE, EIF_REFERENCE)) $a_rout_disp)(
-						$a_calc_rout_addr, $a_closed_operands, $a_operands).$$_result_value;
+						$a_calc_rout_addr, (EIF_REFERENCE) $a_closed_operands, (EIF_REFERENCE) $a_operands).$$_result_value;
 				} else {
 					rout_obj_call_function_dynamic (
 						$a_class_id,
@@ -134,17 +134,17 @@ feature {NONE} -- Implementation
 						$a_is_precompiled,
 						$a_is_basic,
 						$a_is_inline_agent,
-						$a_closed_operands,
+						(EIF_POINTER) $a_closed_operands,
 						$a_closed_count,
-						$a_operands,
+						(EIF_POINTER) $a_operands,
 						$a_open_count,
-						$a_open_map, 
+						(EIF_REFERENCE) $a_open_map, 
 						&result);
 					return result;
 				}
 			#else
 				return (FUNCTION_CAST($$_result_type, (EIF_POINTER, EIF_REFERENCE, EIF_REFERENCE)) $a_rout_disp)(
-					$a_calc_rout_addr, $a_closed_operands, $a_operands);
+					$a_calc_rout_addr, (EIF_REFERENCE) $a_closed_operands, (EIF_REFERENCE) $a_operands);
 			#endif
 			]"
 		end

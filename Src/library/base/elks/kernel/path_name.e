@@ -175,32 +175,32 @@ feature {NONE} -- Externals
 			"C signature (EIF_CHARACTER *): EIF_BOOLEAN use %"eif_path_name.h%""
 		end
 
-	eif_append_directory (s, p, v: POINTER)
+	eif_append_directory (s, p, v: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_REFERENCE, EIF_CHARACTER *, EIF_CHARACTER *) use %"eif_path_name.h%""
 		end
 
-	eif_set_directory (s, p, v: POINTER)
+	eif_set_directory (s, p, v: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_REFERENCE, EIF_CHARACTER *, EIF_CHARACTER *) use %"eif_path_name.h%""
 		end
 
-	eif_path_name_compare (s, t: POINTER; length: INTEGER): BOOLEAN
+	eif_path_name_compare (s, t: TYPED_POINTER [ANY]; length: INTEGER): BOOLEAN
 		external
 			"C signature (EIF_CHARACTER *, EIF_CHARACTER *, EIF_INTEGER): EIF_BOOLEAN use %"eif_path_name.h%""
 		end
 
-	eif_volume_name (s: POINTER): detachable STRING
+	eif_volume_name (s: TYPED_POINTER [ANY]): detachable STRING
 		external
 			"C signature (EIF_CHARACTER *): EIF_REFERENCE use %"eif_path_name.h%""
 		end
 
-	eif_extracted_paths (s: POINTER): detachable ARRAY [STRING]
+	eif_extracted_paths (s: TYPED_POINTER [ANY]): detachable ARRAY [STRING]
 		external
 			"C signature (EIF_CHARACTER *): EIF_REFERENCE use %"eif_path_name.h%""
 		end
 
-	c_strlen (ptr: POINTER): INTEGER
+	c_strlen (ptr: TYPED_POINTER [ANY]): INTEGER
 		external
 			"C signature (char *): EIF_INTEGER use <string.h>"
 		alias

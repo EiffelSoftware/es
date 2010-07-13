@@ -522,13 +522,13 @@ feature {NONE} -- Implementation
 
 	Read_directory: INTEGER = 2
 
-	file_mkdir (dir_name: POINTER)
+	file_mkdir (dir_name: TYPED_POINTER [ANY])
 			-- Make directory `dir_name'.
 		external
 			"C signature (char *) use %"eif_file.h%""
 		end
 
-	dir_open (dir_name: POINTER): POINTER
+	dir_open (dir_name: TYPED_POINTER [ANY]): POINTER
 			-- Open the directory `dir_name'.
 		external
 			"C signature (char *): EIF_POINTER use %"eif_dir.h%""
@@ -552,37 +552,37 @@ feature {NONE} -- Implementation
 			"C use %"eif_dir.h%""
 		end
 
-	eif_dir_delete (dir_name: POINTER)
+	eif_dir_delete (dir_name: TYPED_POINTER [ANY])
 			-- Delete the directory `dir_name'.
 		external
 			"C signature (char *) use %"eif_dir.h%""
 		end
 
-	eif_dir_exists (dir_name: POINTER): BOOLEAN
+	eif_dir_exists (dir_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Does the directory `dir_name' exist?
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_dir.h%""
 		end
 
-	eif_dir_is_readable (dir_name: POINTER): BOOLEAN
+	eif_dir_is_readable (dir_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Is `dir_name' readable?
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_dir.h%""
 		end
 
-	eif_dir_is_executable (dir_name: POINTER): BOOLEAN
+	eif_dir_is_executable (dir_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Is `dir_name' executable?
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_dir.h%""
 		end
 
-	eif_dir_is_writable (dir_name: POINTER): BOOLEAN
+	eif_dir_is_writable (dir_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Is `dir_name' writable?
 		external
 			"C signature (char *): EIF_BOOLEAN use %"eif_dir.h%""
 		end
 
-	eif_dir_rename (old_name, new_name: POINTER)
+	eif_dir_rename (old_name, new_name: TYPED_POINTER [ANY])
 			-- Change directory name from `old_name' to `new_name'.
 		external
 			"C signature (char *, char *) use %"eif_file.h%""

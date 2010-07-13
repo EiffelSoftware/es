@@ -144,67 +144,67 @@ feature -- Conversion
 
 feature {NONE} -- Implementation
 
-	b_item (a_bit: POINTER; index: INTEGER): BOOLEAN
+	b_item (a_bit: TYPED_POINTER [BIT_REF]; index: INTEGER): BOOLEAN
 			-- Boolean item at position `i' in `a_bit'
 		external
 			"C signature (EIF_REFERENCE, EIF_INTEGER): EIF_BOOLEAN use %"eif_bits.h%""
 		end
 
-	b_count (a_bit: POINTER): INTEGER
+	b_count (a_bit: TYPED_POINTER [BIT_REF]): INTEGER
 			-- Size of `a_bit'
 		external
 			"C signature (EIF_REFERENCE): EIF_INTEGER use %"eif_bits.h%""
 		end
 
-	b_shift (a_bit: POINTER; s: INTEGER): like Current
+	b_shift (a_bit: TYPED_POINTER [BIT_REF]; s: INTEGER): like Current
 			-- Result of shifting `a_bit' by `s' positions
 		external
 			"C signature (EIF_REFERENCE, EIF_INTEGER): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_rotate (a_bit: POINTER; s: INTEGER): like Current
+	b_rotate (a_bit: TYPED_POINTER [BIT_REF]; s: INTEGER): like Current
 			-- Result of rotating `a_bit' by `s' positions
 		external
 			"C signature (EIF_REFERENCE, EIF_INTEGER): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_and (a_bit1, a_bit2: POINTER): like Current
+	b_and (a_bit1, a_bit2: TYPED_POINTER [BIT_REF]): like Current
 			-- Conjunction of `a_bit1' with `a_bit2'
 		external
 			"C signature (EIF_REFERENCE, EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_implies (a_bit1, a_bit2: POINTER): like Current
+	b_implies (a_bit1, a_bit2: TYPED_POINTER [BIT_REF]): like Current
 			-- Implication for `a_bit1' of `a_bit2'
 		external
 			"C signature (EIF_REFERENCE, EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_or (a_bit1, a_bit2: POINTER): like Current
+	b_or (a_bit1, a_bit2: TYPED_POINTER [BIT_REF]): like Current
 			-- Disjunction of `a_bit1' with `a_bit2'
 		external
 			"C signature (EIF_REFERENCE, EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_xor (a_bit1, a_bit2: POINTER): like Current
+	b_xor (a_bit1, a_bit2: TYPED_POINTER [BIT_REF]): like Current
 			-- Exclusive or of `a_bit1' with `a_bit2'
 		external
 			"C signature (EIF_REFERENCE, EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_not (a_bit: POINTER): like Current
+	b_not (a_bit: TYPED_POINTER [BIT_REF]): like Current
 			-- Negation of `a_bit'
 		external
 			"C signature (EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
 		end
 
-	b_put (a_bit: POINTER; val: BOOLEAN; index: INTEGER)
+	b_put (a_bit: TYPED_POINTER [BIT_REF]; val: BOOLEAN; index: INTEGER)
 			-- Put `val' in `a_bit' at position `index'.
 		external
 			"C signature (EIF_REFERENCE, char, int) use %"eif_bits.h%""
 		end
 
-	c_out (b: POINTER): STRING
+	c_out (b: TYPED_POINTER [BIT_REF]): STRING
 			-- Out representation of Current
 		external
 			"C signature (EIF_REFERENCE): EIF_REFERENCE use %"eif_bits.h%""
@@ -212,7 +212,7 @@ feature {NONE} -- Implementation
 			"b_eout"
 		end
 
-	b_makebit_from (p: POINTER; n: INTEGER): BIT_REF
+	b_makebit_from (p: TYPED_POINTER [ANY]; n: INTEGER): BIT_REF
 			-- From Eiffel object `p' generate a new BIT_REF instance of count `n'
 		external
 			"C signature (EIF_REFERENCE, EIF_INTEGER): EIF_REFERENCE use %"eif_bits.h%""

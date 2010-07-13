@@ -1162,7 +1162,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Externals: Access
 
-	eif_item_type (obj: POINTER; pos: INTEGER): NATURAL_8
+	eif_item_type (obj: TYPED_POINTER [ANY]; pos: INTEGER): NATURAL_8
 			-- Code for generic parameter `pos' in `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
@@ -1170,91 +1170,91 @@ feature {NONE} -- Externals: Access
 			"eif_item_type"
 		end
 
-	eif_boolean_item (obj: POINTER; pos: INTEGER): BOOLEAN
+	eif_boolean_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): BOOLEAN
 			-- Boolean item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_character_8_item (obj: POINTER; pos: INTEGER): CHARACTER_8
+	eif_character_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): CHARACTER_8
 			-- Character item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_character_32_item (obj: POINTER; pos: INTEGER): CHARACTER_32
+	eif_character_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): CHARACTER_32
 			-- Wide character item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_real_64_item (obj: POINTER; pos: INTEGER): REAL_64
+	eif_real_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): REAL_64
 			-- Double item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_real_32_item (obj: POINTER; pos: INTEGER): REAL_32
+	eif_real_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): REAL_32
 			-- Real item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_pointer_item (obj: POINTER; pos: INTEGER): POINTER
+	eif_pointer_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): POINTER
 			-- Pointer item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_natural_8_item (obj: POINTER; pos: INTEGER): NATURAL_8
+	eif_natural_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): NATURAL_8
 			-- NATURAL_8 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_natural_16_item (obj: POINTER; pos: INTEGER):  NATURAL_16
+	eif_natural_16_item (obj: TYPED_POINTER [ANY]; pos: INTEGER):  NATURAL_16
 			-- NATURAL_16 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_natural_32_item (obj: POINTER; pos: INTEGER):  NATURAL_32
+	eif_natural_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER):  NATURAL_32
 			-- NATURAL_32 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_natural_64_item (obj: POINTER; pos: INTEGER):  NATURAL_64
+	eif_natural_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER):  NATURAL_64
 			-- NATURAL_64 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_integer_8_item (obj: POINTER; pos: INTEGER): INTEGER_8
+	eif_integer_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): INTEGER_8
 			-- INTEGER_8 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_integer_16_item (obj: POINTER; pos: INTEGER): INTEGER_16
+	eif_integer_16_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): INTEGER_16
 			-- INTEGER_16 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_integer_32_item (obj: POINTER; pos: INTEGER): INTEGER_32
+	eif_integer_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): INTEGER_32
 			-- INTEGER_32 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_integer_64_item (obj: POINTER; pos: INTEGER): INTEGER_64
+	eif_integer_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): INTEGER_64
 			-- INTEGER_64 item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_reference_item (obj: POINTER; pos: INTEGER): detachable ANY
+	eif_reference_item (obj: TYPED_POINTER [ANY]; pos: INTEGER): detachable ANY
 			-- Reference item at position `pos' in tuple `obj'.
 		external
 			"C macro use %"eif_rout_obj.h%""
@@ -1262,175 +1262,175 @@ feature {NONE} -- Externals: Access
 
 feature {NONE} -- Externals: Setting
 
-	eif_put_boolean_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_boolean_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set boolean item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_character_8_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_character_8_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set character item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_character_32_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_character_32_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set wide character item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_real_64_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_real_64_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set double item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_real_32_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_real_32_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set real item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_pointer_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_pointer_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set pointer item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_8_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_natural_8_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set NATURAL_8 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_16_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_natural_16_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set NATURAL_16 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_32_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_natural_32_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set NATURAL_32 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_64_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_natural_64_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set NATURAL_64 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_8_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_integer_8_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set integer_8 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_16_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_integer_16_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set integer_16 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_32_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_integer_32_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set integer_32 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_64_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_integer_64_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set integer_64 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_reference_item_with_object (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_reference_item_with_object (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set reference item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_boolean_item (obj: POINTER; pos: INTEGER; v: BOOLEAN)
+	eif_put_boolean_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: BOOLEAN)
 			-- Set boolean item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_character_8_item (obj: POINTER; pos: INTEGER; v: CHARACTER_8)
+	eif_put_character_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: CHARACTER_8)
 			-- Set character_8 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_character_32_item (obj: POINTER; pos: INTEGER; v: CHARACTER_32)
+	eif_put_character_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: CHARACTER_32)
 			-- Set character_32 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_real_64_item (obj: POINTER; pos: INTEGER; v: REAL_64)
+	eif_put_real_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: REAL_64)
 			-- Set double item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_real_32_item (obj: POINTER; pos: INTEGER; v: REAL_32)
+	eif_put_real_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: REAL_32)
 			-- Set real item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_pointer_item (obj: POINTER; pos: INTEGER; v: POINTER)
+	eif_put_pointer_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: POINTER)
 			-- Set pointer item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_8_item (obj: POINTER; pos: INTEGER; v: NATURAL_8)
+	eif_put_natural_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: NATURAL_8)
 			-- Set NATURAL_8 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_16_item (obj: POINTER; pos: INTEGER; v: NATURAL_16)
+	eif_put_natural_16_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: NATURAL_16)
 			-- Set NATURAL_16 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_32_item (obj: POINTER; pos: INTEGER; v: NATURAL_32)
+	eif_put_natural_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: NATURAL_32)
 			-- Set NATURAL_32 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_natural_64_item (obj: POINTER; pos: INTEGER; v: NATURAL_64)
+	eif_put_natural_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: NATURAL_64)
 			-- Set NATURAL_64 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_8_item (obj: POINTER; pos: INTEGER; v: INTEGER_8)
+	eif_put_integer_8_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: INTEGER_8)
 			-- Set integer_8 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_16_item (obj: POINTER; pos: INTEGER; v: INTEGER_16)
+	eif_put_integer_16_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: INTEGER_16)
 			-- Set integer_16 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_32_item (obj: POINTER; pos: INTEGER; v: INTEGER_32)
+	eif_put_integer_32_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: INTEGER_32)
 			-- Set integer_32 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-	eif_put_integer_64_item (obj: POINTER; pos: INTEGER; v: INTEGER_64)
+	eif_put_integer_64_item (obj: TYPED_POINTER [ANY]; pos: INTEGER; v: INTEGER_64)
 			-- Set integer_64 item at position `pos' in tuple `obj' with `v'.
 		external
 			"C macro use %"eif_rout_obj.h%""

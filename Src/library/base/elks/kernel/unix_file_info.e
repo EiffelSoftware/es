@@ -284,25 +284,25 @@ feature {NONE} -- Implementation
 			"C use %"eif_file.h%""
 		end
 
-	file_stat (name, stat_buf: POINTER)
+	file_stat (name, stat_buf: TYPED_POINTER [ANY])
 			-- Get information from file `name' into `stat_buf'
 		external
 			"C signature (char *, struct stat *) use %"eif_file.h%""
 		end
 
-	file_access (f_name: POINTER; which: INTEGER): BOOLEAN
+	file_access (f_name: TYPED_POINTER [ANY]; which: INTEGER): BOOLEAN
 			-- Perform access test `which' on `f_name' using real ID.
 		external
 			"C signature (char *, EIF_INTEGER): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_eaccess (stat_buf: POINTER; which: INTEGER): BOOLEAN
+	file_eaccess (stat_buf: TYPED_POINTER [ANY]; which: INTEGER): BOOLEAN
 			-- Perform access tests using effective ID.
 		external
 			"C signature (struct stat *, int): EIF_BOOLEAN use %"eif_file.h%""
 		end
 
-	file_info (stat_buf: POINTER; which: INTEGER): INTEGER
+	file_info (stat_buf: TYPED_POINTER [ANY]; which: INTEGER): INTEGER
 			-- Extract information `which' from information buffer
 		external
 			"C signature (struct stat *, int): EIF_INTEGER use %"eif_file.h%""

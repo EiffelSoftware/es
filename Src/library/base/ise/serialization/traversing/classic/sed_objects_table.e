@@ -64,7 +64,7 @@ feature -- Removal
 
 feature {NONE} -- Implementation
 
-	table: HASH_TABLE [NATURAL_32, POINTER]
+	table: HASH_TABLE [NATURAL_32, TYPED_POINTER [ANY]]
 			-- Mapping between object address and index.
 
 invariant

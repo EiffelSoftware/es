@@ -265,7 +265,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *): EIF_REAL_64 use %"eif_file.h%""
 		end
 
-	file_open (f_name: POINTER; how: INTEGER): POINTER
+	file_open (f_name: TYPED_POINTER [ANY]; how: INTEGER): POINTER
 			-- File pointer for file `f_name', in mode `how'.
 		external
 			"C signature (char *, int): EIF_POINTER use %"eif_file.h%""
@@ -282,7 +282,7 @@ feature {NONE} -- Implementation
 			"file_binary_dopen"
 		end
 
-	file_reopen (f_name: POINTER; how: INTEGER; file: POINTER): POINTER
+	file_reopen (f_name: TYPED_POINTER [ANY]; how: INTEGER; file: POINTER): POINTER
 			-- File pointer to `file', reopened to have new name `f_name'
 			-- in a mode specified by `how'.
 		external

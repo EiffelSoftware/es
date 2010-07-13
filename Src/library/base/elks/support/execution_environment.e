@@ -254,7 +254,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- External
 
-	eif_getenv (s: POINTER): POINTER
+	eif_getenv (s: TYPED_POINTER [ANY]): POINTER
 			-- Value of environment variable `s'
 		external
 			"C use <stdlib.h>"
@@ -270,7 +270,7 @@ feature {NONE} -- External
 			"putenv"
 		end
 
-	eif_chdir (path: POINTER): INTEGER
+	eif_chdir (path: TYPED_POINTER [ANY]): INTEGER
 			-- Set the current directory to `path'
 		external
 			"C use %"eif_dir.h%""

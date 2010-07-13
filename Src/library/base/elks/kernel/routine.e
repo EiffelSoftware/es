@@ -386,7 +386,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Externals
 
-	eif_gen_typecode_str (obj: POINTER): STRING
+	eif_gen_typecode_str (obj: TYPED_POINTER [ANY]): STRING
 			-- Code name for generic parameter `pos' in `obj'.
 		external
 			"C signature (EIF_REFERENCE): EIF_REFERENCE use %"eif_gen_conf.h%""

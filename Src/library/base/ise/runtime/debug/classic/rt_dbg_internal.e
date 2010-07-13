@@ -321,7 +321,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- External implementation
 
-	frozen c_object_is_expanded (object: POINTER): BOOLEAN
+	frozen c_object_is_expanded (object: TYPED_POINTER [ANY]): BOOLEAN
 		external
 			"C inline use %"eif_eiffel.h%""
 		alias
@@ -344,7 +344,7 @@ feature {NONE} -- External implementation
 			"System(To_dtype($a_type_id)).cn_types[$i]"
 		end
 
-	frozen c_rt_dynamic_type (object: POINTER): INTEGER
+	frozen c_rt_dynamic_type (object: TYPED_POINTER [ANY]): INTEGER
 			-- Dynamic type of `object'.
 		external
 			"C macro signature (EIF_REFERENCE): EIF_INTEGER use %"eif_macros.h%""
@@ -354,7 +354,7 @@ feature {NONE} -- External implementation
 
 feature -- Get
 
-	frozen c_boolean_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): BOOLEAN
+	frozen c_boolean_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): BOOLEAN
 			-- BOOLEAN value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -362,7 +362,7 @@ feature -- Get
 			"return *(EIF_BOOLEAN *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_character_8_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): CHARACTER_8
+	frozen c_character_8_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): CHARACTER_8
 			-- CHARACTER_8 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -370,7 +370,7 @@ feature -- Get
 			"return *(EIF_CHARACTER *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_character_32_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): CHARACTER_32
+	frozen c_character_32_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): CHARACTER_32
 			-- CHARACTER_32 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -378,7 +378,7 @@ feature -- Get
 			"return *(EIF_WIDE_CHAR *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_natural_8_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): NATURAL_8
+	frozen c_natural_8_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): NATURAL_8
 			-- NATURAL_8 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -386,7 +386,7 @@ feature -- Get
 			"return *(EIF_NATURAL_8 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_natural_16_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): NATURAL_16
+	frozen c_natural_16_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): NATURAL_16
 			-- NATURAL_16 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -394,7 +394,7 @@ feature -- Get
 			"return *(EIF_NATURAL_16 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_natural_32_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): NATURAL_32
+	frozen c_natural_32_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): NATURAL_32
 			-- NATURAL_32 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -402,7 +402,7 @@ feature -- Get
 			"return *(EIF_NATURAL_32 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_natural_64_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): NATURAL_64
+	frozen c_natural_64_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): NATURAL_64
 			-- NATURAL_64 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -410,7 +410,7 @@ feature -- Get
 			"return *(EIF_NATURAL_64 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_integer_8_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): INTEGER_8
+	frozen c_integer_8_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): INTEGER_8
 			-- INTEGER_8 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -418,7 +418,7 @@ feature -- Get
 			"return *(EIF_INTEGER_8 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_integer_16_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): INTEGER_16
+	frozen c_integer_16_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): INTEGER_16
 			-- INTEGER_16 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -426,7 +426,7 @@ feature -- Get
 			"return *(EIF_INTEGER_16 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_integer_32_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): INTEGER_32
+	frozen c_integer_32_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): INTEGER_32
 			-- INTEGER_32 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -434,7 +434,7 @@ feature -- Get
 			"return *(EIF_INTEGER_32 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_integer_64_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): INTEGER_64
+	frozen c_integer_64_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): INTEGER_64
 			-- INTEGER_64 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -442,7 +442,7 @@ feature -- Get
 			"return *(EIF_INTEGER_64 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_real_32_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): REAL_32
+	frozen c_real_32_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): REAL_32
 			-- REAL_32 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -450,7 +450,7 @@ feature -- Get
 			"return *(EIF_REAL_32 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_real_64_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): REAL_64
+	frozen c_real_64_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): REAL_64
 			-- REAL_64 value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -458,7 +458,7 @@ feature -- Get
 			"return *(EIF_REAL_64 *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_pointer_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): POINTER
+	frozen c_pointer_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): POINTER
 			-- POINTER value referenced at offset `off' on `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -466,7 +466,7 @@ feature -- Get
 			"return *(EIF_POINTER *) ei_field_at((long) $off, (uint32) $a_type, (EIF_REFERENCE) $object)"
 		end
 
-	frozen c_field_at (off: INTEGER; a_type: NATURAL_32; object: POINTER): detachable ANY
+	frozen c_field_at (off: INTEGER; a_type: NATURAL_32; object: TYPED_POINTER [ANY]): detachable ANY
 			-- Object value referenced at `off' offset of `object'
 		external
 			"C inline use %"eif_internal.h%""
@@ -549,105 +549,105 @@ end
 			end
 		end
 
-	frozen c_set_boolean_field_at (off: INTEGER; value: BOOLEAN; object: POINTER)
+	frozen c_set_boolean_field_at (off: INTEGER; value: BOOLEAN; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_BOOLEAN *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_BOOLEAN)($value)"
 		end
 
-	frozen c_set_character_8_field_at (off: INTEGER; value: CHARACTER_8; object: POINTER)
+	frozen c_set_character_8_field_at (off: INTEGER; value: CHARACTER_8; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_CHARACTER *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_CHARACTER)($value)"
 		end
 
-	frozen c_set_character_32_field_at (off: INTEGER; value: CHARACTER_32; object: POINTER)
+	frozen c_set_character_32_field_at (off: INTEGER; value: CHARACTER_32; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_WIDE_CHAR *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_WIDE_CHAR)($value)"
 		end
 
-	frozen c_set_natural_8_field_at (off: INTEGER; value: NATURAL_8; object: POINTER)
+	frozen c_set_natural_8_field_at (off: INTEGER; value: NATURAL_8; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_NATURAL_8 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_NATURAL_8)($value)"
 		end
 
-	frozen c_set_natural_16_field_at (off: INTEGER; value: NATURAL_16; object: POINTER)
+	frozen c_set_natural_16_field_at (off: INTEGER; value: NATURAL_16; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_NATURAL_16 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_NATURAL_16)($value)"
 		end
 
-	frozen c_set_natural_32_field_at (off: INTEGER; value: NATURAL_32; object: POINTER)
+	frozen c_set_natural_32_field_at (off: INTEGER; value: NATURAL_32; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_NATURAL_32 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_NATURAL_32)($value)"
 		end
 
-	frozen c_set_natural_64_field_at (off: INTEGER; value: NATURAL_64; object: POINTER)
+	frozen c_set_natural_64_field_at (off: INTEGER; value: NATURAL_64; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_NATURAL_64 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_NATURAL_64)($value)"
 		end
 
-	frozen c_set_integer_8_field_at (off: INTEGER; value: INTEGER_8; object: POINTER)
+	frozen c_set_integer_8_field_at (off: INTEGER; value: INTEGER_8; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_INTEGER_8 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_INTEGER_8)($value)"
 		end
 
-	frozen c_set_integer_16_field_at (off: INTEGER; value: INTEGER_16; object: POINTER)
+	frozen c_set_integer_16_field_at (off: INTEGER; value: INTEGER_16; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_INTEGER_16 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_INTEGER_16)($value)"
 		end
 
-	frozen c_set_integer_32_field_at (off: INTEGER; value: INTEGER_32; object: POINTER)
+	frozen c_set_integer_32_field_at (off: INTEGER; value: INTEGER_32; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_INTEGER_32 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_INTEGER_32)($value)"
 		end
 
-	frozen c_set_integer_64_field_at (off: INTEGER; value: INTEGER_64; object: POINTER)
+	frozen c_set_integer_64_field_at (off: INTEGER; value: INTEGER_64; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_INTEGER_64 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_INTEGER_64)($value)"
 		end
 
-	frozen c_set_real_32_field_at (off: INTEGER; value: REAL_32; object: POINTER)
+	frozen c_set_real_32_field_at (off: INTEGER; value: REAL_32; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_REAL_32 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_REAL_32)($value)"
 		end
 
-	frozen c_set_real_64_field_at (off: INTEGER; value: REAL_64; object: POINTER)
+	frozen c_set_real_64_field_at (off: INTEGER; value: REAL_64; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_REAL_64 *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_REAL_64)($value)"
 		end
 
-	frozen c_set_pointer_field_at (off: INTEGER; value: POINTER; object: POINTER)
+	frozen c_set_pointer_field_at (off: INTEGER; value: POINTER; object: TYPED_POINTER [ANY])
 		external
 			"C inline use %"eif_internal.h%""
 		alias
 			"*(EIF_POINTER *) ((EIF_REFERENCE)$object + (long)$off) = (EIF_POINTER)($value)"
 		end
 
-	frozen c_set_reference_field_at (off: INTEGER; value: POINTER; object: POINTER)
+	frozen c_set_reference_field_at (off: INTEGER; value, object: POINTER)
 		external
 			"C inline use %"eif_internal.h%""
 		alias
@@ -960,7 +960,7 @@ feature -- Change local
 			#endif
 			]"
 		end
-	frozen c_set_reference_stack_value (dep: INTEGER; a_loc_type: INTEGER; pos: INTEGER; a_ref: POINTER): INTEGER
+	frozen c_set_reference_stack_value (dep: INTEGER; a_loc_type: INTEGER; pos: INTEGER; a_ref: TYPED_POINTER [ANY]): INTEGER
 		require
 			a_ref_not_null: a_ref /= Default_pointer
 		external
