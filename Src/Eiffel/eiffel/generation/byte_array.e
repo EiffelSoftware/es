@@ -326,7 +326,7 @@ feature -- Element change
 		do
 			append_integer_32 (a_offset)
 		end
-		
+
 	append_feature_id (a_id: INTEGER)
 			-- Append feature ID `a_id'.
 		require
@@ -601,7 +601,7 @@ feature {NONE} -- Externals
 			"BIT_NBPACK"
 		end
 
-	ca_wbit(ptr: POINTER; val: POINTER; pos: INTEGER; bit_count: INTEGER)
+	ca_wbit(ptr: TYPED_POINTER [ANY]; val: TYPED_POINTER [ANY]; pos: INTEGER; bit_count: INTEGER)
 			-- Write in `ptr' at position `pos' a bit value `val'
 		external
 			"C"

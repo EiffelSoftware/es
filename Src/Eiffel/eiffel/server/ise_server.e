@@ -83,7 +83,7 @@ feature -- Implementation
 
 feature {NONE} -- External features
 
-	store_append (f_desc: INTEGER; object, make_index_proc, need_index_proc, s: POINTER): INTEGER
+	store_append (f_desc: INTEGER; object: TYPED_POINTER [ANY]; make_index_proc, need_index_proc: POINTER; s: TYPED_POINTER [ANY]): INTEGER
 		external
 			"C inline use %"pstore.h%""
 		alias
@@ -396,7 +396,7 @@ invariant
 	tables_not_void: tables /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

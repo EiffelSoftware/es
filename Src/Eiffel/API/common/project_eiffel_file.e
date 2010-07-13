@@ -375,7 +375,7 @@ feature {NONE} -- C externals
 			"parsing_retrieve"
 		end
 
-	compiler_store (f_desc: INTEGER; obj: POINTER)
+	compiler_store (f_desc: INTEGER; obj: TYPED_POINTER [ANY])
 		external
 			"C | %"pstore.h%""
 		alias

@@ -367,7 +367,7 @@ feature {NONE} -- Implementation
 			buffered_file_info.update (name)
 		end
 
-	file_open (f_name: POINTER; how: INTEGER): POINTER
+	file_open (f_name: TYPED_POINTER [ANY]; how: INTEGER): POINTER
 			-- File pointer for file `f_name', in mode `how'.
 		external
 			"C use %"eif_file.h%""
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *) use %"eif_file.h%""
 		end
 
-	file_unlink (fname: POINTER)
+	file_unlink (fname: TYPED_POINTER [ANY])
 			-- Delete file `fname'.
 		external
 			"C use %"eif_file.h%""
@@ -393,7 +393,7 @@ feature {NONE} -- Implementation
 			"C signature (FILE *): EIF_INTEGER use %"eif_file.h%""
 		end
 
-	file_exists (f_name: POINTER): BOOLEAN
+	file_exists (f_name: TYPED_POINTER [ANY]): BOOLEAN
 			-- Does `f_name' exist.
 		external
 			"C use %"eif_file.h%""
@@ -408,7 +408,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
