@@ -80,20 +80,18 @@ rt_private void cr_raise (char *msg) {
 rt_private void bwrite (char *buffer, size_t nbytes)
 {
 
-
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_capturing", is_capturing);
 
 	if (nbytes != fwrite(buffer, sizeof(char), nbytes, cr_file))
 		cr_raise("Unable to write to capture log");
 
-	RTCRDBG((stderr, "r/w %d %x bytes\n", nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
+//	RTCRDBG((stderr, "r/w %d %x bytes\n", (int) nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
 
 }
 
 rt_private void bread (char *buffer, size_t nbytes)
 {
-
 
 	REQUIRE("cr_file_not_null", cr_file != NULL);
 	REQUIRE("is_replaying", is_replaying);
@@ -101,7 +99,7 @@ rt_private void bread (char *buffer, size_t nbytes)
 	if (nbytes != fread(buffer, sizeof(char), nbytes, cr_file))
 		cr_raise("Unable to read from capture log");
 
-	RTCRDBG((stderr, "r/w %d %x bytes\n", nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
+//	RTCRDBG((stderr, "r/w %d %x bytes\n", (int) nbytes, nbytes == 1 ? (int) * (char *) buffer : 0));
 
 }
 
@@ -637,7 +635,6 @@ rt_private char cr_schedule()
 			if (ref.size != CR_GLOBAL_REF)
 				cr_raise("Trying to wean non global object");
 
-			RTCRDBG((stderr, "wean %lx\n", (unsigned long) ref.item.o));
 			newref.item.r = eif_wean((EIF_OBJECT) ref.item.o);
 
 			cr_remove_object (id);
@@ -775,11 +772,12 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 		if ((rtype & TYPE_MASK) != (type & TYPE_MASK))
 			cr_raise ("Expected CR_CALL but read different event from log");
 
-		if ((rtype & ARG_MASK) != (type & ARG_MASK))
-			cr_raise ("Expected CR_CALL with different number of arguments");
-		
 		if (bid != bodyid)
 			cr_raise("Expected CR_CALL to different routine");
+
+		if ((rtype & ARG_MASK) != (type & ARG_MASK))
+			cr_raise ("Expected different number of arguments for CR_CALL");
+		
 	}
 	else {
 		/* No need to lock the mutex, as it is an incall and cr_replay already locked it */
@@ -839,7 +837,7 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, uint32 p
 	EIF_GET_CONTEXT
 
 	/* `use_value' indicates whether value and type point to live memory locations and whether their
-	* should be used by the capture/replay mechanism or restored
+	* value should be used by the capture/replay mechanism. Otherwise the value should be restored.
 	*/
 	int use_value = (is_capturing || (is_replaying && !RTCRI));
 
@@ -969,18 +967,23 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, uint32 p
 					if (CR_IS_REFERENCE(ref) && (CR_ACCESS(ref) == except_mnger)) {
 						cr_id.item.id = 0xFFFFFFFF;
 						cr_id.item.size = CR_GLOBAL_REF;
+						* (EIF_INTEGER_64 *) log_value = cr_id.value;
 					}
 					else {
 						if (CR_IS_REFERENCE(ref)) {
-							printf("Unknown reference %lx\n", (long unsigned int) CR_ACCESS(ref));
+							RTCRDBG((stderr, "Unknown reference %lx\n", (long unsigned int) CR_ACCESS(ref)));
 						}
 						else {
-							printf("Unknown reference %lx\n", (long unsigned int) ref.item.p);
+							RTCRDBG((stderr, "Unknown reference %lx\n", (long unsigned int) ref.item.p));
 						}
-						cr_raise ("Passing unknown reference to Eiffel");
+						/* Instead of raising an assertion, we will pass a null pointer when replaying */
+						/* cr_raise ("Passing unknown reference to Eiffel"); */
+						* (EIF_INTEGER_64 *) log_value = (EIF_INTEGER_64) 0;
 					}
 				}
-				* (EIF_INTEGER_64 *) log_value = cr_id.value;
+				else {
+					* (EIF_INTEGER_64 *) log_value = cr_id.value;
+				}
 			}
 			else {
 				/* In this case an ID does not make sense as we will simply push the reference. As an
@@ -1102,7 +1105,7 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 	cr_remove_object (id);
 
-	RTCRDBG((stderr, "protect %lx\n", (unsigned long) obj));
+	//RTCRDBG((stderr, "protect %lx\n", (unsigned long) obj));
 
 	newref.item.o = obj;
 	newref.size = CR_GLOBAL_REF;
@@ -1145,8 +1148,6 @@ rt_public void cr_register_wean (EIF_REFERENCE *obj)
 	char type = (char) WEANOBJ;
 	cr_write_event_type (type);
 	bwrite((char *) &id, sizeof(EIF_CR_ID));
-
-	RTCRDBG((stderr, "wean %lx\n", (unsigned long) obj));
 
 	cr_remove_object (id);
 
