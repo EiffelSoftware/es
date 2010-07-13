@@ -1062,12 +1062,11 @@ feature {NONE} -- C code generation
 					elseif
 						attached {ACCESS_EXPR_B} target as l_expr and then
 						attached {HECTOR_B} l_expr.expr as l_hector and then
-						attached {RESULT_BL} l_hector.expr as l_result and then
-						l_result.type.is_basic
+						l_hector.expr.type.is_basic
 					then
-							-- This is workaround for the fact that the expression $Result is not
+							-- This is workaround for the fact that the a target expression using $ is not
 							-- treated as a TYPED_POINTER, but a regular POINTER
-						l_result.type.c_type.generate_sk_value (buffer)
+						l_hector.expr.type.c_type.generate_sk_value (buffer)
 					else
 						buffer.put_string ({SK_CONST}.sk_invalid_string)
 					end
