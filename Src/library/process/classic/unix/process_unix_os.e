@@ -169,7 +169,7 @@ feature{NONE} -- Implementation
 			c_unix_fork_process ($Result)
 		end
 
-	str_dup (area: POINTER): POINTER
+	str_dup (area: TYPED_POINTER [ANY]): POINTER
 			-- Return new copy of C string indicated by `area'
 		do
 			c_str_dup (area, $Result);
@@ -187,7 +187,7 @@ feature{NONE} -- Implementation
 
 feature {NONE} -- Externals
 
-	c_str_dup (area: POINTER; a_result: TYPED_POINTER [POINTER])
+	c_str_dup (area: TYPED_POINTER [ANY]; a_result: TYPED_POINTER [POINTER])
 			-- Duplicate data from `area' to `a_result'.
 			external
 				"C inline use <string.h>"
@@ -206,7 +206,7 @@ feature {NONE} -- Externals
 			end
 
 
-	unix_pipe (read_fd, write_fd: POINTER)
+	unix_pipe (read_fd, write_fd: TYPED_POINTER [INTEGER])
 			-- Create a new pipe and put the read file descriptor
 			-- in `read_fd' and the write file descriptor in
 			-- `write_fd'
@@ -292,7 +292,7 @@ feature {NONE} -- Externals
 		end
 
 
-	unix_exec_process (pname, args, env: POINTER; close_nonstd_files: BOOLEAN)
+	unix_exec_process (pname: TYPED_POINTER [ANY]; args, env: POINTER; close_nonstd_files: BOOLEAN)
 			-- Call execv or execve to overlay current process with
 			-- new one.  Does not return (raises exception
 			-- if error doing the exec)
@@ -370,14 +370,14 @@ feature {NONE} -- Externals
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

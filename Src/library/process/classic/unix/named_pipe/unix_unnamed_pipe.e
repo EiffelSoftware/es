@@ -651,21 +651,21 @@ feature -- Input
 			"C blocking signature (int, void*, size_t): ssize_t use <unistd.h>"
 		end
 
-	c_basic_store (file_handle: INTEGER; object: POINTER)
+	c_basic_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_INTEGER, EIF_REFERENCE) use %"eif_store.h%""
 		alias
 			"estore"
 		end
 
-	c_independent_store (file_handle: INTEGER; object: POINTER)
+	c_independent_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_INTEGER, EIF_REFERENCE) use %"eif_store.h%""
 		alias
 			"sstore"
 		end
 
-	c_general_store (file_handle: INTEGER; object: POINTER)
+	c_general_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 		external
 			"C signature (EIF_INTEGER, EIF_REFERENCE) use %"eif_store.h%""
 		alias
@@ -715,7 +715,7 @@ invariant
 	current_platform_not_void: current_platform /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

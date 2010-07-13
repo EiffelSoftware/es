@@ -1095,21 +1095,21 @@ feature {NONE} -- Externals
 			"C"
 		end
 
-	eif_net_basic_store (file_handle: INTEGER; object: POINTER)
+	eif_net_basic_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
 			"C"
 		end
 
-	eif_net_general_store (file_handle: INTEGER; object: POINTER)
+	eif_net_general_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external
 			"C"
 		end
 
-	eif_net_independent_store (file_handle: INTEGER; object: POINTER)
+	eif_net_independent_store (file_handle: INTEGER; object: TYPED_POINTER [ANY])
 			-- Store object structure reachable form current object
 			-- in file pointer `file_ptr'.
 		external

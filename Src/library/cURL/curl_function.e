@@ -140,7 +140,7 @@ feature -- cURL curl_easy_setopt functions
 
 feature {NONE} -- Externals
 
-	c_set_object (a_object: POINTER)
+	c_set_object (a_object: TYPED_POINTER [ANY])
 			-- Set Current object address.
 		external
 			"C signature (EIF_REFERENCE) use %"eiffel_curl.h%""
@@ -182,12 +182,12 @@ feature {NONE} -- Implementation
 			-- Wean `Current'
 		do
 			c_release_object
-			c_set_object (default_pointer)
+			c_set_object (({TYPED_POINTER [ANY]}).default)
 		end
 
 note
 	library:   "cURL: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
