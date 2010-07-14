@@ -1056,7 +1056,7 @@ rt_shared EIF_TYPE_INDEX *eif_gen_cid (EIF_TYPE_INDEX dftype)
 	EIF_GEN_DER *gdp;
 
 	if ((dftype == NONE_TYPE) || (dftype < eif_first_gen_id)) {
-		/* CHECK("valid_cid_array", (cid_array[0] == 1) && (cid_array[2] == TERMINATOR)); */
+		CHECK("valid_cid_array", (cid_array[0] == 1) && (cid_array[2] == TERMINATOR));
 		cid_array [1] = dftype;
 		return cid_array;
 	}
