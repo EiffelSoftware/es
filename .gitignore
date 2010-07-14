@@ -468,6 +468,8 @@ Src/framework/web/xebra/www/xmlrpc_demo/.generated
 Src/framework/web/xebra/www/xmlrpc_demo/EIFGENs
 Src/framework/xml/gobo/removed
 Src/free_add_ons
+Src/library/cURL/spec/linux-x86
+Src/library/cURL/spec/linux-x86-64
 Src/library/cURL/spec/mingw
 Src/library/cURL/spec/msc
 Src/library/cocoa/EIFGENs
@@ -522,6 +524,7 @@ Src/tools/eiffel_image_embedder/EIFGENs
 Src/tools/eiffel_matrix_code_generator/*.exe
 Src/tools/estudio/*.wb
 Src/tools/estudio/EIFGENs
+Src/tools/estudio/config/EIFGENs
 Src/tools/estudio/estudio.rc
 Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
@@ -535,6 +538,9 @@ Src/tools/syntax_updater/parser_v63/eiffel_tokens.e
 Src/tools/syntax_updater/parser_v65/eiffel_parser.e
 Src/tools/syntax_updater/parser_v65/eiffel_scanner.e
 Src/tools/syntax_updater/parser_v65/eiffel_tokens.e
+Src/tools/syntax_updater/parser_v67/eiffel_parser.e
+Src/tools/syntax_updater/parser_v67/eiffel_scanner.e
+Src/tools/syntax_updater/parser_v67/eiffel_tokens.e
 Src/tools/vms/ES5SH/*.wb
 Src/tools/vms/ES5SH/EIFGEN
 Src/tools/vms/ES5SH/EIFGENs

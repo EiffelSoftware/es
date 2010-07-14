@@ -272,9 +272,9 @@ extern struct opstack op_stack;               /* Operational stack */
 #define BC_END_CATCALL		(unsigned char) 158
 #define BC_IS_ATTACHED		(unsigned char) 159
 #define BC_SPECIAL_EXTEND	(unsigned char) 160
-#define BC_QLIKE		(unsigned char) 161
-#define BC_PQLIKE		(unsigned char) 162
-#define BC_NOTUSED_163		(unsigned char) 163
+#define BC_QLIKE			(unsigned char) 161
+#define BC_PQLIKE			(unsigned char) 162
+#define BC_GUARD			(unsigned char) 163
 #define BC_NOTUSED_164		(unsigned char) 164
 #define BC_NOTUSED_165		(unsigned char) 165
 #define BC_NOTUSED_166		(unsigned char) 166
@@ -284,7 +284,11 @@ extern struct opstack op_stack;               /* Operational stack */
 #define BC_TUPLE	(unsigned char) 168
 #define BC_PTUPLE	(unsigned char) 169
 
-#define MAX_CODE                169    /* Maximum legal byte code */
+/* Unicode*/
+#define BC_STRING32	(unsigned char) 170
+#define BC_ONCE_STRING32	(unsigned char) 171
+
+#define MAX_CODE                171    /* Maximum legal byte code */
 
 
 	/* Structure to get and set variable value in the debugger */

@@ -16,12 +16,7 @@ inherit
 			save_preferences
 		end
 
-	XM_CALLBACKS_FILTER_FACTORY
-		export
-			{NONE} all
-		end
-
-	XM_MARKUP_CONSTANTS
+	XML_CALLBACKS_FILTER_FACTORY
 		export
 			{NONE} all
 		end
@@ -63,7 +58,7 @@ feature {NONE} -- Initialization
 			-- If file does not exist create new one.
 		do
 			Precursor {PREFERENCES_STORAGE_I} (a_location)
-			create xml_structure.make_with_root_named ("EIFFEL_DOCUMENT", create {XM_NAMESPACE}.make_default)
+			create xml_structure.make_with_root_named ("EIFFEL_DOCUMENT", create {XML_NAMESPACE}.make_default)
 		end
 
 feature {PREFERENCES} -- Initialization
@@ -157,7 +152,7 @@ feature {PREFERENCES} -- Resource Management
 
 feature {NONE} -- Implementation
 
-	xml_structure: detachable XM_DOCUMENT
+	xml_structure: detachable XML_DOCUMENT
 			-- XML structure built from parsing of `file'.
 
 	extract_preferences_from_file
@@ -165,70 +160,73 @@ feature {NONE} -- Implementation
 		require
 			location_not_void: location /= Void
 		local
-			parser: XM_EIFFEL_PARSER
-			l_file: KL_TEXT_INPUT_FILE
-			l_tree_pipe: XM_TREE_CALLBACKS_PIPE
-			l_concat_filter: XM_CONTENT_CONCATENATOR
-			l_attrib: detachable XM_ATTRIBUTE
+			parser: XML_LITE_STOPPABLE_PARSER
+			l_file: PLAIN_TEXT_FILE
+			l_tree: XML_CALLBACKS_TREE
+			l_attrib: detachable XML_ATTRIBUTE
 			pref_name,
 			pref_value: detachable STRING
-			node: detachable XM_ELEMENT
-			l_root_element: XM_ELEMENT
+			l_root_element: XML_ELEMENT
 			t_preference, t_name, t_value: STRING
+			l_retried: BOOLEAN
 		do
 			create parser.make
-			create l_tree_pipe.make
-			create l_concat_filter.make_null
-			parser.set_callbacks (standard_callbacks_pipe (<<l_concat_filter, l_tree_pipe.start>>))
+			create l_tree.make_null
+			parser.set_callbacks (l_tree)
 
 			create l_file.make (location)
-			l_file.open_read
-			if l_file.is_open_read then
-				parser.parse_from_stream (l_file)
-				l_file.close
-	    		if not l_tree_pipe.error.has_error and then
-	    			(attached l_tree_pipe.document as l_xml_structure) -- should be implied by `not has_error'
-	    		then
-	    			xml_structure := l_xml_structure
-	    			from
-	    				t_preference := "PREFERENCE"
-	    				t_name := "NAME"
-	    				t_value := "VALUE"
+			if l_file.exists and then l_file.is_readable then
+				safe_open_read (l_file)
+				if l_file.is_open_read then
+					parser.parse_from_file (l_file)
+					l_file.close
+		    		if not parser.error_occurred and then
+		    			(attached l_tree.document as l_xml_structure) -- should be implied by `not has_error'
+		    		then
+		    			xml_structure := l_xml_structure
+		    			from
+		    				t_preference := "PREFERENCE"
+		    				t_name := "NAME"
+		    				t_value := "VALUE"
 
-	    				l_root_element := l_xml_structure.root_element
-						l_root_element.start
-					until
-						l_root_element.after
-					loop
-						node ?= l_root_element.item_for_iteration
-						if node /= Void then
-							if node.name ~ t_preference then
-									-- Found preference
-								l_attrib := node.attribute_by_name (t_name)
-								if l_attrib /= Void then
-									pref_name := l_attrib.value
-									l_attrib := node.attribute_by_name (t_value)
+		    				l_root_element := l_xml_structure.root_element
+							l_root_element.start
+						until
+							l_root_element.after
+						loop
+							if attached {XML_ELEMENT} l_root_element.item_for_iteration as node then
+								if node.name ~ t_preference then
+										-- Found preference
+									l_attrib := node.attribute_by_name (t_name)
 									if l_attrib /= Void then
-										pref_value := l_attrib.value
+										pref_name := l_attrib.value
+										l_attrib := node.attribute_by_name (t_value)
+										if l_attrib /= Void then
+											pref_value := l_attrib.value
+										end
+										if pref_value = Void then
+											check xml_contain_value: False end
+											create pref_value.make_empty
+										end
+										session_values.put (pref_value, pref_name)
 									end
-									if pref_value = Void then
-										check xml_contain_value: False end
-										create pref_value.make_empty
-									end
-									session_values.put (pref_value, pref_name)
 								end
 							end
+							l_root_element.forth
 						end
-						l_root_element.forth
-					end
+					else
+						debug ("refactor_fixme")
+							fixme ("Add code to let callers know that XML file was invalid")
+						end
+		    		end
 				else
 					debug ("refactor_fixme")
-						fixme ("Add code to let callers know that XML file was invalid")
+						fixme ("Add code to let callers that we could not open preference file")
 					end
-	    		end
+				end
 			else
 				debug ("refactor_fixme")
-					fixme ("Add code to let callers that we could not open preference file")
+					fixme ("Add code to let callers that preference file can not be read")
 				end
 			end
 		end
@@ -271,8 +269,28 @@ feature {NONE} -- Implementation
 			Result.append_character (quot_char)
 		end
 
+	safe_open_read (a_file: FILE)
+			-- Safely open `a_file' with read mode.
+		require
+			a_file_not_void: a_file /= Void
+			a_file_closed: a_file.is_closed
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				a_file.open_read
+			elseif not a_file.is_closed then
+				a_file.close
+			end
+		rescue
+			if not retried then
+				retried := True
+				retry
+			end
+		end
+
 	safe_open_write (a_file: FILE)
-			-- Safely open `a_file'.
+			-- Safely open `a_file' with write mode.
 		require
 			a_file_not_void: a_file /= Void
 			a_file_closed: a_file.is_closed
@@ -281,18 +299,34 @@ feature {NONE} -- Implementation
 		do
 			if not retried then
 				a_file.open_write
+			elseif not a_file.is_closed then
+				a_file.close
 			end
 		rescue
-			retried := True
-			retry
+			if not retried then
+				retried := True
+				retry
+			end
 		end
+
+feature {NONE} -- XML markup and entities constants
+
+	Lt_char: CHARACTER = '<'
+	Gt_char: CHARACTER = '>'
+	Amp_char: CHARACTER = '&'
+	Quot_char: CHARACTER = '%"'
+
+	Lt_entity: STRING = "&lt;"
+	Gt_entity: STRING = "&gt;"
+	Amp_entity: STRING = "&amp;"
+	Quot_entity: STRING = "&quot;"
 
 invariant
 	has_session_values: session_values /= Void
 	has_xml_structure: xml_structure /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

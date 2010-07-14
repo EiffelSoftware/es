@@ -28,6 +28,8 @@ inherit
 
 	SHARED_EIFNET_DEBUG_VALUE_FACTORY
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 
@@ -874,7 +876,7 @@ feature {NONE} -- Implementation
 		do
 			Result := dmv.value_dotnet
 
-			if dmv.is_basic or dmv.is_type_manifest_string then
+			if dmv.is_basic or dmv.is_type_manifest_string_8 then
 				if Result /= Void then
 						--| we have a basic type as dotnet value
 

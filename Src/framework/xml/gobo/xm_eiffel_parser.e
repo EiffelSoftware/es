@@ -9,7 +9,7 @@ note
 class XM_EIFFEL_PARSER
 
 inherit
-	XML_STOPPABLE_PARSER
+	XML_LITE_STOPPABLE_PARSER
 		rename
 			parse_from_stream as parse_from_xml_stream
 		end

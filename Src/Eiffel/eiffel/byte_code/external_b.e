@@ -15,7 +15,7 @@ inherit
 			is_feature_special, is_unsafe, optimized_byte_node,
 			calls_special_features, size,
 			pre_inlined_code, inlined_byte_code,
-			need_target, is_constant_expression
+			need_target, is_constant_expression, has_call, allocates_memory
 		end
 
 	SHARED_INCLUDE
@@ -24,6 +24,8 @@ inherit
 		export
 			{NONE} all
 		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
 
 feature -- Visitor
 
@@ -67,17 +69,6 @@ feature -- Attributes for externals
 	external_name_id: INTEGER
 			-- Name ID of C external.
 
-	external_name: STRING
-			-- Name of C external.
-		require
-			external_name_id_set: external_name_id > 0
-		do
-			Result := Names_heap.item (external_name_id)
-		ensure
-			result_not_void: Result /= Void
-			result_not_empty: not Result.is_empty
-		end
-
 	encapsulated: BOOLEAN;
 			-- Has the feature some assertion declared ?
 
@@ -95,6 +86,19 @@ feature -- Attributes for externals
 			Result := static_class_type
 		end
 
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Attributes for externals
+
+	external_name: STRING
+			-- Name of C external.
+		require
+			external_name_id_set: external_name_id > 0
+		do
+			Result := Names_heap.item (external_name_id)
+		ensure
+			result_not_void: Result /= Void
+			result_not_empty: not Result.is_empty
+		end
+
 feature -- Status report
 
 	is_constant_expression: BOOLEAN
@@ -106,6 +110,13 @@ feature -- Status report
 			l_ext ?= extension
 			Result := l_ext /= Void
 		end
+
+	has_call: BOOLEAN = True
+			-- <Precursor>
+
+	allocates_memory: BOOLEAN = True
+			-- <Precursor>
+			-- An external is a black box that may allocate Eiffel memory when called.
 
 feature -- Routines for externals
 

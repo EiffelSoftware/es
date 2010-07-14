@@ -1845,35 +1845,41 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_ASSERT\n");
 #endif
-		switch (*IC++) {
-		case BC_PRE: 	assert_type = EX_PRE; break;
-		case BC_PST:	assert_type = EX_POST; break;
-		case BC_CHK:	assert_type = EX_CHECK; break;
-		case BC_LINV:	assert_type = EX_LINV; break;
-		case BC_LVAR:	assert_type = EX_VAR; break;
-		case BC_INV:	assert_type = (where ? EX_CINV : EX_INVC); break;
-		default:
-			eif_panic(MTC "invalid assertion code");
-			/* NOTREADCHED */
-		}
-		switch (*IC++) {
-		case BC_TAG:				/* Assertion tag */
-			string = get_string8(&IC, -1);
-			if ((assert_type == EX_CINV) || (assert_type == EX_INVC))
+		{
+			int l_is_guard = 0;
+			switch (*IC++) {
+			case BC_PRE: 	assert_type = EX_PRE; break;
+			case BC_PST:	assert_type = EX_POST; break;
+			case BC_CHK:	assert_type = EX_CHECK; break;
+			case BC_GUARD:	assert_type = EX_CHECK; l_is_guard = 1; break;
+			case BC_LINV:	assert_type = EX_LINV; break;
+			case BC_LVAR:	assert_type = EX_VAR; break;
+			case BC_INV:	assert_type = (where ? EX_CINV : EX_INVC); break;
+			default:
+				eif_panic(MTC "invalid assertion code");
+				/* NOTREADCHED */
+			}
+			switch (*IC++) {
+			case BC_TAG:				/* Assertion tag */
+				string = get_string8(&IC, -1);
+				break;
+			case BC_NOTAG:
+				string = NULL;
+				break;
+			default:
+				string = NULL;
+				eif_panic(MTC "invalid tag opcode");
+				/* NOTREADCHED */
+			}
+			if ((assert_type == EX_CINV) || (assert_type == EX_INVC)) {
 				RTIT((char *) string, icurrent->it_ref);
-			else
-				RTCT((char *) string, assert_type);
-			break;
-		case BC_NOTAG:				/* No assertion tag */
-			if ((assert_type == EX_CINV) || (assert_type == EX_INVC))
-				RTIS(icurrent->it_ref);
-			else
-				RTCS (assert_type);
-			break;
-		case BC_NOT_REC: break;		/* Do not record assertion */
-		default:
-			eif_panic(MTC "invalid tag opcode");
-			/* NOTREADCHED */
+			} else {
+				if (l_is_guard) {
+					RTCT0((char *) string, assert_type);
+				} else {
+					RTCT((char *) string, assert_type);
+				}
+			}
 		}
 		break;
 
@@ -1887,11 +1893,19 @@ rt_private void interpret(int flag, int where)
 		code = (int) opop()->it_char;	/* Get the assertion
 										 * boolean result
 										 */
-		if (code) {
-			RTCK;				/* Assertion success */
-		}
-		else {
-			RTCF;				/* Assertion failure */
+		if (*IC++) {
+				/* If we are not handling a guard, we can reset `in_assertion'. */
+			if (code) {
+				RTCK;				/* Assertion success */
+			} else {
+				RTCF;				/* Assertion failure */
+			} 
+		} else {
+			if (code) {
+				RTCK0;				/* Assertion success */
+			} else {
+				RTCF0;				/* Assertion failure */
+			} 
 		}
 		break;
 
@@ -3415,7 +3429,7 @@ rt_private void interpret(int flag, int where)
 		}
 
 	/*
-	 * Once manifest string.
+	 * Once manifest STRING.
 	 */
 	case BC_ONCE_STRING:
 #ifdef DEBUG
@@ -3426,7 +3440,7 @@ rt_private void interpret(int flag, int where)
 			unsigned char *OLD_IC;
 			int32 body_index;	/* routine body index */
 			int32 number;	/* number of the once manifest string in routine body */
-			int32 length;	/* length of once manifest string */
+			int32 length;	/* nubmer of bytes of once manifest string */
 
 			stagval = tagval;
 			body_index = get_int32(&IC);	/* Get routine body index */
@@ -3436,6 +3450,7 @@ rt_private void interpret(int flag, int where)
 
 			last = iget();
 			last->type = SK_REF;
+
 			OLD_IC = IC;
 			RTCOMS (last->it_ref, body_index, number, (char *) string, length, 0);
 			IC = OLD_IC;
@@ -3446,6 +3461,39 @@ rt_private void interpret(int flag, int where)
 			break;
 		}
 
+	/*
+	 * Once manifest STRING_32.
+	 */
+	case BC_ONCE_STRING32:
+#ifdef DEBUG
+		dprintf(2)("BC_ONCE_STRING32\n");
+#endif
+		{
+			unsigned long stagval;
+			unsigned char *OLD_IC;
+			int32 body_index;	/* routine body index */
+			int32 number;	/* number of the once manifest string in routine body */
+			int32 length;	/* nubmer of bytes of once manifest string */
+
+			stagval = tagval;
+			body_index = get_int32(&IC);	/* Get routine body index */
+			number = get_int32(&IC);	/* Get number of the once manifest string in the routine body */
+			length = get_int32(&IC);
+			string = get_string8(&IC, length);	/* Get string of specified length. */
+
+			last = iget();
+			last->type = SK_REF;
+
+			OLD_IC = IC;
+			RTCOMS32 (last->it_ref, body_index, number, (char *) string, length / sizeof (EIF_CHARACTER_32), 0);
+			IC = OLD_IC;
+
+			if (tagval != stagval) {
+				sync_registers(MTC scur,stop);
+			}
+			break;
+		}
+		
 	/*
 	 * Allocate space to store once manifest strings.
 	 */
@@ -3470,7 +3518,7 @@ rt_private void interpret(int flag, int where)
 		}
 
 	/*
-	 * Manifest string.
+	 * Manifest STRING.
 	 */
 	case BC_STRING:
 #ifdef DEBUG
@@ -3480,9 +3528,10 @@ rt_private void interpret(int flag, int where)
 			EIF_REFERENCE str_obj;			  /* String object created */
 			unsigned long stagval;
 			unsigned char *OLD_IC;
-			int32 length;
+			int32 length;						/* number of bytes of the manifest string */
 
 			stagval = tagval;
+
 			length = get_int32(&IC);
 			string = get_string8(&IC, length);	/* Get string of specified length. */
 			last = iget();
@@ -3495,6 +3544,42 @@ rt_private void interpret(int flag, int where)
 
 			OLD_IC = IC;
 			str_obj = RTMS_EX((char *) string, length);
+			IC = OLD_IC;
+
+			last->type = SK_REF;
+			last->it_ref = str_obj;
+			if (tagval != stagval)
+				sync_registers(MTC scur,stop);
+			break;
+		}
+
+	/*
+	 * Manifest STRING32.
+	 */
+	case BC_STRING32:
+#ifdef DEBUG
+		dprintf(2)("BC_STRING32\n");
+#endif
+		{
+			EIF_REFERENCE str_obj;			  /* String object created */
+			unsigned long stagval;
+			unsigned char *OLD_IC;
+			int32 length;						/* number of bytes of the manifest string */
+
+			stagval = tagval;
+
+			length = get_int32(&IC);
+			string = get_string8(&IC, length);	/* Get string of specified length. */
+			last = iget();
+			last->type = SK_INT32;		/* Protect empty cell from GC */
+
+			/* We have to use the str_obj temporary variable instead of doing
+			 * the assignment directly into last->it_ref because the GC might
+			 * run a cycle when makestr() is called...
+			 */
+
+			OLD_IC = IC;
+			str_obj = RTMS32_EX((char *) string, length / sizeof (EIF_CHARACTER_32));
 			IC = OLD_IC;
 
 			last->type = SK_REF;
@@ -3897,6 +3982,14 @@ enter_body:
 				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.called, icur_dtype);
 			}
 			*(EIF_BOOLEAN *)(icurrent->it_ref + offset) = EIF_TRUE;
+
+				/* Init exception storage */
+			if (once_p_obj_info.is_precompiled) {
+				offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
+			} else {
+				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
+			}
+			*(EIF_REFERENCE *)(icurrent->it_ref + offset) = (EIF_REFERENCE)0;
 			
 				/* Record execution vector to catch exception. */
 			exvecto = extre ();
@@ -5673,8 +5766,10 @@ rt_private EIF_TYPE_INDEX get_next_compound_id (EIF_REFERENCE Current)
 				short stype;
 				int32 origin, ooffset;
 				EIF_TYPE_INDEX dftype;
-
-				dftype = get_next_compound_id(Current);
+				EIF_TYPE_INDEX dtype;
+				
+				dtype = get_int16(&IC);
+				dftype = get_compound_id(Current, dtype);
 				stype = get_int16(&IC);			/* Get static type of caller */
 				origin = get_int32(&IC);			/* Get the origin class id */
 				ooffset = get_int32(&IC);			/* Get the offset in origin */
@@ -5686,8 +5781,10 @@ rt_private EIF_TYPE_INDEX get_next_compound_id (EIF_REFERENCE Current)
 				short code;
 				long  offset;
 				EIF_TYPE_INDEX dftype;
-
-				dftype = get_next_compound_id(Current);
+				EIF_TYPE_INDEX dtype;
+				
+				dtype = get_int16(&IC);
+				dftype = get_compound_id(Current, dtype);
 				code = get_int16(&IC);		/* Get the static type first */
 				offset = get_int32(&IC);	/* Get the feature id of the anchor */
 				result = RTWCTT(code, offset, dftype);

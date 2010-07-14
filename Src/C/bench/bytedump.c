@@ -216,8 +216,8 @@ static  char    *names [] = {
 "BC_NOTUSED_167" ,
 "BC_TUPLE",
 "BC_PTUPLE",
-"BC_NOTUSED_170",
-"BC_NOTUSED_171",
+"BC_STRING32",
+"BC_ONCE_STRING32",
 "BC_NOTUSED_172",
 "BC_NOTUSED_173",
 "BC_NOTUSED_174",
@@ -653,6 +653,9 @@ static  void    print_instructions (void)
 					fprintf (ofp," : \"%s\"", get_string8(&ip, -1));
 				break;
 			case  BC_END_ASSERT :
+				if (!get_bool(&ip)) {
+					fprintf (ofp," guard");
+				}
 				break;
 			case  BC_CHECK :
 				/* If not enabled jump to 'offset' */
@@ -1235,6 +1238,11 @@ static  void    print_instructions (void)
 				fprintf (ofp, "number %d, ", get_int32(&ip));
 				fprintf (ofp, "value \"%s\"", get_string8(&ip, get_int32(&ip)));
 				break;
+			case BC_ONCE_STRING32:
+				fprintf (ofp, "index %d, ", get_int32(&ip));
+				fprintf (ofp, "number %d, ", get_int32(&ip));
+				fprintf (ofp, "value \"%s\"", get_string8(&ip, get_int32(&ip)));
+				break;
 			case BC_ALLOCATE_ONCE_STRINGS:
 				fprintf (ofp, "index %d, ", get_int32(&ip));
 				fprintf (ofp, "count %d", get_int32(&ip));
@@ -1249,6 +1257,9 @@ static  void    print_instructions (void)
 				fprintf (ofp,"%d", 0);
 				break;
 			case  BC_STRING :
+				fprintf (ofp,"\"%s\"", get_string8(&ip, get_int32(&ip)));
+				break;
+			case  BC_STRING32 :
 				fprintf (ofp,"\"%s\"", get_string8(&ip, get_int32(&ip)));
 				break;
 			case  BC_BIT :

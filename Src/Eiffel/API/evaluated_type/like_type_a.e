@@ -46,7 +46,7 @@ inherit
 			set_detachable_mark,
 			set_is_implicitly_attached,
 			unset_is_implicitly_attached,
-			description,
+			description, description_with_detachable_type,
 			c_type,
 			generics,
 			generated_id,
@@ -244,6 +244,11 @@ feature -- Access
 			Result := actual_type.description
 		end
 
+	description_with_detachable_type: ATTR_DESC
+		do
+			Result := actual_type.description_with_detachable_type
+		end
+
 	c_type: TYPE_C
 		do
 			Result := actual_type.c_type
@@ -254,6 +259,10 @@ feature -- Primitives
 	set_actual_type (a: TYPE_A)
 			-- Assign `a' to `actual_type'.
 		do
+				-- Remove any previously recorded actual type first
+				-- since it can be used to compute attachment properties
+				-- and give wrong results.
+			actual_type := Void
 			actual_type := a.to_other_immediate_attachment (Current)
 		end
 
@@ -296,7 +305,7 @@ feature -- Primitives
 			t: like Current
 		do
 			t := twin
-			t.set_actual_type (actual_type.instantiated_in (class_type))
+			t.set_actual_type (actual_type.instantiated_in (class_type).actual_type)
 			Result := t
 		end
 

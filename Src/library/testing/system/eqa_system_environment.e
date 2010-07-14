@@ -28,60 +28,87 @@ feature {NONE} -- Initialization
 			-- `a_test': Prepared system test for which environment should be initialized.
 		require
 			a_test_attached: a_test /= Void
-		local
-			l_source_var, l_testing_var: detachable STRING
 		do
 			test_set := a_test
-			l_source_var := get (source_env)
+			initialize_directories
+		end
+
+	initialize_directories
+			-- Initialize `source_directory' and `target_directory'.
+		local
+			l_env: EXECUTION_ENVIRONMENT
+			l_info: EQA_EVALUATION_INFO
+			l_source_var, l_testing_var: detachable STRING
+		do
+			create l_env
+			create l_info
+			l_source_var := l_env.get (source_env)
 			if l_source_var /= Void then
 				set_source_directory (l_source_var)
-			else
-				set_source_directory (default_source_directory)
 			end
-			l_testing_var := get (testing_env)
+			l_testing_var := l_env.get (testing_env)
 			if l_testing_var /= Void then
 				set_target_directory (l_testing_var)
 			else
-				set_target_directory (default_target_directory)
+				set_target_directory (l_info.test_directory)
 			end
-			initialize_test_suffix
 		end
 
-	initialize_test_suffix
-			-- Initialize testing directory suffix for `test_set'
-		local
-			l_gen, l_name, l_suffix: STRING
-			l_info: EQA_EVALUATION_INFO
-		do
-			l_gen := test_set.generator
-			create l_info
-			l_name := l_info.test_name
-			create l_suffix.make (l_gen.count + l_name.count + 1)
-			l_suffix.append (l_gen)
-			l_suffix.append_character ('_')
-			l_suffix.append (l_name)
-			test_suffix := l_suffix
-		end
-
-feature -- Query
+feature -- Access
 
 	test_set: EQA_SYSTEM_TEST_SET
 			-- Current test set
 
 	source_directory: READABLE_STRING_8
-			-- Directory name where source file for testing are stored
+			-- Directory name where source file for system level testing are stored
 			--
-			-- Note: this directory must exists before executing `test_set'
+			-- Note: this directory must exists before executing `test_set'.
+		require
+			source_directory_set: is_source_directory_set
+		local
+			l_cache: like source_directory_cache
+		do
+			l_cache := source_directory_cache
+			check set: l_cache /= Void end
+			Result := l_cache
+		end
 
 	target_directory: READABLE_STRING_8
-			-- Directory name where files needed for testing are created or copied to
+			-- Directory name where files needed for system level testing are created or copied to
 			--
-			-- Note: this directory must exist before executing `test_set'
+			-- Note: working directory by default
 
 	test_suffix: READABLE_STRING_8
 			-- Directory suffix for `test_set'
 			--
 			-- Note: this should be unique for all tests, so each test has its private testing directory
+
+	executable_name: READABLE_STRING_8
+			-- Executable for launching the system under test.
+		local
+			l_exec_env: EXECUTION_ENVIRONMENT
+			l_cmd: detachable STRING
+		do
+			l_cmd := get (executable_env)
+			if l_cmd = Void then
+				create l_exec_env
+				l_cmd := l_exec_env.command_line.argument (0)
+			end
+			Result := substitute_recursive (l_cmd)
+		end
+
+feature {NONE} -- Access
+
+	source_directory_cache: detachable like source_directory
+			-- Internal storage for `source_directory'
+
+feature -- Status report
+
+	is_source_directory_set: BOOLEAN
+			-- Has `source_direcoty' been set through `set_source_directory'?
+		do
+			Result := source_directory_cache /= Void
+		end
 
 feature -- Command
 
@@ -92,7 +119,7 @@ feature -- Command
 		require
 			a_source_directory_attached: a_source_directory /= Void
 		do
-			create {STRING} source_directory.make_from_string (a_source_directory)
+			create {STRING} source_directory_cache.make_from_string (a_source_directory)
 		ensure
 			source_directory_set: source_directory ~ a_source_directory
 		end
@@ -208,11 +235,16 @@ feature -- Command
 			Result := get (a_var)
 		end
 
-feature {NONE} -- Constants
+feature -- Constants
+
+	executable_env: STRING = "EQA_EXECUTABLE"
+			-- Name of environment variable holding executable name
 
 	source_env: STRING = "EQA_SOURCE"
 	testing_env: STRING = "EQA_TARGET"
 			-- Environment variable names specifying testing directories.
+
+feature {NONE} -- Constants
 
 	default_source_directory: READABLE_STRING_8
 			-- Default value for `source_directory'
@@ -258,7 +290,7 @@ invariant
 	test_suffix_not_empty: not test_suffix.is_empty
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

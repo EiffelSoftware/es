@@ -91,6 +91,23 @@ inherit
 		export
 			{NONE}
 				clear_all, wipe_out, extend
+		redefine
+			cursor, valid_cursor, go_to
+		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+		undefine
+			is_equal, copy
+		end
+
+	SHARED_ENCODING_CONVERTER
+		undefine
+			is_equal, copy
+		end
+
+	SHARED_DEGREES
+		undefine
+			is_equal, copy
 		end
 
 create
@@ -290,6 +307,36 @@ feature -- HASH_TABLE like feature
 			end
 		end
 
+	cursor: CURSOR
+			-- <Precursor>
+		do
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.cursor
+			else
+				Result := Precursor
+			end
+		end
+
+	valid_cursor (c: CURSOR): BOOLEAN
+			-- <Precursor>
+		do
+			if attached feature_table as l_feat_tbl then
+				Result := l_feat_tbl.valid_cursor (c)
+			else
+				Result := Precursor (c)
+			end
+		end
+
+     go_to (c: CURSOR)
+ 			-- <Precursor>
+          do
+             if attached feature_table as l_feat_tbl then
+                 l_feat_tbl.go_to (c)
+             else
+                 Precursor (c)
+             end
+         end
+
 feature {NONE} -- HASH_TABLE like features
 
 	remove (key: INTEGER)
@@ -324,20 +371,6 @@ feature {NONE} -- HASH_TABLE like features
 
 feature -- Access: compatibility
 
-	item (s: STRING): FEATURE_I
-			-- Item of name `s'.
-		require
-			s_not_void: s /= Void
-			s_not_empty: not s.is_empty
-		local
-			id: INTEGER
-		do
-			id := Names_heap.id_of (s)
-			if id > 0 then
-				Result := item_id (id)
-			end
-		end
-
 	overloaded_items (an_id: INTEGER): LIST [FEATURE_I]
 			-- List of features matching overloaded name `s'.
 		require
@@ -358,6 +391,31 @@ feature -- Access: compatibility
 			end
 		ensure
 			overloaded_items_not_void: Result /= Void
+		end
+
+	alias_item_32 (alias_name: STRING_32): FEATURE_I
+			-- Feature with given `alias_name' if any
+		require
+			alias_name_not_void: alias_name /= Void
+			is_mangled_alias_name: is_mangled_alias_name (encoding_converter.utf32_to_utf8 (alias_name))
+		do
+			Result := item_alias_id (names_heap.id_of (encoding_converter.utf32_to_utf8 (alias_name)))
+		end
+
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Access: compatibility
+
+	item (s: STRING): FEATURE_I
+			-- Item of name `s'.
+		require
+			s_not_void: s /= Void
+			s_not_empty: not s.is_empty
+		local
+			id: INTEGER
+		do
+			id := Names_heap.id_of (s)
+			if id > 0 then
+				Result := item_id (id)
+			end
 		end
 
 	has (s: STRING): BOOLEAN
@@ -383,8 +441,29 @@ feature -- Access: compatibility
 		require
 			alias_name_not_void: alias_name /= Void
 			is_mangled_alias_name: is_mangled_alias_name (alias_name)
+		local
+			id: INTEGER
 		do
-			Result := item_alias_id (names_heap.id_of (alias_name))
+			id := names_heap.id_of (alias_name)
+			if id > 0 then
+				Result := item_alias_id (id)
+			end
+		end
+
+feature -- Query
+
+	has_feature_named (a_feat: E_FEATURE): BOOLEAN
+			-- Has feature named `a_feat'?
+		do
+			Result := has (a_feat.name)
+		end
+
+	feature_named (a_feat: E_FEATURE): FEATURE_I
+			-- Feature named the same with `a_feat'.
+		require
+			has_feature: has_feature_named (a_feat)
+		do
+			Result := item (a_feat.name)
 		end
 
 feature -- Traversal
@@ -592,6 +671,7 @@ end
 			external_i: EXTERNAL_I
 			propagate_feature: BOOLEAN
 			same_interface, has_same_type: BOOLEAN
+			is_anchor_changed: BOOLEAN
 		do
 				-- Iteration on the features of the current feature
 				-- table.
@@ -608,7 +688,9 @@ end
 				feature_name_id := old_feature_i.feature_name_id
 					-- New feature
 				new_feature_i := other.item_id (feature_name_id)
-				if new_feature_i /= Void then
+				if new_feature_i = Void then
+					is_anchor_changed := True
+				else
 					has_same_type := True
 					same_interface := old_feature_i.same_interface (new_feature_i)
 					if not same_interface then
@@ -623,6 +705,7 @@ end
 							System.request_freeze
 						end
 						has_same_type := old_feature_i.same_class_type (new_feature_i)
+						is_anchor_changed := not has_same_type
 					end
 				end
 					-- First condition, `other' must have the feature
@@ -651,6 +734,8 @@ end
 						)
 				then
 					propagate_feature := True
+					is_anchor_changed := is_anchor_changed or else not
+						old_feature_i.export_status.equiv (new_feature_i.export_status)
 				end
 
 				if old_feature_i.written_in = feat_tbl_id or else old_feature_i.is_replicated_directly then
@@ -685,6 +770,7 @@ debug ("ACTIVITY")
 end
 						removed_features.put (old_feature_i.body_index)
 						propagate_feature := True
+						is_anchor_changed := True
 					end
 				end
 
@@ -719,6 +805,11 @@ debug ("ACTIVITY")
 end
 					melted_propagators.put (depend_unit)
 				end
+				end
+
+				if is_anchor_changed then
+						-- Mark anchor clients for recompilation.
+					degree_4.touch_feature_type (old_feature_i, associated_class)
 				end
 
 				depend_unit := Void
@@ -912,6 +1003,7 @@ end
 			opo_info: OBJECT_RELATIVE_ONCE_INFO
 			opo_reused: BOOLEAN
 			l_ancestor_once_info: detachable OBJECT_RELATIVE_ONCE_INFO
+			l_cl_type_a: detachable CL_TYPE_A
 		do
 			l_associated_class := associated_class
 			check l_associated_class_attached: l_associated_class /= Void end
@@ -953,13 +1045,11 @@ end
 								-- we need to clean previous extra attributes
 								opo_info.reuse (l_once_i)
 								opo_reused := opo_info.is_set
-								check is_set: opo_info.is_set end
 							else
 								create opo_info.make (l_once_i)
 								check is_not_set: not opo_info.is_set end
 							end
 							opo_info_table.force (opo_info, rid)
-
 
 							l_written_class := l_once_i.written_class
 
@@ -1008,10 +1098,14 @@ end
 								attached system.exception_class as l_exception_class
 								and then l_exception_class.is_compiled
 							then
-								ref_desc.set_type_i (create {CL_TYPE_A}.make (system.exception_class_id))
+								create l_cl_type_a.make (system.exception_class_id)
+								l_cl_type_a.set_detachable_mark
+								ref_desc.set_type_i (l_cl_type_a)
 							else
 								ref_desc.set_type_i (system.any_type)
+								check exception_class_available: False end
 							end
+
 							desc := ref_desc
 							desc.set_attribute_name_id (opo_info.exception_name_id)
 							desc.set_feature_id (opo_info.exception_feature_id)
@@ -1034,7 +1128,7 @@ end
 									opo_info.set_result_name_id (names_heap.found_item)
 								end
 
-								desc := l_once_i.type.description
+								desc := l_once_i.type.description_with_detachable_type
 								desc.set_attribute_name_id (opo_info.result_name_id)
 								desc.set_feature_id (opo_info.result_feature_id)
 								desc.set_rout_id (opo_info.result_routine_id)

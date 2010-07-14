@@ -415,6 +415,25 @@ feature -- Element change
 			append ('%U')
 		end
 
+	append_raw_string_32 (s: STRING_32)
+			-- Append string `s'.
+		require
+			good_argument: s /= Void
+		local
+			i, l_count: INTEGER
+		do
+			from
+				l_count := s.count
+				i := 1
+			until
+				i > l_count
+			loop
+				append_character_32 (s [i])
+				i := i + 1
+			end
+			append ('%U')
+		end
+
 feature -- Forward and backward jump managment
 
 	forward_marks: ARRAYED_STACK [INTEGER]

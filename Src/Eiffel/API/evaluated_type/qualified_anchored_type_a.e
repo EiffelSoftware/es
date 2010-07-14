@@ -3,7 +3,7 @@ note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
-	revision: "$Revision $"
+	revision: "$Revision$"
 
 class
 	QUALIFIED_ANCHORED_TYPE_A
@@ -11,11 +11,17 @@ class
 inherit
 	LIKE_TYPE_A
 		redefine
+			description, description_with_detachable_type,
 			dispatch_anchors,
+			error_generics,
 			evaluated_type_in_descendant,
+			good_generics,
 			initialize_info,
+			instantiated_in,
+			instantiation_in,
 			is_explicit,
 			is_syntactically_equal,
+			skeleton_adapted_in,
 			update_dependance
 		end
 
@@ -66,6 +72,11 @@ feature -- Properties
 	class_id: INTEGER
 			-- ID if a class where this type is written
 
+feature {TYPE_A_CHECKER} -- Properties
+
+	routine_id: SPECIAL [INTEGER_32]
+			-- Routine IDs of the second part of the type, after the `qualifier'
+
 feature -- Status Report
 
 	is_explicit: BOOLEAN
@@ -79,16 +90,89 @@ feature -- Status Report
 			end
 		end
 
-feature -- Access
+feature -- Comparison
 
 	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		do
-			if attached {QUALIFIED_ANCHORED_TYPE_A} other as o then
-				Result :=
-					qualifier.same_as (o.qualifier) and then
-					chain ~ o.chain and then
-					has_same_attachment_marks (o)
+			if
+				attached {QUALIFIED_ANCHORED_TYPE_A} other as o and then
+				qualifier.same_as (o.qualifier) and then
+				chain ~ o.chain and then
+				has_same_attachment_marks (o)
+			then
+					-- Compare computed actual types as otherwise they may be left
+					-- from the previous compilation in an invalid state.
+				if attached actual_type as a then
+					Result :=
+						is_valid and then
+						o.is_valid and then
+						attached o.actual_type as oa and then
+						a.same_as (oa)
+				else
+					Result := not attached o.actual_type
+				end
+			end
+		end
+
+feature -- Code generation
+
+	description: ATTR_DESC
+			-- Descritpion of type for skeletons.
+		local
+			gen_desc: GENERIC_DESC
+		do
+			if qualifier.is_loose then
+				create gen_desc
+				gen_desc.set_type_i (Current)
+				Result := gen_desc
+			else
+				Result := Precursor
+			end
+		end
+
+	description_with_detachable_type: ATTR_DESC
+			-- Descritpion of type for skeletons.
+		local
+			gen_desc: GENERIC_DESC
+		do
+			if qualifier.is_loose then
+				create gen_desc
+				gen_desc.set_type_i (as_detachable_type)
+				Result := gen_desc
+			else
+				Result := Precursor
+			end
+		end
+
+	skeleton_adapted_in (class_type: CLASS_TYPE): QUALIFIED_ANCHORED_TYPE_A
+			-- <Precursor>
+		local
+			q: TYPE_A
+		do
+			Result := Current
+			q := qualifier.skeleton_adapted_in (class_type)
+			if q /= qualifier then
+				Result := duplicate
+				Result.set_qualifier (q)
+			end
+		end
+
+feature -- Type checking
+
+	good_generics: BOOLEAN
+			-- <Precursor>
+		do
+			Result := qualifier.good_generics and then Precursor
+		end
+
+	error_generics: VTUG
+			-- <Precursor>
+		do
+			if qualifier.good_generics then
+				Result := Precursor
+			else
+				Result := qualifier.error_generics
 			end
 		end
 
@@ -126,6 +210,33 @@ feature -- Modification
 			qualifier := q
 		ensure
 			qualifier_set: qualifier = q
+		end
+
+feature {TYPE_A_CHECKER} -- Modification
+
+	set_chain (n: like chain; c: CLASS_C)
+			-- Set `chain' to the value relative to class `c'.
+		require
+			n_attached: attached n
+			n_same_count: n.count = chain.count
+			c_attached: attached c
+		do
+			chain := n
+			class_id := c.class_id
+		ensure
+			chain_set: chain = n
+			class_id_set: class_id = c.class_id
+		end
+
+	set_routine_id (r: like routine_id)
+			-- Set `routine_id' to `r'.
+		require
+			r_attached: attached r
+			r_same_count: r.count = chain.count
+		do
+			routine_id := r
+		ensure
+			routine_id_set: routine_id = r
 		end
 
 feature -- Generic conformance
@@ -239,8 +350,10 @@ feature -- Output
 				n := names_heap.item (chain [i])
 				if attached f then
 					st.add_feature (f, n)
-				else
+				elseif attached q then
 					st.add_feature_name (n, q)
+				else
+					st.process_feature_name_text (n, Void)
 				end
 				i := i + 1
 			end
@@ -253,35 +366,61 @@ feature -- Output
 
 feature -- Primitives
 
+	instantiated_in (class_type: TYPE_A): TYPE_A
+			-- <Precursor>
+		local
+			t: like Current
+		do
+			t := twin
+			t.set_actual_type (actual_type.instantiated_in (class_type).actual_type)
+			t.set_qualifier (qualifier.instantiated_in (class_type))
+			Result := t
+		end
+
+	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A
+			-- <Precursor>
+		local
+			t: like Current
+		do
+			t := twin
+			t.set_actual_type (actual_type.instantiation_in (type, written_id))
+			t.set_qualifier (qualifier.instantiation_in (type, written_id))
+			Result := t
+		end
+
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): QUALIFIED_ANCHORED_TYPE_A
 			-- <Precursor>
 		local
 			i: INTEGER
 			c: like chain
 			q: TYPE_A
+			d: TYPE_A
 		do
 			if a_ancestor /= a_descendant then
 					-- Compute new feature names.
 				create c.make_filled (0, chain.count)
 				from
 					q := qualifier
-					create Result.make (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature), c, a_descendant.class_id)
+					d := q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature)
+					create Result.make (d, c, a_descendant.class_id)
 				until
 					i >= chain.count
 				loop
 						-- Find a corresponding feature in the current class and in the descendant.
-					feature_finder.find (chain [i], q, context.written_class)
+					feature_finder.find (chain [i], q, a_ancestor)
 					check
 						is_ancestor_feature_found: attached feature_finder.found_feature as f
 						is_descendant_feature_found: attached q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature).associated_class.feature_of_rout_id (f.rout_id_set.first) as g
 					then
 						c [i] := g.feature_name_id
 						q := f.type.instantiated_in (q)
+						d := g.type.instantiated_in (d)
 					end
 					i := i + 1
 				end
 					-- `q' holds the type relative to `a_ancestor'.
-				Result.set_actual_type (q.evaluated_type_in_descendant (a_ancestor, a_descendant, a_feature))
+					-- `d' holds the type relative to `a_descendant'.
+				Result.set_actual_type (d)
 				if has_attached_mark then
 					Result.set_attached_mark
 				elseif has_detachable_mark then

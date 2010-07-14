@@ -24,6 +24,7 @@ inherit
 	SHARED_DECLARATIONS
 	SHARED_GENERATION
 	SHARED_TABLE
+	INTERNAL_COMPILER_STRING_EXPORTER
 
 create {QUALIFIED_ANCHORED_TYPE_A}
 	default_create, make
@@ -48,7 +49,7 @@ feature {QUALIFIED_ANCHORED_TYPE_A} -- Initialization
 			feature_finder.find (t.chain [i], q, c)
 			check attached feature_finder.found_feature as f1 then
 				f := f1
-				make_explicit (q.create_info, q, f)
+				make_explicit (q.create_info, q, feature_finder.found_site, f)
 				from
 					n := t.chain.upper
 				until
@@ -59,7 +60,7 @@ feature {QUALIFIED_ANCHORED_TYPE_A} -- Initialization
 					feature_finder.find (t.chain [i], q, c)
 					check attached feature_finder.found_feature as fn then
 						f := fn
-						make_explicit (twin, q, f)
+						make_explicit (twin, q, feature_finder.found_site, f)
 					end
 				end
 			end
@@ -67,14 +68,16 @@ feature {QUALIFIED_ANCHORED_TYPE_A} -- Initialization
 
 feature {CREATE_QUALIFIED} -- Creation
 
-	make_explicit (c: CREATE_INFO; q: TYPE_A; f: FEATURE_I)
+	make_explicit (c: CREATE_INFO; q: TYPE_A; i: like {CLASS_C}.class_id; f: FEATURE_I)
 		require
 			c_attached: attached c
 			q_attached: attached q
+			i_valid: attached system.class_of_id (i)
 			f_attached: attached f
 		do
 			qualifier_creation := c
 			qualifier := q
+			qualifier_class_id := i
 			feature_id := f.feature_id
 			routine_id := f.rout_id_set.first
 		end
@@ -87,11 +90,28 @@ feature {CREATE_QUALIFIED} -- Access
 	qualifier: TYPE_A
 			-- First part of the qualified type
 
+	qualifier_class_id: INTEGER
+			-- Class corresponding to a qualifier type
+
 	feature_id: INTEGER
 			-- Routine ID of the second part of the qualified type
 
 	routine_id: INTEGER
 			-- Routine ID of the second part of the qualified type
+
+feature {NONE} -- Convenience
+
+	qualifier_class: CLASS_C
+			-- Class, associated with qualifier
+		do
+			Result := system.class_of_id (qualifier_class_id)
+		end
+
+	qualifier_static_type_id: INTEGER
+			-- Static type ID of `qualifier' class type.
+		do
+			Result := context.real_type (qualifier).static_type_id (Context.context_class_type.type)
+		end
 
 feature -- Update
 
@@ -100,11 +120,13 @@ feature -- Update
 		local
 			c: CREATE_INFO
 			q: TYPE_A
+			a: CLASS_C
 		do
 			c := qualifier_creation.updated_info
 			q := context.descendant_type (qualifier)
 			if c /= qualifier_creation or else q /= qualifier and then not qualifier.same_as (q) then
-				create {CREATE_QUALIFIED} Result.make_explicit (q.create_info, q, q.associated_class.feature_of_rout_id (routine_id))
+				a := context.real_type (q).associated_class
+				create {CREATE_QUALIFIED} Result.make_explicit (q.create_info, q, a.class_id, a.feature_of_rout_id (routine_id))
 			else
 				Result := Current
 			end
@@ -149,7 +171,7 @@ feature -- C code generation
 					buffer.put_integer (0)
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					l_type := table.first.type.deep_actual_type
+					l_type := table.first.type.instantiated_in (qualifier).deep_actual_type
 
 					if l_type.has_generics then
 						buffer.put_string ("typres")
@@ -187,10 +209,10 @@ feature -- C code generation
 			else
 				if
 					Compilation_modes.is_precompiling or
-					qualifier.associated_class.is_precompiled
+					qualifier_class.is_precompiled
 				then
 					buffer.put_string ("RTWPCTT(")
-					buffer.put_static_type_id (qualifier.static_type_id (context.context_class_type.type))
+					buffer.put_static_type_id (qualifier_static_type_id)
 					buffer.put_string ({C_CONST}.comma_space)
 					rout_info := System.rout_info_table.item (routine_id)
 					buffer.put_class_id (rout_info.origin)
@@ -198,7 +220,7 @@ feature -- C code generation
 					buffer.put_integer (rout_info.offset)
 				else
 					buffer.put_string ("RTWCTT(")
-					buffer.put_static_type_id (qualifier.static_type_id (context.context_class_type.type))
+					buffer.put_static_type_id (qualifier_static_type_id)
 					buffer.put_string ({C_CONST}.comma_space)
 					buffer.put_integer (feature_id)
 				end
@@ -223,7 +245,7 @@ feature -- IL code generation
 			qualifier_creation.generate_il
 			il_generator.create_type
 
-			target_type := context.real_type (qualifier.associated_class.anchored_features.item
+			target_type := context.real_type (qualifier_class.anchored_features.item
 				(routine_id).type)
 			if target_type.is_expanded then
 					-- Load value of a value type object.
@@ -240,7 +262,7 @@ feature -- IL code generation
 		do
 				-- Create qualifier object.
 			qualifier_creation.generate_il
-			c := qualifier.associated_class_type (context.context_class_type.type).type
+			c := context.real_type (qualifier).associated_class_type (context.context_class_type.type).type
 				-- Generate call to feature that will give the type we want to create.
 			il_generator.generate_type_feature_call_on_type (c.associated_class.anchored_features.item (routine_id), c)
 		end
@@ -252,17 +274,17 @@ feature -- Byte code generation
 		local
 			rout_info: ROUT_INFO
 		do
-			if qualifier.associated_class.is_precompiled then
+			if qualifier_class.is_precompiled then
 				ba.append (Bc_pqlike)
 				qualifier_creation.make_byte_code (ba)
-				ba.append_type_id (qualifier.static_type_id (context.context_class_type.type))
+				ba.append_type_id (qualifier_static_type_id)
 				rout_info := System.rout_info_table.item (routine_id)
 				ba.append_integer (rout_info.origin)
 				ba.append_integer (rout_info.offset)
 			else
 				ba.append (Bc_qlike)
 				qualifier_creation.make_byte_code (ba)
-				ba.append_type_id (qualifier.static_type_id (context.context_class_type.type))
+				ba.append_type_id (qualifier_static_type_id)
 				ba.append_integer (feature_id)
 			end
 		end
@@ -276,7 +298,8 @@ feature -- Genericity
 		do
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
-				Result := table.has_one_type and then table.first.type.deep_actual_type.is_explicit
+				Result := table.has_one_type and then
+					table.first.type.instantiated_in (qualifier).deep_actual_type.is_explicit
 			else
 				Result := False
 			end
@@ -285,8 +308,13 @@ feature -- Genericity
 	generate_gen_type_conversion (a_level: NATURAL)
 			-- <Precursor>
 		do
-			qualifier_creation.generate_gen_type_conversion (a_level + 1)
-			Precursor (a_level)
+			if attached type_to_create then
+					-- The type does not depend on the qualifier.
+				Precursor (a_level)
+			else
+					-- The type is computed using qualifier.
+				qualifier_creation.generate_gen_type_conversion (a_level + 1)
+			end
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode: BOOLEAN)
@@ -309,7 +337,7 @@ feature -- Genericity
 					buffer.put_character (',')
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					l_type := table.first.type.deep_actual_type
+					l_type := table.first.type.instantiated_in (qualifier).deep_actual_type
 
 					if l_type.has_generics or l_type.is_formal then
 						l_type.generate_cid (buffer, final_mode, False, context.context_class_type.type)
@@ -342,10 +370,10 @@ feature -- Genericity
 			else
 				if
 					Compilation_modes.is_precompiling or
-					qualifier.associated_class.is_precompiled
+					qualifier_class.is_precompiled
 				then
 					buffer.put_string ("RTWPCTT(")
-					buffer.put_static_type_id (qualifier.static_type_id (context.context_class_type.type))
+					buffer.put_static_type_id (qualifier_static_type_id)
 					buffer.put_string ({C_CONST}.comma_space)
 					rout_info := System.rout_info_table.item (routine_id)
 					buffer.put_class_id (rout_info.origin)
@@ -353,7 +381,7 @@ feature -- Genericity
 					buffer.put_integer (rout_info.offset)
 				else
 					buffer.put_string ("RTWCTT(")
-					buffer.put_static_type_id (qualifier.static_type_id (context.context_class_type.type))
+					buffer.put_static_type_id (qualifier_static_type_id)
 					buffer.put_string ({C_CONST}.comma_space)
 					buffer.put_integer (feature_id)
 				end
@@ -386,7 +414,7 @@ feature -- Genericity
 					dummy := idx_cnt.next
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					l_type := table.first.type.deep_actual_type
+					l_type := table.first.type.instantiated_in (qualifier).deep_actual_type
 
 					if l_type.has_generics or l_type.is_formal then
 						l_type.generate_cid_array (buffer,
@@ -425,7 +453,7 @@ feature -- Genericity
 					dummy := idx_cnt.next
 					is_optimized := True
 				elseif table.has_one_type then
-					l_type := table.first.type.deep_actual_type
+					l_type := table.first.type.instantiated_in (qualifier).deep_actual_type
 					if l_type.has_generics or else l_type.is_formal then
 						l_type.generate_cid_init (buffer, final_mode, False, idx_cnt, context.context_class_type.type, a_level)
 					else
@@ -454,17 +482,17 @@ feature -- Genericity
 		local
 			rout_info: ROUT_INFO
 		do
-			if qualifier.associated_class.is_precompiled then
+			if qualifier_class.is_precompiled then
 				ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.qualified_pfeature_type)
-				qualifier_creation.make_type_byte_code (ba)
-				ba.append_type_id (qualifier.static_type_id (context.context_class_type.type))
+				qualifier.make_full_type_byte_code (ba, context.context_class_type.type)
+				ba.append_type_id (qualifier_static_type_id)
 				rout_info := System.rout_info_table.item (routine_id)
 				ba.append_integer (rout_info.origin)
 				ba.append_integer (rout_info.offset)
 			else
 				ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.qualified_feature_type)
-				qualifier_creation.make_type_byte_code (ba)
-				ba.append_type_id (qualifier.static_type_id (context.context_class_type.type))
+				qualifier.make_full_type_byte_code (ba, context.context_class_type.type)
+				ba.append_type_id (qualifier_static_type_id)
 				ba.append_integer (feature_id)
 			end
 		end
@@ -476,7 +504,7 @@ feature -- Genericity
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
 				if table.has_one_type then
-					Result ?= table.first.type.deep_actual_type
+					Result ?= table.first.type.instantiated_in (qualifier).deep_actual_type
 				end
 			end
 		end

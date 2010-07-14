@@ -236,7 +236,7 @@ feature -- Access
 	Bc_pqlike:			CHARACTER = '%/162/';
 
 		-- Unused opcode
-	Bc_notused_163:		CHARACTER = '%/163/';
+	Bc_guard:			CHARACTER = '%/163/';
 	Bc_notused_164:		CHARACTER = '%/164/';
 	Bc_notused_165:		CHARACTER = '%/165/';
 	Bc_notused_166:		CHARACTER = '%/166/';
@@ -245,6 +245,10 @@ feature -- Access
 		-- Manifest tuple
 	Bc_tuple:				CHARACTER = '%/168/'
 	Bc_ptuple:				CHARACTER = '%/169/';
+
+		-- Unicode
+	Bc_string32:		CHARACTER = '%/170/';
+	Bc_once_string32:	CHARACTER = '%/171/';
 
 note
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"

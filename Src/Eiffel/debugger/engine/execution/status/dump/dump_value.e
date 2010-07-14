@@ -48,6 +48,13 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ENCODING_CONVERTER
+		export
+			{NONE} all
+		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create {DUMP_VALUE_FACTORY}
 	make_empty
 
@@ -112,6 +119,18 @@ feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 		do
 			value_string := value
 			type := Type_manifest_string
+			dynamic_class := dtype
+		ensure
+			type /= Type_unknown
+		end
+
+	set_manifest_string_32_value (value: STRING; dtype: CLASS_C)
+			-- make a string item initialized to `value'
+		require
+			value_attached: value /= Void
+		do
+			value_string := value
+			type := type_manifest_string_32
 			dynamic_class := dtype
 		ensure
 			type /= Type_unknown
@@ -265,6 +284,8 @@ feature -- Status report
 		do
 			if type = Type_manifest_string then
 				Result := True
+			elseif type = Type_manifest_string_32 then
+				Result := True
 			elseif type = Type_string_dotnet then
 				Result := not is_void
 			elseif is_type_object and not is_void then
@@ -312,11 +333,11 @@ feature -- Status report
 			debug ("debugger_interface")
 				io.put_string ("Finding output value of dump_value%N")
 			end
-			if type = Type_manifest_string then
+			if type = Type_manifest_string or type = Type_manifest_string_32 then
 				debug ("debugger_interface")
 					io.put_string ("Finding output value of constant string")
 				end
-				Result := Character_routines.eiffel_string_32 (value_string)
+				Result := Character_routines.eiffel_string_32 (encoding_converter.utf8_to_utf32 (value_string))
 --			elseif type = Type_string_dotnet and then value_string_dotnet = Void then
 					--| Handled by DUMP_VALUE_DOTNET
 			else
@@ -356,7 +377,7 @@ feature -- Status report
 			--| `output_value' = "This is a string"
 		do
 			Result := output_value (True).twin
-			if type /= Type_manifest_string and has_formatted_output then
+			if (type /= Type_manifest_string or type /= Type_manifest_string_32) and has_formatted_output then
 				if attached formatted_output as fo then
 					Result.append_character (' ')
 					Result.append_character ('=')
@@ -546,10 +567,11 @@ feature {DUMP_VALUE} -- string_representation Implementation
 							--| Take name of `area' and `count' from STRING or STRING_32 in descendant version.
 							--| since STRING.area and STRING_32.area are not inherited from STRING_GENERAL
 							--| we have to test the 2 cases : STRING and STRING_32
+							--| FIXME: Handle Uniocode
 						f := sc.feature_with_name (area_name).ancestor_version (dynamic_class)
-						l_area_name := f.name
+						l_area_name := f.name_32.as_string_8
 						f := sc.feature_with_name (count_name).ancestor_version (dynamic_class)
-						l_count_name := f.name
+						l_count_name := f.name_32.as_string_8
 					end
 				end
 			end
@@ -760,15 +782,20 @@ feature -- Action
 			is_classic_system
 		local
 			value_string_c: ANY
+			s8: STRING_8
+			s32: STRING_32
 		do
 			last_classic_send_value_succeed := True
 			inspect (type)
 			when Type_manifest_string then
-				debug ("refactor_fixme")
-					fixme("We should handle STRING_32 on the runtime side of the debuger")
-				end
-				value_string_c := value_string.as_string_8.to_c
-				send_string_value ($value_string_c)
+				s8 := value_string.as_string_8
+				value_string_c := s8.to_c
+				send_string_value ($value_string_c, s8.count)
+			when type_manifest_string_32 then
+				s32 := encoding_converter.utf8_to_utf32 (value_string)
+				value_string_c := s32.to_c
+					-- Send UTF-32 directly.
+				send_string_32_value ($value_string_c, s32.count * {PLATFORM}.character_32_bytes)
 			when Type_object, Type_expanded_object then
 				if attached value_address as add then
 					if add.has_offset then
@@ -856,6 +883,16 @@ feature -- Access
 					Result.append_character ('%"')
 				else
 					Result := value_string.as_string_8.twin
+				end
+			when Type_manifest_string_32 then
+				s := encoding_converter.utf8_to_utf32 (value_string)
+				if format_result then
+					create Result.make (s.count + 2)
+					Result.append_character ('%"')
+					Result.append (s)
+					Result.append_character ('%"')
+				else
+					Result := s.twin
 				end
 			when Type_string_dotnet , Type_object, type_expanded_object then
 				if value_address /= Void and then not value_address.is_void then
@@ -956,7 +993,7 @@ feature -- Access
 			-- Void if `is_void' or if `Current' does not represent an object.
 		do
 			inspect type
-			when type_object, type_string_dotnet, type_manifest_string then
+			when type_object, type_string_dotnet, type_manifest_string, type_manifest_string_32 then
 				Result := value_address
 			when type_expanded_object then
 				Result := value_address
@@ -990,6 +1027,7 @@ feature -- Access
 			Result := not is_type_object
 				and not is_exception
 				and type /= Type_manifest_string
+				and type /= Type_manifest_string_32
 				and type /= Type_string_dotnet
 		end
 
@@ -1020,7 +1058,7 @@ feature {DBG_EVALUATOR} -- Convertor
 	manifest_string_to_dump_value_object: DUMP_VALUE
 			-- Current manifest string converted to an instance of STRING.
 		require
-			is_type_manifest_string
+			is_type_manifest_string_8
 		local
 			s: STRING_8
 		do
@@ -1036,10 +1074,29 @@ feature {DBG_EVALUATOR} -- Convertor
 			end
 		end
 
+	manifest_string_32_to_dump_value_object: DUMP_VALUE
+			-- Current manifest string converted to an instance of STRING_32.
+		require
+			is_type_manifest_string_32
+		local
+			s: STRING_8
+		do
+			debug ("refactor_fixme")
+				fixme ("This is a temporary safe solution for 6.1, later we'll need to redesign part of debugger's data+evaluator")
+			end
+			s := value_string
+			if s /= Void then
+				Result := debugger_manager.expression_evaluation ("(%"" + s + "%").twin")
+			end
+			if Result = Void then
+				Result := debugger_manager.dump_value_factory.new_void_value (debugger_manager.compiler_data.string_32_class_c)
+			end
+		end
+
 feature -- Access: internal data
 
 	value_address	: like address -- string standing for the address of the object if type=Type_object
-	value_string    : STRING_32 -- String value
+	value_string    : STRING_8 -- String value, in UTF-8
 	value_exception : EXCEPTION_DEBUG_VALUE
 	procedure_return_value: PROCEDURE_RETURN_DEBUG_VALUE
 
@@ -1061,7 +1118,9 @@ feature -- Access: internal data
 			Result := type = type_expanded_object
 		end
 
-	is_type_manifest_string: BOOLEAN do Result := type = Type_manifest_string end
+	is_type_manifest_string: BOOLEAN do Result := type = Type_manifest_string or type = Type_manifest_string_32 end
+	is_type_manifest_string_8: BOOLEAN do Result := type = Type_manifest_string end
+	is_type_manifest_string_32: BOOLEAN do Result := type = Type_manifest_string_32 end
 --	is_type_expanded: BOOLEAN is do Result := type = Type_expanded_object end
 	is_type_exception: BOOLEAN do Result := type = Type_exception end
 	is_type_procedure_return: BOOLEAN do Result := type = Type_procedure_return end

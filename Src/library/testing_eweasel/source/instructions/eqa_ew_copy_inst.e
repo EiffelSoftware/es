@@ -1,9 +1,10 @@
 note
-	description: "[
+	description:
+		"[
 					Ancestor class for all copy instructions
 					
 					For old version, please check {EW_COPY_INST}
-																						]"
+		]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "Eiffel test"
@@ -65,40 +66,38 @@ feature -- Commannd
 			-- instructions of `test'.
 			-- Set `execute_ok' to indicate whether successful.
 		local
+			l_src_name: READABLE_STRING_8
 			l_dest_name: STRING
 			l_src, l_dir, l_dest: like new_file
 			l_before_date, l_after_date: INTEGER
 			l_orig_date, l_final_date: INTEGER
-			l_file_system: EQA_FILE_SYSTEM
-			l_error: STRING
-			l_source_dir: detachable STRING
 		do
 			dest_directory := test_set.environment.substitute_recursive (dest_directory)
 			source_file := test_set.environment.substitute_recursive (source_file)
 
 			execute_ok := False
 
-			l_source_dir := test_set.environment.source_directory
-			check attached l_source_dir end -- Implied by environment values have been set before executing test cases
-			l_dest_name := string_util.file_path (<<l_source_dir,source_file>>)
-
-			create l_file_system.make (test_set.environment)
-
-			l_src := new_file (l_dest_name)
+			if use_source_environment_variable then
+				l_src_name := test_set.file_system.build_source_path (<< source_file >>)
+			else
+				l_src_name := source_file
+			end
+			l_dest_name := test_set.file_system.build_path (dest_directory, << dest_file >>)
+			l_src := new_file (l_src_name)
 			ensure_dir_exists (dest_directory)
 			l_dir := new_file (dest_directory)
 
 			if (l_src.exists and then l_src.is_plain) and
 			   (l_dir.exists and then l_dir.is_directory) then
 
-				l_dest := new_file (string_util.file_path (<<dest_directory, dest_file>>))
+				l_dest := new_file (l_dest_name)
 				if l_dest.exists then
 					l_orig_date := l_dest.date
 				else
 					l_orig_date := 0
 				end
 				if is_fast then
-					l_file_system.copy_file (l_src, test_set.environment, l_dest, substitute)
+					copy_file (l_src, l_dest)
 					if l_orig_date /= 0 then
 						l_dest.set_date (l_orig_date + 1)
 					end
@@ -113,48 +112,46 @@ feature -- Commannd
 
 					l_after_date := os.current_time_in_seconds
 
-					l_file_system.copy_file (l_src, test_set.environment, l_dest, substitute)
+					copy_file (l_src, l_dest)
 
 					l_final_date := l_dest.date
 
 					if l_final_date <= l_orig_date then
 						-- Work around possible Linux bug
 						if l_after_date <= l_orig_date then
-							l_error := "ERROR: After date " + l_after_date.out + " not greater than original date " + l_orig_date.out
-							assert.assert (l_error, False)
+							failure_explanation := "ERROR: After date " + l_after_date.out + " not greater than original date " + l_orig_date.out
+							print (failure_explanation)
+							a_test.assert (exception_tag, False)
 						else
 							l_dest.set_date (l_after_date)
 							l_final_date := l_dest.date
 							if l_final_date /= l_after_date then
-								l_error := "ERROR: failed to set dest modification date to " + l_after_date.out
-								assert.assert (l_error, False)
+								failure_explanation := "ERROR: failed to set dest modification date to " + l_after_date.out
+								print (failure_explanation)
+								a_test.assert (exception_tag, False)
 							end
 						end
 					end
 
-					check_dates (test_set.e_compile_start_time, l_orig_date, l_final_date, l_before_date, l_after_date, l_dest_name)
+					check_dates (test_set, test_set.e_compile_start_time, l_orig_date, l_final_date, l_before_date, l_after_date, l_dest_name)
 
 					test_set.unset_copy_wait
 				end
 				execute_ok := True
 			elseif not l_src.exists then
-				l_error := "source file not found"
-				failure_explanation := l_error
-				assert.assert (l_error, False)
+				failure_explanation := "source file not found"
 			elseif not l_src.is_plain then
-				l_error := "source file not a plain file"
-				failure_explanation := l_error
-				assert.assert (l_error, False)
+				failure_explanation := "source file not a plain file"
 			elseif not l_dir.exists then
-				l_error := "destination directory not found"
-				failure_explanation := l_error
-				assert.assert (l_error, False)
+				failure_explanation := "destination directory not found"
 			elseif not l_dir.is_directory then
-				l_error := "destination directory not a directory"
-				failure_explanation := l_error
-				assert.assert (l_error, False)
+				failure_explanation := "destination directory not a directory"
 			end
 
+			if not execute_ok then
+				print (failure_explanation)
+				a_test.assert (exception_tag, False)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -188,13 +185,53 @@ feature {NONE} -- Implementation
 			retry
 		end
 
+	copy_file (src: like new_file; dest: like new_file)
+			-- Append lines of file `src', with environment
+			-- variables substituted according to `env' (but
+			-- only if `substitute' is true) to
+			-- file `dest'.
+		require
+			source_not_void: src /= Void;
+			destination_not_void: dest /= Void;
+			source_is_closed: src.is_closed;
+			destination_is_closed: dest.is_closed;
+		local
+			line: STRING;
+			l_env: EQA_ENVIRONMENT
+		do
+			from
+				l_env := test_set.environment
+				src.open_read;
+				dest.open_write;
+			until
+					-- src.readable is required or else src.read_line will throw an exception
+				src.end_of_file or not src.readable
+			loop
+				src.read_line;
+				if substitute then
+					line := l_env.substitute (src.last_string);
+				else
+					line := src.last_string;
+				end;
+				if not src.end_of_file then
+					dest.put_string (line);
+					dest.new_line;
+				elseif not line.is_empty then
+					dest.put_string (line);
+				end
+			end;
+			src.close;
+			dest.flush;
+			dest.close;
+		end;
+
 	is_fast: BOOLEAN
 			-- Should "speed" mode be used?
 		do
 			Result := test_set.environment.get ({EQA_EW_PREDEFINED_VARIABLES}.Eweasel_fast_name) /= Void
 		end
 
-	check_dates (a_start_date, a_orig_date, a_final_date, a_before_date, a_after_date: INTEGER a_fname: STRING)
+	check_dates (a_test: EQA_EW_SYSTEM_TEST_SET; a_start_date, a_orig_date, a_final_date, a_before_date, a_after_date: INTEGER a_fname: STRING)
 			-- Check if date correct
 		local
 			l_error: STRING
@@ -202,7 +239,8 @@ feature {NONE} -- Implementation
 			if a_final_date <= a_orig_date then
 				l_error := "ERROR: final date " + a_final_date.out + " not greater than original date " + a_orig_date.out + " for file " + a_fname
 				l_error.append ("Compile start = " + a_start_date.out + " Before = " + a_before_date.out + " After = " + a_after_date.out)
-				assert.assert (l_error, False)
+				print (l_error)
+				a_test.assert (exception_tag, False)
 			end
 		end
 
@@ -214,6 +252,17 @@ feature {NONE} -- Implementation
 
 	source_file: STRING
 			-- Name of source file (always in source directory)
+
+	use_source_environment_variable: BOOLEAN
+			-- Do we use `source_dir_name' for copy?
+		do
+			Result := True
+		end
+
+feature {NONE} -- Constants
+
+	exception_tag: STRING = "Invalid file copy"
+			-- Tag for an exception thrown in `Current'
 
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"

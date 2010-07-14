@@ -49,6 +49,8 @@ inherit
 			all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 
@@ -191,11 +193,17 @@ feature {AST_EIFFEL} -- Visitor: routine body
 
 	process_once_as (a: ONCE_AS)
 		do
-				-- Attributes set by a once feature are not initialized,
-				-- because the next call to it will not execute the body.
-			attribute_initialization.keeper.enter_realm
-			Precursor (a)
-			attribute_initialization.keeper.leave_optional_realm
+			if a.has_key_object then
+					-- Since this is once-per-object and a creation of the object is processed,
+					-- it should be safe to process the routine as normal one.
+				Precursor (a)
+			else
+					-- Attributes set by a once feature are not initialized,
+					-- because the next call to it will not execute the body.
+				attribute_initialization.keeper.enter_realm
+				Precursor (a)
+				attribute_initialization.keeper.leave_optional_realm
+			end
 		end
 
 feature {AST_EIFFEL} -- Visitor: access to features
@@ -501,7 +509,7 @@ feature {NONE} -- Access
 			-- Bodies that are being processed
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

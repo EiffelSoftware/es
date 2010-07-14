@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ENCODING_CONVERTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -62,6 +67,8 @@ feature -- Properties
 	class_id: INTEGER;
 			-- Class ID of the class where the anchor is referenced
 
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Properties
+
 	feature_name: STRING
 			-- Final name of anchor.
 		require
@@ -98,15 +105,24 @@ feature -- Access
 
 	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
-		local
-			other_like_feat: LIKE_FEATURE
 		do
-			other_like_feat ?= other
-			if other_like_feat /= Void then
-				Result :=
-					other_like_feat.routine_id = routine_id and then
-					other_like_feat.feature_id = feature_id and then
-					has_same_attachment_marks (other_like_feat)
+			if
+				attached {LIKE_FEATURE} other as o and then
+				o.routine_id = routine_id and then
+				o.feature_id = feature_id and then
+				has_same_attachment_marks (o)
+			then
+					-- Compare computed actual types as otherwise they may be left
+					-- from the previous compilation in an invalid state.
+				if attached actual_type as a then
+					Result :=
+						is_valid and then
+						o.is_valid and then
+						attached o.actual_type as oa and then
+						a.same_as (oa)
+				else
+					Result := not attached o.actual_type
+				end
 			end
 		end
 
@@ -184,12 +200,12 @@ feature -- Output
 			st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_like_keyword, Void)
 			st.add_space
 			if ec.has_feature_table then
-				l_feat := ec.feature_with_name (feature_name)
+				l_feat := ec.feature_with_name (encoding_converter.utf8_to_utf32 (feature_name))
 			end
 			if l_feat /= Void then
-				st.add_feature (l_feat, feature_name)
+				st.add_feature (l_feat, encoding_converter.utf8_to_utf32 (feature_name))
 			else
-				st.add_feature_name (feature_name, ec)
+				st.add_feature_name (encoding_converter.utf8_to_utf32 (feature_name), ec)
 			end
 			st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_r_bracket)
 			st.add_space

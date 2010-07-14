@@ -52,7 +52,7 @@ feature -- Initlization
 			create {EV_CELL_IMP} implementation_upper_zone.make -- Make void safe compiler happy, not used
 			default_create
 			init
-			
+
 			notebook.set_tab_position ({SD_NOTEBOOK}.tab_top)
 			notebook.normal_max_actions.extend (agent on_normal_max_window)
 			notebook.minimize_actions.extend (agent on_minimize)
@@ -74,7 +74,7 @@ feature -- Initlization
 
 feature -- Redefine
 
-	on_focus_in (a_content: SD_CONTENT)
+	on_focus_in (a_content: detachable SD_CONTENT)
 			-- <Precursor>
 		do
 			Precursor {SD_DOCKING_ZONE} (a_content)
@@ -171,6 +171,14 @@ feature -- Redefine
 			end
 		end
 
+feature -- Query
+
+	is_normal_max_enabled: BOOLEAN
+			-- If normal max zone mechnism enabled?
+		do
+			Result := notebook.is_normal_max_button_enabled
+		end
+
 feature {SD_DOCKING_STATE} -- Query
 
 	notebook: SD_NOTEBOOK_UPPER
@@ -185,13 +193,16 @@ feature {NONE} -- Implementation
 		end
 
 	on_normal_max_window
+			-- <Precursor>
 		do
-			-- We need to remove the minimized state when either
-			-- selecting `restore' or `maximize'.
-			if is_minimized then
-				recover_normal_size_from_minimize
+			if is_normal_max_enabled then
+				-- We need to remove the minimized state when either
+				-- selecting `restore' or `maximize'.
+				if is_minimized then
+					recover_normal_size_from_minimize
+				end
+				Precursor
 			end
-			Precursor
 		end
 
 invariant

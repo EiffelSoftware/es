@@ -45,6 +45,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 
@@ -1458,10 +1460,11 @@ feature -- Once manifest string manipulation
 		do
 		end
 
-	generate_once_string (number: INTEGER; value: STRING; is_cil_string: BOOLEAN)
+	generate_once_string (number: INTEGER; value: STRING; type: INTEGER)
 			-- Generate code for once string in a current routine with the given
-			-- `number' and `value' using CIL string type if `is_cil_string' is `true'
-			-- or Eiffel string type otherwise.
+			-- `number' and `value' using CIL string type if `type' is `string_type_cil',
+			-- STRING_8 if `type' is `string_type_string' or STRING_32 if `type' is 
+			-- string_type_string_32.
 		do
 		end
 
@@ -1912,6 +1915,17 @@ feature -- Constants generation
 		do
 		end
 
+	put_manifest_string_32_from_system_string_local (n: INTEGER)
+			-- Create a manifest string by using local at position `n' which
+			-- should be of type SYSTEM_STRING.
+		do
+		end
+
+	put_manifest_string_32 (s: STRING)
+			-- Put `s' on IL stack.
+		do
+		end
+
 	put_system_string (s: STRING)
 			-- Put instance of platform String object corresponding to `s' on IL stack.
 		do
@@ -1921,6 +1935,12 @@ feature -- Constants generation
 				print ("%"")
 			end
 			current_method.code.append_push_manifest_string (s)
+		end
+
+	put_system_string_32 (s: STRING)
+			-- Put `System.String' object corresponding to `s' on IL stack.
+			-- `s' is in UTF-8 encoding.
+		do
 		end
 
 	put_numeric_integer_constant (type: TYPE_A; i: INTEGER)

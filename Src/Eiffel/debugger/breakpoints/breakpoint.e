@@ -106,7 +106,7 @@ feature -- Output
 			end
 			Result.append_string ("}.")
 			if rout /= Void then
-				Result.append_string (rout.name)
+				Result.append_string (rout.name_32)
 			else
 				Result.append_string ("???")
 			end
@@ -178,7 +178,7 @@ feature -- Tags access
 		do
 			ts := tags
 			if tags /= Void and then not tags.is_empty then
-				create Result.make (1, tags.count)
+				create Result.make_filled ("", 1, tags.count)
 				from
 					ts.start
 					i := 1
@@ -262,7 +262,7 @@ feature -- Tags access
 						Result.append (c.name_in_upper)
 						Result.append_character ('}')
 						Result.append_character ('.')
-						Result.append (r.name)
+						Result.append (r.name_32)
 						Result.append_character ('@')
 						Result.append_integer (location.breakable_line_number)
 						g := c.group
@@ -768,7 +768,7 @@ feature {NONE} -- Private constants
 	Bench_breakpoint_disabled: INTEGER 		= 2
 
 ;note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

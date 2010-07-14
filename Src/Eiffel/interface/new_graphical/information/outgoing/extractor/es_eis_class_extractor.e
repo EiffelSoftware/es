@@ -122,6 +122,7 @@ feature {NONE} -- Access
 
 	location: INTEGER
 			-- Location in the text where including EIS entries are calculated
+			-- UTF-8 byte position.
 
 	eis_class_id: detachable STRING
 			-- Class ID for EIS entry.
@@ -214,7 +215,7 @@ feature {NONE} -- Basic operations
 								eis_feature_id := id_solution.id_of_feature_ast (l_class, l_feature)
 								if location >= l_feature.start_location.position  and then location <= l_feature.end_location.position then
 										-- Set feature name, for URI replacement
-									l_feature_name := l_feature.feature_name.name
+									l_feature_name := l_feature.feature_name.name_8
 									if attached l_feature.indexes as lt_clause1 then
 										extract_enties_from_index_clause (lt_clause1, True)
 									end
@@ -299,7 +300,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

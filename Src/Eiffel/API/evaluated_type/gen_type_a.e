@@ -16,7 +16,7 @@ inherit
 			has_like, has_like_argument, has_like_current, is_loose, duplicate, good_generics,
 			error_generics, check_constraints, has_formal_generic, instantiated_in,
 			has_expanded, internal_is_valid_for_class, expanded_deferred, valid_expanded_creation,
-			same_as, is_equivalent, description, instantiated_description, is_explicit,
+			same_as, is_equivalent, description, description_with_detachable_type, instantiated_description, is_explicit,
 			deep_actual_type, context_free_type, instantiation_in, has_actual,
 			actual_argument_type, update_dependance, hash_code,
 			is_full_named_type, process, evaluated_type_in_descendant,
@@ -27,6 +27,8 @@ inherit
 			is_valid_generic_derivation, skeleton_adapted_in, dispatch_anchors,
 			check_labels, duplicate_for_instantiation, is_computable_using_ancestors
 		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
 
 create
 	make
@@ -171,6 +173,19 @@ feature -- Access
 			if is_loose then
 				create gen_desc
 				gen_desc.set_type_i (Current)
+				Result := gen_desc
+			else
+				Result := Precursor {CL_TYPE_A}
+			end
+		end
+
+	description_with_detachable_type: ATTR_DESC
+		local
+			gen_desc: GENERIC_DESC
+		do
+			if is_loose then
+				create gen_desc
+				gen_desc.set_type_i (as_detachable_type)
 				Result := gen_desc
 			else
 				Result := Precursor {CL_TYPE_A}

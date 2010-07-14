@@ -951,26 +951,31 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 /* Macros for assertion checking:
  *  RTCT(t,x) next assertion has tag 't' and is of type 'x'
- *  RTCS(x) new stack frame of type 'x'
  *  RTCK signals successful end of last assertion check
  *  RTJB goto body 
  *  RTCF signals failure during last assertion check
  *  RTTE tests assertion 
  *	RTIT(t,x) next invariant assertion has tag 't' and is of type 'x'
- *	RTIS(x) new stack invariant frame of type 'x'
  *  RTVR(x,y) check if call of feature 'y' on 'x' is done on a void reference
  */
-#define RTCT(t,x) exasrt(MTC t, x)
-#define RTCS(x) exasrt(MTC (EIF_REFERENCE) 0, x)
-#define RTCK in_assertion = 0; expop(&eif_stack);
-#define RTCF in_assertion = 0; eviol();
-#define RTIT(t,x) exinv(MTC t, x)
-#define RTIS(x) exinv(MTC (EIF_REFERENCE) 0, x)
+#define RTCT0(t,x) exasrt(t, x)
+#define RTIT0(t,x) exinv(t, x)
+#define RTCK0 expop(&eif_stack)
+#define RTCF0 eviol()
+
+#define RTCT(t,x) RTCT0(t,x); in_assertion = ~0
+#define RTIT(t,x) RTIT0(t,x); in_assertion = ~0
+#define RTCK in_assertion = 0; RTCK0
+#define RTCF in_assertion = 0; RTCF0
 #define RTTE(x,y) if (!(x)) goto y 
 #define RTJB goto body
 #ifdef WORKBENCH
 #define RTVR(x,y) if ((x) == (EIF_REFERENCE) 0) eraise(y, EN_VOID)
 #endif
+
+/* Obsolete for backward compatibility */
+#define RTCS(x) RTCT(NULL,x)
+#define RTIS(x) RTIT(NULL,x)
 
 
 
@@ -1183,6 +1188,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  *  RTMS(s) creates an Eiffel string from a C manifest string s.
  *  RTMS_EX(s,c) creates an Eiffel string from a C manifest string s of length c.
  *  RTMS_EX_H(s,c,h) creates an Eiffel string from a C manifest string s of length c and hash-code h.
+ *  RTMS32_EX_H(s,c,h) creates an STRING_32 from a C manifest string s of length c and hash-code h.
  *  RTMS_EX_O(s,c,h) creates an Eiffel string in heap for old objects from a C manifest string s of length c and hash-code h.
  *  RTOMS(b,n) a value of a once manifest string object for routine body index `b' and number `n'.
  *  RTDOMS(b,m) declares a field to store once manifest string objects for routine body index `b' and number `n' of such objects.
@@ -1201,6 +1207,11 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define	RTMS_EX(s,c)	makestr_with_hash(s,c,0)
 #define	RTMS_EX_H(s,c,h)	makestr_with_hash(s,c,h)
 #define RTMS_EX_O(s,c,h)	makestr_with_hash_as_old(s,c,h)
+
+#define	RTMS32(s)		makestr32_with_hash(s,strlen(s),0)
+#define	RTMS32_EX(s,c)	makestr32_with_hash(s,c,0)
+#define	RTMS32_EX_H(s,c,h)	makestr32_with_hash(s,c,h)
+#define RTMS32_EX_O(s,c,h)	makestr32_with_hash_as_old(s,c,h)
 
 #if defined(WORKBENCH) || defined(EIF_THREADS)
 #define RTOMS(b,n)	(EIF_oms[(b)][(n)])
@@ -1230,6 +1241,19 @@ RT_LNK void eif_exit_eiffel_code(void);
 			} \
 			r = rs; \
 		}
+#define RTCOMS32(r,b,n,s,c,h) \
+		{ \
+			EIF_REFERENCE * rsp; \
+			EIF_REFERENCE rs; \
+			rsp = &RTOMS(b,n); \
+			rs = *rsp; \
+			if (!rs) { \
+				register_oms (rsp); \
+				rs = RTMS32_EX_O(s,c,h); \
+				*rsp = rs; \
+			} \
+			r = rs; \
+		}
 #else
 #define RTOMS(b,n)	CAT2(EIF_oms_,b) [n]
 #define RTDOMS(b,m)	EIF_REFERENCE RTOMS(b,m)
@@ -1241,6 +1265,15 @@ RT_LNK void eif_exit_eiffel_code(void);
 			if (!(*rsp)) { \
 				register_oms (rsp); \
 				*rsp = RTMS_EX_O(s,c,h); \
+			} \
+		}
+#define RTPOMS32(b,n,s,c,h) \
+		{ \
+			EIF_REFERENCE * rsp; \
+			rsp = &RTOMS(b,n); \
+			if (!(*rsp)) { \
+				register_oms (rsp); \
+				*rsp = RTMS32_EX_O(s,c,h); \
 			} \
 		}
 #endif

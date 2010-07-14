@@ -314,7 +314,7 @@ feature -- Action
 				end
 				parser.set_is_ignoring_attachment_marks (lace_class.is_void_unsafe)
 				Inst_context.set_group (cluster)
-				parser.parse_class (file, Current)
+				parser.internal_parse_class (file, Current)
 				if l_error_level = error_handler.error_level then
 					Result := parser.root_node
 					check no_error_implies_not_void: Result /= Void end
@@ -2082,6 +2082,8 @@ feature -- Inline agents
 				Result.inline_agent_nr = a_inline_agent_nr
 		end
 
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Inline agents
+
 	api_inline_agent_of_name (n: STRING): E_FEATURE
 			-- API feature for the inline agent named by `n'
 		require
@@ -2149,7 +2151,10 @@ feature {NONE} -- Backup implementation
 					l_dir_name.extend (l_over.item.group.target.system.uuid.out)
 					create l_dir.make (l_dir_name)
 					if not l_dir.exists then
+							-- We need to create the directory.
 						l_dir.create_directory
+							-- But also to copy the config files.
+						adapt_and_copy_configuration (l_over.item.group.target.system, workbench.backup_subdirectory)
 					end
 					copy_class (l_over.item, l_dir_name)
 					l_over.forth

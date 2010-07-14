@@ -31,6 +31,8 @@ inherit
 	SHARED_SERVER
 	COMPILER_EXPORTER
 	REFACTORING_HELPER
+	INTERNAL_COMPILER_STRING_EXPORTER
+	SHARED_ENCODING_CONVERTER
 
 create
 	make, make_from_context
@@ -647,7 +649,7 @@ feature {NONE} -- Access: once manifest strings
 			-- Number of once manifest strings to be allocated for the given routine body index;
 			-- actual for the whole system
 
-	once_manifest_string_table: HASH_TABLE [ARRAY [STRING], INTEGER]
+	once_manifest_string_table: HASH_TABLE [ARRAY [like once_manifest_string_value], INTEGER]
 			-- Once manifest strings to be created for the given routine body index;
 			-- actual for the current class
 
@@ -669,13 +671,13 @@ feature -- Access: once manifest strings
 			non_negative_result: Result >= 0
 		end
 
-	once_manifest_string_value (number: INTEGER): STRING
+	once_manifest_string_value (number: INTEGER): TUPLE [value: STRING; is_string_32: BOOLEAN]
 			-- Value of once manifest string `number' in current routine body
 		require
 			is_static_system_data_safe: is_static_system_data_safe
 			valid_number: number > 0 and then number <= once_manifest_string_count
 		local
-			routine_once_manifest_strings: ARRAY [STRING]
+			routine_once_manifest_strings: ARRAY [TUPLE [value: STRING; is_string_32: BOOLEAN]]
 		do
 			routine_once_manifest_strings := once_manifest_string_table.item (original_body_index)
 			if routine_once_manifest_strings /= Void then
@@ -795,10 +797,11 @@ feature -- Access: once manifest strings
 		local
 			buf: like buffer
 			class_once_manifest_strings: like once_manifest_string_table
-			routine_once_manifest_strings: ARRAY [STRING]
+			routine_once_manifest_strings: ARRAY [like once_manifest_string_value]
 			body_index: like original_body_index
 			i: INTEGER
-			value: STRING
+			value: like once_manifest_string_value
+			value_32: STRING_32
 		do
 			buf := buffer
 			class_once_manifest_strings := once_manifest_string_table
@@ -820,16 +823,33 @@ feature -- Access: once manifest strings
 							-- RTPOMS is the macro used to create and store once manifest string
 							-- provided that it is not created and stored before
 						buf.put_new_line
-						buf.put_string ("RTPOMS(")
+						if value.is_string_32 then
+							buf.put_string ("RTPOMS32(")
+						else
+							buf.put_string ("RTPOMS(")
+						end
 						buf.put_integer (body_index - 1)
 						buf.put_character (',')
 						buf.put_integer (i - 1)
 						buf.put_character (',')
-						buf.put_string_literal (value)
+						if value.is_string_32 then
+							value_32 := encoding_converter.utf8_to_utf32 (value.value)
+							buf.put_string_literal (encoding_converter.string_32_to_stream (value_32))
+						else
+							buf.put_string_literal (value.value)
+						end
 						buf.put_character (',')
-						buf.put_integer (value.count)
+						if value.is_string_32 then
+							buf.put_integer (value_32.count)
+						else
+							buf.put_integer (value.value.count)
+						end
 						buf.put_character(',')
-						buf.put_integer (value.hash_code)
+						if value.is_string_32 then
+							buf.put_integer (value_32.hash_code)
+						else
+							buf.put_integer (value.value.hash_code)
+						end
 						buf.put_character (')')
 						buf.put_character (';')
 					end
@@ -839,7 +859,7 @@ feature -- Access: once manifest strings
 			end
 		end
 
-	register_once_manifest_string (value: STRING; number: INTEGER)
+	register_once_manifest_string (value: STRING; is_string_32: BOOLEAN; number: INTEGER)
 			-- Register that current routine body has once manifest string
 			-- with the given `number' of the given `value'.
 		require
@@ -848,10 +868,11 @@ feature -- Access: once manifest strings
 			valid_number: number > 0 and number <= once_manifest_string_count
 			same_if_registered:
 				once_manifest_string_value (number) /= Void implies
-				once_manifest_string_value (number) = value
+				(once_manifest_string_value (number).value = value and then
+				once_manifest_string_value (number).is_string_32 = is_string_32)
 		local
 			index: like original_body_index
-			routine_once_manifest_strings: ARRAY [STRING]
+			routine_once_manifest_strings: ARRAY [like once_manifest_string_value]
 		do
 			index := original_body_index
 			routine_once_manifest_strings := once_manifest_string_table.item (index)
@@ -859,9 +880,11 @@ feature -- Access: once manifest strings
 				create routine_once_manifest_strings.make (1, once_manifest_string_count)
 				once_manifest_string_table.force (routine_once_manifest_strings, index)
 			end
-			routine_once_manifest_strings.put (value, number)
+			routine_once_manifest_strings.put ([value, is_string_32], number)
 		ensure
-			registered: once_manifest_string_value (number) = value
+			registered: (once_manifest_string_value (number).value = value and then
+						once_manifest_string_value (number).is_string_32 = is_string_32)
+
 		end
 
 feature {NONE} -- Setting: once manifest strings
@@ -920,7 +943,7 @@ feature -- Registers
 			valid_t: not t.is_void
 			is_workbench_mode: workbench_mode
 		do
-			create Result.make_with_level (t.level + (c_nb_types - 1))
+			create Result.make_with_level (t.level + c_nb_types)
 		ensure
 			Result_attached: Result /= Void
 		end
@@ -946,7 +969,7 @@ feature {REGISTER} -- Registers
 	register_name (t: INTEGER; n: INTEGER): STRING
 			-- Name of a temporary register number `n' of type `t'.
 		require
-			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
+			valid_t: 0 <= t and t < c_nb_types * 2
 			positive_n: n > 0
 		do
 			create Result.make (5)
@@ -957,7 +980,7 @@ feature {REGISTER} -- Registers
 	put_register_name (t: INTEGER; n: INTEGER; buf: like buffer)
 			-- Put name of a temporary register number `n' of type `t' into `buf'.
 		require
-			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
+			valid_t: 0 <= t and t < c_nb_types * 2
 			positive_n: n > 0
 			buf_attached: buf /= Void
 		do
@@ -968,13 +991,13 @@ feature {REGISTER} -- Registers
 	register_type (t: INTEGER): TYPE_C
 			-- Type of register identified by `t'.
 		require
-			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
+			valid_t: 0 <= t and t < c_nb_types * 2
 		local
 			i: INTEGER
 		do
 			i := t
 			if i >= c_nb_types then
-				i := i - (c_nb_types - 1)
+				i := i - c_nb_types
 			end
 			inspect i
 			when c_uint8 then
@@ -1034,27 +1057,27 @@ feature {NONE} -- Registers: implementation
 			Result.put ("tp", c_pointer)
 			Result.put ("tr", c_ref)
 				-- Registers for passing typed arguments.
-			Result.put ("ui1_", c_nb_types - 1 + c_int8)
-			Result.put ("ui2_", c_nb_types - 1 + c_int16)
-			Result.put ("ui4_", c_nb_types - 1 + c_int32)
-			Result.put ("ui8_", c_nb_types - 1 + c_int64)
-			Result.put ("uu1_", c_nb_types - 1 + c_uint8)
-			Result.put ("uu2_", c_nb_types - 1 + c_uint16)
-			Result.put ("uu4_", c_nb_types - 1 + c_uint32)
-			Result.put ("uu8_", c_nb_types - 1 + c_uint64)
-			Result.put ("ur4_", c_nb_types - 1 + c_real32)
-			Result.put ("ur8_", c_nb_types - 1 + c_real64)
-			Result.put ("ub", c_nb_types - 1 + c_boolean)
-			Result.put ("uc", c_nb_types - 1 + c_char)
-			Result.put ("uw", c_nb_types - 1 + c_wide_char)
-			Result.put ("up", c_nb_types - 1 + c_pointer)
-			Result.put ("ur", c_nb_types - 1 + c_ref)
+			Result.put ("ui1_", c_nb_types + c_int8)
+			Result.put ("ui2_", c_nb_types + c_int16)
+			Result.put ("ui4_", c_nb_types + c_int32)
+			Result.put ("ui8_", c_nb_types + c_int64)
+			Result.put ("uu1_", c_nb_types + c_uint8)
+			Result.put ("uu2_", c_nb_types + c_uint16)
+			Result.put ("uu4_", c_nb_types + c_uint32)
+			Result.put ("uu8_", c_nb_types + c_uint64)
+			Result.put ("ur4_", c_nb_types + c_real32)
+			Result.put ("ur8_", c_nb_types + c_real64)
+			Result.put ("ub", c_nb_types + c_boolean)
+			Result.put ("uc", c_nb_types + c_char)
+			Result.put ("uw", c_nb_types + c_wide_char)
+			Result.put ("up", c_nb_types + c_pointer)
+			Result.put ("ur", c_nb_types + c_ref)
 		end
 
 	register_sk_value (t: INTEGER): STRING
 			-- SK value associated with a register type `t'
 		require
-			valid_t: 0 < t and t <= (c_nb_types - 1) * 2
+			valid_t: 0 <= t and t < c_nb_types * 2
 		do
 			Result := register_sk_values [t]
 		end
@@ -1062,7 +1085,7 @@ feature {NONE} -- Registers: implementation
 	register_sk_values: ARRAY [STRING]
 			-- SK values of registers indexed by their level
 		once
-			create Result.make (1, (c_nb_types - 1) * 2)
+			create Result.make (1, c_nb_types * 2)
 			Result.put ("SK_INT8", c_int8)
 			Result.put ("SK_INT16", c_int16)
 			Result.put ("SK_INT32", c_int32)
@@ -1079,21 +1102,21 @@ feature {NONE} -- Registers: implementation
 			Result.put ("SK_POINTER", c_pointer)
 			Result.put ("SK_REF", c_ref)
 				-- Registers for passing typed arguments.
-			Result.put ("SK_INT8", c_nb_types - 1 + c_int8)
-			Result.put ("SK_INT16", c_nb_types - 1 + c_int16)
-			Result.put ("SK_INT32", c_nb_types - 1 + c_int32)
-			Result.put ("SK_INT64", c_nb_types - 1 + c_int64)
-			Result.put ("SK_UINT8", c_nb_types - 1 + c_uint8)
-			Result.put ("SK_UINT16", c_nb_types - 1 + c_uint16)
-			Result.put ("SK_UINT32", c_nb_types - 1 + c_uint32)
-			Result.put ("SK_UINT64", c_nb_types - 1 + c_uint64)
-			Result.put ("SK_REAL32", c_nb_types - 1 + c_real32)
-			Result.put ("SK_REAL64", c_nb_types - 1 + c_real64)
-			Result.put ("SK_BOOL", c_nb_types - 1 + c_boolean)
-			Result.put ("SK_CHAR8", c_nb_types - 1 + c_char)
-			Result.put ("SK_CHAR32", c_nb_types - 1 + c_wide_char)
-			Result.put ("SK_POINTER", c_nb_types - 1 + c_pointer)
-			Result.put ("SK_REF", c_nb_types - 1 + c_ref)
+			Result.put ("SK_INT8", c_nb_types + c_int8)
+			Result.put ("SK_INT16", c_nb_types + c_int16)
+			Result.put ("SK_INT32", c_nb_types + c_int32)
+			Result.put ("SK_INT64", c_nb_types + c_int64)
+			Result.put ("SK_UINT8", c_nb_types + c_uint8)
+			Result.put ("SK_UINT16", c_nb_types + c_uint16)
+			Result.put ("SK_UINT32", c_nb_types + c_uint32)
+			Result.put ("SK_UINT64", c_nb_types + c_uint64)
+			Result.put ("SK_REAL32", c_nb_types + c_real32)
+			Result.put ("SK_REAL64", c_nb_types + c_real64)
+			Result.put ("SK_BOOL", c_nb_types + c_boolean)
+			Result.put ("SK_CHAR8", c_nb_types + c_char)
+			Result.put ("SK_CHAR32", c_nb_types + c_wide_char)
+			Result.put ("SK_POINTER", c_nb_types + c_pointer)
+			Result.put ("SK_REF", c_nb_types + c_ref)
 		end
 
 feature -- Access
@@ -1828,10 +1851,11 @@ feature -- Access
 		do
 			needs_macro_undefinition := False
 			from
-				i := (c_nb_types - 1) * 2
+				i := c_nb_types * 2
 			until
 				i <= 0
 			loop
+				i := i - 1
 				from
 					j := 1
 					nb_vars := register_server.needed_registers_by_clevel (i)
@@ -1841,7 +1865,6 @@ feature -- Access
 					generate_tmp_var (i, j)
 					j := j + 1
 				end
-				i := i - 1
 			end
 		end
 
@@ -1855,10 +1878,11 @@ feature -- Access
 				needs_macro_undefinition := False
 				from
 					buf := buffer
-					i := (c_nb_types - 1) * 2
+					i := c_nb_types * 2
 				until
-					i < c_nb_types
+					i <= c_nb_types
 				loop
+					i := i - 1
 					from
 						j := 1
 						nb_vars := register_server.needed_registers_by_clevel (i)
@@ -1870,7 +1894,6 @@ feature -- Access
 						put_register_name (i, j, buf)
 						j := j + 1
 					end
-					i := i - 1
 				end
 			end
 		end

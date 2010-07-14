@@ -38,6 +38,8 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 
@@ -49,8 +51,9 @@ feature {NONE} -- Initialization
 			a_once_attached: a_once /= Void
 		do
 			once_routine := a_once
-			once_routine_id := a_once.rout_id_set.first
-			result_type_a := a_once.type
+			once_routine_rout_id_set := a_once.rout_id_set
+			once_routine_id := once_routine_rout_id_set.first
+			result_type_a := a_once.type.as_detachable_type
 			has_result := result_type_a /= Void and then not result_type_a.is_void
 		end
 
@@ -62,7 +65,7 @@ feature -- Basic operations
 			a_once_attached: a_once /= Void
 		do
 			if
-				a_once.rout_id_set.first = once_routine_id and then
+				a_once.rout_id_set.intersect (once_routine_rout_id_set) and then
 				a_once.same_interface (once_routine)
 			then
 				debug ("ONCE_PER_OBJECT")
@@ -113,6 +116,9 @@ feature -- Access
 	once_routine: ONCE_PROC_I
 			-- Associated once routine.
 
+	once_routine_rout_id_set: ROUT_ID_SET
+			-- Associated once rout id set
+
 	once_routine_id: INTEGER
 			-- Routine id of the associated ONCE_PROC_I
 
@@ -128,6 +134,30 @@ feature -- Access
 		end
 
 feature -- Access: attribute
+
+	attribute_of_feature_id (a_feature_id: INTEGER): detachable ATTRIBUTE_I
+			-- Attribute related to `a_feature_id' if exists.
+		do
+			if a_feature_id = called_feature_id then
+				Result := called_attribute_i
+			elseif a_feature_id = exception_feature_id then
+				Result := exception_attribute_i
+			elseif a_feature_id = result_feature_id then
+				Result := result_attribute_i
+			end
+		end
+
+	attribute_of_routine_id	(a_routine_id: INTEGER): detachable ATTRIBUTE_I
+			-- Attribute related to `a_routine_id' if exists.
+		do
+			if a_routine_id = called_routine_id then
+				Result := called_attribute_i
+			elseif a_routine_id = exception_routine_id then
+				Result := exception_attribute_i
+			elseif a_routine_id = result_routine_id then
+				Result := result_attribute_i
+			end
+		end
 
 	called_attribute_i: ATTRIBUTE_I
 			-- ATTRIBUTE_I for extra attribute `called_name'
@@ -224,7 +254,7 @@ feature -- Element change
 			l_att_i.set_origin_class_id (once_routine.origin_class_id)
 			l_att_i.set_feature_id (called_feature_id)
 			l_att_i.set_origin_feature_id (called_feature_id)
-			l_att_i.set_feature_name_id (called_name_id, called_name_id)
+			l_att_i.set_feature_name_id (called_name_id, 0)
 			l_att_i.set_is_transient (once_routine.is_transient)
 			l_att_i.set_is_hidden (True)
 
@@ -248,7 +278,7 @@ feature -- Element change
 			l_att_i.set_origin_class_id (once_routine.origin_class_id)
 			l_att_i.set_feature_id (exception_feature_id)
 			l_att_i.set_origin_feature_id (exception_feature_id)
-			l_att_i.set_feature_name_id (exception_name_id, exception_name_id)
+			l_att_i.set_feature_name_id (exception_name_id, 0)
 			l_att_i.set_is_transient (once_routine.is_transient)
 			l_att_i.set_is_hidden (True)
 
@@ -273,7 +303,7 @@ feature -- Element change
 			l_att_i.set_origin_class_id (once_routine.origin_class_id)
 			l_att_i.set_feature_id (result_feature_id)
 			l_att_i.set_origin_feature_id (result_feature_id)
-			l_att_i.set_feature_name_id (result_name_id, result_name_id)
+			l_att_i.set_feature_name_id (result_name_id, 0)
 			l_att_i.set_is_transient (once_routine.is_transient)
 			l_att_i.set_is_hidden (True)
 
@@ -307,7 +337,7 @@ feature -- Access: exception
 	exception_type_a: TYPE_A
 			-- Type of `exception_name' extra attribute	
 		do
-			Result := system.exception_class.compiled_class.actual_type
+			Result := system.exception_class.compiled_class.actual_type.as_detachable_type
 		end
 
 	exception_feature_id: INTEGER assign set_exception_feature_id

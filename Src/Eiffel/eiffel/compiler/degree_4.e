@@ -167,6 +167,32 @@ feature -- Processing
 								-- Set current class now.
 							l_system.set_current_class (a_class)
 							put_action_class
+								-- If class has creation constraints they are checked later
+								-- but before feature type checks since constraints can have
+								-- renamings that are taken into account when checking
+								-- qualified anchored types.
+							if
+								attached a_class.generics as g and then
+								g.there_exists (agent {FORMAL_DEC_AS}.has_constraint)
+							then
+									-- Add action to check constraints.
+								put_action (agent
+									local
+										e: like error_handler.error_level
+									do
+										check
+											current_class_set: attached system.current_class as c
+										then
+											e := error_handler.error_level
+											c.check_constraint_renaming
+												-- We only check the creation constraints if the renaming was valid.
+											if error_handler.error_level = e then
+												c.check_creation_constraint_genericity
+											end
+										end
+									end
+								)
+							end
 								-- Adds future checks to the `remaining_validity_checking_list'
 							l_error_level := l_error_handler.error_level
 							process_class (a_class)
@@ -232,34 +258,6 @@ feature -- Processing
 
 				-- Flush features that are computed with a delay.
 			tmp_feature_server.flush_delayed
-
-				-- Check now the validity on creation constraint, i.e. that the
-				-- specified creation procedures are indeed part of the constraint
-				-- class. This needs to be done at the end of Degree 4 because
-				-- we need some feature tables.
-			nb := count
-			from i := 1 until nb = 0 loop
-				a_class := classes.item (i)
-				if a_class /= Void and then a_class.degree_4_needed then
-					if a_class.changed and then a_class.generics /= Void then
-						l_system.set_current_class (a_class)
-						l_error_level := l_error_handler.error_level
-						a_class.check_constraint_renaming
-							-- We only check the creation constraints if the renaming was valid.
-						if l_error_handler.error_level = l_error_level then
-							a_class.check_creation_constraint_genericity
-						end
-					end
-					nb := nb - 1
-				end
-				i := i + 1
-			end
-
-				-- We cannot go on here as the creation constraints are not guaranteed to be valid.
-				-- The remaining_validity_check_list will be kept. All checks will be done once we have no more errors.
-			if l_error_handler.has_error then
-				l_error_handler.raise_error
-			end
 
 				-- Check now that all the instances of a generic class are
 				-- valid for the creation constraint if there is one. The
@@ -829,6 +827,7 @@ feature {NONE} -- Qualified suppliers: removal
 		do
 			qualified_suppliers := Void
 			qualified_clients := Void
+			qualified_supplier := Void
 		ensure
 			removed_qualified_suppliers: qualified_suppliers = Void
 			removed_qualified_clients: qualified_clients = Void
@@ -915,9 +914,12 @@ feature -- Qualified suppliers: recompilation
 			q: like qualified_supplier
 		do
 			if attached qualified_clients as t then
+					-- Check if a temporary cell is already allocated.
 				q := qualified_supplier
 				if not attached q then
 					create q.make (f, c)
+						-- Record allocated object for reuse.
+					qualified_supplier := q
 				else
 					q.set (f, c)
 				end
@@ -926,7 +928,10 @@ feature -- Qualified suppliers: recompilation
 					across
 						clients as i
 					loop
-						workbench.add_class_to_recompile (system.class_of_id (i.item).lace_class)
+						if attached system.class_of_id (i.item) as d then
+							d.set_changed2 (True)
+							insert_new_class (d)
+						end
 					end
 				end
 			end

@@ -26,6 +26,7 @@ inherit
 			new_integer_binary_as,
 			new_external_lang_as,
 			new_vtgc1_error,
+			new_vvok1_error, new_vvok2_error,
 			validate_integer_real_type,
 			validate_non_conforming_inheritance_type
 		end
@@ -342,24 +343,28 @@ feature -- Access
 			end
 		end
 
-feature -- Access for Erros
+feature -- Access for Errors
 
-	new_vtgc1_error (a_line, a_column: INTEGER_32; a_filename: STRING_8;  a_id: ID_AS; a_current: CURRENT_AS): VTGC1
-			-- Create new VTGC1 error.
-		local
-			l_location: LOCATION_AS
+	new_vtgc1_error (a_line: INTEGER; a_column: INTEGER; a_filename: STRING; a_type: TYPE_AS): VTGC1
+			-- <Precursor>
 		do
-			if a_id /= Void then
-				l_location := a_id
-			elseif a_current /= Void then
-				l_location := a_current
-			end
-			check l_location_not_void: l_location /= Void end
 			create Result
 			if attached {CLASS_C} parser.current_class as l_class_c then
 				Result.set_class (l_class_c)
 			end
-			Result.set_location (l_location)
+			Result.set_location (a_type.start_location)
+		end
+
+	new_vvok1_error (a_line, a_column: INTEGER_32; a_filename: STRING_8; a_once_as: FEATURE_AS): VVOK1
+			-- Create new VVOK1 error.
+		do
+			create Result.make (a_line, a_column, a_filename, Void)
+		end
+
+	new_vvok2_error (a_line, a_column: INTEGER_32; a_filename: STRING_8; a_once_as: FEATURE_AS): VVOK2
+			-- Create new VVOK2 error.
+		do
+			create Result.make (a_line, a_column, a_filename, Void)
 		end
 
 feature {NONE} -- Validation
@@ -419,7 +424,7 @@ feature {NONE} -- Validation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
