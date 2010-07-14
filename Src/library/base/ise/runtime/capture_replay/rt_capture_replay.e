@@ -25,6 +25,18 @@ feature -- Output
 			"built_in"
 		end
 
+	frozen enable_debug_output
+			-- Enable debug output.
+		external
+			"built_in"
+		end
+
+	frozen disable_debug_output
+			-- Disable debug output.
+		external
+			"built_in"
+		end
+
 note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
 	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
