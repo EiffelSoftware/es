@@ -1584,6 +1584,11 @@ rt_shared EIF_REFERENCE rt_nmake(long int objectCount)
 	nb_recorded = 0;
 	rt_create_table (objectCount);
 
+#ifdef WORKBENCH
+	int cr_old_suppress = cr_suppress;
+	cr_suppress = 1;
+#endif
+
 	for (;n > 0; n--) {
 		/* Read object address */
 		buffer_read((char *) &oldadd, sizeof(EIF_REFERENCE));
@@ -1639,7 +1644,6 @@ rt_shared EIF_REFERENCE rt_nmake(long int objectCount)
 			}
 		}
 
-
 			/* Record the new object in hector table */
 		new_hector = hrecord(newadd);
 		nb_recorded++;
@@ -1665,6 +1669,13 @@ rt_shared EIF_REFERENCE rt_nmake(long int objectCount)
 			/* Restore garbage collector status */
 		rt_g_data.status = g_status;
 #endif
+
+#ifdef WORKBENCH
+	cr_suppress = cr_old_suppress;
+	if (is_capturing)
+		cr_register_retrieve (newadd);
+#endif
+
 	return newadd;
 }
 
