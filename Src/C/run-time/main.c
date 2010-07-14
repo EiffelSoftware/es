@@ -514,6 +514,7 @@ rt_public char cr_next_event = (char) 0;
 #endif
 rt_public FILE *cr_file = (FILE *) NULL;
 rt_public struct cr_object* cr_global_objects = (struct cr_object *) NULL;
+rt_public int cr_debug = 0;
 #endif
 
 /*

@@ -198,6 +198,8 @@ extern "C" {
 #ifdef WORKBENCH
 
 #define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)                  eif_printf(string)
+#define eif_builtin_RT_CAPTURE_REPLAY_enable_debug_output(obj)			cr_debug = 1
+#define eif_builtin_RT_CAPTURE_REPLAY_disable_debug_output(obj)			cr_debug = 0
 #ifdef EIF_THREADS
 #define eif_builtin_RT_CAPTURE_REPLAY_thread_id(obj)				eif_cr_thread_id()
 #else

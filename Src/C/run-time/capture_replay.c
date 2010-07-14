@@ -1488,7 +1488,7 @@ rt_public void cr_replay ()
 
 				newref.item.o = (EIF_REFERENCE *) eif_protect(CR_ACCESS(ref));
 
-				RTCRDBG((stderr, "protect %lx\n", (unsigned long) newref.item.o));
+//				RTCRDBG((stderr, "protect %lx\n", (unsigned long) newref.item.o));
 
 				newref.size = CR_GLOBAL_REF;
 
