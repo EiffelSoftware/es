@@ -515,11 +515,12 @@ rt_private EIF_CR_REFERENCE cr_retrieve_object ()
  * Private capture/replay routines
  */
 
-#ifdef EIF_THREADS
 
-/*
-rt_private void cr_log_event (unsigned char type, EIF_NATURAL_64 tid)
+rt_private void cr_log_event (unsigned char type)
 {
+
+	EIF_GET_CONTEXT
+
 	char *types = NULL;
 
 	switch (type & TYPE_MASK) {
@@ -537,10 +538,15 @@ rt_private void cr_log_event (unsigned char type, EIF_NATURAL_64 tid)
 		default: types =  "?";
 	}
 
-
-	fprintf(stderr, "%s %ld\n", types, (long int) tid);
+#ifdef EIT_THREADS
+	RTCRDBG((stderr, "%s %ld\n", types, (long int) cr_thread_id));
+#else
+	RTCRDBG((stderr, "%s\n", types));
+#endif
 }
-*/
+
+
+#ifdef EIF_THREADS
 
 rt_private void cr_start_thread(EIF_REFERENCE Current)
 {
@@ -615,6 +621,13 @@ rt_private char cr_schedule()
 		/* In single thread mode we simply read the event type and move on */
 
 		bread(&next_action, sizeof(char));
+
+		cr_debug++;
+
+		cr_log_event (next_action);
+
+		cr_debug--;
+
 #endif
 
 
@@ -730,6 +743,7 @@ rt_public void cr_register_call (int num_args, BODY_INDEX bodyid)
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || is_replaying);
+	REQUIRE("not_disabled", !cr_disabled);
 
 	if (cr_suppress)
 		return;
@@ -793,6 +807,7 @@ rt_public void cr_register_return (int num_args)
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_capturing || (is_replaying && !RTCRI));
+	REQUIRE("not_disabled", !cr_disabled);
 
 	char type, log_type;
 
@@ -844,6 +859,7 @@ rt_private void cr_register_value_recursive (void *value, uint32 *type, uint32 p
 	REQUIRE("value_pointer_not_null", value != NULL);
 	REQUIRE("type_pointer_not_null", type != NULL);
 	REQUIRE("valid_context", is_capturing || is_replaying);
+	REQUIRE("not_disabled", !cr_disabled);
 	REQUIRE("valid_type_and_size", !use_value || (*type == SK_POINTER || pointed_type == SK_INVALID));
 
 	if (cr_suppress)
@@ -1047,7 +1063,7 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 
 	REQUIRE("valid_context", is_capturing && !RTCRI);
 
-	if (cr_suppress)
+	if (cr_suppress || cr_disabled)
 		return;
 
 	union overhead *zone = HEADER(obj);
@@ -1082,7 +1098,7 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
 
-	if (cr_suppress)
+	if (cr_suppress || cr_disabled)
 		return;
 
 	EIF_CR_REFERENCE ref, newref;
@@ -1118,13 +1134,14 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 rt_public void cr_register_wean (EIF_REFERENCE *obj)
 {
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	/* Note: we register a wean event even if cr_suppress is true, otherwise we miss freeing an object which
 	 * causes a memory leak during replay.
 	 */
+
+	if (cr_disabled)
+		return;
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
@@ -1169,7 +1186,7 @@ rt_public void cr_register_exception (char *tag, long code)
 	REQUIRE("not_inside", !RTCRI);
 
 	/* Note: exception in a call to dispose? Not sure what to do here */
-	if (cr_suppress)
+	if (cr_suppress || cr_disabled)
 		return;
 
 	char type = (char) CR_EXC;
@@ -1195,13 +1212,13 @@ rt_public void cr_register_retrieve (EIF_REFERENCE obj)
 	/* For now we simply store `obj' to a temporary file and then copy
 	 * the contents of the file to the log. */
 
-#ifdef EIF_ASSERTIONS
 	EIF_GET_CONTEXT
-#endif
 
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
-	REQUIRE("not_inside_dispose", !cr_suppress);
+
+	if (cr_suppress || cr_disabled)
+		return;
 
 	char type = (char) CR_RTV;
 
@@ -1338,6 +1355,7 @@ rt_public void cr_replay ()
 	EIF_GET_CONTEXT
 
 	REQUIRE("valid_context", is_replaying && !RTCRI);
+	REQUIRE("not_disabled", !cr_disabled);
 
 	char type;
 

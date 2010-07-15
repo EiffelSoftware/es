@@ -1345,6 +1345,9 @@ RT_LNK void eif_exit_eiffel_code(void);
  *
  * RTCRI          1 if current thread is inside of the captured boundary, 0 otherwise.
  *
+ * RTCREN         temporarily enable capture/replay
+ * RTCRDIS        temporarily disable capture/replay
+ *
  * RTCRCS(x,y)    hook at beginning of crossing call
  *     x: 1 if routine is "inside", 0 otherwise
  *     y: Number of values for call, including Current
@@ -1382,9 +1385,12 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRI (!(cr_cross_depth%2))
 
+#define RTCREN cr_disabled--
+#define RTCRDIS cr_disabled++
+
 #define RTCRCSI(y,bodyid,rout) \
 	int cr_old_depth = cr_cross_depth; \
-	int cr_cross = (RTCRI != (1)) && (is_capturing || is_replaying); \
+	int cr_cross = (RTCRI != (1)) && (is_capturing || is_replaying) && !cr_disabled; \
 	cr_call_depth++; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
@@ -1468,6 +1474,10 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRMFRE(s)      cr_free(exvect,s)
 
 #else
+
+#define RTCRI
+#define RTCRON
+#define RTCROFF
 
 #define RTCRCSI(y,bodyid,rout)
 #define RTCRCSO(y,bodyid,rout)

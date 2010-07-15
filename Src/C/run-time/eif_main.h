@@ -60,6 +60,7 @@ RT_LNK uint32 cr_cross_depth;             /* How many IN-/OUTCALLs are currently
 RT_LNK uint32 cr_call_depth;
 RT_LNK struct cr_object *cr_local_objects; /* Unprotected objects available to capture/replay mechanism */
 RT_LNK int cr_suppress;
+RT_LNK int cr_disabled;
 #endif
 #ifdef WORKBENCH
 RT_LNK int is_inside_rt_eiffel_code;

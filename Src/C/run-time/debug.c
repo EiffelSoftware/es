@@ -83,7 +83,6 @@ doc:<file name="debug.c" header="eif_debug.h" version="$Id$" summary="Routines u
 #include <stdlib.h>				/* For exit(), abort() */
 #include "rt_globals.h"
 
-
 #define ITEM_SZ			sizeof(EIF_TYPED_ADDRESS)
 
 #define clocnum exvect->ex_locnum
@@ -379,6 +378,7 @@ rt_public void dstart(EIF_CONTEXT_NOARG)
 	 */
 	RT_GET_CONTEXT
 	EIF_GET_CONTEXT
+	RTCRDIS;
 	struct dcall *context;		/* The calling context */
 
 	/* If the debugging stack is not empty, then we need to look at the current
@@ -416,6 +416,7 @@ rt_public void dstart(EIF_CONTEXT_NOARG)
 			/* No more memory */
 		enomem();						/* Critical exception */
 	}
+	RTCREN;
 }
 
 rt_public void dexset(struct ex_vect *exvect)
@@ -482,10 +483,15 @@ rt_public void dsync(void)
 	 * stop thanks to the propagation work done in dstart()--RAM.
 	 */
 
+	RTCRDIS;
+	
 	context = dtop();
 	CHECK("context not null", context);
 	d_data.db_status = context->dc_status;	/* Execution status */
 	d_data.db_start = context->dc_start;	/* Used to compute offsets in BC */
+
+	RTCREN;
+
 }
 
 rt_public void dstatus(int dx)
@@ -579,6 +585,9 @@ rt_public void dstop(struct ex_vect *exvect, uint32 break_index)
 						 * from Estudio, we can avoid the execution of this declaration
  						 * when the application is started from the command line
  						 */
+
+		RTCRDIS;
+
 		if (RTDBG_MACRO2(is_inside_rt_eiffel_code == 0,1)) {
 			RTDBGH(d_data.db_callstack_depth, break_index, 0);
 			if (!BREAKPOINTS_DISCARDED) {
@@ -639,6 +648,7 @@ rt_public void dstop(struct ex_vect *exvect, uint32 break_index)
 				DBGMTX_UNLOCK; /* Leave critical section */
 			}
 		}
+		RTCREN;
 	}
 }
 
@@ -657,6 +667,8 @@ rt_public void dstop_nested(struct ex_vect *exvect, uint32 break_index, uint32 n
 	   					* with Estudio, we can avoid the execution of this declaration
 	   					* when the application is started from the command line
 	   					*/
+
+		RTCRDIS;
 
 		if (RTDBG_MACRO2(is_inside_rt_eiffel_code == 0,1)) {
 			RTDBGH(d_data.db_callstack_depth, break_index, nested_break_index);
@@ -681,6 +693,8 @@ rt_public void dstop_nested(struct ex_vect *exvect, uint32 break_index, uint32 n
 				DBGMTX_UNLOCK; /* Leave critical section */
 			}
 		}
+
+		RTCREN;
 	}
 }
 
@@ -795,6 +809,7 @@ rt_shared void safe_dbreak (int why)
 rt_public void dsetbreak(BODY_INDEX body_id, int offset, int what)
 	{
 	EIF_GET_CONTEXT
+	RTCRDIS;
 	/* set a breakpoint according to its nature (what) */
 	switch (what)
 		{
@@ -823,6 +838,7 @@ rt_public void dsetbreak(BODY_INDEX body_id, int offset, int what)
 			eif_panic("debug.c, dsetbreak: Invalid breakpoint type");
 		#endif
 		}
+	RTCREN;
 	}
 
 /**************************************************************************/
@@ -1318,6 +1334,8 @@ rt_public struct dcall *dpush(register struct dcall *val)
 	 */
 
 	RT_GET_CONTEXT
+	EIF_GET_CONTEXT
+	RTCRDIS;
 	struct dcall *top = db_stack.st_top;	/* Top of stack */
 
 	/* Stack created at initialization time via initdb */
@@ -1349,6 +1367,8 @@ rt_public struct dcall *dpush(register struct dcall *val)
 	} else {
 		memset (top, 0, CALL_SZ);
 	}
+
+	RTCREN;
 
 	return top;				/* Address of allocated item */
 }
@@ -1394,6 +1414,8 @@ rt_public struct dcall *dpop(void)
 	 */
 
 	RT_GET_CONTEXT
+	EIF_GET_CONTEXT
+	RTCRDIS;
 	struct dcall *top = db_stack.st_top;	/* Top of the stack */
 	struct stdchunk *s;			/* To walk through stack chunks */
 	struct dcall *arena;			/* Base address of current chunk */
@@ -1422,6 +1444,8 @@ rt_public struct dcall *dpop(void)
 	top = db_stack.st_end = s->sk_end;
 	db_stack.st_top = --top;
 	SIGRESUME;
+
+	RTCREN;
 
 	return db_stack.st_top;
 }
@@ -1492,6 +1516,8 @@ rt_public struct dcall *dtop(void)
 	struct stdchunk *prev;		/* Previous chunk in stack */
 
 	RT_GET_CONTEXT
+	EIF_GET_CONTEXT
+	RTCRDIS;
 	last_item = db_stack.st_top - 1;
 	if (last_item >= db_stack.st_cur->sk_arena)
 		return last_item;
@@ -1508,6 +1534,8 @@ rt_public struct dcall *dtop(void)
 	if (prev == (struct stdchunk *) 0)
 		eif_panic("debugging stack is empty");
 #endif
+
+	RTCREN;
 
 	return prev->sk_end - 1;			/* Last item of previous chunk */
 }
