@@ -112,9 +112,11 @@ feature {NONE} -- Implementation
 
 	width: INTEGER
 			-- Width of `Current'.
+		local
+			l_null: TYPED_POINTER [INTEGER_32]
 		do
 			if configure_event_pending or not is_displayed then
-				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, $Result, default_pointer)
+				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, $Result, l_null)
 				Result := Result.max (minimum_width)
 			else
 				Result := Precursor
@@ -123,9 +125,11 @@ feature {NONE} -- Implementation
 
 	height: INTEGER
 			-- Height of `Current'.
+		local
+			l_null: TYPED_POINTER [INTEGER_32]
 		do
 			if configure_event_pending or not is_displayed then
-				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, default_pointer, $Result)
+				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, l_null, $Result)
 				Result := Result.max (minimum_height)
 			else
 				Result := Precursor

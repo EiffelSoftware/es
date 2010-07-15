@@ -8052,7 +8052,7 @@ feature
 			"C (GtkWindow*, gint, gint) | <gtk/gtk.h>"
 		end
 
-	frozen gtk_window_get_default_size (a_window: POINTER; a_width: POINTER; a_height: POINTER)
+	frozen gtk_window_get_default_size (a_window: POINTER; a_width: TYPED_POINTER [INTEGER]; a_height: TYPED_POINTER [INTEGER])
 		external
 			"C (GtkWindow*, EIF_INTEGER_32*, EIF_INTEGER_32*) | <gtk/gtk.h>"
 		end
