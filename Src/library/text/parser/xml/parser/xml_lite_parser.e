@@ -130,6 +130,16 @@ feature -- Status
 			-- Position when error occurred
 
 	position: XML_POSITION
+			-- Logical position
+		do
+			if attached checkpoint_position as p then
+				Result := p
+			else
+				Result := buffer_position
+			end
+		end
+
+	buffer_position: XML_POSITION
 			-- XML position in buffer
 		do
 			create Result.make (buffer.name, byte_index, column, line)
@@ -200,10 +210,12 @@ feature {NONE} -- Implementation: parse
 			l_in_tag: BOOLEAN
 			buf: like buffer
 			l_callbacks: like callbacks
+			l_ignore_non_printable_char: BOOLEAN
 		do
 			reset
 			buf := buffer
 			l_callbacks := callbacks
+			l_ignore_non_printable_char := True
 
 			l_callbacks.on_start
 			from
@@ -221,6 +233,10 @@ feature {NONE} -- Implementation: parse
 							l_content.wipe_out
 						end
 					else
+						l_ignore_non_printable_char := False
+						if not is_blank (l_content) then
+							report_unexpected_content (l_content)
+						end
 						l_content.wipe_out
 					end
 					c := next_character
@@ -252,10 +268,14 @@ feature {NONE} -- Implementation: parse
 				when '&' then
 					l_content.append_string (next_entity)
 				else
---| Should we ignore non printable character?					
---					if c.is_printable then
+					--| Ignore non printable character on top of XML document.
+					if
+						l_in_tag
+						or else c.is_printable
+						or else not l_ignore_non_printable_char
+					then
 						l_content.append_character (c)
---					end
+					end
 				end
 			end
 			l_callbacks.on_finish
@@ -690,12 +710,8 @@ feature {NONE} -- Implementation: parse
 			s: STRING
 			p: like position
 		do
-			if attached checkpoint_position as checkpoint then
-				p := checkpoint
-				unset_checkpoint_position
-			else
-				p := position
-			end
+			p := position
+			unset_checkpoint_position
 
 			error_message := a_message.string
 
@@ -704,7 +720,9 @@ feature {NONE} -- Implementation: parse
 			s.append_character ('(')
 			s.append_string ("position=")
 			s.append_string (p.out)
-			print (s + "%N")
+			debug ("xml_parser")
+				print (s + "%N")
+			end
 
 			if error_position = Void then
 					-- record only first error's position
@@ -715,6 +733,12 @@ feature {NONE} -- Implementation: parse
 			callbacks.on_error (s)
 		ensure
 			error_occurred: error_occurred
+		end
+
+	report_unexpected_content (a_content: STRING)
+			-- Report unexpected content `a_content'
+		do
+			report_error ("Unexpected content (not well-formed XML)")
 		end
 
 feature {NONE} -- Doctype
@@ -1189,6 +1213,24 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Factory
+
+	is_blank (s: STRING): BOOLEAN
+			-- Is `s' containing only blank character?
+			-- i.e: ' ', '%T', '%N', '%R'
+		local
+			i, n: INTEGER
+		do
+			from
+				Result := True
+				i := 1
+				n := s.count
+			until
+				i > n or not Result
+			loop
+				Result := s.item (i).is_space
+				i := i + 1
+			end
+		end
 
 	case_insensitive_same_string (a,b: STRING): BOOLEAN
 			-- `a' and `b' are the same string regardless of casing?

@@ -24,3 +24,6 @@ classname_finder.e: classname_finder.l
 lace_parser.e: lace.y
 	$(GOBO_YACC) -t LACE_TOKENS -o $@ $?
 	$(SYNTAX_UPDATER) .
+
+clean:
+	$(RM) lace_parser.e lace_scanner.e lace_tokens.e

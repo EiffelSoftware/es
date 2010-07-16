@@ -674,6 +674,26 @@ feature -- Access: object relative once
 	object_relative_once_infos: detachable HASH_TABLE [OBJECT_RELATIVE_ONCE_INFO, INTEGER]
 			-- List of info about object relative onces associated with Current
 
+	object_relative_once_info_of_rout_id_set (a_rout_id_set: ROUT_ID_SET): detachable OBJECT_RELATIVE_ONCE_INFO
+			-- Info about object relative once associated with Current and an item of `a_rout_id_set'
+		require
+			a_rout_id_set_not_void: a_rout_id_set /= Void
+		local
+			i, nb: INTEGER_32
+		do
+			if attached object_relative_once_infos as l_infos then
+				from
+					i := 1
+					nb := a_rout_id_set.count
+				until
+					i > nb or Result /= Void
+				loop
+					Result := l_infos.item (a_rout_id_set.item (i))
+					i := i + 1
+				end
+			end
+		end
+
 	object_relative_once_info (a_once_routine_id: INTEGER): detachable OBJECT_RELATIVE_ONCE_INFO
 			-- Info about object relative once associated with Current and `a_once_routine_id'
 		do
@@ -685,14 +705,17 @@ feature -- Access: object relative once
 	object_relative_once_attribute_of_feature_id (a_feature_id: INTEGER): detachable ATTRIBUTE_I
 			-- Attribute associated with Current with feature_id `a_feature_id', if any.
 		do
-			if attached object_relative_once_infos as l_infos then
+			if
+				attached object_relative_once_infos as l_infos and then
+				attached l_infos.new_cursor as c
+			then
 				from
-					l_infos.start
+					c.start
 				until
-					l_infos.after or Result /= Void
+					c.after or Result /= Void
 				loop
-					Result := l_infos.item_for_iteration.attribute_of_feature_id (a_feature_id)
-					l_infos.forth
+					Result := c.item.attribute_of_feature_id (a_feature_id)
+					c.forth
 				end
 			end
 		end
@@ -700,14 +723,17 @@ feature -- Access: object relative once
 	object_relative_once_attribute_of_routine_id (a_routine_id: INTEGER): detachable ATTRIBUTE_I
 			-- Attribute associated with Current with feature_id `a_routine_id', if any.
 		do
-			if attached object_relative_once_infos as l_infos then
+			if
+				attached object_relative_once_infos as l_infos and then
+				attached l_infos.new_cursor as c
+			then
 				from
-					l_infos.start
+					c.start
 				until
-					l_infos.after or Result /= Void
+					c.after or Result /= Void
 				loop
-					Result := l_infos.item_for_iteration.attribute_of_routine_id (a_routine_id)
-					l_infos.forth
+					Result := c.item.attribute_of_routine_id (a_routine_id)
+					c.forth
 				end
 			end
 		end
@@ -2366,6 +2392,23 @@ end
 				l_instantiator.dispatch (parent_type, Current)
 				i := i + 1
 			end
+				-- Ensure all constraint types are registered
+				-- as they are expected to be registered at code generation time (see test#term185).
+			if attached generics as l then
+				from
+					i := l.count
+				until
+					i <= 0
+				loop
+					constrained_types (i).do_all (
+						agent (t: RENAMED_TYPE_A [TYPE_A])
+							do
+								instantiator.dispatch (t.type, Current)
+							end
+					)
+					i := i - 1
+				end
+			end
 		end
 
 	init_types
@@ -3553,7 +3596,7 @@ feature -- Access
 		end
 
 	feature_of_rout_id_set (rout_id_set: ROUT_ID_SET): FEATURE_I
-			-- Feature with routine ID `rout_id'.
+			-- Feature with routine ID in `rout_id_set'.
 		require
 			rout_id_set_not_void: rout_id_set /= Void
 			has_feature_table: has_feature_table

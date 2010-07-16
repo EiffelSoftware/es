@@ -920,6 +920,8 @@ test	renamed-type-crash			incr365 tcf fail incrementality generic
 test	once-per-object-add-descendant		incr366 tcf fail incrementality once
 test	change-constraint-rename-crash		incr367 tcf fail incrementality generic anchored_type
 test	qat-change-parent-actual-generic	incr368 tcf fail incrementality generic anchored_type
+test	qat-veen-instead-of-vtat		incr369 tcf fail incrementality anchored_type
+test	qat-constrained-type-in-crash-2		incr370 tcf fail incrementality anchored_type
 
 
 -- Melting
@@ -1024,6 +1026,7 @@ test	bad-melted-infix		melt096  tcf pass execution melting
 test	new-type-type-melted	melt097  tcf pass execution melting
 test	melted-type-of-generic	melt098  tcf pass execution melting reflection
 test	melted-tuple-expression-order melt099 tcf pass execution melting tuple
+test	melted-creation-constrained-generic melt100 tcf fail execution melting generic
 
 -- Freezing
 
@@ -1708,6 +1711,7 @@ test	create-constrained-generic-crash-2	term181	tcf fail termination
 test	expanded-indirect-like-current		term182	tcf fail termination expanded anchored_type
 test	expanded-indirect-like-current-2	term183	tcf fail termination expanded anchored_type
 test	create-generic-with-rename		term184	tcf fail termination generic
+test	generic-derivation-constraint		term185 tcf pass termination formal generic constraint
 
 -- Config
 
@@ -1868,6 +1872,7 @@ test	storable-formats-63-2		store029 tcf pass storable
 test	store-retrieve-transient-attributes	store030 tcf pass storable
 test	store-retrieve-with-version	store031 tcf pass storable
 test	store-in-different-thread	store032 tcf pass storable multithreaded
+test	store-bounded-queues-stacks	store033 tcf pass storable
 
 -- Flat, short, flatshort tests
 
@@ -2447,6 +2452,10 @@ test	qat-constrained-types-crash		anchor047 tcf fail anchored_type formal generi
 test	qat-conformance-type-crash-2		anchor048 tcf fail anchored_type formal generic
 test	qat-process-formal-as-crash		anchor049 tcf fail anchored_type formal generic
 test	qat-invalid-vffd			anchor050 tcf fail anchored_type
+test	qat-c-compile-failure			anchor051 tcf fail anchored_type generic
+test	qat-anchored-to-redefined-descendant	anchor052 tcf fail anchored_type
+test	qat-inlining-bug			anchor053 tcf fail anchored_type generic
+test	qat-instantiated-in-crash-3		anchor054 tcf fail anchored_type formal generic
 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet

@@ -160,14 +160,24 @@ feature {NONE} -- C code generation: implementation
 				if context.workbench_mode or else context.result_used then
 					context.add_dt_current
 					if is_basic_type then
-						a_result_attrib.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name)
-						buf.put_string_and_new_line (" = (" + c_type_name + ") " + a_result_name + ";")
+						a_result_attrib.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name)
+						buf.put_three_character (' ', '=' , '(')
+						buf.put_string (c_type_name)
+						buf.put_two_character (')', ' ')
+						buf.put_string (a_result_name)
+						buf.put_character (';')
 					else
-						buf.put_string ("RTAR(" + {C_CONST}.current_name +  {C_CONST}.comma_space + a_result_name)
+						buf.put_string ("RTAR(")
+						buf.put_string ({C_CONST}.current_name)
+						buf.put_two_character (',', ' ')
+						buf.put_string (a_result_name)
 						buf.put_two_character (')', ';')
 						buf.put_new_line
-						a_result_attrib.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name)
-						buf.put_string (" = (" + c_type_name + ") RTCCL(" + a_result_name)
+						a_result_attrib.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name)
+						buf.put_three_character (' ', '=' , '(')
+						buf.put_string (c_type_name)
+						buf.put_string (") RTCCL(")
+						buf.put_string (a_result_name)
 						buf.put_two_character (')', ';')
 						buf.put_new_line
 					end
@@ -210,7 +220,8 @@ feature {NONE} -- C code generation: implementation
 				if context.workbench_mode or else context.result_used then
 						-- Generate Result definition
 					buf.put_new_line_only
-					buf.put_string ("#define " + macro)
+					buf.put_string ("#define ")
+					buf.put_string (macro)
 					buf.put_character ('%T')
 					if is_basic_type then
 						buf.put_string (c_type_name)
@@ -372,19 +383,14 @@ feature -- C code generation
 				l_att_i := context.associated_class.object_relative_once_info (rout_id).called_attribute_i
 				buf.put_new_line
 				buf.put_string ("if (!EIF_TEST(")
-				l_att_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name)
+				l_att_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name)
 				buf.put_string (")) {")
 				buf.indent
 				buf.put_new_line
-				l_att_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name)
-				buf.put_string_and_new_line (" = EIF_TRUE;")
-
-					--| Init exception storage
-				l_att_i := context.associated_class.object_relative_once_info (rout_id).exception_attribute_i
-				l_att_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name)
-				buf.put_string_and_new_line (" = (EIF_REFERENCE)0;")
-
-				buf.put_string_and_new_line ("RTO_TRY")
+				l_att_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name)
+				buf.put_string (" = EIF_TRUE;")
+				buf.put_new_line
+				buf.put_string ("RTO_TRY")
 			else
 				if context.workbench_mode then
 					if is_process_relative_once then
@@ -452,28 +458,29 @@ feature -- C code generation
 		do
 				-- See `generate_once_prologue' for details
 			buf := context.buffer
-			buf.put_new_line
 			if is_object_relative_once then
 				context.add_dt_current
-				buf.indent
-				buf.put_new_line
-
 				l_obj_once_info := context.associated_class.object_relative_once_info (rout_id)
 					-- Save result if any
 				if l_obj_once_info.has_result then
+					buf.put_new_line
 					generate_object_relative_once_result_assignment ("Result", l_obj_once_info.result_attribute_i)
 				end
 
 					-- Catch exception
-				buf.put_string_and_new_line ("RTO_EXCEPT")
+				buf.put_new_line
+				buf.put_string ("RTO_EXCEPT")
 					-- Record exception for future use
-				l_obj_once_info.exception_attribute_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
-				buf.put_string_and_new_line (" = RTLA;")
-				buf.put_string_and_new_line ("RTO_END_EXCEPT")
+				buf.put_new_line
+				l_obj_once_info.exception_attribute_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
+				buf.put_string (" = RTLA;")
+				buf.put_new_line
+				buf.put_string ("RTO_END_EXCEPT")
+				buf.put_new_line
 				buf.put_string ({C_CONST}.if_conditional)
 				buf.put_two_character (' ', '(')
-				l_obj_once_info.exception_attribute_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
-				buf.put_string_and_new_line (" != NULL) {")
+				l_obj_once_info.exception_attribute_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
+				buf.put_string (" != NULL) {")
 				buf.indent
 				buf.put_new_line
 				buf.put_string ("ereturn();")
@@ -490,26 +497,28 @@ feature -- C code generation
 					-- Raise the saved exception if any
 				buf.put_string ({C_CONST}.if_conditional)
 				buf.put_two_character (' ', '(')
-				l_obj_once_info.exception_attribute_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
-				buf.put_string_and_new_line (" != NULL) {")
+				l_obj_once_info.exception_attribute_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
+				buf.put_string (" != NULL) {")
 				buf.indent
 				buf.put_new_line
 				buf.put_string ("oraise (")
-				l_obj_once_info.exception_attribute_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)					
+				l_obj_once_info.exception_attribute_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)					
 				buf.put_two_character (')', ';')
 				buf.exdent
 				buf.put_new_line
-				buf.put_string_and_new_line ("}")
+				buf.put_string ("}")
 				if l_obj_once_info.has_result then
 						-- Return save result if any
+					buf.put_new_line
 					buf.put_string ("Result = ")
-					l_obj_once_info.result_attribute_i.generate_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
+					l_obj_once_info.result_attribute_i.generate_hidden_attribute_access (context.class_type, buf, {C_CONST}.current_name) --context.current_register.register_name)
 					buf.put_character (';')
 				end
 				buf.exdent
 				buf.put_new_line
 				buf.put_string ("}")
 			else
+				buf.put_new_line
 				if context.workbench_mode then
 					if is_process_relative_once then
 						buf.put_string ("RTOQE;")

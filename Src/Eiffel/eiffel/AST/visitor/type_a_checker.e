@@ -892,7 +892,7 @@ feature {NONE} -- Implementation
 				create routine_id.make_filled (0, n)
 				from
 						-- Register intermediate type with instantiator.
-					instantiator.dispatch (q, current_class)
+					instantiator.dispatch (q.conformance_type, current_class)
 				until
 					not attached q or else i >= n
 				loop
@@ -934,7 +934,7 @@ feature {NONE} -- Implementation
 									-- Record supplier for recompilation.
 								degree_4.add_qualified_supplier (f, c, current_class)
 									-- Register intermediate type with instantiator.
-								instantiator.dispatch (q, current_class)
+								instantiator.dispatch (q.conformance_type, current_class)
 									-- Record routine ID that is used to update the type in descendants.
 								routine_id [i] := f.rout_id_set.first
 								if attached suppliers as s then
@@ -990,14 +990,14 @@ feature {NONE} -- Implementation
 				create name.make_filled (0, n)
 				from
 						-- Register intermediate type with instantiator.
-					instantiator.dispatch (q, current_class)
+					instantiator.dispatch (q.conformance_type, current_class)
 				until
 					not attached q or else i >= n
 				loop
-						-- TODO: support MC generics
+					feature_finder.find_by_routine_id (t.routine_id [i], q, current_class)
 					if
-						attached q.associated_class as c and then
-						attached c.feature_of_rout_id (t.routine_id [i]) as f
+						attached feature_finder.found_feature as f and then
+						attached system.class_of_id (feature_finder.found_site) as c
 					then
 						saved_class := current_class
 						saved_actual_type := current_actual_type
@@ -1023,7 +1023,7 @@ feature {NONE} -- Implementation
 								-- Record supplier for recompilation.
 							degree_4.add_qualified_supplier (f, c, current_class)
 								-- Register intermediate type with instantiator.
-							instantiator.dispatch (q, current_class)
+							instantiator.dispatch (q.conformance_type, current_class)
 								-- Save name of the routine.
 							name [i] := f.feature_name_id
 							if attached suppliers as s then
@@ -1061,13 +1061,11 @@ feature {NONE} -- Implementation
 		require
 			f_attached: attached f
 		local
-			l_rout_id: INTEGER_32
 			l_like_control: like like_control
 			l_vtat1: VTAT1
 		do
 			l_like_control := like_control
-			l_rout_id := f.rout_id_set.first
-			if l_like_control.has_routine_id (l_rout_id) then
+			if l_like_control.has_feature (f) then
 					-- Error because of cycle
 				last_type := Void
 				if has_error_reporting then
@@ -1077,11 +1075,11 @@ feature {NONE} -- Implementation
 					error_handler.insert_error (l_vtat1)
 				end
 			else
-				l_like_control.put_routine_id (l_rout_id)
+				l_like_control.put_feature (f)
 					-- Process type referenced by anchor.
 				f.type.process (Current)
 					-- Update anchored type controler
-				l_like_control.remove_routine_id
+				l_like_control.remove_feature
 				if not attached last_type as a then
 						-- Nothing to be done, error if any was already reported.
 				elseif a.is_void then
