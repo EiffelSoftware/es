@@ -25,6 +25,7 @@ test	capture-replay-suppress-dispose	caprep013 tcf pass capture replay
 test	capture-replay-retrieve		caprep014 tcf pass capture replay
 test	capture-replay-threads		caprep015 tcf pass capture replay
 test	capture-replay-net-retrieve	caprep016 tcf pass capture replay
+test	capture-replay-dynamic-type-ids	caprep017 tcf pass capture replay
 
 
 -- EiffelTime tests
