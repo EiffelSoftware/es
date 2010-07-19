@@ -1934,7 +1934,9 @@ feature {NONE} -- Query
 				if
 					l_class.same_string ("TUPLE") or
 					l_class.same_string ("MEMORY") or
-					l_class.same_string ("MEM_INFO")
+					l_class.same_string ("MEM_INFO") or
+					l_class.same_string ("INTERNAL") or
+					l_class.same_string ("ISE_RUNTIME")
 				then
 						-- The external routines of the above classes are executed in any case
 					Result := True
