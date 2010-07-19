@@ -622,12 +622,6 @@ rt_private char cr_schedule()
 
 		bread(&next_action, sizeof(char));
 
-		cr_debug++;
-
-		cr_log_event (next_action);
-
-		cr_debug--;
-
 #endif
 
 
@@ -1866,7 +1860,7 @@ rt_public void cr_free (struct ex_vect *exvect, void *dest)
 rt_public void eif_printf (EIF_REFERENCE string)
 {
 
-	printf("%s", (char *) *(EIF_REFERENCE *)string);
+	fprintf(stderr, "%s", (char *) *(EIF_REFERENCE *)string);
 
 }
 
