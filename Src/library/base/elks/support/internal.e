@@ -56,7 +56,7 @@ feature -- Creation
 			class_type_not_empty: not class_type.is_empty
 			is_valid_type_string: is_valid_type_string (class_type)
 		local
-			l_cstr: C_STRING
+			l_area: SPECIAL [CHARACTER]
 			l_table: like internal_dynamic_type_string_table
 			l_pre_ecma_status: BOOLEAN
 		do
@@ -65,11 +65,11 @@ feature -- Creation
 			if l_table.found then
 				Result := l_table.found_item
 			else
-				create l_cstr.make (class_type)
+				l_area := class_type.area
 					-- Take into consideration possible pre-ECMA mapping.
 				l_pre_ecma_status := {ISE_RUNTIME}.pre_ecma_mapping_status
 				{ISE_RUNTIME}.set_pre_ecma_mapping (not is_pre_ecma_mapping_disabled)
-				Result := {ISE_RUNTIME}.type_id_from_name (l_cstr.item)
+				Result := {ISE_RUNTIME}.type_id_from_name (l_area.base_address)
 				{ISE_RUNTIME}.set_pre_ecma_mapping (l_pre_ecma_status)
 				l_table.put (Result, class_type)
 			end
