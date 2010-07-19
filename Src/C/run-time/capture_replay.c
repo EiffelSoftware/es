@@ -1060,6 +1060,8 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 	if (cr_suppress || cr_disabled)
 		return;
 
+	char *type_name;
+	size_t length;
 	union overhead *zone = HEADER(obj);
 	char type = NEWOBJ;
 	EIF_CR_REFERENCE ref;
@@ -1070,11 +1072,14 @@ rt_public void cr_register_emalloc (EIF_REFERENCE obj)
 		type |= 0x1;
 
 	EIF_TYPE_INDEX dftype = zone->ov_dftype;
+	type_name = eif_typename(dftype);
+	length = strlen (type_name);
 
 	CR_EVENT_MUTEX_LOCK("malloc");
 
 	cr_write_event_type (type);
-	bwrite ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
+	bwrite ((char *) &length, sizeof(size_t));
+	bwrite (type_name, length);
 
 	CR_EVENT_MUTEX_UNLOCK("malloc");
 
@@ -1361,7 +1366,8 @@ rt_public void cr_replay ()
 	EIF_CR_ID id;
 	long excpt_code;
 	uint32 excpt_length;
-	char *excpt_tag;
+	char *excpt_tag, *type_name;
+	size_t length;
 
 	if (cr_suppress)
 		return;
@@ -1463,9 +1469,22 @@ rt_public void cr_replay ()
 
 			case NEWOBJ:
 
-				bread ((char *) &dftype, sizeof(EIF_TYPE_INDEX));
+				bread ((char *) &length, sizeof(size_t));
+
+				type_name = (char *) eif_rt_xcalloc(length + 1, (size_t) 1);
+				if (type_name == (char *) 0)
+					enomem();
+
+				bread (type_name, length);
+				type_name[length] = '\0';
 
 				CR_EVENT_MUTEX_UNLOCK("malloc");
+
+				dftype = eif_type_id (type_name);
+				eif_rt_xfree (type_name);
+
+				if (dftype == EIF_NO_TYPE)
+					cr_raise ("Unknown dynamic type");
 
 				if ((type & ARG_MASK) == 1)
 					ref.item.r = emalloc(dftype);
@@ -1860,7 +1879,7 @@ rt_public void cr_free (struct ex_vect *exvect, void *dest)
 rt_public void eif_printf (EIF_REFERENCE string)
 {
 
-	fprintf(stderr, "%s", (char *) *(EIF_REFERENCE *)string);
+	printf("%s", (char *) *(EIF_REFERENCE *)string);
 
 }
 
