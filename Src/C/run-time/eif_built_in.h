@@ -211,6 +211,9 @@ extern "C" {
 #define eif_builtin_RT_CAPTURE_REPLAY_print_string(obj,string)
 #define eif_builtin_RT_CAPTURE_REPLAY_thread_id(obj)				((EIF_NATURAL_64) 0)
 
+#define eif_builtin_RT_CAPTURE_REPLAY_enable_debug_output(obj)
+#define eif_builtin_RT_CAPTURE_REPLAY_disable_debug_output(obj)
+
 #endif
 
 
