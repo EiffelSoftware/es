@@ -16,8 +16,6 @@ inherit
 
 	SHARED_TYPES
 
-	CI_SHARED_EQUALITY_TESTERS
-
 	KL_SHARED_STRING_EQUALITY_TESTER
 
 	EPA_UTILITY
@@ -26,6 +24,8 @@ inherit
 
 	EPA_STRING_UTILITY
 
+	CI_UTILITY
+
 feature -- Access
 
 	logger: EPA_LOG_MANAGER
@@ -33,6 +33,9 @@ feature -- Access
 
 	config: CI_CONFIG
 			-- Configuration
+
+	data: CI_TEST_CASE_DATA
+			-- Data collected from test case execution
 
 feature -- Access
 
@@ -47,9 +50,22 @@ feature -- Access
 			-- Key is a boolean indicating precondition or postcondition,
 			-- value is the set of assertions of that kind.
 
+feature -- Status report
+
+	is_arff_needed: BOOLEAN
+			-- Is ARFF data needed?
+		do
+			Result := True
+		end
+
+	is_expression_value_map_needed: BOOLEAN
+			-- Is expression to its value set mapping needed?
+		do
+		end
+
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
+	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		deferred
@@ -177,6 +193,9 @@ feature -- Access
 
 	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
 			-- Transition data from which contracts are inferred
+		do
+			Result := data.transition_data
+		end
 
 	feature_under_test: FEATURE_I
 			-- Feature under test
@@ -322,6 +341,7 @@ feature{NONE} -- Implementation
 		end
 
 	valid_frame_properties (
+		a_ternary_logic: BOOLEAN;
 		a_expressions: like quantifier_free_expressions;
 		a_bookkeeping_agent: detachable PROCEDURE [ANY, TUPLE [a_quantified_expr: CI_QUANTIFIED_EXPRESSION; a_resolved_expr: STRING; a_evaluator: CI_EXPRESSION_EVALUATOR; a_tc_info: CI_TEST_CASE_TRANSITION_INFO]]): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
 			-- Set of valid frame properties from `a_expressions'
@@ -346,6 +366,7 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (ci_quantified_expression_equality_tester)
 
 			create l_evaluator
+			l_evaluator.set_is_ternary_logic_enabled (a_ternary_logic)
 
 				-- Logging.
 			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
@@ -451,37 +472,6 @@ feature{NONE} -- Implementation
 			create last_contracts.make (2)
 			last_contracts.put (last_preconditions, True)
 			last_contracts.put (last_postconditions, False)
-		end
-
-	interface_transitions_from_test_cases (a_test_cases: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]): DS_HASH_TABLE [SEM_FEATURE_CALL_TRANSITION, CI_TEST_CASE_TRANSITION_INFO]
-			-- Build interface transitions from `a_test_cases'.
-			-- Result is a table of interface transtions
-			-- Key is test case, value is the interface transition adapted from the transition in that test case.
-			-- The pre- and post-conditions of the interface transition only mentions operands in the feature.
-		local
-			l_transition: SEM_FEATURE_CALL_TRANSITION
-			l_test_case: CI_TEST_CASE_TRANSITION_INFO
-			l_original_transition: SEM_FEATURE_CALL_TRANSITION
-		do
-			create Result.make (transition_data.count)
-			Result.set_key_equality_tester (ci_test_case_transition_info_equality_tester)
-
-				-- Iterate through all test cases in `transition_data',
-				-- for each test case, build the corresponding interface transition.
-			across a_test_cases as l_test_cases loop
-				l_test_case := l_test_cases.item
-				l_original_transition := l_test_case.transition
-				create l_transition.make (
-					l_test_case.test_case_info.class_under_test,
-					l_test_case.test_case_info.feature_under_test,
-					l_test_case.test_case_info.operand_map,
-					l_test_case.transition.context,
-					l_test_case.transition.is_creation)
-				l_transition.set_uuid (l_original_transition.uuid)
-				l_transition.set_preconditions (l_original_transition.interface_preconditions.subtraction (l_original_transition.written_preconditions))
-				l_transition.set_postconditions (l_original_transition.interface_postconditions.subtraction (l_original_transition.written_postconditions))
-				Result.force_last (l_transition, l_test_case)
-			end
 		end
 
 	expression_from_function (a_function: EPA_FUNCTION; a_function_type: detachable TYPE_A; a_operand_map: HASH_TABLE [INTEGER, INTEGER]; a_class: CLASS_C; a_feature: FEATURE_I): EPA_EXPRESSION

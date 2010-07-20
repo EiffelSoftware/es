@@ -23,14 +23,14 @@ inherit
 
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
+	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.	
 		local
 			l_cursor: DS_HASH_SET_CURSOR [STRING]
 		do
 			logger.put_line_with_time_at_info_level ("Start analyzing sequence-based frame properties.")
-			transition_data := a_data.twin
+			data := a_data
 			setup_data_structures
 			calculate_sequences
 			calculate_integer_queries

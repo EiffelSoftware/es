@@ -17,7 +17,7 @@ inherit
 
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
+	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		local
@@ -27,7 +27,7 @@ feature -- Basic operations
 			l_valid_frame_properties: like valid_frame_properties
 			l_valid_prop_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
 		do
-			transition_data := a_data
+			data := a_data
 			setup_data_structures
 
 			logger.put_line_with_time ("Start inferring composite frame properties.")
@@ -51,7 +51,7 @@ feature -- Basic operations
 			create evaluation_distribution.make (100)
 			evaluation_distribution.set_key_equality_tester (ci_quantified_expression_equality_tester)
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
-			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions, agent on_property_evaluated)
+			l_valid_frame_properties := valid_frame_properties (False, l_quantifier_free_exressions, agent on_property_evaluated)
 
 				-- Filter out properties which only evaluated to true or only evaluated to false over all test cases.
 			from
@@ -71,6 +71,7 @@ feature -- Basic operations
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
+			generate_inferred_contracts (l_valid_frame_properties)
 			setup_last_contracts
 
 				-- Logging.
@@ -192,7 +193,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	is_function_with_same_signature (a_function: EPA_FUNCTION; a_valuations: EPA_FUNCTION_VALUATIONS; a_target_variable_index: INTEGER; a_transition: SEM_TRANSITION; a_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE): BOOLEAN
+	is_function_with_same_signature (a_function: EPA_FUNCTION; a_valuations: EPA_FUNCTION_VALUATIONS; a_target_variable_index: INTEGER; a_transition: SEM_TRANSITION; a_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE; a_pre_state: BOOLEAN): BOOLEAN
 			-- Does `a_function' have the same signature as `a_signature'?
 		local
 			l_func_valuations: EPA_FUNCTION_VALUATIONS
@@ -293,7 +294,7 @@ feature{NONE} -- Implementation
 						l_state_functions.force_last (l_functions, l_signature)
 					end
 						-- For each signature and each state, get the set of functions of the same signature in that state.
-					l_functions.append_last (suitable_functions (l_pre_state, agent is_function_with_same_signature (?, ?, ?, ?, l_signature)))
+					l_functions.append_last (suitable_functions (l_pre_state, agent is_function_with_same_signature (?, ?, ?, ?, l_signature, l_pre_state)))
 				end
 				l_sig_cursor.forth
 			end
@@ -636,6 +637,25 @@ feature{NONE} -- Implementation
 					end
 				end
 				l_column := l_column + 1
+			end
+		end
+
+	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION])
+			-- Generate final inferred contracts from `candidate_properties' and
+			-- store result in `last_postconditions'.
+		local
+			l_properties: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+		do
+			from
+				l_properties := a_valid_properties.new_cursor
+				l_properties.start
+			until
+				l_properties.after
+			loop
+				l_expr := expression_from_quantified_expression (l_properties.item, class_under_test, feature_under_test)
+				last_postconditions.force_last (l_expr)
+				l_properties.forth
 			end
 		end
 

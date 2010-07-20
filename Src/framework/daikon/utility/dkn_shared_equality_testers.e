@@ -21,4 +21,11 @@ feature -- Access
 			create Result
 		end
 
+	daikon_invariant_equality_tester: DKN_INVARIANT_EQUALITY_TESTER
+			-- Equality tester for {DKN_INVARIANT}
+		once
+			create Result
+		end
+
+
 end

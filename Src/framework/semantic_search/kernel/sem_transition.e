@@ -166,6 +166,17 @@ feature -- Access
 	uuid: detachable STRING
 			-- UUID of current transition
 
+	cloned_object: like Current
+			-- Clonded object
+		deferred
+		end
+
+	as_interface_transition: like Current
+			-- Interface transition of Current
+			-- Make a copy of current.
+		deferred
+		end
+
 feature -- Status setting
 
 	set_preconditions (a_pre: like preconditions)

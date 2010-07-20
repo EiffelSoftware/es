@@ -12,6 +12,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	EPA_CONSTANTS
+
 create
 	make
 
@@ -29,7 +31,6 @@ feature -- Access
 
 	function: EPA_FUNCTION
 			-- Function whose argument(s) to value map that current represents
-
 
 	map: DS_HASH_SET [EPA_FUNCTION_ARGUMENT_VALUE_MAP]
 			-- List of argument(s) to value mappings
@@ -200,6 +201,17 @@ feature -- Status report
 								a_map.arguments.is_equal (b_map.arguments) and then
 								not function_equality_tester.test (a_map.value, b_map.value)
 						end (?, a_valuation))
+		end
+
+	has_nonsensical_in_result: BOOLEAN
+			-- Does "nonsensical" exist as a value in result of curent valuation?
+		do
+			Result :=
+				map.there_exists (
+					agent (a_map: EPA_FUNCTION_ARGUMENT_VALUE_MAP): BOOLEAN
+						do
+							Result := a_map.value.body ~ nonsensical_value
+						end)
 		end
 
 feature -- Status report

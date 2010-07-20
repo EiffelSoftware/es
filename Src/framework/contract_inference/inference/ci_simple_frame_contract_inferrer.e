@@ -12,7 +12,7 @@ inherit
 
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
+	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		local
@@ -22,14 +22,14 @@ feature -- Basic operations
 			l_valid_frame_properties: like valid_frame_properties
 		do
 				-- Initialize.
-			transition_data := a_data.twin
+			data := a_data
 			setup_data_structures
 
 				-- Find building blocks for frame conditions.
 			l_suitable_functions := suitable_functions (True, agent is_function_suitable)
 			l_quantified_expressions := quantified_expressions (l_suitable_functions, True)
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
-			l_valid_frame_properties := valid_frame_properties (l_quantifier_free_exressions, Void)
+			l_valid_frame_properties := valid_frame_properties (False, l_quantifier_free_exressions, Void)
 
 				-- Setup results.
 			create last_preconditions.make (10)
@@ -78,6 +78,12 @@ feature{NONE} -- Implementation
 
 				if l_func_valuations.map.count > 1 then
 					Result := True
+				end
+
+					-- Remove functions with nonsensical values, because a candidate property containing such
+					-- functions will not be a valid contract anyway.
+				if Result then
+					Result := not l_func_valuations.has_nonsensical_in_result
 				end
 			end
 		end

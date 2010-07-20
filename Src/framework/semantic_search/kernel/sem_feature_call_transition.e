@@ -21,7 +21,9 @@ inherit
 	DEBUG_OUTPUT
 
 create
-	make
+	make,
+	make_with_transition,
+	make_interface_transition
 
 feature{NONE} -- Initialization
 
@@ -46,6 +48,54 @@ feature{NONE} -- Initialization
 			create written_postconditions.make (5, context.class_, context.feature_)
 			initialize_boosts
 			initialize (a_operands)
+		end
+
+	make_with_transition (a_transition: like Current)
+			-- Initialize Current by copying data from `a_transition'.
+		do
+			make (a_transition.class_, a_transition.feature_, a_transition.operand_map, a_transition.context, a_transition.is_creation)
+			set_description (a_transition.description)
+			set_uuid (a_transition.uuid)
+			set_name (a_transition.name)
+			preconditions := a_transition.preconditions.cloned_object
+			postconditions := a_transition.postconditions.cloned_object
+			written_preconditions := a_transition.written_preconditions.cloned_object
+			written_postconditions := a_transition.written_postconditions.cloned_object
+			precondition_boosts := a_transition.precondition_boosts.cloned_object
+			postcondition_boosts := a_transition.postcondition_boosts.cloned_object
+		end
+
+	make_interface_transition (a_transition: like Current)
+			-- Initialize Current by copying ONLY interface related data from `a_transition'.
+		local
+			l_assertions: like preconditions
+			l_boosts: like precondition_boosts
+		do
+			make (a_transition.class_, a_transition.feature_, a_transition.operand_map, a_transition.context, a_transition.is_creation)
+			set_description (a_transition.description)
+			set_uuid (a_transition.uuid)
+			set_name (a_transition.name)
+			preconditions := a_transition.interface_preconditions
+			postconditions := a_transition.interface_postconditions
+			set_precondition_boosts (a_transition.precondition_boosts)
+			set_postcondition_boosts (a_transition.postcondition_boosts)
+
+				-- Remove boosts which mention assertions which does not appear in Current anymore.
+			across <<True, False>> as l_states loop
+				l_assertions := assertions (l_states.item)
+				l_boosts := assertion_boosts (l_states.item)
+				from
+					l_boosts.start
+				until
+					l_boosts.after
+				loop
+					if l_assertions.has (l_boosts.key_for_iteration) then
+						l_boosts.forth
+					else
+						l_boosts.remove (l_boosts.key_for_iteration)
+					end
+				end
+			end
 		end
 
 feature -- Access
@@ -105,6 +155,35 @@ feature -- Access
 			Result.set_postconditions (postconditions)
 			Result.set_precondition_boosts (precondition_boosts)
 			Result.set_postcondition_boosts (postcondition_boosts)
+		end
+
+	cloned_object: like Current
+			-- Clonded object
+		do
+			create Result.make_with_transition (Current)
+		end
+
+	operand_map: HASH_TABLE [STRING, INTEGER]
+			-- Map from 0-based operand index of `feature_' to the name
+			-- of the variable associated with that operand
+		local
+			l_reversed: like reversed_variable_position
+			l_opd_index: INTEGER
+		do
+			l_reversed := reversed_variable_position
+
+			create Result.make (operand_count_of_feature (feature_))
+			across operand_index_set (feature_, True, True) as l_indexes loop
+				l_opd_index := l_indexes.item
+				Result.put (l_reversed.item (l_opd_index).text, l_opd_index)
+			end
+		end
+
+	as_interface_transition: like Current
+			-- Interface transition of Current
+			-- Make a copy of current.
+		do
+			create Result.make_interface_transition (Current)
 		end
 
 feature -- Status report

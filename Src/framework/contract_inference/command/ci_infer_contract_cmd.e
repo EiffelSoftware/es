@@ -26,6 +26,8 @@ inherit
 
 	EPA_COMPILATION_UTILITY
 
+	CI_UTILITY
+
 create
 	make
 
@@ -529,8 +531,10 @@ feature{NONE} -- Actions
 			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
 			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
 		do
+			setup_data
+
 				-- Infer contracts using all registered inferrers.
-			inferrers.do_all (agent {CI_INFERRER}.infer (transition_data))
+			inferrers.do_all (agent {CI_INFERRER}.infer (data))
 
 				-- Setup results.
 			create l_preconditions.make (100)
@@ -817,8 +821,139 @@ feature{NONE} -- Results
 	last_post_execution_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
 			-- Functions with bounded integer domain in post-execution state
 
+feature{NONE} -- Data
+
 	transition_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO]
 			-- Data collected for transitions retrieved from executed test cases
 
+	data: CI_TEST_CASE_DATA
+			-- Data collected from executed test cases
+
+feature{NONE} -- Implementation
+
+	generate_arff_relation
+			-- Generate `arff_relation' from `transition_data'.
+		local
+			l_gen: CI_TRANSITION_TO_WEKA_PRINTER
+			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+		do
+			if inferrers.there_exists (agent {CI_INFERRER}.is_arff_needed) then
+				log_manager.put_line_with_time ("Generating ARFF relation.")
+
+					-- Setup ARFF generator.
+				create l_gen.make
+				l_gen.set_is_union_mode (False)
+				l_gen.set_is_absolute_change_included (True)
+				l_gen.set_is_relative_change_included (True)
+				l_gen.set_is_value_table_generated (True)
+				l_gen.set_equation_selection_function (
+					agent (a_equation: EPA_EQUATION; a_tran: SEM_TRANSITION; a_pre_state: BOOLEAN): BOOLEAN
+						local
+							l_type: TYPE_A
+						do
+							l_type := a_equation.expression.type
+							Result :=
+								(l_type.is_integer or l_type.is_boolean)
+--								not a_equation.value.is_nonsensical
+						end)
+
+				data.interface_transitions.do_all (agent l_gen.extend_transition ({SEM_FEATURE_CALL_TRANSITION}?))
+				data.set_arff_relation (l_gen.as_weka_relation)
+
+					-- Store ARFF file.
+				create l_file_name.make_from_string (config.data_directory)
+				l_file_name.set_file_name (class_.name_in_upper + "__" + feature_.feature_name.as_lower + ".arff")
+				create l_file.make_create_read_write (l_file_name)
+				data.arff_relation.to_medium (l_file)
+				l_file.close
+			end
+		end
+
+	generate_expression_value_mapping
+			-- Generate expression-value mapping.
+		do
+			if inferrers.there_exists (agent {CI_INFERRER}.is_expression_value_map_needed) then
+				log_manager.put_line_with_time ("Generating interface expression value mapping.")
+				data.initialize_interface_expression_value_mapping
+				log_interface_expression_value_statistics
+			end
+		end
+
+	setup_data
+			-- Setup `data'.
+		do
+			log_manager.put_line_with_time ("Analyzing test case data.")
+
+			create data.make (transition_data)
+
+				-- Generate ARFF relation if needed.
+			generate_arff_relation
+
+				-- Generate expression-value mapping if needed.
+			generate_expression_value_mapping
+		end
+
+	log_interface_expression_value_statistics
+			-- Log statistics information of interface expression values.
+		local
+			l_text: STRING
+			l_expr: STRING
+			l_exprs: SORTED_TWO_WAY_LIST [STRING]
+			l_expr_values: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION_VALUE], STRING]
+			l_value_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION_VALUE]
+			i, l_count: INTEGER
+		do
+				-- Logging.
+			log_manager.push_fine_level
+			if log_manager.is_logging_needed then
+				log_manager.put_line_with_time ("Statistics of interface expressions:")
+				across <<True, False>> as l_states loop
+					if l_states.item then
+						log_manager.put_line ("%TIn pre-state:")
+					else
+						log_manager.put_line ("%TIn post-state:")
+					end
+					create l_exprs.make
+					l_expr_values := data.interface_expression_values.item (l_states.item)
+					across l_expr_values as l_values loop
+						l_exprs.extend (l_values.key)
+					end
+					l_exprs.sort
+					across l_exprs as l_sorted_exprs loop
+						l_expr := l_sorted_exprs.item
+						create l_text.make (128)
+						l_text.append (once "%T%T")
+						l_text.append (l_expr)
+						l_text.append (once " = { ")
+						from
+							i := 1
+							l_count := l_expr_values.item (l_expr).count
+							l_value_cursor := l_expr_values.item (l_expr).new_cursor
+							l_value_cursor.start
+						until
+							l_value_cursor.after
+						loop
+							l_text.append (l_value_cursor.item.out)
+							if i < l_count then
+								l_text.append (once ", ")
+							end
+							i := i + 1
+							l_value_cursor.forth
+						end
+						l_text.append (once " }")
+						log_manager.put_line (l_text)
+					end
+				end
+
+				log_manager.put_line ("%TChanged interface expressions:")
+				across data.interface_expression_changes as l_changes loop
+					if l_changes.item then
+						log_manager.put_line (once "%T%T" + l_changes.key)
+					end
+				end
+			end
+			log_manager.pop_level
+		end
 
 end

@@ -62,8 +62,7 @@ feature -- Generate
 			calculate_declarations (l_enter_ppt, pre_state_expressions)
 			calculate_declarations (l_exit_ppt, post_state_expressions)
 
-			calculate_traces (l_enter_ppt, True)
-			calculate_traces (l_exit_ppt, False)
+			calculate_traces (l_enter_ppt, l_exit_ppt)
 		end
 
 feature{NONE} -- Implementation
@@ -121,20 +120,13 @@ feature{NONE} -- Implementation
 	variable_declaractions (a_variable_names: like pre_state_expressions): DS_HASH_SET [DKN_VARIABLE]
 			-- Set of variable declarations derived from `a_state'
 		local
-			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, STRING_8]
 			l_variable: like variable_declaraction
 		do
 			create Result.make (100)
 			Result.set_equality_tester (daikon_variable_equality_tester)
-			from
-				l_cursor := a_variable_names.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_variable := variable_declaraction (l_cursor.key, l_cursor.item)
+			across a_variable_names as l_var_names loop
+				l_variable := variable_declaraction (l_var_names.key, l_var_names.item)
 				Result.force_last (l_variable)
-				l_cursor.forth
 			end
 		end
 
@@ -170,11 +162,12 @@ feature{NONE} -- Implementation
 			create Result.make (a_var_name, l_rep_type, l_var_kind, l_dec_type, l_comparability)
 		end
 
-	calculate_traces (a_ppt: DKN_PROGRAM_POINT; a_precondition: BOOLEAN)
-			-- Calculate traces for `a_ppt', store result in `last_trace'.
+	calculate_traces (a_entry_ppt, a_exit_ppt: DKN_PROGRAM_POINT)
+			-- Calculate traces for `a_entry_ppt' and `a_exit_ppt', store result in `last_trace'.
 		do
 			across transitions as l_transitions loop
-				last_trace.extend (trace_record (a_ppt, l_transitions.item, a_precondition))
+				last_trace.extend (trace_record (a_entry_ppt, l_transitions.item, True))
+				last_trace.extend (trace_record (a_exit_ppt, l_transitions.item, False))
 			end
 		end
 

@@ -29,7 +29,7 @@ feature{NONE} -- Initialization
 
 				-- Only select equations that are of type boolean or integer.
 			set_equation_selection_function (
-				agent (a_equation: EPA_EQUATION): BOOLEAN
+				agent (a_equation: EPA_EQUATION; a_transition: SEM_TRANSITION; a_pre_state: BOOLEAN): BOOLEAN
 					local
 						l_type: TYPE_A
 					do
@@ -76,13 +76,13 @@ feature -- Access
 			l_posts := post_state_expressions
 
 			create l_attrs.make
-			l_pres.keys.do_all (agent l_attrs.extend)
-			l_posts.keys.do_all (agent l_attrs.extend)
+			across l_pres as pres loop l_attrs.extend (pres.key) end
+			across l_posts as posts loop l_attrs.extend (posts.key) end
 
 			if is_absolute_change_included or is_relative_change_included then
-				calculate_changes
+				calculate_changes (l_pres, l_posts)
 				attributes_for_changes.keys.do_all (agent l_attrs.extend)
-				attributes_for_changes.do_all_with_key (agent l_posts.force_last)
+				attributes_for_changes.do_all_with_key (agent l_posts.force)
 			end
 
 			create l_weka_attrs.make (100)
@@ -246,16 +246,16 @@ feature -- Status report
 			l_agent: FUNCTION [ANY, TUPLE [EPA_EQUATION], BOOLEAN]
 		do
 			l_agent :=
-				agent (a_equation: EPA_EQUATION): BOOLEAN
+				agent (a_equation: EPA_EQUATION; a_tran: SEM_TRANSITION; a_pre_state: BOOLEAN): BOOLEAN
 					do
 						Result :=
-							attached equation_selection_function as l_function implies l_function.item ([a_equation]) and
+							attached equation_selection_function as l_function implies l_function.item ([a_equation, a_tran, a_pre_state]) and
 							((a_equation.value.is_boolean or
 							  a_equation.value.is_nonsensical or
 							  a_equation.value.is_void or
 							  a_equation.value.is_integer)) and
 							a_equation.value.is_deterministic
-					end
+					end (?, a_transition, ?)
 
 			Result :=
 				a_transition.preconditions.for_all (l_agent) and then
@@ -338,78 +338,6 @@ feature{NONE} -- Implementation
 			end
 		end
 
---	selected_assertions (a_attributes_retriever: FUNCTION [ANY, TUPLE [SEM_TRANSITION], EPA_STATE]): DS_HASH_TABLE [TYPE_A, STRING]
---			-- Set of expressions that are to be translated into Weka attributes
---			-- Elements in Result is anonymous expression names for those attributes.
---		local
---			l_frequence_tbl: DS_HASH_TABLE [INTEGER, STRING]
---			l_type_tbl: DS_HASH_TABLE [TYPE_A, STRING]
---			l_cursor: CURSOR
---			l_state_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
---			l_selection_function: like equation_selection_function
---			l_expression: EPA_EXPRESSION
---			l_union_mode: BOOLEAN
---			l_count: INTEGER
---			l_anonymous_expr: STRING
---			l_transition: SEM_TRANSITION
---			l_state: EPA_STATE
---			l_type: TYPE_A
---		do
---			l_selection_function := equation_selection_function
---			create l_frequence_tbl.make (100)
---			l_frequence_tbl.set_key_equality_tester (string_equality_tester)
---			create l_type_tbl.make (100)
---			l_type_tbl.set_key_equality_tester (string_equality_tester)
-
---				-- Collect the number of times that each expression appears in all transitions.
---			l_cursor := transitions.cursor
---			from
---				transitions.start
---			until
---				transitions.after
---			loop
---				from
---					l_transition := transitions.item_for_iteration
---					l_state := a_attributes_retriever.item ([l_transition])
---					l_state_cursor := l_state.new_cursor
---					l_state_cursor.start
---				until
---					l_state_cursor.after
---				loop
---					if l_selection_function = Void or else l_selection_function.item ([l_state_cursor.item]) then
---						l_expression :=	l_state_cursor.item.expression
---						l_type := l_expression.type
---						fixme ("We only handle boolean and integer expressions for the moment. 9.6.2010 Jasonw")
---						if l_type.is_boolean or l_type.is_integer then
---							l_anonymous_expr := l_transition.anonymous_expression_text (l_expression)
---							l_frequence_tbl.force_last (l_frequence_tbl.item (l_anonymous_expr) + 1, l_anonymous_expr)
---							l_type_tbl.force_last (l_expression.resolved_type (l_transition.context_type), l_anonymous_expr)
---						end
---					end
---					l_state_cursor.forth
---				end
---				transitions.forth
---			end
---			transitions.go_to (l_cursor)
-
---				-- Collect all the expressions to be translated as attributes.
---			create Result.make (l_frequence_tbl.count)
---			Result.set_key_equality_tester (string_equality_tester)
---			l_union_mode := is_union_mode
-
---			from
---				l_count := transitions.count
---				l_frequence_tbl.start
---			until
---				l_frequence_tbl.after
---			loop
---				if l_union_mode or else (l_frequence_tbl.item_for_iteration = l_count) then
---					Result.force_last (l_type_tbl.item (l_frequence_tbl.key_for_iteration), l_frequence_tbl.key_for_iteration)
---				end
---				l_frequence_tbl.forth
---			end
---		end
-
 	attribute_name_for_change (a_change: EPA_EXPRESSION_CHANGE; a_transition: SEM_TRANSITION): STRING
 			-- Name of the Weka attribute representing `a_change' in `a_transition'
 		do
@@ -422,7 +350,7 @@ feature{NONE} -- Implementation
 			Result.append (a_transition.anonymous_expression_text (a_change.expression))
 		end
 
-	calculate_changes
+	calculate_changes (a_pres: like pre_state_expressions; a_posts: like post_state_expressions)
 			-- Calculate changes in `transitions' and store result in `changes'.
 			-- Also calculate `attributes_for_changes'.
 		local
@@ -457,7 +385,7 @@ feature{NONE} -- Implementation
 				create l_zero_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "0", l_transition.context.class_)
 				create l_stay_true_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_true_value + once "%"", l_transition.context.class_)
 				create l_stay_false_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_false_value + once "%"", l_transition.context.class_)
-				l_change_set := transition_change_set (l_transition)
+				l_change_set := transition_change_set (l_transition, a_pres, a_posts)
 				create l_changes.make (20)
 				l_changes.compare_objects
 				l_tran_changes.extend ([l_transition, l_changes])
@@ -514,7 +442,7 @@ feature{NONE} -- Implementation
 	attributes_for_changes: DS_HASH_TABLE [TYPE_A, STRING]
 			-- Set of attributes that are to be translated into Weka attributes.
 
-	transition_change_set (a_transition: SEM_TRANSITION): DS_HASH_SET [EPA_EXPRESSION_CHANGE]
+	transition_change_set (a_transition: SEM_TRANSITION; a_pres: like pre_state_expressions; a_posts: like post_state_expressions): DS_HASH_SET [EPA_EXPRESSION_CHANGE]
 			-- Change set from `a_transition'
 		local
 			l_change_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
@@ -529,6 +457,8 @@ feature{NONE} -- Implementation
 			l_result_name: STRING
 			l_expr_name: STRING
 			l_type: TYPE_A
+			l_state: EPA_STATE
+			l_equation: EPA_EQUATION
 		do
 			l_is_absoluted_change_included := is_absolute_change_included
 			l_is_relative_change_included := is_relative_change_included
@@ -539,8 +469,25 @@ feature{NONE} -- Implementation
 			create l_change_calculator
 
 			from
-				l_pre_state := a_transition.interface_preconditions.subtraction (a_transition.written_preconditions)
-				l_post_state := a_transition.interface_postconditions.subtraction (a_transition.written_postconditions)
+--				l_pre_state := a_transition.interface_preconditions.subtraction (a_transition.written_preconditions)
+--				l_post_state := a_transition.interface_postconditions.subtraction (a_transition.written_postconditions)
+				l_pre_state := a_transition.preconditions.cloned_object
+				l_post_state := a_transition.postconditions.cloned_object
+				across <<l_pre_state, l_post_state>> as l_states loop
+					l_state := l_states.item
+					from
+						l_state.start
+					until
+						l_state.after
+					loop
+						l_equation := l_state.item_for_iteration
+						if not a_pres.has (a_transition.anonymous_expression_text (l_equation.expression)) then
+							l_state.remove (l_equation)
+						else
+							l_state.forth
+						end
+					end
+				end
 					-- If `a_transition' is a query feature call transition, we remove the postconditions which mention "Result"
 					-- from being used for change calculation.
 				if attached {SEM_FEATURE_CALL_TRANSITION} a_transition as l_feat_transition and then l_feat_transition.feature_.has_return_value then

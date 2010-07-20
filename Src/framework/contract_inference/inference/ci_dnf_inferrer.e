@@ -12,7 +12,7 @@ inherit
 
 feature -- Basic operations
 
-	infer (a_data: LINKED_LIST [CI_TEST_CASE_TRANSITION_INFO])
+	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		do
@@ -23,7 +23,7 @@ feature -- Basic operations
 						Result := a_equation.expression.type.is_boolean
 					end)
 
-			transition_data := a_data
+			data := a_data
 			setup_data_structures
 			setup_operand_string_table
 			logger.put_line_with_time_at_info_level ("Start inferring properties in DNF format.")
@@ -91,11 +91,34 @@ feature{NONE} -- Implementation
 		local
 			l_transitions: like transition_table.new_cursor
 			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_old_tran: SEM_FEATURE_CALL_TRANSITION
 			l_selection_func: like assertion_selection_fuction
 			l_assert_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_state: EPA_STATE
+			l_cursor: like data.interface_transitions.new_cursor
+			l_tc: CI_TEST_CASE_TRANSITION_INFO
 		do
-			transition_table := interface_transitions_from_test_cases (transition_data)
+			create transition_table.make (data.transition_data.count)
+			transition_table.set_key_equality_tester (ci_test_case_transition_info_equality_tester)
+			from
+				l_cursor := data.interface_transitions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_old_tran := l_cursor.item
+				l_tc := l_cursor.key
+				create l_transition.make (
+					l_tc.test_case_info.class_under_test,
+					l_tc.test_case_info.feature_under_test,
+					l_tc.test_case_info.operand_map,
+					l_tc.transition.context,
+					l_tc.transition.is_creation)
+				l_transition.set_preconditions (l_transition.preconditions)
+				l_transition.set_postconditions (l_transition.postconditions)
+				transition_table.force_last (l_transition, l_tc)
+				l_cursor.forth
+			end
 
 				-- Iterate through all transitions, and keep only expressions of boolean type.			
 			l_selection_func := assertion_selection_fuction

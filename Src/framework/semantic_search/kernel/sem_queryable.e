@@ -40,6 +40,21 @@ feature -- Access
 			-- Key is a variable, value is the 0-based appearing index of that
 			-- variable in Current transition.
 
+	variable_name_positions: HASH_TABLE [INTEGER, STRING]
+			-- Table from variable name to their positions
+		local
+			l_pos: like variable_positions
+		do
+			l_pos := variable_positions
+			create Result.make (l_pos.count)
+			Result.compare_objects
+			variable_positions.do_all_with_key (
+				agent (a_pos: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [INTEGER, STRING])
+					do
+						a_tbl.put (a_pos, a_expr.text)
+					end (?, ?, Result))
+		end
+
 	reversed_variable_position: HASH_TABLE [EPA_EXPRESSION, INTEGER]
 			-- Revsersed table for `variable_position'
 			-- Key is variable expression, value is the index of that variable

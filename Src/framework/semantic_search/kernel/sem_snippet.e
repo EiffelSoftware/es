@@ -14,7 +14,8 @@ inherit
 		end
 
 create
-	make
+	make,
+	make_with_transition
 
 feature{NONE} -- Initialization
 
@@ -79,6 +80,25 @@ feature{NONE} -- Initialization
 			set_description ("")
 		end
 
+	make_with_transition (a_transition: like Current)
+			-- Intialize Current by copying data from `a_transition'.
+		do
+			make (
+				a_transition.context,
+				a_transition.variable_name_positions,
+				string_set_from_expression_set (a_transition.inputs),
+				string_set_from_expression_set (a_transition.outputs),
+				a_transition.content)
+
+			preconditions := a_transition.preconditions.cloned_object
+			postconditions := a_transition.postconditions.cloned_object
+			precondition_boosts := a_transition.precondition_boosts.cloned_object
+			postcondition_boosts := a_transition.postcondition_boosts.cloned_object
+			set_name (a_transition.name)
+			set_uuid (a_transition.uuid)
+			set_description (a_transition.description)
+		end
+
 feature -- Access
 
 	content: STRING
@@ -87,6 +107,19 @@ feature -- Access
 			-- normalized, for example:
 			-- {1}.extend ({2})
 			-- {1} and {2} represent the first and second variable, respectively.
+
+	cloned_object: like Current
+			-- Clonded object
+		do
+			create Result.make_with_transition (Current)
+		end
+
+	as_interface_transition: like Current
+			-- Interface transition of Current
+			-- Make a copy of current.
+		do
+			Result := cloned_object
+		end
 
 feature -- Type status report
 
@@ -99,6 +132,20 @@ feature -- Visitor
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_snippet (Current)
+		end
+
+feature{SEM_SNIPPET} -- Implementation
+
+	string_set_from_expression_set (a_expr_set: DS_HASH_SET [EPA_EXPRESSION]): DS_HASH_SET [STRING]
+			-- String set from `a_expr_set'
+		do
+			create Result.make (a_expr_set.count)
+			Result.set_equality_tester (string_equality_tester)
+			a_expr_set.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_set: DS_HASH_SET [STRING])
+					do
+						a_set.force_last (a_expr.text)
+					end (?, Result))
 		end
 
 end

@@ -86,18 +86,87 @@ feature{NONE} -- Implementation
 		do
 			create left_hand_sides.make
 			l_parts := string_slices (a_assertion, sequence_is_prefix_of_bin_operator)
-			from
-				l_parts.start
-			until
-				l_parts.after
-			loop
-				l_parts.item.left_adjust
-				l_parts.item.right_adjust
-				if l_parts.item.item (1) = '(' then
-					l_parts.item.remove_head (1)
-					l_parts.item.remove_tail (1)
+			left_hand_sides.extend (l_parts.first)
+			right_hand_side := l_parts.last
+			clean_component (right_hand_side)
+		end
+
+	generate_for_concatenated_equal
+			-- Generate from `left_hand_sides' and `right_hand_side'.	
+		local
+			l_left: STRING
+			l_left_ast: EXPR_AS
+			l_body: STRING
+		do
+			across left_hand_sides as l_lefts loop
+				create l_body.make (64)
+				l_left := l_lefts.item
+				clean_component (l_left)
+				l_left_ast := ast_from_expression_text (l_left)
+				if attached {PARAN_AS} l_left_ast as l_paran then
+					l_left_ast := l_paran.expr
 				end
-				l_parts.forth
+
+				if attached {TUPLE_AS} l_left_ast as l_seq then
+
+				elseif attached {UN_OLD_AS} l_left_ast as l_old_seq then
+				elseif attached {BIN_FREE_AS} l_left_ast as l_free then
+
+				end
+			end
+		end
+
+	quantified_expression (a_left_signature: CI_SEQUENCE_SIGNATURE; a_right_signature: CI_SEQUENCE_SIGNATURE; a_left_pre_state, a_right_pre_state: BOOLEAN; a_offset: INTEGER): EPA_EXPRESSION
+			--
+		local
+			l_body: STRING
+			l_index_str: STRING
+			i: STRING
+			l_expr: EPA_AST_EXPRESSION
+			l_quantified_expr: EPA_UNIVERSAL_QUANTIFIED_EXPRESSION
+		do
+			create l_body.make (64)
+			if a_left_signature.is_special then
+				i := "1"
+			else
+				l_body.append ("(i >= ")
+				l_body.append (lower_bound_function (a_left_signature, a_left_pre_state).body)
+				l_body.append (" and i <= ")
+				l_body.append (upper_bound_function (a_left_signature, a_left_pre_state).body)
+				l_body.append (") implies ")
+				i := "i"
+			end
+
+			create l_index_str.make (32)
+			l_index_str.append (" - ")
+			l_index_str.append (a_offset.out)
+			l_index_str.append (" - 1 + ")
+			l_index_str.append (i)
+			fixme ("l_index_str needs to be simplified.")
+			l_index_str.append (lower_bound_function (a_right_signature, a_right_pre_state).body)
+
+			l_body.append (item_function (a_right_signature, a_right_pre_state, l_index_str).body)
+			l_body.append (" = ")
+
+			l_body.append (item_function (a_left_signature, a_left_pre_state, "i").body)
+
+			create l_expr.make_with_text_and_type (class_, feature_, l_body, class_, boolean_type)
+			if a_left_signature.is_special then
+				Result := l_expr
+			else
+				create l_quantified_expr.make ("i", integer_type, l_expr, class_, feature_, class_)
+				Result := l_quantified_expr
+			end
+		end
+
+	clean_component (a_string: STRING)
+			-- Remove heading/tailing spaces and paranthses of `a_string'.
+		do
+			a_string.left_adjust
+			a_string.right_adjust
+			if a_string.item (1) = '(' and then a_string.item (a_string.count) = ')' then
+				a_string.remove_head (1)
+				a_string.remove_tail (1)
 			end
 		end
 
@@ -190,3 +259,4 @@ feature{NONE} -- Process
 
 
 end
+

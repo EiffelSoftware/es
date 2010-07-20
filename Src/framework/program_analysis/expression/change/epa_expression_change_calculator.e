@@ -188,6 +188,10 @@ feature{NONE} -- Process/Data
 					create l_no_change.make_with_original_value (l_equation.value)
 					create l_change_list.make
 					l_change_list.extend (new_expression_change (expression, l_no_change, True, 0.1))
+
+					create l_absolute_result_expr.make_with_text (expression.class_, expression.feature_, a_value.out, expression.written_class)
+					l_change_list.extend (new_expression_change (expression, new_single_value_change_set (l_absolute_result_expr), False, 0.1))
+
 					expression_change_set.force_last (l_change_list, expression)
 				end
 			end

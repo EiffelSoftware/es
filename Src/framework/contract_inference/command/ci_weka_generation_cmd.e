@@ -12,6 +12,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	CI_UTILITY
+
 create
 	make
 
@@ -147,7 +149,7 @@ feature{NONE} -- Actions
 			logger.put_line_with_time ("Start loading transitions for feature " + a_feature_name + ".")
 			logger.push_fine_level
 
-				-- Iterate through all test cases for the feature.
+				-- Iterate through all test cases for the feature.			
 			from
 				l_cursor := a_test_cases.new_cursor
 				l_cursor.start
@@ -157,7 +159,10 @@ feature{NONE} -- Actions
 				logger.put_line (once "%TLoading " + l_cursor.item)
 				create l_transition_loader
 				l_transition_loader.load (l_cursor.item)
-				l_generator.extend_transitions (l_transition_loader.last_transitions)
+				l_transition_loader.last_transitions.do_all (
+					agent (a_tran: SEM_FEATURE_CALL_TRANSITION; a_gen: CI_TRANSITION_TO_WEKA_PRINTER) do
+						a_gen.extend_transition (create {SEM_FEATURE_CALL_TRANSITION}.make_interface_transition (a_tran))
+					end (?, l_generator))
 				l_cursor.forth
 			end
 
