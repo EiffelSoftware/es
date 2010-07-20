@@ -38,9 +38,9 @@
 #define _eif_error_h_
 
 #include "eif_except.h"
-#ifdef EIF_ASSERTIONS
-#include "rt_assert.h"
-#endif
+//#ifdef EIF_ASSERTIONS
+//#include "rt_assert.h"
+//#endif
 
 #ifdef __cplusplus
 extern "C" {

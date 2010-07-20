@@ -1399,7 +1399,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTCRCSO(y,bodyid,rout) \
 	int cr_old_depth = cr_cross_depth; \
-	int cr_cross = (RTCRI != (0)) && (is_capturing || is_replaying); \
+	int cr_cross = (RTCRI != (0)) && (is_capturing || is_replaying) && !cr_disabled; \
 	int cr_exception = 0; \
 	jmp_buf cr_jbuf, *cr_old_jbuf = (jmp_buf *) NULL; \
 	cr_call_depth++; \

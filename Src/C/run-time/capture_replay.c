@@ -1093,12 +1093,12 @@ rt_public void cr_register_protect (EIF_REFERENCE *obj)
 
 	EIF_GET_CONTEXT
 
+	if (cr_suppress || cr_disabled)
+		return;
+
 	REQUIRE("valid_object", obj != NULL);
 	REQUIRE("capturing", is_capturing);
 	REQUIRE("not_inside", !RTCRI);
-
-	if (cr_suppress || cr_disabled)
-		return;
 
 	EIF_CR_REFERENCE ref, newref;
 	ref.item.r = *obj;

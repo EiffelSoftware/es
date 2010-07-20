@@ -593,7 +593,6 @@ rt_public void dstop(struct ex_vect *exvect, uint32 break_index)
 			if (!BREAKPOINTS_DISCARDED) {
 				int stopped = 0;
 				BODY_INDEX bodyid = exvect->ex_bodyid;
-
 				DBGMTX_LOCK;	/* Enter critical section */
 
 				if (should_be_interrupted() && dinterrupt()) {	/* Ask daemon whether application should be interrupted here.*/
@@ -786,7 +785,6 @@ rt_shared void safe_dbreak (int why)
 	esresume();					/* Restore run-time context */
 #endif
 #endif
-
 
 	/* Returning from this routine will resume execution where it stopped */
 }
@@ -1428,6 +1426,7 @@ rt_public struct dcall *dpop(void)
 	arena = db_stack.st_cur->sk_arena;
 	if (--top >= arena) {			/* Hopefully, we remain in current chunk */
 		db_stack.st_top = top;		/* Yes! Update top */
+		RTCREN;
 		return top;					/* Done, we're lucky */
 	}
 

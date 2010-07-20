@@ -186,6 +186,8 @@ rt_private void process_request(EIF_PSTREAM sp, Request *rqst)
 {
 	/* Process the received request */
 
+	EIF_GET_CONTEXT
+
 
 static int curr_modify = NO_CURRMODIF;
 
@@ -198,6 +200,8 @@ static int curr_modify = NO_CURRMODIF;
 #ifdef USE_ADD_LOG
 	add_log(9, "received request type %d", rqst->rq_type);
 #endif
+
+	RTCRDIS;
 
 	switch (rqst->rq_type) {
 	case INSPECT:					/* Object inspection */
@@ -404,6 +408,8 @@ static int curr_modify = NO_CURRMODIF;
 		ignore_current_assertion_violation ((int) arg_1);
 		break;
 	}
+
+	RTCREN;
 
 #undef arg_1
 #undef arg_2
