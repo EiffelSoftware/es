@@ -272,8 +272,8 @@ rt_private void cr_push_object (EIF_CR_REFERENCE ref)
 
 	RTCRDBG((stderr, "push object %s\n", ref.size == CR_GLOBAL_REF ? "gobal" : "local"));
 
-		/* when replaying we do not observe objects */
-	if (is_replaying)
+		/* For global objects or when replaying we do not observe objects */
+	if (is_replaying || ref.size == CR_GLOBAL_REF)
 		return;
 
 		/* check if we need to do any observation */
