@@ -22,6 +22,13 @@ inherit
 			out
 		end
 
+	WEKA_SHARED_EQUALITY_TESTERS
+		undefine
+			is_equal,
+			copy,
+			out
+		end
+
 create
 	make
 
@@ -52,6 +59,17 @@ feature -- Access
 			-- Each element in current list represent an instance,
 			-- and the inner list stores the values of all attributes in that instance,
 			-- with the same order as `attributes'.	
+			-- Note: Elements in the list should not contain duplications.
+			-- It is stored in a list instead of a set because we want to make sure the order of elements
+			-- are not changed. For getting a set of attributes, see `attribute_set'.
+
+	attribute_set: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			-- Set representation of `attributes'
+		do
+			create Result.make (attributes.count)
+			Result.set_equality_tester (weka_arff_attribute_equality_tester)
+			attributes.do_all (agent Result.force_last)
+		end
 
 	comment: STRING
 			-- Comments to be located after the relation name, before attribute declaration	
