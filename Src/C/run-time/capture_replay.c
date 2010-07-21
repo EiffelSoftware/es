@@ -323,9 +323,14 @@ rt_private void cr_capture_mutations (int register_mutations)
 	EIF_CR_ID cr_id;
 
 	object = cr_local_objects;
-	if (object == (struct cr_object *) NULL) {
+
+	/* The commented sections in this routine mean that memory changes in global objects are not
+	 * captured. This inceases performance especially for Vision apps.
+	 */
+
+	/*if (object == (struct cr_object *) NULL) {
 		object = cr_global_objects;
-	}
+	}*/
 
 	while (object != NULL) {
 
@@ -390,13 +395,17 @@ rt_private void cr_capture_mutations (int register_mutations)
 			memcpy(object->copy, src, src_size);
 		}
 		object = object->next;
+		/*
 		if (object == NULL && cr_id.item.size != CR_GLOBAL_REF) {
 			object = cr_global_objects;
 			id = 1;
 		}
 		else {
+		*/
 			id++;
+		/*
 		}
+		*/
 	}
 
 }
