@@ -7,21 +7,6 @@ note
 class
 	RM_CONSTANTS
 
-create
-	make
-
-feature{NONE}
-
-	make
-		do
-			if {PLATFORM}.is_windows then
-				create{RM_ENVIRONMENT_WINDOWS} rm_environment
-			else
-				create{RM_ENVIRONMENT_UNIX} rm_environment
-			end
-
-		end
-
 feature -- translators from codes to strings
 
 	algorithm_code_to_string(code: INTEGER):STRING
@@ -50,6 +35,15 @@ feature -- algorithm types
 
 	linear_regression: INTEGER = 2
 
+feature -- Status report
+
+	is_valid_decision_tree_algorithm_code (a_code: INTEGER): BOOLEAN
+			-- Does `a_code' represent a supported decition tree algorithm?
+		do
+			Result :=
+				a_code = decision_tree
+		end
+
 feature -- validation types
 
 	no_validation: INTEGER = 1
@@ -75,5 +69,15 @@ feature -- placeholders
 feature -- env
 
 	rm_environment: RM_ENVIRONMENT
+			-- Environment for file manipulations according to
+			-- currently used operating system.
+		once
+			if {PLATFORM}.is_windows then
+				create{RM_ENVIRONMENT_WINDOWS} Result
+			else
+				create{RM_ENVIRONMENT_UNIX} Result
+			end
+
+		end
 
 end

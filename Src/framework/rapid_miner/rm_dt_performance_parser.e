@@ -17,7 +17,7 @@ feature -- interface
 			l_line: STRING
 		do
 			-- currently we only need the accuracy. if later we need some other performance metrics, they should be parsed here.
-			create rm_conts.make
+			create rm_conts
 			create l_file.make_open_read (rm_conts.rm_environment.performance_file_path)
 			if l_file.exists then
 				--first two lines are the dates

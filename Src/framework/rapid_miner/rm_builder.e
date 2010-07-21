@@ -8,7 +8,8 @@ deferred class
 	RM_BUILDER
 
 
-feature{RM_BUILDER} -- initializaiton
+feature{RM_BUILDER} -- Initializaiton
+
 	init(a_algorithm_code: INTEGER; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST[STRING]; a_label_name: STRING)
 		local
 			rm_const: RM_CONSTANTS
@@ -18,7 +19,7 @@ feature{RM_BUILDER} -- initializaiton
 			arff_file_path := a_arff_file_path
 			selected_attributes := a_selected_attributes
 			label_name := a_label_name
-			create rm_const.make
+			create rm_const
 			rm_env := rm_const.rm_environment
 		end
 

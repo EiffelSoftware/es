@@ -15,7 +15,7 @@ feature{NONE} -- Creation
 		local
 			rm_consts: RM_CONSTANTS
 		do
-			create rm_consts.make
+			create rm_consts
 			rm_env := rm_consts.rm_environment
 			algorithm_code := a_algorithm_code
 			validation_code := a_validation_code

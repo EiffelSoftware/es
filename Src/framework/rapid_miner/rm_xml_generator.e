@@ -22,7 +22,7 @@ feature{NONE}
 			selected_attributes := a_selected_attributes
 			label_name := a_label_name
 
-			create rm_const.make
+			create rm_const
 			rm_env := rm_const.rm_environment
 		end
 
@@ -147,7 +147,7 @@ feature{RM_XML_GENERATOR}
 		do
 			l_start_index := xml.substring_index ({RM_CONSTANTS}.validation_name_placeholder, 1)
 			l_end_index := l_start_index + {RM_CONSTANTS}.validation_name_placeholder.count - 1
-			create rm_constants.make
+			create rm_constants
 			xml.replace_substring (rm_constants.validation_code_to_string (validation_code), l_start_index , l_end_index)
 		ensure
 			no_more_validation_placeholder: not xml.has_substring ({RM_CONSTANTS}.validation_name_placeholder)
@@ -164,7 +164,7 @@ feature{RM_XML_GENERATOR}
 		do
 			l_start_index := xml.substring_index ({RM_CONSTANTS}.algorithm_name_placeholder, 1)
 			l_end_index := l_start_index + {RM_CONSTANTS}.algorithm_name_placeholder.count - 1
-			create rm_constants.make
+			create rm_constants
 			xml.replace_substring (rm_constants.algorithm_code_to_string (algorithm_code), l_start_index , l_end_index)
 		ensure
 			no_more_algorithm_placeholder: not xml.has_substring ({RM_CONSTANTS}.algorithm_name_placeholder)
