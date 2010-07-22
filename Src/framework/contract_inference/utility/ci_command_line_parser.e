@@ -56,6 +56,7 @@ feature -- Basic operations
 			l_dnf_option: AP_STRING_OPTION
 			l_max_dnf_clause_option: AP_INTEGER_OPTION
 			l_tilda_option: AP_FLAG
+			l_implication_flag: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -143,19 +144,19 @@ feature -- Basic operations
 			l_parser.options.force_last (l_composite_integer_premise_connector_option)
 
 			create l_sequence_property_option.make_with_long_form ("sequence-property")
-			l_sequence_property_option.set_description ("Should sequence-based frame properties be inferred?%N Format: --sequence-property [on|off].%NDefault: on")
+			l_sequence_property_option.set_description ("Should sequence-based frame properties be inferred?%N Format: --sequence-property [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_sequence_property_option)
 
 			create l_simple_property_option.make_with_long_form ("simple-property")
-			l_simple_property_option.set_description ("Should simple-based frame properties be inferred?%N Format: --simple-property [on|off].%NDefault: on")
+			l_simple_property_option.set_description ("Should simple-based frame properties be inferred?%N Format: --simple-property [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_simple_property_option)
 
 			create l_daikon_option.make_with_long_form ("daikon")
-			l_daikon_option.set_description ("Should Daikon be used as an inferrer?%N Format: --daikon [on|off].%NDefault: on")
+			l_daikon_option.set_description ("Should Daikon be used as an inferrer?%N Format: --daikon [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_daikon_option)
 
 			create l_dnf_option.make_with_long_form ("dnf-property")
-			l_dnf_option.set_description ("Should properties in DNF format be inferred?%N Format: --daikon [on|off].%NDefault: on")
+			l_dnf_option.set_description ("Should properties in DNF format be inferred?%N Format: --daikon [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_dnf_option)
 
 			create l_max_dnf_clause_option.make_with_long_form ("max-dfn-clause")
@@ -165,6 +166,10 @@ feature -- Basic operations
 			create l_tilda_option.make_with_long_form ("tilda")
 			l_tilda_option.set_description ("Is contract mentioning %"~%" enabled? Default: False")
 			l_parser.options.force_last (l_tilda_option)
+
+			create l_implication_flag.make_with_long_form ("implication-property")
+			l_implication_flag.set_description ("Should implications be inferred?%NFormat: --implication-property [on|off].%NDefault: on.")
+			l_parser.options.force_last (l_implication_flag)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -266,13 +271,29 @@ feature -- Basic operations
 				config.set_max_dnf_clause (2)
 			end
 
+			if l_implication_flag.was_found then
+				setup_implication_property (config, l_implication_flag.parameter)
+			else
+				setup_implication_property (config, Void)
+			end
+
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation
 
+	setup_implication_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if implication properties are to be inferred.
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_implication_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_implication_property_enabled (False)
+			end
+		end
+
 	setup_dnf_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
-			-- Setup if Daikon is used?
+			-- Setup if properties in DNF format are to be inferred.
 		do
 			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
 				config.set_is_dnf_property_enabled (True)

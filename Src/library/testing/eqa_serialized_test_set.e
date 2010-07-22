@@ -23,7 +23,8 @@ feature{NONE} -- Initialization
 	default_create
 			-- Initialize Current.
 		do
-			-- Do nothing here.
+			create environment
+			create file_system.make (Current)
 		end
 
 feature -- Access

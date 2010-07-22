@@ -659,6 +659,7 @@ feature{NONE} -- Implementation
 			l_composite_frame_inferrer: CI_COMPOSITE_FRAME_PROPERTY_INFERRER
 			l_daikon_inferrer: CI_DAIKON_INFERRER
 			l_dnf_inferrer: CI_DNF_INFERRER
+			l_implication_inferrer: CI_IMPLICATION_INFERRER
 		do
 			create inferrers.make
 
@@ -693,6 +694,13 @@ feature{NONE} -- Implementation
 				l_dnf_inferrer.set_config (config)
 				l_dnf_inferrer.set_logger (log_manager)
 				inferrers.extend (l_dnf_inferrer)
+			end
+
+			if config.is_implication_property_enabled then
+				create l_implication_inferrer
+				l_implication_inferrer.set_config (config)
+				l_implication_inferrer.set_logger (log_manager)
+				inferrers.extend (l_implication_inferrer)
 			end
 		end
 

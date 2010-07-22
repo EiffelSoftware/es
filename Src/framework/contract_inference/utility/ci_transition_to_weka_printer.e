@@ -17,6 +17,8 @@ inherit
 
 	EPA_STRING_UTILITY
 
+	CI_WEKA_CONSTANTS
+
 create
 	make
 
@@ -554,28 +556,19 @@ feature{NONE} -- Implementation
 			l_tran_changes.go_to (l_cursor)
 		end
 
-	weka_boolean_values: LINKED_SET [STRING]
+	weka_boolean_values: DS_HASH_SET [STRING]
 			-- Boolean values
 		do
 			if weka_boolean_values_cache = Void then
-				create weka_boolean_values_cache.make
-				weka_boolean_values_cache.compare_objects
-				weka_boolean_values_cache.extend ("True")
-				weka_boolean_values_cache.extend ("False")
-				weka_boolean_values_cache.extend (stay_true_value)
-				weka_boolean_values_cache.extend (stay_false_value)
+				create weka_boolean_values_cache.make (4)
+				weka_boolean_values_cache.set_equality_tester (string_equality_tester)
+				weka_boolean_values_cache.force_last ("True")
+				weka_boolean_values_cache.force_last ("False")
+				weka_boolean_values_cache.force_last (stay_true_value)
+				weka_boolean_values_cache.force_last (stay_false_value)
 			end
 			Result := weka_boolean_values_cache
 		end
-
-	not_applicable_value: STRING = "NA"
-			-- Not applicable value
-
-	stay_true_value: STRING = "STAY_TRUE"
-			-- A value indicating that a boolean attributes stays True.
-
-	stay_false_value: STRING = "STAY_FALSE"
-			-- A value indicating that a boolean attributes stays False.
 
 	weka_boolean_values_cache: detachable like weka_boolean_values
 			-- Cache for `weka_boolean_values'

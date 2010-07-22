@@ -13,12 +13,17 @@ inherit
 			is_nominal
 		end
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+		undefine
+			is_equal
+		end
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_name: like name; a_values: LINKED_SET [STRING])
+	make (a_name: like name; a_values: like values)
 			-- Initialize current nominal attribute with `a_name' and
 			-- values `a_values'.
 		require
@@ -26,37 +31,41 @@ feature{NONE} -- Initialization
 			no_space: a_values.for_all (agent (a_value: STRING): BOOLEAN do Result := a_value.has_substring (" ") end)
 		do
 			name := a_name.twin
-			create values.make
-			values.compare_objects
-			a_values.do_all (agent (a_value: STRING; a_set: like values) do a_set.extend (a_value.twin) end (?, values))
+			create values.make (a_values.count)
+			values.set_equality_tester (string_equality_tester)
+			a_values.do_all (agent values.force_last)
 		end
 
 feature -- Access
 
-	values: LINKED_SET [STRING]
+	values: DS_HASH_SET [STRING]
 			-- Nominal values for current attribute
 
 	type_string: STRING
 			-- String representing the type of current attribute
 		local
-			l_cursor: CURSOR
+			l_cursor: DS_HASH_SET_CURSOR [STRING]
+			i: INTEGER
+			c: INTEGER
 		do
 			create Result.make (128)
 			Result.append_character ('{')
-			l_cursor := values.cursor
 			from
-				values.start
+				i := 1
+				c := values.count
+				l_cursor := values.new_cursor
+				l_cursor.start
 			until
-				values.after
+				l_cursor.after
 			loop
-				Result.append (values.item_for_iteration)
-				if values.index < values.count then
+				Result.append (l_cursor.item)
+				if i < c then
 					Result.append_character (',')
 					Result.append_character (' ')
 				end
-				values.forth
+				i := i + 1
+				l_cursor.forth
 			end
-			values.go_to (l_cursor)
 			Result.append_character ('}')
 		end
 
@@ -69,6 +78,12 @@ feature -- Access
 			else
 				Result := missing_value
 			end
+		end
+
+	as_nominal (a_values: DS_HASH_SET [STRING]): WEKA_ARFF_NOMINAL_ATTRIBUTE
+			-- Norminal attribute from Current under the set of values `a_values'
+		do
+			create Result.make (name, a_values)
 		end
 
 feature -- Status report

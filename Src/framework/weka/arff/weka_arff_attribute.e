@@ -56,6 +56,11 @@ feature -- Access
 			result_is_valid: is_valid_value (Result)
 		end
 
+	as_nominal (a_values: DS_HASH_SET [STRING]): WEKA_ARFF_NOMINAL_ATTRIBUTE
+			-- Norminal attribute from Current under the set of values `a_values'
+		deferred
+		end
+
 feature -- Constants
 
 	attribute_header: STRING = "@ATTRIBUTE"

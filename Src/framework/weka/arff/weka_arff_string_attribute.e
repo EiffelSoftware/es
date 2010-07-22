@@ -40,6 +40,12 @@ feature -- Access
 			end
 		end
 
+	as_nominal (a_values: DS_HASH_SET [STRING]): WEKA_ARFF_NOMINAL_ATTRIBUTE
+			-- Norminal attribute from Current under the set of values `a_values'
+		do
+			create Result.make (name, a_values)
+		end
+
 feature -- Status report
 
 	is_string: BOOLEAN = True

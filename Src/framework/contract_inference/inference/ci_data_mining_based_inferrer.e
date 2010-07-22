@@ -9,17 +9,5 @@ deferred class
 
 inherit
 	CI_INFERRER
-		redefine
-			is_arff_needed,
-			is_expression_value_map_needed
-		end
-
-feature -- Status report
-
-	is_arff_needed: BOOLEAN = True
-			-- Is ARFF data needed?
-
-	is_expression_value_map_needed: BOOLEAN = True
-			-- Is expression to its value set mapping needed?
 
 end

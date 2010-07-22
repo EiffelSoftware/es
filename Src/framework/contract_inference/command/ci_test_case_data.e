@@ -81,7 +81,7 @@ feature -- Access
 	interface_expression_values: HASH_TABLE [like interface_pre_expression_values, BOOLEAN]
 			-- Table of inteface expression values
 			-- Key is a boolean indicating pre-state or post-state
-			-- value is an expression to value table.
+			-- value is an expression to value table.							
 
 feature -- Basic operations
 

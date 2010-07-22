@@ -225,6 +225,9 @@ feature -- Access
 			-- Is contract mentioning "~" enabled?
 			-- Default: False
 
+	is_implication_property_enabled: BOOLEAN
+			-- Should implications be inferred?
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -431,6 +434,14 @@ feature -- Setting
 			is_tilda_enabled := b
 		ensure
 			is_tilda_enabled_set: is_tilda_enabled = b
+		end
+
+	set_is_implication_property_enabled (b: BOOLEAN)
+			-- Set `is_implication_property_enabled' with `b'.
+		do
+			is_implication_property_enabled := b
+		ensure
+			is_implication_property_enabled_set: is_implication_property_enabled = b
 		end
 
 feature{NONE} -- Implementation

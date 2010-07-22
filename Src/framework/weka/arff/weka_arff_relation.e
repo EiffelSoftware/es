@@ -29,6 +29,13 @@ inherit
 			out
 		end
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+		undefine
+			is_equal,
+			copy,
+			out
+		end
+
 create
 	make
 
@@ -140,9 +147,130 @@ feature -- Access
 			Result.append (trailing_comment)
 		end
 
-feature -- hash table generators
 
-	item_as_hash_table: HASH_TABLE[STRING, STRING]
+	value_set: DS_HASH_TABLE [DS_HASH_SET [STRING], WEKA_ARFF_ATTRIBUTE]
+			-- Table from attribute to values of that attributes in all instances
+			-- Key is an attribute, value is the set of values that attribute have across all instances.
+		local
+			l_instance: ARRAYED_LIST [STRING]
+			i: INTEGER
+			l_values: DS_HASH_SET [STRING]
+			l_value: STRING
+			l_attr: WEKA_ARFF_ATTRIBUTE
+		do
+			create Result.make (attributes.count)
+			Result.set_key_equality_tester (weka_arff_attribute_equality_tester)
+
+				-- Create an empty value set for each attribute.
+			across attributes as l_attrs loop
+				create l_values.make (5)
+				l_values.set_equality_tester (string_equality_tester)
+				Result.force_last (l_values, l_attrs.item)
+			end
+
+				-- Iterate through all instances in Current and
+				-- collect values that each attribute can have.
+			across Current as l_instances loop
+				l_instance := l_instances.item
+				i := 1
+				across attributes as l_attrs loop
+					l_attr := l_attrs.item
+					l_value := l_instance.i_th (i)
+					l_values := Result.item (l_attr)
+					if not l_values.has (l_value) then
+						l_values.force_last (l_value)
+					end
+					i := i + 1
+				end
+			end
+		end
+
+	projection (a_attribute_selection_function: FUNCTION [ANY, TUPLE [WEKA_ARFF_ATTRIBUTE], BOOLEAN]): like Current
+			-- Projection of Current by selecting only attributes that satisfies `a_attribute_selection_function'
+			-- The order of the attributes in the resulting relation is the same as in the original relation.
+		local
+			l_indexes: LINKED_LIST [INTEGER]
+			i: INTEGER
+			l_attributes: like attributes
+			l_instance: like item
+			l_prj_instance: like item
+		do
+				-- Store indexes of remaining attributes in `l_indexes'.
+			create l_indexes.make
+			create l_attributes.make (attributes.count)
+			i := 1
+			across attributes as l_attrs loop
+				if a_attribute_selection_function.item ([l_attrs.item]) then
+					l_indexes.extend (i)
+					l_attributes.extend (l_attrs.item)
+				end
+				i := i + 1
+			end
+
+				-- Iterate through all instances in Current and store the projected data into Result.
+			create Result.make (l_attributes)
+			across Current as l_instances loop
+				l_instance := l_instances.item
+				create l_prj_instance.make (l_indexes.count)
+				across l_indexes as l_attr_indexes loop
+					l_prj_instance.extend (l_instance.i_th (l_attr_indexes.item))
+				end
+				Result.extend (l_prj_instance)
+			end
+
+			Result.set_name (name)
+			Result.set_comment (comment)
+			Result.set_trailing_comment (trailing_comment)
+		end
+
+	cloned_object: like Current
+			-- Cloned version of Current
+		do
+			create Result.make (attributes)
+			do_all (agent Result.extend)
+			Result.set_comment (comment)
+			Result.set_trailing_comment (trailing_comment)
+			Result.set_name (name)
+		end
+
+	nominalized_cloned_object: like Current
+			-- Cloned version of Current, with all numeric values normalized
+		local
+			l_new_attrs: like attributes
+			l_value_set: like value_set
+		do
+			l_value_set := value_set
+			create l_new_attrs.make (attributes.count)
+			across attributes as l_attrs loop
+				if l_attrs.item.is_nominal then
+					l_new_attrs.extend (l_attrs.item)
+				else
+					l_new_attrs.extend (l_attrs.item.as_nominal (l_value_set.item (l_attrs.item)))
+				end
+			end
+
+			create Result.make (l_new_attrs)
+			do_all (agent Result.extend)
+			Result.set_comment (comment)
+			Result.set_trailing_comment (trailing_comment)
+			Result.set_name (name)
+		end
+
+	attribute_by_name (a_name: STRING): WEKA_ARFF_ATTRIBUTE
+			-- Attribute in `attributes' with `a_name'
+		require
+			a_name_exists: has_attribute_by_name (a_name)
+		do
+			across attributes as l_attrs until Result /= Void loop
+				if l_attrs.item.name ~ a_name then
+					Result := l_attrs.item
+				end
+			end
+		end
+
+feature -- Hash table generators
+
+	item_as_hash_table: HASH_TABLE [STRING, STRING]
 			-- Returns a hash table where the keys are the attribute names and the values comes from the current item
 		require
 			valid_item: not off
@@ -160,13 +288,14 @@ feature -- hash table generators
 	i_th_as_hash_table(a_i:INTEGER): HASH_TABLE[STRING, STRING]
 			-- returns a hash table where the keys are the attribute names and the values comes from the ith item
 		do
-			Result := data_as_hash_table(i_th (a_i))
+			Result := data_as_hash_table (i_th (a_i))
 		end
 
-	attributes_as_hash_table: HASH_TABLE[STRING, STRING]
+	attributes_as_hash_table: HASH_TABLE [STRING, STRING]
 			-- returns a hash table where the keys are the attributes and the values are void
 		do
 			create Result.make(attributes.count)
+			Result.compare_objects
 			from attributes.start until attributes.after loop
 				Result[attributes.item_for_iteration.name] := Void
 				attributes.forth
@@ -198,6 +327,17 @@ feature -- Status report
 				end
 				l_attrs.go_to (l_cursor)
 			end
+		end
+
+	has_attribute_by_name (a_name: STRING): BOOLEAN
+			-- Is there an attribute in Current with `a_name'?
+		do
+			Result :=
+				attributes.there_exists (
+					agent (a_attr: WEKA_ARFF_ATTRIBUTE; a_nm: STRING): BOOLEAN
+						do
+							Result := a_attr.name ~ a_nm
+						end (?, a_name))
 		end
 
 feature -- Status report
@@ -282,8 +422,8 @@ feature -- Constants
 
 feature{NONE} -- Implementation
 
-	data_as_hash_table(a_list: LIST[STRING]): HASH_TABLE[STRING, STRING]
-			-- returns an hash table where the attribute names are the keys and tha data comes from the array
+	data_as_hash_table(a_list: LIST[STRING]): HASH_TABLE [STRING, STRING]
+			-- Returns an hash table where the attribute names are the keys and tha data comes from the array
 		do
 			create Result.make (attributes.count)
 			Result.compare_objects
