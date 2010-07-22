@@ -13,6 +13,11 @@ inherit
 			is_nominal
 		end
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -37,6 +42,18 @@ feature -- Access
 			else
 				Result := missing_value
 			end
+		end
+
+	as_nominal (a_values: DS_HASH_SET [STRING]): WEKA_ARFF_NOMINAL_ATTRIBUTE
+			-- Norminal attribute from Current under the set of values `a_values'
+		local
+			l_values: DS_HASH_SET [STRING]
+		do
+			create l_values.make (2)
+			l_values.set_equality_tester (string_equality_tester)
+			l_values.force_last (once "True")
+			l_values.force_last (once "False")
+			create Result.make (name, l_values)
 		end
 
 feature -- Status report

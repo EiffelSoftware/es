@@ -27,11 +27,16 @@ feature -- Basic operations
 	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
+		local
+			l_loader: WEKA_ARFF_RELATION_PARSER
 		do
 				-- Initialize.
 			data := a_data
 			setup_data_structures
-			arff_relation := data.arff_relation.cloned_object
+			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+			l_loader.parse_relation
+			arff_relation := l_loader.last_relation
+--			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
 			logger.put_line_with_time_at_fine_level ("Start inferring implications.")
@@ -45,7 +50,7 @@ feature -- Basic operations
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
 
---			build_decision_trees
+			build_decision_trees
 
 			log_inferred_implications
 			setup_last_contracts
@@ -142,7 +147,7 @@ feature{NONE} -- Implementation
 	generate_implications (a_tree: RM_DECISION_TREE)
 			-- Generate implications and store them in `last_postconditions'.
 		do
-			across a_tree.path as l_paths loop
+			across a_tree.paths as l_paths loop
 				last_postconditions.force_last (implication_from_path (l_paths.item))
 			end
 		end

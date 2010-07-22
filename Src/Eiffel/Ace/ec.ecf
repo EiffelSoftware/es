@@ -27,8 +27,8 @@
 		<library name="emitter_loader" location="$EIFFEL_SRC\framework\emitter_loader\emitter_loader.ecf" readonly="false" use_application_options="true"/>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf" readonly="false"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf" readonly="false" use_application_options="true"/>
-		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf" readonly="false" use_application_options="true"/>
 		<library name="fmwk_utilities" location="$EIFFEL_SRC\framework\utilities\utilities.ecf"/>
+		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf" readonly="false" use_application_options="true"/>
 		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
 		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf" readonly="false"/>
@@ -152,8 +152,11 @@
 		<library name="command_tunnel" location="$EIFFEL_SRC\framework\command_tunnel\command_tunnel.ecf" readonly="false"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
 		<library name="configuration_gui" location="$EIFFEL_SRC\framework\configuration\configuration_gui.ecf" readonly="false"/>
-		<library name="contract_inference" location="$EIFFEL_SRC\framework\contract_inference\contract_inference.ecf" readonly="false"/>
-		<library name="rapid_miner" location="$EIFFEL_SRC\framework\rapid_miner\rapid_miner.ecf" readonly="false"/>
+		<library name="contract_inference" location="$EIFFEL_SRC\framework\contract_inference\contract_inference.ecf" readonly="false">
+			<option>
+				<assertions/>
+			</option>
+		</library>
 		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf" readonly="false"/>
 		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
@@ -201,6 +204,7 @@
 			</condition>
 		</library>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
+		<library name="rapid_miner" location="$EIFFEL_SRC\framework\rapid_miner\rapid_miner.ecf" readonly="false"/>
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="tagging-ev" location="$EIFFEL_SRC\framework\tagging\ev\tagging-ev.ecf" readonly="false"/>
@@ -254,9 +258,9 @@
 			</class_option>
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>^/tty$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>/overrides$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>^/tty$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

@@ -237,6 +237,10 @@ feature -- Access
 			-- Should simple equality properties in form of p = q be inferred?
 			-- Default: True
 
+	is_dummy_property_enabled: BOOLEAN
+			-- Should dummy equality property be inferred?
+			-- Default: False
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -467,6 +471,14 @@ feature -- Setting
 			is_simple_equality_property_enabled := b
 		ensure
 			is_simple_equality_property_enabled_set: is_simple_equality_property_enabled = b
+		end
+
+	set_is_dummy_property_enabled (b: BOOLEAN)
+			-- Set `is_dummy_property_enabled' with `b'.
+		do
+			is_dummy_property_enabled := b
+		ensure
+			is_dummy_property_enabled_set: is_dummy_property_enabled = b
 		end
 
 feature{NONE} -- Implementation

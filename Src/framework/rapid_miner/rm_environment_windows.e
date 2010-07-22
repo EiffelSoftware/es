@@ -15,22 +15,22 @@ feature
 
 	model_file_path: STRING
 		do
-			Result := "C:/temp/rapid_model.res"
+			Result := "C:\temp\rapid_model.res"
 		end
 
 	performance_file_path: STRING
 		do
-			Result := "C:/temp/rapid_performance.res"
+			Result := "C:\temp\rapid_performance.res"
 		end
 
 	rapid_miner_xml_file_path: STRING
 		do
-			Result := "C:/temp/rapid_miner.xml"
+			Result := "C:\temp\rapid_miner.xml"
 		end
 
 	rapid_miner_arff_file_path: STRING
 		do
-			Result := "C:/temp/rapid_miner.arff"
+			Result := "C:\temp\rapid_miner.arff"
 		end
 
 	rapid_miner_working_directory: STRING

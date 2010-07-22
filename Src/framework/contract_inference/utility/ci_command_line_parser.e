@@ -59,6 +59,7 @@ feature -- Basic operations
 			l_implication_flag: AP_STRING_OPTION
 			l_linear_flag: AP_STRING_OPTION
 			l_simple_equality_flag: AP_STRING_OPTION
+			l_dummy_flag: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -181,6 +182,10 @@ feature -- Basic operations
 			l_simple_equality_flag.set_description ("Should simple equality properties in form of p = q be inferred?%NFormat: --simple-equality-property [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_simple_equality_flag)
 
+			create l_dummy_flag.make_with_long_form ("dummy-property")
+			l_dummy_flag.set_description ("Should dummy properties be inferred?%NFormat: --dummy-property [on|off].%NDefault: off.")
+			l_parser.options.force_last (l_dummy_flag)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -299,10 +304,26 @@ feature -- Basic operations
 				setup_simple_equality_property (config, Void)
 			end
 
+			if l_dummy_flag.was_found then
+				setup_dummy_property (config, l_dummy_flag.parameter)
+			else
+				setup_dummy_property (config, Void)
+			end
+
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation
+
+	setup_dummy_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if dummy properties are to be inferred.
+		do
+			if a_parameter /= Void and then a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_dummy_property_enabled (True)
+			elseif a_parameter = Void or else a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_dummy_property_enabled (False)
+			end
+		end
 
 	setup_simple_equality_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup if simple_equality properties are to be inferred.

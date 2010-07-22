@@ -662,6 +662,7 @@ feature{NONE} -- Implementation
 			l_implication_inferrer: CI_IMPLICATION_INFERRER
 			l_linear_inferrer: CI_LINEAR_REGRESSION_INFERRER
 			l_simple_equality_inferrer: CI_SIMPLE_EQUALITY_INFERRER
+			l_dummy_inferrer: CI_DUMMY_INFERRER
 		do
 			create inferrers.make
 
@@ -717,6 +718,13 @@ feature{NONE} -- Implementation
 				l_simple_equality_inferrer.set_config (config)
 				l_simple_equality_inferrer.set_logger (log_manager)
 				inferrers.extend (l_simple_equality_inferrer)
+			end
+
+			if config.is_dummy_property_enabled then
+				create l_dummy_inferrer
+				l_dummy_inferrer.set_config (config)
+				l_dummy_inferrer.set_logger (log_manager)
+				inferrers.extend (l_dummy_inferrer)
 			end
 		end
 

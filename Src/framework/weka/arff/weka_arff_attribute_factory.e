@@ -7,6 +7,9 @@ note
 class
 	WEKA_ARFF_ATTRIBUTE_FACTORY
 
+inherit
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 feature
 	is_attribute(a_line: STRING):BOOLEAN
 			-- True if a_line is an attribute line in an arff file
@@ -23,7 +26,7 @@ feature
 		local
 			l_name: STRING
 			l_type: STRING
-			l_set: LINKED_SET[STRING]
+			l_set: DS_HASH_SET [STRING]
 		do
 			-- "@attribute".count is 10
 			a_line.keep_tail (a_line.count - 10)
@@ -38,27 +41,26 @@ feature
 			elseif l_type.has_substring ({WEKA_CONSTANTS}.str)  then
 				create {WEKA_ARFF_STRING_ATTRIBUTE} Result.make(l_name)
 			else
-				l_set := nominal_values_set(l_type)
-				l_set.compare_objects
+				l_set := nominal_values_set (l_type)
 				if l_set.count = 2 and l_set.has ("True") and l_set.has ("False") then
-					create {WEKA_ARFF_BOOLEAN_ATTRIBUTE} Result.make(l_name)
+					create {WEKA_ARFF_BOOLEAN_ATTRIBUTE} Result.make (l_name)
 				else
-					create {WEKA_ARFF_NOMINAL_ATTRIBUTE} Result.make(l_name, l_set)
+					create {WEKA_ARFF_NOMINAL_ATTRIBUTE} Result.make (l_name, l_set)
 				end
 			end
 		end
 
 feature {NONE}
 
-	nominal_values_set(a_type:STRING):LINKED_SET[STRING]
+	nominal_values_set(a_type:STRING): DS_HASH_SET [STRING]
 			-- Extracts the values list for a nominal attribute
 		local
 			l_values: STRING
-			l_values_list: LIST[STRING]
+			l_values_list: LIST [STRING]
 			l_value: STRING
 		do
-			create Result.make
-			Result.compare_objects
+			create Result.make (5)
+			Result.set_equality_tester (string_equality_tester)
 			if a_type.index_of ('{', 1) > 0 then
 				l_values := a_type.substring (a_type.index_of ('{', 1)+1, a_type.last_index_of ('}', a_type.count)-1)
 				l_values_list := l_values.split (',')
@@ -66,7 +68,7 @@ feature {NONE}
 					l_value := l_values_list.item_for_iteration
 					l_value.prune_all_leading (' ')
 					l_value.prune_all_trailing (' ')
-					Result.force (l_value)
+					Result.force_last (l_value)
 					l_values_list.forth
 				end
 			end
