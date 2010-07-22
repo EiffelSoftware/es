@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_ENVIRONMENT}."
+	description: "Keeps constants that are dependents on the user's OS."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -20,6 +20,11 @@ feature
 
 	rapid_miner_xml_file_path: STRING
 			-- the location of the xml file needed to run rapidminer. This file tells rapidminer what to do.
+		deferred
+		end
+
+	rapid_miner_arff_file_path: STRING
+			-- the location where the arff file will be created.
 		deferred
 		end
 

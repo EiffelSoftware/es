@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_XML_GENERATOR}."
+	description: "This class will generated the required xml for runny rapidminer. It depends on the algorithm code and validation code."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,7 @@ class
 create
 	make
 
-feature{NONE}
+feature{NONE} -- Creation
 
 	make(a_algorithm_code: INTEGER; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST[STRING]; a_label_name: STRING)
 		local
@@ -34,7 +34,7 @@ feature -- Access
 feature -- Interface
 
 	generate_xml
-			-- generates the xml for rapidminer according to the arguments provided in the creation feature
+			-- generates the xml for rapidminer according to the arguments provided in the creation feature. Use `xml' to get the result.
 		local
 			rm_seed_generator: RM_SEED_XML_GENERATOR
 		do
@@ -77,7 +77,7 @@ feature -- Interface
 			validation_parameters := a_val_params
 		end
 
-feature{RM_XML_GENERATOR}
+feature{RM_XML_GENERATOR} -- The pieces of the generation. To be overriden if necessary.
 
 	put_file_path
 			-- puts the file name into the xml string at the appropriate placeholder
@@ -88,9 +88,7 @@ feature{RM_XML_GENERATOR}
 		local
 			l_start_index, l_end_index: INTEGER
 		do
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.data_file_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.data_file_placeholder.count - 1
-			xml.replace_substring (arff_file_path, l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.data_file_placeholder, arff_file_path)
 		ensure
 			no_more_file_path_placeholder: not xml.has_substring ({RM_CONSTANTS}.data_file_placeholder)
 			has_file_name: xml.has_substring (arff_file_path)
@@ -111,9 +109,7 @@ feature{RM_XML_GENERATOR}
 				l_attributes.append (selected_attributes.item_for_iteration + "|")
 				selected_attributes.forth
 			end
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.selected_attributes_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.selected_attributes_placeholder.count - 1
-			xml.replace_substring (l_attributes, l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.selected_attributes_placeholder, l_attributes)
 		ensure
 			no_more_label_name_placeholder: not xml.has_substring ({RM_CONSTANTS}.selected_attributes_placeholder)
 		end
@@ -127,9 +123,7 @@ feature{RM_XML_GENERATOR}
 		local
 			l_start_index, l_end_index: INTEGER
 		do
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.label_name_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.label_name_placeholder.count - 1
-			xml.replace_substring (label_name, l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.label_name_placeholder, label_name)
 		ensure
 			no_more_label_name_placeholder: not xml.has_substring ({RM_CONSTANTS}.label_name_placeholder)
 			has_label_name: xml.has_substring (label_name)
@@ -145,10 +139,8 @@ feature{RM_XML_GENERATOR}
 			l_start_index, l_end_index: INTEGER
 			rm_constants: RM_CONSTANTS
 		do
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.validation_name_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.validation_name_placeholder.count - 1
 			create rm_constants
-			xml.replace_substring (rm_constants.validation_code_to_string (validation_code), l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.validation_name_placeholder, rm_constants.validation_code_to_string (validation_code))
 		ensure
 			no_more_validation_placeholder: not xml.has_substring ({RM_CONSTANTS}.validation_name_placeholder)
 		end
@@ -162,10 +154,8 @@ feature{RM_XML_GENERATOR}
 			l_start_index, l_end_index: INTEGER
 			rm_constants: RM_CONSTANTS
 		do
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.algorithm_name_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.algorithm_name_placeholder.count - 1
 			create rm_constants
-			xml.replace_substring (rm_constants.algorithm_code_to_string (algorithm_code), l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.algorithm_name_placeholder, rm_constants.algorithm_code_to_string (algorithm_code))
 		ensure
 			no_more_algorithm_placeholder: not xml.has_substring ({RM_CONSTANTS}.algorithm_name_placeholder)
 		end
@@ -189,9 +179,7 @@ feature{RM_XML_GENERATOR}
 				l_params_string.append ("%N")
 				algorithm_parameters.forth
 			end
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.algorithm_parameters_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.algorithm_parameters_placeholder.count - 1
-			xml.replace_substring (l_params_string, l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.algorithm_parameters_placeholder, l_params_string)
 		ensure
 			no_more_algorithm_params_placeholder:  not xml.has_substring ({RM_CONSTANTS}.algorithm_parameters_placeholder)
 		end
@@ -215,11 +203,28 @@ feature{RM_XML_GENERATOR}
 				l_params_string.append ("%N")
 				validation_parameters.forth
 			end
-			l_start_index := xml.substring_index ({RM_CONSTANTS}.validation_parameters_placeholder, 1)
-			l_end_index := l_start_index + {RM_CONSTANTS}.validation_parameters_placeholder.count - 1
-			xml.replace_substring (l_params_string, l_start_index , l_end_index)
+			replace_placeholder ({RM_CONSTANTS}.validation_parameters_placeholder, l_params_string)
 		ensure
 			no_more_validation_params_placeholder:  not xml.has_substring ({RM_CONSTANTS}.validation_parameters_placeholder)
+		end
+
+feature{NONE} -- Implemenation
+
+	replace_placeholder(a_placehodler_name: STRING; a_replacement: STRING)
+			-- replaces `a_placeholder' in the xml string with `a_replacement'
+		require
+			xml_not_empty: not xml.is_empty
+			a_replacement_not_empty: not a_replacement.is_empty
+			has_the_placeholder: xml.has_substring (a_placehodler_name)
+		local
+			l_start_index, l_end_index: INTEGER
+		do
+			l_start_index := xml.substring_index (a_placehodler_name, 1)
+			l_end_index := l_start_index + a_placehodler_name.count - 1
+			xml.replace_substring (a_replacement, l_start_index , l_end_index)
+		ensure
+			no_more_placeholder: not xml.has_substring (a_placehodler_name)
+			has_replacement: xml.has_substring (a_replacement)
 		end
 
 feature{RM_XML_GENERATOR} -- internal data holders

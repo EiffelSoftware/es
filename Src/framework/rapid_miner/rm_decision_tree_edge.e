@@ -1,24 +1,34 @@
 note
-	description: "Class representing the edge in the rapid miner decision tree."
+	description: "Class representing the edge in a RM_DECISION_TREE."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	RM_DT_EDGE
+	RM_DECISION_TREE_EDGE
 create
 	make
 
 feature -- Access
 	operator: STRING
+			-- operator for that edge
+
 	value: STRING
-	node : RM_DT_NODE
+			-- value which stays on the right side of the `operator'
+
+	node : RM_DECISION_TREE_NODE
+			-- the node to which this edge leads.
+
 	condition: STRING
+			-- appends the operator and value
 		do
 			Result := operator + value
 		end
 
+feature -- Interface
+
 	does_satisfy_condition(a_value:STRING):BOOLEAN
+			-- calculates if `a_value' satisfies the condition(operator and value) of that edge.
 		do
 			if operator.is_equal ("=") then
 				Result := a_value.is_equal (value)
@@ -37,7 +47,8 @@ feature -- Access
 
 
 feature {NONE} -- creation
-	make(a_condition:STRING; a_node:RM_DT_NODE)
+
+	make(a_condition:STRING; a_node:RM_DECISION_TREE_NODE)
 		do
 			if a_condition.at (1).code = 226 then
 				operator := "<="

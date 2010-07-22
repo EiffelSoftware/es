@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_CONSTANTS}."
+	description: "Keeps all the constants needed by rapidminer and the belonging infrastructure."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -7,10 +7,10 @@ note
 class
 	RM_CONSTANTS
 
-feature -- translators from codes to strings
+feature -- Translators from codes to strings
 
 	algorithm_code_to_string(code: INTEGER):STRING
-			-- 	returns the string name of the algorithm with code
+			-- 	Returns the string name of the algorithm with code.
 		do
 			Result := ""
 			if code = decision_tree then
@@ -21,7 +21,7 @@ feature -- translators from codes to strings
 		end
 
 	validation_code_to_string(code: INTEGER):STRING
-			-- 	returns the string name of the validation with code
+			-- Returns the string name of the validation with code.
 		do
 			Result := ""
 			if code = x_validation then
@@ -29,7 +29,7 @@ feature -- translators from codes to strings
 			end
 		end
 
-feature -- algorithm types
+feature -- Algorithm types
 
 	decision_tree: INTEGER = 1
 
@@ -37,20 +37,25 @@ feature -- algorithm types
 
 feature -- Status report
 
-	is_valid_decision_tree_algorithm_code (a_code: INTEGER): BOOLEAN
-			-- Does `a_code' represent a supported decition tree algorithm?
+	is_valid_algorithm_code(a_code: INTEGER):BOOLEAN
+			-- Does `a_code' represent a supported rapidminer algorithm?
 		do
-			Result :=
-				a_code = decision_tree
+			Result := (a_code>0 and a_code<3)
 		end
 
-feature -- validation types
+	is_valid_validation_code(a_code: INTEGER):BOOLEAN
+			-- Does `a_code' represent a supported rapidminer validation?
+		do
+			Result := (a_code>0 and a_code<3)
+		end
+
+feature -- Validation types
 
 	no_validation: INTEGER = 1
 
 	x_validation: INTEGER = 2
 
-feature -- placeholders
+feature -- Placeholders
 
 	data_file_placeholder: STRING = "${data_file_placeholder}"
 
@@ -66,7 +71,7 @@ feature -- placeholders
 
 	validation_name_placeholder: STRING = "${validation_name_placeholder}"
 
-feature -- env
+feature -- Environment
 
 	rm_environment: RM_ENVIRONMENT
 			-- Environment for file manipulations according to

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_ENVIRONMENT_WINDOWS}."
+	description: "Constants for users using WINDOWS."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -26,6 +26,11 @@ feature
 	rapid_miner_xml_file_path: STRING
 		do
 			Result := "C:/temp/rapid_miner.xml"
+		end
+
+	rapid_miner_arff_file_path: STRING
+		do
+			Result := "C:/temp/rapid_miner.arff"
 		end
 
 	rapid_miner_working_directory: STRING

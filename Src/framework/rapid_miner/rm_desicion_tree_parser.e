@@ -16,12 +16,12 @@ feature{RM_DECISION_TREE_PARSER} -- child access
 
 feature{NONE} -- implementation
 
-	stack : LINKED_STACK[RM_DT_STACK_ITEM]
+	stack : LINKED_STACK[RM_DECISION_TREE_STACK_ITEM]
 		-- stack needed for parsing the file
 
 
 
-feature {NONE} -- Implementation
+feature {NONE} -- Construction
 
 	make(a_model_file_path:STRING)
 		require
@@ -32,18 +32,21 @@ feature {NONE} -- Implementation
 			create stack.make
 			tree_root := Void
 		end
+
 feature -- access
 
-	tree_root : RM_DT_NODE
+	tree_root : RM_DECISION_TREE_NODE
 		-- will hold the root of the tree after the model file is parsed
+
+feature -- interface
 
 	parse_model
 		local
 			l_model_file: PLAIN_TEXT_FILE
 			l_line : STRING
-			l_stack_item : RM_DT_STACK_ITEM
+			l_stack_item : RM_DECISION_TREE_STACK_ITEM
 			l_depth : INTEGER
-			l_node : RM_DT_NODE
+			l_node : RM_DECISION_TREE_NODE
 		do
 			tree_root := Void
 			create l_model_file.make_open_read (model_file_path)
@@ -56,8 +59,6 @@ feature -- access
 					l_model_file.read_line
 					l_line := l_model_file.last_string
 					if l_line.count > 0 then
---						io.put_string (l_line)
---						io.put_new_line
 						create_new_node(l_line)
 					end
 				end
@@ -70,13 +71,13 @@ feature -- access
 
 feature{RM_DECISION_TREE_PARSER}
 	create_new_node(a_line:STRING)
-		-- parses the line and creates the nodes and edges that it contains
+		-- Parses the line, creates the nodes and edges that it contains and saves them into `stack`.
 		local
 			l_depth : INTEGER
 			l_line : STRING
 			l_name : STRING
 			l_condition : STRING
-			l_leaf: detachable RM_DT_NODE
+			l_leaf: detachable RM_DECISION_TREE_NODE
 		do
 			l_depth := extract_depth (a_line)
 			l_line := clean_line (a_line)
@@ -123,6 +124,7 @@ feature{RM_DECISION_TREE_PARSER}
 
 
 	extract_leaf_name(a_line:STRING):STRING
+			-- extracts the leaf name from a string.
 		require
 			is_leaf: has_leaf (a_line)
 		local
@@ -136,8 +138,8 @@ feature{RM_DECISION_TREE_PARSER}
 	add_to_stack(a_name:STRING; a_depth:INTEGER; a_condition:STRING)
 		-- creates a RM_DT_STACK_ITEM and pushes it on top of the stack
 		local
-			l_stack_item : RM_DT_STACK_ITEM
-			l_node : RM_DT_NODE
+			l_stack_item : RM_DECISION_TREE_STACK_ITEM
+			l_node : RM_DECISION_TREE_NODE
 		do
 			create l_node.make (a_name, false)
 			if not stack.is_empty then

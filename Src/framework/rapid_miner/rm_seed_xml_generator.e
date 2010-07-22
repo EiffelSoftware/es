@@ -1,5 +1,5 @@
 note
-	description: "This class will provide the initial xml with the placeholders for the validation and algorithm type."
+	description: "This class will provide the initial xml with the placeholders for the validation, algorithm type and all others."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -48,6 +48,7 @@ feature{NONE} -- Internal data holders
 feature{NONE} -- actual xml
 
 	no_validation_xml: STRING
+			-- the initial xml if the validation code is 'no_validation'
 		do
 			Result := ""
 			Result.append ( "[
@@ -116,6 +117,7 @@ feature{NONE} -- actual xml
 
 
 	x_validation_xml: STRING
+			-- the xml if the required validation is x_validation.
 		do
 			Result := "[
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>

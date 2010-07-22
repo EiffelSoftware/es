@@ -23,7 +23,7 @@ feature -- Create
 
 feature -- Access
 
-	linear_regression: RM_LINEAR_REGRESSION
+	last_linear_regression: RM_LINEAR_REGRESSION
 
 feature{RM_BUILDER} -- implementation
 
@@ -38,7 +38,7 @@ feature{RM_BUILDER} -- implementation
 	parse_performance
 			-- parses the performance file
 		local
-			l_perf_parser: RM_DT_PERFORMANCE_PARSER
+			l_perf_parser: RM_DECISION_TREE_PERFORMANCE_PARSER
 		do
 			create l_perf_parser
 			l_perf_parser.parse_performance

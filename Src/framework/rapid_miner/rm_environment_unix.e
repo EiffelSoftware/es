@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_ENVIRONMENT_UNIX}."
+	description: "Constants for users using UNIX."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -25,6 +25,11 @@ feature
 	rapid_miner_xml_file_path: STRING
 		do
 			Result := "/tmp/rapid_miner.xml"
+		end
+
+	rapid_miner_arff_file_path: STRING
+		do
+			Result := "/tmp/rapid_miner.arff"
 		end
 
 	rapid_miner_working_directory: STRING

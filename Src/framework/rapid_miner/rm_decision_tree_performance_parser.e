@@ -5,12 +5,12 @@ note
 	revision: "$Revision$"
 
 class
-	RM_DT_PERFORMANCE_PARSER
+	RM_DECISION_TREE_PERFORMANCE_PARSER
 
 feature -- interface
 
 	parse_performance
-			-- parses the performance file from rapidminer. The loction of the file is in RM_ENVIRONMENT.performance_file_path
+			-- parses the performance file from rapidminer. The loction of the file is in `RM_ENVIRONMENT.performance_file_path'
 		local
 			l_file: PLAIN_TEXT_FILE
 			rm_conts: RM_CONSTANTS
@@ -32,6 +32,7 @@ feature -- interface
 
 			end
 		end
+
 feature -- access
 
 	is_accurate: BOOLEAN

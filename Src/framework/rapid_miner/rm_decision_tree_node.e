@@ -1,66 +1,52 @@
 note
-	description: "Class representing a node of the rapid miner decision tree."
+	description: "Class representing a node of a RM_DECISION_TREE."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	RM_DT_NODE
+	RM_DECISION_TREE_NODE
 create
 	make
 
 feature -- Access
 	name : STRING
-	is_leaf : BOOLEAN
-	edges : LINKED_LIST[RM_DT_EDGE]
+			-- the name of the node.
 
-feature {NONE} -- Implementation
+	is_leaf : BOOLEAN
+			-- is the node leaf or not.
+
+	edges : LINKED_LIST[RM_DECISION_TREE_EDGE]
+			-- all the edges leading out of that node.
+
+	samples: detachable HASH_TABLE[INTEGER, STRING]
+			-- holds the samples for that node. Samples are for example {True:5, False:0, STAY_FALSE:0}
+
+feature {NONE} -- Creation
+
 	make (a_name: STRING; a_is_leaf: BOOLEAN)
 		do
 			name := a_name
 			is_leaf := a_is_leaf
 			create edges.make
 		end
+
 feature -- Interface
-	add_child(a_node: RM_DT_NODE; a_condition : STRING)
+	add_child(a_node: RM_DECISION_TREE_NODE; a_condition : STRING)
+			-- Adds another node to the current's children.
 		local
-			l_edge : RM_DT_EDGE
+			l_edge : RM_DECISION_TREE_EDGE
 		do
 			create l_edge.make (a_condition, a_node)
 			edges.force (l_edge)
 		end
 
-	traverse_df
-		do
-			io.put_string ("Node-" + name)
-			if is_leaf then
-				io.put_string (" is leaf")
-				if samples /= Void then
-					io.put_string ("{")
-					from samples.start until samples.after loop
-						io.put_string (samples.key_for_iteration)
-						io.put_string ("=")
-						io.put_string (samples.item_for_iteration.out)
-						samples.forth
-					end
-					io.put_string ("}")
-				end
-			end
-			io.put_new_line
-			from edges.start until edges.after loop
-				io.put_string("Condition-")
-				io.put_string (edges.item_for_iteration.condition)
-				io.put_new_line
-				edges.item_for_iteration.node.traverse_df
-				edges.forth
-			end
-		end
 
 	calculate_result(a_hash:HASH_TABLE[STRING,STRING]):STRING
 		-- given a hash table with all the attributes as keys and their respective values, it will return the value calculated by the decision tree algorithm
 		local
 			l_is_found: BOOLEAN
-			l_next_node: RM_DT_NODE
+			l_next_node: RM_DECISION_TREE_NODE
 		do
 			if is_leaf then
 				Result := name
@@ -77,7 +63,7 @@ feature -- Interface
 		end
 
 	parse_samples(a_line:STRING)
-			-- parses the samples if any and fills the samples hash table
+			-- parses the samples if any and fills the `samples' hash table
 		require
 			ends_with_curly_bracket: a_line.ends_with ("}")
 		local
@@ -103,8 +89,6 @@ feature -- Interface
 
 		end
 
-feature -- access
-	samples: detachable HASH_TABLE[INTEGER, STRING]
 
 invariant
 	invariant_clause: True -- Your invariant here
