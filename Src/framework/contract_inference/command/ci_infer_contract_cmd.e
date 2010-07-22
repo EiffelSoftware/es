@@ -660,6 +660,8 @@ feature{NONE} -- Implementation
 			l_daikon_inferrer: CI_DAIKON_INFERRER
 			l_dnf_inferrer: CI_DNF_INFERRER
 			l_implication_inferrer: CI_IMPLICATION_INFERRER
+			l_linear_inferrer: CI_LINEAR_REGRESSION_INFERRER
+			l_simple_equality_inferrer: CI_SIMPLE_EQUALITY_INFERRER
 		do
 			create inferrers.make
 
@@ -701,6 +703,20 @@ feature{NONE} -- Implementation
 				l_implication_inferrer.set_config (config)
 				l_implication_inferrer.set_logger (log_manager)
 				inferrers.extend (l_implication_inferrer)
+			end
+
+			if config.is_linear_property_enabled then
+				create l_linear_inferrer
+				l_linear_inferrer.set_config (config)
+				l_linear_inferrer.set_logger (log_manager)
+				inferrers.extend (l_linear_inferrer)
+			end
+
+			if config.is_simple_equality_property_enabled then
+				create l_simple_equality_inferrer
+				l_simple_equality_inferrer.set_config (config)
+				l_simple_equality_inferrer.set_logger (log_manager)
+				inferrers.extend (l_simple_equality_inferrer)
 			end
 		end
 

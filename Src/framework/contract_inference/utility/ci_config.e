@@ -227,6 +227,15 @@ feature -- Access
 
 	is_implication_property_enabled: BOOLEAN
 			-- Should implications be inferred?
+			-- Default: True
+
+	is_linear_property_enabled: BOOLEAN
+			-- Should linear properties be inferred?
+			-- Default: True
+
+	is_simple_equality_property_enabled: BOOLEAN
+			-- Should simple equality properties in form of p = q be inferred?
+			-- Default: True
 
 feature -- Status report
 
@@ -442,6 +451,22 @@ feature -- Setting
 			is_implication_property_enabled := b
 		ensure
 			is_implication_property_enabled_set: is_implication_property_enabled = b
+		end
+
+	set_is_linear_property_enabled (b: BOOLEAN)
+			-- Set `is_liear_property_enabled' with `b'.
+		do
+			is_linear_property_enabled := b
+		ensure
+			is_linear_property_enabled_set: is_linear_property_enabled = b
+		end
+
+	set_is_simple_equality_property_enabled (b: BOOLEAN)
+			-- Set `is_simple_equality_property_enabled' with `b'.
+		do
+			is_simple_equality_property_enabled := b
+		ensure
+			is_simple_equality_property_enabled_set: is_simple_equality_property_enabled = b
 		end
 
 feature{NONE} -- Implementation

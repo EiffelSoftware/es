@@ -57,6 +57,8 @@ feature -- Basic operations
 			l_max_dnf_clause_option: AP_INTEGER_OPTION
 			l_tilda_option: AP_FLAG
 			l_implication_flag: AP_STRING_OPTION
+			l_linear_flag: AP_STRING_OPTION
+			l_simple_equality_flag: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -171,6 +173,14 @@ feature -- Basic operations
 			l_implication_flag.set_description ("Should implications be inferred?%NFormat: --implication-property [on|off].%NDefault: on.")
 			l_parser.options.force_last (l_implication_flag)
 
+			create l_linear_flag.make_with_long_form ("linear-property")
+			l_linear_flag.set_description ("Should linear properties be inferred?%NFormat: --linear-property [on|off].%NDefault: on.")
+			l_parser.options.force_last (l_linear_flag)
+
+			create l_simple_equality_flag.make_with_long_form ("simple-equality-property")
+			l_simple_equality_flag.set_description ("Should simple equality properties in form of p = q be inferred?%NFormat: --simple-equality-property [on|off].%NDefault: on.")
+			l_parser.options.force_last (l_simple_equality_flag)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -277,10 +287,42 @@ feature -- Basic operations
 				setup_implication_property (config, Void)
 			end
 
+			if l_linear_flag.was_found then
+				setup_linear_property (config, l_linear_flag.parameter)
+			else
+				setup_linear_property (config, Void)
+			end
+
+			if l_simple_equality_flag.was_found then
+				setup_simple_equality_property (config, l_simple_equality_flag.parameter)
+			else
+				setup_simple_equality_property (config, Void)
+			end
+
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation
+
+	setup_simple_equality_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if simple_equality properties are to be inferred.
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_simple_equality_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_simple_equality_property_enabled (False)
+			end
+		end
+
+	setup_linear_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup if linear properties are to be inferred.
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
+				config.set_is_linear_property_enabled (True)
+			elseif a_parameter.is_case_insensitive_equal ("off") then
+				config.set_is_linear_property_enabled (False)
+			end
+		end
 
 	setup_implication_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup if implication properties are to be inferred.

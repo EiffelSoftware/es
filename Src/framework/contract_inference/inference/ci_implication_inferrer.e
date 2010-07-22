@@ -27,8 +27,6 @@ feature -- Basic operations
 	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
-		local
-			l_tree_buidler: RM_DECISION_TREE_BUILDER
 		do
 				-- Initialize.
 			data := a_data
@@ -46,15 +44,14 @@ feature -- Basic operations
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			setup_last_contracts
 
 --			build_decision_trees
+
+			log_inferred_implications
+			setup_last_contracts
 		end
 
 feature{NONE} -- Implementation
-
-	arff_relation: WEKA_ARFF_RELATION
-			-- ARFF relation
 
 	consequent_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			-- Set of attributes to be used as goal attributes
@@ -72,6 +69,24 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
+	adapted_attributes (a_old_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_new_relation: WEKA_ARFF_RELATION): DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			-- Set of attributes with the same name as `a_old_attributes', but from `a_new_relation'
+		local
+			l_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
+		do
+			create Result.make (a_old_attributes.count)
+			Result.set_equality_tester (weka_arff_attribute_equality_tester)
+			from
+				l_cursor := a_old_attributes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.force_last (a_new_relation.attribute_by_name (l_cursor.item.name))
+				l_cursor.forth
+			end
+		end
+
 	build_decision_trees
 			-- Build decision trees.
 		local
@@ -81,33 +96,121 @@ feature{NONE} -- Implementation
 			l_selected_attrs: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			l_attrs1, l_attrs2: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			l_done: BOOLEAN
+			l_relation: like arff_relation
+			l_cons_attrs: like consequent_attributes
+			l_bool_pre_attrs: like boolean_premise_attributes
+			l_pre_attrs: like premise_attributes
 		do
+			l_relation := arff_relation.nominalized_cloned_object
+			l_bool_pre_attrs := adapted_attributes (boolean_premise_attributes, l_relation)
+			l_pre_attrs := adapted_attributes (premise_attributes, l_relation)
+			l_cons_attrs := adapted_attributes (consequent_attributes, l_relation)
+
 			from
 				l_cursor := consequent_attributes.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
 			loop
-				create l_attrs1.make (boolean_premise_attributes.count + 1)
+				create l_attrs1.make (l_bool_pre_attrs.count + 1)
 				l_attrs1.set_equality_tester (weka_arff_attribute_equality_tester)
-				l_attrs1.append (boolean_premise_attributes)
+				l_attrs1.append (l_bool_pre_attrs)
 				l_attrs1.force_last (l_cursor.item)
 
-				create l_attrs2.make (premise_attributes.count + 1)
+				create l_attrs2.make (l_pre_attrs.count + 1)
 				l_attrs2.set_equality_tester (weka_arff_attribute_equality_tester)
-				l_attrs2.append (premise_attributes)
+				l_attrs2.append (l_pre_attrs)
 				l_attrs2.force_last (l_cursor.item)
 
 					-- First try to build a decision with only boolean premises.
 					-- If no tree is accurate, build trees with all premise attributes.
 				l_done := False
 				across <<l_attrs1, l_attrs2>> as l_attrs until l_done loop
-					create l_tree_builder.make_with_relation (arff_relation, l_attrs.item, l_cursor.item)
+					create l_tree_builder.make_with_relation (l_relation, l_attrs.item, l_cursor.item)
 					l_tree_builder.build
 					l_tree := l_tree_builder.last_tree
 					l_done := l_tree.is_accurate
 				end
 				l_cursor.forth
+			end
+
+			if l_done then
+				generate_implications (l_tree)
+			end
+		end
+
+	generate_implications (a_tree: RM_DECISION_TREE)
+			-- Generate implications and store them in `last_postconditions'.
+		do
+			across a_tree.path as l_paths loop
+				last_postconditions.force_last (implication_from_path (l_paths.item))
+			end
+		end
+
+	implication_from_path (a_path: LIST [RM_DECISION_TREE_PATH_NODE]): EPA_EXPRESSION
+			-- Implication expression from `a_path'
+		local
+			l_path: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
+			l_text: STRING
+			l_node: RM_DECISION_TREE_PATH_NODE
+			l_name: STRING
+			l_operator: STRING
+			l_value: STRING
+			l_expr: EPA_AST_EXPRESSION
+		do
+			create l_path.make
+			a_path.do_all (agent l_path.extend)
+
+			create l_text.make (64)
+			from
+				l_path.start
+			until
+				l_path.after
+			loop
+				l_node := l_path.item_for_iteration
+				l_name := string_slices (l_node.operator_name, once "::").last
+				if l_name.item (l_name.count) = '%"' then
+					l_name.remove_tail (1)
+				end
+				l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
+				if l_name.starts_with (once "Current.") then
+					l_name.remove_head (8)
+				end
+
+				l_name.prepend_character ('(')
+				l_name.append_character (')')
+				l_operator := l_node.operator_name
+				l_value := l_node.value_name
+				if l_value.is_double then
+					l_value := l_value.to_double.floor.out
+				end
+				if not l_path.isfirst then
+					if l_path.islast then
+						l_text.append (once " implies ")
+					else
+						l_text.append (once " and ")
+					end
+				end
+				l_text.append (l_name)
+				l_text.append_character (' ')
+				l_text.append (l_operator)
+				l_text.append (l_value)
+				l_path.forth
+			end
+			create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
+			Result := l_expr
+		end
+
+	expression_from_anonymous_form (a_text: STRING; a_feature: FEATURE_I; a_class: CLASS_C): STRING
+			-- Expression from `a_text' with anonymous operands replaced with real operands of `a_feature' in `a_class'
+		local
+			l_opd_names: like operand_name_index_with_feature
+		do
+			l_opd_names := operand_name_index_with_feature (a_feature, a_class)
+			create Result.make (a_text.count + 20)
+			Result.append (a_text)
+			across l_opd_names as l_names loop
+				Result.replace_substring_all (curly_brace_surrounded_integer (l_names.key), l_names.item)
 			end
 		end
 
@@ -289,6 +392,27 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
+		end
+
+feature{NONE} -- Logging
+
+	log_inferred_implications
+			-- Log inferred implications.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+		do
+			logger.push_info_level
+			logger.put_line_with_time ("Found the following implications:")
+			from
+				l_cursor := last_postconditions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				logger.put_line (once "%T" + l_cursor.item.text)
+				l_cursor.forth
+			end
+			logger.pop_level
 		end
 
 end

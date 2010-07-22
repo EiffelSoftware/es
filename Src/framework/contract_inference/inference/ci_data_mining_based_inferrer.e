@@ -10,4 +10,9 @@ deferred class
 inherit
 	CI_INFERRER
 
+feature{NONE} -- Implementation
+
+	arff_relation: WEKA_ARFF_RELATION
+			-- ARFF relation
+
 end
