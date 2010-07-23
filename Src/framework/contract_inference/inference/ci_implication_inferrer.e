@@ -39,7 +39,7 @@ feature -- Basic operations
 --			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
-			logger.put_line_with_time_at_fine_level ("Start inferring implications.")
+			logger.put_line_with_time ("Start inferring implications.")
 
 			collect_premise_attributes
 			collect_consequent_attributes
@@ -67,10 +67,6 @@ feature{NONE} -- Implementation
 
 	premise_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			-- Set of attributes to be used as premise attributes
-
-	value_sets: DS_HASH_TABLE [DS_HASH_SET [STRING_8], WEKA_ARFF_ATTRIBUTE]
-			-- Table from attribute to values of that attributes in all instances
-			-- Key is an attribute, value is the set of values that attribute have across all instances.
 
 feature{NONE} -- Implementation
 
@@ -136,12 +132,12 @@ feature{NONE} -- Implementation
 					l_tree := l_tree_builder.last_tree
 					l_done := l_tree.is_accurate
 				end
+				if l_done then
+					generate_implications (l_tree)
+				end
 				l_cursor.forth
 			end
 
-			if l_done then
-				generate_implications (l_tree)
-			end
 		end
 
 	generate_implications (a_tree: RM_DECISION_TREE)
@@ -162,6 +158,8 @@ feature{NONE} -- Implementation
 			l_operator: STRING
 			l_value: STRING
 			l_expr: EPA_AST_EXPRESSION
+			l_slices: LIST [STRING]
+			l_is_pre: BOOLEAN
 		do
 			create l_path.make
 			a_path.do_all (agent l_path.extend)
@@ -173,25 +171,49 @@ feature{NONE} -- Implementation
 				l_path.after
 			loop
 				l_node := l_path.item_for_iteration
-				l_name := string_slices (l_node.operator_name, once "::").last
-				if l_name.item (l_name.count) = '%"' then
-					l_name.remove_tail (1)
-				end
+				l_slices := string_slices (l_node.attribute_name, once "::")
+				l_is_pre := l_slices.first.has_substring (once "pre::")
+				l_name := l_slices.last
 				l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
 				if l_name.starts_with (once "Current.") then
 					l_name.remove_head (8)
 				end
 
-				l_name.prepend_character ('(')
-				l_name.append_character (')')
 				l_operator := l_node.operator_name
 				l_value := l_node.value_name
 				if l_value.is_double then
 					l_value := l_value.to_double.floor.out
+				elseif l_value ~ stay_true_value then
+					l_value := once "True"
+				elseif l_value ~ stay_false_value then
+					l_value := once "False"
 				end
+
+				if l_path.islast then
+					if l_slices.first.has_substring (once "by")	then
+						l_name := l_name + once " = old " + l_name
+						if l_value.is_integer then
+							if l_value.to_integer < 0 then
+								l_name := l_name + once " - "
+							else
+								l_name := l_name + once " + "
+							end
+						end
+					else
+						l_name := l_name + once " = "
+					end
+				else
+					if l_is_pre then
+						l_name.prepend (once "old ")
+					end
+					l_name.prepend_character ('(')
+					l_name.append_character (')')
+				end
+
 				if not l_path.isfirst then
 					if l_path.islast then
 						l_text.append (once " implies ")
+
 					else
 						l_text.append (once " and ")
 					end
@@ -247,7 +269,7 @@ feature{NONE} -- Implementation
 				l_name := l_attribute.name
 
 					-- Remove attributes that do not describe a prestate property.
-				if not l_name.starts_with (once "%"pre::") then
+				if not l_name.starts_with (once "pre::") then
 					l_ok := False
 				end
 
@@ -320,7 +342,7 @@ feature{NONE} -- Implementation
 				l_name := l_attribute.name
 
 					-- Remove attributes that do not describe a change.
-				if not l_name.starts_with (once "%"by::") and then not l_name.starts_with (once "%"to::") then
+				if not l_name.starts_with (once "by::") and then not l_name.starts_with (once "to::") then
 					l_ok := False
 				end
 

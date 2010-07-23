@@ -19,23 +19,25 @@ feature
 			end
 		end
 
-	create_attribute(a_line: STRING):WEKA_ARFF_ATTRIBUTE
+	create_attribute(a_attr_line: STRING):WEKA_ARFF_ATTRIBUTE
 			-- Creates a weka_arff_attribute object by analyzing the a_line argument
 		require
-			line_is_an_attribute: is_attribute(a_line)
+			line_is_an_attribute: is_attribute(a_attr_line)
 		local
 			l_name: STRING
 			l_type: STRING
 			l_set: DS_HASH_SET [STRING]
+			l_line: STRING
 		do
+			l_line := a_attr_line.twin
 			-- "@attribute".count is 10
-			a_line.keep_tail (a_line.count - 10)
-			a_line.prune_all_leading(' ')
-			a_line.prune_all_leading('%T')
-			a_line.prune_all_trailing (' ')
-			a_line.prune_all_trailing ('%T')
-			l_name := parse_attr_name(a_line)
-			l_type := cut_off_name(a_line)
+			l_line.keep_tail (l_line.count - 10)
+			l_line.prune_all_leading(' ')
+			l_line.prune_all_leading('%T')
+			l_line.prune_all_trailing (' ')
+			l_line.prune_all_trailing ('%T')
+			l_name := parse_attr_name(l_line)
+			l_type := cut_off_name(l_line)
 			if l_type.has_substring ({WEKA_CONSTANTS}.numeric) then
 				create {WEKA_ARFF_NUMERIC_ATTRIBUTE} Result.make(l_name)
 			elseif l_type.has_substring ({WEKA_CONSTANTS}.str)  then
@@ -58,11 +60,14 @@ feature {NONE}
 			l_values: STRING
 			l_values_list: LIST [STRING]
 			l_value: STRING
+			l_start_index: INTEGER
 		do
 			create Result.make (5)
 			Result.set_equality_tester (string_equality_tester)
-			if a_type.index_of ('{', 1) > 0 then
-				l_values := a_type.substring (a_type.index_of ('{', 1)+1, a_type.last_index_of ('}', a_type.count)-1)
+			l_start_index := a_type.last_index_of ('{', a_type.count)
+			if l_start_index > 0 then
+				l_values := a_type.substring (l_start_index + 1, a_type.index_of ('}', l_start_index + 1) - 1)
+
 				l_values_list := l_values.split (',')
 				from l_values_list.start until l_values_list.after loop
 					l_value := l_values_list.item_for_iteration

@@ -38,13 +38,11 @@ feature -- Access
 			create Result.make (128)
 			Result.append (attribute_header)
 			Result.append_character (' ')
-			if name.has (' ') then
-				Result.append_character('"')
-				Result.append (name)
-				Result.append_character('"')
-			else
-				Result.append (name)
-			end
+
+			Result.append_character ('%"')
+			Result.append (name)
+			Result.append_character ('%"')
+
 			Result.append_character ('%T')
 			Result.append (type_string)
 		end

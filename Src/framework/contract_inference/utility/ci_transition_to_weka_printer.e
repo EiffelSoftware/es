@@ -285,7 +285,7 @@ feature{NONE} -- Implementation
 			-- `a_precondition' indicates if `a_name' is used in precondition, otherwise postcondition.
 		do
 			create Result.make (a_name.count + 10)
-			Result.append_character ('%"')
+--			Result.append_character ('%"')
 			if not (a_name.starts_with (by_field_prefix) or a_name.starts_with (to_field_prefix)) then
 				if a_precondition then
 					Result.append (precondition_field_prefix)
@@ -294,7 +294,7 @@ feature{NONE} -- Implementation
 				end
 			end
 			Result.append (a_name)
-			Result.append_character ('%"')
+--			Result.append_character ('%"')
 		end
 
 	weka_comment: STRING
