@@ -1476,8 +1476,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 #else
 
 #define RTCRI
-#define RTCRON
-#define RTCROFF
+#define RTCREN
+#define RTCRDIS
+
 
 #define RTCRCSI(y,bodyid,rout)
 #define RTCRCSO(y,bodyid,rout)
