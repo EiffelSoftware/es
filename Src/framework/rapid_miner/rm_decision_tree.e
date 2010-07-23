@@ -19,25 +19,6 @@ feature{NONE} -- Initialization
 			create stack.make
 		end
 
-feature -- Clasification
-
-	clasify (a_sample: HASH_TABLE [STRING, STRING])
-			-- Use current tree to classify the instance given by `a_sample', store result in `last_classification'.			
-			-- Key of `a_sample' is attribute name, value is the value of that attribute in `a_sample'.
-		do
-			last_classification := root.calculate_result (a_sample)
-		end
-
-feature -- Setting
-
-	set_is_accurate (a_is_accurate: BOOLEAN)
-			-- Set `is_accurate' with `a_is_accurate'.
-		do
-			is_accurate := a_is_accurate
-		ensure
-			is_accurate_set: is_accurate = a_is_accurate
-		end
-
 feature -- Access
 
 	last_classification: STRING
@@ -63,6 +44,29 @@ feature -- Access
 feature -- Status report
 
 	is_accurate: BOOLEAN
+			-- Is Current tree accurate?
+			-- A tree is accurate if it does correct classification on all training samples.
+
+feature -- Clasification
+
+	classify (a_sample: HASH_TABLE [STRING, STRING])
+			-- Use current tree to classify the instance given by `a_sample', store result in `last_classification'.			
+			-- Key of `a_sample' is attribute name, value is the value of that attribute in `a_sample'.
+		do
+			last_classification := root.classification (a_sample)
+		end
+
+feature{RM_DECISION_TREE_BUILDER} -- Setting
+
+	set_is_accurate (a_is_accurate: BOOLEAN)
+			-- Set `is_accurate' with `a_is_accurate'.
+		do
+			is_accurate := a_is_accurate
+		ensure
+			is_accurate_set: is_accurate = a_is_accurate
+		end
+
+
 
 feature{NONE} -- Implementation
 

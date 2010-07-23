@@ -6,10 +6,26 @@ note
 
 class
 	RM_DECISION_TREE_EDGE
+
 create
 	make
 
+feature {NONE} -- creation
+
+	make (a_condition: STRING; a_node: RM_DECISION_TREE_NODE)
+		do
+			if a_condition.at (1).code = 226 then
+				operator := "<="
+				value := a_condition.substring (5, a_condition.count)
+			else
+				operator := a_condition.substring (1, 1)
+				value := a_condition.substring (3, a_condition.count)
+			end
+			node := a_node
+		end
+
 feature -- Access
+
 	operator: STRING
 			-- operator for that edge
 
@@ -25,10 +41,10 @@ feature -- Access
 			Result := operator + value
 		end
 
-feature -- Interface
+feature -- Status report
 
-	does_satisfy_condition(a_value:STRING):BOOLEAN
-			-- calculates if `a_value' satisfies the condition(operator and value) of that edge.
+	is_condition_satisfied (a_value:STRING): BOOLEAN
+			-- Calculates if `a_value' satisfies the condition(operator and value) of that edge.
 		do
 			if operator.is_equal ("=") then
 				Result := a_value.is_equal (value)
@@ -44,23 +60,5 @@ feature -- Interface
 				Result := False
 			end
 		end
-
-
-feature {NONE} -- creation
-
-	make(a_condition:STRING; a_node:RM_DECISION_TREE_NODE)
-		do
-			if a_condition.at (1).code = 226 then
-				operator := "<="
-				value := a_condition.substring (5, a_condition.count)
-			else
-				operator := a_condition.substring (1, 1)
-				value := a_condition.substring (3, a_condition.count)
-			end
-			node := a_node
-		end
-
-invariant
-	invariant_clause: True -- Your invariant here
 
 end
