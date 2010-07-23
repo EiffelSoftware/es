@@ -75,9 +75,11 @@ feature{RM_BUILDER} -- Implementation
 		local
 			l_perf_parser: RM_DECISION_TREE_PERFORMANCE_PARSER
 		do
-			create l_perf_parser
-			l_perf_parser.parse_performance
-			last_tree.set_is_accurate (l_perf_parser.is_accurate)
+			if validation_code /= {RM_CONSTANTS}.no_validation then
+				create l_perf_parser
+				l_perf_parser.parse_performance
+				last_tree.set_is_accurate (l_perf_parser.is_accurate)
+			end
 		end
 
 end

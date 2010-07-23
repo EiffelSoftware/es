@@ -156,9 +156,7 @@ feature{NONE} -- actual xml
       <operator activated="true" class="
 		]")
 			Result.append({RM_CONSTANTS}.validation_name_placeholder)
-			Result.append("[
-" expanded="true" name="Validation">
-]")
+			Result.append("%"  expanded=%"true%" name=%"Validation%">")
 			Result.append({RM_CONSTANTS}.validation_parameters_placeholder)
 			Result.append("[
         <process expanded="true">

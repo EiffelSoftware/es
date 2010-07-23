@@ -52,15 +52,11 @@ feature -- Interface
 
 			if validation_code /= {RM_CONSTANTS}.no_validation then
 				put_validation_name
-			end
 
-			if algorithm_parameters /= Void then
-				put_algorithm_parameters
-			end
-
-			if validation_code /= {RM_CONSTANTS}.no_validation and validation_parameters /= Void then
 				put_validation_parameters
 			end
+
+			put_algorithm_parameters
 
 
 		end
@@ -163,21 +159,22 @@ feature{RM_XML_GENERATOR} -- The pieces of the generation. To be overriden if ne
 	put_algorithm_parameters
 			-- puts the algorithm parameters into the xml string at the appropriate placeholder
 		require
-			algorithm_params_is_not_void: algorithm_parameters /= Void
 			has_the_algorithm_params_placeholder: xml.has_substring ({RM_CONSTANTS}.algorithm_parameters_placeholder)
 		local
 			l_params_string: STRING
 			l_start_index, l_end_index: INTEGER
 		do
 			l_params_string := "%N"
-			from algorithm_parameters.start until algorithm_parameters.after loop
-				l_params_string.append (" <parameter key=%"")
-				l_params_string.append (algorithm_parameters.key_for_iteration)
-				l_params_string.append ("%" value=%"")
-				l_params_string.append (algorithm_parameters.item_for_iteration)
-				l_params_string.append ("%"/>")
-				l_params_string.append ("%N")
-				algorithm_parameters.forth
+			if validation_code /= {RM_CONSTANTS}.no_validation and validation_parameters /= Void then
+				from algorithm_parameters.start until algorithm_parameters.after loop
+					l_params_string.append (" <parameter key=%"")
+					l_params_string.append (algorithm_parameters.key_for_iteration)
+					l_params_string.append ("%" value=%"")
+					l_params_string.append (algorithm_parameters.item_for_iteration)
+					l_params_string.append ("%"/>")
+					l_params_string.append ("%N")
+					algorithm_parameters.forth
+				end
 			end
 			replace_placeholder ({RM_CONSTANTS}.algorithm_parameters_placeholder, l_params_string)
 		ensure
@@ -187,21 +184,22 @@ feature{RM_XML_GENERATOR} -- The pieces of the generation. To be overriden if ne
 	put_validation_parameters
 			-- puts the validation parameters into the xml string at the appropriate placeholder
 		require
-			validation_params_is_not_void: validation_parameters /= Void
 			has_the_validation_params_placeholder: xml.has_substring ({RM_CONSTANTS}.validation_parameters_placeholder)
 		local
 			l_params_string: STRING
 			l_start_index, l_end_index: INTEGER
 		do
 			l_params_string := "%N"
-			from validation_parameters.start until validation_parameters.after loop
-				l_params_string.append (" <parameter key=%"")
-				l_params_string.append (validation_parameters.key_for_iteration)
-				l_params_string.append ("%" value=%"")
-				l_params_string.append (validation_parameters.item_for_iteration)
-				l_params_string.append ("%"/>")
-				l_params_string.append ("%N")
-				validation_parameters.forth
+			if algorithm_parameters /= Void then
+				from validation_parameters.start until validation_parameters.after loop
+					l_params_string.append (" <parameter key=%"")
+					l_params_string.append (validation_parameters.key_for_iteration)
+					l_params_string.append ("%" value=%"")
+					l_params_string.append (validation_parameters.item_for_iteration)
+					l_params_string.append ("%"/>")
+					l_params_string.append ("%N")
+					validation_parameters.forth
+				end
 			end
 			replace_placeholder ({RM_CONSTANTS}.validation_parameters_placeholder, l_params_string)
 		ensure
