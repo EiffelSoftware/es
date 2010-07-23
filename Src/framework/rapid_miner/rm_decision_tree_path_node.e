@@ -7,6 +7,9 @@ note
 class
 	RM_DECISION_TREE_PATH_NODE
 
+inherit
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -34,22 +37,38 @@ feature -- Access
 	value_name: STRING
 			-- Value of the attribute
 
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := attribute_name + " " + operator_name + " " + value_name
+		end
+
 feature -- Setters
 
 	set_operator_name (a_operator_name: STRING)
 			-- Set `operator_name' with `a_operator_name'.
 		do
-			operator_name := a_operator_name
+			operator_name := a_operator_name.twin
 		ensure
-			is_accurate_set: operator_name = a_operator_name
+			is_accurate_set: operator_name ~ a_operator_name
 		end
 
 	set_value_name (a_value_name: STRING)
 			-- Set `value_name' with `a_value_name'.
 		do
-			value_name := a_value_name
+			value_name := a_value_name.twin
 		ensure
-			is_value_name: value_name = a_value_name
+			is_value_name: value_name ~ a_value_name
+		end
+
+	set_attribute_name (a_name: STRING)
+			-- Set `attribute_name' with `a_name'.
+		do
+			attribute_name := a_name.twin
+		ensure
+			attribute_name_set: attribute_name ~ a_name
 		end
 
 end
