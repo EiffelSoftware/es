@@ -122,11 +122,11 @@ feature {NONE}
 			else
 				space_index := a_line.index_of (' ', 1) - 1
 				tab_index := a_line.index_of ('%T', 1) - 1
-				-- if some of the indices is 0 then we don't want to pick it so we make it huge
-				if space_index = 0 then
+				-- if some of the indices is -1 then we don't want to pick it so we make it huge
+				if space_index = -1 then
 					space_index := 10000
 				end
-				if tab_index = 0 then
+				if tab_index = -1 then
 					tab_index := 10000
 				end
 				-- if both of them exists then we take the minimal

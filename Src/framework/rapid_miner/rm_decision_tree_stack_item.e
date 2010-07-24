@@ -11,18 +11,18 @@ create
 
 feature -- Access
 
-	node : RM_DECISION_TREE_NODE
+	node: RM_DECISION_TREE_NODE
 			-- a reference to a node
 
 	condition: STRING
 			-- stores the condition
 
-	depth : INTEGER
+	depth: INTEGER
 			-- the depth of `node' in the decision tree.
 
 feature -- Interface
 
-	set_condition(a_condition:STRING)
+	set_condition (a_condition: STRING)
 			-- set `condition' to `a_condition'
 		do
 			condition := a_condition
@@ -32,7 +32,10 @@ feature -- Interface
 
 feature {NONE} -- Construction
 
-	make(a_node: RM_DECISION_TREE_NODE; a_condition: STRING; a_depth : INTEGER)
+	make (a_node: RM_DECISION_TREE_NODE; a_condition: STRING; a_depth: INTEGER)
+		-- `a_node' the node to be saved
+		-- `a_condition' the condition to leave `a_node'
+		-- `a_depth' the tree-depth of `a_node'
 		do
 			node := a_node
 			condition := a_condition

@@ -11,19 +11,17 @@ create
 
 feature{RM_DECISION_TREE_PARSER} -- child access
 
-	model_file_path:STRING
+	model_file_path: STRING
 		-- the path to the model file
 
 feature{NONE} -- implementation
 
-	stack : LINKED_STACK[RM_DECISION_TREE_STACK_ITEM]
+	stack : LINKED_STACK [RM_DECISION_TREE_STACK_ITEM]
 		-- stack needed for parsing the file
-
-
 
 feature {NONE} -- Construction
 
-	make(a_model_file_path:STRING)
+	make(a_model_file_path: STRING)
 		require
 			-- file_exists:
 			file_name_not_null: not a_model_file_path.is_empty
@@ -35,7 +33,7 @@ feature {NONE} -- Construction
 
 feature -- access
 
-	tree_root : RM_DECISION_TREE_NODE
+	tree_root: RM_DECISION_TREE_NODE
 		-- will hold the root of the tree after the model file is parsed
 
 feature -- interface
@@ -43,10 +41,10 @@ feature -- interface
 	parse_model
 		local
 			l_model_file: PLAIN_TEXT_FILE
-			l_line : STRING
-			l_stack_item : RM_DECISION_TREE_STACK_ITEM
-			l_depth : INTEGER
-			l_node : RM_DECISION_TREE_NODE
+			l_line: STRING
+			l_stack_item: RM_DECISION_TREE_STACK_ITEM
+			l_depth: INTEGER
+			l_node: RM_DECISION_TREE_NODE
 		do
 			tree_root := Void
 			create l_model_file.make_open_read (model_file_path)
@@ -59,7 +57,7 @@ feature -- interface
 					l_model_file.read_line
 					l_line := l_model_file.last_string
 					if l_line.count > 0 then
-						create_new_node(l_line)
+						create_new_node (l_line)
 					end
 				end
 				tree_root := stack.item.node
@@ -70,13 +68,14 @@ feature -- interface
 		end
 
 feature{RM_DECISION_TREE_PARSER}
-	create_new_node(a_line:STRING)
+
+	create_new_node (a_line: STRING)
 		-- Parses the line, creates the nodes and edges that it contains and saves them into `stack`.
 		local
-			l_depth : INTEGER
-			l_line : STRING
-			l_name : STRING
-			l_condition : STRING
+			l_depth: INTEGER
+			l_line: STRING
+			l_name: STRING
+			l_condition: STRING
 			l_leaf: detachable RM_DECISION_TREE_NODE
 		do
 			l_depth := extract_depth (a_line)
@@ -94,7 +93,7 @@ feature{RM_DECISION_TREE_PARSER}
 			end
 		end
 
-	handle_add_to_stack(a_name:STRING; a_depth:INTEGER; a_condition:STRING)
+	handle_add_to_stack(a_name: STRING; a_depth: INTEGER; a_condition: STRING)
 		-- adds another item in the stack making sure that the new element is added
 		-- only when the top element of the stack has smaller depth. If depth is equal
 		-- just the condition is changed
@@ -123,23 +122,23 @@ feature{RM_DECISION_TREE_PARSER}
 		end
 
 
-	extract_leaf_name(a_line:STRING):STRING
+	extract_leaf_name (a_line: STRING): STRING
 			-- extracts the leaf name from a string.
 		require
 			is_leaf: has_leaf (a_line)
 		local
-			l_index_end, l_index_start : INTEGER
+			l_index_end, l_index_start: INTEGER
 		do
 			l_index_start := a_line.last_index_of (':', a_line.count) + 2
 			l_index_end := a_line.last_index_of ('{', a_line.count) - 2
 			Result := a_line.substring (l_index_start, l_index_end)
 		end
 
-	add_to_stack(a_name:STRING; a_depth:INTEGER; a_condition:STRING)
+	add_to_stack(a_name: STRING; a_depth: INTEGER; a_condition: STRING)
 		-- creates a RM_DT_STACK_ITEM and pushes it on top of the stack
 		local
-			l_stack_item : RM_DECISION_TREE_STACK_ITEM
-			l_node : RM_DECISION_TREE_NODE
+			l_stack_item: RM_DECISION_TREE_STACK_ITEM
+			l_node: RM_DECISION_TREE_NODE
 		do
 			create l_node.make (a_name, false)
 			if not stack.is_empty then
@@ -151,33 +150,33 @@ feature{RM_DECISION_TREE_PARSER}
 			stack.count = old stack.count + 1
 		end
 
-	clean_line(a_line:STRING):STRING
+	clean_line(a_line: STRING): STRING
 		-- removes the trailing '|' from the beginning of the line
 		do
-			if extract_depth(a_line) > 0 then
+			if extract_depth (a_line) > 0 then
 				Result := a_line.substring (a_line.last_index_of ('|', a_line.count)+4, a_line.count)
 			else
 				Result := a_line
 			end
 		end
 
-	extract_depth(a_line:STRING):INTEGER
+	extract_depth (a_line: STRING): INTEGER
 			-- tells us how many levels deep is the node on this line
 		do
 			Result := a_line.last_index_of ('|', a_line.count)
 			Result := (Result + 3)//4
 		end
 
-	extract_node_name(a_line:STRING):STRING
+	extract_node_name(a_line: STRING): STRING
 			-- extracts the node name from a rapidminer modelfile line
 		local
 			l_index: INTEGER
 		do
-			l_index := find_operator_index(a_line) - 1
+			l_index := find_operator_index (a_line) - 1
 			Result := a_line.substring (1, l_index)
 		end
 
-	extract_condition(a_line:STRING):STRING
+	extract_condition(a_line: STRING): STRING
 			-- extracts the condition from tha rapidminder model file line
 		local
 			l_index_start: INTEGER
@@ -186,7 +185,7 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := a_line.substring (l_index_start, a_line.count)
 		end
 
-	find_operator_index(a_line:STRING):INTEGER
+	find_operator_index(a_line: STRING): INTEGER
 			-- returns the index of the operator in this line
 		local
 			l_index: INTEGER
@@ -201,7 +200,7 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := l_index
 		end
 
-	has_leaf(a_line:STRING):BOOLEAN
+	has_leaf(a_line: STRING): BOOLEAN
 		-- tells if a line from the model file produced by RM has a leaf node in it.
 		do
 			-- TODO if we have :: in the name then this will not work

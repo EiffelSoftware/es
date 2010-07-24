@@ -14,6 +14,8 @@ inherit
 feature{RM_BUILDER} -- Initializaiton
 
 	init(a_algorithm_code: INTEGER; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST[STRING]; a_label_name: STRING)
+			-- `a_selected_attributes' the attributes to be selected by RM
+			-- `a_label_name' the target attribute name
 			-- Initialize some attributes.
 		local
 			rm_const: RM_CONSTANTS
@@ -44,13 +46,13 @@ feature -- Interface
 
 feature -- Setters
 
-	set_algorithm_parameters(a_alg_params: HASH_TABLE[STRING, STRING])
+	set_algorithm_parameters(a_alg_params: HASH_TABLE [STRING, STRING])
 			-- Sets the algorithm parameters.
 		do
 			algorithm_parameters := a_alg_params
 		end
 
-	set_validation_parameters(a_val_param: HASH_TABLE[STRING, STRING])
+	set_validation_parameters(a_val_param: HASH_TABLE [STRING, STRING])
 			-- Sets the validation parameters.
 		do
 			validation_parameters := a_val_param
@@ -148,6 +150,7 @@ feature{RM_BUILDER} -- Implementation
 feature {RM_BUILDER} -- creation encapsulation
 
 	create_xml_generator: RM_XML_GENERATOR
+			-- Factory method creating an RM_XML_GENERATOR
 		do
 			create Result.make (algorithm_code, validation_code, arff_file_path, selected_attributes, label_name)
 

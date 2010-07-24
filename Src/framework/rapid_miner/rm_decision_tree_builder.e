@@ -20,7 +20,7 @@ create
 
 feature -- Create
 
-	make(a_arff_file_path: STRING; a_selected_attributes: LIST[STRING]; a_label_name: STRING)
+	make(a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
 			-- creates a decision tree builder with default decision_tree algorithm and
 			-- 'no_validation'
 		do
@@ -49,7 +49,7 @@ feature -- Create
 				a_selected_attributes.forth
 			end
 
-			init(decision_tree, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+			init (decision_tree, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
 		end
 
 feature -- Access
@@ -67,7 +67,7 @@ feature{RM_BUILDER} -- Implementation
 			create l_model_parser.make (rm_environment.model_file_path)
 			l_model_parser.parse_model
 
-			create last_tree.make (l_model_parser.tree_root)
+			create last_tree.make (l_model_parser.tree_root, label_name)
 		end
 
 	parse_performance

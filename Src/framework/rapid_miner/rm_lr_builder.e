@@ -23,14 +23,14 @@ feature -- Create
 
 feature -- Access
 
-	last_linear_regression: RM_LINEAR_REGRESSION
+--	last_linear_regression: RM_LINEAR_REGRESSION
 
 feature{RM_BUILDER} -- implementation
 
 	parse_model
 			-- parses the model file
 		local
-			l_model_parser: RM_LINEAR_REGRESSION_PARSER
+--			l_model_parser: RM_LINEAR_REGRESSION_PARSER
 		do
 
 		end

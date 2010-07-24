@@ -12,10 +12,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_root: RM_DECISION_TREE_NODE)
-			-- Requires the root of the tree.
+	make (a_root: RM_DECISION_TREE_NODE; a_label_name: STRING)
+			-- `a_root' the root of the tree
+			-- `a_label_name' the target attribute's name for this tree
 		do
 			root := a_root
+			label_name := a_label_name
 			create stack.make
 		end
 
@@ -27,6 +29,9 @@ feature -- Access
 	root: RM_DECISION_TREE_NODE
 			-- the root node of the tree.
 
+	label_name: STRING
+			-- the name of the target attribute of that  tree
+
 	paths: LINKED_LIST [LINKED_LIST [RM_DECISION_TREE_PATH_NODE]]
 			-- List of paths from current tree
 			-- Eath inner list represents a path, the first element is the root node,
@@ -36,7 +41,7 @@ feature -- Access
 				stack.wipe_out
 				create paths_internal.make
 				paths_internal.wipe_out
-				calculate_paths(root)
+				calculate_paths (root)
 			end
 			Result := paths_internal
 		end
@@ -83,7 +88,7 @@ feature{NONE} -- Implementation
 			l_node: RM_DECISION_TREE_PATH_NODE
 		do
 			if current_node.is_leaf then
-				create l_node.make (current_node.name, "", "")
+				create l_node.make (label_name, "=", current_node.name)
 				stack.put (l_node)
 				save_stack
 				stack.remove
@@ -102,7 +107,7 @@ feature{NONE} -- Implementation
 			-- Saves the stack into the paths variable.
 		local
 			l_list: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
-			l_array: ARRAYED_LIST[RM_DECISION_TREE_PATH_NODE]
+			l_array: ARRAYED_LIST [RM_DECISION_TREE_PATH_NODE]
 		do
 			create l_list.make
 			l_array := stack.linear_representation
