@@ -114,16 +114,34 @@ feature {NONE}
 		require
 			attribute_is_cut_out: not a_line.starts_with ({WEKA_CONSTANTS}.attr)
 			spaces_are_cut_out: not a_line.starts_with (" ") and not a_line.starts_with ("%T")
+		local
+			space_index, tab_index: INTEGER
 		do
 			if a_line.starts_with ("%"") then
 				Result := a_line.index_of ('"', 2)
 			else
-				if a_line.index_of (' ', 1) = 0 then
-					-- if no spaces found we look for tabs
-					Result := a_line.index_of ('%T', 1) - 1
-				else
-					Result :=  a_line.index_of (' ', 1) - 1
+				space_index := a_line.index_of (' ', 1) - 1
+				tab_index := a_line.index_of ('%T', 1) - 1
+				-- if some of the indices is 0 then we don't want to pick it so we make it huge
+				if space_index = 0 then
+					space_index := 10000
 				end
+				if tab_index = 0 then
+					tab_index := 10000
+				end
+				-- if both of them exists then we take the minimal
+				if space_index < tab_index then
+					Result := space_index
+				else
+					Result := tab_index
+				end
+
+--				if a_line.index_of (' ', 1) = 0 then
+--					-- if no spaces found we look for tabs
+--					Result := a_line.index_of ('%T', 1) - 1
+--				else
+--					Result :=  a_line.index_of (' ', 1) - 1
+--				end
 			end
 		end
 end
