@@ -16,6 +16,8 @@ feature{NONE} -- Initialization
 			-- `a_root' the root of the tree
 			-- `a_label_name' the target attribute's name for this tree
 		do
+			internal_is_accurate := True
+			calculate_is_accurate := True
 			root := a_root
 			label_name := a_label_name
 			create stack.make
@@ -51,6 +53,13 @@ feature -- Status report
 	is_accurate: BOOLEAN
 			-- Is Current tree accurate?
 			-- A tree is accurate if it does correct classification on all training samples.
+		do
+			if calculate_is_accurate then
+				Result := root.is_sample_accurate
+			else
+				Result := internal_is_accurate
+			end
+		end
 
 feature -- Clasification
 
@@ -66,21 +75,32 @@ feature{RM_DECISION_TREE_BUILDER} -- Setting
 	set_is_accurate (a_is_accurate: BOOLEAN)
 			-- Set `is_accurate' with `a_is_accurate'.
 		do
-			is_accurate := a_is_accurate
+			internal_is_accurate := a_is_accurate
+			calculate_is_accurate := False
 		ensure
 			is_accurate_set: is_accurate = a_is_accurate
 		end
 
 
+feature{NONE} -- Internal data holders
 
-feature{NONE} -- Implementation
+	calculate_is_accurate: BOOLEAN
+			-- This variable tells if we have to calculate the `is_accurate' feature
+			-- by going to all the leaves and checking out the samples or we can use
+			-- the `internal_is_accurate' variable. If we use the `set_is_accurate'
+			-- feature then the `calculate_is_accurate' will be false else true.
+
+	internal_is_accurate: BOOLEAN
+			-- If we manually set the accuracy of the tree this is where we store it.
 
 	paths_internal: detachable like paths
-			-- internal variable used to hold the intermediate paths calculated in `calculate_paths'
+			-- Internal variable used to hold the intermediate paths calculated in `calculate_paths'
 
 	stack: LINKED_STACK [RM_DECISION_TREE_PATH_NODE]
 			-- While we dfs traverse the tree we need to keep the previous nodes so that we can
 			-- print the whole path when we reach a leaf node.
+
+feature{NONE} -- Implementation
 
 	calculate_paths(current_node: RM_DECISION_TREE_NODE)
 			-- Traverses the tree in a DFS manner. When a leaf node is encountered the stack is saved into the paths variable.

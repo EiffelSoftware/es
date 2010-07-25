@@ -57,6 +57,51 @@ feature -- Status report
 	is_leaf : BOOLEAN
 			-- is the node leaf or not.
 
+feature -- Interface
+
+	is_sample_accurate: BOOLEAN
+			-- Taking this node as a root of a tree, is this tree accurate according to the samples in the leaves?
+		local
+			found_one: BOOLEAN
+		do
+			if is_leaf then
+				Result := are_samples_accurate
+			else
+				Result := True
+				from edges.start until edges.after loop
+					Result := Result and edges.item_for_iteration.node.is_sample_accurate
+					edges.forth
+				end
+
+			end
+		end
+
+feature{NONE} -- Implementation
+
+	are_samples_accurate: BOOLEAN
+			-- Checks out the samples only on the current node and determines if they show accuracy or not.
+			-- This is determined by looking for values > 0, if more than 1 is found then the tree is inaccurate.
+		local
+			found_one: BOOLEAN
+		do
+			if samples = Void then
+				Result := True
+			else
+				Result := True
+				from samples.start until samples.after loop
+					if samples.item_for_iteration > 0 then
+						if found_one then
+							Result := False
+						end
+						found_one := True
+					end
+					samples.forth
+				end
+			end
+		ensure
+			samples_void_means_true: samples = Void implies Result = True
+		end
+
 feature{RM_DECISION_TREE_PARSER} -- Implementation
 
 	add_child (a_node: RM_DECISION_TREE_NODE; a_condition: STRING)
@@ -96,4 +141,7 @@ feature{RM_DECISION_TREE_PARSER} -- Implementation
 			end
 		end
 
+invariant
+	leaf_has_no_children: is_leaf implies edges.is_empty
+	no_leaf_has_children: not is_leaf implies not edges.is_empty
 end
