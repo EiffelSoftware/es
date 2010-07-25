@@ -50,8 +50,17 @@ feature{NONE} -- Initialization
 			out.append (once "%"]")
 			hash_code := out.hash_code
 
-			lower_bound_expression := a_lower_bound_expr.twin
-			upper_bound_expression := a_upper_bound_expr.twin
+			if a_lower_bound_expr = Void then
+				lower_bound_expression := Void
+			else
+				lower_bound_expression := a_lower_bound_expr.twin
+			end
+
+			if a_upper_bound_expr = Void then
+				upper_bound_expression := Void
+			else
+				upper_bound_expression := a_upper_bound_expr.twin
+			end
 		end
 
 feature -- Access

@@ -57,4 +57,10 @@ feature -- Access
 			create Result
 		end
 
+	ci_expression_value_hash_set_equality_tester: CI_HASH_SET_EQUALITY_TESTER [EPA_EXPRESSION_VALUE]
+			-- Equality for {CI_HASH_SET [EPA_EXPRESSION_VALUE]}
+		once
+			create Result
+		end
+
 end

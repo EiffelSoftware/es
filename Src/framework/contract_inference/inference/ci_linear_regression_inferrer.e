@@ -35,10 +35,10 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
-			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
-			l_loader.parse_relation
-			arff_relation := l_loader.last_relation
---			arff_relation := data.arff_relation.cloned_object
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+--			l_loader.parse_relation
+--			arff_relation := l_loader.last_relation
+			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
 			collect_dependent_attributes

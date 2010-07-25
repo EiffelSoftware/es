@@ -347,7 +347,7 @@ feature{NONE} -- Implementation
 			l_lparan_index: INTEGER
 			l_feature: FEATURE_I
 		do
-			l_target_type := operand_types_with_feature (feature_under_test, class_under_test).item (a_target_variable_index)
+			l_target_type := operand_types_with_feature (feature_under_test, class_under_test).item (a_target_variable_index).actual_type
 			l_target_type := actual_type_from_formal_type (l_target_type, class_under_test)
 			l_target_type := l_target_type.instantiation_in (class_under_test.actual_type, class_under_test.class_id)
 

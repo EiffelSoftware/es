@@ -199,6 +199,7 @@ feature{NONE} -- Implementation
 			l_argument_types: ARRAY [TYPE_A]
 			l_is_container: BOOLEAN
 			l_templates: LINKED_LIST [TUPLE [header: STRING; trailer: STRING]]
+			l_temp_body: STRING
 		do
 			create Result.make (1)
 			Result.set_equality_tester (ci_quantified_expression_equality_tester)
@@ -212,12 +213,12 @@ feature{NONE} -- Implementation
 
 					-- Create different contract templates depending on whether `class_under_test' is a CONTAINER class.
 				create l_templates.make
-				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
-					l_templates.extend (["old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /~ {2} implies(", "))"])
-					l_templates.extend (["not old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /= {2} implies (", "))"])
-				else
+--				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
+--					l_templates.extend (["old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /~ {2} implies(", "))"])
+--					l_templates.extend (["not old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /= {2} implies (", "))"])
+--				else
 					l_templates.extend (["{3} /= {2} implies (", ")"])
-				end
+--				end
 
 				from
 					l_templates.start
@@ -228,18 +229,20 @@ feature{NONE} -- Implementation
 					create l_predicate_body.make (64)
 					l_predicate_body.append (l_templates.item_for_iteration.header)
 					l_predicate_body.append (once "old ")
-					l_predicate_body.append (a_function.body)
+					l_temp_body := a_function.body.twin
+					l_temp_body.replace_substring_all (curly_brace_surrounded_integer (2), curly_brace_surrounded_integer (3))
+					l_predicate_body.append (l_temp_body)
 					if a_negated_consequent then
 						l_predicate_body.append (once " /= ")
 					else
 						l_predicate_body.append (once " = ")
 					end
-					l_predicate_body.append (a_function.body)
+					l_predicate_body.append (l_temp_body)
 					l_predicate_body.append (l_templates.item_for_iteration.trailer)
 
 						-- Setup frame property scope and operand map.
 					create l_scope.make (a_function, 2, a_pre_state)
-					create l_operand_map.make (1)
+					create l_operand_map.make (2)
 					l_operand_map.put (a_target_variable_index, 1)
 					l_operand_map.put (1, 2)
 

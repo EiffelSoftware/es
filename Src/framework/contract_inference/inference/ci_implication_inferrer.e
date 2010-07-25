@@ -33,10 +33,10 @@ feature -- Basic operations
 				-- Initialize.
 			data := a_data
 			setup_data_structures
-			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
-			l_loader.parse_relation
-			arff_relation := l_loader.last_relation
---			arff_relation := data.arff_relation.cloned_object
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+--			l_loader.parse_relation
+--			arff_relation := l_loader.last_relation
+			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
 			logger.put_line_with_time ("Start inferring implications.")
@@ -172,7 +172,7 @@ feature{NONE} -- Implementation
 			loop
 				l_node := l_path.item_for_iteration
 				l_slices := string_slices (l_node.attribute_name, once "::")
-				l_is_pre := l_slices.first.has_substring (once "pre::")
+				l_is_pre := l_slices.first.has_substring (once "pre")
 				l_name := l_slices.last
 				l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
 				if l_name.starts_with (once "Current.") then
@@ -199,8 +199,7 @@ feature{NONE} -- Implementation
 								l_name := l_name + once " + "
 							end
 						end
-					else
-						l_name := l_name + once " = "
+						l_operator := ""
 					end
 				else
 					if l_is_pre then
@@ -278,6 +277,12 @@ feature{NONE} -- Implementation
 					l_ok := False
 				end
 
+					-- Remove attributes which describe inequality because
+					-- they can be represented through equalities.
+				if l_ok then
+					l_ok := not l_name.has_substring (once "/=") and then not l_name.has_substring (once "/~")
+				end
+
 				if l_ok then
 					premise_attributes.force_last (l_attribute)
 					if l_attribute.is_nominal and then is_boolean_value_set (l_values) then
@@ -353,6 +358,10 @@ feature{NONE} -- Implementation
 
 					-- Remove attributes that describe a fake relative integer change.
 				if l_ok and then l_name.starts_with (once "by::") and then l_values.count = 1 and then l_values.first ~ once "0" then
+					l_ok := False
+				end
+
+				if l_ok and then l_name.starts_with (once "to::") and then l_values.count /= 1 then
 					l_ok := False
 				end
 

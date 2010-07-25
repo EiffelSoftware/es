@@ -42,6 +42,7 @@ feature{NONE} -- Process
 	process_ast_expression (a_expr: EPA_AST_EXPRESSION)
 			-- Process `a_expr'.
 		do
+			a_expr.ast.process (Current)
 		end
 
 	process_universal_quantified_expression (a_expr: EPA_UNIVERSAL_QUANTIFIED_EXPRESSION)

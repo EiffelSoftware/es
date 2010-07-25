@@ -68,12 +68,12 @@ feature -- Access
 			-- value is a boolean indicator, True means that expression is changes in at least one test case,
 			-- False means that the expression never changes.
 
-	interface_pre_expression_values: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION_VALUE], STRING]
+	interface_pre_expression_values: HASH_TABLE [CI_HASH_SET [EPA_EXPRESSION_VALUE], STRING]
 			-- Table from interface expression to its values in all `transitions' in pre-state
 			-- Key is anonymous format of an expression in pre-state,
 			-- value is a set of values that expression have in all transitions in pre-state.
 
-	interface_post_expression_values: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION_VALUE], STRING]
+	interface_post_expression_values: HASH_TABLE [CI_HASH_SET [EPA_EXPRESSION_VALUE], STRING]
 			-- Table from interface expression to its values in all `transitions' in post-state
 			-- Key is anonymous format of an expression in post-state,
 			-- value is a set of values that expression have in all transitions in post-state.
@@ -122,7 +122,7 @@ feature -- Basic operations
 			l_state: BOOLEAN
 			l_transition: SEM_TRANSITION
 			l_anony_expr: STRING
-			l_value_set: DS_HASH_SET [EPA_EXPRESSION_VALUE]
+			l_value_set: CI_HASH_SET [EPA_EXPRESSION_VALUE]
 			l_expr_values: like interface_pre_expression_values
 			l_pre_state_values: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			l_post_state_value: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]

@@ -258,9 +258,9 @@
 			</class_option>
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>/overrides$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>^/tty$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>/overrides$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>
