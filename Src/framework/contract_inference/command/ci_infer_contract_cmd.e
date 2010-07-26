@@ -98,6 +98,10 @@ feature -- Access
 			-- Key is a boolean indicating precondition or postcondition,
 			-- value is the set of assertions of that kind.	
 
+	last_sequence_based_contracts: DS_HASH_SET [STRING]
+			-- Set of sequence based contracts
+			-- FIXME: This is a walkaround for the problem that we cannot generate Eiffel expressions for sequence-based contracts.
+
 feature -- Basic operations
 
 	execute
@@ -542,10 +546,18 @@ feature{NONE} -- Actions
 			create l_postconditions.make (100)
 			l_postconditions.set_equality_tester (expression_equality_tester)
 
+			create last_sequence_based_contracts.make (10)
+			last_sequence_based_contracts.set_equality_tester (string_equality_tester)
+
 				-- Iterate through all inferrers to collect inferred contracts.
 			across inferrers as l_inferrers loop
 				l_preconditions.append_last (l_inferrers.item.last_preconditions)
 				l_postconditions.append_last (l_inferrers.item.last_postconditions)
+				if attached {CI_SEQUENCE_PROPERTY_INFERRER} l_inferrers.item as l_seq_inferrer then
+					if l_seq_inferrer.properties.has (False) then
+						last_sequence_based_contracts.append (l_seq_inferrer.properties.item (False))
+					end
+				end
 			end
 
 			create last_contracts.make (2)
@@ -573,6 +585,15 @@ feature{NONE} -- Actions
 			loop
 				log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
 				l_cursor.forth
+			end
+
+			from
+				last_sequence_based_contracts.start
+			until
+				last_sequence_based_contracts.after
+			loop
+				log_manager.put_line (once "%T" + last_sequence_based_contracts.item_for_iteration)
+				last_sequence_based_contracts.forth
 			end
 			log_manager.pop_level
 		end

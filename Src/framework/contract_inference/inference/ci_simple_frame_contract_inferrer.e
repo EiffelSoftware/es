@@ -217,8 +217,14 @@ feature{NONE} -- Implementation
 --					l_templates.extend (["old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /~ {2} implies(", "))"])
 --					l_templates.extend (["not old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /= {2} implies (", "))"])
 --				else
-					l_templates.extend (["{3} /= {2} implies (", ")"])
+--					l_templates.extend (["{3} /= {2} implies (", ")"])
 --				end
+				if
+					l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) and then
+					l_actual_arg_type.is_conformant_to (class_under_test, l_func_arg_type)
+				then
+					l_templates.extend (["{3} /= {2} implies (", ")"])
+				end
 
 				from
 					l_templates.start

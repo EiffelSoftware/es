@@ -88,7 +88,7 @@ feature{NONE} -- Implementation
 				Result := True
 			else
 				Result := True
-				from samples.start until samples.after loop
+				from samples.start until samples.after or else not Result loop
 					if samples.item_for_iteration > 0 then
 						if found_one then
 							Result := False

@@ -29,6 +29,7 @@ feature -- Basic operations
 			-- executed test cases.
 		local
 			l_loader: WEKA_ARFF_RELATION_PARSER
+			l_linear_regression: RM_LINEAR_REGRESSION
 		do
 				-- Initialize.
 			logger.put_line_with_time ("Start inferring linear regression related contracts.")

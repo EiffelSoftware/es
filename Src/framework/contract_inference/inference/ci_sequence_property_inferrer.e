@@ -62,7 +62,7 @@ feature -- Basic operations
 
 					-- Validate property candidates.
 				validate_properties
-				log_properties ("Valid properties:", properties)
+				log_properties ("Valid sequenced-based properties:", properties)
 
 				create last_preconditions.make (10)
 				last_preconditions.set_equality_tester (expression_equality_tester)
@@ -780,9 +780,9 @@ feature{NONE} -- Implementation/Logging
 			across <<True, False>>  as l_states loop
 
 				if l_states.item then
-					logger.put_line_with_time ("Properties in pre-states:")
+					logger.put_line_with_time ("Valid sequence-based properties in pre-states:")
 				else
-					logger.put_line_with_time ("Properties in post-states:")
+					logger.put_line_with_time ("Valid sequence-based properties in post-states:")
 				end
 				from
 					l_cursor := a_properties.item (l_states.item).new_cursor
