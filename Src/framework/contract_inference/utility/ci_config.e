@@ -241,6 +241,10 @@ feature -- Access
 			-- Should dummy equality property be inferred?
 			-- Default: False
 
+	is_constant_change_property_enabled: BOOLEAN
+			-- Should constant-change properties by inferred?
+			-- Default: True
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -479,6 +483,14 @@ feature -- Setting
 			is_dummy_property_enabled := b
 		ensure
 			is_dummy_property_enabled_set: is_dummy_property_enabled = b
+		end
+
+	set_is_constant_change_property_enabled (b: BOOLEAN)
+			-- Set `is_constant_change_property_enabled' with `b'.
+		do
+			is_constant_change_property_enabled := b
+		ensure
+			is_constant_change_property_enabled_set: is_constant_change_property_enabled = b
 		end
 
 feature{NONE} -- Implementation

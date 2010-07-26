@@ -330,8 +330,10 @@ feature{NONE} -- Implementation
 		do
 			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("on") then
 				config.set_is_simple_equality_property_enabled (True)
+				config.set_is_constant_change_property_enabled (True)
 			elseif a_parameter.is_case_insensitive_equal ("off") then
 				config.set_is_simple_equality_property_enabled (False)
+				config.set_is_constant_change_property_enabled (False)
 			end
 		end
 

@@ -684,6 +684,7 @@ feature{NONE} -- Implementation
 			l_linear_inferrer: CI_LINEAR_REGRESSION_INFERRER
 			l_simple_equality_inferrer: CI_SIMPLE_EQUALITY_INFERRER
 			l_dummy_inferrer: CI_DUMMY_INFERRER
+			l_constant_change_inferrer: CI_CONSTANT_CHANGE_INFERRER
 		do
 			create inferrers.make
 
@@ -746,6 +747,13 @@ feature{NONE} -- Implementation
 				l_dummy_inferrer.set_config (config)
 				l_dummy_inferrer.set_logger (log_manager)
 				inferrers.extend (l_dummy_inferrer)
+			end
+
+			if config.is_constant_change_property_enabled then
+				create l_constant_change_inferrer
+				l_constant_change_inferrer.set_config (config)
+				l_constant_change_inferrer.set_logger (log_manager)
+				inferrers.extend (l_constant_change_inferrer)
 			end
 		end
 
