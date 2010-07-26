@@ -53,6 +53,7 @@ feature -- interface
 				-- just skip the first 2 lines, since they hold the dates
 				l_model_file.read_line
 				l_model_file.read_line
+				handle_trivial_tree(l_model_file.last_string)
 				from until l_model_file.end_of_file loop
 					l_model_file.read_line
 					l_line := l_model_file.last_string
@@ -60,14 +61,30 @@ feature -- interface
 						create_new_node (l_line)
 					end
 				end
-				tree_root := stack.item.node
-				stack.wipe_out
+				if not stack.is_empty then
+					tree_root := stack.item.node
+					stack.wipe_out
+				end
 			end
 		ensure
 			-- l_model_file.is_empty implies tree_root = Void
 		end
 
 feature{RM_DECISION_TREE_PARSER}
+
+	handle_trivial_tree(a_line: STRING)
+			-- This will handle the case of a trivial tree. RM prints the trivial node of the tree next to
+			-- the date on the second line in the model file. It is assumed that if there is a leaf on that line
+			-- then there are no more node down the file.
+		local
+			l_node: RM_DECISION_TREE_NODE
+		do
+			if has_leaf (a_line) then -- we have a trivial tree
+				create l_node.make (extract_leaf_name (a_line), True)
+				l_node.parse_samples(a_line)
+				tree_root := l_node
+			end
+		end
 
 	create_new_node (a_line: STRING)
 		-- Parses the line, creates the nodes and edges that it contains and saves them into `stack`.
@@ -90,6 +107,7 @@ feature{RM_DECISION_TREE_PARSER}
 			handle_add_to_stack(l_name, l_depth, l_condition)
 			if l_leaf /= Void then
 				stack.item.node.add_child (l_leaf, stack.item.condition)
+				l_leaf := Void
 			end
 		end
 
@@ -203,8 +221,7 @@ feature{RM_DECISION_TREE_PARSER}
 	has_leaf(a_line: STRING): BOOLEAN
 		-- tells if a line from the model file produced by RM has a leaf node in it.
 		do
-			-- TODO if we have :: in the name then this will not work
-			if a_line.ends_with ("}") then
+			if a_line.ends_with ("}") and a_line.has ('{')then
 				Result := True
 			end
 		ensure
