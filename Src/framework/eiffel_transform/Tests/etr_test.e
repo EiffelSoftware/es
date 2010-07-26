@@ -76,7 +76,7 @@ feature -- Test routines
 				-- reparse the string representation
 				-- somehow the syntax version gets reset when parsing
 				l_parser.set_syntax_version (syntax_version)
-				l_parser.parse_from_string (l_output.string_representation, void)
+				l_parser.parse_from_ascii_string (l_output.string_representation, void)
 				assert("Parsing failed", l_parser.error_count = 0)
 			else
 				assert ("$EIFFEL_SRC not set", false)
@@ -261,7 +261,7 @@ feature {NONE} -- Helpers
 				-- reparse the string representation
 				-- somehow the syntax version gets reset when parsing
 				shared_parser.set_syntax_version (syntax_version)
-				shared_parser.parse_from_string (shared_output.string_representation, void)
+				shared_parser.parse_from_ascii_string (shared_output.string_representation, Void)
 
 				if shared_parser.error_count >0 then
 					io.put_string ("STOP")
