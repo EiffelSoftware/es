@@ -19,6 +19,8 @@ inherit
 
 	CI_WEKA_CONSTANTS
 
+	WEKA_SHARED_EQUALITY_TESTERS
+
 create
 	make
 
@@ -69,6 +71,7 @@ feature -- Access
 			l_uuid_attr: WEKA_ARFF_STRING_ATTRIBUTE
 			l_uuid_str: STRING
 			l_value_text: STRING
+			l_trimmed_relation: WEKA_ARFF_RELATION
 		do
 			l_transition_changes := transition_changes
 
@@ -233,6 +236,9 @@ feature -- Access
 				Result.extend_instance (l_instance)
 				transitions.forth
 			end
+
+			l_trimmed_relation := trimmed_relation (Result)
+			Result := l_trimmed_relation
 
 				-- Generate trailing comments containing an easier format of the instance data.
 			if is_value_table_generated then
@@ -593,6 +599,59 @@ feature{NONE} -- Implementation
 				l_row.append_character ('%N')
 				Result.append (l_row)
 			end
+		end
+
+	trimmed_relation (a_relation: WEKA_ARFF_RELATION): WEKA_ARFF_RELATION
+			-- Weka relation from `a_relation' where all fake change attributes are removed.
+		local
+			l_post_attrs: ARRAYED_LIST [WEKA_ARFF_ATTRIBUTE]
+			l_pre_attr_name: STRING
+			l_pre_attr, l_post_attr: WEKA_ARFF_ATTRIBUTE
+			l_pre_values, l_post_values: LINKED_LIST [STRING]
+			l_unneeded_attrs: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			l_temp_name: STRING
+			l_base_name: STRING
+		do
+				-- Collect poststate expressions.
+			create l_post_attrs.make (a_relation.attributes.count)
+			across a_relation.attributes as l_attrs loop
+				if l_attrs.item.name.has_substring (postcondition_field_prefix) then
+					l_post_attrs.extend (l_attrs.item)
+				end
+			end
+
+				-- Collect unnecessary attributes into `l_unneeded_attrs'.
+			create l_unneeded_attrs.make (10)
+			l_unneeded_attrs.set_equality_tester (weka_arff_attribute_equality_tester)
+			across l_post_attrs as l_attrs loop
+				l_post_attr := l_attrs.item
+				l_base_name := string_slices (l_post_attr.name, "::").last
+				l_pre_attr_name := precondition_field_prefix + l_base_name
+				if a_relation.has_attribute_by_name (l_pre_attr_name) then
+					l_pre_attr := a_relation.attribute_by_name (l_pre_attr_name)
+					l_pre_values := a_relation.values_of_attribute (l_pre_attr)
+					l_post_values := a_relation.values_of_attribute (l_post_attr)
+					if l_pre_values.is_equal (l_post_values) then
+						l_temp_name := by_field_prefix + l_base_name
+						if a_relation.has_attribute_by_name (l_temp_name) then
+							l_unneeded_attrs.force_last (a_relation.attribute_by_name (l_temp_name))
+						end
+						l_temp_name := to_field_prefix + l_base_name
+						if a_relation.has_attribute_by_name (l_temp_name) then
+							l_unneeded_attrs.force_last (a_relation.attribute_by_name (l_temp_name))
+						end
+
+					end
+				end
+			end
+
+				-- Remove unnecessary attributes.
+			Result :=
+				a_relation.projection (
+					agent (a_attr: WEKA_ARFF_ATTRIBUTE; a_unneeded: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]): BOOLEAN
+						do
+							Result := not a_unneeded.has (a_attr)
+						end (?, l_unneeded_attrs))
 		end
 
 end

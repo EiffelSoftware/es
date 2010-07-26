@@ -185,6 +185,21 @@ feature -- Access
 			end
 		end
 
+	values_of_attribute (a_attribute: WEKA_ARFF_ATTRIBUTE): LINKED_LIST [STRING]
+			-- List of values of `a_attribute' across all instances.
+			-- The order of values are preserved.
+		local
+			l_index: INTEGER
+		do
+			create Result.make
+			Result.compare_objects
+
+			l_index := attributes.index_of (a_attribute, 1)
+			across Current as l_instances loop
+				Result.extend (l_instances.item.i_th (l_index))
+			end
+		end
+
 	projection (a_attribute_selection_function: FUNCTION [ANY, TUPLE [WEKA_ARFF_ATTRIBUTE], BOOLEAN]): like Current
 			-- Projection of Current by selecting only attributes that satisfies `a_attribute_selection_function'
 			-- The order of the attributes in the resulting relation is the same as in the original relation.
@@ -268,6 +283,8 @@ feature -- Access
 			end
 		end
 
+
+
 feature -- Hash table generators
 
 	item_as_hash_table: HASH_TABLE [STRING, STRING]
@@ -332,12 +349,10 @@ feature -- Status report
 	has_attribute_by_name (a_name: STRING): BOOLEAN
 			-- Is there an attribute in Current with `a_name'?
 		do
-			Result :=
-				attributes.there_exists (
-					agent (a_attr: WEKA_ARFF_ATTRIBUTE; a_nm: STRING): BOOLEAN
-						do
-							Result := a_attr.name ~ a_nm
-						end (?, a_name))
+			Result := False
+			across attributes as l_attrs until Result loop 
+				Result := l_attrs.item.name ~ a_name
+			end
 		end
 
 feature -- Status report

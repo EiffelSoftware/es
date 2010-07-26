@@ -33,7 +33,7 @@ feature -- Basic operations
 				-- Initialize.
 			data := a_data
 			setup_data_structures
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__back.arff2")
 --			l_loader.parse_relation
 --			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
@@ -361,8 +361,12 @@ feature{NONE} -- Implementation
 					l_ok := False
 				end
 
-				if l_ok and then l_name.starts_with (once "to::") and then l_values.count /= 1 then
+				if l_ok and then l_name.starts_with (once "to::") and then l_values.count <= 1 then
 					l_ok := False
+				end
+
+				if l_ok then
+					l_ok := l_values.count > 1 and l_values.count < 4
 				end
 
 					-- Remove atributes that describe a fake boolean change.
@@ -375,10 +379,7 @@ feature{NONE} -- Implementation
 					if l_values.found then
 						l_values.remove_found_item
 					end
-				end
-
-				if l_ok then
-					l_ok := l_values.count > 1 and then l_values.count < 4
+					l_ok := not l_values.is_empty
 				end
 
 				if l_ok then
