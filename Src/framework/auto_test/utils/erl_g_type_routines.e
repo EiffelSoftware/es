@@ -299,7 +299,7 @@ feature -- Types
 				end
 
 					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string ("type " + a_name, a_context_class)
+				type_parser.parse_from_utf8_string ("type " + a_name, a_context_class)
 				l_type_as := type_parser.type_node
 
 					-- Generate TYPE_A object from type AST node.
@@ -323,7 +323,7 @@ feature -- Types
 			i: INTEGER
 		do
 			fixme ("Refactoring, see header comment.")
-			type_parser.parse_from_string ("type " + a_type, a_context_class)
+			type_parser.parse_from_utf8_string ("type " + a_type, a_context_class)
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
 				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, a_context_class)
 				if l_type_a /= Void then

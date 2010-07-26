@@ -275,7 +275,7 @@ feature{NONE} -- Implementation
 			l_body.append (once " do end")
 
 				-- Parse this fake feature.
-			entity_feature_parser.parse_from_string (l_body, Void)
+			entity_feature_parser.parse_from_utf8_string (l_body, Void)
 			l_feat_as := entity_feature_parser.feature_node
 
 				-- Generate FEATURE_I for this fake feature.

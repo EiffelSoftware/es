@@ -379,7 +379,7 @@ feature -- Type checking
 			l_ast_string := ast_tools.ast_to_string(an_ast)
 			l_parser := etr_expr_parser
 			setup_formal_parameters (l_parser, a_context.context_class)
-			l_parser.parse_from_string("check "+l_ast_string, a_context.context_class)
+			l_parser.parse_from_utf8_string ("check "+l_ast_string, a_context.context_class)
 			if l_parser.error_count > 0 then
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else

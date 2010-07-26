@@ -499,6 +499,7 @@ test	inherited-generic-agent-argument	valid261 tcf pass validity formal generic 
 test	conversion_without_binary_operator	valid262 tcf pass validity
 test	manifest-real-to-real-32-conformance	valid263 tcf pass validity ieee
 test	generic-rename-with-alias		valid264 tcf fail validity generic rename
+test	variant-with-anchored-type		valid265 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -922,6 +923,10 @@ test	change-constraint-rename-crash		incr367 tcf fail incrementality generic anc
 test	qat-change-parent-actual-generic	incr368 tcf fail incrementality generic anchored_type
 test	qat-veen-instead-of-vtat		incr369 tcf fail incrementality anchored_type
 test	qat-constrained-type-in-crash-2		incr370 tcf fail incrementality anchored_type
+test	rename-routine-error			incr371 tcf fail incrementality
+test	qat-finalize-panic-cascade		incr372 tcf fail incrementality
+test	finalize-feature-name-crash		incr373 tcf fail incrementality
+test	static-type-id-crash			incr374 tcf fail incrementality
 
 
 -- Melting
@@ -1061,6 +1066,7 @@ test	freeze-with-conversion		freez028  tcf pass freezing
 test	object-test-with-generic-type	freez029  tcf pass freezing
 test	invariant-qualified-call-on-constant	freez030  tcf fail freezing
 test	expanded-like-current-void-precursor	freez031  tcf fail freezing
+test	boolean-hash-code		freez032  tcf fail freezing
 
 -- Finalizing
 
@@ -1154,6 +1160,7 @@ test	finalize-inline-merged-routine	final087 tcf fail finalizing
 test	finalize-inline-check-void-target	final088 tcf fail finalizing
 test	finalize-qat-object-test		final089 tcf fail finalizing anchored_type
 test	finalize-attached-dcr-missing	final090 tcf pass finalizing
+test	finalize-inline-same-generic-derivation-crash	final091 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1712,6 +1719,8 @@ test	expanded-indirect-like-current		term182	tcf fail termination expanded ancho
 test	expanded-indirect-like-current-2	term183	tcf fail termination expanded anchored_type
 test	create-generic-with-rename		term184	tcf fail termination generic
 test	generic-derivation-constraint		term185 tcf pass termination formal generic constraint
+test	across-keyword-as-feature-name		term186 tcf fail termination 
+test	chained-generic-constraints		term187 tcf fail termination formal generic constraint
 
 -- Config
 
@@ -2269,6 +2278,8 @@ test	multi-constraint-light-roundtrip				multicon052 tcf pass multiconstraint
 test	multi-constraint-constrained-twice-2			multicon053 tcf fail multiconstraint
 test	multi-constraint-constrained-by-self			multicon054 tcf fail multiconstraint
 test	multi-constraint-make-byte-code-crash			multicon055 tcf fail multiconstraint
+test	multi-constraint-static-access				multicon056 tcf fail multiconstraint
+test	multi-constraint-static-access-2			multicon057 tcf fail multiconstraint
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded
@@ -2378,8 +2389,9 @@ test	stable-attribute-in-rescue				attach070 tcf pass void_safe validity stable 
 test	self-init-attribute-non-void-safe			attach071 tcf fail attached_types self_init void_safe
 test	default-create-missing-check			attach072 tcf pass attached_types void_safe
 test	bogus-vevi-expanded-formal-generic		attach073 tcf fail attached_types void_safe
-test	vevi-on-once-per-object-routine			attach074 tcf fail attached_types void_safeA once
-test	once-per-object-creation-procedure		attach075 tcf fail attached_types void_safeA once
+test	vevi-on-once-per-object-routine			attach074 tcf fail attached_types void_safe once
+test	once-per-object-creation-procedure		attach075 tcf fail attached_types void_safe once
+test	attached-to-none				attach076 tcf fail attached_types void_safe once
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance

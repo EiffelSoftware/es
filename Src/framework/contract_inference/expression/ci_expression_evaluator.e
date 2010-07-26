@@ -159,7 +159,7 @@ feature -- Basic operations
 		do
 			l_parser := etr_expr_parser
 			setup_formal_parameters (l_parser, transition_context.test_case_info.class_under_test)
-			l_parser.parse_from_string (once "check " + a_string, transition_context.test_case_info.class_under_test)
+			l_parser.parse_from_utf8_string (once "check " + a_string, transition_context.test_case_info.class_under_test)
 			check l_parser.expression_node /= Void end
 			evaluate (l_parser.expression_node)
 		end

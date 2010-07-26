@@ -745,7 +745,7 @@ feature{NONE} -- Implementation
 			if a_fix.feature_text.has_substring ("should not happen") then
 				l_feat_text := a_fix.feature_text
 			else
-				entity_feature_parser.parse_from_string (a_fix.text , Void)
+				entity_feature_parser.parse_from_utf8_string (a_fix.text , Void)
 				create l_output.make_with_indentation_string ("%T")
 				create l_printer.make_with_output (l_output)
 				l_printer.print_ast_to_output (entity_feature_parser.feature_node)

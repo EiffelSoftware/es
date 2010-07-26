@@ -12,13 +12,12 @@ note
 class
 	TRACING_SETTING
 
-create
-	default_create
-
 feature -- Status report
 
 	is_tracing: BOOLEAN
 			-- Is tracing currently enabled?
+		require
+			valid_platform: not {PLATFORM}.is_dotnet
 		external
 			"C inline use %"eif_eiffel.h%""
 		alias
@@ -29,6 +28,8 @@ feature -- Status setting
 
 	enable_tracing
 			-- Start tracing.
+		require
+			valid_platform: not {PLATFORM}.is_dotnet
 		external
 			"C inline use %"eif_eiffel.h%""
 		alias
@@ -37,6 +38,8 @@ feature -- Status setting
 
 	disable_tracing
 			-- Stop tracing
+		require
+			valid_platform: not {PLATFORM}.is_dotnet
 		external
 			"C inline use %"eif_eiffel.h%""
 		alias

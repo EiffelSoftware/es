@@ -68,7 +68,7 @@ feature -- Access
 				end
 
 					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string ("type " + a_name, a_context_class)
+				type_parser.parse_from_utf8_string ("type " + a_name, a_context_class)
 				l_type_as := type_parser.type_node
 
 					-- Generate TYPE_A object from type AST node.

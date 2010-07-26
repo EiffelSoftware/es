@@ -84,7 +84,7 @@ feature -- Operations
 			l_parser := etr_expr_parser
 			setup_formal_parameters (l_parser, a_context_class)
 			l_parser.set_syntax_version (syntax_version)
-			l_parser.parse_from_string ("check " + a_printed_ast, a_context_class)
+			l_parser.parse_from_ascii_string ("check " + a_printed_ast, a_context_class)
 			if l_parser.error_count > 0 or l_parser.expression_node = void then
 				error_handler.add_error (Current, "parse_expr", "Expression parsing failed")
 				logger.log_error (a_printed_ast)
@@ -105,7 +105,7 @@ feature -- Operations
 			l_parser := etr_feat_parser
 			l_parser.set_syntax_version (syntax_version)
 			setup_formal_parameters (l_parser, a_context_class)
-			l_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
+			l_parser.parse_from_ascii_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", Void)
 			if l_parser.error_count > 0 or etr_feat_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_instruction_list", "Instruction-list parsing failed")
 				logger.log_error (a_printed_ast)
@@ -127,7 +127,7 @@ feature -- Operations
 
 			l_parser := etr_feat_parser
 			l_parser.set_syntax_version (syntax_version)
-			l_parser.parse_from_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", a_context_class)
+			l_parser.parse_from_ascii_string ("feature new_instr_dummy_feature do " + a_printed_ast + " end", a_context_class)
 			if l_parser.error_count > 0 or l_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_instruction", "Instruction parsing failed")
 				logger.log_error (a_printed_ast)
@@ -153,7 +153,7 @@ feature -- Operations
 
 			l_parser := etr_feat_parser
 			l_parser.set_syntax_version (syntax_version)
-			l_parser.parse_from_string ("feature " + a_printed_ast, Void)
+			l_parser.parse_from_ascii_string ("feature " + a_printed_ast, Void)
 			if l_parser.error_count > 0 or l_parser.feature_node = void then
 				error_handler.add_error (Current, "parse_feature", "Feature parsing failed")
 				logger.log_error (a_printed_ast)
@@ -170,7 +170,7 @@ feature -- Operations
 			parsed_ast := void
 
 			etr_class_parser.set_syntax_version (syntax_version)
-			etr_class_parser.parse_from_string (a_printed_ast, Void)
+			etr_class_parser.parse_from_ascii_string (a_printed_ast, Void)
 			if etr_class_parser.error_count > 0 or etr_class_parser.root_node = void then
 				error_handler.add_error (Current, "parse_class", "Class parsing failed")
 				logger.log_error (a_printed_ast)
@@ -187,7 +187,7 @@ feature -- Operations
 			parsed_ast := void
 
 			etr_type_parser.set_syntax_version (syntax_version)
-			etr_type_parser.parse_from_string ("dummy "+a_printed_ast, Void)
+			etr_type_parser.parse_from_ascii_string ("dummy "+a_printed_ast, Void)
 			if etr_type_parser.error_count > 0 or etr_type_parser.type_node = void then
 				error_handler.add_error (Current, "parse_type", "Type parsing failed")
 				logger.log_error (a_printed_ast)

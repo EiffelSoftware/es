@@ -66,7 +66,7 @@ feature -- AST
 			l_text: STRING
 		do
 			l_text := "feature dummy__feature do " + a_text + "%Nend"
-			entity_feature_parser.parse_from_string (l_text, Void)
+			entity_feature_parser.parse_from_utf8_string (l_text, Void)
 
 			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
 				if attached {DO_AS} l_routine.routine_body as l_do then
@@ -82,7 +82,7 @@ feature -- AST
 			-- AST node from expression `a_text'
 			-- `a_text' must be as an expression.
 		do
-			expression_parser.parse_from_string (once "check " + a_text, Void)
+			expression_parser.parse_from_utf8_string (once "check " + a_text, Void)
 			Result := expression_parser.expression_node
 		end
 

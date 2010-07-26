@@ -48,7 +48,7 @@ feature -- Cleaning
 			-- Clean the list of all the removed classes
 		local
 			i, nb: INTEGER
-			l_default: CL_TYPE_A
+			l_default: detachable CL_TYPE_A
 			local_content: like content
 		do
 				-- Note: we cannot search items in the table because they might be

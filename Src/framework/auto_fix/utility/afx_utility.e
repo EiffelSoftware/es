@@ -41,7 +41,7 @@ feature -- Fix
 			l_match_list: LEAF_AS_LIST
 		do
 			l_match_list := match_list_server.item (a_feature.written_class.class_id)
-			entity_feature_parser.parse_from_string ("feature " + a_feature.e_feature.ast.original_text (l_match_list), Void)
+			entity_feature_parser.parse_from_utf8_string ("feature " + a_feature.e_feature.ast.original_text (l_match_list), Void)
 			create l_output.make_with_indentation_string ("%T")
 			create l_printer.make_with_output (l_output)
 			l_printer.print_ast_to_output (a_feature.e_feature.ast)
@@ -61,7 +61,7 @@ feature -- Fix
 			else
 				l_parser := entity_feature_parser
 				l_parser.set_syntax_version (l_parser.transitional_64_syntax)
-				l_parser.parse_from_string ("feature " + a_fix.feature_text, Void)
+				l_parser.parse_from_utf8_string ("feature " + a_fix.feature_text, Void)
 				create l_output.make_with_indentation_string ("%T")
 				create l_printer.make_with_output (l_output)
 				l_printer.print_ast_to_output (l_parser.feature_node)

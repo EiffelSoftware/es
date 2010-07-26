@@ -68,7 +68,7 @@ feature -- Operation
 										"%T%T"+l_attr_name+"_set: "+a_postcond+"%N"+
 										"%Tend%N"
 
-					etr_feat_parser.parse_from_string (l_setter_string,void)
+					etr_feat_parser.parse_from_utf8_string (l_setter_string,void)
 
 					if etr_feat_parser.error_count=0 then
 						create transformation_result.make (etr_feat_parser.feature_node, a_transformable.context.class_context, false)
