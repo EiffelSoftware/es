@@ -17,6 +17,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	SEM_FIELD_NAMES
+
 feature -- Status report
 
 	is_arff_needed: BOOLEAN = True
@@ -36,11 +38,17 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
-			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
-			l_loader.parse_relation
-			arff_relation := l_loader.last_relation
---			arff_relation := data.arff_relation.cloned_object
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+--			l_loader.parse_relation
+--			arff_relation := l_loader.last_relation
+			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
+
+				-- Setup results.
+			create last_preconditions.make (10)
+			last_preconditions.set_equality_tester (expression_equality_tester)
+			create last_postconditions.make (10)
+			last_postconditions.set_equality_tester (expression_equality_tester)
 
 			collect_dependent_attributes
 			if not dependent_attributes.is_empty then
@@ -50,11 +58,7 @@ feature -- Basic operations
 				end
 			end
 
-				-- Setup results.
-			create last_preconditions.make (10)
-			last_preconditions.set_equality_tester (expression_equality_tester)
-			create last_postconditions.make (10)
-			last_postconditions.set_equality_tester (expression_equality_tester)
+			log_inferred_contracts ("Found the following linear-regression properties:", last_postconditions)
 			setup_last_contracts
 		end
 
@@ -93,7 +97,13 @@ feature{NONE} -- Implementation
 			l_regression: RM_LINEAR_REGRESSION
 			i: INTEGER
 			l_name: STRING
-			l_coefficient: DOUBLE
+			l_coefficient: INTEGER
+			l_property_body: STRING
+			l_slices: LIST [STRING]
+			l_prefix: STRING
+			l_int_coefficient: INTEGER
+			l_sign: STRING
+			l_property: EPA_AST_EXPRESSION
 		do
 			l_regressors := a_regressors.cloned_object
 			l_regressors.force_last (a_dependent_attribute)
@@ -101,23 +111,65 @@ feature{NONE} -- Implementation
 			l_builder.build
 			l_regression := l_builder.last_linear_regression
 			if l_regression.is_all_regressor_coefficient_integer then
-				logger.push_fine_level
-				logger.put_string (a_dependent_attribute.name + " = ")
+				create l_property_body.make (128)
+				l_slices := string_slices (a_dependent_attribute.name, prefix_separator)
+				l_prefix := l_slices.first
+				l_name := l_slices.last
+				l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
+				if l_prefix ~ "pre" then
+					l_property_body.append ("old (")
+					if l_name.starts_with ("Current.") then
+						l_name.remove_head (8)
+					end
+					l_property_body.append (l_name)
+					l_property_body.append (") = ")
+				else
+					l_property_body.append (l_name)
+					l_property_body.append (" = ")
+				end
+
 				i := 1
 				across l_regression.regressors as l_cursor loop
-					l_coefficient := l_cursor.item
-					l_name := l_cursor.key
-					if l_coefficient < 0 then
-						logger.put_string (l_coefficient.out)
+					l_coefficient := l_cursor.item.truncated_to_integer
+					l_slices := string_slices (l_cursor.key, prefix_separator)
+					l_prefix := l_slices.first
+					l_name := l_slices.last
+
+					if l_name.is_empty then
+						if l_coefficient > 0 then
+							l_property_body.append (" + ")
+							l_property_body.append (l_coefficient.out)
+						elseif l_coefficient < 0 then
+							l_property_body.append (l_coefficient.out)
+						end
 					else
-						logger.put_string (" + " + l_coefficient.out)
-					end
-					if not l_name.is_empty then
-						logger.put_string (" x " + l_name)
+						if l_coefficient > 0 then
+							l_sign := " + "
+						else
+							l_sign := " - "
+						end
+						l_coefficient := l_coefficient.abs
+						if i = 1 and then l_sign ~ " + " then
+							l_sign := ""
+						end
+						l_property_body.append (l_sign)
+						if l_coefficient /= 1 then
+							l_property_body.append (l_coefficient.out)
+						end
+
+						l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
+						if l_name.starts_with ("Current.") then
+							l_name.remove_head (8)
+						end
+						if l_prefix ~ "pre" then
+							l_name.prepend ("old (")
+							l_name.append (")")
+						end
+						l_property_body.append (l_name)
 					end
 				end
-				logger.put_line ("")
-				logger.pop_level
+				create l_property.make_with_text_and_type (class_under_test, feature_under_test, l_property_body, class_under_test, boolean_type)
+				last_postconditions.force_last (l_property)
 			end
 		end
 

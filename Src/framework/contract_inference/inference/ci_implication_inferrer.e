@@ -52,7 +52,7 @@ feature -- Basic operations
 
 			build_decision_trees
 
-			log_inferred_implications
+			log_inferred_contracts ("Found the following implications:", last_postconditions)
 			setup_last_contracts
 		end
 
@@ -225,19 +225,6 @@ feature{NONE} -- Implementation
 			end
 			create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
 			Result := l_expr
-		end
-
-	expression_from_anonymous_form (a_text: STRING; a_feature: FEATURE_I; a_class: CLASS_C): STRING
-			-- Expression from `a_text' with anonymous operands replaced with real operands of `a_feature' in `a_class'
-		local
-			l_opd_names: like operand_name_index_with_feature
-		do
-			l_opd_names := operand_name_index_with_feature (a_feature, a_class)
-			create Result.make (a_text.count + 20)
-			Result.append (a_text)
-			across l_opd_names as l_names loop
-				Result.replace_substring_all (curly_brace_surrounded_integer (l_names.key), l_names.item)
-			end
 		end
 
 	collect_premise_attributes
@@ -429,27 +416,6 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
-		end
-
-feature{NONE} -- Logging
-
-	log_inferred_implications
-			-- Log inferred implications.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
-		do
-			logger.push_info_level
-			logger.put_line_with_time ("Found the following implications:")
-			from
-				l_cursor := last_postconditions.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				logger.put_line (once "%T" + l_cursor.item.text)
-				l_cursor.forth
-			end
-			logger.pop_level
 		end
 
 end

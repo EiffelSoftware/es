@@ -22,6 +22,8 @@ feature -- Access
 
 	by_field_prefix: STRING = "by::"
 
+	prefix_separator: STRING = "::"
+
 	changed_field_prefix: STRING = "changed::"
 
 	precondition_field_prefix: STRING = "pre::"
