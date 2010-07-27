@@ -45,7 +45,7 @@ feature -- Basic operations
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table)
+			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table, Void)
 			setup_last_contracts
 		end
 

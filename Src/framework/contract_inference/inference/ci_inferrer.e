@@ -711,7 +711,7 @@ feature{NONE} -- Candidate validation
 			end
 		end
 
-	setup_inferred_contracts_in_last_postconditions (a_candidates: DS_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION])
+	setup_inferred_contracts_in_last_postconditions (a_candidates: DS_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_mapping_agent: detachable PROCEDURE [ANY, TUPLE [a_expr: EPA_EXPRESSION; a_func: EPA_FUNCTION]])
 			-- Generate final inferred contracts from `candidate_properties' and
 			-- store result in `last_postconditions'.
 		local
@@ -719,6 +719,7 @@ feature{NONE} -- Candidate validation
 			l_postconditions: like last_postconditions
 			l_class: CLASS_C
 			l_feature: FEATURE_I
+			l_property: EPA_EXPRESSION
 		do
 			l_postconditions := last_postconditions
 			l_class := class_under_test
@@ -729,7 +730,11 @@ feature{NONE} -- Candidate validation
 			until
 				l_candidates.after
 			loop
-				l_postconditions.force_last (expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature))
+				l_property := expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature)
+				l_postconditions.force_last (l_property)
+				if a_mapping_agent /= Void then
+					a_mapping_agent.call ([l_property, l_candidates.item])
+				end
 				l_candidates.forth
 			end
 		end

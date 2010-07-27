@@ -37,15 +37,22 @@ feature -- Basic operations
 			log_candidate_properties (candidate_properties, "Found the following candidate properties:")
 			validate_candiate_properties (candidate_properties, operand_map_table, "Start validating simple equality properties.")
 			log_candidate_properties (candidate_properties, "Found the following valid properties:")
+			create function_to_postcondition_mapping.make (candidate_properties.count)
+			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)
 
 				-- Setup results.
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table)
+			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table, agent function_to_postcondition_mapping.force_last)
 			setup_last_contracts
 		end
+
+feature -- Access
+
+	function_to_postcondition_mapping: DS_HASH_TABLE [EPA_EXPRESSION, EPA_FUNCTION]
+			-- Mapping from functions to postconditions
 
 feature{NONE} -- Implementation
 
@@ -245,7 +252,7 @@ feature{NONE} -- Implementation
 					l_expr := l_changes.key
 					if not l_expr.has_substring (once "~") and then not l_expr.has_substring (once "=") then
 						l_post_values.search (l_expr)
-						if l_post_values.found and then l_post_values.found_item.count > 1 then
+						if l_post_values.found and then l_post_values.found_item.count > 1 and then not l_post_values.found_item.there_exists (agent (a_v: EPA_EXPRESSION_VALUE): BOOLEAN do Result := a_v.is_nonsensical end) then
 							l_values := l_post_values.found_item
 							left_expressions.force_last (l_expr)
 							post_expression_value_table.search (l_values)

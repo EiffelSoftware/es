@@ -38,15 +38,23 @@ feature -- Basic operations
 			log_candidate_properties (candidate_properties, "Found the following constant-change properties:")
 			validate_candiate_properties (candidate_properties, operand_map_table, "Start validating constant-change properties.")
 			log_candidate_properties (candidate_properties, "Found the following valid constant-change properties:")
+			create function_to_postcondition_mapping.make (20)
+			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)
+
 
 				-- Setup results.
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table)
+			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table, agent function_to_postcondition_mapping.force_last)
 			setup_last_contracts
 		end
+
+feature -- Access
+
+	function_to_postcondition_mapping: DS_HASH_TABLE [EPA_EXPRESSION, EPA_FUNCTION]
+			-- Mapping from functions to postconditions
 
 feature{NONE} -- Implementation
 
