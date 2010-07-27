@@ -136,14 +136,14 @@ feature{NONE} -- Implementation
 							if l_expr_cur.item /~ l_left_expr then
 								create l_temp.make (128)
 								l_temp.append (l_expr_cur.item)
-								l_temp.append (once " = (")
+								l_temp.append (" = (")
 								l_temp.append (l_left_expr)
 								l_temp.append_character (')')
 
 								if not l_equality_candidates.has (l_temp) then
 									create l_candidate.make (128)
 									l_candidate.append (l_left_expr)
-									l_candidate.append (once " = (")
+									l_candidate.append (" = (")
 									l_candidate.append (l_expr_cur.item)
 									l_candidate.append_character (')')
 									l_equality_candidates.force_last (l_candidate)
@@ -190,7 +190,7 @@ feature{NONE} -- Implementation
 									if l_changes.found and then l_changes.found_item then
 										create l_candidate.make (128)
 										l_candidate.append (l_left_expr)
-										l_candidate.append (once " = old (")
+										l_candidate.append (" = old (")
 										l_candidate.append (l_expr_cur.item)
 										l_candidate.append_character (')')
 										l_equality_candidates.force_last (l_candidate)
@@ -250,9 +250,9 @@ feature{NONE} -- Implementation
 			across data.interface_expression_changes as l_changes loop
 				if l_changes.item then
 					l_expr := l_changes.key
-					if not l_expr.has_substring (once "~") and then not l_expr.has_substring (once "=") then
+					if not l_expr.has_substring ("~") and then not l_expr.has_substring ("=") then
 						l_post_values.search (l_expr)
-						if l_post_values.found and then l_post_values.found_item.count > 1 and then not l_post_values.found_item.there_exists (agent (a_v: EPA_EXPRESSION_VALUE): BOOLEAN do Result := a_v.is_nonsensical end) then
+						if l_post_values.found and then l_post_values.found_item.count > 1 and then not l_post_values.found_item.there_exists (agent (a_v: EPA_EXPRESSION_VALUE): BOOLEAN do Result := a_v = Void or else a_v.is_nonsensical end) then
 							l_values := l_post_values.found_item
 							left_expressions.force_last (l_expr)
 							post_expression_value_table.search (l_values)
@@ -282,7 +282,7 @@ feature{NONE} -- Implementation
 				end
 				across l_states.item as l_value_map loop
 					l_expr := l_value_map.key
-					if not l_expr.has_substring (once "~") and then not l_expr.has_substring (once "=") then
+					if not l_expr.has_substring ("~") and then not l_expr.has_substring ("=") then
 						l_values := l_value_map.item
 						l_equiv_set.search (l_values)
 						if l_equiv_set.found then
@@ -301,7 +301,7 @@ feature{NONE} -- Implementation
 			until
 				l_expr_cur.after
 			loop
-				logger.put_line (once "%T" + l_expr_cur.item)
+				logger.put_line ("%T" + l_expr_cur.item)
 				l_expr_cur.forth
 			end
 
@@ -331,11 +331,11 @@ feature{NONE} -- Implementation
 							if l_expr_cur.is_last then
 								logger.put_string (l_expr_cur.item)
 							else
-								logger.put_string (l_expr_cur.item + once ", ")
+								logger.put_string (l_expr_cur.item + ", ")
 							end
 							l_expr_cur.forth
 						end
-						logger.put_string (once " : {")
+						logger.put_string (" : {")
 						from
 							l_value_cur := l_values.new_cursor
 							l_value_cur.start
@@ -345,11 +345,11 @@ feature{NONE} -- Implementation
 							if l_value_cur.is_last then
 								logger.put_string (l_value_cur.item.text)
 							else
-								logger.put_string (l_value_cur.item.text + once ", ")
+								logger.put_string (l_value_cur.item.text + ", ")
 							end
 							l_value_cur.forth
 						end
-						logger.put_line (once "}")
+						logger.put_line ("}")
 					end
 					l_equiv_cur.forth
 				end

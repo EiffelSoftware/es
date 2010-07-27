@@ -391,8 +391,10 @@ feature{NONE} -- Implementation
 			across transitions as l_cursor loop
 				l_transition := l_cursor.item
 				create l_zero_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "0", l_transition.context.class_)
-				create l_stay_true_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_true_value + once "%"", l_transition.context.class_)
-				create l_stay_false_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_false_value + once "%"", l_transition.context.class_)
+--				create l_stay_true_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_true_value + once "%"", l_transition.context.class_)
+--				create l_stay_false_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, once "%"" + stay_false_value + once "%"", l_transition.context.class_)
+				create l_stay_true_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "True", l_transition.context.class_)
+				create l_stay_false_expression.make_with_text (l_transition.context.class_, l_transition.context.feature_, "False", l_transition.context.class_)
 				l_change_set := transition_change_set (l_transition, a_pres, a_posts)
 				create l_changes.make (20)
 				l_changes.compare_objects

@@ -10,6 +10,7 @@ create
 	make
 
 feature{NONE} -- Create
+
 	make(a_model_file_path: STRING)
 			-- `a_model_file_path' the path to the model file.
 		do

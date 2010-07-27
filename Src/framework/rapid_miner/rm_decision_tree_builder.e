@@ -36,7 +36,7 @@ feature -- Create
 			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
 			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
 		do
-			init_with_relation (a_relation, a_selected_attributes, a_label_attribute)
+			init_with_relation (decision_tree, a_relation, a_selected_attributes, a_label_attribute)
 		end
 
 feature -- Access

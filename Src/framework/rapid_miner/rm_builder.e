@@ -28,7 +28,7 @@ feature{RM_BUILDER} -- Initializaiton
 			create rm_const
 		end
 
-	init_with_relation(a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
+	init_with_relation (a_algorithm_code: INTEGER; a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
 			-- Initialize current with ARFF relation `a_relation'.
 			-- `a_selected_attributes' is a subset of attributes in `a_relation', which will be used for the tree learning.
 			-- `a_label_attribute' is the goal attribute whose values are to be classified by the learnt tree.
@@ -50,7 +50,7 @@ feature{RM_BUILDER} -- Initializaiton
 				a_selected_attributes.forth
 			end
 
-			init (decision_tree, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+			init (a_algorithm_code, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
 		end
 
 feature -- Interface
@@ -58,9 +58,9 @@ feature -- Interface
 	build
 			-- Builds the tree with the help of rapidminer. Implements the template method pattern.
 		do
---			prepare_xml_file
+			prepare_xml_file
 
---			run_rapidminer
+			run_rapidminer
 
 			parse_model
 

@@ -929,6 +929,7 @@ feature{NONE} -- Implementations
 			l_agents.extend (nested_not_on_basic_veto_agent)
 			l_agents.extend (feature_with_few_arguments_veto_agent (0))
 			l_agents.extend (feature_exported_to_any_agent)
+			l_agents.extend (feature_not_obsolete_veto_agent)
 			if not should_search_for_query_with_precondition then
 				l_agents.extend (feature_without_precondition_agent)
 			end
@@ -959,6 +960,7 @@ feature{NONE} -- Implementations
 			l_agents.extend (nested_not_on_basic_veto_agent)
 			l_agents.extend (feature_exported_to_any_agent)
 			l_agents.extend (feature_with_one_integer_argument_veto_agent)
+			l_agents.extend (feature_not_obsolete_veto_agent)
 			if not should_search_for_query_with_precondition then
 				l_agents.extend (feature_without_precondition_agent)
 			end

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	RM_LR_BUILDER
+	RM_LINEAR_REGRESSION_BUILDER
 
 inherit
 	RM_BUILDER	redefine
@@ -14,7 +14,8 @@ inherit
 	end
 
 create
-	make
+	make,
+	make_with_relation
 
 feature -- Create
 
@@ -32,7 +33,7 @@ feature -- Create
 			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
 			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
 		do
-			init_with_relation (a_relation, a_selected_attributes, a_label_attribute)
+			init_with_relation (linear_regression, a_relation, a_selected_attributes, a_label_attribute)
 		end
 
 feature -- Access

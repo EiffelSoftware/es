@@ -36,16 +36,18 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
---			l_loader.parse_relation
---			arff_relation := l_loader.last_relation
-			arff_relation := data.arff_relation.cloned_object
+			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+			l_loader.parse_relation
+			arff_relation := l_loader.last_relation
+--			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
 			collect_dependent_attributes
 			if not dependent_attributes.is_empty then
 				collect_regressor_attributes
-
+				if not regressor_attributes.is_empty then
+					generate_linear_regressions
+				end
 			end
 
 				-- Setup results.
@@ -65,6 +67,59 @@ feature{NONE} -- Implementation
 			-- Set of attributes used as regressors in regression
 
 feature{NONE} -- Implementation
+
+	generate_linear_regressions
+			-- Generate linear regressions, one for each dependent attributes in
+			-- `dependent_attributes'.		
+		local
+			l_cursor: like regressor_attributes.new_cursor
+		do
+			from
+				l_cursor := regressor_attributes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				generate_linear_regression (l_cursor.item, l_cursor.key)
+				l_cursor.forth
+			end
+		end
+
+	generate_linear_regression (a_regressors: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_dependent_attribute: WEKA_ARFF_ATTRIBUTE)
+			-- Generate linear regression for `a_dependent_attribute' with `a_regressors'.
+		local
+			l_builder: RM_LINEAR_REGRESSION_BUILDER
+			l_regressors: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			l_regression: RM_LINEAR_REGRESSION
+			i: INTEGER
+			l_name: STRING
+			l_coefficient: DOUBLE
+		do
+			l_regressors := a_regressors.cloned_object
+			l_regressors.force_last (a_dependent_attribute)
+			create l_builder.make_with_relation (arff_relation, l_regressors, a_dependent_attribute)
+			l_builder.build
+			l_regression := l_builder.last_linear_regression
+			if l_regression.is_all_regressor_coefficient_integer then
+				logger.push_fine_level
+				logger.put_string (a_dependent_attribute.name + " = ")
+				i := 1
+				across l_regression.regressors as l_cursor loop
+					l_coefficient := l_cursor.item
+					l_name := l_cursor.key
+					if l_coefficient < 0 then
+						logger.put_string (l_coefficient.out)
+					else
+						logger.put_string (" + " + l_coefficient.out)
+					end
+					if not l_name.is_empty then
+						logger.put_string (" x " + l_name)
+					end
+				end
+				logger.put_line ("")
+				logger.pop_level
+			end
+		end
 
 	collect_dependent_attributes
 			-- Collect `dependent_attributes'.
@@ -91,7 +146,7 @@ feature{NONE} -- Implementation
 					not value_sets.item (l_attr).has (once "?")
 				if l_ok then
 					l_name := string_slices (l_attr.name, once "::").last
-					l_to_name := "%"to::" + l_name
+					l_to_name := "to::" + l_name
 					if arff_relation.has_attribute_by_name (l_to_name) then
 						l_to_attr := arff_relation.attribute_by_name (l_to_name)
 						l_ok := value_sets.item (l_to_attr).count > 1
