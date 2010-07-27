@@ -28,14 +28,39 @@ feature{RM_BUILDER} -- Initializaiton
 			create rm_const
 		end
 
+	init_with_relation(a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
+			-- Initialize current with ARFF relation `a_relation'.
+			-- `a_selected_attributes' is a subset of attributes in `a_relation', which will be used for the tree learning.
+			-- `a_label_attribute' is the goal attribute whose values are to be classified by the learnt tree.
+			-- Use default decision tree algorithm, and default validation criterion.
+		require
+			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
+			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
+		local
+			l_arff_file: PLAIN_TEXT_FILE
+			l_attr_list: LINKED_LIST[STRING]
+		do
+			create l_arff_file.make_create_read_write (rm_environment.rapid_miner_arff_file_path)
+			a_relation.to_medium (l_arff_file)
+			l_arff_file.close
+
+			create l_attr_list.make
+			from a_selected_attributes.start until a_selected_attributes.after loop
+				l_attr_list.force (a_selected_attributes.item_for_iteration.name)
+				a_selected_attributes.forth
+			end
+
+			init (decision_tree, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+		end
+
 feature -- Interface
 
 	build
 			-- Builds the tree with the help of rapidminer. Implements the template method pattern.
 		do
-			prepare_xml_file
+--			prepare_xml_file
 
-			run_rapidminer
+--			run_rapidminer
 
 			parse_model
 

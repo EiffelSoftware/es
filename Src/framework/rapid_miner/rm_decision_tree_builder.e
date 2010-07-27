@@ -35,21 +35,8 @@ feature -- Create
 		require
 			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
 			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
-		local
-			l_arff_file: PLAIN_TEXT_FILE
-			l_attr_list: LINKED_LIST[STRING]
 		do
-			create l_arff_file.make_create_read_write (rm_environment.rapid_miner_arff_file_path)
-			a_relation.to_medium (l_arff_file)
-			l_arff_file.close
-
-			create l_attr_list.make
-			from a_selected_attributes.start until a_selected_attributes.after loop
-				l_attr_list.force (a_selected_attributes.item_for_iteration.name)
-				a_selected_attributes.forth
-			end
-
-			init (decision_tree, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+			init_with_relation (a_relation, a_selected_attributes, a_label_attribute)
 		end
 
 feature -- Access
@@ -73,7 +60,7 @@ feature{RM_BUILDER} -- Implementation
 	parse_performance
 			-- Parses the performance file.
 		local
-			l_perf_parser: RM_DECISION_TREE_PERFORMANCE_PARSER
+			l_perf_parser: RM_PERFORMANCE_PARSER
 		do
 			if validation_code /= {RM_CONSTANTS}.no_validation then
 				create l_perf_parser

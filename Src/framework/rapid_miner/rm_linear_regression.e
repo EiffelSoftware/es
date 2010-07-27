@@ -7,6 +7,36 @@ note
 class
 	RM_LINEAR_REGRESSION
 
+create
+	make
+
+feature{NONE} -- Creation
+
+	make(a_dependent_variable: STRING)
+		do
+			dependent_variable := a_dependent_variable
+			create regressors.make (10)
+		end
+
+feature -- Setting
+
+	set_dependent_variable(a_dependent_variable: STRING)
+			-- Set `dependent_variable' with `a_dependent_variable'.
+		do
+			dependent_variable := a_dependent_variable
+		ensure
+			dependent_var_is_set: dependent_variable = a_dependent_variable
+		end
+
+feature -- Interface	
+
+	add_regressor(a_name: STRING; a_value: DOUBLE)
+			-- Adds a regressor to this linear regression formula.
+			-- `a_name' is the name of the regressor and `a_value' is the value of its coefficient.
+		do
+			regressors.put (a_value, a_name)
+		end
+
 feature -- Access
 
 	dependent_variable: STRING
@@ -14,7 +44,7 @@ feature -- Access
 
 	regressors: HASH_TABLE [DOUBLE, STRING]
 			-- Table of regressors and their coefficients
-			-- Key is name of a regressor variable, value
+			-- Key is name of a regressor variable, value	
 			-- is the coefficient of that regressor variable.
 
 feature -- Access
@@ -32,6 +62,11 @@ feature -- Status report
 	is_all_regressor_coefficient_integer: BOOLEAN
 			-- Are all the coefficients of `regressors' integers?
 		do
+			Result := True
+			from regressors.start until regressors.after loop
+				Result := Result and (regressors.item_for_iteration.floor = regressors.item_for_iteration)
+				regressors.forth
+			end
 		end
 
 feature -- Basic operation
@@ -47,6 +82,16 @@ feature -- Basic operation
 					regressors.has (l_regressors.key)
 				end
 		do
+			last_regression := 0
+			from regressors.start until regressors.after loop
+				if regressors.key_for_iteration ~ constant_regressor then
+					last_regression := last_regression + regressors.item_for_iteration
+				else
+					last_regression := last_regression + ( regressors.item_for_iteration * a_regressor_values.item (regressors.key_for_iteration) )
+				end
+
+				regressors.forth
+			end
 		end
 
 end
