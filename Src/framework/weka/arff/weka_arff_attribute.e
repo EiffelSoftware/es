@@ -12,6 +12,12 @@ inherit
 		redefine
 			is_equal
 		end
+
+	DEBUG_OUTPUT
+		undefine
+			is_equal
+		end
+
 feature -- Access
 
 	name: STRING
@@ -57,6 +63,16 @@ feature -- Access
 	as_nominal (a_values: DS_HASH_SET [STRING]): WEKA_ARFF_NOMINAL_ATTRIBUTE
 			-- Norminal attribute from Current under the set of values `a_values'
 		deferred
+		end
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (64)
+			Result.append (name)
+			Result.append_character (':')
+			Result.append_character (' ')
+			Result.append (type_string)
 		end
 
 feature -- Constants

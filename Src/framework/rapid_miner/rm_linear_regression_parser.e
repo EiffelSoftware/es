@@ -50,19 +50,24 @@ feature{NONE} -- Internal data holders
 
 feature{NONE} -- Implementation
 
-	parse_line(a_line: STRING)
-			-- Parses a line from a linear regression model file line. Puts the
+	parse_line (a_text: STRING)
+			-- Parse a line `a_text' from a linear regression model file line. Put the
 			-- parsed regressors in the `last_linear_regression'
 		local
 			l_list: LIST [STRING]
 			l_value: DOUBLE
+			l_line: STRING
 		do
-			if not a_line.is_empty then
-				if a_line.starts_with ("+") then
-					a_line.keep_tail (a_line.count - 2)
+			l_line := a_text.twin
+			if not l_line.is_empty then
+				if l_line.starts_with ("+") then
+					l_line.keep_tail (l_line.count - 2)
+				elseif l_line.starts_with ("-") then
+					l_line.keep_tail (l_line.count - 2)
+					l_line.prepend_character ('-')
 				end
-				if a_line.has ('*') then
-					l_list := a_line.split ('*')
+				if l_line.has ('*') then
+					l_list := l_line.split ('*')
 					l_list[1].left_adjust
 					l_list[1].right_adjust
 					l_list[2].left_adjust
@@ -72,8 +77,8 @@ feature{NONE} -- Implementation
 						last_linear_regression.add_regressor (l_list[2], l_value)
 					end
 				else
-					if a_line.is_double then
-						l_value := a_line.to_double
+					if l_line.is_double then
+						l_value := l_line.to_double
 						last_linear_regression.add_regressor (last_linear_regression.constant_regressor, l_value)
 					end
 				end

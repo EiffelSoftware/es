@@ -7,6 +7,9 @@ note
 class
 	RM_CONSTANTS
 
+inherit
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 feature -- Translators from codes to strings
 
 	algorithm_code_to_string(code: INTEGER):STRING
@@ -34,6 +37,20 @@ feature -- Algorithm types
 	decision_tree: INTEGER = 1
 
 	linear_regression: INTEGER = 2
+
+	algorithm_decision_tree: STRING = "decision_tree"
+			-- Name of the default decision tree algorithm
+
+feature -- Access
+
+	decision_tree_algorithms: DS_HASH_SET [STRING]
+			-- Set of the names of supported decision tree algorithms
+		once
+			create Result.make (10)
+			Result.set_equality_tester (string_equality_tester)
+
+			Result.force_last (algorithm_decision_tree)
+		end
 
 feature -- Status report
 

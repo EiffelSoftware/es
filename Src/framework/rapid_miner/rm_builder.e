@@ -13,9 +13,9 @@ inherit
 
 feature{RM_BUILDER} -- Initializaiton
 
-	init(a_algorithm_code: INTEGER; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST[STRING]; a_label_name: STRING)
-			-- `a_selected_attributes' the attributes to be selected by RM
-			-- `a_label_name' the target attribute name
+	init (a_algorithm_code: INTEGER; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
+			-- `a_selected_attributes' is the attributes to be selected by RapidMiner
+			-- `a_label_name' is the target attribute name.
 			-- Initialize some attributes.
 		local
 			rm_const: RM_CONSTANTS
@@ -118,13 +118,14 @@ feature{RM_BUILDER} -- Implementation
 		end
 
 	run_rapidminer
-			-- Executes rapidminer with the appropriate xml file stored in rm_environment.
+			-- Executes rapidminer with the appropriate xml file stored in rm_environment.						
 		local
 			l_rapid_execute_string: STRING
 			l_executor: EPA_PROCESS_UTILITY
 			l_bushon: STRING
 		do
-			l_rapid_execute_string := "cmd /C %"rapidminer.bat -f "
+			create l_rapid_execute_string.make (128)
+			l_rapid_execute_string.append ("cmd /C %"rapidminer.bat -f ")
 			l_rapid_execute_string.append (rm_environment.rapid_miner_xml_file_path)
 			l_rapid_execute_string.append ("%"")
 
@@ -188,7 +189,7 @@ feature {RM_BUILDER} -- creation encapsulation
 			end
 		end
 
-feature{RM_BUILDER} -- internal data holders
+feature{RM_BUILDER} -- Internal data holders
 
 	algorithm_code: INTEGER
 

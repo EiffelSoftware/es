@@ -38,7 +38,7 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__extend.arff2")
+--			create l_loader.make ("D:\jasonw\contrace-based-analysis\contract_inference\project\EIFGENs\project\Contract_inference\data\LINKED_LIST__remove_left.arff")
 --			l_loader.parse_relation
 --			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
@@ -116,11 +116,11 @@ feature{NONE} -- Implementation
 				l_prefix := l_slices.first
 				l_name := l_slices.last
 				l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
+				if l_name.starts_with ("Current.") then
+					l_name.remove_head (8)
+				end
 				if l_prefix ~ "pre" then
 					l_property_body.append ("old (")
-					if l_name.starts_with ("Current.") then
-						l_name.remove_head (8)
-					end
 					l_property_body.append (l_name)
 					l_property_body.append (") = ")
 				else

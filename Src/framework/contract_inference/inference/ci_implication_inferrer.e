@@ -198,6 +198,7 @@ feature{NONE} -- Implementation
 							else
 								l_name := l_name + once " + "
 							end
+							l_value := l_value.to_integer.abs.out
 						end
 						l_operator := ""
 					end
