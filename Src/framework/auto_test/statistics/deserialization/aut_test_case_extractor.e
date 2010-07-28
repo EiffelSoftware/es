@@ -556,6 +556,7 @@ feature{NONE} -- Auxiliary features
 			l_name: STRING
 		do
 			l_name := tc_class_name
+			check class_name_attached: l_name /= Void end
 			if l_name.count > a_length then
 				error_handler.report_warning_message ("Class name truncated: " + l_name)
 				tc_class_name_cache := l_name.substring (1, a_length)
@@ -643,10 +644,15 @@ feature{NONE} -- Auxiliary features
 					tc_assertion_tag_cache := "noname"
 				else
 					l_assertion_tag_new := string_to_identifier (l_assertion_tag)
+
 					if l_assertion_tag /~ l_assertion_tag_new then
+						-- There are situations where assertion tags are not identifiers, e.g. in developer raised exceptions.
+						-- Such tags do not correspond to any program element, and they are not retained in the deserialized test cases.
 						error_handler.report_error_message ("Unexpected character(s) in the failing assertion tag: " + l_assertion_tag)
+						tc_assertion_tag_cache := once "noname"
+					else
+						tc_assertion_tag_cache := l_assertion_tag_new
 					end
-					tc_assertion_tag_cache := l_assertion_tag_new
 				end
 
 				-- Breakpoint index

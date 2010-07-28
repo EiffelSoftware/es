@@ -31,6 +31,7 @@ feature -- Operation
 		require
 			directory_exists: True -- the directory exists.
 		local
+			l_retried: BOOLEAN
 			l_name: STRING
 			l_dir: DIRECTORY
 			l_file_name: FILE_NAME
@@ -38,27 +39,44 @@ feature -- Operation
 			l_class_content: STRING
 			l_length: INTEGER
 		do
-			is_successful := True
+			if not l_retried then
+				is_successful := True
 
-			l_class_content := tc_class_content
+				l_class_content := tc_class_content
 
-			if not l_class_content.is_empty then
-				-- Prepare test case directory.
-				prepare_directory (a_dir_name)
-				-- Create test case file.
-				l_name := tc_class_full_path (a_dir_name)
-				create l_file.make (l_name)
-				-- Write test case.
-				l_file.recursive_open_write
-				if not l_file.is_open_write then
-					is_successful := False
-				else
-					l_file.put_string (l_class_content)
-					l_file.close
+				if not l_class_content.is_empty then
+					-- Prepare test case directory.
+					prepare_directory (a_dir_name)
+					-- Create test case file.
+					l_name := tc_class_full_path (a_dir_name)
+
+--io.put_string ("Writing to file: ")
+--io.put_string (l_name)
+--io.put_string ("...")
+
+					create l_file.make (l_name)
+					-- Write test case.
+					l_file.recursive_open_write
+					if not l_file.is_open_write then
+						is_successful := False
+--io.put_string ("Failed.%N")
+					else
+						l_file.put_string (l_class_content)
+						l_file.close
+--io.put_string ("Done.%N")
+					end
 				end
-			else
-				error_handler.report_error_message ("Error generating test case class content: " + tc_class_full_path (a_dir_name))
 			end
+		rescue
+			l_retried := True
+
+			-- Delete incomplete class files.
+			if l_file /= Void and then l_file.is_open_write then
+				l_file.close
+				l_file.delete
+			end
+
+			retry
 		end
 
 feature{NONE} -- Construction
@@ -74,6 +92,7 @@ feature{NONE} -- Construction
 			-- Class body.
 			l_class_str := tc_class_template.twin
 			l_class_str.replace_substring_all (ph_class_name, tc_class_name)
+			l_class_str.replace_substring_all (ph_uuid, tc_uuid)
 			l_class_str.replace_substring_all (ph_feature_name, tc_feature_name)
 			l_class_str.replace_substring_all (ph_generation_type, tc_generation_type)
 			l_class_str.replace_substring_all (ph_summary, tc_summary)
@@ -84,6 +103,7 @@ feature{NONE} -- Construction
 			l_class_str.replace_substring_all (ph_is_query, tc_is_query.out)
 			l_class_str.replace_substring_all (ph_is_passing, tc_is_passing.out)
 			l_class_str.replace_substring_all (ph_exception_code, tc_exception_code.out)
+			l_class_str.replace_substring_all (ph_breakpoint_index, tc_breakpoint_index.out)
 			l_class_str.replace_substring_all (ph_exception_recipient, tc_exception_recipient)
 			l_class_str.replace_substring_all (ph_exception_recipient_class, tc_exception_recipient_class)
 			l_class_str.replace_substring_all (ph_assertion_tag, tc_assertion_tag)
@@ -143,6 +163,11 @@ feature{NONE} -- Construction
             -- Exception code. 0 for passing test cases.
         deferred
         end
+
+	tc_breakpoint_index: INTEGER
+			-- Breakpoint index where the test case fails.
+		deferred
+		end
 
     tc_assertion_tag: STRING
 			-- Tag of the violated assertion, if any.
@@ -340,13 +365,16 @@ $(BODY)
         
 feature -- Test case information
 
-	tci_class_name: STRING do Result :="$(CLASS_NAME)" end
-			-- Name of current class
+	tci_class_name: STRING = "$(CLASS_NAME)"
+			-- Name of current class.
+			
+	tci_class_uuid: STRING = "$(UUID)"
+			-- UUID of current test case.
 
-	tci_class_under_test: STRING do Result := "$(CLASS_UNDER_TEST)" end
+	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
 			-- Name of the class under test.
 
-	tci_feature_under_test: STRING do Result := "$(FEATURE_UNDER_TEST)" end
+	tci_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
 			-- Name of the feature under test.
 			
 	tci_is_creation: BOOLEAN = $(IS_CREATION)
@@ -361,16 +389,25 @@ feature -- Test case information
 	tci_exception_code: INTEGER = $(EXCEPTION_CODE)
 			-- Exception code. 0 for passing test cases.
 	
-	tci_assertion_tag: STRING do Result := "$(ASSERTION_TAG)" end
+	tci_breakpoint_index: INTEGER = $(BREAKPOINT_INDEX)
+			-- Index of the breakpoint where the test case fails inside `tci_class_under_test'.`tci_feature_under_test'.
+			
+	tci_assertion_tag: STRING = "$(ASSERTION_TAG)" 
 			-- Tag of the violated assertion, if any.
 			-- Empty string for passing test cases.
 	
-	tci_exception_recipient: STRING do Result := "$(EXCEPTION_RECIPIENT)" end
-			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
-	
-	tci_exception_recipient_class: STRING do Result := "$(EXCEPTION_RECIPIENT_CLASS)" end
+	tci_exception_recipient_class: STRING = "$(EXCEPTION_RECIPIENT_CLASS)" 
 			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
 	
+	tci_exception_recipient: STRING = "$(EXCEPTION_RECIPIENT)" 
+			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
+	
+    tci_exception_trace: STRING =
+			-- Exception trace.
+--<exception_trace>
+$(TRACE)
+--</exception_trace>
+
 	tci_argument_count: INTEGER = $(ARGUMENT_COUNT)
 			-- Number of arguments of the feature under test.
 	
@@ -382,12 +419,6 @@ feature -- Test case information
 			create Result.make ($(ARGUMENT_COUNT) + 2)
 $(OPERAND_TABLE_INITIALIZER)
 		end
-
-    tci_exception_trace: STRING =
-			-- Exception trace.
---<exception_trace>
-$(TRACE)
---</exception_trace>
 
 feature{NONE} -- Serialization data
 

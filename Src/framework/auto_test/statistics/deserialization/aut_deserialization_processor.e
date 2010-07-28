@@ -112,48 +112,52 @@ feature -- Operation
 			l_file: RAW_FILE
 			l_entry_name: STRING
 		do
-			-- Use a queue to recursively process all the input files .
-			from
-				create l_file_names.make
-				l_file_names.force (data_input)
-			until
-				l_file_names.is_empty
-			loop
-				l_file_names.start
-				l_name := l_file_names.item
+			if not configuration.error_handler.has_error then
+				-- Use a queue to recursively process all the input files .
+				from
+					create l_file_names.make
+					l_file_names.force (data_input)
+				until
+					l_file_names.is_empty
+				loop
+					l_file_names.start
+					l_name := l_file_names.item
 
-				create l_file.make (l_name)
-				if l_file.exists and then l_name.ends_with (once ".txt") then
-					-- Process a single file.
-					process_file (l_file)
-					l_file_names.remove
-				else
-					if is_recursive then
-						-- Recursively add all directory entries into the list.
-						create l_dir.make (l_name)
-						if l_dir.exists then
-							l_dir.open_read
-							if not l_dir.is_closed then
-								from
-									l_dir.start
-									l_dir.readentry
-								until
-									l_dir.lastentry = Void
-								loop
-									l_entry_name := l_dir.lastentry
-									if l_entry_name /~ "." and then l_entry_name /~ ".." then
-										l_file_names.force (file_system.pathname (l_name, l_entry_name))
+					create l_file.make (l_name)
+					if l_file.exists and then l_name.ends_with (once ".txt") then
+						-- Process a single file.
+						process_file (l_file)
+						l_file_names.remove
+					else
+						if is_recursive then
+							-- Recursively add all directory entries into the list.
+							create l_dir.make (l_name)
+							if l_dir.exists then
+								l_dir.open_read
+								if not l_dir.is_closed then
+									from
+										l_dir.start
+										l_dir.readentry
+									until
+										l_dir.lastentry = Void
+									loop
+										l_entry_name := l_dir.lastentry
+										if l_entry_name /~ "." and then l_entry_name /~ ".." then
+											l_file_names.force (file_system.pathname (l_name, l_entry_name))
+										end
+										l_dir.readentry
 									end
-									l_dir.readentry
 								end
 							end
 						end
-					end
 
-					-- Remove the directory name from the head of queue.
-					l_file_names.start
-					l_file_names.remove
+						-- Remove the directory name from the head of queue.
+						l_file_names.start
+						l_file_names.remove
+					end
 				end
+			else
+				configuration.error_handler.report_error_message ("Configuration error, deserialization cannot start.")
 			end
 		end
 
@@ -192,7 +196,7 @@ feature{NONE} -- Implementation
 				data_output_cache := l_conf.data_output
 				check data_output /= Void and then not data_output.is_empty end
 				create l_file.make (data_output)
-				if l_file.exists then
+				if l_file.exists and then not l_file.is_directory then
 					configuration.error_handler.report_cannot_write_error (data_output)
 				end
 			end
@@ -204,6 +208,10 @@ feature{NONE} -- Implementation
 			l_retried: BOOLEAN
 			l_line: STRING
 		do
+			io.put_string (once "%NNow processing: ")
+			io.put_string (a_file.name)
+			io.put_string (once "...")
+
 			if not l_retried then
 				a_file.open_read
 				if a_file.is_open_read then
@@ -221,6 +229,8 @@ feature{NONE} -- Implementation
 			else
 				configuration.error_handler.report_error_message ("Bad serialization data file: " + a_file.name)
 			end
+
+			io.put_string (once "Done.")
 		rescue
 			l_retried := True
 			retry
@@ -428,7 +438,10 @@ feature{NONE} -- Auxiliary routines
 			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
 
 			-- Test if the string can be successfully deserialized into a SPECIAL of TUPLEs.
-            if is_valid_serialization_data (l_serialization_str) then
+
+-- Output the test case without testing if the serialization data is in good status.
+-- Since even the testing itself would crash the program.
+--          if is_valid_serialization_data (l_serialization_str) then
 				-- Convert the values between delimiters into {NATURAL_8}, and save them.
 				create last_pre_serialization.make (a_length + 1)
 				l_objects := last_pre_serialization
@@ -441,11 +454,11 @@ feature{NONE} -- Auxiliary routines
 					l_objects.extend (l_serialization_str[l_index].code.as_natural_8)
 					l_index := l_index + 1
 				end
-            else
-            	-- Bad serialization data.
-            	-- Abandon current transition.
-            	last_pre_serialization := Void
-           	end
+--          else
+--            	-- Bad serialization data.
+--            	-- Abandon current transition.
+--            	last_pre_serialization := Void
+--         	end
 
 		end
 
