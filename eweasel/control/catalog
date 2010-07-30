@@ -542,6 +542,7 @@ test	svalid-inherited-agent-with-formal-switch	svalid025 tcf pass system-validit
 test	svalid-redefined-precursor-not-checked	svalid026 tcf fail system-validity
 test	svalid-conversion-forget		svalid027 tcf fail system-validity conversion
 test	svalid-generic-rename-with-alias	svalid028 tcf fail system-validity generic rename
+test	svalid-inherited-renamed-prefix		svalid029 tcf fail system-validity rename
 
 -- Catcall tests
 test	simple-catcall				catcall001 tcf pass catcall
@@ -927,6 +928,8 @@ test	rename-routine-error			incr371 tcf fail incrementality
 test	qat-finalize-panic-cascade		incr372 tcf fail incrementality
 test	finalize-feature-name-crash		incr373 tcf fail incrementality
 test	static-type-id-crash			incr374 tcf fail incrementality
+test	rout-entry-crash			incr375 tcf fail incrementality
+test	finalize-once-per-object-wrong		incr376 tcf fail incrementality
 
 
 -- Melting
@@ -1161,6 +1164,8 @@ test	finalize-inline-check-void-target	final088 tcf fail finalizing
 test	finalize-qat-object-test		final089 tcf fail finalizing anchored_type
 test	finalize-attached-dcr-missing	final090 tcf pass finalizing
 test	finalize-inline-same-generic-derivation-crash	final091 tcf fail finalizing
+test	finalize-c-code-redeclared-identifier	final092 tcf fail finalizing
+test	finalize-create-expanded-generic	final093 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1540,6 +1545,7 @@ test once-per-object-called-via-precursor	once006 tcf fail once
 test once-per-object-with-inheritance		once007 tcf fail once
 test once-per-object-finalized-crash		once008 tcf fail once
 test once-per-object-effect-deferred		once009 tcf fail once
+test once-per-object-empty-body			once010 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1721,6 +1727,8 @@ test	create-generic-with-rename		term184	tcf fail termination generic
 test	generic-derivation-constraint		term185 tcf pass termination formal generic constraint
 test	across-keyword-as-feature-name		term186 tcf fail termination 
 test	chained-generic-constraints		term187 tcf fail termination formal generic constraint
+test	static-access-on-generic-in-inspect	term188 tcf fail termination formal generic
+test	vmfn-reporting-crash				term189 tcf fail termination validity
 
 -- Config
 
@@ -1742,6 +1750,11 @@ test	config-library-options-redefinition	config015 tcf pass config
 test	config-library-options-setting	config016 tcf pass config
 test	config-nonstandard-source-extension	config017 tcf pass config
 test	config-keyword-root-class		config018 tcf fail config
+test	config-invalid-root-type		config019 tcf fail config
+test	config-invalid-actual-generic		config020 tcf fail config
+test	config-undetected-vlec			config021 tcf fail config
+test	config-invalid-vsrt2			config022 tcf fail config
+test	config-generic-root-type-extra-chars	config023 tcf fail config
 
 -- Lace
 
@@ -2280,6 +2293,8 @@ test	multi-constraint-constrained-by-self			multicon054 tcf fail multiconstraint
 test	multi-constraint-make-byte-code-crash			multicon055 tcf fail multiconstraint
 test	multi-constraint-static-access				multicon056 tcf fail multiconstraint
 test	multi-constraint-static-access-2			multicon057 tcf fail multiconstraint
+test	inherited-unary-with-generic				multicon058 tcf pass multiconstraint formal
+test	multi-constraint-real-type-in-crash			multicon059 tcf fail multiconstraint formal
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded
@@ -2468,6 +2483,8 @@ test	qat-c-compile-failure			anchor051 tcf fail anchored_type generic
 test	qat-anchored-to-redefined-descendant	anchor052 tcf fail anchored_type
 test	qat-inlining-bug			anchor053 tcf fail anchored_type generic
 test	qat-instantiated-in-crash-3		anchor054 tcf fail anchored_type formal generic
+test	qat-static-type-id-crash-2		anchor055 tcf fail anchored_type formal generic
+test	qat-generic-constrained-by-self		anchor056 tcf fail anchored_type formal generic manual
 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet

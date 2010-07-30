@@ -13,7 +13,7 @@ LN = copy
 MV = $mv
 RM = RD /S /Q
 DEL = del
-MKDIR_TARGET = $mkdir
+MKDIR = $mkdir
 LINK = $link32
 DLL_FLAGS = $dll_flags
 DLL_LIBS = $dll_libs
@@ -39,19 +39,19 @@ lib_dir: ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)$(DIR)lib
 
 
 ..$(DIR)spec:
-	$(MKDIR_TARGET)
+	$(MKDIR) ..$(DIR)spec
 
 ..$(DIR)spec$(DIR)$(ISE_C_COMPILER): ..$(DIR)spec
-	$(MKDIR_TARGET)
+	$(MKDIR) ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)
 
 ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM): ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)
-	$(MKDIR_TARGET)
+	$(MKDIR) ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)
 
 ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)$(DIR)lib: ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)
-	$(MKDIR_TARGET)
+	$(MKDIR) ..$(DIR)spec$(DIR)$(ISE_C_COMPILER)$(DIR)$(ISE_PLATFORM)$(DIR)lib
 	
 ..$(DIR)spec$(DIR)include: ..$(DIR)spec
-	$(MKDIR_TARGET)
+	$(MKDIR) ..$(DIR)spec$(DIR)include
 
 clean:
 	$(RM) lp_solve$(DIR)lpsolve55$(DIR)bin
