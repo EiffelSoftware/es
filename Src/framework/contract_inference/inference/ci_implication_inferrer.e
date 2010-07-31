@@ -162,6 +162,7 @@ feature{NONE} -- Implementation
 			l_expr: EPA_AST_EXPRESSION
 			l_slices: LIST [STRING]
 			l_is_pre: BOOLEAN
+			l_is_bad: BOOLEAN
 		do
 			create l_path.make
 			a_path.do_all (agent l_path.extend)
@@ -170,7 +171,7 @@ feature{NONE} -- Implementation
 			from
 				l_path.start
 			until
-				l_path.after
+				l_path.after or else l_is_bad
 			loop
 				l_node := l_path.item_for_iteration
 				l_slices := string_slices (l_node.attribute_name, once "::")
@@ -183,51 +184,57 @@ feature{NONE} -- Implementation
 
 				l_operator := l_node.operator_name
 				l_value := l_node.value_name
-				if l_value.is_double then
-					l_value := l_value.to_double.floor.out
-				elseif l_value ~ stay_true_value then
-					l_value := once "True"
-				elseif l_value ~ stay_false_value then
-					l_value := once "False"
-				end
-
-				if l_path.islast then
-					if l_slices.first.has_substring (once "by")	then
-						l_name := l_name + once " = old " + l_name
-						if l_value.is_integer then
-							if l_value.to_integer < 0 then
-								l_name := l_name + once " - "
-							else
-								l_name := l_name + once " + "
-							end
-							l_value := l_value.to_integer.abs.out
-						end
-						l_operator := ""
-					end
+				if l_value ~ "?" then
+					l_is_bad := True
 				else
-					if l_is_pre then
-						l_name.prepend (once "old (")
-						l_name.append_character (')')
+					if l_value.is_double then
+						l_value := l_value.to_double.floor.out
+					elseif l_value ~ stay_true_value then
+						l_value := once "True"
+					elseif l_value ~ stay_false_value then
+						l_value := once "False"
 					end
-				end
 
-				if not l_path.isfirst then
 					if l_path.islast then
-						l_text.append (once " implies ")
-
+						if l_slices.first.has_substring (once "by")	then
+							l_name := l_name + once " = old " + l_name
+							if l_value.is_integer then
+								if l_value.to_integer < 0 then
+									l_name := l_name + once " - "
+								else
+									l_name := l_name + once " + "
+								end
+								l_value := l_value.to_integer.abs.out
+							end
+							l_operator := ""
+						end
 					else
-						l_text.append (once " and ")
+						if l_is_pre then
+							l_name.prepend (once "old (")
+							l_name.append_character (')')
+						end
 					end
+
+					if not l_path.isfirst then
+						if l_path.islast then
+							l_text.append (once " implies ")
+
+						else
+							l_text.append (once " and ")
+						end
+					end
+					l_text.append (l_name)
+					l_text.append_character (' ')
+					l_text.append (l_operator)
+					l_text.append (l_value)
 				end
-				l_text.append (l_name)
-				l_text.append_character (' ')
-				l_text.append (l_operator)
-				l_text.append (l_value)
 				l_path.forth
 			end
-			create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
-			if not l_expr.has_syntax_error and then l_expr.type /= Void then
-				Result := l_expr
+			if not l_is_bad then
+				create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
+				if not l_expr.has_syntax_error and then l_expr.type /= Void then
+					Result := l_expr
+				end
 			end
 		end
 
