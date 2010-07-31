@@ -170,7 +170,7 @@ feature -- Evaluation
 					create {EPA_REFERENCE_VALUE} Result.make (l_address.physical_addr (l_address).as_string, system.any_type)
 				end
 			else
-				check False end
+				create {EPA_NONSENSICAL_VALUE} Result
 			end
 		end
 

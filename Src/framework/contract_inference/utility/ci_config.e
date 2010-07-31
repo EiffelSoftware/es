@@ -245,6 +245,11 @@ feature -- Access
 			-- Should constant-change properties by inferred?
 			-- Default: True
 
+	verbose_level: INTEGER
+			-- Information output level
+			-- Check constants defiend {EPA_LOG_MANAGER} for valid values.
+			-- Default: {EPA_LOG_MANAGER}.info_level
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -491,6 +496,14 @@ feature -- Setting
 			is_constant_change_property_enabled := b
 		ensure
 			is_constant_change_property_enabled_set: is_constant_change_property_enabled = b
+		end
+
+	set_verbose_level (a_level: INTEGER)
+			-- Set `verbose_leve' with `a_level'.
+		do
+			verbose_level := a_level
+		ensure
+			verbose_level_set: verbose_level = a_level
 		end
 
 feature{NONE} -- Implementation

@@ -35,6 +35,13 @@ feature -- Basic operations
 			calculate_sequences
 			calculate_integer_queries
 			check_sequence_consistency
+
+			create last_preconditions.make (10)
+			last_preconditions.set_equality_tester (expression_equality_tester)
+			create last_postconditions.make (10)
+			last_postconditions.set_equality_tester (expression_equality_tester)
+			setup_last_contracts
+
 			if is_sequence_consistent then
 				generate_is_empty_properties
 
@@ -63,12 +70,6 @@ feature -- Basic operations
 					-- Validate property candidates.
 				validate_properties
 				log_properties ("Valid sequenced-based properties:", properties)
-
-				create last_preconditions.make (10)
-				last_preconditions.set_equality_tester (expression_equality_tester)
-				create last_postconditions.make (10)
-				last_postconditions.set_equality_tester (expression_equality_tester)
-				setup_last_contracts
 			end
 		end
 
@@ -251,63 +252,69 @@ feature{NONE} -- Implementation
 			l_evaluator := evaluator
 			l_evaluator.set_transition_context (a_tc_info)
 			l_sequences := sequences
-			from
-				l_funcs_cur := a_tc_info.integer_bounded_functions [a_pre_state].new_cursor
-				l_funcs_cur.start
-			until
-				l_funcs_cur.after
-			loop
-				l_sequences.search (a_tc_info)
-				if l_sequences.found then
-					l_seq_set := l_sequences.found_item.item (a_pre_state)
-				else
-					create l_seq_tbl.make (2)
-					create l_seq_set.make (5)
-					l_seq_set.set_equality_tester (ci_sequence_equality_tester)
-					l_seq_tbl.put (l_seq_set, True)
-					create l_seq_set.make (5)
-					l_seq_set.set_equality_tester (ci_sequence_equality_tester)
-					l_seq_tbl.put (l_seq_set, False)
-					l_sequences.force_last (l_seq_tbl, a_tc_info)
-					l_seq_set := l_seq_tbl.item (a_pre_state)
-				end
-					-- Construct the sequence.
-				l_sequence := sequence_from_integer_bounded_function (l_funcs_cur.item, a_tc_info, a_pre_state)
-				if l_sequence /= Void and then not l_seq_set.has (l_sequence.signature) then
-					log_message (once "%T Found sequence: " + text_of_sequence (l_sequence) + l_in_state, False, True)
-					l_seq_set.force_last (l_sequence, l_sequence.signature)
+			if a_tc_info.integer_bounded_functions [a_pre_state].is_empty then
+				create l_seq_tbl.make (2)
+				l_sequences.force_last (l_seq_tbl, a_tc_info)
+			else
+				from
+					l_funcs_cur := a_tc_info.integer_bounded_functions [a_pre_state].new_cursor
+					l_funcs_cur.start
+				until
+					l_funcs_cur.after
+				loop
+					l_sequences.search (a_tc_info)
+					if l_sequences.found then
+						l_seq_set := l_sequences.found_item.item (a_pre_state)
+					else
+						create l_seq_tbl.make (2)
+						create l_seq_set.make (5)
+						l_seq_set.set_equality_tester (ci_sequence_equality_tester)
+						l_seq_tbl.put (l_seq_set, True)
+						create l_seq_set.make (5)
+						l_seq_set.set_equality_tester (ci_sequence_equality_tester)
+						l_seq_tbl.put (l_seq_set, False)
+						l_sequences.force_last (l_seq_tbl, a_tc_info)
+						l_seq_set := l_seq_tbl.item (a_pre_state)
+					end
+						-- Construct the sequence.
+					l_sequence := sequence_from_integer_bounded_function (l_funcs_cur.item, a_tc_info, a_pre_state)
+					if l_sequence /= Void and then not l_seq_set.has (l_sequence.signature) then
+						log_message (once "%T Found sequence: " + text_of_sequence (l_sequence) + l_in_state, False, True)
+						l_seq_set.force_last (l_sequence, l_sequence.signature)
 
-						-- Check if some operand of `feature_under_test' can form a single element sequence too.
-					l_sequence_type := l_funcs_cur.item.result_type
-					from
-						l_opd_types := l_operand_types.new_cursor
-						l_opd_types.start
-					until
-						l_opd_types.after
-					loop
-						l_opd_type := l_opd_types.item
-						if l_opd_type.same_type (l_sequence_type) and then l_opd_type.is_equivalent (l_sequence_type) then
-							l_var_name := a_tc_info.transition.reversed_variable_position.item (l_opd_types.key).text
-							if a_pre_state then
-								l_evaluator.evaluate_string (once "old " + l_var_name)
-							else
-								l_evaluator.evaluate_string (l_var_name)
-							end
-							if not l_evaluator.has_error then
-								create l_opd_value.make
-								l_opd_value.extend (l_evaluator.last_value)
-								create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, l_opd_type, a_tc_info.transition.context, "", l_opd_types.key, Void, Void)
-									-- Found a new single element sequence made from an operand variable.
-								if not l_seq_set.has (l_opd_sequence.signature) then
-									log_message (once "%T Found sequence: " + text_of_sequence (l_opd_sequence) + l_in_state, False, True)
-									l_seq_set.force_last (l_opd_sequence, l_opd_sequence.signature)
+							-- Check if some operand of `feature_under_test' can form a single element sequence too.
+						l_sequence_type := l_funcs_cur.item.result_type
+						from
+							l_opd_types := l_operand_types.new_cursor
+							l_opd_types.start
+						until
+							l_opd_types.after
+						loop
+							l_opd_type := l_opd_types.item
+							if l_opd_type.same_type (l_sequence_type) and then l_opd_type.is_equivalent (l_sequence_type) then
+								l_var_name := a_tc_info.transition.reversed_variable_position.item (l_opd_types.key).text
+								if a_pre_state then
+									l_evaluator.evaluate_string (once "old " + l_var_name)
+								else
+									l_evaluator.evaluate_string (l_var_name)
+								end
+								if not l_evaluator.has_error then
+									create l_opd_value.make
+									l_opd_value.extend (l_evaluator.last_value)
+									create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, l_opd_type, a_tc_info.transition.context, "", l_opd_types.key, Void, Void)
+										-- Found a new single element sequence made from an operand variable.
+									if not l_seq_set.has (l_opd_sequence.signature) then
+										log_message (once "%T Found sequence: " + text_of_sequence (l_opd_sequence) + l_in_state, False, True)
+										l_seq_set.force_last (l_opd_sequence, l_opd_sequence.signature)
+									end
 								end
 							end
+							l_opd_types.forth
 						end
-						l_opd_types.forth
 					end
+					l_funcs_cur.forth
 				end
-				l_funcs_cur.forth
+
 			end
 		end
 
@@ -352,8 +359,9 @@ feature{NONE} -- Implementation
 						-- Collect sequence signatures.
 					create l_sig_set.make (10)
 					l_sig_set.set_equality_tester (ci_sequence_signature_equality_tester)
-					l_sig_set.append_last (l_test_cases.item.item (l_pre_state).keys)
-
+					if l_test_cases.item.has (l_pre_state) then
+						l_sig_set.append_last (l_test_cases.item.item (l_pre_state).keys)
+					end
 					l_signatures.extend (l_sig_set)
 					l_test_cases.forth
 				end
@@ -934,7 +942,8 @@ feature{NONE} -- Implementation
 				l_count_expression.append_character (')')
 
 				l_transition := a_tc_info.transition
-				create Result.make_from_function (a_function, l_count_expression, l_values, l_transition.variable_position_by_name (l_target_variable_name), a_function.lower_bound_expression, a_function.upper_bound_expression)
+--				create Result.make_from_function (a_function, l_count_expression, l_values, l_transition.variable_position_by_name (l_target_variable_name), a_function.lower_bound_expression, a_function.upper_bound_expression)
+				create Result.make_from_function (a_function, l_count_expression, l_values, a_function.target_operand_index, a_function.lower_bound_expression, a_function.upper_bound_expression)
 			end
 		end
 

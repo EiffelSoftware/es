@@ -144,11 +144,13 @@ feature{NONE} -- Implementation
 			-- Generate implications and store them in `last_postconditions'.
 		do
 			across a_tree.paths as l_paths loop
-				last_postconditions.force_last (implication_from_path (l_paths.item))
+				if attached {EPA_EXPRESSION} implication_from_path (l_paths.item) as l_expr then
+					last_postconditions.force_last (l_expr)
+				end
 			end
 		end
 
-	implication_from_path (a_path: LIST [RM_DECISION_TREE_PATH_NODE]): EPA_EXPRESSION
+	implication_from_path (a_path: LIST [RM_DECISION_TREE_PATH_NODE]): detachable EPA_EXPRESSION
 			-- Implication expression from `a_path'
 		local
 			l_path: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
@@ -204,10 +206,9 @@ feature{NONE} -- Implementation
 					end
 				else
 					if l_is_pre then
-						l_name.prepend (once "old ")
+						l_name.prepend (once "old (")
+						l_name.append_character (')')
 					end
-					l_name.prepend_character ('(')
-					l_name.append_character (')')
 				end
 
 				if not l_path.isfirst then
@@ -225,7 +226,9 @@ feature{NONE} -- Implementation
 				l_path.forth
 			end
 			create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
-			Result := l_expr
+			if not l_expr.has_syntax_error and then l_expr.type /= Void then
+				Result := l_expr
+			end
 		end
 
 	collect_premise_attributes

@@ -342,6 +342,7 @@ feature -- Basic operations
 			l_linear_solution: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_tried_linear_context: DS_HASH_SET [STRING]
 			l_fixed_vars: like fixed_operand_indexes
+			l_solution_cur: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 		do
 			create last_candidates.make
 			l_last_candidates := last_candidates
@@ -426,7 +427,15 @@ feature -- Basic operations
 										l_linear_solver.solve
 										if l_linear_solver.has_solution then
 											create l_linear_solution.make (l_linear_solver.solution.count)
-											l_linear_solver.solution.do_all_with_key (agent l_linear_solution.force_last)
+											from
+												l_solution_cur := l_linear_solver.solution.new_cursor
+												l_solution_cur.start
+											until
+												l_solution_cur.after
+											loop
+												l_linear_solution.force_last (l_solution_cur.item, l_solution_cur.key)
+												l_solution_cur.forth
+											end
 											l_last_candidates.force_last ([l_last_candidate, l_linear_solution])
 											l_count := l_count + 1
 										end

@@ -123,8 +123,18 @@ feature{NONE} -- Actions
 
 	generate_weka_relations
 			-- Generate Weka relations from `test_cases'.
+		local
+			l_cursor: like test_cases.new_cursor
 		do
-			test_cases.do_all_with_key (agent generate_weka_relation_for_feature)
+			from
+				l_cursor := test_cases.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				generate_weka_relation_for_feature (l_cursor.item, l_cursor.key)
+				l_cursor.forth
+			end
 		end
 
 	generate_weka_relation_for_feature (a_test_cases: DS_HASH_SET [STRING]; a_feature_name: STRING)

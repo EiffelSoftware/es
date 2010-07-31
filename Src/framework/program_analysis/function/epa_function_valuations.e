@@ -43,6 +43,7 @@ feature -- Access
 		do
 			create Result.make (function)
 			create l_new_map.make (map.count)
+			l_new_map.set_equality_tester (map.equality_tester)
 			from
 				l_cursor := map.new_cursor
 				l_cursor.start
@@ -52,6 +53,7 @@ feature -- Access
 				l_new_map.force_last (l_cursor.item.cloned)
 				l_cursor.forth
 			end
+
 			Result.set_map (l_new_map)
 		end
 

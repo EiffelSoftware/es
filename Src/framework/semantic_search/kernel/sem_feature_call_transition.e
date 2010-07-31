@@ -121,15 +121,20 @@ feature -- Access
 			l_positions: HASH_TABLE [INTEGER, STRING]
 			l_inputs: DS_HASH_SET [STRING]
 			l_outputs: DS_HASH_SET [STRING]
+			l_cursor: like variable_positions.new_cursor
 		do
 				-- Initialize variable position table `l_positions'.
 			create l_positions.make (variable_positions.count)
 			l_positions.compare_objects
-			variable_positions.do_all_with_key (
-				agent (a_pos: INTEGER; a_var: EPA_EXPRESSION; a_tbl: HASH_TABLE [INTEGER, STRING])
-					do
-						a_tbl.put (a_pos, a_var.text)
-					end (?, ?, l_positions))
+			from
+				l_cursor := variable_positions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_positions.put (l_cursor.item, l_cursor.key.text)
+				l_cursor.forth
+			end
 
 				-- Initialize input set `l_inputs'.
 			create l_inputs.make (inputs.count)

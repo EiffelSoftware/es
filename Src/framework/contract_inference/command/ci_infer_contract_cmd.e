@@ -44,7 +44,7 @@ feature{NONE} -- Initialization
 			context_type := class_.constraint_actual_type
 			create log_manager.make
 			create l_file_name.make_from_string (config.log_directory)
-			l_file_name.set_file_name ("log.txt")
+			l_file_name.set_file_name (class_.name_in_upper + "__" + feature_.feature_name.as_lower + "__log.txt")
 			create log_file.make_create_read_write (l_file_name)
 			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
@@ -52,7 +52,7 @@ feature{NONE} -- Initialization
 
 				-- Enable verbose logging (for debugging purpose)
 				-- When the code is ready, use a concise logging level will save some time.
-			log_manager.set_level_threshold_to_fine
+			log_manager.set_level_threshold (config.verbose_level)
 			setup_inferrers
 		end
 
@@ -286,6 +286,7 @@ feature{NONE} -- Implementation
 			l_func_with_domain: CI_FUNCTION_WITH_INTEGER_DOMAIN
 			l_final_lower_expr: EPA_EXPRESSION
 			l_final_upper_expr: EPA_EXPRESSION
+			l_target_operand_index: INTEGER
 		do
 			create Result.make (10)
 			Result.set_equality_tester (function_equality_tester)
@@ -298,6 +299,9 @@ feature{NONE} -- Implementation
 
 			if attached {EPA_INTEGER_RANGE_DOMAIN} a_function.argument_domain (1) as l_domain then
 				l_target_of_function := target_of_function (a_function)
+				check attached {CELL [INTEGER]} a_function.data as l_cell then
+					l_target_operand_index := l_cell.item
+				end
 				l_function_name := a_function.body.substring (l_target_of_function.count + 2, a_function.body.index_of ('(', 1) - 1)
 				l_function_name.left_adjust
 				l_function_name.right_adjust
@@ -407,7 +411,7 @@ feature{NONE} -- Implementation
 							Result.force_last (a_function.partially_evalauted (l_arg, 1))
 
 								-- Register functions with bounded integer domain.
-							create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
+							create l_func_with_domain.make (l_target_operand_index, l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
 							if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
 								last_pre_execution_bounded_functions.force_last (l_func_with_domain)
 							end
@@ -418,7 +422,7 @@ feature{NONE} -- Implementation
 						end
 					else
 							-- Register functions with an EMPTY bounded integer domain.
-						create l_func_with_domain.make (l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
+						create l_func_with_domain.make (l_target_operand_index, l_target_of_function, l_function_name, l_final_lower, l_final_upper, a_context, l_final_lower_expr.text, l_final_upper_expr.text)
 						if a_pre_execution and then not last_pre_execution_bounded_functions.has (l_func_with_domain) then
 							last_pre_execution_bounded_functions.force_last (l_func_with_domain)
 						end
@@ -625,7 +629,9 @@ feature{NONE} -- Implementation
 				l_context,
 				last_test_case_info.is_feature_under_test_creation)
 			l_transition.set_uuid (last_test_case_info.uuid)
-
+			if last_pre_execution_evaluations = Void then
+				create last_pre_execution_evaluations.make (0, class_, feature_)
+			end
 			l_transition.set_preconditions (last_pre_execution_evaluations)
 			l_transition.set_postconditions (last_post_execution_evaluations)
 

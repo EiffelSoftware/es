@@ -145,7 +145,7 @@ feature -- Class/feature related
 		do
 			l_count := a_feature.argument_count
 			create Result.make (l_count)
-			Result.set_key_equality_tester (case_insensitive_string_equality_tester)
+			Result.set_key_equality_tester (string_equality_tester)
 
 			if l_count > 0 then
 				from
@@ -175,6 +175,7 @@ feature -- Class/feature related
 			-- The result is inversed `operands_with_feature'.
 		local
 			l_operand_count: INTEGER
+			l_arg_cursor: like arguments_of_feature.new_cursor
 		do
 			l_operand_count := 1 + a_feature.argument_count
 			if not a_feature.type.is_void then
@@ -184,7 +185,15 @@ feature -- Class/feature related
 			Result.set_key_equality_tester (string_equality_tester)
 
 			Result.force_last (0, ti_current)
-			arguments_of_feature (a_feature).do_all_with_key (agent Result.force_last)
+			from
+				l_arg_cursor := arguments_of_feature (a_feature).new_cursor
+				l_arg_cursor.start
+			until
+				l_arg_cursor.after
+			loop
+				Result.force_last (l_arg_cursor.item, l_arg_cursor.key)
+				l_arg_cursor.forth
+			end
 
 			if a_feature.has_return_value then
 				Result.force_last (l_operand_count - 1, ti_result)
@@ -198,14 +207,19 @@ feature -- Class/feature related
 			-- The result is inversed `operands_of_feature'.
 		local
 			l_operands: like operands_of_feature
+			l_cursor: like operands_of_feature.new_cursor
 		do
 			l_operands := operands_of_feature (a_feature)
 			create Result.make (l_operands.count)
-			l_operands.do_all_with_key (
-				agent (a_pos: INTEGER; a_name: STRING; a_tbl: DS_HASH_TABLE [STRING, INTEGER])
-					do
-						a_tbl.force_last (a_name, a_pos)
-					end (?, ?, Result))
+			from
+				l_cursor := l_operands.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.force_last (l_cursor.key, l_cursor.item)
+				l_cursor.forth
+			end
 		end
 
 	operand_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, INTEGER]

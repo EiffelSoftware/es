@@ -30,6 +30,9 @@ feature{NONE} -- Initialization
 
 	make (a_expr: like expression; a_value: like value)
 			-- Initialize Current.
+		require
+			a_expr_attached: a_expr /= Void
+			a_value_attached: a_value /= Void
 		do
 			set_state_item (a_expr)
 			set_value (a_value)

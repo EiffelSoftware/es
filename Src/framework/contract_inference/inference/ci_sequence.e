@@ -28,6 +28,11 @@ inherit
 			out
 		end
 
+	EPA_STRING_UTILITY
+		undefine
+			out
+		end
+
 create
 	make,
 	make_from_function
@@ -178,6 +183,8 @@ feature -- Status report
 				i := i + 1
 			end
 			Result.append (once "] @ ")
+			Result.append (curly_brace_surrounded_integer (signature.target_variable_index))
+			Result.append_character ('.')
 			Result.append (function_name)
 		end
 

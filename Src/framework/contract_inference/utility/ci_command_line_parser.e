@@ -60,6 +60,7 @@ feature -- Basic operations
 			l_linear_flag: AP_STRING_OPTION
 			l_simple_equality_flag: AP_STRING_OPTION
 			l_dummy_flag: AP_STRING_OPTION
+			l_verbose_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -186,6 +187,10 @@ feature -- Basic operations
 			l_dummy_flag.set_description ("Should dummy properties be inferred?%NFormat: --dummy-property [on|off].%NDefault: off.")
 			l_parser.options.force_last (l_dummy_flag)
 
+			create l_verbose_option.make_with_long_form ("verbose")
+			l_verbose_option.set_description ("Set verbose level.%NFormat: --verbose [info|fine].%N%"info%" will provide basic information. %"fine%" will produce detailed information, suitable for debugging.%NDefault: info. ")
+			l_parser.options.force_last (l_verbose_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -310,10 +315,29 @@ feature -- Basic operations
 				setup_dummy_property (config, Void)
 			end
 
+			if l_verbose_option.was_found then
+				setup_verbose_level (config, l_verbose_option.parameter)
+			else
+				setup_verbose_level (config, Void)
+			end
+
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation
+
+	setup_verbose_level (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup verbose level.
+		do
+			a_config.set_verbose_level ({EPA_LOG_MANAGER}.info_level)
+			if a_parameter /= Void then
+				if a_parameter.is_case_insensitive_equal ("info") then
+					a_config.set_verbose_level ({EPA_LOG_MANAGER}.info_level)
+				elseif a_parameter.is_case_insensitive_equal ("fine") then
+					a_config.set_verbose_level ({EPA_LOG_MANAGER}.fine_level)
+				end
+			end
+		end
 
 	setup_dummy_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup if dummy properties are to be inferred.

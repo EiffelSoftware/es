@@ -232,6 +232,7 @@ feature{NONE} -- Implementation
 			l_actual_result: EPA_FUNCTION
 			l_actual_arg: EPA_FUNCTION
 			l_maped_values: DS_HASH_SET [EPA_FUNCTION_ARGUMENT_VALUE_MAP]
+			l_var_expr: EPA_AST_EXPRESSION
 		do
 			create Result.make
 
@@ -326,11 +327,11 @@ feature{NONE} -- Implementation
 						-- Create function argument for argument.
 					l_actual_args.force_last (
 						create {EPA_FUNCTION}.make_from_expression (
-							create {EPA_AST_EXPRESSION}.make_with_text (
+							create {EPA_AST_EXPRESSION}.make_with_text_and_context (
 								context.class_,
 								context.feature_,
 								l_argument_variable,
-								context.class_)))
+								context.class_, context.feature_context)))
 				else
 					create l_argument_types.make (1, 1)
 					l_argument_types.put (l_target_type, 1)

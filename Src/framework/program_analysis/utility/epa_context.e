@@ -95,10 +95,10 @@ feature{NONE} -- Initialization
 			-- `a_add_locals' indicates if locals in `a_feature' should be added as variables into the resulting context.
 		local
 			l_context: ETR_CLASS_CONTEXT
-			l_operands: like operand_name_types_with_feature
 			i: INTEGER
 			l_upper: INTEGER
 			l_tvar: ETR_TYPED_VAR
+			l_opd_cursor: like operand_name_types_with_feature.new_cursor
 		do
 			class_ := a_class
 			feature_ := a_feature
@@ -110,8 +110,15 @@ feature{NONE} -- Initialization
 			variables.compare_objects
 
 			if a_add_operands then
-				l_operands := operand_name_types_with_feature (a_feature, a_class)
-				l_operands.do_all_with_key (agent variables.put)
+				from
+					l_opd_cursor := operand_name_types_with_feature (a_feature, a_class).new_cursor
+					l_opd_cursor.start
+				until
+					l_opd_cursor.after
+				loop
+					variables.put (l_opd_cursor.item, l_opd_cursor.key)
+					l_opd_cursor.forth
+				end
 			end
 
 			if a_add_locals and then feature_context.has_locals then

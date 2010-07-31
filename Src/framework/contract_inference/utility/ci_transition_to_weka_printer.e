@@ -72,6 +72,7 @@ feature -- Access
 			l_uuid_str: STRING
 			l_value_text: STRING
 			l_trimmed_relation: WEKA_ARFF_RELATION
+			l_attr_cur: like attributes_for_changes.new_cursor
 		do
 			l_transition_changes := transition_changes
 
@@ -87,7 +88,15 @@ feature -- Access
 			if is_absolute_change_included or is_relative_change_included then
 				calculate_changes (l_pres, l_posts)
 				attributes_for_changes.keys.do_all (agent l_attrs.extend)
-				attributes_for_changes.do_all_with_key (agent l_posts.force)
+				from
+					l_attr_cur := attributes_for_changes.new_cursor
+					l_attr_cur.start
+				until
+					l_attr_cur.after
+				loop
+					l_posts.force (l_attr_cur.item, l_attr_cur.key)
+					l_attr_cur.forth
+				end
 			end
 
 			create l_weka_attrs.make (100)

@@ -35,7 +35,8 @@ create
 	make_with_text,
 	make_with_text_and_type,
 	make_with_type,
-	make_with_feature
+	make_with_feature,
+	make_with_text_and_context
 
 feature{NONE} -- Initialization
 
@@ -52,6 +53,13 @@ feature{NONE} -- Initialization
 			else
 				check should_not_happen: False end
 			end
+		end
+
+	make_with_text_and_context (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_context: like context)
+			-- Initialize Current.
+		do
+			context_internal := a_context
+			make_with_text (a_class, a_feature, a_text, a_written_class)
 		end
 
 	make_with_text_and_type (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_type: like type)
@@ -291,13 +299,19 @@ feature{NONE} -- Implementation
 			l_class_ctxt: ETR_CLASS_CONTEXT
 			l_feature_ctxt: ETR_FEATURE_CONTEXT
 		do
-			if attached {FEATURE_I} feature_ as l_feat then
-				create l_feature_ctxt.make (feature_, Void)
-				Result := l_feature_ctxt
-			else
-				create l_class_ctxt.make (class_)
-				Result := l_class_ctxt
+			if context_internal = Void then
+				if attached {FEATURE_I} feature_ as l_feat then
+					create l_feature_ctxt.make (feature_, Void)
+					context_internal := l_feature_ctxt
+				else
+					create l_class_ctxt.make (class_)
+					context_internal := l_class_ctxt
+				end
 			end
+			Result := context_internal
 		end
+
+	context_internal: detachable like context
+			-- Cache for `context'
 
 end

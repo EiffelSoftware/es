@@ -38,7 +38,7 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
---			create l_loader.make ("D:\jasonw\contrace-based-analysis\contract_inference\project\EIFGENs\project\Contract_inference\data\LINKED_LIST__remove_left.arff")
+--			create l_loader.make ("D:\jasonw\contrace-based-analysis\contract_inference\project\EIFGENs\project\Contract_inference\data\LINKED_LIST__merge_left.arff2")
 --			l_loader.parse_relation
 --			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
@@ -167,6 +167,7 @@ feature{NONE} -- Implementation
 						end
 						l_property_body.append (l_name)
 					end
+					i := i + 1
 				end
 				create l_property.make_with_text_and_type (class_under_test, feature_under_test, l_property_body, class_under_test, boolean_type)
 				last_postconditions.force_last (l_property)
@@ -262,30 +263,6 @@ feature{NONE} -- Implementation
 					l_cursor.forth
 				end
 			end
-		end
-
-feature{NONE} -- Implementation
-
-	build_linear_regressions
-			-- Build linear regression.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
-		do
-				-- Iterate through all dependent attribute,
-				-- for each attribute, try to build a linear regression.
-			from
-				l_cursor := dependent_attributes.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_cursor.forth
-			end
-		end
-
-	build_linear_regression (a_dependent_attribute: WEKA_ARFF_ATTRIBUTE; a_regressor_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE])
-		do
-
 		end
 
 feature{NONE} -- Logging

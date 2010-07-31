@@ -272,15 +272,12 @@ feature{NONE} -- Implementation
 	variable_names: DS_HASH_SET [STRING]
 			-- Name of variables in `variables'
 
-	static_type_table: DS_HASH_TABLE [TYPE_A, STRING]
-			-- Table for static type of variables defined in `context'
-			-- Key is the variable name, value is the static type of that variable.
-			-- For operands in `feature_', the static types are from the feature definition.
-			-- For other variables in `context', their static type is the declared type.
-
-	operand_static_type_table: DS_HASH_TABLE [TYPE_A, STRING]
+	operand_static_type_table: DS_HASH_TABLE [TYPE_A, INTEGER]
 			-- Table of static types for operands of `feature_'
 			-- Key is operand name, value is the static type of that operand.
+
+	operand_name_table: HASH_TABLE [STRING, INTEGER]
+			-- Table from 0-based operand index to the name of that operand
 
 	variables: HASH_TABLE [TYPE_A, STRING]
 			-- Table of variables in `context'
@@ -388,42 +385,43 @@ feature{NONE} -- Implementation
 				loop
 					l_operand_name := l_operand_cur.item
 					l_operand_type := variable_type_table.item (l_operand_name)
---					l_operand_type := resolved_type_in_context (l_operand_type, l_context_class)
-					l_operand_class := l_operand_type.associated_class
+					if not l_operand_type.is_basic then
+						l_operand_class := l_operand_type.associated_class
 
-						-- 2. For each operand, get all queries with one argument.
-					l_features := queries_with_one_argument (l_operand_class)
+							-- 2. For each operand, get all queries with one argument.
+						l_features := queries_with_one_argument (l_operand_class)
 
-					if not l_features.is_empty then
-						from
-							l_features.start
-						until
-							l_features.after
-						loop
-								-- 3. For each such query, iterate through all functions in `variable_functions', select those
-								--    whose type conforms to the type of that query,
-							l_feature := l_features.item_for_iteration
-							fixme ("We don't handle is_equal for the moment because between any two given variables, because there are too many cases. 9.5.2010 Jasonw")
-							if is_single_argument_query_valid (l_feature, l_operand_type) then
-								l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
+						if not l_features.is_empty then
+							from
+								l_features.start
+							until
+								l_features.after
+							loop
+									-- 3. For each such query, iterate through all functions in `variable_functions', select those
+									--    whose type conforms to the type of that query,
+								l_feature := l_features.item_for_iteration
+								fixme ("We don't handle is_equal for the moment because between any two given variables, because there are too many cases. 9.5.2010 Jasonw")
+								if is_single_argument_query_valid (l_feature, l_operand_type) then
+									l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
 
-									-- 4. Compose the query and the selected function in `quasi_constant_functions'.
-								if not l_funcs.is_empty then
-									l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context, l_operand_type)
-									from
-										l_funcs.start
-									until
-										l_funcs.after
-									loop
-										l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
-										l_composed_functions.force_last (l_composed_func)
-										l_quasi_constant_functions.force_last (l_composed_func)
+										-- 4. Compose the query and the selected function in `quasi_constant_functions'.
+									if not l_funcs.is_empty then
+										l_outer_func := new_single_argument_function (l_operand_class, l_feature, l_operand_name, context, l_operand_type)
+										from
+											l_funcs.start
+										until
+											l_funcs.after
+										loop
+											l_composed_func := l_outer_func.partially_evalauted (l_funcs.item_for_iteration, 1)
+											l_composed_functions.force_last (l_composed_func)
+											l_quasi_constant_functions.force_last (l_composed_func)
 
-										l_funcs.forth
+											l_funcs.forth
+										end
 									end
 								end
+								l_features.forth
 							end
-							l_features.forth
 						end
 					end
 					l_operand_cur.forth
@@ -467,7 +465,7 @@ feature{NONE} -- Implementation
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
 			l_function: EPA_FUNCTION
-			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, STRING]
+			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
 			l_class: CLASS_C
 			l_feat_tbl: FEATURE_TABLE
 			l_tbl_cursor: CURSOR
@@ -516,11 +514,13 @@ feature{NONE} -- Implementation
 									l_argument_domains.put (l_range, 1)
 									l_result_type := l_feat.type.actual_type.instantiation_in (l_type, l_class.class_id)
 									create l_body.make (32)
-									l_body.append (l_cursor.key)
+									l_body.append (operand_name_table.item (l_cursor.key))
 									l_body.append_character ('.')
 									l_body.append (l_feat.feature_name)
 									l_body.append (once " ({1})")
 									create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
+										-- Put the 0-based operand index into the data field of `l_function'.
+									l_function.set_data (create {CELL [INTEGER]}.put (l_cursor.key))
 									l_quasi_functions.force_last (l_function)
 								end
 							end
@@ -563,7 +563,6 @@ feature{NONE} -- Implementation
 			l_opernd_types: like operand_types_with_feature
 			l_type: TYPE_A
 			l_variables: HASH_TABLE [TYPE_A, STRING]
-			l_static_type_table: like static_type_table
 			l_operand_static_type_table: like operand_static_type_table
 			l_cursor: CURSOR
 			l_operand_name: STRING
@@ -572,16 +571,15 @@ feature{NONE} -- Implementation
 			l_variable_names: like variable_names
 			l_context_type: like context_type
 			l_context_type_class: CLASS_C
+			l_opd_index: INTEGER
 		do
 			l_context_type := context_type
 			l_context_type_class := l_context_type.associated_class
-			create static_type_table.make (variables.count)
-			l_static_type_table := static_type_table
-			l_static_type_table.set_key_equality_tester (string_equality_tester)
 
 			create operand_static_type_table.make (variables.count)
 			l_operand_static_type_table := operand_static_type_table
-			l_operand_static_type_table.set_key_equality_tester (string_equality_tester)
+
+			create operand_name_table.make (variables.count)
 
 			create variable_type_table.make (variables.count)
 			l_variable_type_table := variable_type_table
@@ -595,10 +593,12 @@ feature{NONE} -- Implementation
 				until
 					l_opernd_types.after
 				loop
-					l_operand_name := operand_map.item (l_opernd_types.key_for_iteration)
+					l_opd_index := l_opernd_types.key_for_iteration
+					l_operand_name := operand_map.item (l_opd_index)
 					l_type := l_opernd_types.item_for_iteration
-					l_static_type_table.force_last (l_type, l_operand_name)
-					l_operand_static_type_table.force_last (l_type, l_operand_name)
+					operand_name_table.put (l_operand_name, l_opd_index)
+
+					l_operand_static_type_table.force_last (l_type, l_opd_index)
 					if l_opernd_types.key_for_iteration = 0 then
 							-- Dynamic type for feature target.
 						l_variable_type_table.force_last (variables.item (l_operand_name), l_operand_name)
@@ -624,8 +624,7 @@ feature{NONE} -- Implementation
 				l_var_name := l_variables.key_for_iteration
 				l_variable_names.force_last (l_var_name)
 				l_type := l_variables.item_for_iteration
-				if not l_static_type_table.has (l_var_name) then
-					l_static_type_table.force_last (l_type, l_var_name)
+				if not l_variable_type_table.has (l_var_name) then
 					l_variable_type_table.force_last (l_type, l_var_name)
 				end
 				l_variables.forth
@@ -1080,7 +1079,7 @@ feature{NONE} -- Implementations
 		require
 			a_func1_is_constant: a_func1.is_constant
 			a_func2_is_constant: a_func2.is_constant
-			a_tilda_symbol_valid: a_tilda_symbol ~ ti_tilda or a_tilda_symbol ~ "/~"
+--			a_tilda_symbol_valid: a_tilda_symbol ~ ti_tilda or a_tilda_symbol ~ "/~"
 		local
 			l_body: STRING
 		do

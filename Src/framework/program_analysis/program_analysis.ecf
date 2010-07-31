@@ -3,7 +3,7 @@
 	<target name="program_analysis">
 		<root all_classes="true"/>
 		<option warning="false" is_attached_by_default="false" void_safety="none" syntax="provisional">
-			<assertions/>
+			<assertions precondition="true"/>
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>

@@ -33,13 +33,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target_variable_name: like target_variable_name; a_function_name: like function_name; a_lower_bound: INTEGER; a_upper_bound: INTEGER; a_context: like context; a_lower_bound_expression: STRING; a_upper_bound_expression: STRING)
+	make (a_target_operand_index: INTEGER; a_target_variable_name: like target_variable_name; a_function_name: like function_name; a_lower_bound: INTEGER; a_upper_bound: INTEGER; a_context: like context; a_lower_bound_expression: STRING; a_upper_bound_expression: STRING)
 			-- Initialize Current.
 		require
 			function_valid: is_function_with_single_integer_argument (a_target_variable_name, a_function_name, a_context)
 			range_valid: a_lower_bound <= a_upper_bound + 1
 		do
 			target_variable_name := a_target_variable_name.twin
+			target_operand_index := a_target_operand_index
 			function_name := a_function_name.twin
 			lower_bound := a_lower_bound
 			upper_bound := a_upper_bound
@@ -56,6 +57,9 @@ feature -- Access
 
 	target_variable_name: STRING
 			-- Name of the target varaible of current function
+
+	target_operand_index: INTEGER
+			-- 0-based operand index of the target of current function
 
 	function_name: STRING
 			-- Name of current function

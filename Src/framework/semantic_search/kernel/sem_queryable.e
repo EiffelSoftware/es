@@ -44,15 +44,21 @@ feature -- Access
 			-- Table from variable name to their positions
 		local
 			l_pos: like variable_positions
+			l_cursor: like variable_positions.new_cursor
 		do
 			l_pos := variable_positions
 			create Result.make (l_pos.count)
 			Result.compare_objects
-			variable_positions.do_all_with_key (
-				agent (a_pos: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [INTEGER, STRING])
-					do
-						a_tbl.put (a_pos, a_expr.text)
-					end (?, ?, Result))
+
+			from
+				l_cursor := variable_positions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.put (l_cursor.item, l_cursor.key.text)
+				l_cursor.forth
+			end
 		end
 
 	reversed_variable_position: HASH_TABLE [EPA_EXPRESSION, INTEGER]
@@ -115,15 +121,19 @@ feature -- Access
 			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
 		local
 			l_replacements: HASH_TABLE [STRING, STRING]
+			l_cursor: like variable_positions.new_cursor
 		do
 			create l_replacements.make (variables.count)
 			l_replacements.compare_objects
-			variable_positions.do_all_with_key (
-				agent (a_position: INTEGER; a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING])
-					do
-						a_tbl.put (anonymous_variable_name (a_position), a_expr.text.as_lower)
-					end (?, ?, l_replacements))
-
+			from
+				l_cursor := variable_positions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_replacements.put (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
+				l_cursor.forth
+			end
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
@@ -473,3 +483,4 @@ invariant
 	variable_positions_equality_tester_valid: variable_positions.key_equality_tester = expression_equality_tester
 	variables_in_context: variables.for_all (agent has_variable_in_context)
 end
+

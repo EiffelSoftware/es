@@ -31,7 +31,7 @@ feature -- Status report
 				Result := False
 			else
 				Result :=
-					v.target_variable_name ~ u.target_variable_name and then
+					v.target_operand_index ~ u.target_operand_index and then
 					v.function_name ~ u.function_name
 
 			end

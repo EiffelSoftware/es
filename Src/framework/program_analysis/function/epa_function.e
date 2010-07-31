@@ -267,6 +267,9 @@ feature -- Access
 			end
 		end
 
+	data: detachable ANY
+			-- Arbitrary data that is stored in Current
+
 feature -- Partial evaluation
 
 	partially_evalauted (a_argument: EPA_FUNCTION; a_position: INTEGER): EPA_FUNCTION
@@ -514,6 +517,16 @@ feature -- Status report
 			-- Text
 		do
 			Result := canonical_form
+		end
+
+feature -- Setting
+
+	set_data (a_data: like data)
+			-- Set `data' with `a_data'.
+		do
+			data := a_data
+		ensure
+			data_set: data = a_data
 		end
 
 feature{NONE} -- Implementation

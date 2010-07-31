@@ -41,7 +41,7 @@ feature -- Extract contract expressions
 			Result.append (inherited_invariants (a_class))
 		ensure
 			all_invariants: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_invariant end)
-			count_correct: Result.count = total_invariant_count (a_class)
+--			count_correct: Result.count = total_invariant_count (a_class)
 		end
 
 	invariants (a_class: CLASS_C): LIST[ETR_CONTRACT_EXPRESSION]
@@ -55,7 +55,7 @@ feature -- Extract contract expressions
 			end
 		ensure
 			all_invariants: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_invariant end)
-			count_correct: Result.count = invariant_count (a_class)
+--			count_correct: Result.count = invariant_count (a_class)
 		end
 
 	preconditions (a_feature: FEATURE_I): LIST[ETR_CONTRACT_EXPRESSION]
@@ -107,7 +107,7 @@ feature -- Extract contract expressions
 					end(?, Result))
 		ensure
 			all_invariants: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_invariant end)
-			count_correct: Result.count = inherited_invariant_count (a_class)
+--			count_correct: Result.count = inherited_invariant_count (a_class)
 		end
 
 	inherited_postconditions (a_feature: FEATURE_I): LIST[ETR_CONTRACT_EXPRESSION]
