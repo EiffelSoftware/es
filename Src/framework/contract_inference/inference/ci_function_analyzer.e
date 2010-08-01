@@ -262,7 +262,8 @@ feature{NONE} -- Implementation
 				until
 					l_operands.after
 				loop
-					l_target_type := l_operand_types.item (l_operands.item_for_iteration)
+					l_target_type := l_operand_types.item (l_operands.item_for_iteration).actual_type
+					l_target_type := actual_type_from_formal_type (l_target_type, context_type.associated_class)
 					l_target_type := l_target_type.instantiation_in (context_type, context_type.associated_class.class_id)
 					l_feat := l_target_type.associated_class.feature_of_rout_id_set (l_dyna_feat.rout_id_set)
 					if l_feat /= Void then

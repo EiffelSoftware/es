@@ -24,7 +24,8 @@ inherit
 			process_tagged_as,
 			process_feature_as,
 			process_routine_as,
-			process_inline_agent_creation_as
+			process_inline_agent_creation_as,
+			process_creation_as
 		end
 	REFACTORING_HELPER
 		export
@@ -201,6 +202,13 @@ feature {AST_EIFFEL} -- Roundtrip
 			-- Breakpoint slot at the end of a routine
 			assign_current_slot (l_as)
 			set_current_breakpoint_slot (current_breakpoint_slot + 1)
+		end
+
+	process_creation_as (l_as: CREATION_AS)
+		do
+			assign_current_slot (l_as)
+			set_current_breakpoint_slot (current_breakpoint_slot + 1)
+			process_branch(l_as, << l_as.target, l_as.type, l_as.call >>)
 		end
 
 feature {NONE} -- Implementation

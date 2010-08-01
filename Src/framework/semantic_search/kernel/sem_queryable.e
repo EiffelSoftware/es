@@ -137,6 +137,29 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
+	anonymous_expressions_text (a_expression: EPA_EXPRESSION): DS_HASH_SET [STRING]
+			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
+			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_cursor: like variable_positions.new_cursor
+		do
+			create Result.make (2)
+			Result.set_equality_tester (string_equality_tester)
+			create l_replacements.make (variables.count)
+			l_replacements.compare_objects
+			from
+				l_cursor := variable_positions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_replacements.put (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
+				l_cursor.forth
+			end
+--			Result := expression_rewriter.expression_text (a_expression, l_replacements)
+		end
+
 	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
 			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".

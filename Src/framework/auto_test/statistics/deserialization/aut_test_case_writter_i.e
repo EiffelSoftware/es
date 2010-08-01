@@ -343,7 +343,7 @@ feature{NONE} -- Constants
 	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
 	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
 	tc_operand_table_initializer_template: STRING = "%T%T%TResult.put ($(VAR_INDEX),$(OPERAND_INDEX))"
-
+	
 	tc_class_template: STRING = "[
 class 
 	$(CLASS_NAME)
@@ -365,16 +365,16 @@ $(BODY)
         
 feature -- Test case information
 
-	tci_class_name: STRING = "$(CLASS_NAME)"
+	tci_class_name: STRING do Result := "$(CLASS_NAME)" end
 			-- Name of current class.
 			
-	tci_class_uuid: STRING = "$(UUID)"
+	tci_class_uuid: STRING do Result := "$(UUID)" end
 			-- UUID of current test case.
 
-	tci_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
+	tci_class_under_test: STRING do Result := "$(CLASS_UNDER_TEST)" end
 			-- Name of the class under test.
 
-	tci_feature_under_test: STRING = "$(FEATURE_UNDER_TEST)"
+	tci_feature_under_test: STRING do Result := "$(FEATURE_UNDER_TEST)" end
 			-- Name of the feature under test.
 			
 	tci_is_creation: BOOLEAN = $(IS_CREATION)
@@ -392,14 +392,14 @@ feature -- Test case information
 	tci_breakpoint_index: INTEGER = $(BREAKPOINT_INDEX)
 			-- Index of the breakpoint where the test case fails inside `tci_class_under_test'.`tci_feature_under_test'.
 			
-	tci_assertion_tag: STRING = "$(ASSERTION_TAG)" 
+	tci_assertion_tag: STRING do Result := "$(ASSERTION_TAG)" end
 			-- Tag of the violated assertion, if any.
 			-- Empty string for passing test cases.
 	
-	tci_exception_recipient_class: STRING = "$(EXCEPTION_RECIPIENT_CLASS)" 
+	tci_exception_recipient_class: STRING do Result := "$(EXCEPTION_RECIPIENT_CLASS)" end
 			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
 	
-	tci_exception_recipient: STRING = "$(EXCEPTION_RECIPIENT)" 
+	tci_exception_recipient: STRING do Result := "$(EXCEPTION_RECIPIENT)" end
 			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
 	
     tci_exception_trace: STRING =

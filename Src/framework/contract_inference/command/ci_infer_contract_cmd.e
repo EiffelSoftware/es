@@ -587,7 +587,16 @@ feature{NONE} -- Actions
 			until
 				l_cursor.after
 			loop
-				log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
+					-- Remove contracts containing "~" or "is_inserted". Becuase tilta is not supported. And
+					-- `is_inserted' has a questionable implication, and it should not be public. Including it
+					-- messes up the quality of the result. 1.8.2010 Jason.
+				if
+					l_cursor.item.text.has_substring ("~") or
+					l_cursor.item.text.has_substring ("is_inserted")
+				then
+				else
+					log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
+				end
 				l_cursor.forth
 			end
 
