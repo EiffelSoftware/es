@@ -125,6 +125,7 @@ feature -- Access
 			l_should_include: BOOLEAN
 		do
 			create l_new_map.make (map.count)
+			l_new_map.set_equality_tester (function_argument_value_map_equality_tester)
 			from
 				l_arg_count := function.arity + 1
 				l_cursor := map.new_cursor

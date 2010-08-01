@@ -198,14 +198,25 @@ feature{NONE} -- Implementation
 		local
 			l_func_valuations: EPA_FUNCTION_VALUATIONS
 			l_signature: CI_SINGLE_ARG_FUNCTION_SIGNATURE
+			l_func_target_type: TYPE_A
+			l_operand_type: TYPE_A
 		do
 				-- We are only interested in boolean queries with one argument,
 				-- together with the target, the arity of that function
 				-- should be 2.		
 			if a_function.arity = 2 then
-				l_signature := signature_of_single_argument_function (a_function, a_target_variable_index)
-				if l_signature /= Void then
-					Result := ci_single_arg_function_signature_equality_tester.test (l_signature, a_signature)
+				if attached {SEM_FEATURE_CALL_TRANSITION} a_transition as l_feat_tran then
+					l_operand_type := l_feat_tran.reversed_variable_position.item (a_target_variable_index).type
+					l_operand_type := actual_type_from_formal_type (l_operand_type, l_feat_tran.class_)
+					l_operand_type := l_operand_type.instantiation_in (l_feat_tran.class_.actual_type, l_feat_tran.class_.class_id)
+					l_func_target_type := a_function.argument_type (1)
+
+					if l_operand_type.is_conformant_to (l_feat_tran.class_, l_func_target_type) then
+						l_signature := signature_of_single_argument_function (a_function, a_target_variable_index)
+						if l_signature /= Void then
+							Result := ci_single_arg_function_signature_equality_tester.test (l_signature, a_signature)
+						end
+					end
 				end
 			end
 		end
