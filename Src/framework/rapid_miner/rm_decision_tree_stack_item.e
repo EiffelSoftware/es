@@ -12,18 +12,18 @@ create
 feature -- Access
 
 	node: RM_DECISION_TREE_NODE
-			-- a reference to a node
+			-- A reference to a node
 
 	condition: STRING
-			-- stores the condition
+			-- Stores the condition
 
 	depth: INTEGER
-			-- the depth of `node' in the decision tree.
+			-- The depth of `node' in the decision tree.
 
 feature -- Interface
 
 	set_condition (a_condition: STRING)
-			-- set `condition' to `a_condition'
+			-- Set `condition' to `a_condition'
 		do
 			condition := a_condition
 		ensure

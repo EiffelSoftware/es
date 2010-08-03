@@ -21,6 +21,21 @@ feature {NONE} -- Creation
 
 feature -- Access
 
+	traverse_dfs
+		do
+			io.put_string (name)
+			if not is_leaf then
+				from edges.start until edges.after loop
+					io.put_string (edges.item_for_iteration.condition)
+					io.put_new_line
+					edges.item_for_iteration.node.traverse_dfs
+					edges.forth
+				end
+			else
+				io.put_new_line
+			end
+		end
+
 	name : STRING
 			-- the name of the node.
 

@@ -12,7 +12,8 @@ create
 
 feature{NONE} -- Creation
 
-	make(a_dependent_variable: STRING)
+	make (a_dependent_variable: STRING)
+			-- `a_dependent_variable' the name of the dependent variable.
 		do
 			dependent_variable := a_dependent_variable
 			create regressors.make (10)
@@ -20,7 +21,7 @@ feature{NONE} -- Creation
 
 feature -- Setting
 
-	set_dependent_variable(a_dependent_variable: STRING)
+	set_dependent_variable (a_dependent_variable: STRING)
 			-- Set `dependent_variable' with `a_dependent_variable'.
 		do
 			dependent_variable := a_dependent_variable
@@ -30,7 +31,7 @@ feature -- Setting
 
 feature -- Interface	
 
-	add_regressor(a_name: STRING; a_value: DOUBLE)
+	add_regressor (a_name: STRING; a_value: DOUBLE)
 			-- Adds a regressor to this linear regression formula.
 			-- `a_name' is the name of the regressor and `a_value' is the value of its coefficient.
 		do

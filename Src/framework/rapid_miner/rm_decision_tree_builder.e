@@ -23,8 +23,11 @@ feature -- Create
 	make(a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
 			-- creates a decision tree builder with default decision_tree algorithm and
 			-- 'no_validation'
+		require
+			selected_attributes_not_empty: not a_selected_attributes.is_empty
+			a_label_attribute_valid: a_selected_attributes.has (a_label_name)
 		do
-			init(decision_tree, no_validation, a_arff_file_path, a_selected_attributes, a_label_name)
+			init(algorithm_decision_tree, no_validation, a_arff_file_path, a_selected_attributes, a_label_name)
 		end
 
 	make_with_relation (a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
@@ -36,7 +39,7 @@ feature -- Create
 			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
 			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
 		do
-			init_with_relation (decision_tree, a_relation, a_selected_attributes, a_label_attribute)
+			init_with_relation (algorithm_decision_tree, a_relation, a_selected_attributes, a_label_attribute)
 		end
 
 feature -- Access

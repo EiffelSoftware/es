@@ -102,7 +102,7 @@ feature{NONE} -- Internal data holders
 
 feature{NONE} -- Implementation
 
-	calculate_paths(current_node: RM_DECISION_TREE_NODE)
+	calculate_paths (current_node: RM_DECISION_TREE_NODE)
 			-- Traverses the tree in a DFS manner. When a leaf node is encountered the stack is saved into the paths variable.
 		local
 			l_node: RM_DECISION_TREE_PATH_NODE

@@ -15,7 +15,10 @@ create
 
 feature -- Creation
 
-	make(a_attribute_name: STRING; a_operator_name: STRING; a_value_name: STRING)
+	make (a_attribute_name: STRING; a_operator_name: STRING; a_value_name: STRING)
+			-- `a_attribute name' is the name of the attribute which stands on the left hand side of the operator
+			-- `a_operator_name' holds the operator
+			-- `a_value_name' holds the value in the right hand side of the operator
 		do
 			attribute_name := a_attribute_name
 			operator_name := a_operator_name

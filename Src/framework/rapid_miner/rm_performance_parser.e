@@ -16,14 +16,14 @@ feature -- Interface
 			rm_conts: RM_CONSTANTS
 			l_line: STRING
 		do
-			-- currently we only need the accuracy. if later we need some other performance metrics, they should be parsed here.
+			-- Currently we only need the accuracy. if later we need some other performance metrics, they should be parsed here.
 			create rm_conts
 			create l_file.make_open_read (rm_conts.rm_environment.performance_file_path)
 			if l_file.exists then
-				--first two lines are the dates
+				-- First two lines are the dates
 				l_file.read_line
 				l_file.read_line
-				-- read the accuracy line
+				-- Read the accuracy line
 				l_file.read_line
 				l_line := l_file.last_string
 				if l_line.substring (11, 17) ~ "100.00%%" then

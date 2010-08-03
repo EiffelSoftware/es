@@ -9,24 +9,34 @@ class
 create
 	make
 
-feature -- interface
+feature -- Access
+
+	file_path: STRING
+			-- the path to the arff file we are going to parse
 
 	last_relation: WEKA_ARFF_RELATION
+			-- The last relation parsed by the `parse_relation' command.
 
 	had_errors: BOOLEAN
+			-- Were errors encountered during parsing.
 
-	set_file_path(a_file_path: STRING)
+feature -- Interface
+
+	set_file_path (a_file_path: STRING)
+			-- `a_file_path' is the absolute file path to the arff file
 		do
 			file_path := a_file_path
+		ensure
+			file_path = a_file_path
 		end
 
 	parse_relation
-			-- parses the arff file to generation a WEKA_ARFF_RELATION
+			-- Parses the arff file to generate a WEKA_ARFF_RELATION
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_line: STRING
 			l_has_data_passed: BOOLEAN
-			l_data: ARRAYED_LIST[STRING]
+			l_data: ARRAYED_LIST [STRING]
 		do
 			had_errors := False
 			create_relation
@@ -50,22 +60,21 @@ feature -- interface
 				end
 			end
 		end
+
 feature{NONE} -- creation
 
 	make(a_file_path: STRING)
+			-- `a_file_path' is the absolute file path to the arff file
 		do
 			file_path := a_file_path
 		end
 
-feature{NONE} -- implementation
+feature{NONE} -- Implementation
 
-	file_path: STRING
-		-- the path to the arff file we are going to parse
-
-	parsed_data(a_line:STRING; a_count:INTEGER):ARRAYED_LIST[STRING]
-			-- parses the data lines from the file and puts them in the inherited array list
+	parsed_data (a_line: STRING; a_count: INTEGER): ARRAYED_LIST [STRING]
+			-- Parses the data lines from the arff file and puts them in the inherited array list.
 		local
-			l_values: LIST[STRING]
+			l_values: LIST [STRING]
 			l_value: STRING
 		do
 			l_values := a_line.split (',')
@@ -75,11 +84,10 @@ feature{NONE} -- implementation
 				Result.extend (l_values.item_for_iteration)
 				l_values.forth
 			end
-
 		end
 
 	create_relation
-			-- creates the WEKA_ARFF_RELATION, only parses the name, attributes and comment at that point
+			-- Creates the WEKA_ARFF_RELATION, only parses the name, attributes and comment at that point
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_line: STRING
@@ -114,14 +122,14 @@ feature{NONE} -- implementation
 				end
 			end
 
-			create last_relation.make(l_attributes)
+			create last_relation.make (l_attributes)
 
 			if not l_name.is_empty then
-				last_relation.set_name(l_name)
+				last_relation.set_name (l_name)
 			end
 
 			if not l_comment.is_empty then
-				last_relation.set_comment(l_comment)
+				last_relation.set_comment (l_comment)
 			end
 		end
 end

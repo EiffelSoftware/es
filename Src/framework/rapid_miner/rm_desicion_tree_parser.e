@@ -72,7 +72,7 @@ feature -- interface
 
 feature{RM_DECISION_TREE_PARSER}
 
-	handle_trivial_tree(a_line: STRING)
+	handle_trivial_tree (a_line: STRING)
 			-- This will handle the case of a trivial tree. RM prints the trivial node of the tree next to
 			-- the date on the second line in the model file. It is assumed that if there is a leaf on that line
 			-- then there are no more node down the file.
@@ -81,7 +81,7 @@ feature{RM_DECISION_TREE_PARSER}
 		do
 			if has_leaf (a_line) then -- we have a trivial tree
 				create l_node.make (extract_leaf_name (a_line), True)
-				l_node.parse_samples(a_line)
+				l_node.parse_samples (a_line)
 				tree_root := l_node
 			end
 		end
@@ -99,19 +99,19 @@ feature{RM_DECISION_TREE_PARSER}
 			l_line := clean_line (a_line)
 			if has_leaf(l_line) then
 				create l_leaf.make (extract_leaf_name (l_line), True)
-				l_leaf.parse_samples(l_line)
-				l_line := clear_leaf_details(l_line)
+				l_leaf.parse_samples (l_line)
+				l_line := clear_leaf_details (l_line)
 			end
 			l_name := extract_node_name (l_line)
 			l_condition := extract_condition (l_line)
-			handle_add_to_stack(l_name, l_depth, l_condition)
+			handle_add_to_stack (l_name, l_depth, l_condition)
 			if l_leaf /= Void then
 				stack.item.node.add_child (l_leaf, stack.item.condition)
 				l_leaf := Void
 			end
 		end
 
-	handle_add_to_stack(a_name: STRING; a_depth: INTEGER; a_condition: STRING)
+	handle_add_to_stack (a_name: STRING; a_depth: INTEGER; a_condition: STRING)
 		-- adds another item in the stack making sure that the new element is added
 		-- only when the top element of the stack has smaller depth. If depth is equal
 		-- just the condition is changed
@@ -128,7 +128,7 @@ feature{RM_DECISION_TREE_PARSER}
 			end
 		end
 
-	clear_leaf_details(a_line:STRING):STRING
+	clear_leaf_details (a_line:STRING): STRING
 			-- will delete everything after the : before the leaf value including it
 		require
 			has_leaf (a_line)
@@ -152,7 +152,7 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := a_line.substring (l_index_start, l_index_end)
 		end
 
-	add_to_stack(a_name: STRING; a_depth: INTEGER; a_condition: STRING)
+	add_to_stack (a_name: STRING; a_depth: INTEGER; a_condition: STRING)
 		-- creates a RM_DT_STACK_ITEM and pushes it on top of the stack
 		local
 			l_stack_item: RM_DECISION_TREE_STACK_ITEM
@@ -160,7 +160,7 @@ feature{RM_DECISION_TREE_PARSER}
 		do
 			create l_node.make (a_name, false)
 			if not stack.is_empty then
-				stack.item.node.add_child(l_node, stack.item.condition)
+				stack.item.node.add_child (l_node, stack.item.condition)
 			end
 			create l_stack_item.make (l_node, a_condition, a_depth)
 			stack.put (l_stack_item)
@@ -168,7 +168,7 @@ feature{RM_DECISION_TREE_PARSER}
 			stack.count = old stack.count + 1
 		end
 
-	clean_line(a_line: STRING): STRING
+	clean_line (a_line: STRING): STRING
 		-- removes the trailing '|' from the beginning of the line
 		do
 			if extract_depth (a_line) > 0 then
@@ -185,7 +185,7 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := (Result + 3)//4
 		end
 
-	extract_node_name(a_line: STRING): STRING
+	extract_node_name (a_line: STRING): STRING
 			-- extracts the node name from a rapidminer modelfile line
 		local
 			l_index: INTEGER
@@ -194,16 +194,16 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := a_line.substring (1, l_index)
 		end
 
-	extract_condition(a_line: STRING): STRING
+	extract_condition (a_line: STRING): STRING
 			-- extracts the condition from tha rapidminder model file line
 		local
 			l_index_start: INTEGER
 		do
-			l_index_start := find_operator_index(a_line) + 1
+			l_index_start := find_operator_index (a_line) + 1
 			Result := a_line.substring (l_index_start, a_line.count)
 		end
 
-	find_operator_index(a_line: STRING): INTEGER
+	find_operator_index (a_line: STRING): INTEGER
 			-- returns the index of the operator in this line
 		local
 			l_index: INTEGER
@@ -218,7 +218,7 @@ feature{RM_DECISION_TREE_PARSER}
 			Result := l_index
 		end
 
-	has_leaf(a_line: STRING): BOOLEAN
+	has_leaf (a_line: STRING): BOOLEAN
 		-- tells if a line from the model file produced by RM has a leaf node in it.
 		do
 			if a_line.ends_with ("}") and a_line.has ('{')then

@@ -11,7 +11,7 @@ create
 
 feature{NONE} -- Create
 
-	make(a_model_file_path: STRING)
+	make (a_model_file_path: STRING)
 			-- `a_model_file_path' the path to the model file.
 		do
 			model_file_path := a_model_file_path
@@ -20,7 +20,7 @@ feature{NONE} -- Create
 feature -- Interface
 
 	parse_linear_regression
-			-- parses the linear regression from the file located at `model_file_path'
+			-- Parses the linear regression from the file located at `model_file_path'
 		local
 			l_model_file: PLAIN_TEXT_FILE
 		do
@@ -54,9 +54,9 @@ feature{NONE} -- Implementation
 			-- Parse a line `a_text' from a linear regression model file line. Put the
 			-- parsed regressors in the `last_linear_regression'
 		local
-			l_list: LIST [STRING]
 			l_value: DOUBLE
-			l_line: STRING
+			l_regressor_name, l_string_value, l_line: STRING
+			l_index: INTEGER
 		do
 			l_line := a_text.twin
 			if not l_line.is_empty then
@@ -67,14 +67,12 @@ feature{NONE} -- Implementation
 					l_line.prepend_character ('-')
 				end
 				if l_line.has ('*') then
-					l_list := l_line.split ('*')
-					l_list[1].left_adjust
-					l_list[1].right_adjust
-					l_list[2].left_adjust
-					l_list[2].right_adjust
-					if l_list[1].is_double then
-						l_value := l_list[1].to_double
-						last_linear_regression.add_regressor (l_list[2], l_value)
+					l_index := l_line.index_of ('*', 1)
+					l_regressor_name := l_line.substring (l_index + 2, l_line.count)
+					l_string_value := l_line.substring (1, l_index - 2)
+					if l_string_value.is_double then
+						l_value := l_string_value.to_double
+						last_linear_regression.add_regressor (l_regressor_name, l_value)
 					end
 				else
 					if l_line.is_double then
@@ -85,7 +83,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	cleaned_line(a_line: STRING): STRING
+	cleaned_line (a_line: STRING): STRING
 			-- Currently rapidminer prints the first line of the linear regression at the same line
 			-- where it prints the date. The date is irrelevant and must be cleaned. This feature
 			-- takes care of that - deleted the date in the beginning and returns the cleaned line.

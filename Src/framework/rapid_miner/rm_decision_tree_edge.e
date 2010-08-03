@@ -13,6 +13,7 @@ create
 feature {NONE} -- creation
 
 	make (a_condition: STRING; a_node: RM_DECISION_TREE_NODE)
+			-- `a_condition' is the condition that leads to `a_node'
 		do
 			if a_condition.at (1).code = 226 then
 				operator := "<="
