@@ -389,7 +389,7 @@ feature{NONE} -- Implementation
 						l_final_upper := l_constant_uppers.first
 						l_final_upper_expr := l_constant_upper_map.item (l_final_upper)
 					elseif l_constant_uppers.is_empty then
-						l_final_upper := l_resolved_lowers.first
+						l_final_upper := l_resolved_uppers.first
 						l_final_upper_expr := l_resolved_upper_map.item (l_final_upper)
 					else
 						if l_resolved_uppers.min < l_constant_uppers.max then
@@ -539,11 +539,6 @@ feature{NONE} -- Actions
 			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
 			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
 		do
-			setup_data
-
-				-- Infer contracts using all registered inferrers.
-			inferrers.do_all (agent {CI_INFERRER}.infer (data))
-
 				-- Setup results.
 			create l_preconditions.make (100)
 			l_preconditions.set_equality_tester (expression_equality_tester)
@@ -553,21 +548,27 @@ feature{NONE} -- Actions
 			create last_sequence_based_contracts.make (10)
 			last_sequence_based_contracts.set_equality_tester (string_equality_tester)
 
-				-- Iterate through all inferrers to collect inferred contracts.
-			across inferrers as l_inferrers loop
-				l_preconditions.append_last (l_inferrers.item.last_preconditions)
-				l_postconditions.append_last (l_inferrers.item.last_postconditions)
-				if attached {CI_SEQUENCE_PROPERTY_INFERRER} l_inferrers.item as l_seq_inferrer then
-					if l_seq_inferrer.properties.has (False) then
-						last_sequence_based_contracts.append (l_seq_inferrer.properties.item (False))
-					end
-				end
-			end
-
 			create last_contracts.make (2)
 			last_contracts.put (l_preconditions, True)
 			last_contracts.put (l_postconditions, False)
 
+			if not transition_data.is_empty then
+				setup_data
+
+					-- Infer contracts using all registered inferrers.
+				inferrers.do_all (agent {CI_INFERRER}.infer (data))
+
+					-- Iterate through all inferrers to collect inferred contracts.
+				across inferrers as l_inferrers loop
+					l_preconditions.append_last (l_inferrers.item.last_preconditions)
+					l_postconditions.append_last (l_inferrers.item.last_postconditions)
+					if attached {CI_SEQUENCE_PROPERTY_INFERRER} l_inferrers.item as l_seq_inferrer then
+						if l_seq_inferrer.properties.has (False) then
+							last_sequence_based_contracts.append (l_seq_inferrer.properties.item (False))
+						end
+					end
+				end
+			end
 			log_final_contracts
 		end
 
@@ -591,7 +592,7 @@ feature{NONE} -- Actions
 					-- `is_inserted' has a questionable implication, and it should not be public. Including it
 					-- messes up the quality of the result. 1.8.2010 Jason.
 				if
-					l_cursor.item.text.has_substring ("~") or
+--					l_cursor.item.text.has_substring ("~") or
 					l_cursor.item.text.has_substring ("is_inserted")
 				then
 				else

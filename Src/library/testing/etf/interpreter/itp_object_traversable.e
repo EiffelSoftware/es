@@ -61,7 +61,7 @@ feature{NONE} -- Implementation
 					-- 3 - Normal objects
 				l_dtype := l_int.dynamic_type (l_object)
 				if l_int.is_special_type (l_dtype) then
-					if l_int.is_special_any_type (l_dtype) then
+--					if l_int.is_special_any_type (l_dtype) then
 						if attached {SPECIAL [detachable ANY]} l_object as l_sp then
 							from
 								i := 0
@@ -88,10 +88,11 @@ feature{NONE} -- Implementation
 										attached {POINTER} l_field
 									then
 											-- We report that a field of primitive type is visited.
-										l_field := l_int.field (i, l_object)
-										if l_field /= Void and then l_action /= Void then
-											l_action.call ([l_field])
-										end
+										l_action.call ([l_field])
+--										l_field := l_int.field (i, l_object)
+--										if l_field /= Void and then l_action /= Void then
+--											l_action.call ([l_field])
+--										end
 									elseif not l_int.is_marked (l_field) then
 										l_int.mark (l_field)
 										l_objects_to_visit.put (l_field)
@@ -101,7 +102,9 @@ feature{NONE} -- Implementation
 								i := i + 1
 							end
 						end
-					end
+--					else
+--						
+--					end
 				elseif l_int.is_tuple (l_object) then
 					if attached {TUPLE} l_object as l_tuple_obj then
 						from

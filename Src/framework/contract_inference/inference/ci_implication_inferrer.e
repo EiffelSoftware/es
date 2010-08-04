@@ -101,11 +101,14 @@ feature{NONE} -- Implementation
 			l_cons_attrs: like consequent_attributes
 			l_bool_pre_attrs: like boolean_premise_attributes
 			l_pre_attrs: like premise_attributes
+			l_value_set: DS_HASH_TABLE [DS_HASH_SET [STRING_8], WEKA_ARFF_ATTRIBUTE]
+			l_values: DS_HASH_SET [STRING_8]
 		do
 			l_relation := arff_relation.nominalized_cloned_object
 			l_bool_pre_attrs := adapted_attributes (boolean_premise_attributes, l_relation)
 			l_pre_attrs := adapted_attributes (premise_attributes, l_relation)
 			l_cons_attrs := adapted_attributes (consequent_attributes, l_relation)
+			l_value_set := l_relation.value_set
 
 			from
 				l_cursor := consequent_attributes.new_cursor
@@ -113,27 +116,35 @@ feature{NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				create l_attrs1.make (l_bool_pre_attrs.count + 1)
-				l_attrs1.set_equality_tester (weka_arff_attribute_equality_tester)
-				l_attrs1.append (l_bool_pre_attrs)
-				l_attrs1.force_last (l_cursor.item)
+				l_values := l_value_set.item (l_cursor.item)
+				if l_values /= Void then
+					if l_values.has ({WEKA_ARFF_ATTRIBUTE}.missing_value) then
+						l_values.remove ({WEKA_ARFF_ATTRIBUTE}.missing_value)
+					end
+					if l_values.count > 1 then
+						create l_attrs1.make (l_bool_pre_attrs.count + 1)
+						l_attrs1.set_equality_tester (weka_arff_attribute_equality_tester)
+						l_attrs1.append (l_bool_pre_attrs)
+						l_attrs1.force_last (l_cursor.item)
 
-				create l_attrs2.make (l_pre_attrs.count + 1)
-				l_attrs2.set_equality_tester (weka_arff_attribute_equality_tester)
-				l_attrs2.append (l_pre_attrs)
-				l_attrs2.force_last (l_cursor.item)
+						create l_attrs2.make (l_pre_attrs.count + 1)
+						l_attrs2.set_equality_tester (weka_arff_attribute_equality_tester)
+						l_attrs2.append (l_pre_attrs)
+						l_attrs2.force_last (l_cursor.item)
 
-					-- First try to build a decision with only boolean premises.
-					-- If no tree is accurate, build trees with all premise attributes.
-				l_done := False
-				across <<l_attrs1, l_attrs2>> as l_attrs until l_done loop
-					create l_tree_builder.make_with_relation (l_relation, l_attrs.item, l_cursor.item)
-					l_tree_builder.build
-					l_tree := l_tree_builder.last_tree
-					l_done := l_tree.is_accurate
-				end
-				if l_done then
-					generate_implications (l_tree)
+							-- First try to build a decision with only boolean premises.
+							-- If no tree is accurate, build trees with all premise attributes.
+						l_done := False
+						across <<l_attrs1, l_attrs2>> as l_attrs until l_done loop
+							create l_tree_builder.make_with_relation (l_relation, l_attrs.item, l_cursor.item)
+							l_tree_builder.build
+							l_tree := l_tree_builder.last_tree
+							l_done := l_tree.is_accurate
+						end
+						if l_done then
+							generate_implications (l_tree)
+						end
+					end
 				end
 				l_cursor.forth
 			end

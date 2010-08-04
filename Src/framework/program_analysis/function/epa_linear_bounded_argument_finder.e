@@ -59,7 +59,7 @@ feature -- Basic operations
 		local
 			l_done: BOOLEAN
 			l_expr: EPA_AST_EXPRESSION
-			l_preconditions: LIST [EPA_EXPRESSION]
+			l_preconditions, l_postconditions: LIST [EPA_EXPRESSION]
 			l_pre_feat: LIST [TUPLE [expr: EPA_EXPRESSION; feat: FEATURE_I]]
 		do
 			is_bound_found := False
@@ -89,9 +89,9 @@ feature -- Basic operations
 						-- to see if the integer argument is bounded.
 					l_pre_feat := single_query_over_argument (l_expr, a_context_class, a_feature, l_preconditions)
 					if l_pre_feat /= Void then
-						l_preconditions := postconditions_as_preconditions (l_expr, l_pre_feat, a_context_class, a_feature)
-						if l_preconditions /= Void then
-							check_bouding_assertions (l_expr, l_preconditions, a_context_class, a_feature)
+						l_postconditions := postconditions_as_preconditions (l_expr, l_pre_feat, a_context_class, a_feature)
+						if l_postconditions /= Void then
+							check_bouding_assertions (l_expr, l_postconditions, a_context_class, a_feature)
 						end
 					end
 				end

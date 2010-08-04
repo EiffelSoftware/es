@@ -17,7 +17,7 @@ feature -- Extract contract expressions
 			Result.append (preconditions (a_feature))
 		ensure
 			all_preconditions: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_precondition end)
-			count_correct: Result.count = total_precondition_count (a_feature)
+--			count_correct: Result.count = total_precondition_count (a_feature)
 		end
 
 	all_postconditions (a_feature: FEATURE_I): LIST[ETR_CONTRACT_EXPRESSION]
@@ -72,7 +72,7 @@ feature -- Extract contract expressions
 			end
 		ensure
 			all_preconditions: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_precondition end)
-			count_correct: Result.count = precondition_count (a_feature)
+--			count_correct: Result.count = precondition_count (a_feature)
 		end
 
 	postconditions (a_feature: FEATURE_I): LIST[ETR_CONTRACT_EXPRESSION]
@@ -145,7 +145,7 @@ feature -- Extract contract expressions
 					end(?,Result))
 		ensure
 			all_preconditions: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_precondition end)
-			count_correct: Result.count = inherited_precondition_count (a_feature)
+--			count_correct: Result.count = inherited_precondition_count (a_feature)
 		end
 
 feature -- Count

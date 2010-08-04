@@ -478,6 +478,7 @@ feature{NONE} -- Implementation
 			l_range: like integer_bounds
 			l_quasi_functions: like quasi_constant_functions
 			l_type: TYPE_A
+			l_features: LINKED_LIST [FEATURE_I]
 		do
 			if should_solve_integer_argument_bound and then is_for_feature and then should_search_for_query_with_arguments then
 				l_quasi_functions := quasi_constant_functions
@@ -494,12 +495,22 @@ feature{NONE} -- Implementation
 						l_class := l_type.associated_class
 						l_feat_tbl := l_class.feature_table
 						l_tbl_cursor := l_feat_tbl.cursor
+						create l_features.make
 						from
 							l_feat_tbl.start
 						until
 							l_feat_tbl.after
 						loop
-							l_feat := l_feat_tbl.item_for_iteration
+							l_features.extend (l_feat_tbl.item_for_iteration)
+							l_feat_tbl.forth
+						end
+						l_feat_tbl.go_to (l_tbl_cursor)
+						from
+							l_features.start
+						until
+							l_features.after
+						loop
+							l_feat := l_features.item_for_iteration
 							if
 								l_feat.has_return_value and then
 								l_feat.written_class.class_id /= l_any_id and then
@@ -524,9 +535,8 @@ feature{NONE} -- Implementation
 									l_quasi_functions.force_last (l_function)
 								end
 							end
-							l_feat_tbl.forth
+							l_features.forth
 						end
-						l_feat_tbl.go_to (l_tbl_cursor)
 					end
 					l_cursor.forth
 				end

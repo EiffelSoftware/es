@@ -137,7 +137,7 @@ feature{NONE} -- Implementation
 			create l_post_gen
 			l_post_gen.generate (context_class, a_feature)
 			l_post_str := l_post_gen.last_postcondition
-			if l_post_str /= Void and then not l_post_str.is_empty then
+			if l_post_str /= Void and then not l_post_str.is_empty and then not l_post_str.has_substring ("{") then
 				generate_invariant_from_string (l_post_str)
 			end
 --			else

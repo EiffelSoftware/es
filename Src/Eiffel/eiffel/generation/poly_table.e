@@ -790,7 +790,9 @@ feature {POLY_TABLE} -- Special data
 	increase_tmp_size (n: INTEGER)
 			-- Increase the current array of `n' elements.
 		do
-			tmp_poly_table.make (1, tmp_poly_table.upper + (1 + n // Block_size) * Block_size)
+--			tmp_poly_table.make (1, tmp_poly_table.upper + (1 + n // Block_size) * Block_size)
+			tmp_poly_table.conservative_resize (1, tmp_poly_table.upper + (1 + n // Block_size) * Block_size)
+			tmp_poly_table.clear_all
 		end
 
 	Block_size: INTEGER = 50
@@ -831,7 +833,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

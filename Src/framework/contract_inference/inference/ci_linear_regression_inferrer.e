@@ -4,6 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
+
 class
 	CI_LINEAR_REGRESSION_INFERRER
 
@@ -38,7 +39,7 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
---			create l_loader.make ("D:\jasonw\contrace-based-analysis\contract_inference\project\EIFGENs\project\Contract_inference\data\LINKED_LIST__merge_left.arff2")
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_QUEUE__remove.arff2")
 --			l_loader.parse_relation
 --			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
@@ -143,34 +144,42 @@ feature{NONE} -- Implementation
 							l_property_body.append (l_coefficient.out)
 						end
 					else
-						if l_coefficient > 0 then
-							l_sign := " + "
-						else
-							l_sign := " - "
-						end
-						l_coefficient := l_coefficient.abs
-						if i = 1 and then l_sign ~ " + " then
-							l_sign := ""
-						end
-						l_property_body.append (l_sign)
-						if l_coefficient /= 1 then
-							l_property_body.append (l_coefficient.out)
-						end
+						if l_coefficient /= 0 then
+							if l_coefficient > 0 then
+								l_sign := " + "
+							else
+								l_sign := " - "
+							end
+							l_coefficient := l_coefficient.abs
+							if i = 1 and then l_sign ~ " + " then
+								l_sign := ""
+							end
+							l_property_body.append (l_sign)
+							if l_coefficient /= 1 then
+								l_property_body.append (l_coefficient.out)
+							end
 
-						l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
-						if l_name.starts_with ("Current.") then
-							l_name.remove_head (8)
+							l_name := expression_from_anonymous_form (l_name, feature_under_test, class_under_test)
+							if l_name.starts_with ("Current.") then
+								l_name.remove_head (8)
+							end
+							if l_prefix ~ "pre" then
+								l_name.prepend ("old (")
+								l_name.append (")")
+							end
+							l_property_body.append (l_name)
 						end
-						if l_prefix ~ "pre" then
-							l_name.prepend ("old (")
-							l_name.append (")")
-						end
-						l_property_body.append (l_name)
 					end
 					i := i + 1
 				end
+				l_property_body.right_justify
+				if l_property_body.item (l_property_body.count) = '=' then
+					l_property_body.append (" 0")
+				end
 				create l_property.make_with_text_and_type (class_under_test, feature_under_test, l_property_body, class_under_test, boolean_type)
-				last_postconditions.force_last (l_property)
+				if not l_property.has_syntax_error then
+					last_postconditions.force_last (l_property)
+				end
 			end
 		end
 
@@ -223,7 +232,13 @@ feature{NONE} -- Implementation
 			l_prefix: STRING
 			l_strs: LIST [STRING]
 			l_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
-			l_regressors: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			l_regressors, l_reg_set: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
+			l_reg_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
+			l_dependent_var: STRING
+			l_reg: WEKA_ARFF_ATTRIBUTE
+			l_reg_prefix: STRING
+			l_reg_name: STRING
+			l_parts: LIST [STRING]
 		do
 			create regressor_attributes.make (10)
 			regressor_attributes.set_key_equality_tester (weka_arff_attribute_equality_tester)
@@ -259,6 +274,29 @@ feature{NONE} -- Implementation
 					dependent_attributes.remove (l_attr)
 					regressor_attributes.remove (l_attr)
 				else
+					l_dependent_var := string_slices (l_attr.name, prefix_separator).last
+					from
+						l_reg_cursor := l_regressors.new_cursor
+						l_reg_cursor.start
+					until
+						l_reg_cursor.after
+					loop
+						l_reg := l_reg_cursor.item
+						l_parts := string_slices (l_reg.name, prefix_separator)
+						l_prefix := l_parts.first
+						l_reg_name := l_parts.last
+						if l_prefix ~ "pre" and then l_reg_name ~ l_dependent_var then
+							create l_reg_set.make (1)
+							l_reg_set.set_equality_tester (weka_arff_attribute_equality_tester)
+							l_reg_set.force_last (l_reg)
+							regressor_attributes.force_last (l_reg_set, l_attr)
+							log_attributes ("For attribute " + l_attr.name + ", found the following regressions:", l_reg_set)
+							l_reg_cursor.go_after
+						else
+							l_reg_cursor.forth
+						end
+					end
+
 					log_attributes ("For attribute " + l_attr.name + ", found the following regressions:", l_regressors)
 					l_cursor.forth
 				end

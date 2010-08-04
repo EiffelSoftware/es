@@ -174,23 +174,35 @@ feature{NONE} -- Implementation
 			l_cursor: CURSOR
 			l_feat: FEATURE_I
 			l_new: like accesses
+			l_features: LINKED_LIST [FEATURE_I]
 		do
 			create Result.make (initial_capacity)
 			l_feats := a_class.feature_table
+
+			create l_features.make
 			l_cursor := l_feats.cursor
 			from
 				l_feats.start
 			until
 				l_feats.after
 			loop
-				l_feat := l_feats.item_for_iteration
+				l_features.extend (l_feats.item_for_iteration)
+				l_feats.forth
+			end
+			l_feats.go_to (l_cursor)
+
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+				l_feat := l_features.item_for_iteration
 				if not l_feat.type.is_void then
 					l_new := accesses_of_feature (a_prefix, a_class, l_feat, a_args, a_veto_agent)
 					Result.append (l_new)
 				end
-				l_feats.forth
+				l_features.forth
 			end
-			l_feats.go_to (l_cursor)
 		end
 
 	accesses_of_feature (a_prefix: EPA_ACCESS; a_class: CLASS_C; a_feature: FEATURE_I; a_terms: like accesses; a_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]): like accesses
