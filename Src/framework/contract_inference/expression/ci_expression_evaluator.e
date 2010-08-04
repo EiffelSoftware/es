@@ -309,7 +309,7 @@ feature{NONE} -- Implementation
 					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
 					attached {EPA_INTEGER_VALUE} a_right as l_right
 				then
-					create {EPA_ANY_VALUE} last_value.make (l_left.front (l_right.item))
+					create {EPA_ANY_VALUE} last_value.make (l_left.front (l_right.item - l_left.lower_bound + 1))
 				else
 					set_has_error (True, msg_type_error_sequence_expected)
 				end
@@ -318,7 +318,7 @@ feature{NONE} -- Implementation
 					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
 					attached {EPA_INTEGER_VALUE} a_right as l_right
 				then
-					create {EPA_ANY_VALUE} last_value.make (l_left.tail (l_right.item))
+					create {EPA_ANY_VALUE} last_value.make (l_left.tail (l_right.item - l_left.lower_bound + 1))
 				else
 					set_has_error (True, msg_type_error_sequence_expected)
 				end

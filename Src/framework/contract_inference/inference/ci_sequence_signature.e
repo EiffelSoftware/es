@@ -37,7 +37,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target_variable_index: INTEGER; a_function_name: like function_name; a_function_type: TYPE_A; a_lower_bound_expr, a_upper_bound_expr: STRING)
+	make (a_target_variable_index: INTEGER; a_function_name: like function_name; a_function_type: TYPE_A; a_lower_bound_expr, a_upper_bound_expr: STRING; a_lower_bound_value: INTEGER; a_upper_bound_value: INTEGER)
 			-- Initialize Current.
 		do
 			target_variable_index := a_target_variable_index
@@ -49,6 +49,9 @@ feature{NONE} -- Initialization
 			out.append (a_function_name)
 			out.append (once "%"]")
 			hash_code := out.hash_code
+
+			lower_bound_value := a_lower_bound_value
+			upper_bound_value := a_upper_bound_value
 
 			if a_lower_bound_expr = Void then
 				lower_bound_expression := Void
@@ -91,6 +94,12 @@ feature -- Access
 
 	lower_bound_expression: STRING
 			-- Expression to get lower bound
+
+	lower_bound_value: INTEGER
+			-- Value of lower bound
+
+	upper_bound_value: INTEGER
+			-- Value of upper bound
 
 feature -- Status report
 

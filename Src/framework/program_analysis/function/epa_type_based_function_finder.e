@@ -515,7 +515,8 @@ feature{NONE} -- Implementation
 								l_feat.has_return_value and then
 								l_feat.written_class.class_id /= l_any_id and then
 								l_feat.argument_count = 1 and then
-								l_feat.arguments.i_th (1).is_integer
+								l_feat.arguments.i_th (1).is_integer and then
+								not is_redundant_query_in_array (l_class, l_feat)
 							then
 								l_range := integer_bounds (context_class, l_feat)
 								if l_range /= Void then
@@ -1125,5 +1126,29 @@ feature{NONE} -- Implementations
 				l_opd_set.force_last (l_operand_map.key)
 			end
 		end
+
+feature{NONE} -- Implementation
+
+	is_redundant_query_in_ARRAY (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' in `a_class' redundant and only slows down the inference process?
+		do
+			if a_class.class_id = ARRAY_class_id then
+				Result :=
+					a_feature.feature_name ~ "entry" or
+					a_feature.feature_name ~ "at"
+			end
+		end
+
+	ARRAY_class_id: INTEGER
+			-- Class ID of {ARRAY}.
+		do
+			if ARRAY_class_id_cache = 0 then
+				ARRAY_class_id_cache := first_class_starts_with_name ("ARRAY").class_id
+			end
+			Result := ARRAY_class_id_cache
+		end
+
+	ARRAY_class_id_cache: INTEGER
+			-- Cache for `ARRAY_class_id'
 
 end

@@ -18,7 +18,7 @@ create
 	empty
 --	const
 
-create {MML_MODEL}
+create --{MML_MODEL}
 	make_from_array
 
 feature -- Access
@@ -115,6 +115,19 @@ feature -- Access
 			Result.append_character (']')
 		end
 
+	lower_bound: INTEGER
+			-- Lower bound
+
+feature -- Setting
+
+	set_lower_bound (b: INTEGER)
+			-- Set `lower_bound' with `b'.
+		do
+			lower_bound := b
+		ensure
+			lower_bound_set: lower_bound = b
+		end
+
 feature -- Search
 	first_index_of (x: G): INTEGER
 			-- Index of the first occurrence of `x'
@@ -204,8 +217,10 @@ feature -- Decomposition
 			u := upper.min (count)
 			if l <= u then
 				create Result.make_from_array (array.subarray (array.lower + l - 1, array.lower + u - 1))
+				Result.set_lower_bound (lower_bound)
 			else
 				create Result.empty
+				Result.set_lower_bound (lower_bound)
 			end
 		end
 
@@ -298,6 +313,7 @@ feature -- Element change
 			a.subcopy (array, array.lower, array.upper, 1)
 			a.put (x, a.count)
 			create Result.make_from_array (a)
+			Result.set_lower_bound (lower_bound)
 		end
 
 	prepended (x: G): MML_FINITE_SEQUENCE [G]
@@ -309,6 +325,7 @@ feature -- Element change
 			a.subcopy (array, array.lower, array.upper, 2)
 			a.put (x, 1)
 			create Result.make_from_array (a)
+			Result.set_lower_bound (lower_bound)
 		end
 
 	concatenation alias "+" (other : MML_FINITE_SEQUENCE [G]): MML_FINITE_SEQUENCE [G]
@@ -325,6 +342,7 @@ feature -- Element change
 				a.subcopy(array, array.lower, array.upper, 1)
 				a.subcopy(other.array, other.array.lower, other.array.upper, count + 1)
 				create Result.make_from_array (a)
+				Result.set_lower_bound (lower_bound)
 			end
 		end
 
@@ -346,6 +364,7 @@ feature -- Element change
 			a := array.twin
 			a.put (x, i)
 			create Result.make_from_array (a)
+			Result.set_lower_bound (lower_bound)
 		end
 
 --feature -- Iteration
@@ -372,6 +391,7 @@ feature {MML_MODEL} -- Implementation
 			-- Create with a predefined array
 		do
 			array := a
+			lower_bound := 1
 		end
 end
 

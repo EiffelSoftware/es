@@ -42,39 +42,55 @@ convert
 
 feature{NONE} -- Initialization
 
-	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_function_type: TYPE_A; a_context: like context; a_count_expressions_name: STRING; a_target_variable_position: INTEGER; a_lower_bound_expr, a_upper_bound_expr: STRING)
+	make (a_content: LINKED_LIST [G]; a_target_varaible_name: like target_variable_name; a_function_name: STRING; a_function_type: TYPE_A; a_context: like context; a_count_expressions_name: STRING; a_target_variable_position: INTEGER; a_lower_bound_expr, a_upper_bound_expr: STRING; a_lower_bound_value: INTEGER; a_upper_bound_value: INTEGER)
 			-- Initialize Current with `a_array'.
 		local
 			l_cursor: CURSOR
 			l_hash_str: STRING
+			l_array: ARRAY [G]
+			i: INTEGER
 		do
 			target_variable_name := a_target_varaible_name.twin
 			context := a_context
 			count_expressions_name := a_count_expressions_name.twin
-			create signature.make (a_target_variable_position, a_function_name, a_function_type, a_lower_bound_expr, a_upper_bound_expr)
+			create signature.make (a_target_variable_position, a_function_name, a_function_type, a_lower_bound_expr, a_upper_bound_expr, a_lower_bound_value, a_upper_bound_value)
 
 				-- Initialize `content'.
 			create l_hash_str.make (64)
-			create content.empty
-			l_cursor := a_content.cursor
-			from
-				a_content.start
-			until
-				a_content.after
-			loop
-				content := content.extended (a_content.item_for_iteration)
-				l_hash_str.append (a_content.item_for_iteration.out)
+
+			create l_array.make (1, a_content.count)
+			i := 1
+			across a_content as l_con loop
+				l_array.put (l_con.item, i)
+				l_hash_str.append (l_con.item.out)
 				l_hash_str.append_character ('.')
-				a_content.forth
+				i := i + 1
 			end
-			a_content.go_to (l_cursor)
+
+			create content.make_from_array (l_array)
+			content.set_lower_bound (a_lower_bound_value)
+
+--			create content.empty
+--			content.set_lower_bound (a_lower_bound_value)
+--			l_cursor := a_content.cursor
+--			from
+--				a_content.start
+--			until
+--				a_content.after
+--			loop
+--				content := content.extended (a_content.item_for_iteration)
+--				l_hash_str.append (a_content.item_for_iteration.out)
+--				l_hash_str.append_character ('.')
+--				a_content.forth
+--			end
+--			a_content.go_to (l_cursor)
 			hash_code := l_hash_str.hash_code
 		end
 
 	make_from_function (a_function: CI_FUNCTION_WITH_INTEGER_DOMAIN; a_count_expressions_name: STRING; a_content: LINKED_LIST [G]; a_target_variable_position: INTEGER; a_lower_bound_expr, a_upper_bound_expr: detachable STRING)
 			-- Initialize Current.
 		do
-			make (a_content, a_function.target_variable_name, a_function.function_name, a_function.result_type, a_function.context, a_count_expressions_name, a_target_variable_position, a_lower_bound_expr, a_upper_bound_expr)
+			make (a_content, a_function.target_variable_name, a_function.function_name, a_function.result_type, a_function.context, a_count_expressions_name, a_target_variable_position, a_lower_bound_expr, a_upper_bound_expr, a_function.lower_bound, a_function.upper_bound)
 		end
 
 feature -- Access

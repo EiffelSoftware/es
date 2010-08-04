@@ -104,16 +104,19 @@ feature -- Access
 			l_class := a_tc_info.transition.context.class_
 			l_feature := a_tc_info.transition.context.feature_
 			create Result.make (10, l_class, l_feature)
-			from
-				l_sequences := sequences.item (a_tc_info).item (a_pre_state).new_cursor
-				l_sequences.start
-			until
-				l_sequences.after
-			loop
-				create l_value.make (l_sequences.item)
-				create l_expr.make_with_text (l_class, l_feature, l_sequences.key.out, l_class)
-				Result.force_last (create {EPA_EQUATION}.make (l_expr, l_value))
-				l_sequences.forth
+
+			if sequences.item (a_tc_info).item (a_pre_state) /= Void then
+				from
+					l_sequences := sequences.item (a_tc_info).item (a_pre_state).new_cursor
+					l_sequences.start
+				until
+					l_sequences.after
+				loop
+					create l_value.make (l_sequences.item)
+					create l_expr.make_with_text (l_class, l_feature, l_sequences.key.out, l_class)
+					Result.force_last (create {EPA_EQUATION}.make (l_expr, l_value))
+					l_sequences.forth
+				end
 			end
 		end
 
@@ -264,7 +267,13 @@ feature{NONE} -- Implementation
 				loop
 					l_sequences.search (a_tc_info)
 					if l_sequences.found then
-						l_seq_set := l_sequences.found_item.item (a_pre_state)
+						if l_sequences.found_item.has (a_pre_state) then
+							l_seq_set := l_sequences.found_item.item (a_pre_state)
+						else
+							create l_seq_set.make (10)
+							l_seq_set.set_equality_tester (ci_sequence_equality_tester)
+							l_sequences.found_item.force (l_seq_set, a_pre_state)
+						end
 					else
 						create l_seq_tbl.make (2)
 						create l_seq_set.make (5)
@@ -301,7 +310,7 @@ feature{NONE} -- Implementation
 								if not l_evaluator.has_error then
 									create l_opd_value.make
 									l_opd_value.extend (l_evaluator.last_value)
-									create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, l_opd_type, a_tc_info.transition.context, "", l_opd_types.key, Void, Void)
+									create l_opd_sequence.make (l_opd_value, l_var_name, ti_current, l_opd_type, a_tc_info.transition.context, "", l_opd_types.key, Void, Void, 1, 1)
 										-- Found a new single element sequence made from an operand variable.
 									if not l_seq_set.has (l_opd_sequence.signature) then
 										log_message (once "%T Found sequence: " + text_of_sequence (l_opd_sequence) + l_in_state, False, True)
@@ -1035,7 +1044,8 @@ feature{NONE} -- Implementation
 					<<feature_not_from_any_veto_agent,
 					  feature_with_few_arguments_veto_agent (0),
 				      nested_not_on_basic_veto_agent,
-				      integer_expression_veto_agent>>), 2)
+				      integer_expression_veto_agent,
+				      feature_not_constant_veto_agent>>), 2)
 		end
 
 	integer_queries: DS_HASH_SET [CI_INTEGER_QUERY]

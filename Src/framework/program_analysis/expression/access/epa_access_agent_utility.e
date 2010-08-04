@@ -98,6 +98,22 @@ feature -- Expression veto agents
 					end
 		end
 
+	feature_not_constant_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
+			-- Agent to select non constant features.
+		do
+			Result :=
+				agent (a_access: EPA_ACCESS): BOOLEAN
+					do
+						Result := True
+						if a_access.is_feature then
+							if attached {EPA_ACCESS_FEATURE} a_access as l_feat then
+								Result :=
+									not l_feat.feature_.is_constant
+							end
+						end
+					end
+		end
+
 	feature_not_from_any_veto_agent: FUNCTION [ANY, TUPLE [EPA_ACCESS], BOOLEAN]
 			-- An agent to select feature not from class ANY
 		do

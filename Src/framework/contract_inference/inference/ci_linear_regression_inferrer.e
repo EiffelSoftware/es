@@ -39,10 +39,10 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_QUEUE__remove.arff2")
---			l_loader.parse_relation
---			arff_relation := l_loader.last_relation
-			arff_relation := data.arff_relation.cloned_object
+			create l_loader.make ("D:\jasonw\contrace-based-analysis\contract_inference\project\EIFGENs\project\Contract_inference\data\ARRAY__rebase.arff2")
+			l_loader.parse_relation
+			arff_relation := l_loader.last_relation
+--			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
 				-- Setup results.
@@ -68,7 +68,7 @@ feature{NONE} -- Implementation
 	dependent_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			-- Set of attributes used as dependent variables in regression
 
-	regressor_attributes: DS_HASH_TABLE [DS_HASH_SET [WEKA_ARFF_ATTRIBUTE], WEKA_ARFF_ATTRIBUTE]
+	regressor_attributes: DS_HASH_TABLE [LINKED_LIST [DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]], WEKA_ARFF_ATTRIBUTE]
 			-- Set of attributes used as regressors in regression
 
 feature{NONE} -- Implementation
@@ -85,7 +85,9 @@ feature{NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				generate_linear_regression (l_cursor.item, l_cursor.key)
+				across l_cursor.item as l_regs loop
+					generate_linear_regression (l_regs.item, l_cursor.key)
+				end
 				l_cursor.forth
 			end
 		end
@@ -239,6 +241,7 @@ feature{NONE} -- Implementation
 			l_reg_prefix: STRING
 			l_reg_name: STRING
 			l_parts: LIST [STRING]
+			l_reg_list: LINKED_LIST [DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]]
 		do
 			create regressor_attributes.make (10)
 			regressor_attributes.set_key_equality_tester (weka_arff_attribute_equality_tester)
@@ -252,7 +255,13 @@ feature{NONE} -- Implementation
 				l_attr := l_cursor.item
 				create l_regressors.make (10)
 				l_regressors.set_equality_tester (weka_arff_attribute_equality_tester)
-				regressor_attributes.force_last (l_regressors, l_attr)
+				if regressor_attributes.has (l_attr) then
+					l_reg_list := regressor_attributes.item (l_attr)
+				else
+					create l_reg_list.make
+					regressor_attributes.force_last (l_reg_list, l_attr)
+				end
+				l_reg_list.extend (l_regressors)
 
 					-- Iterate through all attributes and find out those satisfying:
 					-- 1. is numeric.
@@ -289,7 +298,8 @@ feature{NONE} -- Implementation
 							create l_reg_set.make (1)
 							l_reg_set.set_equality_tester (weka_arff_attribute_equality_tester)
 							l_reg_set.force_last (l_reg)
-							regressor_attributes.force_last (l_reg_set, l_attr)
+							l_reg_list := regressor_attributes.item (l_attr)
+							l_reg_list.extend (l_reg_set)
 							log_attributes ("For attribute " + l_attr.name + ", found the following regressions:", l_reg_set)
 							l_reg_cursor.go_after
 						else
