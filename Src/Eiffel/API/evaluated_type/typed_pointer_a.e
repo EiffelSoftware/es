@@ -33,7 +33,7 @@ inherit
 
 	GEN_TYPE_A
 		undefine
-			meta_type, is_basic,
+			meta_type, is_basic, processor_tag,
 			description, instantiated_description, description_with_detachable_type,
 			generate_cecil_value, sk_value, element_type, cl_make
 		redefine

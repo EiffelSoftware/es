@@ -1,0 +1,496 @@
+note
+	description: "[
+					Roundtrip visitor to process parents (`PARENT_LIST_AS' node)
+					in SCOOP proxy class.
+					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+				]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	SCOOP_PROXY_PARENT_VISITOR
+
+inherit
+	SCOOP_PARENT_VISITOR
+		redefine
+			process_internal_conforming_parents,
+			process_internal_non_conforming_parents,
+			process_generic_class_type_as,
+			process_parent_as,
+			process_rename_as,
+			process_id_as,
+			process_redefine_clause_as,
+			process_undefine_clause_as,
+			process_select_clause_as,
+			process_feat_name_id_as,
+			process_feature_name_alias_as
+		end
+
+	SCOOP_WORKBENCH
+		export
+			{NONE} all
+		end
+
+	SCOOP_BASIC_TYPE
+		export
+			{NONE} all
+		end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+
+create
+	make_with_context
+
+feature -- Access
+
+	process_internal_conforming_parents(l_as: PARENT_LIST_AS) is
+			-- Process `l_as'.
+		do
+			is_process_first_select := True
+			if l_as /= Void then
+				create parent_redefine_list.make
+				Precursor (l_as)
+				scoop_workbench_objects.append_parent_redefine_list (parent_redefine_list)
+			else
+					-- inherit 'SCOOP_SEPARATE__ANY' if (conforming) parent list contains no elements.
+				context.add_string ("%N%Ninherit%N%TSCOOP_SEPARATE__ANY")
+					-- rename and redefine 'implementation_'
+				if parsed_class.is_expanded then
+					-- Attributes of expanded type cannot be used to redefine an attribute of non-expanded type. As we are going to introduce an implementation feature of expanded type, we have to rename the one inherited from the proxy root.
+					context.add_string ("%N%T%Trename%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " as " + system.any_class.name + "_" + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " end")
+				else
+					context.add_string ("%N%T%Tredefine " + {SCOOP_SYSTEM_CONSTANTS}.scoop_library_implementation_getter_name + " end")
+				end
+			end
+		end
+
+	process_internal_non_conforming_parents(l_as: PARENT_LIST_AS) is
+			-- Process `l_as'
+		do
+			is_process_first_select := False
+			create parent_redefine_list.make
+			Precursor (l_as)
+			scoop_workbench_objects.append_parent_redefine_list (parent_redefine_list)
+		end
+
+feature {NONE} -- Visitor implementation
+
+	process_parent_as (l_as: PARENT_AS) is
+			-- Process `l_as'.
+		local
+			l_parent_name: STRING
+			l_string_context: ROUNDTRIP_STRING_LIST_CONTEXT
+		do
+			-- set current processed parent
+			current_processed_parent := l_as
+
+			last_index := l_as.type.first_token (match_list).index - 1
+			-- skip parent if it is 'ANY'
+			if l_as.type.class_name.name.is_equal ("ANY") then
+				-- skip complete parent_clause
+				last_index := l_as.last_token (match_list).index
+			else
+				context.add_string ("%N%T")
+				l_string_context ?= context
+
+				-- process parent object
+				create parent_object.make (l_as.type.class_name.name)
+				scoop_workbench_objects.add_proxy_parent_object (parent_object)
+				create l_parent_name.make_from_string (l_as.type.class_name.name)
+				parent_object.set_parent_name (l_parent_name)
+				parent_object.set_parent_class_c (get_parent_class_c_by_name (l_parent_name))
+
+				-- process type
+				safe_process (l_as.type)
+				parent_object.set_parent_cursor (l_string_context.cursor_to_current_position)
+
+				-- process internal renaming
+				safe_process (l_as.internal_renaming)
+				if parsed_class.is_expanded then
+					if l_as.internal_renaming = Void then
+						context.add_string ("%N%T%Trename")
+					else
+						context.add_string (", ")
+					end
+					-- add renaming of 'implementation_'
+					context.add_string ("%N%T%T%Timplementation_ as implementation_" + l_as.type.class_name.name.as_lower + "_")
+
+					-- mark rename clause
+					parent_object.set_rename_cursor (l_string_context.cursor_to_current_position)
+				elseif l_as.internal_renaming /= Void then
+					-- mark rename clause
+					parent_object.set_rename_cursor (l_string_context.cursor_to_current_position)
+				end
+
+				-- process internal exports
+				safe_process (l_as.internal_exports)
+
+				-- process internal undefining	
+				safe_process (l_as.internal_undefining)
+
+				-- process internal redefining
+				safe_process (l_as.internal_redefining)
+				if not parsed_class.is_expanded then
+					if l_as.internal_redefining /= Void then
+						context.add_string (",")
+					else
+						context.add_string ("%N%T%Tredefine")
+					end
+					context.add_string ("%N%T%T%Timplementation_")
+				end
+
+				parent_object.set_redefine_cursor (l_string_context.cursor_to_current_position)
+
+				-- process internal selection
+				safe_process (l_as.internal_selecting)
+--				if parsed_class.is_expanded and then is_process_first_select then
+--					if l_as.internal_selecting = Void then
+--						context.add_string ("%N%T%Tselect")
+--					else
+--						context.add_string (", ")
+--					end
+--					context.add_string ("%N%T%T%Timplementation_" + l_as.type.class_name.name.as_lower + "_")
+--					is_process_first_select := False
+--				end
+
+					-- add in each case the end keyword
+				context.add_string ("%N%T%Tend")
+				if l_as.end_keyword_index > 0 then
+					last_index := l_as.end_keyword_index
+				else
+					last_index := l_as.type.last_token (match_list).index
+				end
+			end
+		end
+
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
+			-- Process `l_as'.
+		local
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+		do
+			safe_process (l_as.lcurly_symbol (match_list))
+			safe_process (l_as.attachment_mark (match_list))
+			safe_process (l_as.expanded_keyword (match_list))
+			safe_process (l_as.class_name)
+
+			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+			l_generics_visitor.process_internal_generics (l_as.internal_generics, false, False)
+
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_id_as (l_as: ID_AS) is
+			-- Process `l_as'.
+		local
+			a_class: CLASS_AS
+			l_scoop_separate_str: STRING
+		do
+			create l_scoop_separate_str.make_from_string (" SCOOP_SEPARATE__")
+			process_leading_leaves (l_as.index)
+
+			if not is_special_class (l_as.name) then
+				if is_process_export_clause then
+					-- print client and proxy class name when printing export clause
+					context.add_string (l_scoop_separate_str)
+					put_string (l_as)
+					context.add_string (", ")
+				else
+					-- add prefix if parent class is not expanded.
+					a_class := class_as_by_name (l_as.name)
+					if a_class /= Void then
+						context.add_string (l_scoop_separate_str)
+					end
+				end
+			end
+
+			-- print id
+			put_string (l_as)
+			last_index := l_as.index
+		end
+
+	process_rename_as (l_as: RENAME_AS) is
+			-- Process `l_as'.
+		local
+			l_old_name, l_new_name, l_str: STRING
+			l_original_old_name, l_original_old_alias_name: STRING
+			l_class_c: CLASS_C
+			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+		do
+			-- Create rename statement for assigner wrapper features
+			-- if the current rename statement renames a feature which
+			-- is used as assigner in a parent class. If the current
+			-- statement renames f from g to f then add a rename feature
+			-- "g_scoop_separate_assigner_ as f_scoop_separate_assigner_"
+
+			-- create visitors
+			create l_assign_finder
+			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+
+			-- get current processed parent
+			l_class_c := parent_object.parent_class_c
+
+			-- get original old name
+			l_feature_name_visitor.process_original_feature_name (l_as.old_name, False)
+			l_original_old_name := l_feature_name_visitor.feature_name.twin
+			l_feature_name_visitor.process_original_feature_name (l_as.old_name, True)
+			l_original_old_alias_name := l_feature_name_visitor.feature_name.twin
+
+			-- get old and new name (with infix replacement)
+			l_feature_name_visitor.process_feature_name (l_as.old_name, False)
+			l_old_name := l_feature_name_visitor.feature_name
+			l_feature_name_visitor.process_feature_name (l_as.new_name, False)
+			l_new_name := l_feature_name_visitor.feature_name
+
+			if not l_old_name.is_empty and not l_new_name.is_empty then
+				context.add_string ("%N%T%T%T")
+				context.add_string (l_old_name)
+				context.add_string (" ")
+				safe_process (l_as.as_keyword (match_list))
+				context.add_string (" ")
+				context.add_string (l_new_name)
+
+					-- FIXME: this is terribly brittle I think, there must
+					-- be some better way to consume unwanted syntax?
+				if l_as.new_name.alias_name = Void then
+					last_index := last_index + 3
+				else
+					last_index := last_index + 4
+				end
+			end
+
+			-- check if old name is a feature with assigner in current parent or an ancestor
+			if l_assign_finder.has_current_or_parents_feature_with_assigner (l_original_old_name, l_original_old_alias_name, l_class_c) then
+
+				-- create rename statement
+				create l_str.make_from_string (",%N%T%T%T" + l_old_name + "_scoop_separate_assigner_")
+				l_str.append (" as " + l_new_name + "_scoop_separate_assigner_")
+				context.add_string (l_str)
+			end
+		end
+
+	process_redefine_clause_as (l_as: REDEFINE_CLAUSE_AS) is
+			-- Process `l_as'.
+		local
+			i, nb: INTEGER
+			l_class_c: CLASS_C
+			l_redefine_name, l_redefine_alias_name: STRING
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_redefine_tuple: TUPLE [orignial_feature_name, original_feature_alias_name: STRING; parent_object: SCOOP_PROXY_PARENT_OBJECT ]
+		do
+			-- process node
+			Precursor (l_as)
+
+			-- get all redefine statements which are features with assigner in an ancestor.
+			create l_assign_finder
+			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+
+			if l_as.content /= Void then
+				-- iterate over all redefine statements
+				from
+					i := 1
+					nb := l_as.content.count
+				until
+					i > nb
+				loop
+					-- get redefine statement / feature name
+					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), False)
+					l_redefine_name := l_feature_name_visitor.feature_name
+					l_feature_name_visitor.process_original_feature_name (l_as.content.i_th (i), True)
+					l_redefine_alias_name :=  l_feature_name_visitor.feature_name
+
+					-- check if current parent or an ancestor has the actual redefined feature
+					-- defined together with an assigner
+
+					-- get current class
+					l_class_c := parent_object.parent_class_c
+
+					if l_assign_finder.has_current_or_parents_feature_with_assigner (l_redefine_name, l_redefine_alias_name, l_class_c) then
+						-- current parent class or an ancestor has found a feature with
+						-- feature name `l_redefine_name' and assigner. Save `l_redefine_name' and
+						-- reference to parent_object in list to insert it when creating the
+						-- `f_scoop_separate_assinger_' feature.
+						create l_redefine_tuple
+						l_redefine_tuple.orignial_feature_name := l_redefine_name
+						l_redefine_tuple.original_feature_alias_name := l_redefine_alias_name
+						l_redefine_tuple.parent_object := parent_object
+						parent_redefine_list.extend (l_redefine_tuple)
+					end
+					i := i + 1
+				end
+			end
+		end
+
+	process_undefine_clause_as (l_as: UNDEFINE_CLAUSE_AS) is
+			-- Process `l_as'.
+		do
+			-- process node
+			Precursor (l_as)
+
+			-- check if undefine feature name is a feature with assigner in an ancestor.
+			-- insert if found a undefine statement for the assigner wrapper feature.
+			if l_as.content /= Void then
+				check_list_and_add_assigner_wrapper_feature_name (l_as.content)
+			end
+		end
+
+	process_select_clause_as (l_as: SELECT_CLAUSE_AS) is
+			-- Process `l_as'.
+		do
+			-- process node
+			Precursor (l_as)
+
+			-- check if select feature name is a feature with assigner in an ancestor
+			-- insert if found a undefine statement for the assigner wrapper feature.
+			if l_as.content /= Void then
+				check_list_and_add_assigner_wrapper_feature_name (l_as.content)
+			end
+		end
+
+	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS) is
+			-- Process `l_as'.
+		local
+			l_feature_name: STRING
+			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+		do
+			-- get feature name without alias
+			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+			l_feature_name_visitor.process_feature_name (l_as, False)
+			l_feature_name := l_feature_name_visitor.feature_name
+
+			-- process frozen keyowrd
+			safe_process (l_as.frozen_keyword)
+
+			-- insert the feature name
+			process_leading_leaves (l_as.feature_name.index)
+			context.add_string (l_feature_name)
+			last_index := l_as.feature_name.index
+		end
+
+	process_feature_name_alias_as (l_as: FEATURE_NAME_ALIAS_AS) is
+			-- Process `l_as'.
+		local
+			l_feature_name: STRING
+			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+		do
+			-- get feature name without alias
+			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+			l_feature_name_visitor.process_feature_name (l_as, False)
+			l_feature_name := l_feature_name_visitor.feature_name
+
+			-- process frozen keyword
+			safe_process (l_as.frozen_keyword)
+
+			-- insert feature name
+			process_leading_leaves (l_as.feature_name.index)
+			context.add_string (l_feature_name)
+			last_index := l_as.feature_name.index
+
+			-- process alias
+			if l_as.alias_name /= Void then
+				safe_process (l_as.alias_keyword (match_list))
+				safe_process (l_as.alias_name)
+				if l_as.has_convert_mark then
+					safe_process (l_as.convert_keyword (match_list))
+				end
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	check_list_and_add_assigner_wrapper_feature_name (a_list: EIFFEL_LIST [FEATURE_NAME]) is
+			-- checks if a FEATURE_NAME item is a feature with assigner in a ancestor class
+			-- an inserts in this case the name of the assign wrapper feature.
+		require
+			a_list_not_void: a_list /= Void
+		local
+			i, nb: INTEGER
+			l_class_c: CLASS_C
+			l_feature_name: FEATURE_NAME
+			l_original_feature_name, l_original_feature_alias_name, l_feature_name_str, l_str: STRING
+			l_feature_name_visitor: SCOOP_FEATURE_NAME_VISITOR
+			l_assign_finder: SCOOP_PROXY_ASSIGN_FINDER
+		do
+			create l_assign_finder
+			l_feature_name_visitor := scoop_visitor_factory.new_feature_name_visitor
+
+			from
+				i := 1
+				nb := a_list.count
+			until
+				i > nb
+			loop
+				l_feature_name := a_list.i_th (i)
+
+				-- get original old name (without infix replacement)
+				l_feature_name_visitor.process_original_feature_name (l_feature_name, False)
+				l_original_feature_name := l_feature_name_visitor.feature_name
+				l_feature_name_visitor.process_original_feature_name (l_feature_name, True)
+				l_original_feature_alias_name := l_feature_name_visitor.feature_name
+
+				-- get current class
+				l_class_c := parent_object.parent_class_c
+
+				-- check if old name is a feature with assigner in current parent or an ancestor
+				if l_assign_finder.has_current_or_parents_feature_with_assigner (l_original_feature_name, l_original_feature_alias_name, l_class_c) then
+					-- get feature name (with infix replacement)
+					l_feature_name_visitor.process_feature_name (l_feature_name, False)
+					l_feature_name_str := l_feature_name_visitor.feature_name
+
+					-- create select / undefine clause
+					create l_str.make_from_string (",%N%T%T%T" + l_feature_name_str + "_scoop_separate_assigner_")
+					context.add_string (l_str)
+				end
+
+				i := i + 1
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	is_process_first_select: BOOLEAN
+			-- indicates internal select of first parent should be processed.
+
+	current_processed_parent: PARENT_AS
+			-- Reference to current processed parent.
+
+	parent_object: SCOOP_PROXY_PARENT_OBJECT
+			-- Current proxy parent object.
+
+	parent_redefine_list: LINKED_LIST [TUPLE [orignial_feature_name, original_feature_alias_name: STRING; parent_object: SCOOP_PROXY_PARENT_OBJECT ]]
+			-- List of redefine features with corresponding parent object.
+
+;note
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
+		]"
+
+end -- class SCOOP_PROXY_PARENT_VISITOR

@@ -564,6 +564,9 @@ feature -- Update
 			l_text_area: EB_SMART_EDITOR
 			l_system: SYSTEM_I
 			l_root: SYSTEM_ROOT
+
+			l_conf_load: CONF_LOAD
+			l_original_conf_root: CONF_ROOT
 		do
 			during_synchronization := True
 			if eiffel_project.system_defined then
@@ -579,12 +582,33 @@ feature -- Update
 				not l_system.root_creators.is_empty
 			then
 					-- Note: this code must be updated to support multiple root features
-				l_root := l_system.root_creators.first
-				if l_root.root_class.is_compiled then
-					stone := create {CLASSC_STONE}.make (l_root.root_class.compiled_class)
+					-- Changed for SCOOP: Make sure the original root class is displayed in the editor.
+				if workbench.is_degree_scoop_processed then
+					create l_conf_load.make (create {CONF_PARSE_FACTORY})
+					l_conf_load.retrieve_configuration (workbench.lace.file_name)
+					l_original_conf_root := l_conf_load.last_system.targets.at (workbench.universe.target.name).root
+
+					if l_original_conf_root.cluster_name /= Void then
+						stone := create {CLASSI_STONE}.make (
+							workbench.universe.class_named (
+								workbench.universe.target.root.class_type_name,
+								workbench.lace.target.clusters.at (l_original_conf_root.cluster_name)
+							)
+						)
+					else
+						stone := create {CLASSI_STONE}.make (
+							workbench.universe.classes_with_name (l_original_conf_root.class_type_name).first
+						)
+					end
 				else
-					stone := create {CLASSI_STONE}.make (l_root.root_class)
+					l_root := l_system.root_creators.first
+					if l_root.root_class.is_compiled then
+						stone := create {CLASSC_STONE}.make (l_root.root_class.compiled_class)
+					else
+						stone := create {CLASSI_STONE}.make (l_root.root_class)
+					end
 				end
+
 				if
 					eiffel_system.universe.target.clusters.count = 1
 				then

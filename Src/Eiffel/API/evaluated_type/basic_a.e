@@ -19,6 +19,7 @@ inherit
 			description, description_with_detachable_type,
 			generic_il_type_name, hash_code, internal_generic_derivation, generic_derivation,
 			internal_same_generic_derivation_as, generate_cecil_value,
+			processor_tag,
 			sk_value, element_type, make
 		end
 
@@ -194,6 +195,12 @@ feature {TYPE_A} -- Helpers
 			else
 				Result := same_as (other)
 			end
+		end
+
+feature -- SCOOP Processor Tag Constant
+	processor_tag : attached PROCESSOR_TAG_TYPE
+		do
+			create Result.make_current
 		end
 
 feature {COMPILER_EXPORTER}

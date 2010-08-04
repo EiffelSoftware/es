@@ -1,0 +1,307 @@
+note
+	description: "[
+					Roundtrip visitor to process types in several contexts 
+					in SCOOP proxy class.
+					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
+				]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+deferred class
+	SCOOP_PROXY_TYPE_VISITOR
+
+inherit
+	SCOOP_CONTEXT_AST_PRINTER
+		redefine
+			process_class_type_as,
+			process_generic_class_type_as,
+			process_named_tuple_type_as,
+			process_like_cur_as
+		end
+
+	SCOOP_CLASS_NAME
+
+feature -- Initialisation
+
+	make_with_context(a_context: ROUNDTRIP_CONTEXT)
+			-- Initialise and reset flags
+		require
+			a_context_not_void: a_context /= Void
+		do
+			context := a_context
+
+			-- Reset some values
+			is_print_with_prefix := False
+			is_filter_detachable := False
+			is_from_formal       := False
+		end
+
+feature -- Access
+	is_from_formal : BOOLEAN
+
+	set_from_formal (b : BOOLEAN)
+		do
+			is_from_formal := b
+		end
+
+	process_type (l_as: TYPE_AS)
+			-- process 'l_as'
+			-- print out the TYPE_AS as defined below
+		do
+			is_replace_current := False
+			if l_as /= Void then
+				last_index := l_as.first_token (match_list).index - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_type_replace_current (l_as: TYPE_AS)
+			-- process 'l_as'
+			-- print out the TYPE_AS as defined below
+		do
+			is_replace_current := True
+			if l_as /= Void then
+				last_index := l_as.first_token (match_list).index - 1
+				safe_process (l_as)
+			end
+		end
+
+	process_type_ast (l_as: AST_EIFFEL)
+			-- process 'l_as'
+			-- used to print out internal generics and other types nodes
+		do
+			if l_as /= Void then
+				last_index := l_as.first_token (match_list).index - 1
+				safe_process (l_as)
+			end
+		end
+
+	set_generics_to_substitute(gen: LINKED_LIST[TUPLE[INTEGER,INTEGER]])
+			-- Set the generic's which need to be substituted
+		do
+			generics_to_substitute := gen
+		ensure
+			is_set: generics_to_substitute = gen
+		end
+
+feature {NONE} -- Roundtrip: process nodes
+
+	process_class_type_as (l_as: CLASS_TYPE_AS)
+		do
+			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+			evaluate_class_type_flags (l_as)
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- skip expanded keyword
+			if l_as.is_expanded then
+				last_index := l_as.expanded_keyword_index
+			end
+
+			-- process class name
+			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
+			if l_as.class_name /= Void then
+				last_index := l_as.class_name.last_token (match_list).index
+			end
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
+		local
+			l_generics_visitor: SCOOP_GENERICS_VISITOR
+		do
+			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+			evaluate_generic_class_type_flags (l_as)
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- skip expanded_keyword
+			if l_as.is_expanded then
+				last_index := l_as.expanded_keyword_index
+			end
+
+			-- process class name
+			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
+			if l_as.class_name /= Void then
+				last_index := l_as.class_name.last_token (match_list).index
+			end
+
+			-- process internal generics			
+			-- no `SCOOP_SEPARATE__' prefix, not detachable.
+			l_generics_visitor := scoop_visitor_factory.new_generics_visitor (context)
+
+			-- Do we need to substitute generics?
+			if generics_to_substitute /= void and then (not generics_to_substitute.is_empty) then
+				l_generics_visitor.set_generics_to_substitute(generics_to_substitute)
+			end
+
+			-- Do we need to replace `like current'
+			if is_replace_current then
+				l_generics_visitor.process_type_locals(l_as.internal_generics, False, False)
+			else
+				l_generics_visitor.process_type_internal_generics (l_as.internal_generics, False, False)
+			end
+
+			if l_as.internal_generics /= Void then
+				last_index := l_as.internal_generics.last_token (match_list).index
+			end
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
+		do
+			-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+			evaluate_named_tuple_type_flags (l_as)
+
+			-- process lcurly symbol
+			safe_process (l_as.lcurly_symbol (match_list))
+
+			-- process attachment mark
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+			-- process class name
+			process_leading_leaves (l_as.class_name.index)
+			process_class_name (l_as.class_name, is_print_with_prefix, context, match_list)
+			last_index := l_as.class_name.index
+
+			-- process parameters
+			-- types of parameters will be treated like current
+			safe_process (l_as.parameters)
+
+			-- process rcurly symbol
+			safe_process (l_as.rcurly_symbol (match_list))
+		end
+
+	process_like_cur_as (l_as: LIKE_CUR_AS)
+			-- process 'l_as'
+			-- this feature is redefined in the locals printer
+		do
+			if l_as /= Void then
+				-- get flags 'is_filter_detachable' and 'is_print_with_prefix'
+				evaluate_like_current_type_flags
+
+				-- process lcurly symbol
+				safe_process (l_as.lcurly_symbol (match_list))
+
+				-- process attachment mark
+				process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+
+				-- process like keyword
+				safe_process (l_as.like_keyword (match_list))
+
+				-- process current keyword
+				safe_process (l_as.current_keyword)
+
+				-- process rcurly symbol
+				safe_process (l_as.rcurly_symbol (match_list))
+			end
+		end
+
+feature {NONE} -- Deferred feature implementation
+
+	evaluate_class_type_flags (l_as: CLASS_TYPE_AS)
+			-- the flags are set dependant on the situation
+		deferred
+		end
+
+	evaluate_generic_class_type_flags (l_as: GENERIC_CLASS_TYPE_AS)
+			-- the flags are set dependant on the situation
+		deferred
+		end
+
+	evaluate_named_tuple_type_flags (l_as: NAMED_TUPLE_TYPE_AS)
+			-- the flags are set dependant on the situation
+		deferred
+		end
+
+	evaluate_like_current_type_flags
+			-- the flags are set dependant on the situation
+		deferred
+		end
+
+	evaluate_like_id_type_flags (l_as: LIKE_ID_AS)
+			-- the flags are set dependant on the situation
+		deferred
+		end
+
+feature {NONE} -- Feature implementation
+
+	process_attachment_mark (has_detachable_mark: BOOLEAN; attachment_mark_index: INTEGER;  attachment_mark_symbol: SYMBOL_AS)
+			-- process the attachment mark
+		do
+			if is_filter_detachable then
+				if has_detachable_mark then
+					-- skip flag
+					last_index := attachment_mark_index
+				else
+					-- process attachment mark
+					safe_process (attachment_mark_symbol)
+				end
+			else
+				-- just process attachment mark
+				safe_process (attachment_mark_symbol)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	generics_to_substitute: LINKED_LIST[TUPLE[INTEGER,INTEGER]]
+			-- List of generics which need to be substituted.
+
+	is_replace_current: BOOLEAN
+			-- Do we want to replace `like current' with `like implementation'
+			-- in the internal generics?
+
+	is_print_with_prefix: BOOLEAN
+			-- indicates that a class name is printed with prefix 'SCOOP_SEPARATE__'
+			-- is set in the 'evaluate_flags' feature
+
+	is_filter_detachable: BOOLEAN
+			-- indicates that a detachable flag should be filtered
+			-- is set in the 'evaluate_flags' feature
+
+;note
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
+		]"
+
+end -- class SCOOP_PROXY_TYPE_VISITOR

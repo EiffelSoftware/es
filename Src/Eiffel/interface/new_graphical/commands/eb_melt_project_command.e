@@ -130,6 +130,12 @@ feature {NONE} -- Compilation implementation
 
 				reset_debugger
 				Window_manager.on_compile
+
+					-- Added for SCOOP
+				if workbench.system_defined then
+					system.remove_scoop_compilation_artifacts
+				end
+
 				perform_compilation
 				display_eiffel_compilation_status
 				if Eiffel_project.successful then

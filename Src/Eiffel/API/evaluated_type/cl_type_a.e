@@ -20,6 +20,7 @@ inherit
 			il_type_name, generate_gen_type_il, is_generated_as_single_type,
 			generic_derivation, associated_class_type, has_associated_class_type,
 			internal_same_generic_derivation_as, internal_generic_derivation,
+			processor_tag,
 			has_associated_class, is_class_valid, instantiated_in, deep_actual_type
 		end
 
@@ -127,7 +128,7 @@ feature -- Properties
 	is_reference: BOOLEAN
 			-- Is the type a reference type?
 		do
-			Result := has_reference_mark or else (has_no_mark and then not associated_class.is_expanded)
+			Result := has_reference_mark or else (has_separate_mark or (has_no_mark and then not associated_class.is_expanded))
 		end
 
 	is_separate: BOOLEAN
@@ -181,6 +182,7 @@ feature -- Comparison
 		do
 			Result := declaration_mark = other.declaration_mark and then
 				class_declaration_mark = other.class_declaration_mark and then
+				-- (workbench.is_degree_scoop_processing implies (is_separate = other.is_separate implies processor_tag.is_equal (other.processor_tag))) and then
 				is_attached = other.is_attached and then
 				class_id = other.class_id
 		end
@@ -325,6 +327,16 @@ feature -- Output
 				st.add_space
 			elseif has_separate_mark then
 				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_separate_keyword, Void)
+				st.add_space
+
+			elseif not processor_tag.is_current then
+ 				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_separate_keyword, Void)
+				if not processor_tag.tag_name.is_empty then
+					st.add_space
+					st.add ("<")
+					st.add (processor_tag.tag_name)
+					st.add (">")
+				end
 				st.add_space
 			end
 			associated_class.append_name (st)
@@ -691,11 +703,43 @@ feature {COMPILER_EXPORTER} -- Conformance
 							-- We should still verify that the attachment marks are taken into account.
 						Result := is_attachable_to (other_class_type)
 					end
+
+					if Result and workbench.is_degree_scoop_processing then
+						Result := scoop_conform_to (other_class_type)
+					end
 				end
 			elseif other.is_type_set then
 				l_other_type_set ?= other.actual_type
 				Result := to_type_set.conform_to (a_context_class, l_other_type_set.twin)
 			end
+		end
+
+	processor_tag : attached PROCESSOR_TAG_TYPE
+		do
+			if {p : PROCESSOR_TAG_TYPE} attr_processor_tag then
+				Result := p
+			else
+				create Result.make_current
+			end
+		end
+
+	scoop_conform_to (other : CL_TYPE_A) : BOOLEAN
+			-- Conformance as according to the SCOOP type rules.
+			-- This is meant to be called within conform_to feature, after the
+			-- decision of inheritance, so that we implicitly have
+			-- Current < other (where < is the inheritance relation).
+		require
+			other_not_void:     other               /= Void
+		local
+			lte_proc_tag : BOOLEAN
+			lte_attach   : BOOLEAN
+		do
+			-- TODO: This rule prevents legal SCOOP feature redeclarations, because it is both applied to result types AND arguments. This needs to be reworked. In the meantime, the check for lte_proc_tag got removed temporarily.
+			lte_proc_tag := processor_tag < other.processor_tag or else processor_tag.is_equal (other.processor_tag)
+			lte_attach   := other.is_implicitly_attached implies
+			                is_implicitly_attached
+
+			Result := lte_attach -- and lte_proc_tag
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN

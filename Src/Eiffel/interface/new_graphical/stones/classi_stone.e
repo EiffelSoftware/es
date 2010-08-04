@@ -104,7 +104,13 @@ feature -- Properties
 			-- be a classc_stone if the class is compiled now)
 		do
 			if class_i /= Void and then class_i.is_valid then
-				if class_i.is_compiled then
+				-- Changed for SCOOP: Make sure the synchronized stone of an original class points to the original class itself.
+				if
+					class_i.config_class.is_overriden and then
+					class_i.config_class.overriden_by.group.name.is_equal ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
+				then
+					create {CLASSI_STONE} Result.make (class_i)
+				elseif class_i.is_compiled then
 					create {CLASSC_STONE} Result.make (class_i.compiled_class)
 				else
 					create {CLASSI_STONE} Result.make (class_i)

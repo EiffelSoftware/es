@@ -1,0 +1,250 @@
+note
+	description: "Internal representation of the SCOOP workbench."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	SCOOP_WORKBENCH
+
+inherit
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+			{ANY} system
+		end
+
+	SHARED_SERVER
+		export
+			{NONE} all
+			{ANY} match_list_server
+		end
+
+	SCOOP_WORKBENCH_ACCESS
+
+feature -- CLASS_C access
+
+	class_c: CLASS_C is
+			-- Currenct processed class_c.
+		require
+			class_c_not_void: scoop_workbench_objects /= Void and then scoop_workbench_objects.current_class_c /= Void
+		do
+			Result := scoop_workbench_objects.current_class_c
+		end
+
+	set_current_class_c (a_class: CLASS_C) is
+			-- Set `a_class' to current class_c.
+		do
+			scoop_workbench_objects.set_current_class_c (a_class)
+		end
+
+feature -- CLASS_AS access
+
+	class_as: CLASS_AS is
+			-- Current processed class_as.
+		require
+			class_as_not_void: scoop_workbench_objects /= Void and then scoop_workbench_objects.current_class_as /= Void
+		do
+			Result := scoop_workbench_objects.current_class_as
+		end
+
+	set_current_class_as (a_class: CLASS_AS) is
+			-- Set `a_class' to current class_as.
+		do
+			scoop_workbench_objects.set_current_class_as (a_class)
+		end
+
+feature -- FEATURE_AS access
+
+	feature_as: FEATURE_AS is
+			-- Current processed feature_as.
+		do
+			Result := scoop_workbench_objects.current_feature_as
+		end
+
+	set_current_feature_as (a_feature: FEATURE_AS) is
+			-- Set `a_feature' to current feature_as.
+		do
+			scoop_workbench_objects.set_current_feature_as (a_feature)
+		end
+
+	set_current_feature_as_void is
+			-- Set the current feature_as to `Void'.
+		do
+			scoop_workbench_objects.set_current_feature_as (Void)
+		end
+
+feature {SCOOP_SEPARATE_PROXY_PRINTER, SCOOP_PROXY_FEATURE_VISITOR} -- FEATURE_CLAUSE_AS access
+
+	feature_clause_as: FEATURE_CLAUSE_AS is
+			-- Current processed feature clause.
+		require
+			feature_clause_as_not_void: feature_clause_as /= Void
+		do
+			Result := scoop_workbench_objects.current_feature_clause_as
+		end
+
+	set_current_feature_clause_as (a_feature_clause: FEATURE_CLAUSE_AS) is
+			-- Set `a_feature_clause' to current feature clause.
+		do
+			scoop_workbench_objects.set_current_feature_clause_as (a_feature_clause)
+		end
+
+	set_current_feature_clause_as_void is
+			-- Set current feature clause to `Void'.
+		do
+			scoop_workbench_objects.set_current_feature_clause_as (Void)
+		end
+
+feature {SCOOP_SEPARATE_PROXY_PRINTER, SCOOP_PROXY_FEATURE_VISITOR} -- FEATURE_CLAUSE_AS access
+
+	is_first_feature: BOOLEAN is
+			-- Is current feature the first in feature clause?
+		do
+			Result := scoop_workbench_objects.is_first_feature
+		end
+
+	set_is_first_feature (a_value: BOOLEAN) is
+			-- Set `a_value' for first feature.
+		do
+			scoop_workbench_objects.set_is_first_feature (a_value)
+		end
+
+feature -- FEATURE_TABLE access
+
+	feature_table: FEATURE_TABLE is
+			-- Feature table of current class.
+		require
+			feature_table_not_void: scoop_workbench_objects /= Void
+				and then scoop_workbench_objects.current_class_c /= Void
+				and then scoop_workbench_objects.current_class_c.feature_table /= Void
+		do
+			Result := scoop_workbench_objects.current_class_c.feature_table
+		end
+
+feature -- SCOOP_SEPARATE_CLASS_LIST access
+
+	scoop_classes: SCOOP_SEPARATE_CLASS_LIST is
+			-- All classes to be processed.
+		require
+			scoop_classes_not_void: scoop_workbench_objects /= Void
+				and then scoop_workbench_objects.scoop_classes /= Void
+		do
+			Result := scoop_workbench_objects.scoop_classes
+		end
+
+	set_scoop_classes (a_list: SCOOP_SEPARATE_CLASS_LIST) is
+			-- Set 'a_list' to class list.
+		do
+			scoop_workbench_objects.set_scoop_classes (a_list)
+		end
+
+feature -- Current derived information access
+
+	feature_object: SCOOP_CLIENT_FEATURE_OBJECT is
+			-- The current feature object.
+		do
+			Result := scoop_workbench_objects.current_feature_object
+		end
+
+	derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION is
+			-- The current class object.
+		do
+			Result := scoop_workbench_objects.current_derived_class_information
+		end
+
+	set_feature_object (a_feature_object: SCOOP_CLIENT_FEATURE_OBJECT) is
+			-- Set `a_feature_object' as current feature object.
+		do
+			scoop_workbench_objects.set_current_feature_object (a_feature_object)
+		end
+
+	set_derived_class_information  (a_derived_class_information: SCOOP_DERIVED_CLASS_INFORMATION) is
+			-- Set `a_feature_object' as current feature object.
+		do
+			scoop_workbench_objects.set_current_derived_class_information (a_derived_class_information)
+		end
+
+
+feature -- Current proxy feature name
+
+	proxy_feature_name: STRING is
+			-- The current proxy feature name.
+		do
+			Result := scoop_workbench_objects.current_proxy_feature_name
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+feature -- System support
+	class_as_by_name (a_class_name: STRING): CLASS_AS is
+			-- Get the class_as by the given name `a_class_name'.
+		local
+			i: INTEGER
+			a_class: CLASS_C
+		do
+			from
+				i := 1
+			until
+				i > system.classes.sorted_classes.count
+			loop
+				a_class := system.classes.sorted_classes.item (i)
+				if a_class /= Void then
+					if a_class.name_in_upper.is_equal (a_class_name.as_upper) then
+						Result := a_class.ast
+					end
+				end
+				i := i + 1
+			end
+--			if result = void then
+--				from
+--					i := 1
+--				until
+--					i > system.classes.count
+--				loop
+--					a_class := system.classes.item (i)
+--					if a_class /= Void then
+--						if a_class.name_in_upper.is_equal (a_class_name.as_upper) then
+--							Result := a_class.ast
+--						end
+--					end
+--					i := i + 1
+--				end
+--			end
+		end
+
+invariant
+	scoop_workbench_objects_not_void: scoop_workbench_objects /= Void
+
+note
+	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			ETH Zurich
+			Chair of Software Engineering
+			Website http://se.inf.ethz.ch/
+		]"
+
+end -- class SCOOP_WORKBENCH

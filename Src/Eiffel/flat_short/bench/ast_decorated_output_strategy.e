@@ -4112,6 +4112,14 @@ feature {NONE} -- Implementation
 			l_text_formatter_decorator.put_new_line
 		end
 
+	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS)
+			-- Process `l_as'.
+		do
+			safe_process (l_as.entity)
+			safe_process (l_as.handler)
+		end
+
+
 feature -- Expression visitor
 
 	expr_type (a_expr: EXPR_AS): TYPE_A

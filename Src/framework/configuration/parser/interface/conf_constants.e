@@ -94,6 +94,11 @@ feature -- Settings
 	s_platform: STRING = "platform"
 	s_shared_library_definition: STRING = "shared_library_definition"
 	s_total_order_on_reals: STRING = "total_order_on_reals"
+
+		-- Added for SCOOP, by trosim on 2010-03-31
+	s_scoop_profile: STRING = "scoop_profile"
+	s_scoop_profile_buffer: STRING = "scoop_profile_buffer"
+
 	s_use_cluster_name_as_namespace: STRING = "use_cluster_name_as_namespace"
 	s_use_all_cluster_name_as_namespace: STRING = "use_all_cluster_name_as_namespace"
 

@@ -98,6 +98,11 @@ inherit
 			{NONE} all
 		end
 
+	SCOOP_BASIC_TYPE
+		export
+			{NONE} all
+		end
+
 feature -- Initialization
 
 	init (a_context: AST_CONTEXT)
@@ -802,6 +807,92 @@ feature {NONE} -- Settings
 		ensure
 			is_current_feature_set: current_feature = a_feature
 		end
+feature {NONE} -- SCOOP Implementation
+    last_is_controlled : BOOLEAN
+
+	set_controlled (a_type : TYPE_A)
+		do
+			if workbench.is_degree_scoop_processing and then a_type.is_separate then
+				a_type.processor_tag.set_controlled (a_type.is_implicitly_attached)
+			end
+		end
+
+    is_arg_controlled (a_type : TYPE_A) : BOOLEAN
+            -- Determine whether the argument `var' is controlled, as
+            -- defined by the SCOOP specification. This implementation uses
+            -- the `current_feature' state variable to determine the current
+            -- context for this predicate.
+        do
+            Result := a_type.is_separate implies a_type.is_attached
+        end
+
+    is_controlled (a_type : TYPE_A) : BOOLEAN
+            -- Determine whether a given type is controlled. This determination
+            -- is based off of the separate tag for the type.
+        do
+
+            Result := True
+
+            if a_type.is_separate then
+                Result := a_type.processor_tag.is_current or a_type.processor_tag.is_controlled
+            end
+
+        end
+
+
+    transform_scoop_result (result_t, target_t : TYPE_A) : TYPE_A
+            -- Transforms the result of a feature call depending on the
+            -- target of that call. This transformation is according to the
+            -- definition given in the SCOOP work on typing
+        local
+            tmp_tag : attached PROCESSOR_TAG_TYPE
+        do
+            Result  := result_t.twin
+
+            if result_t.is_expanded or
+            	(result_t.associated_class = Void or else
+            	is_in_ignored_group (result_t.associated_class)) then
+
+            else
+                Result  := result_t.twin
+                tmp_tag := target_t.processor_tag.twin
+
+                if not result_t.processor_tag.is_current then
+                    Result.processor_tag.make_top
+                else
+                    Result.set_processor_tag (tmp_tag)
+                end
+            end
+        end
+
+
+    transform_scoop_argument (arg_t, target_t : TYPE_A) : TYPE_A
+            -- Transforms the argument type based on the existing argument
+            -- type and the target type. This is according to the definition
+            -- given in the SCOOP work on typing.
+        local
+            tmp_tag : attached PROCESSOR_TAG_TYPE
+        do
+            Result := arg_t.twin
+
+            if target_t.is_expanded or
+            	(arg_t.associated_class = Void or else
+            	is_in_ignored_group (arg_t.associated_class)) then
+
+            else
+                Result  := arg_t.twin
+                tmp_tag := target_t.processor_tag.twin
+
+                if not target_t.processor_tag.top and arg_t.processor_tag.is_current then
+                elseif arg_t.processor_tag.top then
+                    tmp_tag.make_top
+                else
+                    tmp_tag.make_bottom
+                end
+
+                Result.set_processor_tag (tmp_tag)
+            end
+        end
 
 feature {NONE} -- Roundtrip
 
@@ -1254,6 +1345,13 @@ feature {NONE} -- Implementation
 
 			l_context_current_class := context.current_class
 
+				-- FIXME: deal with unqualified call validity checking
+            if workbench.is_degree_scoop_processing then
+                if is_qualified and then not is_controlled (a_type) then
+                    error_handler.insert_error (create {VSTU}.make (context, a_type, l_feature_name))
+                end
+            end
+
 			l_last_type := a_type.actual_type
 			if not l_last_type.is_formal then
 					-- We have no formal, therefore we don't need to recompute `l_last_constrained'
@@ -1528,6 +1626,13 @@ feature {NONE} -- Implementation
 											-- Get formal argument type.
 										l_formal_arg_type := l_feature.arguments.i_th (i)
 
+
+                                            -- Use the SCOOP argument combinator to transform the
+                                            -- Resulting type
+                                        if workbench.is_degree_scoop_processing then
+                                            l_formal_arg_type := transform_scoop_argument (l_formal_arg_type, a_type)
+                                        end
+
 											-- Take care of anchoring to argument
 										if l_formal_arg_type.is_like_argument then
 											l_like_arg_type := l_formal_arg_type.instantiation_in (l_last_type.as_implicitly_detachable, l_last_id)
@@ -1674,6 +1779,12 @@ feature {NONE} -- Implementation
 
 								-- Get the type of Current feature.
 							l_result_type := l_feature.type
+
+								-- SCOOP transformation of the result type, based on both old result type and target of the feature call
+                            if workbench.is_degree_scoop_processing then
+                                l_result_type := transform_scoop_result (l_result_type, a_type)
+                            end
+
 							l_result_type := l_result_type.formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id)
 								-- Adapted type in case it is a formal generic parameter or a like.
 							if l_arg_types /= Void then
@@ -2587,6 +2698,11 @@ feature {NONE} -- Implementation
 					-- Found argument
 				l_type := l_feature.arguments.i_th (l_arg_pos)
 				l_type := l_type.actual_type.instantiation_in (last_type.as_implicitly_detachable, l_last_id)
+
+                    -- We need to remember if this argument is controlled so we can pass this on
+                    -- to later stages, important for SCOOP separate call validity checking.
+				set_controlled (l_type)
+
 				l_has_vuar_error := l_as.parameters /= Void
 				if l_needs_byte_node then
 					create l_argument
@@ -2744,6 +2860,7 @@ feature {NONE} -- Implementation
 				l_arg_type := l_feature.arguments.i_th (l_arg_pos)
 
 				last_type := l_arg_type.actual_type.instantiation_in (last_type.as_implicitly_detachable, l_last_id)
+				set_controlled (last_type)
 				if l_as.parameters /= Void then
 					create l_vuar1
 					context.init_error (l_vuar1)
@@ -7744,6 +7861,13 @@ feature {NONE} -- Implementation
 			-- Process `l_as'.
 		do
 			process_eiffel_list (l_as)
+		end
+
+	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS)
+			-- Process `l_as'.
+		do
+			safe_process (l_as.entity)
+			safe_process (l_as.handler)
 		end
 
 feature {NONE} -- Predefined types

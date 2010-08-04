@@ -97,6 +97,8 @@ feature {NONE} -- Query
 		do
 			inspect
 				a_degree
+			when 7 then
+				Result := translate (lb_degree_7, Void)
 			when 6 then
 				Result := translate (lb_degree_6, Void)
 			when 5 then
@@ -315,6 +317,20 @@ feature -- Basic operations: Degrees
 		do
 			total_number := 1
 			put_degree (degree_message (6), 1, a_cluster.name + a_path)
+		end
+
+	put_degree_scoop (a_class: CLASS_C; nbr_to_go: INTEGER)
+			-- Put message to indicate that `a_class' is being
+			-- compiled during degree scoop with `nbr_to_go'
+			-- classes to go out of `total_nbr'..
+		require
+			class_not_void: a_class /= Void
+			positive_nbr_to_go: nbr_to_go >= 0
+			in_degree_5to4: degree = 7
+		do
+			total_number := nbr_to_go + processed
+			put_degree (degree_message(4), nbr_to_go, a_class.name)
+			processed := processed + 1;
 		end
 
 	put_degree_5 (a_class: CLASS_C; a_to_go: INTEGER)
@@ -676,6 +692,7 @@ feature {NONE} -- Internationalization
 	lb_group: STRING = "group"
 	lb_class: STRING = "class"
 	lb_degree: STRING = "Degree"
+	lb_degree_7: STRING = "Transforming SCOOP Constructs"
 	lb_degree_6: STRING = "Examining System"
 	lb_degree_5: STRING = "Parsing Classes"
 	lb_degree_4: STRING = "Analyzing Inheritance"
@@ -702,7 +719,7 @@ feature {NONE} -- Internationalization
 	lb_case_cluster_message: STRING = "Analyzing Cluster "
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

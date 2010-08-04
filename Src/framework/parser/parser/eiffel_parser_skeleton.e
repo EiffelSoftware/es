@@ -187,6 +187,7 @@ feature -- Initialization
 			deferred_keyword := Void
 			expanded_keyword := Void
 			separate_keyword := Void
+			frozen_keyword := Void
 		end
 
 feature -- Status report

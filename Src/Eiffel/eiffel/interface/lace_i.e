@@ -1140,7 +1140,8 @@ feature {NONE} -- Implementation
 					if l_s.is_boolean then
 						l_b := l_s.to_boolean
 							-- value can't change from a precompile or in a compiled system
-						if l_b /= system.has_multithreaded and then (a_target.precompile /= Void or workbench.has_compilation_started) then
+							-- Modified for SCOOP: We want to to change the multithreaded settings for SCOOP after the SCOOP degree run.							
+						if not workbench.is_degree_scoop_processed and then l_b /= system.has_multithreaded and then (a_target.precompile /= Void or workbench.has_compilation_started) then
 							if not is_force_new_target then
 								create vd83.make (s_multithreaded, system.has_multithreaded.out.as_lower, l_s)
 								Error_handler.insert_warning (vd83)

@@ -254,6 +254,8 @@ feature {NONE} -- Implementation
 			Result.force (s_use_cluster_name_as_namespace)
 			Result.force (s_use_all_cluster_name_as_namespace)
 			Result.force (s_old_feature_replication)
+			Result.force (s_scoop_profile)
+			Result.force (s_scoop_profile_buffer)
 		ensure
 			Result_not_void: Result /= Void
 		end
