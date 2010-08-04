@@ -12,12 +12,10 @@ inherit
 	DS_HASH_TABLE [DS_HASH_TABLE[DS_HASH_SET[V], K2], K1]
 		rename
 			make_with_equality_testers as make_table_with_equality_testers
-		export
-			{NONE}all
 		end
 
 create
-	make_with_equality_testers
+	make, make_with_equality_testers
 
 feature -- Initialization
 

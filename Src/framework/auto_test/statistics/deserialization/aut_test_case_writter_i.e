@@ -121,10 +121,12 @@ feature{NONE} -- Construction
 			l_class_str.replace_substring_all (ph_code, tc_code)
 			l_oper_dec := tc_operands_declaration
 			l_oper_dec.prune_all ('%R')
+			l_oper_dec.prune_all ('%T')
 			l_oper_dec.replace_substring_all ("%N", "$")
 			l_class_str.replace_substring_all (ph_operands_declaration_in_one_line, l_oper_dec)
 			l_var_dec := tc_variables_declaration
 			l_var_dec.prune_all ('%R')
+			l_var_dec.prune_all ('%T')
 			l_var_dec.replace_substring_all ("%N", "$")
 			l_class_str.replace_substring_all (ph_var_declaration_in_one_line, l_var_dec)
 			l_class_str.replace_substring_all (ph_hash_code, tc_hash_code)

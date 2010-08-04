@@ -441,7 +441,7 @@ feature{NONE} -- Auxiliary routines
 
 -- Output the test case without testing if the serialization data is in good status.
 -- Since even the testing itself would crash the program.
---          if is_valid_serialization_data (l_serialization_str) then
+          if is_valid_serialization_data (l_serialization_str) then
 				-- Convert the values between delimiters into {NATURAL_8}, and save them.
 				create last_pre_serialization.make (a_length + 1)
 				l_objects := last_pre_serialization
@@ -454,11 +454,11 @@ feature{NONE} -- Auxiliary routines
 					l_objects.extend (l_serialization_str[l_index].code.as_natural_8)
 					l_index := l_index + 1
 				end
---          else
---            	-- Bad serialization data.
---            	-- Abandon current transition.
---            	last_pre_serialization := Void
---         	end
+          else
+            	-- Bad serialization data.
+            	-- Abandon current transition.
+            	last_pre_serialization := Void
+         	end
 
 		end
 
