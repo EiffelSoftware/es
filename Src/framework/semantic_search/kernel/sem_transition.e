@@ -135,7 +135,7 @@ feature -- Access
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
 		do
-			Result := equation_by_anonymous_expression_text (a_expr_text, preconditions)
+			Result := equation_by_anonymous_expression_text (a_expr_text, preconditions, True)
 		end
 
 	postcondition_by_anonymous_expression_text (a_expr_text: STRING): detachable EPA_EQUATION
@@ -143,7 +143,7 @@ feature -- Access
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
 		do
-			Result := equation_by_anonymous_expression_text (a_expr_text, postconditions)
+			Result := equation_by_anonymous_expression_text (a_expr_text, postconditions, False)
 		end
 
 	name: STRING

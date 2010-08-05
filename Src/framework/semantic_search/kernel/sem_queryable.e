@@ -122,42 +122,27 @@ feature -- Access
 		local
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_cursor: like variable_positions.new_cursor
+			l_cache: like anonymous_expression_cache
 		do
-			create l_replacements.make (variables.count)
-			l_replacements.compare_objects
-			from
-				l_cursor := variable_positions.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_replacements.put (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
-				l_cursor.forth
+			l_cache := anonymous_expression_cache
+			l_cache.search (a_expression)
+			if l_cache.found then
+				Result := l_cache.found_item
+			else
+				create l_replacements.make (variables.count)
+				l_replacements.compare_objects
+				from
+					l_cursor := variable_positions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_replacements.put (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
+					l_cursor.forth
+				end
+				Result := expression_rewriter.expression_text (a_expression, l_replacements)
+				l_cache.force_last (Result, a_expression)
 			end
-			Result := expression_rewriter.expression_text (a_expression, l_replacements)
-		end
-
-	anonymous_expressions_text (a_expression: EPA_EXPRESSION): DS_HASH_SET [STRING]
-			-- Text of `a_expression' with all accesses to variables replaced by anonymoue names
-			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.
-		local
-			l_replacements: HASH_TABLE [STRING, STRING]
-			l_cursor: like variable_positions.new_cursor
-		do
-			create Result.make (2)
-			Result.set_equality_tester (string_equality_tester)
-			create l_replacements.make (variables.count)
-			l_replacements.compare_objects
-			from
-				l_cursor := variable_positions.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_replacements.put (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
-				l_cursor.forth
-			end
---			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
 	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
@@ -167,30 +152,61 @@ feature -- Access
 			Result := typed_expression_text_with_variables (a_expression, variables)
 		end
 
-	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: EPA_STATE): detachable EPA_EQUATION
+	equation_by_anonymous_expression_text (a_expr_text: STRING; a_state: EPA_STATE; a_pre_state: BOOLEAN): detachable EPA_EQUATION
 			-- Assertion equation from `a_state' by anonymouse `a_expr_text' in
 			-- the form of "{0}.has ({1})".
 			-- Void if no such equation is found.
+			-- `a_pre_state' indicates if `a_state' is from prestate.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_equation: EPA_EQUATION
 			l_done: BOOLEAN
+			l_cache: like equation_by_anonymous_expression_cache
+			l_tbl: HASH_TABLE [EPA_EQUATION, STRING]
 		do
-			from
-				l_cursor := a_state.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after or else l_done
-			loop
-				l_equation := l_cursor.item
-				if a_expr_text ~ anonymous_expression_text (l_equation.expression) then
-					Result := l_equation
-					l_done := True
-				else
-					l_cursor.forth
+			l_tbl := equation_by_anonymous_expression_cache.item (a_pre_state)
+			l_tbl.search (a_expr_text)
+			if l_tbl.found then
+				Result := l_tbl.found_item
+			else
+				from
+					l_cursor := a_state.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after or else l_done
+				loop
+					l_equation := l_cursor.item
+					if a_expr_text ~ anonymous_expression_text (l_equation.expression) then
+						Result := l_equation
+						l_done := True
+					else
+						l_cursor.forth
+					end
 				end
+				l_tbl.put (Result, a_expr_text)
 			end
 		end
+
+	equation_by_anonymous_expression_cache: HASH_TABLE [HASH_TABLE [EPA_EQUATION, STRING], BOOLEAN]
+			-- Cache for `equation_by_anonymous_expression_text'
+		local
+			l_tbl: HASH_TABLE [EPA_EQUATION, STRING]
+		do
+			if equation_by_anonymous_expression_cache_internal = Void then
+				create equation_by_anonymous_expression_cache_internal.make (2)
+				create l_tbl.make (100)
+				l_tbl.compare_objects
+				equation_by_anonymous_expression_cache_internal.put (l_tbl, True)
+				create l_tbl.make (100)
+				l_tbl.compare_objects
+				equation_by_anonymous_expression_cache_internal.put (l_tbl, False)
+			end
+			Result := equation_by_anonymous_expression_cache_internal
+		end
+
+	equation_by_anonymous_expression_cache_internal: detachable like equation_by_anonymous_expression_cache
+			-- Cache for `equation_by_anonymous_expression_cache'
+
 
 	typed_expression_text_with_variables (a_expression: EPA_EXPRESSION; a_variables: EPA_HASH_SET [EPA_EXPRESSION]): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
@@ -499,6 +515,22 @@ feature{NONE} -- Implementation
 				end
 			end
 		end
+
+feature{NONE} -- Implementation
+
+	anonymous_expression_cache: DS_HASH_TABLE [STRING, EPA_EXPRESSION]
+			-- Cache for anonymous expressions
+			-- Key is an expression value is the cached anonymous string of that expression
+		do
+			if anonymous_expression_internal = Void then
+				create anonymous_expression_internal.make (200)
+				anonymous_expression_internal.set_key_equality_tester (expression_equality_tester)
+			end
+			Result := anonymous_expression_internal
+		end
+
+	anonymous_expression_internal: detachable like anonymous_expression_cache
+			-- Cache for `anonymous_expression_cache'
 
 invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)

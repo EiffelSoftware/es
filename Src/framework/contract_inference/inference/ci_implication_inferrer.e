@@ -33,7 +33,7 @@ feature -- Basic operations
 				-- Initialize.
 			data := a_data
 			setup_data_structures
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__back.arff2")
+--			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__append.arff2")
 --			l_loader.parse_relation
 --			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
