@@ -62,7 +62,7 @@ feature -- interface
 					end
 				end
 				if not stack.is_empty then
-					tree_root := stack.item.node
+					tree_root := stack.linear_representation[stack.count].node
 					stack.wipe_out
 				end
 			end
