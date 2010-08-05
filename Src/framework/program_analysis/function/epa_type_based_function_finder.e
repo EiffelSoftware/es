@@ -517,7 +517,9 @@ feature{NONE} -- Implementation
 								l_feat.argument_count = 1 and then
 								l_feat.arguments.i_th (1).is_integer and then
 								not is_redundant_query_in_array (l_class, l_feat) and then
-								not is_redundant_query_in_linked_list (l_class, l_feat)
+								not is_redundant_query_in_linked_list (l_class, l_feat) and then
+								not is_redundant_query_in_linked_queue (l_class, l_feat) and then
+								not is_redundant_query_in_linked_stack (l_class, l_feat)
 							then
 								l_range := integer_bounds (context_class, l_feat)
 								if l_range /= Void then
@@ -1130,6 +1132,23 @@ feature{NONE} -- Implementations
 
 feature{NONE} -- Implementation
 
+	ARRAY_class_id: INTEGER
+			-- Class ID of {ARRAY}.
+		do
+			if ARRAY_class_id_cache = 0 then
+				if attached {CLASS_C} first_class_starts_with_name ("ARRAY") as l_class then
+					ARRAY_class_id_cache := l_class.class_id
+				else
+					ARRAY_class_id_cache := -1
+				end
+
+			end
+			Result := ARRAY_class_id_cache
+		end
+
+	ARRAY_class_id_cache: INTEGER
+			-- Cache for `ARRAY_class_id'
+
 	is_redundant_query_in_ARRAY (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' in `a_class' redundant and only slows down the inference process?
 		do
@@ -1140,6 +1159,22 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	LINKED_LIST_class_id: INTEGER
+			-- Class ID of {LINKED_LIST}.
+		do
+			if LINKED_LIST_class_id_cache = 0 then
+				if attached {CLASS_C} first_class_starts_with_name ("LINKED_LIST") as l_class then
+					LINKED_LIST_class_id_cache := l_class.class_id
+				else
+					LINKED_LIST_class_id_cache := -1
+				end
+			end
+			Result := LINKED_LIST_class_id_cache
+		end
+
+	LINKED_LIST_class_id_cache: INTEGER
+			-- Cache for `LINKED_LIST_class_id'
+
 	is_redundant_query_in_LINKED_LIST (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' in `a_class' redundant and only slows down the inference process?
 		do
@@ -1149,29 +1184,55 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	ARRAY_class_id: INTEGER
-			-- Class ID of {ARRAY}.
+	LINKED_QUEUE_class_id: INTEGER
+			-- Class ID of {LINKED_QUEUE}.
 		do
-			if ARRAY_class_id_cache = 0 then
-				ARRAY_class_id_cache := first_class_starts_with_name ("ARRAY").class_id
+			if LINKED_QUEUE_class_id_cache = 0 then
+				if attached {CLASS_C} first_class_starts_with_name ("LINKED_QUEUE") as l_class then
+					LINKED_QUEUE_class_id_cache := l_class.class_id
+				else
+					LINKED_QUEUE_class_id_cache := -1
+				end
 			end
-			Result := ARRAY_class_id_cache
+			Result := LINKED_QUEUE_class_id_cache
 		end
 
-	ARRAY_class_id_cache: INTEGER
-			-- Cache for `ARRAY_class_id'
+	LINKED_QUEUE_class_id_cache: INTEGER
+			-- Cache for `LINKED_QUEUE_class_id'
 
-	LINKED_LIST_class_id: INTEGER
-			-- Class ID of {LINKED_LIST}.
+	is_redundant_query_in_LINKED_QUEUE (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' in `a_class' redundant and only slows down the inference process?
 		do
-			if LINKED_LIST_class_id_cache = 0 then
-				LINKED_LIST_class_id_cache := first_class_starts_with_name ("LINKED_LIST").class_id
+			if a_class.class_id = LINKED_QUEUE_class_id then
+				Result :=
+					a_feature.feature_name ~ "at"
 			end
-			Result := LINKED_LIST_class_id_cache
 		end
 
-	LINKED_LIST_class_id_cache: INTEGER
-			-- Cache for `LINKED_LIST_class_id'
+	LINKED_STACK_class_id: INTEGER
+			-- Class ID of {LINKED_STACK}.
+		do
+			if LINKED_STACK_class_id_cache = 0 then
+				if attached {CLASS_C} first_class_starts_with_name ("LINKED_STACK") as l_class then
+					LINKED_STACK_class_id_cache := l_class.class_id
+				else
+					LINKED_STACK_class_id_cache := -1
+				end
 
+			end
+			Result := LINKED_STACK_class_id_cache
+		end
+
+	LINKED_STACK_class_id_cache: INTEGER
+			-- Cache for `LINKED_STACK_class_id'
+
+	is_redundant_query_in_LINKED_STACK (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' in `a_class' redundant and only slows down the inference process?
+		do
+			if a_class.class_id = LINKED_STACK_class_id then
+				Result :=
+					a_feature.feature_name ~ "at"
+			end
+		end
 
 end
