@@ -2223,6 +2223,7 @@ Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wel/wel-safe.lic -text
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
 Src/contrib/library/README.txt -text
+Src/contrib/library/svn/svn.lic -text
 Src/dotnet/codedom_provider_2.0/test/tester/icons/tester.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/ecdpman.ico -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/application.png -text
