@@ -1853,8 +1853,13 @@ feature -- Propagation
 					io.error.put_string (class_i.name)
 					io.error.put_new_line
 				end
-				workbench.add_class_to_recompile (class_i)
-				class_i.set_changed (True)
+					-- Can only recompile a class if it is valid.
+					-- This fixes eweasel test#fixed119 and test#fixed120
+					-- when running with assertions.
+				if class_i.is_valid then
+					workbench.add_class_to_recompile (class_i)
+					class_i.set_changed (True)
+				end
 				l_syntactical_clients.forth
 			end
 		end
@@ -2600,7 +2605,7 @@ end
 				-- Propagation along the filters since we have a new type
 				-- Clean the filters. Some of the filters can be obsolete
 				-- if the base class has been removed from the system
-			class_filters.clean
+			class_filters.clean (Current)
 			l_system := system
 			from
 				class_filters.start
@@ -2642,7 +2647,7 @@ feature {CLASS_C} -- Incrementality
 				-- Propagation along the filters since we have a new type
 				-- Clean the filters. Some of the filters can be obsolete
 				-- if the base class has been removed from the system
-			class_filters.clean
+			class_filters.clean (Current)
 			from
 				class_filters.start
 				l_system := system
@@ -4009,6 +4014,14 @@ feature {COMPILER_EXPORTER} -- Setting
 			generic_features := f
 		ensure
 			generic_features_set: generic_features = f
+		end
+
+	set_need_new_parents (v: like need_new_parents)
+			-- Set `need_new_parents' with `v'.
+		do
+			need_new_parents := v
+		ensure
+			need_new_parents_set: need_new_parents = v
 		end
 
 feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Setting
