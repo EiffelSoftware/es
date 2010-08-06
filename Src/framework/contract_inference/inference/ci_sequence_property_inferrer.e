@@ -55,6 +55,11 @@ feature -- Basic operations
 					signature_set (False, False, True, False),
 					<<sequence_is_prefix_of_bin_operator>>, True)
 
+				generate_boolean_binary_properties (
+					signature_set (True, False, True, False),
+					signature_set (False, False, True, False),
+					<<sequence_is_suffix_of_bin_operator>>, True)
+
 				generate_binary_properties (
 					signature_set (True, True, True, True),
 					signature_set (True, True, True, True),

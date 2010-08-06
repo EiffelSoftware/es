@@ -294,6 +294,16 @@ feature{NONE} -- Implementation
 					set_has_error (True, msg_type_error_sequence_expected)
 				end
 
+			elseif a_operator_name ~ sequence_is_suffix_of_bin_operator then
+				if
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then
+					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_right as l_right
+				then
+					create {EPA_BOOLEAN_VALUE} last_value.make (l_left.is_suffix_of (l_right))
+				else
+					set_has_error (True, msg_type_error_sequence_expected)
+				end
+
 			elseif a_operator_name ~ sequence_concatenation_bin_operator then
 				if
 					attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_left as l_left and then

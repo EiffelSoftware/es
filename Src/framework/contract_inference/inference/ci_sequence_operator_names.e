@@ -18,6 +18,8 @@ feature -- Sequence operators
 
 	sequence_is_prefix_of_bin_operator: STRING = "|is_prefix_of|"
 
+	sequence_is_suffix_of_bin_operator: STRING = "|is_suffix_of|"
+
 	sequence_concatenation_bin_operator: STRING = "|+|"
 
 	sequence_head_bin_operator: STRING = "|head|"
@@ -42,9 +44,11 @@ feature -- Sequence operators
 			Result.set_equality_tester (string_equality_tester)
 			Result.force_last (sequence_is_equal_bin_operator)
 			Result.force_last (sequence_is_prefix_of_bin_operator)
+			Result.force_last (sequence_is_suffix_of_bin_operator)
 			Result.force_last (sequence_concatenation_bin_operator)
 			Result.force_last (sequence_head_bin_operator)
 			Result.force_last (sequence_tail_bin_operator)
+
 		end
 
 end

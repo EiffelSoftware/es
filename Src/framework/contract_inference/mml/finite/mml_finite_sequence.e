@@ -284,6 +284,25 @@ feature -- Comparison
 			end
 		end
 
+	is_suffix_of (other: MML_FINITE_SEQUENCE [G]): BOOLEAN
+			-- Is `Current' a suffix of `other'?
+		local
+			i: INTEGER
+			j: INTEGER
+		do
+			j := other.count
+			Result := count <= j
+			from
+				i := count
+			until
+				i = 0 or not Result
+			loop
+				Result := item (i) ~ other.item (j)
+				i := i - 1
+				j := j - 1
+			end
+		end
+
 feature {NONE} -- Initialization
 	empty
 			-- Create empty sequence

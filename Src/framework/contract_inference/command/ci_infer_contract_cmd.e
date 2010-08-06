@@ -581,7 +581,7 @@ feature{NONE} -- Actions
 				-- Logging.
 			create l_printer.make
 			log_manager.push_info_level
-			log_manager.put_line_with_time ("Found the following final postconditions:")
+			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
 			from
 				l_cursor := last_postconditions.new_cursor
 				l_cursor.start
