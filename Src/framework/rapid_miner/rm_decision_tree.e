@@ -17,7 +17,7 @@ feature{NONE} -- Initialization
 			-- `a_label_name' the target attribute's name for this tree
 		do
 			internal_is_accurate := True
-			calculate_is_accurate := True
+			should_calculate_is_accurate := True
 			root := a_root
 			label_name := a_label_name
 			create stack.make
@@ -54,7 +54,7 @@ feature -- Status report
 			-- Is Current tree accurate?
 			-- A tree is accurate if it does correct classification on all training samples.
 		do
-			if calculate_is_accurate then
+			if should_calculate_is_accurate then
 				Result := root.is_sample_accurate
 			else
 				Result := internal_is_accurate
@@ -76,7 +76,7 @@ feature{RM_DECISION_TREE_BUILDER} -- Setting
 			-- Set `is_accurate' with `a_is_accurate'.
 		do
 			internal_is_accurate := a_is_accurate
-			calculate_is_accurate := False
+			should_calculate_is_accurate := False
 		ensure
 			is_accurate_set: is_accurate = a_is_accurate
 		end
@@ -84,7 +84,7 @@ feature{RM_DECISION_TREE_BUILDER} -- Setting
 
 feature{NONE} -- Internal data holders
 
-	calculate_is_accurate: BOOLEAN
+	should_calculate_is_accurate: BOOLEAN
 			-- This variable tells if we have to calculate the `is_accurate' feature
 			-- by going to all the leaves and checking out the samples or we can use
 			-- the `internal_is_accurate' variable. If we use the `set_is_accurate'

@@ -63,6 +63,23 @@ feature -- Access
 
 feature -- Status report
 
+	does_support_missing_values(a_name: STRING): BOOLEAN
+			-- Does the algorithm with name `a_name' support arff files with missing values.
+		do
+			Result := True
+			if a_name = algorithm_id3 then
+				Result := False
+			end
+		end
+
+	does_support_numeric_values(a_name: STRING): BOOLEAN
+			-- Does the algorithm with name `a_name' support arff files with numeric values.
+		do
+			if a_name = algorithm_decision_tree or a_name = algorithm_decision_stump then
+				Result := True
+			end
+		end
+
 	is_valid_algorithm_name (a_name: STRING): BOOLEAN
 			-- Does `a_name' represent a supported rapidminer algorithm?
 		do
@@ -86,18 +103,25 @@ feature -- Validation types
 feature -- Placeholders. They will be put into the seed xml string and will be replaced by the appropriate values afterwards.
 
 	placeholder_data_file: STRING = "${data_file_placeholder}"
+			-- Placeholder for the absolute ARFF file path in the Rapidminer xml file.
 
 	placeholder_label_name: STRING = "${label_name_placeholder}"
+			-- Placeholder for the label(target attribute) in the Rapidminer xml file.
 
 	placeholder_algorithm_name: STRING = "${algorithm_name_placeholder}"
+			-- Placeholder for the algorithm name in the Rapidminer xml file.
 
 	placeholder_algorithm_parameters: STRING = "${algorithm_parameters_placeholder}"
+			-- Placeholder for the algorithm parameters in the Rapidminer xml file.
 
 	placeholder_selected_attributes: STRING = "${selected_attributes_placeholder}"
+			-- Placeholder for the selected attributes in the Rapidminer xml file.
 
 	placeholder_validation_parameters: STRING = "${validation_parameters_placeholder}"
+			-- Placeholder for the validation parameters in the Rapidminer xml file.
 
 	placeholder_validation_name: STRING = "${validation_name_placeholder}"
+			-- Placeholder for the validation name in the Rapidminer xml file.
 
 feature -- Environment
 

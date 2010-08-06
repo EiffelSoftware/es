@@ -52,9 +52,9 @@ feature{RM_BUILDER} -- Implementation
 	parse_model
 			-- Parses the model file.
 		local
-			l_model_parser: RM_DECISION_TREE_PARSER
+			l_model_parser: RM_DECISION_TREE_PARSER_INTERFACE
 		do
-			create l_model_parser.make (rm_environment.model_file_path)
+			l_model_parser := parser
 			l_model_parser.parse_model
 
 			create last_tree.make (l_model_parser.tree_root, label_name)
@@ -71,5 +71,11 @@ feature{RM_BUILDER} -- Implementation
 				last_tree.set_is_accurate (l_perf_parser.is_accurate)
 			end
 		end
+
+	parser: RM_DECISION_TREE_PARSER_INTERFACE
+		-- Gives the right parser for the particular decision tree algorithm.
+	do
+		create {RM_DECISION_TREE_PARSER}Result.make(rm_environment.model_file_path)
+	end
 
 end

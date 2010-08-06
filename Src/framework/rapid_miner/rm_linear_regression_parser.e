@@ -5,6 +5,11 @@ note
 	revision: "$Revision$"
 class
 	RM_LINEAR_REGRESSION_PARSER
+	
+inherit
+	RM_LINEAR_REGRESSION_PARSER_INTERFACE redefine
+		parse_linear_regression
+	end
 
 create
 	make
@@ -40,15 +45,7 @@ feature -- Interface
 			end
 		end
 
-feature -- Access
-
-	last_linear_regression: RM_LINEAR_REGRESSION
-
-feature{NONE} -- Internal data holders
-
-	model_file_path: STRING
-
-feature{NONE} -- Implementation
+feature{RM_LINEAR_REGRESSION_PARSER_INTERFACE} -- Implementation
 
 	parse_line (a_text: STRING)
 			-- Parse a line `a_text' from a linear regression model file line. Put the

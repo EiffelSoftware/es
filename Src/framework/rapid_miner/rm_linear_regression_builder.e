@@ -49,9 +49,9 @@ feature{RM_BUILDER} -- Implementation
 
 	parse_model
 		local
-			l_model_parser: RM_LINEAR_REGRESSION_PARSER
+			l_model_parser: RM_LINEAR_REGRESSION_PARSER_INTERFACE
 		do
-			create l_model_parser.make (rm_environment.model_file_path)
+			l_model_parser := parser
 			l_model_parser.parse_linear_regression
 			last_linear_regression := l_model_parser.last_linear_regression
 			last_linear_regression.set_dependent_variable (label_name)
@@ -66,5 +66,11 @@ feature{RM_BUILDER} -- Implementation
 				l_perf_parser.parse_performance
 			end
 		end
+
+	parser: RM_LINEAR_REGRESSION_PARSER_INTERFACE
+		-- Gives the right parser for the particular decision tree algorithm.
+	do
+		create {RM_LINEAR_REGRESSION_PARSER}Result.make(rm_environment.model_file_path)
+	end
 
 end
