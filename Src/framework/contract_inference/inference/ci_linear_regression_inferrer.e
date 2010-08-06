@@ -187,9 +187,14 @@ feature{NONE} -- Implementation
 					end
 					i := i + 1
 				end
-				l_property_body.right_justify
+				l_property_body.right_adjust
 				if l_property_body.item (l_property_body.count) = '=' then
 					l_property_body.append (" 0")
+				end
+				l_property_body.left_adjust
+				if l_property_body.item (1) = '+' then
+					l_property_body.keep_tail (l_property_body.count - 1)
+					l_property_body.left_adjust
 				end
 				create l_property.make_with_text_and_type (class_under_test, feature_under_test, l_property_body, class_under_test, boolean_type)
 				if not l_property.has_syntax_error then
@@ -306,6 +311,24 @@ feature{NONE} -- Implementation
 						l_reg_attr /= l_attr and then
 						l_reg_attr.is_numeric and then
 						l_reg_attr.name.has_substring (once "post::") and then
+						not value_sets.item (l_reg_attr).has (once "?")
+					if l_ok then
+						l_regressors.force_last (l_reg_attr)
+					end
+				end
+				if not l_regressors.is_empty then
+					l_reg_list.extend (l_regressors)
+				end
+
+
+				create l_regressors.make (10)
+				l_regressors.set_equality_tester (weka_arff_attribute_equality_tester)
+				across arff_relation.attributes as l_attrs loop
+					l_reg_attr := l_attrs.item
+					l_ok :=
+						l_reg_attr /= l_attr and then
+						l_reg_attr.is_numeric and then
+						(l_reg_attr.name.has_substring (once "pre::") or l_reg_attr.name.has_substring (once "post::")) and then
 						not value_sets.item (l_reg_attr).has (once "?")
 					if l_ok then
 						l_regressors.force_last (l_reg_attr)
