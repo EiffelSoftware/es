@@ -61,6 +61,7 @@ feature -- Basic operations
 			l_simple_equality_flag: AP_STRING_OPTION
 			l_dummy_flag: AP_STRING_OPTION
 			l_verbose_option: AP_STRING_OPTION
+			l_freeze_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -190,6 +191,10 @@ feature -- Basic operations
 			create l_verbose_option.make_with_long_form ("verbose")
 			l_verbose_option.set_description ("Set verbose level.%NFormat: --verbose [info|fine].%N%"info%" will provide basic information. %"fine%" will produce detailed information, suitable for debugging.%NDefault: info. ")
 			l_parser.options.force_last (l_verbose_option)
+
+			create l_freeze_option.make_with_long_form ("freeze")
+			l_freeze_option.set_description ("Should the project be frozen before contract inference starts? Default: False.")
+			l_parser.options.force_last (l_freeze_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -321,6 +326,7 @@ feature -- Basic operations
 				setup_verbose_level (config, Void)
 			end
 
+			config.set_should_freeze (l_freeze_option.was_found)
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 

@@ -250,6 +250,10 @@ feature -- Access
 			-- Check constants defiend {EPA_LOG_MANAGER} for valid values.
 			-- Default: {EPA_LOG_MANAGER}.info_level
 
+	should_freeze: BOOLEAN
+			-- Should freeze the project before contract inference?
+			-- Default: False
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -504,6 +508,14 @@ feature -- Setting
 			verbose_level := a_level
 		ensure
 			verbose_level_set: verbose_level = a_level
+		end
+
+	set_should_freeze (b: BOOLEAN)
+			-- Set `should_freeze' with `b'.
+		do
+			should_freeze := b
+		ensure
+			should_freeze_set: should_freeze = b
 		end
 
 feature{NONE} -- Implementation

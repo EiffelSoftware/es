@@ -180,7 +180,8 @@ feature{NONE} -- Implementation
 			if a_pre_execution then
 				l_bp_slot := a_tc_info.before_test_break_point_slot + 1
 			else
-				l_bp_slot := a_tc_info.after_test_break_point_slot
+--				l_bp_slot := a_tc_info.before_test_break_point_slot
+				l_bp_slot := a_tc_info.after_test_break_point_slot + 1
 			end
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
 			Result.set_breakpoint_with_agent_and_action (
