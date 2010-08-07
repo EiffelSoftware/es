@@ -200,9 +200,77 @@ feature{NONE} -- Implementation
 			l_is_container: BOOLEAN
 			l_templates: LINKED_LIST [TUPLE [header: STRING; trailer: STRING]]
 			l_temp_body: STRING
+			l_arg_index: INTEGER
 		do
 			create Result.make (1)
 			Result.set_equality_tester (ci_quantified_expression_equality_tester)
+
+			l_is_container := is_class_a_container (class_under_test)
+			l_feat_types := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type)
+
+			if feature_under_test.argument_count > 0 and then a_function.arity = 2 and then not a_function.argument_type (2).is_integer then
+					-- Iterate through all arguments of `feature_under_test', and see if
+					-- some frame property candidates can be built from it.
+				across 1 |..| feature_under_test.argument_count as l_arg_indexes loop
+					l_arg_index := l_arg_indexes.item
+					l_actual_arg_type := l_feat_types.item (l_arg_index)
+					l_func_arg_type := a_function.argument_type (2).actual_type
+					l_func_arg_type := actual_type_from_formal_type (l_func_arg_type, class_under_test)
+
+					create l_templates.make
+	--				if l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) then
+	--					l_templates.extend (["old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /~ {2} implies(", "))"])
+	--					l_templates.extend (["not old " + curly_brace_surrounded_integer (1) + ".object_comparison implies ({3} /= {2} implies (", "))"])
+	--				else
+	--					l_templates.extend (["{3} /= {2} implies (", ")"])
+	--				end
+					if
+						l_func_arg_type.is_conformant_to (class_under_test, l_actual_arg_type) and then
+						l_actual_arg_type.is_conformant_to (class_under_test, l_func_arg_type)
+					then
+						l_templates.extend (["{3} /= {2} implies (", ")"])
+					end
+
+					from
+						l_templates.start
+					until
+						l_templates.after
+					loop
+							-- Construct frame property text.
+						create l_predicate_body.make (64)
+						l_predicate_body.append (l_templates.item_for_iteration.header)
+						l_predicate_body.append (once "old ")
+						l_temp_body := a_function.body.twin
+						l_temp_body.replace_substring_all (curly_brace_surrounded_integer (2), curly_brace_surrounded_integer (3))
+						l_predicate_body.append (l_temp_body)
+						if a_negated_consequent then
+							l_predicate_body.append (once " /= ")
+						else
+							l_predicate_body.append (once " = ")
+						end
+						l_predicate_body.append (l_temp_body)
+						l_predicate_body.append (l_templates.item_for_iteration.trailer)
+
+							-- Setup frame property scope and operand map.
+						create l_scope.make (a_function, 2, a_pre_state)
+						create l_operand_map.make (2)
+						l_operand_map.put (a_target_variable_index, 1)
+						l_operand_map.put (l_arg_index, 2)
+
+							-- Setup argument types for the frame property.
+						create l_argument_types.make (1, 3)
+						l_argument_types.put (a_function.argument_type (1), 1)
+						l_argument_types.put (feature_under_test.arguments.i_th (l_arg_index), 2)
+						l_argument_types.put (a_function.argument_type (2), 3)
+						l_predicate := quantified_function (l_argument_types, l_predicate_body)
+
+							-- Create frame property.
+						create l_quantified_expr.make (3, l_predicate, l_scope, True, l_operand_map)
+						Result.force_last (l_quantified_expr)
+						l_templates.forth
+					end
+				end
+			end
 
 			if feature_under_test.argument_count = 1 and then a_function.arity = 2 and then not a_function.argument_type (2).is_integer then
 				l_is_container := is_class_a_container (class_under_test)
