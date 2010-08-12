@@ -3176,6 +3176,9 @@ Src/tools/pmsn/pmsn.lic -text
 Src/tools/po_generation_tool/po_generation_tool.lic -text
 Src/tools/quick_finalize/quick_finalize.lic -text
 Src/tools/reg2wix/reg2wix.lic -text
+Src/tools/repository_tool/ctr.exe.manifest -text
+Src/tools/repository_tool/ctr.ico -text
+Src/tools/repository_tool/ctr.rc -text
 Src/tools/repository_tool/data/catalog.ini -text
 Src/tools/repository_tool/lib/README.TXT -text
 Src/tools/resave_cfg/resave_cfg.lic -text
