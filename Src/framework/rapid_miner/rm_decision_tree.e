@@ -26,16 +26,16 @@ feature{NONE} -- Initialization
 feature -- Access
 
 	last_classification: STRING
-			-- last result from the classify command.
+			-- Last result from the classify command.
 
 	root: RM_DECISION_TREE_NODE
-			-- the root node of the tree.
+			-- The root node of the tree.
 
 	label_name: STRING
-			-- the name of the target attribute of that  tree
+			-- The name of the target attribute of that  tree
 
 	paths: LINKED_LIST [LINKED_LIST [RM_DECISION_TREE_PATH_NODE]]
-			-- List of paths from current tree
+			-- List of all the paths from the root of the current tree to all the nodes.
 			-- Eath inner list represents a path, the first element is the root node,
 			-- the last element is the leaf node.
 		do

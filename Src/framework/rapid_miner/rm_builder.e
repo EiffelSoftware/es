@@ -24,15 +24,12 @@ feature{RM_BUILDER} -- Initializaiton
 			selected_attributes_not_empty: not a_selected_attributes.is_empty
 			a_label_attribute_valid: a_selected_attributes.has (a_label_name)
 			valid_algorithm: is_valid_algorithm_name (a_algorithm_name)
-		local
-			rm_const: RM_CONSTANTS
 		do
 			algorithm_name := a_algorithm_name
 			validation_code := a_validation_code
 			arff_file_path := a_arff_file_path
 			selected_attributes := a_selected_attributes
 			label_name := a_label_name
-			create rm_const
 		end
 
 	init_with_relation (a_algorithm_name: STRING; a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
@@ -66,7 +63,7 @@ feature{RM_BUILDER} -- Initializaiton
 feature -- Interface
 
 	build
-			-- Builds the tree with the help of rapidminer. Implements the template method pattern.
+			-- Builds the classification with the help of rapidminer. Implements the template method pattern.
 		do
 			prepare_xml_file
 
@@ -81,7 +78,7 @@ feature -- Interface
 
 feature -- Setters
 
-	set_algorithm_parameters(a_parameters: HASH_TABLE [STRING, STRING])
+	set_algorithm_parameters (a_parameters: HASH_TABLE [STRING, STRING])
 			-- Sets the algorithm parameters.
 			-- `a_parameters' is a set of parameters specifying options for the current algorithm. They will be written in the
 			-- XML file given to rapid miner. The key is the parameter name and the value is the value.
@@ -91,7 +88,7 @@ feature -- Setters
 			algorithm_parameters = a_parameters
 		end
 
-	set_validation_parameters(a_parameters: HASH_TABLE [STRING, STRING])
+	set_validation_parameters (a_parameters: HASH_TABLE [STRING, STRING])
 			-- Sets the validation parameters.
 			-- `a_parameters' is a set of parameters specifying options for the current validation. They will be written in the
 			-- XML file given to rapid miner. The key is the parameter name and the value is the value.
@@ -101,7 +98,7 @@ feature -- Setters
 			validation_parameters = a_parameters
 		end
 
-	set_validation_type(a_validation_code: INTEGER)
+	set_validation_type (a_validation_code: INTEGER)
 			-- Set `validation_code' with `a_validation_code'.
 		require
 			valid_type: is_valid_validation_code (a_validation_code)
@@ -111,7 +108,7 @@ feature -- Setters
 			validation_code = a_validation_code
 		end
 
-	set_algorithm_type(a_algorithm_name: STRING)
+	set_algorithm_type (a_algorithm_name: STRING)
 			-- Set `algorithm_name' with `a_algorithm_name'.
 		require
 			valid_algorithm: is_valid_algorithm_name (a_algorithm_name)
@@ -123,7 +120,6 @@ feature -- Setters
 
 
 feature{RM_BUILDER} -- Implementation
-
 
 	parse_model
 			-- Parses the model file. The model file is the file where rapidminer writes the generated

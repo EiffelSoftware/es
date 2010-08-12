@@ -76,15 +76,15 @@ feature{NONE} -- Actual xml skeleton generation.
       <operator activated="true" class="read_arff" expanded="true" name="Read ARFF">
         <parameter key="data_file" value="
         ]")
-        	Result.append(placeholder_data_file)
-			Result.append("[
+        	Result.append (placeholder_data_file)
+			Result.append ("[
 "/>
       </operator>
       <operator activated="true" class="set_role" expanded="true"  name="Set Role">
         <parameter key="name" value="
      	]")
-			Result.append(placeholder_label_name)
-			Result.append("[
+			Result.append (placeholder_label_name)
+			Result.append ("[
 "/>
         <parameter key="target_role" value="label"/>
       </operator>
@@ -92,24 +92,24 @@ feature{NONE} -- Actual xml skeleton generation.
         <parameter key="attribute_filter_type" value="subset"/>
         <parameter key="attributes" value="
         ]")
-        	Result.append(placeholder_selected_attributes)
-			Result.append("[
+        	Result.append (placeholder_selected_attributes)
+			Result.append ("[
 "/>
       </operator>
       <operator activated="true" class="
       ]")
-			Result.append(placeholder_algorithm_name)
-			Result.append("[
+			Result.append (placeholder_algorithm_name)
+			Result.append ("[
 " expanded="true"  name="Decision Tree">
       ]")
-			Result.append(placeholder_algorithm_parameters)
-			Result.append("[
+			Result.append (placeholder_algorithm_parameters)
+			Result.append ("[
       </operator>
       <operator activated="true" class="write_as_text" expanded="true"  name="Output Model to File" >
         <parameter key="result_file" value="
         ]")
-			Result.append(rm_environment.model_file_path)
-			Result.append("[
+			Result.append (rm_environment.model_file_path)
+			Result.append ("[
 "/>
 		<parameter key="encoding" value="UTF-8"/>
       </operator>
@@ -126,12 +126,12 @@ feature{NONE} -- Actual xml skeleton generation.
 </process>
 			]")
 		ensure
-			has_placeholder: Result.has_substring(placeholder_data_file)
-			has_placeholder: Result.has_substring(placeholder_label_name)
-			has_placeholder: Result.has_substring(placeholder_selected_attributes)
-			has_placeholder: Result.has_substring(placeholder_algorithm_name)
-			has_placeholder: Result.has_substring(placeholder_algorithm_parameters)
-			has_placeholder: Result.has_substring(rm_environment.model_file_path)
+			has_placeholder: Result.has_substring (placeholder_data_file)
+			has_placeholder: Result.has_substring (placeholder_label_name)
+			has_placeholder: Result.has_substring (placeholder_selected_attributes)
+			has_placeholder: Result.has_substring (placeholder_algorithm_name)
+			has_placeholder: Result.has_substring (placeholder_algorithm_parameters)
+			has_placeholder: Result.has_substring (rm_environment.model_file_path)
 		end
 
 
@@ -151,42 +151,42 @@ feature{NONE} -- Actual xml skeleton generation.
       <operator activated="true" class="read_arff" expanded="true" name="Read ARFF">
         <parameter key="data_file" value="
         ]"
-        	Result.append(placeholder_data_file)
-			Result.append("[
+        	Result.append (placeholder_data_file)
+			Result.append ("[
 "/>
       </operator>
       <operator activated="true" class="select_attributes" expanded="true" name="Select Attributes">
         <parameter key="attribute_filter_type" value="subset"/>
         <parameter key="attributes" value="
         ]")
-        	Result.append(placeholder_selected_attributes)
-			Result.append("[
+        	Result.append (placeholder_selected_attributes)
+			Result.append ("[
 "/>
       </operator>
       <operator activated="true" class="remove_useless_attributes" expanded="true" name="Remove Useless Attributes"/>
       <operator activated="true" class="set_role" expanded="true" name="Set Role">
         <parameter key="name" value="
         ]")
-			Result.append(placeholder_label_name)
-			Result.append("[
+			Result.append (placeholder_label_name)
+			Result.append ("[
 "/>
         <parameter key="target_role" value="label"/>
       </operator>
       <operator activated="true" class="
 		]")
-			Result.append(placeholder_validation_name)
-			Result.append("%"  expanded=%"true%" name=%"Validation%">")
-			Result.append(placeholder_validation_parameters)
-			Result.append("[
+			Result.append (placeholder_validation_name)
+			Result.append ("%"  expanded=%"true%" name=%"Validation%">")
+			Result.append (placeholder_validation_parameters)
+			Result.append ("[
         <process expanded="true">
           <operator activated="true" class="
           ]")
-			Result.append(placeholder_algorithm_name)
-			Result.append("[
+			Result.append (placeholder_algorithm_name)
+			Result.append ("[
 " expanded="true" name="Decision Tree (2)">
 			]")
-			Result.append(placeholder_algorithm_parameters)
-			Result.append("[
+			Result.append (placeholder_algorithm_parameters)
+			Result.append ("[
             <parameter key="no_pre_pruning" value="true"/>
             <parameter key="no_pruning" value="true"/>
           </operator>
@@ -215,16 +215,16 @@ feature{NONE} -- Actual xml skeleton generation.
       <operator activated="true" class="write_as_text" expanded="true" name="Output Performance To File">
         <parameter key="result_file" value="
         ]")
-			Result.append(rm_environment.performance_file_path)
-			Result.append("[
+			Result.append (rm_environment.performance_file_path)
+			Result.append ("[
 "/>
         <parameter key="encoding" value="UTF-8"/>
       </operator>
       <operator activated="true" class="write_as_text" expanded="true" name="Output Model To File">
         <parameter key="result_file" value="
         ]")
-			Result.append(rm_environment.model_file_path)
-			Result.append("[
+			Result.append (rm_environment.model_file_path)
+			Result.append ("[
 "/>
         <parameter key="encoding" value="UTF-8"/>
       </operator>
@@ -245,15 +245,15 @@ feature{NONE} -- Actual xml skeleton generation.
 </process>
 	]")
 		ensure
-			has_placeholder: Result.has_substring(placeholder_data_file)
-			has_placeholder: Result.has_substring(placeholder_label_name)
-			has_placeholder: Result.has_substring(placeholder_selected_attributes)
-			has_placeholder: Result.has_substring(placeholder_algorithm_name)
-			has_placeholder: Result.has_substring(placeholder_algorithm_parameters)
-			has_placeholder: Result.has_substring(rm_environment.model_file_path)
-			has_placeholder: Result.has_substring(rm_environment.performance_file_path)
-			has_placeholder: Result.has_substring(placeholder_validation_name)
-			has_placeholder: Result.has_substring(placeholder_validation_parameters)
+			has_placeholder: Result.has_substring (placeholder_data_file)
+			has_placeholder: Result.has_substring (placeholder_label_name)
+			has_placeholder: Result.has_substring (placeholder_selected_attributes)
+			has_placeholder: Result.has_substring (placeholder_algorithm_name)
+			has_placeholder: Result.has_substring (placeholder_algorithm_parameters)
+			has_placeholder: Result.has_substring (rm_environment.model_file_path)
+			has_placeholder: Result.has_substring (rm_environment.performance_file_path)
+			has_placeholder: Result.has_substring (placeholder_validation_name)
+			has_placeholder: Result.has_substring (placeholder_validation_parameters)
 		end
 
 invariant

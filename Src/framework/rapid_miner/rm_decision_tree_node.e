@@ -21,63 +21,41 @@ feature {NONE} -- Creation
 
 feature -- Access
 
-	traverse_dfs
-		do
-			io.put_string (name)
-			if not is_leaf then
-				from edges.start until edges.after loop
-					io.put_string (edges.item_for_iteration.condition)
-					io.put_new_line
-					edges.item_for_iteration.node.traverse_dfs
-					edges.forth
-				end
-			else
-				io.put_new_line
-			end
-		end
+--	traverse_dfs
+--			 -- very useful for debuging
+--		do
+--			io.put_string (name)
+--			if not is_leaf then
+--				from edges.start until edges.after loop
+--					io.put_string (edges.item_for_iteration.condition)
+--					io.put_new_line
+--					edges.item_for_iteration.node.traverse_dfs
+--					edges.forth
+--				end
+--			else
+--				io.put_new_line
+--			end
+--		end
 
-	name : STRING
-			-- the name of the node.
+	name: STRING
+			-- The name of the node.
 
-	edges : LINKED_LIST [RM_DECISION_TREE_EDGE]
-			-- all the edges leading out of that node.
+	edges: LINKED_LIST [RM_DECISION_TREE_EDGE]
+			-- All the edges leading out of that node.
 
 	samples: detachable HASH_TABLE [INTEGER, STRING]
-			-- holds the samples for that node. Samples are for example {True:5, False:0, STAY_FALSE:0}
-
-	classification (a_instance: HASH_TABLE [STRING, STRING]): STRING
-			-- Classication of the goal attribute given the instance `a_instance'.
-			-- Given a hash table with all the attributes as keys and their respective values, it will return the value calculated by the decision tree algorithm
-			-- Key of `a_instance' is attribute name, value is attribute value.
-		local
-			l_is_found: BOOLEAN
-			l_next_node: RM_DECISION_TREE_NODE
-		do
-			if is_leaf then
-				Result := name
-			else
-				from edges.start until l_is_found loop
-					if edges.item_for_iteration.is_condition_satisfied (a_instance [name]) then
-						l_next_node := edges.item_for_iteration.node
-						l_is_found := True
-					end
-					edges.forth
-				end
-				Result := l_next_node.classification (a_instance)
-			end
-		end
+			-- Holds the samples for that node. Samples are for example {True:5, False:0, STAY_FALSE:0}
+			-- Key is the name of the result and value is the number of occurances
 
 feature -- Status report
 
-	is_leaf : BOOLEAN
-			-- is the node leaf or not.
+	is_leaf: BOOLEAN
+			-- Is the node leaf or not.
 
 feature -- Interface
 
 	is_sample_accurate: BOOLEAN
 			-- Taking this node as a root of a tree, is this tree accurate according to the samples in the leaves?
-		local
-			found_one: BOOLEAN
 		do
 			if is_leaf then
 				Result := are_samples_accurate
@@ -87,7 +65,31 @@ feature -- Interface
 					Result := Result and edges.item_for_iteration.node.is_sample_accurate
 					edges.forth
 				end
+			end
+		end
 
+	classification (a_instance: HASH_TABLE [STRING, STRING]): STRING
+			-- Classication of the goal attribute given the instance `a_instance'.
+			-- Given a hash table with all the attributes as keys and their respective values,
+			-- it will return the value calculated by the decision tree algorithm
+			-- Key of `a_instance' is attribute name, value is attribute value.
+		local
+			l_is_found: BOOLEAN
+			l_next_node: detachable RM_DECISION_TREE_NODE
+		do
+			if is_leaf then
+				Result := name
+			else
+				from edges.start until l_is_found or edges.after loop
+					if edges.item_for_iteration.is_condition_satisfied (a_instance [name]) then
+						l_next_node := edges.item_for_iteration.node
+						l_is_found := True
+					end
+					edges.forth
+				end
+				if l_next_node /= Void then
+					Result := l_next_node.classification (a_instance)
+				end
 			end
 		end
 

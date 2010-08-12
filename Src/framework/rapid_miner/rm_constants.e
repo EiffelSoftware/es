@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Status report
 
-	does_support_missing_values(a_name: STRING): BOOLEAN
+	does_support_missing_values (a_name: STRING): BOOLEAN
 			-- Does the algorithm with name `a_name' support arff files with missing values.
 		do
 			Result := True
@@ -72,7 +72,7 @@ feature -- Status report
 			end
 		end
 
-	does_support_numeric_values(a_name: STRING): BOOLEAN
+	does_support_numeric_values (a_name: STRING): BOOLEAN
 			-- Does the algorithm with name `a_name' support arff files with numeric values.
 		do
 			if a_name = algorithm_decision_tree or a_name = algorithm_decision_stump then

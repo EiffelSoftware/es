@@ -17,12 +17,12 @@ create
 
 feature{NONE} -- Implementation
 
-	stack : LINKED_STACK [RM_DECISION_TREE_STACK_ITEM]
+	stack: LINKED_STACK [RM_DECISION_TREE_STACK_ITEM]
 		-- Stack needed for parsing the file
 
 feature {NONE} -- Construction
 
-	make(a_model_file_path: STRING)
+	make (a_model_file_path: STRING)
 		require
 			file_name_not_null: not a_model_file_path.is_empty
 		do
@@ -49,7 +49,7 @@ feature -- Interface
 				-- just skip the first 2 lines, since they hold the dates
 				l_model_file.read_line
 				l_model_file.read_line
-				handle_trivial_tree(l_model_file.last_string)
+				handle_trivial_tree (l_model_file.last_string)
 				from until l_model_file.end_of_file loop
 					l_model_file.read_line
 					l_line := l_model_file.last_string
@@ -74,14 +74,14 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 			l_node: RM_DECISION_TREE_NODE
 		do
 			if has_leaf (a_line) then -- we have a trivial tree
-				create l_node.make (extract_leaf_name (a_line), True)
+				create l_node.make (leaf_name (a_line), True)
 				l_node.parse_samples (a_line)
 				tree_root := l_node
 			end
 		end
 
 	create_new_node (a_line: STRING)
-		-- Parses the line, creates the nodes and edges that it contains and saves them into `stack`.
+			-- Parses the line, creates the nodes and edges that it contains and saves them into `stack`.
 		local
 			l_depth: INTEGER
 			l_line: STRING
@@ -89,15 +89,15 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 			l_condition: STRING
 			l_leaf: detachable RM_DECISION_TREE_NODE
 		do
-			l_depth := extract_depth (a_line)
+			l_depth := node_depth (a_line)
 			l_line := clean_line (a_line)
 			if has_leaf(l_line) then
-				create l_leaf.make (extract_leaf_name (l_line), True)
+				create l_leaf.make (leaf_name (l_line), True)
 				l_leaf.parse_samples (l_line)
-				l_line := clear_leaf_details (l_line)
+				l_line := cleared_leaf_details (l_line)
 			end
-			l_name := extract_node_name (l_line)
-			l_condition := extract_condition (l_line)
+			l_name := node_name (l_line)
+			l_condition := condition (l_line)
 			handle_add_to_stack (l_name, l_depth, l_condition)
 			if l_leaf /= Void then
 				stack.item.node.add_child (l_leaf, stack.item.condition)
@@ -106,24 +106,24 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 		end
 
 	handle_add_to_stack (a_name: STRING; a_depth: INTEGER; a_condition: STRING)
-		-- adds another item in the stack making sure that the new element is added
+		-- Adds another item in the stack making sure that the new element is added
 		-- only when the top element of the stack has smaller depth. If depth is equal
 		-- just the condition is changed
 		do
 			if stack.is_empty then
-				add_to_stack(a_name, a_depth,a_condition)
+				add_to_stack (a_name, a_depth,a_condition)
 			elseif stack.item.depth < a_depth then
-				add_to_stack(a_name, a_depth, a_condition)
+				add_to_stack (a_name, a_depth, a_condition)
 			elseif stack.item.depth = a_depth then
 				stack.item.set_condition(a_condition)
 			elseif stack.item.depth > a_depth then
 				stack.remove
-				handle_add_to_stack(a_name, a_depth, a_condition)
+				handle_add_to_stack (a_name, a_depth, a_condition)
 			end
 		end
 
-	clear_leaf_details (a_line:STRING): STRING
-			-- will delete everything after the : before the leaf value including it
+	cleared_leaf_details (a_line:STRING): STRING
+			-- Will delete everything after the : before the leaf value including it
 		require
 			has_leaf (a_line)
 		local
@@ -134,8 +134,8 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 		end
 
 
-	extract_leaf_name (a_line: STRING): STRING
-			-- extracts the leaf name from a string.
+	leaf_name (a_line: STRING): STRING
+			-- Extracts the leaf name from a string.
 		require
 			is_leaf: has_leaf (a_line)
 		local
@@ -165,40 +165,42 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 	clean_line (a_line: STRING): STRING
 		-- removes the trailing '|' from the beginning of the line
 		do
-			if extract_depth (a_line) > 0 then
-				Result := a_line.substring (a_line.last_index_of ('|', a_line.count)+4, a_line.count)
+			if node_depth (a_line) > 0 then
+				Result := a_line.substring (a_line.last_index_of ('|', a_line.count) + 4, a_line.count)
 			else
 				Result := a_line
 			end
 		end
 
-	extract_depth (a_line: STRING): INTEGER
-			-- tells us how many levels deep is the node on this line
+	node_depth (a_line: STRING): INTEGER
+			-- Tells us how many levels deep is the node on this line
 		do
 			Result := a_line.last_index_of ('|', a_line.count)
-			Result := (Result + 3)//4
+			Result := (Result + 3) // 4
 		end
 
-	extract_node_name (a_line: STRING): STRING
-			-- extracts the node name from a rapidminer modelfile line
+	node_name (a_line: STRING): STRING
+			-- Extracts the node name from a rapidminer model file line.
 		local
 			l_index: INTEGER
 		do
-			l_index := find_operator_index (a_line) - 1
+			l_index := operator_index (a_line) - 1
 			Result := a_line.substring (1, l_index)
 		end
 
-	extract_condition (a_line: STRING): STRING
-			-- extracts the condition from tha rapidminder model file line
+	condition (a_line: STRING): STRING
+			-- Extracts the condition from tha rapidminder model file line.
 		local
 			l_index_start: INTEGER
 		do
-			l_index_start := find_operator_index (a_line) + 1
+			l_index_start := operator_index (a_line) + 1
 			Result := a_line.substring (l_index_start, a_line.count)
 		end
 
-	find_operator_index (a_line: STRING): INTEGER
-			-- returns the index of the operator in this line
+	operator_index (a_line: STRING): INTEGER
+			-- Returns the index of the operator in this line
+		require
+			leaf_cleaned: not has_leaf (a_line)
 		local
 			l_index: INTEGER
 			l_found: BOOLEAN
@@ -213,7 +215,7 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 		end
 
 	has_leaf (a_line: STRING): BOOLEAN
-		-- tells if a line from the model file produced by RM has a leaf node in it.
+		-- Tells if a line from the model file produced by RM has a leaf node in it.
 		do
 			if a_line.ends_with ("}") and a_line.has ('{')then
 				Result := True

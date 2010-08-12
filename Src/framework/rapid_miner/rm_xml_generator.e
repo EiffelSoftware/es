@@ -34,9 +34,6 @@ feature{NONE} -- Creation
 			arff_file_path := a_arff_file_path
 			selected_attributes := a_selected_attributes
 			label_name := a_label_name
-
-			create rm_const
-			rm_env := rm_const.rm_environment
 		end
 
 feature -- Access
@@ -252,8 +249,6 @@ feature{NONE} -- Implemenation
 		end
 
 feature{RM_XML_GENERATOR} -- internal data holders
-
-	rm_env: RM_ENVIRONMENT
 
 	algorithm_name: STRING
 			-- The name of the algorithm to be included in the generated xml file.

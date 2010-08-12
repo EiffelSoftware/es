@@ -28,16 +28,16 @@ feature {NONE} -- creation
 feature -- Access
 
 	operator: STRING
-			-- operator for that edge
+			-- Operator for that edge
 
 	value: STRING
-			-- value which stays on the right side of the `operator'
+			-- Value which stays on the right side of the `operator'
 
 	node : RM_DECISION_TREE_NODE
-			-- the node to which this edge leads.
+			-- The node to which this edge leads.
 
 	condition: STRING
-			-- appends the operator and value
+			-- Appends the operator and value
 		do
 			Result := operator + value
 		end
