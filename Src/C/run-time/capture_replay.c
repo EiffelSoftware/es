@@ -17,7 +17,8 @@
 #include "eif_store.h"
 #include "eif_misc.h"
 #include "eif_macros.h"
-
+#include "rt_macros.h"
+#include "rt_gen_types.h"
 
 #ifdef EIF_THREADS
 #include "eif_threads.h"
@@ -708,7 +709,6 @@ rt_private void cr_write_event_type (char type)
 	bwrite((char *) &cr_thread_id, sizeof(EIF_NATURAL_64));
 #endif
 
-
 }
 
 
@@ -737,6 +737,19 @@ rt_public void cr_init ()
 		cr_thread_id = ++cr_thread_count;
 	}
 #endif
+
+}
+
+
+rt_public void cr_exit ()
+{
+
+	if (cr_bodyid != -1 && cr_extract_count == -1) {
+		/* The user has launched the current execution with -eif_inspect [body_id],
+		 * therefore we will print the statistics here */
+
+		printf ("C/R statistics for body id: %d\ninvocations: %ld\nrequires log: %s\n", cr_bodyid, (long unsigned int) cr_invoke_count, cr_requires_log ? "yes" : "no");
+	}
 
 }
 
@@ -1901,3 +1914,118 @@ rt_public EIF_NATURAL_64 eif_cr_thread_id ()
 
 }
 #endif
+
+
+
+/* Operand extraction */
+
+rt_private char cr_operand_dftype[1024];
+rt_private EIF_TYPED_VALUE *cr_operands;
+rt_private int cr_operand_pos;
+
+rt_private EIF_TYPE_INDEX cr_dftype (EIF_VALUE value, uint32 type) {
+
+	switch (type & SK_HEAD) {
+		case SK_BOOL:    return egc_bool_dtype;
+		case SK_CHAR8:   return egc_char_dtype;
+		case SK_CHAR32:  return egc_wchar_dtype;
+		case SK_INT8:    return egc_int8_dtype;
+		case SK_INT16:   return egc_int16_dtype;
+		case SK_INT32:   return egc_int32_dtype;
+		case SK_INT64:   return egc_int64_dtype;
+		case SK_UINT8:   return egc_uint8_dtype;
+		case SK_UINT16:  return egc_uint16_dtype;
+		case SK_UINT32:  return egc_uint32_dtype;
+		case SK_UINT64:  return egc_uint64_dtype;
+		case SK_REAL32:  return egc_real32_dtype;
+		case SK_REAL64:  return egc_real64_dtype;
+		case SK_POINTER: return egc_point_dtype;
+		case SK_REF:
+			if (value.r != (EIF_REFERENCE) NULL)
+				return Dftype(value.r);
+			return egc_any_dtype;
+			;
+		default: break;
+	}
+	return NONE_TYPE;
+}
+
+
+rt_public void cr_prepare_extraction (int num_operands)
+{
+
+	cr_operand_pos = 0;
+	cr_operands = cmalloc(num_operands * sizeof(EIF_TYPED_VALUE));
+	if (cr_operands == NULL)
+		enomem();
+
+	cr_operand_dftype[0] = '\0';
+	strcat(cr_operand_dftype, "TUPLE[");
+
+}
+
+
+rt_public void cr_add_operand (EIF_VALUE value, uint32 type)
+{
+	cr_operands[cr_operand_pos].item = value;
+	cr_operands[cr_operand_pos].type = type;
+	cr_operand_pos++;
+	if (cr_operand_pos > 1)
+		strcat(cr_operand_dftype, ",");
+	strcat(cr_operand_dftype, eif_typename (cr_dftype (value, type)));
+}
+
+rt_private char * cr_panic = "Replay panic";
+
+rt_public void cr_extract_operands ()
+{
+
+	EIF_GET_CONTEXT
+
+	strcat(cr_operand_dftype, "]");
+
+	int dftype = eif_type_id (cr_operand_dftype);
+	printf("%s (%d)\n", cr_operand_dftype, dftype);
+	EIF_REFERENCE tuple = RTLNTS(dftype, cr_operand_pos + 1, EIF_FALSE);
+	RT_GC_PROTECT(tuple);
+
+	int curr_pos = 1;
+
+	while (curr_pos < cr_operand_pos + 1) {
+				/* Fill the tuple with the expressions for the manifest tuple. */
+		EIF_TYPED_VALUE *it = &cr_operands[curr_pos-1];
+		switch (it->type & SK_HEAD) {
+			case SK_BOOL: eif_put_boolean_item(tuple, curr_pos, it->it_char); break;
+			case SK_CHAR8: eif_put_character_item(tuple, curr_pos, it->it_char); break;
+			case SK_CHAR32: eif_put_wide_character_item(tuple, curr_pos, it->it_wchar); break;
+			case SK_BIT: eif_put_reference_item(tuple, curr_pos, it->it_bit); break;
+			case SK_UINT8: eif_put_natural_8_item(tuple, curr_pos, it->it_uint8); break;
+			case SK_UINT16: eif_put_natural_16_item(tuple, curr_pos, it->it_uint16); break;
+			case SK_UINT32: eif_put_natural_32_item(tuple, curr_pos, it->it_uint32); break;
+			case SK_UINT64: eif_put_natural_64_item(tuple, curr_pos, it->it_uint64); break;
+			case SK_INT8: eif_put_integer_8_item(tuple, curr_pos, it->it_int8); break;
+			case SK_INT16: eif_put_integer_16_item(tuple, curr_pos, it->it_int16); break;
+			case SK_INT32: eif_put_integer_32_item(tuple, curr_pos, it->it_int32); break;
+			case SK_INT64: eif_put_integer_64_item(tuple, curr_pos, it->it_int64); break;
+			case SK_REAL32: eif_put_real_32_item(tuple, curr_pos, it->it_real32); break;
+			case SK_REAL64: eif_put_real_64_item(tuple, curr_pos, it->it_real64); break;
+			case SK_POINTER: eif_put_pointer_item(tuple, curr_pos, it->it_ptr); break;
+			case SK_EXP: eif_put_reference_item(tuple, curr_pos, RTCL(it->it_ref)); break;
+			case SK_REF: eif_put_reference_item(tuple, curr_pos, it->it_ref); break;
+			default:
+				eif_panic(cr_panic);
+		}
+		curr_pos++;
+	}
+
+	FILE *op_file = fopen("./operands.dat", "w");
+	sstore (file_fd(op_file), tuple);
+	fclose(op_file);
+	RT_GC_WEAN(tuple);
+
+	eif_rt_xfree(cr_operands);
+	cr_operands = NULL;
+
+}
+
+

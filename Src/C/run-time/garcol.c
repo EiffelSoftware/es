@@ -1279,6 +1279,10 @@ rt_public void reclaim(void)
 		}
 #endif
 
+#ifdef WORKBENCH
+		cr_exit();
+#endif
+
 #ifdef ISE_GC
 		if (!eif_no_reclaim && !(rt_g_data.status & GC_STOP)) {	/* Does user want no reclaim? */
 #else

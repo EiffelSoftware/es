@@ -12,6 +12,7 @@ extern "C" {
 
 
 RT_LNK void cr_init ();
+RT_LNK void cr_exit ();
 
 /* Capture routines */
 
@@ -53,6 +54,12 @@ RT_LNK void *cr_calloc(struct ex_vect *exvect, size_t nmemb, size_t size);
 RT_LNK void *cr_realloc(struct ex_vect *exvect, void *source, size_t size);
 RT_LNK void cr_free (struct ex_vect *exvect, void *dest);
 
+
+/* Operand extraction */
+
+RT_LNK void cr_prepare_extraction (int num_operands);
+RT_LNK void cr_add_operand (EIF_VALUE value, uint32 type);
+RT_LNK void cr_extract_operands ();
 
 
 #ifdef __cplusplus

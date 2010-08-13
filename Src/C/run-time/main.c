@@ -508,6 +508,12 @@ rt_public void set_debug_mode (int v){
 #ifdef WORKBENCH
 rt_public int is_capturing = 0;      /* By default we do not capture */
 rt_public int is_replaying = 0;      /* By default we do not replay */
+rt_public int cr_bodyid = -1;
+rt_public int cr_extract_count = -1;
+rt_public EIF_NATURAL_64 cr_invoke_count = 0;
+rt_public int cr_invoke_depth = 0;
+rt_public int cr_requires_log = 0;
+
 #ifdef EIF_THREADS
 rt_public EIF_NATURAL_64 cr_thread_count = 0;
 rt_public EIF_NATURAL_64 cr_next_thread_id = 0;
@@ -826,27 +832,39 @@ rt_public void eif_retrieve_root (int *argc, char **argv)
 
 	while ((*argc) > 1) {
 
-		if (0 == strcmp (argv[(*argc)-2], "-eif_root")) {
-			egc_eif_root = argv[(*argc)-1];
-			(*argc) -= 1;
-		}
-		else if (0 == strcmp (argv[(*argc)-1], "-eif_root"))
-			egc_ridx = -1;
+			if ((*argc) > 2 && 0 == strcmp (argv[(*argc)-2], "-eif_root")) {
+				egc_eif_root = argv[(*argc)-1];
+				(*argc) -= 2;
+				continue;
+			}
 #ifdef WORKBENCH
-		else if (0 == strcmp (argv[(*argc)-1], "-eif_replay")) {
-			is_capturing = 0;
-			is_replaying = 1;
-		}
-		else if (0 == strcmp (argv[(*argc)-1], "-eif_capture")) {
-			is_capturing = 1;
-			is_replaying = 0;
-		}
+			else if ((*argc) > 2 && 0 == strcmp (argv[(*argc)-2], "-eif_inspect")) {
+				cr_bodyid = atoi(argv[(*argc)-1]);
+				is_replaying = 1;
+			}
+			else if ((*argc) > 3 && 0 == strcmp(argv[(*argc)-3], "-eif_extract")) {
+				cr_bodyid = atoi(argv[(*argc)-2]);
+				cr_extract_count = atoi(argv[(*argc)-1]);
+				is_replaying = 1;
+			}
 #endif
-		else {
-			break;
-		}
-		(*argc) -= 1;
 
+			else if (0 == strcmp (argv[(*argc)-1], "-eif_root")) {
+				egc_ridx = -1;
+				(*argc) -= 1;
+				continue;
+			}
+#ifdef WORKBENCH
+			else if (0 == strcmp (argv[(*argc)-1], "-eif_replay")) {
+				is_replaying = 1;
+				(*argc) -= 1;
+			}
+			else if (0 == strcmp (argv[(*argc)-1], "-eif_capture")) {
+				is_capturing = 1;
+				(*argc) -= 1;
+			}
+#endif
+		break;
 	}
 
 }

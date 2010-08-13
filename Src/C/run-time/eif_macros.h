@@ -1391,11 +1391,13 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRCSI(y,bodyid,rout) \
 	int cr_old_depth = cr_cross_depth; \
 	int cr_cross = (RTCRI != (1)) && (is_capturing || is_replaying) && !cr_disabled; \
+	int cr_log = (is_replaying && bodyid == cr_bodyid); \
+	if (cr_log) {cr_invoke_count++; cr_invoke_depth++; } \
+	int cr_extract = cr_log && (cr_invoke_count == cr_extract_count); \
 	cr_call_depth++; \
-	if (cr_cross) { \
-		cr_cross_depth++; \
-		if (!cr_suppress) { RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); } \
-		cr_register_call (y, bodyid);
+	if (cr_cross || cr_extract) { \
+		if (cr_cross) { cr_cross_depth++; if (!cr_suppress) { RTCRDBG((stderr, "INCALL %s (bodyid: %d)\n", rout, bodyid)); } cr_register_call (y, bodyid); } \
+		if (cr_extract) { cr_prepare_extraction (y); } \
 
 #define RTCRCSO(y,bodyid,rout) \
 	int cr_old_depth = cr_cross_depth; \
@@ -1403,6 +1405,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 	int cr_exception = 0; \
 	jmp_buf cr_jbuf, *cr_old_jbuf = (jmp_buf *) NULL; \
 	cr_call_depth++; \
+	int cr_log = 0; \
+	int cr_extract = 0; \
 	if (cr_cross) { \
 		cr_cross_depth++; \
 		if (!cr_suppress) { RTCRDBG((stderr, "OUTCALL %s (bodyid: %d)\n", rout, bodyid)); } \
@@ -1420,6 +1424,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 	else {\
 		if ((is_capturing || is_replaying) && !cr_suppress) { RTCRDBG((stderr, "%s\n", rout)); } \
 	} \
+	if (cr_extract) { cr_extract_operands (); cr_extract = 0; } \
 
 #define RTCRCEO(rout) \
 	RTCRCEI(rout); \
@@ -1455,13 +1460,16 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTCRRE \
 	}\
 	if ((is_capturing || is_replaying) && !cr_suppress) { RTCRDBG((stderr, "ret\n")); } \
-	cr_call_depth--;
+	cr_call_depth--; \
+	if (cr_log) { cr_invoke_depth--; }
 
-//#define RTCRRC { uint32 cr_type = SK_REF | RTCRI ? 0x0 : HEADER(Current)->ov_dftype; cr_register_value ((void *) &Current, &cr_type, 0); }
-#define RTCRRC { uint32 cr_type = SK_REF; cr_register_value ((void *) &Current, &cr_type, SK_INVALID); }
+/*#define RTCRRC { uint32 cr_type = SK_REF | RTCRI ? 0x0 : HEADER(Current)->ov_dftype; cr_register_value ((void *) &Current, &cr_type, 0); } */
+#define RTCRRC { uint32 cr_type = SK_REF; EIF_VALUE cr_value; cr_value.r = Current; \
+	 if (cr_cross) {cr_register_value ((void *) &Current, &cr_type, SK_INVALID); } if (cr_extract) { cr_add_operand (cr_value, cr_type); } }
 
-#define RTCRRV(a,s) cr_register_value ((void *) &((a).item), &((a).type), s);
+#define RTCRRV(a,s) if (cr_cross) { cr_register_value ((void *) &((a).item), &((a).type), s); } if (cr_extract) { cr_add_operand ((a).item, (a).type); }
 
+/* Here cr_cross is always true */
 #define RTCRRR(t,s) { uint32 cr_type = t; cr_register_value ((void *) &Result, &cr_type, s);} 
 
 #define RTCRMCPY(d,ds,s,c)  cr_memcpy(exvect,d,ds,s,c)

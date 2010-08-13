@@ -93,6 +93,11 @@ RT_LNK void set_debug_mode (int);
 RT_LNK int is_capturing;                /* Are we capturing anything? */
 RT_LNK int is_replaying;                /* Are we replaying anything? Note: although not implemeted yet,       */
 					/* it is conceptually possible to capture and replay at the same time  */
+RT_LNK int cr_bodyid;
+RT_LNK int cr_extract_count;
+RT_LNK EIF_NATURAL_64 cr_invoke_count;
+RT_LNK int cr_invoke_depth;
+RT_LNK int cr_requires_log;
 RT_LNK FILE *cr_file;
 RT_LNK int cr_debug;
 #ifdef EIF_THREADS
