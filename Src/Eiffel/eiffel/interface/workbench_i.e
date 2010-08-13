@@ -623,7 +623,7 @@ feature -- Commands
 			end
 
 				-- Insertion in the pass controlers
-			Degree_5.insert_changed_class (class_to_recompile)
+			Degree_5.insert_class (class_to_recompile)
 				-- Added for SCOOP: For a SCOOP project, classes must be processed in the degree SCOOP. For non-SCOOP projects the degree SCOOP will not be executed.
 			Degree_SCOOP.insert_new_class (class_to_recompile)
 			Degree_4.insert_new_class (class_to_recompile)

@@ -84,7 +84,7 @@ feature -- Element Change
 						file.read_character
 						if not file.end_of_input then
 							put_character (file.last_character, buff)
-							i := i + 1
+							i := i + last_number_of_bytes_put
 						else
 							nb2 := i - pos - nb
 							i := end_pos + 1
@@ -122,15 +122,22 @@ feature -- Element Change
 				if iso_8859_1.last_conversion_successful then
 					a_buff.fill_from_string (iso_8859_1.last_converted_stream, count)
 					count := count + iso_8859_1.last_converted_stream.count - 1
+					last_number_of_bytes_put := iso_8859_1.last_converted_stream.count
 				else
 						-- FIXME: We should raise a waring at least.
 					a_buff.put (a_char, count)
+					last_number_of_bytes_put := 1
 				end
 			else
 					-- UTF8 compatible
 				a_buff.put (a_char, count)
+				last_number_of_bytes_put := 1
 			end
 		end
+
+feature -- Query
+
+	last_number_of_bytes_put: INTEGER
 
 feature {NONE} -- Buffer
 

@@ -213,14 +213,6 @@ feature -- Element change
 			a_class.set_parsing_needed (True)
 		end
 
-	insert_changed_class (a_class: CLASS_C)
-			--
-		require
-			a_class_not_void: a_class /= Void
-		do
-			insert_class (a_class)
-		end
-
 feature -- Removal
 
 	remove_class (a_class: CLASS_C)

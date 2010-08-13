@@ -126,6 +126,7 @@ test	exception_cause				except037 tcf pass exception
 -- Unicode
 test unicode_manifest_string_char_and_constants unicode001 tcf pass unicode
 test unicode_free_operator unicode002 tcf pass unicode
+test big_extended_ascii_src unicode003 tcf pass unicode
 
 -- Non Conforming Inheritance
 test basic-non-conforming-inheritance			noncon001 tcf pass non-conforming
@@ -500,6 +501,7 @@ test	conversion_without_binary_operator	valid262 tcf pass validity
 test	manifest-real-to-real-32-conformance	valid263 tcf pass validity ieee
 test	generic-rename-with-alias		valid264 tcf fail validity generic rename
 test	variant-with-anchored-type		valid265 tcf fail validity
+test	vtcg7-precondition-violation	valid266 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1542,7 +1544,7 @@ test once-per-object-exec-with-exception 	once002 tcf pass once exception
 test once-per-object-redefinition 		once003 tcf pass once redefine
 test once-per-object-removal 			once004 tcf pass once redefine
 test once-key-validity				once005 tcf pass once validity
-test once-per-object-called-via-precursor	once006 tcf fail once
+test once-per-object-called-via-precursor	once006 tcf pass once
 test once-per-object-with-inheritance		once007 tcf pass once
 test once-per-object-finalized-crash		once008 tcf pass once
 test once-per-object-effect-deferred		once009 tcf pass once
@@ -2405,8 +2407,8 @@ test	stable-attribute-in-rescue				attach070 tcf pass void_safe validity stable 
 test	self-init-attribute-non-void-safe			attach071 tcf fail attached_types self_init void_safe
 test	default-create-missing-check			attach072 tcf pass attached_types void_safe
 test	bogus-vevi-expanded-formal-generic		attach073 tcf fail attached_types void_safe
-test	vevi-on-once-per-object-routine			attach074 tcf fail attached_types void_safe once
-test	once-per-object-creation-procedure		attach075 tcf fail attached_types void_safe once
+test	vevi-on-once-per-object-routine			attach074 tcf pass attached_types void_safe once
+test	once-per-object-creation-procedure		attach075 tcf pass attached_types void_safe once
 test	attached-to-none				attach076 tcf fail attached_types void_safe once
 
 -- Tests for conformance in general

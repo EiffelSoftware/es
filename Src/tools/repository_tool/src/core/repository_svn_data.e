@@ -50,7 +50,9 @@ feature -- Access
 
 	logs: detachable HASH_TABLE [like log_from_revision, STRING]
 
-	last_known_revision: INTEGER
+	revision_last_known: INTEGER
+
+	revision_first_known: INTEGER
 
 	info: detachable SVN_REPOSITORY_INFO
 
@@ -97,6 +99,7 @@ feature -- Access
 	load_logs
 		local
 			l_last_known_rev: INTEGER
+			l_first_known_rev: INTEGER
 			l_logs: like logs
 			d: DIRECTORY
 			r: INTEGER
@@ -121,6 +124,11 @@ feature -- Access
 						r := s.to_integer
 						l_id := r.out
 						l_last_known_rev := l_last_known_rev.max (r)
+						if l_first_known_rev = 0 then
+							l_first_known_rev := r
+						else
+							l_first_known_rev := l_first_known_rev.min (r)
+						end
 						if not l_logs.has (l_id) and attached loaded_log (l_id) as e then
 							l_logs.put (e, l_id)
 						end
@@ -129,7 +137,8 @@ feature -- Access
 				end
 				d.close
 			end
-			last_known_revision := l_last_known_rev
+			revision_last_known := l_last_known_rev
+			revision_first_known := l_first_known_rev
 		ensure then
 			logs_attached: logs /= Void
 		end
@@ -137,7 +146,14 @@ feature -- Access
 	fetch_logs
 		do
 			load_logs
-			internal_fetch_logs (repository, last_known_revision)
+			internal_fetch_logs (repository, revision_last_known, 0)
+			import_fetched_logs
+		end
+
+	fetch_range_of_logs (a_from, a_to: INTEGER)
+		do
+			load_logs
+			internal_fetch_logs (repository, a_from, a_to)
 			import_fetched_logs
 		end
 
@@ -162,9 +178,9 @@ feature -- Access
 			create th.make (agent (ia_mut: MUTEX; ia_repo: like repository; ia_last_known_rev: INTEGER_32)
 				do
 					ia_mut.lock
-					internal_fetch_logs (ia_repo, ia_last_known_rev)
+					internal_fetch_logs (ia_repo, ia_last_known_rev, 0)
 					ia_mut.unlock
-				end (l_fetch_mutex, create {like repository}.make_from_repository (repository), last_known_revision))
+				end (l_fetch_mutex, create {like repository}.make_from_repository (repository), revision_last_known))
 			th.launch
 		end
 
@@ -246,12 +262,16 @@ feature {NONE} -- Implementation
 
 	fetched_info: like repository.info
 
-	internal_fetch_logs (a_repo: like repository; a_last_fetched_rev: INTEGER)
+	internal_fetch_logs (a_repo: like repository; a_from_rev, a_to_rev: INTEGER)
 		do
 			if attached a_repo.info as repo_info then
 				fetched_info := repo_info
-				if a_last_fetched_rev > 0 then
-					fetched_logs := a_repo.logs (True, a_last_fetched_rev, repo_info.last_changed_rev, 0)
+				if a_from_rev > 0 then
+					if a_to_rev > a_from_rev then
+						fetched_logs := a_repo.logs (True, a_from_rev, repo_info.last_changed_rev, 0)
+					else
+						fetched_logs := a_repo.logs (True, a_from_rev, a_to_rev, 0)
+					end
 				else
 					fetched_logs := a_repo.logs (True, 0, 0, 100)
 				end
@@ -288,7 +308,8 @@ feature {REPOSITORY_SVN_LOG} -- Implementation
 	loaded_log (a_id: STRING): detachable like log_from_revision
 		local
 			f: RAW_FILE
-			l_line: STRING
+			l_line,s: STRING
+			n,p: INTEGER
 			l_message: detachable STRING
 			e: detachable SVN_REVISION_INFO
 			r: INTEGER
@@ -322,9 +343,31 @@ feature {REPOSITORY_SVN_LOG} -- Implementation
 						e.set_author (l_line.string)
 					elseif l_line.starts_with ("parent=") then
 --						l_line.remove_head (7)
-					elseif l_line.starts_with ("path[]=") then
-						l_line.remove_head (7)
-						e.add_path (l_line.string, "", "")
+					elseif l_line.starts_with ("path[]") then
+						p := l_line.index_of ('=', 1)
+						if p > 0 then
+							s := l_line.substring (6, p - 1)
+							n := s.occurrences (',')
+							if n = 1 then
+								-- path[],A=
+								e.add_path (l_line.substring (p + 1, l_line.count), "", s.substring (2, s.count))
+							elseif n = 2 then
+								-- path[],K,A=
+								inspect s.item (2)
+								when 'D', 'd' then
+									e.add_dir_path (l_line.substring (p + 1, l_line.count), s.substring (5, s.count))
+								when 'F', 'f' then
+									e.add_file_path (l_line.substring (p + 1, l_line.count), s.substring (5, s.count))
+								else
+									e.add_path (l_line.substring (p + 1, l_line.count), s.substring (2,2), s.substring (5, s.count))
+								end
+							else
+								e.add_path (l_line.substring (p + 1, l_line.count), "", "")
+							end
+						else
+							check invalid_line: False end
+							print ("Invalid log line: " + l_line + "%N")
+						end
 					elseif l_line.starts_with ("message=") then
 						l_line.remove_head (8)
 						l_message := l_line.string
@@ -344,7 +387,12 @@ feature {REPOSITORY_SVN_LOG} -- Implementation
 		do
 			ensure_data_folder_exists
 			create f.make (svn_log_data_filename (id_of (r)))
-			if not f.exists then
+			if not f.exists or else f.is_writable then
+				debug ("scm")
+					if f.exists then
+						print ("Log for rev#" + r.revision.out + " already fetched%N")
+					end
+				end
 				f.create_read_write
 				f.put_string ("revision=" + r.revision.out + "%N")
 				f.put_string ("date=" + r.date + "%N")
@@ -356,7 +404,18 @@ feature {REPOSITORY_SVN_LOG} -- Implementation
 					until
 						l_paths.after
 					loop
-						f.put_string ("path[]=" + l_paths.item.path + "%N")
+						f.put_string ("path[],")
+						inspect
+							l_paths.item.kind
+						when {SVN_CONSTANTS}.kind_dir then
+							f.put_string ("D,")
+						when {SVN_CONSTANTS}.kind_file then
+							f.put_string ("F,")
+						else
+						end
+						f.put_string (l_paths.item.action)
+						f.put_character ('=')
+						f.put_string (l_paths.item.path + "%N")
 						l_paths.forth
 					end
 				end
