@@ -3948,6 +3948,7 @@ eweasel/tests/incr311/Ace_rev1 -text
 eweasel/tests/incr368/output_generic -text
 eweasel/tests/incr368/output_numeric -text
 eweasel/tests/incr371/Ace -text
+eweasel/tests/incr379/Ace_rev2 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
