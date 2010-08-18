@@ -10,7 +10,7 @@ deferred class
 feature{RM_DECISION_TREE_PARSER_INTERFACE} -- Child access
 
 	model_file_path: STRING
-		-- The absolute path to the model file.
+		-- Absolute path to the model file.
 
 feature -- Access
 

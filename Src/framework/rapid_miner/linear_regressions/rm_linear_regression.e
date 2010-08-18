@@ -15,7 +15,7 @@ feature{NONE} -- Creation
 	make (a_dependent_variable: STRING)
 			-- `a_dependent_variable' the name of the dependent variable.
 		do
-			dependent_variable := a_dependent_variable
+			dependent_variable := a_dependent_variable.twin
 			create regressors.make (10)
 		end
 
@@ -24,7 +24,7 @@ feature -- Setting
 	set_dependent_variable (a_dependent_variable: STRING)
 			-- Set `dependent_variable' with `a_dependent_variable'.
 		do
-			dependent_variable := a_dependent_variable
+			dependent_variable := a_dependent_variable.twin
 		ensure
 			dependent_var_is_set: dependent_variable = a_dependent_variable
 		end
@@ -35,7 +35,7 @@ feature -- Interface
 			-- Adds a regressor to this linear regression formula.
 			-- `a_name' is the name of the regressor and `a_value' is the value of its coefficient.
 		do
-			regressors.put (a_value, a_name)
+			regressors.force (a_value, a_name)
 		end
 
 feature -- Access

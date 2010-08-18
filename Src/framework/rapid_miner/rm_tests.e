@@ -191,8 +191,8 @@ feature{NONE} -- Tests
 			check_test(l_children.has (l_tree.root.edges[1].node.name), "child name")
 
 			check_test(l_children.has (l_tree.root.edges[2].node.name), "child name")
-
---			l_file.delete
+			l_file.close
+			l_file.delete
 		end
 
 

@@ -19,8 +19,8 @@ feature{NONE} -- Initialization
 			internal_is_accurate := True
 			should_calculate_is_accurate := True
 			root := a_root
-			label_name := a_label_name
-			create stack.make
+			label_name := a_label_name.twin
+			create node_stack.make
 		end
 
 feature -- Access
@@ -40,7 +40,7 @@ feature -- Access
 			-- the last element is the leaf node.
 		do
 			if paths_internal = Void then
-				stack.wipe_out
+				node_stack.wipe_out
 				create paths_internal.make
 				paths_internal.wipe_out
 				calculate_paths (root)
@@ -81,7 +81,6 @@ feature{RM_DECISION_TREE_BUILDER} -- Setting
 			is_accurate_set: is_accurate = a_is_accurate
 		end
 
-
 feature{NONE} -- Internal data holders
 
 	should_calculate_is_accurate: BOOLEAN
@@ -96,7 +95,7 @@ feature{NONE} -- Internal data holders
 	paths_internal: detachable like paths
 			-- Internal variable used to hold the intermediate paths calculated in `calculate_paths'
 
-	stack: LINKED_STACK [RM_DECISION_TREE_PATH_NODE]
+	node_stack: LINKED_STACK [RM_DECISION_TREE_PATH_NODE]
 			-- While we dfs traverse the tree we need to keep the previous nodes so that we can
 			-- print the whole path when we reach a leaf node.
 
@@ -109,15 +108,15 @@ feature{NONE} -- Implementation
 		do
 			if current_node.is_leaf then
 				create l_node.make (label_name, "=", current_node.name)
-				stack.put (l_node)
+				node_stack.put (l_node)
 				save_stack
-				stack.remove
+				node_stack.remove
 			else
 				from current_node.edges.start until current_node.edges.after loop
 					create l_node.make (current_node.name, current_node.edges.item_for_iteration.operator, current_node.edges.item_for_iteration.value)
-					stack.put (l_node)
+					node_stack.put (l_node)
 					calculate_paths (current_node.edges.item_for_iteration.node)
-					stack.remove
+					node_stack.remove
 					current_node.edges.forth
 				end
 			end
@@ -130,7 +129,7 @@ feature{NONE} -- Implementation
 			l_array: ARRAYED_LIST [RM_DECISION_TREE_PATH_NODE]
 		do
 			create l_list.make
-			l_array := stack.linear_representation
+			l_array := node_stack.linear_representation
 			from l_array.finish until l_array.before loop
 				l_list.force (l_array.item_for_iteration)
 				l_array.back

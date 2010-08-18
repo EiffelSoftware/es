@@ -10,6 +10,7 @@ deferred class
 feature -- Access
 
 	last_linear_regression: RM_LINEAR_REGRESSION
+		-- Last mined linear regression
 
 feature -- Interface
 
@@ -21,5 +22,6 @@ feature -- Interface
 feature{RM_LINEAR_REGRESSION_PARSER_INTERFACE} -- Internal data holders
 
 	model_file_path: STRING
+			-- Absolute path to the model file
 
 end

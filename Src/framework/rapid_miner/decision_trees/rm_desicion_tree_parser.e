@@ -8,9 +8,10 @@ class
 	RM_DECISION_TREE_PARSER
 
 inherit
-	RM_DECISION_TREE_PARSER_INTERFACE redefine
-		parse_model
-	end
+	RM_DECISION_TREE_PARSER_INTERFACE
+		redefine
+			parse_model
+		end
 
 create
 	make

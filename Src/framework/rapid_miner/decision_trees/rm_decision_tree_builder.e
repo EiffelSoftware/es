@@ -27,7 +27,7 @@ feature -- Create
 			selected_attributes_not_empty: not a_selected_attributes.is_empty
 			a_label_attribute_valid: a_selected_attributes.has (a_label_name)
 		do
-			init(algorithm_decision_tree, no_validation, a_arff_file_path, a_selected_attributes, a_label_name)
+			initialize (algorithm_decision_tree, no_validation, a_arff_file_path, a_selected_attributes, a_label_name)
 		end
 
 	make_with_relation (a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
@@ -39,7 +39,7 @@ feature -- Create
 			a_selection_attributes_valid: a_selected_attributes.is_subset (a_relation.attribute_set)
 			a_label_attribute_valid: a_selected_attributes.has (a_label_attribute)
 		do
-			init_with_relation (algorithm_decision_tree, a_relation, a_selected_attributes, a_label_attribute)
+			initialize_with_relation (algorithm_decision_tree, a_relation, a_selected_attributes, a_label_attribute)
 		end
 
 feature -- Access
@@ -74,8 +74,8 @@ feature{RM_BUILDER} -- Implementation
 
 	parser: RM_DECISION_TREE_PARSER_INTERFACE
 		-- Gives the right parser for the particular decision tree algorithm.
-	do
-		create {RM_DECISION_TREE_PARSER}Result.make(rm_environment.model_file_path)
-	end
+		do
+			create {RM_DECISION_TREE_PARSER} Result.make(rm_environment.model_file_path)
+		end
 
 end

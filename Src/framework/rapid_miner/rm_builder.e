@@ -13,7 +13,7 @@ inherit
 
 feature{RM_BUILDER} -- Initializaiton
 
-	init (a_algorithm_name: STRING; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
+	initialize (a_algorithm_name: STRING; a_validation_code: INTEGER; a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
 			-- `a_algorithm_name' is the algorithm name representing the type of algorithm to be performed by rapid miner.
 			-- `a_validation_code' is the validation which will be performed by rapid miner.
 			-- `a_arff_file_path' is the absolute file path to the arff file, which will provide the data for rapid miner.
@@ -25,14 +25,14 @@ feature{RM_BUILDER} -- Initializaiton
 			a_label_attribute_valid: a_selected_attributes.has (a_label_name)
 			valid_algorithm: is_valid_algorithm_name (a_algorithm_name)
 		do
-			algorithm_name := a_algorithm_name
+			algorithm_name := a_algorithm_name.twin
 			validation_code := a_validation_code
-			arff_file_path := a_arff_file_path
+			arff_file_path := a_arff_file_path.twin
 			selected_attributes := a_selected_attributes
-			label_name := a_label_name
+			label_name := a_label_name.twin
 		end
 
-	init_with_relation (a_algorithm_name: STRING; a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
+	initialize_with_relation (a_algorithm_name: STRING; a_relation: WEKA_ARFF_RELATION; a_selected_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_label_attribute: WEKA_ARFF_ATTRIBUTE)
 			-- Initialize current with ARFF relation `a_relation'.
 			-- `a_algorithm_name' is the algorithm name representing the type of algorithm to be performed by rapid miner.
 			-- `a_validation_code' is the validation which will be performed by rapid miner.
@@ -57,13 +57,13 @@ feature{RM_BUILDER} -- Initializaiton
 				a_selected_attributes.forth
 			end
 
-			init (a_algorithm_name, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+			initialize (a_algorithm_name, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
 		end
 
 feature -- Interface
 
 	build
-			-- Builds the classification with the help of rapidminer. Implements the template method pattern.
+			-- Build the classification with the help of rapidminer. Implements the template method pattern.
 		do
 			prepare_xml_file
 
@@ -73,7 +73,7 @@ feature -- Interface
 
 			parse_performance
 
---			clean_files
+			clean_files
 		end
 
 feature -- Setters
@@ -174,24 +174,26 @@ feature{RM_BUILDER} -- Implementation
 		local
 			l_file: PLAIN_TEXT_FILE
 		do
-			create l_file.make_create_read_write (rm_environment.model_file_path)
-			if l_file.exists then
-				l_file.delete
-			end
+			if rm_environment.should_remove_generated_files then
+				create l_file.make (rm_environment.model_file_path)
+				if l_file.exists then
+					l_file.delete
+				end
 
-			create l_file.make_create_read_write (rm_environment.performance_file_path)
-			if l_file.exists then
-				l_file.delete
-			end
+				create l_file.make (rm_environment.performance_file_path)
+				if l_file.exists then
+					l_file.delete
+				end
 
-			create l_file.make_create_read_write (rm_environment.rapid_miner_xml_file_path)
-			if l_file.exists then
-				l_file.delete
-			end
+				create l_file.make (rm_environment.rapid_miner_xml_file_path)
+				if l_file.exists then
+					l_file.delete
+				end
 
-			create l_file.make_create_read_write (rm_environment.rapid_miner_arff_file_path)
-			if l_file.exists then
-				l_file.delete
+				create l_file.make (rm_environment.rapid_miner_arff_file_path)
+				if l_file.exists then
+					l_file.delete
+				end
 			end
 		end
 
@@ -243,4 +245,5 @@ invariant
 	validation_valid: is_valid_validation_code (validation_code)
 
 	label_belongs_to_selected: selected_attributes.has (label_name)
+
 end

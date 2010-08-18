@@ -20,13 +20,13 @@ feature -- Creation
 			-- `a_operator_name' holds the operator
 			-- `a_value_name' holds the value in the right hand side of the operator
 		do
-			attribute_name := a_attribute_name
-			operator_name := a_operator_name
-			value_name := a_value_name
+			attribute_name := a_attribute_name.twin
+			operator_name := a_operator_name.twin
+			value_name := a_value_name.twin
 		ensure
-			attribute_name_set: attribute_name = a_attribute_name
-			operator_name_set: operator_name = a_operator_name
-			value_name_set: value_name = a_value_name
+			attribute_name_set: attribute_name ~ a_attribute_name
+			operator_name_set: operator_name ~ a_operator_name
+			value_name_set: value_name ~ a_value_name
 		end
 
 feature -- Access

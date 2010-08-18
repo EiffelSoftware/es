@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 class
 	RM_LINEAR_REGRESSION_PARSER
-	
+
 inherit
 	RM_LINEAR_REGRESSION_PARSER_INTERFACE redefine
 		parse_linear_regression
@@ -19,7 +19,7 @@ feature{NONE} -- Create
 	make (a_model_file_path: STRING)
 			-- `a_model_file_path' the path to the model file.
 		do
-			model_file_path := a_model_file_path
+			model_file_path := a_model_file_path.twin
 		end
 
 feature -- Interface

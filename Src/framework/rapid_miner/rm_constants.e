@@ -134,7 +134,6 @@ feature -- Environment
 			else
 				create{RM_ENVIRONMENT_UNIX} Result
 			end
-
 		end
 
 end
