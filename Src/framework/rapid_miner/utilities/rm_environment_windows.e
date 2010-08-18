@@ -38,4 +38,10 @@ feature
 			Result := "C:\"
 		end
 
+	rapid_miner_test_arff_path: STRING
+		do
+			Result := "C:\temp\rapid_miner_test.arff"
+		end
+
+
 end

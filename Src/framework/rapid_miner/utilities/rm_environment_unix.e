@@ -37,4 +37,9 @@ feature
 			Result := "/home/"
 		end
 
+	rapid_miner_test_arff_path: STRING
+		do
+			Result := "/tmp/rapid_miner_test.arff"
+		end
+
 end

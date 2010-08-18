@@ -24,12 +24,17 @@ feature
 		end
 
 	rapid_miner_arff_file_path: STRING
-			-- The location where the arff file will be created.
+			-- The location of the arff file.
 		deferred
 		end
 
-	rapid_miner_working_directory:STRING
+	rapid_miner_working_directory: STRING
 			-- Where will rapidminer be executed. nothing is created here.
+		deferred
+		end
+
+	rapid_miner_test_arff_path: STRING
+			-- This is the absolute path to the test arff file. This file is just used for testing.
 		deferred
 		end
 
