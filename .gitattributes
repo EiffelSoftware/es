@@ -3950,6 +3950,7 @@ eweasel/tests/incr368/output_numeric -text
 eweasel/tests/incr371/Ace -text
 eweasel/tests/incr379/Ace_rev2 -text
 eweasel/tests/incr380/Ace_rev2 -text
+eweasel/tests/incr381/Ace_rev2 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
