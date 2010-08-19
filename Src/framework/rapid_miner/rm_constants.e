@@ -29,31 +29,31 @@ feature -- Algorithm types
 	algorithm_linear_regression: STRING = "linear_regression"
 			-- Name of the default linear regression algorithm.
 
-	algorithm_decision_stump: STRING = "decision_stump"
+	algorithm_decision_tree_decision_stump: STRING = "decision_stump"
 			-- Learns only a root node of a decision tree.
 
-	algorithm_chaid: STRING = "chaid"
+	algorithm_decision_tree_chaid: STRING = "chaid"
 			-- Learns a pruned decision tree based on a chi squared attribute relevance test.
 
-	algorithm_id3: STRING = "id3"
+	algorithm_decision_tree_id3: STRING = "id3"
 			-- Learns an unpruned decision tree from nominal attributes only.
 
 feature -- Access
 
 	decision_tree_algorithms: DS_HASH_SET [STRING]
-			-- Set of the names of supported decision tree algorithms
+			-- Returns the names of supported decision tree algorithms
 		once
 			create Result.make (10)
 			Result.set_equality_tester (string_equality_tester)
 
 			Result.force_last (algorithm_decision_tree)
-			Result.force_last (algorithm_decision_stump)
-			Result.force_last (algorithm_chaid)
-			Result.force_last (algorithm_id3)
+			Result.force_last (algorithm_decision_tree_decision_stump)
+			Result.force_last (algorithm_decision_tree_chaid)
+			Result.force_last (algorithm_decision_tree_id3)
 		end
 
 	linear_regression_algorithms: DS_HASH_SET [STRING]
-			-- Set of the names of supported decision tree algorithms
+			-- Returns  the names of supported decision tree algorithms
 		once
 			create Result.make (10)
 			Result.set_equality_tester (string_equality_tester)
@@ -61,23 +61,41 @@ feature -- Access
 			Result.force_last (algorithm_linear_regression)
 		end
 
-feature -- Status report
+	numeric_value_algorithms: DS_HASH_SET [STRING]
+			-- Returns the names of algorithms supporting numeric values
+		once
+			create Result.make (10)
+			Result.set_equality_tester (string_equality_tester)
 
-	does_support_missing_values (a_name: STRING): BOOLEAN
-			-- Does the algorithm with name `a_name' support arff files with missing values.
-		do
-			Result := True
-			if a_name = algorithm_id3 then
-				Result := False
-			end
+			Result.force_last (algorithm_decision_tree)
+			Result.force_last (algorithm_decision_tree_decision_stump)
+			Result.force_last (algorithm_linear_regression)
 		end
 
-	does_support_numeric_values (a_name: STRING): BOOLEAN
+	missing_value_algorithms: DS_HASH_SET [STRING]
+			-- Returns the names of algorithms supporting missing values
+		once
+			create Result.make (10)
+			Result.set_equality_tester (string_equality_tester)
+
+			Result.force_last (algorithm_decision_tree)
+			Result.force_last (algorithm_decision_tree_decision_stump)
+			Result.force_last (algorithm_decision_tree_chaid)
+			Result.force_last (algorithm_linear_regression)
+		end
+
+feature -- Status report
+
+	is_missing_value_supported (a_name: STRING): BOOLEAN
+			-- Does the algorithm with name `a_name' support arff files with missing values.
+		do
+			Result := missing_value_algorithms.has (a_name)
+		end
+
+	is_numeric_value_supported (a_name: STRING): BOOLEAN
 			-- Does the algorithm with name `a_name' support arff files with numeric values.
 		do
-			if a_name = algorithm_decision_tree or a_name = algorithm_decision_stump then
-				Result := True
-			end
+			Result := numeric_value_algorithms.has (a_name)
 		end
 
 	is_valid_algorithm_name (a_name: STRING): BOOLEAN

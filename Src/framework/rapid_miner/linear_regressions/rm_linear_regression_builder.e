@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_LR_BUILDER}."
+	description: "This class will take an arff file and different configurations and will produce the linear regression."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -45,13 +45,20 @@ feature -- Access
 
 	last_linear_regression: RM_LINEAR_REGRESSION
 
+feature -- Validity
+
+	is_algorithm_valid(a_algorithm_name: STRING): BOOLEAN
+		do
+			Result := linear_regression_algorithms.has (a_algorithm_name)
+		end
+
 feature{RM_BUILDER} -- Implementation
 
 	parse_model
 		local
 			l_model_parser: RM_LINEAR_REGRESSION_PARSER_INTERFACE
 		do
-			l_model_parser := parser
+			l_model_parser := parsers[algorithm_name]
 			l_model_parser.parse_linear_regression
 			last_linear_regression := l_model_parser.last_linear_regression
 			last_linear_regression.set_dependent_variable (label_name)
@@ -67,10 +74,14 @@ feature{RM_BUILDER} -- Implementation
 			end
 		end
 
-	parser: RM_LINEAR_REGRESSION_PARSER_INTERFACE
+	parsers: HASH_TABLE[RM_LINEAR_REGRESSION_PARSER_INTERFACE, STRING]
 			-- Gives the right parser for the particular decision tree algorithm.
+		local
+			l_parser: RM_LINEAR_REGRESSION_PARSER
 		do
-			create {RM_LINEAR_REGRESSION_PARSER} Result.make(rm_environment.model_file_path)
+			create Result.make (5)
+			create l_parser.make (rm_environment.model_file_path)
+			Result[algorithm_linear_regression] := l_parser
 		end
 
 end

@@ -23,24 +23,29 @@ feature
 			Result := "C:\temp\rapid_performance.res"
 		end
 
-	rapid_miner_xml_file_path: STRING
+	rapidminer_xml_file_path: STRING
 		do
 			Result := "C:\temp\rapid_miner.xml"
 		end
 
-	rapid_miner_arff_file_path: STRING
+	rapidminer_arff_file_path: STRING
 		do
 			Result := "C:\temp\rapid_miner.arff"
 		end
 
-	rapid_miner_working_directory: STRING
+	rapidminer_working_directory: STRING
 		do
 			Result := "C:\"
 		end
 
-	rapid_miner_test_arff_path: STRING
+	rapidminer_test_arff_path: STRING
 		do
 			Result := "C:\temp\rapid_miner_test.arff"
+		end
+
+	rapidminer_command: STRING
+		do
+			Result := "cmd /C %"rapidminer.bat -f "
 		end
 
 

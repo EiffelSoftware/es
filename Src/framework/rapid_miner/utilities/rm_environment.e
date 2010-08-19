@@ -19,23 +19,28 @@ feature -- Access
 		deferred
 		end
 
-	rapid_miner_xml_file_path: STRING
+	rapidminer_xml_file_path: STRING
 			-- The location of the xml file needed to run rapidminer. This file tells rapidminer what to do.
 		deferred
 		end
 
-	rapid_miner_arff_file_path: STRING
+	rapidminer_arff_file_path: STRING
 			-- The location of the arff file.
 		deferred
 		end
 
-	rapid_miner_working_directory: STRING
+	rapidminer_working_directory: STRING
 			-- Where will rapidminer be executed. nothing is created here.
 		deferred
 		end
 
-	rapid_miner_test_arff_path: STRING
+	rapidminer_test_arff_path: STRING
 			-- This is the absolute path to the test arff file. This file is just used for testing.
+		deferred
+		end
+
+	rapidminer_command: STRING
+			-- The command that we start rapidminer from the console with.
 		deferred
 		end
 

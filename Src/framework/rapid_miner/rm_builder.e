@@ -1,5 +1,5 @@
 note
-	description: "Represents a clasifier bulder class."
+	description: "Represents a clasifier bulder class. All other model builders must inherit from it."
 	author: "Nikolay Kazmin"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -47,7 +47,7 @@ feature{RM_BUILDER} -- Initializaiton
 			l_arff_file: PLAIN_TEXT_FILE
 			l_attr_list: LINKED_LIST [STRING]
 		do
-			create l_arff_file.make_create_read_write (rm_environment.rapid_miner_arff_file_path)
+			create l_arff_file.make_create_read_write (rm_environment.rapidminer_arff_file_path)
 			a_relation.to_medium (l_arff_file)
 			l_arff_file.close
 
@@ -57,7 +57,7 @@ feature{RM_BUILDER} -- Initializaiton
 				a_selected_attributes.forth
 			end
 
-			initialize (a_algorithm_name, no_validation, rm_environment.rapid_miner_arff_file_path, l_attr_list, a_label_attribute.name)
+			initialize (a_algorithm_name, no_validation, rm_environment.rapidminer_arff_file_path, l_attr_list, a_label_attribute.name)
 		end
 
 feature -- Interface
@@ -111,13 +111,19 @@ feature -- Setters
 	set_algorithm_type (a_algorithm_name: STRING)
 			-- Set `algorithm_name' with `a_algorithm_name'.
 		require
-			valid_algorithm: is_valid_algorithm_name (a_algorithm_name)
+			valid_algorithm: is_algorithm_valid (a_algorithm_name)
 		do
 			algorithm_name := a_algorithm_name
 		ensure
 			algorithm_name = a_algorithm_name
 		end
 
+feature -- Validity
+
+	is_algorithm_valid(a_algorithm_name: STRING): BOOLEAN
+			-- Determines if `a_algorithm_name' is a valid algorithm for the current builder.
+		deferred
+		end
 
 feature{RM_BUILDER} -- Implementation
 
@@ -146,12 +152,13 @@ feature{RM_BUILDER} -- Implementation
 			l_bushon: STRING
 		do
 			create l_rapid_execute_string.make (128)
-			l_rapid_execute_string.append ("cmd /C %"rapidminer.bat -f ")
-			l_rapid_execute_string.append (rm_environment.rapid_miner_xml_file_path)
+			l_rapid_execute_string.append (rm_environment.rapidminer_command)
+			--
+			l_rapid_execute_string.append (rm_environment.rapidminer_xml_file_path)
 			l_rapid_execute_string.append ("%"")
 
 			create l_executor
-			l_bushon := l_executor.output_from_program (l_rapid_execute_string, rm_environment.rapid_miner_working_directory)
+			l_bushon := l_executor.output_from_program (l_rapid_execute_string, rm_environment.rapidminer_working_directory)
 		end
 
 	prepare_xml_file
@@ -164,7 +171,7 @@ feature{RM_BUILDER} -- Implementation
 			l_rm_xml_generator := create_xml_generator
 			l_rm_xml_generator.generate_xml
 
-			create l_file.make_open_write (rm_environment.rapid_miner_xml_file_path)
+			create l_file.make_open_write (rm_environment.rapidminer_xml_file_path)
 			l_file.put_string (l_rm_xml_generator.xml)
 			l_file.close
 		end
@@ -185,12 +192,12 @@ feature{RM_BUILDER} -- Implementation
 					l_file.delete
 				end
 
-				create l_file.make (rm_environment.rapid_miner_xml_file_path)
+				create l_file.make (rm_environment.rapidminer_xml_file_path)
 				if l_file.exists then
 					l_file.delete
 				end
 
-				create l_file.make (rm_environment.rapid_miner_arff_file_path)
+				create l_file.make (rm_environment.rapidminer_arff_file_path)
 				if l_file.exists then
 					l_file.delete
 				end

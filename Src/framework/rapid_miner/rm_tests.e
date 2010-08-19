@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_TEST}."
+	description: "Very simple test suite."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,7 +37,7 @@ feature{NONE} -- Tests
 			io.put_string ("Testing linear regression!")
 			io.put_new_line
 
-			create l_file.make_create_read_write (rm_environment.rapid_miner_test_arff_path)
+			create l_file.make_create_read_write (rm_environment.rapidminer_test_arff_path)
 			l_file.put_string (extend_arff)
 			l_file.close
 
@@ -54,7 +54,7 @@ feature{NONE} -- Tests
 			alg_params["minimal_gain"] := "0.2"
 			alg_params["maximal_depth"] := "25"
 
-			create lr_builder.make ( rm_environment.rapid_miner_test_arff_path, selected_attributes, "post::{0}.count")
+			create lr_builder.make ( rm_environment.rapidminer_test_arff_path, selected_attributes, "post::{0}.count")
 			lr_builder.set_validation_parameters (val_params)
 			lr_builder.set_algorithm_parameters (alg_params)
 
@@ -75,7 +75,7 @@ feature{NONE} -- Tests
 
 			check_test (l_linear_regression.regressors[l_linear_regression.constant_regressor] = 1.0, "constant regressor coef")
 
-
+--			l_file.delete
 		end
 
 	test_dt_with_relation
@@ -95,12 +95,12 @@ feature{NONE} -- Tests
 			io.put_new_line
 			create l_children.make (10)
 
-			create l_file.make_create_read_write (rm_environment.rapid_miner_test_arff_path)
+			create l_file.make_create_read_write (rm_environment.rapidminer_test_arff_path)
 			l_file.put_string (search_arff)
 			l_file.close
 
 
-			create l_rel_parser.make (rm_environment.rapid_miner_test_arff_path)
+			create l_rel_parser.make (rm_environment.rapidminer_test_arff_path)
 			l_rel_parser.parse_relation
 			l_relation := l_rel_parser.last_relation
 
@@ -162,7 +162,7 @@ feature{NONE} -- Tests
 			io.put_new_line
 			create l_children.make (10)
 
-			create l_file.make_create_read_write (rm_environment.rapid_miner_test_arff_path)
+			create l_file.make_create_read_write (rm_environment.rapidminer_test_arff_path)
 			l_file.put_string (weka_arff)
 			l_file.close
 
@@ -173,7 +173,7 @@ feature{NONE} -- Tests
 			selected_attributes.force ("tear-prod-rate") selected_attributes.force ("contact-lenses")
 			selected_attributes.force ("astigmatism")
 
-			create rm_tree_builder.make (rm_environment.rapid_miner_test_arff_path, selected_attributes, "contact-lenses")
+			create rm_tree_builder.make (rm_environment.rapidminer_test_arff_path, selected_attributes, "contact-lenses")
 			rm_tree_builder.build
 			l_tree := rm_tree_builder.last_tree
 

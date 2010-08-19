@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_LINEAR_REGRESSION_PARSER_INTERFACE}."
+	description: "Defines the interface that all linear regression parsers must implement."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

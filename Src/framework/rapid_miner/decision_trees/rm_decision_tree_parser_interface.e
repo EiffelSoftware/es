@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {RM_DECISION_TREE_PARSER_INTERFACE}."
+	description: "Defines the interface that all decision tree parsers must implement."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

@@ -47,6 +47,13 @@ feature -- Access
 	last_tree: RM_DECISION_TREE
 		-- Last tree built by `build'
 
+feature -- Validity
+
+	is_algorithm_valid(a_algorithm_name: STRING): BOOLEAN
+		do
+			Result := decision_tree_algorithms.has (a_algorithm_name)
+		end
+
 feature{RM_BUILDER} -- Implementation
 
 	parse_model
@@ -54,7 +61,7 @@ feature{RM_BUILDER} -- Implementation
 		local
 			l_model_parser: RM_DECISION_TREE_PARSER_INTERFACE
 		do
-			l_model_parser := parser
+			l_model_parser := parsers[algorithm_name]
 			l_model_parser.parse_model
 
 			create last_tree.make (l_model_parser.tree_root, label_name)
@@ -72,10 +79,17 @@ feature{RM_BUILDER} -- Implementation
 			end
 		end
 
-	parser: RM_DECISION_TREE_PARSER_INTERFACE
+	parsers: HASH_TABLE [RM_DECISION_TREE_PARSER_INTERFACE, STRING]
 		-- Gives the right parser for the particular decision tree algorithm.
+		local
+			l_parser: RM_DECISION_TREE_PARSER
 		do
-			create {RM_DECISION_TREE_PARSER} Result.make(rm_environment.model_file_path)
+			create l_parser.make (rm_environment.model_file_path)
+			create Result.make (10)
+			Result[algorithm_decision_tree] := l_parser
+			Result[algorithm_decision_tree_chaid] := l_parser
+			Result[algorithm_decision_tree_decision_stump] := l_parser
+			Result[algorithm_decision_tree_id3] := l_parser
 		end
 
 end
