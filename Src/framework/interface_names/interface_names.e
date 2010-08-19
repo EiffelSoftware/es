@@ -169,6 +169,7 @@ feature -- Button texts
 	b_run_and_close: STRING_32					do Result := locale.translation("Run & Close")	end
 	b_Run_finalized: STRING_32					do Result := locale.translation("Run Finalized")	end
 	b_Run_workbench: STRING_32					do Result := locale.translation("Run Workbench")	end
+	b_run_replayed_workbench: STRING_32 do Result := locale.translation ("Replay Workbench") end
 	b_Toggle_stone_management: STRING_32 		do Result := locale.translation("Link Context")	end
 	b_Raise_all: STRING_32						do Result := locale.translation("Raise Windows")	end
 	b_Remove_class_cluster: STRING_32			do Result := locale.translation("Remove Class/Cluster")	end
@@ -215,6 +216,8 @@ feature -- Button texts
 	b_Exec_replay_to: STRING_32					do Result := locale.translation("Go to")	end
 	t_Exec_replay_to: STRING_32					do Result := locale.translation("Replay execution to selected call.")	end
 
+	b_activate_capture_replay: STRING_32 do Result := locale.translation ("Enable Execution Capture") end
+	b_deactivate_capture_replay: STRING_32 do Result := locale.translation ("Disable Execution Capture") end
 
 	b_Control_debuggee_object_storage: STRING_32	do Result := locale.translation("Debuggee Object Storage")	end
 	b_Save_object: STRING_32						do Result := locale.translation("Save Object")	end
@@ -654,6 +657,8 @@ feature -- Accelerator, focus label and menu name
 	m_Run_finalized: STRING_32			do Result := locale.translation("&Run Finalized System")	end
 	f_Run_workbench: STRING_32			do Result := locale.translation("Run workbench system")	end
 	m_Run_workbench: STRING_32			do Result := locale.translation("&Run Workbench System")	end
+	f_run_replayed_workbench: STRING_32 do Result := locale.translation ("Replay Workbench System") end
+	m_run_replayed_workbench: STRING_32 do Result := locale.translation ("&Replay Workbench System") end
 	f_Save: STRING_32					do Result := locale.translation("Save")	end
 	m_Save_new: STRING_32				do Result := locale.translation("&Save")	end
 	m_Save_As: STRING_32					do Result := locale.translation("S&ave As...")	end
@@ -774,6 +779,8 @@ feature -- Accelerator, focus label and menu name
 	m_Exec_replay_left: STRING_32	do Result := locale.translation("Replay Execution: Previous Step")	end
 	m_Exec_replay_right: STRING_32	do Result := locale.translation("Replay Execution: Next Step")	end
 
+	m_activate_capture_replay: STRING_32 do Result := locale.translation ("Enable Execution Capture") end
+	m_deactivate_capture_replay: STRING_32 do Result := locale.translation ("Disable Execution Capture") end
 
 	m_Control_debuggee_object_storage: STRING_32	do Result := locale.translation("Control Debuggee Object Storage")	end
 	m_Save_debuggee_object: STRING_32	do Result := locale.translation("Save Debuggee Object")	end
@@ -2660,6 +2667,9 @@ feature -- Description texts
 	e_Exec_replay_forth: STRING_32	do Result := locale.translation("Replay next execution stack")	end
 	e_Exec_replay_left: STRING_32	do Result := locale.translation("Replay previous execution step")	end
 	e_Exec_replay_right: STRING_32	do Result := locale.translation("Replay next execution step")	end
+
+	e_activate_capture_replay: STRING_32 do Result := locale.translation ("Enable Execution Capture") end
+	e_deactivate_capture_replay: STRING_32 do Result := locale.translation ("Disable Execution Capture") end
 
 	e_Control_debuggee_object_storage: STRING_32	do Result := locale.translation("Control debuggee object storage")	end
 	e_Operation_succeeded: STRING_32	do Result := locale.translation("Operation succeeded.")	end

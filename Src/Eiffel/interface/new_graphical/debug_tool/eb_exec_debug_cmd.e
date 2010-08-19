@@ -218,6 +218,12 @@ feature {NONE} -- Attributes
 				Result.extend (dbg.toggle_exec_replay_recording_mode_cmd.new_menu_item_unmanaged)
 				Result.extend (create {EV_MENU_SEPARATOR})
 
+					-- Capture/replay
+				Result.extend (dbg.toggle_capture_replay_mode_cmd.new_menu_item_unmanaged)
+
+				Result.extend (dbg.run_replayed_cmd.new_menu_item_unmanaged)
+				Result.extend (create {EV_MENU_SEPARATOR})
+
 					-- Run (workbench)
 				Result.extend (dbg.run_workbench_cmd.new_menu_item_unmanaged)
 

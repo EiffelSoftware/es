@@ -708,6 +708,9 @@ feature -- Status
 	execution_replay_recording_enabled: BOOLEAN
 			-- Is execution replay recording enabled ?
 
+	capture_replay_enabled: BOOLEAN
+			-- Is capture/replay enabled?
+
 feature -- Parameters context
 
 --| This code may be used later to enhance display of string ...
@@ -1314,6 +1317,12 @@ feature -- Application change
 					end
 				end
 			end
+		end
+
+	set_capture_replay_mode (b: BOOLEAN)
+			-- Enable/disable capture/replay for workbench executions
+		do
+			capture_replay_enabled := b
 		end
 
 	set_catcall_detection_in_console (b: BOOLEAN)

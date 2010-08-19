@@ -52,6 +52,13 @@ feature -- Commands
 			Result.disable_sensitive
 		end
 
+	run_replayed_cmd: EB_EXEC_REPLAYED_CMD
+			-- Command to run the workbench project in replay mode.
+		once
+			create Result.make
+			Result.disable_sensitive
+		end
+
 	Run_finalized_cmd: EB_EXEC_FINALIZED_CMD
 			-- Command to run the finalized project.
 		once
@@ -150,7 +157,7 @@ feature -- Commands
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

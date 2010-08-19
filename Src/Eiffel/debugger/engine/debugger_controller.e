@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 
 feature -- Debug Operation
 
-	debug_application (param: DEBUGGER_EXECUTION_RESOLVED_PROFILE; a_execution_mode: INTEGER)
+	debug_application (a_param: DEBUGGER_EXECUTION_RESOLVED_PROFILE; a_mode: INTEGER)
 			-- Launch the program from the project target.
 			-- see EXEC_MODES for `a_execution_mode' values.
 		local
@@ -65,7 +65,22 @@ feature -- Debug Operation
 			is_dotnet_system: BOOLEAN
 			prefstr: STRING
 			dotnet_debugger: STRING
+			l_profile: DEBUGGER_EXECUTION_PROFILE
+			l_param: DEBUGGER_EXECUTION_RESOLVED_PROFILE
+			l_mode: INTEGER
 		do
+			if a_mode = {EXEC_MODES}.replay then
+				l_mode := {EXEC_MODES}.step_next
+				create l_profile.make
+				l_profile.set_arguments ("-eif_replay")
+				create l_param.make_from_profile (l_profile)
+			else
+				l_mode := a_mode
+				l_param := a_param
+				if manager.capture_replay_enabled then
+					l_param.set_arguments (l_param.arguments + " -eif_capture")
+				end
+			end
 			launch_program := False
 			if  (not Eiffel_project.system_defined) or else (Eiffel_System.name = Void) then
 				warning (Warning_messages.w_No_system)
@@ -112,7 +127,7 @@ feature -- Debug Operation
 											-- Launch cordbg.exe.
 										(create {COMMAND_EXECUTOR}).execute_with_args
 											(l_app_string,
-												safe_path (eiffel_system.application_name (True)) + " " + param.arguments)
+												safe_path (eiffel_system.application_name (True)) + " " + l_param.arguments)
 										launch_program := True
 									elseif l_il_env.use_dbgclr (dotnet_debugger) then
 											-- Launch DbgCLR.exe.
@@ -124,7 +139,7 @@ feature -- Debug Operation
 								else
 										--| Without BP, we just launch the execution as it is
 									(create {COMMAND_EXECUTOR}).execute_with_args (eiffel_system.application_name (True),
-										param.arguments)
+										l_param.arguments)
 									launch_program := True
 								end
 							end
@@ -148,11 +163,11 @@ feature -- Debug Operation
 										--| for now, yes
 									prefstr := manager.confirm_ignore_all_breakpoints_preference_string
 									discardable_if_confirmed_do (Warning_messages.w_Ignoring_all_stop_points,
-														agent debug_workbench_application (param, a_execution_mode, True),
+														agent debug_workbench_application (l_param, l_mode, True),
 														2, prefstr
 													)
 								else
-									debug_workbench_application (param, a_execution_mode, False)
+									debug_workbench_application (l_param, l_mode, False)
 								end
 							end
 						end
@@ -558,7 +573,7 @@ invariant
 	manager_not_void: manager /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

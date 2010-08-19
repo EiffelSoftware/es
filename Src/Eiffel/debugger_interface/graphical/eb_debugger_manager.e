@@ -18,6 +18,7 @@ inherit
 			confirm_ignore_all_breakpoints_preference_string,
 			change_current_thread_id,
 			activate_execution_replay_recording,
+			set_capture_replay_mode,
 			disable_assertion_checking, restore_assertion_checking,
 			set_execution_ignoring_breakpoints,
 			on_application_before_launching,
@@ -258,6 +259,9 @@ feature {NONE} -- Initialization
 			create toggle_exec_replay_recording_mode_cmd.make
 			toolbarable_commands.extend (toggle_exec_replay_recording_mode_cmd)
 
+			create toggle_capture_replay_mode_cmd.make
+			toolbarable_commands.extend (toggle_capture_replay_mode_cmd)
+
 			create toggle_exec_replay_mode_cmd.make
 			toolbarable_commands.extend (toggle_exec_replay_mode_cmd)
 			create exec_replay_back_cmd.make_back
@@ -403,6 +407,8 @@ feature -- Access
 
 	exec_replay_right_cmd: EB_EXEC_DEBUG_REPLAY_CMD
 			-- Command that can exec replay right the execution			
+
+	toggle_capture_replay_mode_cmd: EB_DEBUG_TOGGLE_CAPTURE_REPLAY_MODE_CMD
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_AND_MENUABLE_COMMAND]
 			-- All commands that can be put in a toolbar.
@@ -726,6 +732,14 @@ feature -- tools management
 			a_recycler.auto_recycle (l_item)
 
 			l_item := exec_replay_left_cmd.new_menu_item
+			Result.extend (l_item)
+			a_recycler.auto_recycle (l_item)
+
+				-- Separator.
+			create sep
+			Result.extend (sep)
+
+			l_item := toggle_capture_replay_mode_cmd.new_menu_item
 			Result.extend (l_item)
 			a_recycler.auto_recycle (l_item)
 
@@ -1401,6 +1415,13 @@ feature -- Status setting
 				end
 				update_execution_replay
 			end
+		end
+
+	set_capture_replay_mode (b: BOOLEAN)
+			-- <Precursor>
+		do
+			toggle_capture_replay_mode_cmd.set_select (b)
+			Precursor (b)
 		end
 
 	set_debugging_window (a_window: EB_DEVELOPMENT_WINDOW)
@@ -2282,6 +2303,7 @@ feature {NONE} -- Implementation
 				step_cmd.enable_sensitive
 				into_cmd.enable_sensitive
 				out_cmd.enable_sensitive
+				toggle_capture_replay_mode_cmd.enable_sensitive
 			end
 		end
 
@@ -2300,6 +2322,7 @@ feature {NONE} -- Implementation
 			into_cmd.disable_sensitive
 			out_cmd.disable_sensitive
 			ignore_breakpoints_cmd.disable_sensitive
+			toggle_capture_replay_mode_cmd.disable_sensitive
 
 			assertion_checking_handler_cmd.disable_sensitive
 			options_cmd.disable_sensitive
