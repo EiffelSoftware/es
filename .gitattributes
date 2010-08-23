@@ -5655,7 +5655,6 @@ free_add_ons/gcc/windows/msys/1.0/bin/rmdir.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/rvi -text
 free_add_ons/gcc/windows/msys/1.0/bin/rview -text
 free_add_ons/gcc/windows/msys/1.0/bin/rvim -text
-free_add_ons/gcc/windows/msys/1.0/bin/rxvt.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sed.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sh.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sleep.exe -text
