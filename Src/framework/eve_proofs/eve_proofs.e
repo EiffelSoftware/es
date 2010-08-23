@@ -146,7 +146,7 @@ feature -- Basic operations
 			end
 		end
 
-feature {NONE} -- Implementation
+feature --{NONE} -- Implementation
 
 	boogie_generator: !EP_BOOGIE_CODE_GENERATOR
 			-- Generator used to generate Boogie code
@@ -326,19 +326,23 @@ feature -- Blackboard tool
 	name: STRING = "EVE Proofs"
 			-- <Precursor>
 
-	configurations: LIST [EBB_TOOL_CONFIGURATION]
+	description: STRING = "Prover using Boogie"
+			-- <Precursor>
+
+	configurations: LINKED_LIST [EBB_TOOL_CONFIGURATION]
 			-- <Precursor>
 		do
-			create {LINKED_LIST [EBB_TOOL_CONFIGURATION]} Result.make
-			Result.extend (create {EBB_TOOL_CONFIGURATION})
+			create Result.make
+			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "Default"))
 		end
 
-	run (a_input: EBB_TOOL_INPUT; a_configuration: EBB_TOOL_CONFIGURATION)
-			-- <Precursor>
+	create_new_instance (a_execution: EBB_TOOL_EXECUTION)
+			-- Create a new instance of this tool.
 		do
-			reset
-			add_class_to_verify (a_input.classes.first)
-			execute_verification
+			create last_instance.make (a_execution)
 		end
+
+	last_instance: detachable EVE_PROOFS_INSTANCE
+			-- Last created instance, if any.
 
 end

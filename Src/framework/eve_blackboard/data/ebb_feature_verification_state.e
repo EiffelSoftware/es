@@ -30,6 +30,11 @@ feature {NONE} -- Initialization
 			-- Initialize empty verification state associated to `a_feature'.
 		do
 			make_with_feature (a_feature)
+
+			if a_feature.is_attribute then
+				correctness_confidence := -1.0
+			end
+
 		ensure
 			consistent: system.class_of_id (class_id).feature_of_feature_id (feature_id).rout_id_set ~ a_feature.rout_id_set
 		end
@@ -45,9 +50,6 @@ feature -- Access
 			-- a value of 1.0 means full confidence of corretness.
 
 feature -- Status report
-
-	is_compiled: BOOLEAN
-			-- Is feature compiled?
 
 	has_loops: BOOLEAN
 			-- Does this feature has loops?
@@ -131,20 +133,21 @@ feature {NONE} -- Implementation
 			if is_class_invariant_proven.is_proven_to_hold then
 				correctness_confidence := correctness_confidence + 1
 			end
-			if is_frame_condition_proven.is_proven_to_hold then
-				correctness_confidence := correctness_confidence + 1
-			end
-			if is_loop_invariant_proven.is_proven_to_hold then
-				correctness_confidence := correctness_confidence + 1
-			end
-			if is_loop_variant_proven.is_proven_to_hold then
-				correctness_confidence := correctness_confidence + 1
-			end
+--			if is_frame_condition_proven.is_proven_to_hold then
+--				correctness_confidence := correctness_confidence + 1
+--			end
+--			if is_loop_invariant_proven.is_proven_to_hold then
+--				correctness_confidence := correctness_confidence + 1
+--			end
+--			if is_loop_variant_proven.is_proven_to_hold then
+--				correctness_confidence := correctness_confidence + 1
+--			end
 
-			correctness_confidence := correctness_confidence / 5
+--			correctness_confidence := correctness_confidence / 5
+			correctness_confidence := correctness_confidence / 2
 		end
 
 invariant
-	confidence_in_interval: 0.0 <= correctness_confidence and correctness_confidence <= 1.0
+--	confidence_in_interval: 0.0 <= correctness_confidence and correctness_confidence <= 1.0
 
 end

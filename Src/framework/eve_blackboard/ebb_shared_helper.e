@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EBB_SHARED_HELPER}."
-	author: ""
+	description: "Helper features used by different classes."
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,5 +1,5 @@
 note
-	description: "Boogie executable for Windows."
+	description: "Boogie executable running as a separate process."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,17 +10,107 @@ inherit
 
 	E2B_EXECUTABLE
 
+	DISPOSABLE
+
+feature -- Access
+
+	last_output: detachable STRING
+			-- <Precursor>
+		do
+			if attached internal_last_output then
+				Result := internal_last_output
+			else
+				if attached process as l_process and then not l_process.is_running then
+					internal_last_output := outputs.item (l_process.id)
+					clear_output (l_process.id)
+					Result := internal_last_output
+				end
+			end
+		end
+
+feature -- Status report
+
+	is_running: BOOLEAN
+			-- <Precursor>
+		do
+			if attached process as l_process then
+				Result := l_process.is_running
+			end
+		end
+
 feature -- Basic operations
 
 	run
-			-- Run Boogie on `input'.
+			-- <Precursor>
 		do
-			last_output.wipe_out
+			if attached process as l_process then
+				clear_output (l_process.id)
+			end
+
 			generate_boogie_file
-			launch_boogie
+			launch_boogie (True)
+			internal_last_output := outputs.item (process.id)
+			clear_output (process.id)
+			process := Void
+		end
+
+	run_asynchronous
+			-- <Precursor>
+		do
+			if attached process as l_process then
+				clear_output (l_process.id)
+			end
+
+			internal_last_output := Void
+			generate_boogie_file
+			launch_boogie (False)
+		end
+
+	cancel
+			-- <Precursor>
+		local
+			l_id: INTEGER
+		do
+			if attached process as l_process then
+				l_id := l_process.id
+				if l_process.is_running then
+					l_process.terminate_tree
+					l_process.wait_for_exit_with_timeout (1000)
+					process := Void
+				end
+			end
+			if l_id > 0 then
+				clear_output (l_id)
+			end
+		end
+
+feature -- Removal
+
+	dispose
+			-- <Precursor>
+		local
+			l_retry: BOOLEAN
+		do
+			if not l_retry and not is_disposed and not is_in_final_collect then
+				if attached process as l_process then
+					if attached outputs as l_outputs then
+						l_outputs.remove (l_process.id)
+					end
+				end
+			end
+			is_disposed := True
+		rescue
+			l_retry := True
+			retry
 		end
 
 feature {NONE} -- Implementation
+
+	is_disposed: BOOLEAN
+			-- Is object already disposed?
+
+	internal_last_output: detachable STRING
+			-- Last generated output.
 
 	boogie_file_name: attached STRING
 			-- File name used to generate Boogie file.
@@ -33,6 +123,9 @@ feature {NONE} -- Implementation
 		ensure
 			not Result.is_empty
 		end
+
+	process: detachable PROCESS
+			-- Process running Boogie.
 
 	generate_boogie_file
 			-- Generate Boogie file from input.
@@ -52,6 +145,9 @@ feature {NONE} -- Implementation
 					append_file_content (l_output_file, input.boogie_files.item)
 					input.boogie_files.forth
 				end
+				l_output_file.put_string ("// Custom content")
+				l_output_file.put_new_line
+				l_output_file.put_new_line
 				from
 					input.custom_content.start
 				until
@@ -67,13 +163,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	launch_boogie
+	launch_boogie (a_wait_for_exit: BOOLEAN)
 			-- Launch Boogie on generated file.
 		local
 			l_ee: EXECUTION_ENVIRONMENT
 			l_arguments: LINKED_LIST [STRING]
 			l_process_factory: PROCESS_FACTORY
-			l_process: PROCESS
 		do
 				-- Prepare command line arguments
 			create l_arguments.make
@@ -84,19 +179,17 @@ feature {NONE} -- Implementation
 				-- Launch Boogie
 			create l_ee
 			create l_process_factory
-			l_process := l_process_factory.process_launcher (boogie_executable, l_arguments, l_ee.current_working_directory)
+			process := l_process_factory.process_launcher (boogie_executable, l_arguments, l_ee.current_working_directory)
+			check not outputs.has_key (process.id) end
 
-			l_process.redirect_output_to_agent (agent handle_boogie_output (?))
-			l_process.redirect_error_to_same_as_output
-			l_process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
-			l_process.launch
-			l_process.wait_for_exit
-		end
-
-	handle_boogie_output (a_output: STRING)
-			-- Handle output from Boogie.
-		do
-			last_output.append (a_output)
+			process.enable_launch_in_new_process_group
+			process.redirect_output_to_agent (agent append_output (?, process))
+			process.redirect_error_to_same_as_output
+			process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
+			process.launch
+			if a_wait_for_exit then
+				process.wait_for_exit
+			end
 		end
 
 	handle_launch_failed (a_executable: STRING; a_arguments: LINKED_LIST [STRING])
@@ -142,6 +235,36 @@ feature {NONE} -- Implementation
 				a_file.put_new_line
 				a_file.put_new_line
 			end
+		end
+
+feature {NONE} -- Output capture
+
+	outputs: HASH_TABLE [STRING, INTEGER]
+			-- Output indexed by process id.
+		note
+			once_status: global
+		once
+			create Result.make (10)
+		end
+
+	append_output (a_text: STRING; a_process: PROCESS)
+			-- Append `a_text' to output of process with id `a_process_id'.
+		local
+			l_new_string: STRING
+		do
+			if outputs.has_key (a_process.id) then
+				outputs.item (a_process.id).append (a_text)
+			else
+				create l_new_string.make (1024)
+				l_new_string.append (a_text)
+				outputs.put (l_new_string, a_process.id)
+			end
+		end
+
+	clear_output (a_process_id: INTEGER)
+			-- Clear output generated by process with id `a_process_id'.
+		do
+			outputs.remove (a_process_id)
 		end
 
 end

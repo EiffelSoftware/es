@@ -50,7 +50,7 @@ feature -- Access
 	associated_feature: attached FEATURE_I
 			-- Feature associated with this data.
 		do
-			Result := associated_class.feature_of_feature_id (feature_id)
+			Result := compiled_class.feature_of_feature_id (feature_id)
 		end
 
 invariant

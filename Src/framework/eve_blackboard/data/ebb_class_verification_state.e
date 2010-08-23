@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 	make (a_class: CLASS_C)
 			-- Initialize empty verification state associated to `a_class'.
 		do
-			make_with_class (a_class)
+			make_with_class (a_class.original_class)
 		end
 
 feature -- Access
@@ -42,9 +42,6 @@ feature -- Access
 			-- a value of 1.0 means full confidence of corretness.
 
 feature -- Status report
-
-	is_compiled: BOOLEAN
-			-- Is class compiled?
 
 	is_proven: BOOLEAN
 			-- Have all features of this class been proven?

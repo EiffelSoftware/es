@@ -7,6 +7,7 @@ note
 			verifier.input.add_boogie_file ("file.bpl")
 			verifier.input.add_custom_content ("some boogie code")
 			verifier.verify
+			verifier.parse_verification_output
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,8 +16,7 @@ class
 	E2B_VERIFIER
 
 create
-	make,
-	make_remote
+	make
 
 feature {NONE} -- Initialization
 
@@ -26,29 +26,29 @@ feature {NONE} -- Initialization
 			create {E2B_PLATFORM_EXECUTABLE_IMPL} executable
 			create output_parser.make
 			create input.make
-			create last_output.make_empty
-			create last_result.make
-		end
-
-	make_remote (a_location: ANY)
-			-- Initialize remote Boogie verifier.
-		require
-			False
-		do
-				-- Todo: implement
-			check False end
 		end
 
 feature -- Access
 
-	input: attached E2B_INPUT
+	input: attached E2B_VERIFIER_INPUT
 			-- Input for Boogie verifier.
 
-	last_result: attached E2B_RESULT
+	last_result: detachable E2B_RESULT
 			-- Result of last run of Boogie.
 
-	last_output: attached STRING
+	last_output: detachable STRING
 			-- Output of last run of Boogie.
+		do
+			Result := executable.last_output
+		end
+
+feature -- Status report
+
+	is_running: BOOLEAN
+			-- Is Boogie verifier running right now?
+		do
+			Result := executable.is_running
+		end
 
 feature -- Element change
 
@@ -64,15 +64,49 @@ feature -- Basic operations
 
 	verify
 			-- Launch Boogie verifier on input.
+		require
+			not_running: not is_running
 		do
+			last_result := Void
 			executable.set_input (input)
 			executable.run
-			last_output := executable.last_output
+		ensure
+			not_running: not is_running
+			last_output_set: last_output.is_equal (executable.last_output)
+			last_result_not_set: last_result = Void
+		end
+
+	verify_asynchronous
+			-- Launch Boogie verifier on input, without waiting for Boogie to finish.
+		require
+			not_running: not is_running
+		do
+			last_result := Void
+			executable.set_input (input)
+			executable.run_asynchronous
+		ensure
+			maybe_running: is_running or not is_running
+			last_output_not_set: is_running implies last_output = Void
+			last_result_not_set: last_result = Void
+		end
+
+	cancel
+			-- Cancel execution of Boogie.
+		do
+			executable.cancel
+		ensure
+			not_running: not is_running
+		end
+
+	parse_verification_output
+			-- Parse `last_output' and fill `last_result'.
+		require
+			last_output_set: attached last_output
+		do
 			output_parser.process (last_output)
 			last_result := output_parser.last_result
 		ensure
-			last_output_set: last_output.is_equal (executable.last_output)
-			last_result_set: last_result.is_equal (output_parser.last_result)
+			last_result_set: attached last_result
 		end
 
 feature {NONE} -- Implementation

@@ -8,22 +8,42 @@ deferred class
 
 feature -- Access
 
-	name: STRING
+	name: attached STRING
 			-- Name of tool.
 		deferred
 		end
 
-	configurations: LIST [EBB_TOOL_CONFIGURATION]
+	description: attached STRING
+			-- Description of tool.
+		deferred
+		end
+
+	configurations: attached LINKED_LIST [attached EBB_TOOL_CONFIGURATION]
 			-- List of available tool configurations.
 		deferred
 		ensure
 			not_empty: not Result.is_empty
 		end
 
+	default_configuration: attached EBB_TOOL_CONFIGURATION
+			-- Default tool configuration.
+		do
+			Result := configurations.first
+		end
+
 feature -- Basic operations
 
-	run (a_input: EBB_TOOL_INPUT; a_configuration: EBB_TOOL_CONFIGURATION)
-			-- Run on `a_input' in mode `a_configuration'.
+	create_new_instance (a_execution: attached EBB_TOOL_EXECUTION)
+			-- Create a new instance of this tool to execute `a_execution'.
+		require
+			correct_tool: a_execution.tool = Current
+		deferred
+		ensure
+			last_instance_attached: attached last_instance
+		end
+
+	last_instance: detachable EBB_TOOL_INSTANCE
+			-- Last created instance, if any.
 		deferred
 		end
 

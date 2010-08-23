@@ -2201,6 +2201,8 @@ debug ("ACTIVITY")
 	io.error.put_new_line
 end
 			changed_features.put (feature_name_id)
+
+			(create {EBB_BLACKBOARD_COMPILER_HELPER}).handle_changed_feature (feature_of_name_id (feature_name_id))
 		end
 
 	constraint (i: INTEGER): TYPE_A

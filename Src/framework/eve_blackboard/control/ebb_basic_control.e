@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EBB_BASIC_CONTROL}."
-	author: ""
+	description: "A basic control for the blackboard."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,43 +10,89 @@ inherit
 
 	EBB_CONTROL
 
-	EBB_SHARED_BLACKBOARD
-		export {NONE} all end
-
-	EBB_SHARED_LOG
-		export {NONE} all end
+	SHARED_EIFFEL_PROJECT
 
 create
 	make
 
-feature {NONE} -- Initialization
-
-	make
-			-- Initialize basic control.
-		do
-
-		end
-
 feature -- Basic operations
 
-	execute_action
+	create_new_tool_executions
 			-- <Precursor>
 		local
+			l_class: EBB_CLASS_DATA
 			l_input: EBB_TOOL_INPUT
 			l_tool: EBB_TOOL
-			l_config: EBB_TOOL_CONFIGURATION
+			l_configuration: EBB_TOOL_CONFIGURATION
+			l_execution: EBB_TOOL_EXECUTION
 		do
-				-- Select input set
-			create l_input.make
-			l_input.add_class (blackboard.data.classes.first.associated_class)
+				-- Only launch new tool when:
+				--  - no other tool is running
+				--  - no other tool is waiting
+				--  - no compilation is running
+			if running_executions.is_empty and waiting_executions.is_empty and not eiffel_project.is_compiling then
 
-				-- Select tool/configuration
-			l_tool := blackboard.tools.first
-			l_config := l_tool.configurations.first
+				l_class := next_class
+				if l_class = Void then
+						-- Nothing to do
+				else
+						-- Create input set
+					create l_input.make
+					l_input.add_class (l_class.compiled_class)
 
-				-- Run tool
-			log.put_line ("Running tool " + l_tool.name)
-			l_tool.run (l_input, l_config)
+						-- Select tool and configuration.
+					l_tool := blackboard.tools.i_th (1)
+					l_configuration := l_tool.default_configuration
+
+						-- Add tool execution to waiting list
+					create l_execution.make (l_tool, l_configuration, l_input)
+					waiting_executions.extend (l_execution)
+				end
+			end
+		end
+
+	start_waiting_tool_executions
+			-- Start waiting tool executions.
+		do
+			if running_executions.is_empty and not waiting_executions.is_empty then
+				start_tool_execution (waiting_executions.first)
+			end
+		end
+
+	next_class: detachable EBB_CLASS_DATA
+			-- Select next class to work on.
+		local
+			l_classes: LIST [EBB_CLASS_DATA]
+		do
+			from
+				l_classes := blackboard.data.classes
+				l_classes.start
+			until
+				l_classes.after or attached Result
+			loop
+				if l_classes.item.is_stale then
+					Result := l_classes.item
+				end
+				l_classes.forth
+			end
+		end
+
+	next_feature: detachable EBB_FEATURE_DATA
+			-- Select next feature to work on.
+		local
+			l_features: LIST [EBB_FEATURE_DATA]
+		do
+			from
+				l_features := blackboard.data.features
+				l_features.start
+			until
+				l_features.after or attached Result
+			loop
+				if l_features.item.is_stale then
+					Result := l_features.item
+				end
+				l_features.forth
+			end
 		end
 
 end

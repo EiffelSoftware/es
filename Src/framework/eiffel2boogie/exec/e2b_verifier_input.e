@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	E2B_INPUT
+	E2B_VERIFIER_INPUT
 
 create
 	make

@@ -19,7 +19,6 @@ feature {NONE} -- Implementation
 			-- Initialize Windows executable.
 		do
 			boogie_file_name := default_boogie_code_file_name
-			create last_output.make_empty
 			create input.make
 		end
 

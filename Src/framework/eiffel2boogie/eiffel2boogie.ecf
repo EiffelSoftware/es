@@ -8,6 +8,8 @@
 		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="eve_blackboard" location="$EIFFEL_SRC\framework\eve_blackboard\eve_blackboard.ecf"/>
+		<library name="eve_proofs" location="$EIFFEL_SRC\framework\eve_proofs\eve_proofs.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>

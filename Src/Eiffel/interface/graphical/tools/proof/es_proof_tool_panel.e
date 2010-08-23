@@ -263,13 +263,24 @@ feature {NONE} -- Events
 			l_result: EBB_FEATURE_VERIFICATION_RESULT
 		do
 			create l_result.make (a_event_item.context_feature)
+			l_result.set_time (create {DATE_TIME}.make_now)
+			l_result.set_tool (blackboard.tools.first)
 			if is_successful_event (a_event_item) then
 				l_result.is_postcondition_proven.set_proven_to_hold
 				l_result.is_postcondition_proven.set_update
 				l_result.is_class_invariant_proven.set_proven_to_hold
 				l_result.is_class_invariant_proven.set_update
+
 				blackboard.add_verification_result (l_result)
-				blackboard.commit_results
+--				blackboard.commit_results
+			end
+			if is_failed_event (a_event_item) then
+				l_result.is_postcondition_proven.set_proven_to_fail
+				l_result.is_postcondition_proven.set_update
+				l_result.is_class_invariant_proven.set_proven_to_fail
+				l_result.is_class_invariant_proven.set_update
+
+				blackboard.add_verification_result (l_result)
 			end
 		end
 

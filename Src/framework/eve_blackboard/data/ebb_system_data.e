@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {EBB_SYSTEM_DATA}."
-	author: ""
+	description: "Blackboard data for the system."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,6 +7,8 @@ class
 	EBB_SYSTEM_DATA
 
 inherit
+
+	EBB_PARENT_ELEMENT [EBB_SYSTEM_DATA, EBB_CLUSTER_DATA]
 
 	SHARED_WORKBENCH
 		export {NONE} all end
@@ -30,24 +31,24 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	cluster_data (a_cluster: CONF_GROUP): EBB_CLUSTER_DATA
+	cluster_data (a_cluster: CONF_GROUP): attached EBB_CLUSTER_DATA
 			-- Cluster data for cluster `a_cluster'.
 		do
 			check cluster_data_table.has_key (a_cluster) end
 			Result := cluster_data_table.item (a_cluster)
 		end
 
-	class_data (a_class: CLASS_C): attached EBB_CLASS_DATA
+	class_data (a_class: CLASS_I): attached EBB_CLASS_DATA
 			-- Blackboard data for class `a_class'.
 		do
---			check class_data_table.has_key (a_class.class_id) end
-			Result := class_data_table.item (a_class.class_id)
+			check class_data_table.has_key (a_class.name) end
+			Result := class_data_table.item (a_class.name)
 		end
 
 	feature_data (a_feature: FEATURE_I): attached EBB_FEATURE_DATA
 			-- Blackboard data for feature `a_feature'.
 		do
---			check feature_data_table.has_key (a_feature.rout_id_set.first) end
+			check feature_data_table.has_key (a_feature.rout_id_set.first) end
 			Result := feature_data_table.item (a_feature.rout_id_set.first)
 		end
 
@@ -67,6 +68,26 @@ feature -- Access
 			-- List of features.
 		do
 			Result := feature_data_table.linear_representation
+		end
+
+feature -- Status report
+
+	has_class (a_class: CLASS_I): BOOLEAN
+			-- Does system have data about class `a_class'?
+		do
+			Result := class_data_table.has_key (a_class.name)
+		end
+
+	has_class_by_name (a_name: STRING): BOOLEAN
+			-- Does system have data about class `a_class'?
+		do
+			Result := class_data_table.has_key (a_name)
+		end
+
+	has_feature (a_feature: FEATURE_I): BOOLEAN
+			-- Does system have data about feature `a_feature'?
+		do
+			Result := feature_data_table.has_key (a_feature.rout_id_set.first)
 		end
 
 feature -- Update
@@ -91,13 +112,96 @@ feature -- Update
 			end
 		end
 
+	add_class (a_class: CLASS_I)
+			-- Add class `a_class'.
+		local
+			l_class_data: EBB_CLASS_DATA
+			l_features: LIST [FEATURE_I]
+		do
+			if not class_data_table.has_key (a_class.name) then
+				create l_class_data.make (a_class)
+				class_data_table.extend (l_class_data, a_class.name)
+			else
+				l_class_data := class_data_table.item (a_class.name)
+			end
+
+			if l_class_data.is_compiled then
+				from
+					l_features := features_written_in_class (l_class_data.compiled_class)
+					l_features.start
+				until
+					l_features.after
+				loop
+					internal_update_feature (l_features.item, l_class_data)
+					l_features.forth
+				end
+			end
+
+		end
+
+	remove_class (a_class: CLASS_I)
+			-- Remove class `a_class'.
+		local
+			l_class: EBB_CLASS_DATA
+		do
+			l_class := class_data (a_class)
+			check l_class /= Void end
+
+			class_data_table.remove (a_class.name)
+			-- TODO: also remove features
+		end
+
+	update_class (a_class: CLASS_I)
+			-- Update class `a_class'.
+		do
+
+		end
+
+	add_feature (a_feature: FEATURE_I)
+			-- Add feature `a_feature'.
+		require
+			not_added: not has_feature (a_feature)
+		local
+			l_class: EBB_CLASS_DATA
+		do
+			l_class := class_data (a_feature.written_class.original_class)
+			check l_class /= Void end
+			internal_update_feature (a_feature, l_class)
+		end
+
+	remove_feature (a_feature: FEATURE_I)
+			-- Remove feature `a_feature'.
+		require
+			added: has_feature (a_feature)
+		local
+			l_class: EBB_CLASS_DATA
+			l_feature: EBB_FEATURE_DATA
+		do
+			l_feature := feature_data (a_feature)
+			check l_feature /= Void end
+			l_class := class_data (a_feature.written_class.original_class)
+			check l_class /= Void end
+
+			l_feature.set_parent (Void)
+			check not l_class.children.has (l_feature) end
+			feature_data_table.remove (a_feature.rout_id_set.first)
+		end
+
+	update_feature (a_feature: FEATURE_I)
+			-- Update feature `a_feature'.
+		require
+			added: has_feature (a_feature)
+		do
+			feature_data (a_feature).set_stale
+		end
+
 feature {NONE} -- Implementation
 
 	cluster_data_table: HASH_TABLE [EBB_CLUSTER_DATA, CONF_GROUP]
 			-- Hashtable storing cluster data, indexed by cluster.
 
-	class_data_table: HASH_TABLE [EBB_CLASS_DATA, INTEGER]
-			-- Hashtable storing class data, indexed by class id.
+	class_data_table: HASH_TABLE [EBB_CLASS_DATA, STRING]
+			-- Hashtable storing class data, indexed by class name.
 
 	feature_data_table: HASH_TABLE [EBB_FEATURE_DATA, INTEGER]
 			-- Hashtable storing feature data, indexed by ???.
@@ -123,24 +227,25 @@ feature {NONE} -- Implementation
 				a_cluster.classes.after
 			loop
 				l_class := a_cluster.classes.item_for_iteration
-				if l_class.is_compiled then
-					update_class (universe.class_named (l_class.name, a_cluster).compiled_class)
-				end
+				add_class (universe.class_named (l_class.name, a_cluster))
+--				if l_class.is_compiled then
+--					internal_update_class (universe.class_named (l_class.name, a_cluster).compiled_class)
+--				end
 				a_cluster.classes.forth
 			end
 		end
 
-	update_class (a_class: CLASS_C)
+	internal_update_class (a_class: CLASS_C)
 			-- Update data from `a_class'.
 		local
 			l_class_data: EBB_CLASS_DATA
 			l_features: LIST [FEATURE_I]
 		do
-			if not class_data_table.has_key (a_class.class_id) then
-				create l_class_data.make (a_class)
-				class_data_table.extend (l_class_data, a_class.class_id)
+			if not class_data_table.has_key (a_class.name) then
+				create l_class_data.make (a_class.original_class)
+				class_data_table.extend (l_class_data, a_class.name)
 			else
-				l_class_data := class_data_table.item (a_class.class_id)
+				l_class_data := class_data_table.item (a_class.name)
 			end
 
 				-- Update features of this class
@@ -150,14 +255,15 @@ feature {NONE} -- Implementation
 			until
 				l_features.after
 			loop
-				update_feature (l_features.item)
+					-- TODO: decide where we filter out attributes...
+				internal_update_feature (l_features.item, l_class_data)
 				l_features.forth
 			end
 
 			--l_class_data.verification_state.calculate_confidence
 		end
 
-	update_feature (a_feature: FEATURE_I)
+	internal_update_feature (a_feature: FEATURE_I; a_class_data: EBB_CLASS_DATA)
 			-- Update data from feature `a_feature'.
 		local
 			l_feature_data: EBB_FEATURE_DATA
@@ -167,6 +273,12 @@ feature {NONE} -- Implementation
 				feature_data_table.extend (l_feature_data, a_feature.rout_id_set.first)
 			else
 				l_feature_data := feature_data_table.item (a_feature.rout_id_set.first)
+			end
+
+			l_feature_data.set_parent (a_class_data)
+
+			if not a_feature.is_attribute then
+				l_feature_data.set_stale
 			end
 		end
 
