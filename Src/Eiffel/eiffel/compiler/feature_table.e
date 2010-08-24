@@ -1003,6 +1003,7 @@ end
 			opo_info_table, old_opo_info_table: detachable OBJECT_RELATIVE_ONCE_INFO_TABLE
 			l_ancestors_once_infos: detachable OBJECT_RELATIVE_ONCE_INFO_TABLE
 			l_ancestor_once_info: detachable OBJECT_RELATIVE_ONCE_INFO
+			l_infos_cursor: ITERATION_CURSOR [detachable OBJECT_RELATIVE_ONCE_INFO]
 			n: INTEGER
 			opo_info: OBJECT_RELATIVE_ONCE_INFO
 			opo_reused: BOOLEAN
@@ -1011,11 +1012,6 @@ end
 			check l_associated_class_attached: l_associated_class /= Void end
 			l_attribute_count := attribute_count
 			l_opo_count := once_per_object_count
-			if l_attribute_count + l_opo_count > 0 then
-				create Result.make (l_attribute_count + l_opo_count * 3)
-			else
-				Result := empty_skeleton
-			end
 
 				--| Once per object entries
 			if attached l_associated_class.parents_classes as l_ancestors then
@@ -1045,10 +1041,18 @@ end
 				end
 			end
 
+			if l_attribute_count + l_opo_count + n > 0 then
+				create Result.make (l_attribute_count + (l_opo_count.max (n)) * 3)
+			else
+				Result := empty_skeleton
+			end
+
+
 			opo_info_table := l_associated_class.object_relative_once_infos
 			if opo_info_table /= Void then
 				old_opo_info_table := opo_info_table
 				l_associated_class.reset_object_relative_once_infos
+				opo_info_table := Void
 			end
 			if l_opo_count > 0 then
 				l_associated_class.create_object_relative_once_infos (l_opo_count)
@@ -1068,26 +1072,26 @@ end
 							opo_info := Void
 							opo_reused := False
 							if old_opo_info_table /= Void then
-								opo_info := object_relative_once_info_of_rout_id_set (old_opo_info_table, l_once_i.rout_id_set)
+								opo_info := old_opo_info_table.item_of_rout_id_set (l_once_i.rout_id_set)
 								if opo_info /= Void then
-									old_opo_info_table.remove (opo_info.once_routine_id)
+									old_opo_info_table.remove_item_of_rout_id_set (opo_info.once_routine_rout_id_set)
 								end
 							end
 							if opo_info /= Void then
 								-- we need to clean previous extra attributes
 								opo_info.reuse (l_once_i)
 								opo_reused := opo_info.is_set
-								opo_info_table.force (opo_info, opo_info.once_routine_id)
+								opo_info_table.replace_or_add_by_routine_id (opo_info, opo_info.once_routine_id)
 							else
 								create opo_info.make (l_once_i)
 								check is_not_set: not opo_info.is_set end
-								opo_info_table.force (opo_info, l_once_i.rout_id_set.first)
+								opo_info_table.replace_or_add_by_routine_id (opo_info, l_once_i.rout_id_set.first)
 							end
 
 							l_written_class := l_once_i.written_class
 							if l_ancestors_once_infos /= Void then
 								l_ancestor_once_info := l_ancestors_once_infos.item_of_rout_id_set (opo_info.once_routine_rout_id_set)
-								if l_ancestor_once_info /= Void then
+								if l_ancestor_once_info /= Void and l_written_class /= l_associated_class then
 										--| remove the process entries
 										--| and then re-add all unprocess entries if any
 									l_ancestors_once_infos.remove_item_of_rout_id_set (opo_info.once_routine_rout_id_set)
@@ -1097,15 +1101,14 @@ end
 							end
 
 							if not opo_reused then
-								if l_ancestor_once_info = Void then
-									if l_written_class /= associated_class then
+								if l_written_class /= associated_class then
+									if l_ancestor_once_info = Void then
 											--| Reuse ancestor's routine ids.
 										l_ancestor_once_info := l_written_class.object_relative_once_info_of_rout_id_set (opo_info.once_routine_rout_id_set)
 										check l_ancestor_once_info_attached: l_ancestor_once_info /= Void end
 									end
 								end
 							end
-
 							add_object_relative_once_to_skeleton (Result, l_associated_class, l_once_i, opo_info, opo_reused, l_ancestor_once_info)
 						end
 					end
@@ -1124,34 +1127,60 @@ end
 					l_associated_class.create_object_relative_once_infos (l_ancestors_once_infos.count)
 					opo_info_table := l_associated_class.object_relative_once_infos
 				end
+				debug ("once_per_object")
+					print ("FEATURE_TABLE.skeleton <" + l_associated_class.name_in_upper + ">: ancestors o.p.o count = " + l_ancestors_once_infos.count.out + "%N")
+				end
+				l_infos_cursor := l_ancestors_once_infos.new_cursor
 				from
-					l_ancestors_once_infos.start
+					l_infos_cursor.start
 				until
-					l_ancestors_once_infos.after
+					l_infos_cursor.after
 				loop
-					l_ancestor_once_info := l_ancestors_once_infos.item_for_iteration
+					l_ancestor_once_info := l_infos_cursor.item
 
 					if attached l_ancestor_once_info.once_routine as l_once_i then
-						create opo_info.make (l_once_i)
-						opo_info_table.force (opo_info, l_ancestor_once_info.once_routine_id)
-						opo_reused := False
 
+						opo_info := Void
+						opo_reused := False
+						if old_opo_info_table /= Void then
+							opo_info := old_opo_info_table.item_of_rout_id_set (l_once_i.rout_id_set)
+							if opo_info /= Void then
+								old_opo_info_table.remove_item_of_rout_id_set (opo_info.once_routine_rout_id_set)
+							end
+						end
+						if opo_info /= Void then
+							-- we need to clean previous extra attributes
+							opo_info.reuse (l_once_i)
+							opo_reused := opo_info.is_set
+							opo_info_table.add_by_routine_id (opo_info, opo_info.once_routine_id)
+						else
+							create opo_info.make (l_once_i)
+							check is_not_set: not opo_info.is_set end
+							opo_info_table.add_by_routine_id (opo_info, l_ancestor_once_info.once_routine_id)
+						end
 						add_object_relative_once_to_skeleton (Result, l_associated_class, l_once_i, opo_info, opo_reused, l_ancestor_once_info)
 					end
 
-					l_ancestors_once_infos.forth
+					l_infos_cursor.forth
+				end
+			end
+			if old_opo_info_table /= Void and then old_opo_info_table.count > 0 then
+				l_infos_cursor := old_opo_info_table.new_cursor
+				from
+					l_infos_cursor.start
+				until
+					l_infos_cursor.after
+				loop
+					opo_info := l_infos_cursor.item
+					opo_info.clean
+					l_infos_cursor.forth
 				end
 			end
 
-			if old_opo_info_table /= Void and then not old_opo_info_table.is_empty then
-				from
-					old_opo_info_table.start
-				until
-					old_opo_info_table.after
-				loop
-					opo_info := old_opo_info_table.item_for_iteration
-					opo_info.clean
-					old_opo_info_table.forth
+			debug ("once_per_object")
+				opo_info_table := l_associated_class.object_relative_once_infos
+				if opo_info_table /= Void then
+					print ("FEATURE_TABLE.skeleton <" + l_associated_class.name_in_upper + ">: total count = " + opo_info_table.count.out + "%N")
 				end
 			end
 
@@ -1186,6 +1215,8 @@ end
 					end
 				end
 			end
+		ensure
+			empty_skeleton_empty: empty_skeleton.is_empty
 		end
 
 	add_object_relative_once_to_skeleton (
@@ -1198,13 +1229,13 @@ end
 			)
 		local
 			desc: ATTR_DESC
-			ref_desc: REFERENCE_DESC
-			l_cl_type_a: detachable CL_TYPE_A
+			l_is_redefined: BOOLEAN
 		do
+			l_is_redefined := a_ancestor_once_info /= Void and a_once_i.written_class = a_associated_class
 				--| called?
 			if not opo_reused then
 				opo_info.set_called_feature_id (a_associated_class.feature_id_counter.next)
-				if a_ancestor_once_info /= Void then
+				if a_ancestor_once_info /= Void and not l_is_redefined then
 					opo_info.set_called_routine_id (a_ancestor_once_info.called_routine_id)
 					opo_info.set_called_body_index (a_ancestor_once_info.called_body_index)
 				else
@@ -1212,21 +1243,20 @@ end
 					opo_info.set_called_body_index (system.body_index_counter.next_id)
 				end
 				opo_info.create_called_name_id
+				opo_info.get_called_attr_desc
+				desc := opo_info.called_attr_desc
+				if a_ancestor_once_info = Void or l_is_redefined then
+					system.rout_info_table.put (desc.rout_id, a_associated_class)
+				end
+			else
+				desc := opo_info.called_attr_desc
 			end
-
-			create {BOOLEAN_DESC} desc
-			desc.set_attribute_name_id (opo_info.called_name_id)
-			desc.set_feature_id (opo_info.called_feature_id)
-			desc.set_rout_id (opo_info.called_routine_id)
-			desc.set_is_transient (opo_info.is_transient)
-			desc.set_is_hidden (True)
 			a_skeleton.extend (desc)
-			system.rout_info_table.put (desc.rout_id, a_associated_class)
 
 				--| Exception?
 			if not opo_reused then
 				opo_info.set_exception_feature_id (a_associated_class.feature_id_counter.next)
-				if a_ancestor_once_info /= Void then
+				if a_ancestor_once_info /= Void and not l_is_redefined then
 					opo_info.set_exception_routine_id (a_ancestor_once_info.exception_routine_id)
 					opo_info.set_exception_body_index (a_ancestor_once_info.exception_body_index)
 				else
@@ -1234,35 +1264,21 @@ end
 					opo_info.set_exception_body_index (system.body_index_counter.next_id)
 				end
 				opo_info.create_exception_name_id
-			end
-
-			create ref_desc
-			if
-				attached system.exception_class as l_exception_class
-				and then l_exception_class.is_compiled
-			then
-				create l_cl_type_a.make (system.exception_class_id)
-				l_cl_type_a.set_detachable_mark
-				ref_desc.set_type_i (l_cl_type_a)
+				opo_info.get_exception_attr_desc
+				desc := opo_info.exception_attr_desc
+				if a_ancestor_once_info = Void or l_is_redefined then
+					system.rout_info_table.put (desc.rout_id, a_associated_class)
+				end
 			else
-				ref_desc.set_type_i (system.any_type)
-				check exception_class_available: False end
+				desc := opo_info.exception_attr_desc
 			end
-
-			desc := ref_desc
-			desc.set_attribute_name_id (opo_info.exception_name_id)
-			desc.set_feature_id (opo_info.exception_feature_id)
-			desc.set_rout_id (opo_info.exception_routine_id)
-			desc.set_is_transient (opo_info.is_transient)
-			desc.set_is_hidden (True)
 			a_skeleton.extend (desc)
-			system.rout_info_table.put (desc.rout_id, a_associated_class)
 
 				--| Result?
 			if opo_info.has_result then
 				if not opo_reused then
 					opo_info.set_result_feature_id (a_associated_class.feature_id_counter.next)
-					if a_ancestor_once_info /= Void then
+					if a_ancestor_once_info /= Void and not l_is_redefined then
 						opo_info.set_result_routine_id (a_ancestor_once_info.result_routine_id)
 						opo_info.set_result_body_index (a_ancestor_once_info.result_body_index)
 					else
@@ -1270,23 +1286,20 @@ end
 						opo_info.set_result_body_index (system.body_index_counter.next_id)
 					end
 					opo_info.create_result_name_id
+					opo_info.get_result_attr_desc
+					desc := opo_info.result_attr_desc
+					if a_ancestor_once_info = Void or l_is_redefined then
+						system.rout_info_table.put (desc.rout_id, a_associated_class)
+					end
+				else
+					desc := opo_info.result_attr_desc
 				end
-
-				desc := a_once_i.type.description_with_detachable_type
-				desc.set_attribute_name_id (opo_info.result_name_id)
-				desc.set_feature_id (opo_info.result_feature_id)
-				desc.set_rout_id (opo_info.result_routine_id)
-				desc.set_is_transient (opo_info.is_transient)
-				desc.set_is_hidden (True)
 				a_skeleton.extend (desc)
-
-				system.rout_info_table.put (desc.rout_id, a_associated_class)
 			end
 			opo_info.update
 			debug ("ONCE_PER_OBJECT")
 				opo_info.debug_output_info (a_once_i, "from " + a_associated_class.name_in_upper + "<" + a_associated_class.class_id.out +">")
 			end
-
 		end
 
 	empty_skeleton: GENERIC_SKELETON
@@ -1484,26 +1497,6 @@ end
 					list.extend (feat)
 				end
 				forth
-			end
-		end
-
-feature {NONE} -- Implementation: object relative once
-
-	object_relative_once_info_of_rout_id_set (a_table: HASH_TABLE [OBJECT_RELATIVE_ONCE_INFO, INTEGER]; a_rout_id_set: ROUT_ID_SET): detachable OBJECT_RELATIVE_ONCE_INFO
-			-- Object relative once info related to `a_rout_id_set'
-		require
-			a_rout_id_set_not_void: a_rout_id_set /= Void
-		local
-			i, nb: INTEGER
-		do
-			from
-				i := 1
-				nb := a_rout_id_set.count
-			until
-				i > nb or Result /= Void
-			loop
-				Result := a_table.item (a_rout_id_set.item (i))
-				i := i + 1
 			end
 		end
 

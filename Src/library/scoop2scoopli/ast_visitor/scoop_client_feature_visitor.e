@@ -475,7 +475,7 @@ feature {NONE} -- Feature redeclaration handling
 						feature_name := feature_as.feature_names.item
 						feature_as.feature_names.forth
 					end
-					if not typ.is_separate then
+					if not typ.has_separate_mark then
 						-- non Separate: Check if substitution is needed.
 						if l_assign_finder.have_to_replace_return_type(feature_name, class_c) then
 							context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)

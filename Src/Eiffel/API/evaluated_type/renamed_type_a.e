@@ -22,7 +22,8 @@ inherit
 		redefine
 			renaming, is_renamed_type, has_renaming, instantiated_in,
 			instantiation_in, has_associated_class, formal_instantiation_in,
-			to_type_set, conformance_type, actual_type, is_computable_using_ancestors
+			to_type_set, conformance_type, actual_type,
+			same_as
 		end
 
 create
@@ -147,6 +148,12 @@ feature -- Comparison
 			Result := type.is_equivalent (other.type)
 		end
 
+	same_as (other: TYPE_A): BOOLEAN
+			-- <Precursor>
+		do
+			Result := attached {like Current} other as l_other and then type.same_as (l_other.type)
+		end
+
 feature -- Visitor
 
 	process (v: TYPE_A_VISITOR)
@@ -173,12 +180,6 @@ feature -- Status
 	is_renamed_type: BOOLEAN = True
 		-- Is current an instance of RENAMED_TYPE_A [TYPE_A]?
 		-- An renamed type has the ability to carry a feature renaming.
-
-	is_computable_using_ancestors: BOOLEAN
-			-- <Precursor>
-		do
-			Result := type.is_computable_using_ancestors
-		end
 
 feature -- Output
 

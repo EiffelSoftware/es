@@ -177,6 +177,7 @@ extern "C" {
 
 /* TYPE class */
 #define eif_builtin_TYPE_has_default(obj)					eif_gen_has_default(eif_gen_param_id(Dftype(obj), 1))
+#define eif_builtin_TYPE_is_expanded(obj)					eif_gen_is_expanded(eif_gen_param_id(Dftype(obj), 1))
 #define eif_builtin_TYPE_type_id(obj)						eif_gen_param_id(Dftype(obj), 1)
 #define eif_builtin_TYPE_runtime_name(obj)					eif_gen_typename_of_type(eif_gen_param_id(Dftype(obj), 1))
 #define eif_builtin_TYPE_generic_parameter_type(obj,i)		RTLNTY(eif_gen_param_id(eif_gen_param_id(Dftype(obj), 1), i))
@@ -188,6 +189,16 @@ extern "C" {
 /* WEL_IDENTIFIED class */
 #define eif_builtin_WEL_IDENTIFIED_eif_current_object_id(object)	eif_reference_id(object)
 #define eif_builtin_WEL_IDENTIFIED_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
+
+/* EQA_EXTERNALS class */
+#ifdef WORKBENCH
+#define eif_builtin_EQA_EXTERNALS_invoke_routine(obj, body_id)		eif_invoke_test_routine(obj,body_id)
+#define eif_builtin_EQA_EXTERNALS_override_byte_code_of_body(body_id, pattern_id, byte_code, length)	eif_override_byte_code_of_body((int) body_id, (int) pattern_id, (unsigned char *) byte_code, (int)length)
+#else
+#define eif_builtin_EQA_EXTERNALS_invoke_routine(obj, body_id)
+#define eif_builtin_EQA_EXTERNALS_override_byte_code_of_body(body_id, pattern_id, byte_code, length)
+#endif
+
 
 #ifdef __cplusplus
 }

@@ -453,7 +453,7 @@ feature {NONE} -- Implementation
 
 					if attached {CLASS_TYPE_AS} a_feature.body.type as typ then
 						create l_assign_finder
-						if not typ.is_separate then
+						if not typ.has_separate_mark then
 							if l_assign_finder.have_to_replace_return_type(feature_name, class_c) then
 								context.add_string ({SCOOP_SYSTEM_CONSTANTS}.proxy_class_prefix+typ.class_name.name)
 								add_result_substitution := true -- Remember we added the substitution so we dont add `proxy_' later					
@@ -730,7 +730,7 @@ feature {NONE} -- Implementation
 						l_type_signature.process_type (l_argument.type)
 
 						if attached {CLASS_TYPE_AS} l_argument.type as typ then
-							if typ.is_separate then
+							if typ.has_separate_mark then
 								if feature_as /= void then
 									if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
 										feature_object.internal_arguments_to_substitute.append (l_argument.id_list)

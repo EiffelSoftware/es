@@ -20,8 +20,8 @@ feature {NONE} -- Initialization
 	make
 			-- Create new store
 		do
-			create storage.make (1, default_capacity)
-			create storage_flag.make (1, default_capacity)
+			create storage.make_filled (Void, 1, default_capacity)
+			create storage_flag.make_filled (False, 1, default_capacity)
 			create typed_storage.make (initial_capacity)
 			create internal
 		end
@@ -160,7 +160,7 @@ feature -- Basic routines
 		do
 			from
 				count := an_expression_list.count
-				create Result.make (1, count)
+				create Result.make_filled (False, 1, count)
 				i := 1
 			until
 				i > count or Result = Void

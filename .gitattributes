@@ -142,7 +142,6 @@ Delivery/scripts/unix/packaging/description -text
 Delivery/scripts/unix/packaging/license -text
 Delivery/scripts/unix/packaging/logo.png -text
 Delivery/scripts/windows/install/Admin.txt -text
-Delivery/scripts/windows/install/content/eiffelstudio/studio_compatible.wxs -text
 Delivery/scripts/windows/install/images/Thumbs.db -text
 Delivery/scripts/windows/install/images/app.ico -text
 Delivery/scripts/windows/install/images/eiffelenvision/backdrop.bmp -text
@@ -4151,9 +4150,10 @@ eweasel/tests/incr288/Ace -text
 eweasel/tests/incr294/Ace1 -text
 eweasel/tests/incr294/Ace2 -text
 eweasel/tests/incr311/Ace_rev1 -text
-eweasel/tests/incr368/output_generic -text
-eweasel/tests/incr368/output_numeric -text
 eweasel/tests/incr371/Ace -text
+eweasel/tests/incr379/Ace_rev2 -text
+eweasel/tests/incr380/Ace_rev2 -text
+eweasel/tests/incr381/Ace_rev2 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -5387,7 +5387,6 @@ free_add_ons/gcc/win64/msys/1.0/bin/rmdir.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/rvi -text
 free_add_ons/gcc/win64/msys/1.0/bin/rview -text
 free_add_ons/gcc/win64/msys/1.0/bin/rvim -text
-free_add_ons/gcc/win64/msys/1.0/bin/rxvt.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/sed.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/sh.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/sleep.exe -text
@@ -5861,7 +5860,6 @@ free_add_ons/gcc/windows/msys/1.0/bin/rmdir.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/rvi -text
 free_add_ons/gcc/windows/msys/1.0/bin/rview -text
 free_add_ons/gcc/windows/msys/1.0/bin/rvim -text
-free_add_ons/gcc/windows/msys/1.0/bin/rxvt.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sed.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sh.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/sleep.exe -text

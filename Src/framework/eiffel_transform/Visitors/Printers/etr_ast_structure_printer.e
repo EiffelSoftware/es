@@ -11,7 +11,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	AST_ITERATOR
 		export
 			{AST_EIFFEL} all
@@ -732,7 +732,7 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				output.append_string (ti_separate_keyword+ti_Space)
 			end
 
@@ -747,7 +747,7 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				output.append_string (ti_separate_keyword+ti_Space)
 			end
 
@@ -772,7 +772,7 @@ feature {AST_EIFFEL} -- Roundtrip: Types
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				output.append_string (ti_separate_keyword+ti_Space)
 			end
 

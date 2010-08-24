@@ -32,7 +32,7 @@ feature {NONE} -- Implementation
 
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				has_separate_keyword := true
 			end
 			l_as.class_name.process (Current)
@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				has_separate_keyword := true
 			end
 			l_as.class_name.process (Current)
@@ -49,7 +49,7 @@ feature {NONE} -- Implementation
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				has_separate_keyword := true
 			end
 			l_as.class_name.process (Current)

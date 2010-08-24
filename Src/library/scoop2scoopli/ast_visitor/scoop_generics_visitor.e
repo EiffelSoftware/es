@@ -163,13 +163,13 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.lcurly_symbol (match_list))
 
 				-- generic separate type should be attached.
-			if not l_as.is_separate then
+			if not l_as.has_separate_mark then
 				safe_process (l_as.attachment_mark (match_list))
 			end
 
 			safe_process (l_as.expanded_keyword (match_list))
 
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				l_process_id_as (l_as.class_name, True)
 			else
 				l_process_id_as (l_as.class_name, False)
@@ -188,13 +188,13 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.lcurly_symbol (match_list))
 
 				-- generic separate type should be attached.
-			if not l_as.is_separate then
+			if not l_as.has_separate_mark then
 				safe_process (l_as.attachment_mark (match_list))
 			end
 
 			safe_process (l_as.expanded_keyword (match_list))
 
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				l_process_id_as (l_as.class_name, True)
 			else
 				l_process_id_as (l_as.class_name, False)
@@ -217,11 +217,11 @@ feature {NONE} -- Visitor implementation
 			safe_process (l_as.lcurly_symbol (match_list))
 
 				-- generic separate type should be attached.
-			if not l_as.is_separate then
+			if not l_as.has_separate_mark then
 				safe_process (l_as.attachment_mark (match_list))
 			end
 
-			if l_as.is_separate then
+			if l_as.has_separate_mark then
 				l_process_id_as (l_as.class_name, True)
 			else
 				l_process_id_as (l_as.class_name, False)

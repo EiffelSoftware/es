@@ -620,4 +620,10 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.compound)
 		end
 
+	process_hidden_b (a_node: HIDDEN_B)
+			-- Process `a_node'
+		do
+			-- Empty implementation to make current compile during EVE merge. 24.8.2010 Jasonw
+		end
+
 end

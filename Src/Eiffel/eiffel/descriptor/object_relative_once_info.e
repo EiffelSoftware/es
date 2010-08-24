@@ -40,6 +40,8 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -64,27 +66,29 @@ feature -- Basic operations
 		require
 			a_once_attached: a_once /= Void
 		do
-			if 
+			if
 				a_once.rout_id_set.intersect (once_routine_rout_id_set) and then
 				a_once.same_interface (once_routine)
 			then
 				debug ("ONCE_PER_OBJECT")
-					print (generator + ".reuse: KEEP")
+					print (generator + ".reuse [" + a_once.feature_name + "]: KEEP%N")
+					debug_output_info (once_routine, "Reused identifiers ...")
 				end
 			else
 				clean
 				make (a_once)
 				debug ("ONCE_PER_OBJECT")
-					print (generator + ".reuse: REUSED")
+					print (generator + ".reuse [" + a_once.feature_name + "]: REUSED")
 				end
-			end
-			debug ("ONCE_PER_OBJECT")
-				print (" => " + a_once.feature_name)
-				print ("%N")
 			end
 		end
 
-feature -- Debug
+feature -- Status report
+
+	debug_output: STRING
+		do
+			Result := once_routine.feature_name + ":" + once_routine_id.out
+		end
 
 	debug_output_info (f: FEATURE_I; a_msg: detachable STRING)
 			-- Print debug information related to object relative once's info
@@ -169,11 +173,20 @@ feature -- Access: attribute
 	called_attribute_i: ATTRIBUTE_I
 			-- ATTRIBUTE_I for extra attribute `called_name'
 
+	called_attr_desc: ATTR_DESC
+			-- ATTR_DESC for extra attribute `called_name'			
+
 	exception_attribute_i: ATTRIBUTE_I
 			-- ATTRIBUTE_I for extra attribute `exception_name'	
 
+	exception_attr_desc: ATTR_DESC
+			-- ATTR_DESC for extra attribute `exception_name'				
+
 	result_attribute_i: ATTRIBUTE_I
 			-- ATTRIBUTE_I for extra attribute `result_name'	
+
+	result_attr_desc: ATTR_DESC
+			-- ATTR_DESC for extra attribute `result_name'				
 
 	called_name: STRING
 			-- Name of extra attribute for called's value	
@@ -218,20 +231,24 @@ feature -- Element change
 		do
 			debug ("ONCE_PER_OBJECT")
 				print (generator + ".clean: "+ once_routine.feature_name + "%N")
+				debug_output_info (once_routine, "Cleaning")
 			end
 			system.rout_info_table.remove (called_routine_id)
 			called_attribute_i := Void
+			called_attr_desc := Void
 			called_feature_id := 0
 			called_routine_id := 0
 
 			system.rout_info_table.remove (exception_routine_id)
 			exception_attribute_i := Void
+			exception_attr_desc := Void
 			exception_feature_id := 0
 			exception_routine_id := 0
 
 			if has_result then
 				system.rout_info_table.remove (result_routine_id)
 				result_attribute_i := Void
+				result_attr_desc := Void
 				result_feature_id := 0
 				result_routine_id := 0
 				has_result := False
@@ -247,6 +264,65 @@ feature -- Element change
 			if has_result then
 				get_result_attribute_i
 			end
+		end
+
+	get_called_attr_desc
+			-- Compute `called_attr_desc' value .	
+		local
+			l_desc: BOOLEAN_DESC
+		do
+			create l_desc
+			l_desc.set_attribute_name_id (called_name_id)
+			l_desc.set_feature_id (called_feature_id)
+			l_desc.set_rout_id (called_routine_id)
+			l_desc.set_is_transient (is_transient)
+			l_desc.set_is_hidden (True)
+			called_attr_desc := l_desc
+		end
+
+	get_exception_attr_desc
+			-- Compute `exception_attr_desc' value .		
+		local
+			l_desc: REFERENCE_DESC
+			l_cl_type_a: detachable CL_TYPE_A
+		do
+			create l_desc
+			if
+				attached system.exception_class as l_exception_class
+				and then l_exception_class.is_compiled
+			then
+				create l_cl_type_a.make (system.exception_class_id)
+				l_cl_type_a.set_detachable_mark
+				l_desc.set_type_i (l_cl_type_a)
+			else
+				l_desc.set_type_i (system.any_type)
+				check exception_class_available: False end
+			end
+
+			l_desc.set_attribute_name_id (exception_name_id)
+			l_desc.set_feature_id (exception_feature_id)
+			l_desc.set_rout_id (exception_routine_id)
+			l_desc.set_is_transient (is_transient)
+			l_desc.set_is_hidden (True)
+
+			exception_attr_desc := l_desc
+		end
+
+	get_result_attr_desc
+			-- Compute `result_attr_desc' value .
+		require
+			has_result: has_result
+		local
+			l_desc: ATTR_DESC
+		do
+			l_desc := result_type_a.description_with_detachable_type
+			l_desc.set_attribute_name_id (result_name_id)
+			l_desc.set_feature_id (result_feature_id)
+			l_desc.set_rout_id (result_routine_id)
+			l_desc.set_is_transient (is_transient)
+			l_desc.set_is_hidden (True)
+
+			result_attr_desc := l_desc
 		end
 
 	get_called_attribute_i
@@ -311,7 +387,9 @@ feature -- Element change
 
 
 	get_result_attribute_i
-			-- Compute `result_attribute_i' value .	
+			-- Compute `result_attribute_i' value .
+		require
+			has_result: has_result
 		local
 			l_id_set: ROUT_ID_SET
 			l_att_i: ATTRIBUTE_I

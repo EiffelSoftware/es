@@ -2,7 +2,7 @@ HALLOW = %INIT_DIR%\install\bin\hallow.exe
 HALLOW_FLAGS = -nologo -de:"\.svn$$" -x64 -c:"EiffelStudio"
 HALLOW_FLAGS_X86 = $(HALLOW_FLAGS) -c:"x86"
 HALLOW_FLAGS_X64 = $(HALLOW_FLAGS) -c:"x64"
-MSBUILD = msbuild.exe
+MSBUILD = C:\Windows\Microsoft.NET\Framework\v2.0.50727\msbuild.exe
 MSBUILD_FLAGS = /nologo /verbosity:quiet 
 
 ###################################################################
@@ -24,7 +24,9 @@ WXS = \
 	studio_core.wxs \
 	studio_examples.wxs \
 	studio_libraries.wxs \
+	studio_gobo.wxs \
 	studio_compatible.wxs \
+	studio_gobo_compatible.wxs \
 	studio_gdiplus.wxs \
 	studio_ent_ec.wxs \
 	studio_gpl_ec.wxs
@@ -53,12 +55,25 @@ studio_examples.wxs:
 
 studio_libraries.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\library" \
-		-dr:"Dir.Core.library" -g:"Core.library" -r -n:"Core.library." > $@.tmp
+		-dr:"Dir.Core.library" -de:"\\EiffelStudio\\library\\gobo$$" \
+		-g:"Core.library" -r -n:"Core.library." > $@.tmp
+	move $@.tmp $@
+
+studio_gobo.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\library\gobo" \
+		-dr:"Dir.Core.library.gobo" -g:"Core.library.gobo" -r -n:"Core.library.gobo." > $@.tmp
 	move $@.tmp $@
 
 studio_compatible.wxs:
-	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\compatible" \
-		-dr:"Dir.Core.compatible" -g:"Core.compatible" -r -n:"Core.compatible." > $@.tmp
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\compatible\library" \
+		-dr:"Dir.Core.compatible.library" -de:"\\EiffelStudio\\compatible\\library\\gobo$$" \
+		-g:"Core.compatible.library" -r -n:"Core.compatible." > $@.tmp
+	move $@.tmp $@
+
+studio_gobo_compatible.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\compatible\library\gobo" \
+		-dr:"Dir.Core.compatible.library.gobo" -g:"Core.compatible.library.gobo" \
+		-r -n:"Core.compatible.library.gobo." > $@.tmp
 	move $@.tmp $@
 
 studio_gdiplus.wxs:
@@ -84,16 +99,16 @@ studio_gpl_ec.wxs:
 ###################################################################
 
 enterprise_x86: $(WXS)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x86 ..\..\package.sln
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x86 /p:Platform=x86 ..\..\package.sln
 
 gpl_x86: $(WXS)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_gpl_x86 ..\..\package.sln
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_gpl_x86 /p:Platform=x86 ..\..\package.sln
 
 enterprise_x64: $(WXS)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x64 ..\..\package.sln
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_ent_x64 /p:Platform=x64 ..\..\package.sln
 
 gpl_x64: $(WXS)
-	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_gpl_x64 ..\..\package.sln
+	$(MSBUILD) $(MSBUILD_FLAGS) /p:Configuration=studio_gpl_x64 /p:Platform=x64 ..\..\package.sln
 
 
 ###################################################################

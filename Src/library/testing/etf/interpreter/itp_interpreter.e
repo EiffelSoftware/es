@@ -30,6 +30,11 @@ inherit
 			{NONE} all
 		end
 
+	EQA_EXTERNALS
+
+--create
+--	execute
+
 feature {NONE} -- Initialization
 
 	execute
@@ -274,6 +279,7 @@ feature {NONE} -- Handlers
 			last_request_is_execute_request: last_request_type = execute_request_flag
 		local
 			l_bcode: detachable STRING
+			l_cstring: C_STRING
 			l_predicate_results: TUPLE [INTEGER, detachable like evaluated_predicate_results]
 			i: INTEGER
 			l_object_summary: ARRAYED_LIST [STRING]
@@ -291,10 +297,11 @@ feature {NONE} -- Handlers
 				else
 					log_message (once "report_execute_request start%N")
 						-- Inject received byte-code into byte-code array of Current process.
-					eif_override_byte_code_of_body (
+					create l_cstring.make (l_bcode)
+					override_byte_code_of_body (
 						byte_code_feature_body_id,
 						byte_code_feature_pattern_id,
-						pointer_for_byte_code (l_bcode),
+						l_cstring.item,
 						l_bcode.count)
 
 						-- Test case serialization: retrieve pre-TC state.
@@ -660,30 +667,6 @@ feature {NONE} -- Byte code
 			retry
 		end
 
-	pointer_for_byte_code (a_byte_code_string: STRING): POINTER
-			-- pointer representation for `a_byte_code_string'
-		require
-			a_byte_code_string_attached: a_byte_code_string /= Void
-		local
-			l_managed_ptr: MANAGED_POINTER
-			l_count: INTEGER
-			i: INTEGER
-		do
-			l_count := a_byte_code_string.count
-			create l_managed_ptr.make (l_count)
-			from
-				i := 1
-			until
-				i > l_count
-			loop
-				l_managed_ptr.put_character (a_byte_code_string.item (i), i - 1)
-				i := i + 1
-			end
-			Result := l_managed_ptr.item
-		ensure
-			result_attached: Result /= default_pointer
-		end
-
 	execute_byte_code
 			-- Execute test case
 			-- The test case will be written as byte-code.
@@ -697,22 +680,6 @@ feature {NONE} -- Byte code
 			-- Store `a_object' at `a_index' in `store'.
 		do
 			store.assign_value (a_object, a_index)
-		end
-
-	eif_override_byte_code_of_body (a_body_id: INTEGER; a_pattern_id: INTEGER; a_byte_code: POINTER; a_length: INTEGER)
-			-- Store `a_byte_code' of `a_length' byte long for feature with `a_body_id'.
-		require
-			a_body_id_not_negative: a_body_id >= 0
-			a_byte_code_attached: a_byte_code /= default_pointer
-			a_length_positive: a_length > 0
-		external
-			"C inline use %"eif_interp.h%""
-		alias
-			"[
-#ifdef WORKBENCH
-			eif_override_byte_code_of_body ((int) $a_body_id, (int) $a_pattern_id, (unsigned char *) $a_byte_code, (int) $a_length);
-#endif
-			]"
 		end
 
 	main_loop
@@ -796,6 +763,7 @@ feature -- Object state checking
 			o: detachable ANY
 			l_retried: BOOLEAN
 			l_bcode: STRING
+			l_cstring: C_STRING
 		do
 			if not l_retried then
 				output_buffer.wipe_out
@@ -818,10 +786,11 @@ feature -- Object state checking
 						log_message (once "report_object_state_request start%N")
 
 							-- Inject received byte-code into byte-code array of Current process.
-						eif_override_byte_code_of_body (
+						create l_cstring.make (l_bcode)
+						override_byte_code_of_body (
 							byte_code_feature_body_id,
 							byte_code_feature_pattern_id,
-							pointer_for_byte_code (l_bcode),
+							l_cstring.item,
 							l_bcode.count)
 
 							-- Run the feature with newly injected byte-code.
@@ -850,13 +819,16 @@ feature -- Object state checking
 	retrieve_post_object_state
 			-- Retrieve post-execution object states by executing byte-code
 			-- stored in `post_state_retrieval_byte_code'.
+		local
+			l_cstring: C_STRING
 		do
 			initialize_query_value_holders
 			if attached {STRING} post_state_retrieveal_byte_code as l_byte_code then
-				eif_override_byte_code_of_body (
+				create l_cstring.make (l_byte_code)
+				override_byte_code_of_body (
 					byte_code_feature_body_id,
 					byte_code_feature_pattern_id,
-					pointer_for_byte_code (l_byte_code),
+					l_cstring.item,
 					l_byte_code.count)
 
 					-- Run the feature with newly injected byte-code.

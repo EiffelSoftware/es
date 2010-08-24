@@ -478,7 +478,7 @@ feature {NONE} -- Implementation Redeclaration substitution
 			position.stage := position.stage +1
 			if attached {CLASS_TYPE_AS} org_type as o_typ and attached {CLASS_TYPE_AS} curr_type as c_typ then
 				-- Check if generics are different (separate wise)
-				if not c_typ.is_separate.is_equal(o_typ.is_separate) then
+				if not c_typ.has_separate_mark.is_equal(o_typ.has_separate_mark) then
 					if not generic_parameters_to_substitute.has (position) then
 						create l_position.default_create
 						l_position.pos := position.pos
@@ -538,7 +538,7 @@ feature {NONE} -- Implementation Redeclaration substitution
 								compare_generic_parameters(type, original_class_type, start_position)
 								-- Keep searching in further ancestors to build the complete list of generics to substitute in the current internal argument.
 								Result := false
-							elseif not type.is_separate then
+							elseif not type.has_separate_mark then
 								-- Found it!
 								Result := true
 							end

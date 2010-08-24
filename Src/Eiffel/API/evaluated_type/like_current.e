@@ -24,8 +24,7 @@ inherit
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
 			is_generated_as_single_type, heaviest, instantiation_in, adapted_in,
 			hash_code, internal_generic_derivation, internal_same_generic_derivation_as,
-			is_class_valid, skeleton_adapted_in, good_generics, has_like_current, is_type_set,
-			is_computable_using_ancestors
+			is_class_valid, skeleton_adapted_in, good_generics, has_like_current, is_type_set
 		end
 
 feature -- Visitor
@@ -152,15 +151,12 @@ feature -- Properties
 		do
 			if other.is_like_current then
 				l ?= other
-				Result := has_same_attachment_marks (l)
+				Result := has_same_marks (l)
 			end
 		end
 
 	good_generics: BOOLEAN = True
 			--| A current type always has the right number of generic parameter.
-
-	is_computable_using_ancestors: BOOLEAN = True
-			-- <Precursor>
 
 feature -- Access
 
@@ -232,11 +228,7 @@ feature -- Output
 			actual_dump := conformance_type.dump
 			create Result.make (17 + actual_dump.count)
 			Result.append_character ('[')
-			if has_attached_mark then
-				Result.append_character ('!')
-			elseif has_detachable_mark then
-				Result.append_character ('?')
-			end
+			dump_marks (Result)
 			Result.append ("like Current] ")
 			Result.append (actual_dump)
 		end
@@ -244,13 +236,7 @@ feature -- Output
 	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C)
 		do
 			st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_L_bracket)
-			if has_attached_mark then
-				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_attached_keyword, Void)
-				st.add_space
-			elseif has_detachable_mark then
-				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_detachable_keyword, Void)
-				st.add_space
-			end
+			ext_append_marks (st)
 			st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_Like_keyword, Void)
 			st.add_space
 			st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_Current, Void)

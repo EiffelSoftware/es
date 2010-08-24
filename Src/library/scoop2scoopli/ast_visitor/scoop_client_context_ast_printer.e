@@ -123,14 +123,14 @@ feature {NONE} -- Type expression processing
 			safe_process (l_as.expanded_keyword (match_list))
 
 			-- skip separate keyword and processor tag
-			if l_as.is_separate then
-				process_leading_leaves (l_as.separate_keyword_index)
+			if l_as.has_separate_mark then
+				process_leading_leaves (l_as.separate_mark_index)
 				last_index := l_as.class_name.index - 1
 			end
 
 			-- process class name
 			process_leading_leaves (l_as.class_name.index)
-			process_class_name (l_as.class_name, l_as.is_separate, context, match_list)
+			process_class_name (l_as.class_name, l_as.has_separate_mark, context, match_list)
 			last_index := l_as.class_name.index
 
 			safe_process (l_as.rcurly_symbol (match_list))
@@ -146,14 +146,14 @@ feature {NONE} -- Type expression processing
 			safe_process (l_as.expanded_keyword (match_list))
 
 			-- skip separate keyword and processor tag
-			if l_as.is_separate then
-				process_leading_leaves (l_as.separate_keyword_index)
+			if l_as.has_separate_mark then
+				process_leading_leaves (l_as.separate_mark_index)
 				last_index := l_as.class_name.index - 1
 			end
 
 			-- process class name
 			process_leading_leaves (l_as.class_name.index)
-			process_class_name (l_as.class_name, l_as.is_separate, context, match_list)
+			process_class_name (l_as.class_name, l_as.has_separate_mark, context, match_list)
 			context.add_string (" ")
 			last_index := l_as.class_name.index
 
@@ -174,15 +174,15 @@ feature {NONE} -- Type expression processing
 			safe_process (l_as.attachment_mark (match_list))
 
 			-- skip separate keyword and processor tag
-			if l_as.is_separate then
-				process_leading_leaves (l_as.separate_keyword_index)
+			if l_as.has_separate_mark then
+				process_leading_leaves (l_as.separate_mark_index)
 				last_index := l_as.class_name.index - 1
 				context.add_string (" ")
 			end
 
 			-- process class name
 			process_leading_leaves (l_as.class_name.index)
-			process_class_name (l_as.class_name, l_as.is_separate, context, match_list)
+			process_class_name (l_as.class_name, l_as.has_separate_mark, context, match_list)
 			last_index := l_as.class_name.index
 
 			safe_process (l_as.parameters)

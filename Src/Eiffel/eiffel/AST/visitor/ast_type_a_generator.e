@@ -125,6 +125,9 @@ feature {NONE} -- Visitor implementation
 			elseif l_as.has_detachable_mark then
 				t.set_detachable_mark
 			end
+			if l_as.has_separate_mark then
+				t.set_separate_mark
+			end
 			last_type := t
 		end
 
@@ -138,6 +141,9 @@ feature {NONE} -- Visitor implementation
 				l_cur.set_attached_mark
 			elseif l_as.has_detachable_mark then
 				l_cur.set_detachable_mark
+			end
+			if l_as.has_separate_mark then
+				l_cur.set_separate_mark
 			end
 			last_type := l_cur
 		end
@@ -166,6 +172,9 @@ feature {NONE} -- Visitor implementation
 					t.set_attached_mark
 				elseif l_as.has_detachable_mark then
 					t.set_detachable_mark
+				end
+				if l_as.has_separate_mark then
+					t.set_separate_mark
 				end
 				last_type := t
 			end
@@ -218,14 +227,14 @@ feature {NONE} -- Visitor implementation
 							f.set_is_attached
 							f.set_is_expanded
 							types_todo.wipe_out
-							l.finish
+								-- Terminate iteration.
+							i := 1
 						elseif t.has_detachable_mark then
 								-- Skip the detachable constraint because it does not allow to see
 								-- if the formal is always attached or not.
 						elseif t.has_attached_mark then
 							f.set_is_attached
 							types_todo.wipe_out
-							l.finish
 						elseif attached {FORMAL_AS} t as ff then
 								-- Record new formal generic for processing (if not done yet).
 							if not types_done.has (ff.position) and then not types_todo.has (ff.position) then
@@ -243,11 +252,13 @@ feature {NONE} -- Visitor implementation
 								-- Let's use the `current_class' default attachment settings.
 							f.set_is_attached
 							types_todo.wipe_out
-							l.finish
 						end
 						i := i - 1
 					end
 				end
+			end
+			if l_as.has_separate_mark then
+				f.set_separate_mark
 			end
 		end
 
@@ -298,7 +309,7 @@ feature {NONE} -- Visitor implementation
 					l_tag_name := ""
 				end
 
-				create l_proc_tag.make (l_as.is_separate, l_tag_name, l_handled)
+				create l_proc_tag.make (l_as.has_separate_mark, l_tag_name, l_handled)
 
 				l_generics := l_as.generics
 				if l_generics /= Void then
@@ -307,7 +318,7 @@ feature {NONE} -- Visitor implementation
 						count := l_generics.count
 						create l_actual_generic.make (1, count)
 						l_type := l_class_c.partial_actual_type (l_actual_generic, l_as.is_expanded,
-							l_as.is_separate, l_proc_tag)
+							l_as.has_separate_mark, l_proc_tag)
 					until
 						i > count or l_has_error
 					loop
@@ -323,7 +334,7 @@ feature {NONE} -- Visitor implementation
 						last_type := l_type
 					end
 				else
-					l_type := l_class_c.partial_actual_type (Void, l_as.is_expanded, l_as.is_separate, l_proc_tag)
+					l_type := l_class_c.partial_actual_type (Void, l_as.is_expanded, l_as.has_separate_mark, l_proc_tag)
 					last_type := l_type
 				end
 				if l_type /= Void then
@@ -349,6 +360,9 @@ feature {NONE} -- Visitor implementation
 							last_type := l_type
 						end
 						l_type.set_is_attached
+					end
+					if l_as.has_separate_mark then
+						l_type.set_separate_mark
 					end
 				end
 			else
@@ -415,6 +429,9 @@ feature {NONE} -- Visitor implementation
 							l_type.set_detachable_mark
 						elseif current_class.lace_class.is_attached_by_default then
 							l_type.set_is_attached
+						end
+						if l_as.has_separate_mark then
+							l_type.set_separate_mark
 						end
 					end
 					last_type := l_type

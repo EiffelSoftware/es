@@ -403,8 +403,8 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.expanded_keyword (match_list))
 
 			-- skip separate keyword and processor tag
-			if l_as.is_separate then
-				process_leading_leaves (l_as.separate_keyword_index)
+			if l_as.has_separate_mark then
+				process_leading_leaves (l_as.separate_mark_index)
 				last_index := l_as.class_name.index - 1
 				context.add_string (" ")
 			end
@@ -413,7 +413,7 @@ feature {NONE} -- Feature redeclaration handling
 				add_scoop_separate__ := False
 				substitute_internal_argument := False
 			else
-				add_scoop_separate__ := l_as.is_separate
+				add_scoop_separate__ := l_as.has_separate_mark
 			end
 
 			-- process class name
@@ -434,8 +434,8 @@ feature {NONE} -- Feature redeclaration handling
 			safe_process (l_as.expanded_keyword (match_list))
 
 			-- skip separate keyword and processor tag
-			if l_as.is_separate then
-				process_leading_leaves (l_as.separate_keyword_index)
+			if l_as.has_separate_mark then
+				process_leading_leaves (l_as.separate_mark_index)
 				last_index := l_as.class_name.index - 1
 				context.add_string (" ")
 			end
@@ -444,7 +444,7 @@ feature {NONE} -- Feature redeclaration handling
 				add_scoop_separate__ := False
 				substitute_internal_argument := False
 			else
-				add_scoop_separate__ := l_as.is_separate
+				add_scoop_separate__ := l_as.has_separate_mark
 			end
 			-- process class name
 			process_leading_leaves (l_as.class_name.index)
@@ -536,7 +536,7 @@ feature {NONE} -- Feature redeclaration handling
 							last_index := l_as_type.first_token (match_list).index
 							-- Check if we need to substitute the internal argument
 							add_scoop_separate__ := False
-							if l_as_type.is_separate then
+							if l_as_type.has_separate_mark then
 								add_scoop_separate__ := True
 								if need_internal_argument_substitution(feature_as.feature_name, class_c, pos) then
 									feature_object.internal_arguments_to_substitute.put_front (l_ids.item)
