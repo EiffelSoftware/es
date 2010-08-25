@@ -15,6 +15,7 @@ inherit
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 		undefine
+
 			default_create
 		end
 
@@ -24,7 +25,6 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			create environment
-			create file_system.make (Current)
 		end
 
 feature -- Access

@@ -100,6 +100,9 @@ feature {NONE} -- Output
 				loop
 					stream.indent
 					stream.put_line (l_ancs.item (i))
+					if l_ancs.item (i).is_equal ("ITP_INTERPRETER") then
+						stream.put_line ("redefine initialize_predicates end")
+					end
 					stream.dedent
 					stream.put_line ("")
 					i := i + 1
@@ -131,7 +134,7 @@ feature {NONE} -- Output
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

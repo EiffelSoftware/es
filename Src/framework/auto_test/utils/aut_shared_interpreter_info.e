@@ -89,6 +89,7 @@ feature -- Access
 						end))
 
 			Result.force_last ("ITP_INTERPRETER")
+			Result.force_last ("ITP_INTERPRETER_ROOT")
 			Result.force_last ("ITP_REQUEST_PARSER")
 			Result.force_last ("ITP_STORE")
 			Result.force_last ("ITP_EXPRESSION")

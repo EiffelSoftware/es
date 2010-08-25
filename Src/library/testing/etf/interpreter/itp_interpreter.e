@@ -1203,7 +1203,7 @@ feature -- Predicate evaluation
 			-- predicate index is 1-based, it is the identifier associated with
 			-- every unique predicate. See {AUT_PREDICATE}.`id' for more information.
 
-	initialize_predicates is
+	initialize_predicates
 			-- Initialize `predicate_table' and `predicate_arity'.
 		do
 		end
