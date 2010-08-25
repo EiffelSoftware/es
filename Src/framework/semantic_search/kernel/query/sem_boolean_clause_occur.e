@@ -9,16 +9,16 @@ class
 
 feature -- Constants
 
-	must_occur_criterion_string: STRING is "MUST"
-	must_occur_criterion: INTEGER is 1
+	must_occur_criterion_string: STRING = "MUST"
+	must_occur_criterion: INTEGER = 1
 			-- Criterion that requires current property MUST occur in a document for that document to be matched
 
-	should_occur_criterion_string: STRING is "SHOULD"
-	should_occur_criterion: INTEGER is 2
+	should_occur_criterion_string: STRING = "SHOULD"
+	should_occur_criterion: INTEGER = 2
 		-- Criterion that requires current property SHOULD occur in a document for that document to be matched
 
-	must_not_occur_criterion_string: STRING is "MUST_NOT"
-	must_not_occur_criterion: INTEGER is 3
+	must_not_occur_criterion_string: STRING = "MUST_NOT"
+	must_not_occur_criterion: INTEGER = 3
 		-- Criterion that requires current property MUST NOT occur in a document for that document to be matched
 
 feature -- Conversion

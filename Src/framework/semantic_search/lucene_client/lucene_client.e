@@ -11,7 +11,7 @@ class
 
 
 feature -- Access
-	make is
+	make
 			--
 		local
 			l_listener:NETWORK_STREAM_SOCKET

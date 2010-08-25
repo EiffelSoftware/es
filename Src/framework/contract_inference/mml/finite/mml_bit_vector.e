@@ -76,7 +76,7 @@ feature -- Status report
 				Result := code = 0
 			end
 		end
-		
+
 feature -- Decomposition
 	last: BOOLEAN is
 			-- The last element of `current'.
@@ -211,7 +211,7 @@ feature -- Element change
 			create Result.make_with_count (code.set_bit (b, i - 1), count)
 		end
 
-	concatenation alias "+" (other : MML_BIT_VECTOR): MML_BIT_VECTOR is
+	concatenation alias "+" (other : MML_BIT_VECTOR): MML_BIT_VECTOR
 			-- The concatenation of `current' and `other'.
 		do
 			create Result.make_with_count (code + other.code |<< count, count + other.count)

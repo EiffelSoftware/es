@@ -10,7 +10,7 @@ class
 		make_with_header
 
 Feature--Create
-make_with_header(a_header:STRING) is
+make_with_header(a_header:STRING)
 		--
 	do
 		create body.make
@@ -19,14 +19,14 @@ make_with_header(a_header:STRING) is
 	end
 
 
- add_line_body (line :STRING) is
+ add_line_body (line :STRING)
  		--
  	do
  		body.put_left (line)
 
  	end
 
-send_message ( socket:NETWORK_STREAM_SOCKET)is
+send_message ( socket:NETWORK_STREAM_SOCKET)
 	require
 		socket /= void
 		socket.is_connected

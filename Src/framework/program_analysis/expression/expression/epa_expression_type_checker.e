@@ -22,7 +22,7 @@ inherit
 
 feature -- Type checking
 
-	check_expression (a_expr_as: EXPR_AS; a_context_class: CLASS_C; a_feature: FEATURE_I; a_in_postcondition: BOOLEAN) is
+	check_expression (a_expr_as: EXPR_AS; a_context_class: CLASS_C; a_feature: FEATURE_I; a_in_postcondition: BOOLEAN)
 			-- Type check `a_expr_as' in the context of `a_feature'.
 			-- Store type of `a_expr_as' in `last_type'.
 			-- `a_in_postcondition' indicates if `an_ast' in in postcondition.	
