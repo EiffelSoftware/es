@@ -7,7 +7,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class ITP_INTERPRETER
+class ITP_INTERPRETER
 
 inherit
 	ANY
@@ -32,8 +32,8 @@ inherit
 
 	EQA_EXTERNALS
 
---create
---	execute
+create
+	execute
 
 feature {NONE} -- Initialization
 
@@ -1205,7 +1205,7 @@ feature -- Predicate evaluation
 
 	initialize_predicates is
 			-- Initialize `predicate_table' and `predicate_arity'.
-		deferred
+		do
 		end
 
 	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): NATURAL_8 is
