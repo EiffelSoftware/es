@@ -942,6 +942,8 @@ test	disk-item-io-error			incr382 tcf fail incrementality
 test	compiler-panic				incr383 tcf fail incrementality
 test	descriptor-list-put-crash		incr384 tcf pass incrementality
 test	deep-twin-agent-infinite-loop		incr385 tcf fail incrementality manual
+test	conform-to-precondition-violation	incr386 tcf fail incrementality
+test	disk-item-io-error-2			incr387 tcf fail incrementality
 
 
 -- Melting
@@ -1547,6 +1549,7 @@ test	assertion-reset-with-check		exec327 tcf pass execution assertion
 test	default-on-expanded-string		exec328 tcf fail execution expanded manual
 test	ieee-abs-minus-zero				exec329 tcf pass execution ieee
 test	catcall-in-expanded-class-invariant	exec330 tcf fail execution catcall
+test	once-string-seg-fault			exec331 tcf fail execution
 
 -- Once specific
 
@@ -1745,6 +1748,7 @@ test	across-keyword-as-feature-name		term186 tcf fail termination
 test	chained-generic-constraints		term187 tcf fail termination formal generic constraint
 test	static-access-on-generic-in-inspect	term188 tcf fail termination formal generic
 test	vmfn-reporting-crash				term189 tcf fail termination validity
+test	conform-to-type-precondition-violation	term190 tcf fail termination validity
 
 -- Config
 
@@ -1771,6 +1775,7 @@ test	config-invalid-actual-generic		config020 tcf fail config
 test	config-undetected-vlec			config021 tcf fail config
 test	config-invalid-vsrt2			config022 tcf fail config
 test	config-generic-root-type-extra-chars	config023 tcf fail config
+test	config-generic-root-with-expanded	config024 tcf fail config generic expanded
 
 -- Lace
 
