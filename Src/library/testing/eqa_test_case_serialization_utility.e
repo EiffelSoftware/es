@@ -27,26 +27,26 @@ feature -- Access
 	        serialize_not_void: Result /= Void
 	    end
 
-	serialized_object_through_file (a_object: ANY; a_file_name: STRING): STRING is
-	        -- Serialize `a_object'.
-			-- The serialiation is done through a file specified by `a_file_name'.
-			-- FIXME: This is a walkaround for the problem that the serialization through
-			-- FIXME: STREAM does not work. 31.5.2010 Jasonw
-	    require
-	        a_object_not_void: a_object /= Void
-		local
-			l_stream: STREAM
-			l_file: RAW_FILE
-	    do
-	    	create l_file.make_create_read_write (a_file_name)
-	    	l_file.independent_store (a_object)
-	    	l_file.start
-	    	l_file.read_stream (l_file.count)
-	    	Result := l_file.last_string.twin
-	    	l_file.close
-	    ensure
-	        serialize_not_void: Result /= Void
-	    end
+--	serialized_object_through_file (a_object: ANY; a_file_name: STRING): STRING is
+--	        -- Serialize `a_object'.
+--			-- The serialiation is done through a file specified by `a_file_name'.
+--			-- FIXME: This is a walkaround for the problem that the serialization through
+--			-- FIXME: STREAM does not work. 31.5.2010 Jasonw
+--	    require
+--	        a_object_not_void: a_object /= Void
+--		local
+--			l_stream: STREAM
+--			l_file: RAW_FILE
+--	    do
+--	    	create l_file.make_create_read_write (a_file_name)
+--	    	l_file.independent_store (a_object)
+--	    	l_file.start
+--	    	l_file.read_stream (l_file.count)
+--	    	Result := l_file.last_string.twin
+--	    	l_file.close
+--	    ensure
+--	        serialize_not_void: Result /= Void
+--	    end
 
 	deserialized_object (a_string: STRING): detachable ANY is
 			-- Object deserialized from `a_string'
@@ -136,10 +136,8 @@ feature{NONE} -- Implementation
 		local
 			l_cstring: C_STRING
 		do
-			io.error.put_string ("Start string_from_pointer%N")
 			create l_cstring.make_shared_from_pointer_and_count (a_pointer, a_size)
 			Result := l_cstring.substring (1, a_size)
-			io.error.put_string ("End string_from_pointer%N")
 		ensure
 			result_attached: Result /= Void
 			result_valid: Result.count = a_size

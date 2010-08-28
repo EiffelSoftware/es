@@ -337,6 +337,7 @@ feature{NONE} -- Implementation
 			variables.force_last (a_variable)
 			variable_positions.force_last (a_index, a_variable)
 			reversed_variable_position.put (a_variable, a_index)
+			clean_all_caches
 		end
 
 feature -- Variable name
@@ -442,6 +443,7 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
+			clean_all_caches
 		end
 
 feature{NONE} -- Implementation
@@ -531,6 +533,12 @@ feature{NONE} -- Implementation
 
 	anonymous_expression_internal: detachable like anonymous_expression_cache
 			-- Cache for `anonymous_expression_cache'
+
+	clean_all_caches
+			-- Clean all caches.
+		do
+			anonymous_expression_internal := Void
+		end
 
 invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)

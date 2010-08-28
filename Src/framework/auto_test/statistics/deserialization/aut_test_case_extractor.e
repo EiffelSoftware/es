@@ -162,6 +162,8 @@ feature{NONE} -- Class content
 				l_name.replace_substring_all (ph_assertion_tag, tc_assertion_tag)
 				l_name.replace_substring_all (ph_hash_code, tc_hash_code)
 				l_name.replace_substring_all (ph_uuid, tc_uuid)
+				l_name.replace_substring_all (ph_pre_object_info, tc_pre_object_info)
+				l_name.replace_substring_all (ph_post_object_info, tc_post_object_info)
 
 				tc_class_name_cache := l_name
 			end
@@ -378,6 +380,7 @@ feature{NONE} -- Class content
 			l_reindexing: DS_HASH_TABLE [DS_HASH_SET[INTEGER], INTEGER]
 			l_op_name: STRING
 			l_variables_declaration, l_operands_declaration: STRING
+			l_type_name: STRING
 		do
 			l_data := current_data
 			l_variables_table := l_data.variable_type_table
@@ -396,7 +399,9 @@ feature{NONE} -- Class content
 
 				-- Declare a local variable if it is no operand.
 				if not l_operands_table.has (l_var) then
-					l_line := "%T%T%T" + l_var.name (l_prefix) + ": " + l_type.name + "%N"
+					l_type_name := l_type.name.twin
+					l_type_name.replace_substring_all (once "?", once "")
+					l_line := "%T%T%T" + l_var.name (l_prefix) + ": " + l_type_name + "%N"
 					l_variables_declaration.append (l_line)
 				end
 
@@ -425,7 +430,9 @@ feature{NONE} -- Class content
 					l_new_index := l_reindexing.item_for_iteration.first
 
 					l_op_name := l_data.variable_name_prefix.twin + l_new_index.out
-					l_line := "%T%T%T" + l_op_name + ": " + l_type.name + "%N"
+					l_type_name := l_type.name.twin
+					l_type_name.replace_substring_all (once "?", once "")
+					l_line := "%T%T%T" + l_op_name + ": " + l_type_name + "%N"
 					l_operands_declaration.append (l_line)
 
 					l_reindexing.forth
@@ -567,6 +574,12 @@ feature{NONE} -- Class content
 			Result.append (once "%T%T%T%T-- Execute feature under test.%N%T%T%T")
 			Result.append (l_test_call)
 			Result.append (once "%N%N%T%T%Tcleanup_after_test")
+			Result.append ("%N%N%T%T%T%T-- Setup object serialization in post-state.%N")
+			Result.append ("%T%T%Tif is_post_state_information_enabled%N")
+			Result.append ("%T%T%T%Tpost_serialization_cache := ascii_string_as_array (serialized_object (array_from_tuple (")
+			Result.append (tuple_for_objects)
+			Result.append (")))%N")
+			Result.append ("%T%T%Tend%N")
 		end
 
 	tc_code_cache: STRING
@@ -650,6 +663,48 @@ feature{NONE} -- Class content
 			l_hash_value: INTEGER
 		do
 			Result := current_data.trans_hashcode.hash_code.out
+		end
+
+	tc_pre_object_info: STRING
+			-- String representing for objects in current test case in pre-state
+		local
+			l_vars: LIST [STRING]
+			l_declaration: LIST [STRING]
+			l_var_name: STRING
+			l_var_index: STRING
+			l_var_type: STRING
+		do
+			create Result.make (256)
+
+			l_vars := tc_all_variable_declaration.split ('%N')
+			from
+				l_vars.start
+			until
+				l_vars.after
+			loop
+				l_declaration := l_vars.item_for_iteration.split (':')
+				l_var_name := l_declaration.first
+				l_var_name.left_adjust
+				l_var_name.right_adjust
+				l_var_type := l_declaration.last
+				l_var_type.left_adjust
+				l_var_type.right_adjust
+				l_var_index := l_var_name.substring (3, l_var_name.count)
+
+				if not Result.is_empty then
+					Result.append_character (',')
+				end
+				Result.append (l_var_type)
+				Result.append_character (',')
+				Result.append (l_var_index)
+				l_vars.forth
+			end
+		end
+
+	tc_post_object_info: STRING
+			-- String representing for objects in current test case in post-state
+		do
+			Result := tc_pre_object_info
 		end
 
 feature{NONE} -- Cache
@@ -977,7 +1032,40 @@ feature{NONE} -- Auxiliary features
 	current_data: detachable AUT_DESERIALIZED_DATA
 			-- Current data from which the test case would be extracted.
 
-;note
+	tuple_for_objects: STRING
+			-- TUPLE representation for objects in current test case
+		local
+			l_vars: LIST [STRING]
+			l_declaration: LIST [STRING]
+			l_var_name: STRING
+			l_var_index: STRING
+		do
+			create Result.make (256)
+			Result.append_character ('[')
+			l_vars := tc_all_variable_declaration.split ('%N')
+			from
+				l_vars.start
+			until
+				l_vars.after
+			loop
+				l_declaration := l_vars.item_for_iteration.split (':')
+				l_var_name := l_declaration.first
+				l_var_name.left_adjust
+				l_var_name.right_adjust
+				l_var_index := l_var_name.substring (3, l_var_name.count)
+
+				if l_vars.index > 1 then
+					Result.append_character (',')
+				end
+				Result.append (l_var_index)
+				Result.append_character (',')
+				Result.append (l_var_name)
+				l_vars.forth
+			end
+			Result.append_character (']')
+		end
+
+note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

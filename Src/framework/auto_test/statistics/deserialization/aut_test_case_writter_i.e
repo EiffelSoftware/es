@@ -112,6 +112,8 @@ feature{NONE} -- Construction
 			l_class_str.replace_substring_all (ph_trace, tc_trace)
 			l_class_str.replace_substring_all (ph_pre_serialization, tc_pre_serialization)
 --			l_class_str.replace_substring_all (ph_post_serialization, tc_post_serialization)
+			l_class_str.replace_substring_all (ph_pre_object_info, tc_pre_object_info)
+			l_class_str.replace_substring_all (ph_post_object_info, tc_post_object_info)
 
 			-- Extra information.
 			l_class_str.replace_substring_all (ph_start_block_string, start_block_string)
@@ -292,6 +294,16 @@ feature{NONE} -- Construction
 		deferred
 		end
 
+	tc_pre_object_info: STRING
+			-- String representing for objects in current test case in pre-state
+		deferred
+		end
+
+	tc_post_object_info: STRING
+			-- String representing for objects in current test case in post-state
+		deferred
+		end
+
 feature{NONE} -- Construction cache
 
 	uuid_generator: UUID_GENERATOR
@@ -328,6 +340,8 @@ feature{NONE} -- Constants
 	ph_var_index: STRING = "$(VAR_INDEX)"
 	ph_start_block_string: STRING = "$(START_BLOCK_STRING)"
 	ph_finish_block_string: STRING = "$(FINISH_BLOCK_STRING)"
+	ph_pre_object_info: STRING = "$(PRE_OBJECT_INFO)"
+	ph_post_object_info: STRING = "$(POST_OBJECT_INFO)"
 
 
 	ph_class_under_test: STRING = "$(CLASS_UNDER_TEST)"
@@ -345,7 +359,7 @@ feature{NONE} -- Constants
 	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
 	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
 	tc_operand_table_initializer_template: STRING = "%T%T%TResult.put ($(VAR_INDEX),$(OPERAND_INDEX))"
-	
+
 	tc_class_template: STRING = "[
 class 
 	$(CLASS_NAME)
@@ -378,6 +392,14 @@ feature -- Test case information
 
 	tci_feature_under_test: STRING do Result := "$(FEATURE_UNDER_TEST)" end
 			-- Name of the feature under test.
+			
+	tci_pre_object_info: STRING do Result := "$(PRE_OBJECT_INFO)" end
+			-- Information about objects in current test case in pre-state
+			-- Format: TYPE_1;position1;TYPE_2;position2;...;TYPE_n;position_n.
+
+	tci_post_object_info: STRING do Result := "$(POST_OBJECT_INFO)" end
+			-- Information about objects in current test case in post-state
+			-- Format: TYPE_1;position1;TYPE_2;position2;...;TYPE_n;position_n.
 			
 	tci_is_creation: BOOLEAN = $(IS_CREATION)
 			-- Is the feature under test a creation feature?
@@ -422,7 +444,7 @@ $(TRACE)
 $(OPERAND_TABLE_INITIALIZER)
 		end
 
-feature{NONE} -- Serialization data
+feature -- Serialization data
 
     pre_serialization: ARRAY [NATURAL_8]
             -- Serialized test case data before the transition.
@@ -434,18 +456,22 @@ $(PRE_SERIALIZATION)
 >>
         end
         
---    post_serialization: ARRAY [NATURAL_8]
---    		-- Serialized test case data after the transition.
---    	do
---    		Result := <<
-----<post_serialization>
---$(POST_SERIALIZATION)
-----</post_serialization>
---			>>
---		end
+    post_serialization: ARRAY [NATURAL_8]
+    		-- Serialized test case data after the transition.
+    	do
+    		if is_post_state_information_enabled then
+    			Result := post_serialization_cache
+    		else
+    			create Result.make (1, 0)
+    		end
+		end
 
+feature{NONE} -- Implementation
 
-note
+	post_serialization_cache: detachable like post_serialization
+			-- Cache for `post_serialization'
+
+;note
   extra_information: 
 $(START_BLOCK_STRING)
 --<extra_information>
