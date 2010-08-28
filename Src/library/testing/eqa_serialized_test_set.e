@@ -112,6 +112,11 @@ feature -- Basic operation
 		do
 		end
 
+	finish_post_state_calculation
+			-- Finish post state calculation
+		do
+		end
+
 	set_is_post_state_information_enabled (b: BOOLEAN)
 			-- Set `is_post_state_information_enabled' with `b'.
 		do
@@ -198,6 +203,31 @@ feature -- Test case information
 			-- and argument_count + 1 means the result, if any), value is the variable
 			-- index of that operand.
 		deferred
+		end
+
+	tci_operand_table_as_string: STRING
+			-- String representation of `tci_operand_table'
+			-- Format: Comma separated numbers.
+			-- For every number pair, the first number is key, the second number is value.
+		local
+			l_cursor: CURSOR
+		do
+			create Result.make (128)
+			l_cursor := tci_operand_table.cursor
+			from
+				tci_operand_table.start
+			until
+				tci_operand_table.after
+			loop
+				if not Result.is_empty then
+					Result.append_character (',')
+				end
+				Result.append (tci_operand_table.key_for_iteration.out)
+				Result.append_character (',')
+				Result.append (tci_operand_table.item_for_iteration.out)
+				tci_operand_table.forth
+			end
+			tci_operand_table.go_to (l_cursor)
 		end
 
 	tci_operand_variable_indexes: STRING

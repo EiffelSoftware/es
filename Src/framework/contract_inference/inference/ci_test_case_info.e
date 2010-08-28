@@ -72,6 +72,9 @@ feature -- Access
 	after_test_break_point_slot: INTEGER
 			-- Break point slot after the execution of `feature_under_test'
 
+	finish_post_state_calculation_slot: INTEGER
+			-- Break point slot after post state calculation finished
+
 	operand_map: HASH_TABLE [STRING, INTEGER]
 			-- Map from 0-based operand index in `feature_under_test' to locals in `test_feature'
 			-- Key is operand index, value is the name of local in `test_feature'.
@@ -163,6 +166,7 @@ feature -- Access
 			l_bp_finder.find_break_points (l_transformable.to_ast)
 			before_test_break_point_slot := l_bp_finder.before_test_break_point_slot
 			after_test_break_point_slot := l_bp_finder.after_test_break_point_slot
+			finish_post_state_calculation_slot := l_bp_finder.finish_post_state_calculation_slot
 		end
 
 	setup_operand_map (a_operands: STRING)

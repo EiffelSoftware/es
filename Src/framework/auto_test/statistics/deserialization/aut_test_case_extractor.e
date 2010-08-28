@@ -575,10 +575,11 @@ feature{NONE} -- Class content
 			Result.append (l_test_call)
 			Result.append (once "%N%N%T%T%Tcleanup_after_test")
 			Result.append ("%N%N%T%T%T%T-- Setup object serialization in post-state.%N")
-			Result.append ("%T%T%Tif is_post_state_information_enabled%N")
-			Result.append ("%T%T%T%Tpost_serialization_cache := ascii_string_as_array (serialized_object (array_from_tuple (")
+			Result.append ("%T%T%Tif is_post_state_information_enabled then%N")
+			Result.append ("%T%T%T%Tpost_serialization_cache := ascii_string_as_array (serialized_object (special_from_tuple (")
 			Result.append (tuple_for_objects)
 			Result.append (")))%N")
+			Result.append ("%T%T%T%Tfinish_post_state_calculation%N")
 			Result.append ("%T%T%Tend%N")
 		end
 

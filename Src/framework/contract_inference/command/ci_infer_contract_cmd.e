@@ -180,7 +180,6 @@ feature{NONE} -- Implementation
 			if a_pre_execution then
 				l_bp_slot := a_tc_info.before_test_break_point_slot + 1
 			else
---				l_bp_slot := a_tc_info.before_test_break_point_slot
 				l_bp_slot := a_tc_info.after_test_break_point_slot + 1
 			end
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
@@ -188,6 +187,31 @@ feature{NONE} -- Implementation
 				l_bp_slot,
 				agent expressions_to_evaluate (a_tc_info, a_pre_execution),
 				agent on_state_expression_evaluated (?, ?, a_pre_execution, a_tc_info, Result))
+		end
+
+	object_serialization_evaluation (a_tc_info: CI_TEST_CASE_INFO): EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Break point manager for evaluating expressions to collect object serialization information
+			-- for `a_tc_info'. This break point is only reachable if `config'.`is_semantic_search_enabled' is True.
+		do
+			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
+			Result.set_breakpoint_with_agent_and_action (
+				a_tc_info.finish_post_state_calculation_slot,
+				agent expressions_to_get_serialization_info (a_tc_info),
+				agent on_object_serialization_evaluated (?, ?, a_tc_info, Result))
+		end
+
+	expressions_to_get_serialization_info (a_tc_info: CI_TEST_CASE_INFO): DS_HASH_SET [EPA_EXPRESSION]
+			-- Expressions to evaluate in debugger to get object serialization information
+			-- from test case `a_tc_info'
+		do
+			create Result.make (4)
+			Result.set_equality_tester (expression_equality_tester)
+
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "pre_serialization_as_string", a_tc_info.test_case_class))
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "post_serialization_as_string", a_tc_info.test_case_class))
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_pre_object_info", a_tc_info.test_case_class))
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_post_object_info", a_tc_info.test_case_class))
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_operand_table_as_string", a_tc_info.test_case_class))
 		end
 
 	expressions_to_evaluate (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -465,9 +489,16 @@ feature{NONE} -- Actions
 			l_before_dbg_manager: like breakpoint_manager_for_expression_evaluation
 			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
+			l_dummy_value: DUMP_VALUE
+			l_serialization_dbg_manager: like object_serialization_evaluation
 		do
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
+					-- Enable the flag to calculate post-state information if needed.
+				if config.is_semantic_search_enabled then
+					l_dummy_value := debugger_manager.expression_evaluation ("set_is_post_state_information_enabled (True)")
+				end
+
 					-- Setup information of the newly found test case.
 				create last_test_case_info.make (a_state)
 				create last_pre_execution_bounded_functions.make (5)
@@ -485,6 +516,11 @@ feature{NONE} -- Actions
 					-- Enable break points for expression evaluation.
 				l_before_dbg_manager.toggle_breakpoints (True)
 				l_after_dbg_manager.toggle_breakpoints (True)
+
+				if config.is_semantic_search_enabled then
+					l_serialization_dbg_manager := object_serialization_evaluation (last_test_case_info)
+					l_serialization_dbg_manager.toggle_breakpoints (True)
+				end
 			end
 		end
 
@@ -516,6 +552,17 @@ feature{NONE} -- Actions
 				log_manager.put_line (last_post_execution_evaluations.debug_output)
 			end
 			log_manager.pop_level
+		end
+
+	on_object_serialization_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
+			-- Action to be performed when expressions to get object serialization information are evalauted
+		do
+			a_bp_manager.toggle_breakpoints (False)
+--			io.put_string ("pre_serialization: " + a_state.item_with_expression_text ("pre_serialization_as_string").value.text + "%N%N")
+--			io.put_string ("post_serialization: " + a_state.item_with_expression_text ("post_serialization_as_string").value.text + "%N%N")
+--			io.put_string ("pre_object_info: " + a_state.item_with_expression_text ("tci_pre_object_info").value.text + "%N%N")
+--			io.put_string ("post_object_info: " + a_state.item_with_expression_text ("tci_post_object_info").value.text + "%N%N")
+--			io.put_string ("operand_table: " + a_state.item_with_expression_text ("tci_operand_table_as_string").value.text + "%N%N")
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)

@@ -254,6 +254,12 @@ feature -- Access
 			-- Should freeze the project before contract inference?
 			-- Default: False
 
+	is_semantic_search_enabled: BOOLEAN
+			-- Is semantic search support enabled?
+			-- If enabled, during test case execution, object serialization in
+			-- pre- and poststate as well as the object type information will be kept
+			-- Default: False
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -516,6 +522,14 @@ feature -- Setting
 			should_freeze := b
 		ensure
 			should_freeze_set: should_freeze = b
+		end
+
+	set_is_semantic_search_enabled (b: BOOLEAN)
+			-- Set `is_semantic_search_enabled' with `b'.
+		do
+			is_semantic_search_enabled := b
+		ensure
+			is_semantic_search_enabled_set: is_semantic_search_enabled = b
 		end
 
 feature{NONE} -- Implementation

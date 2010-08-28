@@ -358,7 +358,7 @@ feature{NONE} -- Constants
 
 	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
 	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
-	tc_operand_table_initializer_template: STRING = "%T%T%TResult.put ($(VAR_INDEX),$(OPERAND_INDEX))"
+	tc_operand_table_initializer_template: STRING = "%T%T%T%Ttci_operand_table_cache.put ($(VAR_INDEX),$(OPERAND_INDEX))"
 
 	tc_class_template: STRING = "[
 class 
@@ -440,8 +440,11 @@ $(TRACE)
 			-- and argument_count + 1 means the result, if any), value is the variable 
 			-- index of that operand.
 		do
-			create Result.make ($(ARGUMENT_COUNT) + 2)
+			if tci_operand_table_cache = Void then
+				create tci_operand_table_cache.make ($(ARGUMENT_COUNT) + 2)
 $(OPERAND_TABLE_INITIALIZER)
+			end
+			Result := tci_operand_table_cache
 		end
 
 feature -- Serialization data
@@ -470,6 +473,9 @@ feature{NONE} -- Implementation
 
 	post_serialization_cache: detachable like post_serialization
 			-- Cache for `post_serialization'
+			
+	tci_operand_table_cache: detachable like tci_operand_table
+			-- Cache for `tci_operand_table'
 
 ;note
   extra_information: 
