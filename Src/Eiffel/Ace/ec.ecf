@@ -166,11 +166,7 @@
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false" use_application_options="true"/>
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
-		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false">
-			<option syntax="provisional">
-				<assertions precondition="true" check="true"/>
-			</option>
-		</library>
+		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
 		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
 		<library name="fast_ini" location="$EIFFEL_SRC\framework\file_formats\fast_ini\fast_ini.ecf" readonly="false"/>
 		<library name="file_utilities" location="$EIFFEL_SRC\framework\file_utilities\file_utilities.ecf" readonly="false" use_application_options="true"/>

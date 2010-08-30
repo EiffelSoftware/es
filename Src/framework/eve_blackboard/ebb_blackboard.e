@@ -28,14 +28,14 @@ feature {NONE} -- Initialization
 			-- Initialize empty blackboard.
 		do
 			create data.make
-			create {EBB_BASIC_CONTROL} control.make
+			create {EBB_IDLE_CONTROL} control.make
 			create {LINKED_LIST [EBB_TOOL]} tools.make
 			create {LINKED_LIST [EBB_FEATURE_VERIFICATION_RESULT]} verification_results.make
 
 			initialize
 
 				-- Autostart Blackboard
---			eiffel_project.manager.load_agents.extend (agent start)
+			eiffel_project.manager.load_agents.extend (agent start)
 		end
 
 feature -- Access
@@ -56,6 +56,16 @@ feature -- Status report
 
 	is_usable: BOOLEAN = True
 			-- <Precursor>
+
+feature -- Element change
+
+	set_control (a_control: attached like control)
+			-- Set `control' to `a_control'.
+		do
+			control := a_control
+		ensure
+			control_set: control = a_control
+		end
 
 feature -- Basic operations
 
@@ -105,6 +115,7 @@ feature -- Basic operations
 			-- Handle that `a_class' was added.
 		do
 			data.add_class (a_class)
+			control.handle_changed_class (a_class)
 			data_changed_event.publish ([])
 		end
 
@@ -112,6 +123,7 @@ feature -- Basic operations
 			-- Handle that `a_class' was removed.
 		do
 			data.remove_class (a_class)
+			control.handle_changed_class (a_class)
 			data_changed_event.publish ([])
 		end
 
@@ -126,6 +138,7 @@ feature -- Basic operations
 					data.add_feature (a_feature)
 				end
 			end
+			control.handle_changed_class (a_feature.written_class.original_class)
 			data_changed_event.publish ([])
 		end
 
@@ -135,6 +148,7 @@ feature -- Basic operations
 			if data.has_feature (a_feature) then
 				data.remove_feature (a_feature)
 			end
+			control.handle_changed_class (a_feature.written_class.original_class)
 			data_changed_event.publish ([])
 		end
 

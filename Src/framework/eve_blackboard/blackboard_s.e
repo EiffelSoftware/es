@@ -14,12 +14,18 @@ feature {NONE} -- Initalization
 
 	initialize
 			-- Initialize blackboard service.
+		require
+			data_attached: attached data
+			control_attached: attached control
+			tools_attached: attached tools
 		local
 			l_shared_project: SHARED_EIFFEL_PROJECT
 		do
 			create data_initialized_event
 			create data_changed_event
 			create tool_execution_changed_event
+			create blackboard_started_event
+			create blackboard_stopped_event
 
 			create l_shared_project
 			l_shared_project.eiffel_project.manager.load_agents.extend (agent data.update_from_universe)
@@ -50,7 +56,7 @@ feature -- Status report
 		require
 			usable: is_interface_usable
 		do
-			Result := rota.has_task (control) and then control.has_next_step
+			Result := control.is_running
 		end
 
 feature -- Status setting
@@ -61,13 +67,14 @@ feature -- Status setting
 			usable: is_interface_usable
 		do
 			if attached rota as l_rota then
+				control.start
 				if not rota.has_task (control) then
-					control.start
 					rota.run_task (control)
 				end
+				blackboard_started_event.publish ([])
 			end
 		ensure
-			running: is_running
+			running: attached rota implies is_running
 		end
 
 	stop
@@ -76,6 +83,7 @@ feature -- Status setting
 			usable: is_interface_usable
 		do
 			control.cancel
+			blackboard_stopped_event.publish ([])
 		ensure
 			not_running: not is_running
 		end
@@ -103,6 +111,12 @@ feature -- Events
 
 	tool_execution_changed_event: EVENT_TYPE [TUPLE]
 			-- Event that some tool execution changed.
+
+	blackboard_started_event: EVENT_TYPE [TUPLE]
+			-- Event that blackboard execution has started.
+
+	blackboard_stopped_event: EVENT_TYPE [TUPLE]
+			-- Event that blackboard executino has stopped.
 
 	on_class_changed (a_class: CLASS_I)
 			-- Handle event that `a_class' has been changed.

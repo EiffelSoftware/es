@@ -15,6 +15,11 @@ inherit
 create
 	make
 
+feature -- Access
+
+	name: STRING = "Basic"
+			-- <Precursor>
+
 feature -- Basic operations
 
 	create_new_tool_executions
@@ -30,7 +35,13 @@ feature -- Basic operations
 				--  - no other tool is running
 				--  - no other tool is waiting
 				--  - no compilation is running
-			if running_executions.is_empty and waiting_executions.is_empty and not eiffel_project.is_compiling then
+				--  - there is a tool
+			if
+				running_executions.is_empty and
+				waiting_executions.is_empty and
+				not eiffel_project.is_compiling and
+				not blackboard.tools.is_empty
+			then
 
 				l_class := next_class
 				if l_class = Void then
@@ -70,7 +81,7 @@ feature -- Basic operations
 			until
 				l_classes.after or attached Result
 			loop
-				if l_classes.item.is_stale then
+				if l_classes.item.is_stale and l_classes.item.is_compiled then
 					Result := l_classes.item
 				end
 				l_classes.forth

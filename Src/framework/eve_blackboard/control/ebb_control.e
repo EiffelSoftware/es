@@ -28,6 +28,11 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	name: STRING
+			-- Name of control.
+		deferred
+		end
+
 	waiting_executions: LINKED_LIST [EBB_TOOL_EXECUTION]
 			-- Tool executions waiting to be started.
 
@@ -47,11 +52,14 @@ feature -- Status report
 
 	has_next_step: BOOLEAN
 			-- <Precursor>
+		do
+			Result := internal_is_active or not running_executions.is_empty
+		end
 
 	is_running: BOOLEAN
 			-- Is control running at the moment?
 		do
-			Result := has_next_step
+			Result := internal_is_active
 		end
 
 feature -- Status setting
@@ -59,7 +67,7 @@ feature -- Status setting
 	start
 			-- Start task.
 		do
-			has_next_step := True
+			internal_is_active := True
 		ensure
 			has_next_step: has_next_step
 		end
@@ -67,9 +75,7 @@ feature -- Status setting
 	cancel
 			-- <Precursor>
 		do
-			has_next_step := False
-		ensure then
-			no_next_step: not has_next_step
+			internal_is_active := False
 		end
 
 feature -- Basic operations
@@ -80,9 +86,11 @@ feature -- Basic operations
 			if not running_executions.is_empty then
 				check_running_tool_executions
 			end
-			create_new_tool_executions
-			if not waiting_executions.is_empty then
-				start_waiting_tool_executions
+			if internal_is_active then
+				create_new_tool_executions
+				if not waiting_executions.is_empty then
+					start_waiting_tool_executions
+				end
 			end
 		end
 
@@ -139,6 +147,30 @@ feature -- Basic operations
 			not_waiting: not waiting_executions.has (a_execution)
 			executing: running_executions.has (a_execution)
 		end
+
+	handle_changed_class (a_class: CLASS_I)
+			-- Handle fact that `a_class' changed.
+		local
+			l_execution: EBB_TOOL_EXECUTION
+			l_input: EBB_TOOL_INPUT
+			l_class_overlap: BOOLEAN
+		do
+			across running_executions as l_cursor loop
+				l_execution := l_cursor.item
+				if l_execution.is_running then
+					l_input := l_execution.input
+					l_class_overlap := across l_input.features as l_features some l_features.item.written_class.name.is_equal (a_class.name) end
+					if l_class_overlap then
+						l_execution.cancel
+					end
+				end
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	internal_is_active: BOOLEAN
+			-- Is control active?
 
 invariant
 	consistent_waiting: across waiting_executions as c all not c.item.is_running and not c.item.is_finished end

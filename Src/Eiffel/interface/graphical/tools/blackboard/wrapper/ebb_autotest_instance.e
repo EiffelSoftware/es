@@ -32,13 +32,32 @@ feature -- Basic operations
 			-- <Precursor>
 		local
 			l_session: SERVICE_CONSUMER [SESSION_MANAGER_S]
+			l_test_suite: TEST_SUITE_S
+			l_log_options: HASH_TABLE [BOOLEAN, STRING]
 		do
 			create test_generator.make (test_suite.service, etest_suite)
 			test_generator.add_class_name (input.classes.first.name_in_upper)
+			test_generator.set_is_random_testing_enabled (True)
+			test_generator.set_is_slicing_enabled (True)
+
+			create l_log_options.make (10)
+			l_log_options.put (True, "failing")
+			test_generator.set_proxy_log_options (l_log_options)
+			test_generator.set_html_statistics (True)
+
+
 
 			create l_session
-			l_session.service.retrieve (True).set_value ({TEST_SESSION_CONSTANTS}.types, input.classes.first.name)
+			l_session.service.retrieve (True).set_value (input.classes.first.name, {TEST_SESSION_CONSTANTS}.types)
 			launch_test_generation (test_generator, l_session.service, False)
+
+			if test_suite.is_service_available then
+				l_test_suite := test_suite.service
+				if l_test_suite.is_interface_usable then
+					l_test_suite.launch_session (test_generator)
+				end
+			end
+
 		end
 
 	cancel
@@ -47,7 +66,7 @@ feature -- Basic operations
 			test_generator.cancel
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	test_generator: TEST_GENERATOR
 
