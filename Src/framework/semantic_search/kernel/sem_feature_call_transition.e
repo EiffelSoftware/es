@@ -184,6 +184,36 @@ feature -- Access
 			end
 		end
 
+	operand_variable_positions: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
+			-- Table from operand variables to their 0-based operand index
+			-- Key is variables which are also operands, value is the 0-based operand index for that variable
+			-- Variables which are not operands are not included in the resulting table.
+		local
+			l_positions: like variable_positions
+			l_cursor: like variables.new_cursor
+			l_position: INTEGER
+			l_operand_map: like operand_map
+		do
+			create Result.make (variables.count)
+			Result.set_key_equality_tester (expression_equality_tester)
+
+			l_positions := variable_positions
+			l_operand_map := operand_map
+			from
+				l_cursor := variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_position := l_positions.item (l_cursor.item)
+				l_operand_map.search (l_position)
+				if l_operand_map.found then
+					Result.force_last (l_position, l_cursor.item)
+				end
+				l_cursor.forth
+			end
+		end
+
 	as_interface_transition: like Current
 			-- Interface transition of Current
 			-- Make a copy of current.

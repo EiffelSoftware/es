@@ -92,6 +92,17 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
+	semantic_search_document_directory: STRING
+			-- Directory for semantic search related documents
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (contract_output_directory)
+			l_path.extend ("semantic")
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
 	contract_output_directory: STRING
 			-- Directory for output
 		local

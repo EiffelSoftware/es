@@ -33,7 +33,8 @@ feature{NONE} -- Initialization
 			is_feature_under_test_creation := a_info_state.item_with_expression_text (txt_tci_is_creation).value.out.to_boolean
 
 			calculate_break_point_position
-			setup_operand_map (a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
+			operand_variable_indexes := a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out
+			setup_operand_map (operand_variable_indexes)
 			setup_variables (test_case_class)
 			hash_code := test_case_class.name_in_upper.hash_code
 
@@ -89,6 +90,11 @@ feature -- Access
 
 	uuid: STRING
 			-- UUID of `test_case_class'
+
+	operand_variable_indexes: STRING
+			-- Operand variable indexes
+			-- Format: comma separated numbers, the i-th number is the object id of the i-th operand
+			-- i starts from 0.
 
 feature -- Status report
 

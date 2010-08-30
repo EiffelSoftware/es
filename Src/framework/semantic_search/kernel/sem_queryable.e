@@ -145,6 +145,76 @@ feature -- Access
 			end
 		end
 
+	anonymous_variables_table: DS_HASH_TABLE [STRING, EPA_EXPRESSION]
+			-- Table from `variables' to their anonymous name format
+			-- For example: v_128 -> "{0}" if v_128 is the 0-th variable.
+		local
+			l_cursor: like variable_positions.new_cursor
+		do
+			if anonymous_variables_table_cache = Void then
+				create anonymous_variables_table_cache.make (variables.count)
+				anonymous_variables_table_cache.set_key_equality_tester (expression_equality_tester)
+				from
+					l_cursor := variable_positions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					anonymous_variables_table_cache.force_last (anonymous_variable_name (l_cursor.item), l_cursor.key)
+					l_cursor.forth
+				end
+
+			end
+			Result := anonymous_variables_table_cache
+		end
+
+	anonymous_variables_string_table: HASH_TABLE [STRING, STRING]
+			-- Table from `variables' to their anonymous name format
+			-- For example: v_128 -> "{0}" if v_128 is the 0-th variable.
+		local
+			l_cursor: like variable_positions.new_cursor
+		do
+			if anonymous_variables_string_table_cache = Void then
+				create anonymous_variables_string_table_cache.make (variables.count)
+				anonymous_variables_string_table_cache.compare_objects
+
+				from
+					l_cursor := variable_positions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					anonymous_variables_string_table_cache.force (anonymous_variable_name (l_cursor.item), l_cursor.key.text.as_lower)
+					l_cursor.forth
+				end
+			end
+			Result := anonymous_variables_string_table_cache
+		end
+
+	variable_name_type_table: HASH_TABLE[TYPE_A, STRING]
+			-- Table from variable name to their types
+			-- Key is variable name, value is the type of that variable.
+			-- Note: The types may not be resolved.
+		local
+			l_cursor: like variables.new_cursor
+		do
+			if variable_name_type_table_cache = Void then
+				create variable_name_type_table_cache.make (variables.count)
+				variable_name_type_table_cache.compare_objects
+
+				from
+					l_cursor := variables.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					variable_name_type_table_cache.force (l_cursor.item.type, l_cursor.item.text)
+					l_cursor.forth
+				end
+			end
+			Result := variable_name_type_table_cache
+		end
+
 	typed_expression_text (a_expression: EPA_EXPRESSION): STRING
 			-- Text of `a_expression' with all accesses to variables replaced by the variables' static type
 			-- For example, "has (v)" in LINKED_LIST [ANY] will be: {LINKED_LIST [ANY]}.has ({ANY})".
@@ -538,7 +608,19 @@ feature{NONE} -- Implementation
 			-- Clean all caches.
 		do
 			anonymous_expression_internal := Void
+			anonymous_variables_table_cache := Void
+			anonymous_variables_string_table_cache := Void
+			variable_name_type_table_cache := Void
 		end
+
+	anonymous_variables_table_cache: detachable like anonymous_variables_table
+			-- Cache for `anonymous_variables_table'
+
+	anonymous_variables_string_table_cache: detachable like anonymous_variables_string_table
+			-- Cache for `anonymous_variables_string_table'
+
+	variable_name_type_table_cache: detachable like variable_name_type_table
+			-- Cache for `variable_name_type_table'
 
 invariant
 	variable_positions_valid: variable_positions.for_all_with_key (agent is_variable_position_valid)

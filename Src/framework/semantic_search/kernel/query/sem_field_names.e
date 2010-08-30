@@ -78,6 +78,20 @@ feature -- Access
 
 feature -- Access
 
+	transition_field_value: STRING = "transition"
+	snippet_field_value: STRING = "snippet"
+	object_field_value: STRING = "object"
+
+feature -- Type names
+
+	string_field_type: STRING = "STRING"
+	boolean_field_type: STRING = "BOOLEAN"
+	integer_field_type: STRING = "INTEGER"
+
+	default_boost_value: DOUBLE = 1.0
+
+feature -- Access
+
 	field_name_set: DS_HASH_SET [STRING]
 			-- Set of field names/prefixes
 		once

@@ -81,4 +81,18 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code
 
+	serialization_info: detachable CI_TEST_CASE_SERIALIZATION_INFO
+			-- Serialization information
+			-- Have effect only if semantic search support is enabled
+
+feature -- Setting
+
+	set_serialization_info (a_info: like serialization_info)
+			-- Set `serialization_info' with `a_info'.
+		do
+			serialization_info := a_info
+		ensure
+			serialization_info_set: serialization_info = a_info
+		end
+
 end

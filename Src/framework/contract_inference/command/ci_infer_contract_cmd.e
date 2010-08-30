@@ -558,11 +558,13 @@ feature{NONE} -- Actions
 			-- Action to be performed when expressions to get object serialization information are evalauted
 		do
 			a_bp_manager.toggle_breakpoints (False)
---			io.put_string ("pre_serialization: " + a_state.item_with_expression_text ("pre_serialization_as_string").value.text + "%N%N")
---			io.put_string ("post_serialization: " + a_state.item_with_expression_text ("post_serialization_as_string").value.text + "%N%N")
---			io.put_string ("pre_object_info: " + a_state.item_with_expression_text ("tci_pre_object_info").value.text + "%N%N")
---			io.put_string ("post_object_info: " + a_state.item_with_expression_text ("tci_post_object_info").value.text + "%N%N")
---			io.put_string ("operand_table: " + a_state.item_with_expression_text ("tci_operand_table_as_string").value.text + "%N%N")
+			create last_serialization_info.make (
+				a_tc_info,
+				a_state.item_with_expression_text ("pre_serialization_as_string").value.text,
+				a_state.item_with_expression_text ("post_serialization_as_string").value.text,
+				a_state.item_with_expression_text ("tci_operand_table_as_string").value.text,
+				a_state.item_with_expression_text ("tci_pre_object_info").value.text,
+				a_state.item_with_expression_text ("tci_post_object_info").value.text)
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -733,6 +735,13 @@ feature{NONE} -- Implementation
 				last_pre_execution_bounded_functions,
 				last_post_execution_bounded_functions)
 
+				-- Setup object serialization information if semantic search support is enabled.
+			if config.is_semantic_search_enabled then
+				l_transition_info.set_serialization_info (last_serialization_info)
+			else
+				l_transition_info.set_serialization_info (Void)
+			end
+
 			transition_data.extend (l_transition_info)
 		end
 
@@ -749,6 +758,7 @@ feature{NONE} -- Implementation
 			l_simple_equality_inferrer: CI_SIMPLE_EQUALITY_INFERRER
 			l_dummy_inferrer: CI_DUMMY_INFERRER
 			l_constant_change_inferrer: CI_CONSTANT_CHANGE_INFERRER
+			l_semantic_search_inferrer: CI_SEMANTIC_SEARCH_DATA_COLLECTOR_INFERRER
 		do
 			create inferrers.make
 
@@ -818,6 +828,13 @@ feature{NONE} -- Implementation
 				l_constant_change_inferrer.set_config (config)
 				l_constant_change_inferrer.set_logger (log_manager)
 				inferrers.extend (l_constant_change_inferrer)
+			end
+
+			if config.is_semantic_search_enabled then
+				create l_semantic_search_inferrer
+				l_semantic_search_inferrer.set_config (config)
+				l_semantic_search_inferrer.set_logger (log_manager)
+				inferrers.extend (l_semantic_search_inferrer)
 			end
 		end
 
@@ -945,6 +962,9 @@ feature{NONE} -- Results
 
 	last_post_execution_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
 			-- Functions with bounded integer domain in post-execution state
+
+	last_serialization_info: CI_TEST_CASE_SERIALIZATION_INFO
+			-- Serialization information of the last executed test case
 
 feature{NONE} -- Data
 
