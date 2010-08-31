@@ -58,7 +58,7 @@ feature -- Setting
 feature -- Actions
 
 	on_test_case_start (a_tc: EPA_TEST_CASE_INFO; a_mocking_mode: BOOLEAN)
-			-- Action to ber performed when `a_tc' starts
+			-- Action to be performed when `a_tc' starts
 			-- If `a_mocking_mode' is True, load file directly from disk.
 		require
 			a_tc_has_uuid: attached {STRING} a_tc.uuid as id and then not id.is_empty

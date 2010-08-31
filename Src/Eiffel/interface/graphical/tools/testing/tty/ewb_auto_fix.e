@@ -59,6 +59,8 @@ feature -- Properties
 			l_build_tc_cmd: AFX_TEST_CASE_APP_BUILDER
 			l_analyze_tc_cmd: AFX_TEST_CASE_APP_ANALYZER
 			l_initializer: AFX_INITIALIZER
+
+			l_fixing_project_builder: AFX_FIXING_PROJECT_BUILDER
 		do
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
@@ -69,14 +71,29 @@ feature -- Properties
 			create l_initializer
 			l_initializer.prepare (l_config)
 
-			if l_config.should_build_test_cases then
-				create l_build_tc_cmd.make (l_config)
-				l_build_tc_cmd.execute
-			end
+			if l_config.is_using_model_based_strategy then
+				if l_config.should_build_test_cases then
+					create l_build_tc_cmd.make (l_config)
+					l_build_tc_cmd.execute
+				end
 
-			if l_config.should_analyze_test_cases then
-				create l_analyze_tc_cmd.make (l_config)
-				l_analyze_tc_cmd.execute
+				if l_config.should_analyze_test_cases then
+					create l_analyze_tc_cmd.make (l_config)
+					l_analyze_tc_cmd.execute
+				end
+			else
+				-- Using random-based fix strategy.
+				check using_random_based_strategy: l_config.is_using_random_based_strategy end
+
+				if l_config.should_build_test_cases then
+					create l_fixing_project_builder.make (l_config)
+					l_fixing_project_builder.execute
+				end
+
+				if l_config.should_analyze_test_cases then
+					create {AFX_TEST_CASE_APP_RANDOM_BASED_ANALYZER}l_analyze_tc_cmd.make (l_config)
+					l_analyze_tc_cmd.execute
+				end
 			end
 		end
 

@@ -22,6 +22,7 @@ feature{NONE} -- Initialization
 		do
 			eiffel_system := a_system
 			set_is_using_model_based_strategy (True)
+			set_is_monitoring_breakpointwise (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -218,6 +219,16 @@ feature -- Test case analysis
 			-- Should project be freezed before auto-fixing?
 			-- Default: False
 
+	is_combining_integral_expressions_in_feature: BOOLEAN assign set_is_combining_integral_expressions_in_feature
+			-- Is current strategy for combining integral expressions based on feature?
+			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
+			--		`is_combining_integral_expressions_in_breakpoint' is True.
+
+	is_combining_integral_expressions_in_breakpoint: BOOLEAN assign set_is_combining_integral_expressions_in_breakpoint
+			-- Is current strategy for combining integral expressions based on breakpoint?
+			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
+			--		`is_combining_integral_expressions_in_breakpoint' is True.
+
 feature -- Fix generation
 
 	max_valid_fix_number: INTEGER
@@ -273,6 +284,22 @@ feature -- Status report
 			same_as_cache: Result = is_using_random_based_strategy_cache
 		end
 
+	is_monitoring_featurewise: BOOLEAN
+			-- Will all expressions be monitored featurewise?
+		do
+			Result := is_monitoring_featurewise_cache
+		ensure
+			definition: Result = is_monitoring_featurewise_cache
+		end
+
+	is_monitoring_breakpointwise: BOOLEAN
+			-- Will expressions be monitored breakpointwise?
+		do
+			Result := is_monitoring_breakpointwise_cache
+		ensure
+			definition: Result = is_monitoring_breakpointwise_cache
+		end
+
 	should_retrieve_state: BOOLEAN
 			-- Should state of the system be retrieved?
 		do
@@ -301,6 +328,34 @@ feature -- Setting
 		do
 			is_using_model_based_strategy_cache := b
 			is_using_random_based_strategy_cache := not b
+		end
+
+	set_is_monitoring_featurewise (a_flag: BOOLEAN)
+			-- Set `is_monitoring_featurewise'.
+		do
+			is_monitoring_featurewise_cache := a_flag
+			is_monitoring_breakpointwise_cache := not a_flag
+		end
+
+	set_is_monitoring_breakpointwise (a_flag: BOOLEAN)
+			-- Set `is_monitoring_breakpointwise'.
+		do
+			is_monitoring_breakpointwise_cache := a_flag
+			is_monitoring_featurewise_cache := not a_flag
+		end
+
+	set_is_combining_integral_expressions_in_feature (a_flag: BOOLEAN)
+			-- Set `is_combining_integral_expressions_in_feature'.
+		do
+			is_combining_integral_expressions_in_feature := a_flag
+			is_combining_integral_expressions_in_breakpoint := not a_flag
+		end
+
+	set_is_combining_integral_expressions_in_breakpoint (a_flag: BOOLEAN)
+			-- Set `is_combining_integral_expressions_in_breakpoint'.
+		do
+			is_combining_integral_expressions_in_breakpoint := a_flag
+			is_combining_integral_expressions_in_feature := not a_flag
 		end
 
 	set_should_retrieve_state (b: BOOLEAN)
@@ -464,6 +519,11 @@ feature{NONE} -- Implementation
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
 
+	is_monitoring_featurewise_cache: BOOLEAN
+			-- Cache for `is_monitoring_featurewise'.
+
+	is_monitoring_breakpointwise_cache: BOOLEAN
+			-- Cache for `is_monitoring_breakpointwise'.
 
 
 feature{NONE} -- Implementation

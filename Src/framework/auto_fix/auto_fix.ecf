@@ -64,56 +64,6 @@
 			<file_rule>
 				<exclude>/Clib$</exclude>
 			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/boolean_state_transition_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/model_transformation$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/state_transition_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/boolean_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/query_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/query_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/boolean_model$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/model_transformation$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/strategies$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/behavior_constructor$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/program_fix$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/exception_explanation$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/exception_analysis$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/graph/graph$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>^/state_retrieval/state/expression_value$</exclude>
-			</file_rule>
-			<cluster name="query_model" location="$EIFFEL_SRC\framework\auto_fix\query_model\"/>
-			<cluster name="boolean_model" location="$EIFFEL_SRC\framework\auto_fix\boolean_model\"/>
-			<cluster name="model_transformation" location="$EIFFEL_SRC\framework\auto_fix\model_transformation\"/>
-			<cluster name="behavior_constructor" location="$EIFFEL_SRC\framework\auto_fix\behavior_constructor\"/>
-			<cluster name="program_fix" location="$EIFFEL_SRC\framework\auto_fix\program_fix\"/>
 		</cluster>
 	</target>
 </system>

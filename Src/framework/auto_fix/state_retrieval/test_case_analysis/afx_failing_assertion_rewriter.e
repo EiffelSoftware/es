@@ -255,15 +255,15 @@ feature{NONE} -- Implementation
 			l_class_name: STRING
 			l_feature_name: STRING
 			l_done: BOOLEAN
-			l_analyzer: EPA_EXCEPTION_TRACE_ANALYZER
-			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
-			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
+			l_analyzer: EPA_EXCEPTION_TRACE_PARSER
+			l_frames: DS_LINEAR [EPA_EXCEPTION_TRACE_FRAME]
+			l_frame: EPA_EXCEPTION_TRACE_FRAME
 		do
 --			fixme ("This is a hack. Use relevant trace analysis classes instead. 12.12.2009 Jasonw")
 			create l_analyzer
-			l_analyzer.analyse (a_trace)
+			l_analyzer.parse (a_trace)
 			from
-				l_frames := l_analyzer.last_relevant_exception_frames
+				l_frames := l_analyzer.last_exception_frames
 				l_frames.start
 			until
 				l_frames.after or else l_done
@@ -271,7 +271,7 @@ feature{NONE} -- Implementation
 				l_frame := l_frames.item_for_iteration
 				if l_frame /= Void and then l_frame.breakpoint_slot_index = a_tc.breakpoint_slot and then attached {STRING} l_frame.tag as l_tag and then l_tag ~ a_tc.tag then
 					l_class_name := l_frame.context_class_name
-					l_feature_name := l_frame.feature_name
+					l_feature_name := l_frame.routine_name
 					l_done := True
 				end
 				l_frames.forth

@@ -208,6 +208,7 @@ feature -- Basic operations
 						socket := l_socket
 
 						create timer.make (agent on_test_case_execution_time_out)
+							--| Do we need the two operations below? 'timer' will be set at the beginning of 'worker.execute'.
 						timer.set_timeout (0)
 						timer.start
 

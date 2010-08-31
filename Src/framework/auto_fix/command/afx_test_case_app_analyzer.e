@@ -8,6 +8,7 @@ class
 	AFX_TEST_CASE_APP_ANALYZER
 
 inherit
+
 	SHARED_WORKBENCH
 
 	SHARED_DEBUGGER_MANAGER
@@ -243,9 +244,9 @@ feature{NONE} -- Actions
 			i: INTEGER
 			l_trace_lines: STRING
 			l_done: BOOLEAN
-			l_analyzer: EPA_EXCEPTION_TRACE_ANALYZER
-			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
-			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
+			l_analyzer: EPA_EXCEPTION_TRACE_PARSER
+			l_frames: DS_LINEAR [EPA_EXCEPTION_TRACE_FRAME]
+			l_frame: EPA_EXCEPTION_TRACE_FRAME
 			l_ori_class: STRING
 			l_ori_feature: STRING
 			l_context_class: STRING
@@ -281,8 +282,8 @@ feature{NONE} -- Actions
 			end
 
 			create l_analyzer
-			l_analyzer.analyse (l_trace_lines)
-			l_frames := l_analyzer.last_relevant_exception_frames
+			l_analyzer.parse (l_trace_lines)
+			l_frames := l_analyzer.last_exception_frames
 
 			from
 				l_done := False
@@ -298,13 +299,13 @@ feature{NONE} -- Actions
 						check should_not_happen: False end
 					end
 
-					if attached {STRING} l_frame.feature_name as l_feat_name then
+					if attached {STRING} l_frame.routine_name as l_feat_name then
 						l_context_feature := l_feat_name
 					else
 						check should_not_happen: False end
 					end
 
-					if attached {STRING} l_frame.origin_class_name as l_oclass then
+					if attached {STRING} l_frame.written_class_name as l_oclass then
 						l_ori_class := l_oclass
 					else
 						l_ori_class := l_context_class
@@ -356,6 +357,8 @@ feature{NONE} -- Actions
 				current_test_case_info.set_uuid (l_uuid)
 			else
 				l_data := recipient_from_trace (l_recipient.feature_name.as_lower, l_recipient_class.name_in_upper, l_trace)
+				-- FIXME: Is the following initialization correct?
+				--			July 29, 2010. Max
 				create current_test_case_info.make (l_recipient_class.name, l_recipient.feature_name, l_data.recipient_class, l_data.recipient, l_exception_code, l_bpslot, l_tag, l_passing, l_uuid)
 			end
 

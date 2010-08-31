@@ -37,7 +37,7 @@ feature -- Initialization
 			pre_state_str := a_pre_state
 			post_state_str := a_post_state
 
-			is_summarization_available := True
+			reset_summarization_availability
 		end
 
 feature -- Access
@@ -58,7 +58,7 @@ feature -- Query
 			summarization_available: is_summarization_available
 		do
 			Result := first_class_starts_with_name (class_name_str)
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	feature_: FEATURE_I
@@ -68,7 +68,7 @@ feature -- Query
 			summarization_available: is_summarization_available
 		do
 			Result := test_case.feature_to_call
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	test_case: AUT_CALL_BASED_REQUEST
@@ -80,7 +80,7 @@ feature -- Query
 				test_case_cache := test_case_from_string (code_str)
 			end
 			Result := test_case_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	operand_type_table: HASH_TABLE [TYPE_A, ITP_VARIABLE]
@@ -93,7 +93,7 @@ feature -- Query
 				operand_type_table_cache := variable_type_table_from_declaration (operands_str)
 			end
 			Result := operand_type_table_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	variable_type_table: detachable HASH_TABLE [TYPE_A, ITP_VARIABLE]
@@ -105,6 +105,7 @@ feature -- Query
 				variable_type_table_cache := variable_type_table_from_declaration (variables_str)
 			end
 			Result := variable_type_table_cache
+			update_summarization_availability (Result /= Void)
 		end
 
 	all_variable_name_type_in_string_table: HASH_TABLE [STRING, STRING]
@@ -142,7 +143,7 @@ feature -- Query
 				end
 			end
 			Result := all_variable_name_type_in_string_table_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	operand_position_name_table: HASH_TABLE[STRING, INTEGER]
@@ -169,7 +170,7 @@ feature -- Query
 				end
 			end
 			Result := operand_position_name_table_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	pre_state: EPA_STATE
@@ -181,7 +182,7 @@ feature -- Query
 				pre_state_cache := state_from_string (pre_state_str)
 			end
 			Result := pre_state_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	post_state: EPA_STATE
@@ -193,7 +194,7 @@ feature -- Query
 				post_state_cache := state_from_string (post_state_str)
 			end
 			Result := post_state_cache
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	target: ITP_VARIABLE
@@ -203,7 +204,7 @@ feature -- Query
 			summarization_available: is_summarization_available
 		do
 			Result := test_case.target
-			set_summarization_availability (Result /= Void)
+			update_summarization_availability (Result /= Void)
 		end
 
 	context: EPA_CONTEXT
@@ -217,7 +218,7 @@ feature -- Query
 
 feature -- Status report
 
-	is_summarization_available: BOOLEAN assign set_summarization_availability
+	is_summarization_available: BOOLEAN assign update_summarization_availability
 			-- Is summarization resolution successful so far?
 			-- After each lazy evaluation, this status can be set to 'False' if the information is not available.
 			-- And the this change is irreversible.
@@ -250,10 +251,18 @@ feature -- Status report
 
 feature -- Status set
 
-	set_summarization_availability (a_status: BOOLEAN)
-			-- Set `is_summarization_available' with 'a_status'.
+	reset_summarization_availability
+			-- Reset `is_summarization_available' to True.
 		do
-			is_summarization_available := a_status
+			is_summarization_available := True
+		end
+
+	update_summarization_availability (a_status: BOOLEAN)
+			-- Update `is_summarization_available' according to 'a_status'.
+			-- `is_summarization_available' is irreversible, meaning once it is set to False,
+			--		it would be False until next call to `reset_summarization_availability'.
+		do
+			is_summarization_available := is_summarization_available and then a_status
 		end
 
 feature{NONE} -- Implementation

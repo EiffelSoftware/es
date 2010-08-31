@@ -17,6 +17,8 @@ inherit
 
 	EPA_CFG_UTILITY
 
+	EPA_UTILITY
+
 	ETR_SHARED_TOOLS
 
 	ETR_SHARED_FACTORIES
@@ -30,44 +32,73 @@ feature -- Access
 
 feature -- Basic operations
 
-	build (a_context_class: CLASS_C; a_feature: FEATURE_I)
+	build_from_feature (a_context_class: CLASS_C; a_feature: FEATURE_I; a_next_block_number: INTEGER)
 			-- Build control flow graph for `a_feature' in context of `a_context_class',
 			-- make result available in `last_control_flow_graph'.
+			-- Number all the blocks starting from `a_next_block_number'.
+			-- In case `a_feature' does not have a routine body, `last_control_flow_graph' would be Void.
 		local
 			l_do_as: detachable DO_AS
-			l_compound: detachable EIFFEL_LIST [INSTRUCTION_AS]
 			l_class_context: ETR_CLASS_CONTEXT
 			l_context: ETR_FEATURE_CONTEXT
 			l_transformable: ETR_TRANSFORMABLE
-			l_start_node: EPA_AUXILARY_BLOCK
-			l_end_node: EPA_AUXILARY_BLOCK
+			l_ast: AST_EIFFEL
 		do
-			next_block_number := 1
+			reset
+
 			feature_ := a_feature
 			context_class := a_context_class
 			written_class := feature_.written_class
 
-			create last_control_flow_graph.make
-			create node_stack.make
-
-				-- Process only if `a_feature' has body.
-			if attached {BODY_AS} a_feature.body.body as l_body then
-				if attached {ROUTINE_AS} l_body.content as l_routine then
-					if attached {DO_AS} l_routine.routine_body as l_do then
-							-- Use Current visitor to iterate through the feature body,
-							-- and insert nodes and edges into `last_control_flow_graph'.
-						l_compound := l_do.compound
+			l_ast := feature_.e_feature.ast
+			l_ast := ast_in_context_class (l_ast, written_class, feature_, context_class)
+			if attached {FEATURE_AS} l_ast as l_feature_as then
+				if attached {BODY_AS} l_feature_as.body as l_body then
+					if attached {ROUTINE_AS} l_body.content as l_routine then
+						if attached {DO_AS} l_routine.routine_body as l_do then
+							if attached {EIFFEL_LIST [INSTRUCTION_AS]} l_do.compound as lt_comp then
+								build_from_compound (lt_comp, context_class, feature_, a_next_block_number)
+							end
+						end
 					end
 				end
 			end
 
-				-- Duplicate ASTs.
-			create l_class_context.make (a_context_class)
-			create l_context.make (a_feature, l_class_context)
-			create l_transformable.make (l_compound, l_context, True)
+--			-- Original implementation.
+--			process_feature_body (l_transformable.to_ast)
+--			check node_stack.count <= 1 end
+--			if node_stack.count = 1 then
+--				last_control_flow_graph.set_start_node (node_stack.item.start_node)
+--				last_control_flow_graph.set_end_node (node_stack.item.end_node)
+--			else
+--				l_start_node := new_auxilary_node
+--				last_control_flow_graph.extend_node (l_start_node)
+--				last_control_flow_graph.set_start_node (l_start_node)
+--				last_control_flow_graph.set_end_node (l_start_node)
+--			end
 
-				-- Visit duplicated AST to build up CFG.
-			process_feature_body (l_transformable.to_ast)
+--				-- Remove auxilary nodes when not needed.
+--			if not is_auxilary_nodes_created then
+--				remove_auxilary_nodes (last_control_flow_graph)
+--			end
+		end
+
+	build_from_compound (a_compound: EIFFEL_LIST [INSTRUCTION_AS]; a_class: CLASS_C; a_feature: FEATURE_I; a_next_block_number: INTEGER)
+			-- Build the control flow graph from `a_compound', as if `a_compound' appears in the context `a_class'.`a_feature'.
+			-- Number all the blocks starting from `a_next_block_number'.
+			-- `last_control_flow_graph' is always attached.
+		local
+			l_start_node: EPA_AUXILARY_BLOCK
+		do
+			create last_control_flow_graph.make
+			create node_stack.make
+
+			context_class := a_class
+			feature_ := a_feature
+			written_class := feature_.written_class
+			next_block_number := a_next_block_number
+
+			process_feature_body (a_compound)
 			check node_stack.count <= 1 end
 			if node_stack.count = 1 then
 				last_control_flow_graph.set_start_node (node_stack.item.start_node)
@@ -83,7 +114,31 @@ feature -- Basic operations
 			if not is_auxilary_nodes_created then
 				remove_auxilary_nodes (last_control_flow_graph)
 			end
+
 		end
+
+--	build_from_compound (a_compound: EIFFEL_LIST [INSTRUCTION_AS])
+--			-- Build control flow graph for a list of instructions.
+--		local
+--			l_start_node: EPA_AUXILARY_BLOCK
+--		do
+--			process_feature_body (a_compound)
+--			check node_stack.count <= 1 end
+--			if node_stack.count = 1 then
+--				last_control_flow_graph.set_start_node (node_stack.item.start_node)
+--				last_control_flow_graph.set_end_node (node_stack.item.end_node)
+--			else
+--				l_start_node := new_auxilary_node
+--				last_control_flow_graph.extend_node (l_start_node)
+--				last_control_flow_graph.set_start_node (l_start_node)
+--				last_control_flow_graph.set_end_node (l_start_node)
+--			end
+
+--				-- Remove auxilary nodes when not needed.
+--			if not is_auxilary_nodes_created then
+--				remove_auxilary_nodes (last_control_flow_graph)
+--			end
+--		end
 
 feature -- Status report
 
@@ -156,6 +211,9 @@ feature{NONE} -- Implementation/Visit
 		once
 			create Result.put (1)
 		end
+
+	next_block_number: INTEGER
+			-- Block number for the next created non-auxiliary block
 
 	node_stack: LINKED_STACK [TUPLE [start_node: EPA_BASIC_BLOCK; end_node: EPA_BASIC_BLOCK]]
 			-- Stack for start and end node of created branches.
@@ -284,6 +342,17 @@ feature{NONE} -- Implementation/Visit
 		end
 
 feature{NONE} -- Implementation/Visit
+
+	reset
+			-- Reset the internal state of CFG builder.
+		do
+			context_class := Void
+			written_class := Void
+			feature_ := Void
+			next_block_number := 1
+			last_control_flow_graph := Void
+			node_stack := Void
+		end
 
 	new_variant_node (a_variant: VARIANT_AS): EPA_INSTRUCTION_BLOCK
 			-- New block for loop variant `a_variant'
@@ -535,8 +604,5 @@ feature{NONE} -- Implementation/Visit
 				l_nodes.forth
 			end
 		end
-
-	next_block_number: INTEGER
-			-- Block number for the next created non-auxiliary block
 
 end

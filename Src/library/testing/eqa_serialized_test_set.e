@@ -13,6 +13,11 @@ inherit
 			default_create
 		end
 
+	EQA_TEST_EXECUTION_MODE
+		undefine
+			default_create
+		end
+
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 		undefine
 
@@ -125,6 +130,14 @@ feature -- Basic operation
 			is_post_state_information_enabled_set: is_post_state_information_enabled = b
 		end
 
+feature -- Status set
+
+	set_execution_mode (a_mode: INTEGER)
+			-- Set the execution mode of current test.
+		do
+			execution_mode := a_mode
+		end
+
 feature{NONE} -- Implementation
 
 	pre_variable_table_cache: detachable like pre_variable_table
@@ -142,54 +155,85 @@ feature -- Test case
 
 feature -- Test case information
 
+	Txt_tci_class_name: STRING = "tci_class_name"
 	tci_class_name: STRING
 			-- Name of current class
 		deferred
 		end
 
+	Txt_execution_mode: STRING = "execution_mode"
+	execution_mode: INTEGER assign set_execution_mode
+			-- Execution mode of the test.
+
+	Txt_tci_class_uuid: STRING = "tci_class_uuid"
+	tci_class_uuid: STRING
+			-- UUID of current test case.
+		deferred
+		end
+
+	Txt_tci_class_under_test: STRING = "tci_class_under_test"
 	tci_class_under_test: STRING
 			-- Name of the class under test.
 		deferred
 		end
 
+	Txt_tci_feature_under_test: STRING = "tci_feature_under_test"
 	tci_feature_under_test: STRING
 			-- Name of the feature under test.
 		deferred
 		end
 
+	Txt_tci_breakpoint_index: STRING = "tci_breakpoint_index"
+	tci_breakpoint_index: INTEGER
+			-- Index of the breakpoint where the test case fails inside `tci_class_under_test'.`tci_feature_under_test'.
+		deferred
+		end
+
+	Txt_tci_is_creation: STRING = "tci_is_creation"
 	tci_is_creation: BOOLEAN
 			-- Is the feature under test a creation feature?
 		deferred
 		end
 
+	Txt_tci_is_query: STRING = "tci_is_query"
 	tci_is_query: BOOLEAN
 			-- Is the feature under test a query?
 		deferred
 		end
 
+	Txt_tci_is_passing: STRING = "tci_is_passing"
 	tci_is_passing: BOOLEAN
 			-- Is the test case passing?
 		deferred
 		end
 
+	Txt_tci_exception_code: STRING = "tci_exception_code"
 	tci_exception_code: INTEGER
 			-- Exception code. 0 for passing test cases.
 		deferred
 		end
 
+	Txt_tci_assertion_tag: STRING = "tci_assertion_tag"
 	tci_assertion_tag: STRING
 			-- Tag of the violated assertion, if any.
 			-- Empty string for passing test cases.
 		deferred
 		end
 
+	Txt_tci_exception_recipient_class: STRING = "tci_exception_recipient_class"
+	tci_exception_recipient_class: STRING
+			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
+		deferred
+		end
+
+	Txt_tci_exception_recipient: STRING = "tci_exception_recipient"
 	tci_exception_recipient: STRING
 			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
 		deferred
 		end
 
-	tci_exception_recipient_class: STRING
-			-- Class of the recipient feature of the exception, same as `tci_class_under_test' in passing test cases.
+	Txt_tci_exception_trace: STRING = "tci_exception_trace"
+    tci_exception_trace: STRING
 		deferred
 		end
 
@@ -258,10 +302,6 @@ feature -- Test case information
 				end
 				i := i + 1
 			end
-		end
-
-    tci_exception_trace: STRING
-		deferred
 		end
 
 feature{NONE} -- Implementation

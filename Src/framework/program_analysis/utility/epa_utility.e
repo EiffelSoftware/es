@@ -115,6 +115,45 @@ feature -- AST
 			end
 		end
 
+	ast_in_context_class (a_ast: AST_EIFFEL; a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C): AST_EIFFEL
+           -- AST representing `a_ast', which comes from `a_written_feature' in `a_written_class'.
+           -- The resulting AST is viewed from `a_context_class' and with all renaming resolved.
+           -- `a_written_class' and `a_context_class' should be in the same inheritance hierarchy.
+       local
+           l_source_context: ETR_CONTEXT
+           l_target_context: ETR_CONTEXT
+           l_feat_context: ETR_FEATURE_CONTEXT
+           l_class_context: ETR_CLASS_CONTEXT
+           l_feat: FEATURE_I
+           l_transformable: ETR_TRANSFORMABLE
+       do
+           if a_written_class /= Void then
+                   -- Calculate source context.
+--               create l_class_context.make (a_written_class)
+--               create l_feat_context.make (a_written_feature, l_class_context)
+--               l_source_context := l_feat_context
+               l_source_context := context_from_class_feature (a_written_class, a_written_feature)
+
+                   -- Calculate target context.
+               l_feat := a_context_class.feature_of_rout_id_set (a_written_feature.rout_id_set)
+--               create l_class_context.make (a_context_class)
+--               create l_feat_context.make (l_feat, l_class_context)
+--               l_target_context := l_feat_context
+               l_target_context := context_from_class_feature (a_context_class, l_feat)
+           else
+                   -- Calculate source context.
+               create l_class_context.make (a_written_class)
+               l_source_context := l_class_context
+
+                   -- Calculate target context.
+               create l_class_context.make (a_context_class)
+               l_target_context := l_class_context
+           end
+
+           create l_transformable.make (a_ast, l_source_context, True)
+           Result := l_transformable.as_in_other_context (l_target_context).to_ast
+       end
+
 	context_from_class_feature (a_class: CLASS_C; a_feature: detachable FEATURE_I): ETR_CONTEXT
 			-- Context from `a_class' and possibly `a_feature'
 		do

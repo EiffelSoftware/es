@@ -41,11 +41,14 @@ feature -- Basic operations
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 			l_fix_strategy: AP_STRING_OPTION
+			l_monitor_strategy: AP_STRING_OPTION
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
 			l_build_tc_option: AP_STRING_OPTION
 			l_analyze_tc_option: AP_FLAG
+			l_integral_combination_option: AP_STRING_OPTION
+			l_combination_strategy: STRING
 			l_max_test_case_no_option: AP_INTEGER_OPTION
 			l_arff_option: AP_FLAG
 			l_daikon_option: AP_FLAG
@@ -68,6 +71,10 @@ feature -- Basic operations
 			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model and random.")
 			l_parser.options.force_last (l_fix_strategy)
 
+			create l_monitor_strategy.make_with_long_form ("monitoring")
+			l_monitor_strategy.set_description ("Choose the strategy for monitoring expressions. Can be %"breakpointwise%" or %"featurewise%".")
+			l_parser.options.force_last (l_monitor_strategy)
+
 			create l_retrieve_state_option.make ('s', "retrieve-state")
 			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
 			l_parser.options.force_last (l_retrieve_state_option)
@@ -83,6 +90,10 @@ feature -- Basic operations
 			create l_build_tc_option.make_with_long_form ("build-tc")
 			l_build_tc_option.set_description ("Build current project to contain test cases storing in the folder specified by the parameter.")
 			l_parser.options.force_last (l_build_tc_option)
+
+			create l_integral_combination_option.make_with_long_form ("integral-combination")
+			l_integral_combination_option.set_description ("Strategy for combining integral expressions into the ones to be monitored. It can be either %"breakpoint%" or %"feature%".")
+			l_parser.options.force_last (l_integral_combination_option)
 
 			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
 			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
@@ -176,6 +187,32 @@ feature -- Basic operations
 					else
 						-- Use the default strategy: model
 					end
+				end
+			end
+
+			if l_monitor_strategy.was_found then
+				if attached l_monitor_strategy.parameter as lt_monitoring then
+					lt_monitoring.to_lower
+					if lt_monitoring ~ "breakpointwise" then
+						config.set_is_monitoring_breakpointwise (True)
+					elseif lt_monitoring ~ "featurewise" then
+						config.set_is_monitoring_featurewise (True)
+					else
+						-- Use the default strategy: featurewise
+					end
+				end
+			end
+
+			if l_integral_combination_option.was_found then
+				l_combination_strategy := l_integral_combination_option.parameter
+				if l_combination_strategy.is_case_insensitive_equal (once "breakpoint") then
+					config.set_is_combining_integral_expressions_in_breakpoint (True)
+				elseif l_combination_strategy.is_case_insensitive_equal (once "feature") then
+					config.set_is_combining_integral_expressions_in_feature (True)
+				else
+					-- Ignoring the parameter.
+					-- Use the default strategy: "breakpoint"
+					config.set_is_combining_integral_expressions_in_breakpoint (True)
 				end
 			end
 

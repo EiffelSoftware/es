@@ -21,7 +21,7 @@ feature -- Access
 feature -- Status report
 
 	is_successful: BOOLEAN
-			-- Is last writting successful?
+			-- Is last writting successful so far?
 
 feature -- Operation
 
@@ -32,11 +32,10 @@ feature -- Operation
 			directory_exists: True -- the directory exists.
 		local
 			l_retried: BOOLEAN
-			l_name: STRING
-			l_dir: DIRECTORY
-			l_file_name: FILE_NAME
-			l_file: KL_TEXT_OUTPUT_FILE
 			l_class_content: STRING
+			l_file_name: STRING
+			l_dir: DIRECTORY
+			l_file: KL_TEXT_OUTPUT_FILE
 			l_length: INTEGER
 		do
 			if not l_retried then
@@ -44,27 +43,33 @@ feature -- Operation
 
 				l_class_content := tc_class_content
 
-				if not l_class_content.is_empty then
-					-- Prepare test case directory.
+				if is_successful then
 					prepare_directory (a_dir_name)
-					-- Create test case file.
-					l_name := tc_class_full_path (a_dir_name)
+					l_file_name := tc_class_full_path (a_dir_name)
 
---io.put_string ("Writing to file: ")
---io.put_string (l_name)
---io.put_string ("...")
+debug ("autoTest")
+	io.put_string ("Writing to file: ")
+	io.put_string (l_file_name)
+	io.put_string ("...")
+end
 
-					create l_file.make (l_name)
-					-- Write test case.
+					create l_file.make (l_file_name)
 					l_file.recursive_open_write
 					if not l_file.is_open_write then
 						is_successful := False
---io.put_string ("Failed.%N")
 					else
 						l_file.put_string (l_class_content)
 						l_file.close
---io.put_string ("Done.%N")
 					end
+
+debug ("autoTest")
+	if is_successful then
+		io.put_string ("Done.%N")
+	else
+		io.put_string ("Failed.%N")
+	end
+end
+
 				end
 			end
 		rescue
@@ -175,7 +180,7 @@ feature{NONE} -- Construction
 
     tc_assertion_tag: STRING
 			-- Tag of the violated assertion, if any.
-			-- Empty string for passing test cases.
+			-- Set to constant string "noname" for passing test cases or assertions without tag.
         deferred
         end
 
@@ -414,7 +419,7 @@ feature -- Test case information
 			-- Exception code. 0 for passing test cases.
 	
 	tci_breakpoint_index: INTEGER = $(BREAKPOINT_INDEX)
-			-- Index of the breakpoint where the test case fails inside `tci_class_under_test'.`tci_feature_under_test'.
+			-- Breakpoint index where the test case fails.
 			
 	tci_assertion_tag: STRING do Result := "$(ASSERTION_TAG)" end
 			-- Tag of the violated assertion, if any.
@@ -426,11 +431,14 @@ feature -- Test case information
 	tci_exception_recipient: STRING do Result := "$(EXCEPTION_RECIPIENT)" end
 			-- Feature of the exception recipient, same as `tci_feature_under_test' in passing test cases.
 	
-    tci_exception_trace: STRING =
+    tci_exception_trace: STRING
 			-- Exception trace.
+		do
+			Result := 
 --<exception_trace>
 $(TRACE)
 --</exception_trace>
+		end
 
 	tci_argument_count: INTEGER = $(ARGUMENT_COUNT)
 			-- Number of arguments of the feature under test.

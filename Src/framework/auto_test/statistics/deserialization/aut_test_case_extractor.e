@@ -90,12 +90,6 @@ feature{NONE} -- Implementation
 			current_data := a_data
 			write_to (test_case_dir)
 
---			-- For testing
---			l_file_name := tc_class_full_path (test_case_dir)
---			create l_loader.make(error_handler)
---			l_loader.load_transition (l_file_name)
---			l_transition := l_loader.last_transition
-
 			current_data := Void
 		end
 
@@ -119,8 +113,9 @@ feature{NONE} -- Implementation
 			create l_file_name.make_from_string (a_dir_name)
 			l_file_name.set_subdirectory (tc_class_under_test)
 			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
-			-- Make sure the length of file name does not exceed 255.
-			l_length := 255 - l_file_name.string.count - 2
+
+			-- Make sure the length of file name does not exceed 255 characters.
+			l_length := 255 - l_file_name.string.count - 3
 			truncate_class_name (l_length)
 			l_file_name.set_file_name (tc_class_name)
 			l_file_name.add_extension (tc_name_extension)
@@ -132,14 +127,12 @@ feature{NONE} -- Class content
 
 	tc_class_content: STRING
 			-- <Precursor>
-			-- Return empty string if there was error during the extraction.
+			-- Set `is_successful' if there was error during the extraction.
 		local
 			l_content: STRING
 		do
 			l_content := Precursor
-			if not current_data.is_summarization_available then
-				l_content := ""
-			end
+			is_successful := is_successful and then current_data.is_summarization_available
 			Result := l_content
 		end
 
@@ -738,11 +731,14 @@ feature{NONE} -- Cache
 			tc_class_name_cache := Void
 			tc_uuid_cache := Void
 
-			-- test case information.
+			-- Exception information.
 			is_exception_information_resolved := False
-			tc_assertion_tag_cache := Void
-			tc_exception_recipient_cache := Void
-			tc_exception_recipient_class_cache := Void
+			tc_exception_code_cache := 0
+			tc_breakpoint_index_cache := 0
+			tc_assertion_tag_cache := "noname"
+			tc_exception_recipient_cache := ""
+			tc_exception_recipient_class_cache := ""
+
 			tc_operand_table_initializer_cache := Void
 			tc_code_cache := Void
 			tc_variables_decleration_cache := Void
@@ -763,32 +759,6 @@ feature{NONE} -- Auxiliary features
 			if l_name.count > a_length then
 				error_handler.report_warning_message ("Class name truncated: " + l_name)
 				tc_class_name_cache := l_name.substring (1, a_length)
-			end
-		end
-
-	string_to_identifier (a_str: STRING): STRING
-			-- Get an identifier out of 'a_str' by removing all the invalid characters.
-		local
-			l_is_start: BOOLEAN
-			l_char: CHARACTER
-			l_index: INTEGER
-		do
-			l_is_start := True
-			from
-				create Result.make (a_str.count)
-				l_index := 1
-			until
-				l_index > a_str.count
-			loop
-				l_char := a_str[l_index]
-				if (l_is_start and then l_char.is_alpha)
-						or else (not l_is_start and then (l_char.is_alpha_numeric or else l_char = '_')) then
-					Result.append_character (l_char)
-					if l_is_start then
-						l_is_start := False
-					end
-				end
-				l_index := l_index + 1
 			end
 		end
 
@@ -935,93 +905,33 @@ feature{NONE} -- Auxiliary features
 			exception_information_not_resolved: not is_exception_information_resolved
 		local
 			l_trace: STRING
-			l_lines: LIST[STRING]
-			l_exception_code: STRING
-			l_recipient_class, l_recipient_feature: STRING
-			l_assertion_tag, l_assertion_tag_new: STRING
-			l_start, l_end: INTEGER
-			l_str: STRING
-			l_done: BOOLEAN
-			l_analyzer: EPA_EXCEPTION_TRACE_ANALYZER
-			l_frames: DS_LINEAR [EPA_EXCEPTION_CALL_STACK_FRAME_I]
-			l_frame: EPA_EXCEPTION_CALL_STACK_FRAME_I
+			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
+			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
 		do
-			is_exception_information_resolved := False
 			l_trace := current_data.trace_str
-			if l_trace.is_empty then
-				tc_exception_code_cache := 0
-				tc_breakpoint_index_cache := 0
-				tc_exception_recipient_cache := tc_feature_under_test
-				tc_exception_recipient_class_cache := tc_class_under_test
-				tc_assertion_tag_cache := "noname"
-			else
-				l_trace.prune_all_leading ('%N')
-				l_trace.prune_all_trailing ('%N')
-				l_lines := l_trace.split ('%N')
-
-				-- Exception code.
-				l_exception_code := l_lines[1]
-				l_exception_code.prune_all_leading ('-')
-				check valid_exception_code: l_exception_code.is_integer end
-				tc_exception_code_cache := l_exception_code.to_integer_32
-
-				-- Recipient feature
-				l_recipient_feature := l_lines[2]
-				l_recipient_feature.prune_all_leading ('-')
-				tc_exception_recipient_cache := l_recipient_feature
-
-				-- Recipient class
-				l_recipient_class := l_lines[3]
-				l_recipient_class.prune_all_leading ('-')
-				tc_exception_recipient_class_cache := l_recipient_class
-
-				-- Assertion tag
-				l_assertion_tag := l_lines[4]
-				l_assertion_tag.prune_all_leading ('-')
-				if l_assertion_tag.is_empty then
-					tc_assertion_tag_cache := "noname"
+			if not l_trace.is_empty then
+				create l_explainer
+				l_explainer.explain (l_trace)
+				if l_explainer.was_successful and then l_explainer.last_explanation.is_exception_supported then
+					l_summary := l_explainer.last_explanation
+					tc_exception_code_cache := l_summary.exception_code
+					tc_exception_recipient_class_cache := l_summary.recipient_context_class_name.twin
+					tc_exception_recipient_cache := l_summary.recipient_feature_name.twin
+					tc_assertion_tag_cache := l_summary.failing_assertion_tag.twin
+					tc_breakpoint_index_cache := l_summary.failing_position_breakpoint_index
 				else
-					l_assertion_tag_new := string_to_identifier (l_assertion_tag)
-
-					if l_assertion_tag /~ l_assertion_tag_new then
-						-- There are situations where assertion tags are not identifiers, e.g. in developer raised exceptions.
-						-- Such tags do not correspond to any program element, and they are not retained in the deserialized test cases.
-						error_handler.report_error_message ("Unexpected character(s) in the failing assertion tag: " + l_assertion_tag)
-						tc_assertion_tag_cache := once "noname"
-					else
-						tc_assertion_tag_cache := l_assertion_tag_new
-					end
+					is_successful := False
 				end
-
-				-- Breakpoint index
-				l_start := l_trace.substring_index ("----", 1)
-				l_trace := l_trace.substring (l_start, l_trace.count)
-				create l_analyzer
-				l_analyzer.analyse (l_trace)
-				from
-					l_frames := l_analyzer.last_relevant_exception_frames
-					l_frames.start
-				until
-					l_frames.after or else l_done
-				loop
-					l_frame := l_frames.item_for_iteration
-					if l_frame /= Void and then l_recipient_class ~ l_frame.origin_class_name and then l_recipient_feature ~ l_frame.feature_name then
-						tc_breakpoint_index_cache := l_frame.breakpoint_slot_index
-						l_done := True
-					end
-					l_frames.forth
-				end
-				check tc_breakpoint_index_attached: tc_breakpoint_index /= Void end
-
-				is_exception_information_resolved := True
 			end
+
+			is_exception_information_resolved := True
 		ensure
-			test_case_information_attached:
-				tc_assertion_tag_cache /= Void
+			exception_information_resolved: is_exception_information_resolved
 		end
 
 	update_uuid
-			-- Ask `uuid_generator' to provide a new uuid string.
+			-- Get a new uuid string from `uuid_generator', and reset the class name.
+			-- The new uuid is available in `tc_uuid'.
 		do
 			tc_uuid_cache := uuid_generator.generate_uuid.out
 			tc_uuid_cache.prune_all ('-')

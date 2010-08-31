@@ -8,6 +8,11 @@ deferred class
 	EPA_BASIC_BLOCK
 
 inherit
+	DEBUG_OUTPUT
+		redefine
+			is_equal
+		end
+
 	HASHABLE
 		redefine
 			is_equal
@@ -42,6 +47,15 @@ feature -- Access
 			-- Note: Can be empty, for example, for a fake node added for ease of analysis.
 		deferred
 		end
+
+feature -- Debug output
+
+	debug_output: STRING
+			-- <Precursor>
+		do
+			Result := ""
+		end
+
 
 feature -- Status report
 
