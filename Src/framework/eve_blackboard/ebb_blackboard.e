@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			create {EBB_IDLE_CONTROL} control.make
 			create {LINKED_LIST [EBB_TOOL]} tools.make
 			create {LINKED_LIST [EBB_FEATURE_VERIFICATION_RESULT]} verification_results.make
+			create executions.make
 
 			initialize
 
@@ -41,13 +42,16 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	data: EBB_SYSTEM_DATA
-			-- Blackboard data for system.
-
-	control: EBB_CONTROL
-			-- Blackboard control.
+			-- <Precursor>
 
 	tools: LIST [EBB_TOOL]
-			-- Available tools for blackboard.
+			-- <Precursor>
+
+	control: EBB_CONTROL
+			-- <Precursor>
+
+	executions: EBB_EXECUTIONS
+			-- <Precursor>
 
 feature -- Status report
 
@@ -115,7 +119,7 @@ feature -- Basic operations
 			-- Handle that `a_class' was added.
 		do
 			data.add_class (a_class)
-			control.handle_changed_class (a_class)
+			executions.handle_changed_class (a_class)
 			data_changed_event.publish ([])
 		end
 
@@ -123,7 +127,7 @@ feature -- Basic operations
 			-- Handle that `a_class' was removed.
 		do
 			data.remove_class (a_class)
-			control.handle_changed_class (a_class)
+			executions.handle_changed_class (a_class)
 			data_changed_event.publish ([])
 		end
 
@@ -138,7 +142,7 @@ feature -- Basic operations
 					data.add_feature (a_feature)
 				end
 			end
-			control.handle_changed_class (a_feature.written_class.original_class)
+			executions.handle_changed_class (a_feature.written_class.original_class)
 			data_changed_event.publish ([])
 		end
 
@@ -148,7 +152,7 @@ feature -- Basic operations
 			if data.has_feature (a_feature) then
 				data.remove_feature (a_feature)
 			end
-			control.handle_changed_class (a_feature.written_class.original_class)
+			executions.handle_changed_class (a_feature.written_class.original_class)
 			data_changed_event.publish ([])
 		end
 

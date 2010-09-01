@@ -25,12 +25,4 @@ feature -- Basic operations
 		do
 		end
 
-	start_waiting_tool_executions
-			-- <Precursor>
-		do
-			if running_executions.is_empty and not waiting_executions.is_empty then
-				start_tool_execution (waiting_executions.first)
-			end
-		end
-
 end

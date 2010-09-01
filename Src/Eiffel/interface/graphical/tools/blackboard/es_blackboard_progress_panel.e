@@ -61,9 +61,9 @@ feature -- Basic operations
 			-- Update display of the data.
 		do
 			grid.remove_and_clear_all_rows
-			add_tool_executions (blackboard.control.running_executions)
-			add_tool_executions (blackboard.control.waiting_executions)
-			add_tool_executions (blackboard.control.finished_executions)
+			add_tool_executions (blackboard.executions.running_executions)
+			add_tool_executions (blackboard.executions.waiting_executions)
+			add_tool_executions (blackboard.executions.finished_executions)
 		end
 
 feature {NONE} -- Implementation

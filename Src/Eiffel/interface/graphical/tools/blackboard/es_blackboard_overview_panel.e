@@ -1,77 +1,62 @@
 note
-	description: "Instance of AutoTest"
+	description: "Summary description for {ES_BLACKBOARD_SYSTEM_PANEL}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EBB_AUTOTEST_INSTANCE
-
-inherit
-
-	EBB_TOOL_INSTANCE
-
-	SHARED_TEST_SERVICE
-		export {NONE} all end
-
+	ES_BLACKBOARD_OVERVIEW_PANEL
+	
 create
 	make
 
-feature -- Status report
+feature {NONE} -- Initialization
 
-	is_running: BOOLEAN
-			-- <Precursor>
+	make
+			-- Initialize panel.
 		do
-			if attached test_generator then
-				Result := test_generator.has_next_step
+			create grid
+
+			grid_token_support.synchronize_color_or_font_change_with_editor
+			grid_token_support.enable_grid_item_pnd_support
+			grid_token_support.enable_ctrl_right_click_to_open_new_window
+--			grid_token_support.set_context_menu_factory_function (agent (develop_window.menus).context_menu_factory)
+		end
+
+feature -- Access
+
+	grid: ES_GRID
+			-- Grid to display system data.
+
+feature {NONE} -- Helpers
+
+	token_generator: EB_EDITOR_TOKEN_GENERATOR
+			-- An editor token generator for generating editor token on grid items
+		once
+			Result := (create {EB_SHARED_WRITER}).token_writer
+		end
+
+	frozen grid_token_support: EB_EDITOR_TOKEN_GRID_SUPPORT
+			-- Support for using `grid_events' with editor token-based items
+		do
+			Result := internal_grid_token_support
+			if Result = Void then
+				create Result.make_with_grid (grid)
+				internal_grid_token_support := Result
+--				auto_recycle (internal_grid_token_support)
 			end
+		ensure
+			result_attached: Result /= Void
+			result_consistent: Result = grid_token_support
 		end
 
-feature -- Basic operations
+feature {NONE} -- Implementation: Internal cache
 
-	start
-			-- <Precursor>
-		local
-			l_session: SERVICE_CONSUMER [SESSION_MANAGER_S]
-			l_test_suite: TEST_SUITE_S
-			l_log_options: HASH_TABLE [BOOLEAN, STRING]
-		do
-			create test_generator.make (test_suite.service, etest_suite)
-			test_generator.add_class_name (input.classes.first.name_in_upper)
-			test_generator.set_is_random_testing_enabled (True)
-			test_generator.set_is_slicing_enabled (True)
+	internal_grid_token_support: like grid_token_support
+			-- Cached version of `grid_token_support'
+			-- Note: Do not use directly!
 
-			create l_log_options.make (10)
-			l_log_options.put (True, "failing")
-			test_generator.set_proxy_log_options (l_log_options)
-			test_generator.set_html_statistics (True)
-
-
-
-			create l_session
-			l_session.service.retrieve (True).set_value (input.classes.first.name, {TEST_SESSION_CONSTANTS}.types)
-			launch_test_generation (test_generator, l_session.service, False)
-
-			if test_suite.is_service_available then
-				l_test_suite := test_suite.service
-				if l_test_suite.is_interface_usable then
-					l_test_suite.launch_session (test_generator)
-				end
-			end
-
-		end
-
-	cancel
-			-- <Precursor>
-		do
-			test_generator.cancel
-		end
-
-feature {NONE} -- Implementation
-
-	test_generator: EBB_TEST_GENERATOR
-
-invariant
-note
+;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

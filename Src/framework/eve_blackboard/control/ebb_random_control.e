@@ -38,8 +38,8 @@ feature -- Basic operations
 				--  - no compilation is running
 				--  - there is a tool
 			if
-				running_executions.is_empty and
-				waiting_executions.is_empty and
+				blackboard.executions.running_executions.is_empty and
+				blackboard.executions.waiting_executions.is_empty and
 				not eiffel_project.is_compiling and
 				not blackboard.tools.is_empty and
 				not blackboard.data.classes.is_empty
@@ -65,15 +65,7 @@ feature -- Basic operations
 
 					-- Add tool execution to waiting list
 				create l_execution.make (l_tool, l_configuration, l_input)
-				waiting_executions.extend (l_execution)
-			end
-		end
-
-	start_waiting_tool_executions
-			-- Start waiting tool executions.
-		do
-			if running_executions.is_empty and not waiting_executions.is_empty then
-				start_tool_execution (waiting_executions.first)
+				blackboard.executions.queue_tool_execution (l_execution)
 			end
 		end
 

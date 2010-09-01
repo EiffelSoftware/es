@@ -42,8 +42,8 @@ feature {NONE} -- Implementation
 			create l_ee
 
 				-- 1. Delivery of installation
-			if l_ise_eiffel /= Void then
 			l_ise_eiffel := l_ee.get ("ISE_EIFFEL")
+			if l_ise_eiffel /= Void then
 				l_possible_paths.extend (l_ise_eiffel + "studio/tools/boogie/bin/Boogie.exe")
 			end
 

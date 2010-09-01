@@ -1,76 +1,64 @@
 note
-	description: "Instance of AutoTest"
+	description: "Summary description for {EBB_TEST_GENERATOR}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EBB_AUTOTEST_INSTANCE
+	EBB_TEST_GENERATOR
 
 inherit
 
-	EBB_TOOL_INSTANCE
+	TEST_GENERATOR
+		redefine
+			print_test_set
+		end
 
-	SHARED_TEST_SERVICE
-		export {NONE} all end
+	EBB_SHARED_BLACKBOARD
 
 create
 	make
 
-feature -- Status report
-
-	is_running: BOOLEAN
-			-- <Precursor>
-		do
-			if attached test_generator then
-				Result := test_generator.has_next_step
-			end
-		end
-
 feature -- Basic operations
 
-	start
-			-- <Precursor>
+	print_test_set (a_list: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT])
+			-- Print test case results as test.
+			--
+			-- `a_list': List of test case results to be printed to a test set.
 		local
-			l_session: SERVICE_CONSUMER [SESSION_MANAGER_S]
-			l_test_suite: TEST_SUITE_S
-			l_log_options: HASH_TABLE [BOOLEAN, STRING]
+			l_result: AUT_TEST_CASE_RESULT
+			l_verification_result: EBB_FEATURE_VERIFICATION_RESULT
 		do
-			create test_generator.make (test_suite.service, etest_suite)
-			test_generator.add_class_name (input.classes.first.name_in_upper)
-			test_generator.set_is_random_testing_enabled (True)
-			test_generator.set_is_slicing_enabled (True)
+			current_results := a_list
 
-			create l_log_options.make (10)
-			l_log_options.put (True, "failing")
-			test_generator.set_proxy_log_options (l_log_options)
-			test_generator.set_html_statistics (True)
+			from
+				current_results.start
+			until
+				current_results.after
+			loop
+				l_result := current_results.item_for_iteration
 
+				if l_result.is_fail then
+					create l_verification_result.make (l_result.feature_)
 
+					l_verification_result.set_time (create {DATE_TIME}.make_now)
+					l_verification_result.set_tool (blackboard.tools.i_th (2))
+					l_verification_result.is_postcondition_proven.set_proven_to_fail
+					l_verification_result.is_postcondition_proven.set_update
+					l_verification_result.is_class_invariant_proven.set_proven_to_fail
+					l_verification_result.is_class_invariant_proven.set_update
 
-			create l_session
-			l_session.service.retrieve (True).set_value (input.classes.first.name, {TEST_SESSION_CONSTANTS}.types)
-			launch_test_generation (test_generator, l_session.service, False)
-
-			if test_suite.is_service_available then
-				l_test_suite := test_suite.service
-				if l_test_suite.is_interface_usable then
-					l_test_suite.launch_session (test_generator)
+					blackboard.add_verification_result (l_verification_result)
 				end
+
+				current_results.forth
 			end
 
+				-- TODO: add results to blackboard
+
+			current_results := Void
 		end
 
-	cancel
-			-- <Precursor>
-		do
-			test_generator.cancel
-		end
-
-feature {NONE} -- Implementation
-
-	test_generator: EBB_TEST_GENERATOR
-
-invariant
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

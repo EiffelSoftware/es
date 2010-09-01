@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialize empty system panel.
 		local
 			l_col: EV_GRID_COLUMN
+			l_pnd: EVS_GRID_PND_SUPPORT
 		do
 			default_create
 
@@ -50,6 +51,9 @@ feature {NONE} -- Initialization
 			l_col := column (last_result_column)
 			l_col.set_width (100)
 			l_col.set_title ("Last result")
+
+			create l_pnd.make_with_grid (Current)
+			l_pnd.enable_grid_item_pnd_support
 		end
 
 feature -- Initialization
@@ -218,8 +222,6 @@ feature {NON} -- Implementation
 			a_row.set_item (correctness_column, create {EV_GRID_TEXT_ITEM}.make_with_text ("-"))
 		end
 
-
-
 	apply_color (a_row: EV_GRID_ROW; a_item: EBB_DATA_ELEMENT)
 			-- Set color of `a_row' according to information of `a_item'.
 		do
@@ -233,17 +235,11 @@ feature {NON} -- Implementation
 		end
 
 	color_for_correctness (a_value: REAL): EV_COLOR
-		local
-			l_hue, l_saturation, l_value, m, n, f: REAL
-			i: INTEGER
 		do
 			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.4, 1.0)
 		end
 
 	color_for_stale_correctness (a_value: REAL): EV_COLOR
-		local
-			l_hue, l_saturation, l_value, m, n, f: REAL
-			i: INTEGER
 		do
 			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.4, 0.5)
 		end

@@ -10,6 +10,12 @@ inherit
 
 	SERVICE_I
 
+	ROTA_TIMED_TASK_I
+		rename
+			has_next_step as is_running,
+			cancel as stop
+		end
+
 feature {NONE} -- Initalization
 
 	initialize
@@ -29,7 +35,9 @@ feature {NONE} -- Initalization
 
 			create l_shared_project
 			l_shared_project.eiffel_project.manager.load_agents.extend (agent data.update_from_universe)
-			l_shared_project.eiffel_project.manager.load_agents.extend (agent data_initialized_event.publish ([]))
+			l_shared_project.eiffel_project.manager.load_agents.extend (agent set_initialized)
+
+			sleep_time := 500
 		end
 
 feature -- Access
@@ -39,25 +47,28 @@ feature -- Access
 		deferred
 		end
 
-	control: attached EBB_CONTROL
-			-- Blackboard control.
-		deferred
-		end
-
 	tools: attached LIST [attached EBB_TOOL]
 			-- Available tools for blackboard.
 		deferred
 		end
 
+	control: attached EBB_CONTROL
+			-- Blackboard control.
+		deferred
+		end
+
+	executions: attached EBB_EXECUTIONS
+			-- Tool executions working on blackboard data.
+		deferred
+		end
+
 feature -- Status report
+
+	is_initialized: BOOLEAN
+			-- Is blackboard initialized?
 
 	is_running: BOOLEAN
 			-- Is blackboard service running?
-		require
-			usable: is_interface_usable
-		do
-			Result := control.is_running
-		end
 
 feature -- Status setting
 
@@ -66,11 +77,12 @@ feature -- Status setting
 		require
 			usable: is_interface_usable
 		do
+			is_running := True
 			if attached rota as l_rota then
-				control.start
-				if not rota.has_task (control) then
-					rota.run_task (control)
+				if not rota.has_task (Current) then
+					rota.run_task (Current)
 				end
+
 				blackboard_started_event.publish ([])
 			end
 		ensure
@@ -79,13 +91,21 @@ feature -- Status setting
 
 	stop
 			-- Stop blackboard service.
-		require
-			usable: is_interface_usable
 		do
-			control.cancel
+			is_running := False
+
 			blackboard_stopped_event.publish ([])
+		end
+
+	set_initialized
+			-- Set blackboard to be initialized.
+		require
+			not_initialized: not is_initialized
+		do
+			is_initialized := True
+			data_initialized_event.publish ([])
 		ensure
-			not_running: not is_running
+			initialized: is_initialized
 		end
 
 feature -- Basic operations
@@ -135,6 +155,17 @@ feature -- Events
 		end
 
 feature {NONE} -- Implementation
+
+	sleep_time: NATURAL
+			-- <Precursor>
+
+	step
+			-- <Precursor>
+		do
+			executions.check_running_tool_executions
+			control.create_new_tool_executions
+			executions.start_waiting_tool_executions
+		end
 
 	frozen rota: detachable ROTA_S
 			-- Access to rota service

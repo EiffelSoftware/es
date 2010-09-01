@@ -44,10 +44,15 @@ feature {NONE} -- Initialization
 			propagate_drop_actions (Void)
 
 				-- Register events
-			blackboard.data_initialized_event.subscribe (agent overview_panel.initialize_from_blackboard)
+			if blackboard.is_initialized then
+				system_grid.initialize_from_blackboard
+			else
+				blackboard.data_initialized_event.subscribe (agent system_grid.initialize_from_blackboard)
+			end
+
 -- For the moment always recreate display
 --			blackboard.data_changed_event.subscribe (agent overview_panel.update_display)
-			blackboard.data_changed_event.subscribe (agent overview_panel.initialize_from_blackboard)
+			blackboard.data_changed_event.subscribe (agent system_grid.initialize_from_blackboard)
 			blackboard.tool_execution_changed_event.subscribe (agent progress_panel.update_display)
 		end
 
@@ -67,16 +72,16 @@ feature {NONE} -- Initialization
 	build_tool_interface (root_widget: EV_NOTEBOOK)
 			-- <Precursor>
 		do
-			create overview_panel.make
+			create system_grid.make
 			create progress_panel.make
 			create configuration_panel.make
 
-			user_widget.extend (overview_panel)
+			user_widget.extend (system_grid)
 			user_widget.extend (progress_panel.grid)
 			user_widget.extend (configuration_panel.panel)
 
-			user_widget.item_tab (overview_panel).set_text ("Overview")
-			user_widget.item_tab (overview_panel).set_pixmap (stock_pixmaps.general_information_icon)
+			user_widget.item_tab (system_grid).set_text ("Overview")
+			user_widget.item_tab (system_grid).set_pixmap (stock_pixmaps.general_information_icon)
 
 			user_widget.item_tab (progress_panel.grid).set_text ("Progress")
 			user_widget.item_tab (progress_panel.grid).set_pixmap (stock_pixmaps.debug_run_icon)
@@ -87,7 +92,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	overview_panel: ES_BLACKBOARD_SYSTEM_GRID
+	system_grid: ES_BLACKBOARD_SYSTEM_GRID
+			-- Panel for system overview.
+
+	overview_panel: ES_BLACKBOARD_OVERVIEW_PANEL
 			-- Panel for system overview.
 
 	progress_panel: ES_BLACKBOARD_PROGRESS_PANEL
