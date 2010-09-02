@@ -125,6 +125,13 @@ feature {EB_WIZARD_STATE_WINDOW} -- Basic Operations
 			is_final := False
 		end
 
+	set_initial_state
+			-- Current state is initial.
+			-- Use when go back from error state to change button's caption from "Abort" to "Next"
+		do
+			next_b.set_text(interface_names.b_next)
+		end
+
 	disable_next_button
 			-- Disable the Next/Finish button
 		do

@@ -369,15 +369,55 @@ feature {NONE} -- Conversion
 			result_positive: Result > 0
 		end
 
+
+-- SCOOP REPLAY
+
 	feature_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING
 			-- What's the name of `a_feature`?
+			-- Try to retrieve feature name.
+			-- Use id as name, if fail.
 		require
 			feature_not_void: a_feature /= Void
+		local
+			l_class : SCOOP_PROFILER_CLASS_INFORMATION
+			l_feature : SCOOP_PROFILER_FEATURE_INFORMATION
 		do
-			Result := information.classes.item (class_id_of (a_feature)).features.item (feature_id_of (a_feature)).name
+			l_class := information.classes.item (class_id_of (a_feature))
+			if l_class /= Void then
+				l_feature := l_class.features.item (feature_id_of (a_feature))
+				if l_feature /= Void then
+					Result := l_feature.name
+				else
+					Result := {SCOOP_LIBRARY_CONSTANTS}.default_feature_name + a_feature.feature_id.out
+				end
+			else
+				Result := {SCOOP_LIBRARY_CONSTANTS}.default_feature_name + a_feature.feature_id.out
+			end
 		ensure
 			result_valid: Result /= Void and then not Result.is_empty
 		end
+
+	class_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING
+			-- What's the class name of `a_object`?
+			-- Try to retrieve class name.
+			-- Use id as name, if fail.
+		require
+			feature_not_void: a_feature /= Void
+		local
+			l_res : SCOOP_PROFILER_CLASS_INFORMATION
+		do
+			l_res := information.classes.item ( class_id_of (a_feature))
+			if l_res /= Void then
+				Result := l_res.name
+			else
+				Result := {SCOOP_LIBRARY_CONSTANTS}.default_class_name + a_feature.class_id.out
+			end
+		ensure
+			result_valid: Result /= Void and then not Result.is_empty
+		end
+
+--	SCOOP REPLAY end
+
 
 	feature_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER
 			-- What's the id of `a_feature`?
@@ -389,15 +429,6 @@ feature {NONE} -- Conversion
 			result_positive: Result > 0
 		end
 
-	class_name_of (a_feature: ROUTINE [ANY, TUPLE]): STRING
-			-- What's the class name of `a_object`?
-		require
-			feature_not_void: a_feature /= Void
-		do
-			Result := information.classes.item (dynamic_class_id_of (a_feature)).name
-		ensure
-			result_valid: Result /= Void and then not Result.is_empty
-		end
 
 	dynamic_class_id_of (a_feature: ROUTINE [ANY, TUPLE]): INTEGER
 			-- What's the dynamic class id of `a_feature`?

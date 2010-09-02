@@ -243,6 +243,14 @@ feature -- Button texts
 	b_Disable_catcall_console_warnings: STRING_32	do Result := locale.translation ("Disable Catcall Console Warning?") end
 	b_Disable_catcall_debugger_warnings: STRING_32	do Result := locale.translation ("Disable Catcall Debugger Warning?") end
 
+-- SCOOP REPLAY
+	b_Activate_SCOOP_execution_recording_mode: STRING_32 do Result := locale.translation("Activate SCOOP Execution Recording") end
+	b_Deactivate_SCOOP_execution_recording_mode: STRING_32 do Result := locale.translation("Dectivate SCOOP Execution Recording") end
+	b_SCOOP_execution_replay: STRING_32 do Result := locale.translation("Replay SCOOP Execution...") end
+	b_Activate_SCOOP_execution_diagram: STRING_32 do Result := locale.translation("Activate SCOOP Execution Diagram Generation") end
+	b_Deactivate_SCOOP_execution_diagram: STRING_32 do Result := locale.translation("Deactivate SCOOP Execution Diagram Generation") end
+-- SCOOP REPLAY end
+
 feature -- Choices
 
 	c_right_click_receiver: HASH_TABLE [STRING_GENERAL, STRING]
@@ -788,6 +796,16 @@ feature -- Accelerator, focus label and menu name
 
 	m_Control_debuggee_object_storage: STRING_32	do Result := locale.translation("Control Debuggee Object Storage")	end
 	m_Save_debuggee_object: STRING_32	do Result := locale.translation("Save Debuggee Object")	end
+
+-- SCOOP REPLAY
+	m_Activate_SCOOP_execution_recording_mode: STRING_32 do Result := locale.translation("Activate SCOOP Execution Recording") end
+	m_Deactivate_SCOOP_execution_recording_mode: STRING_32 do Result := locale.translation("Deactivate SCOOP Execution Recording") end
+
+	m_SCOOP_execution_replay: STRING_32 do Result := locale.translation("Replay SCOOP Execution...") end
+
+	m_Activate_SCOOP_execution_diagram: STRING_32 do Result := locale.translation("Activate SCOOP Execution Diagram Generation") end
+	m_Deactivate_SCOOP_execution_diagram: STRING_32 do Result := locale.translation("Deactivate SCOOP Execution Diagram Generation") end
+-- SCOOP REPLAY end
 
 feature -- Menu entries
 
@@ -2208,6 +2226,11 @@ feature -- Title part
 	t_Organize_favorites: STRING_32				do Result := locale.translation("Organize Favorites")	end
 	t_Profile_query_window: STRING_32			do Result := locale.translation("Profile Query Window")	end
 	t_Profiler_wizard: STRING_32					do Result := locale.translation("Profiler Wizard")	end
+
+-- SCOOP REPLAY
+	t_SCOOP_replay_wizard: STRING_32			do Result := locale.translation("SCOOP Execution Replay Wizard")	end
+-- SCOOP REPLAY end
+
 	t_Position: STRING_32						do Result := locale.translation("Position")	end
 	t_Project: STRING
 		once
@@ -2689,6 +2712,11 @@ feature -- Description texts
 	e_Operation_succeeded: STRING_32	do Result := locale.translation("Operation succeeded.")	end
 	e_Operation_failed: STRING_32	do Result := locale.translation("Operation failed.") end
 
+-- SCOOP REPLAY
+	e_SCOOP_execution_recording_mode: STRING_32 do Result := locale.translation("Record logical schedule of current execution.") end
+	e_SCOOP_execution_replay: STRING_32 do Result := locale.translation("Replay SCOOP execution.") end
+-- SCOOP REPLAY end
+
 feature -- Error
 
 	err_error: STRING_32 do Result := locale.translation ("Error ") end
@@ -2714,6 +2742,23 @@ feature -- Wizard texts
 				%%N%
 				%%N%
 				%To continue, click Next.")	end
+
+-- SCOOP REPLAY
+	wt_SCOOP_replay_wizard_welcome: STRING_32 do Result := locale.translation("Welcome to the SCOOP Execution Replay Wizard")	end
+	wb_SCOOP_replay_wizard_welcome: STRING_32
+				do Result := locale.translation("Using this wizard you can replay selected execution of SCOOP application.%N%
+				%%N%
+				%Replaying an execution is used to localize bugs in concurrent programs%N%
+				%and to ensure it's correctness.%N%
+				%%N%
+				%To continue you need to have already executed your system%N%
+				%with the SCOOP Recording activated. If this is not the case, please%N%
+				%refer to the documentation on how to record SCOOP execution.%N%
+				%%N%
+				%%N%
+				%To continue, click Next.")	end
+-- SCOOP REPLAY end
+
 
 	wt_Compilation_mode: STRING_32 do Result := locale.translation("Compilation mode")	end
 	ws_Compilation_mode: STRING_32 do Result := locale.translation("Select the Compilation mode.")	end
@@ -2765,6 +2810,20 @@ feature -- Wizard texts
 				%not exist or is not valid. Please provide a valid file or generate%N%
 				%a new one.%N%
 				%Click Back and select a valid file or choose the generate option.")	end;
+
+-- SCOOP REPLAY
+	wt_SCOOP_replay_wizard_runs: STRING_32 do Result := locale.translation ("SCOOP Executions") end
+	ws_SCOOP_replay_wizard_runs: STRING_32 do Result := locale.translation ("Choose the right SCOOP application run.") end
+	wb_SCOOP_replay_wizard_runs: STRING_32 do Result := locale.translation ("Please choose the right SCOOP execution, indicated by the starting time.") end
+	wt_SCOOP_replay_wizard_directory_error: STRING_32 do Result := locale.translation ("Replay directory Error") end
+	wb_SCOOP_replay_wizard_directory_error: STRING_32 do Result := locale.translation ("Replay directory doesn't exist or contains no replay files. %N%N%
+																			%To create replay files please activate SCOOP Execution Recording%N%
+																			%and then run your application.") end
+	wt_SCOOP_replay_wizard_file_error: STRING_32 do Result := locale.translation ("Replay file Error") end
+	wb_SCOOP_replay_wizard_file_error: STRING_32 do Result := locale.translation ("Problems with opening: %N%N%
+																			%Wrong or corrupted replay file.") end
+-- SCOOP REPLAY end
+
 
 feature -- Translation (unrecommended to use)
 

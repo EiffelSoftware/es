@@ -68,6 +68,15 @@ inherit
 			output_manager as output_manager_service
 		end
 
+-- SCOOP REPLAY	
+	SHARED_WORKBENCH
+		rename
+			-- to prevent names conflict
+			system as wkbench_system
+		end
+-- SCOOP REPLAY end
+
+
 create
 	make
 
@@ -269,6 +278,21 @@ feature {NONE} -- Initialization
 			create exec_replay_right_cmd.make_right
 			toolbarable_commands.extend (exec_replay_right_cmd)
 
+-- SCOOP REPLAY
+			create scoop_execution_recording_mode_cmd.make (Current)
+			scoop_execution_recording_mode_cmd.enable_sensitive
+			toolbarable_commands.extend (scoop_execution_recording_mode_cmd)
+
+			create scoop_execution_replay_cmd.make
+			scoop_execution_replay_cmd.enable_sensitive
+			toolbarable_commands.extend (scoop_execution_replay_cmd)
+
+			create scoop_execution_diagram_cmd.make (Current)
+			scoop_execution_diagram_cmd.enable_sensitive
+			toolbarable_commands.extend (scoop_execution_diagram_cmd)
+-- SCOOP REPLAY end
+
+
 			create ignore_contract_violation.make
 			toolbarable_commands.extend (ignore_contract_violation)
 
@@ -402,7 +426,21 @@ feature -- Access
 			-- Command that can exec replay left the execution
 
 	exec_replay_right_cmd: EB_EXEC_DEBUG_REPLAY_CMD
-			-- Command that can exec replay right the execution			
+			-- Command that can exec replay right the execution	
+
+
+-- SCOOP REPLAY
+	scoop_execution_recording_mode_cmd: EB_SCOOP_EXECUTION_RECORDING_MODE_CMD
+			-- Command that activates/deactivates scoop execution recording
+
+	scoop_execution_replay_cmd: EB_SCOOP_EXECUTION_REPLAY_CMD
+			-- Command that launches wizard for scoop execution replay
+
+	scoop_execution_diagram_cmd: EB_SCOOP_EXECUTION_DIAGRAM_CMD
+			-- Command that activates/deactivates generating scoop execution diagram
+-- SCOOP REPLAY end
+
+		
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_AND_MENUABLE_COMMAND]
 			-- All commands that can be put in a toolbar.
@@ -762,38 +800,47 @@ feature -- tools management
 			Result.extend (l_item)
 			a_recycler.auto_recycle (l_item)
 
-				-- Separator.
-			create sep
-			Result.extend (sep)
 
-			--| Execution Record/Replay
+-- SCOOP REPLAY
+			-- Just initialization of items.
+			-- Needed items will be added to menu just after first compilation.
 
-			create m.make_with_text (interface_names.m_execution_record_and_replay)
-			Result.extend (m)
+			-- This separator will be useful for evaluating position for pasting record-replay items.
+			create record_replay_top_separator
+			Result.extend (record_replay_top_separator)
 
-			l_item := toggle_exec_replay_recording_mode_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			toggle_exec_replay_recording_mode_item := toggle_exec_replay_recording_mode_cmd.new_menu_item
+			a_recycler.auto_recycle (toggle_exec_replay_recording_mode_item)
 
-			l_item := toggle_exec_replay_mode_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			toggle_exec_replay_mode_item := toggle_exec_replay_mode_cmd.new_menu_item
+			a_recycler.auto_recycle (toggle_exec_replay_mode_item)
 
-			l_item := exec_replay_back_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			exec_replay_back_item := exec_replay_back_cmd.new_menu_item
+			a_recycler.auto_recycle (exec_replay_back_item)
 
-			l_item := exec_replay_forth_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			exec_replay_forth_item := exec_replay_forth_cmd.new_menu_item
+			a_recycler.auto_recycle (exec_replay_forth_item)
 
-			l_item := exec_replay_right_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			exec_replay_left_item := exec_replay_left_cmd.new_menu_item
+			a_recycler.auto_recycle (exec_replay_left_item)
 
-			l_item := exec_replay_left_cmd.new_menu_item
-			m.extend (l_item)
-			a_recycler.auto_recycle (l_item)
+			exec_replay_right_item := exec_replay_right_cmd.new_menu_item
+			a_recycler.auto_recycle (exec_replay_right_item)
+
+			scoop_execution_recording_mode_item := scoop_execution_recording_mode_cmd.new_menu_item
+			a_recycler.auto_recycle (scoop_execution_recording_mode_item)
+
+			scoop_execution_replay_item := scoop_execution_replay_cmd.new_menu_item
+			a_recycler.auto_recycle (scoop_execution_replay_item)
+
+			scoop_execution_diagram_item := scoop_execution_diagram_cmd.new_menu_item
+			a_recycler.auto_recycle (scoop_execution_diagram_item)
+
+			create record_replay_bottom_separator
+				-- Don't need to show it here, just create
+-- SCOOP REPLAY end
+
+
 
 --| FIXME XR: TODO: Add:
 --| 3) edit feature, feature evaluation
@@ -1319,6 +1366,13 @@ feature -- Change
 			ignore_contract_violation.update (w)
 			toggle_exec_replay_recording_mode_cmd.update (w)
 
+-- SCOOP REPLAY
+			scoop_execution_recording_mode_cmd.update (w)
+			scoop_execution_replay_cmd.update (w)
+			scoop_execution_diagram_cmd.update (w)
+-- SCOOP REPLAY end
+
+
 			from
 				l_cmds := show_tool_commands
 				l_cmds.start
@@ -1502,6 +1556,13 @@ feature -- Status setting
 			ignore_breakpoints_cmd.disable_sensitive
 
 			assertion_checking_handler_cmd.disable_sensitive
+
+-- SCOOP REPLAY
+			scoop_execution_recording_mode_cmd.disable_sensitive
+			scoop_execution_replay_cmd.disable_sensitive
+			scoop_execution_diagram_cmd.disable_sensitive
+-- SCOOP REPLAY end
+
 		end
 
 	on_compile_stop
@@ -1519,6 +1580,13 @@ feature -- Status setting
 					debug_cmd.enable_sensitive
 					ignore_breakpoints_cmd.enable_sensitive
 					enable_debug
+
+-- SCOOP REPLAY
+					scoop_execution_recording_mode_cmd.enable_sensitive
+					scoop_execution_replay_cmd.enable_sensitive
+					scoop_execution_diagram_cmd.enable_sensitive
+-- SCOOP REPLAY end
+
 				end
 			end
 		end
@@ -1888,6 +1956,13 @@ feature -- Debugging events
 			object_storage_management_cmd.disable_sensitive
 
 
+-- SCOOP REPLAY
+			scoop_execution_recording_mode_cmd.disable_sensitive
+			scoop_execution_replay_cmd.disable_sensitive
+			scoop_execution_diagram_cmd.disable_sensitive
+-- SCOOP REPLAY end
+
+
 			if dialog /= Void and then not dialog.is_destroyed then
 				close_dialog
 			end
@@ -2121,6 +2196,13 @@ feature -- Debugging events
 			object_storage_management_cmd.disable_sensitive
 
 
+-- SCOOP REPLAY
+			scoop_execution_recording_mode_cmd.enable_sensitive
+			scoop_execution_replay_cmd.enable_sensitive
+			scoop_execution_diagram_cmd.enable_sensitive
+-- SCOOP REPLAY end
+
+
 			Precursor (was_executing)
 		end
 
@@ -2212,6 +2294,24 @@ feature -- Application change
 				debugger_warning_message (interface_names.l_only_available_for_stopped_application)
 			end
 		end
+
+
+-- SCOOP REPLAY
+	activate_scoop_execution_recording_mode (b: BOOLEAN)
+		-- Activate or Deactivate SCOOP execution recording
+	do
+		scoop_execution_recording_enabled := b
+		scoop_execution_recording_mode_cmd.set_select (b)
+	end
+
+	activate_scoop_execution_diagram (b: BOOLEAN)
+		-- Activate or Deactivate generating SCOOP execution diagram
+	do
+		scoop_execution_diagram_enabled := b
+		scoop_execution_diagram_cmd.set_select (b)
+	end
+-- SCOOP REPLAY end
+
 
 	disable_assertion_checking
 			-- Disable assertion checking
@@ -2568,6 +2668,87 @@ feature {NONE} -- Implementation
 				ignore_contract_violation.disable_sensitive
 			end
 		end
+
+
+-- SCOOP REPLAY
+	menu: EV_MENU
+		-- Reference for updating menu's items
+
+	is_scoop_record_replay_items: BOOLEAN
+		-- Is menu containing scoop items for record-replay?
+
+	was_compiled: BOOLEAN
+		-- Is update_record_replay_items feature called after first compilation?
+
+	record_replay_top_separator: EV_MENU_SEPARATOR
+		-- Record-replay items will be pasted after this separator
+
+	record_replay_bottom_separator: EV_MENU_SEPARATOR
+		-- Bottom boundary for group of record-replay items
+
+		-- Record-replay menu items for general Eiffel project.
+	toggle_exec_replay_recording_mode_item: EV_MENU_ITEM
+	toggle_exec_replay_mode_item: EV_MENU_ITEM
+	exec_replay_back_item: EV_MENU_ITEM
+	exec_replay_forth_item: EV_MENU_ITEM
+	exec_replay_left_item: EV_MENU_ITEM
+	exec_replay_right_item: EV_MENU_ITEM
+
+		-- Record-replay menu items for SCOOP project.
+	scoop_execution_recording_mode_item: EV_MENU_ITEM
+	scoop_execution_replay_item: EV_MENU_ITEM
+	scoop_execution_diagram_item: EV_MENU_ITEM
+
+	update_record_replay_items (is_scoop_project: BOOLEAN)
+		-- Replace items in Execution menu with suitable set ( or add, if called after first compilation )
+	local
+		pos: INTEGER
+	do
+		if is_scoop_record_replay_items /= is_scoop_project or not was_compiled then
+
+			remove_item_from_menu (toggle_exec_replay_recording_mode_item)
+			remove_item_from_menu (toggle_exec_replay_mode_item)
+			remove_item_from_menu (exec_replay_back_item)
+			remove_item_from_menu (exec_replay_forth_item)
+			remove_item_from_menu (exec_replay_left_item)
+			remove_item_from_menu (exec_replay_right_item)
+			remove_item_from_menu (scoop_execution_recording_mode_item)
+			remove_item_from_menu (scoop_execution_replay_item)
+			remove_item_from_menu (scoop_execution_diagram_item)
+
+			pos := menu.index_of (record_replay_top_separator, 1)
+			menu.go_i_th (pos)
+			if not menu.has (record_replay_bottom_separator) then
+				menu.put_right (record_replay_bottom_separator)
+			end
+			if is_scoop_project then
+				menu.put_right (scoop_execution_diagram_item)
+				menu.put_right (scoop_execution_replay_item)
+				menu.put_right (scoop_execution_recording_mode_item)
+			else
+				menu.put_right (exec_replay_right_item)
+				menu.put_right (exec_replay_left_item)
+				menu.put_right (exec_replay_forth_item)
+				menu.put_right (exec_replay_back_item)
+				menu.put_right (toggle_exec_replay_mode_item)
+				menu.put_right (toggle_exec_replay_recording_mode_item)
+			end
+			was_compiled := True
+			is_scoop_record_replay_items := is_scoop_project
+		end
+	end
+
+	remove_item_from_menu (a_item: EV_MENU_ITEM)
+		-- Removes first occurrence of item, if exists
+	do
+		if menu.has (a_item) then
+			menu.go_i_th (menu.index_of (a_item, 1))
+			menu.remove
+		end
+	end
+-- SCOOP REPLAY end
+
+
 
 feature {NONE} -- Memory management
 

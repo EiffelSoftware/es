@@ -99,8 +99,17 @@ feature -- Execution
 			execute_with_mode ({EXEC_MODES}.run)
 		end
 
+
+-- SCOOP REPLAY
 	execute_with_mode (execution_mode: INTEGER)
 			-- execute program in debugger with mode `Run' (i.e "Run").
+		local
+			params : DEBUGGER_EXECUTION_RESOLVED_PROFILE
+			args : STRING
+			date_time : DATE_TIME
+			l_directory : DIRECTORY
+			l_date_filename : STRING
+			l_rec_rep_path : STRING
 		do
 			if
 				Eiffel_project.initialized and then
@@ -110,10 +119,36 @@ feature -- Execution
 				if dbg.application_is_executing then
 					resume_with_mode (execution_mode)
 				else -- not yet launched
-					launch_with_mode (execution_mode, dbg.current_execution_parameters)
+
+					params := debugger_manager.current_execution_parameters
+					args := " " + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_command_line_argument_beginning + " "
+					if debugger_manager.scoop_execution_recording_enabled or debugger_manager.scoop_execution_diagram_enabled then
+						create date_time.make_now
+						l_rec_rep_path := project_location.target_path + operating_environment.directory_separator.out +
+												{SCOOP_LIBRARY_CONSTANTS}.REPLAY_directory_name
+						create l_directory.make (l_rec_rep_path)
+						if not l_directory.exists then
+							l_directory.create_dir
+						end
+						l_date_filename := date_time.formatted_out ("[0]dd-[0]mm-yyyy") + "_" + date_time.formatted_out ("hh-[0]mi-[0]ss-ff3")
+						if debugger_manager.scoop_execution_recording_enabled then
+							args := args + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_command_line_argument_record + " " + l_rec_rep_path +
+									operating_environment.directory_separator.out + "replay_" + l_date_filename + "." +
+									{SCOOP_LIBRARY_CONSTANTS}.REPLAY_file_extension + " "
+						end
+						if debugger_manager.scoop_execution_diagram_enabled then
+							args := args + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_command_line_argument_diagram + " " + l_rec_rep_path +
+									operating_environment.directory_separator.out + "diagram_" + l_date_filename + "." +
+									{SCOOP_LIBRARY_CONSTANTS}.REPLAY_diagram_file_extension + " "
+						end
+						params.set_arguments (params.arguments + args + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_command_line_argument_end + " ")
+					end
+					launch_with_mode (execution_mode, params)
 				end
 			end
 		end
+-- SCOOP REPLAY end
+
 
 	launch_with_mode (execution_mode: INTEGER; params: DEBUGGER_EXECUTION_RESOLVED_PROFILE)
 		require
@@ -373,7 +408,7 @@ feature {NONE} -- Implementation / Attributes
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

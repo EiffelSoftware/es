@@ -1096,7 +1096,7 @@ feature {NONE} -- Creation handling
 					safe_process (l_as.type)
 					safe_process (l_as.target)
 					context.add_string (".")
-					context.add_string("set_processor_ (scoop_scheduler.new_processor_); ")
+					context.add_string("set_processor_ (scoop_scheduler.new_processor_( processor_ ) ); ")
 				elseif not l_processor_tag.has_handler then
 					-- current entity is separate and has an explicit processor specification
 					-- but is not defined by a handler.
@@ -1105,7 +1105,7 @@ feature {NONE} -- Creation handling
 
 					-- add processor void test
 					context.add_string ("if " + l_processor_tag.tag_name + " = Void then ")
-					context.add_string ( l_processor_tag.tag_name + ":= scoop_scheduler.new_processor_ end; ")
+					context.add_string ( l_processor_tag.tag_name + ":= scoop_scheduler.new_processor_( processor_ ) end; ")
 
 					-- create SCOOP object with new processor
 					safe_process (l_as.create_keyword (match_list))
@@ -1332,11 +1332,11 @@ feature {NONE} -- Creation handling
 
 				if not l_processor_tag.has_explicit_tag then
 					wrapper.append ("create "+creation_object_name+"")
-					wrapper.append (".set_processor_ (scoop_scheduler.new_processor_); ")
+					wrapper.append (".set_processor_ (scoop_scheduler.new_processor_( processor_ )); ")
 				elseif not l_processor_tag.has_handler then
 					process_leading_leaves (l_as.create_keyword_index)
 					wrapper.append ("if " + l_processor_tag.tag_name + arg_postfix + " = Void then ")
-					wrapper.append (l_processor_tag.tag_name + arg_postfix + ":= scoop_scheduler.new_processor_ end; ")
+					wrapper.append (l_processor_tag.tag_name + arg_postfix + ":= scoop_scheduler.new_processor_( processor_ ) end; ")
 					wrapper.append ("create "+creation_object_name+".set_processor_ (" + l_processor_tag.tag_name + arg_postfix + "); ")
 				else
 					process_leading_leaves (l_as.create_keyword_index)

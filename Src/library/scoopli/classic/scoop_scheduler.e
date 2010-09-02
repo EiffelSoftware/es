@@ -34,21 +34,42 @@ feature {NONE} -- Initialization
 
 feature {SCOOP_SEPARATE_TYPE} -- Registration
 
-	new_processor_: SCOOP_PROCESSOR
+	new_processor_ (a_parent_processor: SCOOP_PROCESSOR) : SCOOP_PROCESSOR
 			-- Create new processor and return reference to it.
 		do
-				-- SCOOP PROFILER
-				if profile_information = Void then
-					read_profile_information
+			-- SCOOP PROFILER
+			if profile_information = Void then
+				read_profile_information
+
+-- SCOOP REPLAY
+				if is_diagram_mode then
+					create replay_diagram
+					replay_diagram.set_profiler_information (profile_information)
 				end
-				create Result.make (Current)
-				processors_mutex.lock
-				processors.extend (Result)
-				-- SCOOP PROFILER
-				if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_information.is_profiling_enabled then
-					Result.profile_collector.collect_processor_add
-				end
-				processors_mutex.unlock
+			end
+
+			create Result.make_with_parent_processor (Current, a_parent_processor)
+
+			if is_diagram_mode then
+				replay_diagram.add (Result)
+			end
+			if is_replay_mode then
+				-- match processor with collected schedule
+				logical_schedule_collector.match_processor (Result)
+			end
+			if is_record_mode then
+				-- add new row into logical schedule	
+				logical_schedule_collector.add_processor (Result)
+			end
+-- SCOOP REPLAY end
+
+			processors_mutex.lock
+			processors.extend (Result)
+			-- SCOOP PROFILER
+			if {SCOOP_LIBRARY_CONSTANTS}.Enable_profiler and profile_information.is_profiling_enabled then
+				Result.profile_collector.collect_processor_add
+			end
+			processors_mutex.unlock
 		end
 
 feature {SCOOP_SEPARATE_CLIENT} -- Basic operations
@@ -226,6 +247,10 @@ feature {NONE} -- Synchronization
 			current_request: SCOOP_ROUTINE_REQUEST
 			number_of_requests: INTEGER_32
 			are_processors_active: BOOLEAN
+-- SCOOP REPLAY
+			is_my_time: BOOLEAN
+				-- is current processor's turn to make next separate call?
+-- SCOOP REPLAY end
 		do
 			from
 				routine_requests.start
@@ -253,12 +278,54 @@ feature {NONE} -- Synchronization
 					routine_requests.off
 				loop
 					current_request := routine_requests.item
-						-- Check if locks can be acquired and wait condition holds.
+
+
+-- SCOOP REPLAY					
+					if is_diagram_mode then
+						-- Collect information for SCOOP execution diagram
+						replay_diagram.add_request (current_request.requested_by.processor_, current_request.routine, current_request.requested_processors, True)
+					end
+
+					-- Check if locks can be acquired and wait condition holds.		
 					if locks_acquired (current_request.requested_by, current_request.requested_processors) then
 						if current_request.wait_condition_satisfied then
-							current_request.signal_ready_for_execution -- Signal that request is ready for execution.
-							routine_requests.remove -- `current_request' has been executed and needs to be removed from list.
---							routine_requests.start -- Restart scanning request list from beginning.
+
+							is_my_time := True
+
+							if is_replay_mode then
+								is_my_time := current_request.requested_by.processor_.is_time_for_my_separate_call (logical_schedule_collector.replay_global_tick)
+								if is_verbose_replay_info then
+									io.putstring ( current_request.requested_by.processor_.thread_id.out + " is trying to be exetuted --> " + is_my_time.out + "%N" )
+								end
+								if is_my_time	then
+									logical_schedule_collector.inc_replay_global_clock
+								end
+							end
+
+							if is_my_time then
+
+								if is_diagram_mode then
+									-- Collect information for SCOOP execution diagram
+									replay_diagram.add_request (current_request.requested_by.processor_, current_request.routine, current_request.requested_processors, True)
+								end
+
+								if is_record_mode then
+									-- Collect information for SCOOP logical schedule
+									logical_schedule_collector.add_critical_event (current_request.requested_by.processor_.logical_schedule_record)
+								end
+
+								current_request.signal_ready_for_execution -- Signal that request is ready for execution.
+								routine_requests.remove -- `current_request' has been executed and needs to be removed from list.
+								--routine_requests.start -- Restart scanning request list from beginning.									
+							else
+								-- Make processor wait his turn - go to the next one
+								release_locks (current_request.requested_by, current_request.requested_processors)
+								routine_requests.forth -- Move to next routine request.	
+							end
+-- SCOOP REPLAY end
+
+
+
 						else
 							release_locks (current_request.requested_by, current_request.requested_processors)
 							routine_requests.forth -- Move to next routine request.
@@ -289,6 +356,12 @@ feature {NONE} -- Synchronization
 					end
 				end
 			end
+
+-- SCOOP REPLAY
+			save_replay_information
+
+-- SCOOP REPLAY end
+
 			-- Terminate application. Destroy all processors.
 			processors_mutex.lock
 			from
@@ -577,6 +650,107 @@ feature {SCOOP_SEPARATE_CLIENT} -- Termination
 		ensure
 			stop_execution_signalled: execution_stopped = True
 		end
+
+
+-- SCOOP REPLAY
+feature {NONE} -- Scoop replay implementation
+
+	logical_schedule_collector: SCOOP_REPLAY_LOGICAL_SCHEDULE_COLLECTOR
+		-- SCOOP logical schedule collector
+
+	replay_diagram: SCOOP_REPLAY_DIAGRAM
+		-- Execution diagram collector
+
+	filename_for_record: STRING
+		-- File name for saving scoop logical schedule
+
+	filename_for_diagram: STRING
+		-- File name for saving scoop execution diagram
+
+feature -- Scoop replay access
+
+	is_record_mode: BOOLEAN
+		-- Is SCOOP execution recording activated?
+
+	is_replay_mode: BOOLEAN
+		-- Is SCOOP execution replay activated?
+
+	is_diagram_mode: BOOLEAN
+		-- Is generating SCOOP execution diagram activated?
+
+	is_verbose_replay_info: BOOLEAN
+		-- Output helpful replay info?
+
+feature {SCOOP_STARTER_IMP}
+
+	set_record_replay_options (a_is_record: BOOLEAN; a_record_filename: STRING; a_is_replay: BOOLEAN; a_replay_filename: STRING;
+								a_is_diagram: BOOLEAN; a_diagram_filename: STRING; a_is_verbose_info: BOOLEAN)
+			-- Set up parameters for RECORD-REPLAY execution
+		local
+			date_time: DATE_TIME
+			file_name_from_date: STRING
+			file_to_read : SCOOP_REPLAY_FILE
+		do
+			is_record_mode := a_is_record
+			is_replay_mode := a_is_replay
+			is_diagram_mode := a_is_diagram
+			is_verbose_replay_info := a_is_verbose_info
+
+			create logical_schedule_collector.make (is_record_mode, is_replay_mode)
+
+			if is_replay_mode and a_replay_filename /= Void then
+				create file_to_read.make_open_read (a_replay_filename)
+				-- Read logical schedule from the file
+			    logical_schedule_collector.set_replay_schedules (file_to_read.read_logical_schedule)
+			    file_to_read.close
+				if is_verbose_replay_info then
+					logical_schedule_collector.output_replay
+				end
+			end
+
+			if is_record_mode or is_diagram_mode then
+				create date_time.make_now
+				file_name_from_date := date_time.formatted_out ("[0]dd-[0]mm-yyyy") + "_" + date_time.formatted_out ("hh-[0]mi-[0]ss-ff3") + "."
+				if is_record_mode then
+
+					if a_record_filename /= Void then
+						filename_for_record := a_record_filename
+					else
+						filename_for_record := "replay_" + file_name_from_date + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_file_extension
+					end
+				end
+
+				if is_diagram_mode then
+					if a_diagram_filename /= Void then
+						filename_for_diagram := a_diagram_filename
+					else
+						filename_for_diagram := "diagram_" + file_name_from_date + {SCOOP_LIBRARY_CONSTANTS}.REPLAY_diagram_file_extension
+					end
+				end
+			end
+		end
+
+feature {SCOOP_PROCESSOR}
+
+	save_replay_information
+			-- Save logical schedule and replay diagram on hard drive
+		local
+			file_to_write : SCOOP_REPLAY_FILE
+		do
+			if is_record_mode then
+				create file_to_write.make_open_write (filename_for_record)
+				logical_schedule_collector.close_intervals
+				if is_verbose_replay_info then
+					logical_schedule_collector.output_record
+				end
+				file_to_write.write_logical_schedule (logical_schedule_collector.record_schedules)
+			end
+			if is_diagram_mode then
+				replay_diagram.serialize_to_dot (filename_for_diagram)
+			end
+		end
+-- SCOOP REPLAY end
+
 
 invariant
 	routine_requests_not_void: routine_requests /= void

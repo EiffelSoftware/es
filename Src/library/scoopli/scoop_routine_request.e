@@ -75,6 +75,9 @@ feature {NONE} -- Implementation
 
 	wait_condition: FUNCTION [SCOOP_SEPARATE_CLIENT, TUPLE, BOOLEAN]
 			-- Wait condition to be satisfied before calling routine.
+-- SCOOP REPLAY
+feature {SCOOP_SCHEDULER}
+-- SCOOP REPLAY end
 
 	routine: ROUTINE [SCOOP_SEPARATE_TYPE, TUPLE]
 			-- Routine to be executed (enclosing routine).

@@ -15,7 +15,7 @@ inherit
 	undefine default_create end
 
 create
-	make
+	make, make_with_parent_processor
 
 feature {NONE} -- Initialization
 
@@ -43,6 +43,18 @@ feature {NONE} -- Initialization
 			end
 		end
 
+	make_with_parent_processor (a_scheduler: SCOOP_SCHEDULER; a_parent_processor: SCOOP_PROCESSOR)
+			-- Create processor with his parent processor.
+		do
+			make (a_scheduler)
+			parent_processor := a_parent_processor
+			if a_parent_processor /= Void then
+				local_id := a_parent_processor.children_number
+				a_parent_processor.increase_children_number
+			end
+		end
+
+
 feature {SCOOP_SCHEDULER, SCOOP_SEPARATE_PROXY, SCOOP_PROFILER_COLLECTOR, SCOOP_ROUTINE_REQUEST} -- Profile collection
 
 	profile_collector: SCOOP_PROFILER_COLLECTOR
@@ -58,6 +70,14 @@ feature -- Access
 			finished: finished = True
 		end
 
+	local_id: INTEGER
+		-- processor's local id (order of creation at the processor's tree level)
+
+	parent_processor: SCOOP_PROCESSOR
+		-- reference to parent processor
+
+	children_number: INTEGER
+		-- number of processor's children
 
 feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_SEPARATE_TYPE} -- Synchronization
 
@@ -386,6 +406,79 @@ feature {SCOOP_SCHEDULER, SCOOP_SEPARATE_PROXY} -- Basic operations
 			-- this postcondition may not hold due to multithreading
 		end
 
+-- SCOOP REPLAY
+
+feature {SCOOP_PROCESSOR, SCOOP_SCHEDULER, SCOOP_REPLAY_DIAGRAM_NODE, SCOOP_REPLAY_DIAGRAM} -- Scoop replay implementation
+
+	logical_schedule_record: SCOOP_REPLAY_LOGICAL_SCHEDULE
+		-- Reference to processor's logical schedule (for recording).
+
+	logical_schedule_replay: SCOOP_REPLAY_LOGICAL_SCHEDULE
+		-- Reference to processor's logical schedule (for replaying).
+
+	processor_replay_diagram_number: INTEGER
+		-- Processor alias for using in scoop replay diagram.
+
+feature {SCOOP_PROCESSOR}
+
+	increase_children_number
+			-- Increment number of processor's children
+		do
+			children_number := children_number + 1
+		end
+
+feature {SCOOP_SCHEDULER}
+
+	is_time_for_my_separate_call (a_global_tick: INTEGER) : BOOLEAN
+			-- Does logical schedule of current processor contain separate call that represented by a_global_tick?
+			-- Basically, should current processor make separate call at time moment a_global_tick?
+		do
+			Result := logical_schedule_replay.has_separate_call (a_global_tick)
+		end
+
+feature {SCOOP_REPLAY_LOGICAL_SCHEDULE_COLLECTOR, SCOOP_REPLAY_LOGICAL_SCHEDULE}
+
+	build_global_id: LINKED_LIST [INTEGER]
+			-- Make path (list of local_id values) that represent position in processor's tree
+		local
+			tmp : SCOOP_PROCESSOR
+		do
+			create Result.make
+			from
+				tmp := Current
+			until
+				tmp = Void
+			loop
+				Result.put_front (tmp.local_id)
+				tmp := tmp.parent_processor
+			end
+		end
+
+feature  -- Scoop replay initialization
+
+	set_replay_diagram_number (a_number: INTEGER)
+			-- Set processor alias for replay diagram
+		do
+			processor_replay_diagram_number := a_number
+		end
+
+feature {SCOOP_REPLAY_LOGICAL_SCHEDULE_COLLECTOR}
+
+	set_logical_schedule_record (a_logical_schedule: SCOOP_REPLAY_LOGICAL_SCHEDULE)
+			-- Set processor's logical schedule for record
+		do
+			logical_schedule_record := a_logical_schedule
+		end
+
+	set_logical_schedule_replay (a_logical_schedule: SCOOP_REPLAY_LOGICAL_SCHEDULE)
+			-- Set processor's logical schedule for replay
+		do
+			logical_schedule_replay := a_logical_schedule
+		end
+
+-- SCOOP REPLAY end
+
+
 feature {NONE} -- Implementation
 
 	scheduler: SCOOP_SCHEDULER
@@ -429,6 +522,15 @@ feature {NONE} -- Implementation
 				actions_not_empty.wait_one -- sleep until there are some actions to be executed
 			end
 			scheduler.remove_processor (Current)
+
+--SCOOP REPLAY
+			rescue
+				if scheduler.is_record_mode or scheduler.is_diagram_mode then
+					io.putstring ("%NApplication has been terminated with unhandled exeption.%N")
+					scheduler.save_replay_information
+				end
+-- SCOOP REPLAY end
+
 		end
 
 invariant
