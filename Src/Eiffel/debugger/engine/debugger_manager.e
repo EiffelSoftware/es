@@ -708,6 +708,15 @@ feature -- Status
 	execution_replay_recording_enabled: BOOLEAN
 			-- Is execution replay recording enabled ?
 
+-- SCOOP REPLAY
+	scoop_execution_recording_enabled: BOOLEAN
+			-- Is execution recording enabled for SCOOP programs ?
+
+	scoop_execution_diagram_enabled: BOOLEAN
+			-- Is drawing processor's structure enabled for SCOOP programs ?
+-- SCOOP REPLAY end
+
+
 feature -- Parameters context
 
 --| This code may be used later to enhance display of string ...
