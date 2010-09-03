@@ -44,6 +44,7 @@ feature {CLASS_TYPE_AS} -- Actual class type
 			if gen /= Void then
 				create {GEN_TYPE_A} Result.make (class_id, gen)
 			else
+				initialize_actual_type
 				Result := actual_type
 			end
 		end

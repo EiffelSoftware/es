@@ -2114,37 +2114,42 @@ feature -- Actual class type
 
 	actual_type: CL_TYPE_A
 			-- Actual type of the class
+
+feature {EXTERNAL_CLASS_C} -- Initialization
+
+	initialize_actual_type
+			-- Initialize `actual_type'.
 		local
-			i, nb: INTEGER
-			actual_generic: ARRAY [TYPE_A]
-			formal: FORMAL_A
-			l_formal_dec: FORMAL_CONSTRAINT_AS
+			a: CL_TYPE_A
+			t: ARRAY [TYPE_A]
 		do
-			if generics = Void then
-				create Result.make (class_id)
+			if not attached generics as g then
+				create {CL_TYPE_A} a.make (class_id)
 			else
-				from
-					i := 1
-					nb := generics.count
-					create actual_generic.make (1, nb)
-					create {GEN_TYPE_A} Result.make (class_id, actual_generic)
-				until
-					i > nb
+				create t.make_empty
+				across
+					g as c
 				loop
-					l_formal_dec ?= generics.i_th (i)
-					check l_formal_dec_not_void: l_formal_dec /= Void end
-					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, i)
-					actual_generic.put (formal, i)
-					i := i + 1
+					t.force (type_a_generator.evaluate_type (c.item.formal, Current), t.upper + 1)
 				end
+				a := create_generic_type (t)
 			end
 			if lace_class.is_attached_by_default then
-				Result.set_is_attached
+				a.set_is_attached
 			else
-				Result.set_is_implicitly_attached
+				a.set_is_implicitly_attached
 			end
+			actual_type := a
+		end
+
+	create_generic_type (g: ARRAY [TYPE_A]): GEN_TYPE_A
+			-- Create generic type with actual generics `g' for the current class.
+		require
+			g_attached: attached g
+		do
+			create {GEN_TYPE_A} Result.make (class_id, g)
 		ensure
-			actual_type_not_void: Result /= Void
+			result_attached: attached Result
 		end
 
 feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual class type
@@ -3287,7 +3292,7 @@ feature -- IL code generation
 				class_name := name.as_lower
 				use_dotnet_naming := System.dotnet_naming_convention
 			end
-			Result := il_casing.type_name (namespace, data_prefix, class_name, use_dotnet_naming)
+			Result := il_casing.type_name (namespace, data_prefix, False, class_name, use_dotnet_naming)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -3300,7 +3305,7 @@ feature -- IL code generation
 		do
 			is_dotnet_naming := System.dotnet_naming_convention
 			precompiled_namespace := original_class.actual_namespace.twin
-			precompiled_class_name := il_casing.type_name (Void, Void, name.as_lower, is_dotnet_naming)
+			precompiled_class_name := il_casing.type_name (Void, Void, False, name.as_lower, is_dotnet_naming)
 		end
 
 	is_dotnet_naming: BOOLEAN
@@ -3334,6 +3339,7 @@ feature {CLASS_I} -- Settings
 			cl_different_from_current_lace_class: cl /= original_class
 		do
 			original_class := cl
+			initialize_actual_type
 		ensure
 			original_class_set: original_class = cl
 		end

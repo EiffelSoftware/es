@@ -1546,7 +1546,7 @@ feature {NONE} -- Class initialization
 							l_eiffel_class.set_new_byte_code_needed (True)
 						end
 					else
-						set_changed2 (True)
+						l_class.set_changed2 (True)
 					end
 					Degree_4.set_supplier_status_modified (l_class)
 					Degree_3.insert_new_class (l_class)
@@ -1567,10 +1567,11 @@ feature {NONE} -- Class initialization
 
 			set_generics (gens)
 
-			if gens /= Void then
+			if attached gens then
 					-- Check generic parameter declaration rule
 				check_generics
 			end
+			initialize_actual_type
 
 			if not is_first_compilation then
 				if gens /= Void then

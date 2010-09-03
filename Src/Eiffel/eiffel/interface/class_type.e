@@ -246,6 +246,14 @@ feature -- Access
 			Result := type.is_true_expanded and basic_type = Void
 		end
 
+	is_separate: BOOLEAN
+			-- Is current class type separate?
+		require
+			type_attached: attached type
+		do
+			Result := type.is_separate
+		end
+
 	is_generic: BOOLEAN
 			-- Is current class a generic class?
 		local
@@ -301,7 +309,7 @@ feature -- Access
 		require
 			is_precompiled: is_precompiled
 		do
-			Result := il_casing.type_name (internal_namespace, a_prefix, internal_type_name, is_dotnet_name)
+			Result := il_casing.type_name (internal_namespace, a_prefix, is_separate, internal_type_name, is_dotnet_name)
 		end
 
 	conformance_table: PACKED_BOOLEANS
@@ -1979,6 +1987,11 @@ feature {NONE} -- Convenience
 				-- Bit 12: Store `is_deferred'
 			if l_class.is_deferred then
 				Result := Result | 0x1000
+			end
+
+				-- Bit 13: Store `is_separate'
+			if is_separate then
+				Result := Result | 0x2000
 			end
 		end
 

@@ -944,6 +944,16 @@ test	descriptor-list-put-crash		incr384 tcf pass incrementality
 test	deep-twin-agent-infinite-loop		incr385 tcf fail incrementality manual
 test	conform-to-precondition-violation	incr386 tcf fail incrementality
 test	disk-item-io-error-2			incr387 tcf fail incrementality
+test	static-type-id-crash-2			incr388 tcf fail incrementality
+test	remove-occurrence-precondition-violation	incr389 tcf fail incrementality
+test	constant-suppliers-crash		incr390 tcf fail incrementality
+test	rout-entry-crash-2			incr391 tcf fail incrementality
+test	is-less-equal-postcondition-violation	incr392 tcf fail incrementality
+test	once-per-object-change-body		incr393 tcf fail incrementality
+test	add-vsrt4-to-expanded-then-remove	incr394 tcf fail incrementality
+test	same-generic-derivation-as-crash	incr395 tcf fail incrementality
+test	new-poly-table-crash			incr396 tcf fail incrementality
+test	once-per-object-change-expansion	incr397 tcf fail incrementality once
 
 
 -- Melting
@@ -1049,6 +1059,7 @@ test	new-type-type-melted	melt097  tcf pass execution melting
 test	melted-type-of-generic	melt098  tcf pass execution melting reflection
 test	melted-tuple-expression-order melt099 tcf pass execution melting tuple
 test	melted-creation-constrained-generic melt100 tcf fail execution melting generic
+test	melted-once-creation-of-generic	melt101 tcf fail execution melting generic
 
 -- Freezing
 
@@ -1565,6 +1576,7 @@ test once-per-object-effect-deferred		once009 tcf pass once
 test once-per-object-empty-body			once010 tcf pass once
 test once-per-object-anchored-or-generic	once011 tcf pass once
 test once-per-object-returning-expanded		once012 tcf fail once
+test once-per-object-precursor-descendant	once013 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1749,6 +1761,9 @@ test	chained-generic-constraints		term187 tcf fail termination formal generic co
 test	static-access-on-generic-in-inspect	term188 tcf fail termination formal generic
 test	vmfn-reporting-crash				term189 tcf fail termination validity
 test	conform-to-type-precondition-violation	term190 tcf fail termination validity
+test	generated-id-assertion-violation	term191 tcf fail termination multiconstraint expanded
+test	skeleton-adapted-in-crash		term192 tcf fail termination 
+test	is-valid-for-class-precondition		term193 tcf fail termination 
 
 -- Config
 
@@ -1776,6 +1791,7 @@ test	config-undetected-vlec			config021 tcf fail config
 test	config-invalid-vsrt2			config022 tcf fail config
 test	config-generic-root-type-extra-chars	config023 tcf fail config
 test	config-generic-root-with-expanded	config024 tcf fail config generic expanded
+test	config-unclosed-element			config025 tcf fail config
 
 -- Lace
 

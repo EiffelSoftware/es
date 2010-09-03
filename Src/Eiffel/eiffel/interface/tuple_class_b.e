@@ -11,7 +11,8 @@ class
 inherit
 	EIFFEL_CLASS_C
 		redefine
-			actual_type,
+			create_generic_type,
+			initialize_actual_type,
 			is_tuple,
 			partial_actual_type
 		end
@@ -24,36 +25,26 @@ feature -- Status report
 	is_tuple: BOOLEAN = True
 			-- Current class is TUPLE.
 
-feature -- Actual class type
+feature {NONE} -- Initialization
 
-	actual_type: TUPLE_TYPE_A
-			-- Actual type of the class
-		local
-			i, count: INTEGER
-			actual_generic: ARRAY [FORMAL_A]
-			formal: FORMAL_A
+	initialize_actual_type
 		do
 			if generics /= Void then
-				from
-					i := 1
-					count := generics.count
-					create actual_generic.make (1, count)
-				until
-					i > count
-				loop
-					create formal.make (False, False, 1)
-					actual_generic.put (formal, i)
-					i := i + 1
+				Precursor
+			else
+				create {TUPLE_TYPE_A} actual_type.make (class_id, <<>>)
+				if lace_class.is_attached_by_default then
+					actual_type.set_is_attached
+				else
+					actual_type.set_is_implicitly_attached
 				end
-			else
-				create actual_generic.make (1, 0)
 			end
-			create Result.make (class_id, actual_generic)
-			if lace_class.is_attached_by_default then
-				Result.set_is_attached
-			else
-				Result.set_is_implicitly_attached
-			end
+		end
+
+	create_generic_type (g: ARRAY [TYPE_A]): GEN_TYPE_A
+			-- <Precursor>
+		do
+			create {TUPLE_TYPE_A} Result.make (class_id, g)
 		end
 
 feature {CLASS_TYPE_AS} -- Actual class type

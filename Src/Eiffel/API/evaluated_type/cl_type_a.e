@@ -499,7 +499,7 @@ feature {NONE} -- IL code generation
 				-- what our casing conversion routines require to perform
 				-- a good job.
 			Result.to_lower
-			Result := il_casing.type_name (associated_class.original_class.actual_namespace, a_prefix, Result, System.dotnet_naming_convention)
+			Result := il_casing.type_name (associated_class.original_class.actual_namespace, a_prefix, is_separate, Result, System.dotnet_naming_convention)
 		ensure
 			internal_il_type_name_not_void: Result /= Void
 			internal_il_type_name_not_empty: not Result.is_empty
@@ -584,8 +584,8 @@ feature {TYPE_A} -- Helpers
 						-- If 'declaration_mark' is not the same for both then we have to make sure
 						-- that both expanded and separate states are identical.
 				(l_cl_type.declaration_mark /= declaration_mark implies
-					(l_cl_type.is_expanded = is_expanded and then
-					l_cl_type.is_separate = is_separate))
+					(l_cl_type.is_expanded = is_expanded)) and then
+				l_cl_type.is_separate = is_separate
 		end
 
 feature {COMPILER_EXPORTER} -- Settings

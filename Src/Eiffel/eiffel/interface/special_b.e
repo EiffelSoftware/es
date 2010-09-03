@@ -288,11 +288,9 @@ feature {NONE} -- Implementation
 			-- Required signature for feature `make_filled' of class SPECIAL
 		local
 			args: FEAT_ARG
-			f: FORMAL_A
 		do
-			create f.make (False, False, 1)
 			create args.make (2)
-			args.extend (f)
+			args.extend (actual_type.generics [1])
 			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
@@ -305,14 +303,12 @@ feature {NONE} -- Implementation
 			-- Required signature for feature `item' of class SPECIAL
 		local
 			args: FEAT_ARG
-			f: FORMAL_A
 		do
 			create args.make (1)
 			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
-			create f.make (False, False, 1)
-			Result.set_type (f, 0)
+			Result.set_type (actual_type.generics [1], 0)
 			Result.set_feature_name_id (Names_heap.item_name_id, 0)
 		ensure
 			item_signature_not_void: Result /= Void
@@ -324,7 +320,7 @@ feature {NONE} -- Implementation
 			l_gen_type: GEN_TYPE_A
 		do
 			create Result
-			create l_gen_type.make (system.array_id, << create {FORMAL_A}.make (False, False, 1) >>)
+			create l_gen_type.make (system.array_id, <<actual_type.generics [1]>>)
 			if not lace_class.is_void_unsafe then
 				l_gen_type.set_is_attached
 			end
@@ -338,11 +334,9 @@ feature {NONE} -- Implementation
 			-- Required signature for feature `put' of class SPECIAL
 		local
 			args: FEAT_ARG
-			f: FORMAL_A
 		do
-			create f.make (False, False, 1)
 			create args.make (2)
-			args.extend (f)
+			args.extend (actual_type.generics [1])
 			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
