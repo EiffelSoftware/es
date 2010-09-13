@@ -664,9 +664,8 @@ feature {COMPILER_EXPORTER} -- Conformance
 							-- We should still verify that the attachment marks are taken into account.
 						Result := is_attachable_to (other_class_type)
 					end
-
-					if Result and workbench.is_degree_scoop_processing then
-						Result := scoop_conform_to (other_class_type)
+					if Result then
+						Result := is_processor_attachable_to (other)
 					end
 				end
 			elseif other.is_type_set then

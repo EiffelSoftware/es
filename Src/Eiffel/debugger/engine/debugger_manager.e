@@ -1393,6 +1393,7 @@ feature -- Application change
 							adbg.update_catcall_detection_mode
 						end,
 					True)
+				application.request_debugger_data_update
 			end
 		end
 

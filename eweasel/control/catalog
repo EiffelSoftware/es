@@ -954,6 +954,9 @@ test	add-vsrt4-to-expanded-then-remove	incr394 tcf fail incrementality
 test	same-generic-derivation-as-crash	incr395 tcf fail incrementality
 test	new-poly-table-crash			incr396 tcf fail incrementality
 test	once-per-object-change-expansion	incr397 tcf fail incrementality once
+test	once-per-object-remove-constraint	incr398 tcf fail incrementality once
+test	once-per-object-change-inheritance	incr399 tcf fail incrementality once
+test	qat-change-constant-anchor-type		incr400 tcf fail incrementality anchored_type
 
 
 -- Melting
@@ -1561,6 +1564,7 @@ test	default-on-expanded-string		exec328 tcf fail execution expanded manual
 test	ieee-abs-minus-zero				exec329 tcf pass execution ieee
 test	catcall-in-expanded-class-invariant	exec330 tcf fail execution catcall
 test	once-string-seg-fault			exec331 tcf fail execution
+test	object-test-wrong-with-expanded-generic	exec332 tcf fail execution
 
 -- Once specific
 
@@ -1577,6 +1581,8 @@ test once-per-object-empty-body			once010 tcf pass once
 test once-per-object-anchored-or-generic	once011 tcf pass once
 test once-per-object-returning-expanded		once012 tcf fail once
 test once-per-object-precursor-descendant	once013 tcf fail once
+test once-per-object-inherited-chained		once014 tcf fail once
+test once-per-object-callee-exception		once015 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1764,6 +1770,7 @@ test	conform-to-type-precondition-violation	term190 tcf fail termination validit
 test	generated-id-assertion-violation	term191 tcf fail termination multiconstraint expanded
 test	skeleton-adapted-in-crash		term192 tcf fail termination 
 test	is-valid-for-class-precondition		term193 tcf fail termination 
+test	is-less-equal-postcondition-violation-2	term194 tcf fail incrementality
 
 -- Config
 
@@ -2447,6 +2454,7 @@ test	vevi-on-once-per-object-routine			attach074 tcf pass attached_types void_sa
 test	once-per-object-creation-procedure		attach075 tcf pass attached_types void_safe once
 test	attached-to-none				attach076 tcf fail attached_types void_safe once
 test	attached-attribute-initialization		attach077 tcf pass attached_types void_safe validity
+test	detachable-formal-attached-constraint		attach078 tcf pass attached_types formal generic constraint conformance validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance

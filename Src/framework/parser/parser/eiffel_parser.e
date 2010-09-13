@@ -8714,11 +8714,11 @@ end
 					temp_keyword_as := Void
 				end
 				if yyvs20.item (yyvsp20) /= Void then
-					yyval79 := ast_factory.new_routine_as (temp_string_as1, yyvs76.item (yyvsp76), yyvs119.item (yyvsp119), yyvs78.item (yyvsp78), yyvs51.item (yyvsp51), yyvs20.item (yyvsp20).second, yyvs12.item (yyvsp12), once_manifest_string_count, fbody_pos, temp_keyword_as, yyvs20.item (yyvsp20).first, object_test_locals)
+					yyval79 := ast_factory.new_routine_as (temp_string_as1, yyvs76.item (yyvsp76), yyvs119.item (yyvsp119), yyvs78.item (yyvsp78), yyvs51.item (yyvsp51), yyvs20.item (yyvsp20).second, yyvs12.item (yyvsp12), once_manifest_string_counter_value, fbody_pos, temp_keyword_as, yyvs20.item (yyvsp20).first, object_test_locals)
 				else
-					yyval79 := ast_factory.new_routine_as (temp_string_as1, yyvs76.item (yyvsp76), yyvs119.item (yyvsp119), yyvs78.item (yyvsp78), yyvs51.item (yyvsp51), Void, yyvs12.item (yyvsp12), once_manifest_string_count, fbody_pos, temp_keyword_as, Void, object_test_locals)
+					yyval79 := ast_factory.new_routine_as (temp_string_as1, yyvs76.item (yyvsp76), yyvs119.item (yyvsp119), yyvs78.item (yyvsp78), yyvs51.item (yyvsp51), Void, yyvs12.item (yyvsp12), once_manifest_string_counter_value, fbody_pos, temp_keyword_as, Void, object_test_locals)
 				end
-				once_manifest_string_count := 0
+				reset_once_manifest_string_counter
 				object_test_locals := Void
 			
 if yy_parsing_status >= yyContinue then
@@ -11150,7 +11150,9 @@ debug ("GEYACC")
 end
 
 				yyval82 := yyvs82.item (yyvsp82)
-				yyval82.set_separate_mark (yyvs12.item (yyvsp12))
+				if attached yyval82 then
+					yyval82.set_separate_mark (yyvs12.item (yyvsp12))
+				end
 			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -11352,7 +11354,9 @@ debug ("GEYACC")
 end
 
 				yyval82 := yyvs82.item (yyvsp82)
-				yyval82.set_separate_mark (yyvs12.item (yyvsp12))
+				if attached yyval82 then
+					yyval82.set_separate_mark (yyvs12.item (yyvsp12))
+				end
 			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -14761,8 +14765,8 @@ debug ("GEYACC")
 end
 
 				set_id_level (Normal_level)
-				yyval68 := ast_factory.new_invariant_as (yyvs25.item (yyvsp25), once_manifest_string_count, yyvs12.item (yyvsp12), object_test_locals)
-				once_manifest_string_count := 0
+				yyval68 := ast_factory.new_invariant_as (yyvs25.item (yyvsp25), once_manifest_string_counter_value, yyvs12.item (yyvsp12), object_test_locals)
+				reset_once_manifest_string_counter
 				object_test_locals := Void
 			
 if yy_parsing_status >= yyContinue then
@@ -20935,7 +20939,7 @@ end
 					yyvs16.item (yyvsp16).set_is_once_string (True)
 					yyvs16.item (yyvsp16).set_once_string_keyword (yyvs12.item (yyvsp12))
 				end
-				once_manifest_string_count := once_manifest_string_count + 1
+				increment_once_manifest_string_counter
 				yyval36 := yyvs16.item (yyvsp16)
 			
 if yy_parsing_status >= yyContinue then
