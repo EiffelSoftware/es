@@ -404,7 +404,7 @@ feature -- Test case information
 
 	tci_post_object_info: STRING do Result := "$(POST_OBJECT_INFO)" end
 			-- Information about objects in current test case in post-state
-			-- Format: TYPE_1;position1;TYPE_2;position2;...;TYPE_n;position_n.
+			-- Format: TYPE_1;object_id1;TYPE_2;object_id2;...;TYPE_n;object_id_n.
 			
 	tci_is_creation: BOOLEAN = $(IS_CREATION)
 			-- Is the feature under test a creation feature?

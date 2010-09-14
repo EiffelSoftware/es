@@ -66,6 +66,26 @@ feature -- Access
 
 	property_field_prefix: STRING = "property::"
 
+	begin_field: STRING = "begin"
+
+	end_field: STRING = "end"
+
+	variable_position_field: STRING = "variable_position_table"
+
+	prestate_serialization_field: STRING = "prestate_serialization"
+
+	poststate_serialization_field: STRING = "poststate_serialization"
+
+	operand_variable_indexes_field: STRING = "operand_variable_indexes"
+
+	is_feature_under_test_creation_field: STRING = "is_feature_under_test_creation"
+
+	is_feature_under_test_query_field: STRING = "is_feature_under_test_query_field"
+
+	test_feature_field: STRING = "test_feature"
+
+	test_case_class_field: STRING = "test_case_class"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','
@@ -81,6 +101,9 @@ feature -- Access
 	transition_field_value: STRING = "transition"
 	snippet_field_value: STRING = "snippet"
 	object_field_value: STRING = "object"
+
+	begin_field_value: STRING = "begin"
+	end_field_value: STRING = "end"
 
 feature -- Type names
 

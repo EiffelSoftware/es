@@ -27,6 +27,7 @@ feature -- Basic operations
 			-- Write `a_document' into `output'.
 		require
 			a_document_attached: a_document /= Void
+			output_medium_set: output /= Void
 			output_medium_ready: output.is_open_write
 		deferred
 		end
@@ -83,6 +84,7 @@ feature{NONE} -- Implementation
 			create Result.make_from_string (a_type)
 			Result.replace_substring_all (once "?", once "")
 			Result.replace_substring_all (once "detachable ", once "")
+			Result.replace_substring_all (once "separate ", once "")
 		end
 
 end

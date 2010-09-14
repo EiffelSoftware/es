@@ -14,6 +14,8 @@ inherit
 
 	HASHABLE
 
+	SEM_UTILITY
+
 create
 	make,
 	make_empty
@@ -93,8 +95,8 @@ feature -- Access
 
 	operand_variable_indexes: STRING
 			-- Operand variable indexes
-			-- Format: comma separated numbers, the i-th number is the object id of the i-th operand
-			-- i starts from 0.
+			-- Format: comma separated numbers, for each pair of numbers,
+			-- the first is the 0-based operand index, the second is the object id of that operand.
 
 feature -- Status report
 
@@ -177,10 +179,8 @@ feature -- Access
 
 	setup_operand_map (a_operands: STRING)
 			-- Setup `opreand_map'.
-			-- `a_operands' is a comma sparated list of integers, each integer represents the variable
-			-- used as an operand in `feature_under_test'. The first integer is for target, the second
-			-- integer is for the first argument, and so on. The last integer is for (possible) result value
-			-- of the feature call.
+			-- `a_operands' is a comma sparated list of integers. For each integer pair,
+			-- the first number is the 0-based operand index, the second number is the object id of that operand.
 		local
 			l_indexes: LIST [STRING]
 			i: INTEGER
@@ -194,19 +194,12 @@ feature -- Access
 			until
 				l_indexes.after
 			loop
-				l_tbl.put (variable_name (l_indexes.item_for_iteration.to_integer), i)
+				l_indexes.forth
+				l_tbl.put (variable_name_with_default_prefix (l_indexes.item_for_iteration.to_integer), i)
 				i := i + 1
 				l_indexes.forth
 			end
 			operand_map := l_tbl
-		end
-
-	variable_name (a_index: INTEGER): STRING
-			-- Name of variable with index `a_index'.
-		do
-			create Result.make (5)
-			Result.append (once "v_")
-			Result.append (a_index.out)
 		end
 
 	setup_variables (a_test_case_class: CLASS_C)

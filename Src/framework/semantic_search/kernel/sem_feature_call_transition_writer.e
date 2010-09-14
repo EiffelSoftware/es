@@ -14,17 +14,159 @@ inherit
 
 	EPA_UTILITY
 
+feature -- Access
+
+	prestate_serialization: detachable STRING
+			-- Prestate object serialization
+
+	poststate_serialization: detachable STRING
+			-- Poststate object serialization	
+
+feature -- Status report
+
+	is_anonymous_expression_enabled: BOOLEAN
+			-- Should anonymous expression be output?
+			-- For example, for an expression v_1.has (v_2), then
+			-- the output will be {0}.has ({1}), if the position of v_1 is 0 and that of v_2 is 1.
+			-- Default: True
+
+	is_dynamic_typed_expression_enabled: BOOLEAN
+			-- Should assertions with dynamic types be output?
+			-- For example, for an expression v_1.has (v_2), if the dynamic type of v_1 is LINKED_LIST [ANY] and of v_2 is STRING_8,
+			-- then the output will be {LINKED_LIST [ANY]}.has ({STRING_8}).
+			-- Default: True
+
+	is_static_typed_expression_enabled: BOOLEAN
+			-- Should assertions with static types be output?
+			-- For example, for an expression v_1.has (v_2), if the static type of v_1 is LINKED_LIST [ANY] and of v_2 is ANY,
+			-- then the output will be {LINKED_LIST [ANY]}.has ({ANY}).
+			-- Default: True		
+
+feature -- Setting
+
+	set_is_anonymous_expression_enabled (b: BOOLEAN)
+			-- Set `is_anonymous_expression_enabled' with `b'.
+		do
+			is_anonymous_expression_enabled := b
+		ensure
+			is_anonymous_expression_enabled_set: is_anonymous_expression_enabled = b
+		end
+
+	set_is_dynamic_typed_expression_enabled (b: BOOLEAN)
+			-- Set `is_dynamic_typed_expression_enabled' with `b'.
+		do
+			is_dynamic_typed_expression_enabled := b
+		ensure
+			is_dynamic_typed_expression_enabled_set: is_dynamic_typed_expression_enabled = b
+		end
+
+	set_is_static_typed_expression_enabled (b: BOOLEAN)
+			-- Set `is_static_typed_expression_enabled' with `b'.
+		do
+			is_static_typed_expression_enabled := b
+		ensure
+			is_static_typed_expression_enabled_set: is_static_typed_expression_enabled = b
+		end
+
+	set_prestate_serialization (a_serialization: like prestate_serialization)
+			-- Set `prestate_serialization' with `a_serialization'.
+		do
+			prestate_serialization := a_serialization
+		ensure
+			prestate_serialization_set: prestate_serialization = a_serialization
+		end
+
+	set_poststate_serialization (a_serialization: like poststate_serialization)
+			-- Set `poststate_serialization' with `a_serialization'.
+		do
+			poststate_serialization := a_serialization
+		ensure
+			poststate_serialization_set: poststate_serialization = a_serialization
+		end
+
 feature -- Basic operations
 
 	write (a_document: like queryable)
 			-- Write `a_document' into output stream.
 		do
 			queryable := a_document
+			write_begin
 			write_header
 			write_variables
+			write_variable_positions
+			write_content
+			write_preconditions
+			write_postconditions
+			write_prestate_objects
+			write_poststate_objects
+			write_end
 		end
 
 feature{NONE} -- Implementation
+
+	write_variable_positions
+			-- Write variable position tables
+			-- The written data is a commo separated string.
+			-- For each pair of strings, the first is variable name, the second is the position of that variable
+		local
+			l_data: STRING
+			l_cursor: like queryable.variable_positions.new_cursor
+		do
+			create l_data.make (128)
+			from
+				l_cursor := queryable.variable_positions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if not l_data.is_empty then
+					l_data.append_character (',')
+				end
+				l_data.append (l_cursor.key.text.as_lower)
+				l_data.append_character (',')
+				l_data.append (l_cursor.item.out)
+				l_cursor.forth
+			end
+			write_field_with_data (variable_position_field, l_data, string_field_type, default_boost_value)
+		end
+
+	write_prestate_objects
+			-- Write object serialization information (if available) in prestate.
+		do
+			write_objects (prestate_serialization_field, prestate_serialization)
+		end
+
+	write_poststate_objects
+			-- Write object serialization information (if available) in poststate.
+		do
+			write_objects (poststate_serialization_field, poststate_serialization)
+		end
+
+	write_objects (a_field_name: STRING; a_serialization: detachable STRING)
+			-- Write `a_serialization' into a field named `a_field_name'.
+		do
+			if a_serialization /= Void then
+				write_field_with_data (a_field_name, a_serialization, string_field_type, default_boost_value)
+			end
+		end
+
+	write_content
+			-- Append content of `queryable' to `buffer'.
+		do
+			write_field_with_data (content_field, queryable.content, string_field_type, default_boost_value)
+		end
+
+	write_begin
+			-- Write begin section of the whole document
+		do
+			write_field_with_data (begin_field, begin_field_value, string_field_type, default_boost_value)
+		end
+
+	write_end
+			-- Write end section of the whole document
+		do
+			write_field_with_data (end_field, end_field_value, string_field_type, default_boost_value)
+		end
 
 	write_header
 			-- Write document header, including
@@ -33,10 +175,9 @@ feature{NONE} -- Implementation
 			write_field_with_data (document_type_field, transition_field_value, string_field_type, default_boost_value)
 			write_field_with_data (class_field, queryable.class_.name_in_upper, string_field_type, default_boost_value)
 			write_field_with_data (feature_field, queryable.feature_.feature_name_32.as_lower , string_field_type, default_boost_value)
-			write_auxiliary_fields
+			write_field_with_data (uuid_field, queryable.uuid, string_field_type, default_boost_value)
 			write_library
-			write_preconditions
-			write_postconditions
+			write_auxiliary_fields
 		end
 
 	write_variables
@@ -142,12 +283,14 @@ feature{NONE} -- Implementation
 			-- Write preconditions from `queryable' into `output'.
 		do
 			write_assertions (queryable.preconditions, precondition_veto_agents, precondition_field_prefix)
+			write_assertions (queryable.written_preconditions, precondition_veto_agents, written_precondition_field_prefix)
 		end
 
 	write_postconditions
 			-- Write postcondition from `queryable' into `output'.
 		do
 			write_assertions (queryable.postconditions, postcondition_veto_agents, postcondition_field_prefix)
+			write_assertions (queryable.written_postconditions, precondition_veto_agents, written_postcondition_field_prefix)
 		end
 
 	write_assertions (a_assertions: EPA_STATE; a_veto_agents: like precondition_veto_agents; a_prefix: STRING)
@@ -174,13 +317,20 @@ feature{NONE} -- Implementation
 					l_anonymous := queryable.anonymous_expression_text (l_expression)
 
 						-- Output anonymous format.
-					write_field_with_data (a_prefix + l_anonymous, l_value.text, type_of_expression (l_assertion), default_boost_value)
+					if is_anonymous_expression_enabled then
+						write_field_with_data (a_prefix + l_anonymous, l_value.text, type_of_expression (l_assertion), default_boost_value)
+					end
 
 						-- Output dynamic type format.
-					write_field_with_data (a_prefix + expression_with_replacements (l_expression, variable_dynamic_type_table (queryable.variables)), l_value.text, type_of_expression (l_assertion), default_boost_value)
+					if is_dynamic_typed_expression_enabled then
+						write_field_with_data (a_prefix + expression_with_replacements (l_expression, variable_dynamic_type_table (queryable.variables), True), l_value.text, type_of_expression (l_assertion), default_boost_value)
+					end
 
 						-- Output static type format.
-					write_field_with_data (a_prefix + expression_with_replacements (l_expression, variable_static_type_table (queryable.variables)), l_value.text, type_of_expression (l_assertion), default_boost_value)
+					if is_static_typed_expression_enabled then
+						write_field_with_data (a_prefix + expression_with_replacements (l_expression, variable_static_type_table (queryable.variables), True), l_value.text, type_of_expression (l_assertion), default_boost_value)
+					end
+
 				end
 				l_cursor.forth
 			end
@@ -274,13 +424,44 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	expression_with_replacements (a_expression: EPA_EXPRESSION; a_replacements: HASH_TABLE [STRING, STRING]): STRING
+	expression_with_replacements (a_expression: EPA_EXPRESSION; a_replacements: HASH_TABLE [STRING, STRING]; a_simplify_basic_equation: BOOLEAN): STRING
 			-- Expressions from `a_expression' where all replacements are done
+			-- If `a_simplify_basic_equation' is True, basic equations such as "=", "~", "/=" and "/~" will be simplified, meaning that
+			-- they will only be output as "{ANY} = {ANY}" for example.
 		local
 			l_expr_rewriter: like expression_rewriter
 		do
-			l_expr_rewriter := expression_rewriter
-			Result := l_expr_rewriter.expression_text (a_expression, a_replacements)
+			if attached {STRING} equality_based_abstraction (a_expression.ast, a_replacements) as l_expr then
+				Result := l_expr
+			else
+				l_expr_rewriter := expression_rewriter
+				Result := l_expr_rewriter.expression_text (a_expression, a_replacements)
+			end
+		end
+
+	equality_based_abstraction (a_expr: EXPR_AS; a_replacements: HASH_TABLE [STRING, STRING]): detachable STRING
+			-- Abstracted expressions for `a_expr' if and only if
+			-- `a_expr' is "a = b", "a /= b", "a ~ b" or "a /~ b".
+			-- Otherwise, return an empty list.
+		do
+			if
+				attached {BIN_EQ_AS} a_expr or else
+				attached {BIN_NE_AS} a_expr or else
+				attached {BIN_TILDE_AS} a_expr or else
+				attached {BIN_NOT_TILDE_AS} a_expr
+			then
+				if attached {BINARY_AS} a_expr as l_bin_as then
+					if
+						a_replacements.has (text_from_ast (l_bin_as.left).as_lower) and then
+						a_replacements.has (text_from_ast (l_bin_as.right).as_lower)
+				 	then
+						create Result.make (24)
+						Result.append (once "{ANY} ")
+						Result.append (l_bin_as.op_name.name)
+						Result.append (once " {ANY}")
+					end
+				end
+			end
 		end
 
 	curly_brace_surrounded_type (a_type_name: STRING): STRING

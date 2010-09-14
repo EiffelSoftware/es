@@ -276,6 +276,7 @@ feature -- Test case information
 
 	tci_operand_variable_indexes: STRING
 			-- Comma separated indexes of operands of the feature under test
+			-- For each pair, the fir number is 0-based operand index, the second number is the object id of that operand.
 		local
 			l_tbl: HASH_TABLE [INTEGER, INTEGER]
 			l_otbl: like tci_operand_table
@@ -296,70 +297,12 @@ feature -- Test case information
 			until
 				i > c
 			loop
+				Result.append (i.out)
+				Result.append_character (',')
 				Result.append (l_otbl.item (i).out)
 				if i < c then
 					Result.append_character (',')
 				end
-				i := i + 1
-			end
-		end
-
-feature{NONE} -- Implementation
-
-	ascii_string_as_array (a_string: STRING): ARRAY [NATURAL_8]
-			-- Array storing the ascii code for each character in `a_string'
-		local
-			l_count: INTEGER
-			i: INTEGER
-		do
-			l_count := a_string.count
-			create Result.make (1, l_count)
-			from
-				i := 1
-			until
-				i > l_count
-			loop
-				Result.put (a_string.item (i).code.to_natural_8, i)
-				i := i + 1
-			end
-		end
-
-	array_as_string (a_array: ARRAY [NATURAL_8]): STRING
-			-- String representation of `a_array'
-			-- Format: comma separated numbers
-		local
-			i: INTEGER
-			u: INTEGER
-		do
-			create Result.make (a_array.count * 4 + 1)
-			from
-				i := a_array.lower
-				u := a_array.upper
-			until
-				i > u
-			loop
-				Result.append (a_array.item (i).out)
-				if i < u then
-					Result.append_character (',')
-				end
-				i := i + 1
-			end
-		end
-
-	special_from_tuple (a_tuple: TUPLE): SPECIAL [detachable ANY]
-			-- Special from `a_tuple'
-		local
-			l_count: INTEGER
-			i: INTEGER
-		do
-			l_count := a_tuple.count
-			create Result.make_filled (Void, l_count)
-			from
-				i := 1
-			until
-				i > l_count
-			loop
-				Result.put (a_tuple.item (i), i - 1)
 				i := i + 1
 			end
 		end

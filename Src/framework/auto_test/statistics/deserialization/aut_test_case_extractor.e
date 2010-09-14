@@ -566,7 +566,6 @@ feature{NONE} -- Class content
 			Result.append (once "%N%T%T%Tsetup_before_test%N%N")
 			Result.append (once "%T%T%T%T-- Execute feature under test.%N%T%T%T")
 			Result.append (l_test_call)
-			Result.append (once "%N%N%T%T%Tcleanup_after_test")
 			Result.append ("%N%N%T%T%T%T-- Setup object serialization in post-state.%N")
 			Result.append ("%T%T%Tif is_post_state_information_enabled then%N")
 			Result.append ("%T%T%T%Tpost_serialization_cache := ascii_string_as_array (serialized_object (special_from_tuple (")
@@ -574,6 +573,7 @@ feature{NONE} -- Class content
 			Result.append (")))%N")
 			Result.append ("%T%T%T%Tfinish_post_state_calculation%N")
 			Result.append ("%T%T%Tend%N")
+			Result.append (once "%N%N%T%T%Tcleanup_after_test%N")
 		end
 
 	tc_code_cache: STRING
@@ -686,10 +686,10 @@ feature{NONE} -- Class content
 				l_var_index := l_var_name.substring (3, l_var_name.count)
 
 				if not Result.is_empty then
-					Result.append_character (',')
+					Result.append_character (';')
 				end
 				Result.append (l_var_type)
-				Result.append_character (',')
+				Result.append_character (';')
 				Result.append (l_var_index)
 				l_vars.forth
 			end

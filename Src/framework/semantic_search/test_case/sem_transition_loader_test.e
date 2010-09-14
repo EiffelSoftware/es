@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	SEM_TRANSITION_LOADER
+	SEM_TRANSITION_LOADER_TEST
 
 inherit
 	REFACTORING_HELPER

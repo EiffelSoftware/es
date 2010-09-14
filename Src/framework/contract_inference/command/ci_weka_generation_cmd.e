@@ -143,7 +143,7 @@ feature{NONE} -- Actions
 		local
 			l_cursor: DS_HASH_SET_CURSOR [STRING]
 			l_generator: CI_TRANSITION_TO_WEKA_PRINTER
-			l_transition_loader: SEM_TRANSITION_LOADER
+--			l_transition_loader: SEM_TRANSITION_LOADER
 			l_relation: WEKA_ARFF_RELATION
 			l_file: PLAIN_TEXT_FILE
 			l_file_name: FILE_NAME
@@ -167,12 +167,12 @@ feature{NONE} -- Actions
 				l_cursor.after
 			loop
 				logger.put_line (once "%TLoading " + l_cursor.item)
-				create l_transition_loader
-				l_transition_loader.load (l_cursor.item)
-				l_transition_loader.last_transitions.do_all (
-					agent (a_tran: SEM_FEATURE_CALL_TRANSITION; a_gen: CI_TRANSITION_TO_WEKA_PRINTER) do
-						a_gen.extend_transition (create {SEM_FEATURE_CALL_TRANSITION}.make_interface_transition (a_tran))
-					end (?, l_generator))
+--				create l_transition_loader
+--				l_transition_loader.load (l_cursor.item)
+--				l_transition_loader.last_transitions.do_all (
+--					agent (a_tran: SEM_FEATURE_CALL_TRANSITION; a_gen: CI_TRANSITION_TO_WEKA_PRINTER) do
+--						a_gen.extend_transition (create {SEM_FEATURE_CALL_TRANSITION}.make_interface_transition (a_tran))
+--					end (?, l_generator))
 				l_cursor.forth
 			end
 

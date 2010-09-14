@@ -10,6 +10,8 @@ class
 inherit
 	EPA_TYPE_UTILITY
 
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
 create
 	make
 
@@ -35,7 +37,19 @@ feature -- Access
 			-- Serialized objects in prestate
 
 	post_serialization: ARRAY [NATURAL_8]
-			-- Serialized objects in poststate
+			-- Serialized objects in poststate	
+
+	pre_serialization_as_string: STRING
+			-- String representation for `pre_serialization'.
+		do
+			Result := array_as_string (pre_serialization)
+		end
+
+	post_serialization_as_string: STRING
+			-- String representation for `post_serialization'.
+		do
+			Result := array_as_string (post_serialization)
+		end
 
 	operand_table: HASH_TABLE [INTEGER, INTEGER]
 			-- Operand table
@@ -114,7 +128,7 @@ feature{NONE} -- Implementation
 			l_object_id: INTEGER
 		do
 			l_context_class := test_case_info.test_case_class
-			l_parts := a_string.split (',')
+			l_parts := a_string.split (';')
 			create Result.make (l_parts.count // 2)
 
 			from

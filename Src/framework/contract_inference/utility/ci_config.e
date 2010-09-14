@@ -19,6 +19,8 @@ feature{NONE} -- Initialization
 
 	make (a_system: like eiffel_system)
 			-- Initialize `eiffel_system' with `a_system'.
+		local
+			l_relation: EPA_EXPRESSION_RELATION
 		do
 			eiffel_system := a_system
 		ensure

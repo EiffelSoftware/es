@@ -129,4 +129,24 @@ feature
 			end
 		end
 
+feature -- Names
+
+	variable_name_with_prefix (a_prefix: STRING; a_id: INTEGER): STRING
+			-- Variable name with `a_prefix' and `a_id',
+			-- for example, "v_12" if `a_prefix' is "v_" and `a_id' is 12.
+		do
+			create Result.make (5)
+			Result.append (a_prefix)
+			Result.append (a_id.out)
+		end
+
+	variable_name_with_default_prefix (a_id: INTEGER): STRING
+			-- Variable name with prefix "v_" and `a_id',
+			-- for example, "v_12" if `a_prefix' is "v_" and `a_id' is 12.
+		do
+			create Result.make (5)
+			Result.append (once "v_")
+			Result.append (a_id.out)
+		end
+
 end
