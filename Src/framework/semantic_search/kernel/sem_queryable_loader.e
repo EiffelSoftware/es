@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	SEM_DOCUMENT_LOADER2 [G -> SEM_QUERYABLE]
+	SEM_QUERYABLE_LOADER [G -> SEM_QUERYABLE]
 
 inherit
 	SEM_FIELD_NAMES

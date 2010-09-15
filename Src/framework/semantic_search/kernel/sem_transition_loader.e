@@ -7,7 +7,7 @@ deferred class
 	SEM_TRANSITION_LOADER [G -> SEM_TRANSITION]
 
 inherit
-	SEM_DOCUMENT_LOADER2 [G]
+	SEM_QUERYABLE_LOADER [G]
 
 feature -- Loading
 

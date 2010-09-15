@@ -119,9 +119,6 @@ feature -- Basic operations
 
 			log_manager.put_line_with_time (msg_contract_inference_ended)
 
-				-- Store transitions in files
-			store_transition_in_files
-
 			if log_file /= Void and then log_file.is_open_write then
 				log_file.close
 			end
@@ -928,22 +925,6 @@ feature{NONE} -- Implementation
 				l_cursor.forth
 			end
 			a_state.append (l_set)
-		end
-
-	store_transition_in_files
-			-- Store transitions in `transition_data' into files.
-		local
-			l_writer: SEM_DOCUMENT_WRITER
-			l_reader: SEM_DOCUMENT_LOADER
-		do
---			create l_writer
---			create l_reader
---			across transition_data as l_cursor loop
---				l_writer.write (l_cursor.item.transition, config.transition_directory)
---				l_reader.load_from_file (l_writer.last_file_path)
---				if attached {SEM_FEATURE_CALL_TRANSITION} l_reader.last_queryable as l_transition then
---				end
---			end
 		end
 
 feature{NONE} -- Results

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	SEM_DOCUMENT_WRITER2 [G -> SEM_QUERYABLE]
+	SEM_QUERYABLE_WRITER [G -> SEM_QUERYABLE]
 
 inherit
 	SEM_SHARED_EQUALITY_TESTER
