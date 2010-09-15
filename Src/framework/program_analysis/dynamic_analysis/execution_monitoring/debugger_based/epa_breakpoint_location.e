@@ -4,17 +4,18 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EPA_BREAKPOINT_LOCATION
 
 inherit
 	EPA_PROGRAM_LOCATION
 		redefine
-			is_equal
+			is_equal,
+			hash_code
 		end
 
-create
-	make
+--create
+--	make
 
 feature{NONE} -- Initialization
 
@@ -61,11 +62,6 @@ feature -- Status report
 				feature_.body_index = other.feature_.body_index and then
 				slot = other.slot
 		end
-
-feature{NONE} -- Implementation
-
-	internal_hash_code: INTEGER
-			-- Cache for `hash_code'
 
 invariant
 	slot_positive: slot > 0

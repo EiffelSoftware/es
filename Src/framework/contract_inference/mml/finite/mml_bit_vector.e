@@ -78,7 +78,7 @@ feature -- Status report
 		end
 
 feature -- Decomposition
-	last: BOOLEAN is
+	last: BOOLEAN
 			-- The last element of `current'.
 		require
 			non_empty: not is_empty
@@ -86,7 +86,7 @@ feature -- Decomposition
 			Result := item (count)
 		end
 
-	but_first: MML_BIT_VECTOR is
+	but_first: MML_BIT_VECTOR
 			-- The elements of `Current' except for the first one.
 		require
 			non_empty: not is_empty
@@ -103,7 +103,7 @@ feature -- Decomposition
 			create Result.make_with_count (code |>> (l - 1), count - l + 1)
 		end
 
-	but_last: MML_BIT_VECTOR is
+	but_last: MML_BIT_VECTOR
 			-- The elements of `Current' except for the last one.
 		require
 			non_empty: not is_empty

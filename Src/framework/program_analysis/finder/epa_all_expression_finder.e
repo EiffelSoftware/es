@@ -9,7 +9,7 @@ class
 
 inherit
 	EPA_EXPRESSION_FINDER
-	
+
 	REFACTORING_HELPER
 
 	AST_ITERATOR
@@ -28,6 +28,9 @@ inherit
 		end
 
 	EPA_UTILITY
+		redefine
+			ast_in_context_class
+		end
 
 create
 	make
