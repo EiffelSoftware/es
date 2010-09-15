@@ -14,13 +14,26 @@ inherit
 
 	EPA_UTILITY
 
-feature -- Access
+create
+	make,
+	make_with_medium
 
-	prestate_serialization: detachable STRING
-			-- Prestate object serialization
+feature{NONE} -- Initialization
 
-	poststate_serialization: detachable STRING
-			-- Poststate object serialization	
+	make
+			-- Initialize Current.
+		do
+			set_is_anonymous_expression_enabled (True)
+			set_is_dynamic_typed_expression_enabled (True)
+			set_is_static_typed_expression_enabled (True)
+		end
+
+	make_with_medium (a_medium: like output)
+			-- Initialize `output' with `a_medium'.
+		do
+			make
+			set_output_medium (a_medium)
+		end
 
 feature -- Status report
 
@@ -68,22 +81,6 @@ feature -- Setting
 			is_static_typed_expression_enabled_set: is_static_typed_expression_enabled = b
 		end
 
-	set_prestate_serialization (a_serialization: like prestate_serialization)
-			-- Set `prestate_serialization' with `a_serialization'.
-		do
-			prestate_serialization := a_serialization
-		ensure
-			prestate_serialization_set: prestate_serialization = a_serialization
-		end
-
-	set_poststate_serialization (a_serialization: like poststate_serialization)
-			-- Set `poststate_serialization' with `a_serialization'.
-		do
-			poststate_serialization := a_serialization
-		ensure
-			poststate_serialization_set: poststate_serialization = a_serialization
-		end
-
 feature -- Basic operations
 
 	write (a_document: like queryable)
@@ -97,8 +94,7 @@ feature -- Basic operations
 			write_content
 			write_preconditions
 			write_postconditions
-			write_prestate_objects
-			write_poststate_objects
+			write_auxiliary_fields
 			write_end
 		end
 
@@ -130,26 +126,6 @@ feature{NONE} -- Implementation
 			write_field_with_data (variable_position_field, l_data, string_field_type, default_boost_value)
 		end
 
-	write_prestate_objects
-			-- Write object serialization information (if available) in prestate.
-		do
-			write_objects (prestate_serialization_field, prestate_serialization)
-		end
-
-	write_poststate_objects
-			-- Write object serialization information (if available) in poststate.
-		do
-			write_objects (poststate_serialization_field, poststate_serialization)
-		end
-
-	write_objects (a_field_name: STRING; a_serialization: detachable STRING)
-			-- Write `a_serialization' into a field named `a_field_name'.
-		do
-			if a_serialization /= Void then
-				write_field_with_data (a_field_name, a_serialization, string_field_type, default_boost_value)
-			end
-		end
-
 	write_content
 			-- Append content of `queryable' to `buffer'.
 		do
@@ -177,7 +153,6 @@ feature{NONE} -- Implementation
 			write_field_with_data (feature_field, queryable.feature_.feature_name_32.as_lower , string_field_type, default_boost_value)
 			write_field_with_data (uuid_field, queryable.uuid, string_field_type, default_boost_value)
 			write_library
-			write_auxiliary_fields
 		end
 
 	write_variables

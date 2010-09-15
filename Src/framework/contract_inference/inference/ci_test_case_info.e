@@ -18,28 +18,53 @@ inherit
 
 create
 	make,
-	make_empty
+	make_empty,
+	make_with_data
 
 feature{NONE} -- Initialization
 
 	make (a_info_state: EPA_STATE)
 			-- Initialize current with `a_inf_state', which contains information of a test case.
 		local
+			l_test_case_class: CLASS_C
+			l_class_under_test: CLASS_C
+		do
+
+			l_test_case_class := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_name).value.out)
+			l_class_under_test := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_under_test).value.out)
+			make_with_data (
+				l_test_case_class,
+				l_test_case_class.feature_named ("generated_test_1"),
+				l_class_under_test,
+				l_class_under_test.feature_named (a_info_state.item_with_expression_text (txt_tci_feature_under_test).value.out),
+				a_info_state.item_with_expression_text (txt_tci_is_query).value.out.to_boolean,
+				a_info_state.item_with_expression_text (txt_tci_is_creation).value.out.to_boolean,
+				a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
+		end
+
+	make_empty
+			-- Initialize Current, but don't populate test case related attributes
+		do
+			hash_code := 0
+		end
+
+	make_with_data (a_test_case_class: CLASS_C; a_test_feature: FEATURE_I; a_class_under_test: CLASS_C; a_feature_under_test: FEATURE_I; a_is_query: BOOLEAN; a_is_creation: BOOLEAN; a_operand_variable_indexes: STRING)
+			-- Initialize Current with data.
+		local
 			l_parts: LIST [STRING]
 		do
-			test_case_class := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_name).value.out)
-			class_under_test := first_class_starts_with_name (a_info_state.item_with_expression_text (txt_tci_class_under_test).value.out)
-			feature_under_test := class_under_test.feature_named (a_info_state.item_with_expression_text (txt_tci_feature_under_test).value.out)
-			test_feature := test_case_class.feature_named ("generated_test_1")
-			is_feature_under_test_query := a_info_state.item_with_expression_text (txt_tci_is_query).value.out.to_boolean
-			is_feature_under_test_creation := a_info_state.item_with_expression_text (txt_tci_is_creation).value.out.to_boolean
+			test_case_class := a_test_case_class
+			class_under_test := a_class_under_test
+			feature_under_test := a_feature_under_test
+			test_feature := a_test_feature
+			is_feature_under_test_query := a_is_query
+			is_feature_under_test_creation := a_is_creation
 
 			calculate_break_point_position
-			operand_variable_indexes := a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out
+			operand_variable_indexes := a_operand_variable_indexes.twin
 			setup_operand_map (operand_variable_indexes)
 			setup_variables (test_case_class)
 			hash_code := test_case_class.name_in_upper.hash_code
-
 
 			l_parts := string_slices (test_case_class.name_in_upper, "__")
 			if l_parts.last.item (1).is_digit then
@@ -47,12 +72,6 @@ feature{NONE} -- Initialization
 			else
 				uuid := ""
 			end
-		end
-
-	make_empty
-			-- Initialize Current, but don't populate test case related attributes
-		do
-			hash_code := 0
 		end
 
 feature -- Access

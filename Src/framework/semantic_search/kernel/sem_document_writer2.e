@@ -78,13 +78,4 @@ feature{NONE} -- Implementation
 			write_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))
 		end
 
-	output_type_name (a_type: STRING): STRING
-			-- Formatted type name from `a_type'
-		do
-			create Result.make_from_string (a_type)
-			Result.replace_substring_all (once "?", once "")
-			Result.replace_substring_all (once "detachable ", once "")
-			Result.replace_substring_all (once "separate ", once "")
-		end
-
 end

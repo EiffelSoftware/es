@@ -12,13 +12,13 @@ inherit
 
 	EPA_TYPE_UTILITY
 
+	EPA_STRING_UTILITY
+
 feature -- Access
 
-	prestate_serialization: detachable STRING
-			-- Prestate serialization (if available) from last `load'
-
-	poststate_serialization: detachable STRING
-			-- Poststate serialization (if available) from last `load'
+	fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]
+			-- Table of fields loaded by last `load'
+			-- Key is field name, value is that field
 
 feature -- Basic operations
 
@@ -31,17 +31,13 @@ feature -- Basic operations
 			fields.search (document_type_field)
 			if fields.found and then fields.found_item.value ~ transition_field_value then
 				setup_basic_fields
-				setup_contracts
+				if last_queryable /= Void then
+					setup_contracts
+				end
 			else
 				-- Not a feature call transition.
 			end
 		end
-
-feature{NONE} -- Implementation
-
-	fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]
-			-- Table of fields loaded by last `load'
-			-- Key is field name, value is that field
 
 feature{NONE} -- Implementation
 
@@ -82,9 +78,9 @@ feature{NONE} -- Implementation
 	initialize_data
 			-- Initialize relevant data.
 		do
-			prestate_serialization := Void
-			poststate_serialization := Void
 			last_queryable := Void
+			fields := Void
+			variable_positions := Void
 		end
 
 	setup_basic_fields
@@ -98,9 +94,9 @@ feature{NONE} -- Implementation
 			l_fields: like fields
 			l_positions: STRING
 			l_variable_type_table: like variable_type_table
-			l_variable_position_table: like variable_position_table
 			l_operand_variable_indexes: like operand_variable_indexes
 			l_is_creation: BOOLEAN
+			l_uuid: STRING
 		do
 			l_ok := True
 			l_fields := fields
@@ -131,8 +127,8 @@ feature{NONE} -- Implementation
 					l_ok := l_fields.found
 					if l_ok then
 						l_variable_type_table := variable_type_table (l_fields.found_item.value)
-						l_variable_position_table := variable_position_table (l_positions)
-						l_context := transition_context (l_variable_type_table, l_variable_position_table)
+						variable_positions := variable_position_table (l_positions)
+						l_context := transition_context (l_variable_type_table, variable_positions)
 					end
 				end
 			end
@@ -155,9 +151,20 @@ feature{NONE} -- Implementation
 				end
 			end
 
-				-- Construct `last_queryable'.
-			create last_queryable.make (l_class, l_feature, l_operand_variable_indexes, l_context, l_is_creation)
+				-- Setup `l_uuid'.
+			if l_ok then
+				l_fields.search (uuid_field)
+				l_ok := l_fields.found
+				if l_ok then
+					l_uuid := l_fields.found_item.value
+				end
+			end
 
+				-- Construct `last_queryable'.
+			if l_ok then
+				create last_queryable.make (l_class, l_feature, l_operand_variable_indexes, l_context, l_is_creation)
+				last_queryable.set_uuid (l_uuid)
+			end
 		end
 
 	variable_position_table (a_data: STRING): HASH_TABLE [STRING, INTEGER]
@@ -250,9 +257,79 @@ feature{NONE} -- Implementation
 
 	setup_contracts
 			-- Setup pre- and postconditions in `last_queryable'.
+		local
+			l_field: STRING
+			l_prestate, l_poststate: EPA_STATE
+			l_state, l_prestate_queries, l_poststate_queries: HASH_TABLE[STRING, STRING]
+			l_current_anon_property, l_current_var_property, l_current_property_value: STRING
+			l_prefix: STRING
+			l_pre_prefix: STRING
+			l_post_prefix: STRING
+			l_ok: BOOLEAN
 		do
-			
+			create l_prestate_queries.make (200)
+			l_prestate_queries.compare_objects
+			create l_poststate_queries.make (200)
+			l_poststate_queries.compare_objects
+
+			l_pre_prefix := precondition_field_prefix
+			l_post_prefix := postcondition_field_prefix
+
+			across fields as l_fields loop
+				l_field := l_fields.key
+				l_ok := False
+				if l_field.starts_with (l_pre_prefix) then
+					l_prefix := l_pre_prefix
+					l_state := l_prestate_queries
+					l_ok := True
+				elseif l_field.starts_with (l_post_prefix) then
+					l_prefix := l_post_prefix
+					l_state := l_poststate_queries
+					l_ok := True
+				end
+
+				if l_ok then
+					l_current_anon_property := l_field.substring (l_prefix.count + 1, l_field.count)
+					if is_anonymous_form (l_current_anon_property) then
+						l_current_var_property := variable_form_from_anonymous (l_current_anon_property, variable_positions)
+						l_current_property_value := l_fields.item.value
+						l_state.extend (l_current_property_value, l_current_var_property)
+					end
+				end
+			end
+
+				-- Create and set pre- & poststates
+			create l_prestate.make_from_object_state (l_prestate_queries, last_queryable.class_ , last_queryable.feature_)
+			create l_poststate.make_from_object_state (l_poststate_queries, last_queryable.class_ , last_queryable.feature_)
+			last_queryable.set_preconditions (l_prestate)
+			last_queryable.set_postconditions (l_poststate)
 		end
+
+	is_anonymous_form (a_string: STRING): BOOLEAN
+			-- Is `a_string' in anonymous form? ({0}.count etc)
+		local
+			l_anon_start: INTEGER
+		do
+			-- Find '{'
+			-- Check if next character is an integer
+			l_anon_start := a_string.index_of ('{', 1)
+			Result :=  l_anon_start = 0 or else a_string.item (l_anon_start+1).is_digit
+		end
+
+	variable_form_from_anonymous (a_string: STRING; a_variable_position_table: like variable_position_table): STRING
+			--
+		local
+			l_pos: INTEGER
+			l_change: BOOLEAN
+		do
+			Result := a_string.twin
+			across a_variable_position_table as l_vars loop
+				Result.replace_substring_all (curly_brace_surrounded_integer (l_vars.key), l_vars.item)
+			end
+		end
+
+	variable_positions: like variable_position_table
+		-- Variable positions
 
 end
 
