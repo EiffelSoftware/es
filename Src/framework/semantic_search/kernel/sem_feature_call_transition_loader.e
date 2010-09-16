@@ -266,6 +266,8 @@ feature{NONE} -- Implementation
 			l_pre_prefix: STRING
 			l_post_prefix: STRING
 			l_ok: BOOLEAN
+			l_test_case_class: CLASS_C
+			l_test_feature: FEATURE_I
 		do
 			create l_prestate_queries.make (200)
 			l_prestate_queries.compare_objects
@@ -299,10 +301,25 @@ feature{NONE} -- Implementation
 			end
 
 				-- Create and set pre- & poststates
-			create l_prestate.make_from_object_state (l_prestate_queries, last_queryable.class_ , last_queryable.feature_)
-			create l_poststate.make_from_object_state (l_poststate_queries, last_queryable.class_ , last_queryable.feature_)
-			last_queryable.set_preconditions (l_prestate)
-			last_queryable.set_postconditions (l_poststate)
+			l_ok := True
+			if l_ok then
+				fields.search (test_case_class_field)
+				l_ok := fields.found
+				if l_ok then
+					l_test_case_class := first_class_starts_with_name (fields.found_item.value)
+					fields.search (test_feature_field)
+					l_ok := fields.found
+					if l_ok then
+						l_test_feature := l_test_case_class.feature_named (fields.found_item.value)
+						if l_ok then
+							create l_prestate.make_from_object_state (l_prestate_queries, l_test_case_class, l_test_feature)
+							create l_poststate.make_from_object_state (l_poststate_queries, l_test_case_class, l_test_feature)
+							last_queryable.set_preconditions (l_prestate)
+							last_queryable.set_postconditions (l_poststate)
+						end
+					end
+				end
+			end
 		end
 
 	is_anonymous_form (a_string: STRING): BOOLEAN

@@ -86,6 +86,10 @@ feature -- Access
 
 	test_case_class_field: STRING = "test_case_class"
 
+	prestate_bounded_functions_field: STRING = "prestate_bounded_functions"
+
+	poststate_bounded_functions_field: STRING = "poststate_bounded_functions"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

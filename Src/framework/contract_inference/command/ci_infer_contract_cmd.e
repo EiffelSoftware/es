@@ -109,13 +109,19 @@ feature -- Basic operations
 		do
 			initialize_data_structure
 
-				-- Compile project
 			log_manager.put_line_with_time (msg_contract_inference_started)
-			compile_project (eiffel_project, True)
 
-			log_manager.put_line_with_time (msg_test_case_execution_started)
-				-- Debug project
-			debug_project
+			if config.should_use_mocking then
+				initialize_with_mocking
+				on_application_exited (debugger_manager)
+			else
+					-- Compile project			
+				compile_project (eiffel_project, True)
+
+				log_manager.put_line_with_time (msg_test_case_execution_started)
+					-- Debug project
+				debug_project
+			end
 
 			log_manager.put_line_with_time (msg_contract_inference_ended)
 
@@ -188,7 +194,7 @@ feature{NONE} -- Implementation
 
 	object_serialization_evaluation (a_tc_info: CI_TEST_CASE_INFO): EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			-- Break point manager for evaluating expressions to collect object serialization information
-			-- for `a_tc_info'. This break point is only reachable if `config'.`is_semantic_search_enabled' is True.
+			-- for `a_tc_info'. This break point is only reachable if `config'.`should_use_mocking' is True.
 		do
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
 			Result.set_breakpoint_with_agent_and_action (
@@ -492,7 +498,7 @@ feature{NONE} -- Actions
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 					-- Enable the flag to calculate post-state information if needed.
-				if config.is_semantic_search_enabled then
+				if config.should_generate_mocking then
 					l_dummy_value := debugger_manager.expression_evaluation ("set_is_post_state_information_enabled (True)")
 				end
 
@@ -514,7 +520,7 @@ feature{NONE} -- Actions
 				l_before_dbg_manager.toggle_breakpoints (True)
 				l_after_dbg_manager.toggle_breakpoints (True)
 
-				if config.is_semantic_search_enabled then
+				if config.should_generate_mocking then
 					l_serialization_dbg_manager := object_serialization_evaluation (last_test_case_info)
 					l_serialization_dbg_manager.toggle_breakpoints (True)
 				end
@@ -733,7 +739,7 @@ feature{NONE} -- Implementation
 				last_post_execution_bounded_functions)
 
 				-- Setup object serialization information if semantic search support is enabled.
-			if config.is_semantic_search_enabled then
+			if config.should_generate_mocking then
 				l_transition_info.set_serialization_info (last_serialization_info)
 			else
 				l_transition_info.set_serialization_info (Void)
@@ -827,7 +833,7 @@ feature{NONE} -- Implementation
 				inferrers.extend (l_constant_change_inferrer)
 			end
 
-			if config.is_semantic_search_enabled then
+			if config.should_generate_mocking then
 				create l_semantic_search_inferrer
 				l_semantic_search_inferrer.set_config (config)
 				l_semantic_search_inferrer.set_logger (log_manager)
@@ -1080,6 +1086,102 @@ feature{NONE} -- Implementation
 				end
 			end
 			log_manager.pop_level
+		end
+
+	initialize_with_mocking
+			-- Initialize data through mockings.
+		do
+				-- Iterate through all files storing transition information and load those transitions.
+			transition_file_paths (config.semantic_search_document_directory).do_all (agent build_last_transition_from_file)
+		end
+
+	transition_file_paths (a_directory: STRING): LINKED_LIST [STRING]
+			-- Absolute file paths for transitions in `a_directory'
+		local
+			l_dir: DIRECTORY
+			l_file_path: FILE_NAME
+
+		do
+			create Result.make
+			create l_dir.make_open_read (config.semantic_search_document_directory)
+			from
+				l_dir.readentry
+			until
+				l_dir.lastentry = Void
+			loop
+				if l_dir.lastentry.ends_with (once ".tran") then
+					create l_file_path.make_from_string (config.semantic_search_document_directory)
+					l_file_path.set_file_name (l_dir.lastentry)
+					Result.extend (l_file_path)
+				end
+				l_dir.readentry
+			end
+			l_dir.close
+		end
+
+	build_last_transition_from_file (a_absolute_path: STRING)
+			-- Build transition from `a_transition', `a_test_case_info' and
+			-- `a_serialization_info' and store resulting transition in `transitions'.
+		local
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_context: EPA_CONTEXT
+			l_func_analyzer: CI_FUNCTION_ANALYZER
+			l_pre_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_post_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
+			l_loader: CI_FEATURE_CALL_TRANSITION_LOADER
+			l_test_case_info: CI_TEST_CASE_INFO
+		do
+			create l_loader
+			l_loader.load_from_file (a_absolute_path)
+
+			l_transition := l_loader.last_feature_call_transition
+			l_test_case_info := l_loader.last_test_case_info
+
+
+				-- Analyze functions in pre-execution state.
+			create l_func_analyzer
+			l_func_analyzer.analyze (
+				l_transition.preconditions,
+				l_transition.context,
+				l_test_case_info.operand_map,
+				l_test_case_info.class_under_test,
+				l_test_case_info.feature_under_test,
+				l_test_case_info.class_under_test.constraint_actual_type)
+			l_pre_valuations := l_func_analyzer.valuations
+
+				-- Logging.
+			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.put_line_with_time ("(Mocking) Function analysis in pre-state:")
+			log_manager.put_line (l_func_analyzer.dumped_result)
+
+				-- Analyze functions in post-execution state.
+			create l_func_analyzer
+			l_func_analyzer.analyze (
+				l_transition.postconditions,
+				l_transition.context,
+				l_test_case_info.operand_map,
+				l_test_case_info.class_under_test,
+				l_test_case_info.feature_under_test,
+				l_test_case_info.class_under_test.constraint_actual_type)
+			l_post_valuations := l_func_analyzer.valuations
+
+			log_manager.put_line_with_time ("(Mocking) Function analysis in post-state:")
+			log_manager.put_line (l_func_analyzer.dumped_result)
+			log_manager.pop_level
+
+				-- Fabricate transition info for the last executed test case.
+			create l_transition_info.make (
+				l_test_case_info,
+				l_transition,
+				l_pre_valuations,
+				l_post_valuations,
+				l_loader.last_integer_bounded_functions.item (True),
+				l_loader.last_integer_bounded_functions.item (False))
+
+				-- Setup object serialization information if semantic search support is enabled.
+			l_transition_info.set_serialization_info (l_loader.last_serialization_info)
+			transition_data.extend (l_transition_info)
 		end
 
 end

@@ -267,10 +267,12 @@ feature -- Access
 			-- Should freeze the project before contract inference?
 			-- Default: False
 
-	is_semantic_search_enabled: BOOLEAN
-			-- Is semantic search support enabled?
-			-- If enabled, during test case execution, object serialization in
-			-- pre- and poststate as well as the object type information will be kept
+	should_use_mocking: BOOLEAN
+			-- Should use mocking information instead of re-run the test suite?
+			-- Default: False
+
+	should_generate_mocking: BOOLEAN
+			-- Should generate mocking information?
 			-- Default: False
 
 feature -- Status report
@@ -537,12 +539,20 @@ feature -- Setting
 			should_freeze_set: should_freeze = b
 		end
 
-	set_is_semantic_search_enabled (b: BOOLEAN)
-			-- Set `is_semantic_search_enabled' with `b'.
+	set_should_generate_mocking (b: BOOLEAN)
+			-- Set `should_generate_mocking' with `b'.
 		do
-			is_semantic_search_enabled := b
+			should_generate_mocking := b
 		ensure
-			is_semantic_search_enabled_set: is_semantic_search_enabled = b
+			should_generate_mocking_set: should_generate_mocking = b
+		end
+
+	set_should_use_mocking (b: BOOLEAN)
+			-- Set `should_use_mocking' with `b'.
+		do
+			should_use_mocking := b
+		ensure
+			should_use_mocking_set: should_use_mocking = b
 		end
 
 feature{NONE} -- Implementation

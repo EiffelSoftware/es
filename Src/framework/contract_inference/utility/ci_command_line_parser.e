@@ -62,7 +62,8 @@ feature -- Basic operations
 			l_dummy_flag: AP_STRING_OPTION
 			l_verbose_option: AP_STRING_OPTION
 			l_freeze_option: AP_FLAG
-			l_semantic_search_option: AP_STRING_OPTION
+			l_generate_mock_option: AP_FLAG
+			l_use_mock_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -197,9 +198,13 @@ feature -- Basic operations
 			l_freeze_option.set_description ("Should the project be frozen before contract inference starts? Default: False.")
 			l_parser.options.force_last (l_freeze_option)
 
-			create l_semantic_search_option.make_with_long_form ("semantic-search")
-			l_semantic_search_option.set_description ("Enable sementic search support, which means to collect object serialization information at both pre- and poststates.%NFormat: --semantic-search [on|off].%NDefault: off.")
-			l_parser.options.force_last (l_semantic_search_option)
+			create l_generate_mock_option.make_with_long_form ("generate-mock")
+			l_generate_mock_option.set_description ("Generate mocking information.")
+			l_parser.options.force_last (l_generate_mock_option)
+
+			create l_use_mock_option.make_with_long_form ("use-mock")
+			l_use_mock_option.set_description ("Enable using mocking information.")
+			l_parser.options.force_last (l_use_mock_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -331,27 +336,14 @@ feature -- Basic operations
 				setup_verbose_level (config, Void)
 			end
 
-			if l_semantic_search_option.was_found then
-				setup_semantic_search_support (config, l_semantic_search_option.parameter)
-			else
-				setup_semantic_search_support (config, Void)
-			end
+			config.set_should_use_mocking (l_use_mock_option.was_found)
+			config.set_should_generate_mocking (l_generate_mock_option.was_found)
 
 			config.set_should_freeze (l_freeze_option.was_found)
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
 		end
 
 feature{NONE} -- Implementation
-
-	setup_semantic_search_support (a_config: CI_CONFIG; a_parameter: detachable STRING)
-			-- Setup if semantic search support is enabled
-		do
-			if a_parameter /= Void and then a_parameter.is_case_insensitive_equal ("on") then
-				config.set_is_semantic_search_enabled (True)
-			elseif a_parameter = Void or else a_parameter.is_case_insensitive_equal ("off") then
-				config.set_is_semantic_search_enabled (False)
-			end
-		end
 
 	setup_verbose_level (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup verbose level.

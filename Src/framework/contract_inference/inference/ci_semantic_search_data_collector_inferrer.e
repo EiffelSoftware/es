@@ -46,7 +46,7 @@ feature{NONE} -- Implementation
 				if attached {SEM_FEATURE_CALL_TRANSITION} l_transitions.item.transition as l_tran then
 						-- Store current transition into a file.
 					l_file_path := tranisition_file_path (l_tran)
-					write_transition_into_file (l_tran, l_transitions.item.test_case_info, l_transitions.item.serialization_info, l_file_path)
+					write_transition_into_file (l_transitions.item, l_file_path)
 
 						-- Load transition from the stored file and restore it, to validate equality.
 --					l_loaded_data := transition_data_from_file (l_file_path)
@@ -57,20 +57,20 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	write_transition_into_file (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_serialization_info: CI_TEST_CASE_SERIALIZATION_INFO; a_file_path: STRING)
+	write_transition_into_file (a_transition_data: CI_TEST_CASE_TRANSITION_INFO; a_file_path: STRING)
 			-- Write transition into `a_file_path'.
 		local
 			l_transition_writer: SEM_FEATURE_CALL_TRANSITION_WRITER
 			l_file: PLAIN_TEXT_FILE
 			l_transition: SEM_FEATURE_CALL_TRANSITION
 		do
-			l_transition := a_transition.cloned_object
+			l_transition := a_transition_data.transition.cloned_object
 			l_transition.add_written_precondition
 			l_transition.add_written_postcondition
 
 			create l_file.make_create_read_write (a_file_path)
 			create l_transition_writer.make_with_medium (l_file)
-			l_transition_writer.auxiliary_field_agents.extend (agent test_case_info_fields (?, a_test_case_info, a_serialization_info))
+			l_transition_writer.auxiliary_field_agents.extend (agent test_case_info_fields (?, a_transition_data))
 			l_transition_writer.write (l_transition)
 			l_file.close
 		end
@@ -96,24 +96,74 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	test_case_info_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_tc_info: CI_TEST_CASE_INFO; a_serialization_info: CI_TEST_CASE_SERIALIZATION_INFO): DS_HASH_SET [SEM_DOCUMENT_FIELD]
+	test_case_info_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_transition_info: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [SEM_DOCUMENT_FIELD]
 			-- Set of semantic search document fields representing the test case for `a_test_case_info' and `a_serialization_info'.
 		do
 			create Result.make (10)
 
 				-- Setup fields for test case information.
 			Result.set_equality_tester (document_field_equality_tester)
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_case_class_field, a_tc_info.test_case_class.name_in_upper, string_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_feature_field, a_tc_info.test_feature.feature_name.as_lower, string_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_query_field, a_tc_info.is_feature_under_test_query.out, boolean_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_creation_field, a_tc_info.is_feature_under_test_creation.out, boolean_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (operand_variable_indexes_field, a_tc_info.operand_variable_indexes, string_field_type, default_boost_value))
+			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_case_class_field, a_transition_info.test_case_info.test_case_class.name_in_upper, string_field_type, default_boost_value))
+			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_feature_field, a_transition_info.test_case_info.test_feature.feature_name.as_lower, string_field_type, default_boost_value))
+			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_query_field, a_transition_info.test_case_info.is_feature_under_test_query.out, boolean_field_type, default_boost_value))
+			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_creation_field, a_transition_info.test_case_info.is_feature_under_test_creation.out, boolean_field_type, default_boost_value))
+			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (operand_variable_indexes_field, a_transition_info.test_case_info.operand_variable_indexes, string_field_type, default_boost_value))
 
 				-- Setup fields for object serialization.
-			if a_serialization_info /= Void then
-				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (prestate_serialization_field, a_serialization_info.pre_serialization_as_string.twin, string_field_type, default_boost_value))
-				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (poststate_serialization_field, a_serialization_info.post_serialization_as_string.twin, string_field_type, default_boost_value))
+			if a_transition_info.serialization_info /= Void then
+				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (prestate_serialization_field, a_transition_info.serialization_info.pre_serialization_as_string.twin, string_field_type, default_boost_value))
+				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (poststate_serialization_field, a_transition_info.serialization_info.post_serialization_as_string.twin, string_field_type, default_boost_value))
 			end
+
+				-- Setup fields for integer-bounded functions.
+			across a_transition_info.integer_bounded_functions as l_states loop
+				Result.force_last (feild_for_integer_bounded_functions (l_states.item, l_states.key))
+			end
+		end
+
+	feild_for_integer_bounded_functions (a_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]; a_pre_state: BOOLEAN): SEM_DOCUMENT_FIELD
+			-- Field for `a_function'
+			-- `a_pre_state' inidcates prestate or poststate.
+		local
+			l_field_name: STRING
+			l_cursor: DS_HASH_SET_CURSOR [CI_FUNCTION_WITH_INTEGER_DOMAIN]
+			l_value: STRING
+			l_func: CI_FUNCTION_WITH_INTEGER_DOMAIN
+		do
+			if a_pre_state then
+				l_field_name := prestate_bounded_functions_field
+			else
+				l_field_name := poststate_bounded_functions_field
+			end
+
+			create l_value.make (256)
+			from
+				l_cursor := a_functions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_func := l_cursor.item
+				l_value.append (l_func.target_operand_index.out)
+				l_value.append_character (';')
+				l_value.append (l_func.target_variable_name)
+				l_value.append_character (';')
+				l_value.append (l_func.function_name)
+				l_value.append_character (';')
+				l_value.append (l_func.lower_bound.out)
+				l_value.append_character (';')
+				l_value.append (l_func.upper_bound.out)
+				l_value.append_character (';')
+				l_value.append (l_func.lower_bound_expression)
+				l_value.append_character (';')
+				l_value.append (l_func.upper_bound_expression)
+
+				if not l_cursor.is_last then
+					l_value.append (field_value_separator)
+				end
+				l_cursor.forth
+			end
+			create Result.make (l_field_name, l_value, string_field_type, default_boost_value)
 		end
 
 	test_case_info_from_fields (a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): CI_TEST_CASE_INFO
