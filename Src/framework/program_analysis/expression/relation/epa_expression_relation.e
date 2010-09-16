@@ -10,6 +10,10 @@ class
 inherit
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_UTILITY
+
+	EPA_CONTRACT_EXTRACTOR
+
 feature -- Access
 
 	relevant_expressions (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
@@ -66,6 +70,22 @@ feature -- Status report
 			-- Note: Recalculate result every time, no cache is maintained. So if this feature is used frequently,
 			-- please do the caching somewhere else.		
 		do
+		end
+
+	demo_code
+			--
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_feat_ast: AST_EIFFEL
+			l_invariants, l_preconditions: LINKED_LIST [EPA_EXPRESSION]
+		do
+			l_class := first_class_starts_with_name ("LINKED_LIST")
+			l_feature := l_class.feature_named ("extend")
+			l_feat_ast := l_feature.e_feature.ast
+
+			l_preconditions := precondition_of_feature (l_feature, l_class)
+			l_invariants := invariant_of_class (l_class)
 		end
 
 end
