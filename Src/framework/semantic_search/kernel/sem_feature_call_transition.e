@@ -251,28 +251,6 @@ feature -- Access
 			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
 		end
 
-	variable_dynamic_type_table: HASH_TABLE [TYPE_A, STRING]
-			-- Table from variable name in `variables' to their dynamic type
-			-- Key of Result is variable name, value is the resolved dynamic type of that variable.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
-			l_context_type: detachable TYPE_A
-		do
-			l_context_type := context_type
-
-			create Result.make (variables.count)
-			Result.compare_objects
-			from
-				l_cursor := variables.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				Result.force (l_cursor.item.resolved_type (l_context_type), l_cursor.item.text)
-				l_cursor.forth
-			end
-		end
-
 	variable_static_type_table: HASH_TABLE [TYPE_A, STRING]
 			-- Table from variable name from `variables' to their dynamic type from `a_feature_transition'
 			-- Key of Result is variable name, value is the resolved static type of that variable.

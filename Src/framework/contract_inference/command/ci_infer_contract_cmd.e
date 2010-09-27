@@ -498,7 +498,7 @@ feature{NONE} -- Actions
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 					-- Enable the flag to calculate post-state information if needed.
-				if config.should_generate_mocking then
+				if config.should_generate_mocking or config.should_generate_solr then
 					l_dummy_value := debugger_manager.expression_evaluation ("set_is_post_state_information_enabled (True)")
 				end
 

@@ -16,14 +16,15 @@ inherit
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
 create
-	make_with_transition_data
+	make_with_serialization
 
 feature{NONE} -- Initialization
 
-	make_with_transition_data (a_context: EPA_CONTEXT; a_serializatoin: like serialization)
+	make_with_serialization (a_context: EPA_CONTEXT; a_serializatoin: like serialization)
 			-- Initialize `context' with `a_context'.
 			-- Key of the table is variable name, value is the position of that variables.
 			-- `a_serialization' is the serialized data for all objects in `a_context'.`variables'. 			
+			-- During initialization, serialize `a_serialization' to setup `objects'.
 			-- The serialized data should be of type SPECIAL [detachable ANY], the format is:
 			-- [object1_index, object1, object2_index, object2, ... , objectn_index, objectn]
 		local
@@ -95,6 +96,13 @@ feature -- Access
 			-- Boost values for equations in `properties'
 			-- Key is an equation in `properties', value is the boost number associated with that equation.
 			-- The boost numbers will be used as boost values for a field (in Lucene sense).
+
+	serialization_as_string: STRING
+			-- String representation for `serialization
+			-- Format: comma separated ascii code for every natural_8 in `serialization.
+		do
+			Result := array_as_string (serialization)
+		end
 
 feature -- Type status report
 

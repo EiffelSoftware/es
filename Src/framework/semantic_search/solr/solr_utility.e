@@ -10,6 +10,8 @@ class
 inherit
 	SEM_CONSTANTS
 
+	SEM_UTILITY
+
 feature -- Access
 
 	xml_element_for_field (a_field: SEM_DOCUMENT_FIELD): STRING

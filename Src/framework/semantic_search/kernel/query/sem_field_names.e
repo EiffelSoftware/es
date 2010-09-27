@@ -92,6 +92,12 @@ feature -- Access
 
 	poststate_bounded_functions_field: STRING = "poststate_bounded_functions"
 
+	precondition_prefix: STRING = "pre"
+
+	postcondition_prefix: STRING = "post"
+
+	property_prefix: STRING = "prop"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

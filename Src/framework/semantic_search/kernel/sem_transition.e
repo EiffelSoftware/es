@@ -9,6 +9,9 @@ deferred class
 
 inherit
 	SEM_QUERYABLE
+		rename
+			preconditions as extracted_preconditions,
+			postconditions as extracted_postconditions
 		redefine
 			is_transition
 		end

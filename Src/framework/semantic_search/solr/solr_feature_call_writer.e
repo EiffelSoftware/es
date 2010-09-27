@@ -10,6 +10,10 @@ class
 inherit
 	SEM_TRANSITION_WRITER [SEM_FEATURE_CALL_TRANSITION]
 
+	SOLR_QUERYABLE_WRITER [SEM_FEATURE_CALL_TRANSITION]
+
+	SEM_UTILITY
+
 create
 	make_with_medium
 
@@ -38,22 +42,6 @@ feature -- Basic operations
 			medium.put_string (once "</doc></add>%N")
 		end
 
-feature -- Access
-
-	uuid: detachable UUID
-			-- UUID used for the queryable to write
-			-- If Void, a new UUID will be generated
-
-feature -- Setting
-
-	set_uuid (a_uuid: like uuid)
-			-- Set `uuid' with `a_uuid'.
-		do
-			uuid := a_uuid
-		ensure
-			uuid_set: uuid = a_uuid
-		end
-
 feature{NONE} -- Implementation
 
 	queryable_static_type_name_table: like type_name_table
@@ -80,22 +68,6 @@ feature{NONE} -- Implementation
 			append_string_field (library_field, queryable.class_.group.name)
 		end
 
-	append_queryable_type
-			-- Append type of `queryable' into `medium'.
-		do
-			append_field (queryable_type_field (queryable))
-		end
-
-	append_uuid
-			-- Append an UUID into `medium'.
-		do
-			if uuid = Void then
-				append_string_field (uuid_field, uuid_generator.generate_uuid.out)
-			else
-				append_string_field (uuid_field, uuid.out)
-			end
-		end
-
 	append_class_and_feature
 			-- Append class and feature of `queryable' into `medium'.
 		do
@@ -118,6 +90,7 @@ feature{NONE} -- Implementation
 			l_boost: DOUBLE
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
+			l_prefix: STRING
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -136,37 +109,37 @@ feature{NONE} -- Implementation
 				l_value_text := l_value.text
 				l_type := type_of_equation (l_equation.equation)
 				l_boost := boost_value_for_equation (l_equation)
+				if l_equation.is_precondition then
+					l_prefix := precondition_prefix
+				else
+					l_prefix := postcondition_prefix
+				end
 
 					-- Only handle integer value and True boolean values.
 				if l_value.is_integer or l_value.is_true_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
-					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, True), l_value_text, l_type, l_boost)
+					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, True, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
 					append_field_with_data (
-						field_name_for_equation (expression_with_replacements (l_expr, l_var_dtype_tbl, True), l_equation, False),
+						field_name_for_equation (
+							expression_with_replacements (l_expr, l_var_dtype_tbl, True),
+							l_equation.equation,
+							False,
+							l_prefix),
 						l_value_text, l_type, l_boost)
 
 						-- Output static type format.
 					append_field_with_data (
-						field_name_for_equation (expression_with_replacements (l_expr, l_var_stype_tbl, True), l_equation, False),
+						field_name_for_equation (
+							expression_with_replacements (l_expr, l_var_stype_tbl, True),
+							l_equation.equation,
+							False,
+							l_prefix),
 						l_value_text, l_type, l_boost)
 				end
 				l_equations.forth
-			end
-		end
-
-	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN)
-			-- Append operands in `queryable' to `medium'.
-			-- `a_print_position' indicates if position of variables are to be printed.
-			-- `a_print_ancestor' indicates if ancestors of the types of `a_variables' are to be printed.
-		local
-			l_values: STRING
-		do
-			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor)
-			if not l_values.is_empty then
-				append_field_with_data (a_field, l_values, string_field_type, default_boost_value)
 			end
 		end
 
@@ -283,32 +256,6 @@ feature{NONE} -- Implementation
 			Result.append (escaped_field_name (a_name))
 		end
 
-	field_name_for_equation (a_name: STRING; a_equation: SEM_EQUATION; a_anonymous: BOOLEAN): STRING
-			-- Field_name for `a_name' and `a_equation'
-			-- `a_anonymous' indicates if the field is a field for anonymous property.
-		do
-			create Result.make (a_name.count + 32)
-
-				-- Append type prefix.
-			if a_anonymous then
-				Result.append (once "s_")
-			elseif a_equation.type.is_integer then
-				Result.append (once "i_")
-			elseif a_equation.type.is_boolean then
-				Result.append (once "b_")
-			end
-			if a_equation.is_precondition then
-				Result.append (once "pre")
-			else
-				Result.append (once "post")
-			end
-			if a_anonymous then
-				Result.append_character ('0')
-			end
-			Result.append_character ('_')
-			Result.append (escaped_field_name (a_name))
-		end
-
 	boost_value_for_equation (a_equation: SEM_EQUATION): DOUBLE
 			-- Boost value for `a_equation'
 		do
@@ -317,31 +264,6 @@ feature{NONE} -- Implementation
 			else
 				Result := default_boost_value
 			end
-		end
-
-	append_field_with_data (a_name: STRING; a_value: STRING; a_type: STRING; a_boost: DOUBLE)
-			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
-		do
-			append_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))
-		end
-
-	append_field (a_field: SEM_DOCUMENT_FIELD)
-			-- append `a_field' into `medium'.
-		do
-			if not written_fields.has (a_field) then
-				medium.put_character (' ')
-				medium.put_character (' ')
-				medium.put_string (xml_element_for_field (a_field))
-				medium.put_character ('%N')
-				written_fields.force_last (a_field)
-			end
-
-		end
-
-	append_string_field (a_name: STRING; a_value: STRING)
-			-- Append a string field with `a_name' and `a_value' and default boost value.
-		do
-			append_field (create {SEM_DOCUMENT_FIELD}.make_with_string_type (a_name, a_value))
 		end
 
 end
