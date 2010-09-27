@@ -35,6 +35,12 @@ feature -- Basic operations
 			queryable_dynamic_type_name_table := type_name_table (queryable.variable_dynamic_type_table)
 			queryable_static_type_name_table := type_name_table (queryable.variable_static_type_table)
 
+			create dynamic_change_meta.make (400)
+			dynamic_change_meta.compare_objects
+
+			create static_change_meta.make (400)
+			static_change_meta.compare_objects
+
 			medium.put_string (once "<add><doc>%N")
 			append_basic_info
 			append_contracts
@@ -90,11 +96,24 @@ feature{NONE} -- Implementation
 			l_boost: DOUBLE
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
-			l_prefix: STRING
+			l_sprefix, l_dprefix, l_prefix: STRING
+			l_smeta: HASH_TABLE [STRING, STRING]
+			l_dmeta: HASH_TABLE [STRING, STRING]
+			l_body: STRING
+			l_field_name: STRING
+			l_list: LINKED_LIST [STRING]
+			l_meta_value: STRING
+			l_separator: STRING
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
 			l_var_stype_tbl := queryable_static_type_name_table
+			l_separator := field_value_separator
+
+			create l_smeta.make (400)
+			l_smeta.compare_objects
+			create l_dmeta.make (400)
+			l_dmeta.compare_objects
 
 				-- Iterate through all interface contracts from `queryable'.
 			from
@@ -111,8 +130,12 @@ feature{NONE} -- Implementation
 				l_boost := boost_value_for_equation (l_equation)
 				if l_equation.is_precondition then
 					l_prefix := precondition_prefix
+					l_sprefix := sprecondition_prefix
+					l_dprefix := dprecondition_prefix
 				else
 					l_prefix := postcondition_prefix
+					l_sprefix := spostcondition_prefix
+					l_dprefix := dpostcondition_prefix
 				end
 
 					-- Only handle integer value and True boolean values.
@@ -122,24 +145,47 @@ feature{NONE} -- Implementation
 					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, True, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
+					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
 					append_field_with_data (
 						field_name_for_equation (
-							expression_with_replacements (l_expr, l_var_dtype_tbl, True),
+							l_body,
 							l_equation.equation,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
 
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, False, l_sprefix)
+					create l_meta_value.make (1024)
+					l_meta_value.append (l_anonymous)
+					l_meta_value.append (l_separator)
+					l_meta_value.append (l_value_text)
+					l_meta_value.append (l_separator)
+					extend_string_into_list (l_smeta, l_meta_value, l_field_name)
+
 						-- Output static type format.
+					l_body := expression_with_replacements (l_expr, l_var_stype_tbl, True)
 					append_field_with_data (
 						field_name_for_equation (
-							expression_with_replacements (l_expr, l_var_stype_tbl, True),
+							l_body,
 							l_equation.equation,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, False, l_dprefix)
+					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
 				end
 				l_equations.forth
+			end
+
+			across <<l_smeta, l_dmeta>> as l_metas loop
+				across l_metas.item as l_items loop
+					if l_items.item.starts_with (once "i") then
+						l_type := integer_field_type
+					else
+						l_type := boolean_field_type
+					end
+					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, l_boost)
+				end
 			end
 		end
 
@@ -155,6 +201,7 @@ feature{NONE} -- Implementation
 			l_change_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
 			l_dynamic_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_static_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
+			l_type: STRING
 		do
 			create l_change_calculator
 
@@ -163,6 +210,17 @@ feature{NONE} -- Implementation
 
 			l_dynamic_change := l_change_calculator.change_set (queryable.preconditions, queryable.postconditions)
 			append_change_set (l_dynamic_change, default_boost_value)
+
+			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
+				across l_metas.item as l_items loop
+					if l_items.item.starts_with (once "i") then
+						l_type := integer_field_type
+					else
+						l_type := boolean_field_type
+					end
+					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)
+				end
+			end
 		end
 
 	append_change_set (a_set: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]; a_boost_value: DOUBLE)
@@ -199,6 +257,9 @@ feature{NONE} -- Implementation
 			l_equation: SEM_EQUATION
 			l_boost: DOUBLE
 			l_value_text: STRING
+			l_body: STRING
+			l_field_name: STRING
+			l_meta_value: STRING
 		do
 			if not a_change.values.is_empty then
 				l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -213,24 +274,43 @@ feature{NONE} -- Implementation
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (a_change.expression)
 
-					append_field_with_data (field_name_for_change (l_anonymous, a_change, True), l_value_text, l_type, a_boost_value)
+					append_field_with_data (field_name_for_change (l_anonymous, a_change, True, False, False), l_value_text, l_type, a_boost_value)
 
 						-- Output dynamic type format.
+					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, False)
 					append_field_with_data (
-						field_name_for_change (expression_with_replacements (l_expr, l_var_dtype_tbl, True), a_change, False),
+						field_name_for_change (l_body, a_change, False, False, False),
 						l_value_text, l_type, l_boost)
+					l_field_name := field_name_for_change (l_body, a_change, False, True, True)
+					create l_meta_value.make (1024)
+					l_meta_value.append (l_anonymous)
+					l_meta_value.append (field_value_separator)
+					l_meta_value.append (l_value_text)
+					l_meta_value.append (field_value_separator)
+					extend_string_into_list (dynamic_change_meta, l_meta_value, l_field_name)
 
 						-- Output static type format.
+					l_body := expression_with_replacements (l_expr, l_var_stype_tbl, True)
 					append_field_with_data (
-						field_name_for_change (expression_with_replacements (l_expr, l_var_stype_tbl, True), a_change, False),
+						field_name_for_change (l_body, a_change, False, False, False),
 						l_value_text, l_type, l_boost)
+					l_field_name := field_name_for_change (l_body, a_change, False, True, False)
+					extend_string_into_list (static_change_meta, l_meta_value, l_field_name)
 				end
 			end
 		end
 
 feature{NONE} -- Implementation
 
-	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_anonymous: BOOLEAN): STRING
+	dynamic_change_meta: HASH_TABLE [STRING, STRING]
+			-- Meta data for dynamic change
+			-- Key is Typed expression, value is all anonymous expressions conforming to that typed expression
+
+	static_change_meta: HASH_TABLE [STRING, STRING]
+			-- Meta data for dynamic change
+			-- Key is Typed expression, value is all anonymous expressions conforming to that typed expression
+
+	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_anonymous: BOOLEAN; a_meta: BOOLEAN; a_static: BOOLEAN): STRING
 			-- Field_name for `a_change'
 			-- `a_anonymous' indicates if the field is a field for anonymous property.
 		do
@@ -244,6 +324,13 @@ feature{NONE} -- Implementation
 			elseif a_change.expression.type.is_boolean then
 				Result.append (once "b_")
 			end
+			if a_meta then
+				if a_static then
+					Result.append_character ('s')
+				else
+					Result.append_character ('d')
+				end
+			end
 			if a_change.is_relative then
 				Result.append (once "by")
 			else
@@ -253,7 +340,7 @@ feature{NONE} -- Implementation
 				Result.append_character ('0')
 			end
 			Result.append_character ('_')
-			Result.append (escaped_field_name (a_name))
+			Result.append (escaped_field_string (a_name))
 		end
 
 	boost_value_for_equation (a_equation: SEM_EQUATION): DOUBLE

@@ -119,7 +119,22 @@ feature{NONE} -- Implementation
 				Result.append_character ('0')
 			end
 			Result.append_character ('_')
-			Result.append (escaped_field_name (a_name))
+			Result.append (escaped_field_string (a_name))
+		end
+
+	extend_string_into_list (a_table: HASH_TABLE [STRING, STRING]; a_string: STRING; a_key: STRING)
+			-- Extend `a_string' into `a_table'.
+		local
+			l_list: STRING
+		do
+			a_table.search (a_key)
+			if a_table.found then
+				l_list := a_table.found_item
+			else
+				create l_list.make (1024)
+				a_table.put (l_list, a_key)
+			end
+			l_list.append (a_string)
 		end
 
 end

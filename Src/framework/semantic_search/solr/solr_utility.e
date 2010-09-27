@@ -19,7 +19,7 @@ feature -- Access
 		do
 			create Result.make (a_field.value.count + a_field.name.count + 64)
 			Result.append (once "<field name=%"")
-			Result.append (escaped_field_name (a_field.name))
+			Result.append (escaped_field_string (a_field.name))
 			Result.append (once "%" boost=%"")
 			Result.append (a_field.boost.out)
 			Result.append (once "%">")
@@ -27,7 +27,7 @@ feature -- Access
 			Result.append (once "</field>")
 		end
 
-	escaped_field_name (a_name: STRING): STRING
+	escaped_field_string (a_name: STRING): STRING
 			-- Escaped `a_name'
 		do
 			create Result.make (a_name.count + 10)

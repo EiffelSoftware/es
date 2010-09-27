@@ -93,10 +93,15 @@ feature -- Access
 	poststate_bounded_functions_field: STRING = "poststate_bounded_functions"
 
 	precondition_prefix: STRING = "pre"
+	sprecondition_prefix: STRING = "spre"
+	dprecondition_prefix: STRING = "dpre"
 
 	postcondition_prefix: STRING = "post"
+	spostcondition_prefix: STRING = "spost"
+	dpostcondition_prefix: STRING = "dpost"
 
 	property_prefix: STRING = "prop"
+	dproperty_prefix: STRING = "dprop"
 
 feature -- Access
 

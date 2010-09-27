@@ -65,11 +65,21 @@ feature{NONE} -- Implementation
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
 			l_prefix: STRING
+			l_dmeta: HASH_TABLE [STRING, STRING]
+			l_dprefix: STRING
+			l_body: STRING
+			l_field_name: STRING
+			l_meta_value: STRING
+			l_separator: STRING
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
 			l_boost := default_boost_value
 			l_prefix := property_prefix
+			l_dprefix := dproperty_prefix
+			create l_dmeta.make (400)
+			l_dmeta.compare_objects
+			l_separator := field_value_separator
 
 				-- Iterate through all interface contracts from `queryable'.
 			from
@@ -91,11 +101,29 @@ feature{NONE} -- Implementation
 					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, True, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
+					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
 					append_field_with_data (
-						field_name_for_equation (expression_with_replacements (l_expr, l_var_dtype_tbl, True), l_equation, False, l_prefix),
+						field_name_for_equation (l_body, l_equation, False, l_prefix),
 						l_value_text, l_type, l_boost)
+					l_field_name := field_name_for_equation (l_body, l_equation, False, l_dprefix)
+					create l_meta_value.make (1024)
+					l_meta_value.append (l_anonymous)
+					l_meta_value.append (l_separator)
+					l_meta_value.append (l_value_text)
+					l_meta_value.append (l_separator)
+					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
+
 				end
 				l_equations.forth
+			end
+
+			across l_dmeta as l_items loop
+				if l_items.item.starts_with (once "i") then
+					l_type := integer_field_type
+				else
+					l_type := boolean_field_type
+				end
+				append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)
 			end
 		end
 
