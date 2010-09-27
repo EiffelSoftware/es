@@ -64,6 +64,7 @@ feature -- Basic operations
 			l_freeze_option: AP_FLAG
 			l_generate_mock_option: AP_FLAG
 			l_use_mock_option: AP_FLAG
+			l_solr_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -206,6 +207,10 @@ feature -- Basic operations
 			l_use_mock_option.set_description ("Enable using mocking information.")
 			l_parser.options.force_last (l_use_mock_option)
 
+			create l_solr_option.make_with_long_form ("generate-solr")
+			l_solr_option.set_description ("Enable generating solr files. Format: --generate-solr [on|off]. Default: off")
+			l_parser.options.force_last (l_solr_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -336,6 +341,12 @@ feature -- Basic operations
 				setup_verbose_level (config, Void)
 			end
 
+			if l_solr_option.was_found then
+				setup_generate_solr_property (config, l_solr_option.parameter)
+			else
+				setup_generate_solr_property (config, Void)
+			end
+
 			config.set_should_use_mocking (l_use_mock_option.was_found)
 			config.set_should_generate_mocking (l_generate_mock_option.was_found)
 
@@ -344,6 +355,16 @@ feature -- Basic operations
 		end
 
 feature{NONE} -- Implementation
+
+	setup_generate_solr_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup solr property
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("off") then
+				config.set_should_generate_solr (False)
+			elseif a_parameter.is_case_insensitive_equal ("on") then
+				config.set_should_generate_solr (True)
+			end
+		end
 
 	setup_verbose_level (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup verbose level.

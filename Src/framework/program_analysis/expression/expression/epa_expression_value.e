@@ -127,6 +127,16 @@ feature -- Status report
 		do
 		end
 
+	is_true_boolean: BOOLEAN
+			-- Is current a boolean value True?
+		do
+		end
+
+	is_false_boolean: BOOLEAN
+			-- Is current a boolean value False?
+		do
+		end
+
 	is_integer: BOOLEAN
 			-- Is current an integer value?
 		do

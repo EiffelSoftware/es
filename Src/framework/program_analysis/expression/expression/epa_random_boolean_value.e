@@ -11,7 +11,9 @@ inherit
 	EPA_RANDOM_VALUE
 		undefine
 			is_boolean,
-			as_boolean
+			as_boolean,
+			is_true_boolean,
+			is_false_boolean
 		redefine
 			process
 		end

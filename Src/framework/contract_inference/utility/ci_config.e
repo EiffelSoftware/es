@@ -105,6 +105,17 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
+	solr_directory: STRING
+			-- Directory for solr documents
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (contract_output_directory)
+			l_path.extend ("solr")
+			Result := l_path
+			safe_recursive_create_directory (l_path)
+		end
+
 	contract_output_directory: STRING
 			-- Directory for output
 		local
@@ -273,6 +284,10 @@ feature -- Access
 
 	should_generate_mocking: BOOLEAN
 			-- Should generate mocking information?
+			-- Default: False
+
+	should_generate_solr: BOOLEAN
+			-- Should generate solr files?
 			-- Default: False
 
 feature -- Status report
@@ -553,6 +568,14 @@ feature -- Setting
 			should_use_mocking := b
 		ensure
 			should_use_mocking_set: should_use_mocking = b
+		end
+
+	set_should_generate_solr (b: BOOLEAN)
+			-- Set `should_generate_solr' with `b'.
+		do
+			should_generate_solr := b
+		ensure
+			should_generate_solr_set: should_generate_solr = b
 		end
 
 feature{NONE} -- Implementation

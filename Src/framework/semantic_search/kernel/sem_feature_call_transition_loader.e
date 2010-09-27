@@ -53,12 +53,12 @@ feature{NONE} -- Implementation
 
 			from
 				create l_lines.make (4)
-				l_done := not input.readable
+				l_done := not medium.readable
 			until
 				l_done
 			loop
-				input.read_line
-				if attached {STRING} input.last_string as l_line then
+				medium.read_line
+				if attached {STRING} medium.last_string as l_line then
 					if l_line.is_empty then
 						if l_lines.count = 4 then
 							create l_field.make (l_lines.first, l_lines.i_th (4), l_lines.i_th (3), l_lines.i_th (2).to_double)

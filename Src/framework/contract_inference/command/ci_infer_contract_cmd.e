@@ -762,6 +762,7 @@ feature{NONE} -- Implementation
 			l_dummy_inferrer: CI_DUMMY_INFERRER
 			l_constant_change_inferrer: CI_CONSTANT_CHANGE_INFERRER
 			l_semantic_search_inferrer: CI_SEMANTIC_SEARCH_DATA_COLLECTOR_INFERRER
+			l_solr_inferrer: CI_SOLR_INFERRER
 		do
 			create inferrers.make
 
@@ -838,6 +839,13 @@ feature{NONE} -- Implementation
 				l_semantic_search_inferrer.set_config (config)
 				l_semantic_search_inferrer.set_logger (log_manager)
 				inferrers.extend (l_semantic_search_inferrer)
+			end
+
+			if config.should_generate_solr then
+				create l_solr_inferrer
+				l_solr_inferrer.set_config (config)
+				l_solr_inferrer.set_logger (log_manager)
+				inferrers.extend (l_solr_inferrer)
 			end
 		end
 

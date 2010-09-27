@@ -10,6 +10,8 @@ class
 inherit
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	SEM_CONSTANTS
+
 feature -- Access
 
 	document_type_field: STRING = "document_type"
@@ -114,20 +116,8 @@ feature -- Access
 
 feature -- Access
 
-	transition_field_value: STRING = "transition"
-	snippet_field_value: STRING = "snippet"
-	object_field_value: STRING = "object"
-
 	begin_field_value: STRING = "begin"
 	end_field_value: STRING = "end"
-
-feature -- Type names
-
-	string_field_type: STRING = "STRING"
-	boolean_field_type: STRING = "BOOLEAN"
-	integer_field_type: STRING = "INTEGER"
-
-	default_boost_value: DOUBLE = 1.0
 
 feature -- Access
 

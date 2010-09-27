@@ -18,8 +18,14 @@ inherit
 			out
 		end
 
+	SEM_CONSTANTS
+		undefine
+			out
+		end
+
 create
-	make
+	make,
+	make_with_string_type
 
 feature{NONE} -- Initialization
 
@@ -41,6 +47,12 @@ feature{NONE} -- Initialization
 			l_hash_str.append (type.hash_code.out)
 			l_hash_str.append (boost.out)
 			hash_code := l_hash_str.hash_code
+		end
+
+	make_with_string_type (a_name: like name; a_value: like value)
+			-- Initialize Current as a string typed field with default boost.
+		do
+			make (a_name, a_value, string_field_type, default_boost_value)
 		end
 
 feature -- Access

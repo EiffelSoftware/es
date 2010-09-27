@@ -11,7 +11,9 @@ inherit
 	EPA_EXPRESSION_VALUE
 		redefine
 			is_boolean,
-			as_boolean
+			as_boolean,
+			is_true_boolean,
+			is_false_boolean
 		end
 
 create
@@ -60,6 +62,18 @@ feature -- Status report
 
 	is_false: BOOLEAN
 			-- Is current a False value?
+		do
+			Result := not item
+		end
+
+	is_true_boolean: BOOLEAN
+			-- Is current a boolean value True?
+		do
+			Result := item
+		end
+
+	is_false_boolean: BOOLEAN
+			-- Is current a boolean value False?
 		do
 			Result := not item
 		end

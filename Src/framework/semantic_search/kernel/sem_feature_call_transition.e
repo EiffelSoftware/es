@@ -20,6 +20,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	SEM_SHARED_EQUALITY_TESTER
+
 create
 	make,
 	make_with_transition,
@@ -219,6 +221,105 @@ feature -- Access
 			-- Make a copy of current.
 		do
 			create Result.make_interface_transition (Current)
+		end
+
+	all_equations: DS_HASH_SET [SEM_EQUATION]
+			-- Equations including `preconditions', `postconditions', `written_preconditions' and
+			-- `written_postconditions'.
+			-- Note: create a new result set every time, may be slow.
+		do
+			create Result.make (preconditions.count + postconditions.count + written_preconditions.count + written_postconditions.count)
+			Result.set_equality_tester (sem_equation_equality_tester)
+
+			preconditions.do_all (agent extend_equation_into_hash_set (?, True, False, Result))
+			postconditions.do_all (agent extend_equation_into_hash_set (?, False, False, Result))
+			written_preconditions.do_all (agent extend_equation_into_hash_set (?, True, True, Result))
+			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
+		end
+
+	interface_equations: DS_HASH_SET [SEM_EQUATION]
+			-- Equations including `interface_preconditions', `interface_postconditions', `written_preconditions' and
+			-- `written_postconditions'.
+			-- Note: create a new result set every time, may be slow.
+		do
+			create Result.make (preconditions.count + postconditions.count + written_preconditions.count + written_postconditions.count)
+			Result.set_equality_tester (sem_equation_equality_tester)
+
+			interface_preconditions.do_all (agent extend_equation_into_hash_set (?, True, False, Result))
+			interface_postconditions.do_all (agent extend_equation_into_hash_set (?, False, False, Result))
+			written_preconditions.do_all (agent extend_equation_into_hash_set (?, True, True, Result))
+			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
+		end
+
+	variable_dynamic_type_table: HASH_TABLE [TYPE_A, STRING]
+			-- Table from variable name in `variables' to their dynamic type
+			-- Key of Result is variable name, value is the resolved dynamic type of that variable.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_context_type: detachable TYPE_A
+		do
+			l_context_type := context_type
+
+			create Result.make (variables.count)
+			Result.compare_objects
+			from
+				l_cursor := variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.force (l_cursor.item.resolved_type (l_context_type), l_cursor.item.text)
+				l_cursor.forth
+			end
+		end
+
+	variable_static_type_table: HASH_TABLE [TYPE_A, STRING]
+			-- Table from variable name from `variables' to their dynamic type from `a_feature_transition'
+			-- Key of Result is variable name, value is the resolved static type of that variable.
+			-- Static type only makes sense for variables which are also operands, for other variables,
+			-- dyanmic types are used.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_context_type: detachable TYPE_A
+			l_operand_types: like operand_types_with_feature
+			l_positions: like variable_positions
+			l_variable: EPA_EXPRESSION
+			l_operand_map: like operand_map
+			l_operand_pos_map: like operand_variable_positions
+			l_position: INTEGER
+			l_type: TYPE_A
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+		do
+			l_class := class_
+			l_feature := feature_
+			l_context_type := context_type
+			l_operand_types := resolved_operand_types_with_feature (l_feature, l_class, l_context_type)
+			l_context_type := context_type
+			l_positions := variable_positions
+			l_operand_pos_map := operand_variable_positions
+
+			create Result.make (variables.count)
+			Result.compare_objects
+			from
+				l_cursor := variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_variable := l_cursor.item
+				l_operand_pos_map.search (l_variable)
+				if l_operand_pos_map.found then
+					l_position := l_operand_pos_map.found_item
+						-- This is an operand variable, static type is used.
+					l_type := l_operand_types.item (l_position)
+				else
+						-- This is not an operand variable, dynamic type is used.
+					l_type := l_variable.resolved_type (l_context_type)
+				end
+				Result.force (l_type, l_variable.text)
+				l_cursor.forth
+			end
 		end
 
 feature -- Status report

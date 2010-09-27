@@ -59,7 +59,7 @@ feature{NONE} -- Implementation
 		do
 			create l_file.make_open_read (a_file_path)
 			create l_transition_loader
-			l_transition_loader.set_input (l_file)
+			l_transition_loader.set_medium (l_file)
 			l_transition_loader.load
 			l_file.close
 

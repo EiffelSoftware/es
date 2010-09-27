@@ -8,6 +8,8 @@ deferred class
 	SEM_QUERYABLE_WRITER [G -> SEM_QUERYABLE]
 
 inherit
+	SEM_QUERYABLE_IO [G]
+
 	SEM_SHARED_EQUALITY_TESTER
 
 	SEM_CONSTANTS
@@ -16,36 +18,18 @@ inherit
 
 	EPA_TYPE_UTILITY
 
-feature -- Access
-
-	output: IO_MEDIUM
-		-- Output medium of `write'
-
 feature -- Basic operations
 
 	write (a_document: G)
 			-- Write `a_document' into `output'.
 		require
 			a_document_attached: a_document /= Void
-			output_medium_set: output /= Void
-			output_medium_ready: output.is_open_write
+			output_medium_set: medium /= Void
+			output_medium_ready: medium.is_open_write
 		deferred
 		end
 
-feature -- Setting
-
-	set_output_medium (a_output: like output)
-			-- Set `output' with `a_output'.
-		do
-			output := a_output
-		ensure
-			output_set: output = a_output
-		end
-
 feature{NONE} -- Implementation
-
-	queryable: G
-			-- Queryable
 
 	written_fields: DS_HASH_SET [SEM_DOCUMENT_FIELD]
 			-- Fields that are already written
@@ -60,22 +44,5 @@ feature{NONE} -- Implementation
 
 	written_fields_cache: detachable like written_fields
 			-- Cache for `written_fields'
-
-	write_field (a_field: SEM_DOCUMENT_FIELD)
-			-- Write `a_field' into `output', and update `written_fields'.
-		do
-			if not written_fields.has (a_field) then
-				output.put_string (a_field.out)
-				output.put_new_line
-
-				written_fields.force_last (a_field)
-			end
-		end
-
-	write_field_with_data (a_name: STRING; a_value: STRING; a_type: STRING; a_boost: DOUBLE)
-			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
-		do
-			write_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))
-		end
 
 end

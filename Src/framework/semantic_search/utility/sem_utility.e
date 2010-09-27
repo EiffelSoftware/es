@@ -12,6 +12,8 @@ inherit
 
 	EPA_UTILITY
 
+	SEM_CONSTANTS
+
 feature
 
 	principal_variable_from_anon_content (a_string: STRING): INTEGER
@@ -147,6 +149,14 @@ feature -- Names
 			create Result.make (5)
 			Result.append (once "v_")
 			Result.append (a_id.out)
+		end
+
+feature -- Access
+
+	uuid_generator: UUID_GENERATOR
+			-- UUID generator
+		once
+			create Result
 		end
 
 end

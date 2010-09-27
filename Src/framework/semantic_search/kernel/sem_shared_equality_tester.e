@@ -21,5 +21,11 @@ feature -- Access
 			create Result
 		end
 
+	sem_equation_equality_tester: SEM_EQUATION_EQUALITY_TESTER
+			-- Equality tester for {SEM_EQUATION} objects
+		once
+			create Result
+		end
+
 
 end
