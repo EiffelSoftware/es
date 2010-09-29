@@ -498,7 +498,7 @@ feature{NONE} -- Actions
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 					-- Enable the flag to calculate post-state information if needed.
-				if config.should_generate_mocking or config.should_generate_solr then
+				if config.should_enable_post_serialization_retrieval then
 					l_dummy_value := debugger_manager.expression_evaluation ("set_is_post_state_information_enabled (True)")
 				end
 
@@ -520,7 +520,7 @@ feature{NONE} -- Actions
 				l_before_dbg_manager.toggle_breakpoints (True)
 				l_after_dbg_manager.toggle_breakpoints (True)
 
-				if config.should_generate_mocking then
+				if config.should_enable_post_serialization_retrieval then
 					l_serialization_dbg_manager := object_serialization_evaluation (last_test_case_info)
 					l_serialization_dbg_manager.toggle_breakpoints (True)
 				end
@@ -739,7 +739,7 @@ feature{NONE} -- Implementation
 				last_post_execution_bounded_functions)
 
 				-- Setup object serialization information if semantic search support is enabled.
-			if config.should_generate_mocking then
+			if config.should_enable_post_serialization_retrieval then
 				l_transition_info.set_serialization_info (last_serialization_info)
 			else
 				l_transition_info.set_serialization_info (Void)

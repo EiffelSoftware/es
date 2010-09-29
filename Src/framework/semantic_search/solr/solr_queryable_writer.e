@@ -100,25 +100,38 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	field_name_for_equation (a_name: STRING; a_equation: EPA_EQUATION; a_anonymous: BOOLEAN; a_prefix: STRING): STRING
+	format_type_prefix (a_type: INTEGER): STRING
+			-- Prefix for `a_type'
+		do
+			if a_type = dynamic_format_type then
+				Result := dynamic_format_type_prefix
+			elseif a_type = static_format_type then
+				Result := static_format_type_prefix
+			elseif a_type = anonymous_format_type then
+				Result := anonymous_format_type_prefix
+			end
+		end
+
+	field_name_for_equation (a_name: STRING; a_equation: EPA_EQUATION; a_format_type: INTEGER; a_meta: BOOLEAN; a_3rdprefix: STRING): STRING
 			-- Field_name for `a_name' and `a_equation'
 			-- `a_anonymous' indicates if the field is a field for anonymous property.
 		do
 			create Result.make (a_name.count + 32)
 
 				-- Append type prefix.
-			if a_anonymous then
-				Result.append (once "s_")
-			elseif a_equation.type.is_integer then
-				Result.append (once "i_")
-			elseif a_equation.type.is_boolean then
-				Result.append (once "b_")
+			if a_meta then
+				Result.append (string_prefix)
+			else
+				if a_equation.type.is_integer then
+					Result.append (integer_prefix)
+				else
+					Result.append (boolean_prefix)
+				end
 			end
-			Result.append (a_prefix)
-			if a_anonymous then
-				Result.append_character ('0')
-			end
-			Result.append_character ('_')
+
+			Result.append (format_type_prefix (a_format_type))
+
+			Result.append (a_3rdprefix)
 			Result.append (escaped_field_string (a_name))
 		end
 
@@ -136,5 +149,27 @@ feature{NONE} -- Implementation
 			end
 			l_list.append (a_string)
 		end
+
+feature{NONE} -- Constants
+
+	integer_prefix: STRING = "i_"
+	boolean_prefix: STRING = "b_"
+	string_prefix: STRING = "s_"
+	text_prefix: STRING = "t_"
+	by_change_prefix: STRING = "by_"
+	to_change_prefix: STRING = "to_"
+
+	dynamic_format_type: INTEGER = 1
+	static_format_type: INTEGER = 2
+	anonymous_format_type: INTEGER = 3
+
+
+	dynamic_format_type_prefix: STRING = "d_"
+	static_format_type_prefix: STRING = "s_"
+	anonymous_format_type_prefix: STRING = "a_"
+
+	precondition_prefix: STRING = "pre_"
+	postcondition_prefix: STRING = "post_"
+	property_prefix: STRING = "prop_"
 
 end

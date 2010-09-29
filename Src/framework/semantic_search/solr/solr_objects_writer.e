@@ -66,7 +66,6 @@ feature{NONE} -- Implementation
 			l_value: EPA_EXPRESSION_VALUE
 			l_prefix: STRING
 			l_dmeta: HASH_TABLE [STRING, STRING]
-			l_dprefix: STRING
 			l_body: STRING
 			l_field_name: STRING
 			l_meta_value: STRING
@@ -76,7 +75,6 @@ feature{NONE} -- Implementation
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
 			l_boost := default_boost_value
 			l_prefix := property_prefix
-			l_dprefix := dproperty_prefix
 			create l_dmeta.make (400)
 			l_dmeta.compare_objects
 			l_separator := field_value_separator
@@ -98,14 +96,14 @@ feature{NONE} -- Implementation
 				if l_value.is_integer or l_value.is_true_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
-					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, True, l_prefix), l_value_text, l_type, l_boost)
+					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, anonymous_format_type, False, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
 					append_field_with_data (
-						field_name_for_equation (l_body, l_equation, False, l_prefix),
+						field_name_for_equation (l_body, l_equation, dynamic_format_type, False, l_prefix),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_equation (l_body, l_equation, False, l_dprefix)
+					l_field_name := field_name_for_equation (l_body, l_equation, dynamic_format_type, True, l_prefix)
 					create l_meta_value.make (1024)
 					l_meta_value.append (l_anonymous)
 					l_meta_value.append (l_separator)

@@ -290,6 +290,12 @@ feature -- Access
 			-- Should generate solr files?
 			-- Default: False
 
+	should_enable_post_serialization_retrieval: BOOLEAN
+			-- Should post-state object serialization be enabled?
+		do
+			Result := should_generate_mocking or should_generate_solr
+		end
+
 feature -- Status report
 
 	should_build_project: BOOLEAN

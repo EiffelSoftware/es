@@ -96,7 +96,7 @@ feature{NONE} -- Implementation
 			l_boost: DOUBLE
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
-			l_sprefix, l_dprefix, l_prefix: STRING
+			l_prefix: STRING
 			l_smeta: HASH_TABLE [STRING, STRING]
 			l_dmeta: HASH_TABLE [STRING, STRING]
 			l_body: STRING
@@ -130,19 +130,15 @@ feature{NONE} -- Implementation
 				l_boost := boost_value_for_equation (l_equation)
 				if l_equation.is_precondition then
 					l_prefix := precondition_prefix
-					l_sprefix := sprecondition_prefix
-					l_dprefix := dprecondition_prefix
 				else
 					l_prefix := postcondition_prefix
-					l_sprefix := spostcondition_prefix
-					l_dprefix := dpostcondition_prefix
 				end
 
 					-- Only handle integer value and True boolean values.
 				if l_value.is_integer or l_value.is_true_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
-					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, True, l_prefix), l_value_text, l_type, l_boost)
+					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, anonymous_format_type, False, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
@@ -150,11 +146,12 @@ feature{NONE} -- Implementation
 						field_name_for_equation (
 							l_body,
 							l_equation.equation,
+							dynamic_format_type,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
 
-					l_field_name := field_name_for_equation (l_body, l_equation.equation, False, l_sprefix)
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, dynamic_format_type, True, l_prefix)
 					create l_meta_value.make (1024)
 					l_meta_value.append (l_anonymous)
 					l_meta_value.append (l_separator)
@@ -168,10 +165,11 @@ feature{NONE} -- Implementation
 						field_name_for_equation (
 							l_body,
 							l_equation.equation,
+							static_format_type,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_equation (l_body, l_equation.equation, False, l_dprefix)
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, static_format_type, True, l_prefix)
 					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
 				end
 				l_equations.forth
@@ -211,13 +209,9 @@ feature{NONE} -- Implementation
 			l_dynamic_change := l_change_calculator.change_set (queryable.preconditions, queryable.postconditions)
 			append_change_set (l_dynamic_change, default_boost_value)
 
+			l_type := string_prefix
 			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
 				across l_metas.item as l_items loop
-					if l_items.item.starts_with (once "i") then
-						l_type := integer_field_type
-					else
-						l_type := boolean_field_type
-					end
 					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)
 				end
 			end
@@ -274,14 +268,14 @@ feature{NONE} -- Implementation
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (a_change.expression)
 
-					append_field_with_data (field_name_for_change (l_anonymous, a_change, True, False, False), l_value_text, l_type, a_boost_value)
+					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_format_type, False), l_value_text, l_type, a_boost_value)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, False)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, False, False, False),
+						field_name_for_change (l_body, a_change, dynamic_format_type, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, False, True, True)
+					l_field_name := field_name_for_change (l_body, a_change, dynamic_format_type, True)
 					create l_meta_value.make (1024)
 					l_meta_value.append (l_anonymous)
 					l_meta_value.append (field_value_separator)
@@ -292,9 +286,9 @@ feature{NONE} -- Implementation
 						-- Output static type format.
 					l_body := expression_with_replacements (l_expr, l_var_stype_tbl, True)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, False, False, False),
+						field_name_for_change (l_body, a_change, static_format_type, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, False, True, False)
+					l_field_name := field_name_for_change (l_body, a_change, static_format_type, True)
 					extend_string_into_list (static_change_meta, l_meta_value, l_field_name)
 				end
 			end
@@ -310,36 +304,29 @@ feature{NONE} -- Implementation
 			-- Meta data for dynamic change
 			-- Key is Typed expression, value is all anonymous expressions conforming to that typed expression
 
-	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_anonymous: BOOLEAN; a_meta: BOOLEAN; a_static: BOOLEAN): STRING
+	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_format_type: INTEGER; a_meta: BOOLEAN): STRING
 			-- Field_name for `a_change'
 			-- `a_anonymous' indicates if the field is a field for anonymous property.
 		do
 			create Result.make (a_name.count + 32)
 
 				-- Append type prefix.
-			if a_anonymous then
-				Result.append (once "s_")
-			elseif a_change.expression.type.is_integer then
-				Result.append (once "i_")
-			elseif a_change.expression.type.is_boolean then
-				Result.append (once "b_")
-			end
 			if a_meta then
-				if a_static then
-					Result.append_character ('s')
+				Result.append (string_prefix)
+			else
+				if a_change.expression.type.is_integer then
+					Result.append (integer_prefix)
 				else
-					Result.append_character ('d')
+					Result.append (boolean_prefix)
 				end
 			end
+			Result.append (format_type_prefix (a_format_Type))
+
 			if a_change.is_relative then
-				Result.append (once "by")
+				Result.append (by_change_prefix)
 			else
-				Result.append (once "to")
+				Result.append (to_change_prefix)
 			end
-			if a_anonymous then
-				Result.append_character ('0')
-			end
-			Result.append_character ('_')
 			Result.append (escaped_field_string (a_name))
 		end
 
