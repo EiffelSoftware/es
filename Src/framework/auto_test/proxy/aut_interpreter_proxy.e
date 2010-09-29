@@ -413,6 +413,18 @@ feature -- Execution
 			retry
 		end
 
+	create_agent (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_feature: FEATURE_I; a_operands: HASH_TABLE [detachable ITP_EXPRESSION, INTEGER])
+			-- Create an agent object of `a_type' and store it `a_receiver'.
+			-- The created agent can be either an agent for a procedure or an agent for function.
+			-- The created agent should wrap around `a_feature'.
+			-- `a_operands' specify which operands are closed for the created agent.
+			-- `a_operands' is a table, key is 0-based operand index, value (when attached) is the expression for that closed operand;
+			-- (when void) is the indication that the corresponding operand is open.
+			-- operand index is 0-based, 0 means target, 1 means the first argument, and so on.
+		do
+
+		end
+
 	create_object (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_procedure: FEATURE_I; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; a_feature: detachable AUT_FEATURE_OF_TYPE)
 			-- Create new object of type `a_type' using creation
 			-- procedure `a_feature' and the arguments `an_argument_list'.
