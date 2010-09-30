@@ -81,6 +81,14 @@ feature{NONE} -- Initialization
 			l_post_state_serialization_option: AP_FLAG
 			l_exclude_option: AP_STRING_OPTION
 			l_collect_interface_related_classes_option: AP_FLAG
+			l_2times_option: AP_STRING_OPTION
+			l_3times_option: AP_STRING_OPTION
+			l_4times_option: AP_STRING_OPTION
+			l_5times_option: AP_STRING_OPTION
+			l_6times_option: AP_STRING_OPTION
+			l_7times_option: AP_STRING_OPTION
+			l_8times_option: AP_STRING_OPTION
+			l_9times_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -277,6 +285,10 @@ feature{NONE} -- Initialization
 			create l_collect_interface_related_classes_option.make_with_long_form ("collect-interface")
 			l_collect_interface_related_classes_option.set_description ("Collect interface related (non-deferred) classes.")
 			parser.options.force_last (l_collect_interface_related_classes_option)
+
+			create l_2times_option.make_with_long_form ("2times")
+			l_2times_option.set_description ("Enable features to be tested more often with strength 2 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_2times_option)
 
 			parser.parse_list (a_arguments)
 
@@ -679,31 +691,17 @@ feature{NONE} -- Initialization
 				is_post_state_serialized := l_post_state_serialization_option.was_found
 			end
 
-			if not error_handler.has_error then
-				create excluded_features.make
-				if l_exclude_option.was_found then
-					l_strs := l_exclude_option.parameter.split (',')
-					from
-						l_strs.start
-					until
-						l_strs.after
-					loop
-						l_strs2 := l_strs.item_for_iteration.split ('.')
-
-						if l_strs2.count = 2 then
-							excluded_features.extend ([l_strs2.first.as_upper, l_strs2.last.as_lower])
-						elseif l_strs2.count = 1 then
-							excluded_features.extend (["", l_strs2.first.as_lower])
-						end
-						l_strs.forth
-					end
-				end
+			if not error_handler.has_error and then l_exclude_option.was_found then
+				setup_excluded_features (l_exclude_option.parameter)
 			end
 
 			if not error_handler.has_error then
 				is_collecting_interface_related_classes := l_collect_interface_related_classes_option.was_found
 			end
 
+			if not error_handler.has_error and then l_2times_option.was_found then
+				setup_popular_features (l_2times_option.parameter, 2)
+			end
 
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
@@ -727,6 +725,56 @@ feature{NONE} -- Initialization
 --			end
 		ensure
 			help_message_set_when_required: should_display_help_message implies help_message /= Void
+		end
+
+	setup_popular_features (a_features: STRING; a_strength: INTEGER)
+			-- Setup `a_features' to have `a_strength' of popularity to be tested.
+		local
+			l_strs: LIST [STRING]
+			l_strs2: LIST [STRING]
+		do
+			if popular_features = Void then
+				create popular_features.make
+			end
+			l_strs := a_features.split (',')
+			from
+				l_strs.start
+			until
+				l_strs.after
+			loop
+				l_strs2 := l_strs.item_for_iteration.split ('.')
+
+				if l_strs2.count = 2 then
+					popular_features.extend ([l_strs2.first.as_upper, l_strs2.last.as_lower, a_strength])
+				elseif l_strs2.count = 1 then
+					popular_features.extend (["", l_strs2.first.as_lower, a_strength])
+				end
+				l_strs.forth
+			end
+		end
+
+	setup_excluded_features (a_features: STRING)
+			-- Setup `a_features' to be excluded.
+		local
+			l_strs: LIST [STRING]
+			l_strs2: LIST [STRING]
+		do
+			create excluded_features.make
+			l_strs := a_features.split (',')
+			from
+				l_strs.start
+			until
+				l_strs.after
+			loop
+				l_strs2 := l_strs.item_for_iteration.split ('.')
+
+				if l_strs2.count = 2 then
+					excluded_features.extend ([l_strs2.first.as_upper, l_strs2.last.as_lower])
+				elseif l_strs2.count = 1 then
+					excluded_features.extend (["", l_strs2.first.as_lower])
+				end
+				l_strs.forth
+			end
 		end
 
 feature -- Status report
@@ -946,6 +994,10 @@ feature -- Status report
 
 	excluded_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING]]
 			-- List of features that are excluded from being tested.
+
+
+	popular_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING; level: INTEGER]]
+			-- List of features that should be tested more often
 
 	is_collecting_interface_related_classes: BOOLEAN
 			-- Is this AutoTest session for collecting interface related classes?

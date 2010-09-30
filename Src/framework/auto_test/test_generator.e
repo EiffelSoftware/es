@@ -163,6 +163,15 @@ feature -- Options: basic
 			Result := excluded_features_cache
 		end
 
+	popular_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING; level: INTEGER]]
+			-- List of features that should be tested more often
+		do
+			if popular_features_cache = Void then
+				create popular_features_cache.make
+			end
+			Result := popular_features_cache
+		end
+
 	types_under_test: DS_LIST [CL_TYPE_A]
 			-- Types under test
 
@@ -1446,6 +1455,9 @@ feature -- Option caches
 
 	excluded_features_cache: like excluded_features
 			-- Cache for `excluded_features'		
+
+	popular_features_cache: like popular_features
+			-- Cache for `popular_features'
 
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

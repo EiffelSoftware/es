@@ -45,6 +45,9 @@ feature {NONE} -- Initialization
 			priority_table.set_key_equality_tester (tester)
 			create excluded_features.make (10)
 			excluded_features.set_equality_tester (string_equality_tester)
+
+			create popular_features.make (10)
+			popular_features.compare_objects
 		ensure
 			system_set: system = a_system
 		end
@@ -102,7 +105,41 @@ feature -- Access
 
 	excluded_features: DS_HASH_SET [STRING]
 			-- Features to be excluded from being tested
-			-- format: CLASS_NAME.feature_name
+			-- format: CLASS_NAME.feature_name or only feature_name
+			-- If it is the latter case, features with the specified name (in all classes)
+			-- will be excluded.
+
+	popular_features: HASH_TABLE [INTEGER, STRING]
+			-- Features that should be frequently tested.
+			-- format of key: CLASS_NAME.feature_name or only feature_name
+			-- If it is the latter case, features with the specified name (in all classes)
+			-- will be matched.
+			-- Meaning of value: 1-based values, the larger the number, the more frequently that feature should be tested.
+
+	should_feature_change_priority (a_feature: AUT_FEATURE_OF_TYPE): BOOLEAN
+			-- Should `a_feature' change its priority to be selected to test in the future?
+			-- The routine check if `a_feature' is in `popular_features', if so, used the specified
+			-- value (in `popular_features') to decide if its priority should be changed.
+			-- If `a_feature' is not in `popular_features', return True.
+		local
+			l_feat_name: STRING
+			l_class_feat_name: STRING
+			l_popular_features: like popular_features
+		do
+			l_class_feat_name := a_feature.type.associated_class.name_in_upper + "." + a_feature.feature_.feature_name.as_lower
+			l_feat_name := a_feature.feature_.feature_name.as_lower
+			l_popular_features := popular_features
+
+			l_popular_features.search (l_feat_name)
+			if not l_popular_features.found then
+				l_popular_features.search (l_class_feat_name)
+			end
+			if l_popular_features.found then
+				Result := (random.item \\ l_popular_features.found_item + 1 = l_popular_features.found_item)
+			else
+				Result := True
+			end
+		end
 
 feature -- Changing Priority
 
@@ -225,6 +262,28 @@ feature -- Changing Priority
 			a_features.go_to (l_cursor)
 		end
 
+	set_popular_features (a_features: LINKED_LIST [TUPLE [class_name: STRING; feature_name: STRING; level: INTEGER]])
+			-- Set `excluded_features' with `a_features'.
+		local
+			l_cursor: CURSOR
+		do
+			popular_features.wipe_out
+			l_cursor := a_features.cursor
+			from
+				a_features.start
+			until
+				a_features.after
+			loop
+				if a_features.item_for_iteration.class_name.is_empty then
+					popular_features.force (a_features.item_for_iteration.level, a_features.item_for_iteration.feature_name)
+				else
+					popular_features.force (a_features.item_for_iteration.level, a_features.item_for_iteration.class_name + "." + a_features.item_for_iteration.feature_name)
+				end
+				a_features.forth
+			end
+			a_features.go_to (l_cursor)
+		end
+
 feature -- Basic routines
 
 	select_next
@@ -259,32 +318,34 @@ feature -- Basic routines
 		do
 			priority_table.search (a_feature)
 			if priority_table.found then
-				old_priority := priority_table.found_item.second
-				new_priority := old_priority - 1
-				if new_priority < 0 then
-					new_priority := 0
-				end
-				priority_table.found_item.put_second (new_priority)
-				feature_list_table.search (old_priority)
-				check
-					found: feature_list_table.found
-				end
-				list := feature_list_table.found_item
-				list.delete (a_feature)
-				if list.count = 0 then
-					feature_list_table.remove (old_priority)
-					if highest_dynamic_priority = old_priority then
-						highest_dynamic_priority := new_priority
+				if should_feature_change_priority (a_feature) then
+					old_priority := priority_table.found_item.second
+					new_priority := old_priority - 1
+					if new_priority < 0 then
+						new_priority := 0
 					end
-				end
-				feature_list_table.search (new_priority)
-				if feature_list_table.found then
-					feature_list_table.found_item.force_last (a_feature)
-				else
-					create list.make_equal
-					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
-					list.force_last (a_feature)
-					feature_list_table.force (list, new_priority)
+					priority_table.found_item.put_second (new_priority)
+					feature_list_table.search (old_priority)
+					check
+						found: feature_list_table.found
+					end
+					list := feature_list_table.found_item
+					list.delete (a_feature)
+					if list.count = 0 then
+						feature_list_table.remove (old_priority)
+						if highest_dynamic_priority = old_priority then
+							highest_dynamic_priority := new_priority
+						end
+					end
+					feature_list_table.search (new_priority)
+					if feature_list_table.found then
+						feature_list_table.found_item.force_last (a_feature)
+					else
+						create list.make_equal
+						list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
+						list.force_last (a_feature)
+						feature_list_table.force (list, new_priority)
+					end
 				end
 			end
 			if highest_dynamic_priority = 0 then
