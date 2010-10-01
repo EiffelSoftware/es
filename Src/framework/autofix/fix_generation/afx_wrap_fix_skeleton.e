@@ -107,6 +107,7 @@ feature{NONE} -- Implementation
 			l_then_text: STRING
 			l_else_text: STRING
 			l_ranking: AFX_FIX_RANKING
+			l_gtext: STRING
 		do
 			l_written_class := exception_spot.recipient_.written_class
 			l_match_list := match_list_server.item (l_written_class.class_id)
@@ -117,7 +118,9 @@ feature{NONE} -- Implementation
 			l_first_as := relevant_ast.first.ast.ast
 			l_last_as := relevant_ast.last.ast.ast
 
-			l_then_text := "if " + guard_condition.text + " then%N"
+			l_gtext := guard_condition.text.twin
+			l_gtext.replace_substring_all ("old ", "")
+			l_then_text := "if " + l_gtext + " then%N"
 			l_first_as.prepend_text (l_then_text, l_match_list)
 
 			create l_else_text.make (64)

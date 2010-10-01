@@ -81,15 +81,21 @@ feature -- Actions
 			load_daikon_result
 
 				-- Set the daikon output
-			create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
-			create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
+			if pass_test_case_info /= Void then
+				create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
+				store_invariant_in_file (daikon_pass_result, daikon_result_file_name (pass_test_case_info))
+			end
 
-				-- Store Daikon output into files for cacheing.
-			store_invariant_in_file (daikon_pass_result, daikon_result_file_name (pass_test_case_info))
-			store_invariant_in_file (daikon_fail_result, daikon_result_file_name (fail_test_case_info))
+			if fail_test_case_info /= Void then
+				create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
+				store_invariant_in_file (daikon_fail_result, daikon_result_file_name (fail_test_case_info))
+			end
+
 
 				-- Put results into server.
-			state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
+			if fail_test_case_info /= Void then
+				state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
+			end
 		end
 
 feature -- Setting
@@ -185,32 +191,36 @@ feature{NONE} -- Implementation
 			pass_file:PLAIN_TEXT_FILE
 			fail_file:PLAIN_TEXT_FILE
 		do
-			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
+			if pass_test_case_info /= Void then
+				create pass_file.make_open_write (pass_file_name (pass_test_case_info))
 
-				--Save to file.
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, False))
-			from
-				daikon_pass_states.start
-			until
-				daikon_pass_states.after
-			loop
-				pass_file.put_string (daikon_pass_states.item_for_iteration)
-				daikon_pass_states.forth
+					--Save to file.
+				pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, False))
+				from
+					daikon_pass_states.start
+				until
+					daikon_pass_states.after
+				loop
+					pass_file.put_string (daikon_pass_states.item_for_iteration)
+					daikon_pass_states.forth
+				end
+				pass_file.close
 			end
-			pass_file.close
 
-			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, True))
-				--Save to file.
-			from
-				daikon_fail_states.start
-			until
-				daikon_fail_states.after
-			loop
-				fail_file.put_string (daikon_fail_states.item_for_iteration)
-				daikon_fail_states.forth
+			if fail_test_case_info /= Void then
+				create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
+				pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, True))
+					--Save to file.
+				from
+					daikon_fail_states.start
+				until
+					daikon_fail_states.after
+				loop
+					fail_file.put_string (daikon_fail_states.item_for_iteration)
+					daikon_fail_states.forth
+				end
+				fail_file.close
 			end
-			fail_file.close
 		end
 
 	load_daikon_result is
@@ -221,10 +231,14 @@ feature{NONE} -- Implementation
 			fail_CMD : STRING
 		do
 			create shell
-			pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
-			fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
-			daikon_fail_result := shell.output_from_program (fail_cmd, void)
-			daikon_pass_result := shell.output_from_program (pass_cmd, void)
+			if pass_test_case_info /= Void then
+				pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
+				daikon_pass_result := shell.output_from_program (pass_cmd, void)
+			end
+			if fail_test_case_info /= Void then
+				fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
+				daikon_fail_result := shell.output_from_program (fail_cmd, void)
+			end
 		end
 
 	daikon_command: STRING

@@ -366,7 +366,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	feature_body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
+	feature_body_compound_ast: AST_EIFFEL
 			-- AST node for body of `exception_spot'.`recipient_'
 			-- It is the compound part of a DO_AS.
 		do
@@ -374,6 +374,9 @@ feature{NONE} -- Implementation
 				if attached {ROUTINE_AS} l_body.content as l_routine then
 					if attached {DO_AS} l_routine.routine_body as l_do then
 						Result := l_do.compound
+						if Result = Void then
+							Result := l_do.do_keyword (match_list_server.item (exception_spot.recipient_written_class.class_id))
+						end
 					end
 				end
 			end

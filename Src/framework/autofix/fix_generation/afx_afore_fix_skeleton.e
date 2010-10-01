@@ -63,6 +63,7 @@ feature{NONE} -- Implementation
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 		local
 			l_fix_text: STRING
+			l_text: STRING
 		do
 			if not a_ignore_state_change then
 				from
@@ -72,7 +73,9 @@ feature{NONE} -- Implementation
 				loop
 					l_fix_text := a_snippets.item_for_iteration.snippet.twin
 					if attached {AFX_EXPRESSION} guard_condition as l_guard then
-						l_fix_text.prepend ("if " + l_guard.text + " then%N%T%T")
+						l_text := l_guard.text.twin
+						l_text.replace_substring_all ("old ", "")
+						l_fix_text.prepend ("if " + l_text + " then%N%T%T")
 						l_fix_text.append ("%Nend%N")
 					end
 					fixes.extend (fix_with_text ("%N" + l_fix_text, a_snippets.item_for_iteration.ranking, a_precondition, a_postcondition))

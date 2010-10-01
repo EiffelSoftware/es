@@ -90,28 +90,48 @@ feature{NONE} -- Implementation
 			create Result.make
 
 				-- Get the most frequently appeared expression, treat it as constrained.
+--			from
+--				constraints.occurrence_frequency.start
+--			until
+--				constraints.occurrence_frequency.after
+--			loop
+--				if constraints.occurrence_frequency.item_for_iteration >= l_max_occur then
+--					l_max_occur := constraints.occurrence_frequency.item_for_iteration
+--					l_constrained_expr := constraints.occurrence_frequency.key_for_iteration
+--				end
+--				constraints.occurrence_frequency.forth
+--			end
+
 			from
 				constraints.occurrence_frequency.start
 			until
 				constraints.occurrence_frequency.after
 			loop
-				if constraints.occurrence_frequency.item_for_iteration >= l_max_occur then
-					l_max_occur := constraints.occurrence_frequency.item_for_iteration
-					l_constrained_expr := constraints.occurrence_frequency.key_for_iteration
-				end
+					-- Construct result.
+				l_constrained_expr := constraints.occurrence_frequency.key_for_iteration
+				create l_constrained.make (1)
+				l_constrained.set_equality_tester (expression_equality_tester)
+				l_constrained.force_last (l_constrained_expr)
+
+				create l_constraining.make (1)
+				l_constraining.set_equality_tester (expression_equality_tester)
+				l_constraining.append (constraints.components.subtraction (l_constrained))
+
+				Result.extend ([l_constrained, l_constraining])
+
 				constraints.occurrence_frequency.forth
 			end
 
-				-- Construct result.
-			create l_constrained.make (1)
-			l_constrained.set_equality_tester (expression_equality_tester)
-			l_constrained.force_last (l_constrained_expr)
+--				-- Construct result.
+--			create l_constrained.make (1)
+--			l_constrained.set_equality_tester (expression_equality_tester)
+--			l_constrained.force_last (l_constrained_expr)
 
-			create l_constraining.make (1)
-			l_constraining.set_equality_tester (expression_equality_tester)
-			l_constraining.append (constraints.components.subtraction (l_constrained))
+--			create l_constraining.make (1)
+--			l_constraining.set_equality_tester (expression_equality_tester)
+--			l_constraining.append (constraints.components.subtraction (l_constrained))
 
-			Result.extend ([l_constrained, l_constraining])
+--			Result.extend ([l_constrained, l_constraining])
 		end
 
 feature{NONE} -- Implementation
@@ -356,6 +376,13 @@ feature{NONE} -- Implementation
 				-- Construct fix skeleton.
 			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status, False)
 			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion.negated)
+			l_fix_skeleton.set_original_ast (l_old_ast)
+			l_fix_skeleton.set_new_ast (l_new_ast)
+			l_fix_skeleton.set_ranking (l_ranking)
+
+			fixes.extend (l_fix_skeleton)
+
+			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status, False)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (l_new_ast)
 			l_fix_skeleton.set_ranking (l_ranking)

@@ -26,7 +26,8 @@ inherit
 			process_nested_as,
 			process_nested_expr_as,
 			process_access_feat_as,
-			process_precursor_as
+			process_precursor_as,
+			process_un_old_as
 		end
 
 feature -- Basic operations
@@ -124,6 +125,11 @@ feature{NONE} -- Processing
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
+			check_expression (new_expression (l_as))
+		end
+
+	process_un_old_as (l_as: UN_OLD_AS)
 		do
 			check_expression (new_expression (l_as))
 		end

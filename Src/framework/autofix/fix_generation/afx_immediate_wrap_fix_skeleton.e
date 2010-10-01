@@ -52,6 +52,7 @@ feature -- Basic operations
 			l_written_class: CLASS_C
 			l_match_list: LEAF_AS_LIST
 			l_ranking: AFX_FIX_RANKING
+			l_gtext: STRING
 		do
 			create fixes.make
 			l_written_class := exception_spot.recipient_written_class
@@ -59,7 +60,9 @@ feature -- Basic operations
 
 			create l_text.make (1024)
 			l_text.append ("if ")
-			l_text.append (guard_condition.text)
+			l_gtext := guard_condition.text.twin
+			l_gtext.replace_substring_all ("old ", "")
+			l_text.append (l_gtext)
 			l_text.append (" then%N")
 			l_text.append (text_from_ast (original_ast))
 			if attached {AST_EIFFEL} new_ast as l_new_ast then

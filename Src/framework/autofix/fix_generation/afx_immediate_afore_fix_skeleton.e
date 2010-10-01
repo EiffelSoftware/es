@@ -53,6 +53,7 @@ feature -- Basic operations
 			l_written_class: CLASS_C
 			l_match_list: LEAF_AS_LIST
 			l_ranking: AFX_FIX_RANKING
+			l_gtext: STRING
 		do
 			create fixes.make
 			l_written_class := exception_spot.recipient_written_class
@@ -60,12 +61,19 @@ feature -- Basic operations
 
 				-- Construct fix snippet.
 			create l_text.make (1024)
-			l_text.append ("%Nif ")
-			check guard_condition /= Void end
-			l_text.append (guard_condition.text)
-			l_text.append (" then%N")
+			if guard_condition /= Void then
+				l_text.append ("%Nif ")
+				l_gtext := guard_condition.text.twin
+				l_gtext.replace_substring_all ("old ", "")
+				l_text.append (l_gtext)
+				l_text.append (" then%N")
+			else
+				l_text.append ("%N")
+			end			
 			l_text.append (text_from_ast (new_ast))
-			l_text.append ("%Nend%N")
+			if guard_condition /= Void then
+				l_text.append ("%Nend%N")
+			end
 
 				-- Decide where to put the fix snippet.
 			if attached {AST_EIFFEL} original_ast as l_original_ast then

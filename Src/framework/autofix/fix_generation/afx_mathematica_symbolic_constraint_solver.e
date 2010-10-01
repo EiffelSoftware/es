@@ -293,7 +293,7 @@ feature{NONE} -- Implementation
 			until
 				l_names.after
 			loop
-				l_expr_name := "var" + i.out
+				l_expr_name := "z" + i.out
 				expression_name_table.put (l_names.item_for_iteration, l_expr_name)
 				name_expression_table.put (l_expr_name, l_names.item_for_iteration)
 				expressions.force_last (l_names.item_for_iteration)
