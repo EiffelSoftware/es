@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 
 feature {CLASS_TYPE_AS} -- Actual class type
 
-	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp: BOOLEAN; is_sep: BOOLEAN; proc_tag: PROCESSOR_TAG_TYPE): CL_TYPE_A
+	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp: BOOLEAN; is_sep: BOOLEAN): CL_TYPE_A
 			-- Actual type of `current depending on the context in which it is declared
 			-- in CLASS_TYPE_AS. That is to say, it could have generics `gen' but not
 			-- be a generic class. It simplifies creation of `CL_TYPE_A' instances in
@@ -79,7 +79,7 @@ feature {CLASS_TYPE_AS} -- Actual class type
 					create Result.make (class_id)
 				end
 			else
-				Result := Precursor {CLASS_B} (gen, is_exp, is_sep, proc_tag)
+				Result := Precursor {CLASS_B} (gen, is_exp, is_sep)
 			end
 		end
 

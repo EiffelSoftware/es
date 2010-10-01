@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_AGENT_ENDORELATION [G]
+	MML_AGENT_ENDORELATION [G->ANY]
 
 inherit
 	MML_ENDORELATION [G]

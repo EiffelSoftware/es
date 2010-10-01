@@ -2154,7 +2154,7 @@ feature {EXTERNAL_CLASS_C} -- Initialization
 
 feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual class type
 
-	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp, is_sep: BOOLEAN; proc_tag: PROCESSOR_TAG_TYPE): CL_TYPE_A
+	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp, is_sep: BOOLEAN): CL_TYPE_A
 			-- Actual type of `current depending on the context in which it is declared
 			-- in CLASS_TYPE_AS. That is to say, it could have generics `gen' but not
 			-- be a generic class. It simplifies creation of `CL_TYPE_A' instances in
@@ -2169,21 +2169,11 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 			else
 				create Result.make (class_id)
 			end
-
-			if {att_proc_tag : PROCESSOR_TAG_TYPE} proc_tag then
-				Result.set_processor_tag (att_proc_tag)
-
-				if not att_proc_tag.bottom and not att_proc_tag.is_current then
-					Result.set_separate_mark
-				end
-			else
-				Result.set_processor_tag (create {PROCESSOR_TAG_TYPE}.make_current)
-			end
-
 			if is_exp then
 				Result.set_expanded_mark
+			elseif is_sep then
+				Result.set_separate_mark
 			end
-
 			if is_expanded then
 				Result.set_expanded_class_mark
 			end
@@ -2206,8 +2196,6 @@ debug ("ACTIVITY")
 	io.error.put_new_line
 end
 			changed_features.put (feature_name_id)
-
-			(create {EBB_BLACKBOARD_COMPILER_HELPER}).handle_changed_feature (feature_of_name_id (feature_name_id))
 		end
 
 	constraint (i: INTEGER): TYPE_A
@@ -3065,10 +3053,6 @@ feature -- Properties
 
 	is_deferred: BOOLEAN
 			-- Is class deferred ?
-
-	is_separate_client: BOOLEAN
-			-- Is class having a separate client?
-			-- Added for Scoop by paedde
 
 	is_interface: BOOLEAN
 			-- Is class an interface for IL code generation?
@@ -4534,16 +4518,7 @@ feature {DEGREE_5} -- Degree 5
 			parsing_needed_set: parsing_needed = b
 		end
 
-	set_separate_client(b: BOOLEAN)
-			-- Set 'is_separate_client' to 'b'.
-			-- Added for Scoop by paedde
-		do
-			is_separate_client := b
-		ensure
-			is_separate_client_set: is_separate_client = b
-		end
-
-feature {DEGREE_SCOOP} -- Degree SCOOP
+feature {DEGREE_SCOOP, DEGREE_5} -- Degree SCOOP
 
 	add_to_degree_scoop
 			-- Add current class to Degree 5.
@@ -4562,21 +4537,22 @@ feature {DEGREE_SCOOP} -- Degree SCOOP
 			removed: not degree_scoop_needed
 		end
 
-	remove_from_comilation_list
-			-- Remove current class from lower degrees.
-		do
-			remove_from_degree_scoop
-			--remove_from_degree_4
-			--remove_from_degree_3
-			--remove_from_degree_2
-			--remove_from_degree_1
-			--remove_from_degree_minus_1
-		end
-
-
-	degree_scoop_needed: BOOLEAN
+    degree_scoop_needed: BOOLEAN
 			-- Does current class need to be
 			-- processed in Degree SCOOP?
+
+	is_separate_client: BOOLEAN
+			-- Is class having a separate client?
+			-- Added for Scoop by paedde
+
+	set_separate_client (b: BOOLEAN)
+			-- Set 'is_separate_client' to 'b'.
+			-- Added for Scoop by paedde
+		do
+			is_separate_client := b
+		ensure
+			is_separate_client_set: is_separate_client = b
+		end
 
 feature {DEGREE_4, NAMED_TUPLE_TYPE_A} -- Degree 4
 

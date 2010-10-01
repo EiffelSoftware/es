@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CI_SEQUENCE [G]
+	CI_SEQUENCE [G->ANY]
 
 inherit
 	HASHABLE

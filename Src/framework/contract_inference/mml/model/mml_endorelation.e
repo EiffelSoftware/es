@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	MML_ENDORELATION [G]
+	MML_ENDORELATION [G->ANY]
 
 inherit
 	MML_RELATION [G, G]

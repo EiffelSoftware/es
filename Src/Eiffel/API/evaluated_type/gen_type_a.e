@@ -738,6 +738,9 @@ feature {TYPE_A} -- Helpers
 				attachment_bits := 0
 				Result := duplicate_for_instantiation
 				attachment_bits := l_attachment_bits
+				if Result.is_separate then
+					Result := Result.as_non_separate
+				end
 
 				l_generics := generics
 				l_new_generics := Result.generics
@@ -760,7 +763,7 @@ feature {TYPE_A} -- Helpers
 						if associated_class.generics.i_th (i).is_multi_constrained (associated_class.generics) then
 							l_new_generics.put (associated_class.constrained_types (i), i)
 						else
-							l_new_generics.put (associated_class.constrained_type (i).as_attachment_mark_free, i)
+							l_new_generics.put (associated_class.constrained_type (i).as_marks_free, i)
 						end
 					end
 				else
@@ -788,8 +791,7 @@ feature {TYPE_A} -- Helpers
 						-- If 'declaration_mark' is not the same for both then we have to make sure
 						-- that both expanded and separate states are identical.
 				(l_gen_type_i.declaration_mark /= declaration_mark implies
-					(l_gen_type_i.is_expanded = is_expanded and then
-					l_gen_type_i.is_separate = is_separate))
+					l_gen_type_i.is_expanded = is_expanded)
 			then
 				from
 					i := 1
@@ -1239,7 +1241,6 @@ feature -- Primitives
 			-- Check generic parameters
 		local
 			i, count: INTEGER
-			our_param, arg_param : TYPE_A
 			gen_type: GEN_TYPE_A
 			gen_type_generics: like generics
 		do
@@ -1254,18 +1255,8 @@ feature -- Primitives
 					until
 						i > count or else not Result
 					loop
-						our_param := generics.item (i)
-						arg_param := gen_type_generics.item (i)
-
-						Result := arg_param.conform_to (a_context_class, our_param)
-						-- SCOOP restricted generics
-												and then (workbench.is_degree_scoop_processing implies
-						            ((not our_param.is_attached and not arg_param.is_attached) or --condition 1
-						             our_param.conform_to (a_context_class, arg_param)))                            --condition 2, from pages 199,200 resp
-						               -- combined with the first formula
-						               -- this should mean the types are
-						               -- exactly equal
-						               -- (basically a <= b and b <= a implies a = b)
+						Result := gen_type_generics.item (i).
+							conform_to (a_context_class, generics.item (i))
 						i := i + 1
 					end
 				end

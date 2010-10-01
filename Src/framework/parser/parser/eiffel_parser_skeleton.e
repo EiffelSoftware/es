@@ -193,7 +193,6 @@ feature -- Initialization
 			external_keyword := Void
 			frozen_keyword := Void
 			separate_keyword := Void
-			frozen_keyword := Void
 		end
 
 feature -- Status report
@@ -635,6 +634,20 @@ feature {NONE} -- Implementation
 		do
 			feature_stack.remove
 			remove_once_manifest_string_counter
+		end
+
+	setup_binary_manifest_string (a_string_as: ATOMIC_AS)
+			-- Caculate the original written bytes of the string
+			-- according to UTF-8 string and original encoding.
+		do
+			if attached {STRING_AS}a_string_as as l_string_as then
+				utf8.convert_to (detected_encoding, l_string_as.value)
+				if utf8.last_conversion_successful then
+					l_string_as.set_binary_value (utf8.last_converted_stream)
+				else
+					check conversion_failed: False end
+				end
+			end
 		end
 
 	is_deferred: BOOLEAN

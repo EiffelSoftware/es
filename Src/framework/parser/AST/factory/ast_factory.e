@@ -363,7 +363,7 @@ feature -- Value AST creation
 			-- New integer value.
 		require
 			buffer_not_void: buffer /= Void
-			valid_sign: ("%U+-").has (sign_symbol)
+--			valid_sign: ("%U+-").has (sign_symbol)
 			a_psr_not_void: a_psr /= Void
 		local
 			token_value: STRING
@@ -1297,19 +1297,6 @@ feature -- Access
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
-
-new_explicit_processor_specification_as (e: ID_AS; h: ID_AS): EXPLICIT_PROCESSOR_SPECIFICATION_AS
-		   -- New EXPLICIT_PROCESSOR_SPECIFICATION AST node
-			-- added for SCOOP by paedde
-        do
-            if e /= Void then
-                if h /= Void then
-                    create Result.initialize_with_handler (e, h)
-                else
-                    create Result.initialize (e)
-                end
-            end
-        end
 
 	new_elseif_as (e: EXPR_AS; c: EIFFEL_LIST [INSTRUCTION_AS]; l_as, t_as: KEYWORD_AS): ELSIF_AS
 			-- New ELSIF AST node

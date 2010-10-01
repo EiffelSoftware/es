@@ -6,7 +6,7 @@ note
 	mapped_to: "Sequence G"
 
 class
-	MML_FINITE_SEQUENCE [G]
+	MML_FINITE_SEQUENCE [G->ANY]
 
 inherit
 	MML_SEQUENCE [G]

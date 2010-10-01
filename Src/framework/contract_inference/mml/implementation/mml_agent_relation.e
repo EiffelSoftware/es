@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_AGENT_RELATION [G, H]
+	MML_AGENT_RELATION [G->ANY, H->ANY]
 
 inherit
 	MML_RELATION [G, H]

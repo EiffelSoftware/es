@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_AGENT_SEQUENCE [G]
+	MML_AGENT_SEQUENCE [G->ANY]
 
 inherit
 	MML_SEQUENCE [G]

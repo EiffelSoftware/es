@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_FINITE_BAG [G]
+	MML_FINITE_BAG [G->ANY]
 
 inherit
 	MML_MODEL

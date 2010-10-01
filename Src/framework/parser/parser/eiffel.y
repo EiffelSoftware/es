@@ -83,7 +83,7 @@ create
 %token <KEYWORD_AS> TE_THEN TE_UNDEFINE	TE_UNTIL TE_VARIANT TE_WHEN	
 %token <KEYWORD_AS> TE_XOR
 -- Special type for keywords that are either keyword or identifier
-%token <TUPLE [KEYWORD_AS, ID_AS, INTEGER, INTEGER, STRING] as keyword_id> TE_ACROSS TE_ASSIGN TE_ATTRIBUTE TE_ATTACHED TE_DETACHABLE TE_INDEXING TE_IS TE_NOTE TE_SOME TE_HANDLER
+%token <TUPLE [KEYWORD_AS, ID_AS, INTEGER, INTEGER, STRING] as keyword_id> TE_ACROSS TE_ASSIGN TE_ATTRIBUTE TE_ATTACHED TE_DETACHABLE TE_INDEXING TE_IS TE_NOTE TE_SOME
 
 %token <STRING_AS> TE_STRING TE_EMPTY_STRING TE_VERBATIM_STRING	TE_EMPTY_VERBATIM_STRING
 %token <STRING_AS> TE_STR_LT TE_STR_LE TE_STR_GT TE_STR_GE TE_STR_MINUS
@@ -129,7 +129,6 @@ create
 %type <DEBUG_AS>			Debug
 %type <ELSIF_AS>			Elseif_part
 %type <ENSURE_AS>			Postcondition
-%type <EXPLICIT_PROCESSOR_SPECIFICATION_AS>	Explicit_processor_specification Processor -- added for SCOOP by paedde
 %type <EXPORT_ITEM_AS>		New_export_item
 %type <EXPR_AS>				Bracket_target Expression Factor Qualified_expression Qualified_factor Typed_expression
 %type <EXTERNAL_AS>			External
@@ -929,7 +928,10 @@ Assigner_mark_opt: -- Empty
 	;
 
 Constant_attribute: Manifest_constant
-			{ $$ := ast_factory.new_constant_as ($1) }
+			{
+				setup_binary_manifest_string ($1)
+				$$ := ast_factory.new_constant_as ($1) 
+			}
 	|	TE_UNIQUE
 			{ $$ := ast_factory.new_constant_as ($1) }
 	;
@@ -1596,70 +1598,6 @@ Non_class_type: TE_EXPANDED Attached_class_type
 						once "Make an expanded version of the base class associated with this type."))
 				end
 			}
-	|	TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			{
-				last_class_type ?= $3
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($1)
-					last_class_type.set_explicit_processor_specification ($2)
-					last_class_type := Void
-				end
-				$$ := $3
-			}
-	|	TE_ATTACHED TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark (extract_keyword ($1), True, False)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-			}
-	|	TE_BANG TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark ($1, True, False)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-				if has_syntax_warning then
-					report_one_warning (
-						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
-						once "Use the `detachable' keyword instead of ?."))
-				end
-			}
-	|	TE_DETACHABLE TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark (extract_keyword ($1), False, True)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-			}
-	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Attached_class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark ($1, False, True)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-				if has_syntax_warning then
-					report_one_warning (
-						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
-						once "Use the `detachable' keyword instead of ?."))
-				end
-			}
 	|	TE_BIT Integer_constant
 			{ $$ := ast_factory.new_bits_as ($2, $1) }
 	|	TE_BIT Identifier_as_lower
@@ -1965,31 +1903,6 @@ Named_parameter_list: TE_ID TE_COLON Type TE_RSQURE
 			}
 	;
 			
-Explicit_processor_specification: -- Empty
-			-- added for SCOOP by paedde
-			-- { $$ := Void }
-	|	TE_LT Processor TE_GT
-			{
-				$$ := $2
-			}
-	;
-
-Processor:	TE_ID
-			-- added for SCOOP by paedde
-			{
-				$$ := ast_factory.new_explicit_processor_specification_as($1, Void)
-			}
-	|	TE_ID TE_DOT TE_ID
-			{
-				if $3.name.is_equal ("handler") then
-					$$ := ast_factory.new_explicit_processor_specification_as($1, $3)
-				else
-					report_one_error (create {SYNTAX_ERROR}.make (token_line ($1), token_column ($3), filename, "Invalid explicit processor specification. Hint: Perhaps you meant '.handler'?"))
-				end
-			}
-	;
-
-
 
 -- Formal generics
 
@@ -2142,72 +2055,6 @@ Constraint_type:
 					report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $1))
 				end
 			}
-	|	TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			-- added for SCOOP by paedde
-			{
-				last_class_type ?= $3
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($1)
-					last_class_type.set_explicit_processor_specification ($2)
-					last_class_type := Void
-				end
-				$$ := $3
-			}
-	|	TE_ATTACHED TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark (extract_keyword ($1), True, False)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-			}
-	|	TE_BANG TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark ($1, True, False)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-				if has_syntax_warning then
-					report_one_warning (
-						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
-						once "Use the `detachable' keyword instead of ?."))
-				end
-			}
-	|	TE_DETACHABLE TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark (extract_keyword ($1), False, True)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-			}
-	|	TE_QUESTION TE_SEPARATE Explicit_processor_specification Class_or_tuple_type
-			{
-				last_class_type ?= $4
-				if last_class_type /= Void then
-					last_class_type.set_separate_mark ($2)
-					last_class_type.set_attachment_mark ($1, False, True)
-					last_class_type.set_explicit_processor_specification ($3)
-					last_class_type := Void
-				end
-				$$ := $4
-				if has_syntax_warning then
-					report_one_warning (
-						create {SYNTAX_WARNING}.make (token_line ($1), token_column ($1), filename,
-						once "Use the `detachable' keyword instead of ?."))
-				end
-			}
-
 	|	Anchored_type
 			{
 				report_one_error (ast_factory.new_vtgc1_error (token_line ($1), token_column ($1), filename, $1))
@@ -3320,12 +3167,16 @@ Expression_constant:
 	|	Bit_constant
 			{ $$ := $1 }
 	|	Manifest_string
-			{ $$ := $1 }
+			{
+				setup_binary_manifest_string ($1)
+				$$ := $1 
+			}
 	|	TE_ONCE_STRING Manifest_string
 			{
 				if $2 /= Void then
 					$2.set_is_once_string (True)
 					$2.set_once_string_keyword ($1)
+					setup_binary_manifest_string ($2)
 				end
 				increment_once_manifest_string_counter
 				$$ := $2

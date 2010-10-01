@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_FINITE_SET [G]
+	MML_FINITE_SET [G->ANY]
 
 inherit
 	MML_SET [G]

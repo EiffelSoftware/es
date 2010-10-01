@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_FINITE_MAP [K, G]
+	MML_FINITE_MAP [K->ANY, G->ANY]
 
 inherit
 	MML_MAP [K, G]
@@ -237,7 +237,7 @@ feature --Basic operations
 			end
 			create Result.make_from_arrays (ks.subarray (ks.lower, j - 1), vs.subarray (vs.lower, j - 1))
 		end
-		
+
 	inverse: MML_FINITE_RELATION [G, K]
 			-- Relation consisting of inverted pairs from `Current'
 		do

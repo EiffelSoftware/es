@@ -59,9 +59,6 @@ feature -- Attributes
 	is_expanded: BOOLEAN
 			-- Is current type used with `expanded' keyword?
 
-	explicit_processor_specification: EXPLICIT_PROCESSOR_SPECIFICATION_AS
-			-- The full processor specification.
-
 feature -- Roundtrip
 
 	expanded_keyword_index: INTEGER
@@ -143,13 +140,6 @@ feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 		do
 			class_name := s
 		end
-
-	set_explicit_processor_specification (s: like explicit_processor_specification)
-            -- Assign `s' to `explicit_processor_specification'.
-            -- added for SCOOP by paedde
-        do
-            explicit_processor_specification := s
-        end
 
 note
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"

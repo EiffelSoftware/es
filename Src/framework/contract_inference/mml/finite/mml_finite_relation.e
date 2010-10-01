@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	MML_FINITE_RELATION [G, H]
+	MML_FINITE_RELATION [G->ANY, H->ANY]
 
 inherit
 	MML_RELATION [G, H]

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CI_SEQUENCE_EQUALITY_TESTER [G]
+	CI_SEQUENCE_EQUALITY_TESTER [G->ANY]
 
 inherit
 	KL_EQUALITY_TESTER [CI_SEQUENCE [G]]

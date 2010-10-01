@@ -214,19 +214,6 @@ feature {NONE} -- Generic conformance
 				ba.append_natural_16 (l_annotation)
 			end
 		end
-feature -- SCOOP Processor access
-	processor_tag : !PROCESSOR_TAG_TYPE
-		do
-			create Result.make_current
-		end
-
-	set_processor_tag (a_proc_tag_t : !PROCESSOR_TAG_TYPE)
-		do
-			attr_processor_tag := a_proc_tag_t.twin
-		end
-
-feature {TYPE_A}
-	attr_processor_tag : PROCESSOR_TAG_TYPE
 
 feature -- C code generation
 
@@ -564,6 +551,12 @@ feature -- Properties
 			-- Is the current actual type a separate one ?
 		do
 			-- Do nothing
+		end
+
+	-- Added for SCOOP: So far the type checker does not support explicit processor specifications. Thus no type in the system will have an explicit processor specification.
+	processor_tag : attached PROCESSOR_TAG_TYPE
+		do
+			create Result.make_top
 		end
 
 	is_none: BOOLEAN
@@ -913,6 +906,14 @@ feature -- Attachment properties
 			Result := Current
 		ensure
 			as_attachment_mark_free_not_void: Result /= Void
+		end
+
+	as_marks_free: like Current
+			-- Same as Current but without any attachment and separate marks
+		do
+			Result := Current
+		ensure
+			as_marks_free_attached: attached Result
 		end
 
 	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current

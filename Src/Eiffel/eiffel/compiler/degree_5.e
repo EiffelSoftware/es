@@ -205,21 +205,8 @@ feature {NONE} -- Processing
 				if ast /= Void then
 					eif_class.end_of_pass1 (ast)
 					a_class.lace_class.config_class.set_up_to_date
-
-						-- added for SCOOP by paedde
-					a_class.set_separate_client (check_separate_client (a_class))
 				end
 			end
-		end
-
-	check_separate_client(a_class: CLASS_C): BOOLEAN
-			-- checks occurrence of a separate client in the class
-			-- added for SCOOP by paedde
-		local
-			l_separate_client_visitor: AST_SEPARATE_CLIENT_VISITOR
-		do
-			create l_separate_client_visitor
-			Result := l_separate_client_visitor.process (a_class.ast)
 		end
 
 feature -- Element change

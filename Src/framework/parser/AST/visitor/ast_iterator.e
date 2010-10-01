@@ -940,14 +940,6 @@ feature {NONE} -- Implementation
 			process_eiffel_list (l_as)
 		end
 
-	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS)
-			-- Process `l_as'.
-		do
-			safe_process (l_as.entity)
-			safe_process (l_as.handler)
-		end
-
-
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

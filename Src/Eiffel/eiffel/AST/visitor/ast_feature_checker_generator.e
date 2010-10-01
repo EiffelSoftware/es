@@ -98,11 +98,6 @@ inherit
 			{NONE} all
 		end
 
-	SCOOP_BASIC_TYPE
-		export
-			{NONE} all
-		end
-
 feature -- Initialization
 
 	init (a_context: AST_CONTEXT)
@@ -732,6 +727,7 @@ feature {NONE} -- Settings
 	reset_for_unqualified_call_checking
 		do
 			last_type := context.current_class_type
+			is_controlled := False
 		end
 
 	set_is_checking_postcondition (b: BOOLEAN)
@@ -807,92 +803,6 @@ feature {NONE} -- Settings
 		ensure
 			is_current_feature_set: current_feature = a_feature
 		end
-feature {NONE} -- SCOOP Implementation
-    last_is_controlled : BOOLEAN
-
-	set_controlled (a_type : TYPE_A)
-		do
-			if workbench.is_degree_scoop_processing and then a_type.is_separate then
-				a_type.processor_tag.set_controlled (a_type.is_implicitly_attached)
-			end
-		end
-
-    is_arg_controlled (a_type : TYPE_A) : BOOLEAN
-            -- Determine whether the argument `var' is controlled, as
-            -- defined by the SCOOP specification. This implementation uses
-            -- the `current_feature' state variable to determine the current
-            -- context for this predicate.
-        do
-            Result := a_type.is_separate implies a_type.is_attached
-        end
-
-    is_controlled (a_type : TYPE_A) : BOOLEAN
-            -- Determine whether a given type is controlled. This determination
-            -- is based off of the separate tag for the type.
-        do
-
-            Result := True
-
-            if a_type.is_separate then
-                Result := a_type.processor_tag.is_current or a_type.processor_tag.is_controlled
-            end
-
-        end
-
-
-    transform_scoop_result (result_t, target_t : TYPE_A) : TYPE_A
-            -- Transforms the result of a feature call depending on the
-            -- target of that call. This transformation is according to the
-            -- definition given in the SCOOP work on typing
-        local
-            tmp_tag : attached PROCESSOR_TAG_TYPE
-        do
-            Result  := result_t.twin
-
-            if result_t.is_expanded or
-            	(result_t.associated_class = Void or else
-            	is_in_ignored_group (result_t.associated_class)) then
-
-            else
-                Result  := result_t.twin
-                tmp_tag := target_t.processor_tag.twin
-
-                if not result_t.processor_tag.is_current then
-                    Result.processor_tag.make_top
-                else
-                    Result.set_processor_tag (tmp_tag)
-                end
-            end
-        end
-
-
-    transform_scoop_argument (arg_t, target_t : TYPE_A) : TYPE_A
-            -- Transforms the argument type based on the existing argument
-            -- type and the target type. This is according to the definition
-            -- given in the SCOOP work on typing.
-        local
-            tmp_tag : attached PROCESSOR_TAG_TYPE
-        do
-            Result := arg_t.twin
-
-            if target_t.is_expanded or
-            	(arg_t.associated_class = Void or else
-            	is_in_ignored_group (arg_t.associated_class)) then
-
-            else
-                Result  := arg_t.twin
-                tmp_tag := target_t.processor_tag.twin
-
-                if not target_t.processor_tag.top and arg_t.processor_tag.is_current then
-                elseif arg_t.processor_tag.top then
-                    tmp_tag.make_top
-                else
-                    tmp_tag.make_bottom
-                end
-
-                Result.set_processor_tag (tmp_tag)
-            end
-        end
 
 feature {NONE} -- Roundtrip
 
@@ -1345,13 +1255,6 @@ feature {NONE} -- Implementation
 
 			l_context_current_class := context.current_class
 
-				-- FIXME: deal with unqualified call validity checking
-            if workbench.is_degree_scoop_processing then
-                if is_qualified and then not is_controlled (a_type) then
-                    error_handler.insert_error (create {VSTU}.make (context, a_type, l_feature_name))
-                end
-            end
-
 			l_last_type := a_type.actual_type
 			if not l_last_type.is_formal then
 					-- We have no formal, therefore we don't need to recompute `l_last_constrained'
@@ -1626,13 +1529,6 @@ feature {NONE} -- Implementation
 											-- Get formal argument type.
 										l_formal_arg_type := l_feature.arguments.i_th (i)
 
-
-                                            -- Use the SCOOP argument combinator to transform the
-                                            -- Resulting type
-                                        if workbench.is_degree_scoop_processing then
-                                            l_formal_arg_type := transform_scoop_argument (l_formal_arg_type, a_type)
-                                        end
-
 											-- Take care of anchoring to argument
 										if l_formal_arg_type.is_like_argument then
 											l_like_arg_type := l_formal_arg_type.instantiation_in (l_last_type.as_implicitly_detachable, l_last_id)
@@ -1779,12 +1675,6 @@ feature {NONE} -- Implementation
 
 								-- Get the type of Current feature.
 							l_result_type := l_feature.type
-
-								-- SCOOP transformation of the result type, based on both old result type and target of the feature call
-                            if workbench.is_degree_scoop_processing then
-                                l_result_type := transform_scoop_result (l_result_type, a_type)
-                            end
-
 							l_result_type := l_result_type.formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id)
 								-- Adapted type in case it is a formal generic parameter or a like.
 							if l_arg_types /= Void then
@@ -2328,6 +2218,8 @@ feature {NONE} -- Implementation
 	process_string_as (l_as: STRING_AS)
 		local
 			t: like last_type
+			l_is_string_32: BOOLEAN
+			l_value: STRING
 		do
 				-- Constants are always of an attached type
 			if l_as.type = Void then
@@ -2342,11 +2234,19 @@ feature {NONE} -- Implementation
 				t := last_type.as_attached_in (context.current_class)
 				last_type := t
 				if is_byte_node_enabled then
+					l_is_string_32 := not t.same_as (string_type)
+					if not l_is_string_32 then
+							-- For STRING_8 manifest string, we keep the written value for compatibility.
+						l_value := l_as.binary_value
+					else
+							-- For STRING_32 manifest string, UTF-8 value is kept for later transformation.
+						l_value := l_as.value
+					end
 					if l_as.is_once_string then
 						once_manifest_string_index := once_manifest_string_index + 1
-						create {ONCE_STRING_B} last_byte_node.make (l_as.value, not t.same_as (string_type), once_manifest_string_index)
+						create {ONCE_STRING_B} last_byte_node.make (l_value, l_is_string_32, once_manifest_string_index)
 					else
-						create {STRING_B} last_byte_node.make (l_as.value, not t.same_as (string_type))
+						create {STRING_B} last_byte_node.make (l_value, l_is_string_32)
 					end
 				end
 			end
@@ -2696,13 +2596,10 @@ feature {NONE} -- Implementation
 			end
 			if l_arg_pos /= 0 then
 					-- Found argument
+					-- Arguments are controlled.
+				is_controlled := True
 				l_type := l_feature.arguments.i_th (l_arg_pos)
 				l_type := l_type.actual_type.instantiation_in (last_type.as_implicitly_detachable, l_last_id)
-
-                    -- We need to remember if this argument is controlled so we can pass this on
-                    -- to later stages, important for SCOOP separate call validity checking.
-				set_controlled (l_type)
-
 				l_has_vuar_error := l_as.parameters /= Void
 				if l_needs_byte_node then
 					create l_argument
@@ -2857,10 +2754,11 @@ feature {NONE} -- Implementation
 			l_error_level := error_level
 			if l_arg_pos /= 0 then
 					-- Found argument
+					-- Arguments are controlled.
+				is_controlled := True
 				l_arg_type := l_feature.arguments.i_th (l_arg_pos)
 
 				last_type := l_arg_type.actual_type.instantiation_in (last_type.as_implicitly_detachable, l_last_id)
-				set_controlled (last_type)
 				if l_as.parameters /= Void then
 					create l_vuar1
 					context.init_error (l_vuar1)
@@ -3088,6 +2986,7 @@ feature {NONE} -- Implementation
 			l_is_qualified_call: BOOLEAN
 			l_error_level: NATURAL_32
 			l_is_assigner_call: BOOLEAN
+			l_is_controlled: BOOLEAN
 		do
 				-- Type check the target, but we reset the
 				-- assigner flag syntax, because it is only pertinent
@@ -3099,6 +2998,10 @@ feature {NONE} -- Implementation
 
 			l_target_type := last_type
 			if l_target_type /= Void then
+				if l_target_type.is_separate then
+					validate_separate_target (l_as.target)
+					l_is_controlled := is_controlled
+				end
 				if is_byte_node_enabled then
 					check last_byte_node_not_void: last_byte_node /= Void end
 					l_target_expr ?= last_byte_node
@@ -3112,17 +3015,20 @@ feature {NONE} -- Implementation
 				l_error_level := error_level
 				l_as.message.process (Current)
 				is_qualified_call := l_is_qualified_call
-				if error_level = l_error_level and is_byte_node_enabled then
-					l_call ?= last_byte_node
-					check
-						l_call_not_void: l_call /= Void
+				if error_level = l_error_level then
+					adapt_last_type_to_target (l_target_type, l_is_controlled)
+					if is_byte_node_enabled then
+						l_call ?= last_byte_node
+						check
+							l_call_not_void: l_call /= Void
+						end
+						create l_nested
+						l_nested.set_target (l_access_expr)
+						fixme ("Should we set `parent' on `l_access_expr' as we do for a NESTED_AS")
+						l_nested.set_message (l_call)
+						l_call.set_parent (l_nested)
+						last_byte_node := l_nested
 					end
-					create l_nested
-					l_nested.set_target (l_access_expr)
-					fixme ("Should we set `parent' on `l_access_expr' as we do for a NESTED_AS")
-					l_nested.set_message (l_call)
-					l_call.set_parent (l_nested)
-					last_byte_node := l_nested
 				end
 			end
 		end
@@ -3150,6 +3056,10 @@ feature {NONE} -- Implementation
 					l_target_access ?= last_byte_node
 				end
 				l_error_level := error_level
+					-- Check the target of a separate feature call.
+				if last_type.is_separate then
+					validate_separate_target (l_as.target)
+				end
 					-- Type check the message
 				l_as.message.process (Current)
 				if error_level /= l_error_level then
@@ -4070,6 +3980,7 @@ feature {NONE} -- Implementation
 			l_error_level: NATURAL_32
 			l_vtmc_error: VTMC
 			l_vtmc4: VTMC4
+			l_is_controlled: BOOLEAN
 		do
 			l_needs_byte_node := is_byte_node_enabled
 
@@ -4080,11 +3991,15 @@ feature {NONE} -- Implementation
 				-- Check operand
 			l_as.expr.process (Current)
 
-			if last_type /= Void then
+			if attached last_type as l_target_type then
+				if l_target_type.is_separate then
+					validate_separate_target (l_as.expr)
+					l_is_controlled := is_controlled
+				end
 				if l_needs_byte_node then
 					l_expr ?= last_byte_node
 				end
-				last_type := last_type.actual_type
+				last_type := l_target_type.actual_type
 				l_formal ?= last_type
 				if l_formal /= Void then
 					if not l_formal.is_single_constraint_without_renaming (l_context_current_class) then
@@ -4275,8 +4190,8 @@ feature {NONE} -- Implementation
 									last_byte_node := l_access
 								end
 							end
-
 							last_type := l_prefix_feature_type
+							adapt_last_type_to_target (l_target_type, l_is_controlled)
 						end
 					end
 				end
@@ -4399,6 +4314,7 @@ feature {NONE} -- Implementation
 			l_result_item: TUPLE [feature_i: FEATURE_I; cl_type: RENAMED_TYPE_A [TYPE_A]]
 			l_type_set: TYPE_SET_A
 			l_vtmc4: VTMC4
+			l_is_controlled: BOOLEAN
 		do
 			l_needs_byte_node := is_byte_node_enabled
 			l_context_current_class := context.current_class
@@ -4411,8 +4327,13 @@ feature {NONE} -- Implementation
 
 				-- First type check the left operand
 			l_as.left.process (Current)
-			if last_type /= Void then
-				l_left_type := last_type.actual_type
+			l_target_type := last_type
+			if attached l_target_type then
+				if l_target_type.is_separate then
+					validate_separate_target (l_as.left)
+					l_is_controlled := is_controlled
+				end
+				l_left_type := l_target_type.actual_type
 				if l_left_type.is_formal and then attached {FORMAL_A} l_left_type as l_formal then
 					if l_formal.is_multi_constrained (l_context_current_class) then
 						l_is_left_multi_constrained := True
@@ -4650,6 +4571,7 @@ feature {NONE} -- Implementation
 								last_byte_node := l_binary
 							end
 							last_type := l_infix_type
+							adapt_last_type_to_target (l_target_type, l_is_controlled)
 						end
 					end
 				end
@@ -4938,6 +4860,7 @@ feature {NONE} -- Implementation
 			l_access_b: ACCESS_B
 			l_is_qualified_call: BOOLEAN
 			l_error_level: NATURAL_32
+			l_is_controlled: BOOLEAN
 		do
 				-- Clean assigner call flag for bracket target
 			was_assigner_call := is_assigner_call
@@ -4948,7 +4871,11 @@ feature {NONE} -- Implementation
 
 				-- Check target
 			l_as.target.process (Current)
-			if last_type /= Void then
+			if attached last_type as l_target_type then
+				if l_target_type.is_separate then
+					validate_separate_target (l_as.target)
+					l_is_controlled := is_controlled
+				end
 				target_type := last_type.actual_type
 				if is_byte_node_enabled then
 					target_expr ?= last_byte_node
@@ -5031,6 +4958,7 @@ feature {NONE} -- Implementation
 						process_call (last_type, Void, id_feature_name, bracket_feature, l_as.operands, False, False, True, False)
 						is_qualified_call := l_is_qualified_call
 						if error_level = l_error_level then
+							adapt_last_type_to_target (l_target_type, l_is_controlled)
 							if is_byte_node_enabled then
 								create nested_b
 								create target_access
@@ -7866,13 +7794,6 @@ feature {NONE} -- Implementation
 			process_eiffel_list (l_as)
 		end
 
-	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS)
-			-- Process `l_as'.
-		do
-			safe_process (l_as.entity)
-			safe_process (l_as.handler)
-		end
-
 feature {NONE} -- Predefined types
 
 	string_type: CL_TYPE_A
@@ -10439,6 +10360,42 @@ feature {INSPECT_CONTROL} -- AST modification
 			end
 		ensure
 			routine_ids_set: ids.is_equal_id_list (a)
+		end
+
+feature {NONE} -- Separateness
+
+	is_controlled: BOOLEAN
+			-- Is last expression of a separate type controlled?
+
+	validate_separate_target (a: AST_EIFFEL)
+			-- Check validity rules for the target `a' of a separate type.
+		require
+			a_attached: attached a
+			is_last_type_separate: attached last_type as t and then t.is_separate
+		do
+			if not is_controlled then
+				error_handler.insert_error (create {VUTA3}.make (context, last_type, a.start_location))
+			end
+		end
+
+	adapt_last_type_to_target (t: TYPE_A; c: BOOLEAN)
+			-- Adapt separateness status of the last message type `last_type'
+			-- to the target of type `t' which has a controlled status `c'
+			-- and update `is_controlled' accordingly.
+		do
+				-- Qualified call is controlled if target is controlled
+				-- and message type is not separate.
+			if
+				t.is_separate and then
+				attached {ATTACHABLE_TYPE_A} t as a and then
+				attached last_type as l and then
+				not l.is_separate
+			then
+				is_controlled := c
+				last_type := l.to_other_separateness (a)
+			else
+				is_controlled := False
+			end
 		end
 
 note

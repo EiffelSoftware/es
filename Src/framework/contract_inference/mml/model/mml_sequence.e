@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	MML_SEQUENCE [G]
+	MML_SEQUENCE [G->ANY]
 
 inherit
 	MML_MODEL

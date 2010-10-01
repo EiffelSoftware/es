@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	MML_MAP [K, G]
+	MML_MAP [K->ANY, G->ANY]
 
 inherit
 	MML_MODEL

@@ -98,7 +98,6 @@ feature -- Analyze
 	analyze
 			-- Analyze creation node
 		local
-			l_call: like call
 			l_type: like type
 		do
 			l_type := real_type (type)
@@ -106,8 +105,7 @@ feature -- Analyze
 				info := info.updated_info
 				info.analyze
 				get_register
-				l_call := call
-				if l_call /= Void then
+				if attached call as l_call then
 					if is_simple_special_creation then
 						check
 							is_special_call_valid: is_special_call_valid
@@ -124,6 +122,13 @@ feature -- Analyze
 			else
 				create {REGISTER} register.make (l_type.c_type)
 			end
+			if real_type (type).is_separate then
+					-- Allocate a register for a container that stores arguments
+					-- to be passed to the scheduler.
+				create separate_register.make (reference_c_type)
+					-- The register is not used right after the call.
+				separate_register.free_register
+			end
 		end
 
 	unanalyze
@@ -139,6 +144,7 @@ feature -- Analyze
 					l_call.unanalyze
 				end
 			end
+			separate_register := Void
 		end
 
 feature -- Status report
@@ -297,8 +303,7 @@ feature -- Generation
 			-- Generate C code for creation expression
 		local
 			buf: GENERATION_BUFFER
-			l_basic_type: BASIC_A
-			l_call: like call
+			t: TYPE_A
 			l_class_type: SPECIAL_CLASS_TYPE
 			parameter: PARAMETER_BL
 			l_is_make_filled: BOOLEAN
@@ -307,9 +312,8 @@ feature -- Generation
 			buf := buffer
 			generate_line_info
 
-			l_basic_type ?= real_type (type)
-			l_call := call
-			if l_basic_type /= Void then
+			t := real_type (type)
+			if attached {BASIC_A} t as l_basic_type then
 				buf.put_new_line
 				register.print_register
 				buf.put_string (" = ")
@@ -327,12 +331,14 @@ feature -- Generation
 				check
 					l_class_type_not_void: l_class_type /= Void
 				end
-				l_call.parameters.first.generate
-				if l_is_make_filled then
-					l_call.parameters.i_th (2).generate
-					parameter ?= l_call.parameters.i_th (2)
-				else
-					parameter ?= l_call.parameters.first
+				if attached call as l_call then
+					l_call.parameters.first.generate
+					if l_is_make_filled then
+						l_call.parameters.i_th (2).generate
+						parameter ?= l_call.parameters.i_th (2)
+					else
+						parameter ?= l_call.parameters.first
+					end
 				end
 				info.generate_start (buf)
 				info.generate_gen_type_conversion (0)
@@ -351,17 +357,23 @@ feature -- Generation
 				l_generate_call := True
 			end
 
+			if t.is_separate then
+					-- Attach new object to a new processor
+				buf.put_new_line
+				buf.put_string ("RTS_PA (")
+				register.print_register
+				buf.put_two_character (')', ';')
+			end
+
 			if l_generate_call then
-				if call /= Void then
-					call.set_parent (nested_b)
+				if attached call as c then
+					c.set_parent (nested_b)
 					if not l_is_make_filled then
-						call.generate_parameters (register)
+						c.generate_parameters (register)
 					end
-						-- We need a new line since `generate_on' doesn't do it.
-					buf.put_new_line
-					call.generate_on (register)
-					call.set_parent (Void)
-					buf.put_character (';')
+						-- Call a creation procedure
+					c.generate_call (separate_register, attached separate_register, Void, register)
+					c.set_parent (Void)
 					generate_frozen_debugger_hook_nested
 				end
 				if
@@ -397,6 +409,11 @@ feature {BYTE_NODE_VISITOR} -- Assertion support
 				(call /= Void and then call.parameters /= Void and then
 				((not is_special_make_filled and call.parameters.count = 1) or (is_special_make_filled and call.parameters.count = 2)))
 		end
+
+feature {NONE} -- Separate feature call
+
+	separate_register: REGISTER;
+			-- Register to store data to be passed to the scheduler
 
 note
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
