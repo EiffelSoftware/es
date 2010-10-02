@@ -524,7 +524,7 @@ feature -- Execution
 				-- or the type of argument are not correct.
 			create l_invoke_request.make (system, l_feature.feature_name, a_target, an_argument_list)
 			if a_feature /= Void then
-				l_invoke_request.set_feature_id (a_feature.id)
+				l_invoke_request.set_feature_id (aut_feature.id)
 			end
 			l_invoke_request.set_target_type (l_target_type)
 			last_operands := l_invoke_request.operand_indexes
@@ -1575,16 +1575,6 @@ feature -- Predicate evaluation
 		require
 			a_feature_attached: a_feature /= Void
 		local
-			l_predicate_table: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
-			l_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
-			l_request_data:  LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]]
-			l_arguments: SPECIAL [INTEGER]
-			l_predicate: AUT_PREDICATE
-			l_arranger: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
-			i, j: INTEGER
-			l_arranger_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
-			l_args: ARRAY [AUT_FEATURE_SIGNATURE_TYPE]
-			l_arity: INTEGER
 			l_related_objects: ARRAY [ITP_VARIABLE]
 		do
 			l_related_objects := relevant_objects (a_target, a_arguments, a_result)
@@ -1625,73 +1615,6 @@ feature -- Predicate evaluation
 		ensure
 			result_attached: Result /= Void
 			result_valid: Result.lower = 0
-		end
-
-	update_predicate_pool (a_request: AUT_REQUEST) is
-			-- Update predicate pool according to `a_request' and its response.
-		require
-			a_request_attached: a_request /= Void
-			a_response_attached: a_request.response /= Void
-		local
-			l_predicate_request: LINKED_LIST [TUPLE [predicate: INTEGER_32; arguments: SPECIAL [INTEGER]]]
-			l_result: LINKED_LIST [TUPLE [predicate: INTEGER_32; evaluation: SPECIAL [NATURAL_8]]]
-			l_predicate: AUT_PREDICATE
-			l_arity: INTEGER
-			l_predicate_tbl: like predicate_table
-			l_arguments: SPECIAL [INTEGER]
-			l_evaluation: SPECIAL [NATURAL_8]
-			i: INTEGER
-			j: INTEGER
-			l_count: INTEGER
-			l_pred_args: LINKED_LIST [INTEGER]
-		do
-			if attached {AUT_PREDICATE_EVALUATION_REQUEST} a_request as l_request then
-				if attached {AUT_PREDICATE_EVALUATION_RESPONSE} a_request.response as l_response then
-					l_predicate_request := l_request.predicates
-					l_result := l_response.evaluation_result
-					if l_predicate_request.count = l_result.count then
-						l_predicate_tbl := predicate_table
-						from
-							l_predicate_request.start
-							l_result.start
-						until
-							l_predicate_request.after
-						loop
-								-- Get the predicate under consideration.
-							l_predicate := l_predicate_tbl.item (l_predicate_request.item_for_iteration.predicate)
-							l_arity := l_predicate.arity
-
-							l_arguments := l_predicate_request.item_for_iteration.arguments
-							l_evaluation := l_result.item_for_iteration.evaluation
-
-								-- Check if the number of evaluation request and the number of results are consistant.
-							if l_arity = 0 and then l_evaluation.count = 1 then
-								create l_pred_args.make
-								update_predicate (l_predicate, l_pred_args, l_evaluation.item (0) = 0)
-							elseif l_arguments.count = l_evaluation.count * l_arity then
-								l_count := l_evaluation.count
-								create l_pred_args.make
-								from
-									i := 0
-									j := 0
-								until
-									j = l_count
-								loop
-									l_pred_args.extend (l_arguments.item (i))
-									i := i + 1
-									if i \\ l_arity = 0 then
-										update_predicate (l_predicate, l_pred_args, (l_evaluation.item (j) = 0))
-										l_pred_args.wipe_out
-										j := j + 1
-									end
-								end
-							end
-							l_predicate_request.forth
-							l_result.forth
-						end
-					end
-				end
-			end
 		end
 
 	update_predicate (a_predicate: AUT_PREDICATE; a_arguments: LINKED_LIST [INTEGER]; a_result: BOOLEAN) is

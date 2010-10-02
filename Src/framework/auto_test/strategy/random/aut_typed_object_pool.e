@@ -76,6 +76,7 @@ feature -- Access
 			l_storage: like storage
 			l_root_class: CLASS_C
 			l_vlist: DS_ARRAYED_LIST [ITP_VARIABLE]
+			l_typ: TYPE_A
 		do
 			l_var_table := variable_table
 			if l_var_table.has (a_type) then
@@ -98,7 +99,7 @@ feature -- Access
 						until
 							l_list.after
 						loop
-							if l_storage.item (l_list.item_for_iteration).conform_to (l_root_class, a_type) then
+							if attached {TYPE_A} l_storage.item (l_list.item_for_iteration) as typ and then typ.conform_to (l_root_class, a_type) then
 								l_vlist.force_last (l_list.item_for_iteration)
 							end
 							l_list.forth

@@ -287,15 +287,21 @@ feature {NONE} -- Handlers
 			l_lower: INTEGER
 			l_canned_objects: STRING
 			l_serializer: like test_case_serializer
+			j: INTEGER
 		do
 			is_failing_test_case := False
-			if attached {TUPLE [l_byte_code: STRING; l_data: detachable ANY]} last_request as l_last_request then
+			if attached {TUPLE [l_byte_code: STRING; l_feat_name: detachable STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
 				check l_bcode /= Void end
 				if l_bcode.count = 0 then
 					report_error (byte_code_length_error)
 				else
-					log_message (once "report_execute_request start%N")
+					if l_last_request.l_feat_name /= Void then
+						log_message (once "report_execute_request start: " + l_last_request.l_feat_name + "%N")
+					else
+						log_message (once "report_execute_request start%N")
+					end
+
 						-- Inject received byte-code into byte-code array of Current process.
 					create l_cstring.make (l_bcode)
 					override_byte_code_of_body (
@@ -317,6 +323,17 @@ feature {NONE} -- Handlers
 					if is_last_protected_execution_successful and then is_predicate_evaluation_enabled then
 						if attached {detachable ARRAY [detachable ANY]} l_last_request.l_data as l_extra_data then
 							if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_extra_data.item (extra_data_index_precondition_satisfaction) as l_feature_data then
+-- Uncomment the following section for debugging purpose. 2.10.2010 Jasonw
+--								log_message ("Feature id: " + l_feature_data.feature_id.out + "%N")
+--								from
+--									j := 0
+--								until
+--									j = l_feature_data.operands.count
+--								loop
+--									log_message ("Object id: " + l_feature_data.operands.item (j).out + ", ")
+--									j := j + 1
+--								end
+--								log_message ("%N")
 								l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
 							else
 								l_predicate_results := Void

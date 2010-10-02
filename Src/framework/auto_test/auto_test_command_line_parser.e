@@ -290,6 +290,36 @@ feature{NONE} -- Initialization
 			l_2times_option.set_description ("Enable features to be tested more often with strength 2 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
 			parser.options.force_last (l_2times_option)
 
+			create l_3times_option.make_with_long_form ("3times")
+			l_3times_option.set_description ("Enable features to be tested more often with strength 3 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_3times_option)
+
+			create l_4times_option.make_with_long_form ("4times")
+			l_4times_option.set_description ("Enable features to be tested more often with strength 4 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_4times_option)
+
+			create l_2times_option.make_with_long_form ("2times")
+
+			create l_5times_option.make_with_long_form ("5times")
+			l_5times_option.set_description ("Enable features to be tested more often with strength 5 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_5times_option)
+
+			create l_6times_option.make_with_long_form ("6times")
+			l_6times_option.set_description ("Enable features to be tested more often with strength 6 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_6times_option)
+
+			create l_7times_option.make_with_long_form ("7times")
+			l_7times_option.set_description ("Enable features to be tested more often with strength 7 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_7times_option)
+
+			create l_8times_option.make_with_long_form ("8times")
+			l_8times_option.set_description ("Enable features to be tested more often with strength 8 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_8times_option)
+
+			create l_9times_option.make_with_long_form ("9times")
+			l_9times_option.set_description ("Enable features to be tested more often with strength 9 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
+			parser.options.force_last (l_9times_option)
+
 			parser.parse_list (a_arguments)
 
 --			if version_option.was_found then
@@ -691,6 +721,7 @@ feature{NONE} -- Initialization
 				is_post_state_serialized := l_post_state_serialization_option.was_found
 			end
 
+			create excluded_features.make
 			if not error_handler.has_error and then l_exclude_option.was_found then
 				setup_excluded_features (l_exclude_option.parameter)
 			end
@@ -699,8 +730,37 @@ feature{NONE} -- Initialization
 				is_collecting_interface_related_classes := l_collect_interface_related_classes_option.was_found
 			end
 
+			create popular_features.make
 			if not error_handler.has_error and then l_2times_option.was_found then
 				setup_popular_features (l_2times_option.parameter, 2)
+			end
+
+			if not error_handler.has_error and then l_3times_option.was_found then
+				setup_popular_features (l_3times_option.parameter, 3)
+			end
+
+			if not error_handler.has_error and then l_4times_option.was_found then
+				setup_popular_features (l_4times_option.parameter, 4)
+			end
+
+			if not error_handler.has_error and then l_5times_option.was_found then
+				setup_popular_features (l_5times_option.parameter, 5)
+			end
+
+			if not error_handler.has_error and then l_6times_option.was_found then
+				setup_popular_features (l_6times_option.parameter, 6)
+			end
+
+			if not error_handler.has_error and then l_7times_option.was_found then
+				setup_popular_features (l_7times_option.parameter, 7)
+			end
+
+			if not error_handler.has_error and then l_8times_option.was_found then
+				setup_popular_features (l_8times_option.parameter, 8)
+			end
+
+			if not error_handler.has_error and then l_9times_option.was_found then
+				setup_popular_features (l_9times_option.parameter, 9)
 			end
 
 --			if parser.parameters.count = 0 then
@@ -733,9 +793,6 @@ feature{NONE} -- Initialization
 			l_strs: LIST [STRING]
 			l_strs2: LIST [STRING]
 		do
-			if popular_features = Void then
-				create popular_features.make
-			end
 			l_strs := a_features.split (',')
 			from
 				l_strs.start
@@ -759,7 +816,6 @@ feature{NONE} -- Initialization
 			l_strs: LIST [STRING]
 			l_strs2: LIST [STRING]
 		do
-			create excluded_features.make
 			l_strs := a_features.split (',')
 			from
 				l_strs.start
