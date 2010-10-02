@@ -557,7 +557,7 @@ feature{NONE} -- Initialization
 				if l_smart_selection_rate_option.was_found then
 					object_selection_for_precondition_satisfaction_rate := l_smart_selection_rate_option.parameter
 				else
-					object_selection_for_precondition_satisfaction_rate := 100
+					object_selection_for_precondition_satisfaction_rate := 70
 				end
 			end
 
@@ -979,7 +979,7 @@ feature -- Status report
 			-- Possibility [0-100] under which smart object selection for precondition satisfaction
 			-- is used.
 			-- Only have effect when precondition evaluation is enabled.
-			-- Default: 100.
+			-- Default: 70.
 
 	smt_enforce_old_value_rate: INTEGER
 			-- Possibility [0-100] to enforce SMT solver to choose an already used value
