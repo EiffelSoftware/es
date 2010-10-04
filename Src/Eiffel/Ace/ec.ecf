@@ -41,6 +41,10 @@
 		<library name="resources" location="$EIFFEL_SRC\framework\resources\resources.ecf" readonly="false" use_application_options="true"/>
 		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false"/>
 		<library name="services_framework" location="$EIFFEL_SRC\framework\services\services.ecf" readonly="false" use_application_options="true"/>
+		<library name="ssa-ifier" location="$EIFFEL_SRC\framework\ssa-ifier\ssa-ifier.ecf" readonly="false">
+			<option syntax="provisional">
+			</option>
+		</library>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
@@ -68,6 +72,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
+		<library name="program_analysis" location="$ISE_LIBRARY\framework\program_analysis\program_analysis.ecf"/>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
@@ -256,9 +261,9 @@
 			</class_option>
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>^/tty$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>/overrides$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>^/tty$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

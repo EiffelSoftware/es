@@ -1287,6 +1287,10 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_CONTRACT_INFERENCE} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-dead_plan") then
+				workbench.set_planned_class_name (argument (current_option + 1))
+
+				current_option := argument_count + 2
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then

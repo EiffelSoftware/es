@@ -1,0 +1,4 @@
+some stuff
+1: (call-somecall var-foo 3 var-bar)
+2: 1
+3: 2

@@ -3177,6 +3177,7 @@ Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/objc_base/Clib/objc_callback_marshal.m -text
 Src/library/objc_base/objc_base-safe.lic -text
 Src/library/objc_base/objc_base.lic -text
+Src/library/plane/soln.plan -text
 Src/library/preferences/preferences_reg-safe.lic -text
 Src/library/preferences/preferences_reg.lic -text
 Src/library/process/classic/unix/process_thread_timer.e -text

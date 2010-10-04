@@ -1888,6 +1888,10 @@ end
 						process_degree_scoop
 					end
 
+
+						-- PLANNER related call to regenerate a class for
+					plan_generate_class
+
 						-- Reset built in processor so that any referenced CLASS_AS object is garbage collected.
 					built_in_processor.reset_all
 
@@ -6407,6 +6411,29 @@ feature -- Added for SCOOP
 							end
 						end
 				)
+			end
+		end
+
+feature -- Added for Plan Generation
+	plan_generate_class
+		local
+			ssaifier: SSAIFIER
+			i: INTEGER
+			done: BOOLEAN
+		do
+			if attached workbench.planned_class_name then
+				from i := 1
+				until i > classes.count or done
+				loop
+					if attached classes[i] then
+					    if classes [i].name.as_lower.is_equal (workbench.planned_class_name.as_lower) then
+					    	done := True
+							create ssaifier.make (classes [i])
+							ssaifier.write_default_plan
+					    end
+					end
+					i := i + 1
+				end
 			end
 		end
 

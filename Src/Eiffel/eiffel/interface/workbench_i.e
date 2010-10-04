@@ -734,6 +734,14 @@ feature -- Automatic backup
 			new_session := False
 		end
 
+feature -- Added for Planning
+	set_planned_class_name (a_name : STRING)
+		do
+			planned_class_name := a_name
+		end
+
+	planned_class_name: STRING
+
 feature -- Added for SCOOP
 	is_degree_scoop_processing: BOOLEAN
 		-- Is the degree SCOOP processing?

@@ -103,11 +103,11 @@
 		<library name="consumer" location="$EIFFEL_SRC\dotnet\consumer\consumer.ecf"/>
 		<library name="dotnet_helper" location="$EIFFEL_SRC\dotnet\helpers\support\dotnet_helper.ecf"/>
 		<library name="dotnet_loader" location="$EIFFEL_SRC\framework\dotnet_loader\dotnet_loader.ecf"/>
-		<library name="eve_blackboard" location="$EIFFEL_SRC\framework\eve_blackboard\eve_blackboard.ecf"/>
 		<library name="eiffel_identifier" location="$EIFFEL_SRC\framework\eiffel_identifier\eiffel_identifier.ecf"/>
 		<library name="emitter_loader" location="$EIFFEL_SRC\framework\emitter_loader\emitter_loader.ecf"/>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="eve_blackboard" location="$EIFFEL_SRC\framework\eve_blackboard\eve_blackboard.ecf"/>
 		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
@@ -129,8 +129,12 @@
 		</library>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="resources" location="$EIFFEL_SRC\framework\resources\resources.ecf"/>
-		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf"/>
+		<library name="scoop2scoopli" location="$ISE_LIBRARY\library\scoop2scoopli\scoop2scoopli.ecf" readonly="false">
+			<option syntax="standard">
+			</option>
+		</library>
 		<library name="scoopli" location="$ISE_LIBRARY\library\scoopli\scoopli.ecf"/>
+		<library name="ssa-ifier" location="$EIFFEL_SRC\framework\ssa-ifier\ssa-ifier.ecf" readonly="false"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
