@@ -62,12 +62,17 @@ feature{NONE} -- Initialization
 			postconditions := a_transition.postconditions.cloned_object
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
+			changes := a_transition.changes.cloned_object
 		end
 
 	make_interface_transition (a_transition: like Current)
 			-- Initialize Current by copying ONLY interface related data from `a_transition'.
 		local
 			l_assertions: like preconditions
+			l_chg_cursor: like changes.new_cursor
+			l_postconditions, l_written_postconditions: like postconditions
+			l_expr: EPA_EXPRESSION
+			l_changes: like changes
 		do
 			make (a_transition.class_, a_transition.feature_, a_transition.operand_map, a_transition.context, a_transition.is_creation)
 			set_description (a_transition.description)
@@ -75,6 +80,25 @@ feature{NONE} -- Initialization
 			set_name (a_transition.name)
 			preconditions := a_transition.interface_preconditions
 			postconditions := a_transition.interface_postconditions
+			written_preconditions := a_transition.written_preconditions.cloned_object
+			written_postconditions := a_transition.written_postconditions.cloned_object
+
+				-- Initialize interface changes.
+			from
+				l_postconditions := postconditions
+				l_written_postconditions := written_postconditions
+				l_changes := changes
+				l_chg_cursor := a_transition.changes.new_cursor
+				l_chg_cursor.start
+			until
+				l_chg_cursor.after
+			loop
+				l_expr := l_chg_cursor.key
+				if l_postconditions.has_expression (l_expr) or l_written_postconditions.has_expression (l_expr) then
+					l_changes.force_last (l_chg_cursor.item, l_expr)
+				end
+				l_chg_cursor.forth
+			end
 		end
 
 feature -- Access
@@ -473,6 +497,9 @@ feature{NONE} -- Implementation
 				-- Initialize `name' and `description'.
 			set_name (class_.name_in_upper + once "." + feature_.feature_name.as_lower)
 			set_description (feature_header_comment (feature_))
+
+			create changes.make (10)
+			changes.set_key_equality_tester (expression_equality_tester)
 		end
 
 	rewritten_contracts (a_assertions: DS_HASH_SET [EPA_EXPRESSION]; a_precondition: BOOLEAN): EPA_STATE

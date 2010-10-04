@@ -485,7 +485,7 @@ feature{NONE} -- Implementation
 				-- Calculate changes from `a_transition'.
 			create Result.make (50)
 			Result.set_equality_tester (partial_expression_change_equality_tester)
-			create l_change_calculator
+			create l_change_calculator.make
 
 			from
 --				l_pre_state := a_transition.interface_preconditions.subtraction (a_transition.written_preconditions)

@@ -25,6 +25,18 @@ inherit
 
 	REFACTORING_HELPER
 
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make
+			-- Initialize Current.
+		do
+			set_positive_relaxation_delta (10)
+			set_negative_relaxation_delta (10)
+		end
+
 feature -- Basic operation
 
 	change_set (a_source_state: EPA_STATE; a_target_state: EPA_STATE): DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
@@ -48,6 +60,18 @@ feature -- Basic operation
 				agent should_change_be_calculated (?, a_source_state, a_target_state))
 		end
 
+feature -- Access
+
+	positive_relaxation_delta: INTEGER
+			-- The value for relaxed integer change calculation for positive case
+			-- This delta only has effect if `is_integer_change_relaxation_enabled' is True.
+			-- Default is 10.
+
+	negative_relaxation_delta: INTEGER
+			-- The avlue for relaxed integer change calculation for negative case
+			-- This delta only has effect if `is_integer_change_relaxation_enabled' is True.
+			-- Default is 10.
+
 feature -- Status report	
 
 	is_integer_change_relaxation_enabled: BOOLEAN
@@ -68,6 +92,22 @@ feature -- Setting
 			is_integer_change_relaxation_enabled := b
 		ensure
 			is_integer_change_relaxation_enabled_set: is_integer_change_relaxation_enabled = b
+		end
+
+	set_positive_relaxation_delta (i: INTEGER)
+			-- Set `positive_relaxation_delta' with `i'.
+		do
+			positive_relaxation_delta := i
+		ensure
+			positive_relaxation_delta_set: positive_relaxation_delta = i
+		end
+
+	set_negative_relaxation_delta (i: INTEGER)
+			-- Set `negative_relaxation_delta' with `i'.
+		do
+			negative_relaxation_delta := i
+		ensure
+			negative_relaxation_delta_set: negative_relaxation_delta = i
 		end
 
 	set_is_no_change_included (b: BOOLEAN)
@@ -134,7 +174,7 @@ feature{NONE} -- Process/Data
 	new_single_value_change_set (a_value: EPA_EXPRESSION): EPA_EXPRESSION_CHANGE_VALUE_SET
 			-- Expression change set containing only `a_value'
 		do
-			create Result.make (1)
+			create {EPA_EXPRESSION_ENUMERATION_CHANGE_SET} Result.make (1)
 			Result.set_equality_tester (expression_equality_tester)
 			Result.force_last (a_value)
 		end
@@ -175,9 +215,9 @@ feature{NONE} -- Process/Data
 						-- Integer delta relaxation
 					if is_integer_change_relaxation_enabled then
 						if l_delta > 0 then
-							l_changes := create {EPA_INTEGER_RANGE}.make_with_lower_bound (expression.class_, 1, True)
+							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, 1, 1 + positive_relaxation_delta)
 						else
-							l_changes := create {EPA_INTEGER_RANGE}.make_with_upper_bound (expression.class_, -1, True)
+							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, -negative_relaxation_delta, 0)
 						end
 						l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 					end
@@ -185,7 +225,7 @@ feature{NONE} -- Process/Data
 					expression_change_set.force_last (l_change_list, expression)
 				elseif is_no_change_included then
 					check l_equation /= Void end
-					create l_no_change.make_with_original_value (l_equation.value)
+					create l_no_change.make (l_equation.value)
 					create l_change_list.make
 					l_change_list.extend (new_expression_change (expression, l_no_change, True, 0.1))
 
@@ -238,7 +278,7 @@ feature{NONE} -- Process/Data
 				expression_change_set.force_last (l_change_list, expression)
 			elseif is_no_change_included then
 				check l_equation /= Void end
-				create l_no_change.make_with_original_value (l_equation.value)
+				create l_no_change.make (l_equation.value)
 
 				create l_change_list.make
 				l_change_list.extend (new_expression_change (expression, l_no_change, False, 0.1))

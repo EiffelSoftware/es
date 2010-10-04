@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EPA_EXPRESSION_CHANGE_VALUE_SET
 
 inherit
@@ -22,9 +22,6 @@ inherit
 			copy
 		end
 
-create
-	make
-
 feature -- Status report
 
 	is_valid: BOOLEAN
@@ -38,14 +35,13 @@ feature -- Status report
 		do
 		end
 
-	is_unknown: BOOLEAN
-			-- Does Current represent the notion of a "unknown" change?
-		do
-			Result := is_empty
-		end
-
 	is_no_change: BOOLEAN
 			-- Does Current represent a change set that contains no change?
+		do
+		end
+
+	is_enumeration: BOOLEAN
+			-- Does Current represent an enumeration of values?
 		do
 		end
 

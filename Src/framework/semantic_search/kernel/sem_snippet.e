@@ -77,6 +77,9 @@ feature{NONE} -- Initialization
 				-- Initialize `name' and `description'.
 			set_name ("")
 			set_description ("")
+
+			create changes.make (10)
+			changes.set_key_equality_tester (expression_equality_tester)
 		end
 
 	make_with_transition (a_transition: like Current)
@@ -91,6 +94,7 @@ feature{NONE} -- Initialization
 
 			preconditions := a_transition.preconditions.cloned_object
 			postconditions := a_transition.postconditions.cloned_object
+			changes := a_transition.changes.cloned_object
 			set_name (a_transition.name)
 			set_uuid (a_transition.uuid)
 			set_description (a_transition.description)

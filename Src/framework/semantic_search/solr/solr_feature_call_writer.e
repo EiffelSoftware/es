@@ -201,7 +201,7 @@ feature{NONE} -- Implementation
 			l_static_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_type: STRING
 		do
-			create l_change_calculator
+			create l_change_calculator.make
 
 			l_static_change := l_change_calculator.change_set (queryable.written_preconditions, queryable.written_postconditions)
 			append_change_set (l_static_change, default_boost_value * 2.0)

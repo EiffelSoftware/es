@@ -28,7 +28,6 @@ feature{NONE} -- Initialization
 		do
 			expression := a_expression
 
-			create values.make (a_values.count)
 			values := a_values
 			set_is_relative (a_relative)
 			set_relevance (1.0)

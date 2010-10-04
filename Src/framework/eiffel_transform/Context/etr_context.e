@@ -8,7 +8,7 @@ class
 
 inherit
 	INTERNAL_COMPILER_STRING_EXPORTER
-	
+
 create
 	make_empty
 
@@ -40,6 +40,7 @@ feature -- Access
 
 	is_empty: BOOLEAN
 			-- Is `Current' an empty context
+			
 
 invariant
 	valid: not is_empty implies attached class_context

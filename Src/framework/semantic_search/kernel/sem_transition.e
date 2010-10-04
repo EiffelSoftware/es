@@ -167,6 +167,11 @@ feature -- Access
 			create Result.make (a_equation, a_is_precondition, a_is_written)
 		end
 
+	changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
+			-- Changes to the states of the objects mentioned in `variables'
+			-- Key is expressions either in `postconditions' or in `written_postconditions'.
+			-- Value is the changes of that expression in post-state compared to pre-state.
+
 feature -- Status setting
 
 	set_preconditions (a_pre: like preconditions)
