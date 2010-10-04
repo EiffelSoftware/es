@@ -13,19 +13,19 @@ create
 	make
 
 feature
-	make (id : STRING)
+	make (id: STRING)
 		do
 			ident := id.twin
 		end
 
-	ident : STRING
+	ident: STRING
 
-	execute (env : ENVIRONMENT) : ANY
+	execute (env: PLAN_ENVIRONMENT): ANY
 		do
 			Result := env.lookup_var (ident)
 		end
 
-	tag : STRING
+	tag: STRING
 		do
 			Result := "var_"
 		end

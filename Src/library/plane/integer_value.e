@@ -22,7 +22,7 @@ feature
 	int : INTEGER
 
 
-	execute (env : ENVIRONMENT) : ANY
+	execute (env : PLAN_ENVIRONMENT) : ANY
 		do
 			Result := int
 		end

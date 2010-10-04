@@ -41,7 +41,7 @@ feature
 		end
 
 
-	execute (env : ENVIRONMENT) : ANY --
+	execute (env : PLAN_ENVIRONMENT) : ANY --
 		local
 			rout_obj : ROUTINE [ANY, TUPLE]
 		do
@@ -58,7 +58,7 @@ feature
 
 
 feature {NONE}
-	eval_list (to_eval: LIST [VALUE]; env: ENVIRONMENT): LIST [ANY]
+	eval_list (to_eval: LIST [VALUE]; env: PLAN_ENVIRONMENT): LIST [ANY]
 		local
 			evald_args : ARRAYED_LIST [ANY]
 			i : INTEGER

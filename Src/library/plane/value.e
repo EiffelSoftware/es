@@ -9,7 +9,7 @@ deferred class
 
 feature
 
-	execute (env : ENVIRONMENT) : ANY
+	execute (env : PLAN_ENVIRONMENT) : ANY
 		deferred
 		end
 

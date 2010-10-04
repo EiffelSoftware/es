@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			tl_parse: TLPLAN_PARSE
 			file: PLAIN_TEXT_FILE
 			vals : LIST [VALUE]
-			anno: PLAN_ANNOTATOR
 		do
 			create tl_parse.make
 			create file.make ("soln.plan")
