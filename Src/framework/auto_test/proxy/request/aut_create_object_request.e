@@ -97,7 +97,7 @@ feature -- Access
 		end
 
 	operand_types: SPECIAL [TYPE_A]
-			-- Types of operands
+			-- Static types of operands
 			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
 			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		local

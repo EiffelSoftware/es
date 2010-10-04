@@ -570,7 +570,6 @@ feature{NONE} -- Implementation/Test case synthesis
 		local
 			l_last: INTEGER
 			i: INTEGER
-			l_var_tbl: HASH_TABLE [INTEGER, INTEGER]
 			l_var_id: INTEGER
 		do
 			l_last := a_operands.count - 1
@@ -629,15 +628,10 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 			from
 				i := 0
-				create l_var_tbl.make (5)
 			until
 				i > l_last
 			loop
-				l_var_id := a_operands.item (i)
-				if not l_var_tbl.has (l_var_id) then
-					l_var_tbl.put (l_var_id, l_var_id)
-					append_variable_with_type (l_var_id, types.item (i), a_buffer, True)
-				end
+				append_variable_with_type (a_operands.item (i), types.item (i), a_buffer, True)
 				i := i + 1
 			end
 			a_buffer.append (operands_tag_end)

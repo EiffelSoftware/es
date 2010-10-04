@@ -48,7 +48,6 @@ feature{NONE} -- Initialization
 			create postconditions.make (20, context.class_, context.feature_)
 			create written_preconditions.make (5, context.class_, context.feature_)
 			create written_postconditions.make (5, context.class_, context.feature_)
-			initialize_boosts
 			initialize (a_operands)
 		end
 
@@ -63,15 +62,12 @@ feature{NONE} -- Initialization
 			postconditions := a_transition.postconditions.cloned_object
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
-			precondition_boosts := a_transition.precondition_boosts.cloned_object
-			postcondition_boosts := a_transition.postcondition_boosts.cloned_object
 		end
 
 	make_interface_transition (a_transition: like Current)
 			-- Initialize Current by copying ONLY interface related data from `a_transition'.
 		local
 			l_assertions: like preconditions
-			l_boosts: like precondition_boosts
 		do
 			make (a_transition.class_, a_transition.feature_, a_transition.operand_map, a_transition.context, a_transition.is_creation)
 			set_description (a_transition.description)
@@ -79,25 +75,6 @@ feature{NONE} -- Initialization
 			set_name (a_transition.name)
 			preconditions := a_transition.interface_preconditions
 			postconditions := a_transition.interface_postconditions
-			set_precondition_boosts (a_transition.precondition_boosts)
-			set_postcondition_boosts (a_transition.postcondition_boosts)
-
-				-- Remove boosts which mention assertions which does not appear in Current anymore.
-			across <<True, False>> as l_states loop
-				l_assertions := assertions (l_states.item)
-				l_boosts := assertion_boosts (l_states.item)
-				from
-					l_boosts.start
-				until
-					l_boosts.after
-				loop
-					if l_assertions.has (l_boosts.key_for_iteration) then
-						l_boosts.forth
-					else
-						l_boosts.remove (l_boosts.key_for_iteration)
-					end
-				end
-			end
 		end
 
 feature -- Access
@@ -160,8 +137,6 @@ feature -- Access
 			create Result.make (context, l_positions, l_inputs, l_outputs, content)
 			Result.set_preconditions (preconditions)
 			Result.set_postconditions (postconditions)
-			Result.set_precondition_boosts (precondition_boosts)
-			Result.set_postcondition_boosts (postcondition_boosts)
 		end
 
 	cloned_object: like Current

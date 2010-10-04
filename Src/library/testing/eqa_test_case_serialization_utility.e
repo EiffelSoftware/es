@@ -288,6 +288,9 @@ feature -- Utilities
 			end
 		end
 
+	variable_name_prefix: STRING = "v_"
+			-- Prefix for variable names in AutoTest
+
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"

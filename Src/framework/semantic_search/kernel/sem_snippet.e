@@ -45,7 +45,6 @@ feature{NONE} -- Initialization
 			context_type := context.class_.actual_type
 			create preconditions.make (20, context.class_, context.feature_)
 			create postconditions.make (20, context.class_, context.feature_)
-			initialize_boosts
 			initialize_tables
 
 			l_inputs := inputs
@@ -92,8 +91,6 @@ feature{NONE} -- Initialization
 
 			preconditions := a_transition.preconditions.cloned_object
 			postconditions := a_transition.postconditions.cloned_object
-			precondition_boosts := a_transition.precondition_boosts.cloned_object
-			postcondition_boosts := a_transition.postcondition_boosts.cloned_object
 			set_name (a_transition.name)
 			set_uuid (a_transition.uuid)
 			set_description (a_transition.description)

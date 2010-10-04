@@ -57,27 +57,6 @@ feature -- Access
 			end
 		end
 
-	precondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
-			-- Boost values for equations in `preconditions'
-			-- Key is an equation in `preconditions', value is the boost number associated with that equation.
-			-- The boost numbers will be used as boost values for a field (in Lucene sense).
-
-	postcondition_boosts: DS_HASH_TABLE [DOUBLE, EPA_EQUATION]
-			-- Boost values for equations in `postconditions'
-			-- Key is an equation in `postconditions', value is the boost number associated with that equation.
-			-- The boost numbers will be used as boost values for a field (in Lucene sense).			
-
-	assertion_boosts (a_precondition: BOOLEAN): like precondition_boosts
-			-- Return `precondition_boosts' if `a_precondition' is True,
-			-- otherwise, return `postcondition_boosts'.
-		do
-			if a_precondition then
-				Result := precondition_boosts
-			else
-				Result := postcondition_boosts
-			end
-		end
-
 	written_preconditions: EPA_STATE
 			-- Human written preconditions (if any) for current transition
 			-- This is a subset of `preconditions'.
@@ -202,18 +181,6 @@ feature -- Status setting
 			set_state (a_post, postconditions)
 		end
 
-	set_precondition_boosts (a_precondition_boosts: like precondition_boosts)
-			-- Set `precondition_boosts' with `a_precondition_boosts'.
-		do
-			precondition_boosts := a_precondition_boosts.cloned_object
-		end
-
-	set_postcondition_boosts (a_postcondition_boosts: like postcondition_boosts)
-			-- Set `postcondition_boosts' with `a_postcondition_boosts'.
-		do
-			postcondition_boosts := a_postcondition_boosts.cloned_object
-		end
-
 	set_name (a_name: like name)
 			-- Set `name' with `a_name'.
 			-- Make a copy of `a_name'.
@@ -312,15 +279,6 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	initialize_boosts
-			-- Initialize `precondition_boosts' and `postcondition_boosts'.
-		do
-			create precondition_boosts.make (20)
-			precondition_boosts.set_key_equality_tester (equation_equality_tester)
-			create postcondition_boosts.make (20)
-			postcondition_boosts.set_key_equality_tester (equation_equality_tester)
-		end
-
 	initialize_tables
 			-- Initialize serval tables.
 		do
@@ -395,10 +353,6 @@ invariant
 	outputs_equality_tester_valid: outputs.equality_tester = expression_equality_tester
 	precondition_equality_tester_valid: preconditions.equality_tester = equation_equality_tester
 	postcondition_equality_tester_valid: postconditions.equality_tester = equation_equality_tester
-	precondition_boosts_valid: precondition_boosts.keys.for_all (agent preconditions.has)
-	precondition_boosts_key_equality_tester_valid: precondition_boosts.key_equality_tester = equation_equality_tester
-	postcondition_boosts_valid: postcondition_boosts.keys.for_all (agent postconditions.has)
-	postcondition_boosts_key_equality_tester_valid: postcondition_boosts.key_equality_tester = equation_equality_tester
 	precondition_postcondition_consistent: preconditions.class_ = postconditions.class_ and preconditions.feature_ = postconditions.feature_
 
 end
