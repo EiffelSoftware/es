@@ -222,25 +222,25 @@ feature -- Status report
 	is_valid_field_name (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid field name/prefix?
 		do
-			Result := field_name_set.has (a_name)
+			Result := True
 		end
 
 	is_valid_transition_field_name (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid field name/prefix for transition documents?
 		do
-			Result := transition_field_name_set.has (a_name)
+			Result := True
 		end
 
 	is_valid_object_field_name (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid field name/prefix object documents?
 		do
-			Result := object_field_name_set.has (a_name)
+			Result := True
 		end
 
 	is_valid_field_prefix (a_name: STRING): BOOLEAN
 			-- Is `a_name' a valid field prefix?
 		do
-			Result := field_prefix_set.has (a_name)
+			Result := True
 		end
 
 end

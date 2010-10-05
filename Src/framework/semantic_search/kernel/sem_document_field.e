@@ -29,7 +29,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_name: like name; a_value: like value; a_type: like type; a_boost: DOUBLE)
+	make (a_name: like name; a_value: like value; a_type: INTEGER; a_boost: DOUBLE)
 			-- Initialize Current.
 		local
 			l_hash_str: STRING
@@ -38,7 +38,6 @@ feature{NONE} -- Initialization
 			value := a_value
 			type := a_type
 			boost := a_boost
-			out := string_representation
 
 				-- Calculate hash code.
 			create l_hash_str.make (64)
@@ -63,7 +62,7 @@ feature -- Access
 	value: STRING
 			-- Value of current field
 
-	type: STRING
+	type: INTEGER
 			-- Type of current field
 
 	boost: DOUBLE
@@ -71,6 +70,9 @@ feature -- Access
 
 	out: STRING
 			-- String representation of current
+		do
+			Result := string_representation
+		end
 
 feature -- Access
 
@@ -99,7 +101,7 @@ feature{NONE} -- Implementation
 			Result.append (boost.out)
 			Result.append_character ('%N')
 
-			Result.append (type)
+			Result.append (field_type_name (type))
 			Result.append_character ('%N')
 
 			Result.append (value)

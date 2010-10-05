@@ -34,7 +34,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	append_field_with_data (a_name: STRING; a_value: STRING; a_type: STRING; a_boost: DOUBLE)
+	append_field_with_data (a_name: STRING; a_value: STRING; a_type: INTEGER; a_boost: DOUBLE)
 			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
 		do
 			append_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))

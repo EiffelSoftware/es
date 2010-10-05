@@ -330,5 +330,14 @@ feature{NONE} -- Process/Data
 			to_implement ("To implement. 8.5.2010 Jasonw")
 		end
 
+	process_set_value (a_value: EPA_EXPRESSION_SET_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
+	process_numeric_range_value (a_value: EPA_NUMERIC_RANGE_VALUE)
+			-- Process `a_value'.
+		do
+		end
 
 end

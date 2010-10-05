@@ -401,6 +401,16 @@ feature{NONE} -- Visitor
 		do
 		end
 
+	process_set_value (a_value: EPA_EXPRESSION_SET_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
+	process_numeric_range_value (a_value: EPA_NUMERIC_RANGE_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	get_effective_boolean_outline (a_class: like class_): AFX_BOOLEAN_STATE_OUTLINE

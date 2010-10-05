@@ -89,7 +89,7 @@ feature{NONE} -- Implementation
 			l_tran: like queryable
 			l_var_dtype_tbl: like type_name_table
 			l_var_stype_tbl: like type_name_table
-			l_type: STRING
+			l_type: INTEGER
 			l_anonymous: STRING
 			a_prefix: STRING
 			l_equation: SEM_EQUATION
@@ -199,7 +199,7 @@ feature{NONE} -- Implementation
 			l_change_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
 			l_dynamic_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_static_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
-			l_type: STRING
+			l_type: INTEGER
 		do
 			create l_change_calculator.make
 
@@ -209,7 +209,7 @@ feature{NONE} -- Implementation
 			l_dynamic_change := l_change_calculator.change_set (queryable.preconditions, queryable.postconditions)
 			append_change_set (l_dynamic_change, default_boost_value)
 
-			l_type := string_prefix
+			l_type := string_field_type
 			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
 				across l_metas.item as l_items loop
 					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)
@@ -245,7 +245,7 @@ feature{NONE} -- Implementation
 			l_tran: like queryable
 			l_var_dtype_tbl: like type_name_table
 			l_var_stype_tbl: like type_name_table
-			l_type: STRING
+			l_type: INTEGER
 			l_anonymous: STRING
 			a_prefix: STRING
 			l_equation: SEM_EQUATION

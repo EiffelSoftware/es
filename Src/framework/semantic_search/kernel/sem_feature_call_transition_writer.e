@@ -281,7 +281,6 @@ feature{NONE} -- Implementation
 					if is_static_typed_expression_enabled then
 						write_field_with_data (a_prefix + expression_with_replacements (l_expression, l_stype_tbl, True), l_value.text, type_of_equation (l_assertion), default_boost_value)
 					end
-
 				end
 				l_cursor.forth
 			end
@@ -327,7 +326,7 @@ feature{NONE} -- Writing
 			end
 		end
 
-	write_field_with_data (a_name: STRING; a_value: STRING; a_type: STRING; a_boost: DOUBLE)
+	write_field_with_data (a_name: STRING; a_value: STRING; a_type: INTEGER; a_boost: DOUBLE)
 			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
 		do
 			write_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))

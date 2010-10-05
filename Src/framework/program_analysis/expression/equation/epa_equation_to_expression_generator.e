@@ -146,6 +146,16 @@ feature -- Process
 		do
 		end
 
+	process_set_value (a_value: EPA_EXPRESSION_SET_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
+	process_numeric_range_value (a_value: EPA_NUMERIC_RANGE_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

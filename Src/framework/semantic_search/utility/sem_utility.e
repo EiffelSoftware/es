@@ -18,7 +18,7 @@ inherit
 
 	SEM_FIELD_NAMES
 
-feature
+feature -- Access
 
 	principal_variable_from_anon_content (a_string: STRING): INTEGER
 			-- Returns the index of the principal variable by taking the most frequent one
@@ -177,7 +177,7 @@ feature -- Access
 			end
 		end
 
-	type_of_equation (a_equation: EPA_EQUATION): STRING
+	type_of_equation (a_equation: EPA_EQUATION): INTEGER
 			-- Type of the value from `a_equation'
 		local
 			l_value: EPA_EXPRESSION_VALUE
@@ -192,7 +192,7 @@ feature -- Access
 			end
 		end
 
-	type_of_expression (a_equation: EPA_EXPRESSION): STRING
+	type_of_expression (a_equation: EPA_EXPRESSION): INTEGER
 			-- Type of the value from `a_equation'
 		local
 			l_type: TYPE_A

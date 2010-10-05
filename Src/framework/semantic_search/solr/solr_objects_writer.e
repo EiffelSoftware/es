@@ -57,7 +57,7 @@ feature{NONE} -- Implementation
 			l_tran: like queryable
 			l_var_dtype_tbl: like type_name_table
 			l_var_stype_tbl: like type_name_table
-			l_type: STRING
+			l_type: INTEGER
 			l_anonymous: STRING
 			a_prefix: STRING
 			l_equation: EPA_EQUATION

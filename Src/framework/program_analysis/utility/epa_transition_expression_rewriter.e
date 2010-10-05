@@ -292,4 +292,15 @@ feature -- Process
 			output.append_string (once "%"")
 		end
 
+	process_set_value (a_value: EPA_EXPRESSION_SET_VALUE)
+			-- Process `a_value'.
+		do
+			check Should_not_be_here: False end
+		end
+
+	process_numeric_range_value (a_value: EPA_NUMERIC_RANGE_VALUE)
+			-- Process `a_value'.
+		do
+		end
+
 end

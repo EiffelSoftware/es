@@ -14,6 +14,8 @@ inherit
 
 	EPA_STRING_UTILITY
 
+	SEM_CONSTANTS
+
 feature -- Access
 
 	fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]
@@ -61,7 +63,7 @@ feature{NONE} -- Implementation
 				if attached {STRING} medium.last_string as l_line then
 					if l_line.is_empty then
 						if l_lines.count = 4 then
-							create l_field.make (l_lines.first, l_lines.i_th (4), l_lines.i_th (3), l_lines.i_th (2).to_double)
+							create l_field.make (l_lines.first, l_lines.i_th (4), field_type_from_name (l_lines.i_th (3)), l_lines.i_th (2).to_double)
 							fields.force (l_field, l_field.name)
 							l_done := (l_field.name ~ end_field)
 						end
