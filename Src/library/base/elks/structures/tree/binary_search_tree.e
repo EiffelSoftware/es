@@ -306,7 +306,7 @@ feature -- Transformation
 			--| it is balanced
 		local
 			seq: LINEAR [G]
-			temp: ARRAY [G]
+			temp: SPECIAL [G]
 			heap: HEAP_PRIORITY_QUEUE [G]
 			i: INTEGER
 		do
@@ -324,17 +324,15 @@ feature -- Transformation
 				seq.forth
 			end
 			from
-				create temp.make (1, heap.count)
-				i := 1
+				create temp.make_empty (heap.count)
 			until
 				heap.is_empty
 			loop
-				temp.put (heap.item, i)
+				temp.extend (heap.item)
 				heap.remove
-				i := i + 1
 			end
-			replace (temp.item ((temp.count) // 2 + 1))
-			fill_from_sorted_special (temp.area, 0, temp.count - 1)
+			replace (temp.item ((temp.count) // 2))
+			fill_from_sorted_special (temp, 0, temp.upper)
 		ensure
 			is_sorted: sorted
 		end

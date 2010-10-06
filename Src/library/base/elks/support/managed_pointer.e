@@ -340,15 +340,17 @@ feature -- Access: Platform specific
 			valid_position: (pos + a_count) <= count
 		local
 			i: INTEGER
+			l_area: SPECIAL [NATURAL_8]
 		do
 			from
-				create Result.make (1, a_count)
+				create l_area.make_empty (a_count)
 			until
 				i >= a_count
 			loop
-				Result.put (read_natural_8 (pos + i), i + 1)
+				l_area.extend (read_natural_8 (pos + i))
 				i := i + 1
 			end
+			create Result.make_from_special (l_area)
 		ensure
 			read_array_not_void: Result /= Void
 			read_array_valid_count: Result.count = a_count

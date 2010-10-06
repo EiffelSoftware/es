@@ -105,7 +105,7 @@ feature -- Access
 			-- Address of element at position `i'
 		require
 			not_dotnet: not {PLATFORM}.is_dotnet
-			index_big_enough: i >= 0
+			index_large_enough: i >= 0
 			index_small_enough: i < count
 		do
 			Result := base_address + i * element_size
@@ -245,7 +245,8 @@ feature -- Element change
 			-- Replace `i'-th item by `v'.
 			-- (Indices begin at 0.)
 		require
-			valid_index: valid_index (i)
+			index_large_enough: i >= 0
+			index_small_enough: i < count
 		external
 			"built_in"
 		ensure
@@ -259,7 +260,7 @@ feature -- Element change
 			-- otherwise replace `i'-th item by `v'.
 			-- (Indices begin at 0.)
 		require
-			index_big_enough: i >= 0
+			index_large_enough: i >= 0
 			index_small_enough: i <= count
 			not_full: i = count implies count < capacity
 		do
@@ -657,18 +658,9 @@ feature -- Resizing
 			-- possible a new copy. Non yet initialized entries are set to `a_default_value'.
 		require
 			n_non_negative: n >= 0
-		local
-			i: INTEGER
 		do
 			Result := aliased_resized_area (n)
-			from
-				i := Result.count
-			until
-				i = n
-			loop
-				Result.extend (a_default_value)
-				i := i + 1
-			end
+			Result.fill_with (a_default_value, Result.count, n - 1)
 		ensure
 			Result_not_void: Result /= Void
 			new_count: Result.count = n

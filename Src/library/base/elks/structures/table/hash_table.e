@@ -232,7 +232,7 @@ feature -- Access
 			old_iteration_position: INTEGER
 		do
 			if is_empty then
-				create Result.make (1, 0)
+				create Result.make_empty
 			else
 				old_iteration_position := iteration_position
 				from

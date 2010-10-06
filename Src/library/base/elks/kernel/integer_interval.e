@@ -280,13 +280,14 @@ feature -- Conversion
 		local
 			i: INTEGER
 		do
-			create Result.make (lower, upper)
+			create Result.make_empty
+			Result.rebase (lower)
 			from
 				i := lower
 			until
 				i > upper
 			loop
-				Result.put (i, i)
+				Result.force (i, i)
 				i := i + 1
 			end
 		ensure

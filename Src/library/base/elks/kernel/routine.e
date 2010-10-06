@@ -89,7 +89,7 @@ feature -- Access
 			--| FIXME compiler support needed!
 		end
 
-	empty_operands: OPEN_ARGS
+	empty_operands: attached OPEN_ARGS
 			-- Empty tuple matching open operands
 		do
 			create Result
@@ -372,11 +372,11 @@ feature {NONE} -- Implementation
 		do
 			o := open_types
 			if o = Void then
-				create o.make (1, open_count)
+				create o.make_filled (-1, 1, open_count)
 				open_types := o
 			end
 			Result := o.item (i)
-			if Result = 0 then
+			if Result = -1 then
 				create l_internal
 				Result := l_internal.generic_dynamic_type_of_type (
 					l_internal.generic_dynamic_type (Current, 2), i)

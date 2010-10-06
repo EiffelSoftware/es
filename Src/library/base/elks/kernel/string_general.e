@@ -108,6 +108,28 @@ feature -- Element change
 			appended: elks_checking implies to_string_32 ~ (old to_string_32.twin + old s.to_string_32.twin)
 		end
 
+	keep_head (n: INTEGER)
+			-- Remove all characters except for the first `n';
+			-- do nothing if `n' >= `count'.
+		require
+			non_negative_argument: n >= 0
+		deferred
+		ensure
+			new_count: count = n.min (old count)
+			kept: elks_checking implies Current ~ (old substring (1, n.min (count)))
+		end
+
+	keep_tail (n: INTEGER)
+			-- Remove all characters except for the last `n';
+			-- do nothing if `n' >= `count'.
+		require
+			non_negative_argument: n >= 0
+		deferred
+		ensure
+			new_count: count = n.min (old count)
+			kept: elks_checking implies Current ~ (old substring (count - n.min(count) + 1, count))
+		end
+
 feature -- Removal
 
 	remove (i: INTEGER)

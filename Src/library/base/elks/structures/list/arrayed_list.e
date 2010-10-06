@@ -478,12 +478,15 @@ feature -- Element change
 			-- Do not move cursor.
 		local
 			i: INTEGER
+			l_area: like area_v2
 		do
 			i := count + 1
-			if i > area_v2.capacity then
-				area_v2 := area_v2.aliased_resized_area (i + additional_space)
+			l_area := area_v2
+			if i > l_area.capacity then
+				l_area := l_area.aliased_resized_area (i + additional_space)
+				area_v2 := l_area
 			end
-			area_v2.extend (v)
+			l_area.extend (v)
 		end
 
 	put_left (v: like item)

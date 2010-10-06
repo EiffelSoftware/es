@@ -82,7 +82,7 @@ feature -- Access
 		do
 				-- All odd numbers except 1 are candidates
 			from
-				create Result.make (1, n)
+				create Result.make_filled (False, 1, n)
 				i := 3
 			until
 				i > n
@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 		once
 			from
 				candidates := all_lower_primes (approximated_i_th (Precomputed_primes_count))
-				create Result.make (1, Precomputed_primes_count)
+				create Result.make_filled (0, 1, Precomputed_primes_count)
 				pos := 1
 				i := 1
 			until

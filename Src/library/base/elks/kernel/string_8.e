@@ -431,16 +431,11 @@ feature -- Element change
 	keep_head (n: INTEGER)
 			-- Remove all characters except for the first `n';
 			-- do nothing if `n' >= `count'.
-		require
-			non_negative_argument: n >= 0
 		do
 			if n < count then
 				count := n
 				internal_hash_code := 0
 			end
-		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies Current ~ (old substring (1, n.min (count)))
 		end
 
 	tail (n: INTEGER)
@@ -460,8 +455,6 @@ feature -- Element change
 	keep_tail (n: INTEGER)
 			-- Remove all characters except for the last `n';
 			-- do nothing if `n' >= `count'.
-		require
-			non_negative_argument: n >= 0
 		local
 			nb: like count
 		do
@@ -471,9 +464,6 @@ feature -- Element change
 				count := n
 				internal_hash_code := 0
 			end
-		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies Current ~ (old substring (count - n.min(count) + 1, count))
 		end
 
 	left_adjust

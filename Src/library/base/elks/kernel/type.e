@@ -97,6 +97,12 @@ feature -- Status report
 			"built_in"
 		end
 
+	is_expanded: BOOLEAN
+			-- Is current type an expanded type?
+		external
+			"built_in"
+		end
+
 feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN
@@ -116,7 +122,7 @@ feature -- Conversion
 			adapted: Result ~ g
 		end
 
-	attempt alias "#?" (obj: detachable ANY): detachable G
+	attempt alias "#?" (obj: detachable separate ANY): detachable G
 			-- Result of assignment attempt of `obj' to entity of type G
 		do
 			if attached {G} obj as l_g then

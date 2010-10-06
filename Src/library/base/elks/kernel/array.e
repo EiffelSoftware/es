@@ -33,6 +33,7 @@ class ARRAY [G] inherit
 		end
 
 create
+	make_empty,
 	make,
 	make_filled,
 	make_from_array,
@@ -45,6 +46,18 @@ convert
 	make_from_cil ({NATIVE_ARRAY [G]})
 
 feature -- Initialization
+
+	make_empty
+			-- Allocate empty array starting at `1'.
+		do
+			lower := 1
+			upper := 0
+			make_empty_area (0)
+		ensure
+			lower_set: lower = 1
+			upper_set: upper = 0
+			items_set: all_default
+		end
 
 	make_filled (a_default_value: G; min_index, max_index: INTEGER)
 			-- Allocate array; set index interval to
@@ -71,6 +84,8 @@ feature -- Initialization
 			-- Allocate array; set index interval to
 			-- `min_index' .. `max_index'; set all values to default.
 			-- (Make array empty if `min_index' = `max_index' + 1).
+		obsolete
+			" `make' is not void-safe statically. Use `make_empty' or `make_filled' instead. [07-2010]"
 		require
 			valid_bounds: min_index <= max_index + 1
 			has_default: min_index <= max_index implies ({G}).has_default
@@ -266,7 +281,7 @@ feature -- Status report
 			end
 		ensure
 			definition: Result = (count = 0 or else
-				((not attached item (upper) as i or else i = i.default) and
+				((not attached item (upper) as i or else i = ({G}).default) and
 				subarray (lower, upper - 1).all_default))
 		end
 
@@ -630,7 +645,7 @@ feature -- Resizing
 			-- Change the capacity to at least `i'.
 		do
 			if i > capacity then
-				conservative_resize (lower, upper + i - capacity)
+				conservative_resize_with_default (({G}).default, lower, upper + i - capacity)
 			end
 		end
 
@@ -638,6 +653,8 @@ feature -- Resizing
 			-- Rearrange array so that it can accommodate
 			-- indices down to `min_index' and up to `max_index'.
 			-- Do not lose any previously entered item.
+		obsolete
+			" `conservative_resize' is not void-safe statically. Use `conservative_resize_with_default' instead. [07-2010]"
 		require
 			good_indices: min_index <= max_index
 			has_default: ({G}).has_default
@@ -688,7 +705,7 @@ feature -- Resizing
 			-- indices down to `min_index' and up to `max_index'.
 			-- Do not lose any previously entered item.
 		obsolete
-			"Use `conservative_resize' instead as future versions will implement `resize' as specified in ELKS."
+			"Use `conservative_resize_with_default' instead as future versions will implement `resize' as specified in ELKS."
 		require
 			good_indices: min_index <= max_index
 			has_default: ({G}).has_default
@@ -710,6 +727,20 @@ feature -- Resizing
 			end
 		ensure then
 			same_items: same_items (old twin)
+		end
+
+	rebase (a_lower: like lower)
+			-- Without changing the actual content of `Current' we set `lower' to `a_lower'
+			-- and `upper' accordingly to `a_lower + count - 1'.
+		local
+			l_old_lower: like lower
+		do
+			l_old_lower := lower
+			lower := a_lower
+			upper := a_lower + (upper - l_old_lower)
+		ensure
+			lower_set: lower = a_lower
+			upper_set: upper = a_lower + old count - 1
 		end
 
 feature -- Conversion
@@ -782,10 +813,14 @@ feature -- Duplication
 			valid_end_pos: end_pos <= upper
 			valid_bounds: (start_pos <= end_pos) or (start_pos = end_pos + 1)
 		do
-			create Result.make (start_pos, end_pos)
 			if start_pos <= end_pos then
+				create Result.make_filled (item (start_pos), start_pos, end_pos)
 					-- Only copy elements if needed.
 				Result.subcopy (Current, start_pos, end_pos, start_pos)
+			else
+					-- make empty
+				create Result.make_empty
+				Result.rebase (start_pos)
 			end
 		ensure
 			lower: Result.lower = start_pos

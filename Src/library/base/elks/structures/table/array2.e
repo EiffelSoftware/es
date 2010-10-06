@@ -44,6 +44,8 @@ feature -- Initialization
 			-- Create a two dimensional array which has `nb_rows'
 			-- rows and `nb_columns' columns,
 			-- with lower bounds starting at 1.
+		obsolete
+			"`make' is not void-safe statically. Use `make_filled' instead. [07-2010]"
 		require
 			nb_rows_non_negative: nb_rows >= 0
 			nb_columns_non_negative: nb_columns >= 0
@@ -118,7 +120,7 @@ feature -- Element change
 			column_large_enough: 1 <= column
 			has_default: ({G}).has_default
 		do
-			resize (row, column)
+			resize_with_default (({G}).default, row, column)
 			put (v, row, column)
 		end
 
@@ -127,7 +129,9 @@ feature -- Removal
 	wipe_out
 			-- Remove all items.
 		do
-			make (0, 0)
+			height := 0
+			width := 0
+			make_empty
 		end
 
 feature -- Resizing
@@ -138,6 +142,8 @@ feature -- Resizing
 			-- without losing any previously
 			-- entered items, nor changing their coordinates;
 			-- do nothing if new values are smaller.
+		obsolete
+			"`resize' is not void-safe statically. Use `resize_with_default' instead. [07-2010]"
 		require
 			valid_row: nb_rows >= 1
 			valid_column: nb_columns >= 1

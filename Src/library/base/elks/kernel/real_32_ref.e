@@ -81,8 +81,8 @@ feature -- Access
 			"built_in static"
 		end
 
-	min_value: REAL_32 = -3.4028235e+038
-	max_value: REAL_32 = 3.4028235e+038
+	min_value: REAL_32 = -3.4028234663852885981170e+038
+	max_value: REAL_32 = 3.4028234663852885981170e+038
 			-- Minimum and Maximum value hold in `item'.
 
 feature -- Comparison

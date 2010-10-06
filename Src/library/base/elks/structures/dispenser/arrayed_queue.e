@@ -449,9 +449,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-invariant
-	extendible: extendible
-
 note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software and others"

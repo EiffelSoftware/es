@@ -69,7 +69,7 @@ feature -- Access
 			i, j: INTEGER
 		do
 			from
-				create Result.make (1, n)
+				create Result.make_filled (False, 1, n)
 				j := 1
 				i := i_th (j)
 			until
