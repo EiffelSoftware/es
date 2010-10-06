@@ -421,8 +421,9 @@ feature -- Execution
 			-- `a_operands' is a table, key is 0-based operand index, value (when attached) is the expression for that closed operand;
 			-- (when void) is the indication that the corresponding operand is open.
 			-- operand index is 0-based, 0 means target, 1 means the first argument, and so on.
+		require
+			a_feature_is_procedure: a_feature.has_return_value implies a_feature.is_function
 		do
-
 		end
 
 	create_object (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_procedure: FEATURE_I; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; a_feature: detachable AUT_FEATURE_OF_TYPE)

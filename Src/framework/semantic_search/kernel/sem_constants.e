@@ -15,6 +15,55 @@ feature -- Queryable type names
 
 	object_field_value: STRING = "object"
 
+feature -- Property type forms
+
+	dynamic_type_form: INTEGER = 1
+			-- Dynamic type form where operands of an expression
+			-- are replaced by the dynamic type of those operands
+			-- For example: For l.has (o), where l is of type LINKED_LIST [ANY]
+			-- and o is of type STRING, the dynamic type form is: {LINKED_LIST [ANY]}.has ({STRING})
+
+	static_type_form: INTEGER = 2
+			-- Static type form where operands of an expression
+			-- are replaced by the static type of those operands
+			-- For example: For l.has (o), where l is of type LINKED_LIST [ANY]
+			-- and o is of type STRING, the dynamic type form is: {LINKED_LIST [ANY]}.has ({ANY})
+
+	anonymous_type_form: INTEGER = 3
+			-- Anonymous type form  where operands of an expression
+			-- are replaced by the indexes of those operands
+			-- For example: For l.has (o), where l is of type LINKED_LIST [ANY]
+			-- and o is of type STRING, the dynamic type form is: {0}.has ({1})
+
+	is_type_form_valid (a_form: INTEGER): BOOLEAN
+			-- Is `a_form' a valid type form?
+		do
+			Result :=
+				a_form = dynamic_type_form or else
+				a_form = static_type_form or else
+				a_form = anonymous_type_form
+		end
+
+feature -- Term occurrences
+
+	term_occurrence_must: INTEGER = 1
+			-- Flag to indicate that a term must occur in a result document
+
+	term_occurrence_must_not: INTEGER = 2
+			-- Flag to indicate that a term must not occur in a result document
+
+	term_occurrence_should: INTEGER = 3
+			-- Flag to indicate that a term should occur in a result document
+
+	is_term_occurrence_valid (a_occurrence: INTEGER): BOOLEAN
+			-- Is `a_occurrence' valid?
+		do
+			Result :=
+				a_occurrence = term_occurrence_must or else
+				a_occurrence = term_occurrence_must_not or else
+				a_occurrence = term_occurrence_should
+		end
+
 feature -- Type names
 
 	string_field_type: INTEGER = 1
@@ -23,37 +72,54 @@ feature -- Type names
 
 	integer_field_type: INTEGER = 3
 
-	string_field_name: STRING = "STRING"
+	string_field_type_name: STRING = "STRING"
 
-	boolean_field_name: STRING = "BOOLEAN"
+	boolean_field_type_name: STRING = "BOOLEAN"
 
-	integer_field_name: STRING = "INTEGER"
+	integer_field_type_name: STRING = "INTEGER"
 
 	field_type_name (a_type: INTEGER): STRING
 			-- Name of the field with `a_type'
 		do
 			if a_type = string_field_type then
-				Result := string_field_name
+				Result := string_field_type_name
 			elseif a_type = boolean_field_type then
-				Result := boolean_field_name
+				Result := boolean_field_type_name
 			elseif a_type = integer_field_type then
-				Result := integer_field_name
+				Result := integer_field_type_name
 			end
 		end
 
 	field_type_from_name (a_name: STRING): INTEGER
 			-- Field type from `a_name'
 		do
-			Result := field_name_table.item (a_name)
+			Result := field_type_name_table.item (a_name)
 		end
 
-	field_name_table: HASH_TABLE [INTEGER, STRING]
+	field_type_name_table: HASH_TABLE [INTEGER, STRING]
 			-- Table from field name to field type
 		once
 			create Result.make (3)
-			Result.force (integer_field_type, integer_field_name)
-			Result.force (boolean_field_type, boolean_field_name)
-			Result.force (string_field_type, string_field_name)
+			Result.force (integer_field_type, integer_field_type_name)
+			Result.force (boolean_field_type, boolean_field_type_name)
+			Result.force (string_field_type, string_field_type_name)
+		end
+
+feature -- Status report
+
+	is_field_type_valid (a_type: INTEGER): BOOLEAN
+			-- Is `a_type' a valid field type?
+		do
+			Result :=
+				a_type = boolean_field_type or else
+				a_type = integer_field_type or else
+				a_type = string_field_type
+		end
+
+	is_field_type_name_valid (a_type_name: STRING): BOOLEAN
+			-- Is `a_type_name' a valid type name?
+		do
+			Result := field_type_name_table.has (a_type_name)
 		end
 
 feature -- Default boost
