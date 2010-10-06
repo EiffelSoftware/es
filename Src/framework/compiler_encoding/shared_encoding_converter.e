@@ -12,10 +12,13 @@ feature -- Access
 
 	encoding_converter: ENCODING_CONVERTER
 			-- Encoding converter
-		require
-			converter_set: is_encoding_converter_set
 		do
-			Result := encoding_converter_cell.item
+			if attached encoding_converter_cell.item as l_converter then
+				Result := l_converter
+			else
+				create Result.make
+				set_encoding_converter (Result)
+			end
 		end
 
 feature -- Query
@@ -32,6 +35,8 @@ feature -- Element change
 			-- Set `encoding_converter' with `a_converter'
 		do
 			encoding_converter_cell.put (a_converter)
+		ensure
+			set: encoding_converter_cell.item = a_converter
 		end
 
 feature {NONE} -- Implementation

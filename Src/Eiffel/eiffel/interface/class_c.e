@@ -671,14 +671,24 @@ feature -- Access: object relative once
 			object_relative_once_infos := Void
 		end
 
-	object_relative_once_infos: detachable HASH_TABLE [OBJECT_RELATIVE_ONCE_INFO, INTEGER]
+	object_relative_once_infos: detachable OBJECT_RELATIVE_ONCE_INFO_TABLE
 			-- List of info about object relative onces associated with Current
+
+	object_relative_once_info_of_rout_id_set (a_rout_id_set: ROUT_ID_SET): detachable OBJECT_RELATIVE_ONCE_INFO
+			-- Info about object relative once associated with Current and an item of `a_rout_id_set'
+		require
+			a_rout_id_set_not_void: a_rout_id_set /= Void
+		do
+			if attached object_relative_once_infos as l_infos then
+				Result := l_infos.first_item_intersecting_with_rout_id_set (a_rout_id_set)
+			end
+		end
 
 	object_relative_once_info (a_once_routine_id: INTEGER): detachable OBJECT_RELATIVE_ONCE_INFO
 			-- Info about object relative once associated with Current and `a_once_routine_id'
 		do
 			if attached object_relative_once_infos as l_infos then
-				Result := l_infos.item (a_once_routine_id)
+				Result := l_infos.item_of_rout_id (a_once_routine_id)
 			end
 		end
 
@@ -686,14 +696,7 @@ feature -- Access: object relative once
 			-- Attribute associated with Current with feature_id `a_feature_id', if any.
 		do
 			if attached object_relative_once_infos as l_infos then
-				from
-					l_infos.start
-				until
-					l_infos.after or Result /= Void
-				loop
-					Result := l_infos.item_for_iteration.attribute_of_feature_id (a_feature_id)
-					l_infos.forth
-				end
+				Result := l_infos.attribute_of_feature_id (a_feature_id)
 			end
 		end
 
@@ -701,14 +704,7 @@ feature -- Access: object relative once
 			-- Attribute associated with Current with feature_id `a_routine_id', if any.
 		do
 			if attached object_relative_once_infos as l_infos then
-				from
-					l_infos.start
-				until
-					l_infos.after or Result /= Void
-				loop
-					Result := l_infos.item_for_iteration.attribute_of_routine_id (a_routine_id)
-					l_infos.forth
-				end
+				Result := l_infos.attribute_of_routine_id (a_routine_id)
 			end
 		end
 
@@ -1614,24 +1610,9 @@ feature -- Parent checking
 			types_empty: not has_types
 		end
 
-feature -- Supplier checking
-
-	check_that_root_class_is_not_deferred
-		-- Check non-genericity of root class
-		local
-			l_vsrt3: VSRT3
-		do
-			if is_deferred then
-				create l_vsrt3
-				l_vsrt3.set_class (Current)
-				Error_handler.insert_error (l_vsrt3)
-				Error_handler.checksum
-			end
-		end
-
 feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Supplier checking
 
-	check_root_class_creators (a_creator: STRING; a_type: CL_TYPE_A)
+	check_root_class_creators (a_creator: STRING; a_type: TYPE_A)
 			-- Check creation procedures of root class
 			--
 			-- Note: if `a_creator' is empty and default_create is a valid creation procedure in `Current',
@@ -1842,8 +1823,13 @@ feature -- Propagation
 					io.error.put_string (class_i.name)
 					io.error.put_new_line
 				end
-				workbench.add_class_to_recompile (class_i)
-				class_i.set_changed (True)
+					-- Can only recompile a class if it is valid.
+					-- This fixes eweasel test#fixed119 and test#fixed120
+					-- when running with assertions.
+				if class_i.is_valid then
+					workbench.add_class_to_recompile (class_i)
+					class_i.set_changed (True)
+				end
 				l_syntactical_clients.forth
 			end
 		end
@@ -2128,37 +2114,42 @@ feature -- Actual class type
 
 	actual_type: CL_TYPE_A
 			-- Actual type of the class
+
+feature {EXTERNAL_CLASS_C} -- Initialization
+
+	initialize_actual_type
+			-- Initialize `actual_type'.
 		local
-			i, nb: INTEGER
-			actual_generic: ARRAY [TYPE_A]
-			formal: FORMAL_A
-			l_formal_dec: FORMAL_CONSTRAINT_AS
+			a: CL_TYPE_A
+			t: ARRAY [TYPE_A]
 		do
-			if generics = Void then
-				create Result.make (class_id)
+			if not attached generics as g then
+				create {CL_TYPE_A} a.make (class_id)
 			else
-				from
-					i := 1
-					nb := generics.count
-					create actual_generic.make (1, nb)
-					create {GEN_TYPE_A} Result.make (class_id, actual_generic)
-				until
-					i > nb
+				create t.make_empty
+				across
+					g as c
 				loop
-					l_formal_dec ?= generics.i_th (i)
-					check l_formal_dec_not_void: l_formal_dec /= Void end
-					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, i)
-					actual_generic.put (formal, i)
-					i := i + 1
+					t.force (type_a_generator.evaluate_type (c.item.formal, Current), t.upper + 1)
 				end
+				a := create_generic_type (t)
 			end
 			if lace_class.is_attached_by_default then
-				Result.set_is_attached
+				a.set_is_attached
 			else
-				Result.set_is_implicitly_attached
+				a.set_is_implicitly_attached
 			end
+			actual_type := a
+		end
+
+	create_generic_type (g: ARRAY [TYPE_A]): GEN_TYPE_A
+			-- Create generic type with actual generics `g' for the current class.
+		require
+			g_attached: attached g
+		do
+			create {GEN_TYPE_A} Result.make (class_id, g)
 		ensure
-			actual_type_not_void: Result /= Void
+			result_attached: attached Result
 		end
 
 feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual class type
@@ -2579,7 +2570,7 @@ end
 				-- Propagation along the filters since we have a new type
 				-- Clean the filters. Some of the filters can be obsolete
 				-- if the base class has been removed from the system
-			class_filters.clean
+			class_filters.clean (Current)
 			l_system := system
 			from
 				class_filters.start
@@ -2621,7 +2612,7 @@ feature {CLASS_C} -- Incrementality
 				-- Propagation along the filters since we have a new type
 				-- Clean the filters. Some of the filters can be obsolete
 				-- if the base class has been removed from the system
-			class_filters.clean
+			class_filters.clean (Current)
 			from
 				class_filters.start
 				l_system := system
@@ -3220,10 +3211,24 @@ feature -- Properties
 
 feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Properties
 
-	text: detachable STRING
+	text: detachable STRING_8
 			-- Class text
 		do
 			Result := lace_class.text
+		end
+
+feature -- Access: Encoding
+
+	encoding: detachable ENCODING
+			-- Encoding detected when reading `text'
+		do
+			Result := lace_class.encoding
+		end
+
+	bom: detachable STRING
+			-- Bom of the encoding detected when reading `text'
+		do
+			Result := lace_class.bom
 		end
 
 	obsolete_message: STRING
@@ -3271,7 +3276,7 @@ feature -- IL code generation
 				class_name := name.as_lower
 				use_dotnet_naming := System.dotnet_naming_convention
 			end
-			Result := il_casing.type_name (namespace, data_prefix, class_name, use_dotnet_naming)
+			Result := il_casing.type_name (namespace, data_prefix, False, class_name, use_dotnet_naming)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -3284,7 +3289,7 @@ feature -- IL code generation
 		do
 			is_dotnet_naming := System.dotnet_naming_convention
 			precompiled_namespace := original_class.actual_namespace.twin
-			precompiled_class_name := il_casing.type_name (Void, Void, name.as_lower, is_dotnet_naming)
+			precompiled_class_name := il_casing.type_name (Void, Void, False, name.as_lower, is_dotnet_naming)
 		end
 
 	is_dotnet_naming: BOOLEAN
@@ -3318,6 +3323,7 @@ feature {CLASS_I} -- Settings
 			cl_different_from_current_lace_class: cl /= original_class
 		do
 			original_class := cl
+			initialize_actual_type
 		ensure
 			original_class_set: original_class = cl
 		end
@@ -3570,7 +3576,7 @@ feature -- Access
 		end
 
 	feature_of_rout_id_set (rout_id_set: ROUT_ID_SET): FEATURE_I
-			-- Feature with routine ID `rout_id'.
+			-- Feature with routine ID in `rout_id_set'.
 		require
 			rout_id_set_not_void: rout_id_set /= Void
 			has_feature_table: has_feature_table

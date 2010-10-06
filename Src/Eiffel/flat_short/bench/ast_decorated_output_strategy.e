@@ -3459,6 +3459,10 @@ feature {NONE} -- Implementation
 						l_text_formatter_decorator.process_keyword_text (ti_detachable_keyword, Void)
 						l_text_formatter_decorator.add_space
 					end
+					if l_as.has_separate_mark then
+						l_text_formatter_decorator.process_keyword_text (ti_separate_keyword, Void)
+						l_text_formatter_decorator.add_space
+					end
 					l_text_formatter_decorator.process_keyword_text (ti_like_keyword, Void)
 					l_text_formatter_decorator.add_space
 					l_text_formatter_decorator.process_local_text (l_as.anchor.name_32)
@@ -3503,6 +3507,12 @@ feature {NONE} -- Implementation
 						l_text_formatter_decorator.process_keyword_text (ti_detachable_keyword, Void)
 						l_text_formatter_decorator.add_space
 							-- The type is of the form "detachable like {T}.something"
+						is_implicit := False
+					end
+					if l_as.has_separate_mark then
+						l_text_formatter_decorator.process_keyword_text (ti_separate_keyword, Void)
+						l_text_formatter_decorator.add_space
+							-- The type is of the form "separate like {T}.something"
 						is_implicit := False
 					end
 					if is_implicit then
@@ -4794,7 +4804,7 @@ feature {NONE} -- Implementation: helpers
 				-- not have any anchors or bit symbols in `a_type'.
 				if source_feature /= Void then
 						-- Perform simple update of TYPE_A in context of `source_class'.
-					type_a_checker.init_with_feature_table (source_feature, source_class.feature_table, Void, Void)
+					type_a_checker.init_with_feature_table (source_feature, source_class.feature_table, Void)
 					l_type := type_a_checker.solved (l_type, a_type)
 
 					if source_class /= current_class then

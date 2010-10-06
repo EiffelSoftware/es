@@ -241,6 +241,19 @@ feature -- Automatically indented output
 			l_buffer.append_character (d)
 		end
 
+	put_five_character (a, b, c, d, e: CHARACTER)
+			-- Write char `a', `b', `c', `d' and `e' assuming no calls to `put_new_line' were done prior to this call.
+		local
+			l_buffer: like current_buffer
+		do
+			l_buffer := current_buffer
+			l_buffer.append_character (a)
+			l_buffer.append_character (b)
+			l_buffer.append_character (c)
+			l_buffer.append_character (d)
+			l_buffer.append_character (e)
+		end
+
 	put_integer (i: INTEGER)
 			-- Write int `i'.
 		do
@@ -400,15 +413,6 @@ feature -- Automatically indented output
 			l_buffer.append (s)
 		ensure
 			new_count: count = old count + s.count
-		end
-
-	put_string_and_new_line (s: STRING)
-			-- Write string `s' and append a new line.
-		require
-			s_not_void: s /= Void
-		do
-			put_string (s)
-			put_new_line
 		end
 
 	put_string_array (a: ARRAY [STRING])

@@ -100,18 +100,12 @@ feature {NONE}
 
 	area_type: GEN_TYPE_A
 			-- Type SPECIAL [T]
-		local
-			f: FORMAL_A
-			gen: ARRAY [TYPE_A]
 		do
-			create f.make (False, False, 1)
-			create gen.make (1, 1)
-			gen.put (f, 1)
-			create Result.make (System.special_id, gen)
+			create Result.make (System.special_id, <<actual_type.generics [1]>>)
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

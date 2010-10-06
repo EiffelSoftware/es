@@ -56,6 +56,8 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	SHARED_ENCODING_CONVERTER
+
 create {EIFFEL_CALL_STACK}
 	make
 create {STOPPED_HDLR, APPLICATION_EXECUTION_CLASSIC, APPLICATION_STATUS_CLASSIC}
@@ -109,10 +111,11 @@ feature {NONE} -- Initialization
 		do
 			if fe /= Void then
 				private_routine := fe
-					-- |FIXME: Handle Unicode.
-				routine_name := fe.name_32.as_string_8
+				routine_name := fe.name_8
+				routine_name_for_display := fe.name_32
 			else
 				routine_name := "Unknown..."
+				routine_name_for_display := routine_name
 			end
 			level_in_stack := lvl
 			is_melted := mlt
@@ -156,7 +159,11 @@ feature -- Properties
 		do
 			Result := private_routine
 			if Result = Void then
-				Result := feature_from_runtime_data (dynamic_class, written_class, routine_name)
+				if not routine_name.is_empty then
+					if written_class /= Void then
+						Result := feature_from_runtime_data (dynamic_class, written_class, routine_name)
+					end
+				end
 				private_routine := Result
 			end
 		end
@@ -601,6 +608,7 @@ feature	{NONE} -- Initialization of the C/Eiffel interface
 				create object_address.make_from_string (object)
 				is_melted := melted
 				routine_name := r_name
+				routine_name_for_display := encoding_converter.utf8_to_utf32 (r_name)
 			end
 		end
 

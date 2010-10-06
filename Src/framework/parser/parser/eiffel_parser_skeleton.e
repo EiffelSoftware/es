@@ -35,6 +35,12 @@ inherit
 	INTERNAL_COMPILER_STRING_EXPORTER
 		export {NONE} all end
 
+	SYSTEM_ENCODINGS
+		export {NONE} all end
+
+	BOM_CONSTANTS
+		export {NONE} all end
+
 feature {NONE} -- Initialization
 
 	make
@@ -58,6 +64,9 @@ feature {NONE} -- Initialization
 			is_supplier_recorded := True
 			create counters.make (Initial_counters_capacity)
 			create counters2.make (Initial_counters_capacity)
+			create once_manifest_string_counters.make (initial_counters_capacity)
+				-- Keep one element in it.
+			once_manifest_string_counters.force (0)
 			create last_rsqure.make (initial_counters_capacity)
 			create feature_stack.make (1)
 			add_feature_frame
@@ -166,9 +175,10 @@ feature -- Initialization
 			add_feature_frame
 			is_supplier_recorded := True
 			is_constraint_renaming := False
-			once_manifest_string_count := 0
 			object_test_locals := Void
 			counters.wipe_out
+			counters2.wipe_out
+			reset_once_manifest_string_counter
 			last_rsqure.wipe_out
 			current_class := Void
 			is_ignoring_attachment_marks := False
@@ -180,6 +190,8 @@ feature -- Initialization
 			is_separate := False
 			deferred_keyword := Void
 			expanded_keyword := Void
+			external_keyword := Void
+			frozen_keyword := Void
 			separate_keyword := Void
 		end
 
@@ -215,64 +227,116 @@ feature -- Status report
 	is_ignoring_attachment_marks: BOOLEAN
 			-- Are we simply ignoring attachment marks while parsing?
 
-feature -- Parsing
+feature -- Parsing (Unknown encoding)
 
 	parse (a_file: KL_BINARY_INPUT_FILE)
 			-- Parse Eiffel class text from `a_file'.
 			-- Make result available in appropriate result node.
 			-- An exception is raised if a syntax error is found.
+			--
+			-- Encoding detection priority:
+			-- 1. Detect BOM from `a_file', use the detected encoding.
+			-- 2. Default to ASCII (ISO-8859-1) encoding.
 		require
 			a_file_not_void: a_file /= Void
 			a_file_open_read: a_file.is_open_read
-				-- |FIXME: The following precondition changes the status of an object.
-				-- |FIXME: Comment the following line until a good solution is found.
-			-- a_file_has_utf8_content: encoding_converter.file_in_utf8 (a_file)
-
 		do
-			internal_parse_class (a_file, Void)
+			parse_class_from_file (a_file, Void, Void)
 		end
 
 	parse_class (a_class: ABSTRACT_CLASS_C)
 			-- Parse class `a_class'
 			-- Make result available in appropriate result node.
 			-- An exception is raised if a syntax error is found.
+			--
+			-- Encoding detection priority:
+			-- 1. Detect BOM from text of `a_class', use the detected encoding.
+			-- 2. Use the encoding specified in the context of `a_class' (.ecf)
+			-- 3. Default to ASCII (ISO-8859-1) encoding.
 		require
 			a_class_not_void: a_class /= Void
 			a_class_has_text: a_class.has_text
 		do
 			filename := a_class.file_name
-			parse_from_string (a_class.text, a_class)
+			parse_from_utf8_string (a_class.text, a_class)
+			detected_encoding := a_class.encoding
+			detected_bom := a_class.bom
 		end
 
-	parse_from_string_32 (a_string: STRING_32; a_class: ABSTRACT_CLASS_C)
-			-- Parse Eiffel class text in `a_string'. `a_string' is in UTF-32.
+	parse_class_from_string (a_string: STRING; a_class: detachable ABSTRACT_CLASS_C; a_encoding: detachable ENCODING)
+			-- Parse Eiffel class text from `a_string'.
 			-- Make result available in appropriate result node.
 			-- An exception is raised if a syntax error is found.
+			--
+			-- Encoding detection priority:
+			-- 1. If `a_encoding' is attached, use it as the encoding of `a_file'
+			-- 2. Detect BOM from `a_string', use the detected encoding.
+			-- 3. Use the encoding specified in the context of `a_class' (.ecf)
+			-- 4. Default to ASCII (ISO-8859-1) encoding.
 		require
 			a_string_not_void: a_string /= Void
+		local
+			l_ast_factory: like ast_factory
+			l_input_buffer: YY_BUFFER
 		do
-			parse_from_string (encoding_converter.utf32_to_utf8 (a_string), a_class)
+			reset_nodes
+
+			if attached a_encoding then
+				l_input_buffer := encoding_converter.input_buffer_from_string_of_encoding (a_string, a_encoding)
+				detected_encoding := a_encoding
+				detected_bom := Void
+			else
+				l_input_buffer := encoding_converter.input_buffer_from_string (a_string, a_class)
+				detected_encoding := encoding_converter.detected_encoding
+				detected_bom := encoding_converter.last_bom
+			end
+			input_buffer := l_input_buffer
+
+				-- Abstracted from 'yy_load_input_buffer' to reuse local
+			yy_set_content (l_input_buffer.content)
+			yy_end := l_input_buffer.index
+			yy_start := yy_end
+			yy_line := l_input_buffer.line
+			yy_column := l_input_buffer.column
+			yy_position := l_input_buffer.position
+
+			l_ast_factory := ast_factory
+			l_ast_factory.create_match_list (initial_match_list_size)
+			current_class := a_class
+			yyparse
+			match_list := l_ast_factory.match_list
+			reset
+		rescue
+			reset
 		end
 
-feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Parsing
-
-	internal_parse_class (a_file: KL_BINARY_INPUT_FILE; a_class: ABSTRACT_CLASS_C)
+	parse_class_from_file (a_file: KL_BINARY_INPUT_FILE; a_class: detachable ABSTRACT_CLASS_C; a_encoding: detachable ENCODING)
 			-- Parse Eiffel class text from `a_file'.
 			-- Make result available in appropriate result node.
 			-- An exception is raised if a syntax error is found.
+			--
+			-- Encoding detection priority:
+			-- 1. If `a_encoding' is attached, use it as the encoding of `a_file'
+			-- 2. Detect BOM from `a_file', use the detected encoding.
+			-- 3. Use the encoding specified in the context of `a_class' (.ecf)
+			-- 4. Default to ASCII (ISO-8859-1) encoding.
 		require
 			a_file_not_void: a_file /= Void
 			a_file_open_read: a_file.is_open_read
-				-- |FIXME: The following precondition changes the status of an object.
-				-- |FIXME: Comment the following line until a good solution is found.
-			-- a_file_has_utf8_content: encoding_converter.file_in_utf8 (a_file)
 		local
 			l_ast_factory: like ast_factory
-			l_input_buffer: YY_FILE_BUFFER
+			l_input_buffer: YY_BUFFER
 		do
 			reset_nodes
-			l_input_buffer := File_buffer
-			l_input_buffer.set_file (a_file)
+			if attached a_encoding then
+				l_input_buffer := encoding_converter.input_buffer_from_file_of_encoding (a_file, a_encoding)
+				detected_encoding := a_encoding
+				detected_bom := Void
+			else
+				l_input_buffer := encoding_converter.input_buffer_from_file (a_file, a_class)
+				detected_encoding := encoding_converter.detected_encoding
+				detected_bom := encoding_converter.last_bom
+			end
 			input_buffer := l_input_buffer
 
 				-- Abstracted from 'yy_load_input_buffer' to reuse local.
@@ -294,8 +358,10 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Parsing
 			reset
 		end
 
-	parse_from_string (a_string: STRING; a_class: ABSTRACT_CLASS_C)
-			-- Parse Eiffel class text in `a_string'.
+feature -- Parsing (Known encoding)
+
+	parse_from_ascii_string (a_string: STRING; a_class: ABSTRACT_CLASS_C)
+			-- Parse Eiffel class text in ASCII (ISO-8859-1) `a_string'.
 			-- Make result available in appropriate result node.
 			-- An exception is raised if a syntax error is found.
 		require
@@ -306,8 +372,10 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Parsing
 		do
 			reset_nodes
 
-			create l_input_buffer.make (a_string)
+			l_input_buffer := encoding_converter.input_buffer_from_ascii_string (a_string)
 			input_buffer := l_input_buffer
+			detected_encoding := encoding_converter.detected_encoding
+			detected_bom := encoding_converter.last_bom
 
 				-- Abstracted from 'yy_load_input_buffer' to reuse local
 			yy_set_content (l_input_buffer.content)
@@ -325,6 +393,54 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Parsing
 			reset
 		rescue
 			reset
+		end
+
+	parse_from_utf8_string (a_string: STRING; a_class: ABSTRACT_CLASS_C)
+			-- Parse Eiffel class text in UTF-8 `a_string'.
+			-- Make result available in appropriate result node.
+			-- An exception is raised if a syntax error is found.
+		require
+			a_string_not_void: a_string /= Void
+		local
+			l_ast_factory: like ast_factory
+			l_input_buffer: YY_BUFFER
+		do
+			reset_nodes
+
+			create l_input_buffer.make (a_string)
+			input_buffer := l_input_buffer
+
+			detected_encoding := utf8
+			detected_bom := Void
+
+				-- Abstracted from 'yy_load_input_buffer' to reuse local
+			yy_set_content (l_input_buffer.content)
+			yy_end := l_input_buffer.index
+			yy_start := yy_end
+			yy_line := l_input_buffer.line
+			yy_column := l_input_buffer.column
+			yy_position := l_input_buffer.position
+
+			l_ast_factory := ast_factory
+			l_ast_factory.create_match_list (initial_match_list_size)
+			current_class := a_class
+			yyparse
+			match_list := l_ast_factory.match_list
+			reset
+		rescue
+			reset
+		end
+
+	parse_from_string_32 (a_string: STRING_32; a_class: detachable ABSTRACT_CLASS_C)
+			-- Parse Eiffel class text in `a_string'. `a_string' is in UTF-32.
+			-- Make result available in appropriate result node.
+			-- An exception is raised if a syntax error is found.
+		require
+			a_string_not_void: a_string /= Void
+		do
+			parse_from_utf8_string (encoding_converter.utf32_to_utf8 (a_string), a_class)
+			detected_encoding := utf32
+			detected_bom := Void
 		end
 
 feature -- Access: result nodes
@@ -374,16 +490,20 @@ feature -- Access
 	invariant_end_position: INTEGER
 			-- End of invariant
 
-	once_manifest_string_count: INTEGER
-			-- Number of once manifest strings in current feature declaration
-			-- or in an invariant
-
 	object_test_locals: ARRAYED_LIST [TUPLE [name: ID_AS; type: TYPE_AS]]
 			-- List of object test locals found
 			-- in the current feature declaration
 
 	feature_clause_end_position: INTEGER
 			-- End of a feature clause
+
+feature -- Access: Encoding
+
+	detected_encoding: detachable ENCODING
+			-- Encoding detected by last parsing
+
+	detected_bom: detachable STRING
+			-- Bom of the encoding detected by last parsing
 
 feature -- Removal
 
@@ -505,6 +625,7 @@ feature {NONE} -- Implementation
 	add_feature_frame
 		do
 			feature_stack.force ([Normal_level, 0])
+			add_once_manifest_string_counter
 		end
 
 	remove_feature_frame
@@ -512,6 +633,21 @@ feature {NONE} -- Implementation
 			feature_stack.count > 1
 		do
 			feature_stack.remove
+			remove_once_manifest_string_counter
+		end
+
+	setup_binary_manifest_string (a_string_as: ATOMIC_AS)
+			-- Caculate the original written bytes of the string
+			-- according to UTF-8 string and original encoding.
+		do
+			if attached {STRING_AS}a_string_as as l_string_as then
+				utf8.convert_to (detected_encoding, l_string_as.value)
+				if utf8.last_conversion_successful then
+					l_string_as.set_binary_value (utf8.last_converted_stream)
+				else
+					check conversion_failed: False end
+				end
+			end
 		end
 
 	is_deferred: BOOLEAN
@@ -609,6 +745,16 @@ feature {NONE} -- Counters
 			value_positive: Result >= 0
 		end
 
+	once_manifest_string_counter_value: INTEGER
+			-- Value of the last counter registered
+		require
+			once_manifest_string_counters_not_empty: not once_manifest_string_counters.is_empty
+		do
+			Result := once_manifest_string_counters.item
+		ensure
+			value_positive: Result >= 0
+		end
+
 	add_counter
 			-- Register a new counter.
 		do
@@ -625,6 +771,23 @@ feature {NONE} -- Counters
 		ensure
 			one_more: counters2.count = old counters2.count + 1
 			value_zero: counter2_value = 0
+		end
+
+	add_once_manifest_string_counter
+			-- Register a new once manifest string counter
+		do
+			once_manifest_string_counters.force (0)
+		ensure
+			one_more: once_manifest_string_counters.count = old once_manifest_string_counters.count + 1
+			value_zero: once_manifest_string_counter_value = 0
+		end
+
+	reset_once_manifest_string_counter
+			-- Reset the value of `once_manifest_string_counter_value'
+		do
+			once_manifest_string_counters.replace (0)
+		ensure
+			value_zero: once_manifest_string_counter_value = 0
 		end
 
 	remove_counter
@@ -647,6 +810,16 @@ feature {NONE} -- Counters
 			one_less: counters2.count = old counters2.count - 1
 		end
 
+	remove_once_manifest_string_counter
+			-- Unregister last registered counter.
+		require
+			once_manifest_string_counters_not_empty: not once_manifest_string_counters.is_empty
+		do
+			once_manifest_string_counters.remove
+		ensure
+			one_less: once_manifest_string_counters.count = old once_manifest_string_counters.count - 1
+		end
+
 	increment_counter
 			-- Increment `counter_value'.
 		require
@@ -662,7 +835,7 @@ feature {NONE} -- Counters
 		end
 
 	increment_counter2
-			-- Increment `counter_value'.
+			-- Increment `counter2_value'.
 		require
 			counters2_not_empty: not counters2.is_empty
 		local
@@ -675,12 +848,29 @@ feature {NONE} -- Counters
 			one_more: counter2_value = old counter2_value + 1
 		end
 
+	increment_once_manifest_string_counter
+			-- Increment `once_manifest_string_counter_value'.
+		require
+			once_manifest_string_counters_not_empty: not once_manifest_string_counters.is_empty
+		local
+			a_value: INTEGER
+		do
+			a_value := once_manifest_string_counters.item
+			once_manifest_string_counters.replace (a_value + 1)
+		ensure
+			same_once_manifest_string_counters_count: once_manifest_string_counters.count = old once_manifest_string_counters.count
+			one_more: once_manifest_string_counter_value = old once_manifest_string_counter_value + 1
+		end
+
 	counters: ARRAYED_STACK [INTEGER]
 			-- Counters currently in use by the parser
 			-- to build lists of AST nodes with the right size.
 
 	counters2: ARRAYED_STACK [INTEGER]
 			-- Counters used for parsing tuples
+
+	once_manifest_string_counters: ARRAYED_STACK [INTEGER]
+			-- Counters used for once manifest string.
 
 feature {NONE} -- Actions
 
@@ -906,6 +1096,7 @@ invariant
 		(id_level = Assert_level) or (id_level = Invariant_level)
 	is_external_class_not_set: not il_parser implies not is_external_class
 	is_partial_class_not_set: not il_parser implies not is_partial_class
+	once_manifest_string_counters_not_empty: not once_manifest_string_counters.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

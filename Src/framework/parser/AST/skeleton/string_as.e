@@ -39,6 +39,7 @@ feature {NONE} -- Initialization
 			n_non_negative: n >= 0
 		do
 			value := s
+			binary_value := s
 			set_position (l, c, p, n)
 		ensure
 			value_set: value = s
@@ -68,7 +69,21 @@ feature -- Properties
 feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Properties
 
 	value: STRING
-			-- Real string value.
+			-- Real string value in UTF-8
+
+	binary_value: STRING
+			-- Original written binary value.
+			-- It is the same as `value' for strings rather than attribute constant and expression constant.
+
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Roundtrip/Text
+
+	string_text (a_match_list: LEAF_AS_LIST): STRING
+			-- Text of the string part (not including the type)
+		require
+			a_match_list_attached: a_match_list /= Void
+		do
+			Result := a_match_list.text (create {ERT_TOKEN_REGION}.make (index, index))
+		end
 
 feature -- Settings
 
@@ -118,6 +133,15 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Status setting
 			value := s
 		ensure
 			value_set: value = s
+		end
+
+	set_binary_value (s: STRING)
+		require
+			s_attached: s /= Void
+		do
+			binary_value := s
+		ensure
+			binary_value_set: binary_value = s
 		end
 
 feature -- Roundtrip
@@ -176,6 +200,7 @@ feature -- Roundtrip/Token
 
 invariant
 	value_not_void: value /= Void
+	binary_value_not_void: binary_value /= Void
 
 note
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"

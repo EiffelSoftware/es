@@ -30,7 +30,6 @@ inherit
 			is_explicit,
 			is_attached,
 			is_basic,
-			is_computable_using_ancestors,
 			is_expanded,
 			is_ephemeral,
 			is_external,
@@ -39,6 +38,7 @@ inherit
 			is_loose,
 			is_none,
 			is_reference,
+			is_separate,
 			is_type_set,
 			internal_is_valid_for_class,
 			meta_type,
@@ -98,8 +98,11 @@ feature -- Status report
 			Result := actual_type /= Void and then actual_type.has_associated_class_type (a_context_type)
 		end
 
-	has_like: BOOLEAN = True
-			-- Does the type have anchored type in its definition ?
+	has_like: BOOLEAN
+			-- Does the type have anchored type in its definition?
+		do
+			Result := True
+		end
 
 	has_like_current: BOOLEAN
 			-- <Precursor>
@@ -115,8 +118,12 @@ feature -- Status report
 	is_like: BOOLEAN = True
 			-- Is the type anchored one ?
 
-	is_loose: BOOLEAN = True
+	is_loose: BOOLEAN
 			-- Does type depend on formal generic parameters and/or anchors?
+		do
+				-- True for anchored types by default.
+			Result := True
+		end
 
 	is_explicit: BOOLEAN
 		do
@@ -151,6 +158,12 @@ feature -- Status report
 			-- <Precursor>
 		do
 			Result := attached actual_type as a and then a.is_ephemeral
+		end
+
+	is_separate: BOOLEAN
+			-- Is current actual type a separate one?
+		do
+			Result := Precursor or else conformance_type.is_separate
 		end
 
 	is_none: BOOLEAN
@@ -204,13 +217,6 @@ feature -- Status report
 				-- We override the `type' set above since it is `actual_type'
 				-- and we want to see the anchor instead.
 			Result.set_type (Current)
-		end
-
-	is_computable_using_ancestors: BOOLEAN
-			-- <Precursor>
-		do
-				-- False here.
-				-- Should be redefined in `{LIKE_CURRENT}'.
 		end
 
 feature -- Access

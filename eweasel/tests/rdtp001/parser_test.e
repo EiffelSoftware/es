@@ -8,9 +8,12 @@ inherit
 	ARGUMENTS
 
 	KL_SHARED_EXECUTION_ENVIRONMENT
-	
+
 	ENCODING_CONVERTER
-	
+		rename
+			make as make_encoding
+		end
+
 	SHARED_ENCODING_CONVERTER
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -22,23 +25,33 @@ feature {NONE} -- Initialization
 
 	make is
 		do
-			set_encoding_converter (Current)
+			make_encoding
 			test_roundtrip := False
 
 			create {AST_NULL_FACTORY} factory
+			create parser.make_with_factory (factory)
+			parser.set_il_parser
 			execute
 
 			create {AST_ROUNDTRIP_LIGHT_FACTORY} factory
+			create parser.make_with_factory (factory)
+			parser.set_il_parser
 			execute
 
 			test_roundtrip_scanner := True
-			create light_factory
 			create {AST_ROUNDTRIP_SCANNER_FACTORY} factory
+			create scanner.make_with_factory (factory)
+			create light_factory
+			create parser.make_with_factory (light_factory)
+			parser.set_il_parser
 			execute
 			test_roundtrip_scanner := False
 
 			test_roundtrip := True
+			scanner := Void
 			create {AST_ROUNDTRIP_FACTORY} factory
+			create parser.make_with_factory (factory)
+			parser.set_il_parser
 			execute
 		end
 
@@ -60,8 +73,6 @@ feature {NONE} -- Implementation
 
 	test_parse (file_name: STRING) is
 		local
-			parser: STANDALONE_EIFFEL_PARSER
-			scanner: EIFFEL_ROUNDTRIP_SCANNER
 			file: KL_BINARY_INPUT_FILE
 			fault: KL_BINARY_OUTPUT_FILE
 			count: INTEGER
@@ -71,16 +82,7 @@ feature {NONE} -- Implementation
 			fn: STRING
 		do
 			if equal (file_name.substring (file_name.count - 1, file_name.count), ".e") then
-				if test_roundtrip_scanner then
-					create scanner.make_with_factory (factory)
-				end
-				if test_roundtrip_scanner then
-					create parser.make_with_factory (light_factory)
-				else
-					create parser.make_with_factory (factory)
-				end
 					-- Set for `IL' parsing since it accepts more classes.
-				parser.set_il_parser
 				create file.make (file_name)
 				count := file.count
 				file.open_read
@@ -95,13 +97,13 @@ feature {NONE} -- Implementation
 					elseif test_roundtrip or test_roundtrip_scanner then
 						if test_roundtrip then
 							output := generated_text (parser.root_node, parser.match_list)
-							res := file.last_string.is_equal (output)
+							res := compare_output (file.last_string, output)
 						else
 							res := True
 						end
 						if res and test_roundtrip_scanner then
 							output := generated_text (parser.root_node, scanner.match_list)
-							res := file.last_string.is_equal (output)
+							res := compare_output (file.last_string, output)
 						end
 						if not res then
 							create file_system
@@ -131,29 +133,32 @@ feature {NONE} -- Implementation
 			a_parser_not_void: a_parser /= Void
 			a_buffer_not_void: a_buffer /= Void
 		do
+			a_parser.error_handler.wipe_out
 				-- First we do it using the old conventions.
 			if a_scanner /= Void then
 				a_scanner.set_syntax_version ({EIFFEL_PARSER}.obsolete_64_syntax)
 				a_scanner.scan_string (a_buffer)
 			end
 			a_parser.set_syntax_version ({EIFFEL_PARSER}.obsolete_64_syntax)
-			a_parser.parse_from_string (a_buffer, Void)
+			a_parser.parse_class_from_string (a_buffer, Void, Void)
 			if a_parser.error_handler.has_error then
+				a_parser.error_handler.wipe_out
 					-- There was an error, let's try to see if the code is using transitional syntax.
 				if a_scanner /= Void then
 					a_scanner.set_syntax_version ({EIFFEL_PARSER}.transitional_64_syntax)
 					a_scanner.scan_string (a_buffer)
 				end
 				a_parser.set_syntax_version ({EIFFEL_PARSER}.transitional_64_syntax)
-				a_parser.parse_from_string (a_buffer, Void)
+				a_parser.parse_class_from_string (a_buffer, Void, Void)
 				if a_parser.error_handler.has_error then
+					a_parser.error_handler.wipe_out
 						-- Still an error, let's try to see if the code is already using `attribute'.
 					if a_scanner /= Void then
 						a_scanner.set_syntax_version ({EIFFEL_PARSER}.ecma_syntax)
 						a_scanner.scan_string (a_buffer)
 					end
 					a_parser.set_syntax_version ({EIFFEL_PARSER}.ecma_syntax)
-					a_parser.parse_from_string (a_buffer, Void)
+					a_parser.parse_class_from_string (a_buffer, Void, Void)
 				end
 			end
 		end
@@ -219,6 +224,19 @@ feature {NONE} -- Implementation
 
 feature {NONE}
 
+	compare_output (a_str_from_file, a_output: STRING): BOOLEAN
+			-- Compare the content from `a_str_from_file' with `a_output'
+			-- Convert `a_str_from_file' to UTF-8 before hand according to last parsing result.
+		require
+			a_str_from_file_not_void: a_str_from_file /= Void
+			a_output_not_void: a_output /= Void
+		local
+			l_s: STRING
+		do
+			l_s := encoding_converter.utf8_string (a_str_from_file, Void)
+			Result := l_s.is_equal (a_output)
+		end
+
 	error_count: INTEGER
 
 	test_roundtrip: BOOLEAN
@@ -230,49 +248,9 @@ feature {NONE}
 			-- Factory being used for parsing.
 
 	light_factory: AST_ROUNDTRIP_LIGHT_FACTORY
+
+	parser: STANDALONE_EIFFEL_PARSER
 	
-feature -- Encoding converter
+	scanner: EIFFEL_ROUNDTRIP_SCANNER
 
-	utf8_string (a_stream: STRING): STRING
-			-- Detect encoding of `a_stream' and convert it into utf8.
-			-- Detection is not 100% reliable. Use other conversion methods when
-			-- encodings are known.
-		do
-			Result := a_stream
-		end
-
-	utf32_string (a_stream: STRING): STRING_32
-			-- Detect encoding of `a_stream' and convert it into utf32.
-		do
-			Result := a_stream.as_string_32
-		end
-
-	localized_print (a_str: STRING_GENERAL)
-			-- Print `a_str' as localized encoding.
-			-- `a_str' is taken as a UTF-32 string.
-		do
-		end
-
-	localized_print_error (a_str: STRING_GENERAL)
-			-- Print an error, `a_str', as localized encoding.
-			-- `a_str' is taken as a UTF-32 string.
-		do
-		end
-
-	utf32_to_file_encoding (a_str: STRING_32): STRING
-			-- Convert utf32 to file encoding (utf8 as default)
-		do
-			Result := a_str.as_string_8
-		end
-
-	detected_encoding: detachable ANY
-			-- Detected encoding
-		do
-		end
-
-	detect_encoding (a_str: detachable STRING_GENERAL)
-			-- Detect encoding of `a_str'
-		do
-		end
-		
 end -- class PARSER_TEST

@@ -11,6 +11,7 @@
 	
 	<target name="init" once="true">
 		<set name="ec_version_string" value="6.6" />
+		<set name="ec_dev_version_string" value="6.7" />
 	</target>
 
 	<target name="check_setup" depend="init,header,check_tools,check_environment_variables,check_resources,check_dependencies">
@@ -112,13 +113,8 @@ Setup check complete and your configuration seems ok.
 		<exec executable="${EIFFEL_SRC}\C\shell\bin\sh.exe --version > NUL:" accept_errors="true" exit_code_variable="sh_in_runtime" 
 			unless="${sh_in_path}=0" />
 		<echo message="  -> sh found in runtime subfolders, exit code: $sh_in_runtime, ok" if="${sh_in_runtime}=0" />
-		<set name="sh_in_path" value="sh_in_runtime" if="${sh_in_runtime}" />
+		<set name="sh_in_path" value="$sh_in_runtime" if="${sh_in_runtime}" />
 		<unset name="sh_in_runtime" />
-		<exec executable="bash --version > NUL:" accept_errors="true" exit_code_variable="bash_in_path" 
-			unless="${sh_in_path}=0" />
-		<echo message="  -> bash found in runtime subfolders, exit code: $bash_in_path, ok" if="${bash_in_path}=0" />
-		<set name="sh_in_path" value="bash_in_path" if="${bash_in_path}" />
-		<unset name="bash_in_path" />
 
 		<echo message="===============================================================================" unless="${sh_in_path}=0" />
 		<echo message="ERROR: unable to find either sh, C\shell\bin\sh.exe, or bash in PATH, exit code: $sh_in_path." unless="${sh_in_path}=0" />
@@ -274,9 +270,13 @@ Setup check complete and your configuration seems ok.
 		<!-- 'ec' correct version -->
 		<exec executable="ec -version | grep -q '${ec_version_string}' > /dev/null" exit_code_variable="conf_ec_version" />
 		<echo message="  -> ec ${ec_version_string}, ok" if="$conf_ec_version=0" />
+
+		<exec executable="ec -version | grep -q '${ec_dev_version_string}' > /dev/null" exit_code_variable="conf_ec_version" unless="$conf_ec_version=0" />
+		<echo message="  -> ec ${ec_dev_version_string}, ok" if="$conf_ec_version=0" />
+
 		<echo message="===============================================================================" unless="$conf_ec_version=0" />
 		<echo message="ERROR: ec wrong version." unless="$conf_ec_version=0" />
-		<echo message="Please make sure that 'ec -version' shows '${ec_version_string}'." unless="$conf_ec_version=0" />
+		<echo message="Please make sure that 'ec -version' shows '${ec_version_string}' or '${ec_dev_version_string}' ." unless="$conf_ec_version=0" />
 		<echo message="===============================================================================" unless="$conf_ec_version=0" />
 		<set name="setup_error" value="" unless="$conf_ec_version=0" />
 	</target>
@@ -300,11 +300,14 @@ Setup check complete and your configuration seems ok.
 
 		<!-- 'ec' correct version -->
 		<exec executable="${find_bin} /C &quot;${ec_version_string}&quot; es_setup_check > NUL:" exit_code_variable="conf_ec_version" />
-		<delete file="es_setup_check" />
 		<echo message="  -> ec ${ec_version_string}, ok" if="$conf_ec_version=0" />
+
+		<exec executable="${find_bin} /C &quot;${ec_dev_version_string}&quot; es_setup_check > NUL:" exit_code_variable="conf_ec_version" unless="$conf_ec_version=0" />
+		<echo message="  -> ec ${ec_dev_version_string}, ok" if="$conf_ec_version=0" />
+		<delete file="es_setup_check" />
 		<echo message="===============================================================================" unless="$conf_ec_version=0" />
 		<echo message="ERROR: ec wrong version." unless="$conf_ec_version=0" />
-		<echo message="Please make sure that 'ec -version' shows '${ec_version_string}'." unless="$conf_ec_version=0" />
+		<echo message="Please make sure that 'ec -version' shows '${ec_version_string}' or '${ec_dev_version_string}' ." unless="$conf_ec_version=0" />
 		<echo message="===============================================================================" unless="$conf_ec_version=0" />
 		<set name="setup_error" value="" unless="$conf_ec_version=0" />
 	</target>

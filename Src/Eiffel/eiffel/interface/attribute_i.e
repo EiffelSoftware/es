@@ -334,7 +334,7 @@ feature -- Element Change
 				end
 				buffer.generate_function_signature (return_type_name,
 					internal_name, True, l_byte_context.header_buffer,
-					<<"Current">>, <<"EIF_REFERENCE">>)
+					<<{C_CONST}.current_name>>, <<"EIF_REFERENCE">>)
 				buffer.generate_block_open
 				buffer.put_new_line
 				if byte_context.workbench_mode then
@@ -347,7 +347,7 @@ feature -- Element Change
 				if is_initialization_required then
 					buffer.put_new_line
 					buffer.put_string ("if (!")
-					generate_attribute_access (class_type, buffer, "Current")
+					generate_attribute_access (class_type, buffer)
 					buffer.put_string (") {")
 					buffer.indent
 					if not result_type.is_attached then
@@ -363,10 +363,12 @@ feature -- Element Change
 					end
 					if has_body then
 						buffer.put_new_line
-						generate_attribute_access (class_type, buffer, "Current")
+						generate_attribute_access (class_type, buffer)
 						buffer.put_string (" = (")
 						buffer.put_string (internal_name)
-						buffer.put_string ("_body (Current))")
+						buffer.put_string ("_body (")
+						buffer.put_string ({C_CONST}.current_name)
+						buffer.put_two_character (')', ')')
 						if byte_context.workbench_mode then
 							buffer.put_character ('.')
 							result_type.c_type.generate_typed_field (buffer)
@@ -389,7 +391,7 @@ feature -- Element Change
 					buffer.put_string ("return ")
 				end
 
-				generate_attribute_access (class_type, buffer, "Current")
+				generate_attribute_access (class_type, buffer)
 				buffer.put_character (';')
 				buffer.put_new_line
 
@@ -405,9 +407,9 @@ feature -- Element Change
 			end
 		end
 
-	generate_attribute_access (class_type: CLASS_TYPE; buffer: GENERATION_BUFFER; cur: STRING)
+	generate_hidden_attribute_access, generate_attribute_access (class_type: CLASS_TYPE; buffer: GENERATION_BUFFER)
 			-- Generates attribute access.
-			-- [Redecalaration of a function into an attribute]
+			-- [Redeclaration of a function into an attribute]
 		local
 			result_type: TYPE_A
 			table_name: STRING
@@ -425,7 +427,7 @@ feature -- Element Change
 				-- already good.
 			end
 			buffer.put_character ('(')
-			buffer.put_string (cur);
+			byte_context.current_register.print_register
 			rout_id := rout_id_set.first
 			if byte_context.final_mode then
 				array_index := Eiffel_table.is_polymorphic (rout_id, class_type.type, class_type, False)
@@ -436,9 +438,9 @@ feature -- Element Change
 						-- table [Actual_offset - base_offset]
 					buffer.put_three_character (' ', '+', ' ')
 					buffer.put_string (table_name)
-					buffer.put_string ("[Dtype(")
-					buffer.put_string (cur)
-					buffer.put_four_character (')', ' ', '-', ' ')
+					buffer.put_character ('[')
+					byte_context.generate_current_dtype
+					buffer.put_three_character (' ', '-', ' ')
 					buffer.put_integer (array_index)
 					buffer.put_character (']')
 						-- Mark attribute offset table used.
@@ -461,17 +463,17 @@ feature -- Element Change
 				buffer.put_class_id (rout_info.origin)
 				buffer.put_character (',')
 				buffer.put_integer (rout_info.offset)
-				buffer.put_string (", Dtype(")
-				buffer.put_string (cur)
-				buffer.put_two_character (')', ')')
+				buffer.put_two_character (',', ' ')
+				byte_context.generate_current_dtype
+				buffer.put_character (')')
 			else
 				buffer.put_string (" + RTWA(")
 				buffer.put_static_type_id (class_type.static_type_id)
 				buffer.put_character (',')
 				buffer.put_integer (feature_id)
-				buffer.put_string (", Dtype(")
-				buffer.put_string (cur)
-				buffer.put_two_character (')', ')')
+				buffer.put_two_character (',', ' ')
+				byte_context.generate_current_dtype
+				buffer.put_character (')')
 			end;
 			buffer.put_character(')')
 		end

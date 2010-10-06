@@ -54,6 +54,7 @@
 #include "eif_rout_obj.h"
 #include "eif_option.h"
 #include "eif_bits.h"
+#include "eif_separate.h"
 
 #ifdef WORKBENCH
 #include "eif_wbench.h"
@@ -1341,6 +1342,56 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTSA(x)		opt = eoption + x
 #endif
 
+ /*
+ * Macros for SCOOP 
+ *
+ * -- Run-time Setup
+ *
+ * RTSCPINIT - SCOOP Runtime Initialization, called prior to root creation
+ * RTSCPWTPR - Wait for SCOOP Processor Redundancy, called after root creation so that the system only completes when all processors have exited.
+ *
+ * -- Separate Object Initialization
+ *
+ * RTSCPAFPID (sep_obj) - Assign a free processor id to the client-side emalloc'd separate object
+ * RTSCPSPAL (sep_obj) - Start processor application loop, notify debugger that launched thread is a SCOOP processor.
+ *
+ * -- GC Processor Handling
+ *
+ * RTSCPFPID (pid) - Free processor id pid for reuse, called by GC after full collect to reclaim processor resources as zero objects reference pid in their object headers. Notify debugger that thread is no longer being used as a SCOOP processor.
+ *
+ * -- Request Chain Handling
+ *
+ * RTSCPSSRC - Signal start of request chain for `Current'
+ * RTSCPASPRC (sep_obj) - Assign supplier processor to request chain of `Current'
+ * RTSCPWRCSPL - Wait for supplier processor request chain nodes to be initialized prior to logging.
+ * RTSCPSERC - Signify end of request chain for `Current'
+ *
+ * -- Request Chain Node Logging
+ *
+ * RTSCPAPRC(sep_obj, predicate, arg_tuple, result) - Add predicate to request chain of `Current', wait for result.
+ * RTSCPACRC(sep_obj, command, arg_tuple) - Add command to request chain of `Current'
+ * RTSCPAQRC(sep_obj, query, arg_tuple, result) - Add query to request chain of `Current', wait for result.
+ *
+*/ 
+
+#define RTSCPINIT
+#define RTSCPWTPR
+
+#define RTSCPAFPID(sep_obj)
+#define RTSCPSPAL(sep_obj)
+
+#define RTSCPFPID(pid)
+#define RTSCPSSRC
+#define RTSCPASPRC(sep_obj)
+#define RTSCPWRCSPL
+#define RTSCPSERC
+
+#define RTSCPAPRC(sep_obj,predicate,arg_tuple,result)
+#define RTSCPACRC(sep_obj,command,arg_tuple) 
+#define RTSCPAQRC(sep_obj,query,arg_tuple,result) 
+
+
+
 /* Macros used for the capture replay mechanism.
  *
  * RTCRI          1 if current thread is inside of the captured boundary, 0 otherwise.
@@ -1362,8 +1413,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  *
  * RTCRMCPY(d,ds,s,c)   memcpy
  * RTCRMMV(d,ds,s,c)    memmove
- * RTCRMSET(d,ds,v,c)   memset
- * RTCRMCMP(d,s,c)   memcmp
+ * RTCRMSET(d,ds,v,c)   memset * RTCRMCMP(d,s,c)   memcmp
  * RTCRMMAL(c)       malloc
  * RTCRMCAL(n,c)     calloc
  * RTCRMRAL(s,c)     realloc
@@ -1371,6 +1421,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  *                Wrapper for memory routines defined in POINTER_REF
  *
  */
+
 
 #define RTCRD { int i; for (i=0;i<cr_call_depth;i++) fprintf(stderr," "); }
 
@@ -1580,8 +1631,8 @@ RT_LNK void eif_exit_eiffel_code(void);
  * This is done by RTLT
  *
  */
-#define RTTR(x,y,z)	start_trace(x,y,z)					/* Print message "entering..." */
-#define RTXT(x,y,z)	stop_trace(x,y,z)					/* Print message "leaving..." */
+#define RTTR(x,y,z,w)	start_trace(x,y,z,w)			/* Print message "entering..." */
+#define RTXT(x,y,z,w)	stop_trace(x,y,z,w)				/* Print message "leaving..." */
 #define RTPR(x,y,z)	start_profile(x,y,z)				/* Start measurement of feature */
 #define RTXP		stop_profile()						/* Stop measurement of feature */
 #define RTLT		int EIF_VOLATILE current_call_level	/* Declare local trave variable */

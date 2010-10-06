@@ -84,7 +84,7 @@ feature -- Command
 			l_file_system: EQA_FILE_SYSTEM
 			l_arguments: like arguments
 		do
-			l_execute_cmd := a_test.environment.get_attached ({EQA_EW_PREDEFINED_VARIABLES}.Execute_command_name, a_test)
+			l_execute_cmd := a_test.environment.get_attached ({EQA_EW_PREDEFINED_VARIABLES}.Execute_command_name, a_test.asserter)
 			l_execute_cmd := a_test.environment.substitute (l_execute_cmd)
 			l_file_system := a_test.file_system
 			l_exec_error := l_file_system.executable_file_exists (l_execute_cmd)

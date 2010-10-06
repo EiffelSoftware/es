@@ -13,7 +13,7 @@ inherit
 		redefine
 			status,
 			send_no_breakpoints,
-			send_breakpoints_for_stepping,
+			send_execution_information,
 			is_valid_and_known_object_address,
 			update_critical_stack_depth,
 			can_not_launch_system_message,
@@ -267,13 +267,11 @@ feature -- Remote access to RT_
 
 feature {NONE} -- Breakpoints implementation
 
-	send_breakpoints_for_stepping (a_execution_mode: INTEGER; ign_bp: BOOLEAN)
-			-- Send breakpoints for step operation
-			-- called by `send_breakpoints'
-			-- DO NOT CALL DIRECTLY
+	send_execution_information (a_execution_mode: INTEGER; ign_bp: BOOLEAN)
+			-- <Precursor/>
 		do
 			Precursor (a_execution_mode, ign_bp)
-			ewb_request.send_breakpoints_for_stepping (Current, a_execution_mode)
+			ewb_request.send_execution_information (Current, a_execution_mode)
 		end
 
 	send_no_breakpoints
@@ -345,7 +343,7 @@ feature {NONE} -- Assertion change Implementation
 
 feature {NONE} -- Assertion violation processing		
 
-	impl_ignore_current_assertion_violation (a_boolean: BOOLEAN) 
+	impl_ignore_current_assertion_violation (a_boolean: BOOLEAN)
 			-- <Precursor>
 		do
 			ewb_request.send_rqst_1 (Rqst_ignore_assertion_violation, a_boolean.to_integer)
@@ -453,7 +451,7 @@ feature -- Query
 			l_res: ABSTRACT_DEBUG_VALUE
 			lst: DEBUG_VALUE_LIST
 		do
-			l_info := a_cl.object_relative_once_info (a_feat.rout_id_set.first)
+			l_info := a_cl.object_relative_once_info_of_rout_id_set (a_feat.rout_id_set)
 			lst := debugger_manager.object_manager.attributes_at_address (a_addr, 0, 0)
 			dv := lst.named_value (l_info.called_attribute_i.feature_name)
 			if

@@ -109,6 +109,12 @@ rt_private FILE *melted_file;
 		enomem();	\
 	}
 
+#define SAFE_EIF_MALLOC(v, type, count) {\
+	v = (type *) eif_malloc((count) * sizeof(type)); \
+	if (v == NULL) \
+		enomem(); \
+	}
+
 rt_public void update(char ignore_updt, char *argv0)
 {
 	/* Update internal structures before execution */
@@ -448,16 +454,16 @@ rt_private void root_class_updt (void)
 
 	l_rcount = wint32();
 	if (l_rcount > egc_rcount) {
-		free (egc_rlist);
-		free (egc_rcorigin);
-		free (egc_rcdt);
-		free (egc_rcoffset);
-		free (egc_rcarg);
-		SAFE_ALLOC (egc_rlist, char*, l_rcount);
-		SAFE_ALLOC (egc_rcorigin, int32, l_rcount);
-		SAFE_ALLOC (egc_rcdt, int32, l_rcount);
-		SAFE_ALLOC (egc_rcoffset, int32, l_rcount);
-		SAFE_ALLOC (egc_rcarg, int32, l_rcount);
+		eif_free (egc_rlist);
+		eif_free (egc_rcorigin);
+		eif_free (egc_rcdt);
+		eif_free (egc_rcoffset);
+		eif_free (egc_rcarg);
+		SAFE_EIF_MALLOC (egc_rlist, char*, l_rcount);
+		SAFE_EIF_MALLOC (egc_rcorigin, int32, l_rcount);
+		SAFE_EIF_MALLOC (egc_rcdt, int32, l_rcount);
+		SAFE_EIF_MALLOC (egc_rcoffset, int32, l_rcount);
+		SAFE_EIF_MALLOC (egc_rcarg, int32, l_rcount);
 	}
 	egc_rcount = l_rcount;
 	for (i = 0; i < egc_rcount; i++) {

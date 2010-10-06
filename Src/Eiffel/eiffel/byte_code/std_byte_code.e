@@ -100,6 +100,13 @@ feature -- Analyzis
 			end
 			l_context.set_assertion_type (0)
 
+				--| Check if this is a object relative once, since the generated code is using dtype more than once
+				--| See ONCE_BYTE_CODE.generate_once_prologue and generate_once_epilogue
+			if is_object_relative_once then
+				context.add_dt_current
+				context.add_dt_current
+			end
+
 				-- Local variables should be recorded because their types
 				-- are used to evaluate types of object test locals.
 			setup_local_variables (False)
@@ -118,6 +125,7 @@ feature -- Analyzis
 
 				-- Check if we need GC hooks for current body.
 			l_context.compute_need_gc_hooks (keep_assertions)
+
 
 				-- Analyze arguments
 			analyze_arguments
@@ -206,9 +214,12 @@ feature -- Analyzis
 				l_context.mark_current_used
 			end
 			if trace_enabled then
-					-- For RTTR and RTXT
+					-- For RTTR
 				l_context.add_dt_current
+				l_context.add_dftype_current
+					-- For RTXT
 				l_context.add_dt_current
+				l_context.add_dftype_current
 			end
 			if profile_enabled then
 					-- For RTPR and RTXP
@@ -472,6 +483,12 @@ feature -- Analyzis
 				-- Capture/Replay feature exit hook
 			if l_inside or attached {ONCE_BYTE_CODE} Current then
 				generate_capture_replay_return (l_inside)
+			end
+
+				-- TODO: should this be before or after the capture/replay exit hook? (Arno: 10/06/2010)
+			if context.has_request_chain then
+				buf.put_new_line
+				buf.put_string ("RTS_RD (Current);")
 			end
 
 			if compound = Void or else not compound.last.last_all_in_result then
@@ -902,15 +919,9 @@ end
 				-- Generate temporary locals under the control of the GC
 			context.generate_temporary_ref_variables
 
-			if is_object_relative_once then
-					-- We need at least twice the dtype
-				context.add_dt_current
-				context.add_dt_current
-			end
-
 				-- Result is declared only if needed. For onces, it is
 				-- accessed via a key allowing us to have them per thread.
-			if (not result_type.is_void) and then (wkb_mode or else context.result_used) then
+			if (not result_type.is_void) and then (wkb_mode or else context.result_used or else is_object_relative_once) then
 				generate_result_declaration (has_rescue and then not wkb_mode)
 			end
 
@@ -1061,7 +1072,33 @@ end
 			inh_assert		: INHERITED_ASSERTION
 			buf				: GENERATION_BUFFER
 			keep_assertions: BOOLEAN
+			i: like arguments.count
 		do
+			buf := buffer
+			if attached arguments as a then
+				from
+					i := a.count
+				until
+					i <= 0
+				loop
+					if real_type (a [i]).is_separate then
+						if not context.has_request_chain then
+							context.set_has_request_chain (True)
+							buf.put_new_line
+							buf.put_string ("RTS_RC (Current);")
+						end
+						buf.put_new_line
+						buf.put_string ("RTS_RS (Current, arg")
+						buf.put_integer (i)
+						buf.put_two_character (')', ';')
+					end
+					i := i - 1
+				end
+				if context.has_request_chain then
+					buf.put_new_line
+					buf.put_string ("RTS_RW (Current);")
+				end
+			end
 			context.set_assertion_type (In_precondition)
 			workbench_mode := context.workbench_mode
 			keep_assertions := workbench_mode or else context.system.keep_assertions
@@ -1072,7 +1109,6 @@ end
 				end
 				generate_invariant_before
 				if have_assert then
-					buf := buffer
 					buf.put_new_line
 					buf.put_string ("if ((RTAL & CK_REQUIRE) || RTAC) {")
 					buf.indent
@@ -1495,7 +1531,7 @@ end
 			-- Generate the "start of profile" macro
 		do
 			if profile_enabled then
-				generate_option_macro ("RTPR")
+				generate_option_macro ("RTPR", False)
 			end
 		end
 
@@ -1515,7 +1551,7 @@ end
 			-- Generate the "start of trace" macro
 		do
 			if trace_enabled then
-				generate_option_macro ("RTTR")
+				generate_option_macro ("RTTR", True)
 			end
 		end
 
@@ -1523,13 +1559,13 @@ end
 			-- Generate the "end of trace" macro
 		do
 			if trace_enabled then
-				generate_option_macro ("RTXT")
+				generate_option_macro ("RTXT", True)
 			end
 		end
 
-	generate_option_macro (macro_name: STRING)
+	generate_option_macro (macro_name: STRING; has_dftype: BOOLEAN)
 			-- Generate an option macro call will the feature name, the feature origin
-			-- and the "dynamic type" of `Current' as arguments
+			-- and the "dynamic type" of `Current' as arguments and its full dynamic type if requested.
 		require
 			dtype_added: context.dt_current > 1
 		local
@@ -1543,7 +1579,11 @@ end
 			buf.put_string ({C_CONST}.comma_space)
 			feature_origin (buf)
 			buf.put_string ({C_CONST}.comma_space)
-			buf.put_string (" dtype")
+			buf.put_string ({C_CONST}.dtype_name)
+			if has_dftype then
+				buf.put_string ({C_CONST}.comma_space)
+				buf.put_string ({C_CONST}.dftype_name)
+			end
 			buf.put_two_character (')', ';')
 		end
 

@@ -78,8 +78,12 @@ feature -- Status report
 		do
 			cl_id := associated_class_id
 			if eiffel_system.valid_class_id (cl_id) and then eiffel_system.class_of_id (cl_id) /= Void then
-				cl_id := written_in
-				Result := eiffel_system.valid_class_id (cl_id) and then eiffel_system.class_of_id (cl_id) /= Void
+				if cl_id /= written_in then
+					cl_id := written_in
+					Result := eiffel_system.valid_class_id (cl_id) and then eiffel_system.class_of_id (cl_id) /= Void
+				else
+					Result := True
+				end
 			end
 		end
 
@@ -538,7 +542,7 @@ feature -- Access
 				then
 					class_text := class_text.substring
 								(start_position, end_position);
-					a_text_formatter.add_feature (Current, class_text)
+					a_text_formatter.add_feature (Current, encoding_converter.utf8_to_utf32 (class_text))
 				end;
 				a_text_formatter.add_new_line;
 			else

@@ -219,9 +219,64 @@
 		<geant target="_log" arguments="--------------------------------------------------" />
 	</target>
 
+	<target name="copy_ise_eiffel_to_delivery" depend="init_deliv" >
+		<!-- copy executable from ISE_EIFFEL, to avoid recompiling everything -->
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},ec${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},ecb${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},emake${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},estudio${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},finish_freezing${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},h2e${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},quick_finalize${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/esbuilder/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR},esbuilder${exe}" />
+
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,geant${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gec${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gelex${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gelint${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gepp${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,getest${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gexace${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,gexslt${exe}" />
+		<geant target="copy_exec_file_if_missing" arguments="${ISE_EIFFEL}/library/gobo/spec/${ISE_PLATFORM}/bin,${_BINARY_DIR}/gobo,geyacc${exe}" />
+
+		<mkdir directory="${_BINARY_DIR}/wizards" />
+		<echo to_file="${_BINARY_DIR}/wizards_compiled" message="compiled" />
+		<mkdir directory="${_BINARY_DIR}/gobo" />
+	</target>
+
+	<target name="quick_delivery" depend="init_deliv" >
+		<!-- copy executable from ISE_EIFFEL, remove ec and ecb, and make delivery -->
+		<geant target="copy_ise_eiffel_to_delivery" />
+		<geant target="safe_delete" arguments="${_BINARY_DIR},ecb${exe}" />
+		<geant target="safe_delete" arguments="${_BINARY_DIR},ec${exe}" />
+		<geant target="build_delivery" />
+	</target>
+
+	<target name="quick_eweasel_delivery" depend="init_deliv" >
+		<!-- copy executable from ISE_EIFFEL, remove ec and ecb, and make delivery -->
+		<geant target="copy_ise_eiffel_to_delivery" />
+		<geant target="safe_delete" arguments="${_BINARY_DIR},ecb${exe}" />
+		<available resource="${_BINARY_DIR}${path_separator}ec${exe}" variable="tmp_ec_available"/>
+		<echo to_file="${_BINARY_DIR}${path_separator}ec${exe}" message="ignore for eweasel" unless="$tmp_rt_available=true" />
+		<geant target="build_binaries" />
+		<geant target="install_eweasel" />
+	</target>
+
 	<target name="build_delivery" depend="init_deliv" >
 		<!-- Main target to build the whole delivery -->
 		<geant target="_log" arguments="Building EiffelStudio Delivery ..." />
+		<!-- prepare binaries, and others -->
+		<geant target="build_binaries" 		/>
+		<!-- Build target delivery, 
+			and install compiled binaries -->
+		<geant target="install_delivery"		/>
+		<geant target="_log" arguments="[build_delivery] is completed" />
+	</target>
+
+	<target name="build_binaries" depend="init_deliv" >
+		<!-- prepare main target to build the whole delivery -->
+		<geant target="_log" arguments="Building EiffelStudio Binaries ..." />
 
 		<geant target="_print_parameters" />
 
@@ -232,11 +287,7 @@
 		<!-- Compile binaries, and others -->
 		<geant target="make_binaries" 			/>
 
-		<!-- Build target delivery, 
-			and install compiled binaries -->
-		<geant target="install_delivery"		/>
-
-		<geant target="_log" arguments="[build_delivery] is completed" />
+		<geant target="_log" arguments="[build_binaries] is completed" />
 	</target>
 
 	<target name="install_delivery" depend="init_deliv" >
@@ -264,11 +315,15 @@
 		<geant target="copy_full_tree" arguments="$_TARGET_DELIV_DIR/studio/config/windows,$_TARGET_DELIV_DIR/studio/config/$ISE_PLATFORM" if="${ISE_PLATFORM}=win64" />
 
 		<setenv name="EWEASEL" value="$EIFFEL_SRC${path_separator}..${path_separator}eweasel" />
-		<exec executable="move ec${exe} ecg${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" />
-		<exec executable="copy ecb${exe} ec${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" />
+		<exec executable="move ec${exe} ecg${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" if="$is_windows" />
+		<exec executable="mv ec${exe} ecg${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" unless="$is_windows" />
+
+		<exec executable="copy ecb${exe} ec${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" if="$is_windows" />
+		<exec executable="cp ecb${exe} ec${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" unless="$is_windows" />
+
 		<replace file="$EWEASEL/compilation/install_eweasel.bat" token="gvim.exe" replace="gvim.bat" flags="g" if="$is_windows" />
 		<exec executable="install_eweasel.bat" dir="$EWEASEL/compilation" 
-			accept_errors="true" exit_code_variable="no_return_code" />
+			accept_errors="true" exit_code_variable="no_return_code" if="$is_windows"/>
 		<global name="_TARGET_DELIV_DIR" value="${old_TARGET_DELIV_DIR}" />
 	</target>
 

@@ -691,13 +691,6 @@ feature -- Properties
 			Result := not is_loose
 		end
 
-	is_computable_using_ancestors: BOOLEAN
-			-- Can type be computed using the type information of ancestor classes only?
-			-- (If yes, the type can be solved immediately if ancestor classes are processed already.)
-		do
-			Result := True
-		end
-
 feature -- Comparison
 
 	frozen is_safe_equivalent (other: TYPE_A): BOOLEAN
@@ -766,6 +759,12 @@ feature -- Comparison
 			other_attached: attached other
 		do
 			Result := same_as (other)
+		end
+
+	is_processor_attachable_to (other: TYPE_A): BOOLEAN
+			-- May processor of current type be used as a processor of type `other'?
+		do
+			Result := is_separate implies other.is_separate
 		end
 
 feature -- Access
@@ -877,8 +876,8 @@ feature -- Attachment properties
 			end
 		ensure
 			result_attached: Result /= Void
-			result_is_attached: c.lace_class.is_void_safe_conformance implies Result.is_attached
-			result_is_implicitly_attached: Result.is_attached or else Result.is_implicitly_attached
+			result_is_attached: not is_none implies (c.lace_class.is_void_safe_conformance implies Result.is_attached)
+			result_is_implicitly_attached: not is_none implies (Result.is_attached or else Result.is_implicitly_attached)
 		end
 
 	as_implicitly_detachable: like Current
@@ -903,6 +902,14 @@ feature -- Attachment properties
 			as_attachment_mark_free_not_void: Result /= Void
 		end
 
+	as_marks_free: like Current
+			-- Same as Current but without any attachment and separate marks
+		do
+			Result := Current
+		ensure
+			as_marks_free_attached: attached Result
+		end
+
 	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current
 			-- Current type to which attachment status of `other' is applied
 		require
@@ -916,6 +923,16 @@ feature -- Attachment properties
 	to_other_immediate_attachment (other: ATTACHABLE_TYPE_A): like Current
 			-- Current type to which attachment status of `other' is applied
 			-- without taking into consideration attachment status of an anchor (if any)
+		require
+			other_attached: other /= Void
+		do
+			Result := Current
+		ensure
+			result_attached: Result /= Void
+		end
+
+	to_other_separateness (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which separateness status of `other' is applied
 		require
 			other_attached: other /= Void
 		do
@@ -1529,6 +1546,11 @@ feature {NONE} -- Implementation
 			constraint_info.set_type (gen_type)
 			constraint_info.set_actual_type_set (l_current_type_set)
 			constraint_info.set_formal_number (position)
+				-- This is necessary to instantiate the constraint in the context of `gen_type'
+				-- as the constraint may involve some formal generic parameters that do not exist
+				-- in the context of the class which triggerred the error.
+				-- This fixes eweasel test#valid266.
+			l_constraint_type_set := l_constraint_type_set.instantiated_in (gen_type)
 			constraint_info.set_constraint_types (l_constraint_type_set)
 			constraint_info.set_unmatched_creation_constraints (a_unmatched_creation_constraints)
 			constraint_error_list.extend (constraint_info)

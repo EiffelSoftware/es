@@ -374,6 +374,15 @@ feature -- C generation
 		do
 		end
 
+	generate_address_on (r: REGISTRABLE)
+			-- Generate address of a function that can be used to make a separate call
+			-- assuming that `r' contains a target of a call.
+		require
+			r_attached: attached r
+		do
+			buffer.put_string ("(void *) 0 /* Not implemented */")
+		end
+
 	generate_access
 			-- Generation of the C code for access
 		do
@@ -388,6 +397,133 @@ feature -- C generation
 		do
 			if parameters /= Void then
 				parameters.generate
+			end
+		end
+
+	generate_call (s: detachable REGISTER; is_exactly_separate: BOOLEAN; r: detachable REGISTRABLE; t: REGISTRABLE)
+			-- Generate a call on target register `t' using register `s' to pass arguments
+			-- if the call may be separate (it cannot be non-separate if `is_exactly_separate' is 'True')
+			-- and storing result (if any) in `r'.
+		require
+			t_attached: attached t
+			is_exactly_separate_consistent: is_exactly_separate implies attached s
+		local
+			buf: GENERATION_BUFFER
+			p: like parameters
+			n: like parameters.count
+			a: PARAMETER_B
+		do
+			buf := buffer
+			if attached s then
+					-- Generate a call on a separate target as follows:
+					--    if (EIF_IS_DIFFERENT_PROCESSOR (Current, target)) {
+					--        ... // Prepare arguments to pass in args.
+					--        RTS_CF (Current, target, feature_address, args, result);
+					--    } else {
+					--        ... // Make non-separate call.
+					--    }
+				if not is_exactly_separate then
+						-- The call may be non-separate, this is determined at tun-time.
+					buf.put_new_line
+					buf.put_string ("if (EIF_IS_DIFFERENT_PROCESSOR (Current, ")
+					t.print_register
+					buf.put_four_character (')', ')', ' ', '{')
+					buf.indent
+				end
+					-- Allocate a container to pass arguments to a scheduler.
+				buf.put_new_line
+				buf.put_string ("RTS_AC (")
+					-- Calculate the number of arguments to be passed.
+				p := parameters
+				if attached p then
+					n := p.count
+				end
+				buf.put_integer (n)
+				buf.put_two_character (',', ' ')
+				t.print_register
+				buf.put_two_character (',', ' ')
+				s.print_register
+				buf.put_two_character (')', ';')
+				if attached p then
+						-- Register arguments to be passed to the scheduler in the allocated container.
+					from
+					until
+						n <= 0
+					loop
+						buf.put_new_line
+						buf.put_string ("RTS_AA (")
+						a := p [n]
+						a.print_register
+						buf.put_two_character (',', ' ')
+						a.c_type.generate_typed_field (buf)
+						buf.put_two_character (',', ' ')
+						a.c_type.generate_sk_value (buf)
+						buf.put_two_character (',', ' ')
+						buf.put_integer (n)
+						buf.put_two_character (',', ' ')
+						s.print_register
+						buf.put_two_character (')', ';')
+						n := n - 1
+					end
+				end
+					-- Register a call in a scheduler.
+				buf.put_new_line
+				if attached r then
+						-- Call to a function.
+					buf.put_string ("RTS_CF (Current, ")
+				else
+						-- Call to a procedure.
+					buf.put_string ("RTS_CP (Current, ")
+				end
+				t.print_register
+				buf.put_two_character (',', ' ')
+				generate_address_on (t)
+				buf.put_two_character (',', ' ')
+				s.print_register
+				if attached r then
+						-- Add result of call.
+					buf.put_two_character (',', ' ')
+					r.print_register
+				end
+				buf.put_two_character (')', ';')
+				if not is_exactly_separate then
+						-- The call may be non-separate.
+					buf.exdent
+					buf.put_new_line
+					buf.put_string ("} else {")
+					buf.indent
+				end
+			end
+			if not is_exactly_separate then
+					-- The call may be non-separate.
+					-- Now if there is a result for the call and the result
+					-- has to be stored in a real register, do generate the
+					-- assignment.
+				buf.put_new_line
+				if not attached r then
+						-- Call to a procedure.
+					generate_on (t)
+				elseif not attached {AGENT_CALL_B} Current then
+						-- Call to a simple function.
+					r.print_register
+					buf.put_three_character (' ', '=', ' ')
+					generate_on (t)
+				else
+						-- Call to an agent function.
+					generate_on (t)
+					buf.put_character (';')
+					buf.put_new_line
+					r.print_register
+					buf.put_string (" = ")
+					register.print_register
+				end
+				buf.put_character (';')
+				if attached s then
+						-- Close else part of a separate conditional.
+					buf.exdent
+					buf.put_new_line
+					buf.put_character ('}')
+				end
 			end
 		end
 
@@ -552,7 +688,7 @@ feature -- Inlining
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -565,22 +701,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -27,13 +27,12 @@ create
 
 feature -- Scann
 
-	scan_file (a_file: KI_CHARACTER_INPUT_STREAM)
+	scan_file (a_file: KL_BINARY_INPUT_FILE)
 			-- Scan `a_file'.
 		require
 			a_file_not_void: a_file /= Void
 		do
-			File_buffer.set_file (a_file)
-			input_buffer := File_buffer
+			input_buffer := encoding_converter.input_buffer_from_file (a_file, Void)
 			yy_load_input_buffer
 			filename := a_file.name
 			scan
@@ -85,11 +84,22 @@ feature -- Scann
 			end
 		end
 
-feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Scann
-
 	scan_string (a_string: STRING)
 			-- Scan `a_string'.
-			-- `a_string' is UTF-8 string.
+			-- Encoding is detected according to BOM.
+			-- Otherwise defaults to ASCII.
+		require
+			a_string_not_void: a_string /= Void
+		do
+			input_buffer := encoding_converter.input_buffer_from_string (a_string, Void)
+			yy_load_input_buffer
+			scan
+		ensure
+			match_list_set: not has_syntax_error implies match_list /= Void
+		end
+
+	scan_utf8_string (a_string: STRING_8)
+			-- Scan `a_string' in UTF-8.
 		require
 			a_string_not_void: a_string /= Void
 		do

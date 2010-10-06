@@ -579,6 +579,7 @@ rt_private void interpret(int flag, int where)
 	int volatile current_trace_level = 0;	/* Saved call level for trace, only needed when routine is retried */
 	char ** volatile saved_prof_top = NULL;	/* Saved top of `prof_stack' */
 	long volatile once_key = 0;				/* Index in once table */
+	uint32 volatile once_end_break_index = 0;				/* Index in once table */
 	int  volatile is_once = 0;				/* Is it a once routine? */
 	int  volatile is_process_or_thread_relative_once = 0;	/* Is it a process or thread relative once routine? */
 	int  volatile is_object_relative_once = 0;				/* Is it a object relative once routine? */
@@ -605,6 +606,7 @@ rt_private void interpret(int flag, int where)
 		is_once  = 1;
 		is_process_or_thread_relative_once = 1;
 		once_key = get_int32(&IC);
+		once_end_break_index = get_uint32(&IC);
 		break;
 #ifdef EIF_THREADS
 	case ONCE_MARK_PROCESS_RELATIVE:
@@ -612,6 +614,7 @@ rt_private void interpret(int flag, int where)
 		is_process_or_thread_relative_once = 1;
 		is_process_once = 1;
 		once_key = get_int32(&IC);
+		once_end_break_index = get_uint32(&IC);
 		break;
 #endif
 	case ONCE_MARK_OBJECT_RELATIVE:
@@ -628,7 +631,7 @@ rt_private void interpret(int flag, int where)
 			once_p_obj_info.except = get_feature_id(&IC);
 			once_p_obj_info.result = get_feature_id(&IC);
 		}
-		once_p_obj_info.result_type = get_type_id(&IC);
+		once_end_break_index = get_uint32(&IC);
 		break;
 	case ONCE_MARK_ATTRIBUTE:
 		create_result = 0;
@@ -1440,7 +1443,15 @@ rt_private void interpret(int flag, int where)
 					*(OResult->result.EIF_REFERENCE_result) = last->it_ref;
 					break;
 				}
+			} else if (is_object_relative_once) {
+				if (once_p_obj_info.is_precompiled) {
+					offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.result, icur_dtype);
+				} else {
+					offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.result, icur_dtype);
+				}
+				put_once_per_object_result (icurrent, offset, rtype, iresult);
 			}
+			
 		}
 		break;
 
@@ -3817,6 +3828,9 @@ enter_body:
 
 			/* Check if once routine was executed earlier. */
 		if (was_executed) {
+
+			dstop(dtop()->dc_exec,once_end_break_index);	/* Debugger hook , dtop->dc_exec returns the current execution vector */
+
 				/* Yes, it was executed.      */
 			if (is_process_or_thread_relative_once) {
 #ifdef EIF_THREADS
@@ -3936,7 +3950,9 @@ enter_body:
 			EIF_REFERENCE except_ref = NULL;
 				/* Yes, it was executed.      */
 
-				/* Ckeck if it failed or not. */
+			dstop(dtop()->dc_exec,once_end_break_index);	/* Debugger hook , dtop->dc_exec returns the current execution vector */
+
+				/* Check if it failed or not. */
 			if (once_p_obj_info.is_precompiled) {
 				offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
 			} else {
@@ -3948,7 +3964,7 @@ enter_body:
 			}
 
 			if (once_p_obj_info.result > 0) {
-				/* if has returning value, retrieve once result. */
+					/* if has returning value, retrieve once result. */
 				if (once_p_obj_info.is_precompiled) {
 					offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.result, icur_dtype);
 				} else {
@@ -3975,22 +3991,6 @@ enter_body:
 				/* Declare variables for exception handling. */
 			struct ex_vect * exvecto;
 
-				/* Mark once routine as executed. */
-			if (once_p_obj_info.is_precompiled) {
-				offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.called, icur_dtype);
-			} else {
-				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.called, icur_dtype);
-			}
-			*(EIF_BOOLEAN *)(icurrent->it_ref + offset) = EIF_TRUE;
-
-				/* Init exception storage */
-			if (once_p_obj_info.is_precompiled) {
-				offset = RTWPA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
-			} else {
-				offset = RTWA(once_p_obj_info.class_id, once_p_obj_info.except, icur_dtype);
-			}
-			*(EIF_REFERENCE *)(icurrent->it_ref + offset) = (EIF_REFERENCE)0;
-			
 				/* Record execution vector to catch exception. */
 			exvecto = extre ();
 				/* Set catch address. */
@@ -6018,10 +6018,13 @@ rt_private void put_once_per_object_result (EIF_TYPED_VALUE *curr, long offset, 
 	case SK_REAL32:  *(EIF_REAL_32*)(curr->it_ref + offset) = ptr->it_real32; break;
 	case SK_REAL64:  *(EIF_REAL_64*)(curr->it_ref + offset) = ptr->it_real64; break;
 	case SK_POINTER: *(EIF_POINTER*)(curr->it_ref + offset) = ptr->it_ptr;    break;
-	case SK_BIT:
 	case SK_EXP:
+		eif_std_ref_copy(ptr->it_ref, curr->it_ref + offset);
+		break;
+	case SK_BIT:
 	case SK_REF:
-					 *(EIF_REFERENCE*)(curr->it_ref + offset) = ptr->it_ptr;    break;
+		 *(EIF_REFERENCE*)(curr->it_ref + offset) = ptr->it_ref;    
+		 break;
 	}
 }
 
@@ -6045,8 +6048,10 @@ rt_private void get_once_per_object_result (EIF_TYPED_VALUE *curr, long offset, 
 	case SK_REAL32:  ptr->it_real32 = *(EIF_REAL_32*)(curr->it_ref + offset); ; break;
 	case SK_REAL64:  ptr->it_real64 = *(EIF_REAL_64*)(curr->it_ref + offset); ; break;
 	case SK_POINTER: ptr->it_ptr    = *(EIF_POINTER*)(curr->it_ref + offset); ; break;
-	case SK_BIT:
 	case SK_EXP:
+		ptr->it_ref = curr->it_ref + offset;
+		break;
+	case SK_BIT:
 	case SK_REF:
 		ptr->it_ref = *(EIF_REFERENCE*)(curr->it_ref + offset);
 		break;

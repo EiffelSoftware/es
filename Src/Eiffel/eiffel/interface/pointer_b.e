@@ -12,7 +12,7 @@ inherit
 		rename
 			make as basic_make
 		redefine
-			actual_type, partial_actual_type, constraint_actual_type,
+			initialize_actual_type, partial_actual_type, constraint_actual_type,
 			is_typed_pointer, check_validity
 		end
 
@@ -33,20 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	actual_type: BASIC_A
-			-- Actual double type
-		local
-			l_formal: FORMAL_A
-		do
-			if is_typed_pointer then
-				create l_formal.make (False, False, 1)
-				create {TYPED_POINTER_A} Result.make_typed (l_formal)
-			else
-				Result := Pointer_type
-			end
-		end
-
-	constraint_actual_type: BASIC_A
+	constraint_actual_type: CL_TYPE_A
 			-- Actual double type
 		do
 			if generics = Void then
@@ -62,6 +49,19 @@ feature -- Access
 
 	is_typed_pointer: BOOLEAN
 			-- Is current representing TYPED_POINTER?
+
+feature {NONE} -- Initialization
+
+	initialize_actual_type
+			-- <Precursor>
+		do
+			if is_typed_pointer and then attached generics as g and then g.count = 1 then
+				create {TYPED_POINTER_A} actual_type.make_typed
+					(type_a_generator.evaluate_type (g.first.formal, Current))
+			else
+				actual_type := Pointer_type
+			end
+		end
 
 feature {CLASS_TYPE_AS} -- Actual class type
 
@@ -141,7 +141,7 @@ feature -- Validity
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -154,22 +154,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

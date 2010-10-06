@@ -26,7 +26,7 @@ feature -- Execution
 			open_debug_class_feature_info (Void, Void)
 		end
 
-	open_debug_class_feature_info (a_cl, a_ft: detachable STRING_32)
+	open_debug_class_feature_info (a_cl, a_ft: detachable STRING_GENERAL)
 		local
 			l_dlg: EV_DIALOG
 			hb: EV_HORIZONTAL_BOX
@@ -57,6 +57,7 @@ feature -- Execution
 						l_row,r: EV_GRID_ROW
 						gei: EV_GRID_EDITABLE_ITEM
 						bgcol: EV_COLOR
+						n: INTEGER
 					do
 						create bgcol.make_with_8_bit_rgb (210, 210, 255)
 						create g
@@ -149,33 +150,58 @@ feature -- Execution
 										l_row := g.grid_extended_new_subrow (r)
 										l_row.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("Inherited features"))
 										from
+											n := 0
 											ftable.start
 										until
 											ftable.after
 										loop
 											if attached ftable.item_for_iteration as fi then
 												if fi.written_class /= cl then
+													n := n + 1
 													debug_class_feature_info_add_feature_i (cl, fi, l_row, bgcol, True)
 												end
 											end
 											ftable.forth
 										end
+										l_row.set_item (2, create {EV_GRID_LABEL_ITEM}.make_with_text (n.out))
+
 										l_row := g.grid_extended_new_subrow (r)
 										l_row.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("Immediate features"))
 										from
+											n := 0
 											ftable.start
 										until
 											ftable.after
 										loop
 											if attached ftable.item_for_iteration as fi then
 												if fi.written_class = cl then
+													n := n + 1
 													debug_class_feature_info_add_feature_i (cl, fi, l_row, bgcol, True)
 												end
 											end
 											ftable.forth
 										end
-
+										l_row.set_item (2, create {EV_GRID_LABEL_ITEM}.make_with_text (n.out))
 									end
+
+									if attached cl.skeleton as skel then
+										l_row := g.grid_extended_new_subrow (r)
+										l_row.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("Skeleton"))
+										from
+											n := 0
+											skel.start
+										until
+											skel.after
+										loop
+											if attached skel.item_for_iteration as attr_desc then
+												n := n + 1
+												debug_class_feature_info_add_attr_desc (cl, attr_desc, l_row, bgcol, True)
+											end
+											skel.forth
+										end
+										l_row.set_item (2, create {EV_GRID_LABEL_ITEM}.make_with_text (n.out))
+									end
+
 									if r.is_expandable then
 										r.expand
 									end
@@ -337,6 +363,44 @@ feature -- Execution
 				gi.set_background_color (bgcol)
 				sr.set_item (2, gi)
 			end
+			if not a_list and then l_row.is_expandable then
+				l_row.expand
+			end
+		end
+
+	debug_class_feature_info_add_attr_desc (cl: CLASS_C; attr_desc: ATTR_DESC; r: EV_GRID_ROW; bgcol: EV_COLOR; a_list: BOOLEAN)
+		local
+			l_row,sr: EV_GRID_ROW
+			g: ES_GRID
+			gi: EV_GRID_LABEL_ITEM
+		do
+			g ?= r.parent
+			l_row := g.grid_extended_new_subrow (r)
+			if attr_desc.is_hidden then
+				create {EV_GRID_LABEL_ITEM} gi.make_with_text (attr_desc.attribute_name + " (HIDDEN)")
+			else
+				create {EV_GRID_LABEL_ITEM} gi.make_with_text (attr_desc.attribute_name)
+			end
+			l_row.set_item (1, gi)
+			if attached attr_desc.type_i as t then
+				l_row.set_item (2, create {EV_GRID_LABEL_ITEM}.make_with_text (t.name))
+			end
+
+			sr := g.grid_extended_new_subrow (l_row)
+			sr.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("feature_id"))
+			create gi.make_with_text (attr_desc.feature_id.out)
+			sr.set_item (2, gi)
+
+			sr := g.grid_extended_new_subrow (l_row)
+			sr.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("rout_id"))
+			create gi.make_with_text (attr_desc.rout_id.out)
+			sr.set_item (2, gi)
+
+			sr := g.grid_extended_new_subrow (l_row)
+			sr.set_item (1, create {EV_GRID_LABEL_ITEM}.make_with_text ("attribute_name_id"))
+			create gi.make_with_text (attr_desc.attribute_name_id.out)
+			sr.set_item (2, gi)
+
 			if not a_list and then l_row.is_expandable then
 				l_row.expand
 			end

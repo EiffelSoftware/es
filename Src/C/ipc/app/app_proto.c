@@ -220,6 +220,7 @@ static int curr_modify = NO_CURRMODIF;
 	case CHANGE_THREAD:					/* Thread id used to precise current thread in debugger */
 #ifdef EIF_THREADS
 		dthread_id = (EIF_THR_TYPE) arg_3_p;
+		REGISTER_DBG_THREAD_ID(dthread_id);
 #else
 		dthread_id = (rt_uint_ptr) arg_3_p;
 #endif
@@ -624,7 +625,7 @@ rt_public void stop_rqst(EIF_PSTREAM sp)
 
 }
 
-rt_public void notify_rqst(EIF_PSTREAM sp, int ev_type, rt_uint_ptr ev_data)
+rt_public void notify_rqst(EIF_PSTREAM sp, int ev_type, rt_uint_ptr ev_data1, rt_uint_ptr ev_data2)
 {
 	/* Send a notification
 	 */
@@ -632,15 +633,16 @@ rt_public void notify_rqst(EIF_PSTREAM sp, int ev_type, rt_uint_ptr ev_data)
 	Request_Clean (rqst);
 	rqst.rq_type = NOTIFIED;/* Notify request */
 	rqst.rq_event.st_type = ev_type;
-	rqst.rq_event.st_data = ev_data;
+	rqst.rq_event.st_data1 = ev_data1;
+	rqst.rq_event.st_data2 = ev_data2;
 	app_send_packet(sp, &rqst);	/* Send notification */
 }
 
-rt_shared void dnotify(int evt_type, rt_uint_ptr evt_data)
+rt_shared void dnotify(int evt_type, rt_uint_ptr evt_data1, rt_uint_ptr evt_data2)
 {
 	if (!debug_mode)		/* If not in debugging mode */
 		return ;			/* Resume execution immediately */
-	notify_rqst(app_sp, evt_type, evt_data);		/* Notify workbench we stopped */
+	notify_rqst(app_sp, evt_type, evt_data1, evt_data2);		/* Notify workbench about event `evt_type' */
 }
 
 

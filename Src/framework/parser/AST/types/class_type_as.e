@@ -59,16 +59,10 @@ feature -- Attributes
 	is_expanded: BOOLEAN
 			-- Is current type used with `expanded' keyword?
 
-	is_separate: BOOLEAN
-			-- Is current type used with `separate' keyword?
-
 feature -- Roundtrip
 
 	expanded_keyword_index: INTEGER
 			-- Index of keyword "expanded" associated with this structure.
-
-	separate_keyword_index: INTEGER
-			-- Index of keyword "separate" associated with this structure.	
 
 	expanded_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
 			-- Keyword "expanded" associated with this structure.
@@ -83,19 +77,6 @@ feature -- Roundtrip
 			end
 		end
 
-	separate_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
-			-- Keyword "separate" associated with this structure.	
-		require
-			a_list_not_void: a_list /= Void
-		local
-			i: INTEGER
-		do
-			i := separate_keyword_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
-			end
-		end
-
 feature -- Roundtrip/Token
 
 	first_token (a_list: LEAF_AS_LIST): LEAF_AS
@@ -104,9 +85,6 @@ feature -- Roundtrip/Token
 			if Result = Void then
 				if a_list /= Void then
 					Result := expanded_keyword (a_list)
-					if Result = Void then
-						Result := separate_keyword (a_list)
-					end
 				end
 				if Result = Void then
 					Result := class_name.first_token (a_list)
@@ -130,14 +108,23 @@ feature -- Comparison
 			Result := equivalent (class_name, other.class_name) and then
 				equivalent (generics, other.generics) and then
 				is_expanded = other.is_expanded and then
-				has_attached_mark = other.has_attached_mark and then
-				has_detachable_mark = other.has_detachable_mark
+				has_same_marks (other)
+		end
+
+feature -- Output
+
+	dump: STRING
+			-- Dumped string
+		do
+			create Result.make (class_name.name.count)
+			dump_marks (Result)
+			Result.append (class_name.name)
 		end
 
 feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 
 	set_is_expanded (i: like is_expanded; s_as: like expanded_keyword)
-			-- Set `is_separate' to `i'.
+			-- Set `is_expanded' to `i'.
 		do
 			is_expanded := i
 			if s_as /= Void then
@@ -148,38 +135,14 @@ feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 			expanded_keyword_set: s_as /= Void implies expanded_keyword_index = s_as.index
 		end
 
-	set_is_separate (i: like is_separate; s_as: like separate_keyword)
-			-- Set `is_separate' to `i'.
-		do
-			is_separate := i
-			if s_as /= Void then
-				separate_keyword_index := s_as.index
-			end
-		ensure
-			is_separate_set: is_separate = i
-			separate_keyword_set: s_as /= Void implies separate_keyword_index = s_as.index
-		end
-
 	set_class_name (s: like class_name)
 			-- Assign `s' to `class_name'.
 		do
 			class_name := s
 		end
 
-	dump: STRING
-			-- Dumped string
-		do
-			create Result.make (class_name.name.count)
-			if has_attached_mark then
-				Result.append_character ('!')
-			elseif has_detachable_mark then
-				Result.append_character ('?')
-			end
-			Result.append (class_name.name)
-		end
-
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -192,22 +155,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class CLASS_TYPE_AS

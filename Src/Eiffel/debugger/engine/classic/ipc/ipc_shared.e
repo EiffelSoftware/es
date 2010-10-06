@@ -67,6 +67,7 @@ feature {NONE} -- Resume
 	Break_remove: INTEGER				= 1 -- Remove user breakpoint ( <=> DT_REMOVE in run-time )
 	Break_set_stack_depth: INTEGER		= 2 -- Activate stepinto mode ( <=> DT_SET_STACKBP in run-time )
 	Break_set_stepinto: INTEGER			= 3 -- Activate stepinto mode ( <=> DT_SET_STEPINTO in run-time )
+	Break_set_run: INTEGER				= 4 -- Activate Run mode 	  ( <=> DT_SET_RUN in run-time )	
 
 feature {NONE} -- Inspection constants
 
@@ -117,8 +118,9 @@ feature {APPLICATION_STATUS} -- Implementation
 
 feature {NONE} -- Notification event type (check eif_debug.h)
 
-	Notif_thr_created: INTEGER			= 1
-	Notif_thr_exited: INTEGER			= 2
+	Notif_thr_created: INTEGER				= 1	--| THR_CREATED
+	Notif_thr_exited: INTEGER				= 2	--| THR_EXITED
+	Notif_scoop_proc_registered: INTEGER  	= 4	--| SCP_PROC_REGISTERED
 
 feature {NONE} -- For workbench responses.
 

@@ -23,14 +23,14 @@ feature {NONE} -- Initialization
 			l_exec_env: EXECUTION_ENVIRONMENT
 			l_name, l_exec_dir: READABLE_STRING_8
 			l_directory: detachable DIRECTORY
-			l_target_path, l_exec_path: detachable READABLE_STRING_8
+			l_target_path: detachable READABLE_STRING_8
 		do
 			create environment
-			create file_system.make (Current)
+			file_system := new_file_system
 
 			create l_exec_env
-			l_name := environment.get_attached ({EQA_TEST_SET}.test_name_key, Current)
 
+			l_name := environment.get_attached ({EQA_TEST_SET}.test_name_key, asserter)
 			if attached environment.get ({EQA_TEST_SET}.target_path_key) as l_target then
 				l_target_path := l_target
 			else
@@ -57,24 +57,25 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	asserter: EQA_ASSERTIONS
+	asserter: like new_asserter
 			-- Assertions used to raise an exception to report unexpected behaviour.
-		local
-			l_asserter: like internal_asserter
+			--
+			-- Note: to extend or modify the asserter, redefine `new_asserter'.
 		do
-			l_asserter := internal_asserter
-			if l_asserter /= Void then
+			if attached internal_asserter as l_asserter then
 				Result := l_asserter
 			else
-				create Result
+				Result := new_asserter
 				internal_asserter := Result
 			end
 		ensure
 			asserter_attached: Result /= Void
 		end
 
-	file_system: EQA_FILE_SYSTEM
+	file_system: like new_file_system
 			-- File system for creating directories and files
+			--
+			-- Note: to extend or modify the file system, redefine `new_file_system'.
 
 	environment: EQA_ENVIRONMENT
 			-- Environment containing global settings
@@ -116,25 +117,6 @@ feature -- Status setting
 
 feature {EQA_TEST_EVALUATOR} -- Status setting
 
-	run_test (a_procedure: PROCEDURE [ANY, TUPLE [like Current]])
-			-- Run the test `a_procedure' (from `Current').
-			--
-			-- Note: this routine can be redefined in order to wrap the actual test routine call.
-		require
-			a_procedure_attached: a_procedure /= Void
-			prepared: is_prepared
-		local
-			l_operands: TUPLE [like Current]
-		do
-			l_operands := a_procedure.empty_operands
-			check
-				valid_operand_count: l_operands.count = 1
-				valid_operand: l_operands.valid_type_for_index (Current, 1)
-			end
-			l_operands.put (Current, 1)
-			a_procedure.call (l_operands)
-		end
-
 	frozen clean (a_has_failed: BOOLEAN)
 			-- Release any resources allocated by `prepare'.
 			--
@@ -160,7 +142,7 @@ feature -- Basic operations
 feature {NONE} -- Events
 
 	on_prepare
-			-- Called after `prepare' has performed all initialization.
+			-- Called after all initializations in `default_create'.
 		do
 		ensure
 			prepared: is_prepared
@@ -174,8 +156,30 @@ feature {NONE} -- Events
 feature {NONE} -- Implementation
 
 	internal_asserter: detachable like asserter
-			-- Once per object storage for `asserter'.
+			-- Once per object storage for `asserter'
 
+feature {NONE} -- Factory
+
+	new_asserter: EQA_ASSERTIONS
+			-- Create new `assserter'
+			--
+			-- Note: redefine in order to specialize assertion handling.
+		do
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
+	new_file_system: EQA_FILE_SYSTEM
+			-- Create new `file_system'
+			--
+			-- Note: redefine in order to extend file system functionality.
+		do
+			create Result.make (asserter)
+		ensure
+			result_attached: Result /= Void
+			result_valid: Result.asserter = asserter
+		end
 
 feature -- Constants
 
@@ -193,7 +197,7 @@ feature -- Constants
 			-- Key for path in which test of `Current' is executed
 
 invariant
-	file_system_valid: file_system.test_set = Current
+	internal_file_system_valid: file_system.asserter = asserter
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"

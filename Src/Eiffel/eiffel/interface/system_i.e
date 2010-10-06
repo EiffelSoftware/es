@@ -151,6 +151,9 @@ feature {NONE} -- Initialization
 				--       obtained from the configuration and one for the testing root class
 			create root_creators.make (2)
 			create explicit_roots.make
+
+				-- Create test system
+			create test_system
 		end
 
 feature -- Counters
@@ -954,10 +957,13 @@ end
 
 			create l_factory
 			l_target := universe.new_target
-			add_eifgens_cluster (l_target, l_factory)
+
 			check
 				l_target_not_void: l_target /= Void
 			end
+
+				-- Check for testing library in current config
+			test_system.check_for_testing_configuration (l_target)
 
 				-- let the configuration system build "everything"
 			l_state := universe.conf_state_from_target (l_target)
@@ -1022,7 +1028,8 @@ end
 				l_classes.after
 			loop
 				l_conf_class := l_classes.item_for_iteration
-					-- FIXME: Patrickr 03/14/2006 for now the compiler can't deal with changed external or precompiled classes
+					-- FIXME: Patrickr 03/14/2006 for now the compiler can't deal with changed
+					-- external or precompiled classes
 				if not l_conf_class.is_class_assembly then
 					l_class_i ?= l_conf_class
 					check l_class_i_not_void: l_class_i /= Void end
@@ -1182,7 +1189,7 @@ end
 			end
 		end
 
-	recheck_partly_removed (a_classes: ARRAYED_LIST [EQUALITY_TUPLE [TUPLE [conf_class: CONF_CLASS; system: CONF_SYSTEM]]] )
+	recheck_partly_removed (a_classes: ARRAYED_LIST [TUPLE [conf_class: CONF_CLASS; system: CONF_SYSTEM]])
 			-- Recheck clients of classes that have been removed from one place but still exists in another.
 		require
 			a_classes_not_void: a_classes /= Void
@@ -1197,8 +1204,8 @@ end
 			until
 				a_classes.after
 			loop
-				l_system := a_classes.item.item.system
-				l_class_i ?= a_classes.item.item.conf_class
+				l_system := a_classes.item.system
+				l_class_i ?= a_classes.item.conf_class
 				check
 					correct_class: l_class_i /= Void and then l_class_i.is_compiled
 				end
@@ -1347,47 +1354,6 @@ end
 					-- before! (Dino, that's an allusion to you, -- FRED)
 				original_body_index_table.copy (body_index_table)
 				Degree_1.wipe_out
-			end
-		end
-
-	add_eifgens_cluster (a_target: CONF_TARGET; a_factory: CONF_PARSE_FACTORY)
-			-- Add cluster for classes created in EIFGENs directory
-			--
-			-- Note: Cluster is only added if `eifgens_cluster_path' in {PROJECT_DIRECTORY} exists. The
-			--       cluster is marked as internal, so it should not be visisble to user.
-		local
-			l_path: DIRECTORY_NAME
-			l_dir: DIRECTORY
-			l_vis: CONF_FIND_LOCATION_VISITOR
-			l_loc: CONF_DIRECTORY_LOCATION
-			l_cluster: CONF_CLUSTER
-		do
-			l_path := project_location.eifgens_cluster_path
-			create l_vis.make
-			l_vis.set_directory (l_path)
-			l_vis.process_target (a_target)
-			if l_vis.found_clusters.is_empty then
-				create l_dir.make (l_path)
-				if l_dir.exists then
-					l_loc := a_factory.new_location_from_path (l_path, a_target)
-					l_cluster := a_factory.new_cluster ("internal_eifgen_cluster", l_loc, a_target)
-					l_cluster.set_recursive (True)
-					l_cluster.set_internal (True)
-					a_target.add_cluster (l_cluster)
-				end
-			end
-		end
-
-	eifgens_cluster: detachable CONF_CLUSTER
-			-- Cluster added to universe target pointing to "Cluster" directory in "EIFGENs", Void if cluster
-			-- has not been added yet.
-		local
-			l_clusters: HASH_TABLE [CONF_CLUSTER, STRING]
-		do
-			l_clusters := universe.target.clusters
-			l_clusters.search ("internal_eifgen_cluster")
-			if l_clusters.found then
-				Result := l_clusters.found_item
 			end
 		end
 
@@ -1715,10 +1681,8 @@ feature -- Recompilation
 		require
 			valid_options: (a_generate_code implies a_system_check) and then (a_system_check implies a_syntax_analysis)
 		local
-			l_root_c: CLASS_C
 			d1, d2: DATE_TIME
 			l_il_env: IL_ENVIRONMENT
-			cs: CURSOR
 		do
 			debug ("timing")
 					-- Enable time accounting to get some precise GC statistics.
@@ -1737,9 +1701,9 @@ feature -- Recompilation
 			end
 
 
-
 				-- Recompilation initialization
 			init_recompilation
+
 			if a_generate_code and then Compilation_modes.is_precompiling and then il_generation then
 					-- For a precompiled library we require a freeze in non-IL
 					-- code generation.
@@ -1818,21 +1782,6 @@ end
 						not Compilation_modes.is_precompiling and
 						not Lace.compile_all_classes
 					then
-							-- Check root class is not deferred
-						cs := root_creators.cursor
-						from
-							root_creators.start
-						until
-							root_creators.after
-						loop
-							check
-								root_compiled: root_creators.item_for_iteration.root_class.is_compiled
-							end
-							l_root_c := root_creators.item_for_iteration.root_class.compiled_class
-							l_root_c.check_that_root_class_is_not_deferred
-							root_creators.forth
-						end
-						root_creators.go_to (cs)
 						current_class := Void
 							-- Remove useless classes i.e classes without
 							-- syntactical clients
@@ -1888,7 +1837,7 @@ end
 
 						-- We need to clean `instantiator' of all the types that do not make sense
 						-- anymore (see eweasel test#incr282).
-					instantiator.clean
+					instantiator.clean (any_class.compiled_class)
 
 						-- Inheritance analysis: `Degree_4' is sorted by class
 						-- topological ids so the parent come first the heirs after.
@@ -1911,6 +1860,12 @@ end
 						mark_only_used_precompiled_classes
 					end
 				end -- if a_system_check
+
+					-- Remove any classes which have previously been added by {TEST_SYSTEM_I}
+					-- and are not needed for testing
+				if test_system.is_testing_enabled then
+					test_system.remove_unused_classes
+				end
 
 				if a_generate_code then
 						-- Byte code production and type checking
@@ -2309,6 +2264,11 @@ end
 				i := i + 1
 			end
 
+				-- Mark classes possibly needed for testing
+			if test_system.is_testing_enabled then
+				test_system.mark_suppliers (marked_classes)
+			end
+
 				-- Remove all the classes that cannot be reached if they are
 				-- not protected
 			from
@@ -2606,7 +2566,7 @@ end
 					l_ba.character_array.store (melted_file)
 
 					write_int (file_pointer, l_rcoffset)
-					if l_root_ft.has_arguments then
+					if l_root_ft /= Void and then l_root_ft.has_arguments then
 						write_int (file_pointer, 1)
 					else
 						write_int (file_pointer, 0)
@@ -3442,6 +3402,8 @@ feature {NONE} -- Implementation
 						supplier := eif_class.syntactical_clients.item
 						related_classes.extend (supplier)
 						supplier.suppliers.remove_class (eif_class)
+							-- Clean associated filters that may include the class being removed.
+						supplier.filters.clean (supplier)
 						eif_class.syntactical_clients.forth
 						finished := False
 					end
@@ -3449,6 +3411,8 @@ feature {NONE} -- Implementation
 						supplier := eif_class.clients.item
 						related_classes.extend (supplier)
 						supplier.suppliers.remove_class (eif_class)
+							-- Clean associated filters that may include the class being removed.
+						supplier.filters.clean (supplier)
 						eif_class.clients.forth
 						finished := False
 					end
@@ -3670,7 +3634,7 @@ feature -- Dead code removal
 						l_cl: CLASS_C
 						l_ft: FEATURE_I
 					do
-						if not a_root.procedure_name.is_empty then
+						if not a_root.procedure_name.is_empty and not a_root.is_explicit then
 							check
 								valid_root: a_root.is_class_type_set
 							end
@@ -4073,26 +4037,31 @@ feature -- Generation
 				loop
 						-- Types of the class
 					a_class := class_list.item (i)
-					types := a_class.types
-					l_class_is_finalized := not a_class.is_precompiled or else a_class.is_in_system
-						-- The following line is a hack so that `types.sort' works.
-					current_class := a_class
-					types.sort
-					from
-						types.start
-					until
-						types.after
-					loop
-						a_backup [types.item.static_type_id] := types.item.type_id
-						if l_class_is_finalized then
-								-- Only update `type_id' for types of classes which are really
-								-- part of the system for a finalization. Classes that are not
-								-- part of the system are not in `class_types' anymore and this
-								-- is why we don't bother updating their `type_id'. It will be
-								-- properly restored when `is_restoring' is True.
-							reset_type_id (types.item, type_id_counter.next)
+
+						-- The following check is needed as `class_list' can contain Void items after Degree 4
+						-- when {TEST_SYSTEM_I} removed unused classes.
+					if a_class /= Void then
+						types := a_class.types
+						l_class_is_finalized := not a_class.is_precompiled or else a_class.is_in_system
+							-- The following line is a hack so that `types.sort' works.
+						current_class := a_class
+						types.sort
+						from
+							types.start
+						until
+							types.after
+						loop
+							a_backup [types.item.static_type_id] := types.item.type_id
+							if l_class_is_finalized then
+									-- Only update `type_id' for types of classes which are really
+									-- part of the system for a finalization. Classes that are not
+									-- part of the system are not in `class_types' anymore and this
+									-- is why we don't bother updating their `type_id'. It will be
+									-- properly restored when `is_restoring' is True.
+								reset_type_id (types.item, type_id_counter.next)
+							end
+							types.forth
 						end
-						types.forth
 					end
 					i := i + 1
 				end
@@ -5207,7 +5176,9 @@ feature -- Pattern table generation
 					root_creators.after
 				loop
 					l_root := root_creators.item_for_iteration
-					if not l_root.procedure_name.is_empty then
+
+						-- In a final systems explicit roots are no longer present
+					if not l_root.procedure_name.is_empty and not l_root.is_explicit then
 						l_root_type := root_class_type (l_root.class_type)
 						l_root_cl := l_root_type.associated_class
 						l_root_ft := l_root_cl.feature_table.item (l_root.procedure_name)
@@ -5645,7 +5616,7 @@ feature -- Access: Root creators
 			--       existing code relying on a single root will continue to work.
 			--       Additional root creation procedures can be added through `add_explicit_root'.
 
-	root_type: CL_TYPE_A
+	root_type: TYPE_A
 			--
 		do
 			Result := root_creators.first.class_type
@@ -5658,6 +5629,10 @@ feature -- Access: Root creators
 			root_creation_name_not_void: Result /= Void
 		end
 
+feature -- Access: Testing
+
+	test_system: TEST_SYSTEM_I
+			-- System containing testing properties of current system
 
 feature {NONE} -- Access: Root creators
 
@@ -5668,7 +5643,7 @@ feature {NONE} -- Access: Root creators
 			-- class_name: Class name in which creation procedure is defined
 			-- feature_name: Name of creation procedure
 
-feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Status report: Root creators
+feature {INTERNAL_COMPILER_STRING_EXPORTER, TEST_SYSTEM_I} -- Status report: Root creators
 
 	is_explicit_root (a_class_name, a_feature_name: STRING): BOOLEAN
 			-- Has an explicit root been added for given class and feature name.
@@ -5686,11 +5661,11 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Status report: Root creators
 
 feature -- Query: Root creators
 
-	root_class_type (a_root_type: CL_TYPE_A): CLASS_TYPE
+	root_class_type (a_root_type: TYPE_A): CLASS_TYPE
 			-- CLASS_TYPE of root type
 		require
 			root_type_exists: root_creators.there_exists (
-				agent (a_root: SYSTEM_ROOT; a_type: CL_TYPE_A): BOOLEAN
+				agent (a_root: SYSTEM_ROOT; a_type: TYPE_A): BOOLEAN
 					do
 						Result := a_root.class_type = a_type
 					end (?, a_root_type))
@@ -5736,25 +5711,41 @@ feature -- Query: Root creators
 					end)
 		end
 
-feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Element change: Root creators
+feature {INTERNAL_COMPILER_STRING_EXPORTER, TEST_SYSTEM_I} -- Element change: Root creators
 
-	add_explicit_root (a_cluster_name, a_class_name, a_feature_name: STRING)
+	add_explicit_root (a_cluster_name, a_class_name, a_feature_name: READABLE_STRING_8)
 			-- Add an explicit root class
 		require
 			a_class_name_not_empty: a_class_name /= Void and then not a_class_name.is_empty
 			a_feature_name_not_void: a_feature_name /= Void
-			not_added: not is_explicit_root (a_class_name, a_feature_name)
+		local
+			l_tpl: TUPLE [clst: STRING; clss: STRING; ft: STRING]
+			l_added: BOOLEAN
 		do
-			explicit_roots.force ([a_cluster_name, a_class_name, a_feature_name])
-			set_rebuild (True)
+			from
+				explicit_roots.start
+			until
+				explicit_roots.after or l_added
+			loop
+				l_tpl := explicit_roots.item_for_iteration
+				if l_tpl.clss.same_string (a_class_name) and l_tpl.ft.same_string (a_feature_name) then
+					l_added := True
+				end
+				explicit_roots.forth
+			end
+			if not l_added then
+				if attached a_cluster_name as l_cluster then
+					explicit_roots.force ([l_cluster.as_string_8, a_class_name.as_string_8, a_feature_name.as_string_8])
+				else
+					explicit_roots.force ([Void, a_class_name.as_string_8, a_feature_name.as_string_8])
+				end
+			end
 		ensure
 			added: is_explicit_root (a_class_name, a_feature_name)
 		end
 
-	remove_explicit_root (a_class_name, a_feature_name: STRING)
+	remove_explicit_root (a_class_name, a_feature_name: READABLE_STRING_8)
 			-- Remove an explicit root class
-		require
-			added: is_explicit_root (a_class_name, a_feature_name)
 		local
 			l_tpl: TUPLE [clst: STRING; clss: STRING; ft: STRING]
 		do
@@ -5764,13 +5755,12 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Element change: Root creators
 				explicit_roots.after
 			loop
 				l_tpl := explicit_roots.item_for_iteration
-				if l_tpl.clss.is_equal (a_class_name) and l_tpl.ft.is_equal (a_feature_name) then
+				if l_tpl.clss.same_string (a_class_name) and l_tpl.ft.same_string (a_feature_name) then
 					explicit_roots.remove
 				else
 					explicit_roots.forth
 				end
 			end
-			set_rebuild (True)
 		ensure
 			removed: not is_explicit_root (a_class_name,a_feature_name)
 		end
@@ -5800,27 +5790,28 @@ feature {NONE} -- Element change: Root creators
 			if l_feat = Void then
 				create l_feat.make_empty
 			end
-			add_root_feature (l_root.cluster_name, l_root_type_name, l_feat)
+			add_root_feature (l_root.cluster_name, l_root_type_name, l_feat, False)
 			from
 				explicit_roots.start
 			until
 				explicit_roots.after
 			loop
 				l_tpl := explicit_roots.item_for_iteration
-				add_root_feature (l_tpl.clst, l_tpl.clss, l_tpl.ft)
+				add_root_feature (l_tpl.clst, l_tpl.clss, l_tpl.ft, True)
 				explicit_roots.forth
 			end
 		ensure
 			root_creators_added: not root_creators.is_empty
 		end
 
-	add_root_feature (a_cluster_name, a_class_name, a_feature_name: STRING)
+	add_root_feature (a_cluster_name, a_class_name, a_feature_name: STRING; a_explicit: BOOLEAN)
 			-- Add root creation procedure for given class and feature name.
 			--
 			-- `a_cluster_name': Name of cluster in which class is located (can be Void).
 			-- `a_class_name': Name of class in which creation procedure is declared.
 			-- `a_feature_name': Name of creation procedure (if Eempty, it will be replaced with the name
 			--                   of the default create feature of the corresponding class.
+			-- `a_explicit': True if root is read from `explicit_root', False if it represents CONF_ROOT.
 		require
 			universe_not_void: universe /= Void
 			target_not_void: universe.target /= Void
@@ -5902,6 +5893,9 @@ feature {NONE} -- Element change: Root creators
 				else
 					create l_system_root.make_with_class (l_class, a_feature_name)
 					l_system_root.set_class_type_as (l_type_as)
+					if a_explicit then
+						l_system_root.set_explicit
+					end
 					root_creators.force (l_system_root)
 					if not l_class.is_compiled then
 						Workbench.change_class (l_class)
@@ -5913,12 +5907,15 @@ feature {NONE} -- Element change: Root creators
 	compute_root_type
 			-- Computes the root type
 		local
-			l_type: CL_TYPE_A
+			l_type: TYPE_A
 			l_root: SYSTEM_ROOT
 			l_vsrt1: VSRT1
 			l_vsrt2: VSRT2
+			l_vsrt3: VSRT3
+			l_vsrt4: VSRT4
 			l_vd20: VD20
 			cs: CURSOR
+			l_error_level: NATURAL_32
 		do
 			from
 				cs := root_creators.cursor
@@ -5927,28 +5924,56 @@ feature {NONE} -- Element change: Root creators
 				root_creators.after
 			loop
 				l_root := root_creators.item_for_iteration
+				l_error_level := error_handler.error_level
 				if not l_root.root_class.is_compiled then
 						-- Class is not part of the system.
 					create l_vd20
 					l_vd20.set_class_name (l_root.root_class.name.as_upper)
 					Error_handler.insert_error (l_vd20)
 				else
-					l_type ?= type_a_generator.evaluate_type_if_possible (l_root.class_type_as, l_root.root_class.compiled_class)
-					if l_type = Void or else l_type.is_loose then
+					l_type := type_a_generator.evaluate_type_if_possible (l_root.class_type_as, l_root.root_class.compiled_class)
+					if l_type = Void then
 							-- Throw an error: type is not valid.
 						create l_vsrt2
-						l_vsrt2.set_class (l_root.root_class.compiled_class)
-						l_vsrt2.set_root_type_name (l_root.root_class.name)
+						l_vsrt2.set_root_type_as (l_root.class_type_as)
 						l_vsrt2.set_group_name (l_root.root_class.group.name)
 						Error_handler.insert_error (l_vsrt2)
+					elseif l_type.is_loose then
+						create l_vsrt1
+						l_vsrt1.set_root_type (l_type)
+						error_handler.insert_error (l_vsrt1)
+					elseif l_type.associated_class.is_deferred then
+						create l_vsrt3
+						l_vsrt3.set_root_type (l_type)
+						error_handler.insert_error (l_vsrt3)
+					elseif not l_type.good_generics then
+						create l_vsrt4
+						l_vsrt4.set_root_type (l_type)
+						error_handler.insert_error (l_vsrt4)
 					else
-						l_root.set_class_type (l_type)
-						if not l_type.has_generics and l_type.associated_class.is_generic then
-							create l_vsrt1
-							l_vsrt1.set_class (l_type.associated_class)
-							l_vsrt1.set_root_type (l_type)
-							Error_handler.insert_error (l_vsrt1)
-						else
+						if attached {GEN_TYPE_A} l_type as l_gen_type then
+								-- Check constrained genericity validity rule
+							l_gen_type.reset_constraint_error_list
+								-- Check creation readiness because root type have to be creation ready.
+								-- This is done in the context of ANY and not of `l_type.associated_class'
+								-- as otherwise we could accept `TEST [G]' if done in the context of the
+								-- generic class declared as `class TEST [G]'.
+							l_gen_type.check_constraints (any_class.compiled_class, Void, True)
+							if l_gen_type.constraint_error_list /= Void and then not l_gen_type.constraint_error_list.is_empty then
+								create l_vsrt4
+								l_vsrt4.set_root_type (l_gen_type)
+								l_vsrt4.set_any_class (any_class.compiled_class)
+								l_vsrt4.set_error_list (l_gen_type.constraint_error_list)
+								error_handler.insert_error (l_vsrt4)
+							else
+									-- We need to check named tuple labels. This fixes eweasel test#tuple012.
+								l_type.check_labels (l_type.associated_class, Void)
+							end
+						end
+
+						if error_handler.error_level = l_error_level then
+							l_root.set_class_type (l_type)
+
 							if not Compilation_modes.is_precompiling and not Lace.compile_all_classes then
 									-- `root_class_c' cannot be used here as `root_type.associated_class' might be changed
 								l_root.class_type.associated_class.check_root_class_creators (l_root.procedure_name, l_root.class_type)

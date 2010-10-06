@@ -147,6 +147,9 @@ test	exception_cause				except037 tcf pass exception
 -- Unicode
 test unicode_manifest_string_char_and_constants unicode001 tcf pass unicode
 test unicode_free_operator unicode002 tcf pass unicode
+test big_extended_ascii_src unicode003 tcf pass unicode
+test extended_ascii_string_compatibility unicode004 tcf pass unicode
+test manifest-string-with-null-character unicode005 tcf pass unicode
 
 -- Non Conforming Inheritance
 test basic-non-conforming-inheritance			noncon001 tcf pass non-conforming
@@ -520,6 +523,8 @@ test	inherited-generic-agent-argument	valid261 tcf pass validity formal generic 
 test	conversion_without_binary_operator	valid262 tcf pass validity
 test	manifest-real-to-real-32-conformance	valid263 tcf pass validity ieee
 test	generic-rename-with-alias		valid264 tcf fail validity generic rename
+test	variant-with-anchored-type		valid265 tcf fail validity
+test	vtcg7-precondition-violation	valid266 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -562,6 +567,7 @@ test	svalid-inherited-agent-with-formal-switch	svalid025 tcf pass system-validit
 test	svalid-redefined-precursor-not-checked	svalid026 tcf fail system-validity
 test	svalid-conversion-forget		svalid027 tcf fail system-validity conversion
 test	svalid-generic-rename-with-alias	svalid028 tcf fail system-validity generic rename
+test	svalid-inherited-renamed-prefix		svalid029 tcf fail system-validity rename
 
 -- Catcall tests
 test	simple-catcall				catcall001 tcf pass catcall
@@ -938,10 +944,41 @@ test	qat-nonexistent-veen			incr362 tcf fail incrementality generic anchored_typ
 test	qat-static-type-id-crash		incr363 tcf fail incrementality generic anchored_type
 test	qat-resume-veen-compiler-error		incr364 tcf fail incrementality generic anchored_type
 test	renamed-type-crash			incr365 tcf fail incrementality generic
-test	once-per-object-add-descendant		incr366 tcf fail incrementality once
+test	once-per-object-add-descendant		incr366 tcf pass incrementality once
 test	change-constraint-rename-crash		incr367 tcf fail incrementality generic anchored_type
 test	qat-change-parent-actual-generic	incr368 tcf fail incrementality generic anchored_type
 test	qat-veen-instead-of-vtat		incr369 tcf fail incrementality anchored_type
+test	qat-constrained-type-in-crash-2		incr370 tcf fail incrementality anchored_type
+test	rename-routine-error			incr371 tcf fail incrementality
+test	qat-finalize-panic-cascade		incr372 tcf fail incrementality
+test	finalize-feature-name-crash		incr373 tcf fail incrementality
+test	static-type-id-crash			incr374 tcf fail incrementality
+test	rout-entry-crash			incr375 tcf fail incrementality
+test	finalize-once-per-object-wrong		incr376 tcf pass incrementality
+test	retry-missing-library-file		incr377 tcf fail incrementality
+test	saving-generic-class-crash		incr378 tcf pass incrementality
+test	change-target-inheritance		incr379 tcf fail incrementality
+test	config-remove-root-element		incr380 tcf fail incrementality
+test	remove-base-library-add-back		incr381 tcf fail incrementality
+test	disk-item-io-error			incr382 tcf fail incrementality
+test	compiler-panic				incr383 tcf fail incrementality
+test	descriptor-list-put-crash		incr384 tcf pass incrementality
+test	deep-twin-agent-infinite-loop		incr385 tcf fail incrementality manual
+test	conform-to-precondition-violation	incr386 tcf fail incrementality
+test	disk-item-io-error-2			incr387 tcf fail incrementality
+test	static-type-id-crash-2			incr388 tcf fail incrementality
+test	remove-occurrence-precondition-violation	incr389 tcf fail incrementality
+test	constant-suppliers-crash		incr390 tcf fail incrementality
+test	rout-entry-crash-2			incr391 tcf fail incrementality
+test	is-less-equal-postcondition-violation	incr392 tcf fail incrementality
+test	once-per-object-change-body		incr393 tcf fail incrementality
+test	add-vsrt4-to-expanded-then-remove	incr394 tcf fail incrementality
+test	same-generic-derivation-as-crash	incr395 tcf fail incrementality
+test	new-poly-table-crash			incr396 tcf fail incrementality
+test	once-per-object-change-expansion	incr397 tcf fail incrementality once
+test	once-per-object-remove-constraint	incr398 tcf fail incrementality once
+test	once-per-object-change-inheritance	incr399 tcf fail incrementality once
+test	qat-change-constant-anchor-type		incr400 tcf fail incrementality anchored_type
 
 
 -- Melting
@@ -1047,6 +1084,7 @@ test	new-type-type-melted	melt097  tcf pass execution melting
 test	melted-type-of-generic	melt098  tcf pass execution melting reflection
 test	melted-tuple-expression-order melt099 tcf pass execution melting tuple
 test	melted-creation-constrained-generic melt100 tcf fail execution melting generic
+test	melted-once-creation-of-generic	melt101 tcf fail execution melting generic
 
 -- Freezing
 
@@ -1081,6 +1119,7 @@ test	freeze-with-conversion		freez028  tcf pass freezing
 test	object-test-with-generic-type	freez029  tcf pass freezing
 test	invariant-qualified-call-on-constant	freez030  tcf fail freezing
 test	expanded-like-current-void-precursor	freez031  tcf fail freezing
+test	boolean-hash-code		freez032  tcf fail freezing
 
 -- Finalizing
 
@@ -1174,6 +1213,10 @@ test	finalize-inline-merged-routine	final087 tcf fail finalizing
 test	finalize-inline-check-void-target	final088 tcf fail finalizing
 test	finalize-qat-object-test		final089 tcf fail finalizing anchored_type
 test	finalize-attached-dcr-missing	final090 tcf pass finalizing
+test	finalize-inline-same-generic-derivation-crash	final091 tcf fail finalizing
+test	finalize-c-code-redeclared-identifier	final092 tcf fail finalizing
+test	finalize-create-expanded-generic	final093 tcf fail finalizing
+test	finalize-static-access-multicon-formal	final094 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1541,6 +1584,9 @@ test	ieee-min-max-values				exec326 tcf pass execution ieee
 test	assertion-reset-with-check		exec327 tcf pass execution assertion
 test	default-on-expanded-string		exec328 tcf fail execution expanded manual
 test	ieee-abs-minus-zero				exec329 tcf pass execution ieee
+test	catcall-in-expanded-class-invariant	exec330 tcf fail execution catcall
+test	once-string-seg-fault			exec331 tcf fail execution
+test	object-test-wrong-with-expanded-generic	exec332 tcf fail execution
 
 -- Once specific
 
@@ -1549,10 +1595,16 @@ test once-per-object-exec-with-exception 	once002 tcf pass once exception
 test once-per-object-redefinition 		once003 tcf pass once redefine
 test once-per-object-removal 			once004 tcf pass once redefine
 test once-key-validity				once005 tcf pass once validity
-test once-per-object-called-via-precursor	once006 tcf fail once
-test once-per-object-with-inheritance		once007 tcf fail once
-test once-per-object-finalized-crash		once008 tcf fail once
-test once-per-object-effect-deferred		once009 tcf fail once
+test once-per-object-called-via-precursor	once006 tcf pass once
+test once-per-object-with-inheritance		once007 tcf pass once
+test once-per-object-finalized-crash		once008 tcf pass once
+test once-per-object-effect-deferred		once009 tcf pass once
+test once-per-object-empty-body			once010 tcf pass once
+test once-per-object-anchored-or-generic	once011 tcf pass once
+test once-per-object-returning-expanded		once012 tcf fail once
+test once-per-object-precursor-descendant	once013 tcf fail once
+test once-per-object-inherited-chained		once014 tcf fail once
+test once-per-object-callee-exception		once015 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1732,6 +1784,15 @@ test	expanded-indirect-like-current		term182	tcf fail termination expanded ancho
 test	expanded-indirect-like-current-2	term183	tcf fail termination expanded anchored_type
 test	create-generic-with-rename		term184	tcf fail termination generic
 test	generic-derivation-constraint		term185 tcf pass termination formal generic constraint
+test	across-keyword-as-feature-name		term186 tcf fail termination 
+test	chained-generic-constraints		term187 tcf fail termination formal generic constraint
+test	static-access-on-generic-in-inspect	term188 tcf fail termination formal generic
+test	vmfn-reporting-crash				term189 tcf fail termination validity
+test	conform-to-type-precondition-violation	term190 tcf fail termination validity
+test	generated-id-assertion-violation	term191 tcf fail termination multiconstraint expanded
+test	skeleton-adapted-in-crash		term192 tcf fail termination 
+test	is-valid-for-class-precondition		term193 tcf fail termination 
+test	is-less-equal-postcondition-violation-2	term194 tcf fail incrementality
 
 -- Config
 
@@ -1753,6 +1814,13 @@ test	config-library-options-redefinition	config015 tcf pass config
 test	config-library-options-setting	config016 tcf pass config
 test	config-nonstandard-source-extension	config017 tcf pass config
 test	config-keyword-root-class		config018 tcf fail config
+test	config-invalid-root-type		config019 tcf fail config
+test	config-invalid-actual-generic		config020 tcf fail config
+test	config-undetected-vlec			config021 tcf fail config
+test	config-invalid-vsrt2			config022 tcf fail config
+test	config-generic-root-type-extra-chars	config023 tcf fail config
+test	config-generic-root-with-expanded	config024 tcf fail config generic expanded
+test	config-unclosed-element			config025 tcf fail config
 
 -- Lace
 
@@ -2289,6 +2357,12 @@ test	multi-constraint-light-roundtrip				multicon052 tcf pass multiconstraint
 test	multi-constraint-constrained-twice-2			multicon053 tcf fail multiconstraint
 test	multi-constraint-constrained-by-self			multicon054 tcf fail multiconstraint
 test	multi-constraint-make-byte-code-crash			multicon055 tcf fail multiconstraint
+test	multi-constraint-static-access				multicon056 tcf fail multiconstraint
+test	multi-constraint-static-access-2			multicon057 tcf fail multiconstraint
+test	inherited-unary-with-generic				multicon058 tcf pass multiconstraint formal
+test	multi-constraint-real-type-in-crash			multicon059 tcf fail multiconstraint formal
+test	saving-multiconstraint-generic-class-crash	multicon060 tcf pass multiconstraint formal incrementality
+test	 expanded-generic-with-multiconstraint		multicon061 tcf pass multiconstraint formal execution
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded
@@ -2398,8 +2472,11 @@ test	stable-attribute-in-rescue				attach070 tcf pass void_safe validity stable 
 test	self-init-attribute-non-void-safe			attach071 tcf fail attached_types self_init void_safe
 test	default-create-missing-check			attach072 tcf pass attached_types void_safe
 test	bogus-vevi-expanded-formal-generic		attach073 tcf fail attached_types void_safe
-test	vevi-on-once-per-object-routine			attach074 tcf fail attached_types void_safeA once
-test	once-per-object-creation-procedure		attach075 tcf fail attached_types void_safeA once
+test	vevi-on-once-per-object-routine			attach074 tcf pass attached_types void_safe once
+test	once-per-object-creation-procedure		attach075 tcf pass attached_types void_safe once
+test	attached-to-none				attach076 tcf fail attached_types void_safe once
+test	attached-attribute-initialization		attach077 tcf pass attached_types void_safe validity
+test	detachable-formal-attached-constraint		attach078 tcf pass attached_types formal generic constraint conformance validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2474,6 +2551,12 @@ test	qat-process-formal-as-crash		anchor049 tcf fail anchored_type formal generi
 test	qat-invalid-vffd			anchor050 tcf fail anchored_type
 test	qat-c-compile-failure			anchor051 tcf fail anchored_type generic
 test	qat-anchored-to-redefined-descendant	anchor052 tcf fail anchored_type
+test	qat-inlining-bug			anchor053 tcf fail anchored_type generic
+test	qat-instantiated-in-crash-3		anchor054 tcf fail anchored_type formal generic
+test	qat-static-type-id-crash-2		anchor055 tcf fail anchored_type formal generic
+test	qat-generic-constrained-by-self		anchor056 tcf fail anchored_type formal generic manual
+test	qat-multi-constraint-type		anchor057 tcf fail anchored_type multiconstraint formal generic renaming creation
+test	qat-invalid-vffd-2			anchor058 tcf fail anchored_type
 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet

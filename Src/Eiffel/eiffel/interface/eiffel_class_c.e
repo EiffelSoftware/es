@@ -314,7 +314,7 @@ feature -- Action
 				end
 				parser.set_is_ignoring_attachment_marks (lace_class.is_void_unsafe)
 				Inst_context.set_group (cluster)
-				parser.internal_parse_class (file, Current)
+				parser.parse_class_from_file (file, Current, Void)
 				if l_error_level = error_handler.error_level then
 					Result := parser.root_node
 					check no_error_implies_not_void: Result /= Void end
@@ -437,7 +437,7 @@ feature -- Action
 				end
 
 					-- Clean the filters, i.e. remove all the obsolete types
-				filters.clean
+				filters.clean (Current)
 			end
 		rescue
 			if Rescue_status.is_error_exception then
@@ -541,6 +541,7 @@ feature -- Third pass: byte code production and type check
 				-- Invariant
 			invar_clause: INVARIANT_AS
 			invariant_changed: BOOLEAN
+			invariant_removed: BOOLEAN
 
 			old_invariant_body_index: INTEGER
 			body_index: INTEGER
@@ -557,11 +558,19 @@ feature -- Third pass: byte code production and type check
 				-- Initialization for actual types evaluation
 			Inst_context.set_group (cluster)
 
-				-- For a changed class, the supplier list has to be updated
-			dependances := depend_server.item (class_id)
+				-- For a changed class, the supplier list has to be updated.
+				-- We use `disk_item' because new dependencies are not stored if there is a
+				-- compilation error, so all the modification we make to `dependances' are
+				-- reused as is when recompiling. This fixes the `consistency' precondition of
+				-- {SUPPLIER_LIST}.remove_occurrence and eweasel test#incr109.
+				-- We look first in TMP_DEPEND_SERVER to address test#incr308 and test#fixed066.
+			dependances := tmp_depend_server.item (class_id)
 			if dependances = Void then
-				create dependances.make (changed_features.count)
-				dependances.set_class_id (class_id)
+				dependances := depend_server.disk_item (class_id)
+				if dependances = Void then
+					create dependances.make (changed_features.count)
+					dependances.set_class_id (class_id)
+				end
 			end
 
 			if changed then
@@ -834,7 +843,8 @@ feature -- Third pass: byte code production and type check
 					if f_suppliers /= Void then
 						new_suppliers.remove_occurrence (f_suppliers)
 					end
-					invariant_feature := Void
+						-- Mark invariant to be reset at the end when no error has occurred
+					invariant_removed := True
 				else
 					invariant_changed := propagators.invariant_changed
 					if not (invariant_changed or else f_suppliers = Void) then
@@ -985,7 +995,7 @@ feature -- Third pass: byte code production and type check
 					if new_suppliers /= Void then
 							-- Write new dependances in the dependances temporary
 							-- server
-						Tmp_depend_server.put (dependances)
+						tmp_depend_server.put (dependances)
 
 							-- Update the client/supplier relations for the current
 							-- class
@@ -1007,6 +1017,10 @@ feature -- Third pass: byte code production and type check
 				l_ast_context.clear_feature_context
 				tmp_ast_server.cache.wipe_out
 				internal_inline_agent_table := old_inline_agent_table
+			elseif invariant_removed then
+					-- No error occurred and class was compiled successfully, we can
+					-- remove the invariant. This fixes eweasel test#incr345.
+				invariant_feature := Void
 			end
 		rescue
 			if Rescue_status.is_error_exception then
@@ -1514,7 +1528,14 @@ feature {NONE} -- Class initialization
 							l_class.set_changed (True)
 								-- The ast is in the temporary server
 								-- so Degree 4 can be done the same way
-							Degree_5.insert_changed_class (l_class)
+							Degree_5.insert_class (l_class)
+						end
+						if changed_expanded then
+								-- We do not know if `l_class' is using the current class
+								-- as a parent, but we have to reset it even just to be sure.
+								-- This fixes eweasel test#incr315 and test#incr361.
+							l_class.set_changed (True)
+							degree_5.insert_class (l_class)
 						end
 							-- We need to recompile the features because their code might still
 							-- contain reference to the type and because it switched from
@@ -1525,7 +1546,7 @@ feature {NONE} -- Class initialization
 							l_eiffel_class.set_new_byte_code_needed (True)
 						end
 					else
-						set_changed2 (True)
+						l_class.set_changed2 (True)
 					end
 					Degree_4.set_supplier_status_modified (l_class)
 					Degree_3.insert_new_class (l_class)
@@ -1546,10 +1567,11 @@ feature {NONE} -- Class initialization
 
 			set_generics (gens)
 
-			if gens /= Void then
+			if attached gens then
 					-- Check generic parameter declaration rule
 				check_generics
 			end
+			initialize_actual_type
 
 			if not is_first_compilation then
 				if gens /= Void then

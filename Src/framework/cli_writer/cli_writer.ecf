@@ -8,12 +8,17 @@
 		<option>
 			<assertions precondition="true"/>
 		</option>
-		<external_include location="$(EIFFEL_SRC)\framework\cli_writer\Clib -D_WIN32_DCOM">
+		<external_include location="$(EIFFEL_SRC)\framework\cli_writer\Clib">
 			<condition>
 				<platform value="windows"/>
 			</condition>
 		</external_include>
-		<external_object location="$(EIFFEL_SRC)\framework\cli_writer\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\cli_writer.lib">
+		<external_include location="xyz -D_WIN32_DCOM">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="$(EIFFEL_SRC)\framework\cli_writer\spec\msc\$(ISE_PLATFORM)\lib\cli_writer.lib">
 			<condition>
 				<platform value="windows"/>
 			</condition>
@@ -25,18 +30,17 @@
 		<cluster name="cli_writer" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/sample$</exclude>
+				<exclude>/Clib$</exclude>
+				<exclude>/spec$</exclude>
 			</file_rule>
 			<file_rule>
-				<exclude>/md_strong_name\.e$</exclude>
-				<exclude>/md_public_key\.e$</exclude>
-				<exclude>/system_assembly_list_builder\.e$</exclude>
+				<exclude>/implementation/windows$</exclude>
 				<condition>
 					<platform excluded_value="windows"/>
 				</condition>
 			</file_rule>
 			<file_rule>
-				<exclude>/Clib$</exclude>
-				<exclude>/spec$</exclude>
+				<exclude>/implementation/unix$</exclude>
 				<condition>
 					<platform value="windows"/>
 				</condition>

@@ -14,7 +14,7 @@ class
 inherit
 	EQA_EW_COPY_BIN_INST
 		redefine
---			use_source_environment_variable --FIXME: not work...
+			use_source_environment_variable
 		end
 
 create

@@ -165,11 +165,39 @@ feature -- Access
 
 	is_valid: BOOLEAN
 			-- Is current type still valid for current system?
+		local
+			l_type: TYPE_A
+			i, nb: INTEGER
+			l_generics: ARRAY [TYPE_A]
 		do
 			Result := associated_class /= Void and then
 				system.class_type_of_id (type_id) = Current and then
 				type.is_valid and then
 				type.is_valid_generic_derivation
+			if Result and then attached {GEN_TYPE_A} type as l_gen_type then
+					-- Check constrained genericity validity rule.
+					-- We cannot apply it directly to `type' because of the formal we use
+					-- to denote the reference version of the generic derivation.
+					-- This fixes eweasel test#incr378.
+				from
+					l_generics := l_gen_type.generics
+					i := l_generics.lower
+					nb := l_generics.upper
+				until
+					i > nb or else not Result
+				loop
+					l_type := l_generics.item (i)
+					if not l_type.is_formal then
+							-- Not a formal thus the generic derivation for an expanded.
+						check is_expanded: l_type.is_expanded end
+						l_gen_type.reset_constraint_error_list
+							-- Check the constraint to ensure it makes sense
+						l_gen_type.check_one_constraint (associated_class, Void, False, i)
+						Result := l_gen_type.constraint_error_list.is_empty
+					end
+					i := i + 1
+				end
+			end
 		end
 
 	is_modifiable: BOOLEAN
@@ -216,6 +244,14 @@ feature -- Access
 			type_not_void: type /= Void
 		do
 			Result := type.is_true_expanded and basic_type = Void
+		end
+
+	is_separate: BOOLEAN
+			-- Is current class type separate?
+		require
+			type_attached: attached type
+		do
+			Result := type.is_separate
 		end
 
 	is_generic: BOOLEAN
@@ -273,7 +309,7 @@ feature -- Access
 		require
 			is_precompiled: is_precompiled
 		do
-			Result := il_casing.type_name (internal_namespace, a_prefix, internal_type_name, is_dotnet_name)
+			Result := il_casing.type_name (internal_namespace, a_prefix, is_separate, internal_type_name, is_dotnet_name)
 		end
 
 	conformance_table: PACKED_BOOLEANS
@@ -879,7 +915,7 @@ feature -- Generation
 			end
 
 				-- clean the list of shared include files
-			shared_include_queue.wipe_out
+			shared_include_queue_wipe_out
 		end
 
 	generate_feature (f: FEATURE_I; buffer, header_buffer: GENERATION_BUFFER)
@@ -1951,6 +1987,11 @@ feature {NONE} -- Convenience
 				-- Bit 12: Store `is_deferred'
 			if l_class.is_deferred then
 				Result := Result | 0x1000
+			end
+
+				-- Bit 13: Store `is_separate'
+			if is_separate then
+				Result := Result | 0x2000
 			end
 		end
 

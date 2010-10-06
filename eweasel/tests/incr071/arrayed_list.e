@@ -68,10 +68,12 @@ feature -- Initialization
 			-- (`n' may be zero for empty list.)
 		require
 			valid_number_of_items: n >= 0
+		local
+			l_default: G
 		do
 			index := 0
 			set_count (0)
-			array_make (1, n)
+			array_make_filled (l_default, 1, n)
 		ensure
 			correct_position: before
 			is_empty: is_empty
@@ -83,10 +85,12 @@ feature -- Initialization
 			-- This list will be full.
 		require
 			valid_number_of_items: n >= 0
+		local
+			l_default: G
 		do
 			index := 0
 			set_count (n)
-			array_make (1, n)
+			array_make_filled (l_default, 1, n)
 		ensure
 			correct_position: before
 			filled: full
@@ -397,9 +401,11 @@ feature -- Element change
 
 	merge_right (other: ARRAYED_LIST [G]) is
 			-- Merge `other' into current structure after cursor.
+		local
+			l_default: G
 		do
 			if not other.is_empty then
-				conservative_resize (1, count + other.count)
+				conservative_resize_with_default (l_default, 1, count + other.count)
 				if index < count then
 					subcopy (Current, index + 1, count, 
 						index + other.count + 1) 
@@ -415,6 +421,7 @@ feature -- Element change
 		local
 			al: ARRAYED_LIST [G]
 			c, new_count: INTEGER
+			l_default: G
 		do
 			al ?= s
 			if al /= Void then -- Optimization for arrayed lists
@@ -422,7 +429,7 @@ feature -- Element change
 					-- If `s' is empty nothing to be done.
 				if c > 0 then
 					new_count := count + c
-					conservative_resize (1, new_count)
+					conservative_resize_with_default (l_default, 1, new_count)
 					subcopy (al, 1, c, count + 1)
 					set_count (new_count)
 				end
@@ -498,9 +505,9 @@ feature -- Removal
 						put_i_th (i_th (i + offset), i) 
 					end
 					if obj_cmp then
-						res := equal (v, i_th (i))
+						res := v ~ i_th (i)
 					else
-						res := (v = i_th (i))
+						res := v = i_th (i)
 					end
 					if res then 
 						offset := offset + 1

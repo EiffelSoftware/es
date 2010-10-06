@@ -219,8 +219,8 @@ feature {NONE} -- Click ast exploration
 		do
 			if is_ok_for_completion then
 				initialize_context
-				if current_class_i /= Void then
-					create l_mapper.make (current_class_i.text_8)
+				if attached content.text_loaded as l_text then
+					create l_mapper.make (l_text)
 					parents := current_class_as.parents
 					has_parents := parents /= Void
 					if has_parents then
@@ -235,14 +235,14 @@ feature {NONE} -- Click ast exploration
 							parents.forth
 							i := i + 1
 						end
-						inherit_clauses.put (l_mapper.next_utf32_pos_from_utf8_pos (current_class_as.conforming_inherit_clause_insert_position), i)
+						inherit_clauses.put (l_mapper.fast_utf32_pos_from_utf8_pos (current_class_as.conforming_inherit_clause_insert_position), i)
 						inherit_clauses.sort
 					end
 					ast_list := current_class_as.click_list
 					if ast_list /= Void then
 						c := ast_list.count
 						create prov_list.make
-						create l_mapper.make (current_class_i.text_8)
+						create l_mapper.make (l_text)
 						from
 							pos := 1
 						until

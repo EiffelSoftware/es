@@ -14,6 +14,9 @@ inherit
 			unanalyze, generate, analyze, allocates_memory
 		end
 
+	SHARED_TYPE_I
+		export {NONE} all end
+
 feature
 
 	register: REGISTRABLE
@@ -217,6 +220,7 @@ feature
 					-- We are not the last call on the chain.
 				message.unanalyze
 			end
+			separate_register := Void
 		end
 
 	analyze
@@ -292,14 +296,18 @@ feature
 					-- We are not the last call on the chain.
 				message.analyze
 			end
+			if real_type (target.type).is_separate then
+					-- Allocate a register for a container that stores arguments
+					-- to be passed to the scheduler.
+				create separate_register.make (reference_c_type)
+					-- The register is not used right after the call.
+				separate_register.free_register
+			end
 		end
 
 	generate
 			-- Generate expression
-		local
-			with_inv: BOOLEAN
 		do
-			with_inv := context.has_invariant
 			if parent = Void then
 					-- This is the first call. Generate the target.
 				target.generate
@@ -308,12 +316,12 @@ feature
 					generate_frozen_debugger_hook_nested
 				end
 						-- Generate a call on an entity stored in `target'
-				generate_call (target, with_inv)
+				generate_call (target)
 			else
 					-- This is part of a dot call. Generate a call on the
 					-- entity stored in the parent's register.
 					-- Our target is already generated.
-				generate_call (parent.register, with_inv)
+				generate_call (parent.register)
 			end
 			if message.target /= message then
 					-- generate a hook
@@ -323,43 +331,20 @@ feature
 			end
 		end
 
-	generate_call (reg: REGISTRABLE; with_inv: BOOLEAN)
+	generate_call (reg: REGISTRABLE)
 			-- Generate a call on entity held in `reg'
 		local
 			message_target: ACCESS_B
-			buf: GENERATION_BUFFER
-			agent_call: AGENT_CALL_B
-			complex_message_target: BOOLEAN
 		do
-			buf := buffer
 				-- Message_target is the target of the message (if message is a nested_bl) and message otherwise.
 			message_target := message.target
 				-- Put parameters, if any, in temporary registers
 			message_target.generate_parameters (reg)
-				-- Now if there is a result for the call and the result
-				-- has to be stored in a real register, do generate the
-				-- assignment.
-			agent_call ?= message_target
-			complex_message_target := agent_call /= Void
-			buf.put_new_line
-			if register /= Void and then register /= No_register and then not complex_message_target then
-				register.print_register
-				buf.put_three_character (' ', '=', ' ')
-			end
-				-- If register is No_register, then the call will be
-				-- generated directly by a call to `print_register'.
-				-- Otherwise, we have to generate it now.
 			if register /= No_register then
-				message_target.generate_on (reg)
-				buf.put_character (';')
-
-				if register /= Void and then complex_message_target then
-					buf.put_new_line
-					register.print_register
-					buf.put_string (" = ")
-					message_target.register.print_register
-					buf.put_character (';')
-				end
+					-- If register is No_register, then the call will be
+					-- generated directly by a call to `print_register'.
+					-- Otherwise, we have to generate it now.
+				message_target.generate_call (separate_register, False, register, reg)
 			end
 		end
 
@@ -368,8 +353,13 @@ feature
 
 	allocates_memory: BOOLEAN = True;
 
+feature {NONE} -- Separate feature call
+
+	separate_register: REGISTER;
+			-- Register to store data to be passed to the scheduler
+
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -382,22 +372,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

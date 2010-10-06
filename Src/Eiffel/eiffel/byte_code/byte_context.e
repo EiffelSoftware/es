@@ -195,13 +195,15 @@ feature -- Access
 	has_feature_name_stored: BOOLEAN
 			-- Is string representing feature name stored in local?
 
+	has_request_chain: BOOLEAN
+			-- Is a request chain created?
+
 	is_inside_hidden_code: BOOLEAN
 			-- Is inside hidden code?
 			--| used for sugar code such as new loop construct "across"
 
 	hidden_code_level: INTEGER
 			-- Level of hidden code (i.e: depth)
-
 
 feature -- Setting
 
@@ -297,6 +299,14 @@ feature -- Setting
 			has_feature_name_stored := v
 		ensure
 			has_feature_name_stored_set: has_feature_name_stored = v
+		end
+
+	set_has_request_chain (v: BOOLEAN)
+			-- Set `has_request_chain' to `v'.
+		do
+			has_request_chain := v
+		ensure
+			has_request_chain_set: has_request_chain = v
 		end
 
 	set_hidden_code_level (a_level: like hidden_code_level)
@@ -1196,11 +1206,15 @@ feature -- Access
 				formal_position := formal.position
 				Result := a_context_type.generics.item (formal_position)
 				if Result.is_formal then
+					formal ?= Result
+					check formal_not_void: formal /= Void end
 					if formal.is_multi_constrained (a_context_type.associated_class) then
 						create {MULTI_FORMAL_A} Result.make (True, formal.is_expanded, formal.position)
 					else
 						Result := a_context_type.associated_class.constrained_type (formal_position)
 					end
+						-- Preserve attachment and separateness status of the context actual parameter.
+					Result := Result.to_other_attachment (formal).to_other_separateness (formal)
 				end
 			end
 		ensure
@@ -2642,6 +2656,7 @@ feature -- Clearing
 			original_body_index := 0
 			current_used := False
 			need_gc_hook := False
+			has_request_chain := False
 			label := 0
 			local_list.wipe_out
 			breakpoint_slots_number := 0;

@@ -76,6 +76,9 @@ feature -- Status report
 			associated_type_ast := Void
 		end
 
+	is_delayed: BOOLEAN
+			-- May type evaluation be delayed?
+
 feature -- Settings
 
 	init_for_checking (a_feature: FEATURE_I; a_class: CLASS_C; a_suppliers: FEATURE_DEPENDANCE; a_error_handler: ERROR_HANDLER)
@@ -91,6 +94,7 @@ feature -- Settings
 			current_feature_table := a_class.feature_table
 			suppliers := a_suppliers
 			error_handler := a_error_handler
+			set_is_delayed (False)
 		ensure
 			current_feature_set: current_feature = a_feature
 			current_class_set: current_class = a_class
@@ -98,11 +102,11 @@ feature -- Settings
 			current_feature_table_set: current_feature_table = current_class.feature_table
 			suppliers_set: suppliers = a_suppliers
 			error_handler_set: error_handler = a_error_handler
+			not_is_delayed: not is_delayed
 		end
 
-	init_with_feature_table (a_feature: FEATURE_I; a_feat_tbl: FEATURE_TABLE; a_suppliers: FEATURE_DEPENDANCE; a_error_handler: ERROR_HANDLER)
-			-- Initialize Current with `a_feature', `a_feat_tbl' and `suppliers'.
-			-- `suppliers' will be updated if not Void.
+	init_with_feature_table (a_feature: FEATURE_I; a_feat_tbl: FEATURE_TABLE; a_error_handler: ERROR_HANDLER)
+			-- Initialize Current to start type checking of the given feature within the given feature table.
 		require
 			a_feature_not_void: a_feature /= Void
 			a_feat_tbl_not_void: a_feat_tbl /= Void
@@ -111,15 +115,25 @@ feature -- Settings
 			current_class := a_feat_tbl.associated_class
 			current_actual_type := current_class.actual_type
 			current_feature_table := a_feat_tbl
-			suppliers := a_suppliers
+			suppliers := Void
 			error_handler := a_error_handler
+			set_is_delayed (False)
 		ensure
 			current_feature_set: current_feature = a_feature
 			current_class_set: current_class = a_feat_tbl.associated_class
 			current_actual_type_set: attached current_actual_type as t and then t.same_as (current_class.actual_type)
 			current_feature_table_set: current_feature_table = a_feat_tbl
-			suppliers_set: suppliers = a_suppliers
+			suppliers_set: suppliers = Void
 			error_handler_set: error_handler = a_error_handler
+			not_is_delayed: not is_delayed
+		end
+
+	set_is_delayed (value: BOOLEAN)
+			-- Set `is_delayed' to `value'.
+		do
+			is_delayed := value
+		ensure
+			is_delayed_set: is_delayed = value
 		end
 
 feature {NONE} -- Implementation: Access
@@ -753,22 +767,14 @@ feature {TYPE_A} -- Visitors
 			if l_anchor_feature /= Void then
 					-- Create instance of LIKE_FEATURE
 				create l_like_feature.make (l_anchor_feature, current_class.class_id)
-				if a_type.has_attached_mark then
-					l_like_feature.set_attached_mark
-				elseif a_type.has_detachable_mark then
-					l_like_feature.set_detachable_mark
-				end
+				l_like_feature.set_marks_from (a_type)
 				update_like_feature (l_anchor_feature, l_like_feature)
 			else
 				l_argument_position := current_feature.argument_position (a_type.anchor_name_id)
 				if l_argument_position /= 0 then
 					create l_like_argument
 					l_like_argument.set_position (l_argument_position)
-					if a_type.has_attached_mark then
-						l_like_argument.set_attached_mark
-					elseif a_type.has_detachable_mark then
-						l_like_argument.set_detachable_mark
-					end
+					l_like_argument.set_marks_from (a_type)
 					update_like_argument (current_feature, l_like_argument)
 				else
 					last_type := Void
@@ -792,11 +798,7 @@ feature {TYPE_A} -- Visitors
 			r: QUALIFIED_ANCHORED_TYPE_A
 		do
 			create r.make (t.qualifier, t.chain, current_class.class_id)
-			if t.has_attached_mark then
-				r.set_attached_mark
-			elseif t.has_detachable_mark then
-				r.set_detachable_mark
-			end
+			r.set_marks_from (t)
 			update_immediate_qualified_anchored_type (r)
 		end
 
@@ -885,7 +887,11 @@ feature {NONE} -- Implementation
 				e := h.error_level
 			end
 			t.qualifier.process (Current)
-			q := last_type
+			if is_delayed then
+				last_type := Void
+			else
+				q := last_type
+			end
 			if attached q then
 				t.set_qualifier (q)
 				n := t.chain.count
@@ -901,7 +907,9 @@ feature {NONE} -- Implementation
 							-- as it makes no sense to continue processing otherwise.
 						check_type_validity (q, associated_type_ast)
 					end
-					if attached error_handler as h and then h.error_level /= e then
+					if
+						attached error_handler as h and then h.error_level /= e
+					then
 							-- The type is not valid in current context.
 						q := Void
 					else
@@ -983,7 +991,11 @@ feature {NONE} -- Implementation
 			n: INTEGER
 		do
 			t.qualifier.process (Current)
-			q := last_type
+			if is_delayed then
+				last_type := Void
+			else
+				q := last_type
+			end
 			if attached q then
 				t.set_qualifier (q)
 				n := t.chain.count
@@ -1061,13 +1073,11 @@ feature {NONE} -- Implementation
 		require
 			f_attached: attached f
 		local
-			l_rout_id: INTEGER_32
 			l_like_control: like like_control
 			l_vtat1: VTAT1
 		do
 			l_like_control := like_control
-			l_rout_id := f.rout_id_set.first
-			if l_like_control.has_routine_id (l_rout_id) then
+			if l_like_control.has_feature (f) then
 					-- Error because of cycle
 				last_type := Void
 				if has_error_reporting then
@@ -1077,11 +1087,11 @@ feature {NONE} -- Implementation
 					error_handler.insert_error (l_vtat1)
 				end
 			else
-				l_like_control.put_routine_id (l_rout_id)
+				l_like_control.put_feature (f)
 					-- Process type referenced by anchor.
 				f.type.process (Current)
 					-- Update anchored type controler
-				l_like_control.remove_routine_id
+				l_like_control.remove_feature
 				if not attached last_type as a then
 						-- Nothing to be done, error if any was already reported.
 				elseif a.is_void then
