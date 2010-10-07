@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="semantic_search" uuid="197D2624-6547-4BAB-90AB-131ABFA4EABB" library_target="semantic_search">
-	<target name="semantic_search">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="information_retrieval" uuid="197D2624-AE47-4BAB-90AB-131ABFA4EABB" library_target="information_retrieval">
+	<target name="information_retrieval">
 		<root all_classes="true"/>
 		<option warning="false" is_attached_by_default="false" void_safety="none" syntax="provisional">
 			<assertions/>
@@ -25,12 +25,11 @@
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
-		<library name="information_retrieval" location="$EIFFEL_SRC\framework\information_retrieval\information_retrieval.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
-		<cluster name="semantic_search" location=".\" recursive="true">
+		<cluster name="information_retrieval" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/java$</exclude>
 			</file_rule>

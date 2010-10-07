@@ -7,6 +7,9 @@ note
 class
 	SEM_CONSTANTS
 
+inherit
+	IR_TERM_OCCURRENCE
+
 feature -- Queryable type names
 
 	transition_field_value: STRING = "transition"
@@ -42,26 +45,6 @@ feature -- Property type forms
 				a_form = dynamic_type_form or else
 				a_form = static_type_form or else
 				a_form = anonymous_type_form
-		end
-
-feature -- Term occurrences
-
-	term_occurrence_must: INTEGER = 1
-			-- Flag to indicate that a term must occur in a result document
-
-	term_occurrence_must_not: INTEGER = 2
-			-- Flag to indicate that a term must not occur in a result document
-
-	term_occurrence_should: INTEGER = 3
-			-- Flag to indicate that a term should occur in a result document
-
-	is_term_occurrence_valid (a_occurrence: INTEGER): BOOLEAN
-			-- Is `a_occurrence' valid?
-		do
-			Result :=
-				a_occurrence = term_occurrence_must or else
-				a_occurrence = term_occurrence_must_not or else
-				a_occurrence = term_occurrence_should
 		end
 
 feature -- Type names

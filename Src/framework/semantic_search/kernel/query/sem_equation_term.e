@@ -16,9 +16,15 @@ feature -- Access
 			-- Equation of current contract, is must from `queryable'
 
 	expression: EPA_EXPRESSION
-			-- Expression of `expression'
+			-- Expression of `equation'
 		do
 			Result := equation.expression
+		end
+
+	value: EPA_EXPRESSION_VALUE
+			-- Value of `equation'
+		do
+			Result := equation.value
 		end
 
 	type: TYPE_A

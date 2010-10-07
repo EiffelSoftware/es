@@ -17,6 +17,8 @@ feature{NONE} -- Initialization
 
 	make (a_queryable: like queryable)
 			-- Initialize `queryable' with `a_queryable'.
+		local
+			i: IR_QUERY
 		do
 			set_queryable (a_queryable)
 			set_primary_property_type_form (static_type_form)

@@ -107,4 +107,5 @@ feature{NONE} -- Implementation
 			Result.append (value)
 			Result.append_character ('%N')
 		end
+
 end
