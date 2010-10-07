@@ -59,7 +59,7 @@ feature -- Access
 			Result := postcondition_veto_agents_cache
 		end
 
-	auxiliary_field_agents: LINKED_LIST [FUNCTION [ANY, TUPLE [a_transition: like queryable], DS_HASH_SET [SEM_DOCUMENT_FIELD]]]
+	auxiliary_field_agents: LINKED_LIST [FUNCTION [ANY, TUPLE [a_transition: like queryable], DS_HASH_SET [IR_FIELD]]]
 			-- Actions to return a list of auxiliary fields for `a_transition'
 			-- If the list is empty, no auxiliary field is used.
 		do
@@ -157,35 +157,35 @@ feature{NONE} -- Implementation
 				l_data.append (l_cursor.item.out)
 				l_cursor.forth
 			end
-			write_field_with_data (variable_position_field, l_data, string_field_type, default_boost_value)
+			write_field_with_data (variable_position_field, l_data, ir_string_value_type, default_boost_value)
 		end
 
 	write_content
 			-- Append content of `queryable' to `buffer'.
 		do
-			write_field_with_data (content_field, queryable.content, string_field_type, default_boost_value)
+			write_field_with_data (content_field, queryable.content, ir_string_value_type, default_boost_value)
 		end
 
 	write_begin
 			-- Write begin section of the whole document
 		do
-			write_field_with_data (begin_field, begin_field_value, string_field_type, default_boost_value)
+			write_field_with_data (begin_field, begin_field_value, ir_string_value_type, default_boost_value)
 		end
 
 	write_end
 			-- Write end section of the whole document
 		do
-			write_field_with_data (end_field, end_field_value, string_field_type, default_boost_value)
+			write_field_with_data (end_field, end_field_value, ir_string_value_type, default_boost_value)
 		end
 
 	write_header
 			-- Write document header, including
 			-- document type, class name, feature name.
 		do
-			write_field_with_data (document_type_field, transition_field_value, string_field_type, default_boost_value)
-			write_field_with_data (class_field, queryable.class_.name_in_upper, string_field_type, default_boost_value)
-			write_field_with_data (feature_field, queryable.feature_.feature_name_32.as_lower , string_field_type, default_boost_value)
-			write_field_with_data (uuid_field, queryable.uuid, string_field_type, default_boost_value)
+			write_field_with_data (document_type_field, transition_field_value, ir_string_value_type, default_boost_value)
+			write_field_with_data (class_field, queryable.class_.name_in_upper, ir_string_value_type, default_boost_value)
+			write_field_with_data (feature_field, queryable.feature_.feature_name_32.as_lower , ir_string_value_type, default_boost_value)
+			write_field_with_data (uuid_field, queryable.uuid, ir_string_value_type, default_boost_value)
 			write_library
 		end
 
@@ -211,14 +211,14 @@ feature{NONE} -- Implementation
 		do
 			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor)
 			if not l_values.is_empty then
-				write_field_with_data (a_field, l_values, string_field_type, default_boost_value)
+				write_field_with_data (a_field, l_values, ir_string_value_type, default_boost_value)
 			end
 		end
 
 	write_library
 			-- Write the library of `queryable' into `output'
 		do
-			write_field_with_data (library_field, queryable.class_.group.name, string_field_type, default_boost_value)
+			write_field_with_data (library_field, queryable.class_.group.name, ir_string_value_type, default_boost_value)
 		end
 
 	write_preconditions
@@ -302,11 +302,11 @@ feature{NONE} -- Writing
 	write_auxiliary_fields
 			-- Write auxiliary fields retrieved from `auxiliary_field_agents' into `output'.
 		local
-			l_fields: DS_HASH_SET [SEM_DOCUMENT_FIELD]
+			l_fields: DS_HASH_SET [IR_FIELD]
 		do
 				-- Collect all auxiliary fields from `auxiliary_field_agents'.
 			create l_fields.make (10)
-			l_fields.set_equality_tester (document_field_equality_tester)
+			l_fields.set_equality_tester (ir_field_equality_tester)
 			across auxiliary_field_agents as l_agents loop
 				l_fields.append_last (l_agents.item.item ([queryable]))
 			end
@@ -315,7 +315,7 @@ feature{NONE} -- Writing
 			l_fields.do_all (agent write_field)
 		end
 
-	write_field (a_field: SEM_DOCUMENT_FIELD)
+	write_field (a_field: IR_FIELD)
 			-- Write `a_field' into `output', and update `written_fields'.
 		do
 			if not written_fields.has (a_field) then
@@ -329,7 +329,7 @@ feature{NONE} -- Writing
 	write_field_with_data (a_name: STRING; a_value: STRING; a_type: INTEGER; a_boost: DOUBLE)
 			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
 		do
-			write_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))
+			write_field (create {IR_FIELD}.make_with_raw_value (a_name, a_value, a_type, a_boost))
 		end
 
 end

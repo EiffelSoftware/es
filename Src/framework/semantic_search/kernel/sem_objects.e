@@ -83,7 +83,7 @@ feature{NONE} -- Initialization
 				l_obj_index := l_obj_table.key_for_iteration
 				l_obj_name := l_name_prefix + l_obj_index.out
 				l_expr := variable_expression_from_context (l_obj_name, a_context)
-				l_objects.put (l_obj_table.item_for_iteration, l_expr)
+				l_objects.force_last (l_obj_table.item_for_iteration, l_expr)
 				extend_variable (l_expr, l_obj_index)
 				l_obj_table.forth
 			end

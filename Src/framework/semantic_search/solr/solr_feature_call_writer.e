@@ -178,9 +178,9 @@ feature{NONE} -- Implementation
 			across <<l_smeta, l_dmeta>> as l_metas loop
 				across l_metas.item as l_items loop
 					if l_items.item.starts_with (once "i") then
-						l_type := integer_field_type
+						l_type := ir_integer_value_type
 					else
-						l_type := boolean_field_type
+						l_type := ir_boolean_value_type
 					end
 					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, l_boost)
 				end
@@ -209,7 +209,7 @@ feature{NONE} -- Implementation
 			l_dynamic_change := l_change_calculator.change_set (queryable.preconditions, queryable.postconditions)
 			append_change_set (l_dynamic_change, default_boost_value)
 
-			l_type := string_field_type
+			l_type := ir_string_value_type
 			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
 				across l_metas.item as l_items loop
 					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)

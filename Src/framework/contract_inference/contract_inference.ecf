@@ -32,6 +32,7 @@
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf"/>
 		<library name="rapid_miner" location="$EIFFEL_SRC\framework\rapid_miner\rapid_miner.ecf" readonly="false"/>
+		<library name="information_retrieval" location="$EIFFEL_SRC\framework\information_retrieval\information_retrieval.ecf" readonly="false"/>
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>

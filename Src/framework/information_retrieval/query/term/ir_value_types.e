@@ -54,6 +54,24 @@ feature -- Access
 			end
 		end
 
+	ir_value_type_from_name (a_name: STRING): INTEGER
+			-- Value type from `a_name'
+		require
+			a_name_valid: is_ir_value_type_name_valid (a_name)
+		do
+			if a_name ~ ir_boolean_value_type_name then
+				Result := ir_boolean_value_type
+			elseif a_name ~ ir_integer_value_type_name then
+				Result := ir_integer_value_type
+			elseif a_name ~ ir_string_value_type_name then
+				Result := ir_string_value_type
+			elseif a_name ~ ir_integer_range_value_type_name then
+				Result := ir_integer_range_value_type
+			end
+		ensure
+			result_good: is_ir_value_type_valid (Result)
+		end
+
 feature -- Status report
 
 	is_ir_value_type_valid (a_type: INTEGER): BOOLEAN
@@ -64,5 +82,15 @@ feature -- Status report
 				a_type = ir_boolean_value_type or else
 				a_type = ir_string_value_type or else
 				a_type = ir_integer_range_value_type
+		end
+
+	is_ir_value_type_name_valid (a_name: STRING): BOOLEAN
+			-- Is `a_name' a valid value type name?
+		do
+			Result :=
+				a_name ~ ir_boolean_value_type_name or else
+				a_name ~ ir_integer_value_type_name or else
+				a_name ~ ir_string_value_type_name or else
+				a_name ~ ir_integer_range_value_type_name
 		end
 end

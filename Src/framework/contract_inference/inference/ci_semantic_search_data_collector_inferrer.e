@@ -96,23 +96,23 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	test_case_info_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_transition_info: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [SEM_DOCUMENT_FIELD]
+	test_case_info_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_transition_info: CI_TEST_CASE_TRANSITION_INFO): DS_HASH_SET [IR_FIELD]
 			-- Set of semantic search document fields representing the test case for `a_test_case_info' and `a_serialization_info'.
 		do
 			create Result.make (10)
 
 				-- Setup fields for test case information.
-			Result.set_equality_tester (document_field_equality_tester)
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_case_class_field, a_transition_info.test_case_info.test_case_class.name_in_upper, string_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (test_feature_field, a_transition_info.test_case_info.test_feature.feature_name.as_lower, string_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_query_field, a_transition_info.test_case_info.is_feature_under_test_query.out, boolean_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (is_feature_under_test_creation_field, a_transition_info.test_case_info.is_feature_under_test_creation.out, boolean_field_type, default_boost_value))
-			Result.force_last (create {SEM_DOCUMENT_FIELD}.make (operand_variable_indexes_field, a_transition_info.test_case_info.operand_variable_indexes, string_field_type, default_boost_value))
+			Result.set_equality_tester (ir_field_equality_tester)
+			Result.force_last (create {IR_FIELD}.make_as_string (test_case_class_field, a_transition_info.test_case_info.test_case_class.name_in_upper, default_boost_value))
+			Result.force_last (create {IR_FIELD}.make_as_string (test_feature_field, a_transition_info.test_case_info.test_feature.feature_name.as_lower, default_boost_value))
+			Result.force_last (create {IR_FIELD}.make_as_boolean (is_feature_under_test_query_field, a_transition_info.test_case_info.is_feature_under_test_query, default_boost_value))
+			Result.force_last (create {IR_FIELD}.make_as_boolean (is_feature_under_test_creation_field, a_transition_info.test_case_info.is_feature_under_test_creation, default_boost_value))
+			Result.force_last (create {IR_FIELD}.make_as_string (operand_variable_indexes_field, a_transition_info.test_case_info.operand_variable_indexes, default_boost_value))
 
 				-- Setup fields for object serialization.
 			if a_transition_info.serialization_info /= Void then
-				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (prestate_serialization_field, a_transition_info.serialization_info.pre_serialization_as_string.twin, string_field_type, default_boost_value))
-				Result.force_last (create {SEM_DOCUMENT_FIELD}.make (poststate_serialization_field, a_transition_info.serialization_info.post_serialization_as_string.twin, string_field_type, default_boost_value))
+				Result.force_last (create {IR_FIELD}.make_as_string (prestate_serialization_field, a_transition_info.serialization_info.pre_serialization_as_string.twin, default_boost_value))
+				Result.force_last (create {IR_FIELD}.make_as_string (poststate_serialization_field, a_transition_info.serialization_info.post_serialization_as_string.twin, default_boost_value))
 			end
 
 				-- Setup fields for integer-bounded functions.
@@ -121,7 +121,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	feild_for_integer_bounded_functions (a_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]; a_pre_state: BOOLEAN): SEM_DOCUMENT_FIELD
+	feild_for_integer_bounded_functions (a_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]; a_pre_state: BOOLEAN): IR_FIELD
 			-- Field for `a_function'
 			-- `a_pre_state' inidcates prestate or poststate.
 		local
@@ -163,10 +163,10 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
-			create Result.make (l_field_name, l_value, string_field_type, default_boost_value)
+			create Result.make_as_string (l_field_name, l_value, default_boost_value)
 		end
 
-	test_case_info_from_fields (a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): CI_TEST_CASE_INFO
+	test_case_info_from_fields (a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_INFO
 			-- Test case info from `a_fields'
 		local
 			l_class_under_test: CLASS_C
@@ -178,30 +178,30 @@ feature{NONE} -- Implementation
 			l_operand_variable_indexes: STRING
 		do
 			a_fields.search (test_case_class_field)
-			l_test_case_class := first_class_starts_with_name (a_fields.found_item.value)
+			l_test_case_class := first_class_starts_with_name (a_fields.found_item.value.text)
 
 			a_fields.search (test_feature_field)
-			l_test_feature := l_test_case_class.feature_named (a_fields.found_item.value)
+			l_test_feature := l_test_case_class.feature_named (a_fields.found_item.value.text)
 
 			a_fields.search (is_feature_under_test_query_field)
-			l_is_query := a_fields.found_item.value.to_boolean
+			l_is_query := a_fields.found_item.value.text.to_boolean
 
 			a_fields.search (is_feature_under_test_creation_field)
-			l_is_query := a_fields.found_item.value.to_boolean
+			l_is_query := a_fields.found_item.value.text.to_boolean
 
 			a_fields.search (operand_variable_indexes_field)
-			l_operand_variable_indexes := a_fields.found_item.value
+			l_operand_variable_indexes := a_fields.found_item.value.text
 
 			a_fields.search (class_field)
-			l_class_under_test := first_class_starts_with_name (a_fields.found_item.value)
+			l_class_under_test := first_class_starts_with_name (a_fields.found_item.value.text)
 
 			a_fields.search (feature_field)
-			l_feature_under_test := l_class_under_test.feature_named (a_fields.found_item.value)
+			l_feature_under_test := l_class_under_test.feature_named (a_fields.found_item.value.text)
 
 			create Result.make_with_data (l_test_case_class, l_test_feature, l_class_under_test, l_feature_under_test, l_is_query, l_is_creation, l_operand_variable_indexes)
 		end
 
-	serialization_info_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): CI_TEST_CASE_SERIALIZATION_INFO
+	serialization_info_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_SERIALIZATION_INFO
 			-- Test case serialization information from `a_fields'
 		local
 			l_object_info: HASH_TABLE [TYPE_A, INTEGER]
@@ -232,13 +232,13 @@ feature{NONE} -- Implementation
 			end
 
 			a_fields.search (prestate_serialization_field)
-			l_pre_serialization := a_fields.found_item.value
+			l_pre_serialization := a_fields.found_item.value.text
 
 			a_fields.search (poststate_serialization_field)
-			l_post_serialization := a_fields.found_item.value
+			l_post_serialization := a_fields.found_item.value.text
 
 			a_fields.search (operand_variable_indexes_field)
-			l_operand_variable_indexes := a_fields.found_item.value
+			l_operand_variable_indexes := a_fields.found_item.value.text
 
 			create Result.make (a_test_case_info, l_pre_serialization, l_post_serialization, l_operand_variable_indexes, l_objects, l_objects)
 		end

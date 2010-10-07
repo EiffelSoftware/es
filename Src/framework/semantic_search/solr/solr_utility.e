@@ -14,16 +14,16 @@ inherit
 
 feature -- Access
 
-	xml_element_for_field (a_field: SEM_DOCUMENT_FIELD): STRING
+	xml_element_for_field (a_field: IR_FIELD): STRING
 			-- String representing XML element for `a_field'
 		do
-			create Result.make (a_field.value.count + a_field.name.count + 64)
+			create Result.make (a_field.value.text.count + a_field.name.count + 64)
 			Result.append (once "<field name=%"")
 			Result.append (escaped_field_string (a_field.name))
 			Result.append (once "%" boost=%"")
 			Result.append (a_field.boost.out)
 			Result.append (once "%">")
-			Result.append (a_field.value)
+			Result.append (a_field.value.text)
 			Result.append (once "</field>")
 		end
 

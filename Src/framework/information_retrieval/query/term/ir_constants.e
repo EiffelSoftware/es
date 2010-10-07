@@ -7,4 +7,8 @@ note
 class
 	IR_CONSTANTS
 
+feature -- Default boost
+
+	default_boost_value: DOUBLE = 1.0
+	
 end

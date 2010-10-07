@@ -163,17 +163,17 @@ feature -- Access
 			create Result
 		end
 
-	queryable_type_field (a_queryable: SEM_QUERYABLE): SEM_DOCUMENT_FIELD
+	queryable_type_field (a_queryable: SEM_QUERYABLE): IR_FIELD
 			-- Field representing the type name of `a_queryable'
 		require
 			a_queryable_attached: a_queryable /= Void
 		do
 			if a_queryable.is_feature_call then
-				create Result.make_with_string_type (document_type_field, transition_field_value)
+				create Result.make_as_string (document_type_field, transition_field_value, default_boost_value)
 			elseif a_queryable.is_snippet then
-				create Result.make_with_string_type (document_type_field, snippet_field_value)
+				create Result.make_as_string (document_type_field, snippet_field_value, default_boost_value)
 			elseif a_queryable.is_objects then
-				create Result.make_with_string_type (document_type_field, object_field_value)
+				create Result.make_as_string (document_type_field, object_field_value, default_boost_value)
 			end
 		end
 
@@ -184,11 +184,11 @@ feature -- Access
 		do
 			l_value := a_equation.value
 			if l_value.is_integer then
-				Result := integer_field_type
+				Result := ir_integer_value_type
 			elseif l_value.is_boolean then
-				Result := boolean_field_type
+				Result := ir_boolean_value_type
 			else
-				Result := string_field_type
+				Result := ir_string_value_type
 			end
 		end
 
@@ -199,11 +199,11 @@ feature -- Access
 		do
 			l_type := a_equation.type
 			if l_type.is_integer then
-				Result := integer_field_type
+				Result := ir_integer_value_type
 			elseif l_type.is_boolean then
-				Result := boolean_field_type
+				Result := ir_boolean_value_type
 			else
-				Result := string_field_type
+				Result := ir_string_value_type
 			end
 		end
 

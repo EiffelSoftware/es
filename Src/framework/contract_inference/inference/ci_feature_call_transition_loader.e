@@ -69,7 +69,7 @@ feature{NONE} -- Implementation
 			Result := [l_transition_loader.last_queryable, l_test_case_info, l_serialization_info, l_bounded_functions]
 		end
 
-	bounded_functions_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): HASH_TABLE [DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN], BOOLEAN]
+	bounded_functions_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_fields: HASH_TABLE [IR_FIELD, STRING]): HASH_TABLE [DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN], BOOLEAN]
 			-- Bounded functions from `a_fields'
 		local
 			l_field_name: STRING
@@ -105,7 +105,7 @@ feature{NONE} -- Implementation
 
 				a_fields.search (l_field_name)
 				if a_fields.found then
-					across string_slices (a_fields.found_item.value, field_value_separator) as l_functions loop
+					across string_slices (a_fields.found_item.value.text, field_value_separator) as l_functions loop
 						l_parts := l_functions.item.split (';')
 						l_target_operand_index := l_parts.i_th (1).to_integer
 						l_target_variable_name := l_parts.i_th (2)
@@ -121,7 +121,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	test_case_info_from_fields (a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): CI_TEST_CASE_INFO
+	test_case_info_from_fields (a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_INFO
 			-- Test case info from `a_fields'
 		local
 			l_class_under_test: CLASS_C
@@ -133,30 +133,30 @@ feature{NONE} -- Implementation
 			l_operand_variable_indexes: STRING
 		do
 			a_fields.search (test_case_class_field)
-			l_test_case_class := first_class_starts_with_name (a_fields.found_item.value)
+			l_test_case_class := first_class_starts_with_name (a_fields.found_item.value.text)
 
 			a_fields.search (test_feature_field)
-			l_test_feature := l_test_case_class.feature_named (a_fields.found_item.value)
+			l_test_feature := l_test_case_class.feature_named (a_fields.found_item.value.text)
 
 			a_fields.search (is_feature_under_test_query_field)
-			l_is_query := a_fields.found_item.value.to_boolean
+			l_is_query := a_fields.found_item.value.text.to_boolean
 
 			a_fields.search (is_feature_under_test_creation_field)
-			l_is_query := a_fields.found_item.value.to_boolean
+			l_is_query := a_fields.found_item.value.text.to_boolean
 
 			a_fields.search (operand_variable_indexes_field)
-			l_operand_variable_indexes := a_fields.found_item.value
+			l_operand_variable_indexes := a_fields.found_item.value.text
 
 			a_fields.search (class_field)
-			l_class_under_test := first_class_starts_with_name (a_fields.found_item.value)
+			l_class_under_test := first_class_starts_with_name (a_fields.found_item.value.text)
 
 			a_fields.search (feature_field)
-			l_feature_under_test := l_class_under_test.feature_named (a_fields.found_item.value)
+			l_feature_under_test := l_class_under_test.feature_named (a_fields.found_item.value.text)
 
 			create Result.make_with_data (l_test_case_class, l_test_feature, l_class_under_test, l_feature_under_test, l_is_query, l_is_creation, l_operand_variable_indexes)
 		end
 
-	serialization_info_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]): CI_TEST_CASE_SERIALIZATION_INFO
+	serialization_info_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_SERIALIZATION_INFO
 			-- Test case serialization information from `a_fields'
 		local
 			l_object_info: HASH_TABLE [TYPE_A, INTEGER]
@@ -187,13 +187,13 @@ feature{NONE} -- Implementation
 			end
 
 			a_fields.search (prestate_serialization_field)
-			l_pre_serialization := a_fields.found_item.value
+			l_pre_serialization := a_fields.found_item.value.text
 
 			a_fields.search (poststate_serialization_field)
-			l_post_serialization := a_fields.found_item.value
+			l_post_serialization := a_fields.found_item.value.text
 
 			a_fields.search (operand_variable_indexes_field)
-			l_operand_variable_indexes := a_fields.found_item.value
+			l_operand_variable_indexes := a_fields.found_item.value.text
 
 			create Result.make (a_test_case_info, l_pre_serialization, l_post_serialization, l_operand_variable_indexes, l_objects, l_objects)
 		end

@@ -30,7 +30,7 @@ feature -- Access
 			-- Table of meta data, such as query time, query status code
 			-- Key is data name, value is data value
 
-	documents: LINKED_LIST [SEM_DOCUMENT]
+	documents: LINKED_LIST [IR_DOCUMENT]
 			-- List of returned document, every document is a set of fields (name,value) pairs.
 			-- The order of the documents is preserved from the raw query result
 end

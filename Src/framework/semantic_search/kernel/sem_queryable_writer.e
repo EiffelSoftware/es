@@ -31,13 +31,13 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	written_fields: DS_HASH_SET [SEM_DOCUMENT_FIELD]
+	written_fields: DS_HASH_SET [IR_FIELD]
 			-- Fields that are already written
 			-- Used to avoid writing duplicated fields
 		do
 			if written_fields_cache = Void then
 				create written_fields_cache.make (100)
-				written_fields_cache.set_equality_tester (document_field_equality_tester)
+				written_fields_cache.set_equality_tester (ir_field_equality_tester)
 			end
 			Result := written_fields_cache
 		end

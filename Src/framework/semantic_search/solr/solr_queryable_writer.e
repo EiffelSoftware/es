@@ -37,10 +37,10 @@ feature{NONE} -- Implementation
 	append_field_with_data (a_name: STRING; a_value: STRING; a_type: INTEGER; a_boost: DOUBLE)
 			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
 		do
-			append_field (create {SEM_DOCUMENT_FIELD}.make (a_name, a_value, a_type, a_boost))
+			append_field (create {IR_FIELD}.make_with_raw_value (a_name, a_value, a_type, a_boost))
 		end
 
-	append_field (a_field: SEM_DOCUMENT_FIELD)
+	append_field (a_field: IR_FIELD)
 			-- append `a_field' into `medium'.
 		do
 			if not written_fields.has (a_field) then
@@ -55,7 +55,7 @@ feature{NONE} -- Implementation
 	append_string_field (a_name: STRING; a_value: STRING)
 			-- Append a string field with `a_name' and `a_value' and default boost value.
 		do
-			append_field (create {SEM_DOCUMENT_FIELD}.make_with_string_type (a_name, a_value))
+			append_field (create {IR_FIELD}.make_as_string (a_name, a_value, default_boost_value))
 		end
 
 	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN)
@@ -67,7 +67,7 @@ feature{NONE} -- Implementation
 		do
 			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor)
 			if not l_values.is_empty then
-				append_field_with_data (a_field, l_values, string_field_type, default_boost_value)
+				append_field_with_data (a_field, l_values, ir_string_value_type, default_boost_value)
 			end
 		end
 
@@ -89,7 +89,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	written_fields: DS_HASH_SET [SEM_DOCUMENT_FIELD]
+	written_fields: DS_HASH_SET [IR_FIELD]
 			-- Fields that are already written
 			-- Used to avoid writing duplicated fields
 		deferred

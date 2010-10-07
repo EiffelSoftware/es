@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	fields: HASH_TABLE [SEM_DOCUMENT_FIELD, STRING]
+	fields: HASH_TABLE [IR_FIELD, STRING]
 			-- Table of fields loaded by last `load'
 			-- Key is field name, value is that field
 
@@ -48,7 +48,7 @@ feature{NONE} -- Implementation
 		local
 			l_done: BOOLEAN
 			l_lines: ARRAYED_LIST [STRING]
-			l_field: SEM_DOCUMENT_FIELD
+			l_field: IR_FIELD
 		do
 			create fields.make (200)
 			fields.compare_objects
@@ -63,7 +63,7 @@ feature{NONE} -- Implementation
 				if attached {STRING} medium.last_string as l_line then
 					if l_line.is_empty then
 						if l_lines.count = 4 then
-							create l_field.make (l_lines.first, l_lines.i_th (4), field_type_from_name (l_lines.i_th (3)), l_lines.i_th (2).to_double)
+							create l_field.make_with_raw_value (l_lines.first, l_lines.i_th (4), ir_value_type_from_name (l_lines.i_th (3)), l_lines.i_th (2).to_double)
 							fields.force (l_field, l_field.name)
 							l_done := (l_field.name ~ end_field)
 						end
@@ -107,7 +107,7 @@ feature{NONE} -- Implementation
 			l_fields.search (class_field)
 			l_ok := l_fields.found
 			if l_ok then
-				l_class := first_class_starts_with_name (l_fields.found_item.value)
+				l_class := first_class_starts_with_name (l_fields.found_item.value.text)
 			end
 
 				-- Setup feature.
@@ -115,7 +115,7 @@ feature{NONE} -- Implementation
 				l_fields.search (feature_field)
 				l_ok := l_fields.found
 				if l_ok then
-					l_feature := l_class.feature_named  (l_fields.found_item.value)
+					l_feature := l_class.feature_named  (l_fields.found_item.value.text)
 				end
 			end
 
@@ -123,12 +123,12 @@ feature{NONE} -- Implementation
 			if l_ok then
 				l_fields.search (variable_position_field)
 				l_ok := l_fields.found
-				l_positions := l_fields.found_item.value
+				l_positions := l_fields.found_item.value.text
 				if l_ok then
 					l_fields.search (variables_field)
 					l_ok := l_fields.found
 					if l_ok then
-						l_variable_type_table := variable_type_table (l_fields.found_item.value)
+						l_variable_type_table := variable_type_table (l_fields.found_item.value.text)
 						variable_positions := variable_position_table (l_positions)
 						l_context := transition_context (l_variable_type_table, variable_positions)
 					end
@@ -140,7 +140,7 @@ feature{NONE} -- Implementation
 				l_fields.search (operand_variable_indexes_field)
 				l_ok := l_fields.found
 				if l_ok then
-					l_operand_variable_indexes := operand_variable_indexes (l_fields.found_item.value)
+					l_operand_variable_indexes := operand_variable_indexes (l_fields.found_item.value.text)
 				end
 			end
 
@@ -149,7 +149,7 @@ feature{NONE} -- Implementation
 				l_fields.search (is_feature_under_test_creation_field)
 				l_ok := l_fields.found
 				if l_ok then
-					l_is_creation := l_fields.found_item.value.to_boolean
+					l_is_creation := l_fields.found_item.value.text.to_boolean
 				end
 			end
 
@@ -158,7 +158,7 @@ feature{NONE} -- Implementation
 				l_fields.search (uuid_field)
 				l_ok := l_fields.found
 				if l_ok then
-					l_uuid := l_fields.found_item.value
+					l_uuid := l_fields.found_item.value.text
 				end
 			end
 
@@ -296,7 +296,7 @@ feature{NONE} -- Implementation
 					l_current_anon_property := l_field.substring (l_prefix.count + 1, l_field.count)
 					if is_anonymous_form (l_current_anon_property) then
 						l_current_var_property := variable_form_from_anonymous (l_current_anon_property, variable_positions)
-						l_current_property_value := l_fields.item.value
+						l_current_property_value := l_fields.item.value.text
 						l_state.extend (l_current_property_value, l_current_var_property)
 					end
 				end
@@ -308,11 +308,11 @@ feature{NONE} -- Implementation
 				fields.search (test_case_class_field)
 				l_ok := fields.found
 				if l_ok then
-					l_test_case_class := first_class_starts_with_name (fields.found_item.value)
+					l_test_case_class := first_class_starts_with_name (fields.found_item.value.text)
 					fields.search (test_feature_field)
 					l_ok := fields.found
 					if l_ok then
-						l_test_feature := l_test_case_class.feature_named (fields.found_item.value)
+						l_test_feature := l_test_case_class.feature_named (fields.found_item.value.text)
 						if l_ok then
 							create l_prestate.make_from_object_state (l_prestate_queries, l_test_case_class, l_test_feature)
 							create l_poststate.make_from_object_state (l_poststate_queries, l_test_case_class, l_test_feature)
