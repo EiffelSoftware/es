@@ -47,6 +47,12 @@ feature{NONE} -- Implementation
 	queryable_dynamic_type_name_table: like type_name_table
 			-- Dynamic type name table for variables in `queryable'
 
+	static_type_form_generator: SEM_STATIC_TYPE_FORM_GENERATOR
+			-- Static type form generator
+		once
+			create Result.make
+		end
+
 feature{NONE} -- Implementation
 
 	append_properties
@@ -66,10 +72,10 @@ feature{NONE} -- Implementation
 			l_value: EPA_EXPRESSION_VALUE
 			l_prefix: STRING
 			l_dmeta: HASH_TABLE [STRING, STRING]
+			l_smeta: HASH_TABLE [STRING, STRING]
 			l_body: STRING
 			l_field_name: STRING
 			l_meta_value: STRING
-			l_separator: STRING
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -77,8 +83,8 @@ feature{NONE} -- Implementation
 			l_prefix := property_prefix
 			create l_dmeta.make (400)
 			l_dmeta.compare_objects
-			l_separator := field_value_separator
-
+			create l_smeta.make (400)
+			l_smeta.compare_objects
 				-- Iterate through all interface contracts from `queryable'.
 			from
 				l_equations := queryable.properties.new_cursor
@@ -103,25 +109,28 @@ feature{NONE} -- Implementation
 					append_field_with_data (
 						field_name_for_equation (l_body, l_equation, dynamic_format_type, False, l_prefix),
 						l_value_text, l_type, l_boost)
+
 					l_field_name := field_name_for_equation (l_body, l_equation, dynamic_format_type, True, l_prefix)
-					create l_meta_value.make (1024)
-					l_meta_value.append (l_anonymous)
-					l_meta_value.append (l_separator)
-					l_meta_value.append (l_value_text)
-					l_meta_value.append (l_separator)
+					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
 
+						-- Output static type form.
+					static_type_form_generator.generate (queryable.context, l_expr, l_var_dtype_tbl)
+					l_body := static_type_form_generator.output.string_representation
+					append_field_with_data (
+						field_name_for_equation (l_body, l_equation, static_format_type, False, l_prefix),
+						l_value_text, l_type, l_boost)
+					l_field_name := field_name_for_equation (l_body, l_equation, static_format_type, True, l_prefix)
+					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
+					extend_string_into_list (l_smeta, l_meta_value, l_field_name)
 				end
 				l_equations.forth
 			end
 
-			across l_dmeta as l_items loop
-				if l_items.item.starts_with (once "i") then
-					l_type := ir_integer_value_type
-				else
-					l_type := ir_boolean_value_type
+			across <<l_dmeta, l_smeta>> as l_metas loop
+				across l_metas.item as l_items loop
+					append_field_with_data (l_items.key, escaped_field_string (l_items.item), ir_string_value_type, default_boost_value)
 				end
-				append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, default_boost_value)
 			end
 		end
 

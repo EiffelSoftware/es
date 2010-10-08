@@ -17,7 +17,6 @@ feature -- Access
 		deferred
 		end
 
-
 	uuid: detachable UUID
 			-- UUID used for the queryable to write
 			-- If Void, a new UUID will be generated
@@ -171,5 +170,50 @@ feature{NONE} -- Constants
 	precondition_prefix: STRING = "pre_"
 	postcondition_prefix: STRING = "post_"
 	property_prefix: STRING = "prop_"
+
+feature{NONE} -- Implementation
+
+	variable_indexes_from_anonymous_text (a_text: STRING): LINKED_LIST [INTEGER]
+			-- Variable indexes from `a_text', `a_text' is in anonymous form
+		local
+			i: INTEGER
+			c: INTEGER
+			l_in_var: BOOLEAN
+			l_index: STRING
+			l_char: CHARACTER
+		do
+			create Result.make
+			create l_index.make (6)
+			from
+				i := 1
+				c := a_text.count
+			until
+				i > c
+			loop
+				l_char := a_text.item (i)
+				if l_char = '{' then
+					l_in_var := True
+				elseif l_char = '}' then
+					Result.extend (l_index.to_integer)
+					l_index.wipe_out
+					l_in_var := False
+				elseif l_in_var then
+					l_index.extend (l_char)
+				end
+				i := i + 1
+			end
+		end
+
+	text_for_variable_indexes_and_value (a_anonymous_text: STRING; a_value_text: STRING): STRING
+			-- String containing variable indexes in `a_anonymous_text' and `a_value_text'
+		do
+			create Result.make (a_anonymous_text.count + 20)
+			across variable_indexes_from_anonymous_text (a_anonymous_text) as l_indexes loop
+				Result.append (l_indexes.item.out)
+				Result.append_character (',')
+			end
+			Result.append (a_value_text)
+			Result.append_character (';')
+		end
 
 end

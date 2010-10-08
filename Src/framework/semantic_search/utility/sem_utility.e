@@ -259,6 +259,7 @@ feature -- Access
 
 	type_name_table (a_tbl: HASH_TABLE [TYPE_A, STRING]): HASH_TABLE [STRING, STRING]
 			-- Table whose values are type names, instead of types
+			-- Key is variable name
 		do
 			create Result.make (a_tbl.count)
 			Result.compare_objects

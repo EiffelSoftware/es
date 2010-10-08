@@ -104,6 +104,7 @@ feature{NONE} -- Implementation
 			l_list: LINKED_LIST [STRING]
 			l_meta_value: STRING
 			l_separator: STRING
+			l_char: CHARACTER
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -152,11 +153,7 @@ feature{NONE} -- Implementation
 						l_value_text, l_type, l_boost)
 
 					l_field_name := field_name_for_equation (l_body, l_equation.equation, dynamic_format_type, True, l_prefix)
-					create l_meta_value.make (1024)
-					l_meta_value.append (l_anonymous)
-					l_meta_value.append (l_separator)
-					l_meta_value.append (l_value_text)
-					l_meta_value.append (l_separator)
+					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (l_smeta, l_meta_value, l_field_name)
 
 						-- Output static type format.
@@ -177,12 +174,7 @@ feature{NONE} -- Implementation
 
 			across <<l_smeta, l_dmeta>> as l_metas loop
 				across l_metas.item as l_items loop
-					if l_items.item.starts_with (once "i") then
-						l_type := ir_integer_value_type
-					else
-						l_type := ir_boolean_value_type
-					end
-					append_field_with_data (l_items.key, escaped_field_string (l_items.item), l_type, l_boost)
+					append_field_with_data (l_items.key, escaped_field_string (l_items.item), ir_string_value_type, l_boost)
 				end
 			end
 		end
@@ -276,11 +268,7 @@ feature{NONE} -- Implementation
 						field_name_for_change (l_body, a_change, dynamic_format_type, False),
 						l_value_text, l_type, l_boost)
 					l_field_name := field_name_for_change (l_body, a_change, dynamic_format_type, True)
-					create l_meta_value.make (1024)
-					l_meta_value.append (l_anonymous)
-					l_meta_value.append (field_value_separator)
-					l_meta_value.append (l_value_text)
-					l_meta_value.append (field_value_separator)
+					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (dynamic_change_meta, l_meta_value, l_field_name)
 
 						-- Output static type format.
