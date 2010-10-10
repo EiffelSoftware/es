@@ -336,6 +336,21 @@ feature -- Access
 			end
 		end
 
+	text_in_static_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		deferred
+		end
+
+	text_in_dynamic_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		deferred
+		end
+
+	text_in_anonymous_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		deferred
+		end
+
 feature -- Status report
 
 	has_variable (a_variable: EPA_EXPRESSION): BOOLEAN
@@ -546,23 +561,6 @@ feature{NONE} -- Implementation
 			Result :=
 				variables.has (a_variable) and then
 				a_position >= 0
-		end
-
-	variable_expression_from_context (a_variable_name: STRING; a_context: like context): EPA_EXPRESSION
-			-- Expression for variable named `a_variable_name'
-			-- The variable should appear in `a_context'.
-		require
-			a_variable_name_name: a_context.variables.has (a_variable_name)
-		local
-			l_expr_as: EXPR_AS
-			l_type: TYPE_A
-		do
-			l_expr_as := ast_from_expression_text (a_variable_name)
-			l_type := a_context.expression_type (l_expr_as)
-			if l_type=void then
-				create {NONE_A}l_type
-			end
-			create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
 		end
 
 	set_state (a_source_state: EPA_STATE; a_target_state: EPA_STATE)

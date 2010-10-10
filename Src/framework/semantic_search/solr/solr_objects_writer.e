@@ -47,12 +47,6 @@ feature{NONE} -- Implementation
 	queryable_dynamic_type_name_table: like type_name_table
 			-- Dynamic type name table for variables in `queryable'
 
-	static_type_form_generator: SEM_STATIC_TYPE_FORM_GENERATOR
-			-- Static type form generator
-		once
-			create Result.make
-		end
-
 feature{NONE} -- Implementation
 
 	append_properties
@@ -102,15 +96,15 @@ feature{NONE} -- Implementation
 				if l_value.is_integer or l_value.is_true_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
-					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, anonymous_format_type, False, l_prefix), l_value_text, l_type, l_boost)
+					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, anonymous_type_form, False, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
 					append_field_with_data (
-						field_name_for_equation (l_body, l_equation, dynamic_format_type, False, l_prefix),
+						field_name_for_equation (l_body, l_equation, dynamic_type_Form, False, l_prefix),
 						l_value_text, l_type, l_boost)
 
-					l_field_name := field_name_for_equation (l_body, l_equation, dynamic_format_type, True, l_prefix)
+					l_field_name := field_name_for_equation (l_body, l_equation, dynamic_type_form, True, l_prefix)
 					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
 
@@ -118,9 +112,9 @@ feature{NONE} -- Implementation
 					static_type_form_generator.generate (queryable.context, l_expr, l_var_dtype_tbl)
 					l_body := static_type_form_generator.output.string_representation
 					append_field_with_data (
-						field_name_for_equation (l_body, l_equation, static_format_type, False, l_prefix),
+						field_name_for_equation (l_body, l_equation, static_type_form, False, l_prefix),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_equation (l_body, l_equation, static_format_type, True, l_prefix)
+					l_field_name := field_name_for_equation (l_body, l_equation, static_type_form, True, l_prefix)
 					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (l_smeta, l_meta_value, l_field_name)
 				end

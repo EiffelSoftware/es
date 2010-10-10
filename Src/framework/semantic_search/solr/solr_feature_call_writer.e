@@ -139,7 +139,7 @@ feature{NONE} -- Implementation
 				if l_value.is_integer or l_value.is_true_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
-					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, anonymous_format_type, False, l_prefix), l_value_text, l_type, l_boost)
+					append_field_with_data (field_name_for_equation (l_anonymous, l_equation.equation, anonymous_type_form, False, l_prefix), l_value_text, l_type, l_boost)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
@@ -147,12 +147,12 @@ feature{NONE} -- Implementation
 						field_name_for_equation (
 							l_body,
 							l_equation.equation,
-							dynamic_format_type,
+							dynamic_type_form,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
 
-					l_field_name := field_name_for_equation (l_body, l_equation.equation, dynamic_format_type, True, l_prefix)
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, dynamic_type_form, True, l_prefix)
 					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (l_smeta, l_meta_value, l_field_name)
 
@@ -162,11 +162,11 @@ feature{NONE} -- Implementation
 						field_name_for_equation (
 							l_body,
 							l_equation.equation,
-							static_format_type,
+							static_type_form,
 							False,
 							l_prefix),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_equation (l_body, l_equation.equation, static_format_type, True, l_prefix)
+					l_field_name := field_name_for_equation (l_body, l_equation.equation, static_type_form, True, l_prefix)
 					extend_string_into_list (l_dmeta, l_meta_value, l_field_name)
 				end
 				l_equations.forth
@@ -260,23 +260,23 @@ feature{NONE} -- Implementation
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (a_change.expression)
 
-					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_format_type, False), l_value_text, l_type, a_boost_value)
+					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_type_form, False), l_value_text, l_type, a_boost_value)
 
 						-- Output dynamic type format.
 					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, False)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, dynamic_format_type, False),
+						field_name_for_change (l_body, a_change, dynamic_type_form, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, dynamic_format_type, True)
+					l_field_name := field_name_for_change (l_body, a_change, dynamic_type_form, True)
 					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (dynamic_change_meta, l_meta_value, l_field_name)
 
 						-- Output static type format.
 					l_body := expression_with_replacements (l_expr, l_var_stype_tbl, True)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, static_format_type, False),
+						field_name_for_change (l_body, a_change, static_type_form, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, static_format_type, True)
+					l_field_name := field_name_for_change (l_body, a_change, static_type_form, True)
 					extend_string_into_list (static_change_meta, l_meta_value, l_field_name)
 				end
 			end

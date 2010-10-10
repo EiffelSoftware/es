@@ -7,7 +7,7 @@ note
 deferred class
 	SEM_QUERYABLE_VISITOR
 
-feature -- Access
+feature -- Process
 
 	process_snippet (a_snippet: SEM_SNIPPET)
 			-- Process `a_snippet'.

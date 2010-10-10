@@ -89,10 +89,11 @@ feature{NONE} -- Initialization
 			make_with_class (a_class, variables)
 		end
 
-	make_with_class_and_feature (a_class: like class_; a_feature: like feature_; a_add_operands: BOOLEAN; a_add_locals: BOOLEAN)
+	make_with_class_and_feature (a_class: like class_; a_feature: like feature_; a_add_operands: BOOLEAN; a_add_locals: BOOLEAN; a_add_target: BOOLEAN)
 			-- Initialize Current with `a_class' and `a_feature'.
 			-- `a_add_operands' indicates if operands of `a_feature' should be added as variables into the resulting context.
 			-- `a_add_locals' indicates if locals in `a_feature' should be added as variables into the resulting context.
+			-- `a_add_target' indicates if target of `a_feature' should be added as a variable into the resulting context.
 		local
 			l_context: ETR_CLASS_CONTEXT
 			i: INTEGER
@@ -116,7 +117,9 @@ feature{NONE} -- Initialization
 				until
 					l_opd_cursor.after
 				loop
-					variables.put (l_opd_cursor.item, l_opd_cursor.key)
+					if l_opd_cursor.key ~ ti_current implies a_add_target then
+						variables.put (l_opd_cursor.item, l_opd_cursor.key)
+					end
 					l_opd_cursor.forth
 				end
 			end

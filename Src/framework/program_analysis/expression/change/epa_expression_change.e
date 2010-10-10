@@ -44,6 +44,12 @@ feature -- Access
 	expression: EPA_EXPRESSION
 			-- Expression to which Current change is associated
 
+	type: TYPE_A
+			-- Type of `expression'
+		do
+			Result := expression.type
+		end
+
 	values: EPA_EXPRESSION_CHANGE_VALUE_SET
 			-- Values by which or to which `expression' changes
 

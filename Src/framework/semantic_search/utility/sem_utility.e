@@ -348,4 +348,27 @@ feature -- Access
 			end
 		end
 
+	variable_expression_from_context (a_variable_name: STRING; a_context: EPA_CONTEXT): EPA_EXPRESSION
+			-- Expression for variable named `a_variable_name'
+			-- The variable should appear in `a_context'.
+		require
+			a_variable_name_name: a_context.variables.has (a_variable_name)
+		local
+			l_expr_as: EXPR_AS
+			l_type: TYPE_A
+		do
+			l_expr_as := ast_from_expression_text (a_variable_name)
+			l_type := a_context.expression_type (l_expr_as)
+			if l_type=void then
+				create {NONE_A}l_type
+			end
+			create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
+		end
+
+	static_type_form_generator: SEM_STATIC_TYPE_FORM_GENERATOR
+			-- Static type form generator
+		once
+			create Result.make
+		end
+
 end

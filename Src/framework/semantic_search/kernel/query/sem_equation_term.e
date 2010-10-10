@@ -33,4 +33,22 @@ feature -- Access
 			Result := equation.expression.type
 		end
 
+	field_content_in_static_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := queryable.text_in_static_type_form (expression)
+		end
+
+	field_content_in_dynamic_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := queryable.text_in_dynamic_type_form (expression)
+		end
+
+	field_content_in_anonymous_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := queryable.text_in_anonymous_type_form (expression)
+		end
+
 end

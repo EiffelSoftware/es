@@ -32,6 +32,18 @@ feature -- Access
 	item: INTEGER_INTERVAL
 			-- Value wrapped in Current
 
+	lower: INTEGER
+			-- Lower from `item'
+		do
+			Result := item.lower
+		end
+
+	upper: INTEGER
+			-- Upper from `item'
+		do
+			Result := item.upper
+		end
+
 	hash_code: INTEGER
 			-- Hash code value
 		do

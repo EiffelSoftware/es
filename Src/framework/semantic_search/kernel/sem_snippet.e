@@ -122,6 +122,24 @@ feature -- Access
 			Result := cloned_object
 		end
 
+	text_in_static_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		do
+			to_implement ("To implement. 10.10.2010 Jasonw")
+		end
+
+	text_in_dynamic_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		do
+			to_implement ("To implement. 10.10.2010 Jasonw")
+		end
+
+	text_in_anonymous_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+		do
+			to_implement ("To implement. 10.10.2010 Jasonw")
+		end
+
 feature -- Type status report
 
 	is_snippet: BOOLEAN = True

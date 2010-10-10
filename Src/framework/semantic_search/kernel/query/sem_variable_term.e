@@ -13,6 +13,8 @@ inherit
 			is_variable
 		end
 
+	SEM_FIELD_NAMES
+
 create
 	make
 
@@ -35,6 +37,34 @@ feature -- Access
 			-- Type of current variable
 		do
 			Result := variable.type
+		end
+
+	text: STRING
+			-- Text representation of Current
+		do
+			create Result.make (128)
+			Result.append (once "Variable ")
+			Result.append (variable.text)
+			Result.append (once ": ")
+			Result.append (type.name)
+		end
+
+	field_content_in_static_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := variables_field
+		end
+
+	field_content_in_dynamic_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := variables_field
+		end
+
+	field_content_in_anonymous_type_form: STRING
+			-- Text of current term in static type form
+		do
+			Result := variables_field
 		end
 
 feature -- Status report

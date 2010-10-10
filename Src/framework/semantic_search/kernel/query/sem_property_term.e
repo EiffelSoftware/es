@@ -32,6 +32,14 @@ feature -- Access
 	queryable: SEM_OBJECTS
 			-- Objects where current term is from
 
+	text: STRING
+			-- Text representation of Current
+		do
+			create Result.make (128)
+			Result.append (once "Property ")
+			Result.append (equation.text)
+		end
+
 feature -- Status report
 
 	is_property: BOOLEAN = True

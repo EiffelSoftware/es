@@ -102,12 +102,12 @@ feature{NONE} -- Implementation
 	format_type_prefix (a_type: INTEGER): STRING
 			-- Prefix for `a_type'
 		do
-			if a_type = dynamic_format_type then
-				Result := dynamic_format_type_prefix
-			elseif a_type = static_format_type then
-				Result := static_format_type_prefix
-			elseif a_type = anonymous_format_type then
-				Result := anonymous_format_type_prefix
+			if a_type = dynamic_type_form then
+				Result := dynamic_type_form_prefix
+			elseif a_type = static_type_form then
+				Result := static_type_form_prefix
+			elseif a_type = anonymous_type_form then
+				Result := anonymous_type_form_prefix
 			end
 		end
 
@@ -148,28 +148,6 @@ feature{NONE} -- Implementation
 			end
 			l_list.append (a_string)
 		end
-
-feature{NONE} -- Constants
-
-	integer_prefix: STRING = "i_"
-	boolean_prefix: STRING = "b_"
-	string_prefix: STRING = "s_"
-	text_prefix: STRING = "t_"
-	by_change_prefix: STRING = "by_"
-	to_change_prefix: STRING = "to_"
-
-	dynamic_format_type: INTEGER = 1
-	static_format_type: INTEGER = 2
-	anonymous_format_type: INTEGER = 3
-
-
-	dynamic_format_type_prefix: STRING = "d_"
-	static_format_type_prefix: STRING = "s_"
-	anonymous_format_type_prefix: STRING = "a_"
-
-	precondition_prefix: STRING = "pre_"
-	postcondition_prefix: STRING = "post_"
-	property_prefix: STRING = "prop_"
 
 feature{NONE} -- Implementation
 

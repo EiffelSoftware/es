@@ -299,6 +299,45 @@ feature -- Access
 			end
 		end
 
+	dynamic_type_name_table: HASH_TABLE [STRING, STRING]
+			-- Table from variable names to their dynamic type
+		do
+			if dynamic_type_name_table_internal = Void then
+				dynamic_type_name_table_internal := type_name_table (variable_dynamic_type_table)
+			end
+			Result := dynamic_type_name_table_internal
+		end
+
+	static_type_name_table: HASH_TABLE [STRING, STRING]
+			-- Table from variable names to their static type
+		do
+			if static_type_name_table_internal = Void then
+				static_type_name_table_internal := type_name_table (variable_static_type_table)
+			end
+			Result := static_type_name_table_internal
+		end
+
+	text_in_static_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form			
+			-- Note: `a_expression' must only mention operands.
+		do
+			Result := expression_with_replacements (a_expression, static_type_name_table, True)
+		end
+
+	text_in_dynamic_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+			-- Note: `a_expression' must only mention operands.
+		do
+			Result := expression_with_replacements (a_expression, dynamic_type_name_table, True)
+		end
+
+	text_in_anonymous_type_form (a_expression: EPA_EXPRESSION): STRING
+			-- Text of `a_expression' in static type form
+			-- Note: `a_expression' must only mention operands.
+		do
+			Result := anonymous_expression_text (a_expression)
+		end
+
 feature -- Status report
 
 	is_creation: BOOLEAN
@@ -538,5 +577,11 @@ feature{NONE} -- Implementation
 				l_cursor.forth
 			end
 		end
+
+	dynamic_type_name_table_internal: detachable like dynamic_type_name_table
+			-- Cache for `dynamic_type_name_table'
+
+	static_type_name_table_internal: detachable like static_type_name_table
+			-- Cache for `static_type_name_table'
 
 end

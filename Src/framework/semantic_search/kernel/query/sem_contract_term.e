@@ -37,6 +37,21 @@ feature -- Access
 	queryable: SEM_TRANSITION
 			-- Transition where current term is from
 
+	text: STRING
+			-- Text representation of Current
+		do
+			create Result.make (128)
+			if is_precondition then
+				Result.append (once "Precondition, ")
+			else
+				Result.append (once "Postcondition, ")
+			end
+			if is_human_written then
+				Result.append (once "human-written, ")
+			end
+			Result.append (equation.text)
+		end
+
 feature -- Status report
 
 	is_contract: BOOLEAN = True
