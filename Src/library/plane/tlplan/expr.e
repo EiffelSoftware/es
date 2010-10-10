@@ -25,7 +25,9 @@ feature
 
 	to_printer (p : PRINTER)
 		do
-			p.add ("(")
+			if not exprs.is_empty then
+				p.add ("(")
+			end
 			p.add (op)
 
 			if not exprs.is_empty then
@@ -44,8 +46,10 @@ feature
 				p.newline
 				p.unindent
 			end
-			
-			p.add (")")
+
+			if not exprs.is_empty then
+				p.add (")")
+			end
 		end
 
 end

@@ -19,5 +19,4 @@ feature
 			make ("?" + a_op, create {ARRAYED_LIST[EXPR]}.make (0))
 		end
 
-
 end

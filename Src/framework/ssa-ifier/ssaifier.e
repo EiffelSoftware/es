@@ -21,28 +21,30 @@ feature
 			ssa_printer: SSA_PRINTER
 			p: PRINTER
 		do
-			create ssa_temps.make
-			io.put_string ("SSAifier running %N")
-
 			class_c := a_class
-			ssa_temps.process (class_c.ast)
 
-			io.put_string (ssa_temps.replacements.count.out + " ast replacements %N")
-			io.put_string (ssa_temps.lines.count.out + " line replacements %N")
-
-			create ssa_temps_printer.make (class_c.ast, ssa_temps.replacements, ssa_temps.lines)
-			ssa_temps_printer.process_replaces
+--			create ssa_temps.make
+--			io.put_string ("SSAifier running %N")
 
 
-			create ssa_typer.make (class_c, "foo")
-			ssa_typer.update_with_table (ssa_temps_printer.anno_replaces)
-			ssa_typer.print_env
+--			ssa_temps.process (class_c.ast)
+
+--			io.put_string (ssa_temps.replacements.count.out + " ast replacements %N")
+--			io.put_string (ssa_temps.lines.count.out + " line replacements %N")
+
+--			create ssa_temps_printer.make (class_c.ast, ssa_temps.replacements, ssa_temps.lines)
+--			ssa_temps_printer.process_replaces
 
 
-			create ssa_printer.make_with_replaces (class_c.ast, ssa_typer.replaces)
-			ssa_printer.process_ast_node (class_c.ast)
+--			create ssa_typer.make (class_c, "foo")
+--			ssa_typer.update_with_table (ssa_temps_printer.anno_replaces)
+--			ssa_typer.print_env
 
-			print (ssa_printer.text)
+
+--			create ssa_printer.make_with_replaces (class_c.ast, ssa_typer.replaces)
+--			ssa_printer.process_ast_node (class_c.ast)
+
+--			print (ssa_printer.text)
 		end
 
 	write_default_plan

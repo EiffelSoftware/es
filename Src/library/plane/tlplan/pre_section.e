@@ -39,19 +39,18 @@ feature
 				p.newline
 			end
 
-			from pre_exprs.start
-			until pre_exprs.after
-			loop
-				pre_exprs.item.to_printer (p)
-				pre_exprs.forth
-
-				if not pre_exprs.after then
-					p.newline
-				end
+			if not pre_exprs.is_empty then
+				and_exprs.to_printer (p)
 			end
-
+			
 			p.unindent
 			p.newline
 			p.add (")")
+		end
+
+feature -- Internal
+	and_exprs: EXPR
+		do
+			create Result.make ("and", pre_exprs)
 		end
 end

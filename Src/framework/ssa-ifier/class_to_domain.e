@@ -31,6 +31,8 @@ feature
 			create symb_defs.make (10)
 
 			create domain.make (symb_defs, actions)
+
+			symb_defs.extend (create {GENERATOR_DEF}.make_gen (type_name_to_gen_name (a_class.class_name.name_32)))
 		end
 
 	action_pre_sect: PRE_SECTION
@@ -123,7 +125,12 @@ feature
 
 	type_to_gen (l_name: STRING; l_type: TYPE_AS): PRE
 		do
-			create Result.make_simple (l_name, type_to_gen_name (l_type))
+			if l_type.text_32 (match_list).as_lower.is_equal ("integer") then
+				create Result.make_integer (l_name)
+			else
+				create Result.make_simple (l_name, type_to_gen_name (l_type))
+			end
+
 		end
 
 	type_to_gen_def (l_type: TYPE_AS): GENERATOR_DEF

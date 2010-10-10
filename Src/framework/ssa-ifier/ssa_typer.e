@@ -111,7 +111,6 @@ feature
 
 					create epa_expr.make_with_text (class_, feat_, text_to_type, class_)
 					type := epa_expr.type
---					type := feat.type
 
 					if attached class_.feature_named_32 (text_to_type) as f then
 						if attached f.body.body.as_routine as rout then

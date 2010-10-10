@@ -47,9 +47,11 @@ feature
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			args: ARRAYED_LIST [EXPR]
+			expr: EXPR
 			var: VAR_EXPR
 		do
 			if attached last_expr then
+				print (l_as.access_name_8 +"%N")
 				create args.make (10)
 
 				args.extend (last_expr)
@@ -62,6 +64,8 @@ feature
 						args.extend (last_expr)
 					end
 				end
+				create expr.make (l_as.access_name_8, args)
+				last_expr := expr
 			elseif not params.has (l_as.access_name_8) then
 				create {UN_EXPR} last_expr.make_un (l_as.access_name_8, create {VAR_EXPR}.make_var ("Current"))
 			else
@@ -108,11 +112,15 @@ feature
 			e1: EXPR
 			e2: EXPR
 		do
+			last_expr := Void
 			l_as.left.process (Current)
 			e1 := last_expr
+--			print (last_expr.op+"%N")
+
+			last_expr := Void
 			l_as.right.process (Current)
 			e2 := last_expr
-
+--			print (last_expr.op+"%N")
 			create bin.make_bin (l_as.op_name.name_8, e1, e2)
 
 			last_expr := bin
