@@ -555,6 +555,8 @@ feature -- Properties
 
 	-- Added for SCOOP: So far the type checker does not support explicit processor specifications. Thus no type in the system will have an explicit processor specification.
 	processor_tag : attached PROCESSOR_TAG_TYPE
+		require
+			already_separate: is_separate
 		do
 			create Result.make_top
 		end

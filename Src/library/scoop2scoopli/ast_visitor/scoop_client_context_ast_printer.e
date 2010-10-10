@@ -1073,17 +1073,21 @@ feature {NONE} -- Creation handling
 				l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
 				is_separate := l_type_expression_visitor.resolved_type.is_separate
 				l_target_type := l_type_expression_visitor.resolved_type
-				l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
 			elseif l_as.target /= Void then
 				l_type_expression_visitor.evaluate_call_type_in_class_and_feature (l_as.target, class_c, l_feature_i, flattened_object_tests_layers, flattened_inline_agents_layers)
 				is_separate := l_type_expression_visitor.is_expression_separate
 				l_target_type := l_type_expression_visitor.expression_type
-				l_processor_tag := l_type_expression_visitor.expression_type.processor_tag
 				l_class_name := l_type_expression_visitor.expression_type.associated_class.name.as_lower
 			end
 
 			if is_separate then
+
+				if l_as.type /= Void then
+					l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
+				elseif l_as.target /= Void then
+					l_processor_tag := l_type_expression_visitor.expression_type.processor_tag
+				end
 
 				------------------------------------------------------------------------------------------
 				-- Separate create creation.															--
@@ -1242,14 +1246,13 @@ feature {NONE} -- Creation handling
 			l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
 			l_type_expression_visitor.resolve_type_in_workbench (l_as.type)
 			l_target_type := l_type_expression_visitor.resolved_type
-			l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 			l_class_name := l_type_expression_visitor.resolved_type.associated_class.name.as_lower
 
 			if l_type_expression_visitor.resolved_type.is_separate then
 				------------------------------------------------------------------------------------------
 				-- Separate create creation expression: Create a wrapper to generate the correct separate object
 				------------------------------------------------------------------------------------------
-
+				l_processor_tag := l_type_expression_visitor.resolved_type.processor_tag
 				create wrapper.make_empty
 				if feature_as /= void then
 					feat_name := feature_as.feature_name.name+"_"

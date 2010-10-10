@@ -23,7 +23,7 @@ feature -- Access
 		require
 			a_class_not_void: a_class /= Void
 		do
-			has_separate_keyword := false
+			has_separate_keyword := False
 			process_class_as (a_class)
 			Result := has_separate_keyword
 		end
@@ -33,7 +33,7 @@ feature {NONE} -- Implementation
 	process_class_type_as (l_as: CLASS_TYPE_AS)
 		do
 			if l_as.has_separate_mark then
-				has_separate_keyword := true
+				has_separate_keyword := True
 			end
 			l_as.class_name.process (Current)
 		end
@@ -41,7 +41,7 @@ feature {NONE} -- Implementation
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
 		do
 			if l_as.has_separate_mark then
-				has_separate_keyword := true
+				has_separate_keyword := True
 			end
 			l_as.class_name.process (Current)
 			l_as.internal_generics.process (Current)
@@ -50,7 +50,7 @@ feature {NONE} -- Implementation
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
 		do
 			if l_as.has_separate_mark then
-				has_separate_keyword := true
+				has_separate_keyword := True
 			end
 			l_as.class_name.process (Current)
 			safe_process (l_as.parameters)

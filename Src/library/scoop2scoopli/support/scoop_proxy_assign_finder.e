@@ -110,7 +110,8 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Access Redeclaration substituion
 				l_ancestor_features.after
 			loop
 				l_current_feature := l_ancestor_features.item
-				if l_current_feature.type.is_separate then
+				if l_current_feature.type.is_separate and
+				    not l_child_feature.type.is_basic then
 					l_one_parent_feature_has_separate_return_type := true
 				end
 				l_ancestor_features.forth

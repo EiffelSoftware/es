@@ -70,7 +70,7 @@ feature {NONE} -- Query
 			-- `a_degree': The degree index to retrieve a description for.
 			-- `Result': A human readable description of the degree.
 		require
-			a_degree_valid: a_degree >= -3 and then a_degree <= 6
+			a_degree_valid: a_degree >= -3 and then a_degree <= 7
 		local
 			l_degree_str: STRING_32
 		do
@@ -93,7 +93,7 @@ feature {NONE} -- Query
 			-- `a_degree': The degree index to retrieve a description for.
 			-- `Result': A human readable description of the degree.
 		require
-			a_degree_valid: a_degree >= -3 and then a_degree <= 6
+			a_degree_valid: a_degree >= -3 and then a_degree <= 7
 		do
 			inspect
 				a_degree
@@ -487,7 +487,7 @@ feature -- Basic operations
 			-- `a_total': Total number of entities to process
 		require
 			not_is_abort_requested: not is_abort_requested
-			a_degree_small_enough: a_degree <= 6
+			a_degree_small_enough: a_degree <= 7
 			a_degree_big_enough: a_degree >= -3
 			a_total_positive: a_total >= 0
 		do
