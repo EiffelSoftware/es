@@ -84,7 +84,7 @@ feature -- Basic operations
 
 				l_body_id := a_feature.body_index
 				l_old_ast := a_feature.body
-				a_feature.tmp_ast_server.body_force (l_feature, l_body_id)
+				a_feature.tmp_ast_server.body_force (a_written_class.class_id, l_feature, l_body_id)
 
 				l_ast_context := a_written_class.ast_context
 				l_ast_context.clear_feature_context
@@ -136,7 +136,7 @@ feature -- Basic operations
 				l_ast_context.clear_all
 
 				if l_old_ast /= Void then
-					a_feature.tmp_ast_server.body_force (l_old_ast, l_body_id)
+					a_feature.tmp_ast_server.body_force (a_written_class.class_id, l_old_ast, l_body_id)
 				end
 			end
 			if l_result = Void then

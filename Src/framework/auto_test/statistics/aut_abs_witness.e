@@ -92,7 +92,7 @@ feature -- Status report
 				until
 					cs.off or not Result
 				loop
-					Result := (cs.item.class_ = cs_other.item.class_) and (cs.item.feature_ = cs_other.item.feature_)
+					Result := (cs.item.class_ = cs_other.item.class_) and (cs.item.feature_.feature_id = cs_other.item.feature_.feature_id)
 					cs.forth
 					cs_other.forth
 				end

@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 			a_error_handler_not_void: a_error_handler /= Void
 			interpreter_root_class_attached: interpreter_root_class /= Void
 		local
-			l_itp_class: like interpreter_class
+			l_itp_class: CLASS_C
 			l_file_printer: AUT_PROXY_LOG_TEXT_STREAM_PRINTER
 		do
 			configuration := a_config
@@ -110,8 +110,11 @@ feature {NONE} -- Initialization
 			make_response_parser (a_system)
 
 				-- You can only do this after the compilation of the interpreter.
-			injected_feature_body_id := l_itp_class.feature_named_32 (feature_name_for_byte_code_injection).real_body_id (l_itp_class.types.first)
-			injected_feature_pattern_id := l_itp_class.feature_named_32 (feature_name_for_byte_code_injection).real_pattern_id (l_itp_class.types.first)
+			check attached feature_for_byte_code_injection as l_feature then
+				l_itp_class := l_feature.written_class
+				injected_feature_body_id := l_feature.real_body_id (l_itp_class.types.first)
+				injected_feature_pattern_id := l_feature.real_pattern_id (l_itp_class.types.first)
+			end
 
 				-- Setup socket data printer.
 			create socket_data_printer.make (system, variable_table, Current)
