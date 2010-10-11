@@ -153,6 +153,13 @@ feature -- Access
 			Result := anonymous_expression_text (a_expression)
 		end
 
+	static_type_of_variable (a_variable: EPA_EXPRESSION): TYPE_A
+			-- Static type of `a_variable'
+			-- For objects, there is no static type, dynamic type of objects are used.
+		do
+			Result := a_variable.type
+		end
+
 feature -- Type status report
 
 	is_objects: BOOLEAN = True

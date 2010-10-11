@@ -388,7 +388,7 @@ feature -- Visitor/Process
 		deferred
 		end
 
-feature{NONE} -- Implementation
+feature -- Access
 
 	resolved_type_in_context (a_type: TYPE_A; a_context_class: ClASS_C): TYPE_A
 			-- Resolved type of `a_type' in context `a_context_class'

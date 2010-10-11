@@ -43,6 +43,11 @@ feature -- Access
 			Result.replace_substring_all (once "+", once "%%2B")
 			Result.replace_substring_all (once "-", once "%%2D")
 			Result.replace_substring_all (once "~", once "%%7E")
+			Result.replace_substring_all (once "(", once "%%28")
+			Result.replace_substring_all (once ")", once "%%29")
+			Result.replace_substring_all (once "%"", once "%%22")
+			Result.replace_substring_all (once ",", once "%%2C")
+			Result.replace_substring_all (once "!", once "%%21")
 		end
 
 end

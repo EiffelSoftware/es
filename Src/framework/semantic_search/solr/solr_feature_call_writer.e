@@ -63,8 +63,9 @@ feature{NONE} -- Implementation
 			append_class_and_feature
 			append_uuid
 			append_library
-			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False)
-			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True)
+			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False, False)
+			append_variables (queryable.inputs.union (queryable.outputs), static_variables_field, True, False, True)
+			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True, False)
 			append_content
 		end
 

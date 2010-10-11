@@ -15,7 +15,10 @@ inherit
 	HASHABLE
 
 create
-	make
+	make,
+	make_as_string,
+	make_as_integer,
+	make_as_boolean
 
 feature{NONE} -- Initialization
 
@@ -27,6 +30,30 @@ feature{NONE} -- Initialization
 			field := a_field
 			occurrence := a_occurrence
 			hash_code := full_text.hash_code
+		end
+
+	make_as_string (a_field_name: STRING; a_field_value: STRING; a_boost: DOUBLE; a_occurrence: INTEGER)
+			-- Initialize Current as a term containing a string field.
+		require
+			a_occurrence_vaild: is_term_occurrence_valid (a_occurrence)
+		do
+			make (create {IR_FIELD}.make_as_string (a_field_name, a_field_value, a_boost), a_occurrence)
+		end
+
+	make_as_integer (a_field_name: STRING; a_field_value: INTEGER; a_boost: DOUBLE; a_occurrence: INTEGER)
+			-- Initialize Current as a term containing an integer field.
+		require
+			a_occurrence_vaild: is_term_occurrence_valid (a_occurrence)
+		do
+			make (create {IR_FIELD}.make_as_integer (a_field_name, a_field_value, a_boost), a_occurrence)
+		end
+
+	make_as_boolean (a_field_name: STRING; a_field_value: BOOLEAN; a_boost: DOUBLE; a_occurrence: INTEGER)
+			-- Initialize Current as a term containing a boolean field.
+		require
+			a_occurrence_vaild: is_term_occurrence_valid (a_occurrence)
+		do
+			make (create {IR_FIELD}.make_as_boolean (a_field_name, a_field_value, a_boost), a_occurrence)
 		end
 
 feature -- Access

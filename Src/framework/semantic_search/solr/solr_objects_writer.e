@@ -34,8 +34,8 @@ feature -- Basic operations
 			medium.put_string (once "<add><doc>%N")
 			append_queryable_type
 			append_uuid
-			append_variables (queryable.variables, variables_field, True, False)
-			append_variables (queryable.variables, variable_types_field, False, True)
+			append_variables (queryable.variables, variables_field, True, False, False)
+			append_variables (queryable.variables, variable_types_field, False, True, False)
 			append_properties
 			append_serialization
 			append_content

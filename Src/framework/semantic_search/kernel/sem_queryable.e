@@ -351,6 +351,13 @@ feature -- Access
 		deferred
 		end
 
+	static_type_of_variable (a_variable: EPA_EXPRESSION): TYPE_A
+			-- Static type of `a_variable'
+		require
+			a_variable_exists: variables.has (a_variable)
+		deferred
+		end
+
 feature -- Status report
 
 	has_variable (a_variable: EPA_EXPRESSION): BOOLEAN

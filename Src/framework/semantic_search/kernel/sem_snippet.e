@@ -140,6 +140,12 @@ feature -- Access
 			to_implement ("To implement. 10.10.2010 Jasonw")
 		end
 
+	static_type_of_variable (a_variable: EPA_EXPRESSION): TYPE_A
+			-- Static type of `a_variable'
+		do
+			to_implement ("To implement. 11.10.2010 Jasonw")
+		end
+
 feature -- Type status report
 
 	is_snippet: BOOLEAN = True

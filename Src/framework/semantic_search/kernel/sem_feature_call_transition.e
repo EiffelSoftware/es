@@ -268,35 +268,38 @@ feature -- Access
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 		do
-			l_class := class_
-			l_feature := feature_
-			l_context_type := context_type
-			l_operand_types := resolved_operand_types_with_feature (l_feature, l_class, l_context_type)
-			l_context_type := context_type
-			l_positions := variable_positions
-			l_operand_pos_map := operand_variable_positions
+			if variable_static_type_table_internal = Void then
+				l_class := class_
+				l_feature := feature_
+				l_context_type := context_type
+				l_operand_types := resolved_operand_types_with_feature (l_feature, l_class, l_context_type)
+				l_context_type := context_type
+				l_positions := variable_positions
+				l_operand_pos_map := operand_variable_positions
 
-			create Result.make (variables.count)
-			Result.compare_objects
-			from
-				l_cursor := variables.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_variable := l_cursor.item
-				l_operand_pos_map.search (l_variable)
-				if l_operand_pos_map.found then
-					l_position := l_operand_pos_map.found_item
-						-- This is an operand variable, static type is used.
-					l_type := l_operand_types.item (l_position)
-				else
-						-- This is not an operand variable, dynamic type is used.
-					l_type := l_variable.resolved_type (l_context_type)
+				create variable_static_type_table_internal.make (variables.count)
+				variable_static_type_table_internal.compare_objects
+				from
+					l_cursor := variables.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_variable := l_cursor.item
+					l_operand_pos_map.search (l_variable)
+					if l_operand_pos_map.found then
+						l_position := l_operand_pos_map.found_item
+							-- This is an operand variable, static type is used.
+						l_type := l_operand_types.item (l_position)
+					else
+							-- This is not an operand variable, dynamic type is used.
+						l_type := l_variable.resolved_type (l_context_type)
+					end
+					variable_static_type_table_internal.force (l_type, l_variable.text)
+					l_cursor.forth
 				end
-				Result.force (l_type, l_variable.text)
-				l_cursor.forth
 			end
+			Result := variable_static_type_table_internal
 		end
 
 	dynamic_type_name_table: HASH_TABLE [STRING, STRING]
@@ -336,6 +339,12 @@ feature -- Access
 			-- Note: `a_expression' must only mention operands.
 		do
 			Result := anonymous_expression_text (a_expression)
+		end
+
+	static_type_of_variable (a_variable: EPA_EXPRESSION): TYPE_A
+			-- Static type of `a_variable'
+		do
+			Result := variable_static_type_table.item (a_variable.text)
 		end
 
 feature -- Status report
@@ -583,5 +592,9 @@ feature{NONE} -- Implementation
 
 	static_type_name_table_internal: detachable like static_type_name_table
 			-- Cache for `static_type_name_table'
+
+	variable_static_type_table_internal: detachable like variable_static_type_table
+			-- Cache of `variable_static_type_table'			
+
 
 end

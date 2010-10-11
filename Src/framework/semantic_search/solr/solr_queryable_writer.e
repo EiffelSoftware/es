@@ -57,14 +57,15 @@ feature{NONE} -- Implementation
 			append_field (create {IR_FIELD}.make_as_string (a_name, a_value, default_boost_value))
 		end
 
-	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN)
+	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN; a_static_type: BOOLEAN)
 			-- Append operands in `queryable' to `medium'.
 			-- `a_print_position' indicates if position of variables are to be printed.
 			-- `a_print_ancestor' indicates if ancestors of the types of `a_variables' are to be printed.
+			-- `a_static_type' indicates if static type of `a_variables' are used.
 		local
 			l_values: STRING
 		do
-			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor)
+			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor, a_static_type)
 			if not l_values.is_empty then
 				append_field_with_data (a_field, l_values, ir_string_value_type, default_boost_value)
 			end

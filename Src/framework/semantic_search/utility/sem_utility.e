@@ -281,10 +281,11 @@ feature -- Access
 			end
 		end
 
-	variable_info (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_queryable: SEM_QUERYABLE; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN): STRING
+	variable_info (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_queryable: SEM_QUERYABLE; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN; a_static_type: BOOLEAN): STRING
 			-- Information about operands in `a_variables' in the context of `a_queryable'
 			-- `a_print_position' indicates if position of variables are to be printed.
 			-- `a_print_ancestor' indicates if ancestors of the types of `a_variables' are to be printed.
+			-- `a_static_type' indicates if static type of `a_variables' are used.
 		local
 			l_values: STRING
 			l_pos: INTEGER
@@ -295,12 +296,14 @@ feature -- Access
 			l_value: STRING
 			l_types: DS_HASH_SET [STRING]
 			l_type: TYPE_A
+			l_context_class: CLASS_C
 		do
 			if attached a_variables and then not a_variables.is_empty then
 				create l_set.make (100)
 				l_set.set_equality_tester (string_equality_tester)
 
 				l_context_type := a_queryable.context_type
+				l_context_class := l_context_type.associated_class
 				create l_values.make (1024)
 				from
 					l_cursor := a_variables.new_cursor
@@ -309,7 +312,12 @@ feature -- Access
 					l_cursor.after
 				loop
 					l_pos := a_queryable.variable_position (l_cursor.item)
-					l_type := l_cursor.item.resolved_type (l_context_type)
+					if a_static_type then
+						l_type := a_queryable.static_type_of_variable (l_cursor.item)
+						l_type := l_cursor.item.resolved_type_in_context (l_type, l_context_class)
+					else
+						l_type := l_cursor.item.resolved_type (l_context_type)
+					end
 					l_value := positioned_type_name (l_type, l_pos, a_print_position)
 
 					create l_types.make (20)

@@ -209,7 +209,7 @@ feature{NONE} -- Implementation
 		local
 			l_values: STRING
 		do
-			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor)
+			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor, False)
 			if not l_values.is_empty then
 				write_field_with_data (a_field, l_values, ir_string_value_type, default_boost_value)
 			end

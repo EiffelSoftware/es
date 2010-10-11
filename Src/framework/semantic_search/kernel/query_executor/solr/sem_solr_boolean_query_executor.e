@@ -54,7 +54,7 @@ feature -- Basic operations
 			io.put_string ("------------------------------------------------%N")
 			io.put_string (l_ir_query.text + "%N")
 
-			create l_executor
+			create l_executor.make
 			l_executor.execute (l_ir_query)
 		end
 
@@ -155,6 +155,7 @@ feature{NONE} -- Implementation
 		local
 			l_returned_fields: DS_HASH_SET [STRING]
 			l_type_form: INTEGER
+			l_should_add: BOOLEAN
 		do
 				-- Iterate through all terms in `a_boolean_query' and
 				-- translate those terms into information-retrieval terms.
@@ -164,6 +165,7 @@ feature{NONE} -- Implementation
 
 				-- Setup searchable terms in result information-retrieval boolean query.
 			create Result.make
+			Result.terms.force_last (document_type_term (query_config.queryable))
 			Result.terms.append (terms)
 
 				-- Setup returned fields.
@@ -173,9 +175,18 @@ feature{NONE} -- Implementation
 			l_returned_fields.force_last (uuid_field)
 			l_type_form := primary_type_form
 			across query_config.terms as l_terms loop
-				l_returned_fields.force_last (
-					field_name_prefix_for_term (l_terms.item, primary_type_form, True) +
-					escaped_field_string (l_terms.item.field_content_in_type_form (l_type_form)))
+				l_should_add := True
+				if attached {SEM_EQUATION_TERM} l_terms.item as l_equation_term then
+					if l_equation_term.type.is_boolean and then l_equation_term.value.as_boolean.item = False then
+						l_should_add := False
+					end
+				end
+
+				if l_should_add then
+					l_returned_fields.force_last (
+						field_name_prefix_for_term (l_terms.item, primary_type_form, True) +
+						escaped_field_string (l_terms.item.field_content_in_type_form (l_type_form)))
+				end
 			end
 		end
 
@@ -218,6 +229,21 @@ feature{NONE} -- Implementation
 			else
 				Result := [a_value, a_occurrence]
 			end
+		end
+
+	document_type_term (a_queryable: SEM_QUERYABLE): IR_TERM
+			-- Term which indicates the type of `a_queryable'		
+		local
+			l_value: STRING
+		do
+			if a_queryable.is_feature_call then
+				l_value := transition_field_value
+			elseif a_queryable.is_objects then
+				l_value := object_field_value
+			elseif a_queryable.is_snippet then
+				l_value := snippet_field_value
+			end
+			create Result.make_as_string (document_type_field, l_value, default_boost_value, term_occurrence_must)
 		end
 
 end
