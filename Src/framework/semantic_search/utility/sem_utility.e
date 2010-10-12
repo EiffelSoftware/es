@@ -340,7 +340,7 @@ feature -- Access
 						l_value := l_types.item_for_iteration
 						if not l_set.has (l_value) then
 							if not l_values.is_empty then
-								l_values.append (field_value_separator)
+								l_values.append_character (field_value_separator)
 							end
 							l_set.force_last (l_value)
 							l_values.append (l_value)

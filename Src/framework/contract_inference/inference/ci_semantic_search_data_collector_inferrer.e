@@ -159,7 +159,7 @@ feature{NONE} -- Implementation
 				l_value.append (l_func.upper_bound_expression)
 
 				if not l_cursor.is_last then
-					l_value.append (field_value_separator)
+					l_value.append_character (field_value_separator)
 				end
 				l_cursor.forth
 			end

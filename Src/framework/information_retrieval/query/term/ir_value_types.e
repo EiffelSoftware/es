@@ -22,6 +22,8 @@ feature -- Type constants
 	ir_integer_range_value_type: INTEGER = 4
 			-- Integer range value type
 
+	ir_double_value_type: INTEGER = 5
+
 feature -- Value type names
 
 	ir_integer_value_type_name: STRING = "INTEGER"
@@ -36,6 +38,9 @@ feature -- Value type names
 	ir_string_value_type_name: STRING = "STRING"
 			-- Name for string type
 
+	ir_double_value_type_name: STRING = "DOUBLE"
+			-- Name for double type
+
 feature -- Access
 
 	ir_value_type_name (a_type: INTEGER): STRING
@@ -49,8 +54,10 @@ feature -- Access
 				Result := ir_integer_range_value_type_name
 			elseif a_type = ir_string_value_type then
 				Result := ir_string_value_type_name
-			elseif a_Type = ir_integer_range_value_type then
+			elseif a_type = ir_integer_range_value_type then
 				Result := ir_integer_range_value_type_name
+			elseif a_type = ir_double_value_type then
+				Result := ir_double_value_type_name
 			end
 		end
 
@@ -67,6 +74,8 @@ feature -- Access
 				Result := ir_string_value_type
 			elseif a_name ~ ir_integer_range_value_type_name then
 				Result := ir_integer_range_value_type
+			elseif a_name ~ ir_double_value_type_name then
+				Result := ir_double_value_type
 			end
 		ensure
 			result_good: is_ir_value_type_valid (Result)
@@ -81,7 +90,8 @@ feature -- Status report
 				a_type = ir_integer_value_type or else
 				a_type = ir_boolean_value_type or else
 				a_type = ir_string_value_type or else
-				a_type = ir_integer_range_value_type
+				a_type = ir_integer_range_value_type or else
+				a_type = ir_double_value_type
 		end
 
 	is_ir_value_type_name_valid (a_name: STRING): BOOLEAN
@@ -91,6 +101,7 @@ feature -- Status report
 				a_name ~ ir_boolean_value_type_name or else
 				a_name ~ ir_integer_value_type_name or else
 				a_name ~ ir_string_value_type_name or else
-				a_name ~ ir_integer_range_value_type_name
+				a_name ~ ir_integer_range_value_type_name or else
+				a_name ~ ir_double_value_type_name
 		end
 end

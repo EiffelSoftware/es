@@ -19,6 +19,12 @@ inherit
 			is_equal
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			copy,
+			is_equal
+		end
+
 create
 	make
 
@@ -65,6 +71,32 @@ feature -- Access
 				l_fields.extend (l_field)
 				l_cursor.forth
 			end
+		end
+
+	text: STRING
+			-- Text representation of Current document
+		local
+			l_cursor: like new_cursor
+		do
+			create Result.make (1024)
+			from
+				l_cursor := new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.append (l_cursor.item.text)
+				Result.append_character ('%N')
+				l_cursor.forth
+			end
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := text
 		end
 
 end

@@ -105,7 +105,7 @@ feature{NONE} -- Implementation
 
 				a_fields.search (l_field_name)
 				if a_fields.found then
-					across string_slices (a_fields.found_item.value.text, field_value_separator) as l_functions loop
+					across string_slices (a_fields.found_item.value.text, field_value_separator.out) as l_functions loop
 						l_parts := l_functions.item.split (';')
 						l_target_operand_index := l_parts.i_th (1).to_integer
 						l_target_variable_name := l_parts.i_th (2)

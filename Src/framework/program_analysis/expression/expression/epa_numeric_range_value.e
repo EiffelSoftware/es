@@ -13,7 +13,8 @@ inherit
 			type,
 			item,
 			text,
-			out
+			out,
+			is_numeric_range
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -63,6 +64,11 @@ feature -- Access
 
 			Result.append_character (']')
 		end
+
+feature -- Status report
+
+	is_numeric_range: BOOLEAN = True
+			-- Is current a numeric range value?
 
 feature -- Process
 

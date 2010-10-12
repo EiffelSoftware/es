@@ -67,7 +67,12 @@ feature{NONE} -- Query
 		local
 			l_query: STRING
 			l_result: STRING
+			l_file: PLAIN_TEXT_FILE
+			l_xml_parser: IR_VERY_SIMPLE_XML_PARSER
+			l_time1, l_time2: DATE_TIME
+
 		do
+			create l_time1.make_now
 			l_query := query_request (query_syntax_from_query (a_query))
 			io.put_string ("------------------%N")
 			io.put_string (l_query)
@@ -76,6 +81,21 @@ feature{NONE} -- Query
 				-- Execute query.
 			l_result := raw_result_from_query (l_query)
 			io.put_string (l_result)
+
+				-- Store data in a file so it can be used by the XML parser.
+			create l_file.make_create_read_write ("/tmp/result.xml")
+			l_file.put_string (l_result)
+			l_file.close
+
+				-- Parse xml file to get result.
+			create l_xml_parser.make ("/tmp/result.xml")
+			l_xml_parser.analyze_file
+			last_result := l_xml_parser.last_result
+			create l_time2.make_now
+			io.put_string (last_result.text)
+			io.put_string (l_time1.out + "%N")
+			io.put_string (l_time2.out + "%N")
+
 		end
 
 feature{NONE} -- Implementation

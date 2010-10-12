@@ -66,6 +66,11 @@ feature -- Access
 			end
 		end
 
+	operands: LINKED_LIST [INTEGER]
+			-- Indexes of operands in Current term
+		deferred
+		end
+
 feature -- Status report
 
 	is_contract: BOOLEAN
@@ -123,6 +128,37 @@ feature{NONE} -- Implementation
 		do
 			occurrence := term_occurrence_should
 			boost := default_boost_value
+		end
+
+	operand_indexes (a_anonymous_form: STRING): LINKED_LIST [INTEGER]
+			-- Operand indexes from `a_anonymous_form'
+		local
+			i: INTEGER
+			c: INTEGER
+			l_index: STRING
+			l_char: CHARACTER
+			l_in: BOOLEAN
+		do
+			create Result.make
+			create l_index.make (5)
+			from
+				i := 1
+				c := a_anonymous_form.count
+			until
+				i > c
+			loop
+				l_char := a_anonymous_form.item (i)
+				if l_char = '{' then
+					l_in := True
+					l_index.wipe_out
+				elseif l_char = '}' then
+					Result.extend (l_index.to_integer)
+					l_in := False
+				elseif l_in then
+					l_index.extend (l_char)
+				end
+				i := i + 1
+			end
 		end
 
 feature -- Process

@@ -67,6 +67,13 @@ feature -- Access
 			Result := variables_field
 		end
 
+	operands: LINKED_LIST [INTEGER]
+			-- Indexes of operands in Current term
+		do
+			create Result.make
+			Result.extend (queryable.variable_position (variable))
+		end
+
 feature -- Status report
 
 	is_variable: BOOLEAN = True

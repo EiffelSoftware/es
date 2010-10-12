@@ -9,13 +9,13 @@ deferred class
 
 feature -- Access
 
-	last_results: detachable SEM_QUERY_RESULT
-			-- Results returned by last `execute'.
+	last_result: detachable IR_QUERY_RESULT
+			-- Result returned by last `execute'.
 
 feature -- Basic operations
 
 	execute (a_query: SEM_QUERY)
-			-- Executor `a_query', make result available in `last_results'.
+			-- Executor `a_query', make result available in `last_result'.
 		deferred
 		end
 

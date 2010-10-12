@@ -27,6 +27,7 @@ create
 	make,
 	make_as_string,
 	make_as_integer,
+	make_as_double,
 	make_as_boolean,
 	make_with_raw_value
 
@@ -51,6 +52,12 @@ feature{NONE} -- Initialization
 			-- Initialize Current as an integer value.
 		do
 			make (a_name, create {IR_INTEGER_VALUE}.make (a_integer_value), a_boost)
+		end
+
+	make_as_double (a_name: like name; a_double_value: DOUBLE; a_boost: DOUBLE)
+			-- Initialize Current as a double value.
+		do
+			make (a_name, create {IR_DOUBLE_VALUE}.make (a_double_value), a_boost)
 		end
 
 	make_as_boolean (a_name: like name; a_boolean_value: BOOLEAN; a_boost: DOUBLE)

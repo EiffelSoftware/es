@@ -132,7 +132,7 @@ feature{NONE} -- Implementation
 			Result.append (format_type_prefix (a_format_type))
 
 			Result.append (a_3rdprefix)
-			Result.append (escaped_field_string (a_name))
+			Result.append (encoded_field_string (a_name))
 		end
 
 	extend_string_into_list (a_table: HASH_TABLE [STRING, STRING]; a_string: STRING; a_key: STRING)

@@ -203,7 +203,7 @@ feature{NONE} -- Implementation
 		do
 			create Result.make (10)
 			l_any := first_class_starts_with_name ("ANY")
-			across string_slices (a_data, field_value_separator) as l_vars loop
+			across string_slices (a_data, field_value_separator.out) as l_vars loop
 				l_cur_var := l_vars.item.split ('@')
 				l_type_name := l_cur_var.i_th (1)
 				l_type_name := l_type_name.substring (2, l_type_name.count - 1)

@@ -8,7 +8,7 @@ class
 	SEM_CHANGE_TERM
 
 inherit
-	SEM_TERM
+	SEM_EXPR_VALUE_TERM
 		redefine
 			queryable,
 			is_change
@@ -92,6 +92,12 @@ feature -- Access
 			-- Text of current term in static type form
 		do
 			Result := queryable.text_in_anonymous_type_form (expression)
+		end
+
+	operands: LINKED_LIST [INTEGER]
+			-- Indexes of operands in Current term
+		do
+			Result := operand_indexes (field_content_in_anonymous_type_form)
 		end
 
 feature -- Status report

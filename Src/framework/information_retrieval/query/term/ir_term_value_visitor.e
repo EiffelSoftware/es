@@ -29,4 +29,9 @@ feature -- Process
 		deferred
 		end
 
+	process_double_term_value (a_value: IR_DOUBLE_VALUE)
+			-- Process `a_value'.
+		deferred
+		end
+
 end

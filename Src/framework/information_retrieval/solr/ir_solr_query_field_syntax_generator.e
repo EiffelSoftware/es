@@ -77,4 +77,10 @@ feature{NONE} -- Process
 			last_field_syntax.append_character (']')
 		end
 
+	process_double_term_value (a_value: IR_DOUBLE_VALUE)
+			-- Process `a_value'.
+		do
+			last_field_syntax.append (a_value.item.out)
+		end
+
 end

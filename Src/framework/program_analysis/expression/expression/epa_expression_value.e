@@ -200,6 +200,11 @@ feature -- Status report
 		do
 		end
 
+	is_numeric_range: BOOLEAN
+			-- Is current a numeric range value?
+		do
+		end
+
 feature -- Hashing
 
 	hash_code: INTEGER

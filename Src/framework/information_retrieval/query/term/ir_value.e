@@ -57,6 +57,11 @@ feature -- Status report
 		do
 		end
 
+	is_double_value: BOOLEAN
+			-- Is current a double value?
+		do
+		end
+
 feature -- Process
 
 	process (a_visitor: IR_TERM_VALUE_VISITOR)

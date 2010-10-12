@@ -58,6 +58,8 @@ feature -- Access
 
 	uuid_field: STRING = "uuid"
 
+	score_field: STRING = "score"
+
 	export_status_field: STRING = "export_status"
 
 	feature_clause_field: STRING = "feature_clause"
@@ -101,7 +103,7 @@ feature -- Access
 	field_name_value_separator: STRING = " : "
 			-- Separator to separate field name and field value
 
-	field_value_separator: STRING = ";"
+	field_value_separator: CHARACTER = ';'
 			-- Field value separator
 
 	default_variable_prefix: STRING = "v_"

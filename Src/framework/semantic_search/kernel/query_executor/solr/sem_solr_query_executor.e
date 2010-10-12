@@ -17,7 +17,7 @@ inherit
 feature -- Basic operations
 
 	execute (a_query: SEM_QUERY)
-			-- Executor `a_query', make result available in `last_results'.
+			-- Executor `a_query', make result available in `last_result'.
 		do
 			execute_with_options (a_query, Void)
 		end
@@ -28,7 +28,6 @@ feature -- Basic operations
 			-- name-value pairs. Key is option name, value is option value.
 		do
 			options := a_options
-			create last_results.make
 			a_query.process (Current)
 		end
 
@@ -41,6 +40,7 @@ feature -- Process
 		do
 			create l_executor.make
 			l_executor.execute_with_options (a_query, options)
+			last_result := l_executor.last_result
 		end
 
 feature{NONE} -- Implementatation
