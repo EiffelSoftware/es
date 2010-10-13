@@ -70,12 +70,16 @@ feature{NONE} -- Query
 			l_file: PLAIN_TEXT_FILE
 			l_xml_parser: IR_VERY_SIMPLE_XML_PARSER
 			l_time1, l_time2: DATE_TIME
+			l_file2: PLAIN_TEXT_FILE
 
 		do
 			create l_time1.make_now
 			l_query := query_request (query_syntax_from_query (a_query))
 			io.put_string ("------------------%N")
 			io.put_string (l_query)
+			create l_file2.make_create_read_write ("/tmp/query.txt")
+			l_file2.put_string (l_query)
+			l_file2.close
 			io.put_string ("------------------%N")
 
 				-- Execute query.

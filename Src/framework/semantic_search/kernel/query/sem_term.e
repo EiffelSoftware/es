@@ -66,7 +66,7 @@ feature -- Access
 			end
 		end
 
-	operands: LINKED_LIST [INTEGER]
+	operands: ARRAYED_LIST [INTEGER]
 			-- Indexes of operands in Current term
 		deferred
 		end
@@ -130,7 +130,7 @@ feature{NONE} -- Implementation
 			boost := default_boost_value
 		end
 
-	operand_indexes (a_anonymous_form: STRING): LINKED_LIST [INTEGER]
+	operand_indexes (a_anonymous_form: STRING): ARRAYED_LIST [INTEGER]
 			-- Operand indexes from `a_anonymous_form'
 		local
 			i: INTEGER
@@ -139,7 +139,7 @@ feature{NONE} -- Implementation
 			l_char: CHARACTER
 			l_in: BOOLEAN
 		do
-			create Result.make
+			create Result.make (3)
 			create l_index.make (5)
 			from
 				i := 1

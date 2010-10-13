@@ -1,3 +1,4 @@
+
 note
 	description: "Class that represents a matching criterion in semantic search"
 	author: ""
@@ -31,7 +32,7 @@ feature -- Access
 	criterion: STRING
 			-- Text of Current criterion content
 
-	operands: LINKED_LIST [INTEGER]
+	operands: ARRAYED_LIST [INTEGER]
 			-- IDs of operands mentioned in Current criterion.
 			-- The order of the operands are the same as their appearing
 			-- order in `criterion'

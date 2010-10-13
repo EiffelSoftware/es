@@ -102,7 +102,7 @@ feature -- Basic operations
 			l_index: INTEGER
 			l_combination: LIST [STRING]
 			l_criterion: SEM_MATCHING_CRITERION
-			l_operands: LINKED_LIST [INTEGER]
+			l_operands: ARRAYED_LIST [INTEGER]
 			l_value: IR_VALUE
 			l_int_value: INTEGER
 		do
@@ -121,7 +121,7 @@ feature -- Basic operations
 					l_value := value_from_string (l_combination.last)
 					l_combination.finish
 					l_combination.remove
-					create l_operands.make
+					create l_operands.make (3)
 					across l_combination as l_positions loop
 						l_operands.extend (l_positions.item.to_integer)
 					end

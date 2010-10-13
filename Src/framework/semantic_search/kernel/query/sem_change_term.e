@@ -94,7 +94,7 @@ feature -- Access
 			Result := queryable.text_in_anonymous_type_form (expression)
 		end
 
-	operands: LINKED_LIST [INTEGER]
+	operands: ARRAYED_LIST [INTEGER]
 			-- Indexes of operands in Current term
 		do
 			Result := operand_indexes (field_content_in_anonymous_type_form)
