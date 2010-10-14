@@ -319,6 +319,7 @@ feature{NONE} -- Implementation
 			l_var: ITP_VARIABLE
 			l_index: INTEGER
 			l_type: TYPE_A
+			l_old_type: TYPE_A
 			l_table: like operand_type_table
 			l_root_class: CLASS_C
 		do
@@ -351,11 +352,19 @@ feature{NONE} -- Implementation
 
 					-- Type.
 					l_type_str := l_line.substring (l_end_index + 1, l_line.count)
-					l_type_str.prune_all (' ')
 					l_type := base_type_with_context (l_type_str, l_root_class)
+					check valid_type: l_type /= Void end
 
 					create l_var.make (l_index)
-					l_table.put (l_type, l_var)
+					if l_table.has (l_var) then
+						-- Store only the most restrictive type.
+						l_old_type := l_table.item (l_var)
+						if l_type.conform_to (l_root_class, l_old_type) then
+							l_table.replace (l_type, l_var)
+						end
+					else
+						l_table.force (l_type, l_var)
+					end
 				end
 
 				l_list.forth

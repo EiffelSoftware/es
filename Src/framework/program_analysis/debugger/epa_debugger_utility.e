@@ -47,9 +47,10 @@ feature -- Access
 
 feature -- Basic operations
 
-	start_debugger (a_dm: DEBUGGER_MANAGER; a_arguments: STRING; a_working_directory: STRING; a_ignore_breakpont: BOOLEAN)
+	start_debugger (a_dm: DEBUGGER_MANAGER; a_arguments: STRING; a_working_directory: STRING; a_exec_mode: INTEGER; a_ignore_breakpont: BOOLEAN)
 			-- Start `a_dm', which is a debugger manager by launching
 			-- the debuggee in `a_working_directory'.
+			-- `a_exec_mode' is a constant from {EXEC_MODES}.
 			-- `a_ignore_breakpoint' indicates if break points should be ignored.
 		require
 			a_dm /= Void
@@ -73,7 +74,7 @@ feature -- Basic operations
 			a_dm.set_catcall_detection_in_console (False)
 			a_dm.set_catcall_detection_in_debugger (False)
 			create param.make_from_profile (prof)
-			ctlr.debug_application (param, {EXEC_MODES}.run)
+			ctlr.debug_application (param, a_exec_mode)
 		end
 
 	remove_debugger_session

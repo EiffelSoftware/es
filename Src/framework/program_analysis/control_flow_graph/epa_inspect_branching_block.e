@@ -13,11 +13,6 @@ inherit
 			condition
 		end
 
-	EPA_UTILITY
-		undefine
-			is_equal
-		end
-
 create
 	make
 

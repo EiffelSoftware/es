@@ -40,7 +40,7 @@ feature -- Basic operations
 
 				-- Analyze different aspects of the failure.
 			analyze_state_predicates (a_tc, a_dm, last_spot)
-			analyze_ast_structure (a_tc, a_dm, last_spot)
+--			analyze_ast_structure (a_tc, a_dm, last_spot)
 			analyze_failing_assertion (a_Tc, a_dm, last_spot.recipient_ast_structure, last_spot)
 		end
 
@@ -165,21 +165,21 @@ feature{NONE} -- Implementation
 --			Result := implications_for_class (l_array, a_tc.recipient_class_, a_tc.recipient_)
 		end
 
-	analyze_ast_structure (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
-			-- Analyze AST structure of the recipient, and
-			-- set the information into `a_spot'.
-			-- `a_tc' includes basic information of the current exception.
-			-- `a_dm' is a debugger manager.
-		local
-			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
-		do
-				-- Analyze AST structure of the recipient feature.
-			create l_structure_gen
-			l_structure_gen.generate (a_tc.recipient_written_class, a_tc.origin_recipient)
---			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
+--	analyze_ast_structure (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
+--			-- Analyze AST structure of the recipient, and
+--			-- set the information into `a_spot'.
+--			-- `a_tc' includes basic information of the current exception.
+--			-- `a_dm' is a debugger manager.
+--		local
+--			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
+--		do
+--				-- Analyze AST structure of the recipient feature.
+--			create l_structure_gen
+--			l_structure_gen.generate (a_tc.recipient_written_class, a_tc.origin_recipient)
+----			l_structure_gen.generate (a_tc.recipient_class_, a_tc.recipient_)
 
-			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
-		end
+--			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
+--		end
 
 	analyze_failing_assertion (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
 			-- Analyze failing assertion of the exception, and

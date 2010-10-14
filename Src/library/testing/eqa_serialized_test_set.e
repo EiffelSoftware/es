@@ -8,29 +8,28 @@ deferred class
 	EQA_SERIALIZED_TEST_SET
 
 inherit
-	EQA_TEST_SET
-		redefine
-			default_create
-		end
+--	EQA_TEST_SET
+--		redefine
+--			default_create
+--		end
 
 	EQA_TEST_EXECUTION_MODE
-		undefine
-			default_create
-		end
+--		undefine
+--			default_create
+--		end
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
-		undefine
-
-			default_create
-		end
+--		undefine
+--			default_create
+--		end
 
 feature{NONE} -- Initialization
 
-	default_create
-			-- Initialize Current.
-		do
-			create environment
-		end
+--	default_create
+--			-- Initialize Current.
+--		do
+--			create environment
+--		end
 
 feature -- Access
 

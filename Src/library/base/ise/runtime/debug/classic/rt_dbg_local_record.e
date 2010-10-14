@@ -6,7 +6,7 @@ note
 	revision: "$Revision$"
 
 class
-	RT_DBG_LOCAL_RECORD [G]
+	RT_DBG_LOCAL_RECORD [G -> ANY]
 
 inherit
 	RT_DBG_VALUE_RECORD

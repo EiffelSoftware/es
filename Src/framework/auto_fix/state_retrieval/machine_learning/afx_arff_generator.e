@@ -54,7 +54,7 @@ feature -- Actions
 			put_data (output_file, a_bpslot, a_state)
 		end
 
-	on_application_exited
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Action to perform when application exited in debugger
 		do
 			close_output_file

@@ -371,6 +371,7 @@ Src/examples/web_browser/EIFGENs
 Src/framework/auto_fix/program_state
 Src/framework/auto_test/spec/linux-x86-64
 Src/framework/auto_test/spec/msc
+Src/framework/auto_test/statistics/deserialization/aut_nested_hash_table.e
 Src/framework/cli_debugger/Clib/OBJ
 Src/framework/cli_debugger/spec
 Src/framework/cli_writer/*.rc

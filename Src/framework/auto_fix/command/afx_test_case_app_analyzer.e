@@ -64,7 +64,7 @@ feature -- Access
 			-- `a_state' is the state evaluated at the breakpoint.
 			-- `a_bpslot' is the breakpoint slot number.
 
-	application_exited_actions: ACTION_SEQUENCE [TUPLE]
+	application_exited_actions: ACTION_SEQUENCE [TUPLE [DEBUGGER_MANAGER]]
 			-- Actions to be performed when application exited in debugger
 
 feature -- Basic operations
@@ -206,7 +206,7 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 				-- Start debugger.
-			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, False)
+			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, {EXEC_MODES}.run, False)
 
 				-- Clean up debugger.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -434,7 +434,7 @@ feature{NONE} -- Actions
 	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application exited.
 		do
-			application_exited_actions.call (Void)
+			application_exited_actions.call ([a_dm])
 		end
 
 	collect_exception_info

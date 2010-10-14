@@ -161,11 +161,9 @@ feature{NONE} -- Implementation
 							last_failing_feature_name,
 							last_failing_position_breakpoint_index,
 							last_failing_assertion_tag,
-							last_failing_written_class_name,
 							last_recipient_context_class_name,
 							last_recipient_feature_name,
-							last_recipient_breakpoint_index,
-							last_recipient_written_class_name)
+							last_recipient_breakpoint_index)
 		end
 
 	explain_unsupported_exception
@@ -220,11 +218,9 @@ feature{NONE} -- Implementation
 							last_failing_feature_name,
 							last_failing_position_breakpoint_index,
 							last_failing_assertion_tag,
-							last_failing_written_class_name,
 							last_recipient_context_class_name,
 							last_recipient_feature_name,
-							last_recipient_breakpoint_index,
-							last_recipient_written_class_name)
+							last_recipient_breakpoint_index)
 		end
 
 --	explain_frame_list (a_frame_list: DS_ARRAYED_LIST [EPA_EXCEPTION_TRACE_FRAME])

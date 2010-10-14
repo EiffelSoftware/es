@@ -184,19 +184,27 @@ feature{NONE} -- Class content
 	tc_exception_recipient: STRING
 			-- <Precursor>
 		do
-			if not is_exception_information_resolved then
-				resolve_exception_information
+			if not tc_is_passing then
+				if not is_exception_information_resolved then
+					resolve_exception_information
+				end
+				Result := tc_exception_recipient_cache
+			else
+				Result := tc_feature_under_test
 			end
-			Result := tc_exception_recipient_cache
         end
 
 	tc_exception_recipient_class: STRING
 			-- <Precursor>
         do
-			if not is_exception_information_resolved then
-				resolve_exception_information
-			end
-			Result := tc_exception_recipient_class_cache
+        	if not tc_is_passing then
+				if not is_exception_information_resolved then
+					resolve_exception_information
+				end
+				Result := tc_exception_recipient_class_cache
+			else
+				Result := tc_class_under_test
+        	end
         end
 
 	tc_argument_count: INTEGER
@@ -367,7 +375,7 @@ feature{NONE} -- Class content
 			l_var, l_op: ITP_VARIABLE
 			l_type: TYPE_A
 			l_prefix: STRING
-			l_nested_table: AUT_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
+			l_nested_table: EPA_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
 			l_op_index: INTEGER
 			l_occurrence, l_new_index: INTEGER
 			l_reindexing: DS_HASH_TABLE [DS_HASH_SET[INTEGER], INTEGER]
@@ -448,7 +456,7 @@ feature{NONE} -- Class content
 			l_var, l_op: ITP_VARIABLE
 			l_type: TYPE_A
 			l_prefix: STRING
-			l_nested_table: AUT_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
+			l_nested_table: EPA_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
 			l_op_index: INTEGER
 			l_occurrence, l_new_index, l_current_occurrence: INTEGER
 			l_reindexing: DS_HASH_TABLE [DS_HASH_SET[INTEGER], INTEGER]
@@ -852,7 +860,7 @@ feature{NONE} -- Auxiliary features
 
 		end
 
-	operand_reindexing_table: AUT_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
+	operand_reindexing_table: EPA_NESTED_HASH_TABLE [INTEGER, INTEGER, INTEGER]
 			-- Table for operand reindexing.
 			--
 			-- Value: index after reindexing
@@ -912,7 +920,9 @@ feature{NONE} -- Auxiliary features
 			if not l_trace.is_empty then
 				create l_explainer
 				l_explainer.explain (l_trace)
+
 				if l_explainer.was_successful and then l_explainer.last_explanation.is_exception_supported then
+					-- Only test cases with supported exception types will be extracted.
 					l_summary := l_explainer.last_explanation
 					tc_exception_code_cache := l_summary.exception_code
 					tc_exception_recipient_class_cache := l_summary.recipient_context_class_name.twin

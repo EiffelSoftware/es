@@ -154,7 +154,7 @@ feature{NONE} -- Implementation
 			l_test_case_info_bp_manager.toggle_breakpoints (True)
 
 				-- Start debugger.
-			start_debugger (debugger_manager, feature_.feature_name.as_lower, config.working_directory, False)
+			start_debugger (debugger_manager, feature_.feature_name.as_lower, config.working_directory, {EXEC_MODES}.run, False)
 
 				-- Clean up debugger.
 			l_test_case_info_bp_manager.toggle_breakpoints (False)

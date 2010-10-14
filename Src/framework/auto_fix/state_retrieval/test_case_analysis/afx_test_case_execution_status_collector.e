@@ -101,7 +101,7 @@ feature -- Actions
 			end
 		end
 
-	on_application_exited
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application exited
 		local
 			l_keys: LINKED_LIST [STRING]

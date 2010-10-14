@@ -12,7 +12,7 @@ create
 
 feature -- Access
 
-	register: AUT_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]
+	register: EPA_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]
 			-- Shared register.
 		do
 			Result := internal_register.item
@@ -27,10 +27,10 @@ feature -- Setting
 		end
 feature{NONE} -- Implementation
 
-	internal_register: CELL [AUT_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]]
+	internal_register: CELL [EPA_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]]
 			-- Internal storage for the register.
 		local
-			l_reg: AUT_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]
+			l_reg: EPA_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]
 		once
 			create l_reg.make_with_equality_testers (100, data_equality_tester, feature_equality_tester, class_equality_tester)
 			create Result.put (l_reg)

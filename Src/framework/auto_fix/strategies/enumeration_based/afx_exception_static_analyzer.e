@@ -8,6 +8,9 @@ class
 	AFX_EXCEPTION_STATIC_ANALYZER
 
 inherit
+
+	AFX_SHARED_PROGRAM_STATE_EXPRESSIONS_SERVER
+
 	REFACTORING_HELPER
 
 create
@@ -36,7 +39,7 @@ feature -- Basic operations
 			--		with 'a_trace' as the exception trace.
 		local
 			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
-			l_collection: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_collection: EPA_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
 			l_calculator: EPA_CONTROL_DISTANCE_CALCULATOR
 			l_report: DS_HASH_TABLE [INTEGER, EPA_BASIC_BLOCK]
 		do
@@ -51,13 +54,15 @@ feature -- Basic operations
 			check is_successful: l_calculator.is_successful end
 			l_report := l_calculator.last_report
 
+			analyze_state_predicates (current_test_case, last_spot)
+
 			-- Collect all program state expressions for the recipient feature.
-			l_collection := program_state_expressions
+--			l_collection := program_state_expressions
 
 			-- Register the expressions at `last_spot'.
 			-- Both `hash_code' and `is_equal' have been redefined in {EPA_PROGRAM_STATE_EXPRESSION},
 			--		therefore, program state expressions can be used directly in `last_spot'.`ranking' and `last_spot'.`skeleton'.
-			last_spot.set_ranking (ranking_in_control_distance (l_collection, l_report))
+--			last_spot.set_ranking (ranking_in_control_distance (l_collection, l_report))
 
 --			create l_ranking.make (l_collection.count)
 --			l_ranking.compare_objects
@@ -99,10 +104,7 @@ feature -- Basic operations
 --						end (?, last_spot.skeleton, last_spot.ranking))
 
 
--- Is the following all necessary?
-
-			-- Build the AST representation of the recipient feature.
-			last_spot.set_recipient_ast_structure (recipient_ast_structure)
+-- Is the following necessary?
 
 			--
 			analyze_failing_assertion
@@ -113,52 +115,156 @@ feature{NONE} -- Implementation
 	current_test_case: EPA_TEST_CASE_INFO
 			-- Test case under analysis.
 
-	program_state_expressions: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
-			-- Program state expressions from the recipient feature,
-			--		together with their associated breakpoint indexes if applicable.
-			-- The set includes only expressions of type {BOOLEAN}.
+	analyze_state_predicates (a_tc: EPA_TEST_CASE_INFO; a_spot: like last_spot)
+			-- Analyze predicates that should be included in state for current exception, and
+			-- set those predicates into `a_spot'.
+			-- `a_tc' includes basic information of the current exception.
 		local
-			l_test_case: EPA_TEST_CASE_INFO
-			l_collector: EPA_PROGRAM_STATE_EXPRESSION_COLLECTOR
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-			l_collection: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
-			l_exp: EPA_PROGRAM_STATE_EXPRESSION
-			l_related_expressions: DS_LINKED_LIST [EPA_PROGRAM_STATE_EXPRESSION]
-			l_related: EPA_PROGRAM_STATE_EXPRESSION
-			l_extender: AFX_PROGRAM_STATE_EXTENDER_FOR_INTEGRAL_RELATIONS
+			l_recipient_class: CLASS_C
+			l_recipient_feature: FEATURE_I
+			l_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_expression: EPA_PROGRAM_STATE_EXPRESSION
+			l_rank: AFX_EXPR_RANK
+
+			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
+			l_implication_gen: AFX_IMPLICATION_GENERATOR
+			l_imp_file: PLAIN_TEXT_FILE
 		do
-			l_test_case := current_test_case
-			l_class := l_test_case.recipient_class_
-			l_feature := l_test_case.recipient_
+			fixme ("The expressions should be from recipient written class, and interpreted in the context class.")
+			l_recipient_class := a_tc.recipient_class_
+			l_recipient_feature := a_tc.origin_recipient
+			l_expression_set := state_expression_server.expression_set (l_recipient_class, l_recipient_feature)
 
-			-- Collect expressions originated from the feature.
-			create l_collector
-			l_collector.collect_from_feature (l_class, l_feature)
-			l_collection := l_collector.last_collection
+			create l_ranking.make (l_expression_set.count)
+			l_ranking.compare_objects
 
-			-- Extend the set with relational expressions in integral ones.
-			if not l_collection.is_empty then
-				create l_extender.make (config)
-				l_extender.set_original (l_collection)
-				l_extender.compute_extension
-				l_collection := l_extender.extended_skeleton
-			end
-
-			-- Collect all boolean expressions into `Result'.
-			create Result.make_equal (l_collection.count + 1)
-			from l_collection.start
-			until l_collection.after
+			from l_expression_set.start
+			until l_expression_set.after
 			loop
-				l_exp := l_collection.item_for_iteration
+				l_expression := l_expression_set.item_for_iteration
 
-				-- Compute related boolean expressions and add them to the `Result'.
-				l_exp.compute_related_boolean_expressions
-				Result.append (l_exp.related_boolean_expressions)
+				create l_rank.make (1)
+				l_ranking.force (l_rank, l_expression)
 
-				l_collection.forth
+				l_expression_set.forth
 			end
+
+			a_spot.set_ranking (l_ranking)
 		end
+
+	ranking_in_control_distance (a_expression_set: EPA_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]; a_report: DS_HASH_TABLE [INTEGER, EPA_BASIC_BLOCK]): HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+			-- List of ranking for expressions from `a_expression_set', on the basis of control distances from such expressions to the exception location.
+		local
+			l_collection: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+			l_exp: EPA_PROGRAM_STATE_EXPRESSION
+			l_rank: AFX_EXPR_RANK
+			l_done: BOOLEAN
+			l_index: INTEGER
+		do
+			create l_collection.make (a_expression_set.count)
+			l_collection.compare_objects
+
+			from a_expression_set.start
+			until a_expression_set.after
+			loop
+				l_exp := a_expression_set.item_for_iteration
+				l_index := l_exp.breakpoint_slot
+
+				-- Rank an expression based on it's control distance to the exception point, as recorded in `a_report'.
+				from
+					a_report.start
+					l_done := False
+				until
+					l_done or else a_report.after
+				loop
+					if a_report.key_for_iteration.asts.first.breakpoint_slot = l_index then
+						create l_rank.make (a_report.item_for_iteration)
+						l_done := True
+					end
+					a_report.forth
+				end
+				check l_done end
+
+				l_collection.force (l_rank, l_exp)
+
+				a_expression_set.forth
+			end
+
+			Result := l_collection
+		end
+
+	analyze_failing_assertion
+			-- Analyze failing assertion of the exception, and save the information into `a_spot'.
+		local
+			l_rewriter: AFX_FAILING_ASSERTION_REWRITER
+			l_spot: like last_spot
+		do
+			l_spot := last_spot
+
+			 -- Failing assertion rewritting
+			create l_rewriter
+			l_rewriter.rewrite (current_test_case, l_spot.recipient_ast_structure, l_spot.trace)
+
+			l_spot.set_failing_assertion (l_rewriter.assertion)
+			l_spot.set_original_failing_assertion (l_rewriter.original_assertion)
+			l_spot.set_feature_of_failing_assertion (l_rewriter.feature_of_assertion)
+			l_spot.set_class_of_feature_of_failing_assertion (l_rewriter.class_of_feature_of_assertion)
+			l_spot.set_actual_arguments_in_failing_assertion (l_rewriter.actual_argument_expressions)
+			l_spot.set_failing_assertion_break_point_slot (l_rewriter.assertion_break_point_slot)
+			l_spot.set_target_expression_of_failing_feature (l_rewriter.target_expression)
+		end
+
+
+end
+
+--	program_state_expressions: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+--			-- Program state expressions from the recipient feature,
+--			--		together with their associated breakpoint indexes if applicable.
+--			-- The set includes only expressions of type {BOOLEAN}.
+--		local
+--			l_test_case: EPA_TEST_CASE_INFO
+--			l_collector: EPA_PROGRAM_STATE_EXPRESSION_COLLECTOR
+----			l_extender: AFX_PROGRAM_STATE_EXPRESSION_EXTENDER
+--			l_class: CLASS_C
+--			l_feature: FEATURE_I
+--			l_collection: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+--			l_exp: EPA_PROGRAM_STATE_EXPRESSION
+--			l_related_expressions: DS_LINKED_LIST [EPA_PROGRAM_STATE_EXPRESSION]
+--			l_related: EPA_PROGRAM_STATE_EXPRESSION
+--			l_extender: AFX_PROGRAM_STATE_EXTENDER_FOR_INTEGRAL_RELATIONS
+--		do
+--			l_test_case := current_test_case
+--			l_class := l_test_case.recipient_class_
+--			l_feature := l_test_case.recipient_
+
+--			-- Collect expressions originated from the feature.
+--			create l_collector
+--			l_collector.collect_from_feature (l_class, l_feature)
+--			l_collection := l_collector.last_collection
+
+--			-- Extend the set with relational expressions in integral ones.
+--			if not l_collection.is_empty then
+--				create l_extender.make (config)
+--				l_extender.set_original (l_collection)
+--				l_extender.compute_extension
+--				l_collection := l_extender.extended_skeleton
+--			end
+
+--			-- Collect all boolean expressions into `Result'.
+--			create Result.make_equal (l_collection.count + 1)
+--			from l_collection.start
+--			until l_collection.after
+--			loop
+--				l_exp := l_collection.item_for_iteration
+
+--				-- Compute related boolean expressions and add them to the `Result'.
+--				l_exp.compute_related_boolean_expressions
+--				Result.append (l_exp.related_boolean_expressions)
+
+--				l_collection.forth
+--			end
+--		end
 
 --			l_collection.do_all (
 --					agent (a_col: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]; a_exp: EPA_PROGRAM_STATE_EXPRESSION)
@@ -201,81 +307,7 @@ feature{NONE} -- Implementation
 --				l_collection.forth
 --			end
 
-	ranking_in_control_distance (a_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]; a_report: DS_HASH_TABLE [INTEGER, EPA_BASIC_BLOCK]): HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
-			-- List of ranking for expressions from `a_expression_set', on the basis of control distances from such expressions to the exception location.
-		local
-			l_collection: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
-			l_exp: EPA_PROGRAM_STATE_EXPRESSION
-			l_rank: AFX_EXPR_RANK
-			l_done: BOOLEAN
-			l_index: INTEGER
-		do
-			create l_collection.make (a_expression_set.count)
-			l_collection.compare_objects
 
-			from a_expression_set.start
-			until a_expression_set.after
-			loop
-				l_exp := a_expression_set.item_for_iteration
-				l_index := l_exp.breakpoint_slot
-
-				-- Rank an expression based on it's control distance to the exception point, as recorded in `a_report'.
-				from
-					a_report.start
-					l_done := False
-				until
-					l_done or else a_report.after
-				loop
-					if a_report.key_for_iteration.asts.first.breakpoint_slot = l_index then
-						create l_rank.make (a_report.item_for_iteration)
-						l_done := True
-					end
-					a_report.forth
-				end
-				check l_done end
-
-				l_collection.force (l_rank, l_exp)
-
-				a_expression_set.forth
-			end
-
-			Result := l_collection
-		end
-
-	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
-			-- AST structure of the recipient feature.
-		local
-			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
-		do
-			create l_structure_gen
-			l_structure_gen.generate (current_test_case.recipient_written_class, current_test_case.origin_recipient)
-
-			Result := l_structure_gen.structure
-		end
-
-	analyze_failing_assertion
-			-- Analyze failing assertion of the exception, and save the information into `a_spot'.
-		local
-			l_rewriter: AFX_FAILING_ASSERTION_REWRITER
-			l_spot: like last_spot
-		do
-			l_spot := last_spot
-
-			 -- Failing assertion rewritting
-			create l_rewriter
-			l_rewriter.rewrite (current_test_case, l_spot.recipient_ast_structure, l_spot.trace)
-
-			l_spot.set_failing_assertion (l_rewriter.assertion)
-			l_spot.set_original_failing_assertion (l_rewriter.original_assertion)
-			l_spot.set_feature_of_failing_assertion (l_rewriter.feature_of_assertion)
-			l_spot.set_class_of_feature_of_failing_assertion (l_rewriter.class_of_feature_of_assertion)
-			l_spot.set_actual_arguments_in_failing_assertion (l_rewriter.actual_argument_expressions)
-			l_spot.set_failing_assertion_break_point_slot (l_rewriter.assertion_break_point_slot)
-			l_spot.set_target_expression_of_failing_feature (l_rewriter.target_expression)
-		end
-
-
-end
 
 --	analyze (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER)
 --			-- Generate `last_spot' for text case `a_tc' in the context
@@ -324,38 +356,6 @@ end
 --			create l_file_name.make_from_string (config.theory_directory)
 --			l_file_name.set_file_name (a_tc.id + ".implications")
 --			create Result.make (l_file_name)
---		end
-
---	analyze_state_predicates (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
---			-- Analyze predicates that should be included in state for current exception, and
---			-- set those predicates into `a_spot'.
---			-- `a_tc' includes basic information of the current exception.
---			-- `a_dm' is a debugger manager.
---		local
---			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
---			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
---			l_implication_gen: AFX_IMPLICATION_GENERATOR
---			l_imp_file: PLAIN_TEXT_FILE
---		do
---			create l_ranking.make (50)
---			l_ranking.compare_objects
-
---				-- Generate basic expressions such as argumentless boolean queries.
---			create l_basic_expr_gen
---			l_basic_expr_gen.generate (a_tc, l_ranking)
-
-
---			l_imp_file := implication_file_path (a_tc)
---			if l_imp_file.exists then
---				update_expressions_with_ranking (l_ranking, implications_from_file (a_tc, l_imp_file), {AFX_EXPR_RANK}.rank_implication)
---			else
---					-- Generate implications.
---				create l_implication_gen
---				l_implication_gen.generate (a_tc, l_ranking)
---				store_implications_in_file (l_implication_gen.implications, l_imp_file)
---			end
-
---			a_spot.set_ranking (l_ranking)
 --		end
 
 --	store_implications_in_file (a_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]; a_file: PLAIN_TEXT_FILE)

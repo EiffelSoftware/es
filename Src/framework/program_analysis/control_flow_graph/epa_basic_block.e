@@ -18,6 +18,11 @@ inherit
 			is_equal
 		end
 
+	EPA_UTILITY
+		undefine
+			is_equal
+		end
+
 feature -- Access
 
 	block_number: INTEGER
@@ -52,10 +57,23 @@ feature -- Debug output
 
 	debug_output: STRING
 			-- <Precursor>
+		local
+			l_ast_list: ARRAYED_LIST [AST_EIFFEL]
+			l_ast: AST_EIFFEL
 		do
-			Result := ""
-		end
+			from
+				l_ast_list := asts
+				Result := ""
+				l_ast_list.start
+			until
+				l_ast_list.after
+			loop
+				Result.append (text_from_ast (l_ast_list.item_for_iteration))
+				Result.append ("%N")
 
+				l_ast_list.forth
+			end
+		end
 
 feature -- Status report
 

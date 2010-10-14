@@ -13,6 +13,11 @@ inherit
 			is_equal
 		end
 
+	REFACTORING_HELPER
+		redefine
+			is_equal
+		end
+
 create
 	make
 
@@ -126,7 +131,22 @@ feature -- Access
 			-- Trace of the exception
 
 	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
-			-- AST structure of `recipient_'
+			-- AST structure of `recipient_'.
+		require
+			test_case_info_attached: test_case_info /= Void
+		local
+			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
+		do
+			if recipient_ast_structure_cache = Void then
+				create l_structure_gen
+				fixme ("Which class, i.e. the written class or the context class, should be used here? -- Oct. 11, 2010 Max")
+				l_structure_gen.generate (test_case_info.recipient_written_class, test_case_info.origin_recipient)
+
+				recipient_ast_structure_cache := l_structure_gen.structure
+			end
+
+			Result := recipient_ast_structure_cache
+		end
 
 	failing_assertion: EPA_EXPRESSION
 			-- Failing assertion, rewritten in the context of the recipient.
@@ -214,13 +234,13 @@ feature -- Setting
 			create trace.make_from_string (a_trace)
 		end
 
-	set_recipient_ast_structure (a_structure: like recipient_ast_structure)
-			-- Set `recipient_ast_structure' with `a_structure'.
-		do
-			recipient_ast_structure := a_structure
-		ensure
-			recipient_ast_structure_set: recipient_ast_structure = a_structure
-		end
+--	set_recipient_ast_structure (a_structure: like recipient_ast_structure)
+--			-- Set `recipient_ast_structure' with `a_structure'.
+--		do
+--			recipient_ast_structure := a_structure
+--		ensure
+--			recipient_ast_structure_set: recipient_ast_structure = a_structure
+--		end
 
 	set_failing_assertion (a_assertion: like failing_assertion)
 			-- Set `failing_assertion' with `a_assertion'.
@@ -270,6 +290,9 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
+	recipient_ast_structure_cache: like recipient_ast_structure
+			-- Cache for `recipient_ast_structure'.
+
 	keys_from_hash_table (a_table: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]): LINKED_LIST [EPA_EXPRESSION]
 			-- Keys from `a_table' as a list
 		do
@@ -283,6 +306,7 @@ feature{NONE} -- Implementation
 				a_table.forth
 			end
 		end
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

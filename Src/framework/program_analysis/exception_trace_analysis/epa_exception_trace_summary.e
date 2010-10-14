@@ -12,15 +12,17 @@ inherit
 
 	EPA_UTILITY
 
+	EPA_HASH_CALCULATOR
+
 create
 	make
 
 feature{NONE} -- Initialization
 
 	make (a_code: INTEGER; a_context_class_name, a_context_feature_name: STRING;
-					a_failing_bp_index: INTEGER; a_failing_tag, a_failing_written_class: STRING;
+					a_failing_bp_index: INTEGER; a_failing_tag: STRING;
 					a_recipient_context_class_name, a_recipient_feature_name: STRING;
-					a_recipient_bp_index: INTEGER; a_recipient_written_class_name: STRING)
+					a_recipient_bp_index: INTEGER)
 			-- Initialization
 		do
 			set_exception_code (a_code)
@@ -28,11 +30,9 @@ feature{NONE} -- Initialization
 			set_failing_feature_name (a_context_feature_name)
 			set_failing_position_breakpoint_index (a_failing_bp_index)
 			set_failing_assertion_tag (a_failing_tag)
-			set_failing_written_class_name (a_failing_written_class)
 			set_recipient_context_class_name (a_recipient_context_class_name)
 			set_recipient_feature_name (a_recipient_feature_name)
 			set_recipient_breakpoint_index (a_recipient_bp_index)
-			set_recipient_written_class_name (a_recipient_written_class_name)
 		end
 
 feature -- Status report
@@ -40,7 +40,9 @@ feature -- Status report
 	is_exception_supported: BOOLEAN
 			-- Is the exception type supported?
 		do
-			Result := (exception_code /= 0)
+			Result := is_precondition_violation or else is_postcondition_violation
+					or else is_class_invariant_violation or else is_assertion_violation
+					or else is_void_call_target
 		end
 
 	is_precondition_violation: BOOLEAN
@@ -67,6 +69,32 @@ feature -- Status report
 			Result := exception_code = check_instruction
 		end
 
+	is_void_call_target: BOOLEAN
+			-- Is this summary about a void call target?
+		do
+			Result := exception_code = Void_call_target
+		end
+
+feature -- Hash
+
+	key_to_hash: DS_LINEAR [INTEGER]
+			-- <Precursor>
+		local
+			l_list: DS_LINKED_LIST [INTEGER]
+		do
+			create l_list.make
+			l_list.force_last (exception_code)
+			l_list.force_last (failing_context_class.class_id)
+			l_list.force_last (failing_feature.feature_id)
+			l_list.force_last (failing_position_breakpoint_index)
+			l_list.force_last (failing_assertion_tag.hash_code)
+			l_list.force_last (recipient_context_class.class_id)
+			l_list.force_last (recipient_feature.feature_id)
+			l_list.force_last (recipient_breakpoint_index)
+
+			Result := l_list
+		end
+
 feature -- Access (Failing position)
 
 	exception_code: INTEGER assign set_exception_code
@@ -75,6 +103,9 @@ feature -- Access (Failing position)
 			--		feature call on void target, or class invariant violation.
 			-- Refer to {EXCEP_CONST}.
 
+	failing_assertion_tag: STRING assign set_failing_assertion_tag
+			-- Tag of the failing assertion, in context of the failing feature.
+
 	failing_position_breakpoint_index: INTEGER assign set_failing_position_breakpoint_index
 			-- Breakpoint index of the failing position, which is
 			--		indicated by the first exception trace frame.
@@ -82,12 +113,6 @@ feature -- Access (Failing position)
 
 	failing_feature_name: STRING assign set_failing_feature_name
 			-- Name of the failing feature, as indicated by the first exception trace frame.
-		do
-			if failing_feature_name_cache = Void then
-				create failing_feature_name_cache.make_empty
-			end
-			Result := failing_feature_name_cache
-		end
 
 	failing_feature: FEATURE_I
 			-- Feature that has failed.
@@ -97,23 +122,13 @@ feature -- Access (Failing position)
 					and then not failing_feature_name.is_empty
 			not_class_invariant_violation: not is_class_invariant_violation
 		do
-			if failing_feature_cache = Void then
-				failing_feature_cache := failing_context_class.feature_named (failing_feature_name)
-			end
-
-			Result := failing_feature_cache
+			Result := failing_context_class.feature_named (failing_feature_name)
 		ensure
 			same_name: Result.feature_name ~ failing_feature_name
 		end
 
 	failing_context_class_name: STRING assign set_failing_context_class_name
 			-- Name of the context class of the failing feature.
-		do
-			if failing_context_class_name_cache = Void then
-				create failing_context_class_name_cache.make_empty
-			end
-			Result := failing_context_class_name_cache
-		end
 
 	failing_context_class: CLASS_C
 			-- Context class of `failing_feature'.
@@ -121,47 +136,32 @@ feature -- Access (Failing position)
 			failing_context_class_name_not_empty: failing_context_class_name /= Void
 					and then not failing_context_class_name.is_empty
 		do
-			if failing_context_class_cache = Void then
-				failing_context_class_cache := first_class_starts_with_name (failing_context_class_name)
-			end
-
-			Result := failing_context_class_cache
+			Result := first_class_starts_with_name (failing_context_class_name)
 		ensure
 			same_name: Result.name ~ failing_context_class_name
 		end
 
-	failing_written_class_name: STRING assign set_failing_written_class_name
-			-- Name of the written class of the failing feature.
-		do
-			if failing_written_class_name_cache = Void then
-				create failing_written_class_name_cache.make_empty
-			end
-			Result := failing_written_class_name_cache
-		end
-
 	failing_written_class: CLASS_C
 			-- Written class of `failing_feature'
+			-- In case of a class invariant violation, return `failing_context_class'.
 		require
-			failing_feature_attached: failing_feature /= Void
-			failing_written_class_name_not_empty: failing_written_class_name /= Void
-					and then not failing_written_class_name.is_empty
+			class_available: failing_feature /= Void
+					or else (is_class_invariant_violation and then failing_context_class /= Void)
 		do
-			if failing_written_class_cache = Void then
-				failing_written_class_cache := failing_feature.written_class
+			if failing_feature /= Void then
+				Result := failing_feature.written_class
+			else
+				check is_class_invariant_violation: is_class_invariant_violation end
+				Result := failing_context_class
 			end
-
-			Result := failing_written_class_cache
-		ensure
-			same_name: Result.name = failing_written_class_name
 		end
 
-	failing_assertion_tag: STRING assign set_failing_assertion_tag
-			-- Tag of the failing assertion, in context of the failing feature.
+	failing_written_class_name: STRING
+			-- Name of the written class of the failing feature.
+		require
+			failing_written_class_attached: failing_written_class /= Void
 		do
-			if failing_assertion_tag_cache = Void or failing_assertion_tag_cache.is_empty then
-				failing_assertion_tag_cache := once "noname"
-			end
-			Result := failing_assertion_tag_cache
+			Result := failing_written_class.name
 		end
 
 feature -- Access (recipient)
@@ -169,15 +169,22 @@ feature -- Access (recipient)
 	recipient_breakpoint_index: INTEGER assign set_recipient_breakpoint_index
 			-- Breakpoint index of the exception recipient.
 
+	recipient_context_class_name: STRING assign set_recipient_context_class_name
+			-- Name of the recipient context class.
+
+	recipient_context_class: CLASS_C
+			-- Context class of recipient feature.
+		require
+			recipient_context_class_name_not_empty: recipient_context_class_name /= Void
+					and then not recipient_context_class_name.is_empty
+		do
+			Result := first_class_starts_with_name (recipient_context_class_name)
+		ensure
+			is_consistent: Result.name ~ recipient_context_class_name
+		end
+
 	recipient_feature_name: STRING assign set_recipient_feature_name
 			-- Name of the feature as the recipient.
-		do
-			if recipient_feature_name_cache = void then
-				create recipient_feature_name_cache.make_empty
-			end
-
-			Result := recipient_feature_name_cache
-		end
 
 	recipient_feature: FEATURE_I
 			-- Recipient feature.
@@ -186,63 +193,25 @@ feature -- Access (recipient)
 			recipient_feature_name_not_empty: recipient_feature_name /= Void
 					and then not recipient_feature_name.is_empty
 		do
-			if recipient_feature_cache = Void then
-				recipient_feature_cache := recipient_context_class.feature_named (recipient_feature_name)
-			end
-
-			Result := recipient_feature_cache
+			Result := recipient_context_class.feature_named (recipient_feature_name)
 		ensure
 			is_consistent: Result.feature_name ~ recipient_feature_name
-		end
-
-	recipient_context_class_name: STRING assign set_recipient_context_class_name
-			-- Name of the recipient context class.
-		do
-			if recipient_context_class_name_cache = Void then
-				create recipient_context_class_name_cache.make_empty
-			end
-
-			Result := recipient_context_class_name_cache
-		end
-
-	recipient_context_class: CLASS_C
-			-- Context class of recipient feature.
-		require
-			recipient_context_class_name_not_empty: recipient_context_class_name /= Void
-					and then not recipient_context_class_name.is_empty
-		do
-			if recipient_context_class_cache = Void then
-				recipient_context_class_cache := first_class_starts_with_name (recipient_context_class_name)
-			end
-
-			Result := recipient_context_class_cache
-		ensure
-			is_consistent: Result.name ~ recipient_context_class_name
-		end
-
-	recipient_written_class_name: STRING assign set_recipient_written_class_name
-			-- Name of the recipient written class.
-		do
-			if recipient_written_class_name_cache = Void then
-				recipient_written_class_name_cache := recipient_context_class_name.twin
-			end
-
-			Result := recipient_written_class_name_cache
 		end
 
 	recipient_written_class: CLASS_C
 			-- Written class of the recipient feature.
 		require
-			recipient_written_class_name_not_empty: recipient_written_class_name /= Void
-					and then not recipient_written_class_name.is_empty
+			recipient_feature_attached: recipient_feature /= Void
 		do
-			if recipient_written_class_cache = Void then
-				recipient_written_class_cache := first_class_starts_with_name (recipient_written_class_name)
-			end
+			Result := recipient_feature.written_class
+		end
 
-			Result := recipient_written_class_cache
-		ensure
-			is_consistent: Result.name ~ recipient_written_class_name
+	recipient_written_class_name: STRING
+			-- Name of the recipient written class.
+		require
+			recipient_written_class_attached: recipient_written_class /= Void
+		do
+			Result := recipient_written_class.name
 		end
 
 feature -- Status set
@@ -268,8 +237,7 @@ feature -- Status set
 		require
 			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			failing_feature_name_cache := a_name.twin
-			failing_feature_cache := Void
+			failing_feature_name := a_name.twin
 		end
 
 	set_failing_context_class_name (a_name: STRING)
@@ -277,26 +245,16 @@ feature -- Status set
 		require
 			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			failing_context_class_name_cache := a_name.twin
-			failing_context_class_cache := Void
-		end
-
-	set_failing_written_class_name (a_name: STRING)
-			-- Set `failing_written_class_name'.
-		require
-			name_not_empty: a_name /= Void and then not a_name.is_empty
-		do
-			failing_written_class_name_cache := a_name.twin
-			failing_written_class_cache := Void
+			failing_context_class_name := a_name.twin
 		end
 
 	set_failing_assertion_tag (a_tag: STRING)
 			-- Set `failing_assertion_tag'.
 		do
 			if a_tag = Void or a_tag.is_empty then
-				failing_assertion_tag_cache := once "noname"
+				failing_assertion_tag := once "noname"
 			else
-				failing_assertion_tag_cache := a_tag.twin
+				failing_assertion_tag := a_tag.twin
 			end
 		end
 
@@ -315,8 +273,7 @@ feature -- Status set
 		require
 			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			recipient_feature_name_cache := a_name.twin
-			recipient_feature_cache := Void
+			recipient_feature_name := a_name.twin
 		end
 
 	set_recipient_context_class_name (a_name: STRING)
@@ -324,59 +281,7 @@ feature -- Status set
 		require
 			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			recipient_context_class_name_cache := a_name.twin
-			recipient_context_class_cache := Void
+			recipient_context_class_name := a_name.twin
 		end
-
-	set_recipient_written_class_name (a_name: STRING)
-			-- Set `recipient_written_class_name'.
-		require
-			name_not_empty: a_name /= Void and then not a_name.is_empty
-		do
-			recipient_written_class_name_cache := a_name.twin
-			recipient_written_class_cache := Void
-		end
-
-feature{NONE} -- Cache
-
-	failing_feature_name_cache: STRING
-			-- Cache for `failing_feature_name'.
-
-	failing_context_class_name_cache: STRING
-			-- Cache for `failing_context_class_name'.
-
-	failing_written_class_name_cache: detachable STRING
-			-- Cache for `failing_written_class_name'.
-
-	failing_assertion_tag_cache: STRING
-			-- Cache for `failing_assertion_tag'.
-
-	failing_feature_cache: FEATURE_I
-			-- Cache for `failing_feature'.
-
-	failing_context_class_cache: CLASS_C
-			-- Cache for `failing_context_class'.
-
-	failing_written_class_cache: CLASS_C
-			-- Cache for `failing_written_class'.
-
-	recipient_written_class_cache: CLASS_C
-			-- Cache for `recipient_written_class'.
-
-	recipient_written_class_name_cache: STRING
-			-- Cache for `recipient_written_class_name'.
-
-	recipient_context_class_cache: CLASS_C
-			-- Cache for `recipient_context_class'.
-
-	recipient_context_class_name_cache: STRING
-			-- Cache for `recipient_context_class'
-
-	recipient_feature_cache: FEATURE_I
-			-- Cache for `recipient_feature'.
-
-	recipient_feature_name_cache: STRING
-			-- Cache for `recipient_feature_name'.
-
 
 end

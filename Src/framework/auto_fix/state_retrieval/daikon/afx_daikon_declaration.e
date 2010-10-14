@@ -83,12 +83,13 @@ feature {NONE} -- Implementation
    			from
    				i := 1
    			until
-   				i = str.count
+   				i >= str.count
    			loop
    				if (str.at (i).is_space) then
    					str.remove_substring (i,i)
+   				else
+	   				i := i + 1
    				end
-   				i := i + 1
    			end
 
    		end

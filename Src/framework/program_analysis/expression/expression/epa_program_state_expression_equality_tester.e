@@ -27,7 +27,9 @@ feature -- Equality
 			elseif u = Void or v = Void then
 				Result := False
 			else
-				Result := u ~ v 
+				Result :=  u.text ~ v.text
+						and then u.breakpoint_slot = v.breakpoint_slot
+						and then u.indirectness = v.indirectness
 			end
 		end
 

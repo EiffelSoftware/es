@@ -14,12 +14,14 @@ feature -- Constants
 
 	Mode_default: INTEGER = 0
 			-- Default test type.
+			-- Not used for the moment.
 
 	Mode_execute: INTEGER = 1
-			-- Mode where the test is executed.
+			-- Mode where the intermediate execution of the test would not be monitored.
+			-- This mode is used especially for reproducing failures.
 
 	Mode_monitor: INTEGER = 2
-			-- Mode where the execution of the test would be monitored.
+			-- Mode where the intermediate execution of the test would be monitored.
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"

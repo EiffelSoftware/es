@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AUT_NESTED_HASH_TABLE [V -> HASHABLE, K2 -> HASHABLE, K1 -> HASHABLE]
+	EPA_NESTED_HASH_TABLE [V -> HASHABLE, K2 -> HASHABLE, K1 -> HASHABLE]
 
 inherit
 
@@ -23,12 +23,11 @@ feature -- Initialization
 				a_k2_tester: KL_EQUALITY_TESTER[K2]; a_k1_tester: KL_EQUALITY_TESTER[K1])
 			-- Initialization.
 		do
+			make (n)
+
 			set_value_equality_tester (a_val_tester)
 			set_secondary_key_equailty_tester (a_k2_tester)
 			set_primary_key_equailty_tester (a_k1_tester)
-
-			make (n)
-			set_primary_key_equailty_tester (primary_key_equality_tester)
 		end
 
 feature -- Access

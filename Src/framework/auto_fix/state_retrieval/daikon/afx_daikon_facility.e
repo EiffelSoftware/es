@@ -69,7 +69,7 @@ feature -- Actions
 			store_daikon_state
 		end
 
-	on_application_exited
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Execute daikon
 		do
 			store_daikon_state

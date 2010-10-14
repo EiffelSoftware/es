@@ -47,7 +47,7 @@ feature -- Actions
 			end
 		end
 
-	on_application_exited
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
 			-- Execute daikon
 		do
 			create pass_result.make_from_string (invariants_from_file (daikon_result_file_name (pass_test_case_info)), pass_test_case_info)
