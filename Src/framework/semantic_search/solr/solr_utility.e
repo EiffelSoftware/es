@@ -19,7 +19,7 @@ feature -- Access
 		do
 			create Result.make (a_field.value.text.count + a_field.name.count + 64)
 			Result.append (once "<field name=%"")
-			Result.append (encoded_field_string (a_field.name))
+			Result.append (a_field.name)
 			Result.append (once "%" boost=%"")
 			Result.append (a_field.boost.out)
 			Result.append (once "%">")
@@ -48,6 +48,7 @@ feature -- Access
 			Result.replace_substring_all (once "%"", once "%%22")
 			Result.replace_substring_all (once ",", once "%%2C")
 			Result.replace_substring_all (once "!", once "%%21")
+			Result.replace_substring_all (once "=", once "%%3D")
 		end
 
 	decoded_field_string (a_name: STRING): STRING
@@ -71,6 +72,7 @@ feature -- Access
 			Result.replace_substring_all (once "%%22", once "%"")
 			Result.replace_substring_all (once "%%2C", once ",")
 			Result.replace_substring_all (once "%%21", once "!")
+			Result.replace_substring_all (once "%%3D", once "=")
 		end
 
 end

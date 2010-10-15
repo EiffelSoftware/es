@@ -65,6 +65,16 @@ feature -- Access
 			-- Revsersed table for `variable_position'
 			-- Key is variable expression, value is the index of that variable
 
+	variable_types: HASH_TABLE [TYPE_A, INTEGER]
+			-- Table of variable types
+			-- key is variable position, value is the type of the variable in that position.
+		do
+			create Result.make (variables.count)
+			across reversed_variable_position as l_vars loop
+				Result.put (l_vars.item.type, l_vars.key)
+			end
+		end
+
 	variable_type_table: DS_HASH_TABLE [INTEGER, TYPE_A]
 			-- Table of types of `variables'
 			-- Key is the type, value is the number of times that a certain

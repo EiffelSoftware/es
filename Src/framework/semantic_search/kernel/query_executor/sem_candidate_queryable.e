@@ -102,8 +102,9 @@ feature -- Status report
 
 feature -- Basic operations
 
-	extend_criterion_from_string (a_criterion_name: STRING; a_value: STRING)
+	extend_criterion_from_string (a_criterion_name: STRING; a_value: STRING; a_types: HASH_TABLE [TYPE_A, INTEGER])
 			-- Add an criterion parsed from `a_criterion_name' and `a_value' into `criteria'.
+			-- `a_types' is a table from variable indexes to variable types.
 		local
 			l_criterion_name: STRING
 			l_index: INTEGER
@@ -132,7 +133,7 @@ feature -- Basic operations
 					across l_combination as l_positions loop
 						l_operands.extend (l_positions.item.to_integer)
 					end
-					create l_criterion.make (l_criterion_name, l_operands, l_value)
+					create l_criterion.make (l_criterion_name, l_value, l_operands, a_types)
 
 						-- Setup `criteria'.
 					extend_criteria (l_criterion)

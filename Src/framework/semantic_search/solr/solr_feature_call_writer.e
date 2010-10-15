@@ -175,7 +175,7 @@ feature{NONE} -- Implementation
 
 			across <<l_smeta, l_dmeta>> as l_metas loop
 				across l_metas.item as l_items loop
-					append_field_with_data (l_items.key, encoded_field_string (l_items.item), ir_string_value_type, l_boost)
+					append_field_with_data (l_items.key, l_items.item, ir_string_value_type, l_boost)
 				end
 			end
 		end
@@ -205,7 +205,7 @@ feature{NONE} -- Implementation
 			l_type := ir_string_value_type
 			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
 				across l_metas.item as l_items loop
-					append_field_with_data (l_items.key, encoded_field_string (l_items.item), l_type, default_boost_value)
+					append_field_with_data (l_items.key, l_items.item, l_type, default_boost_value)
 				end
 			end
 		end

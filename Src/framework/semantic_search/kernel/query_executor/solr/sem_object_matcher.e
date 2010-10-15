@@ -223,20 +223,24 @@ feature -- Basic operations
 			create l_open_indexes.make
 			l_is_matched := True
 			i := 1
-			l_operand_ids := a_criterion.operands
+			l_operand_ids := a_criterion.variables
 			from
 				i := 1
 				c := l_operand_ids.count
 			until
 				i > c or not l_is_matched
 			loop
-				l_var_index := a_searched_criterion.operands.i_th (i)
+				l_var_index := a_searched_criterion.variables.i_th (i)
 				a_matched_variables.search (l_var_index)
 				if a_matched_variables.found_item = -1 then
 						-- The current variable is open.
-					l_var_id := a_searched_criterion.operands.i_th (i)
-					l_obj_id := a_criterion.operands.i_th (i)
-					l_open_indexes.extend ([l_var_id, l_obj_id])
+					l_var_id := a_searched_criterion.variables.i_th (i)
+					l_obj_id := a_criterion.variables.i_th (i)
+					if a_criterion.is_variable_type_conformant_to (a_criterion.variable_type (l_obj_id), a_searched_criterion.variable_type (l_var_id)) then
+						l_open_indexes.extend ([l_var_id, l_obj_id])
+					else
+						l_is_matched := False
+					end
 				else
 						-- The current variable is fixed.
 					if l_operand_ids.i_th (i) /= a_matched_variables.found_item then
@@ -329,7 +333,7 @@ feature{NONE} -- Implementation
 							create {IR_INTEGER_RANGE_VALUE} l_term_value.make (l_range.item.lower, l_range.item.upper)
 						end
 						l_name := l_expr_value_term.field_content_in_type_form (l_type_form)
-						create l_criterion.make (l_name, l_expr_value_term.operands, l_term_value)
+						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)
 						l_criterion.set_term (l_term)
 						Result.search (l_name)
 						if Result.found then

@@ -45,6 +45,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current using data from `a_document'.
 		local
 			l_fields: HASH_TABLE [LINKED_LIST [IR_FIELD], STRING_8]
+			l_variables: like variables
 		do
 			l_fields := a_document.table_by_name
 
@@ -54,24 +55,29 @@ feature{NONE} -- Initialization
 				make (l_fields.item (uuid_field).first.value.text)
 			end
 
-			set_is_valid (l_fields.has (score_field))
 			if is_valid then
-				set_score (l_fields.item (score_field).first.value.text.to_double)
+				set_is_valid (l_fields.has (score_field))
+				if is_valid then
+					set_score (l_fields.item (score_field).first.value.text.to_double)
+				end
 			end
 
 
 				-- Initialize variables.
-			set_is_valid (l_fields.has (variables_field))
 			if is_valid then
-				set_variables_from_string (l_fields.item (variables_field).first.value.text)
+				set_is_valid (l_fields.has (variables_field))
+				if is_valid then
+					set_variables_from_string (l_fields.item (variables_field).first.value.text)
+				end
 			end
 
 			if is_valid then
 					-- Initialize meta data.
+				l_variables := variables
 				across l_fields as l_field_tbl loop
 					if l_field_tbl.key.starts_with (once "s_") then
 							-- This is a field for meta data.
-						extend_criterion_from_string (l_field_tbl.item.first.name, l_field_tbl.item.first.value.text)
+						extend_criterion_from_string (l_field_tbl.item.first.name, l_field_tbl.item.first.value.text, l_variables)
 					end
 				end
 			end
@@ -136,8 +142,7 @@ feature -- Setting
 			l_variables: like variables
 		do
 			l_variables := variables
---			across a_string.split (field_value_separator) as l_vars loop
-			across string_slices (a_string, ";;;") as l_vars loop
+			across a_string.split (field_value_separator) as l_vars loop
 				l_variable := variable_and_position_from_config (l_vars.item)
 				l_variables.force (l_variable.type, l_variable.position)
 			end

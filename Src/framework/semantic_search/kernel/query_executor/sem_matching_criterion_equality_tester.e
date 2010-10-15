@@ -28,7 +28,7 @@ feature -- Status report
 			else
 				Result :=
 					v.criterion ~ u.criterion and then
-					v.operands ~ u.operands and then
+					v.variables ~ u.variables and then
 					ir_value_equality_tester.test (v.value, u.value)
 			end
 		end
