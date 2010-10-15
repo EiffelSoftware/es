@@ -58,16 +58,22 @@ feature {NONE} -- Initialization
 
 			create logs_tool.make ("Logs")
 			create info_tool.make ("Info")
+			create console_tool.make ("Console")
 		end
 
 	initialize
 			-- Build the interface for this window.
 		local
 			dm: like docking_manager
+			acc: EV_ACCELERATOR
+			acc_n_key: ACCELERATOR_AND_THEN_KEY
+			k: EV_KEY
 		do
 			Precursor {EV_TITLED_WINDOW}
+
 			logs_tool.set_ctr_window (Current)
 			info_tool.set_ctr_window (Current)
+			console_tool.set_ctr_window (Current)
 
 				-- Create and add the status bar.
 			build_standard_status_bar
@@ -82,6 +88,7 @@ feature {NONE} -- Initialization
 			end
 			build_tools
 			restore_docking_layout
+--			apply_default_layout
 
 				-- Execute `request_close_window' when the user clicks
 				-- on the cross in the title bar.
@@ -94,6 +101,37 @@ feature {NONE} -- Initialization
 			set_size (Window_width, Window_height)
 
 			show_actions.extend_kamikaze (agent on_first_shown)
+			console.register_observer (console_tool)
+
+				--| Ctrl+G ... ?
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_G)
+			create acc.make_with_key_combination (k, True, False, False)
+			create acc_n_key.make (acc, Current)
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_C)
+			acc_n_key.register_action (k, agent console_tool.set_focus, ["Console", "Go To Console Tool"])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_R)
+			acc_n_key.register_action (k, agent catalog_grid.set_focus, ["Repositories", "Go To Repositories Tool"])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_L)
+			acc_n_key.register_action (k, agent logs_tool.set_focus, ["Logs", "Go To Logs Tool"])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_I)
+			acc_n_key.register_action (k, agent info_tool.set_focus, ["Info", "Go To Info Tool"])
+
+			acc_n_key.enable_popup
+			acc_n_key.attach_to (accelerators, True)
+
+				--| Ctrl+E ... ?
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_E)
+			create acc.make_with_key_combination (k, True, False, False)
+			create acc_n_key.make (acc, Current)
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_A)
+			acc_n_key.register_action (k, agent check_all_repositories, ["Check All Repositories", "Check all repositories for new logs"])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_C)
+			acc_n_key.register_action (k, agent edit_configuration, ["Configuration", "Edit configuration"])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_L)
+			acc_n_key.register_action (k, agent apply_default_layout, ["Reset Layout", Void])
+
+			acc_n_key.enable_popup
+			acc_n_key.attach_to (accelerators, True)
 		end
 
 	is_in_default_state: BOOLEAN
@@ -215,6 +253,9 @@ feature -- Layout
 				catalog_content.set_top ({SD_ENUMERATION}.top)
 				logs_tool.sd_content.set_top ({SD_ENUMERATION}.right)
 				info_tool.sd_content.set_relative (logs_tool.sd_content, {SD_ENUMERATION}.bottom)
+--				console_tool.sd_content.set_relative (logs_tool.sd_content, {SD_ENUMERATION}.bottom)
+				console_tool.sd_content.set_auto_hide ({SD_ENUMERATION}.bottom)
+				console_tool.sd_content.set_floating_height (200)
 				if not catalog_content.is_visible then
 					catalog_content.show
 				end
@@ -223,6 +264,9 @@ feature -- Layout
 				end
 				if not info_tool.sd_content.is_visible then
 					info_tool.sd_content.show
+				end
+				if not console_tool.sd_content.is_visible then
+					console_tool.sd_content.show
 				end
 				dm.close_editor_place_holder
 			end
@@ -660,6 +704,7 @@ feature -- Check/Update/Refresh
 			r: EV_GRID_ROW
 			i: INTEGER
 		do
+			console_log ("Check all repositories")
 			g := catalog_grid
 			from
 				i := 1
@@ -676,6 +721,7 @@ feature -- Check/Update/Refresh
 
 	check_repository (a_repo: REPOSITORY_DATA)
 		do
+			console_log ("Check repository: " + a_repo.repository_location)
 			if ev_application.ctrl_pressed then
 				gui_check_repository (a_repo)
 			else
@@ -1426,6 +1472,9 @@ feature {NONE} -- Implementation
 
 				--| Info
 			dm.contents.extend (info_tool.sd_content)
+
+				--| Console
+			dm.contents.extend (console_tool.sd_content)
 		end
 
 	catalog_content: SD_CONTENT
@@ -1465,6 +1514,7 @@ feature {CTR_TOOL} -- Tools
 
 	logs_tool: CTR_LOGS_TOOL
 	info_tool: CTR_INFO_TOOL
+	console_tool: CTR_CONSOLE_TOOL
 
 	before_busy_pointer: detachable EV_POINTER_STYLE
 
@@ -1640,6 +1690,15 @@ feature {NONE} -- Implementation / Constants
 
 	Window_height: INTEGER = 600
 			-- Initial height for this window.
+
+	debug_state: BOOLEAN
+		external
+			"C inline use %"eif_macros.h%""
+		alias
+			"[
+				return EIF_IS_WORKBENCH;
+			]"
+		end
 
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
