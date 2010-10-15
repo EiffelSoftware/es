@@ -4,8 +4,7 @@
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="true" warning="true">
-			<debug name="autofix_dynamic_analysis" enabled="true"/>
+		<option trace="false" profile="false" debug="false" warning="true">
 			<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
 			<warning name="old_verbatim_strings" enabled="false"/>
 		</option>
@@ -13,11 +12,7 @@
 		<setting name="exception_trace" value="true"/>
 		<setting name="inlining_size" value="0"/>
 		<setting name="multithreaded" value="true"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false">
-			<option>
-				<assertions precondition="true" check="true"/>
-			</option>
-		</library>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf" readonly="false"/>
 		<library name="cli_writer" location="$EIFFEL_SRC\framework\cli_writer\cli_writer.ecf" readonly="false" use_application_options="true"/>
 		<library name="compiler_encoding" location="$EIFFEL_SRC\framework\compiler_encoding\compiler_encoding.ecf" readonly="false"/>
@@ -112,8 +107,7 @@
 	<target name="bench" extends="common">
 		<description>Eiffel Studio</description>
 		<root class="EB_KERNEL" feature="make"/>
-		<option debug="true">
-			<debug name="auto_fix" enabled="true"/>
+		<option>
 			<assertions/>
 			<warning name="once_in_generic" enabled="false"/>
 		</option>
@@ -211,13 +205,8 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
-		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false">
-			<option>
-				<assertions precondition="true" check="true"/>
-			</option>
-		</library>
+		<library name="program_analysis" location="$EIFFEL_SRC\framework\program_analysis\program_analysis.ecf" readonly="false"/>
 		<library name="rapid_miner" location="$EIFFEL_SRC\framework\rapid_miner\rapid_miner.ecf" readonly="false"/>
-		<library name="scoopli" location="$EIFFEL_SRC\library\scoopli\scoopli.ecf" readonly="false"/>
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
 		<library name="information_retrieval" location="$EIFFEL_SRC\framework\information_retrieval\information_retrieval.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
@@ -229,6 +218,7 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
+		<library name="scoopli" location="$EIFFEL_SRC\library\scoopli\scoopli.ecf" readonly="false"/>		
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
