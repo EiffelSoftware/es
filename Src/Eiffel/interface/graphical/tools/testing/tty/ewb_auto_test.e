@@ -73,7 +73,10 @@ feature -- Execution
 				-- Using wizard information to create AutoTest configuration
 			l_session: SERVICE_CONSUMER [SESSION_MANAGER_S]
 			l_manager: SESSION_MANAGER_S
-			l_generator: TEST_GENERATOR
+			l_generator: TEST_GENERATOR_WRAPPER
+				-- Use a wrapper class in batch mode to enable interpreter class generation before testing.
+				-- This is needed to support research ideas such as precondition-satisfaction.
+				-- Ideally, we should be able to enable all research ideas in both GUI and batch mode. 15.10.2010 Jasonw
 			l_type, l_types: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
