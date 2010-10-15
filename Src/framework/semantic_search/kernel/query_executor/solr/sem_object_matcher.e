@@ -10,6 +10,8 @@ class
 inherit
 	SEM_SHARED_EQUALITY_TESTER
 
+	SHARED_WORKBENCH
+
 create
 	make
 
@@ -28,8 +30,16 @@ feature -- Access
 	query_result: IR_QUERY_RESULT
 			-- Result from the query execution
 
-	last_matches: LINKED_LIST [SEM_OBJECTS]
+	last_matches: LINKED_LIST [SEM_QUERYABLE_MATCHING_RESULT]
 			-- Last matched objects
+
+feature -- Access/Performance statistics
+
+	last_match_start_time: DATE_TIME
+			-- Time when matching starts
+
+	last_match_end_time: DATE_TIME
+			-- Time when matching ends
 
 feature -- Basic operations
 
@@ -39,9 +49,9 @@ feature -- Basic operations
 		local
 			l_candidates: LINKED_LIST [SEM_CANDIDATE_OBJECTS]
 			l_candidate: SEM_CANDIDATE_OBJECTS
-			l_searched_criteria: like searched_criteria
-			l_time1: DATE_TIME
-			l_time2: DATE_TIME
+			l_searched_criteria: DS_HASH_SET [SEM_MATCHING_CRITERION]
+			l_mentioned_variables_in_criterion: DS_HASH_SET [INTEGER] -- Indexes of variables that are mentioned in searchable criteria in the query.
+			l_query_data: SEM_SEARCHED_QUERYABLE_DATA
 		do
 				-- Construct candidate objects from query results.
 			create l_candidates.make
@@ -53,24 +63,24 @@ feature -- Basic operations
 			end
 
 				-- Construct data from `a_query_config'.
-			l_searched_criteria := searched_criteria (searched_criterion_table (a_query_config))
+			create l_query_data.make (a_query_config)
+			l_searched_criteria := l_query_data.searched_criteria
+			l_mentioned_variables_in_criterion := l_query_data.variables_unmentioned_in_searched_criteria
 
 				-- Iterate through all candidate object document,
 				-- perform variable matching for each document.
-			create l_time1.make_now
+			create last_match_start_time.make_now
 			across l_candidates as l_candidate_list loop
-				match_document (a_query_config, l_searched_criteria, l_candidate_list.item)
+				match_document (l_query_data, l_candidate_list.item)
 			end
-			create l_time2.make_now
-			io.put_string (l_time1.out + "%N")
-			io.put_string (l_time2.out + "%N")
+			create last_match_end_time.make_now
 		end
 
-	match_document (a_query_config: SEM_QUERY_CONFIG; a_searched_criteria: like searched_criteria; a_document: SEM_CANDIDATE_QUERYABLE)
-			-- Match `a_document' to the query specified through `a_searched_criterion'.
-			-- The original query is accessable through `a_query_config'.
-			-- Make result available in `is_last_match_complete', `last_matched_variables', `last_reversed_matched_variables' and
-			-- `last_unmatchable_terms'.
+feature{NONE} -- Implementation
+
+	match_document (a_query_data: SEM_SEARCHED_QUERYABLE_DATA; a_document: SEM_CANDIDATE_QUERYABLE)
+			-- Match `a_document' to the query specified through `a_query_data'.
+			-- Extend result in `last_matches'.
 		local
 			l_matching: like matching_possibilities
 			l_levels: ARRAYED_LIST [TUPLE [searched_criterion: SEM_MATCHING_CRITERION; cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]]]
@@ -82,7 +92,7 @@ feature -- Basic operations
 			l_cur_cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]  -- The candidate cursor in current level
 			l_cur_level: INTEGER      -- Current level
 			l_level_count: INTEGER    -- The number of total levels.
-			l_solution_found: BOOLEAN -- Is a solution found.
+			l_full_solution_found: BOOLEAN -- Is a solution found.
 			l_matched_variables: HASH_TABLE [INTEGER, INTEGER]
 				-- Already established variable-object bindings, key is index of variables from the query side,
 				-- value is the index of the matched object from the `a_document', -1 means that particular variable (from the query side) is not matched.
@@ -92,15 +102,20 @@ feature -- Basic operations
 			l_open_slots: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]
 				-- `l_open_slots' is a list of variable-object bindings that `a_criterion' can
 				-- contribute to the already established bindings in `a_matched_variables'. `var_id' is the index of a variable in the query side,			
-			l_steps: LINKED_LIST [LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]]
+			l_steps, l_max_partial_steps, l_solution_steps: LINKED_LIST [TUPLE [matches: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]; criterion: SEM_MATCHING_CRITERION]]
 				-- All variable-object mapping steps that are performed so far, used for back-tracking.
 				-- `var_id' is the index of a variable in the query side, `obj_id' is the index of an object in the result document side.
+				-- `criterion' is the matched crierion from the query side.
+				-- `l_mat_partial_steps' are the longest matching that we have seen so far.			
 			l_exhausted: BOOLEAN -- Have we already exhausted all matching possibilities?					
+			l_unmentioned_unmatched_variables: DS_HASH_SET [INTEGER] -- Set of indexes of variables (from the query side) that are both unmentioned in searched criteria and unmatched so far.
+			l_result: SEM_QUERYABLE_MATCHING_RESULT
+			l_is_last_match_complete: BOOLEAN
 		do
-			l_matching := matching_possibilities (a_searched_criteria, a_document)
+			l_matching := matching_possibilities (a_query_data.searched_criteria, a_document)
 
 				-- Build up all levels that can be back-tracked.
-			is_last_match_complete := True
+			l_is_last_match_complete := True
 			create l_levels.make (l_matching.count)
 			across l_matching as l_matchings loop
 				l_match := l_matchings.item
@@ -109,87 +124,196 @@ feature -- Basic operations
 					l_cur_cursor.start
 					l_levels.extend ([l_match.searched_criterion, l_cur_cursor])
 				else
-					if is_last_match_complete then
-						is_last_match_complete := False
+					if l_is_last_match_complete then
+						l_is_last_match_complete := False
 					end
 				end
 			end
 
 				-- Initialize matched variable indexes.
-			create l_matched_variables.make (a_query_config.variable_count)
-			variable_indexes_from_queryable (a_query_config.queryable).do_all (agent l_matched_variables.force (-1, ?))
+			create l_matched_variables.make (a_query_data.query_config.variable_count)
+			variable_indexes_from_queryable (a_query_data.queryable).do_all (agent l_matched_variables.force (-1, ?))
 
-				-- Use back-track to do object matching.
-			create l_steps.make
+				-- Use back-track to do object matching.			
 			l_cur_level := 0
 			l_level_count := l_levels.count
-			from
-				l_cur_level := 1
-				l_cur_cursor := l_levels.i_th (l_cur_level).cursor
-				l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
-				l_exhausted := l_cur_cursor.after
-			until
-				l_solution_found or l_exhausted
-			loop
-				if l_cur_cursor.after then
-						-- We exhausted current level, need to back-track.										
-						-- First, undo all matches in the last step.
-					across l_steps.last as l_slots loop
-						l_matched_variables.force (-1, l_slots.item.var_id)
-					end
-						-- Second, move current cursor to the first position.
-					l_cur_cursor.start
+			if l_level_count > 0 then
+					-- There are some criteria to satisfy, use back-track to satisfy all of them.
+				create l_steps.make
+				create l_max_partial_steps.make
+				from
+					l_cur_level := 1
+					l_cur_cursor := l_levels.i_th (l_cur_level).cursor
+					l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
+					l_exhausted := l_cur_cursor.after
+				until
+					l_full_solution_found or l_exhausted
+				loop
+					if l_cur_cursor.after then
+							-- We exhausted current level, need to back-track.										
+							-- First, undo all matches in the last step.
+						across l_steps.last.matches as l_slots loop
+							l_matched_variables.force (-1, l_slots.item.var_id)
+						end
+							-- Second, move current cursor to the first position.
+						l_cur_cursor.start
 
-						-- Third, go one level back.
-					l_cur_level := l_cur_level - 1
-					if l_cur_level = 0 then
-							-- We exhausted all possibilities, must terminate now.
-						l_exhausted := True
-					else
-						l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
-						l_cur_cursor := l_levels.i_th (l_cur_level).cursor
-						l_cur_cursor.forth
-					end
-				else
-						-- Check if the object combination under current cursor position will fix more variables.
-					l_cur_criterion := l_cur_cursor.item
-					l_var_fixture := is_fixed_variables_matched (l_searched_criterion, l_cur_criterion, l_matched_variables)
-					if l_var_fixture.is_matched then
-							-- We made progress in the matching, can now move to the next level.
-							-- First, we setup the newly fixed variables.
-						l_open_slots := l_var_fixture.open_operands
-						l_steps.extend (l_open_slots)
-						if not l_open_slots.is_empty then
-							across l_open_slots as l_slots loop
-								l_matched_variables.force (l_slots.item.obj_id, l_slots.item.var_id)
-							end
-						end
-							-- Then we move to the nexte level.
-						l_cur_level := l_cur_level + 1
-						if l_cur_level <= l_level_count then
-								-- There is still new levels to match.
-							l_cur_cursor := l_levels.i_th (l_cur_level).cursor
-							l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
+							-- Third, go one level back.
+						l_cur_level := l_cur_level - 1
+						if l_cur_level = 0 then
+								-- We exhausted all possibilities, must terminate now.
+							l_exhausted := True
 						else
-								-- We matched all variables, this means we found a solution.
-							l_solution_found := True
+							l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
+							l_cur_cursor := l_levels.i_th (l_cur_level).cursor
+							l_cur_cursor.forth
 						end
 					else
-							-- We found a conflict in the matching, need to move the cursor forward in the same level
-							-- to see if there is some other fitting combination.
-						l_cur_cursor.forth
+							-- Check if the object combination under current cursor position will fix more variables.
+						l_cur_criterion := l_cur_cursor.item
+						l_var_fixture := is_fixed_variables_matched (l_searched_criterion, l_cur_criterion, l_matched_variables)
+						if l_var_fixture.is_matched then
+								-- We made progress in the matching, can now move to the next level.
+								-- First, we setup the newly fixed variables.
+							l_open_slots := l_var_fixture.open_operands
+							l_steps.extend ([l_open_slots, l_searched_criterion])
+								-- Update `l_max_partial_steps' when we improves in matching more criteria.
+							if l_steps.count > l_max_partial_steps.count then
+								l_max_partial_steps := l_steps.twin
+							end
+							if not l_open_slots.is_empty then
+								across l_open_slots as l_slots loop
+									l_matched_variables.force (l_slots.item.obj_id, l_slots.item.var_id)
+								end
+							end
+								-- Then we move to the nexte level.
+							l_cur_level := l_cur_level + 1
+							if l_cur_level <= l_level_count then
+									-- There is still new levels to match.
+								l_cur_cursor := l_levels.i_th (l_cur_level).cursor
+								l_searched_criterion := l_levels.i_th (l_cur_level).searched_criterion
+							else
+									-- We matched all variables, this means we found a solution.
+								l_full_solution_found := True
+							end
+						else
+								-- We found a conflict in the matching, need to move the cursor forward in the same level
+								-- to see if there is some other fitting combination.
+							l_cur_cursor.forth
+						end
 					end
 				end
 			end
 
-			if l_solution_found then
-				io.put_string ("Found solution:%N")
-				across l_matched_variables as l_matched loop
-					io.put_string ("%Tvar_" + l_matched.key.out + " == " + l_matched.item.out)
-					io.put_string ("%N")
+				-- Check if we can match some variables that are NOT mentioned in any criterion.
+			l_unmentioned_unmatched_variables := a_query_data.variables_unmentioned_in_searched_criteria.intersection (variable_match_status (l_matched_variables, False))
+			if not l_unmentioned_unmatched_variables.is_empty then
+				l_matched_variables.merge (variable_matches (l_unmentioned_unmatched_variables, a_query_data, a_document))
+			end
+
+				-- Fabricate final result.
+			create l_result.make (a_query_data.query_config, a_document, l_full_solution_found and then l_is_last_match_complete, a_query_data)
+				-- Setup matched variables.
+			across l_matched_variables as l_matched_vars loop
+				if l_matched_vars.item /= -1 then
+					l_result.matched_variables.force (l_matched_vars.item, l_matched_vars.key)
+				end
+			end
+				-- Setup matched criteria.
+			if l_full_solution_found then
+				l_solution_steps := l_steps
+			else
+				l_solution_steps := l_max_partial_steps
+			end
+			across l_solution_steps as l_sol_steps loop
+				l_result.matched_criteria.extend (l_sol_steps.item.criterion)
+			end
+			last_matches.extend (l_result)
+		end
+
+	variable_match_status (a_matches: HASH_TABLE [INTEGER, INTEGER]; a_matched: BOOLEAN): DS_HASH_SET [INTEGER]
+			-- Set of indexes of variables (from the query side) that are matched if `a_matched' is True;
+			-- otherwise, set of indexes of varibables (from the query side) that are NOT matched.
+			-- `a_matches' is a table from variable indexes (key) to object indexes (value)
+		do
+			create Result.make (a_matches.count)
+
+			if a_matched then
+				across a_matches as l_matches loop
+					if l_matches.item /= -1 then
+						Result.force (l_matches.key)
+					end
 				end
 			else
-				io.put_string ("There is no solution:%N")
+				across a_matches as l_matches loop
+					if l_matches.item = -1 then
+						Result.force (l_matches.key)
+					end
+				end
+			end
+		end
+
+	variable_matches (a_unmatched_variables: DS_HASH_SET [INTEGER]; a_query_data: SEM_SEARCHED_QUERYABLE_DATA; a_document: SEM_CANDIDATE_QUERYABLE): HASH_TABLE [INTEGER, INTEGER]
+			-- Set of variables that can be matched from `a_document' to `a_query_data'
+			-- `a_unmatched_variables' is a set of variable indexes (from the query side) that needs to be matched.
+			-- Result is a set of variable index (key) to object id (value) mappings.
+		local
+			l_objects: HASH_TABLE [TYPE_A, INTEGER]
+			l_variables: HASH_TABLE [TYPE_A, INTEGER]
+			l_unmatched: DS_HASH_SET [INTEGER]
+			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
+			l_var_type: TYPE_A
+			l_done: BOOLEAN
+			l_context: CLASS_C
+		do
+			create Result.make (5)
+			create l_unmatched.make (5)
+			l_unmatched.append (a_unmatched_variables)
+			l_variables := a_query_data.variable_types
+			l_objects := a_document.variable_types
+
+				-- Try to match variables according to dynamic types (more constraining).
+			from
+				l_cursor := a_unmatched_variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+					-- Get static type of the variable.
+				l_var_type := l_variables.item (l_cursor.item)
+				l_done := False
+				across l_objects as l_types until l_done loop
+					if l_types.item.is_equivalent (l_var_type) then
+						l_done := True
+						Result.force (l_types.key, l_cursor.item)
+						l_unmatched.remove (l_cursor.item)
+					end
+				end
+				l_cursor.forth
+			end
+
+				-- There are still some variables that are not matched,
+				-- try to match them according to static types (less constraining).	
+			if not l_unmatched.is_empty then
+				l_context := workbench.system.root_type.associated_class
+				from
+					l_cursor := l_unmatched.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+						-- Get static type of the variable.
+					l_var_type := l_variables.item (l_cursor.item)
+					l_done := False
+					across l_objects as l_types until l_done loop
+						if l_types.item.conform_to (l_context, l_var_type) then
+							l_done := True
+							Result.force (l_types.key, l_cursor.item)
+							l_unmatched.remove (l_cursor.item)
+						end
+					end
+					l_cursor.forth
+				end
 			end
 		end
 
@@ -263,9 +387,7 @@ feature -- Basic operations
 			end
 		end
 
-feature{NONE} -- Implementation
-
-	matching_possibilities (a_searched_criteria: like searched_criteria; a_candidates: SEM_CANDIDATE_QUERYABLE): SORTED_TWO_WAY_LIST [SEM_MATCHING]
+	matching_possibilities (a_searched_criteria: DS_HASH_SET [SEM_MATCHING_CRITERION]; a_candidates: SEM_CANDIDATE_QUERYABLE): SORTED_TWO_WAY_LIST [SEM_MATCHING]
 			-- Matching possibilities from `a_searched_criteria' to `a_candidates'
 			-- The result is sorted according to the number of possiblities for each searched criterion, the fewer the possibilities,
 			-- the earlier a matching appears in the resulting list.
@@ -289,85 +411,5 @@ feature{NONE} -- Implementation
 				l_cursor.forth
 			end
 		end
-
-	searched_criteria (a_table: like searched_criterion_table): DS_HASH_SET [SEM_MATCHING_CRITERION]
-			-- Set of matching criteria in `a_table'
-		do
-			create Result.make (20)
-			Result.set_equality_tester (sem_matching_criterion_equality_tester)
-			across a_table as l_table loop
-				across l_table.item as l_criteria loop
-					Result.force_last (l_criteria.item)
-				end
-			end
-		end
-
-	searched_criterion_table (a_query_config: SEM_QUERY_CONFIG): HASH_TABLE [LINKED_LIST [SEM_MATCHING_CRITERION], STRING]
-			-- Table of searched criteria from `a_query_config'
-			-- Key is criterion content, value is criterion information
-		local
-			l_term: SEM_TERM
-			l_criterion: SEM_MATCHING_CRITERION
-			l_expr: EPA_EXPRESSION
-			l_value: EPA_EXPRESSION_VALUE
-			l_term_value: IR_VALUE
-			l_type_form: INTEGER
-			l_list: LINKED_LIST [SEM_MATCHING_CRITERION]
-			l_name: STRING
-		do
-			create Result.make (10)
-			Result.compare_objects
-
-			l_type_form := a_query_config.primary_property_type_form
-			across a_query_config.terms as l_terms loop
-				l_term := l_terms.item
-				if l_term.is_change or l_term.is_contract or l_term.is_property then
-					if attached {SEM_EXPR_VALUE_TERM} l_term as l_expr_value_term then
-						l_expr := l_expr_value_term.expression
-						l_value := l_expr_value_term.value
-						if l_value.is_integer then
-							create {IR_INTEGER_VALUE} l_term_value.make (l_value.text.to_integer)
-						elseif l_value.is_boolean then
-							create {IR_BOOLEAN_VALUE} l_term_value.make (l_value.text.to_boolean)
-						elseif attached {EPA_NUMERIC_RANGE_VALUE} l_value as l_range then
-							create {IR_INTEGER_RANGE_VALUE} l_term_value.make (l_range.item.lower, l_range.item.upper)
-						end
-						l_name := l_expr_value_term.field_content_in_type_form (l_type_form)
-						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)
-						l_criterion.set_term (l_term)
-						Result.search (l_name)
-						if Result.found then
-							l_list := Result.found_item
-						else
-							create l_list.make
-							Result.put (l_list, l_name)
-						end
-						l_list.extend (l_criterion)
-					end
-				end
-			end
-		end
-
-feature{NONE} -- Implementation
-
-	is_last_match_complete: BOOLEAN
-			-- Is last match complete?
-			-- Complete match means that all varaibles and all searched terms (criteria) were matched.
-
-	last_matched_variables: HASH_TABLE [INTEGER, INTEGER]
-			-- Table of last matched variables
-			-- Key is object indexes in the original query.
-			-- Value is the matched object index in a document.
-
-	last_reversed_matched_variables: HASH_TABLE [INTEGER, INTEGER]
-			-- Table of last matched variables
-			-- Key is the matched object index in a document.
-			-- Value is object indexes in the original query.
-			-- This is the reversed table as `last_matched_variables'
-
-	last_matched_terms: LINKED_LIST [SEM_TERM]
-			-- Terms that are last matched
-
-	last_unmatchable_terms: LINKED_LIST [STRING]
 
 end

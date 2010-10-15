@@ -39,6 +39,18 @@ feature -- Access
 			Result := queryable.variables
 		end
 
+	variable_types: HASH_TABLE [TYPE_A, INTEGER]
+			-- Table from variable indexes (key) to variable types (value)
+		do
+			Result := queryable.variable_types
+		end
+
+	variable_indexes: DS_HASH_SET [INTEGER]
+			-- Set of indexes of `variables'
+		do
+			Result := queryable.variable_position_set
+		end
+
 	variable_count: INTEGER
 			-- Number of variables in `variables'
 		do

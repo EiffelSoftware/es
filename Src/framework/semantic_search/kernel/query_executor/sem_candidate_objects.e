@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			uuid := a_uuid
-			create variables.make (10)
+			create variable_types.make (10)
 			create criteria.make (10)
 			criteria.compare_objects
 			create criteria_by_value_internal.make (10)
@@ -45,7 +45,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current using data from `a_document'.
 		local
 			l_fields: HASH_TABLE [LINKED_LIST [IR_FIELD], STRING_8]
-			l_variables: like variables
+			l_variables: like variable_types
 		do
 			l_fields := a_document.table_by_name
 
@@ -73,7 +73,7 @@ feature{NONE} -- Initialization
 
 			if is_valid then
 					-- Initialize meta data.
-				l_variables := variables
+				l_variables := variable_types
 				across l_fields as l_field_tbl loop
 					if l_field_tbl.key.starts_with (once "s_") then
 							-- This is a field for meta data.
@@ -95,7 +95,7 @@ feature -- Access
 			Result.append_character ('%N')
 
 				-- Append variable information.
-			across variables as l_variables loop
+			across variable_types as l_variables loop
 				Result.append (l_variables.key.out)
 				Result.append_character (':')
 				Result.append_character (' ')
@@ -136,12 +136,12 @@ feature -- Setting
 		end
 
 	set_variables_from_string (a_string: STRING)
-			-- Set `variables' from `a_string'.
+			-- Set `variable_types' from `a_string'.
 		local
 			l_variable: like variable_and_position_from_config
-			l_variables: like variables
+			l_variables: like variable_types
 		do
-			l_variables := variables
+			l_variables := variable_types
 			across a_string.split (field_value_separator) as l_vars loop
 				l_variable := variable_and_position_from_config (l_vars.item)
 				l_variables.force (l_variable.type, l_variable.position)

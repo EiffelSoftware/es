@@ -1,4 +1,3 @@
-
 note
 	description: "Class that represents a matching criterion in semantic search"
 	author: ""

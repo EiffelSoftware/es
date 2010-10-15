@@ -26,7 +26,7 @@ feature -- Access
 	score: DOUBLE
 			-- Score of Current document
 
-	variables: HASH_TABLE [TYPE_A, INTEGER]
+	variable_types: HASH_TABLE [TYPE_A, INTEGER]
 			-- Table for variables inside Current document
 			-- Key is object index, value is the dynamic type of that variable
 

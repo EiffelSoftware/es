@@ -28,8 +28,18 @@ feature -- Basic operations
 			-- name-value pairs. Key is option name, value is option value.
 		do
 			options := a_options
+			create last_execution_start_time.make_now
 			a_query.process (Current)
+			create last_execution_end_time.make_now
 		end
+
+feature -- Access/Performance statistics
+
+	last_execution_start_time: DATE_TIME
+			-- Time when last execution starts
+
+	last_execution_end_time: DATE_TIME
+			-- Time when last execution ends.
 
 feature -- Process
 
