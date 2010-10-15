@@ -47,7 +47,9 @@ feature -- Basic operations
 			create l_candidates.make
 			across a_query_result.documents as l_documents loop
 				create l_candidate.make_from_document (l_documents.item)
-				l_candidates.extend (l_candidate)
+				if l_candidate.is_valid then
+					l_candidates.extend (l_candidate)
+				end
 			end
 
 				-- Construct data from `a_query_config'.
@@ -61,76 +63,39 @@ feature -- Basic operations
 			end
 			create l_time2.make_now
 			io.put_string (l_time1.out + "%N")
-			io.put_string (l_time2
-			.out + "%N")
+			io.put_string (l_time2.out + "%N")
 		end
 
---	match_document (a_query_config: SEM_QUERY_CONFIG; a_searched_criteria: like searched_criterion_table; a_searched_criterion_names: LINKED_LIST [STRING]; a_candidate: SEM_CANDIDATE_OBJECTS)
---			-- Match `a_query_config' to `a_candidate', make result available in
---			-- `is_last_match_complete', `last_matched_variables' and `last_matched_terms'.
---		local
---			l_matching_order: like matching_order
---			l_matched_criterion_count: INTEGER	-- Number of matched criteria
---			l_searched_criterion_count: INTEGER -- Number of searched criteria
---			l_searched_criteria: ARRAYED_LIST [TUPLE [criterion: SEM_MATCHING_CRITERION; cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]]]
---			l_cri_name: STRING
---			l_candidates: LINKED_LIST [SEM_MATCHING_CRITERION]
---			l_done: BOOLEAN
---			l_current_cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]
---		do
---				-- Initialize.
---			create last_matched_variables.make (10)
---			create last_reversed_matched_variables.make (10)
---			create last_matched_terms.make
---			is_last_match_complete := False
-
---				-- Decide which searched criterion is to be matched first,
---				-- according to how many candidates for each criterion, the
---				-- fewer the candidates, the eariler the criterion.
-----			l_matching_order := matching_order (a_searched_criteria, a_searched_criterion_names, a_candidate)
---			last_unmatchable_terms := l_matching_order.unmatched_terms
-
---				-- Get the list of all searched criteria, those are the terms to be matched.
---			create l_searched_criteria.make (10)
---			across l_matching_order.order as l_orders loop
---				l_cri_name := l_orders.item
---				l_candidates := a_candidate.criteria.item (l_cri_name)
---				across a_searched_criteria.item (l_cri_name) as l_criteria loop
---					l_searched_criteria.extend ([l_criteria.item, l_candidates.new_cursor])
---					l_searched_criterion_count := l_searched_criterion_count + 1
---				end
---			end
-
---				-- Use back-tracking to do object matching.
---			from
---				l_matched_criterion_count := 0
---				l_current_cursor := l_searched_criteria.i_th (l_matched_criterion_count + 1).cursor
---			until
---				l_done
---			loop
-
---			end
-
---		end
-
 	match_document (a_query_config: SEM_QUERY_CONFIG; a_searched_criteria: like searched_criteria; a_document: SEM_CANDIDATE_QUERYABLE)
-			-- Match one document.
+			-- Match `a_document' to the query specified through `a_searched_criterion'.
+			-- The original query is accessable through `a_query_config'.
+			-- Make result available in `is_last_match_complete', `last_matched_variables', `last_reversed_matched_variables' and
+			-- `last_unmatchable_terms'.
 		local
 			l_matching: like matching_possibilities
 			l_levels: ARRAYED_LIST [TUPLE [searched_criterion: SEM_MATCHING_CRITERION; cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]]]
+				-- Levels for variable-object binding.
+				-- Each level represents a searched criterion, the matching will start for the first criterion, and go through all criteria.				
+				-- `searched_criterion' represents a criterion in the query, `cursor' is a cursor which iterate through all candidates
+				-- retrieved from the result document for that `searched_criterion'.
 			l_match: SEM_MATCHING
-			l_cur_cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]
-			l_cur_level: INTEGER
-			l_level_count: INTEGER
-			l_solution_found: BOOLEAN
-			l_variable_indexes: DS_HASH_SET [INTEGER]    -- Indexes of variables to be matched.
-			l_matched_variables: HASH_TABLE [INTEGER, INTEGER] -- Matches of variables, key is variable index, value is the matched object id, -1 means not matched.
-			l_var_fixture: like is_fixed_variables_matched
-			l_cur_criterion: SEM_MATCHING_CRITERION
+			l_cur_cursor: LINKED_LIST_ITERATION_CURSOR [SEM_MATCHING_CRITERION]  -- The candidate cursor in current level
+			l_cur_level: INTEGER      -- Current level
+			l_level_count: INTEGER    -- The number of total levels.
+			l_solution_found: BOOLEAN -- Is a solution found.
+			l_matched_variables: HASH_TABLE [INTEGER, INTEGER]
+				-- Already established variable-object bindings, key is index of variables from the query side,
+				-- value is the index of the matched object from the `a_document', -1 means that particular variable (from the query side) is not matched.
+			l_var_fixture: like is_fixed_variables_matched  -- Data describing how a particular criterion can be matched.
+			l_searched_criterion: SEM_MATCHING_CRITERION    -- Current searched criterion under consideration.
+			l_cur_criterion: SEM_MATCHING_CRITERION         -- Current candidate criterion which may be matched to `l_searched_criterion'
 			l_open_slots: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]
-			l_searched_criterion: SEM_MATCHING_CRITERION
+				-- `l_open_slots' is a list of variable-object bindings that `a_criterion' can
+				-- contribute to the already established bindings in `a_matched_variables'. `var_id' is the index of a variable in the query side,			
 			l_steps: LINKED_LIST [LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]]
-			l_exhausted: BOOLEAN
+				-- All variable-object mapping steps that are performed so far, used for back-tracking.
+				-- `var_id' is the index of a variable in the query side, `obj_id' is the index of an object in the result document side.
+			l_exhausted: BOOLEAN -- Have we already exhausted all matching possibilities?					
 		do
 			l_matching := matching_possibilities (a_searched_criteria, a_document)
 
@@ -151,9 +116,8 @@ feature -- Basic operations
 			end
 
 				-- Initialize matched variable indexes.
-			l_variable_indexes := variable_indexes_from_queryable (a_query_config.queryable)
-			create l_matched_variables.make (l_variable_indexes.count)
-			l_variable_indexes.do_all (agent l_matched_variables.force (-1, ?))
+			create l_matched_variables.make (a_query_config.variable_count)
+			variable_indexes_from_queryable (a_query_config.queryable).do_all (agent l_matched_variables.force (-1, ?))
 
 				-- Use back-track to do object matching.
 			create l_steps.make
@@ -229,10 +193,22 @@ feature -- Basic operations
 			end
 		end
 
-	is_fixed_variables_matched (a_searched_criterion: SEM_MATCHING_CRITERION; a_criterion: SEM_MATCHING_CRITERION; a_matched_variables: HASH_TABLE [INTEGER, INTEGER]): TUPLE [is_matched: BOOLEAN; open_operands: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]]
-			-- Do operands `a_operand_ids' match the fixed variables in `a_matched_variables'?
-			-- `is_matched' indicates if current candidate violates the already fixed variables.
-			-- `open_operands' is the list of open operand ids for the criterion.
+	is_fixed_variables_matched (
+		a_searched_criterion: SEM_MATCHING_CRITERION;
+		a_criterion: SEM_MATCHING_CRITERION;
+		a_matched_variables: HASH_TABLE [INTEGER, INTEGER]): TUPLE [is_matched: BOOLEAN; open_operands: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]]
+			-- Is `a_criterion' matching the varaibles in `a_searched_criterion'?
+			-- `a_searched_criterion' is a criterion given in the query. `a_criterion' is a matching criterion returned as the query results.
+			-- This feature tries to see if objects inside `a_criterion' can match the variables specified in `a_searched_criterion'
+			-- `a_matched_variables' is a table of already established variable-object mappings. Key is indexes of variables in the query,
+			-- value is the indexes of objects in a result document, if the value is -1, that particular variable has not been matched to any object
+			-- in the result document.
+			-- Return value:
+			-- `is_matched' indicates if `a_criterion' can be used to match `a_criterion_criterion' and also the matching conforms to all other
+			-- variable-object bindings in `a_matched_variables'.
+			-- `open_operands' has meanings only when `is_matched' is True. It is a list of variable-object bindings that `a_criterion' can
+			-- contribute to the already established bindings in `a_matched_variables'. `var_id' is the index of a variable in the query side,
+			-- `obj_id' is the index of an object in the result document side.
 		local
 			l_open_indexes: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]
 			l_operand_ids: ARRAYED_LIST [INTEGER]
@@ -274,6 +250,8 @@ feature -- Basic operations
 
 	variable_indexes_from_queryable (a_queryable: SEM_QUERYABLE): DS_HASH_SET [INTEGER]
 			-- List of variable indexes from `a_queryable'
+			-- In `a_queryable', each variable is associated with an index, this feature
+			-- returns the set of indexes from all varaibles in `a_queryable'.
 		do
 			create Result.make (a_queryable.variables.count)
 			across a_queryable.reversed_variable_position as l_positions loop
@@ -306,52 +284,6 @@ feature{NONE} -- Implementation
 				Result.extend (l_matching)
 				l_cursor.forth
 			end
-		end
-
-	matching_order (a_searched_criteria: LINKED_LIST [STRING]; a_candidates: SEM_CANDIDATE_OBJECTS): TUPLE [order: LINKED_LIST [STRING]; combinations: HASH_TABLE [LINKED_LIST [SEM_MATCHING_CRITERION], STRING]; unmatched_terms: LINKED_LIST [STRING]]
-			-- The order of matching for searched criteria
-		local
-			l_done: BOOLEAN
-			l_criterion: STRING
-			l_candidate_criteria: HASH_TABLE [LINKED_LIST [SEM_MATCHING_CRITERION], STRING]
-			l_unmatched: LINKED_LIST [STRING]
-			l_candidate_count: INTEGER
-			l_found: HASH_TABLE [INTEGER, STRING]
-			l_order: LINKED_LIST [STRING]
-		do
-			create l_unmatched.make
-			create l_found.make (10)
-			l_found.compare_objects
-
-			create l_order.make
-			l_candidate_criteria := a_candidates.criteria
-			across a_searched_criteria as l_criteria loop
-				l_criterion := l_criteria.item
-				l_candidate_criteria.search (l_criterion)
-				if l_candidate_criteria.found then
-					l_candidate_count := l_candidate_criteria.found_item.count
-					l_done := False
-					from
-						l_order.start
-					until
-						l_order.after or l_done
-					loop
-						if l_candidate_count > l_found.item (l_order.item) then
-							l_done := True
-						end
-						l_order.forth
-					end
-					if l_order.after then
-						l_order.extend (l_criterion)
-					else
-						l_order.put_left (l_criterion)
-					end
-					l_found.force (l_candidate_count, l_criterion)
-				else
-					l_unmatched.extend (l_criterion)
-				end
-			end
---			Result := [l_order, l_unmatched]
 		end
 
 	searched_criteria (a_table: like searched_criterion_table): DS_HASH_SET [SEM_MATCHING_CRITERION]
@@ -416,7 +348,7 @@ feature{NONE} -- Implementation
 
 	is_last_match_complete: BOOLEAN
 			-- Is last match complete?
-			-- Complete match means that all varaibles and all searched terms were matched.
+			-- Complete match means that all varaibles and all searched terms (criteria) were matched.
 
 	last_matched_variables: HASH_TABLE [INTEGER, INTEGER]
 			-- Table of last matched variables

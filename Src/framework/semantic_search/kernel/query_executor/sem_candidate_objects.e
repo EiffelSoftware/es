@@ -9,6 +9,9 @@ class
 
 inherit
 	SEM_CANDIDATE_QUERYABLE
+		redefine
+			is_valid
+		end
 
 create
 	make,
@@ -28,6 +31,7 @@ feature{NONE} -- Initialization
 			criteria_by_value_internal.compare_objects
 			create integer_criteria_by_value_internal.make (10)
 			integer_criteria_by_value_internal.compare_objects
+			set_is_valid (True)
 		end
 
 	make_with_score (a_uuid: STRING; a_score: DOUBLE)
@@ -45,17 +49,30 @@ feature{NONE} -- Initialization
 			l_fields := a_document.table_by_name
 
 				-- Initialize UUID and score.
-			make (l_fields.item (uuid_field).first.value.text)
-			set_score (l_fields.item (score_field).first.value.text.to_double)
+			set_is_valid (l_fields.has (uuid_field))
+			if is_valid then
+				make (l_fields.item (uuid_field).first.value.text)
+			end
+
+			set_is_valid (l_fields.has (score_field))
+			if is_valid then
+				set_score (l_fields.item (score_field).first.value.text.to_double)
+			end
+
 
 				-- Initialize variables.
-			set_variables_from_string (l_fields.item (variables_field).first.value.text)
+			set_is_valid (l_fields.has (variables_field))
+			if is_valid then
+				set_variables_from_string (l_fields.item (variables_field).first.value.text)
+			end
 
-				-- Initialize meta data.
-			across l_fields as l_field_tbl loop
-				if l_field_tbl.key.starts_with (once "s_") then
-						-- This is a field for meta data.
-					extend_criterion_from_string (l_field_tbl.item.first.name, l_field_tbl.item.first.value.text)
+			if is_valid then
+					-- Initialize meta data.
+				across l_fields as l_field_tbl loop
+					if l_field_tbl.key.starts_with (once "s_") then
+							-- This is a field for meta data.
+						extend_criterion_from_string (l_field_tbl.item.first.name, l_field_tbl.item.first.value.text)
+					end
 				end
 			end
 		end
@@ -89,6 +106,11 @@ feature -- Access
 			end
 		end
 
+feature -- Status report
+
+	is_valid: BOOLEAN
+			-- Is Current candidate valid?
+
 feature -- Setting
 
 	set_score (a_score: DOUBLE)
@@ -97,6 +119,14 @@ feature -- Setting
 			score := a_score
 		ensure
 			score_set: score = a_score
+		end
+
+	set_is_valid (a_valid: BOOLEAN)
+			-- Set `is_valid' with `a_valid'.
+		do
+			is_valid := a_valid
+		ensure
+			is_valid_set: is_valid = a_valid
 		end
 
 	set_variables_from_string (a_string: STRING)

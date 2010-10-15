@@ -33,6 +33,18 @@ feature -- Access
 			-- The query will return some queryables that "look like" the one
 			-- given here.
 
+	variables: DS_HASH_SET [EPA_EXPRESSION]
+			-- Variables from `queryable'
+		do
+			Result := queryable.variables
+		end
+
+	variable_count: INTEGER
+			-- Number of variables in `variables'
+		do
+			Result := variables.count
+		end
+
 	primary_property_type_form: INTEGER
 			-- Type form for searchable properties (dynamic type form, static type form or anonymous type form)
 			-- Default is `static_type_form'

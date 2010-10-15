@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SEM_MATCHING}."
+	description: "Class that represents a binding from a search criterion in a query to the set of possible solutions from a document"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -20,16 +20,22 @@ feature{NONE} -- Initialization
 		do
 			searched_criterion := a_searched_criterion
 			candidate_criteria := a_candidates
+		ensure
+			searched_criterion_set: searched_criterion = a_searched_criterion
+			candidate_criteria_set: candidate_criteria = a_candidates
 		end
 
 feature -- Access
 
 	searched_criterion: SEM_MATCHING_CRITERION
 			-- Criterion that is used in searching
+			-- This is a criterion specified in the original query.
 
 	candidate_criteria: detachable LINKED_LIST [SEM_MATCHING_CRITERION]
 			-- Criteria returned as result of a query which may match `searched_criterion'
 			-- Void if there is no candidates for `searched_criterion'
+			-- A candidate criterion is a fact stored in a document, this fact may match what
+			-- is asked for through `searched_criterion'.
 
 	candidate_criteria_count: INTEGER
 			-- Number of candidates in `candidate_criteria'

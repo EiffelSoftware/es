@@ -93,6 +93,13 @@ feature -- Status report
 			Result := text
 		end
 
+feature -- Status report
+
+	is_valid: BOOLEAN
+			-- Is Current candidate valid?
+		deferred
+		end
+
 feature -- Basic operations
 
 	extend_criterion_from_string (a_criterion_name: STRING; a_value: STRING)
