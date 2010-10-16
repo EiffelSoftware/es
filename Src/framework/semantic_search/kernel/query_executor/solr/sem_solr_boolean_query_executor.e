@@ -57,6 +57,7 @@ feature -- Basic operations
 				end
 			end
 			create l_executor.make
+			io.put_string (l_ir_query.text)
 			l_executor.execute (l_ir_query)
 			last_result := l_executor.last_result
 		end
@@ -203,6 +204,8 @@ feature{NONE} -- Implementation
 			elseif a_expression_value.is_integer then
 				l_int := a_expression_value.as_integer.item
 				create {IR_INTEGER_RANGE_VALUE} Result.make (l_int, l_int)
+			elseif a_expression_value.is_any then
+				create {IR_ANY_VALUE} Result.make
 			end
 		end
 
@@ -221,6 +224,7 @@ feature{NONE} -- Implementation
 		local
 			l_occur: INTEGER
 		do
+-- Disabled this to simplify query and result processing. 16.10.2010 Jasonw.
 			if attached {IR_BOOLEAN_VALUE} a_value as l_bvalue and then l_bvalue.item = False then
 				if a_occurrence = term_occurrence_should then
 					Result := [Void, term_occurrence_should]
@@ -232,6 +236,7 @@ feature{NONE} -- Implementation
 			else
 				Result := [a_value, a_occurrence]
 			end
+--			Result := [a_value, a_occurrence]
 		end
 
 	document_type_term (a_queryable: SEM_QUERYABLE): IR_TERM

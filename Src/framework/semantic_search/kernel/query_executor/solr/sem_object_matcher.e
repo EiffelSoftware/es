@@ -72,17 +72,12 @@ feature -- Basic operations
 			create last_match_start_time.make_now
 			create last_matches.make
 			across l_candidates as l_candidate_list loop
-				match_document (l_query_data, l_candidate_list.item)
+--				if l_candidate_list.item.uuid ~ "6526645C-2FB0-4EFE-A9FF-C278FD0F4F12" then
+					match_document (l_query_data, l_candidate_list.item)
+--				end
+
 			end
 			create last_match_end_time.make_now
-
-			across last_matches as l_results loop
-				io.put_string ("------------------------%N")
-				io.put_string (l_results.item.text)
-			end
-
-			io.put_string (last_match_start_time.out + "%N")
-			io.put_string (last_match_end_time.out + "%N")
 		end
 
 feature{NONE} -- Implementation
@@ -102,7 +97,7 @@ feature{NONE} -- Implementation
 			l_cur_level: INTEGER      -- Current level
 			l_level_count: INTEGER    -- The number of total levels.
 			l_full_solution_found: BOOLEAN -- Is a solution found.
-			l_matched_variables: HASH_TABLE [INTEGER, INTEGER]
+			l_matched_variables, l_mvars: HASH_TABLE [INTEGER, INTEGER]
 				-- Already established variable-object bindings, key is index of variables from the query side,
 				-- value is the index of the matched object from the `a_document', -1 means that particular variable (from the query side) is not matched.
 			l_var_fixture: like is_fixed_variables_matched  -- Data describing how a particular criterion can be matched.
@@ -160,14 +155,17 @@ feature{NONE} -- Implementation
 				loop
 					if l_cur_cursor.after then
 							-- We exhausted current level, need to back-track.										
-							-- First, undo all matches in the last step.
-						if not l_steps.is_empty then
-							across l_steps.last.matches as l_slots loop
+							-- First, undo all matches in the last step.						
+						if l_cur_level > 1 then
+							check not l_steps.is_empty end
+							l_steps.finish
+							across l_steps.item.matches as l_slots loop
 								l_matched_variables.force (-1, l_slots.item.var_id)
 							end
+							l_steps.remove
+								-- Second, move current cursor to the first position.
+							l_cur_cursor.start
 						end
-							-- Second, move current cursor to the first position.
-						l_cur_cursor.start
 
 							-- Third, go one level back.
 						l_cur_level := l_cur_level - 1
@@ -190,14 +188,17 @@ feature{NONE} -- Implementation
 							l_steps.extend ([l_open_slots, l_searched_criterion])
 								-- Update `l_max_partial_steps' when we improves in matching more criteria.
 							if l_steps.count > l_max_partial_steps.count then
-								l_max_partial_steps := l_steps.twin
+								l_max_partial_steps.wipe_out
+								across l_steps as l_tmp_steps loop
+									l_max_partial_steps.extend (l_tmp_steps.item)
+								end
 							end
 							if not l_open_slots.is_empty then
 								across l_open_slots as l_slots loop
 									l_matched_variables.force (l_slots.item.obj_id, l_slots.item.var_id)
 								end
 							end
-								-- Then we move to the nexte level.
+								-- Then we move to the next level.
 							l_cur_level := l_cur_level + 1
 							if l_cur_level <= l_level_count then
 									-- There is still new levels to match.
@@ -224,20 +225,35 @@ feature{NONE} -- Implementation
 
 				-- Fabricate final result.
 			create l_result.make (a_query_data.query_config, a_document, l_full_solution_found and then l_is_last_match_complete, a_query_data)
-				-- Setup matched variables.
-			across l_matched_variables as l_matched_vars loop
-				if l_matched_vars.item /= -1 then
-					l_result.matched_variables.force (l_matched_vars.item, l_matched_vars.key)
-				end
-			end
+
 				-- Setup matched criteria.
 			if l_full_solution_found then
 				l_solution_steps := l_steps
 			else
 				l_solution_steps := l_max_partial_steps
 			end
-			across l_solution_steps as l_sol_steps loop
-				l_result.matched_criteria.extend (l_sol_steps.item.criterion)
+
+				-- Setup matched variables.			
+			create l_mvars.make (l_matched_variables.count)
+			across l_matched_variables as l_vars loop l_mvars.extend (01, l_vars.key) end
+			if l_solution_steps /= Void then
+				across l_solution_steps as l_sol_steps loop
+					across l_sol_steps.item.matches as l_matches loop
+						l_mvars.replace (l_matches.item.obj_id, l_matches.item.var_id)
+					end
+				end
+			end
+
+			across l_mvars as l_matched_vars loop
+				if l_matched_vars.item /= -1 then
+					l_result.matched_variables.force (l_matched_vars.item, l_matched_vars.key)
+				end
+			end
+
+			if l_solution_steps /= Void then
+				across l_solution_steps as l_sol_steps loop
+					l_result.matched_criteria.extend (l_sol_steps.item.criterion)
+				end
 			end
 			last_matches.extend (l_result)
 		end
@@ -354,6 +370,10 @@ feature{NONE} -- Implementation
 			l_var_id: INTEGER
 			l_obj_id: INTEGER
 			c: INTEGER
+			l_var_type: TYPE_A
+			l_obj_type: TYPE_A
+			l_var_types: HASH_TABLE [TYPE_A, INTEGER]
+			l_obj_types: HASH_TABLe [TYPE_A, INTEGER]
 		do
 			create l_open_indexes.make
 			l_is_matched := True
@@ -371,9 +391,27 @@ feature{NONE} -- Implementation
 						-- The current variable is open.
 					l_var_id := a_searched_criterion.variables.i_th (i)
 					l_obj_id := a_criterion.variables.i_th (i)
-					if a_criterion.variable_types.has (l_obj_id) and then a_searched_criterion.variable_types.has (l_var_id) then
-						if a_criterion.is_variable_type_conformant_to (a_criterion.variable_type (l_obj_id), a_searched_criterion.variable_type (l_var_id)) then
-							l_open_indexes.extend ([l_var_id, l_obj_id])
+					l_obj_types := a_criterion.variable_types
+					l_obj_types.search (l_obj_id)
+					if l_obj_types.found and then l_obj_types.found_item /= Void then
+						l_obj_type := l_obj_types.found_item
+						l_var_types := a_searched_criterion.variable_types
+						l_var_types.search (l_var_id)
+						if l_var_types.found and then l_var_types.found_item /= Void then
+							l_var_type := l_var_types.found_item
+							if l_obj_type.is_none then
+								if l_var_type.is_none then
+									l_open_indexes.extend ([l_var_id, l_obj_id])
+								else
+									l_is_matched := False
+								end
+							else
+								if a_criterion.is_variable_type_conformant_to (l_obj_type, l_var_type) then
+									l_open_indexes.extend ([l_var_id, l_obj_id])
+								else
+									l_is_matched := False
+								end
+							end
 						else
 							l_is_matched := False
 						end

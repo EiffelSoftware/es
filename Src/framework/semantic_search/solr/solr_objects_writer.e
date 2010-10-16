@@ -65,11 +65,12 @@ feature{NONE} -- Implementation
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
 			l_prefix: STRING
-			l_dmeta: HASH_TABLE [STRING, STRING]
-			l_smeta: HASH_TABLE [STRING, STRING]
+			l_dmeta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
+			l_smeta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
 			l_body: STRING
 			l_field_name: STRING
 			l_meta_value: STRING
+			l_set: DS_HASH_SET_CURSOR [STRING]
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -123,7 +124,17 @@ feature{NONE} -- Implementation
 
 			across <<l_dmeta, l_smeta>> as l_metas loop
 				across l_metas.item as l_items loop
-					append_field_with_data (l_items.key, l_items.item, ir_string_value_type, default_boost_value)
+					create l_value_text.make (256)
+					from
+						l_set := l_items.item.new_cursor
+						l_set.start
+					until
+						l_set.after
+					loop
+						l_value_text.append (l_set.item)
+						l_set.forth
+					end
+					append_field_with_data (l_items.key, l_value_text, ir_string_value_type, default_boost_value)
 				end
 			end
 		end

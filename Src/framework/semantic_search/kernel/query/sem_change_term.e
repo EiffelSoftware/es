@@ -68,11 +68,15 @@ feature -- Access
 			l_value_text: STRING
 		do
 			fixme ("This is only a simplified solution, which may give wrong information if there are multiple values in the original change or the change value is not a boolean nor an integer. 10.10.2010 Jasonw")
-			l_value_text := change.values.first.text
-			if l_value_text.is_boolean then
-				create {EPA_BOOLEAN_VALUE} Result.make (l_value_text.to_boolean)
-			elseif l_value_text.is_integer then
-				create {EPA_INTEGER_VALUE} Result.make (l_value_text.to_integer)
+			if change.values.is_no_change then
+				create {EPA_ANY_VALUE} Result.make (Void)
+			else
+				l_value_text := change.values.first.text
+				if l_value_text.is_boolean then
+					create {EPA_BOOLEAN_VALUE} Result.make (l_value_text.to_boolean)
+				elseif l_value_text.is_integer then
+					create {EPA_INTEGER_VALUE} Result.make (l_value_text.to_integer)
+				end
 			end
 		end
 

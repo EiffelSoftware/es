@@ -67,24 +67,19 @@ feature{NONE} -- Query
 		local
 			l_query: STRING
 			l_result: STRING
-			l_file: PLAIN_TEXT_FILE
+			l_file: RAW_FILE
 			l_xml_parser: IR_VERY_SIMPLE_XML_PARSER
 			l_time1, l_time2: DATE_TIME
-			l_file2: PLAIN_TEXT_FILE
+			l_file2: RAW_FILE
 
 		do
 			create l_time1.make_now
 			l_query := query_request (query_syntax_from_query (a_query))
-			io.put_string ("------------------%N")
-			io.put_string (l_query)
 			create l_file2.make_create_read_write ("/tmp/query.txt")
 			l_file2.put_string (l_query)
 			l_file2.close
-			io.put_string ("------------------%N")
-
 				-- Execute query.
 			l_result := raw_result_from_query (l_query)
-			io.put_string (l_result)
 
 				-- Store data in a file so it can be used by the XML parser.
 			create l_file.make_create_read_write ("/tmp/result.xml")
@@ -96,10 +91,6 @@ feature{NONE} -- Query
 			l_xml_parser.analyze_file
 			last_result := l_xml_parser.last_result
 			create l_time2.make_now
-			io.put_string (last_result.text)
-			io.put_string (l_time1.out + "%N")
-			io.put_string (l_time2.out + "%N")
-
 		end
 
 feature{NONE} -- Implementation
@@ -204,7 +195,7 @@ feature{NONE} -- cURL
 			l_curl_string: CURL_STRING
 		do
 			if curl.is_dynamic_library_exists then
-				create l_curl_string.make_empty
+				create l_curl_string.make (1024 * 12)
 
 				curl.global_init
 

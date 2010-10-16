@@ -83,4 +83,10 @@ feature{NONE} -- Process
 			last_field_syntax.append (a_value.item.out)
 		end
 
+	process_any_term_value (a_value: IR_ANY_VALUE)
+			-- Process `a_value'
+		do
+			last_field_syntax.append (once "[* TO *]")
+		end
+
 end

@@ -87,6 +87,7 @@ feature -- Field constants
 	text_prefix: STRING = "t_"
 	by_change_prefix: STRING = "by_"
 	to_change_prefix: STRING = "to_"
+	change_prefix: STRING = "ch_"
 
 	dynamic_type_form_prefix: STRING = "d_"
 	static_type_form_prefix: STRING = "s_"

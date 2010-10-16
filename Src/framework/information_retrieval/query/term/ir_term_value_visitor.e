@@ -34,4 +34,9 @@ feature -- Process
 		deferred
 		end
 
+	process_any_term_value (a_value: IR_ANY_VALUE)
+			-- Process `a_value'
+		deferred
+		end
+
 end

@@ -98,14 +98,15 @@ feature{NONE} -- Implementation
 			l_value_text: STRING
 			l_value: EPA_EXPRESSION_VALUE
 			l_prefix: STRING
-			l_smeta: HASH_TABLE [STRING, STRING]
-			l_dmeta: HASH_TABLE [STRING, STRING]
+			l_smeta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
+			l_dmeta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
 			l_body: STRING
 			l_field_name: STRING
 			l_list: LINKED_LIST [STRING]
 			l_meta_value: STRING
 			l_separator: STRING
 			l_char: CHARACTER
+			l_set: DS_HASH_SET_CURSOR [STRING]
 		do
 			l_tran := queryable
 			l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -175,7 +176,17 @@ feature{NONE} -- Implementation
 
 			across <<l_smeta, l_dmeta>> as l_metas loop
 				across l_metas.item as l_items loop
-					append_field_with_data (l_items.key, l_items.item, ir_string_value_type, l_boost)
+					create l_value_text.make (256)
+					from
+						l_set := l_items.item.new_cursor
+						l_set.start
+					until
+						l_set.after
+					loop
+						l_value_text.append (l_set.item)
+						l_set.forth
+					end
+					append_field_with_data (l_items.key, l_value_text, ir_string_value_type, l_boost)
 				end
 			end
 		end
@@ -193,6 +204,8 @@ feature{NONE} -- Implementation
 			l_dynamic_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_static_change: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_type: INTEGER
+			l_set: DS_HASH_SET_CURSOR [STRING]
+			l_value_text: STRING
 		do
 			create l_change_calculator.make
 
@@ -205,7 +218,17 @@ feature{NONE} -- Implementation
 			l_type := ir_string_value_type
 			across <<dynamic_change_meta, static_change_meta>> as l_metas loop
 				across l_metas.item as l_items loop
-					append_field_with_data (l_items.key, l_items.item, l_type, default_boost_value)
+					create l_value_text.make (256)
+					from
+						l_set := l_items.item.new_cursor
+						l_set.start
+					until
+						l_set.after
+					loop
+						l_value_text.append (l_set.item)
+						l_set.forth
+					end
+					append_field_with_data (l_items.key, l_value_text, l_type, default_boost_value)
 				end
 			end
 		end
@@ -247,6 +270,9 @@ feature{NONE} -- Implementation
 			l_body: STRING
 			l_field_name: STRING
 			l_meta_value: STRING
+			l_meta_value2: STRING
+			l_bool_text: STRING
+			l_bool_type: TYPE_A
 		do
 			if not a_change.values.is_empty then
 				l_var_dtype_tbl := queryable_dynamic_type_name_table
@@ -261,39 +287,55 @@ feature{NONE} -- Implementation
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (a_change.expression)
 
-					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_type_form, False), l_value_text, l_type, a_boost_value)
+					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_type_form, False, False), l_value_text, l_type, a_boost_value)
+					append_field_with_data (field_name_for_change (l_anonymous, a_change, anonymous_type_form, False, True), once "True", ir_boolean_value_type, a_boost_value)
 
 						-- Output dynamic type format.
-					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, False)
+					l_body := expression_with_replacements (l_expr, l_var_dtype_tbl, True)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, dynamic_type_form, False),
+						field_name_for_change (l_body, a_change, dynamic_type_form, False, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, dynamic_type_form, True)
+					append_field_with_data (
+						field_name_for_change (l_body, a_change, dynamic_type_form, False, True),
+						once "True", ir_boolean_value_type, l_boost)
+
+					l_field_name := field_name_for_change (l_body, a_change, dynamic_type_form, True, False)
 					l_meta_value := text_for_variable_indexes_and_value (l_anonymous, l_value_text)
 					extend_string_into_list (dynamic_change_meta, l_meta_value, l_field_name)
+
+					l_field_name := field_name_for_change (l_body, a_change, dynamic_type_form, True, True)
+					l_meta_value2 := text_for_variable_indexes_and_value (l_anonymous, once "True")
+					extend_string_into_list (dynamic_change_meta, l_meta_value2, l_field_name)
 
 						-- Output static type format.
 					l_body := expression_with_replacements (l_expr, l_var_stype_tbl, True)
 					append_field_with_data (
-						field_name_for_change (l_body, a_change, static_type_form, False),
+						field_name_for_change (l_body, a_change, static_type_form, False, False),
 						l_value_text, l_type, l_boost)
-					l_field_name := field_name_for_change (l_body, a_change, static_type_form, True)
+					append_field_with_data (
+						field_name_for_change (l_body, a_change, static_type_form, False, True),
+						once "True", ir_boolean_value_type, l_boost)
+
+					l_field_name := field_name_for_change (l_body, a_change, static_type_form, True, False)
 					extend_string_into_list (static_change_meta, l_meta_value, l_field_name)
+
+					l_field_name := field_name_for_change (l_body, a_change, static_type_form, True, True)
+					extend_string_into_list (static_change_meta, l_meta_value2, l_field_name)
 				end
 			end
 		end
 
 feature{NONE} -- Implementation
 
-	dynamic_change_meta: HASH_TABLE [STRING, STRING]
+	dynamic_change_meta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
 			-- Meta data for dynamic change
 			-- Key is Typed expression, value is all anonymous expressions conforming to that typed expression
 
-	static_change_meta: HASH_TABLE [STRING, STRING]
+	static_change_meta: HASH_TABLE [DS_HASH_SET [STRING], STRING]
 			-- Meta data for dynamic change
 			-- Key is Typed expression, value is all anonymous expressions conforming to that typed expression
 
-	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_format_type: INTEGER; a_meta: BOOLEAN): STRING
+	field_name_for_change (a_name: STRING; a_change: EPA_EXPRESSION_CHANGE; a_format_type: INTEGER; a_meta: BOOLEAN; a_only_change: BOOLEAN): STRING
 			-- Field_name for `a_change'
 			-- `a_anonymous' indicates if the field is a field for anonymous property.
 		do
@@ -311,10 +353,14 @@ feature{NONE} -- Implementation
 			end
 			Result.append (format_type_prefix (a_format_Type))
 
-			if a_change.is_relative then
-				Result.append (by_change_prefix)
+			if a_only_change then
+				Result.append (change_prefix)
 			else
-				Result.append (to_change_prefix)
+				if a_change.is_relative then
+					Result.append (by_change_prefix)
+				else
+					Result.append (to_change_prefix)
+				end
 			end
 			Result.append (encoded_field_string (a_name))
 		end

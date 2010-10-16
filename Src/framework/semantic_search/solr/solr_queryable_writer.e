@@ -135,19 +135,20 @@ feature{NONE} -- Implementation
 			Result.append (encoded_field_string (a_name))
 		end
 
-	extend_string_into_list (a_table: HASH_TABLE [STRING, STRING]; a_string: STRING; a_key: STRING)
+	extend_string_into_list (a_table: HASH_TABLE [DS_HASH_SET [STRING], STRING]; a_string: STRING; a_key: STRING)
 			-- Extend `a_string' into `a_table'.
 		local
-			l_list: STRING
+			l_set: DS_HASH_SET [STRING]
 		do
 			a_table.search (a_key)
 			if a_table.found then
-				l_list := a_table.found_item
+				l_set := a_table.found_item
 			else
-				create l_list.make (1024)
-				a_table.put (l_list, a_key)
+				create l_set.make (10)
+				l_set.set_equality_tester (string_equality_tester)
+				a_table.put (l_set, a_key)
 			end
-			l_list.append (a_string)
+			l_set.force_last (a_string)
 		end
 
 feature{NONE} -- Implementation

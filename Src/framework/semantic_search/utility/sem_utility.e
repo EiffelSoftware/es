@@ -207,17 +207,19 @@ feature -- Access
 			end
 		end
 
-
-	expression_with_replacements (a_expression: EPA_EXPRESSION; a_replacements: HASH_TABLE [STRING, STRING]; a_simplify_basic_equation: BOOLEAN): STRING
+	expression_with_replacements (a_expression: EPA_EXPRESSION; a_replacements: HASH_TABLE [STRING, STRING]; a_keep_original: BOOLEAN): STRING
 			-- Expressions from `a_expression' where all replacements are done
-			-- If `a_simplify_basic_equation' is True, basic equations such as "=", "~", "/=" and "/~" will be simplified, meaning that
+			-- If `a_keep_original' is False, basic equations such as "=", "~", "/=" and "/~" will be simplified, meaning that
 			-- they will only be output as "{ANY} = {ANY}" for example.
 		local
 			l_expr_rewriter: like expression_rewriter
 		do
-			if attached {STRING} equality_based_abstraction (a_expression.ast, a_replacements) as l_expr then
-				Result := l_expr
-			else
+			if not a_keep_original then
+				if attached {STRING} equality_based_abstraction (a_expression.ast, a_replacements) as l_expr then
+					Result := l_expr
+				end
+			end
+			if Result = Void then
 				l_expr_rewriter := expression_rewriter
 				Result := l_expr_rewriter.expression_text (a_expression, a_replacements)
 			end

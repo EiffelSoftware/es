@@ -9,6 +9,9 @@ class
 
 inherit
 	EPA_EXPRESSION_VALUE
+		redefine
+			is_any
+		end
 
 	SHARED_TYPES
 		undefine
@@ -42,13 +45,17 @@ feature -- Access
 		end
 
 	item: detachable ANY
-			-- Value item in current		
+			-- Value item in current	
+
+	is_any: BOOLEAN = True
+			-- Is current an any value?				
 
 feature -- Process
 
 	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
+			a_visitor.process_any_value (Current)
 		end
 
 end

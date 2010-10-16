@@ -205,6 +205,11 @@ feature -- Status report
 		do
 		end
 
+	is_any: BOOLEAN
+			-- Is current an any value?
+		do
+		end
+
 feature -- Hashing
 
 	hash_code: INTEGER

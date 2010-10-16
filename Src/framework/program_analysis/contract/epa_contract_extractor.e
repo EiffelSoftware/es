@@ -102,6 +102,17 @@ feature -- Access
 			end
 		end
 
+	contracts_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C; a_precondition: BOOLEAN): LINKED_LIST [detachable EPA_EXPRESSION]
+			-- Preconditions of `a_feature' in `a_context_class' if `a_precondition' is True;
+			-- otherwise, postconditions of the same feature.
+		do
+			if a_precondition then
+				Result := precondition_of_feature (a_feature, a_context_class)
+			else
+				Result := postcondition_of_feature (a_feature, a_context_class)
+			end
+		end
+
 feature -- Contract extraction
 
 	precondition_expression_set (a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]

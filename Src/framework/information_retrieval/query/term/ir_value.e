@@ -62,6 +62,11 @@ feature -- Status report
 		do
 		end
 
+	is_any_value: BOOLEAN
+			-- Is current an unspecified value?
+		do
+		end
+
 feature -- Process
 
 	process (a_visitor: IR_TERM_VALUE_VISITOR)
