@@ -36,7 +36,7 @@ feature -- Access
 
 	variables_field: STRING = "variables"
 
-	static_variables_field: STRING = "static_variables"
+	dynamic_variables_field: STRING = "dynamic_variables"
 
 	inputs_field: STRING = "inputs"
 

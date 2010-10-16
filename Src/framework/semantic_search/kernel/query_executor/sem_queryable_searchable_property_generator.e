@@ -58,9 +58,35 @@ feature --Basic operations
 			create Result.make (l_context, l_variables)
 		end
 
-	transition_from_feature  (a_feature: FEATURE_I; a_class: CLASS_C): SEM_FEATURE_CALL_TRANSITION
+	transition_from_feature (a_feature: FEATURE_I; a_class: CLASS_C): SEM_FEATURE_CALL_TRANSITION
 			-- Semantic feature call transition which contains arguments in `a_feature' from `a_class'
+		local
+			l_context: EPA_CONTEXT
+			l_vcursor: CURSOR
+			l_var: EPA_EXPRESSION
+			i: INTEGER
+			l_variables: HASH_TABLE [STRING, INTEGER]
 		do
+				-- Create context.
+			l_context := context_from_feature (a_feature, a_class)
+			l_vcursor := l_context.variables.cursor
+
+				-- Setup variable positions.
+			create l_variables.make (10)
+			from
+				i := 1
+				l_context.variables.start
+			until
+				l_context.variables.after
+			loop
+				l_variables.force (l_context.variables.key_for_iteration, i)
+				i := i + 1
+				l_context.variables.forth
+			end
+			l_context.variables.go_to (l_vcursor)
+
+				-- Construct final result.
+			create Result.make (a_class, a_feature, l_variables, l_context, False)
 		end
 
 	add_properties_in_objects (a_objects: SEM_OBJECTS; a_feature: FEATURE_I; a_class: CLASS_C; a_use_precondition: BOOLEAN)
@@ -79,6 +105,35 @@ feature --Basic operations
 
 				-- Iterate through all assertions in pre- or post-condition of `a_feature'.
 			across contracts_of_feature (a_feature, a_class, a_use_precondition) as l_constraints loop
+				last_expression := l_constraints.item
+				last_tag := last_expression.tag
+				process_expression (last_expression.ast, last_tag)
+			end
+		end
+
+	add_properties_in_feature_transition (a_feature_transition: SEM_FEATURE_CALL_TRANSITION; a_feature: FEATURE_I; a_class: CLASS_C)
+			-- Add searchable properties into `a_feature_transition'
+		do
+				-- Initialize.
+			is_for_objects := False
+			is_for_feature_transition := True
+			queryable := a_feature_transition
+			context_class := a_class
+			context_feature := a_feature
+
+				-- Iterate through all assertions in precondition of `a_feature'.
+			is_in_precondition := True
+			is_in_postcondition := False
+			across precondition_of_feature (a_feature, a_class) as l_constraints loop
+				last_expression := l_constraints.item
+				last_tag := last_expression.tag
+				process_expression (last_expression.ast, last_tag)
+			end
+
+				-- Iterate through all assertions in postcondition of `a_feature'.
+			is_in_precondition := False
+			is_in_postcondition := True
+			across postcondition_of_feature (a_feature, a_class) as l_constraints loop
 				last_expression := l_constraints.item
 				last_tag := last_expression.tag
 				process_expression (last_expression.ast, last_tag)

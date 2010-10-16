@@ -229,18 +229,18 @@ feature{NONE} -- Implementation
 			l_occur: INTEGER
 		do
 -- Disabled this to simplify query and result processing. 16.10.2010 Jasonw.
-			if attached {IR_BOOLEAN_VALUE} a_value as l_bvalue and then l_bvalue.item = False then
-				if a_occurrence = term_occurrence_should then
-					Result := [Void, term_occurrence_should]
-				elseif a_occurrence = term_occurrence_must then
-					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must_not]
-				elseif a_occurrence = term_occurrence_must_not then
-					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must]
-				end
-			else
-				Result := [a_value, a_occurrence]
-			end
---			Result := [a_value, a_occurrence]
+--			if attached {IR_BOOLEAN_VALUE} a_value as l_bvalue and then l_bvalue.item = False then
+--				if a_occurrence = term_occurrence_should then
+--					Result := [Void, term_occurrence_should]
+--				elseif a_occurrence = term_occurrence_must then
+--					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must_not]
+--				elseif a_occurrence = term_occurrence_must_not then
+--					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must]
+--				end
+--			else
+--				Result := [a_value, a_occurrence]
+--			end
+			Result := [a_value, a_occurrence]
 		end
 
 	document_type_term (a_queryable: SEM_QUERYABLE): IR_TERM

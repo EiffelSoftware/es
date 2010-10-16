@@ -72,10 +72,7 @@ feature -- Basic operations
 			create last_match_start_time.make_now
 			create last_matches.make
 			across l_candidates as l_candidate_list loop
---				if l_candidate_list.item.uuid ~ "6526645C-2FB0-4EFE-A9FF-C278FD0F4F12" then
-					match_document (l_query_data, l_candidate_list.item)
---				end
-
+				match_document (l_query_data, l_candidate_list.item)
 			end
 			create last_match_end_time.make_now
 		end
