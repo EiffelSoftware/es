@@ -92,8 +92,8 @@ feature{NONE} -- Implementation
 				l_value_text := l_value.text
 				l_type := type_of_equation (l_equation)
 
-					-- Only handle integer value and True boolean values.
-				if l_value.is_integer or l_value.is_true_boolean then
+					-- Only handle integer value and boolean values.
+				if l_value.is_integer or l_value.is_boolean then
 						-- Output anonymous format.
 					l_anonymous := queryable.anonymous_expression_text (l_expr)
 					append_field_with_data (field_name_for_equation (l_anonymous, l_equation, anonymous_type_form, False, l_prefix), l_value_text, l_type, l_boost)

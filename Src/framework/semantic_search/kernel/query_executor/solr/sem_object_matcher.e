@@ -70,10 +70,19 @@ feature -- Basic operations
 				-- Iterate through all candidate object document,
 				-- perform variable matching for each document.
 			create last_match_start_time.make_now
+			create last_matches.make
 			across l_candidates as l_candidate_list loop
 				match_document (l_query_data, l_candidate_list.item)
 			end
 			create last_match_end_time.make_now
+
+			across last_matches as l_results loop
+				io.put_string ("------------------------%N")
+				io.put_string (l_results.item.text)
+			end
+
+			io.put_string (last_match_start_time.out + "%N")
+			io.put_string (last_match_end_time.out + "%N")
 		end
 
 feature{NONE} -- Implementation
@@ -152,8 +161,10 @@ feature{NONE} -- Implementation
 					if l_cur_cursor.after then
 							-- We exhausted current level, need to back-track.										
 							-- First, undo all matches in the last step.
-						across l_steps.last.matches as l_slots loop
-							l_matched_variables.force (-1, l_slots.item.var_id)
+						if not l_steps.is_empty then
+							across l_steps.last.matches as l_slots loop
+								l_matched_variables.force (-1, l_slots.item.var_id)
+							end
 						end
 							-- Second, move current cursor to the first position.
 						l_cur_cursor.start
@@ -360,8 +371,12 @@ feature{NONE} -- Implementation
 						-- The current variable is open.
 					l_var_id := a_searched_criterion.variables.i_th (i)
 					l_obj_id := a_criterion.variables.i_th (i)
-					if a_criterion.is_variable_type_conformant_to (a_criterion.variable_type (l_obj_id), a_searched_criterion.variable_type (l_var_id)) then
-						l_open_indexes.extend ([l_var_id, l_obj_id])
+					if a_criterion.variable_types.has (l_obj_id) and then a_searched_criterion.variable_types.has (l_var_id) then
+						if a_criterion.is_variable_type_conformant_to (a_criterion.variable_type (l_obj_id), a_searched_criterion.variable_type (l_var_id)) then
+							l_open_indexes.extend ([l_var_id, l_obj_id])
+						else
+							l_is_matched := False
+						end
 					else
 						l_is_matched := False
 					end

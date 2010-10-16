@@ -7,6 +7,9 @@ note
 class
 	SEM_QUERYABLE_MATCHING_RESULT
 
+inherit
+	IR_TERM_OCCURRENCE
+
 create
 	make
 
@@ -89,7 +92,7 @@ feature -- Access
 			end
 
 				-- Append unmatched variable information.
-			Result.append (once "%NUnatched variables: ")
+			Result.append (once "%NUnmatched variables: ")
 			from
 				i := 0
 				l_cursor := query_data.variable_indexes.new_cursor
@@ -106,6 +109,7 @@ feature -- Access
 				end
 				l_cursor.forth
 			end
+			Result.append_character ('%N')
 
 				-- Append unmatched criteria information.
 			from
@@ -115,7 +119,7 @@ feature -- Access
 				l_cri_cursor.after
 			loop
 				if not matched_criteria.has (l_cri_cursor.item) then
-					if attached {SEM_TERM} l_cri_cursor.item.term as l_term then
+					if attached {SEM_TERM} l_cri_cursor.item.term as l_term and then l_term.occurrence /= term_occurrence_must_not then
 						Result.append_character ('%T')
 						Result.append (l_term.text)
 						Result.append_character ('%N')
@@ -123,7 +127,6 @@ feature -- Access
 				end
 				l_cri_cursor.forth
 			end
-
 		end
 
 feature -- Status report
