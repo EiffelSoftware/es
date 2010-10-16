@@ -97,7 +97,7 @@ feature{NONE} -- Implementation
 			l_cur_level: INTEGER      -- Current level
 			l_level_count: INTEGER    -- The number of total levels.
 			l_full_solution_found: BOOLEAN -- Is a solution found.
-			l_matched_variables, l_mvars: HASH_TABLE [INTEGER, INTEGER]
+			l_matched_variables, l_mvars, l_newly_matched_variables: HASH_TABLE [INTEGER, INTEGER]
 				-- Already established variable-object bindings, key is index of variables from the query side,
 				-- value is the index of the matched object from the `a_document', -1 means that particular variable (from the query side) is not matched.
 			l_var_fixture: like is_fixed_variables_matched  -- Data describing how a particular criterion can be matched.
@@ -220,7 +220,7 @@ feature{NONE} -- Implementation
 				-- Check if we can match some variables that are NOT mentioned in any criterion.
 			l_unmentioned_unmatched_variables := a_query_data.variables_unmentioned_in_searched_criteria.intersection (variable_match_status (l_matched_variables, False))
 			if not l_unmentioned_unmatched_variables.is_empty then
-				l_matched_variables.merge (variable_matches (l_unmentioned_unmatched_variables, a_query_data, a_document))
+				l_newly_matched_variables := variable_matches (l_unmentioned_unmatched_variables, a_query_data, a_document)
 			end
 
 				-- Fabricate final result.
@@ -235,13 +235,17 @@ feature{NONE} -- Implementation
 
 				-- Setup matched variables.			
 			create l_mvars.make (l_matched_variables.count)
-			across l_matched_variables as l_vars loop l_mvars.extend (01, l_vars.key) end
+			across l_matched_variables as l_vars loop l_mvars.extend (-1, l_vars.key) end
 			if l_solution_steps /= Void then
 				across l_solution_steps as l_sol_steps loop
 					across l_sol_steps.item.matches as l_matches loop
 						l_mvars.replace (l_matches.item.obj_id, l_matches.item.var_id)
 					end
 				end
+			end
+
+			if l_newly_matched_variables /= Void and then not l_newly_matched_variables.is_empty then
+				l_mvars.merge (l_newly_matched_variables)
 			end
 
 			across l_mvars as l_matched_vars loop
@@ -292,6 +296,7 @@ feature{NONE} -- Implementation
 			l_var_type: TYPE_A
 			l_done: BOOLEAN
 			l_context: CLASS_C
+			l_obj_type: TYPE_A
 		do
 			create Result.make (5)
 			create l_unmatched.make (5)
@@ -306,14 +311,27 @@ feature{NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-					-- Get static type of the variable.
+					-- Get dynamic type of the variable.
 				l_var_type := l_variables.item (l_cursor.item)
-				l_done := False
-				across l_objects as l_types until l_done loop
-					if l_types.item.is_equivalent (l_var_type) then
-						l_done := True
-						Result.force (l_types.key, l_cursor.item)
-						l_unmatched.remove (l_cursor.item)
+				if l_var_type /= Void then
+					l_done := False
+					across l_objects as l_types until l_done loop
+						l_obj_type := l_types.item
+						if l_obj_type /= Void then
+							if l_obj_type.is_none then
+								if l_var_type.is_none then
+									l_done := True
+									Result.force (l_types.key, l_cursor.item)
+									l_unmatched.remove (l_cursor.item)
+								end
+							else
+								if l_obj_type.is_equivalent (l_var_type) then
+									l_done := True
+									Result.force (l_types.key, l_cursor.item)
+									l_unmatched.remove (l_cursor.item)
+								end
+							end
+						end
 					end
 				end
 				l_cursor.forth
@@ -331,15 +349,30 @@ feature{NONE} -- Implementation
 				loop
 						-- Get static type of the variable.
 					l_var_type := l_variables.item (l_cursor.item)
-					l_done := False
-					across l_objects as l_types until l_done loop
-						if l_types.item.conform_to (l_context, l_var_type) then
-							l_done := True
-							Result.force (l_types.key, l_cursor.item)
-							l_unmatched.remove (l_cursor.item)
+					if l_var_type /= Void then
+						l_done := False
+						across l_objects as l_types until l_done loop
+							l_obj_type := l_types.item
+							if l_obj_type /= Void then
+								if l_obj_type.is_none then
+									if l_var_type.is_none then
+										l_done := True
+										Result.force (l_types.key, l_cursor.item)
+										l_unmatched.remove (l_cursor.item)
+									end
+								else
+									if l_obj_type.conform_to (l_context, l_var_type) then
+										l_done := True
+										Result.force (l_types.key, l_cursor.item)
+										l_unmatched.remove (l_cursor.item)
+									end
+								end
+							end
 						end
 					end
-					l_cursor.forth
+					if not l_cursor.after then
+						l_cursor.forth
+					end
 				end
 			end
 		end

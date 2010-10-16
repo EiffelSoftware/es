@@ -1,3 +1,4 @@
+
 note
 	description: "Result from result matching"
 	author: ""
@@ -58,6 +59,7 @@ feature -- Access
 			i: INTEGER
 			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
 			l_cri_cursor: DS_HASH_SET_CURSOR [SEM_MATCHING_CRITERION]
+			l_str: STRING
 		do
 			create Result.make (1024)
 
@@ -91,8 +93,8 @@ feature -- Access
 				end
 			end
 
-				-- Append unmatched variable information.
-			Result.append (once "%NUnmatched variables: ")
+				-- Append unmatched variable information.			
+			create l_str.make (256)
 			from
 				i := 0
 				l_cursor := query_data.variable_indexes.new_cursor
@@ -102,16 +104,21 @@ feature -- Access
 			loop
 				if not matched_variables.has (l_cursor.item) then
 					if i > 0 then
-						Result.append (once ", ")
+						l_str.append (once ", ")
 					end
-					Result.append (queryable.reversed_variable_position.item (l_cursor.item).text)
+					l_str.append (queryable.reversed_variable_position.item (l_cursor.item).text)
 					i := i + 1
 				end
 				l_cursor.forth
 			end
-			Result.append_character ('%N')
+			if not l_str.is_empty then
+				Result.append (once "%NUnmatched variables: ")
+				Result.append (l_str)
+				Result.append_character ('%N')
+			end
 
 				-- Append unmatched criteria information.
+			create l_str.make (256)
 			from
 				l_cri_cursor := query_data.searched_criteria.new_cursor
 				l_cri_cursor.start
@@ -120,13 +127,20 @@ feature -- Access
 			loop
 				if not matched_criteria.has (l_cri_cursor.item) then
 					if attached {SEM_TERM} l_cri_cursor.item.term as l_term and then l_term.occurrence /= term_occurrence_must_not then
-						Result.append_character ('%T')
-						Result.append (l_term.text)
-						Result.append_character ('%N')
+						l_str.append_character ('%T')
+						l_str.append (l_term.text)
+						l_str.append_character ('%N')
 					end
 				end
 				l_cri_cursor.forth
 			end
+			if not l_str.is_empty then
+				Result.append (once "%NUnmatched properties: ")
+				Result.append (l_str)
+			end
+			Result.append (once "Full solution: ")
+			Result.append (is_full_solution.out)
+			Result.append_character ('%N')
 		end
 
 feature -- Status report

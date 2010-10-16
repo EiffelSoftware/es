@@ -46,6 +46,18 @@ feature -- Access
 	item: INTEGER_INTERVAL
 			-- Item of current value
 
+	lower: INTEGER
+			-- Lower bound of `item'
+		do
+			Result := item.lower
+		end
+
+	upper: INTEGER
+			-- Upper bound of `item'
+		do
+			Result := item.upper
+		end
+
 	type: TYPE_A
 			-- Type of current value
 

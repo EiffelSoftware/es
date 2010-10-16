@@ -206,6 +206,10 @@ feature{NONE} -- Implementation
 				create {IR_INTEGER_RANGE_VALUE} Result.make (l_int, l_int)
 			elseif a_expression_value.is_any then
 				create {IR_ANY_VALUE} Result.make
+			elseif attached {EPA_NUMERIC_RANGE_VALUE} a_expression_value as l_range then
+				create {IR_INTEGER_RANGE_VALUE} Result.make (l_range.lower, l_range.upper)
+			elseif a_expression_value.is_any then
+				create {IR_ANY_VALUE} Result.make
 			end
 		end
 
