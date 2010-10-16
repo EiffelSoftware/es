@@ -53,6 +53,9 @@ feature -- Access
 	matched_criteria: LINKED_LIST [SEM_MATCHING_CRITERION]
 			-- List of criteria (from the query side) that are matched
 
+	content: detachable STRING
+			-- Content of the matched document
+
 	text: STRING
 			-- Text represention of Current result
 		local
@@ -67,6 +70,12 @@ feature -- Access
 			Result.append (once "Document ID: ")
 			Result.append (document.uuid)
 			Result.append_character ('%N')
+
+				-- Append document content.
+			if content /= Void then
+				Result.append (content)
+				Result.append_character ('%N')
+			end
 
 				-- Append matched variable information.
 			Result.append (once "Matched variables: ")
@@ -149,5 +158,15 @@ feature -- Status report
 			-- Is current matching a full solution?
 			-- Full solution means that all the variables
 			-- and all the criteria are satisfied.
+
+feature -- Setting
+
+	set_content (a_content: like content)
+			-- Set `content' with `a_content'.
+		do
+			content := a_content
+		ensure
+			content_set: content = a_content
+		end
 
 end

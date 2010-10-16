@@ -92,15 +92,16 @@ feature{NONE} -- Process terms
 			l_term: IR_TERM
 			l_field: IR_FIELD
 			l_value: detachable IR_VALUE
-			l_data: like reversed_occurrence_for_boolean
+			l_data: like final_occurrence_for_term
 			l_occur: INTEGER
 		do
 			l_value := value_from_expression_value (a_term.value)
-			l_data := reversed_occurrence_for_boolean (l_value, a_term.occurrence)
+			l_data := final_occurrence_for_term (l_value, a_term)
 			l_value := l_data.value
 			l_occur := l_data.occurrence
 			if l_value /= Void then
 				create l_field.make (field_name_for_term (a_term, primary_type_form, False), l_value, default_boost_value)
+
 				create l_term.make (l_field, l_occur)
 				terms.force_last (l_term)
 			end
@@ -113,10 +114,10 @@ feature{NONE} -- Process terms
 			l_field: IR_FIELD
 			l_value: detachable IR_VALUE
 			l_occur: INTEGER
-			l_data: like reversed_occurrence_for_boolean
+			l_data: like final_occurrence_for_term
 		do
 			l_value := value_from_expression_value (a_term.value)
-			l_data := reversed_occurrence_for_boolean (l_value, a_term.occurrence)
+			l_data := final_occurrence_for_term (l_value, a_term)
 			l_value := l_data.value
 			l_occur := l_data.occurrence
 
@@ -210,6 +211,8 @@ feature{NONE} -- Implementation
 				create {IR_INTEGER_RANGE_VALUE} Result.make (l_range.lower, l_range.upper)
 			elseif a_expression_value.is_any then
 				create {IR_ANY_VALUE} Result.make
+			elseif attached {EPA_INTEGER_EXCLUSION_VALUE} a_expression_value as l_integer_ex then
+				create {IR_INTEGER_RANGE_VALUE} Result.make (l_integer_ex.item, l_integer_ex.item)
 			end
 		end
 
@@ -223,24 +226,25 @@ feature{NONE} -- Implementation
 			Result.append (encoded_field_string (a_term.field_content_in_type_form (a_type_form)))
 		end
 
-	reversed_occurrence_for_boolean (a_value: IR_VALUE; a_occurrence: INTEGER): TUPLE [value: detachable IR_VALUE; occurrence: INTEGER]
-			-- Reversed occurrence for boolean
+	final_occurrence_for_term (a_value: IR_VALUE; a_term: SEM_TERM): TUPLE [value: detachable IR_VALUE; occurrence: INTEGER]
+			-- Final occurrence for `a_term'
 		local
 			l_occur: INTEGER
 		do
--- Disabled this to simplify query and result processing. 16.10.2010 Jasonw.
---			if attached {IR_BOOLEAN_VALUE} a_value as l_bvalue and then l_bvalue.item = False then
---				if a_occurrence = term_occurrence_should then
---					Result := [Void, term_occurrence_should]
---				elseif a_occurrence = term_occurrence_must then
---					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must_not]
---				elseif a_occurrence = term_occurrence_must_not then
---					Result := [create {IR_BOOLEAN_VALUE}.make (True), term_occurrence_must]
---				end
---			else
---				Result := [a_value, a_occurrence]
---			end
-			Result := [a_value, a_occurrence]
+			if a_term.is_negated then
+				l_occur := a_term.occurrence
+				if l_occur = term_occurrence_must then
+					Result := [a_value, term_occurrence_must_not]
+				elseif l_occur = term_occurrence_must_not then
+					Result := [a_value, term_occurrence_must]
+				elseif l_occur = term_occurrence_should then
+					Result := [Void, l_occur]
+				end
+			else
+				Result := [a_value, a_term.occurrence]
+			end
+
+
 		end
 
 	document_type_term (a_queryable: SEM_QUERYABLE): IR_TERM

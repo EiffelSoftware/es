@@ -30,6 +30,9 @@ feature{NONE} -- Initialization
 			equation := a_equation
 			is_precondition := a_precondition
 			is_human_written := a_human_written
+			if value.is_integer_exclusion then
+				set_is_negated (True)
+			end
 		end
 
 feature -- Access

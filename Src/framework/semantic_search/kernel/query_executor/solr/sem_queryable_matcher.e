@@ -1,11 +1,11 @@
 note
-	description: "Class to match objects in returned search results"
+	description: "Class to match queryables in returned search results"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SEM_OBJECT_MATCHER
+	SEM_QUERYABLE_MATCHER
 
 inherit
 	SEM_SHARED_EQUALITY_TESTER
@@ -47,8 +47,8 @@ feature -- Basic operations
 			-- Match objects from `a_query_result' to `a_query_config',
 			-- make result available in `last_matches'.
 		local
-			l_candidates: LINKED_LIST [SEM_CANDIDATE_OBJECTS]
-			l_candidate: SEM_CANDIDATE_OBJECTS
+			l_candidates: LINKED_LIST [SEM_CANDIDATE_QUERYABLE]
+			l_candidate: SEM_CANDIDATE_QUERYABLE
 			l_searched_criteria: DS_HASH_SET [SEM_MATCHING_CRITERION]
 			l_mentioned_variables_in_criterion: DS_HASH_SET [INTEGER] -- Indexes of variables that are mentioned in searchable criteria in the query.
 			l_query_data: SEM_SEARCHED_QUERYABLE_DATA
@@ -222,6 +222,7 @@ feature{NONE} -- Implementation
 
 				-- Fabricate final result.
 			create l_result.make (a_query_data.query_config, a_document, l_full_solution_found and then l_is_last_match_complete, a_query_data)
+			l_result.set_content (a_document.content)
 
 				-- Setup matched criteria.
 			if l_full_solution_found then

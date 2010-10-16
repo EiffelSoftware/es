@@ -98,7 +98,7 @@ feature{NONE} -- Implementation
 			across a_query_config.terms as l_terms loop
 				l_term := l_terms.item
 				if l_term.is_change or l_term.is_contract or l_term.is_property then
-					if attached {SEM_EXPR_VALUE_TERM} l_term as l_expr_value_term then
+					if attached {SEM_EXPR_VALUE_TERM} l_term as l_expr_value_term and then l_expr_value_term.should_be_considered_in_result then
 						l_expr := l_expr_value_term.expression
 						l_value := l_expr_value_term.value
 						if l_value.is_integer then
@@ -107,6 +107,8 @@ feature{NONE} -- Implementation
 							create {IR_BOOLEAN_VALUE} l_term_value.make (l_value.text.to_boolean)
 						elseif attached {EPA_NUMERIC_RANGE_VALUE} l_value as l_range then
 							create {IR_INTEGER_RANGE_VALUE} l_term_value.make (l_range.item.lower, l_range.item.upper)
+						elseif attached {EPA_INTEGER_EXCLUSION_VALUE} l_value as l_int_ex then
+							create {IR_INTEGER_VALUE} l_term_value.make (l_int_ex.item)
 						end
 						l_name := l_expr_value_term.field_content_in_type_form (l_type_form)
 						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)

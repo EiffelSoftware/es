@@ -96,6 +96,8 @@ feature -- Access
 
 	poststate_bounded_functions_field: STRING = "poststate_bounded_functions"
 
+	any_value: STRING = "[any_value]"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

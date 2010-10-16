@@ -16,6 +16,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	SEM_FIELD_NAMES
+
 create
 	make
 
@@ -28,6 +30,9 @@ feature{NONE} -- Initialization
 			queryable := a_queryable
 			expression := a_expression
 			change := a_change
+			if change.values.is_no_change then
+				set_is_negated (True)
+			end
 		end
 
 feature -- Access
@@ -51,14 +56,7 @@ feature -- Access
 			-- Text representation of Current
 		do
 			create Result.make (128)
-			Result.append (once "Change for ")
-			Result.append (expression.text)
-			Result.append (once " : ")
-			if change.is_relative then
-				Result.append (once "by:: ")
-			else
-				Result.append (once "to:: ")
-			end
+			Result.append (once "Change, ")
 			Result.append (change.debug_output)
 		end
 
@@ -76,6 +74,8 @@ feature -- Access
 					create {EPA_BOOLEAN_VALUE} Result.make (l_value_text.to_boolean)
 				elseif l_value_text.is_integer then
 					create {EPA_INTEGER_VALUE} Result.make (l_value_text.to_integer)
+				elseif l_value_text ~ any_value then
+					create {EPA_ANY_VALUE} Result.make (Void)
 				end
 			end
 		end

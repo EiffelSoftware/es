@@ -24,6 +24,7 @@ inherit
 
 create
 	make,
+	make_with_context_type,
 	make_with_transition,
 	make_interface_transition
 
@@ -49,6 +50,20 @@ feature{NONE} -- Initialization
 			create written_preconditions.make (5, context.class_, context.feature_)
 			create written_postconditions.make (5, context.class_, context.feature_)
 			initialize (a_operands)
+		end
+
+	make_with_context_type (a_class: like class_; a_feature: like feature_;  a_operands: HASH_TABLE [STRING, INTEGER]; a_context: like context; a_is_creation: BOOLEAN; a_context_type: like context_type)
+			-- Initialize Current as the transition of `a_feature' in `a_class'.
+			-- `a_operands' is a table indicating the operands for current transition.
+			-- Key of `a_operands' are 0-based operand (including result, if any) indexes,
+			-- 0 means target, 1 means the first argument, and so on,
+			-- value of `a_operands' is the name of that operands.
+			-- All the variables in `a_operands' should also be defined in `a_context'.
+		require
+			operand_count_valid: operand_count_of_feature (a_feature) = a_operands.count
+		do
+			make (a_class, a_feature, a_operands, a_context,a_is_creation)
+			context_type := a_context_type
 		end
 
 	make_with_transition (a_transition: like Current)
@@ -179,7 +194,7 @@ feature -- Access
 			l_reversed := reversed_variable_position
 
 			create Result.make (operand_count_of_feature (feature_))
-			across operand_index_set (feature_, True, True) as l_indexes loop
+			across operand_index_set (feature_, l_reversed.has (0), True) as l_indexes loop
 				l_opd_index := l_indexes.item
 				Result.put (l_reversed.item (l_opd_index).text, l_opd_index)
 			end

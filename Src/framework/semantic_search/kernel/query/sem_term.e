@@ -109,6 +109,21 @@ feature -- Status report
 		do
 		end
 
+	is_negated: BOOLEAN
+			-- Is Current term intrinsically negated?
+			-- For example a term "a = old a" is translated into
+			-- "change::a = Nothing". This Nothing is intrinsically negated.
+
+	should_be_considered_in_result: BOOLEAN
+			-- Should this term be considered in result?
+		do
+			if is_negated then
+				Result := occurrence = term_occurrence_must_not
+			else
+				Result := occurrence /= term_occurrence_must_not
+			end
+		end
+
 feature -- Setting
 
 	set_occurrence (a_occurrence: INTEGER)
@@ -119,6 +134,14 @@ feature -- Setting
 			occurrence := a_occurrence
 		ensure
 			occurrence_set: occurrence = a_occurrence
+		end
+
+	set_is_negated (b: BOOLEAN)
+			-- Set `is_negated' with `b'.
+		do
+			is_negated := b
+		ensure
+			is_negated_set: is_negated = b
 		end
 
 feature{NONE} -- Implementation

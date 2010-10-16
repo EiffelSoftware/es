@@ -36,7 +36,7 @@ feature --Basic operations
 			l_variables: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
 		do
 				-- Create context.
-			l_context := context_from_feature (a_feature, a_class)
+			l_context := context_from_feature (a_feature, a_class, False)
 			l_vcursor := l_context.variables.cursor
 
 				-- Setup variable positions.
@@ -66,9 +66,10 @@ feature --Basic operations
 			l_var: EPA_EXPRESSION
 			i: INTEGER
 			l_variables: HASH_TABLE [STRING, INTEGER]
+			l_context_type: TYPE_A
 		do
 				-- Create context.
-			l_context := context_from_feature (a_feature, a_class)
+			l_context := context_from_feature (a_feature, a_class, False)
 			l_vcursor := l_context.variables.cursor
 
 				-- Setup variable positions.
@@ -86,7 +87,8 @@ feature --Basic operations
 			l_context.variables.go_to (l_vcursor)
 
 				-- Construct final result.
-			create Result.make (a_class, a_feature, l_variables, l_context, False)
+			l_context_type := a_class.actual_type
+			create Result.make_with_context_type (a_class, a_feature, l_variables, l_context, False, l_context_type)
 		end
 
 	add_properties_in_objects (a_objects: SEM_OBJECTS; a_feature: FEATURE_I; a_class: CLASS_C; a_use_precondition: BOOLEAN)
@@ -165,10 +167,10 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	context_from_feature (a_feature: FEATURE_I; a_class: CLASS_C): EPA_CONTEXT
+	context_from_feature (a_feature: FEATURE_I; a_class: CLASS_C; a_target: BOOLEAN): EPA_CONTEXT
 			-- Context containing all arguments in `a_feature' from `a_class'
 		do
-			create Result.make_with_class_and_feature (a_class, a_feature, True, False, False)
+			create Result.make_with_class_and_feature (a_class, a_feature, True, False, a_target)
 		end
 
 	context_class: CLASS_C
@@ -277,8 +279,40 @@ feature{NONE} -- Process
 		end
 
 	process_bin_ne_as (l_as: BIN_NE_AS)
+		local
+			l_left: EXPR_AS
+			l_right: EXPR_AS
+			l_expression: EPA_AST_EXPRESSION
 		do
-			put_expression_equal_to_true (l_as)
+			l_left := ast_with_paran_removed (l_as.left)
+			l_right := ast_with_paran_removed (l_as.right)
+			if attached {UN_OLD_AS} l_right as l_old then
+				l_right := ast_with_paran_removed (l_old.expr)
+				if text_from_ast (l_left) ~ text_from_ast (l_right) then
+						-- expr /= old expr
+					check is_in_postcondition end
+					check is_for_feature_transition end
+					create l_expression.make_with_text (context_class, context_feature, text_from_ast (l_left), context_class)
+					queryable_as_feature_transition.changes.force_last (
+						value_change (
+							l_expression,
+							create {EPA_AST_EXPRESSION}.make_with_text (
+								context_class,
+								context_feature,
+								any_value,
+								context_class),
+							False),
+						l_expression)
+				else
+					put_expression_equal_to_true (l_as)
+				end
+			elseif attached {INTEGER_AS} l_right as l_integer then
+					-- expr /= int
+				put_expression_equal_to_integer_exclusion (l_left, l_integer)
+			else
+				put_expression_equal_to_true (l_as)
+			end
+
 		end
 
 	process_bin_ge_as (l_as: BIN_GE_AS)
@@ -485,6 +519,17 @@ feature{NONE} -- Implementation
 		local
 			l_expression: EPA_AST_EXPRESSION
 			l_value: EPA_INTEGER_VALUE
+		do
+			create l_expression.make_with_feature (context_class, context_feature, a_expr, context_class)
+			create l_value.make (a_integer.integer_32_value)
+			put_expression_equality (l_expression, l_value)
+		end
+
+	put_expression_equal_to_integer_exclusion (a_expr: EXPR_AS; a_integer: INTEGER_AS)
+			-- Add a searchable property "a_expr /= a_integer' into `queryable'.
+		local
+			l_expression: EPA_AST_EXPRESSION
+			l_value: EPA_INTEGER_EXCLUSION_VALUE
 		do
 			create l_expression.make_with_feature (context_class, context_feature, a_expr, context_class)
 			create l_value.make (a_integer.integer_32_value)
