@@ -13,7 +13,8 @@ inherit
 	REFACTORING_HELPER
 
 create
-	make
+	make,
+	make_with_primary_type_form
 
 feature{NONE} -- Initialization
 
@@ -24,6 +25,16 @@ feature{NONE} -- Initialization
 			set_primary_property_type_form (static_type_form)
 			create supporting_property_type_forms.make
 			create terms.make
+		end
+
+	make_with_primary_type_form (a_queryable: like queryable; a_type_form: INTEGER)
+			-- Initialize `queryable' with `a_queryable' and set
+			-- `primary_type_form' with `a_type_form'.
+		require
+			a_type_form_valid: is_type_form_valid (a_type_form)
+		do
+			make (a_queryable)
+			set_primary_property_type_form (a_type_form)
 		end
 
 feature -- Access
@@ -120,15 +131,7 @@ feature -- Basic operations
 			end
 		end
 
-feature{NONE} -- Setting
-
-	set_queryable (a_queryable: like queryable)
-			-- Set `queryable' with `a_queryable'.
-		do
-			queryable := a_queryable
-		ensure
-			queryable_set: queryable = a_queryable
-		end
+feature -- Setting
 
 	set_primary_property_type_form (a_type_form: INTEGER)
 			-- Set `primary_property_type_form' with `a_type_form'
@@ -161,6 +164,16 @@ feature{NONE} -- Setting
 				end
 				i := i + 1
 			end
+		end
+
+feature{NONE} -- Setting
+
+	set_queryable (a_queryable: like queryable)
+			-- Set `queryable' with `a_queryable'.
+		do
+			queryable := a_queryable
+		ensure
+			queryable_set: queryable = a_queryable
 		end
 
 invariant

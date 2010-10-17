@@ -344,6 +344,8 @@ feature{NONE} -- Implementation
 				-- Append type prefix.
 			if a_meta then
 				Result.append (string_prefix)
+			elseif a_only_change then
+				Result.append (boolean_prefix)
 			else
 				if a_change.expression.type.is_integer then
 					Result.append (integer_prefix)

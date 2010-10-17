@@ -38,21 +38,28 @@ feature{NONE} -- Process
 	last_is_meta: BOOLEAN
 			-- Last meta indicator
 
+	last_is_no_change: BOOLEAN
+			-- Is last term a no change term?
+
 feature{NONE} -- Process
 
 	append_position_1_2_prefix (a_type: TYPE_A)
 			-- Append position 1 and position 2 prefix to `last_prefix'.
 		do
 				-- Append position 1 prefix.
-			if last_is_meta then
-				last_prefix.append (string_prefix)
+			if last_is_no_change then
+				last_prefix.append (boolean_prefix)
 			else
-				if a_type.is_integer then
-					last_prefix.append (integer_prefix)
-				elseif a_type.is_boolean then
-					last_prefix.append (boolean_prefix)
+				if last_is_meta then
+					last_prefix.append (string_prefix)
 				else
-					check other_type_not_supported: False end
+					if a_type.is_integer then
+						last_prefix.append (integer_prefix)
+					elseif a_type.is_boolean then
+						last_prefix.append (boolean_prefix)
+					else
+						check other_type_not_supported: False end
+					end
 				end
 			end
 
@@ -69,7 +76,13 @@ feature{NONE} -- Process
 	process_change_term (a_term: SEM_CHANGE_TERM)
 			-- Process `a_term'.
 		do
+			if a_term.change.is_no_change then
+				last_is_no_change := True
+			else
+				last_is_no_change := False
+			end
 			append_position_1_2_prefix (a_term.type)
+			last_is_no_change := False
 
 				-- Append position 3 prefix.
 			if a_term.is_relative then

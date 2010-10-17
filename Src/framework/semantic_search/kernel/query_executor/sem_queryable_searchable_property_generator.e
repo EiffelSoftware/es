@@ -91,6 +91,57 @@ feature --Basic operations
 			create Result.make_with_context_type (a_class, a_feature, l_variables, l_context, False, l_context_type)
 		end
 
+	queryable_from_feature (a_feature: FEATURE_I; a_class: CLASS_C): SEM_QUERYABLE
+			-- Semantic queryable from `a_feature' in `a_class'
+			-- If `a_feature' has postcondition, return a transition queryable,
+			-- otherwise return an object queryable.
+		local
+			l_objects: SEM_OBJECTS
+			l_feature: SEM_FEATURE_CALL_TRANSITION
+		do
+			if postcondition_of_feature (a_feature, a_class).is_empty then
+				l_objects := objects_from_feature (a_feature, a_class)
+				add_properties_in_objects (l_objects, a_feature, a_class, True)
+				Result := l_objects
+			else
+				l_feature := transition_from_feature (a_feature, a_class)
+				add_properties_in_feature_transition (l_feature, a_feature, a_class)
+				Result := l_feature
+			end
+		end
+
+	queryable_from_feature_names (a_feature: STRING; a_class: STRING): detachable SEM_QUERYABLE
+			-- Semantic queryable from `a_feature' in `a_class'
+			-- If `a_feature' has postcondition, return a transition queryable,
+			-- otherwise return an object queryable.
+		local
+			l_objects: SEM_OBJECTS
+			l_feature: SEM_FEATURE_CALL_TRANSITION
+			l_class_c: CLASS_C
+			l_feature_i: FEATURE_I
+		do
+			l_class_c := first_class_starts_with_name (a_class)
+			if l_class_c /= Void then
+				l_feature_i := l_class_c.feature_named (a_feature)
+				if l_feature_i /= Void then
+					Result := queryable_from_feature (l_feature_i, l_class_c)
+				end
+			end
+		end
+
+	query_config_from_queryable (a_queryable: SEM_QUERYABLE): SEM_QUERY_CONFIG
+			-- Query config from `a_queryable'
+		do
+			if a_queryable.is_objects then
+				create Result.make_with_primary_type_form (a_queryable, dynamic_type_form)
+			else
+				create Result.make_with_primary_type_form (a_queryable, static_type_form)
+			end
+			Result.add_default_searchable_properties (Void, agent (a_term: SEM_TERM): INTEGER do Result := {IR_TERM_OCCURRENCE}.term_occurrence_must end)
+		end
+
+feature -- Basic operations
+
 	add_properties_in_objects (a_objects: SEM_OBJECTS; a_feature: FEATURE_I; a_class: CLASS_C; a_use_precondition: BOOLEAN)
 			-- Add searchable properties into `a_objects'
 			-- If `a_use_precondition' is True, add prconditions from `a_feature' in `a_class' as searchable properties,
