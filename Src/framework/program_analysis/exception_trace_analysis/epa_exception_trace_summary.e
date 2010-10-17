@@ -226,6 +226,7 @@ feature -- Status set
 
 	set_failing_position_breakpoint_index (a_index: INTEGER)
 			-- Set `failing_position_breakpoint_index'.
+			-- In case of a c-inline failing feature, the index could be 0.
 		require
 			valid_breakpoint_index:	a_index >= 0
 		do
@@ -260,10 +261,10 @@ feature -- Status set
 
 	set_recipient_breakpoint_index (a_index: INTEGER)
 			-- Set `recipient_breakpoint_index'.
+			-- For c-inline features, such breakpoint index could be 0.
 		require
 			recipient_feature_attached: recipient_feature /= Void
-			valid_breakpoint_index: recipient_feature.first_breakpoint_slot_index <= a_index
-					and then a_index <= recipient_feature.number_of_breakpoint_slots
+			valid_breakpoint_index: 0 <= a_index
 		do
 			recipient_breakpoint_index := a_index
 		end
