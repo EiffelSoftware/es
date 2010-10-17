@@ -9,7 +9,7 @@ class
 
 create
 	make
-	
+
 feature
 	make
 		do
@@ -27,7 +27,13 @@ feature
 			level := level - 2
 		end
 
-	add (s : STRING)
+	add_nl (s: STRING)
+		do
+			add (s)
+			newline
+		end
+
+	add (s: STRING)
 		do
 			context := context + s
 		end

@@ -11,20 +11,18 @@ create
 	make
 
 feature
-	make (a_name: STRING; a_dom: ADL_DOMAIN; a_prob: PDDL_PROBLEM; a_dir : STRING)
+	make (a_name: STRING; a_dom: ADL_DOMAIN; a_goal: GOAL_FILE; a_dir : STRING)
 		do
 			name := a_name
 			dom := a_dom
-			prob := a_prob
+			goal := a_goal
 			dir := a_dir
-			create plan.make (a_name)
 		end
 
-	dom : ADL_DOMAIN
-	name : STRING
-	prob : PDDL_PROBLEM
-	plan : GOAL_FILE
-	dir : STRING
+	dom: ADL_DOMAIN
+	name: STRING
+	goal: GOAL_FILE
+	dir: STRING
 
 	generate : LIST [STRING]
 		local
@@ -33,7 +31,7 @@ feature
 		do
 			create p_fact
 			proc := p_fact.process_launcher ( "/home/scott/local/bin/tlplan"
-			                                , create {ARRAYED_LIST [STRING]}.make_from_array (<<name + "Run.lisp">>)
+			                                , create {ARRAYED_LIST [STRING]}.make_from_array (<<goal_file_name>>)
 			                                , dir)
 			print (proc.command_line + "%N")
 			proc.redirect_error_to_agent (agent io.put_string)
@@ -47,6 +45,25 @@ feature
 			create {ARRAYED_LIST[STRING]}Result.make (0)
 		end
 
+	goal_file_name: STRING
+		do
+			Result := name + "Run.lisp"
+		end
+
+	goal_full_path: STRING
+		do
+			Result := dir + goal_file_name
+		end
+
+	write_goal
+		local
+			file: PLAIN_TEXT_FILE
+		do
+			create file.make_open_write (goal_full_path)
+			file.put_string (goal.print_string)
+			file.close
+		end
+
 	write_files
 		local
 			file : PLAIN_TEXT_FILE
@@ -55,13 +72,7 @@ feature
 			file.put_string (dom.print_string)
 			file.close
 
-			create file.make_open_write (dir + name + "Problem.tlp.lisp")
-			file.put_string (prob.print_string)
-			file.close
-
-			create file.make_open_write (dir + name + "Run.lisp")
-			file.put_string (plan.print_string)
-			file.close
+			write_goal
 		end
 
 end

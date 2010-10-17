@@ -7,6 +7,9 @@ note
 class
 	PLAN_STATE
 
+inherit
+	PRINTABLE
+
 create
 	make
 
@@ -43,5 +46,15 @@ feature
 
 	predicates: ARRAYED_LIST [EXPR]
 	functions: ARRAYED_LIST [EXPR]
+
+	to_printer (p: PRINTER)
+		do
+			p.add ("(set-initial-facts")
+			print_list_ln_indent (p, predicates)
+			print_list_ln_indent (p, functions)
+			p.add (")")
+			p.newline
+		end
+
 
 end

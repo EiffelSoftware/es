@@ -14,7 +14,7 @@ create
 	make
 
 feature
-	make (a_dom : STRING; a_objs: LIST [OBJ]; a_inits, a_goals: LIST [EXPR])
+	make (a_dom : STRING; a_objs: LIST [OBJ]; a_inits: PLAN_STATE; a_goals: LIST [EXPR])
 		do
 			dom := a_dom
 			objs := a_objs
@@ -23,7 +23,7 @@ feature
 		end
 
 	objs: LIST [OBJ]
-	inits: LIST [EXPR]
+	inits: PLAN_STATE
 	goals: LIST [EXPR]
 	dom : STRING
 
@@ -41,10 +41,7 @@ feature
 			p.add (")")
 			p.newline
 
-			p.add ("(:init")
-			print_list_ln_indent (p, inits)
-			p.add (")")
-			p.newline
+			print (inits)
 
 			p.add ("(:goal")
 			print_list_ln_indent (p, goals)

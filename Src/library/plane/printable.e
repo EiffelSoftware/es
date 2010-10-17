@@ -24,13 +24,15 @@ feature
 
 	print_list_ln_indent (p : PRINTER; l: LIST [PRINTABLE])
 		do
-			p.indent
-			p.newline
+			if not l.is_empty then
+				p.indent
+				p.newline
 
-			print_list_ln (p, l)
+				print_list_ln (p, l)
 
-			p.unindent
-			p.newline
+				p.unindent
+				p.newline
+			end
 		end
 
 	print_list_ln (p : PRINTER; l: LIST [PRINTABLE])
