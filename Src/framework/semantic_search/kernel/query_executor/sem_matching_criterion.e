@@ -95,6 +95,14 @@ feature -- Status report
 			Result := a_variable.conform_to (l_context, b_variable)
 		end
 
+	is_negated: BOOLEAN
+			-- Is the appearence of Current negated?		
+		do
+			if term /= Void then
+				Result := term.is_negated
+			end
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -112,5 +120,5 @@ feature -- Setting
 		ensure
 			term_set: term = a_term
 		end
-
+		
 end

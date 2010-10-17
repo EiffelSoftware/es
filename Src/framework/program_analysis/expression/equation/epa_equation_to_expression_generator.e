@@ -156,11 +156,6 @@ feature -- Process
 		do
 		end
 
-	process_integer_exclusion_value	(a_value: EPA_INTEGER_EXCLUSION_VALUE)
-			-- Process `a_value'.
-		do
-		end
-
 feature{NONE} -- Implementation
 
 	max_integer_value: INTEGER

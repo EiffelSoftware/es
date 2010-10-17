@@ -21,7 +21,8 @@ inherit
 			process_bin_le_as,
 			process_bin_ge_as,
 			process_bin_gt_as,
-			process_binary_as
+			process_binary_as,
+			process_un_not_as
 		end
 
 feature --Basic operations
@@ -275,7 +276,7 @@ feature{NONE} -- Process
 				put_expression_equal_to_integer (l_left, l_integer)
 			elseif attached {BOOL_AS} l_right as l_bool then
 					-- expr = boolean
-				put_expression_equal_to_boolean (l_left, l_bool)
+				put_expression_equal_to_boolean (l_left, l_bool.value)
 			else
 				if attached {UN_OLD_AS} l_right as l_old then
 						-- expr1 = old expr2
@@ -344,16 +345,7 @@ feature{NONE} -- Process
 					check is_in_postcondition end
 					check is_for_feature_transition end
 					create l_expression.make_with_text (context_class, context_feature, text_from_ast (l_left), context_class)
-					queryable_as_feature_transition.changes.force_last (
-						value_change (
-							l_expression,
-							create {EPA_AST_EXPRESSION}.make_with_text (
-								context_class,
-								context_feature,
-								any_value,
-								context_class),
-							False),
-						l_expression)
+					queryable_as_feature_transition.changes.force_last (value_any_change (l_expression, False), l_expression)
 				else
 					put_expression_equal_to_true (l_as)
 				end
@@ -363,13 +355,13 @@ feature{NONE} -- Process
 			else
 				put_expression_equal_to_true (l_as)
 			end
-
 		end
 
 	process_bin_ge_as (l_as: BIN_GE_AS)
 		local
 			l_left: EXPR_AS
 			l_right: EXPR_AS
+			l_left2, l_right2: EXPR_AS
 		do
 			l_left := ast_with_paran_removed (l_as.left)
 			l_right := ast_with_paran_removed (l_as.right)
@@ -386,6 +378,32 @@ feature{NONE} -- Process
 					else
 						put_expression_equal_to_true (l_as)
 					end
+				elseif attached {BIN_PLUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr >= old expr + int
+						put_integer_expression_increased (l_left, l_int.integer_32_value, l_int.integer_32_value + 100)
+					else
+						put_expression_equal_to_true (l_as)
+					end
+				elseif attached {BIN_MINUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr >= old expr - int
+						put_integer_expression_increased (l_left, - l_int.integer_32_value, - l_int.integer_32_value + 100)
+					else
+						put_expression_equal_to_true (l_as)
+					end
 				else
 					put_expression_equal_to_true (l_as)
 				end
@@ -396,6 +414,7 @@ feature{NONE} -- Process
 		local
 			l_left: EXPR_AS
 			l_right: EXPR_AS
+			l_left2, l_right2: EXPR_AS
 		do
 			l_left := ast_with_paran_removed (l_as.left)
 			l_right := ast_with_paran_removed (l_as.right)
@@ -412,6 +431,32 @@ feature{NONE} -- Process
 					else
 						put_expression_equal_to_true (l_as)
 					end
+				elseif attached {BIN_PLUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr > old expr + int
+						put_integer_expression_increased (l_left, l_int.integer_32_value + 1, l_int.integer_32_value + 100)
+					else
+						put_expression_equal_to_true (l_as)
+					end
+				elseif attached {BIN_MINUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr > old expr - int
+						put_integer_expression_increased (l_left, - l_int.integer_32_value + 1, - l_int.integer_32_value + 100)
+					else
+						put_expression_equal_to_true (l_as)
+					end
 				else
 					put_expression_equal_to_true (l_as)
 				end
@@ -422,6 +467,7 @@ feature{NONE} -- Process
 		local
 			l_left: EXPR_AS
 			l_right: EXPR_AS
+			l_left2, l_right2: EXPR_AS
 		do
 			l_left := ast_with_paran_removed (l_as.left)
 			l_right := ast_with_paran_removed (l_as.right)
@@ -438,6 +484,32 @@ feature{NONE} -- Process
 					else
 						put_expression_equal_to_true (l_as)
 					end
+				elseif attached {BIN_PLUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr <= old expr + int
+						put_integer_expression_decreased (l_left, l_int.integer_32_value - 100, l_int.integer_32_value)
+					else
+						put_expression_equal_to_true (l_as)
+					end
+				elseif attached {BIN_MINUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr <= old expr - int
+						put_integer_expression_decreased (l_left, - l_int.integer_32_value - 100, - l_int.integer_32_value)
+					else
+						put_expression_equal_to_true (l_as)
+					end
 				else
 					put_expression_equal_to_true (l_as)
 				end
@@ -448,6 +520,7 @@ feature{NONE} -- Process
 		local
 			l_left: EXPR_AS
 			l_right: EXPR_AS
+			l_left2, l_right2: EXPR_AS
 		do
 			l_left := ast_with_paran_removed (l_as.left)
 			l_right := ast_with_paran_removed (l_as.right)
@@ -464,6 +537,32 @@ feature{NONE} -- Process
 					else
 						put_expression_equal_to_true (l_as)
 					end
+				elseif attached {BIN_PLUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr < old expr + int
+						put_integer_expression_decreased (l_left, l_int.integer_32_value - 100, l_int.integer_32_value - 1)
+					else
+						put_expression_equal_to_true (l_as)
+					end
+				elseif attached {BIN_MINUS_AS} l_right as l_plus then
+					l_left2 := ast_with_paran_removed (l_plus.left)
+					l_right2 := ast_with_paran_removed (l_plus.right)
+					if
+						attached {UN_OLD_AS} l_left2 as l_old and then
+						text_from_ast (ast_with_paran_removed (l_old.expr)) ~ text_from_ast (l_left) and then
+						attached {INTEGER_AS} l_right2 as l_int
+					then
+							-- expr <= old expr - int
+						put_integer_expression_decreased (l_left, - l_int.integer_32_value - 100, - l_int.integer_32_value - 1)
+					else
+						put_expression_equal_to_true (l_as)
+					end
 				else
 					put_expression_equal_to_true (l_as)
 				end
@@ -475,6 +574,14 @@ feature{NONE} -- Process
 			put_expression_equal_to_true (l_as)
 		end
 
+	process_un_not_as (l_as: UN_NOT_AS)
+			-- Process `l_as'.
+		local
+			l_expr: EXPR_AS
+		do
+			l_expr := ast_with_paran_removed (l_as.expr)
+			put_expression_equal_to_boolean (l_expr, False)
+		end
 
 feature{NONE} -- Implementation
 
@@ -486,7 +593,7 @@ feature{NONE} -- Implementation
 			check is_in_postcondition end
 			check is_for_feature_transition end
 			create l_expr.make_with_text (context_class, context_feature, text_from_ast (a_expr), context_class)
-			queryable_as_feature_transition.changes.force_last (value_no_change (l_expr), l_expr)
+			queryable_as_feature_transition.changes.force_last (value_any_change (l_expr, True), l_expr)
 		end
 
 	put_integer_expression_increased (a_expr: EXPR_AS; a_lower: INTEGER; a_upper: INTEGER)
@@ -530,7 +637,7 @@ feature{NONE} -- Implementation
 			end
 			l_upper := l_lower + 100
 			create l_value.make (l_lower, l_upper)
-			put_expression_equality (l_expression, l_value)
+			put_expression_equality (l_expression, l_value, False)
 		end
 
 	put_expression_less_than_integer (a_expr: EXPR_AS; a_integer: INTEGER; a_strict: BOOLEAN)
@@ -550,7 +657,7 @@ feature{NONE} -- Implementation
 			end
 			l_lower := l_upper - 100
 			create l_value.make (l_lower, l_upper)
-			put_expression_equality (l_expression, l_value)
+			put_expression_equality (l_expression, l_value, False)
 		end
 
 	put_expression_equal_to_true (a_expr: EXPR_AS)
@@ -562,7 +669,7 @@ feature{NONE} -- Implementation
 		do
 			create l_expression.make_with_text (context_class, context_feature, text_from_ast (a_expr), context_class)
 			create l_value.make (True)
-			put_expression_equality (l_expression, l_value)
+			put_expression_equality (l_expression, l_value, False)
 		end
 
 	put_expression_equal_to_integer (a_expr: EXPR_AS; a_integer: INTEGER_AS)
@@ -573,32 +680,32 @@ feature{NONE} -- Implementation
 		do
 			create l_expression.make_with_feature (context_class, context_feature, a_expr, context_class)
 			create l_value.make (a_integer.integer_32_value)
-			put_expression_equality (l_expression, l_value)
+			put_expression_equality (l_expression, l_value, False)
 		end
 
 	put_expression_equal_to_integer_exclusion (a_expr: EXPR_AS; a_integer: INTEGER_AS)
 			-- Add a searchable property "a_expr /= a_integer' into `queryable'.
 		local
 			l_expression: EPA_AST_EXPRESSION
-			l_value: EPA_INTEGER_EXCLUSION_VALUE
+			l_value: EPA_INTEGER_VALUE
 		do
 			create l_expression.make_with_feature (context_class, context_feature, a_expr, context_class)
 			create l_value.make (a_integer.integer_32_value)
-			put_expression_equality (l_expression, l_value)
+			put_expression_equality (l_expression, l_value, True)
 		end
 
-	put_expression_equal_to_boolean (a_expr: EXPR_AS; a_boolean: BOOL_AS)
+	put_expression_equal_to_boolean (a_expr: EXPR_AS; a_boolean: BOOLEAN)
 			-- Add a searchable property "a_expr = a_boolean' into `queryable'.
 		local
 			l_expression: EPA_AST_EXPRESSION
 			l_value: EPA_BOOLEAN_VALUE
 		do
 			create l_expression.make_with_feature (context_class, context_feature, a_expr, context_class)
-			create l_value.make (a_boolean.value)
-			put_expression_equality (l_expression, l_value)
+			create l_value.make (a_boolean)
+			put_expression_equality (l_expression, l_value, False)
 		end
 
-	put_expression_equality (a_expression: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE)
+	put_expression_equality (a_expression: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE; a_negated: BOOLEAN)
 			-- Put "a_expression = a_value" into `queryable'.
 		local
 			l_equation: EPA_EQUATION
@@ -606,15 +713,17 @@ feature{NONE} -- Implementation
 			if is_for_objects then
 					-- Add current property as a property of objects.
 				create l_equation.make (a_expression, a_value)
+				l_equation.set_is_negated (a_negated)
 				queryable_as_objects.properties.force_last (l_equation)
 			elseif is_for_feature_transition then
 				if is_in_precondition then
 						-- Add current property as a precondition of a feature transition.
 					create l_equation.make (a_expression, a_value)
+					l_equation.set_is_negated (a_negated)
 					queryable_as_feature_transition.preconditions.force_last (l_equation)
 				elseif is_in_postcondition then
 						-- Add current property as a absolute change of a feature transition.					
-					queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False), a_expression)
+					queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False, a_negated), a_expression)
 				end
 			end
 		end
@@ -631,7 +740,7 @@ feature{NONE} -- Implementation
 			Result.extend (l_change)
 		end
 
-	value_change (a_expression: EPA_EXPRESSION; a_value: EPA_EXPRESSION; a_relative: BOOLEAN): LINKED_LIST [EPA_EXPRESSION_CHANGE]
+	value_change (a_expression: EPA_EXPRESSION; a_value: EPA_EXPRESSION; a_relative: BOOLEAN; a_negated: BOOLEAN): LINKED_LIST [EPA_EXPRESSION_CHANGE]
 			-- Value change.
 		local
 			l_change_set: EPA_EXPRESSION_ENUMERATION_CHANGE_SET
@@ -641,20 +750,25 @@ feature{NONE} -- Implementation
 			l_change_set.force_last (a_value)
 			create Result.make
 			create l_change.make (a_expression, l_change_set, a_relative)
+			l_change.set_is_negated (a_negated)
 			Result.extend (l_change)
 		end
 
-	value_no_change (a_expression: EPA_EXPRESSION): LINKED_LIST [EPA_EXPRESSION_CHANGE]
-			-- Value no change.
+	value_any_change (a_expression: EPA_EXPRESSION; a_negated: BOOLEAN): LINKED_LIST [EPA_EXPRESSION_CHANGE]
+			-- Any change set.
 		local
-			l_change_set: EPA_EXPRESSION_NO_CHANGE_SET
+			l_change_set: EPA_EXPRESSION_ENUMERATION_CHANGE_SET
 			l_change: EPA_EXPRESSION_CHANGE
 			l_value: EPA_ANY_VALUE
+			l_expr: EPA_AST_EXPRESSION
 		do
-			create l_value.make (Void)
-			create l_change_set.make (l_value)
+			create l_expr.make_with_text (context_class, context_feature, any_value, context_class)
+			create l_change_set.make (1)
+			l_change_set.force_last (l_expr)
+
 			create Result.make
 			create l_change.make (a_expression, l_change_set, True)
+			l_change.set_is_negated (a_negated)
 			Result.extend (l_change)
 		end
 

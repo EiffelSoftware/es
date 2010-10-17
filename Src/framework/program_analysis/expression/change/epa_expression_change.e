@@ -80,6 +80,11 @@ feature -- Status report
 			Result := attached {EPA_EXPRESSION_NO_CHANGE_SET} values
 		end
 
+	is_negated: BOOLEAN
+			-- Is the appearence of current negated?
+			-- Only used for semantic query construction
+			-- Default: False
+
 feature -- Setting
 
 	set_is_relative (b: BOOLEAN)
@@ -106,6 +111,14 @@ feature -- Setting
 			relevance_set: relevance = v
 		end
 
+	set_is_negated (b: BOOLEAN)
+			-- Set `is_negated' with `b'.
+		do
+			is_negated := b
+		ensure
+			is_negated_set: is_negated = b
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -120,7 +133,7 @@ feature -- Status report
 			Result.append (expression.text)
 			Result.append (once " == ")
 			Result.append (values.debug_output)
-			Result.append (once ", ")
+			Result.append (once ", relevance = ")
 			Result.append (relevance.out)
 		end
 

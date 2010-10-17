@@ -78,10 +78,5 @@ feature -- Process
 			-- Process `a_value'.
 		deferred
 		end
-
-	process_integer_exclusion_value	(a_value: EPA_INTEGER_EXCLUSION_VALUE)
-			-- Process `a_value'.
-		deferred
-		end
-
+		
 end

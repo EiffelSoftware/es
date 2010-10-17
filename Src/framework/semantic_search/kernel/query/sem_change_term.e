@@ -30,9 +30,7 @@ feature{NONE} -- Initialization
 			queryable := a_queryable
 			expression := a_expression
 			change := a_change
-			if change.values.is_no_change then
-				set_is_negated (True)
-			end
+			set_is_negated (change.is_negated)
 		end
 
 feature -- Access
@@ -66,8 +64,8 @@ feature -- Access
 			l_value_text: STRING
 		do
 			fixme ("This is only a simplified solution, which may give wrong information if there are multiple values in the original change or the change value is not a boolean nor an integer. 10.10.2010 Jasonw")
-			if change.values.is_no_change then
-				create {EPA_ANY_VALUE} Result.make (Void)
+			if attached {EPA_INTEGER_RANGE} change.values as l_range then
+				create {EPA_NUMERIC_RANGE_VALUE} Result.make (l_range.lower, l_range.upper)
 			else
 				l_value_text := change.values.first.text
 				if l_value_text.is_boolean then
@@ -75,7 +73,7 @@ feature -- Access
 				elseif l_value_text.is_integer then
 					create {EPA_INTEGER_VALUE} Result.make (l_value_text.to_integer)
 				elseif l_value_text ~ any_value then
-					create {EPA_ANY_VALUE} Result.make (Void)
+					create {EPA_ANY_VALUE} Result.make (any_value)
 				end
 			end
 		end

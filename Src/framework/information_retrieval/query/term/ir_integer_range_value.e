@@ -47,7 +47,7 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 		do
-			Result := item.lower + item.upper
+			Result := (item.lower + item.upper).abs
 		end
 
 	text: STRING

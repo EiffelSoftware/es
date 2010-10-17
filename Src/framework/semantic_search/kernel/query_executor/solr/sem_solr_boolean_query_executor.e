@@ -101,7 +101,6 @@ feature{NONE} -- Process terms
 			l_occur := l_data.occurrence
 			if l_value /= Void then
 				create l_field.make (field_name_for_term (a_term, primary_type_form, False), l_value, default_boost_value)
-
 				create l_term.make (l_field, l_occur)
 				terms.force_last (l_term)
 			end
@@ -181,11 +180,13 @@ feature{NONE} -- Implementation
 			l_type_form := primary_type_form
 			across query_config.terms as l_terms loop
 				l_should_add := True
-				if attached {SEM_EQUATION_TERM} l_terms.item as l_equation_term then
-					if l_equation_term.type.is_boolean and then l_equation_term.value.as_boolean.item = False then
-						l_should_add := False
-					end
-				end
+--				if attached {SEM_EXPR_VALUE_TERM} l_terms.item as l_equation_term then
+--					if l_equation_term.is_negated then
+--						l_should_add := l_equation_term.occurrence = {IR_TERM_OCCURRENCE}.term_occurrence_must_not
+--					else
+--						l_should_add := l_equation_term.occurrence /= {IR_TERM_OCCURRENCE}.term_occurrence_must_not
+--					end
+--				end
 
 				if l_should_add then
 					l_returned_fields.force_last (
@@ -211,8 +212,6 @@ feature{NONE} -- Implementation
 				create {IR_INTEGER_RANGE_VALUE} Result.make (l_range.lower, l_range.upper)
 			elseif a_expression_value.is_any then
 				create {IR_ANY_VALUE} Result.make
-			elseif attached {EPA_INTEGER_EXCLUSION_VALUE} a_expression_value as l_integer_ex then
-				create {IR_INTEGER_RANGE_VALUE} Result.make (l_integer_ex.item, l_integer_ex.item)
 			end
 		end
 

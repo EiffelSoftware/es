@@ -216,11 +216,6 @@ feature -- Status report
 		do
 		end
 
-	is_integer_exclusion: BOOLEAN
-			-- Is current an integer exclusion value?
-		do
-		end
-
 feature -- Hashing
 
 	hash_code: INTEGER

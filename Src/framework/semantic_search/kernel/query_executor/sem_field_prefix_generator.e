@@ -12,6 +12,8 @@ inherit
 
 	SEM_CONSTANTS
 
+	SEM_FIELD_NAMES
+
 feature -- Basic operations
 
 	term_prefix (a_term: SEM_TERM; a_type_form: INTEGER; a_meta: BOOLEAN): STRING
@@ -38,8 +40,7 @@ feature{NONE} -- Process
 	last_is_meta: BOOLEAN
 			-- Last meta indicator
 
-	last_is_no_change: BOOLEAN
-			-- Is last term a no change term?
+	last_is_any_change: BOOLEAN
 
 feature{NONE} -- Process
 
@@ -47,11 +48,11 @@ feature{NONE} -- Process
 			-- Append position 1 and position 2 prefix to `last_prefix'.
 		do
 				-- Append position 1 prefix.
-			if last_is_no_change then
-				last_prefix.append (boolean_prefix)
+			if last_is_meta then
+				last_prefix.append (string_prefix)
 			else
-				if last_is_meta then
-					last_prefix.append (string_prefix)
+				if last_is_any_change then
+					last_prefix.append (boolean_prefix)
 				else
 					if a_type.is_integer then
 						last_prefix.append (integer_prefix)
@@ -76,20 +77,24 @@ feature{NONE} -- Process
 	process_change_term (a_term: SEM_CHANGE_TERM)
 			-- Process `a_term'.
 		do
-			if a_term.change.is_no_change then
-				last_is_no_change := True
+			if a_term.value.text ~ any_value then
+				last_is_any_change := True
 			else
-				last_is_no_change := False
+				last_is_any_change := False
 			end
 			append_position_1_2_prefix (a_term.type)
-			last_is_no_change := False
 
 				-- Append position 3 prefix.
-			if a_term.is_relative then
-				last_prefix.append (by_change_prefix)
-			elseif a_term.is_absolute then
-				last_prefix.append (to_change_prefix)
+			if last_is_any_change then
+				last_prefix.append (change_prefix)
+			else
+				if a_term.is_relative then
+					last_prefix.append (by_change_prefix)
+				elseif a_term.is_absolute then
+					last_prefix.append (to_change_prefix)
+				end
 			end
+			last_is_any_change := False
 		end
 
 	process_contract_term (a_term: SEM_CONTRACT_TERM)

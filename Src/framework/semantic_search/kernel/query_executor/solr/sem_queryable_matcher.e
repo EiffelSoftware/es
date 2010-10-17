@@ -125,8 +125,10 @@ feature{NONE} -- Implementation
 					l_cur_cursor.start
 					l_levels.extend ([l_match.searched_criterion, l_cur_cursor])
 				else
-					if l_is_last_match_complete then
-						l_is_last_match_complete := False
+					if l_match.should_be_matched then
+						if l_is_last_match_complete then
+							l_is_last_match_complete := False
+						end
 					end
 				end
 			end

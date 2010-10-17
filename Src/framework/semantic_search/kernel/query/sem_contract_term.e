@@ -22,7 +22,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_queryable: like queryable; a_equation: like equation; a_precondition: BOOLEAN; a_human_written: BOOLEAN)
+	make (a_queryable: like queryable; a_equation: like equation; a_precondition: BOOLEAN; a_human_written: BOOLEAN; a_is_negated: BOOLEAN)
 			-- Initialize Current.
 		do
 			initialize
@@ -30,9 +30,7 @@ feature{NONE} -- Initialization
 			equation := a_equation
 			is_precondition := a_precondition
 			is_human_written := a_human_written
-			if value.is_integer_exclusion then
-				set_is_negated (True)
-			end
+			set_is_negated (a_is_negated)
 		end
 
 feature -- Access

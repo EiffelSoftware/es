@@ -25,9 +25,7 @@ feature{NONE} -- Initialization
 			initialize
 			queryable := a_queryable
 			equation := a_equation
-			if value.is_integer_exclusion then
-				set_is_negated (True)
-			end
+			set_is_negated (a_equation.is_negated)
 		end
 
 feature -- Access

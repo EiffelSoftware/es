@@ -124,6 +124,7 @@ feature -- Access
 			l_lower, l_upper: INTEGER
 			l_iinternal: like integer_criteria_by_value_internal
 			l_cursor: DS_HASH_TABLE_CURSOR [LINKED_LIST [SEM_MATCHING_CRITERION], INTEGER]
+			l_bool_value: IR_BOOLEAN_VALUE
 		do
 			l_internal := criteria_by_value_internal
 			l_internal.search (a_criterion_name)
@@ -155,6 +156,12 @@ feature -- Access
 						if Result.is_empty then
 							Result := Void
 						end
+					end
+				elseif attached {IR_ANY_VALUE} a_value as l_any_value then
+					create l_bool_value.make (True)
+					l_tbl.search (l_bool_value)
+					if l_tbl.found then
+						Result := l_tbl.found_item
 					end
 				end
 			end
@@ -251,12 +258,13 @@ feature -- Basic operations
 			l_operands: ARRAYED_LIST [INTEGER]
 			l_value: IR_VALUE
 			l_int_value: INTEGER
+			l_name: STRING
 		do
 				-- 1. Remove prefix from `a_criterion_name'
 				-- 2. Decode `a_criterion_name'
 			l_index := a_criterion_name.index_of ('_', 1)
-			l_index := a_criterion_name.index_of ('_', l_index + 1)
-			l_index := a_criterion_name.index_of ('_', l_index + 1)
+--			l_index := a_criterion_name.index_of ('_', l_index + 1)
+--			l_index := a_criterion_name.index_of ('_', l_index + 1)
 			l_criterion_name := decoded_field_string (a_criterion_name.substring (l_index + 1, a_criterion_name.count))
 
 				-- Iterate through all combinations of objects.
@@ -271,7 +279,14 @@ feature -- Basic operations
 					across l_combination as l_positions loop
 						l_operands.extend (l_positions.item.to_integer)
 					end
-					create l_criterion.make (l_criterion_name, l_value, l_operands, a_types)
+					create l_name.make (l_criterion_name.count + 10)
+					if l_value.is_boolean_value then
+						l_name.append (boolean_prefix)
+					elseif l_value.is_integer_value then
+						l_name.append (integer_prefix)
+					end
+					l_name.append (l_criterion_name)
+					create l_criterion.make (l_name, l_value, l_operands, a_types)
 
 						-- Setup `criteria'.
 					extend_criteria (l_criterion)

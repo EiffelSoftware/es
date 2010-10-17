@@ -90,11 +90,13 @@ feature{NONE} -- Implementation
 			l_type_form: INTEGER
 			l_list: LINKED_LIST [SEM_MATCHING_CRITERION]
 			l_name: STRING
+			l_prefix_generator: like field_prefix_generator
 		do
 			create Result.make (10)
 			Result.compare_objects
 
 			l_type_form := a_query_config.primary_property_type_form
+			l_prefix_generator := field_prefix_generator
 			across a_query_config.terms as l_terms loop
 				l_term := l_terms.item
 				if l_term.is_change or l_term.is_contract or l_term.is_property then
@@ -107,10 +109,10 @@ feature{NONE} -- Implementation
 							create {IR_BOOLEAN_VALUE} l_term_value.make (l_value.text.to_boolean)
 						elseif attached {EPA_NUMERIC_RANGE_VALUE} l_value as l_range then
 							create {IR_INTEGER_RANGE_VALUE} l_term_value.make (l_range.item.lower, l_range.item.upper)
-						elseif attached {EPA_INTEGER_EXCLUSION_VALUE} l_value as l_int_ex then
-							create {IR_INTEGER_VALUE} l_term_value.make (l_int_ex.item)
+						elseif l_value.is_any and then l_term.is_change then
+							create {IR_BOOLEAN_VALUE} l_term_value.make (True)
 						end
-						l_name := l_expr_value_term.field_content_in_type_form (l_type_form)
+						l_name := l_prefix_generator.term_prefix (l_term, l_type_form, False) + l_expr_value_term.field_content_in_type_form (l_type_form)
 						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)
 						l_criterion.set_term (l_term)
 						Result.search (l_name)
@@ -143,6 +145,12 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
+		end
+
+	field_prefix_generator: SEM_FIELD_PREFIX_GENERATOR
+			-- Prefix generator
+		once
+			create Result
 		end
 
 end

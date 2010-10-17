@@ -114,6 +114,13 @@ feature -- Access
 
 feature -- Status report
 
+	is_negated: BOOLEAN
+			-- Is the appearance of Current negated?
+			-- Only used for semantic query construction
+			-- Default: False
+
+feature -- Status report
+
 	out, debug_output, text: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
@@ -168,6 +175,14 @@ feature -- Setting
 			value := a_value
 		ensure
 			value_set: value = a_value
+		end
+
+	set_is_negated (b: BOOLEAN)
+			-- Set `is_negated' with `b'.
+		do
+			is_negated := b
+		ensure
+			is_negated_set: is_negated = b
 		end
 
 end

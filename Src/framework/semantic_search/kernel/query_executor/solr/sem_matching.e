@@ -10,6 +10,11 @@ class
 inherit
 	COMPARABLE
 
+	IR_TERM_OCCURRENCE
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -54,6 +59,19 @@ feature -- Status report
 			-- Is there any candidates in `candidate_criteria'?
 		do
 			Result := candidate_criteria /= Void
+		end
+
+	should_be_matched: BOOLEAN
+			-- Should `searched_criterion' be matched with some `candidate_criteria'?
+		local
+			l_searched: like searched_criterion
+		do
+			l_searched := searched_criterion
+			if l_searched.is_negated then
+				Result := l_searched.term.occurrence = term_occurrence_must_not
+			else
+				Result := l_searched.term.occurrence /= term_occurrence_must_not
+			end
 		end
 
 feature -- Comparison

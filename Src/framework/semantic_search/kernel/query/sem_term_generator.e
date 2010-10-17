@@ -75,7 +75,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (a_call, l_contracts.item, True, False)
+				create l_contract_term.make (a_call, l_contracts.item, True, False, l_contracts.item.is_negated)
 				if term_occurrence_function /= Void then
 					l_contract_term.set_occurrence (term_occurrence_function.item ([l_contract_term]))
 				end
@@ -91,7 +91,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (a_call, l_contracts.item, True, True)
+				create l_contract_term.make (a_call, l_contracts.item, True, True, l_contracts.item.is_negated)
 				if term_occurrence_function /= Void then
 					l_contract_term.set_occurrence (term_occurrence_function.item ([l_contract_term]))
 				end
@@ -106,7 +106,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (a_call, l_contracts.item, False, False)
+				create l_contract_term.make (a_call, l_contracts.item, False, False, l_contracts.item.is_negated)
 				if term_occurrence_function /= Void then
 					l_contract_term.set_occurrence (term_occurrence_function.item ([l_contract_term]))
 				end
@@ -121,7 +121,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (a_call, l_contracts.item, False, True)
+				create l_contract_term.make (a_call, l_contracts.item, False, True, l_contracts.item.is_negated)
 				if term_occurrence_function /= Void then
 					l_contract_term.set_occurrence (term_occurrence_function.item ([l_contract_term]))
 				end
