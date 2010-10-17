@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {SSA_TEMPS_PRINTER}."
+	description: "Construct a table which associates a syntax node with a replacement variable, target, and call."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SSA_TEMPS_PRINTER
+	SSA_REPLACEMENTS_CREATOR
 
 inherit
 	AST_ROUNDTRIP_ITERATOR
@@ -38,7 +38,7 @@ feature
 			create anno_replaces.make (20)
 
 			lines := a_lines
-			last_target := Void
+			clear_target
 		end
 
 	process_replaces
@@ -58,7 +58,7 @@ feature
 
 	replaces: HASH_TABLE [STRING, AST_HASHWRAP]
 
-	anno_replaces: HASH_TABLE [LIST [TUPLE [STRING, STRING, STRING]], AST_HASHWRAP]
+	anno_replaces: HASH_TABLE [LIST [TUPLE [STRING, STRING, AST_EIFFEL]], AST_HASHWRAP]
 	working_ast: AST_EIFFEL
 
 	lines: LIST [AST_EIFFEL]
@@ -108,7 +108,7 @@ feature
 			repl := replaces [wrap (l_as)]
 
 			if attached repl then
-				assign_extend (repl, target, ast_to_string (l_as))
+				assign_extend (repl, target, l_as)
 				set_target (repl)
 			else
 				set_target (l_as.name)
@@ -117,7 +117,7 @@ feature
 
 	process_bool_as (l_as: BOOL_AS)
 		do
-			last_target := l_as.is_true_keyword.out
+			set_target (l_as.is_true_keyword.out)
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
@@ -127,39 +127,52 @@ feature
 			is_command := False
 
 			safe_process (l_as.source)
-			assign_extend (ast_to_string (l_as.target), Void, last_target)
+--			assign_extend (ast_to_string (l_as.target), Void, last_target)
 
 			is_command := True
 		end
 
 	process_nested_as (l_as: NESTED_AS)
 		local
-			repl: STRING
-			clear: BOOLEAN
+			trg: STRING
 		do
-			if not is_first_target then
-				clear := True
-			end
-
 			safe_process (l_as.target)
 
-			if clear implies not is_command then
-				safe_process (l_as.message)
-			end
-
-			if clear and is_command then
-				clear_target
+			if attached {NESTED_AS} l_as.message as nested then
+				safe_process (nested)
+			elseif is_command then
+				assign_extend (Void, last_target, l_as.message)
 			end
 		end
 
-	assign_extend (var, target, call : STRING)
+--	process_nested_as (l_as: NESTED_AS)
+--		local
+--			repl: STRING
+--			clear: BOOLEAN
+--		do
+--			if not is_first_target then
+--				clear := True
+--			end
+
+--			safe_process (l_as.target)
+
+--			if clear implies not is_command then
+--				safe_process (l_as.message)
+--			end
+
+--			if clear and is_command then
+--				clear_target
+--			end
+--		end
+
+	assign_extend (var, target: STRING; call: AST_EIFFEL)
 		local
-			list: LIST [TUPLE [STRING, STRING, STRING]]
+			list: LIST [TUPLE [STRING, STRING, AST_EIFFEL]]
 		do
 			list := anno_replaces [wrap (working_ast)]
 
 			if not attached list then
-				create {ARRAYED_LIST [TUPLE [STRING, STRING, STRING]]} list.make (20)
+				create {ARRAYED_LIST [TUPLE [STRING, STRING, AST_EIFFEL]]} list.make (20)
 				anno_replaces [wrap (working_ast)] := list
 			end
 

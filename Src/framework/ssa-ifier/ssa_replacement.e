@@ -5,14 +5,15 @@ note
 	revision: "$Revision$"
 
 class
-	SSA_REPLACE
+	SSA_REPLACEMENT
 
 create
 	make
 
 feature
 	make (a_type: TYPE_A;
-	      a_var, a_target, a_call: STRING
+	      a_var, a_target: STRING;
+	      a_call: AST_EIFFEL;
 	      a_req: REQUIRE_AS)
 		do
 			type := a_type
@@ -25,7 +26,7 @@ feature
 	type: TYPE_A
 	var: STRING
 	target: STRING
-	call: STRING
+	call: AST_EIFFEL
 	req: REQUIRE_AS
 
 end

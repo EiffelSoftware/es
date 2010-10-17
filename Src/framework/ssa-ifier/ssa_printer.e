@@ -10,159 +10,71 @@ class
 inherit
 	AST_ROUNDTRIP_PRINTER_VISITOR
 		redefine
-			process_nested_as,
-			process_access_feat_as,
-			process_access_id_as,
-			process_assign_as,
-
-			process_id_as
---			process_keyword_as,
---			process_symbol_as,
---			process_bool_as,
---			process_char_as,
---			process_typed_char_as,
---			process_result_as,
---			process_retry_as,
---			process_unique_as,
---			process_deferred_as,
---			process_void_as,
---			process_string_as,
---			process_verbatim_string_as,
---			process_current_as,
---			process_integer_as,
---			process_real_as,
---			process_break_as,
---			process_symbol_stub_as
+			process_feature_as
 		end
-
-	INTERNAL_COMPILER_STRING_EXPORTER
 
 	SHARED_SERVER
 
 create
-	make_with_replaces
+	make_with_feature
 
 feature
-	make_with_replaces (a_class: CLASS_AS; a_replaces: HASH_TABLE [LIST [SSA_REPLACE], AST_HASHWRAP])
+
+	class_: CLASS_C
+	name: STRING
+
+	make_with_feature (a_class: CLASS_C; a_name: STRING)
 		do
 			make_with_default_context
-			setup (a_class, match_list_server.item (a_class.class_id), True, True)
-			replaces := a_replaces
+
+			class_ := a_class
+			name := a_name
+
+			setup (class_.ast, match_list_server.item (a_class.class_id), True, True)
 		end
 
-feature
-	replaces: HASH_TABLE [LIST [SSA_REPLACE], AST_HASHWRAP]
+	process
+		do
+			safe_process (class_.ast)
+		end
 
-	replace_asts (l_as: AST_EIFFEL)
-		require
-			has_as: replaces.has (wrap (l_as))
+
+feature {NONE}
+
+	process_feature_as (l_as: FEATURE_AS)
+			-- Process only the selected feature.
 		local
-			list: LIST [SSA_REPLACE]
+			ssa_breaker: SSA_CHAIN_BREAKER
+			ssa_repl: SSA_REPLACEMENTS_CREATOR
+			ssa_typer: SSA_TYPER
+			ssa_printer: SSA_FEATURE_PRINTER
 		do
-			list := replaces [wrap (l_as)]
+			if l_as.feature_name.name_32.is_equal (name) then
+				create ssa_breaker.make
 
-			from list.start
-			until list.after
-			loop
-				replace_ast (list.item)
-				list.forth
-			end
-			put_raw_string ("%N")
-			last_index := l_as.last_token (match_list).index + 1
-		end
+--				io.put_string ("SSAifier running %N")
+				ssa_breaker.process (l_as)
+--				io.put_string (ssa_temps.replacements.count.out + " ast replacements %N")
+--				io.put_string (ssa_temps.lines.count.out + " line replacements %N")
 
-	replace_ast (rep: SSA_REPLACE)
-		do
-			put_raw_string ("%N")
-			insert_planning (rep)
-			put_raw_string ("%N")
-			insert_last_call (rep)
+				create ssa_repl.make (class_.ast, ssa_breaker.replacements, ssa_breaker.lines)
+				ssa_repl.process_replaces
 
-		end
 
-	insert_planning (rep: SSA_REPLACE)
-		do
-			put_raw_string ("PLANNING")
-			safe_process (rep.req)
-		end
+				create ssa_typer.make (class_, name)
+				ssa_typer.update_with_table (ssa_repl.anno_replaces)
+				ssa_typer.print_env
 
-	insert_last_call (rep: SSA_REPLACE)
-		do
-			if not attached {VOID_A} rep.type and
-			   attached rep.type and
-			   attached rep.var then
-				put_raw_string (rep.var)
-				put_raw_string (" := ")
-			end
 
-			if attached rep.target then
-				put_raw_string (rep.target + ".")
-			end
+				create ssa_printer.make_with_replaces (class_, ssa_typer.replaces, name, match_list, last_index)
 
-			put_raw_string (rep.call)
-		end
+				ssa_printer.process_ast_node (l_as)
+				context.add_string (ssa_printer.text)
 
-feature -- AST
-	process_assign_as (l_as: ASSIGN_AS)
-		do
-			if replaces.has (wrap (l_as)) then
-				replace_asts (l_as)
+				last_index := ssa_printer.last_index
 			else
 				Precursor (l_as)
 			end
-		end
-
-	process_id_as (l_as: ID_AS)
-		do
-			if replaces.has (wrap (l_as)) then
-				replace_asts (l_as)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_id_as (l_as: ACCESS_ID_AS)
-		do
-			if replaces.has (wrap (l_as)) then
-				replace_asts (l_as)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			if replaces.has (wrap (l_as)) then
-				replace_asts (l_as)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_nested_as (l_as: NESTED_AS)
-		do
-			if replaces.has (wrap (l_as)) then
-				replace_asts (l_as)
-				-- last_index := l_as.last_token (match_list).index
-			else
-				Precursor (l_as)
-			end
-		end
-
-feature
-	put_raw_string (a_str: STRING)
-		do
-			put_string (wrap_str (a_str))
-		end
-
-	wrap_str (a_str: STRING): SSA_LEAF_STUB
-		do
-			create Result.make (a_str)
-		end
-
-	wrap (a_ast: AST_EIFFEL): AST_HASHWRAP
-		do
-			create Result.make (a_ast)
 		end
 
 end

@@ -1,14 +1,14 @@
 note
-	description: "Summary description for {SSA_TEMPS_VISITOR}."
+	description: "Constructs an association of AST nodes to a temporary variable name."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SSA_TEMPS_VISITOR
+	SSA_CHAIN_BREAKER
 
 inherit
-	AST_ITERATOR -- AST_NULL_VISITOR
+	AST_ITERATOR
 		redefine
 			process_nested_as,
 			process_access_feat_as,
@@ -26,6 +26,11 @@ feature
 			create replacements.make (20)
 			create lines.make (10)
 			first_nested := True
+		end
+
+	process (l_as: FEATURE_AS)
+		do
+			process_feature_as (l_as)
 		end
 
 	replacements: HASH_TABLE [STRING, AST_HASHWRAP]
@@ -46,13 +51,6 @@ feature
 				replacements.forth
 			end
 		end
-
-
-	process (l_as: CLASS_AS)
-		do
-			process_class_as (l_as)
-		end
-
 
 feature {NONE} -- Private attributes
 
@@ -88,7 +86,6 @@ feature {NONE} -- Internal traversal of the AST
 
 	process_id_as (l_as: ID_AS)
 		do
---			io.put_string (l_as.name_8 + "%N")
 			if in_feature_body then
 				store_and_incr (l_as)
 			end

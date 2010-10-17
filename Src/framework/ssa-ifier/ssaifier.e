@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {PLAN_ANNOTATOR}."
+	description: "Top-level annotation of a class' feature."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,47 +12,25 @@ create
 feature
 	class_c: CLASS_C
 
-	make (a_class: CLASS_C)
+	make (a_class: CLASS_C; a_name: STRING)
+			-- Process the feature `a_name' from the class `a_class'.
 		local
-			ssa_temps: SSA_TEMPS_VISITOR
-			ssa_temps_printer: SSA_TEMPS_PRINTER
-			ssa_typer: SSA_TYPER
-			c2d: CLASS_TO_DOMAIN
 			ssa_printer: SSA_PRINTER
 			p: PRINTER
 		do
 			class_c := a_class
-
---			create ssa_temps.make
---			io.put_string ("SSAifier running %N")
-
-
---			ssa_temps.process (class_c.ast)
-
---			io.put_string (ssa_temps.replacements.count.out + " ast replacements %N")
---			io.put_string (ssa_temps.lines.count.out + " line replacements %N")
-
---			create ssa_temps_printer.make (class_c.ast, ssa_temps.replacements, ssa_temps.lines)
---			ssa_temps_printer.process_replaces
-
-
---			create ssa_typer.make (class_c, "foo")
---			ssa_typer.update_with_table (ssa_temps_printer.anno_replaces)
---			ssa_typer.print_env
-
-
---			create ssa_printer.make_with_replaces (class_c.ast, ssa_typer.replaces)
---			ssa_printer.process_ast_node (class_c.ast)
-
---			print (ssa_printer.text)
+			create ssa_printer.make_with_feature (a_class, a_name)
+			ssa_printer.process
+			print ("Expanded Class:%N")
+			print (ssa_printer.text)
 		end
 
-	write_default_plan
+	write_default_instrumented
 		do
-			write_plan_file (create {FILE_NAME}.make_from_string (class_c.name + ".plan.lisp"))
+			write_instrumented_file (create {FILE_NAME}.make_from_string (class_c.name + ".plan.lisp"))
 		end
 
-	write_plan_file (file_name: FILE_NAME)
+	write_instrumented_file (file_name: FILE_NAME)
 		local
 			file: PLAIN_TEXT_FILE
 			c2d: CLASS_TO_DOMAIN

@@ -6433,8 +6433,30 @@ feature -- Added for Plan Generation
 					if attached classes[i] then
 					    if classes [i].name.as_lower.is_equal (workbench.planned_class_name.as_lower) then
 					    	done := True
-							create ssaifier.make (classes [i])
-							ssaifier.write_default_plan
+							create ssaifier.make (classes [i], "foo")
+							-- ssaifier.write_default_plan
+					    end
+					end
+					i := i + 1
+				end
+			end
+		end
+
+	plan_generate_domain
+		local
+			domifier: DOMAINIFIER
+			i: INTEGER
+			done: BOOLEAN
+		do
+			if attached workbench.planned_class_name then
+				from i := 1
+				until i > classes.count or done
+				loop
+					if attached classes[i] then
+					    if classes [i].name.as_lower.is_equal (workbench.planned_class_name.as_lower) then
+					    	done := True
+							create domifier.make (classes [i])
+							domifier.write_default_plan
 					    end
 					end
 					i := i + 1
