@@ -114,9 +114,8 @@ feature{NONE} -- Implementation
 			l_file_name.set_subdirectory (tc_class_under_test)
 			l_file_name.set_subdirectory (tc_feature_under_test + "__" + tc_directory_postfix)
 
-			-- Make sure the length of file name does not exceed 255 characters.
-			l_length := 255 - l_file_name.string.count - 3
-			truncate_class_name (l_length)
+			-- Make sure the length of file name does not exceed 255 characters.			
+			truncate_class_name (253)
 			l_file_name.set_file_name (tc_class_name)
 			l_file_name.add_extension (tc_name_extension)
 
@@ -146,6 +145,11 @@ feature{NONE} -- Class content
 				l_name.copy (tc_class_name_template)
 				l_name.replace_substring_all (ph_class_under_test, tc_class_under_test)
 				l_name.replace_substring_all (ph_feature_under_test, tc_feature_under_test)
+				if tc_is_query then
+					l_name.replace_substring_all (ph_feature_type, ph_query)
+				else
+					l_name.replace_substring_all (ph_feature_type, ph_command)
+				end
 				l_name.replace_substring_all (ph_success_status, tc_success_status)
 				l_name.replace_substring_all (ph_exception_code, tc_exception_code.out)
 				l_name.replace_substring_all (ph_breakpoint_index, tc_breakpoint_index.out)
@@ -157,7 +161,6 @@ feature{NONE} -- Class content
 				l_name.replace_substring_all (ph_uuid, tc_uuid)
 				l_name.replace_substring_all (ph_pre_object_info, tc_pre_object_info)
 				l_name.replace_substring_all (ph_post_object_info, tc_post_object_info)
-
 				tc_class_name_cache := l_name
 			end
 			Result := tc_class_name_cache

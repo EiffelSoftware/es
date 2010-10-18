@@ -356,12 +356,15 @@ feature{NONE} -- Constants
 	ph_var_declaration_in_one_line: STRING = "$(VAR_DECLARATION_IN_ONE_LINE)"
 	ph_pre_state: STRING = "$(PRE_STATE)"
 	ph_post_state: STRING = "$(POST_STATE)"
+	ph_feature_type: STRING = "$(FEATURE_TYPE)"
+	ph_command: STRING = "CMD"
+	ph_query: STRING = "QRY"
 
 	tc_name_extension: STRING = "e"
 	tc_feature_name: STRING = "generated_test_1"
 	tc_generation_type: STRING = "AutoTest test case extracted from serialization"
 
-	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
+	tc_class_name_template: STRING = "TC__$(CLASS_UNDER_TEST)__$(FEATURE_UNDER_TEST)__$(FEATURE_TYPE)__$(STATUS)__c$(EXCEPTION_CODE)__b$(BREAKPOINT_INDEX)__REC_$(EXCEPTION_RECIPIENT_CLASS)__$(EXCEPTION_RECIPIENT)__TAG_$(ASSERTION_TAG)__$(HASH_CODE)__$(UUID)"
 	tc_var_initialization_template: STRING = "$(VAR) ?= pre_variable_table[$(INDEX)]%N"
 	tc_operand_table_initializer_template: STRING = "%T%T%T%Ttci_operand_table_cache.put ($(VAR_INDEX),$(OPERAND_INDEX))"
 
