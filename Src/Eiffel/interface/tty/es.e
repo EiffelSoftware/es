@@ -1287,6 +1287,8 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_CONTRACT_INFERENCE} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-boogie") then
+				create {EWB_BOOGIE_VERIFICATION} command
 			elseif option.is_equal ("-dead_plan") then
 				workbench.set_planned_class_name (argument (current_option + 1))
 
