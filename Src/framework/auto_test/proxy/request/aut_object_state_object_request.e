@@ -71,7 +71,7 @@ feature -- Access
 			end
 
 				-- Compile text into byte code.
-			l_class ?= interpreter_root_class
+			l_class ?= interpreter_class
 			Result :=
 				[feature_byte_code_with_text (l_class, feature_for_byte_code_injection, once "feature " + l_text, True).byte_code, Void]
 		end
