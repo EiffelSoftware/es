@@ -795,7 +795,7 @@ feature -- Object state checking
 					if l_bcode.count = 0 then
 						report_error (byte_code_length_error)
 					else
-						if l_request.post_state_byte_code /= Void and then is_test_case_serialization_enabled then
+						if l_request.post_state_byte_code /= Void and then is_test_case_serialization_enabled and then is_post_state_serialized then
 							post_state_retrieveal_byte_code := l_request.post_state_byte_code
 						else
 							post_state_retrieveal_byte_code := Void

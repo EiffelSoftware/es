@@ -238,13 +238,15 @@ feature -- Basic operations
 			if is_test_case_setup then
 				exception := interpreter.error_buffer.twin
 				if exception.is_empty then
-					if interpreter.post_state_retrieveal_byte_code /= Void then
+					if is_post_state_serialized and then interpreter.post_state_retrieveal_byte_code /= Void then
 						interpreter.retrieve_post_object_state
 						post_state_object_summary := Void
 						l_data := abstract_object_state (False)
 						if l_data /= Void then
 							post_state_object_summary := l_data.summary
 						end
+					else
+						post_state_object_summary := Void
 					end
 				else
 					post_state_object_summary := Void
