@@ -3178,6 +3178,9 @@ Src/tools/repository_tool/ctr.ico -text
 Src/tools/repository_tool/ctr.rc -text
 Src/tools/repository_tool/data/catalog.ini -text
 Src/tools/repository_tool/lib/README.TXT -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.inc -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.info -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.module -text
 Src/tools/resave_cfg/resave_cfg.lic -text
 Src/tools/resource_bench/RB_documentation/docrb/ANALYZ.gif svneol=native#unset
 Src/tools/resource_bench/RB_documentation/docrb/BROWSE.gif svneol=native#unset
