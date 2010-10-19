@@ -33,7 +33,7 @@ feature
 			proc := p_fact.process_launcher ( "/home/scott/local/bin/tlplan"
 			                                , create {ARRAYED_LIST [STRING]}.make_from_array (<<goal_file_name>>)
 			                                , dir)
-			print (proc.command_line + "%N")
+--			print (proc.command_line + "%N")
 			proc.redirect_error_to_agent (agent error_process)
 			proc.redirect_output_to_agent (agent output_process) -- update_finished_status)
 			proc.enable_terminal_control
