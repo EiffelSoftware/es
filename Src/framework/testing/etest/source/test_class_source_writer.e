@@ -101,7 +101,7 @@ feature {NONE} -- Output
 					stream.indent
 					stream.put_line (l_ancs.item (i))
 					if l_ancs.item (i).is_equal ("ITP_INTERPRETER") then
-						stream.put_line ("redefine initialize_predicates end")
+						stream.put_line ("redefine initialize_predicates, execute_byte_code end")
 					end
 					stream.dedent
 					stream.put_line ("")

@@ -42,7 +42,7 @@ feature{NONE} -- Initialization
 		ensure
 			configuration_set: configuration = a_config
 		end
-		
+
 feature -- Access
 
 	class_name: STRING = "ITP_INTERPRETER_ROOT"
@@ -79,6 +79,7 @@ feature -- Basic operations
 			create stream.make (a_file)
 			put_indexing
 			put_class_header
+			put_execute_byte_code
 
 			if not a_system.root_creators.is_empty then
 				l_root := a_system.root_creators.first
@@ -101,6 +102,30 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
+	put_execute_byte_code
+			-- Put a dummy `execute_byte_code' routine.
+		require
+			stream_valid: is_writing
+			root_group_attached: root_group /= Void
+			root_class_attached: root_class /= Void
+			root_feature_attached: root_feature /= Void
+		local
+			l_type: STRING
+		do
+			stream.indent
+			stream.put_line ("execute_byte_code")
+			stream.indent
+			stream.put_line ("local")
+			stream.indent
+			stream.put_line ("v_1: ANY")
+			stream.dedent
+			stream.put_line ("do")
+			stream.dedent
+			stream.put_line ("end")
+			stream.dedent
+			stream.put_line ("")
+		end
 
 	put_anchor_routine (a_types: DS_LINEAR [STRING])
 			--
