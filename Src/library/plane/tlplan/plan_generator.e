@@ -34,8 +34,8 @@ feature
 			                                , create {ARRAYED_LIST [STRING]}.make_from_array (<<goal_file_name>>)
 			                                , dir)
 			print (proc.command_line + "%N")
-			proc.redirect_error_to_agent (agent io.put_string)
-			proc.redirect_output_to_agent (agent io.put_string)
+			proc.redirect_error_to_agent (agent error_process)
+			proc.redirect_output_to_agent (agent output_process) -- update_finished_status)
 			proc.enable_terminal_control
 			proc.set_buffer_size (512)
 			proc.enable_launch_in_new_process_group
@@ -43,6 +43,26 @@ feature
 			proc.wait_for_exit
 
 			create {ARRAYED_LIST[STRING]}Result.make (0)
+		end
+
+	plan_found: BOOLEAN
+
+
+	error_process (str: STRING)
+		do
+--			print ("planner error: <<")
+--			print (str)
+--			print (">>")
+			if str.has_substring ("Elapsed CPU time") then
+				plan_found := str.has_substring ("Planning completed.  Plan found.")
+			end
+		end
+
+	output_process (str: STRING)
+		do
+--			io.put_string ("planner output: ")
+--			io.put_string (str)
+
 		end
 
 	goal_file_name: STRING
