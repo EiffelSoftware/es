@@ -509,17 +509,18 @@ feature{NONE} -- Class content
 				l_operands_table.forth
 			end
 			tc_code_cache := l_test_call
-			Result.append (once "%N%T%T%Tsetup_before_test%N")
 			Result.append (once "%T%T%Tload_variables%N%N")
 
 			Result.append (once "%T%T%T%T-- Retrieve object information in pre-state.%N")
-			Result.append (once "%T%T%Tif is_pre_state_information_needed then%N")
+			Result.append (once "%T%T%Tif is_pre_state_information_enabled then%N")
 			Result.append (once "%T%T%T%Tfinish_pre_state_calculation%N")
-			Result.append (once "%T%T%T%Twipe_out_variables%N")
+			Result.append (once "%T%T%T%Twipe_out_caches%N")
 			Result.append (once "%T%T%T%Tload_variables%N")
 			Result.append (once "%T%T%Tend%N")
 
-			Result.append (once "%T%T%T%T-- Execute feature under test.%N%T%T%T")
+			Result.append (once "%T%T%Tsetup_before_test%N%N")
+
+			Result.append (once "%T%T%T%T--Execute the feature under test.%N%T%T%T")
 
 			Result.append (l_test_call)
 			Result.append ("%N%N%T%T%T%T-- Retrieve object information in post-state.%N")
