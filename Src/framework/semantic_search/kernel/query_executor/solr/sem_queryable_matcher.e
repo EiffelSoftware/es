@@ -103,10 +103,11 @@ feature{NONE} -- Implementation
 			l_open_slots: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]
 				-- `l_open_slots' is a list of variable-object bindings that `a_criterion' can
 				-- contribute to the already established bindings in `a_matched_variables'. `var_id' is the index of a variable in the query side,			
-			l_steps, l_max_partial_steps, l_solution_steps: LINKED_LIST [TUPLE [matches: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]; criterion: SEM_MATCHING_CRITERION]]
+			l_steps, l_max_partial_steps, l_solution_steps: LINKED_LIST [TUPLE [matches: LINKED_LIST [TUPLE [var_id: INTEGER; obj_id: INTEGER]]; criterion: SEM_MATCHING_CRITERION; candidate_criterion: SEM_MATCHING_CRITERION]]
 				-- All variable-object mapping steps that are performed so far, used for back-tracking.
 				-- `var_id' is the index of a variable in the query side, `obj_id' is the index of an object in the result document side.
 				-- `criterion' is the matched crierion from the query side.
+				-- `candidate_criterion' is the criterion from the document side.
 				-- `l_mat_partial_steps' are the longest matching that we have seen so far.			
 			l_exhausted: BOOLEAN -- Have we already exhausted all matching possibilities?					
 			l_unmentioned_unmatched_variables: DS_HASH_SET [INTEGER] -- Set of indexes of variables (from the query side) that are both unmentioned in searched criteria and unmatched so far.
@@ -184,7 +185,7 @@ feature{NONE} -- Implementation
 								-- We made progress in the matching, can now move to the next level.
 								-- First, we setup the newly fixed variables.
 							l_open_slots := l_var_fixture.open_operands
-							l_steps.extend ([l_open_slots, l_searched_criterion])
+							l_steps.extend ([l_open_slots, l_searched_criterion, l_cur_criterion])
 								-- Update `l_max_partial_steps' when we improves in matching more criteria.
 							if l_steps.count > l_max_partial_steps.count then
 								l_max_partial_steps.wipe_out
@@ -256,7 +257,7 @@ feature{NONE} -- Implementation
 
 			if l_solution_steps /= Void then
 				across l_solution_steps as l_sol_steps loop
-					l_result.matched_criteria.extend (l_sol_steps.item.criterion)
+					l_result.matched_criteria.force_last (l_sol_steps.item.candidate_criterion, l_sol_steps.item.criterion)
 				end
 			end
 			last_matches.extend (l_result)

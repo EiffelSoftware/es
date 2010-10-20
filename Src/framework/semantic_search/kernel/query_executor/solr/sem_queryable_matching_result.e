@@ -11,6 +11,8 @@ class
 inherit
 	IR_TERM_OCCURRENCE
 
+	SEM_SHARED_EQUALITY_TESTER
+
 create
 	make
 
@@ -24,7 +26,8 @@ feature{NONE} -- Initialization
 			query_data := a_query_data
 
 			create matched_variables.make (5)
-			create matched_criteria.make
+			create matched_criteria.make (5)
+			matched_criteria.set_key_equality_tester (sem_matching_criterion_equality_tester)
 			is_full_solution := a_full_solution
 		end
 
@@ -50,8 +53,9 @@ feature -- Access
 			-- Key is index of variables from the query side,
 			-- value is index of objects from the document side.
 
-	matched_criteria: LINKED_LIST [SEM_MATCHING_CRITERION]
-			-- List of criteria (from the query side) that are matched
+	matched_criteria: DS_HASH_TABLE [SEM_MATCHING_CRITERION, SEM_MATCHING_CRITERION]
+			-- Table of criteria (from the query side) that are matched
+			-- Key is the matched criterion (from the query side), value is the candidate criterion in the document
 
 	content: detachable STRING
 			-- Content of the matched document
@@ -63,6 +67,7 @@ feature -- Access
 			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
 			l_cri_cursor: DS_HASH_SET_CURSOR [SEM_MATCHING_CRITERION]
 			l_str: STRING
+			l_ccursor: DS_HASH_TABLE_CURSOR [SEM_MATCHING_CRITERION, SEM_MATCHING_CRITERION]
 		do
 			create Result.make (1024)
 
@@ -94,12 +99,21 @@ feature -- Access
 
 				-- Append matched criteria information.
 			Result.append (once "Matched criteria: %N")
-			across matched_criteria as l_criteria loop
-				if attached {SEM_TERM} l_criteria.item.term as l_term then
+			from
+				l_ccursor := matched_criteria.new_cursor
+				l_ccursor.start
+			until
+				l_ccursor.after
+			loop
+				if attached {SEM_TERM} l_ccursor.key.term as l_term then
 					Result.append_character ('%T')
 					Result.append (l_term.text)
+					Result.append (once " (")
+					Result.append (l_ccursor.item.value.text)
+					Result.append_character (')')
 					Result.append_character ('%N')
 				end
+				l_ccursor.forth
 			end
 
 				-- Append unmatched variable information.			
@@ -144,7 +158,7 @@ feature -- Access
 				l_cri_cursor.forth
 			end
 			if not l_str.is_empty then
-				Result.append (once "%NUnmatched properties: ")
+				Result.append (once "%NUnmatched properties:%N")
 				Result.append (l_str)
 			end
 			Result.append (once "Full solution: ")
