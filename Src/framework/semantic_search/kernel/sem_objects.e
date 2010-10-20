@@ -75,7 +75,7 @@ feature{NONE} -- Initialization
 				create objects_internal.make (l_obj_table.count // 2)
 				objects_internal.set_key_equality_tester (expression_equality_tester)
 				l_objects := objects_internal
-				l_name_prefix := variable_name_prefix
+				l_name_prefix := {ITP_SHARED_CONSTANTS}.variable_name_prefix
 				l_obj_table.start
 			until
 				l_obj_table.after

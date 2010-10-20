@@ -14,6 +14,8 @@ inherit
 
 	IR_CONSTANTS
 
+	EPA_TYPE_UTILITY
+
 feature -- Queryable type names
 
 	transition_field_value: STRING = "transition"

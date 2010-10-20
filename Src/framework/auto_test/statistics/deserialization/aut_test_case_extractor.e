@@ -400,9 +400,8 @@ feature{NONE} -- Class content
 
 				-- Declare a local variable if it is no operand.
 				if not l_operands_table.has (l_var) then
-					l_type_name := l_type.name.twin
-					l_type_name.replace_substring_all (once "?", once "")
-					l_line := "%T" + l_var.name (l_prefix) + ": " + l_type_name + "%N"
+					l_type_name := output_type_name (l_type.name)
+					l_line := once "%T%T%T" + l_var.name (l_prefix) + ": " + l_type_name + once "%N"
 					l_variables_declaration.append (l_line)
 				end
 
@@ -431,9 +430,8 @@ feature{NONE} -- Class content
 					l_new_index := l_reindexing.item_for_iteration.first
 
 					l_op_name := l_data.variable_name_prefix.twin + l_new_index.out
-					l_type_name := l_type.name.twin
-					l_type_name.replace_substring_all (once "?", once "")
-					l_line := "%T%T%T" + l_op_name + ": " + l_type_name + "%N"
+					l_type_name := output_type_name (l_type.name.twin)
+					l_line := once "%T%T%T" + l_op_name + once ": " + l_type_name + once "%N"
 					l_operands_declaration.append (l_line)
 
 					l_reindexing.forth
@@ -509,14 +507,10 @@ feature{NONE} -- Class content
 				l_operands_table.forth
 			end
 			tc_code_cache := l_test_call
-			Result.append (once "%T%T%Tload_variables%N%N")
-
 			Result.append (once "%T%T%T%T-- Retrieve object information in pre-state.%N")
 			Result.append (once "%T%T%Tif is_pre_state_information_enabled then%N")
 			Result.append (once "%T%T%T%Tfinish_pre_state_calculation%N")
-			Result.append (once "%T%T%T%Twipe_out_caches%N")
-			Result.append (once "%T%T%T%Tload_variables%N")
-			Result.append (once "%T%T%Tend%N")
+			Result.append (once "%T%T%Tend%N%N")
 
 			Result.append (once "%T%T%Tsetup_before_test%N%N")
 
@@ -533,8 +527,8 @@ feature{NONE} -- Class content
 			Result.append (once "%N%T%T%Tcleanup_after_test%N")
 		end
 
-	tc_load_variables_body: STRING
-			-- Text for the body of feature `load_variables'
+	tc_var_initialization: STRING
+			-- Text for the body of the feature `load_variables'.
 		local
 			l_data: like current_data
 			l_variables_table, l_operands_table: HASH_TABLE [TYPE_A, ITP_VARIABLE]

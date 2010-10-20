@@ -153,11 +153,6 @@ feature -- Basic operation
 			post_variable_table_cache := Void
 		end
 
-	load_variables
-			-- Load variables from serialization data into variable attributes.
-		deferred
-		end
-
 feature -- Status set
 
 	set_execution_mode (a_mode: INTEGER)

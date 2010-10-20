@@ -85,6 +85,15 @@ feature -- Access
 		do
 			Result := type_a_from_string (a_name, workbench.system.root_type.associated_class)
 		end
+		
+	output_type_name (a_type: STRING): STRING
+			-- Formatted type name from `a_type'
+		do
+			create Result.make_from_string (a_type)
+			Result.replace_substring_all (once "?", once "")
+			Result.replace_substring_all (once "detachable ", once "")
+			Result.replace_substring_all (once "separate ", once "")
+		end
 
 feature{NONE} -- Implementation
 

@@ -77,6 +77,9 @@ feature -- Strings
 	query_value_separator: STRING = " == "
 			-- String to separate query name and its value
 
+	variable_name_prefix: STRING = "v_"
+			-- Prefix for variables
+
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

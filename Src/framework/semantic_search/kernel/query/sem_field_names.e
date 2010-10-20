@@ -111,15 +111,6 @@ feature -- Access
 	default_variable_prefix: STRING = "v_"
 			-- Default prefix for variables
 
-	output_type_name (a_type: STRING): STRING
-			-- Formatted type name from `a_type'
-		do
-			create Result.make_from_string (a_type)
-			Result.replace_substring_all (once "?", once "")
-			Result.replace_substring_all (once "detachable ", once "")
-			Result.replace_substring_all (once "separate ", once "")
-		end
-
 feature -- Access
 
 	begin_field_value: STRING = "begin"
