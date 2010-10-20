@@ -104,6 +104,9 @@ feature -- Status report
 	is_post_state_information_enabled: BOOLEAN
 			-- Is information about objects in post-state enabled?
 
+	is_pre_state_information_enabled: BOOLEAN
+			-- Is information about objects in pre-state enabled?
+
 feature -- Basic operation
 
 	setup_before_test
@@ -116,9 +119,22 @@ feature -- Basic operation
 		do
 		end
 
-	finish_post_state_calculation
-			-- Finish post state calculation
+	finish_pre_state_calculation
+			-- Finish pre-state calculation
 		do
+		end
+
+	finish_post_state_calculation
+			-- Finish post-state calculation
+		do
+		end
+
+	set_is_pre_state_information_enabled (b: BOOLEAN)
+			-- Set `is_pre_state_information_enabled' with `b'.
+		do
+			is_pre_state_information_enabled := b
+		ensure
+			is_pre_state_information_enabled_set: is_pre_state_information_enabled = b
 		end
 
 	set_is_post_state_information_enabled (b: BOOLEAN)
@@ -127,6 +143,19 @@ feature -- Basic operation
 			is_post_state_information_enabled := b
 		ensure
 			is_post_state_information_enabled_set: is_post_state_information_enabled = b
+		end
+
+	wipe_out_caches
+			-- Wipe out `pre_variable_table_cache' and `post_variable_table_cache'.
+			-- The next time when the variables are accessed, a new deserialization is performed.
+		do
+			pre_variable_table_cache := Void
+			post_variable_table_cache := Void
+		end
+
+	load_variables
+			-- Load variables from serialization data into variable attributes.
+		deferred
 		end
 
 feature -- Status set
