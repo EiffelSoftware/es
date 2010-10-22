@@ -12,7 +12,8 @@ inherit
 		export{ANY}
 			break_point_slot_count,
 			context,
-			check_locals
+			check_locals,
+			error_handler
 		end
 
 end

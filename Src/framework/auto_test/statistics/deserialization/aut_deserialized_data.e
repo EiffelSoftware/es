@@ -41,6 +41,12 @@ feature -- Access string representation
 	pre_serialization: ARRAYED_LIST[NATURAL_8]
 --	post_serialization: ARRAYED_LIST[NATURAL_8]
 
+	file_path: detachable STRING
+			-- Full path of the serialization file
+
+	line_number: INTEGER
+			-- Line number of the record
+
 feature -- Access
 
 	trans_hashcode: STRING
@@ -61,6 +67,24 @@ feature -- Access
 				trans_hashcode_cache := l_string.substring (l_start + 1, l_string.count)
 			end
 			Result := trans_hashcode_cache
+		end
+
+feature -- Setting
+
+	set_file_path (a_path: like file_path)
+			-- Set `file_path' with `a_path'.
+		do
+			if a_path /= Void then
+				file_path := a_path.twin
+			else
+				file_path := Void
+			end
+		end
+
+	set_line_number (a_line: INTEGER)
+			-- Set `line_number' with `a_line'.
+		do
+			line_number := a_line
 		end
 
 feature{NONE} -- Implementation

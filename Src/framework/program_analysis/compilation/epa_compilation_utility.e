@@ -95,16 +95,18 @@ feature -- Basic operations
 				l_ast_context.set_written_class (a_written_class)
 				l_ast_context.set_is_ignoring_export (a_ignore_export)
 				l_feature_checker := epa_feature_checker
+				l_feature_checker.error_handler.wipe_out
 				l_feature_checker.init (l_ast_context)
 				l_feature_checker.type_check_and_code (a_feature, True, False)
 
 				if attached {ROUTINE_AS} a_feature.e_feature.ast.body.content as l_routine then
+					l_feature_checker.context.clear_local_context
 					l_feature_checker.check_locals (l_routine)
 					l_locals := l_feature_checker.context.locals.twin
 				else
 					create l_locals.make (0)
 				end
-				if attached l_feature_checker.byte_code as l_byte_code then
+				if l_feature_checker.error_handler.error_list.count = 0 and then attached l_feature_checker.byte_code as l_byte_code then
 					l_last_bpslot := l_feature_checker.break_point_slot_count
 					l_context := context
 					l_byte_array := byte_array

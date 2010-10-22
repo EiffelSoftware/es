@@ -142,7 +142,7 @@ feature -- Operation
 										l_dir.lastentry = Void
 									loop
 										l_entry_name := l_dir.lastentry
-										if l_entry_name /~ "." and then l_entry_name /~ ".." then
+										if l_entry_name /~ once "." and then l_entry_name /~ once ".." then
 											l_file_names.force (file_system.pathname (l_name, l_entry_name))
 										end
 										l_dir.readentry
@@ -215,6 +215,8 @@ feature{NONE} -- Implementation
 			if not l_retried then
 				a_file.open_read
 				if a_file.is_open_read then
+					last_file_path := a_file.name.twin
+					line_number := 0
 					from
 						a_file.start
 					until
@@ -301,6 +303,12 @@ feature{NONE} -- Implementation
 	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
 
 	last_tag: detachable STRING
+
+	last_file_path: detachable STRING
+			-- Full path of the last processed file
+
+	line_number: INTEGER
+			-- Current line number
 
 feature{NONE} -- Auxiliary routines
 
@@ -467,13 +475,13 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_retried: BOOLEAN
 		do
---			Result := True
---			fixme ("I have to comment out the following block because it is too often that we have segmentation fault by doing deserialization. If the code is not commented, the deserialization will never succeeded. 21.5.2010 Jasonw")
-			if not l_retried then
-	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
-					Result := True
-				end
-			end
+			Result := True
+			fixme ("I have to comment out the following block because it is too often that we have segmentation fault by doing deserialization. If the code is not commented, the deserialization will never succeeded. 21.5.2010 Jasonw")
+--			if not l_retried then
+--	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
+--					Result := True
+--				end
+--			end
 		rescue
 			l_retried := True
 			retry
@@ -521,6 +529,8 @@ feature{NONE} -- Auxiliary routines
 						last_post_state,
 						last_pre_serialization) --,
 --						last_post_serialization)
+				l_serialization.set_file_path (last_file_path)
+				l_serialization.set_line_number (line_number)
 				report_serialization_data (l_serialization)
 			end
 			is_inside_serialization := False
@@ -548,7 +558,7 @@ feature{NONE} -- Auxiliary routines
 			l_line: STRING
 		do
 			next_line := once "";
-
+			line_number := line_number + 1
 			from
 			until
 				a_stream.end_of_file or not next_line.is_empty

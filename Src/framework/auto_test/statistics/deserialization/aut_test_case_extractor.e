@@ -28,6 +28,8 @@ inherit
 
 	ERL_G_TYPE_ROUTINES
 
+	EPA_COMPILATION_UTILITY
+
 create
 	default_create
 
@@ -86,9 +88,57 @@ feature{NONE} -- Implementation
 		do
 			reset_cache
 			current_data := a_data
-			write_to (test_case_dir)
-
+			if is_test_case_valid then
+				write_to (test_case_dir)
+			end
 			current_data := Void
+		end
+
+	is_test_case_valid: BOOLEAN
+			-- Is test case in `current_data' valid?
+			-- A test case is valid if it compiles.
+		local
+			l_text: STRING
+			l_tc_body: STRING
+			l_class: EIFFEL_CLASS_C
+			l_feature: FEATURE_I
+			l_data: like feature_byte_code_with_text
+			l_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+		do
+			l_tc_body := tc_body
+			create l_text.make (1024)
+			l_text.append (once "make local %N")
+			l_text.append (tc_all_variable_declaration)
+			l_text.append (once "%Ndo %N")
+			l_text.append (tc_code_cache)
+			l_text.append (once "%Nend%N")
+			l_class ?= workbench.system.root_type.associated_class
+			l_feature := l_class.feature_named (workbench.system.root_creation_name)
+				-- Melt the code to see if it is valid.
+			l_data := feature_byte_code_with_text (l_class, l_feature, once "feature " + l_text, False)
+			Result := not l_data.byte_code.is_empty
+			if not Result then
+				prepare_directory (test_case_dir)
+				create l_file_name.make_from_string (test_case_dir)
+				l_file_name.set_file_name ("error.log")
+				create l_file.make_open_read_append (l_file_name.out)
+				l_file.put_string ("---------------------------------------------------%N")
+				if current_data.file_path /= Void then
+					l_file.put_string (once "File: ")
+					l_file.put_string (current_data.file_path)
+					l_file.put_string (once " (line ")
+					l_file.put_integer (current_data.line_number)
+					l_file.put_character (')')
+				end
+				l_file.put_character ('%N')
+
+				l_file.put_string (tc_all_variable_declaration)
+				l_file.put_character ('%N')
+				l_file.put_string (tc_code_cache)
+				l_file.put_character ('%N')
+				l_file.close
+			end
 		end
 
 	prepare_directory (a_dir_name: STRING)
@@ -465,6 +515,9 @@ feature{NONE} -- Class content
 
 			-- Renaming operands in the test call.
 			l_test_call := l_data.code_str.twin
+			if l_data.is_feature_creation then
+				l_test_call := output_type_name (l_test_call)
+			end
 			l_nested_table := operand_reindexing_table
 			from
 				l_operands_table := l_data.operand_type_table
