@@ -57,6 +57,18 @@ feature{NONE} -- Implementation
 			append_field (create {IR_FIELD}.make_as_string (a_name, a_value, default_boost_value))
 		end
 
+	append_boolean_field (a_name: STRING; a_value: BOOLEAN)
+			-- Append a boolean field with `a_name' and `a_value' and default boost value.
+		do
+			append_field (create {IR_FIELD}.make_as_boolean (a_name, a_value, default_boost_value))
+		end
+
+	append_integer_field (a_name: STRING; a_value: INTEGER)
+			-- Append an integer field with `a_name' and `a_value' and default boost value.
+		do
+			append_field (create {IR_FIELD}.make_as_integer (a_name, a_value, default_boost_value))
+		end
+
 	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN; a_static_type: BOOLEAN)
 			-- Append operands in `queryable' to `medium'.
 			-- `a_print_position' indicates if position of variables are to be printed.

@@ -63,10 +63,24 @@ feature{NONE} -- Implementation
 			append_class_and_feature
 			append_uuid
 			append_library
+			append_feature_type
 			append_variables (queryable.inputs.union (queryable.outputs), dynamic_variables_field, True, False, False)
 			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False, True)
 			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True, False)
 			append_content
+		end
+
+	append_feature_type
+			-- Append feature type fields into `medium'.
+		do
+			if queryable.feature_.has_return_value then
+				append_string_field (feature_type_field, feature_type_query)
+			else
+				append_string_field (feature_type_field, feature_type_command)
+			end
+			append_boolean_field (is_creation_field, queryable.is_creation)
+			append_integer_field (operand_count_field, queryable.feature_.argument_count + 1)
+			append_integer_field (argument_count_field, queryable.feature_.argument_count)
 		end
 
 	append_library

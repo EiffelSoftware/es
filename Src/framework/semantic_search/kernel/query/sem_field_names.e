@@ -98,6 +98,18 @@ feature -- Access
 
 	any_value: STRING = "[any_value]"
 
+	feature_type_field: STRING = "feature_type"
+
+	feature_type_command: STRING = "command"
+
+	feature_type_query: STRING = "query"
+
+	is_creation_field: STRING = "is_creation"
+
+	operand_count_field: STRING = "operand_count"
+
+	argument_count_field: STRING = "argument_count"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','
