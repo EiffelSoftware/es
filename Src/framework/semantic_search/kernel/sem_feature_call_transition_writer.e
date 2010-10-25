@@ -186,6 +186,11 @@ feature{NONE} -- Implementation
 			write_field_with_data (class_field, queryable.class_.name_in_upper, ir_string_value_type, default_boost_value)
 			write_field_with_data (feature_field, queryable.feature_.feature_name_32.as_lower , ir_string_value_type, default_boost_value)
 			write_field_with_data (uuid_field, queryable.uuid, ir_string_value_type, default_boost_value)
+			if queryable.is_passing then
+				write_field_with_data (test_case_status_field, test_case_status_passing, ir_string_value_type, default_boost_value)
+			else
+				write_field_with_data (test_case_status_field, test_case_status_failing, ir_string_value_type, default_boost_value)
+			end
 			write_library
 		end
 

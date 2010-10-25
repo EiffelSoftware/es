@@ -44,7 +44,7 @@ feature{NONE} -- Implementation
 						-- Store current transition into a file.
 					l_uuid := uuid_generator.generate_uuid
 					l_file_path := tranisition_file_path (l_tran, l_uuid)
-					write_transition_into_file (l_transitions.item, l_file_path, l_uuid)
+					write_transition_into_file (l_transitions.item, l_file_path, l_uuid, l_transitions.item.serialization_info)
 
 						-- Store post-state objects into a file.
 					if attached {CI_TEST_CASE_SERIALIZATION_INFO} l_transitions.item.serialization_info as l_serialization then
@@ -82,7 +82,7 @@ feature{NONE} -- Implementation
 			create Result
 		end
 
-	write_transition_into_file (a_transition_data: CI_TEST_CASE_TRANSITION_INFO; a_file_path: STRING; a_uuid: UUID)
+	write_transition_into_file (a_transition_data: CI_TEST_CASE_TRANSITION_INFO; a_file_path: STRING; a_uuid: UUID; a_serialization: detachable CI_TEST_CASE_SERIALIZATION_INFO)
 			-- Write transition into `a_file_path'.
 		local
 			l_transition_writer: SOLR_FEATURE_CALL_WRITER
@@ -96,6 +96,22 @@ feature{NONE} -- Implementation
 			create l_file.make_create_read_write (a_file_path)
 			create l_transition_writer.make_with_medium (l_file)
 			l_transition_writer.set_uuid (a_uuid)
+			if a_serialization /= Void then
+				l_transition_writer.set_pre_state_serialization (a_serialization.pre_serialization_as_string)
+				l_transition_writer.set_pre_state_object_info (a_serialization.pre_object_type_as_string)
+			end
+
+				-- Setup exception related data if Current test case is a failing one.
+			if not a_transition_data.test_case_info.is_passing then
+				l_transition_writer.set_recipient (a_transition_data.test_case_info.recipient)
+				l_transition_writer.set_recipient_class (a_transition_data.test_case_info.recipient_class)
+				l_transition_writer.set_exception_break_point_slot (a_transition_data.test_case_info.exception_break_point_slot)
+				l_transition_writer.set_exception_code (a_transition_data.test_case_info.exception_code)
+				l_transition_writer.set_exception_meaning (a_transition_data.test_case_info.exception_meaning)
+				l_transition_writer.set_exception_trace (a_transition_data.test_case_info.exception_trace)
+				l_transition_writer.set_exception_tag (a_transition_data.test_case_info.exception_tag)
+				l_transition_writer.set_fault_id (a_transition_data.test_case_info.fault_id)
+			end
 			l_transition_writer.write (l_transition)
 			l_file.close
 		end
@@ -109,8 +125,13 @@ feature{NONE} -- Implementation
 			l_objects: SEM_OBJECTS
 		do
 			create l_file.make_create_read_write (a_file_path)
-			create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
-			l_objects.set_properties (a_transition_data.transition.postconditions)
+			if a_transition_data.transition.is_passing then
+				create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
+				l_objects.set_properties (a_transition_data.transition.postconditions)
+			else
+				create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
+				l_objects.set_properties (a_transition_data.transition.preconditions)
+			end
 
 			create l_writer.make_with_medium (l_file)
 			l_writer.set_uuid (a_uuid)

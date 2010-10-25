@@ -39,7 +39,8 @@ feature{NONE} -- Initialization
 				l_class_under_test.feature_named (a_info_state.item_with_expression_text (txt_tci_feature_under_test).value.out),
 				a_info_state.item_with_expression_text (txt_tci_is_query).value.out.to_boolean,
 				a_info_state.item_with_expression_text (txt_tci_is_creation).value.out.to_boolean,
-				a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out)
+				a_info_state.item_with_expression_text (txt_tci_operand_variable_indexes).value.out,
+				a_info_state.item_with_expression_text (txt_tci_is_passing).value.out.to_boolean)
 		end
 
 	make_empty
@@ -48,7 +49,7 @@ feature{NONE} -- Initialization
 			hash_code := 0
 		end
 
-	make_with_data (a_test_case_class: CLASS_C; a_test_feature: FEATURE_I; a_class_under_test: CLASS_C; a_feature_under_test: FEATURE_I; a_is_query: BOOLEAN; a_is_creation: BOOLEAN; a_operand_variable_indexes: STRING)
+	make_with_data (a_test_case_class: CLASS_C; a_test_feature: FEATURE_I; a_class_under_test: CLASS_C; a_feature_under_test: FEATURE_I; a_is_query: BOOLEAN; a_is_creation: BOOLEAN; a_operand_variable_indexes: STRING; a_passing: BOOLEAN)
 			-- Initialize Current with data.
 		local
 			l_parts: LIST [STRING]
@@ -59,6 +60,7 @@ feature{NONE} -- Initialization
 			test_feature := a_test_feature
 			is_feature_under_test_query := a_is_query
 			is_feature_under_test_creation := a_is_creation
+			is_passing := a_passing
 
 			calculate_break_point_position
 			operand_variable_indexes := a_operand_variable_indexes.twin
@@ -97,6 +99,9 @@ feature -- Access
 	finish_post_state_calculation_slot: INTEGER
 			-- Break point slot after post state calculation finished
 
+	finish_pre_state_calculation_slot: INTEGER
+			-- Break point slot before pre-state calculation finished
+
 	operand_map: HASH_TABLE [STRING, INTEGER]
 			-- Map from 0-based operand index in `feature_under_test' to locals in `test_feature'
 			-- Key is operand index, value is the name of local in `test_feature'.
@@ -117,6 +122,30 @@ feature -- Access
 			-- Format: comma separated numbers, for each pair of numbers,
 			-- the first is the 0-based operand index, the second is the object id of that operand.
 
+	recipient: detachable STRING
+			-- The recipient feature if the transition to be written represents a failing test case
+
+	recipient_class: detachable STRING
+			-- The class of `recipient'  if the transition to be written represents a failing test case
+
+	exception_break_point_slot: detachable STRING
+			-- The break point slot of the exception if the transition to be written represents a failing test case
+
+	exception_code: detachable STRING
+			-- The error code of the exception if the transition to be written represents a failing test case
+
+	exception_meaning: detachable STRING
+			-- The error meaning of the exception if the transition to be written represents a failing test case
+
+	exception_trace: detachable STRING
+			-- Trace of the exception if the transition to be written represents a failing test case
+
+	fault_id: detachable STRING
+			-- Fault identifier if the transition to be written represents a failing test case
+
+	exception_tag: detachable STRING
+			-- Tag of the failing assertion  if the transition to be written represents a failing test case
+
 feature -- Status report
 
 	is_feature_under_test_query: BOOLEAN
@@ -124,6 +153,9 @@ feature -- Status report
 
 	is_feature_under_test_creation: BOOLEAN
 			-- Is `feature_under_test' a creation?
+
+	is_passing: BOOLEAN
+			-- Is Current test case a passing test case?
 
 feature -- Access
 
@@ -157,6 +189,9 @@ feature -- Access
 
 			create l_expr.make_with_text (l_class, l_feature, txt_tci_is_query, l_class)
 			Result.force_last (l_expr)
+
+			create l_expr.make_with_text (l_class, l_feature, txt_tci_is_passing, l_class)
+			Result.force_last (l_expr)
 		end
 
 	txt_tci_class_name: STRING = "tci_class_name"
@@ -165,6 +200,7 @@ feature -- Access
 	txt_tci_operand_variable_indexes: STRING = "tci_operand_variable_indexes"
 	txt_tci_is_creation: STRING = "tci_is_creation"
 	txt_tci_is_query: STRING = "tci_is_query"
+	txt_tci_is_passing: STRING = "tci_is_passing"
 
 	test_set_class: CLASS_C
 			-- Class for the test set
@@ -194,6 +230,7 @@ feature -- Access
 			before_test_break_point_slot := l_bp_finder.before_test_break_point_slot
 			after_test_break_point_slot := l_bp_finder.after_test_break_point_slot
 			finish_post_state_calculation_slot := l_bp_finder.finish_post_state_calculation_slot
+			finish_pre_state_calculation_slot := l_bp_finder.finish_pre_state_calculation_slot
 		end
 
 	setup_operand_map (a_operands: STRING)
@@ -250,5 +287,105 @@ feature -- Access
 
 	test_feature_name: STRING = "generated_test_1"
 			-- Name of the feature used in test case class as test entry
+
+feature -- Setting
+
+	set_recipient (a_data: like recipient)
+			-- Set `recipient' with `a_data'.
+		do
+			recipient := a_data
+		ensure
+			recipient_set: recipient = a_data
+		end
+
+	set_recipient_class (a_data: like recipient_class)
+			-- Set `recipient_class' with `a_data'.
+		do
+			recipient_class := a_data
+		ensure
+			recipient_class_set: recipient_class = a_data
+		end
+
+	set_exception_break_point_slot (a_data: like exception_break_point_slot)
+			-- Set `exception_break_point_slot' with `a_data'.
+		do
+			exception_break_point_slot := a_data
+		ensure
+			exception_break_point_slot_set: exception_break_point_slot = a_data
+		end
+
+	set_exception_code (a_data: like exception_code)
+			-- Set `exception_code' with `a_data'.
+		do
+			exception_code := a_data
+		ensure
+			exception_code_set: exception_code = a_data
+		end
+
+	set_exception_meaning (a_data: like exception_meaning)
+			-- Set `exception_meaning' with `a_data'.
+		do
+			exception_meaning := a_data
+		ensure
+			exception_meaning_set: exception_meaning = a_data
+		end
+
+	set_exception_trace (a_data: like exception_trace)
+			-- Set `exception_trace' with `a_data'.
+		do
+			exception_trace := a_data
+		ensure
+			exception_trace_set: exception_trace = a_data
+		end
+
+	set_fault_id (a_data: like fault_id)
+			-- Set `fault_id' with `a_data'.
+		do
+			fault_id := a_data
+		ensure
+			fault_id_set: fault_id = a_data
+		end
+
+	set_exception_tag (a_data: like exception_tag)
+			-- Set `exception_tag' with `a_data'.
+		do
+			exception_tag := a_data
+		ensure
+			exception_tag_set: exception_tag = a_data
+		end
+
+	calculate_fault_id
+			-- Calculate `fault_id' based on already set exception related information.
+		local
+			l_id: STRING
+		do
+			create l_id.make (64)
+			if recipient_class /= Void then
+				l_id.append (recipient_class)
+
+			end
+			if recipient /= Void then
+				if not l_id.is_empty then
+					l_id.append_character ('.')
+				end
+				l_id.append (recipient)
+			end
+			if exception_code /= Void then
+				if not l_id.is_empty then
+					l_id.append_character ('.')
+				end
+				l_id.append_character ('c')
+				l_id.append (exception_code)
+			end
+			if exception_break_point_slot /= Void then
+				if not l_id.is_empty then
+					l_id.append_character ('.')
+				end
+				l_id.append_character ('b')
+				l_id.append (exception_break_point_slot)
+			end
+
+			set_fault_id (l_id)
+		end
 
 end

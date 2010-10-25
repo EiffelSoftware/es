@@ -78,7 +78,7 @@ feature{NONE} -- Implementation
 			loop
 				l_constraint_analyzer.analyze (a_assertions.item_for_iteration)
 				if l_constraint_analyzer.is_matched then
-					l_constraints.put (l_constraint_analyzer.constraints, a_assertions.item_for_iteration)
+					l_constraints.force_last (l_constraint_analyzer.constraints, a_assertions.item_for_iteration)
 				end
 				a_assertions.forth
 			end
@@ -130,7 +130,7 @@ feature{NONE} -- Implementation
 				l_constraints.after
 			loop
 				if l_kept.has (l_constraints.key_for_iteration) then
-					constraint_table.put (l_constraints.item_for_iteration, l_constraints.key_for_iteration)
+					constraint_table.force_last (l_constraints.item_for_iteration, l_constraints.key_for_iteration)
 					constraining_expressions.extend (l_constraints.key_for_iteration)
 				end
 				l_constraints.forth

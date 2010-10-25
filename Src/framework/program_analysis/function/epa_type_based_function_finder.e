@@ -479,8 +479,10 @@ feature{NONE} -- Implementation
 			l_quasi_functions: like quasi_constant_functions
 			l_type: TYPE_A
 			l_features: LINKED_LIST [FEATURE_I]
+			l_any_class: CLASS_C
 		do
 			if should_solve_integer_argument_bound and then is_for_feature and then should_search_for_query_with_arguments then
+				l_any_class := workbench.system.any_class.compiled_representation
 				l_quasi_functions := quasi_constant_functions
 				l_any_id := system.any_class.compiled_representation.class_id
 				from
@@ -512,6 +514,7 @@ feature{NONE} -- Implementation
 						loop
 							l_feat := l_features.item_for_iteration
 							if
+								l_feat.is_exported_for (l_any_class) and then
 								l_feat.has_return_value and then
 								l_feat.written_class.class_id /= l_any_id and then
 								l_feat.argument_count = 1 and then

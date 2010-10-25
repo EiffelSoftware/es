@@ -131,6 +131,7 @@ feature{NONE} -- Implementation
 			l_is_query: BOOLEAN
 			l_is_creation: BOOLEAN
 			l_operand_variable_indexes: STRING
+			l_is_passing: BOOLEAN
 		do
 			a_fields.search (test_case_class_field)
 			l_test_case_class := first_class_starts_with_name (a_fields.found_item.value.text)
@@ -153,7 +154,9 @@ feature{NONE} -- Implementation
 			a_fields.search (feature_field)
 			l_feature_under_test := l_class_under_test.feature_named (a_fields.found_item.value.text)
 
-			create Result.make_with_data (l_test_case_class, l_test_feature, l_class_under_test, l_feature_under_test, l_is_query, l_is_creation, l_operand_variable_indexes)
+			a_fields.search (test_case_status_field)
+			l_is_passing := a_fields.found_item ~ test_case_status_passing
+			create Result.make_with_data (l_test_case_class, l_test_feature, l_class_under_test, l_feature_under_test, l_is_query, l_is_creation, l_operand_variable_indexes ,l_is_passing)
 		end
 
 	serialization_info_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO; a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_SERIALIZATION_INFO

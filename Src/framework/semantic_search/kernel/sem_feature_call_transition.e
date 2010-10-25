@@ -78,6 +78,7 @@ feature{NONE} -- Initialization
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
 			changes := a_transition.changes.cloned_object
+			set_is_passing (a_transition.is_passing)
 		end
 
 	make_interface_transition (a_transition: like Current)
@@ -93,6 +94,7 @@ feature{NONE} -- Initialization
 			set_description (a_transition.description)
 			set_uuid (a_transition.uuid)
 			set_name (a_transition.name)
+			set_is_passing (a_transition.is_passing)
 			preconditions := a_transition.interface_preconditions
 			postconditions := a_transition.interface_postconditions
 			written_preconditions := a_transition.written_preconditions.cloned_object
@@ -265,6 +267,17 @@ feature -- Access
 			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
 		end
 
+	precondition_interface_equations: DS_HASH_SEt [SEM_EQUATION]
+			-- Equations including `interface_preconditions' and `written_preconditions'.
+			-- Note: create a new result set every time, may be slow.
+		do
+			create Result.make (preconditions.count + written_preconditions.count)
+			Result.set_equality_tester (sem_equation_equality_tester)
+
+			interface_preconditions.do_all (agent extend_equation_into_hash_set (?, True, False, Result))
+			written_preconditions.do_all (agent extend_equation_into_hash_set (?, True, True, Result))
+		end
+
 	variable_static_type_table: HASH_TABLE [TYPE_A, STRING]
 			-- Table from variable name from `variables' to their dynamic type from `a_feature_transition'
 			-- Key of Result is variable name, value is the resolved static type of that variable.
@@ -367,6 +380,12 @@ feature -- Status report
 	is_creation: BOOLEAN
 			-- Is current transition a creation?
 
+	is_passing: BOOLEAN
+			-- Is current transition from a passing test case?
+
+	is_feature_call: BOOLEAN = True
+			-- Is Current a feature call queryable?
+
 feature -- Status report
 
 	debug_output: STRING
@@ -375,10 +394,15 @@ feature -- Status report
 			Result := content_of_transition_internal (variable_type_name)
 		end
 
-feature -- Type status report
+feature -- Setting
 
-	is_feature_call: BOOLEAN = True
-			-- Is Current a feature call queryable?
+	set_is_passing (b: BOOLEAN)
+			-- Set `is_passing' with `b'.
+		do
+			is_passing := b
+		ensure
+			is_passing_set: is_passing = b
+		end
 
 feature -- Visitor
 

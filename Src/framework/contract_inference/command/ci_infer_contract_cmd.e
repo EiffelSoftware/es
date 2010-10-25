@@ -28,6 +28,8 @@ inherit
 
 	CI_UTILITY
 
+	EXCEPTION_CODE_MEANING
+
 create
 	make
 
@@ -195,10 +197,17 @@ feature{NONE} -- Implementation
 	object_serialization_evaluation (a_tc_info: CI_TEST_CASE_INFO): EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			-- Break point manager for evaluating expressions to collect object serialization information
 			-- for `a_tc_info'. This break point is only reachable if `config'.`should_use_mocking' is True.
+		local
+			l_slot: INTEGER
 		do
+			if a_tc_info.is_passing and config.should_enable_post_serialization_retrieval then
+				l_slot := a_tc_info.finish_post_state_calculation_slot
+			else
+				l_slot := a_tc_info.finish_pre_state_calculation_slot
+			end
 			create Result.make (a_tc_info.test_case_class, a_tc_info.test_feature)
 			Result.set_breakpoint_with_agent_and_action (
-				a_tc_info.finish_post_state_calculation_slot,
+				l_slot,
 				agent expressions_to_get_serialization_info (a_tc_info),
 				agent on_object_serialization_evaluated (?, ?, a_tc_info, Result))
 		end
@@ -209,12 +218,14 @@ feature{NONE} -- Implementation
 		do
 			create Result.make (4)
 			Result.set_equality_tester (expression_equality_tester)
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_pre_object_info", a_tc_info.test_case_class))
+			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_operand_table_as_string", a_tc_info.test_case_class))
 
 			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "pre_serialization_as_string", a_tc_info.test_case_class))
-			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "post_serialization_as_string", a_tc_info.test_case_class))
-			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_pre_object_info", a_tc_info.test_case_class))
-			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_post_object_info", a_tc_info.test_case_class))
-			Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_operand_table_as_string", a_tc_info.test_case_class))
+			if a_tc_info.is_passing then
+				Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "post_serialization_as_string", a_tc_info.test_case_class))
+				Result.force_last (create {EPA_AST_EXPRESSION}.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, "tci_post_object_info", a_tc_info.test_case_class))
+			end
 		end
 
 	expressions_to_evaluate (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -489,21 +500,35 @@ feature{NONE} -- Actions
 			-- Action to be performed if a new test case is found and about to execute
 		local
 			l_after_expr_finder: EPA_TYPE_BASED_FUNCTION_FINDER
-			l_before_dbg_manager: like breakpoint_manager_for_expression_evaluation
-			l_after_dbg_manager: like breakpoint_manager_for_expression_evaluation
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 			l_dummy_value: DUMP_VALUE
 			l_serialization_dbg_manager: like object_serialization_evaluation
+			l_except_code: INTEGER
 		do
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 					-- Enable the flag to calculate post-state information if needed.
+				l_dummy_value := debugger_manager.expression_evaluation ("set_is_pre_state_information_enabled (True)")
 				if config.should_enable_post_serialization_retrieval then
 					l_dummy_value := debugger_manager.expression_evaluation ("set_is_post_state_information_enabled (True)")
 				end
 
 					-- Setup information of the newly found test case.
 				create last_test_case_info.make (a_state)
+
+					-- Setup exception related data for failing test cases.
+				if not last_test_case_info.is_passing then
+					 last_test_case_info.set_recipient (debugger_manager.expression_evaluation ("tci_exception_recipient").string_representation)
+					 last_test_case_info.set_recipient_class (debugger_manager.expression_evaluation ("tci_exception_recipient_class").string_representation)
+					 last_test_case_info.set_exception_break_point_slot (debugger_manager.expression_evaluation ("tci_breakpoint_index").output_for_debugger)
+					 l_except_code := debugger_manager.expression_evaluation ("tci_exception_code").output_for_debugger.to_integer
+					 last_test_case_info.set_exception_code (l_except_code.out)
+					 last_test_case_info.set_exception_meaning (description_from_code (l_except_code))
+					 last_test_case_info.set_exception_trace (debugger_manager.expression_evaluation ("tci_exception_trace").string_representation)
+					 last_test_case_info.set_exception_tag (debugger_manager.expression_evaluation ("tci_assertion_tag").string_representation)
+					 last_test_case_info.calculate_fault_id
+				end
+
 				create last_pre_execution_bounded_functions.make (5)
 				last_pre_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
 				create last_post_execution_bounded_functions.make (5)
@@ -512,35 +537,48 @@ feature{NONE} -- Actions
 					-- Log information of the newly found test case.
 				log_new_test_case_found (last_test_case_info)
 
-					-- Setup break points to evaluate expressions.
-				l_before_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
-				l_after_dbg_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
+					-- Setup breakpoints for object serialization.				
+				l_serialization_dbg_manager := object_serialization_evaluation (last_test_case_info)
+				l_serialization_dbg_manager.toggle_breakpoints (True)
 
-					-- Enable break points for expression evaluation.
-				l_before_dbg_manager.toggle_breakpoints (True)
-				l_after_dbg_manager.toggle_breakpoints (True)
+					-- Setup break points to evaluate expressions, and
+					-- break points for expression evaluation.
+				las_pre_state_expression_evaluation_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
+				las_pre_state_expression_evaluation_manager.toggle_breakpoints (True)
 
-				if config.should_enable_post_serialization_retrieval then
-					l_serialization_dbg_manager := object_serialization_evaluation (last_test_case_info)
-					l_serialization_dbg_manager.toggle_breakpoints (True)
+				if last_test_case_info.is_passing then
+					last_post_state_expression_evaluation_manger := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
+					last_post_state_expression_evaluation_manger.toggle_breakpoints (True)
+				else
+					last_post_state_expression_evaluation_manger := Void
 				end
 			end
 		end
+
+	las_pre_state_expression_evaluation_manager: like breakpoint_manager_for_expression_evaluation
+	last_post_state_expression_evaluation_manger: like breakpoint_manager_for_expression_evaluation
+			-- Breakpoint expression evaluation manager
 
 	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
 			-- Action to be performed when expressions are evaluated for test case defined in `a_tc_info'.
 			-- The evaluated expressions as well as their values are in `a_state'.
 			-- `a_pre_execution' indicates if those expressions are evaluated before the execution of the test case.
 		do
-			a_bp_manager.toggle_breakpoints (False)
+			if a_bp_manager /= Void then
+				a_bp_manager.toggle_breakpoints (False)
+			end
 
 				-- Store results.
 			if a_pre_execution then
 				last_pre_execution_evaluations := a_state.cloned_object
 				mutate_equality_comparision_expressions (last_pre_execution_evaluations)
 			else
-				last_post_execution_evaluations := a_state.cloned_object
-				mutate_equality_comparision_expressions (last_post_execution_evaluations)
+				if a_state = Void then
+					create last_post_execution_evaluations.make (0, class_, feature_)
+				else
+					last_post_execution_evaluations := a_state.cloned_object
+					mutate_equality_comparision_expressions (last_post_execution_evaluations)
+				end
 				build_last_transition
 			end
 
@@ -561,13 +599,23 @@ feature{NONE} -- Actions
 			-- Action to be performed when expressions to get object serialization information are evalauted
 		do
 			a_bp_manager.toggle_breakpoints (False)
-			create last_serialization_info.make (
-				a_tc_info,
-				a_state.item_with_expression_text ("pre_serialization_as_string").value.text,
-				a_state.item_with_expression_text ("post_serialization_as_string").value.text,
-				a_state.item_with_expression_text ("tci_operand_table_as_string").value.text,
-				a_state.item_with_expression_text ("tci_pre_object_info").value.text,
-				a_state.item_with_expression_text ("tci_post_object_info").value.text)
+			if last_test_case_info.is_passing then
+				create last_serialization_info.make (
+					a_tc_info,
+					a_state.item_with_expression_text ("pre_serialization_as_string").value.text,
+					a_state.item_with_expression_text ("post_serialization_as_string").value.text,
+					a_state.item_with_expression_text ("tci_operand_table_as_string").value.text,
+					a_state.item_with_expression_text ("tci_pre_object_info").value.text,
+					a_state.item_with_expression_text ("tci_post_object_info").value.text)
+			else
+				create last_serialization_info.make (
+					a_tc_info,
+					a_state.item_with_expression_text ("pre_serialization_as_string").value.text,
+					Void,
+					a_state.item_with_expression_text ("tci_operand_table_as_string").value.text,
+					a_state.item_with_expression_text ("tci_pre_object_info").value.text,
+					Void)
+			end
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -580,6 +628,12 @@ feature{NONE} -- Actions
 					a_dm.application.kill
 				else
 					if a_dm.application_status.exception_occurred then
+						if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
+						else
+							if not last_test_case_info.is_passing then
+								on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+							end
+						end
 						a_dm.controller.resume_workbench_application
 					end
 				end
@@ -692,10 +746,14 @@ feature{NONE} -- Implementation
 				l_context,
 				last_test_case_info.is_feature_under_test_creation)
 			l_transition.set_uuid (last_test_case_info.uuid)
+			l_transition.set_is_passing (last_test_case_info.is_passing)
 			if last_pre_execution_evaluations = Void then
 				create last_pre_execution_evaluations.make (0, class_, feature_)
 			end
 			l_transition.set_preconditions (last_pre_execution_evaluations)
+			if last_post_execution_evaluations = Void then
+				create last_post_execution_evaluations.make (0, last_pre_execution_evaluations.class_, last_pre_execution_evaluations.feature_)
+			end
 			l_transition.set_postconditions (last_post_execution_evaluations)
 
 				-- Analyze functions in pre-execution state.

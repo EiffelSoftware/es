@@ -248,25 +248,29 @@ feature -- Utilities
 			end
 		end
 
-	array_as_string (a_array: ARRAY [NATURAL_8]): STRING
+	array_as_string (a_array: ARRAY [NATURAL_8]): detachable STRING
 			-- String representation of `a_array'
 			-- Format: comma separated numbers
 		local
 			i: INTEGER
 			u: INTEGER
 		do
-			create Result.make (a_array.count * 4 + 1)
-			from
-				i := a_array.lower
-				u := a_array.upper
-			until
-				i > u
-			loop
-				Result.append (a_array.item (i).out)
-				if i < u then
-					Result.append_character (',')
+			if a_array /= Void then
+				create Result.make (a_array.count * 4 + 1)
+				from
+					i := a_array.lower
+					u := a_array.upper
+				until
+					i > u
+				loop
+					Result.append (a_array.item (i).out)
+					if i < u then
+						Result.append_character (',')
+					end
+					i := i + 1
 				end
-				i := i + 1
+			else
+				Result := Void
 			end
 		end
 

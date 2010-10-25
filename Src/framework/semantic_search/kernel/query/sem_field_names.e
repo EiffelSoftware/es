@@ -110,6 +110,32 @@ feature -- Access
 
 	argument_count_field: STRING = "argument_count"
 
+	test_case_status_field: STRING = "transition_status"
+
+	test_case_status_passing: STRING = "passing"
+
+	test_case_status_failing: STRING = "failing"
+
+	pre_serialization_field: STRING = "pre_serialization"
+
+	pre_object_info_field: STRING = "pre_object_info"
+
+	recipient_field: STRING = "recipient"
+
+	recipient_class_field: STRING = "recipient_class"
+
+	exception_break_point_slot_field: STRING = "exception_break_point_slot"
+
+	exception_code_field: STRING = "exception_code"
+
+	exception_meaning_field: STRING = "exception_meaning"
+
+	exception_trace_field: STRING = "exception_trace"
+
+	exception_tag_field: STRING = "exception_assertion_tag"
+
+	fault_id_field: STRING = "fault_id"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

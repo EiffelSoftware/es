@@ -153,6 +153,18 @@ feature -- Basic operation
 			post_variable_table_cache := Void
 		end
 
+	right_before_test
+			-- Right before test
+			-- The main purpose of this feature is to provide breakpoint anchor.
+		do
+		end
+
+	right_after_test
+			-- Right before test
+			-- The main purpose of this feature is to provide breakpoint anchor.
+		do
+		end
+
 feature -- Status set
 
 	set_execution_mode (a_mode: INTEGER)

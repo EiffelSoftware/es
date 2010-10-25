@@ -26,6 +26,8 @@ feature{NONE} -- Initialization
 			operand_table := operand_table_from_string (a_operand_table)
 			pre_object_type_table := type_table_from_string (a_pre_objects)
 			post_object_type_table := type_table_from_string (a_post_objects)
+			pre_object_type_as_string := a_pre_objects
+			post_object_type_as_string := a_post_objects
 		end
 
 feature -- Access
@@ -61,9 +63,15 @@ feature -- Access
 			-- Table from object id to the type of that object, in pre-state
 			-- Key is object id, value is the type of that object.
 
+	pre_object_type_as_string: detachable STRING
+			-- String representation of `pre_object_type_table'
+
 	post_object_type_table: HASH_TABLE [TYPE_A, INTEGER]
 			-- Table from object id to the type of that object, in post-state
 			-- Key is object id, value is the type of that object.			
+
+	post_object_type_as_string: detachable STRING
+			-- String representation of `post_object_type_table'
 
 feature{NONE} -- Implementation
 
@@ -75,26 +83,30 @@ feature{NONE} -- Implementation
 			l_done: BOOLEAN
 			l_list: LINKED_LIST [NATURAL_8]
 		do
-			create l_list.make
-			from
-				l_index1 := 1
-			until
-				l_done
-			loop
-				l_index2 := a_string.index_of (',', l_index1 + 1)
-				if l_index2 = 0 then
-					l_index2 := a_string.count + 1
-					l_done := True
+			if a_string /= Void then
+				create l_list.make
+				from
+					l_index1 := 1
+				until
+					l_done
+				loop
+					l_index2 := a_string.index_of (',', l_index1 + 1)
+					if l_index2 = 0 then
+						l_index2 := a_string.count + 1
+						l_done := True
+					end
+					l_list.extend (a_string.substring (l_index1, l_index2 - 1).to_natural_8)
+					l_index1 := l_index2 + 1
 				end
-				l_list.extend (a_string.substring (l_index1, l_index2 - 1).to_natural_8)
-				l_index1 := l_index2 + 1
-			end
 
-			create Result.make_filled (0, 1, l_list.count)
-			l_index1 := 1
-			across l_list as l_numbers loop
-				Result.put (l_numbers.item, l_index1)
-				l_index1 := l_index1 + 1
+				create Result.make_filled (0, 1, l_list.count)
+				l_index1 := 1
+				across l_list as l_numbers loop
+					Result.put (l_numbers.item, l_index1)
+					l_index1 := l_index1 + 1
+				end
+			else
+				Result := Void
 			end
 		end
 
@@ -127,20 +139,22 @@ feature{NONE} -- Implementation
 			l_type_name: STRING
 			l_object_id: INTEGER
 		do
-			l_context_class := test_case_info.test_case_class
-			l_parts := a_string.split (';')
-			create Result.make (l_parts.count // 2)
+			if a_string /= Void then
+				l_context_class := test_case_info.test_case_class
+				l_parts := a_string.split (';')
+				create Result.make (l_parts.count // 2)
 
-			from
-				l_parts.start
-			until
-				l_parts.after
-			loop
-				l_type_name := l_parts.item_for_iteration
-				l_parts.forth
-				l_object_id := l_parts.item_for_iteration.to_integer
-				l_parts.forth
-				Result.force (type_a_from_string (l_type_name, l_context_class), l_object_id)
+				from
+					l_parts.start
+				until
+					l_parts.after
+				loop
+					l_type_name := l_parts.item_for_iteration
+					l_parts.forth
+					l_object_id := l_parts.item_for_iteration.to_integer
+					l_parts.forth
+					Result.force (type_a_from_string (l_type_name, l_context_class), l_object_id)
+				end
 			end
 		end
 
