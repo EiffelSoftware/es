@@ -4,7 +4,11 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	SSA_EXPR
 
+feature
+	as_code: STRING
+		deferred
+		end
 end

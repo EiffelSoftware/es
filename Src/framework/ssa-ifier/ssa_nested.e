@@ -25,4 +25,28 @@ feature
 	name: STRING
 	args: LIST [SSA_EXPR]
 
+	as_code: STRING
+		do
+			Result := target.as_code + "." + name
+
+			if not args.is_empty then
+				Result := Result + " ("
+
+				from
+					args.start
+				until
+					args.after
+				loop
+					Result := Result + args.item.as_code
+					args.forth
+
+					if not args.after then
+						Result := Result + ", "
+					end
+				end
+
+				Result := Result + ")"
+			end
+		end
+
 end

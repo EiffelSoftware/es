@@ -44,6 +44,7 @@ feature {NONE}
 	process_feature_as (l_as: FEATURE_AS)
 			-- Process only the selected feature.
 		local
+			fixer: EXPR_FIXER
 			ssa_breaker: SSA_CHAIN_BREAKER
 			ssa_repl: SSA_REPLACEMENTS_CREATOR
 			ssa_typer: SSA_TYPER

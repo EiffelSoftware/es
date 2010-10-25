@@ -25,6 +25,14 @@ feature
 			reset
 		end
 
+	convert_ast (expr: EXPR_AS): SSA_EXPR
+		do
+			reset
+			safe_process (expr)
+			Result := last_expr
+		end
+
+
 	reset
 		do
 			constructor := Void
@@ -133,8 +141,14 @@ feature
 		end
 
 	process_unary_as (l_as: UNARY_AS)
+		local
+			e: SSA_EXPR
 		do
 			safe_process (l_as.expr)
+			e := last_expr
+
+			reset
+
 			create {SSA_EXPR_UNARY} last_expr.make (l_as.operator_name_32, last_expr)
 		end
 
@@ -148,6 +162,7 @@ feature
 
 			safe_process (l_as.right)
 			e2 := last_expr
+			reset
 
 			create {SSA_EXPR_BIN} last_expr.make (l_as.op_name.name_32, e1, e2)
 		end

@@ -21,4 +21,9 @@ feature
 
 	integer: INTEGER
 
+	as_code: STRING
+		do
+			Result := integer.out
+		end
+
 end

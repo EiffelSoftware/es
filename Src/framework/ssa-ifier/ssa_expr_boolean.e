@@ -21,4 +21,9 @@ feature
 
 	boolean: BOOLEAN
 
+	as_code: STRING
+		do
+			Result := boolean.out
+		end
+
 end

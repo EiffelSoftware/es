@@ -23,4 +23,8 @@ feature
 	op: STRING
 	expr: SSA_EXPR
 
+	as_code: STRING
+		do
+			Result := op + "(" + expr.as_code + ")"
+		end
 end

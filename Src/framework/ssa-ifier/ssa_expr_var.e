@@ -21,4 +21,9 @@ feature
 
 	name: STRING
 
+
+	as_code: STRING
+		do
+			Result := name
+		end
 end

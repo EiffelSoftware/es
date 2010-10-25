@@ -24,4 +24,9 @@ feature
 	op: STRING
 	expr1, expr2: SSA_EXPR
 
+	as_code: STRING
+		do
+			Result := "(" + expr1.as_code + ") " + op + " (" + expr2.as_code + ")"
+		end
+
 end
