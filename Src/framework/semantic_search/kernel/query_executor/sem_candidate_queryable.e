@@ -37,6 +37,10 @@ feature{NONE} -- Initialization
 			create integer_criteria_by_value_internal.make (10)
 			integer_criteria_by_value_internal.compare_objects
 			set_is_valid (True)
+			create fields_by_name.make (10)
+			fields_by_name.compare_objects
+			create normal_fields.make (10)
+			normal_fields.compare_objects
 		end
 
 	make_with_score (a_uuid: STRING; a_score: DOUBLE)
@@ -51,8 +55,10 @@ feature{NONE} -- Initialization
 		local
 			l_fields: HASH_TABLE [LINKED_LIST [IR_FIELD], STRING_8]
 			l_variables: like variable_types
+			l_field_name: STRING
 		do
-			l_fields := a_document.table_by_name
+			fields_by_name := a_document.table_by_name
+			l_fields := fields_by_name
 
 				-- Initialize UUID and score.
 			set_is_valid (l_fields.has (uuid_field))
@@ -67,7 +73,6 @@ feature{NONE} -- Initialization
 				end
 			end
 
-
 				-- Initialize variables.
 			if is_valid then
 				set_is_valid (l_fields.has (variables_field))
@@ -80,9 +85,19 @@ feature{NONE} -- Initialization
 					-- Initialize meta data.
 				l_variables := variable_types
 				across l_fields as l_field_tbl loop
+					l_field_name := l_field_tbl.item.first.name
 					if l_field_tbl.key.starts_with (once "s_") then
 							-- This is a field for meta data.
-						extend_criterion_from_string (l_field_tbl.item.first.name, l_field_tbl.item.first.value.text, l_variables)
+						extend_criterion_from_string (l_field_name, l_field_tbl.item.first.value.text, l_variables)
+					else
+							-- This is a normal field.
+
+						normal_fields.force (
+							create {IR_FIELD}.make (
+								l_field_name,
+								l_field_tbl.item.first.value,
+								default_boost_value),
+							l_field_name)
 					end
 				end
 			end
@@ -199,6 +214,14 @@ feature -- Access
 				end
 			end
 		end
+
+	fields_by_name: HASH_TABLE [LINKED_LIST [IR_FIELD], STRING_8]
+			-- Table from field name to fields with that particular name
+			-- Key is field name, value is a list of fields with the same name.		
+
+	normal_fields: HASH_TABLE [IR_FIELD, STRING]
+			-- Normal fields
+			-- Key is field name, value is that field
 
 feature -- Status report
 

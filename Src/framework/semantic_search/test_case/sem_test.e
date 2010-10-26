@@ -17,7 +17,6 @@ feature -- Basic operations
 			l_generator: SEM_QUERYABLE_SEARCHABLE_PROPERTY_GENERATOR
 			l_query_config: SEM_QUERY_CONFIG
 			l_bquery: SEM_BOOLEAN_QUERY
-			l_options: HASH_TABLE [STRING, STRING]
 			l_queryable: SEM_QUERYABLE
 			l_matcher: SEM_QUERYABLE_MATCHER
 			l_matches: LINKED_LIST [SEM_QUERYABLE_MATCHING_RESULT]
@@ -26,19 +25,20 @@ feature -- Basic operations
 			create l_generator
 			l_queryable := l_generator.queryable_from_feature_names (a_feature_name, a_class_name)
 			l_query_config := l_generator.query_config_from_queryable (l_queryable)
+			l_query_config.returned_fields.append (l_generator.last_returned_fields)
+			across l_generator.last_fields as l_fields loop
+				l_query_config.extra_fields.force (l_fields.item, l_fields.key)
+			end
+
 
 				-- Generate a query executor.
 			create l_bquery.make (l_query_config)
-			create l_options.make (10)
-			l_options.compare_objects
-			l_options.force ("0", "start")
-			l_options.force (a_rows.out, "rows")
 			create l_executor
 
 				-- Execute query and output results.
 			io.put_string ("----------------------------------------------------%N")
 			io.put_string (l_query_config.text)
-			l_executor.execute_with_options (l_bquery, l_options)
+			l_executor.execute_with_options (l_bquery, l_generator.last_options)
 			io.put_string ("----------------------------------------------------%N")
 
 			create l_matcher.make

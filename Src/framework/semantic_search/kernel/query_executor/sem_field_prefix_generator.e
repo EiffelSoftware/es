@@ -125,4 +125,22 @@ feature{NONE} -- Process
 			-- Do nothing
 		end
 
+	process_variable_position_term (a_term: SEM_VARIABLE_POSITION_TERM)
+			-- Process `a_term'.
+		do
+			if last_is_meta then
+				last_prefix.append (string_prefix)
+			else
+				last_prefix.append (text_prefix)
+			end
+				-- Append position 2 prefix.
+			if last_type_form = dynamic_type_form then
+				last_prefix.append (dynamic_type_form_prefix)
+			elseif last_type_form = static_type_form then
+				last_prefix.append (static_type_form_prefix)
+			elseif last_type_form = anonymous_type_form then
+				last_prefix.append (anonymous_type_form_prefix)
+			end
+		end
+
 end

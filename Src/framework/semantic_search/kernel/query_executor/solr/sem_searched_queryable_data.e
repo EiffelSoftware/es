@@ -99,7 +99,7 @@ feature{NONE} -- Implementation
 			l_prefix_generator := field_prefix_generator
 			across a_query_config.terms as l_terms loop
 				l_term := l_terms.item
-				if l_term.is_change or l_term.is_contract or l_term.is_property then
+				if l_term.is_change or l_term.is_contract or l_term.is_property  or l_term.is_variable_position then
 					if attached {SEM_EXPR_VALUE_TERM} l_term as l_expr_value_term and then l_expr_value_term.should_be_considered_in_result then
 						l_expr := l_expr_value_term.expression
 						l_value := l_expr_value_term.value
@@ -115,15 +115,18 @@ feature{NONE} -- Implementation
 						l_name := l_prefix_generator.term_prefix (l_term, l_type_form, False) + l_expr_value_term.field_content_in_type_form (l_type_form)
 						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)
 						l_criterion.set_term (l_term)
-						Result.search (l_name)
-						if Result.found then
-							l_list := Result.found_item
-						else
-							create l_list.make
-							Result.put (l_list, l_name)
-						end
-						l_list.extend (l_criterion)
+					elseif attached {SEM_VARIABLE_POSITION_TERM} l_term as l_pos_term then
+						l_name := l_prefix_generator.term_prefix (l_term, l_type_form, False) + l_pos_term.field_content_in_type_form (l_type_form)
+						create l_criterion.make (l_name, l_term_value, l_pos_term.operands, a_query_config.queryable.variable_types)
 					end
+					Result.search (l_name)
+					if Result.found then
+						l_list := Result.found_item
+					else
+						create l_list.make
+						Result.put (l_list, l_name)
+					end
+					l_list.extend (l_criterion)
 				end
 			end
 		end

@@ -25,6 +25,9 @@ feature{NONE} -- Initialization
 			set_primary_property_type_form (static_type_form)
 			create supporting_property_type_forms.make
 			create terms.make
+			create returned_fields.make
+			create extra_fields.make (5)
+			extra_fields.compare_objects
 		end
 
 	make_with_primary_type_form (a_queryable: like queryable; a_type_form: INTEGER)
@@ -99,6 +102,16 @@ feature -- Access
 				Result.append_character ('%N')
 			end
 		end
+
+	returned_fields: LINKED_LIST [STRING]
+			-- List of names of fields that are to be returned.
+			-- This list contains fields that are additionally specified,
+			-- usually those fields has nothing to do with searched criteria.
+
+	extra_fields: HASH_TABLE [STRING, STRING]
+			-- List of fields along with their values.
+			-- Key is field name, value is field value.
+			-- Fields listed here always have "MUST" as occurrence flag.
 
 feature -- Basic operations
 

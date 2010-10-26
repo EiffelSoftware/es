@@ -156,6 +156,11 @@ feature -- Basic operations
 			queryable := a_objects
 			context_class := a_class
 			context_feature := a_feature
+			create last_options.make (5)
+			last_options.compare_objects
+			create last_fields.make (5)
+			last_fields.compare_objects
+			create last_returned_fields.make
 
 				-- Iterate through all assertions in pre- or post-condition of `a_feature'.
 			across contracts_of_feature (a_feature, a_class, a_use_precondition) as l_constraints loop
@@ -174,6 +179,11 @@ feature -- Basic operations
 			queryable := a_feature_transition
 			context_class := a_class
 			context_feature := a_feature
+			create last_options.make (5)
+			last_options.compare_objects
+			create last_fields.make (5)
+			last_fields.compare_objects
+			create last_returned_fields.make
 
 				-- Iterate through all assertions in precondition of `a_feature'.
 			is_in_precondition := True
@@ -199,6 +209,22 @@ feature -- Basic operations
 				process_expression (last_expression.ast, last_tag)
 			end
 		end
+
+feature -- Access
+
+	last_options: HASH_TABLE [STRING, STRING]
+			-- Options that are collected from last invocation to `add_properties_in_feature_transition' or
+			-- `add_properties_in_objects'
+			-- Key is option name, value is option value
+
+	last_fields: HASH_TABLE [STRING, STRING]
+			-- Fields that are additionally specified that are collected from last invocation to
+			-- `add_properties_in_feature_transition' or `add_properties_in_objects'
+			-- Key is field name, value is field value
+
+	last_returned_fields: LINKED_LIST [STRING]
+			-- List of names of fields to be returned, those fields are additionally specified
+			-- from last invocation to `add_properties_in_feature_transition' or `add_properties_in_objects'
 
 feature{NONE} -- Implementation
 
@@ -270,15 +296,135 @@ feature{NONE} -- Process
 
 	process_expression (a_expr: EXPR_AS; a_tag: detachable STRING)
 			-- Process `a_expr'.
+		local
+			l_done: BOOLEAN
 		do
-			if is_in_postcondition and then last_precondition_text.has (text_from_ast (a_expr)) then
-					-- `a_expr' is a postcondition assertion which also presents in precondition.
-					-- We understand this as stating that a certain property does not change.
-				should_suppress_change := True
-			else
-				should_suppress_change := False
+			if a_tag /= Void then
+				if a_tag.is_case_insensitive_equal ("is_option") then
+					if attached {TUPLE [key: STRING; value: STRING]} key_value_pair_from_expr (a_expr) as l_option then
+						last_options.force (l_option.value, l_option.key)
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_field") then
+					if attached {TUPLE [key: STRING; value: STRING]} key_value_pair_from_expr (a_expr) as l_field then
+						last_fields.force (l_field.value, l_field.key)
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_return_field") then
+					if attached {STRING} value_equal_to_true_from_expr (a_expr) as l_value then
+						last_returned_fields.extend (l_value)
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_target") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_target,
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_result") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_result,
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_unspecified_argument,
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_operand") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_unspecified_operand,
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_interface_variable") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_unspecified_interface_variable,
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_1") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (1),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_2") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (2),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_3") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (3),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_4") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (4),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_5") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (5),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_6") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (6),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_7") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (7),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_8") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (8),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				elseif a_tag.is_case_insensitive_equal ("is_argument_9") then
+					if attached {STRING} value_from_expr (a_expr) as l_value then
+						queryable_as_feature_transition.interface_variable_positions.force_last (
+							create {SEM_TRANSITION_VARIABLE_POSITION}.make_as_argument (9),
+							queryable_as_feature_transition.variable_by_name (l_value))
+						l_done := True
+					end
+				end
 			end
-			a_expr.process (Current)
+			if not l_done then
+				if is_in_postcondition and then last_precondition_text.has (text_from_ast (a_expr)) then
+						-- `a_expr' is a postcondition assertion which also presents in precondition.
+						-- We understand this as stating that a certain property does not change.
+					should_suppress_change := True
+				else
+					should_suppress_change := False
+				end
+				a_expr.process (Current)
+			end
 		end
 
 	process_expr_call_as (l_as: EXPR_CALL_AS)
@@ -814,6 +960,50 @@ feature{NONE} -- Implementation
 					Result := l_paran.expr
 				else
 					l_done := True
+				end
+			end
+		end
+
+	value_from_expr (a_expr: EXPR_AS): detachable STRING
+			-- Value from `a_expr'
+		do
+
+			if attached {OBJECT_TEST_AS} a_expr as l_test then
+				Result := text_from_ast (l_test.expression)
+			end
+		end
+
+	value_equal_to_true_from_expr (a_expr: EXPR_AS): detachable STRING
+			-- Value from `a_expr'
+		local
+			l_key: STRING
+			l_value: STRING
+		do
+			if attached {BIN_EQ_AS} a_expr as l_equation then
+				if attached {STRING_AS} l_equation.left as l_left and then attached {BOOL_AS} l_equation.right as l_right then
+					l_key := l_left.string_value.twin
+					l_key.remove_head (1)
+					l_key.remove_tail (1)
+					Result := l_key
+				end
+			end
+		end
+
+	key_value_pair_from_expr (a_expr: EXPR_AS): detachable TUPLE [key: STRING; value: STRING]
+			-- Key value pair from `a_expr'
+		local
+			l_key: STRING
+			l_value: STRING
+		do
+			if attached {BIN_EQ_AS} a_expr as l_equation then
+				if attached {STRING_AS} l_equation.left as l_left and then attached {STRING_AS} l_equation.right as l_right then
+					l_key := l_left.string_value.twin
+					l_key.remove_head (1)
+					l_key.remove_tail (1)
+					l_value := l_right.string_value.twin
+					l_value.remove_head (1)
+					l_value.remove_tail (1)
+					Result := [l_key, l_value]
 				end
 			end
 		end

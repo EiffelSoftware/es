@@ -164,6 +164,24 @@ feature -- Access
 			Result.append (once "Full solution: ")
 			Result.append (is_full_solution.out)
 			Result.append_character ('%N')
+
+			if not query_config.returned_fields.is_empty then
+				Result.append ("Extra returned fields:%N")
+				across query_config.returned_fields as l_fields loop
+					Result.append_character ('%T')
+					Result.append (l_fields.item)
+					Result.append_character (':')
+					Result.append_character (' ')
+					document.normal_fields.search (l_fields.item)
+					if document.normal_fields.found then
+						Result.append (document.normal_fields.found_item.value.text)
+
+					else
+						Result.append (once "not found")
+					end
+					Result.append_character ('%N')
+				end
+			end
 		end
 
 feature -- Status report

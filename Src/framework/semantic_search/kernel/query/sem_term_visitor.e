@@ -29,4 +29,9 @@ feature -- Process
 		deferred
 		end
 
+	process_variable_position_term (a_term: SEM_VARIABLE_POSITION_TERM)
+			-- Process `a_term'.
+		deferred
+		end
+
 end

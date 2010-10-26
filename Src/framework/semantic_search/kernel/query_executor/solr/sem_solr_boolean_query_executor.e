@@ -152,6 +152,19 @@ feature{NONE} -- Process terms
 			terms.force_last (l_term)
 		end
 
+	process_variable_position_term (a_term: SEM_VARIABLE_POSITION_TERM)
+			-- Process `a_term'.
+		local
+			l_field: IR_FIELD
+			l_value: IR_STRING_VALUE
+			l_term: IR_TERM
+		do
+			create l_value.make (once "%"" + output_type_name (a_term.type.name) + once "%"")
+			create l_field.make (field_name_for_term (a_term, primary_type_form, False), l_value, default_boost_value)
+			create l_term.make (l_field, a_term.occurrence)
+			terms.force_last (l_term)
+		end
+
 feature{NONE} -- Implementation
 
 	ir_boolean_query: IR_BOOLEAN_QUERY
@@ -159,13 +172,17 @@ feature{NONE} -- Implementation
 		local
 			l_returned_fields: DS_HASH_SET [STRING]
 			l_type_form: INTEGER
-			l_should_add: BOOLEAN
 		do
 				-- Iterate through all terms in `a_boolean_query' and
 				-- translate those terms into information-retrieval terms.
 			create terms.make (20)
 			terms.set_equality_tester (ir_term_equality_tester)
 			query.config.terms.do_all (agent {SEM_TERM}.process (Current))
+
+				-- Add extra specified fields.
+			across query.config.extra_fields as l_fields loop
+				terms.force_last (ir_term_from_data (l_fields.key, l_fields.item))
+			end
 
 				-- Setup searchable terms in result information-retrieval boolean query.
 			create Result.make
@@ -179,21 +196,22 @@ feature{NONE} -- Implementation
 			l_returned_fields.force_last (uuid_field)
 			l_type_form := primary_type_form
 			across query_config.terms as l_terms loop
-				l_should_add := True
---				if attached {SEM_EXPR_VALUE_TERM} l_terms.item as l_equation_term then
---					if l_equation_term.is_negated then
---						l_should_add := l_equation_term.occurrence = {IR_TERM_OCCURRENCE}.term_occurrence_must_not
---					else
---						l_should_add := l_equation_term.occurrence /= {IR_TERM_OCCURRENCE}.term_occurrence_must_not
---					end
---				end
-
-				if l_should_add then
-					l_returned_fields.force_last (
-						field_name_prefix_for_term (l_terms.item, primary_type_form, True) +
-						encoded_field_string (l_terms.item.field_content_in_type_form (l_type_form)))
-				end
+				l_returned_fields.force_last (
+					field_name_prefix_for_term (l_terms.item, primary_type_form, True) +
+					encoded_field_string (l_terms.item.field_content_in_type_form (l_type_form)))
 			end
+
+				-- Add extra specified returned fields.
+			across query.config.returned_fields as l_fields loop
+				l_returned_fields.force_last (l_fields.item)
+			end
+
+		end
+
+	ir_term_from_data (a_field_name: STRING; a_field_value: STRING): IR_TERM
+			-- ir term from `a_field_name' and `a_field_value'
+		do
+			create Result.make_as_string (a_field_name, a_field_value, default_boost_value, {IR_TERM_OCCURRENCE}.term_occurrence_must)
 		end
 
 	value_from_expression_value (a_expression_value: EPA_EXPRESSION_VALUE): IR_VALUE

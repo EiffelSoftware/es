@@ -26,7 +26,12 @@ feature -- Status report
 			elseif u = Void then
 				Result := False
 			else
-				Result := v.position = u.position
+				Result :=
+					v.position = u.position and then
+					v.is_argument = u.is_argument and then
+					v.is_target = u.is_target and then
+					v.is_operand = u.is_operand and then
+					v.is_interface = u.is_interface
 			end
 		end
 

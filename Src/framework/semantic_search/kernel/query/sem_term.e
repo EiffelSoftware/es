@@ -109,6 +109,11 @@ feature -- Status report
 		do
 		end
 
+	is_variable_position: BOOLEAN
+			-- Is current a variable position term?
+		do
+		end
+
 	is_negated: BOOLEAN
 			-- Is Current term intrinsically negated?
 			-- For example a term "a = old a" is translated into
