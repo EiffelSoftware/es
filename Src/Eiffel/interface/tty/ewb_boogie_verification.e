@@ -47,6 +47,7 @@ feature -- Execution
 		local
 			l_groups: LIST [CONF_GROUP]
 			l_cluster: CLUSTER_I
+			l_proof_event: EVENT_LIST_PROOF_ITEM_I
 		do
 			eve_proofs.reset
 			eve_proofs.register_message_callbacks (agent (s: STRING) do output_window.put_string (s) output_window.put_new_line end, agent (s: STRING) do end)
@@ -72,12 +73,27 @@ feature -- Execution
 			end
 
 				-- Add warninigs and errors
-			error_handler.warning_list.append (boogie_warnings)
-			error_handler.warning_list.finish
-			error_handler.error_list.append (errors)
-			error_handler.error_list.finish
+			--error_handler.warning_list.append (boogie_warnings)
+			--error_handler.warning_list.finish
+			--error_handler.error_list.append (errors)
+			--error_handler.error_list.finish
 				-- Display warnings
-			error_handler.trace
+			--error_handler.trace
+
+			if event_list.is_service_available then
+				from
+					event_list.service.all_items.start
+					event_list.service.all_items.start
+				until
+					event_list.service.all_items.after
+				loop
+					l_proof_event ?= event_list.service.all_items.item_for_iteration
+					if l_proof_event /= Void then
+						print_event (l_proof_event)
+					end
+					event_list.service.all_items.forth
+				end
+			end
 		end
 
 	load_class (a_class: CLASS_I)
@@ -120,6 +136,125 @@ feature -- Execution
 					a_cluster.sub_clusters.forth
 				end
 			end
+		end
+
+	frozen event_list: SERVICE_CONSUMER [EVENT_LIST_S]
+			-- Access to an event list service {EVENT_LIST_S} consumer
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
+	print_event (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
+			-- Print event `a_proof_event' to console.
+		local
+			l_successful: EVENT_LIST_PROOF_SUCCESSFUL_ITEM
+			l_failed: EVENT_LIST_PROOF_FAILED_ITEM
+			l_skipped: EVENT_LIST_PROOF_SKIPPED_ITEM
+		do
+			l_successful ?= a_proof_event
+			l_failed ?= a_proof_event
+			l_skipped ?= a_proof_event
+
+			if l_successful /= Void then
+				print_successful (l_successful)
+			elseif l_failed /= Void then
+				from
+					l_failed.error_list.start
+				until
+					l_failed.error_list.after
+				loop
+					print_error (l_failed.error_list.item, l_failed)
+					l_failed.error_list.forth
+				end
+			elseif l_skipped /= Void then
+				print_skipped (l_skipped)
+			end
+		end
+
+	print_successful (a_event: EVENT_LIST_PROOF_SUCCESSFUL_ITEM)
+		do
+			output_window.add ("--------------------------------------%N")
+			output_window.add ("Type: successful%N")
+			output_window.add ("Title: proof successful%N")
+			print_class_and_feature (a_event)
+			print_time (a_event)
+		end
+
+	print_skipped (a_event: EVENT_LIST_PROOF_SKIPPED_ITEM)
+		do
+			output_window.add ("--------------------------------------%N")
+			output_window.add ("Type: skipped%N")
+			output_window.add ("Title: proof skipped%N")
+			print_class_and_feature (a_event)
+
+			if a_event.description /= Void then
+				output_window.add ("Information: %N")
+				output_window.add (a_event.description)
+				output_window.add_new_line
+			end
+		end
+
+	print_error (a_error: EP_ERROR; a_proof_event: EVENT_LIST_PROOF_FAILED_ITEM)
+			-- Print error to console.
+		local
+			l_verification_error: EP_VERIFICATION_ERROR
+		do
+			output_window.add ("--------------------------------------%N")
+			output_window.add ("Type: failed%N")
+			output_window.add ("Title: ")
+			a_error.trace_single_line (output_window)
+			output_window.add_new_line
+
+			print_class_and_feature (a_proof_event)
+
+			l_verification_error ?= a_error
+			if l_verification_error /= Void and then l_verification_error.tag /= Void then
+				output_window.add ("Tag: ")
+				output_window.add (l_verification_error.tag)
+				output_window.add_new_line
+			end
+
+			if a_error.line > 0 then
+				output_window.add ("Line: ")
+				output_window.add (a_error.line.out)
+				output_window.add_new_line
+			end
+
+			print_time (a_proof_event)
+
+			if a_error.message /= Void then
+				output_window.add ("Message: ")
+				output_window.add (a_error.message)
+				output_window.add_new_line
+			end
+
+			if a_error.description /= Void then
+				output_window.add ("Information: %N")
+				output_window.add (a_error.description)
+				output_window.add_new_line
+			end
+
+			output_window.add_new_line
+		end
+
+	print_class_and_feature (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
+		do
+			output_window.add ("Class: ")
+			output_window.add_class (a_proof_event.context_class.original_class)
+			output_window.add_new_line
+
+			output_window.add ("Feature: ")
+			output_window.add_feature (a_proof_event.context_feature.e_feature, a_proof_event.context_feature.feature_name)
+			output_window.add_new_line
+		end
+
+	print_time (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
+		do
+			output_window.add ("Time: ")
+			output_window.add (a_proof_event.milliseconds_used.out)
+			output_window.add_new_line
 		end
 
 note
