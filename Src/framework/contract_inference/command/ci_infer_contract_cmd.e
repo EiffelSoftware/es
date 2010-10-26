@@ -628,10 +628,14 @@ feature{NONE} -- Actions
 					a_dm.application.kill
 				else
 					if a_dm.application_status.exception_occurred then
-						if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
-						else
-							if not last_test_case_info.is_passing then
-								on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+							-- Avoid deserialization mismatch problem because some test cases
+							-- may not properly serialized. Need to fix this bug. 26.10.2010 Jasonw
+						if not a_dm.application_status.exception_meaning.as_lower.has_substring ("mismatch") then
+							if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
+							else
+								if not last_test_case_info.is_passing then
+									on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+								end
 							end
 						end
 						a_dm.controller.resume_workbench_application

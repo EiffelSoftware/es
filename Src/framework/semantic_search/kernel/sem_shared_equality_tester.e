@@ -24,4 +24,10 @@ feature -- Access
 			create Result
 		end
 
+	sem_transition_variable_position_equality_tester: SEM_TRANSITION_VARIABLE_POSITION_EQUALITY_TESTER
+			-- Equality tester for {SEM_TRANSITION_VARIABLE_POSITION} objects
+		once
+			create Result
+		end
+
 end

@@ -178,7 +178,13 @@ feature -- Basic operations
 				-- Iterate through all assertions in precondition of `a_feature'.
 			is_in_precondition := True
 			is_in_postcondition := False
-			across precondition_of_feature (a_feature, a_class) as l_constraints loop
+			last_preconditions := precondition_of_feature (a_feature, a_class)
+			create last_precondition_text.make (10)
+			last_precondition_text.set_equality_tester (string_equality_tester)
+			across last_preconditions as l_constraints loop
+				last_precondition_text.force_last (text_from_ast (l_constraints.item.ast))
+			end
+			across last_preconditions as l_constraints loop
 				last_expression := l_constraints.item
 				last_tag := last_expression.tag
 				process_expression (last_expression.ast, last_tag)
@@ -251,11 +257,27 @@ feature{NONE} -- Implementation
 	last_tag: detachable STRING
 			-- Last processed tag
 
+	last_preconditions: LINKED_LIST [EPA_EXPRESSION]
+			-- List of preconditions
+
+	last_precondition_text: DS_HASH_SET [STRING]
+			-- Text of `last_preconditions'
+
+	should_suppress_change: BOOLEAN
+			-- Should change be suppressed (for postcondition)?
+
 feature{NONE} -- Process
 
 	process_expression (a_expr: EXPR_AS; a_tag: detachable STRING)
 			-- Process `a_expr'.
 		do
+			if is_in_postcondition and then last_precondition_text.has (text_from_ast (a_expr)) then
+					-- `a_expr' is a postcondition assertion which also presents in precondition.
+					-- We understand this as stating that a certain property does not change.
+				should_suppress_change := True
+			else
+				should_suppress_change := False
+			end
 			a_expr.process (Current)
 		end
 
@@ -722,8 +744,14 @@ feature{NONE} -- Implementation
 					l_equation.set_is_negated (a_negated)
 					queryable_as_feature_transition.preconditions.force_last (l_equation)
 				elseif is_in_postcondition then
-						-- Add current property as a absolute change of a feature transition.					
-					queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False, a_negated), a_expression)
+					if should_suppress_change then
+						create l_equation.make (a_expression, a_value)
+						l_equation.set_is_negated (a_negated)
+						queryable_as_feature_transition.postconditions.force_last (l_equation)
+					else
+							-- Add current property as a absolute change of a feature transition.					
+						queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False, a_negated), a_expression)
+					end
 				end
 			end
 		end

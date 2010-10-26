@@ -172,6 +172,11 @@ feature -- Access
 			-- Key is expressions either in `postconditions' or in `written_postconditions'.
 			-- Value is the changes of that expression in post-state compared to pre-state.
 
+	interface_variable_positions: DS_HASH_TABLE [SEM_TRANSITION_VARIABLE_POSITION, EPA_EXPRESSION]
+			-- Table of interface variable positions
+			-- Key is variable, value is its position
+			-- Note that interface variables means target, argument or result.
+
 feature -- Status setting
 
 	set_preconditions (a_pre: like preconditions)

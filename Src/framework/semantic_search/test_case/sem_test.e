@@ -49,10 +49,10 @@ feature -- Basic operations
 			until
 				l_matches.after
 			loop
---				if l_matches.item_for_iteration.is_full_solution then
+				if l_matches.item_for_iteration.is_full_solution then
 					io.put_string ("------------------------%N")
 					io.put_string (l_matches.item_for_iteration.text)
---				end
+				end
 				l_matches.forth
 			end
 

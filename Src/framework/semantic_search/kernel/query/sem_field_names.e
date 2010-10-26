@@ -136,6 +136,49 @@ feature -- Access
 
 	fault_id_field: STRING = "fault_id"
 
+	s_s_arg_field: STRING = "s_s_arg_"
+	s_d_arg_field: STRING = "s_d_arg_"
+	t_s_arg_field: STRING = "t_s_arg_"
+	t_d_arg_field: STRING = "t_d_arg_"
+			-- A particular argument variable
+
+	s_s_args_field: STRING = "s_s_args"
+	s_d_args_field: STRING = "s_d_args"
+	t_s_args_field: STRING = "t_s_args"
+	t_d_args_field: STRING = "t_d_args"
+			-- Agument variables
+
+	s_s_tgt_field: STRING = "s_s_tgt"
+	s_d_tgt_field: STRING = "s_d_tgt"
+	t_s_tgt_field: STRING = "t_s_tgt"
+	t_d_tgt_field: STRING = "t_d_tgt"
+			-- Target variables
+
+	s_s_rlt_field: STRING = "s_s_rlt"
+	s_d_rlt_field: STRING = "s_d_rlt"
+	t_s_rlt_field: STRING = "t_s_rlt"
+	t_d_rlt_field: STRING = "t_d_rlt"
+			-- Result variables
+
+	s_s_opd_field: STRING = "s_s_opd"
+	s_d_opd_field: STRING = "s_d_opd"
+	t_s_opd_field: STRING = "t_s_opd"
+	t_d_opd_field: STRING = "t_d_opd"
+			-- Operand variables (target + argument)
+
+	s_s_ifc_field: STRING = "s_s_ifc"
+	s_d_ifc_field: STRING = "s_d_ifc"
+	t_s_ifc_field: STRING = "t_s_ifc"
+	t_d_ifc_field: STRING = "t_d_ifc"
+			-- Interface variables (target + argument + result)	
+
+	target_varaible_short: STRING = "tgt"
+	result_varaible_short: STRING = "rlt"
+	argument_variable_short: STRING = "args"
+	one_argument_variable_short: STRING = "arg"
+	operand_variable_short: STRING = "opd"
+	interface_variable_short: STRING = "ifc"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

@@ -79,6 +79,7 @@ feature{NONE} -- Initialization
 			written_postconditions := a_transition.written_postconditions.cloned_object
 			changes := a_transition.changes.cloned_object
 			set_is_passing (a_transition.is_passing)
+			interface_variable_positions := a_transition.interface_variable_positions.cloned_object
 		end
 
 	make_interface_transition (a_transition: like Current)
@@ -99,6 +100,7 @@ feature{NONE} -- Initialization
 			postconditions := a_transition.interface_postconditions
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
+			interface_variable_positions := a_transition.interface_variable_positions.cloned_object
 
 				-- Initialize interface changes.
 			from
@@ -267,14 +269,14 @@ feature -- Access
 			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
 		end
 
-	precondition_interface_equations: DS_HASH_SEt [SEM_EQUATION]
-			-- Equations including `interface_preconditions' and `written_preconditions'.
+	all_precondition_equations: DS_HASH_SEt [SEM_EQUATION]
+			-- Equations including `preconditions' and `written_preconditions'.
 			-- Note: create a new result set every time, may be slow.
 		do
 			create Result.make (preconditions.count + written_preconditions.count)
 			Result.set_equality_tester (sem_equation_equality_tester)
 
-			interface_preconditions.do_all (agent extend_equation_into_hash_set (?, True, False, Result))
+			preconditions.do_all (agent extend_equation_into_hash_set (?, True, False, Result))
 			written_preconditions.do_all (agent extend_equation_into_hash_set (?, True, True, Result))
 		end
 
@@ -375,6 +377,27 @@ feature -- Access
 			Result := variable_static_type_table.item (a_variable.text)
 		end
 
+	argument_count: INTEGER
+			-- Number of arguments in `feature_'
+		do
+			Result := feature_.argument_count
+		end
+
+	operand_count: INTEGER
+			-- Number of operands (target + argument) in `feature_'
+		do
+			Result := argument_count + 1
+		end
+
+	interface_variable_count: INTEGER
+			-- Number of interface variable count (target + argument + result) in `feature_'
+		do
+			Result := operand_count
+			if is_query then
+				Result := Result +  1
+			end
+		end
+
 feature -- Status report
 
 	is_creation: BOOLEAN
@@ -385,6 +408,12 @@ feature -- Status report
 
 	is_feature_call: BOOLEAN = True
 			-- Is Current a feature call queryable?
+
+	is_query: BOOLEAN
+			-- Is `feature_' a query?
+		do
+			Result := feature_.has_return_value
+		end
 
 feature -- Status report
 
@@ -587,6 +616,9 @@ feature{NONE} -- Implementation
 
 			create changes.make (10)
 			changes.set_key_equality_tester (expression_equality_tester)
+
+			create interface_variable_positions.make (variables.count)
+			interface_variable_positions.set_key_equality_tester (expression_equality_tester)
 		end
 
 	rewritten_contracts (a_assertions: DS_HASH_SET [EPA_EXPRESSION]; a_precondition: BOOLEAN): EPA_STATE

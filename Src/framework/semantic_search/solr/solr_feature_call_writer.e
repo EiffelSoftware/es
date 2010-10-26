@@ -14,6 +14,8 @@ inherit
 
 	SEM_UTILITY
 
+	EPA_SHARED_EQUALITY_TESTERS
+
 create
 	make_with_medium
 
@@ -191,10 +193,113 @@ feature{NONE} -- Implementation
 			append_library
 			append_feature_type
 			append_transition_status
-			append_variables (queryable.inputs.union (queryable.outputs), dynamic_variables_field, True, False, False)
-			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False, True)
-			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True, False)
+--			append_variables (queryable.inputs.union (queryable.outputs), dynamic_variables_field, True, False, False)
+--			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False, True)
+--			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True, False)
+			append_variables (queryable.variables, dynamic_variables_field, True, False, False)
+			append_variables (queryable.variables, variables_field, True, False, True)
+			append_variables (queryable.variables, variable_types_field, False, True, False)
+			append_interface_variable_positions
 			append_content
+		end
+
+	append_interface_variable_positions
+			-- Append position information for interface variables into `medium'.
+		local
+			l_arg_count: INTEGER
+			l_vars: DS_HASH_SET [EPA_EXPRESSION]
+		do
+				-- For target variable.
+			create l_vars.make (1)
+			l_vars.set_equality_tester (expression_equality_tester)
+			l_vars.force_last (queryable.reversed_variable_position.item (0))
+			append_interface_variable_positions_internal (l_vars, target_varaible_short)
+
+				-- For result variable.
+			if queryable.is_query then
+				create l_vars.make (1)
+				l_vars.set_equality_tester (expression_equality_tester)
+				l_vars.force_last (queryable.reversed_variable_position.item (queryable.argument_count + 1))
+				append_interface_variable_positions_internal (l_vars, result_varaible_short)
+			end
+
+				-- For argument variables.
+			if queryable.argument_count > 0 then
+				create l_vars.make (queryable.argument_count)
+				l_vars.set_equality_tester (expression_equality_tester)
+				across 1 |..| queryable.argument_count as l_arg_indexes loop
+					l_vars.force_last (queryable.reversed_variable_position.item (l_arg_indexes.item))
+				end
+				append_interface_variable_positions_internal (l_vars, argument_variable_short)
+			end
+
+				-- For particular variables.
+			if queryable.argument_count > 0 then
+				across 1 |..| queryable.argument_count as l_arg_indexes loop
+					create l_vars.make (queryable.argument_count)
+					l_vars.set_equality_tester (expression_equality_tester)
+					l_vars.force_last (queryable.reversed_variable_position.item (l_arg_indexes.item))
+					append_interface_variable_positions_internal (l_vars, one_argument_variable_short + "_" + l_arg_indexes.item.out)
+				end
+			end
+
+				-- For operand variables (target + argument).
+			if queryable.argument_count > 0 then
+				create l_vars.make (queryable.argument_count + 1)
+				l_vars.set_equality_tester (expression_equality_tester)
+				across 0 |..| queryable.argument_count as l_arg_indexes loop
+					l_vars.force_last (queryable.reversed_variable_position.item (l_arg_indexes.item))
+				end
+				append_interface_variable_positions_internal (l_vars, operand_variable_short)
+			end
+
+				-- For interface variables (target + argument + result).
+			if queryable.argument_count > 0 then
+				create l_vars.make (queryable.argument_count + 2)
+				l_vars.set_equality_tester (expression_equality_tester)
+				across 0 |..| (queryable.interface_variable_count - 1) as l_arg_indexes loop
+					l_vars.force_last (queryable.reversed_variable_position.item (l_arg_indexes.item))
+				end
+				append_interface_variable_positions_internal (l_vars, interface_variable_short)
+			end
+		end
+
+	append_interface_variable_positions_internal (a_vars: DS_HASH_SET [EPA_EXPRESSION]; a_category: STRING)
+			-- Append position information for interface variables into `medium'.
+		local
+			l_dfield_value, l_sfield_value: STRING
+			l_meta_field_value: STRING
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_var_name: STRING
+			l_var_position: INTEGER
+		do
+			create l_sfield_value.make (128)
+			create l_dfield_value.make (128)
+			create l_meta_field_value.make (256)
+			from
+				l_cursor := a_vars.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_var_name := l_cursor.item.text
+				l_var_position := queryable.variable_position (l_cursor.item)
+				l_sfield_value.append (queryable.static_type_name_table.item (l_var_name))
+				l_sfield_value.append_character (field_value_separator)
+				l_dfield_value.append (queryable.dynamic_type_name_table.item (l_var_name))
+				l_dfield_value.append_character (field_value_separator)
+
+				l_meta_field_value.append (l_var_position.out)
+				l_meta_field_value.append_character (',')
+				l_meta_field_value.append_boolean (True)
+				l_meta_field_value.append_character (field_value_separator)
+				l_cursor.forth
+			end
+
+			append_string_field (once "t_s_" + a_category, l_sfield_value)
+			append_string_field (once "t_d_" + a_category, l_dfield_value)
+			append_string_field (once "s_s_" + a_category, l_meta_field_value)
+			append_string_field (once "s_d_" + a_category, l_meta_field_value)
 		end
 
 	append_transition_status
@@ -272,9 +377,9 @@ feature{NONE} -- Implementation
 				-- Iterate through all interface contracts from `queryable'.
 			from
 				if queryable.is_passing then
-					l_equations := queryable.interface_equations.new_cursor
+					l_equations := queryable.all_equations.new_cursor
 				else
-					l_equations := queryable.precondition_interface_equations.new_cursor
+					l_equations := queryable.all_precondition_equations.new_cursor
 				end
 				l_equations.start
 			until
