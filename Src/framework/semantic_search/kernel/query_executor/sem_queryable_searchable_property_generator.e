@@ -799,9 +799,9 @@ feature{NONE} -- Implementation
 		do
 			create l_expression.make_with_text (context_class, context_feature, text_from_ast (a_expr), context_class)
 			if a_strict then
-				l_lower := a_integer
-			else
 				l_lower := a_integer + 1
+			else
+				l_lower := a_integer
 			end
 			l_upper := l_lower + 100
 			create l_value.make (l_lower, l_upper)

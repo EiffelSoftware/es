@@ -91,6 +91,7 @@ feature{NONE} -- Implementation
 			l_list: LINKED_LIST [SEM_MATCHING_CRITERION]
 			l_name: STRING
 			l_prefix_generator: like field_prefix_generator
+			l_prefix: STRING
 		do
 			create Result.make (10)
 			Result.compare_objects
@@ -116,8 +117,14 @@ feature{NONE} -- Implementation
 						create l_criterion.make (l_name, l_term_value, l_expr_value_term.operands, a_query_config.queryable.variable_types)
 						l_criterion.set_term (l_term)
 					elseif attached {SEM_VARIABLE_POSITION_TERM} l_term as l_pos_term then
-						l_name := l_prefix_generator.term_prefix (l_term, l_type_form, False) + l_pos_term.field_content_in_type_form (l_type_form)
+						create {IR_INTEGER_RANGE_VALUE} l_term_value.make (0, 65535 * 10)
+
+						l_prefix := l_prefix_generator.term_prefix (l_term, l_type_form, False)
+						l_prefix.remove_head (2)
+						l_prefix.prepend ({SEM_CONSTANTS}.boolean_prefix)
+						l_name :=  l_prefix + l_pos_term.field_content_in_type_form (l_type_form)
 						create l_criterion.make (l_name, l_term_value, l_pos_term.operands, a_query_config.queryable.variable_types)
+						l_criterion.set_term (l_term)
 					end
 					Result.search (l_name)
 					if Result.found then

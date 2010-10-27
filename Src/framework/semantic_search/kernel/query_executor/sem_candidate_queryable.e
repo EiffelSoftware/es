@@ -127,7 +127,20 @@ feature -- Access
 
 	criteria: HASH_TABLE [LINKED_LIST [SEM_MATCHING_CRITERION], STRING]
 			-- Table of criteria that are used for matching
-			-- Key is criteria content, value is the matching criteria of the same content.			
+			-- Key is criteria content, value is the matching criteria of the same content.	
+
+	variable_position_fields: DS_HASH_SET [STRING]
+			-- Set of fields describing variable positions
+		once
+			create Result.make (6)
+			Result.set_equality_tester (string_equality_tester)
+			Result.force_last ("b_s_args")
+			Result.force_last ("b_d_args")
+			Result.force_last ("b_s_opd")
+			Result.force_last ("b_d_opd")
+			Result.force_last ("b_s_ifc")
+			Result.force_last ("b_d_ifc")
+		end
 
 	criteria_by_value (a_criterion_name: STRING; a_value: IR_VALUE): detachable LINKED_LIST [SEM_MATCHING_CRITERION]
 			-- List of matching criterion with `a_criterion_name' and `a_value'
@@ -140,14 +153,18 @@ feature -- Access
 			l_iinternal: like integer_criteria_by_value_internal
 			l_cursor: DS_HASH_TABLE_CURSOR [LINKED_LIST [SEM_MATCHING_CRITERION], INTEGER]
 			l_bool_value: IR_BOOLEAN_VALUE
+			l_vpos_fields: like variable_position_fields
 		do
 			l_internal := criteria_by_value_internal
+			l_vpos_fields := variable_position_fields
 			l_internal.search (a_criterion_name)
 			if l_internal.found then
 				l_tbl := l_internal.found_item
 				l_tbl.search (a_value)
 				if l_tbl.found then
 					Result := l_tbl.found_item
+				elseif l_vpos_fields.has (a_criterion_name) then
+					Result := l_tbl.first
 				elseif attached {IR_INTEGER_RANGE_VALUE} a_value as l_range then
 						-- For integer range values, we do a linear search.
 					l_lower := l_range.lower

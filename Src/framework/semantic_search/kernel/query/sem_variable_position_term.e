@@ -52,7 +52,24 @@ feature -- Access
 			Result.append (once ": ")
 			Result.append (type.name)
 			Result.append (once " at ")
-			Result.append (position.position.out)
+			if position.is_unspecified then
+				if position.is_argument then
+					Result.append (once "some argument")
+				elseif position.is_operand then
+					Result.append (once "some operand")
+				elseif position.is_interface then
+					Result.append (once "some interface variable position")
+				end
+			else
+				if position.is_target then
+					Result.append (once "target")
+				elseif position.is_result then
+					Result.append (once "result")
+				elseif position.is_argument then
+					Result.append (position.position.out)
+					Result.append (once "-th argument")
+				end
+			end
 		end
 
 	field_content_in_static_type_form: STRING
