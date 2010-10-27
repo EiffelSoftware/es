@@ -179,6 +179,8 @@ feature -- Access
 	operand_variable_short: STRING = "opd"
 	interface_variable_short: STRING = "ifc"
 
+	hit_break_points_field: STRING = "hit_breakpoints"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

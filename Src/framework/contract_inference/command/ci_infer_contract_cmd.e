@@ -534,6 +534,21 @@ feature{NONE} -- Actions
 				create last_post_execution_bounded_functions.make (5)
 				last_post_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
 
+					-- Setup breakpoint monitor for `feature_' if the flag is turned on.
+				create last_hit_breakpoints.make (20)
+				if config.is_breakpoint_monitoring_enabled then
+					create last_right_before_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.feat_right_before_test)
+					last_right_before_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_before_test_hit)
+					last_right_before_test_breakpoint_manager.toggle_breakpoints (True)
+
+					create last_right_after_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.feat_right_after_test)
+					last_right_after_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_after_test_hit)
+					last_right_after_test_breakpoint_manager.toggle_breakpoints (True)
+				else
+					last_right_before_test_breakpoint_manager := Void
+					last_right_after_test_breakpoint_manager := Void
+				end
+
 					-- Log information of the newly found test case.
 				log_new_test_case_found (last_test_case_info)
 
@@ -554,10 +569,6 @@ feature{NONE} -- Actions
 				end
 			end
 		end
-
-	las_pre_state_expression_evaluation_manager: like breakpoint_manager_for_expression_evaluation
-	last_post_state_expression_evaluation_manger: like breakpoint_manager_for_expression_evaluation
-			-- Breakpoint expression evaluation manager
 
 	on_state_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE; a_pre_execution: BOOLEAN; a_tc_info: CI_TEST_CASE_INFO; a_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER)
 			-- Action to be performed when expressions are evaluated for test case defined in `a_tc_info'.
@@ -630,6 +641,9 @@ feature{NONE} -- Actions
 					if a_dm.application_status.exception_occurred then
 							-- Avoid deserialization mismatch problem because some test cases
 							-- may not properly serialized. Need to fix this bug. 26.10.2010 Jasonw
+						if config.is_breakpoint_monitoring_enabled then
+							on_right_after_test_hit (Void, Void)
+						end
 						if not a_dm.application_status.exception_meaning.as_lower.has_substring ("mismatch") then
 							if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
 							else
@@ -683,44 +697,34 @@ feature{NONE} -- Actions
 			log_final_contracts
 		end
 
-	log_final_contracts
-			-- Log final contracts in `last_postconditions'.
-		local
-			l_cursor: like last_postconditions.new_cursor
-			l_printer: CI_EXPRESSION_PRINTER
+	on_breakpoint_in_feature_under_test_hit	(a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
+			-- Agent to be called when `a_breakpoint' is hit.
 		do
-				-- Logging.
-			create l_printer.make
-			log_manager.push_info_level
-			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
-			from
-				l_cursor := last_postconditions.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-					-- Remove contracts containing "~" or "is_inserted". Becuase tilta is not supported. And
-					-- `is_inserted' has a questionable implication, and it should not be public. Including it
-					-- messes up the quality of the result. 1.8.2010 Jason.
-				if
---					l_cursor.item.text.has_substring ("~") or
-					l_cursor.item.text.has_substring ("is_inserted")
-				then
-				else
-					log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
-				end
-				l_cursor.forth
-			end
+			last_hit_breakpoints.force_last (a_breakpoint.location.breakable_line_number)
+		end
 
-			from
-				last_sequence_based_contracts.start
-			until
-				last_sequence_based_contracts.after
-			loop
-				log_manager.put_line (once "%T" + last_sequence_based_contracts.item_for_iteration)
-				last_sequence_based_contracts.forth
+	on_right_before_test_hit (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
+			-- Agent to be called when the feature `right_before_test' is hit.
+		do
+			if config.is_breakpoint_monitoring_enabled then
+				create last_feature_under_test_breakpoint_manager.make (last_test_case_info.feature_under_test.written_class, last_test_case_info.feature_under_test.written_class.feature_of_rout_id_set (feature_.rout_id_set))
+				last_feature_under_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_breakpoint_in_feature_under_test_hit)
+				last_feature_under_test_breakpoint_manager.toggle_breakpoints (True)
 			end
-			log_manager.pop_level
+		end
+
+	on_right_after_test_hit (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
+			-- Agent to be called when the feature `right_after_test' is hit.
+		do
+			if last_feature_under_test_breakpoint_manager /= Void then
+				last_feature_under_test_breakpoint_manager.toggle_breakpoints (False)
+			end
+			if last_right_before_test_breakpoint_manager /= Void then
+				last_right_before_test_breakpoint_manager.toggle_breakpoints (False)
+			end
+			if last_right_after_test_breakpoint_manager /= Void then
+				last_right_after_test_breakpoint_manager.toggle_breakpoints (False)
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -751,6 +755,7 @@ feature{NONE} -- Implementation
 				last_test_case_info.is_feature_under_test_creation)
 			l_transition.set_uuid (last_test_case_info.uuid)
 			l_transition.set_is_passing (last_test_case_info.is_passing)
+			l_transition.hit_breakpoints.append (last_hit_breakpoints)
 			if last_pre_execution_evaluations = Void then
 				create last_pre_execution_evaluations.make (0, class_, feature_)
 			end
@@ -1003,6 +1008,47 @@ feature{NONE} -- Implementation
 			a_state.append (l_set)
 		end
 
+
+	log_final_contracts
+			-- Log final contracts in `last_postconditions'.
+		local
+			l_cursor: like last_postconditions.new_cursor
+			l_printer: CI_EXPRESSION_PRINTER
+		do
+				-- Logging.
+			create l_printer.make
+			log_manager.push_info_level
+			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
+			from
+				l_cursor := last_postconditions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+					-- Remove contracts containing "~" or "is_inserted". Becuase tilta is not supported. And
+					-- `is_inserted' has a questionable implication, and it should not be public. Including it
+					-- messes up the quality of the result. 1.8.2010 Jason.
+				if
+--					l_cursor.item.text.has_substring ("~") or
+					l_cursor.item.text.has_substring ("is_inserted")
+				then
+				else
+					log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
+				end
+				l_cursor.forth
+			end
+
+			from
+				last_sequence_based_contracts.start
+			until
+				last_sequence_based_contracts.after
+			loop
+				log_manager.put_line (once "%T" + last_sequence_based_contracts.item_for_iteration)
+				last_sequence_based_contracts.forth
+			end
+			log_manager.pop_level
+		end
+
 feature{NONE} -- Results
 
 	last_test_case_info: CI_TEST_CASE_INFO
@@ -1022,6 +1068,21 @@ feature{NONE} -- Results
 
 	last_serialization_info: CI_TEST_CASE_SERIALIZATION_INFO
 			-- Serialization information of the last executed test case
+
+	last_hit_breakpoints: DS_HASH_SET [INTEGER]
+			-- The list of breakpoint slots that were hit during the last execution
+			-- of `feature_'
+
+	las_pre_state_expression_evaluation_manager: like breakpoint_manager_for_expression_evaluation
+	last_post_state_expression_evaluation_manger: like breakpoint_manager_for_expression_evaluation
+			-- Breakpoint expression evaluation manager
+
+	last_feature_under_test_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Breakpoint manager for `feature_'
+
+	last_right_before_test_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+	last_right_after_test_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Breakpoint manager right before and after execution of the feature under test
 
 feature{NONE} -- Data
 

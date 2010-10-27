@@ -34,6 +34,12 @@ feature -- Access
 	finish_pre_state_calculation_slot: INTEGER
 			-- Break point slot before pre-state serialization calculation
 
+	right_before_test_slot: INTEGER
+			-- Break point slot right before the execution of the feature under test
+
+	right_after_test_slot: INTEGER
+			-- Break point slot right after the execution of the feature under test
+
 feature -- Basic operation
 
 	find_break_points (a_ast: AST_EIFFEL)
@@ -56,6 +62,12 @@ feature{NONE} -- Implementation
 
 	finish_pre_state_calculation_name: STRING = "finish_pre_state_calculation"
 			-- Name for feature `finish_pre_state_calculation'
+
+	right_before_test_name: STRING = "right_before_test"
+			-- Name for feature `right_before_test'
+
+	right_after_test_name: STRING = "right_after_test"
+			-- Name for feature `right_after_test"
 
 feature{NONE} -- Process
 
@@ -81,6 +93,10 @@ feature{NONE} -- Process
 				finish_post_state_calculation_slot := a_ast.breakpoint_slot
 			elseif a_name.is_case_insensitive_equal (finish_pre_state_calculation_name) then
 				finish_pre_state_calculation_slot := a_ast.breakpoint_slot
+			elseif a_name.is_case_insensitive_equal (right_before_test_name) then
+				right_before_test_slot := a_ast.breakpoint_slot
+			elseif a_name.is_case_insensitive_equal (right_after_test_name) then
+				right_after_test_slot := a_ast.breakpoint_slot
 			end
 		end
 

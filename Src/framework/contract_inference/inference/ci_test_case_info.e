@@ -102,6 +102,12 @@ feature -- Access
 	finish_pre_state_calculation_slot: INTEGER
 			-- Break point slot before pre-state calculation finished
 
+	right_before_test_slot: INTEGER
+			-- Break point slot right before the execution of the feature under test
+
+	right_after_test_slot: INTEGER
+			-- Break point slot right after the execution of the feature under test
+
 	operand_map: HASH_TABLE [STRING, INTEGER]
 			-- Map from 0-based operand index in `feature_under_test' to locals in `test_feature'
 			-- Key is operand index, value is the name of local in `test_feature'.
@@ -214,6 +220,18 @@ feature -- Access
 			Result := test_set_class.feature_named ("setup_before_test")
 		end
 
+	feat_right_before_test: FEATURE_I
+			-- Feature `right_before_test'
+		do
+			Result := test_set_class.feature_named ("right_before_test")
+		end
+
+	feat_right_after_test: FEATURE_I
+			-- Feature `right_after_test'
+		do
+			Result := test_set_class.feature_named ("right_after_test")
+		end
+
 	calculate_break_point_position
 			-- Calculate `before_test_break_point_slot' and `after_test_break_point_slot'.
 		local
@@ -231,6 +249,8 @@ feature -- Access
 			after_test_break_point_slot := l_bp_finder.after_test_break_point_slot
 			finish_post_state_calculation_slot := l_bp_finder.finish_post_state_calculation_slot
 			finish_pre_state_calculation_slot := l_bp_finder.finish_pre_state_calculation_slot
+			right_before_test_slot := l_bp_finder.right_before_test_slot
+			right_after_test_slot := l_bp_finder.right_after_test_slot
 		end
 
 	setup_operand_map (a_operands: STRING)

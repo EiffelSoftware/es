@@ -45,15 +45,17 @@ feature -- Basic operations
 			create l_concrete_state.make (l_exprs.count, class_, feature_)
 
 				-- Evaluate `expressions'.
-			from
-				l_cursor := l_exprs.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				create l_state_value.make (l_cursor.item, evaluated_value_from_debugger (a_dm, l_cursor.item))
-				l_concrete_state.force_last (l_state_value)
-				l_cursor.forth
+			if l_exprs /= Void and then not l_exprs.is_empty then
+				from
+					l_cursor := l_exprs.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					create l_state_value.make (l_cursor.item, evaluated_value_from_debugger (a_dm, l_cursor.item))
+					l_concrete_state.force_last (l_state_value)
+					l_cursor.forth
+				end
 			end
 
 				-- Call agents.

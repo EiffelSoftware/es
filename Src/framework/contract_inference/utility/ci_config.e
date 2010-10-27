@@ -296,6 +296,10 @@ feature -- Access
 			Result := should_generate_mocking or should_generate_solr
 		end
 
+	is_breakpoint_monitoring_enabled: BOOLEAN
+			-- Should breakpoints in feature under analysis be monitored?
+			-- Default: False
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -582,6 +586,14 @@ feature -- Setting
 			should_generate_solr := b
 		ensure
 			should_generate_solr_set: should_generate_solr = b
+		end
+
+	set_is_breakpoint_monitoring_enabled (b: BOOLEAN)
+			-- Set `is_breakpoint_monitoring_enabled' with `b'.
+		do
+			is_breakpoint_monitoring_enabled := b
+		ensure
+			is_breakpoint_monitoring_enabled_set: is_breakpoint_monitoring_enabled = b
 		end
 
 feature{NONE} -- Implementation

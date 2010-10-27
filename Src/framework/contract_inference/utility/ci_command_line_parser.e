@@ -65,6 +65,7 @@ feature -- Basic operations
 			l_generate_mock_option: AP_FLAG
 			l_use_mock_option: AP_FLAG
 			l_solr_option: AP_STRING_OPTION
+			l_breakpoint_monitoring_flag: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -211,6 +212,10 @@ feature -- Basic operations
 			l_solr_option.set_description ("Enable generating solr files. Format: --generate-solr [on|off]. Default: off")
 			l_parser.options.force_last (l_solr_option)
 
+			create l_breakpoint_monitoring_flag.make_with_long_form ("monitor-breakpoint")
+			l_breakpoint_monitoring_flag.set_description ("Should breakpoint visit status of feature under analysis be monitored? Default: False")
+			l_parser.options.force_last (l_breakpoint_monitoring_flag)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -345,6 +350,10 @@ feature -- Basic operations
 				setup_generate_solr_property (config, l_solr_option.parameter)
 			else
 				setup_generate_solr_property (config, Void)
+			end
+
+			if l_breakpoint_monitoring_flag.was_found then
+				config.set_is_breakpoint_monitoring_enabled (True)
 			end
 
 			config.set_should_use_mocking (l_use_mock_option.was_found)

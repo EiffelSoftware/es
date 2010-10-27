@@ -49,6 +49,7 @@ feature{NONE} -- Initialization
 			create postconditions.make (20, context.class_, context.feature_)
 			create written_preconditions.make (5, context.class_, context.feature_)
 			create written_postconditions.make (5, context.class_, context.feature_)
+			create hit_breakpoints.make (20)
 			initialize (a_operands)
 		end
 
@@ -78,6 +79,7 @@ feature{NONE} -- Initialization
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
 			changes := a_transition.changes.cloned_object
+			hit_breakpoints := a_transition.hit_breakpoints.cloned_object
 			set_is_passing (a_transition.is_passing)
 			interface_variable_positions := a_transition.interface_variable_positions.cloned_object
 		end
@@ -101,7 +103,7 @@ feature{NONE} -- Initialization
 			written_preconditions := a_transition.written_preconditions.cloned_object
 			written_postconditions := a_transition.written_postconditions.cloned_object
 			interface_variable_positions := a_transition.interface_variable_positions.cloned_object
-
+			hit_breakpoints := a_transition.hit_breakpoints.cloned_object
 				-- Initialize interface changes.
 			from
 				l_postconditions := postconditions
@@ -397,6 +399,9 @@ feature -- Access
 				Result := Result +  1
 			end
 		end
+
+	hit_breakpoints: DS_HASH_SET [INTEGER]
+			-- List of breakpoints that are hit during the execution of Current transition
 
 feature -- Status report
 

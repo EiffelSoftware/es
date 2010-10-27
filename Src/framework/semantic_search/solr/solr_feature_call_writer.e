@@ -201,6 +201,29 @@ feature{NONE} -- Implementation
 			append_variables (queryable.variables, variable_types_field, False, True, False)
 			append_interface_variable_positions
 			append_content
+			append_hit_breakpoints
+		end
+
+	append_hit_breakpoints
+			-- Append hit breakpoint information into `medium'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
+			l_data: STRING
+		do
+			create l_data.make (128)
+			from
+				l_cursor := queryable.hit_breakpoints.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if not l_data.is_empty then
+					l_data.append_character (',')
+				end
+				l_data.append_integer (l_cursor.item)
+				l_cursor.forth
+			end
+			append_string_field (hit_break_points_field, l_data)
 		end
 
 	append_interface_variable_positions
