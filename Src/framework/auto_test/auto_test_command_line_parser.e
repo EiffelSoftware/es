@@ -89,6 +89,7 @@ feature{NONE} -- Initialization
 			l_7times_option: AP_STRING_OPTION
 			l_8times_option: AP_STRING_OPTION
 			l_9times_option: AP_STRING_OPTION
+			l_freeze_flag: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -319,6 +320,10 @@ feature{NONE} -- Initialization
 			create l_9times_option.make_with_long_form ("9times")
 			l_9times_option.set_description ("Enable features to be tested more often with strength 9 (larger is better). Format (feature_name|CLASS_NAME.feature_name)[,(feature_name|CLASS_NAME.feature_name)]+. If only feature_name is specified, any feature with that name is matched.")
 			parser.options.force_last (l_9times_option)
+
+			create l_freeze_flag.make_with_short_form ('f')
+			l_freeze_flag.set_description ("Freeze the target system before testing. Default: False")
+			parser.options.force_last (l_freeze_flag)
 
 			parser.parse_list (a_arguments)
 
@@ -763,6 +768,10 @@ feature{NONE} -- Initialization
 				setup_popular_features (l_9times_option.parameter, 9)
 			end
 
+			if not error_handler.has_error and then l_freeze_flag.was_found then
+				should_freeze_before_testing := True
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1057,6 +1066,10 @@ feature -- Status report
 
 	is_collecting_interface_related_classes: BOOLEAN
 			-- Is this AutoTest session for collecting interface related classes?
+
+	should_freeze_before_testing: BOOLEAN
+			-- Should the target system be freezed before testing?
+			-- Default: False
 
 feature {NONE} -- Constants
 

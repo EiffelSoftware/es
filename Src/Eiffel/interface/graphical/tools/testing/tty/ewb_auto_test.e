@@ -222,6 +222,7 @@ feature -- Execution
 				l_generator.popular_features.append (l_ap.popular_features)
 
 				l_generator.set_collecting_interface_related_classes (l_ap.is_collecting_interface_related_classes)
+				l_generator.set_should_freeze_before_testing (l_ap.should_freeze_before_testing)
 
 				a_test_suite.launch_session (l_generator)
 			else

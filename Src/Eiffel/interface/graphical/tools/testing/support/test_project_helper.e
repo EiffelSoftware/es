@@ -16,7 +16,8 @@ inherit
 			can_run,
 			compile,
 			cancel_compilation,
-			run
+			run,
+			freeze
 		end
 
 feature -- Status report
@@ -42,6 +43,14 @@ feature -- Basic operations
 			if eiffel_project.freezing_occurred then
 				eiffel_project.call_finish_freezing_and_wait (True)
 			end
+		end
+
+	freeze
+			-- Freeze `project'.
+			--
+			-- Note: this routine will not return until compilation has stopped.
+		do
+			eiffel_project.freeze
 		end
 
 	cancel_compilation

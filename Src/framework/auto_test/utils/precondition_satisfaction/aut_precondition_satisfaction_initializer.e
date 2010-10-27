@@ -19,7 +19,6 @@ feature -- Basic operations
 			if a_config.is_precondition_checking_enabled then
 					-- Get the list of all features under test.
 				class_types_under_test.append_last (a_config.types_under_test)
-				features_under_test.append_last (testable_features_from_types (class_types_under_test, system))
 				setup_feature_id_table
 
 					-- Find out all preconditions.

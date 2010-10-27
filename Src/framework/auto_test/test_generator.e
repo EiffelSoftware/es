@@ -175,6 +175,9 @@ feature -- Options: basic
 	types_under_test: DS_LIST [CL_TYPE_A]
 			-- Types under test
 
+	should_freeze_before_testing: BOOLEAN
+			-- Should the target system be freezed before testing?
+
 feature -- Options: logging
 
 	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
@@ -936,6 +939,14 @@ feature -- Status setting
 			status_set: is_collecting_interface_related_classes = b
 		end
 
+	set_should_freeze_before_testing (b: BOOLEAN)
+			-- Set `should_freeze_before_testing' with `b'.
+		do
+			should_freeze_before_testing := b
+		ensure
+			should_freeze_before_testing_set: should_freeze_before_testing = b
+		end
+
 feature -- Basic operations
 
 	step
@@ -1135,6 +1146,7 @@ feature -- Precondition satisfaction
 			-- Find types under test and add them into `configuration'.`types_under_test'.
 		do
 			set_types_under_test (types_under_test_from_names (class_names, system.root_type.associated_class))
+			features_under_test.append (testable_features_from_types (types_under_test, system))
 		end
 
 	types_under_test_from_names (a_list: detachable DS_HASH_SET [STRING_8]; a_context: CLASS_C): DS_LINKED_LIST [CL_TYPE_A]

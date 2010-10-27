@@ -54,6 +54,19 @@ feature -- Status report
 	is_successful: BOOLEAN
 			-- Was project successfully melted?
 
+	is_freezing_needed: BOOLEAN
+			-- Is freezing needed?
+
+feature -- Setting
+
+	set_is_freezing_needed (b: BOOLEAN)
+			-- Set `is_freezing_needed' with `b'.
+		do
+			is_freezing_needed := b
+		ensure
+			is_freezing_needed_set: is_freezing_needed = b
+		end
+
 feature {NONE} -- Status report
 
 	force_recompilation: BOOLEAN
@@ -134,6 +147,10 @@ feature {NONE} -- Implementation
 							compilation_requested := False
 						end)
 				l_helper.compile
+				if is_freezing_needed then
+					l_helper.freeze
+					project.call_finish_freezing_and_wait (True)
+				end
 			end
 		end
 
@@ -150,7 +167,7 @@ invariant
 	not_force_and_requested: not (force_recompilation and compilation_requested)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

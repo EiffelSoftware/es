@@ -126,6 +126,16 @@ feature -- Basic operations
 		deferred
 		end
 
+	freeze
+			-- Freeze `project'.
+			--
+			-- Note: this routine will not return until compilation has stopped.
+		require
+			usable: is_interface_usable
+			compilable: can_compile
+		deferred
+		end
+
 	cancel_compilation
 			-- Cancel any current compilation.
 		require
@@ -149,7 +159,7 @@ feature -- Basic operations
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

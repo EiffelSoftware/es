@@ -357,7 +357,8 @@ feature{NONE} -- Implementation
 			loop
 				l_text.append (l_variables.key_for_iteration)
 				l_text.append (once ": ")
-				l_text.append (l_variables.item_for_iteration.name)
+
+				l_text.append (output_type_name (l_variables.item_for_iteration.name))
 				l_text.append_character ('%N')
 				l_variables.forth
 			end

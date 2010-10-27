@@ -116,6 +116,7 @@ feature {NONE} -- Basic operations
 		do
 			l_system := system
 			check l_system /= Void end
+
 				-- Create actual root class in EIFGENs cluster
 			l_dir := l_system.project_location
 			create l_file_name.make_from_string (l_dir.eifgens_cluster_path)
@@ -144,6 +145,7 @@ feature {NONE} -- Basic operations
 					end, True)
 
 			l_melt := new_melt_task
+			l_melt.set_is_freezing_needed (should_freeze_before_testing)
 			l_melt.start (True)
 			sub_task := l_melt
 		end
