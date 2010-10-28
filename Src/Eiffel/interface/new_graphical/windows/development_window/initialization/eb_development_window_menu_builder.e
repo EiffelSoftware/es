@@ -1220,6 +1220,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			end
 			insert_show_tool_menu_item (Result, {ES_JSTAR_PROOFS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_EVE_PROOFS_TOOL})
+			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
 
 --			l_customized_tools := develop_window.tools.customized_tools

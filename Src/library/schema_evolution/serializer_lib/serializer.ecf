@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="serializer" uuid="C03E8B11-069C-45E2-84E9-570F91679948" library_target="serializer">
+	<target name="serializer">
+		<description>Serialization library, see http://escher.ethz.ch for more informations.</description>
+		<root all_classes="true"/>
+		<option syntax="standard">
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<cluster name="serializer" location=".\" recursive="true">
+			<option namespace="Base">
+			</option>
+		</cluster>
+	</target>
+</system>
