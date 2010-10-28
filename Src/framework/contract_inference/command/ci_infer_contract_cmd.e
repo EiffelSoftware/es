@@ -548,6 +548,7 @@ feature{NONE} -- Actions
 					last_right_before_test_breakpoint_manager := Void
 					last_right_after_test_breakpoint_manager := Void
 				end
+				last_feature_under_test_breakpoint_manager := Void
 
 					-- Log information of the newly found test case.
 				log_new_test_case_found (last_test_case_info)
@@ -813,6 +814,7 @@ feature{NONE} -- Implementation
 			end
 
 			transition_data.extend (l_transition_info)
+			last_feature_under_test_breakpoint_manager := Void
 		end
 
 	setup_inferrers

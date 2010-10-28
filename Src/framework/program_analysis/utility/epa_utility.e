@@ -106,13 +106,20 @@ feature -- AST
 			-- Void if context transformation failed.
 		local
 			l_transformable: ETR_TRANSFORMABLE
+			l_retried: BOOLEAN
 		do
-			etr_error_handler.reset_errors
-			create l_transformable.make (a_ast, a_source_context, True)
-			Result := l_transformable.as_in_other_context (a_target_context)
-			if etr_error_handler.has_errors then
-				Result := Void
+			if not l_retried then
+				etr_error_handler.reset_errors
+				create l_transformable.make (a_ast, a_source_context, True)
+				Result := l_transformable.as_in_other_context (a_target_context)
+				if etr_error_handler.has_errors then
+					Result := Void
+				end
 			end
+		rescue
+			l_retried := True
+			Result := Void
+			retry
 		end
 
 	ast_in_context_class (a_ast: AST_EIFFEL; a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C): AST_EIFFEL

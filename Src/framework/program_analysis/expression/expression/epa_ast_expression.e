@@ -300,11 +300,11 @@ feature{NONE} -- Implementation
 			l_feature_ctxt: ETR_FEATURE_CONTEXT
 		do
 			if context_internal = Void then
+				create l_class_ctxt.make (class_)
 				if attached {FEATURE_I} feature_ as l_feat then
-					create l_feature_ctxt.make (feature_, Void)
+					create l_feature_ctxt.make (feature_, l_class_ctxt)
 					context_internal := l_feature_ctxt
 				else
-					create l_class_ctxt.make (class_)
 					context_internal := l_class_ctxt
 				end
 			end

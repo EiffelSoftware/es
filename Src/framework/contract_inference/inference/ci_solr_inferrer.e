@@ -123,20 +123,29 @@ feature{NONE} -- Implementation
 			l_file: PLAIN_TEXT_FILE
 			l_object_writer: SOLR_OBJECTS_WRITER
 			l_objects: SEM_OBJECTS
+			l_retried: BOOLEAN
 		do
-			create l_file.make_create_read_write (a_file_path)
-			if a_transition_data.transition.is_passing then
-				create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
-				l_objects.set_properties (a_transition_data.transition.postconditions)
-			else
-				create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
-				l_objects.set_properties (a_transition_data.transition.preconditions)
-			end
+			if not l_retried then
+				create l_file.make_create_read_write (a_file_path)
+				if a_transition_data.transition.is_passing then
+					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
+					l_objects.set_properties (a_transition_data.transition.postconditions)
+				else
+					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
+					l_objects.set_properties (a_transition_data.transition.preconditions)
+				end
 
-			create l_writer.make_with_medium (l_file)
-			l_writer.set_uuid (a_uuid)
-			l_writer.write (l_objects)
-			l_file.close
+				create l_writer.make_with_medium (l_file)
+				l_writer.set_uuid (a_uuid)
+				l_writer.write (l_objects)
+				l_file.close
+			end
+		rescue
+			l_retried := True
+			if l_file /= Void and then l_file.is_open_write then
+				l_file.close
+			end
+			retry
 		end
 
 end
