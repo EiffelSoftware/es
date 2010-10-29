@@ -35,8 +35,7 @@ create
 	make_with_text,
 	make_with_text_and_type,
 	make_with_type,
-	make_with_feature,
-	make_with_text_and_context
+	make_with_feature
 
 feature{NONE} -- Initialization
 
@@ -53,13 +52,6 @@ feature{NONE} -- Initialization
 			else
 				check should_not_happen: False end
 			end
-		end
-
-	make_with_text_and_context (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_context: like context)
-			-- Initialize Current.
-		do
-			context_internal := a_context
-			make_with_text (a_class, a_feature, a_text, a_written_class)
 		end
 
 	make_with_text_and_type (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_type: like type)
@@ -110,15 +102,6 @@ feature{NONE} -- Initialization
 			set_type (a_type)
 			set_text (text_from_ast (a_expression))
 		end
-
---	make_with_context (a_text: like text; a_written_class: like written_class; a_context: SEM_TRANSITION_CONTEXT)
---			-- Initialize the expression.
---		do
---			set_class (a_context.class_)
---			set_feature (a_context.feature_)
---			set_written_class (a_written_class)
---			p
---		end
 
 feature -- Access
 
@@ -245,12 +228,17 @@ feature{NONE} -- Implementation
 			l_checker := expression_type_checker
 			l_check_post := l_checker.is_checking_postcondition
 			l_checker.set_is_checking_postcondition (has_old_expression)
-			l_checker.check_ast_type (ast, context)
+
+			l_checker.check_expression_type (ast, feature_, class_)
 			l_checker.set_is_checking_postcondition (l_check_post)
-			set_has_type_error (l_error_handler.has_errors)
-			if not has_type_error then
-				type := l_checker.last_type.actual_type
-			end
+			type := l_checker.last_type
+
+--			l_checker.check_ast_type (ast, context)
+--			l_checker.set_is_checking_postcondition (l_check_post)
+--			set_has_type_error (l_error_handler.has_errors)
+--			if not has_type_error then
+--				type := l_checker.last_type.actual_type
+--			end
 		ensure
 			type_attached: not has_type_error implies type /= Void
 		end
@@ -292,26 +280,5 @@ feature{NONE} -- Implementation
 			create Result.make_with_factory (create {EPA_EXPRESSION_AST_FACTORY})
 			Result.set_expression_parser
 		end
-
-	context: ETR_CONTEXT
-			-- Context for Current expression
-		local
-			l_class_ctxt: ETR_CLASS_CONTEXT
-			l_feature_ctxt: ETR_FEATURE_CONTEXT
-		do
-			if context_internal = Void then
-				create l_class_ctxt.make (class_)
-				if attached {FEATURE_I} feature_ as l_feat then
-					create l_feature_ctxt.make (feature_, l_class_ctxt)
-					context_internal := l_feature_ctxt
-				else
-					context_internal := l_class_ctxt
-				end
-			end
-			Result := context_internal
-		end
-
-	context_internal: detachable like context
-			-- Cache for `context'
 
 end

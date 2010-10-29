@@ -328,11 +328,11 @@ feature{NONE} -- Implementation
 						-- Create function argument for argument.
 					l_actual_args.force_last (
 						create {EPA_FUNCTION}.make_from_expression (
-							create {EPA_AST_EXPRESSION}.make_with_text_and_context (
+							create {EPA_AST_EXPRESSION}.make_with_text (
 								context.class_,
 								context.feature_,
 								l_argument_variable,
-								context.class_, context.feature_context)))
+								context.feature_.written_class)))
 				else
 					create l_argument_types.make (1, 1)
 					l_argument_types.put (l_target_type, 1)

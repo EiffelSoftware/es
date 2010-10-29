@@ -38,6 +38,7 @@ feature -- Conversion
 		end
 
 feature -- Access
+
 	written_class: CLASS_C
 			-- Compiled class that belongs to this context
 

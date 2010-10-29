@@ -7,6 +7,13 @@ note
 class
 	SEM_TEST
 
+inherit
+	IR_TERM_OCCURRENCE
+
+	SEM_FIELD_NAMES
+
+	EPA_UTILITY
+
 feature -- Basic operations
 
 	test_search_for_feature (a_class_name: STRING; a_feature_name: STRING; a_rows: INTEGER)
@@ -58,6 +65,30 @@ feature -- Basic operations
 
 			io.put_string (l_matcher.last_match_start_time.out + "%N")
 			io.put_string (l_matcher.last_match_end_time.out + "%N")
+		end
+
+	test_for_find_unvisited_breakpoints (a_class: STRING; a_feature: STRING)
+			-- Search for breakpoints in `a_feature' from `a_class' that are not visited in
+			-- all the test cases for that feature in the search system.
+		local
+			l_bp_collector: SEM_BREAKPOINT_VISIT_STATUS_COLLECTOR
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+		do
+			create l_bp_collector
+			l_class := first_class_starts_with_name (a_class)
+			l_feature := l_class.feature_named (a_feature)
+
+			l_bp_collector.collect (l_class, l_feature)
+			io.put_string ("---------------------------------------------------%N")
+			io.put_string (l_class.name + "." + l_feature.feature_name + "%N")
+			io.put_string ("All break points: " + l_bp_collector.dumped_integer_sets (l_bp_collector.breakpoints) + "%N")
+			io.put_string ("In passing tests: " + l_bp_collector.dumped_integer_sets (l_bp_collector.visited_breakpoints_in_passing_tests) + "%N")
+			io.put_string ("In failing tests: " + l_bp_collector.dumped_integer_sets (l_bp_collector.visited_breakpoints_in_failing_tests) + "%N")
+			io.put_string ("Unvisited points: " +
+				l_bp_collector.dumped_integer_sets (
+					l_bp_collector.breakpoints.subtraction (l_bp_collector.visited_breakpoints_in_passing_tests).subtraction (l_bp_collector.visited_breakpoints_in_failing_tests)) + "%N")
+
 		end
 
 end

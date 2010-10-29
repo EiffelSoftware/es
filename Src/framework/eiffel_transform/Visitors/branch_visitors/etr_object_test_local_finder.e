@@ -17,7 +17,7 @@ inherit
 	ETR_SHARED_TOOLS
 
 	ETR_SHARED_LOGGER
-	
+
 create
 	make
 
@@ -72,7 +72,11 @@ feature {AST_EIFFEL} -- Roundtrip
 				end
 
 				if l_written_type/=void and then l_written_type.is_valid then
-					l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class, l_feat_context.written_feature)
+					if l_feat_context /= Void then
+						l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class, l_feat_context.written_feature)
+					else
+						l_explicit_type := type_checker.explicit_type (l_written_type, context.class_context.written_class, Void)
+					end
 
 					-- check if name already exists
 					from

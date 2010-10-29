@@ -12,6 +12,8 @@ inherit
 
 	IR_QUERY_VISITOR
 
+	EXECUTION_ENVIRONMENT
+
 create
 	make
 
@@ -71,23 +73,33 @@ feature{NONE} -- Query
 			l_xml_parser: IR_VERY_SIMPLE_XML_PARSER
 			l_time1, l_time2: DATE_TIME
 			l_file2: RAW_FILE
-
+			l_query_file: FILE_NAME
+			l_result_file: FILE_NAME
 		do
+			if {PLATFORM}.is_unix or {PLATFORM}.is_mac then
+				create l_query_file.make_from_string ("/tmp")
+				create l_result_file.make_from_string ("/tmp")
+			else
+				create l_query_file.make_from_string (environ.item ("TEMP").string)
+				create l_result_file.make_from_string (environ.item ("TEMP").string)
+			end
+			l_query_file.set_file_name ("query.txt")
+			l_result_file.set_file_name ("result.txt")
 			create l_time1.make_now
 			l_query := query_request (query_syntax_from_query (a_query))
-			create l_file2.make_create_read_write ("/tmp/query.txt")
+			create l_file2.make_create_read_write (l_query_file)
 			l_file2.put_string (l_query)
 			l_file2.close
 				-- Execute query.
 			l_result := raw_result_from_query (l_query)
 
 				-- Store data in a file so it can be used by the XML parser.
-			create l_file.make_create_read_write ("/tmp/result.xml")
+			create l_file.make_create_read_write (l_result_file)
 			l_file.put_string (l_result)
 			l_file.close
 
 				-- Parse xml file to get result.
-			create l_xml_parser.make ("/tmp/result.xml")
+			create l_xml_parser.make (l_result_file)
 			l_xml_parser.analyze_file
 			last_result := l_xml_parser.last_result
 			create l_time2.make_now

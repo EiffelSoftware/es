@@ -21,13 +21,13 @@ feature -- New (Universe-dependant)
 			create Result.make (a_ast, create {ETR_CLASS_CONTEXT}.make(a_class), true)
 		end
 
-	new_transformable_in_feature (a_ast: AST_EIFFEL; a_feature: FEATURE_I): ETR_TRANSFORMABLE
-			-- Returns a transformable of `a_ast' in the context of `a_feature'
-		require
-			non_void: a_feature /= void and a_ast /= void
-		do
-			create Result.make (a_ast, create {ETR_FEATURE_CONTEXT}.make(a_feature, void), true)
-		end
+--	new_transformable_in_feature (a_ast: AST_EIFFEL; a_feature: FEATURE_I): ETR_TRANSFORMABLE
+--			-- Returns a transformable of `a_ast' in the context of `a_feature'
+--		require
+--			non_void: a_feature /= void and a_ast /= void
+--		do
+--			create Result.make (a_ast, create {ETR_FEATURE_CONTEXT}.make(a_feature, void), true)
+--		end
 
 	new_class_transformable (a_name: STRING): ETR_TRANSFORMABLE
 			-- Returns the transformable for the class with `a_name'
@@ -53,11 +53,12 @@ feature -- New (Universe-dependant)
 			non_void: a_classname /= void and a_featurename /= void
 		local
 			l_feat: FEATURE_I
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
 			l_feat := feature_of_compiled_class(a_classname, a_featurename)
-
+			create l_class_ctxt.make (compiled_class_with_name (a_classname))
 			if l_feat /= void then
-				create Result.make (l_feat.e_feature.ast, create {ETR_FEATURE_CONTEXT}.make(l_feat, void), true)
+				create Result.make (l_feat.e_feature.ast, create {ETR_FEATURE_CONTEXT}.make(l_feat, l_class_ctxt), true)
 			else
 				create Result.make_invalid
 			end

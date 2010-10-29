@@ -163,11 +163,14 @@ feature -- AST
 
 	context_from_class_feature (a_class: CLASS_C; a_feature: detachable FEATURE_I): ETR_CONTEXT
 			-- Context from `a_class' and possibly `a_feature'
+		local
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
+			create l_class_ctxt.make (a_class)
 			if a_feature = Void then
-				create {ETR_CLASS_CONTEXT} Result.make (a_class)
+				Result := l_class_ctxt
 			else
-				create {ETR_FEATURE_CONTEXT} Result.make (a_feature, create {ETR_CLASS_CONTEXT}.make (a_class))
+				create {ETR_FEATURE_CONTEXT} Result.make (a_feature, l_class_ctxt)
 			end
 		end
 

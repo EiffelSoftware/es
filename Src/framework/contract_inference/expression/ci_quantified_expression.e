@@ -80,6 +80,7 @@ feature -- Access
 			l_done: BOOLEAN
 			l_hashable_class: CLASS_C
 			l_hashable_type: TYPE_A
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
 			l_hashable_class := first_class_starts_with_name (once "HASHABLE")
 			l_hashable_type := l_hashable_class.actual_type
@@ -96,8 +97,8 @@ feature -- Access
 					l_names := preferred_object_names
 				end
 			end
-
-			create l_ctxt.make (a_feature, Void)
+			create l_class_ctxt.make (a_class)
+			create l_ctxt.make (a_feature, l_class_ctxt)
 			l_cursor := l_names.cursor
 			from
 				l_names.start

@@ -33,10 +33,12 @@ feature -- New
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
 			l_class := compiled_class_with_name (a_classname)
 			l_feat := l_class.feature_named (a_featurename)
-			create Result.make (l_feat, create {ETR_CLASS_CONTEXT}.make(l_class))
+			create l_class_ctxt.make (l_class)
+			create Result.make (l_feat, l_class_ctxt)
 		end
 
 	new_empty_context: ETR_CONTEXT

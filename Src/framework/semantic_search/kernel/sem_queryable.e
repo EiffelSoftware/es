@@ -561,12 +561,14 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_context: like context
 			l_equation: EPA_EQUATION
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
 				-- Calculate source and target context.
+			create l_class_ctxt.make (a_source_state.class_)
 			if attached {FEATURE_I} a_source_state.feature_ as l_feature then
-				create {ETR_FEATURE_CONTEXT} l_source_context.make (l_feature, create {ETR_CLASS_CONTEXT}.make (a_source_state.class_))
+				create {ETR_FEATURE_CONTEXT} l_source_context.make (l_feature, l_class_ctxt)
 			else
-				create {ETR_CLASS_CONTEXT} l_source_context.make (a_source_state.class_)
+				l_source_context := l_class_ctxt
 			end
 			l_target_context := context.feature_context
 

@@ -40,7 +40,6 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-
 	type_a_from_string (a_name: STRING; a_context_class: CLASS_C): TYPE_A
 			-- Type parsed from `a_name'
 			-- If `a_name' is "NONE", return {NONE_A}.
@@ -85,7 +84,7 @@ feature -- Access
 		do
 			Result := type_a_from_string (a_name, workbench.system.root_type.associated_class)
 		end
-		
+
 	output_type_name (a_type: STRING): STRING
 			-- Formatted type name from `a_type'
 		do

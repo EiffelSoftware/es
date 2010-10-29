@@ -89,7 +89,7 @@ feature {NONE} -- Creation
 			end
 		end
 
-	make (a_written_feature: like written_feature; a_class_context: detachable like class_context)
+	make (a_written_feature: like written_feature; a_class_context: like class_context)
 			-- Make with `a_written_feature' and use the existing `a_class_context'.
 			-- If void, create it.
 		local
@@ -99,17 +99,20 @@ feature {NONE} -- Creation
 			l_name: STRING
 			l_written_type: TYPE_A
 			l_ot_extractor: ETR_OBJECT_TEST_LOCAL_EXTRACTOR
+			l_context_class: CLASS_C
+			l_written_class: CLASS_C
 		do
-			if attached a_class_context then
-				class_context := a_class_context
-			else
-				create class_context.make (a_written_feature.written_class)
-			end
+			l_written_class := a_written_feature.written_class
+			l_context_class := a_class_context.context_class
+			class_context := a_class_context
 
 			-- compute explicit type
 			if a_written_feature.has_return_value then
 				unresolved_type := a_written_feature.type
-				type := type_checker.explicit_type (a_written_feature.type, class_context.written_class, a_written_feature)
+				type := type_checker.explicit_type (a_written_feature.type, l_context_class, a_written_feature)
+				if type = Void then
+					type := type_checker.explicit_type (a_written_feature.type, l_written_class, a_written_feature)
+				end
 				has_return_value := true
 			end
 
@@ -119,7 +122,7 @@ feature {NONE} -- Creation
 			l_e_feat := a_written_feature.e_feature
 
 			if attached l_e_feat.arguments then
-				-- store arguments
+				-- store arguments				
 				from
 					create l_arg_list.make
 					l_e_feat.arguments.start
@@ -127,7 +130,10 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, class_context.written_class, a_written_feature)
+					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_context_class, a_written_feature)
+					if l_expl_type = Void then
+						l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_written_class, a_written_feature)
+					end
 					l_name := l_e_feat.argument_names.item
 					l_arg_list.extend (create {ETR_TYPED_VAR}.make (l_name, l_expl_type, l_e_feat.arguments.item))
 

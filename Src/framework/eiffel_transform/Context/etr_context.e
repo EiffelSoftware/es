@@ -30,17 +30,16 @@ feature -- Access
 			end
 		end
 
-	class_context: detachable ETR_CLASS_CONTEXT
+	class_context: ETR_CLASS_CONTEXT
 			-- Class context belonging to this context
 
-	context_class: detachable CLASS_C
+	context_class: CLASS_C
 			-- Context class
 		do
 		end
 
 	is_empty: BOOLEAN
 			-- Is `Current' an empty context
-			
 
 invariant
 	valid: not is_empty implies attached class_context

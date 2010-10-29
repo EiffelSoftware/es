@@ -320,8 +320,8 @@ feature {AST_EIFFEL} -- Roundtrip
 						l_new_msg_name := new_message_name (l_new_feature.feature_name_id, changed_new_renamings)
 
 						-- Check if type of expression changed
-						l_old_expl_type := type_checker.explicit_type (l_old_feature.type, changed_old_type, void)
-						l_new_expl_type := type_checker.explicit_type (l_new_feature.type, changed_new_type, void)
+						l_old_expl_type := type_checker.explicit_type (l_old_feature.type, changed_old_type, l_old_feature)
+						l_new_expl_type := type_checker.explicit_type (l_new_feature.type, changed_new_type, l_new_feature)
 
 						set_additional_renaming(l_old_expl_type, l_new_expl_type)
 
@@ -370,8 +370,8 @@ feature {AST_EIFFEL} -- Roundtrip
 							end
 
 							-- Check if type of expression changed
-							l_old_expl_type := type_checker.explicit_type (l_old_feature.type, l_changed_local.old_type, void)
-							l_new_expl_type := type_checker.explicit_type (l_new_feature.type, l_changed_local.new_type, void)
+							l_old_expl_type := type_checker.explicit_type (l_old_feature.type, l_changed_local.old_type, l_old_feature)
+							l_new_expl_type := type_checker.explicit_type (l_new_feature.type, l_changed_local.new_type, l_new_feature)
 
 							set_additional_renaming (l_old_expl_type, l_new_expl_type)
 

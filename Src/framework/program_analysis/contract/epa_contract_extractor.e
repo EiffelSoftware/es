@@ -37,7 +37,7 @@ feature -- Access
 				l_asserts.after
 			loop
 				l_exprs := l_asserts.item_for_iteration.assertions
-				Result.append (tags (l_asserts.item_for_iteration.source_class, Void, a_class, Void, l_exprs, False, False, False, False))
+				Result.append (tags (l_asserts.item_for_iteration.source_class, l_asserts.item_for_iteration.source_class.invariant_feature, a_class, a_class.invariant_feature, l_exprs, False, False, False, False))
 				l_asserts.forth
 			end
 		ensure
@@ -186,7 +186,7 @@ feature -- Contract extraction
 
 feature{NONE} -- Implementation
 
-	tags (a_written_class: CLASS_C; a_written_feature: detachable FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION]
+	tags (a_written_class: CLASS_C; a_written_feature: FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION]
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
@@ -209,18 +209,19 @@ feature{NONE} -- Implementation
 				a_asserts.after
 			loop
 				l_expr_as ?= ast_in_other_context (a_asserts.item.expr, l_source_context, l_target_context)
-				check l_expr_as /= Void end
-				if a_written_feature = Void then
-					create l_expr.make (l_expr_as, a_written_class, a_context_class)
-				else
-					create l_expr.make_with_feature (a_context_class, a_written_feature, l_expr_as, a_written_class)
+				if l_expr_as /= Void then
+					if a_written_feature = Void then
+						create l_expr.make (l_expr_as, a_written_class, a_context_class)
+					else
+						create l_expr.make_with_feature (a_context_class, a_written_feature, l_expr_as, a_written_class)
+					end
+					if attached {ID_AS} a_asserts.item.tag as l_tag then
+						l_expr.set_tag (l_tag.name)
+					else
+						l_expr.set_tag (Void)
+					end
+					Result.extend(l_expr)
 				end
-				if attached {ID_AS} a_asserts.item.tag as l_tag then
-					l_expr.set_tag (l_tag.name)
-				else
-					l_expr.set_tag (Void)
-				end
-				Result.extend(l_expr)
 				a_asserts.forth
 			end
 			a_asserts.go_to (l_cursor)
@@ -241,7 +242,11 @@ feature{NONE} -- Implementation
 				a_exprs.after
 			loop
 				if a_test.item ([a_exprs.item_for_iteration]) then
-					create l_expr.make_with_text (a_context_class, a_feature, text_from_ast (a_exprs.item_for_iteration.ast), a_exprs.item_for_iteration.written_class)
+					if a_feature = Void then
+						create l_expr.make_with_text (a_context_class, a_exprs.item.written_class.invariant_feature, text_from_ast (a_exprs.item_for_iteration.ast), a_exprs.item_for_iteration.written_class)
+					else
+						create l_expr.make_with_text (a_context_class, a_feature, text_from_ast (a_exprs.item_for_iteration.ast), a_exprs.item_for_iteration.written_class)
+					end
 					if not a_set.has (l_expr) then
 						a_set.force_last (l_expr)
 					end

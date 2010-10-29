@@ -285,8 +285,10 @@ feature -- Access
 			l_locals: HASH_TABLE [ETR_TYPED_VAR, STRING]
 			l_cursor: CURSOR
 			l_variables: like variables
+			l_class_ctxt: ETR_CLASS_CONTEXT
 		do
-			create l_feature_context.make (a_test_case_class.feature_named (test_feature_name), Void)
+			create l_class_ctxt.make (a_test_case_class)
+			create l_feature_context.make (a_test_case_class.feature_named (test_feature_name), l_class_ctxt)
 			l_locals := l_feature_context.local_by_name
 
 			create l_variables.make (l_locals.count)
