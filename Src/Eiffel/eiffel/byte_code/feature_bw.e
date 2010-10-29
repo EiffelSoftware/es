@@ -15,8 +15,8 @@ inherit
 			check_dt_current,
 			free_register,
 			generate_access_on_type,
-			generate_address_on,
 			generate_end,
+			generate_separate_call,
 			is_polymorphic,
 			has_one_signature,
 			unanalyze
@@ -51,6 +51,9 @@ feature -- C code generation
 			if return_type.is_reference then
 					-- Do not use reference type because this register should not be tracked by GC.
 				result_register := context.get_argument_register (pointer_type.c_type)
+			elseif not return_type.is_void and then context_type.is_separate then
+					-- The register is used to store result of a separate feature call.
+				result_register := context.get_argument_register (return_type)
 			end
 		end
 
@@ -115,13 +118,44 @@ feature -- C code generation
 
 feature {NONE} -- Separate call
 
-	generate_address_on (r: REGISTRABLE)
+	separate_function_macro: TUPLE [routine, routine_with_invariant, precompiled, precompiled_with_invariant: STRING]
+			-- Name of a macro to make a call to a function depending on the kind of a call:
+			-- See `routine_macro' for details.
+		once
+			Result := ["RTS_CF", "RTS_CF", "RTS_CFP", "RTS_CFP"]
+		end
+
+	separate_procedure_macro: TUPLE [routine, routine_with_invariant, precompiled, precompiled_with_invariant: STRING]
+			-- Name of a macro to make a call to a procedure depending on the kind of a call.
+			-- See `routine_macro' for details.
+		once
+				-- Procedure call without an invariant check is a creation procedure call.
+			Result := ["RTS_CC", "RTS_CP", "RTS_CCP", "RTS_CPP"]
+		end
+
+	generate_separate_call (s: detachable REGISTER; r: detachable REGISTRABLE; t: REGISTRABLE)
 			-- <Precursor>
+		local
+			buf: like buffer
 		do
-			if attached {CL_TYPE_A} context_type as c then
-				generate_workbench_address (r, c)
-			else
-				Precursor (r)
+			check attached {CL_TYPE_A} context_type as c then
+				buf := buffer
+				buf.put_new_line
+				if attached r then
+						-- Call to a function.
+					generate_call_macro (separate_function_macro, t, c, s, result_register)
+					buf.put_character (';')
+					buf.put_new_line
+					r.print_register
+					buf.put_four_character (' ', '=', ' ', '(')
+					context.print_argument_register (result_register, buf)
+					generate_return_value_conversion (result_register)
+					buf.put_character (')')
+				else
+						-- Call to a procedure.
+					generate_call_macro (separate_procedure_macro, t, c, s, Void)
+				end
+				buf.put_character (';')
 			end
 		end
 

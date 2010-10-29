@@ -950,7 +950,7 @@ feature {NONE} -- Added for SCOOP
 			-- Enable multithreading in the universe target, if necessary.
 		do
 			-- Check whether multithreading has already been activated.
-			if not universe.target.setting_multithreaded then
+			if not universe.target.setting_concurrency.is_set then
 				-- Multithrading has not been activated.
 
 				-- Enable multithreading.

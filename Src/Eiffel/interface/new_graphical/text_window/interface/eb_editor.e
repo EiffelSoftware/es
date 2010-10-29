@@ -172,6 +172,14 @@ feature -- Status setting
 			is_main_editor := a_b
 		end
 
+	set_bom (a_bom: like bom)
+			-- Set `bom' with `a_bom'.
+		do
+			bom := a_bom
+		ensure
+			bom_set: bom = a_bom
+		end
+
 feature -- Text Loading
 
 	load_file (a_filename: STRING)
@@ -234,15 +242,13 @@ feature -- Text Loading
 			-- <Precursor>
 		local
 			l_d_class : DOCUMENT_CLASS
-			l_scanner: EDITOR_EIFFEL_SCANNER
 			l_stone: CLASSI_STONE
 			l_s8: STRING_8
 			l_s: STRING_GENERAL
 		do
 			l_d_class := get_class_from_type (once "e")
 			set_current_document_class (l_d_class)
-			l_scanner ?= l_d_class.scanner
-			if l_scanner /= Void then
+			if attached {EDITOR_EIFFEL_SCANNER} l_d_class.scanner as l_scanner then
 				l_stone ?= stone
 				if l_stone /= Void then
 					l_scanner.set_current_class (l_stone.class_i.config_class)

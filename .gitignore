@@ -336,6 +336,11 @@ Src/examples/proofs/account/EIFGENs
 Src/examples/proofs/demo/EIFGENs
 Src/examples/scoop/baboon_crossing/EIFGENs
 Src/examples/scoop/barbershop/EIFGENs
+Src/examples/scoop/concurrency/concurrency/EIFGENs
+Src/examples/scoop/concurrency/event_driven_programming/EIFGENs
+Src/examples/scoop/concurrency/rendezvous_synchronisation/EIFGENs
+Src/examples/scoop/concurrency/resource_pooling/EIFGENs
+Src/examples/scoop/concurrency/waiting_faster/EIFGENs
 Src/examples/scoop/counter/EIFGENs
 Src/examples/scoop/dining_philosophers/EIFGENs
 Src/examples/scoop/dining_savages/EIFGENs
@@ -585,6 +590,9 @@ Src/tools/estudio/estudio.rc
 Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
 Src/tools/quick_finalize/quick_finalize.rc
+Src/tools/repository_tool/lib/eapml
+Src/tools/repository_tool/lib/eel
+Src/tools/repository_tool/mydata
 Src/tools/syntax_updater/parser_v60/eiffel_parser.e
 Src/tools/syntax_updater/parser_v60/eiffel_scanner.e
 Src/tools/syntax_updater/parser_v60/eiffel_tokens.e

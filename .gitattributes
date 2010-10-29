@@ -2611,8 +2611,6 @@ Src/framework/configuration/parser/implementation/lace/lace_compile/lace.l -text
 Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-2-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
-Src/framework/configuration/versioning/configuration-1-5-0.xsd -text
-Src/framework/configuration/versioning/configuration-1-6-0.xsd -text
 Src/framework/dotnet_loader/dotnet_loader.lic -text
 Src/framework/eiffel_identifier/eiffel_identifier.lic -text
 Src/framework/eiffel_transform/Demo/printer_test.ee -text
@@ -3381,6 +3379,9 @@ Src/tools/repository_tool/ctr.ico -text
 Src/tools/repository_tool/ctr.rc -text
 Src/tools/repository_tool/data/catalog.ini -text
 Src/tools/repository_tool/lib/README.TXT -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.inc -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.info -text
+Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.module -text
 Src/tools/resave_cfg/resave_cfg.lic -text
 Src/tools/resource_bench/RB_documentation/docrb/ANALYZ.gif svneol=native#unset
 Src/tools/resource_bench/RB_documentation/docrb/BROWSE.gif svneol=native#unset

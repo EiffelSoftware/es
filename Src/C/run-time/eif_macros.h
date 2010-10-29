@@ -54,7 +54,7 @@
 #include "eif_rout_obj.h"
 #include "eif_option.h"
 #include "eif_bits.h"
-#include "eif_separate.h"
+#include "eif_scoop.h"
 
 #ifdef WORKBENCH
 #include "eif_wbench.h"
@@ -999,7 +999,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  *  RTXSC resynchronizes the run-time stacks in a pseudo rescue clause in C
  *  RTXS(x) resynchronizes the run-time stacks in a rescue clause
  *  RTEOK ends a routine with a rescue clause by cleaning the trace stack
- *  RTSO stops the tracing as well as the profiling
+ *  RTMD(x) Stops monitoring (profile or tracing) for routine context 'y' (i.e. normal vs external)
  *	RTLA Last exception from EXCEPTION_MANAGER
  *	RTCO(x) Check if x is NULL, if not raise an OLD_VIOLATION
  *  RTE_T start try block (for body)
@@ -1018,7 +1018,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTEV		exvect = exft()
 #define RTET(t,x)	eraise(t,x)
 #define RTEC(x)		RTET((EIF_REFERENCE) 0,x)
-#define RTSO		check_options_stop()
+#define RTSO		check_options_stop(0)
+#define RTMD(x)		check_options_stop(x)
 #define RTLA		last_exception()
 #define RTCO(x)		chk_old(x)
 
@@ -1028,8 +1029,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTDBGEAA(y,z,b)		RTDBGE(y,b,z,db_cstack);
 #define RTDBGLE		RTDBGL(exvect->ex_orig,exvect->ex_bodyid,exvect->ex_id,db_cstack); 
 
-#define RTEE		RTSO; d_data.db_callstack_depth = --db_cstack; expop(&eif_stack)
-#define RTEOK		RTSO; d_data.db_callstack_depth = --db_cstack; exok ()
+#define RTEE		d_data.db_callstack_depth = --db_cstack; expop(&eif_stack)
+#define RTEOK		d_data.db_callstack_depth = --db_cstack; exok ()
 
 #define RTEJ		current_call_level = trace_call_level; \
 					if (prof_stack) saved_prof_top = prof_stack->st_top; \
@@ -1325,7 +1326,8 @@ RT_LNK void eif_exit_eiffel_code(void);
  * RTSC saves assertion level of the current feature.
  * RTRS restores the caller_assertion_level.
  * WASC(x) Assertion level.
- * RTSA(x) saves assertion level for dynamic type 'x'
+ * RTSA(x) gets the option settings for dynamic type 'x'
+ * RTME(x,y) Starts monitoring (profile or tracing) for dynamic type 'x' for routine context 'y' (i.e. normal vs external)
  */
 
 #define RTDA		struct eif_opt * EIF_VOLATILE opt; \
@@ -1335,60 +1337,132 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTSC		caller_assertion_level = RTAL & CK_SUP_REQUIRE
 #define RTRS		caller_assertion_level = saved_caller_assertion_level
 #define WASC(x)		eoption[x].assert_level	
+#define RTSA(x)		opt = eoption + x;
 #ifdef WORKBENCH
-#define RTSA(x)		opt = eoption + x; check_options(opt, x)
-#else
-#define RTSA(x)		opt = eoption + x
+#define RTME(x,y)	check_options_start(opt, x, y)
 #endif
 
  /*
  * Macros for SCOOP 
- *
- * -- Run-time Setup
- *
- * RTSCPINIT - SCOOP Runtime Initialization, called prior to root creation
- * RTSCPWTPR - Wait for SCOOP Processor Redundancy, called after root creation so that the system only completes when all processors have exited.
- *
- * -- Separate Object Initialization
- *
- * RTSCPAFPID (sep_obj) - Assign a free processor id to the client-side emalloc'd separate object
- * RTSCPSPAL (sep_obj) - Start processor application loop, notify debugger that launched thread is a SCOOP processor.
- *
- * -- GC Processor Handling
- *
- * RTSCPFPID (pid) - Free processor id pid for reuse, called by GC after full collect to reclaim processor resources as zero objects reference pid in their object headers. Notify debugger that thread is no longer being used as a SCOOP processor.
- *
- * -- Request Chain Handling
- *
- * RTSCPSSRC - Signal start of request chain for `Current'
- * RTSCPASPRC (sep_obj) - Assign supplier processor to request chain of `Current'
- * RTSCPWRCSPL - Wait for supplier processor request chain nodes to be initialized prior to logging.
- * RTSCPSERC - Signify end of request chain for `Current'
- *
- * -- Request Chain Node Logging
- *
- * RTSCPAPRC(sep_obj, predicate, arg_tuple, result) - Add predicate to request chain of `Current', wait for result.
- * RTSCPACRC(sep_obj, command, arg_tuple) - Add command to request chain of `Current'
- * RTSCPAQRC(sep_obj, query, arg_tuple, result) - Add query to request chain of `Current', wait for result.
- *
-*/ 
+ */
 
+// Define RTS_SCP_CAPABLE for use by eplug to determine whether SCOOP can be initialized.
+#ifndef RTS_SCP_CAPABLE
+#ifdef EIF_THREADS
+#define RTS_SCP_CAPABLE 1 
+#else
+#define RTS_SCP_CAPABLE 0 
+#endif
+#endif
 
-#define RTSCPINIT
-#define RTSCPWTPR
+#define scoop_task_assign_processor 1
+#define	scoop_task_free_processor 2
+#define scoop_task_start_processor_loop 3
+#define scoop_task_signify_start_of_new_chain 4
+#define scoop_task_signify_end_of_new_chain 5
+#define scoop_task_add_supplier_to_request_chain 6
+#define scoop_task_wait_for_supplier_processor_locks 7
+#define	scoop_task_add_predicate 8
+#define scoop_task_add_command 9
+#define	scoop_task_add_function 10
 
-#define RTSCPAFPID(sep_obj)
-#define RTSCPSPAL(sep_obj)
+#define EIFNULL 0
 
-#define RTSCPFPID(pid)
-#define RTSCPSSRC
-#define RTSCPASPRC(sep_obj)
-#define RTSCPWRCSPL
-#define RTSCPSERC
+#ifdef WORKBENCH
+#define RTS_TCB(t,c,s,b,a,r) \
+	{                                                                       \
+		EIF_TYPED_VALUE xt,xc,xs,xf,xa,xr;                              \
+		xt.it_i1 = t;                                                   \
+		xt.type = SK_INT8;                                              \
+		xc.it_i4 = c;                                                   \
+		xc.type = SK_INT32;                                             \
+		xs.it_i4 = s;                                                   \
+		xs.type = SK_INT32;                                             \
+		xf.it_n4 = b;                                                   \
+		xf.type = SK_UINT32;                                            \
+		xa.it_p = a;                                                    \
+		xa.type = SK_POINTER;                                           \
+		xr.it_p = r;                                                    \
+		xr.type = SK_POINTER;                                           \
+		(egc_scoop_manager_task_callback)(scp_mnger,xt,xc,xs,xf,xa,xr); \
+	}
+#else
+#define RTS_TCB(t,c,s,f,a,r) (egc_scoop_manager_task_callback)(scp_mnger,t,RTS_PID(c),RTS_PID(s),f,a,r); 
+#endif
+#define RTS_PID(o) HEADER(o)->ov_head.ovs_pid
 
-#define RTSCPAPRC(sep_obj,predicate,arg_tuple,result)
-#define RTSCPACRC(sep_obj,command,arg_tuple) 
-#define RTSCPAQRC(sep_obj,query,arg_tuple,result) 
+/*
+ * Object status:
+ * EIF_IS_DIFFERENT_PROCESSOR (o1, o2) - tells if o1 and o2 run on different processors
+ * RTS_OU(c,o) - tells if object o is uncontrolled by the processor associated with object c
+ */
+#define EIF_IS_DIFFERENT_PROCESSOR(o1,o2) (RTS_PID(o1) != RTS_PID(o2))
+#define RTS_OU(c,o) EIF_TRUE
+
+/*
+ * Processor:
+ * RTS_PA(o) - associate a fresh processor with an object o
+ */
+#define RTS_PA(o) \
+	{                                                                                     \
+		EIF_INTEGER_32 pid;                                                           \
+		RTS_TCB(scoop_task_assign_processor,RTS_PID(o),EIFNULL,EIFNULL,EIFNULL,&pid); \
+		RTS_PID(o) = pid;                                                             \
+	}
+
+/*
+ * Request chain:
+ * RTS_RC(p)   - create a request chain for the processor identified by object p
+ * RTS_RD(p)   - delete a request chain for the processor identified by object p
+ * RTS_RS(p,s) - add a supplier s to the request chain of the processor identified by object p
+ * RTS_RW(p)   - wait until all the suppliers are ready in the request chain of the processor identified by object p
+ * The only valid sequence of calls is
+ *      RTS_RC (RTS_RS)* [RTS_RW] RTS_RD
+ */
+#define RTS_RC(p) RTS_TCB(scoop_task_signify_start_of_new_chain,RTS_PID(p),EIFNULL,EIFNULL,EIFNULL,EIFNULL)
+#define RTS_RD(p) RTS_TCB(scoop_task_signify_end_of_new_chain,RTS_PID(p),EIFNULL,EIFNULL,EIFNULL,EIFNULL)
+#define RTS_RS(p,s) RTS_TCB(scoop_task_add_supplier_to_request_chain,RTS_PID(p),RTS_PID(s),EIFNULL,EIFNULL,EIFNULL)
+#define RTS_RW(p) RTS_TCB(scoop_task_wait_for_supplier_processor_locks,RTS_PID(p),EIFNULL,EIFNULL,EIFNULL,EIFNULL)
+
+/*
+ * Separate call (versions ending with P stand for calls to precompiled routines, the first two arguments to them have a different meaning):
+ * RTS_CF(s,f,n,t,a,r) - call a function on a static type s with a feature id f and name n on a target t and arguments a and result r
+ * RTS_CP(s,f,n,t,a)   - call a procedure on a static type s with a feature id f and name n on a target t and arguments a
+ * RTS_CC(s,f,d,a)     - call a creation procedure on a static type s with a feature id f on a target of dynamic type d and arguments a
+ */
+#define RTS_CF(s,f,n,t,a,r) \
+	{                                                 \
+		((call_data*)(a)) -> result = &(r);       \
+		eif_log_call (s, f, RTS_PID(Current), a); \
+	}
+#define RTS_CFP(s,f,n,t,a,r) \
+	{                                                  \
+		((call_data*)(a)) -> result = &(r);        \
+		eif_log_callp (s, f, RTS_PID(Current), a); \
+	}
+#define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), a)
+#define RTS_CPP(s,f,n,t,a) eif_log_callp (s, f, RTS_PID(Current), a)
+#define RTS_CC(s,f,d,a)    eif_log_call  (s, f, RTS_PID(Current), a)
+#define RTS_CCP(s,f,d,a)   eif_log_callp (s, f, RTS_PID(Current), a)
+
+/*
+ * Separate call arguments:
+ * RTS_AC(n,t,a) - allocate container a that can hold n arguments for target t
+ * RTS_AA(v,f,t,n,a) - register argument v corresponding to field f of type t at position n in a
+ */
+#define RTS_AC(n,t,a) \
+	{                                                                                \
+		a = cmalloc (sizeof (call_data) + sizeof (EIF_TYPED_VALUE) * ((n) - 1)); \
+		((call_data*)(a)) -> target = eif_protect (t);                                       \
+		((call_data*)(a)) -> count = (n);                                        \
+		((call_data*)(a)) -> result = (EIF_TYPED_VALUE *) 0;                     \
+	}
+#define RTS_AA(v,f,t,n,a) \
+	{                                                                                                                          \
+		((call_data*)(a)) -> argument [(n) - 1] = (v);                                                                     \
+		if ((t) == SK_REF)                                                                                                 \
+			((call_data*)(a)) -> argument [(n) - 1].it_r = eif_protect (((call_data*)(a)) -> argument [(n) - 1].it_r); \
+	}
 
  /*
  * Macros for workbench

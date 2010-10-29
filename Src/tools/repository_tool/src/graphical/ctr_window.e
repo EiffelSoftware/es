@@ -34,6 +34,13 @@ inherit
 			default_create, copy
 		end
 
+	CTR_SHARED_GUI_PREFERENCES
+		export
+			{NONE} all
+		undefine
+			default_create, copy
+		end
+
 create
 	default_create
 
@@ -47,27 +54,40 @@ feature {NONE} -- Initialization
 		end
 
 	create_interface_objects
+		local
+			args: ARGUMENTS
+			l_preferences: CTR_GUI_PREFERENCES
 		do
 			Precursor
+			create args
+			if
+				attached args.separate_word_option_value ("config") as s and then
+				not s.is_empty
+			then
+				set_common_data_folder (s)
+			else
+				set_common_data_folder ("data")
+			end
+			create l_preferences.make (preferences_xml_filename)
+			set_preferences (l_preferences)
+
+
 			create catalog_grid
-			create catalog_content.make_with_widget (catalog_grid, "Catalog")
+			create catalog_content.make_with_widget (catalog_grid, Names.t_catalog)
 
 			create standard_status_bar
 			create standard_status_label
 			create main_container
 
-			create logs_tool.make ("Logs")
-			create info_tool.make ("Info")
-			create console_tool.make ("Console")
+			create logs_tool.make (Names.t_logs)
+			create info_tool.make (Names.t_info)
+			create console_tool.make (Names.t_console)
 		end
 
 	initialize
 			-- Build the interface for this window.
 		local
 			dm: like docking_manager
-			acc: EV_ACCELERATOR
-			acc_n_key: ACCELERATOR_AND_THEN_KEY
-			k: EV_KEY
 		do
 			Precursor {EV_TITLED_WINDOW}
 
@@ -103,18 +123,29 @@ feature {NONE} -- Initialization
 			show_actions.extend_kamikaze (agent on_first_shown)
 			console.register_observer (console_tool)
 
+			init_accelerators
+
+			console_log ("Opening configuration from %"" + common_data_folder + "%"")
+		end
+
+	init_accelerators
+		local
+			acc: EV_ACCELERATOR
+			acc_n_key: ACCELERATOR_AND_THEN_KEY
+			k: EV_KEY
+		do
 				--| Ctrl+G ... ?
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_G)
 			create acc.make_with_key_combination (k, True, False, False)
 			create acc_n_key.make (acc, Current)
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_C)
-			acc_n_key.register_action (k, agent console_tool.set_focus, ["Console", "Go To Console Tool"])
+			acc_n_key.register_action (k, agent console_tool.set_focus, [Names.t_console, Names.d_go_to_console_tool])
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_R)
-			acc_n_key.register_action (k, agent catalog_grid.set_focus, ["Repositories", "Go To Repositories Tool"])
+			acc_n_key.register_action (k, agent catalog_grid.set_focus, [Names.t_repositories, Names.d_go_to_catalog_tool])
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_L)
-			acc_n_key.register_action (k, agent logs_tool.set_focus, ["Logs", "Go To Logs Tool"])
+			acc_n_key.register_action (k, agent logs_tool.set_focus, [Names.t_logs, Names.d_go_to_logs_tool])
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_I)
-			acc_n_key.register_action (k, agent info_tool.set_focus, ["Info", "Go To Info Tool"])
+			acc_n_key.register_action (k, agent info_tool.set_focus, [Names.t_info, Names.d_go_to_info_tool])
 
 			acc_n_key.enable_popup
 			acc_n_key.attach_to (accelerators, True)
@@ -124,14 +155,27 @@ feature {NONE} -- Initialization
 			create acc.make_with_key_combination (k, True, False, False)
 			create acc_n_key.make (acc, Current)
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_A)
-			acc_n_key.register_action (k, agent check_all_repositories, ["Check All Repositories", "Check all repositories for new logs"])
+			acc_n_key.register_action (k, agent check_all_repositories, [Names.t_check_all_repositories, Names.d_check_all_repositories])
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_C)
-			acc_n_key.register_action (k, agent edit_configuration, ["Configuration", "Edit configuration"])
+			acc_n_key.register_action (k, agent edit_configuration, [Names.t_edit_repositories, Names.d_edit_repositories])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_P)
+			acc_n_key.register_action (k, agent edit_preferences, [Names.t_edit_preferences, Names.d_edit_preferences])
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_I)
+			acc_n_key.register_action (k, agent show_information, [Names.t_show_information, Names.d_show_information])
 			create k.make_with_code ({EV_KEY_CONSTANTS}.key_L)
-			acc_n_key.register_action (k, agent apply_default_layout, ["Reset Layout", Void])
+			acc_n_key.register_action (k, agent apply_default_layout, [Names.t_reset_layout, Void])
 
 			acc_n_key.enable_popup
 			acc_n_key.attach_to (accelerators, True)
+
+
+			create k.make_with_code ({EV_KEY_CONSTANTS}.key_F5)
+			create acc.make_with_key_combination (k, False, False, False)
+			acc.actions.extend (agent
+				do
+					logs_tool.check_current_repositories
+				end)
+			accelerators.extend (acc)
 		end
 
 	is_in_default_state: BOOLEAN
@@ -183,6 +227,9 @@ feature {NONE} -- Events
 				end
 			end
 			save_docking_layout
+			if attached preferences as prefs then
+				prefs.save_preferences
+			end
 		end
 
 feature -- Layout
@@ -286,6 +333,16 @@ feature -- Layout
 
 feature -- Storage
 
+	preferences_xml_filename: STRING
+		local
+			fn: FILE_NAME
+		once
+			create fn.make_from_string (common_data_folder)
+			fn.set_file_name ("preferences")
+			fn.add_extension ("xml")
+			Result := fn.string
+		end
+
 	catalog_ini_filename: STRING
 		local
 			fn: FILE_NAME
@@ -301,13 +358,23 @@ feature -- Storage
 			cat: like catalog
 			rf: RAW_FILE
 			repo: detachable REPOSITORY
+			svnrepo: detachable REPOSITORY_SVN
 			n,k: detachable STRING
 			p,i: INTEGER
 			s,s2,s3: STRING
 			v: STRING
+			l_svn_path_pref: detachable STRING_PREFERENCE
 		do
 			create rf.make (catalog_ini_filename)
 			if rf.exists then
+				if attached preferences as prefs then
+					l_svn_path_pref := prefs.svn_executable_pref
+--					l_svn_path_pref.change_actions.extend (agent
+--							do
+--								reload_catalog
+--							end
+--						)
+				end
 				rf.open_read
 				from
 					create cat.make
@@ -343,7 +410,15 @@ feature -- Storage
 							n.right_adjust
 							if k /= Void and then not k.is_empty then
 								if k.same_string ("svn") then
-									create {REPOSITORY_SVN} repo.make
+									create svnrepo.make
+									repo := svnrepo
+
+									if
+										l_svn_path_pref /= Void and then
+										not l_svn_path_pref.value.is_empty
+									then
+										svnrepo.set_svn_executable_path (l_svn_path_pref.value)
+									end
 								else
 									--|, cvs, git, ...
 									create {REPOSITORY_SVN} repo.make
@@ -581,7 +656,62 @@ feature -- Storage
 			end
 		end
 
-feature -- Configuration
+feature -- Preferences
+
+	internal_preferences_dialog: detachable PREFERENCES_GRID_DIALOG
+
+	edit_preferences
+		local
+			dlg: like internal_preferences_dialog
+		do
+			dlg := internal_preferences_dialog
+			if dlg = Void then
+				if attached preferences as p then
+					create dlg.make (p.preferences)
+				end
+			end
+			if dlg /= Void then
+				dlg.show_relative_to_window (Current)
+			end
+		end
+
+feature -- Information		
+
+	show_information
+		local
+			dlg: EV_POPUP_WINDOW
+			txt: EV_TEXT
+			but: EV_BUTTON
+			b: EV_VERTICAL_BOX
+		do
+			create dlg.make_with_shadow
+
+			create txt
+			create but.make_with_text_and_action ("Close", agent dlg.destroy)
+
+			create b
+			dlg.extend (b)
+			b.extend (txt)
+			b.extend (but)
+			b.disable_item_expand (but)
+
+			txt.set_text ("Information")
+			txt.append_text ("%Ndata folder=" + common_data_folder + "%N")
+			if attached txt.font.string_size (txt.text) as t then
+				dlg.set_size (t.width, t.height)
+				dlg.set_position (x_position + (width - dlg.width) // 2, y_position + (height - dlg.height) // 2)
+			else
+				dlg.set_size (width, height)
+				dlg.set_position (x_position, y_position)
+			end
+
+
+
+			dlg.close_request_actions.extend (agent dlg.destroy)
+			dlg.show_relative_to_window (Current)
+		end
+
+feature -- Configuration		
 
 	edit_configuration
 		local
@@ -1367,22 +1497,40 @@ feature {CTR_TOOL} -- Diff
 			but: EV_BUTTON
 			m: EV_VERTICAL_BOX
 			t: EV_TEXT
+			l_diff_fn: FILE_NAME
+			diff_cmd: detachable STRING
+			e: EXECUTION_ENVIRONMENT
 		do
-			create dlg
-			create m
-			create t
-			create but.make_with_text_and_action ("Close", agent dlg.destroy)
-			dlg.extend (m)
-			m.extend (t)
-			m.extend (but)
-			m.disable_item_expand (but)
-			t.set_text (a_log.diff)
-			dlg.close_request_actions.extend (agent dlg.destroy)
-			dlg.set_position (x_position, y_position)
-			dlg.set_size (width, height)
-			dlg.enable_border
-			dlg.enable_user_resize
-			dlg.show_relative_to_window (Current)
+			if attached preferences as prefs then
+				create diff_cmd.make_from_string (prefs.diff_viewer_command_pref.value)
+			end
+			if
+				diff_cmd /= Void and then not diff_cmd.is_empty and then
+				attached a_log.parent.log_diff_data_filename (a_log) as fn
+			then
+				create e
+				create l_diff_fn.make_from_string (e.current_working_directory)
+				l_diff_fn.extend (fn)
+				diff_cmd.replace_substring_all ("$filename", l_diff_fn.string)
+				diff_cmd.replace_substring_all ("$id", a_log.id)
+				e.launch (diff_cmd)
+			else
+				create dlg
+				create m
+				create t
+				create but.make_with_text_and_action ("Close", agent dlg.destroy)
+				dlg.extend (m)
+				m.extend (t)
+				m.extend (but)
+				m.disable_item_expand (but)
+				t.set_text (a_log.diff)
+				dlg.close_request_actions.extend (agent dlg.destroy)
+				dlg.set_position (x_position, y_position)
+				dlg.set_size (width, height)
+				dlg.enable_border
+				dlg.enable_user_resize
+				dlg.show_relative_to_window (Current)
+			end
 		end
 
 feature -- Access

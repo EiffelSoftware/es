@@ -59,9 +59,7 @@ feature -- Access
 	generated_c_feature_name: STRING
 			-- Name of generated routine in C generated code
 		do
-			Result := Encoder.feature_name (
-				context.class_type.type_id,
-				body_index)
+			Result := Encoder.feature_name (context.class_type.type_id, body_index)
 		end
 
 feature -- Setting
@@ -93,10 +91,10 @@ feature -- Analyzis
 				l_context.set_origin_has_precondition (True)
 				inh_assert := l_context.inherited_assertion
 				inh_assert.init
-			end
-			if keep_assertions and not l_context.associated_class.is_basic and feat.assert_id_set /= Void then
-					--! Do not get inherited pre & post for basic types
-				formulate_inherited_assertions (feat.assert_id_set)
+				if not l_context.associated_class.is_basic and feat.assert_id_set /= Void then
+						--! Do not get inherited pre & post for basic types
+					formulate_inherited_assertions (feat.assert_id_set)
+				end
 			end
 			l_context.set_assertion_type (0)
 
@@ -125,7 +123,6 @@ feature -- Analyzis
 
 				-- Check if we need GC hooks for current body.
 			l_context.compute_need_gc_hooks (keep_assertions)
-
 
 				-- Analyze arguments
 			analyze_arguments
@@ -213,18 +210,20 @@ feature -- Analyzis
 					-- For RTEA call
 				l_context.mark_current_used
 			end
-			if trace_enabled then
-					-- For RTTR
-				l_context.add_dt_current
-				l_context.add_dftype_current
-					-- For RTXT
-				l_context.add_dt_current
-				l_context.add_dftype_current
-			end
-			if profile_enabled then
-					-- For RTPR and RTXP
-				l_context.add_dt_current
-				l_context.add_dt_current
+			if context.final_mode then
+				if trace_enabled then
+						-- For RTTR
+					l_context.add_dt_current
+					l_context.add_dftype_current
+						-- For RTXT
+					l_context.add_dt_current
+					l_context.add_dftype_current
+				end
+				if profile_enabled then
+						-- For RTPR and RTXP
+					l_context.add_dt_current
+					l_context.add_dt_current
+				end
 			end
 
 		end
@@ -235,24 +234,50 @@ feature -- Analyzis
 			args: like arguments
 			i, nb: INTEGER
 			arg: TYPE_A
+			l_cl_type: CL_TYPE_A
+			l_arg: ARGUMENT_BL
+			l_is_catcall_checking_enabled, l_enable_hooks: BOOLEAN
+			l_name_id, l_any_class_id: INTEGER
 		do
 			args := arguments
 			if args /= Void then
 				from
 					i := args.lower
 					nb := args.count
+					if context.workbench_mode or system.check_for_catcall_at_runtime then
+						l_name_id := context.current_feature.feature_name_id
+						l_any_class_id := system.any_id
+						l_is_catcall_checking_enabled := (context.current_feature.written_in /= l_any_class_id or else
+							(l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
+							l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id))
+					end
 				until
 					i > nb
 				loop
 					arg := real_type (args.item (i))
-					if arg.is_true_expanded then
+					if l_is_catcall_checking_enabled and then arg.c_type.is_reference then
+						l_cl_type ?= args.item (i)
+								-- Only generate a catcall detection if the expected argument is different
+								-- than ANY since ANY is the ancestor to all types.
+						if l_cl_type = Void or else l_cl_type.class_id /= l_any_class_id then
+							l_enable_hooks := True
+						else
+							l_enable_hooks := False
+						end
+					else
+							-- See FIXME of `generate_expanded_initialization'
+							-- for possible improvement in the case of `true_expanded'.
+						l_enable_hooks := arg.is_true_expanded
+					end
+					if l_enable_hooks then
 							-- Force GC hook and its usage even if not used within
 							-- body of current routine.
-							-- See FIXME of `generate_expanded_arguments_cloning'
-							-- for possible improvement.
 						context.force_gc_hooks
-						arg_var.set_position (i)
-						context.set_local_index (arg_var.register_name, arg_var.enlarged)
+						if l_arg = Void then
+							create l_arg
+						end
+						l_arg.set_position (i)
+						context.set_local_index (l_arg.register_name, l_arg)
 					end
 					i := i + 1
 				end
@@ -369,11 +394,13 @@ feature -- Analyzis
 				-- Generate execution trace information (RTEAA)
 			generate_execution_trace
 
-				-- Generate trace macro (start)
-			generate_trace_start
+				-- Generate the saving of the assertion level
+			if keep then
+				generate_save_assertion_level
+			end
 
-				-- Generate profile macro (start)
-			generate_profile_start
+				-- Generate monitoring start for profiling and tracing
+			generate_monitoring_start
 
 				-- Generate GC synchronization macro
 			if not is_external and l_context.need_gc_hook then
@@ -389,11 +416,6 @@ feature -- Analyzis
 
 				-- Allocate memory for once manifest strings if required
 			l_context.generate_once_manifest_string_allocation (once_manifest_string_count)
-
-				-- Generate the saving of the assertion level
-			if keep then
-				generate_save_assertion_level
-			end
 
 				-- Record enter feature execution
 			generate_rtdbgd_enter
@@ -418,13 +440,15 @@ feature -- Analyzis
 			if rescue_clause /= Void then
 					-- Generate a `setjmp' C instruction in case of a
 					-- rescue clause
-				if trace_enabled then
-					buf.put_new_line
-					buf.put_string ("RTTI;")
-				end
-				if profile_enabled then
-					buf.put_new_line
-					buf.put_string ("RTPI;")
+				if context.final_mode then
+					if trace_enabled then
+						buf.put_new_line
+						buf.put_string ("RTTI;")
+					end
+					if profile_enabled then
+						buf.put_new_line
+						buf.put_string ("RTPI;")
+					end
 				end
 				buf.put_new_line
 				buf.put_string ("RTE_T")
@@ -463,7 +487,7 @@ feature -- Analyzis
 
 			if context.has_request_chain then
 				buf.put_new_line
-				buf.put_string ("RTS_RD (Current);")
+				buf.put_string ("if (uarg) RTS_RD (Current);")
 			end
 
 			if compound = Void or else not compound.last.last_all_in_result then
@@ -652,17 +676,18 @@ end
 		do
 		end
 
-	generate_expanded_arguments
+	generate_argument_initialization
 			-- Generate declaration for locals `earg' that will hold a copy of passed
 			-- arguments.
 		local
+			t: TYPE_A
 			l_arguments: like arguments
 			i, nb: INTEGER
 			l_buf: like buffer
-			l_has_expanded: BOOLEAN
-			l_type: CL_TYPE_A
 			l_arg_name: STRING
 			l_class_type: CLASS_TYPE
+			is_next: BOOLEAN
+			w: BOOLEAN
 		do
 			l_arguments := arguments
 			if l_arguments /= Void then
@@ -670,11 +695,22 @@ end
 					i := l_arguments.lower
 					nb := l_arguments.upper
 					l_buf := buffer
+					w := context.workbench_mode
 				until
 					i > nb
 				loop
-					l_type ?= real_type (l_arguments.item (i))
-					if l_type /= Void and then l_type.is_true_expanded then
+					t := real_type (l_arguments.item (i))
+					if w then
+							-- Generate definitions for arguments that are passed
+						l_buf.put_new_line_only
+						l_buf.put_string ("#define arg")
+						l_buf.put_integer (i)
+						l_buf.put_four_character (' ', 'a', 'r', 'g')
+						l_buf.put_integer (i)
+						l_buf.put_two_character ('x', '.')
+						t.c_type.generate_typed_field (l_buf)
+					end
+					if attached {CL_TYPE_A} t as l_type and then l_type.is_true_expanded then
 						create l_arg_name.make (6)
 						l_arg_name.append ("sarg")
 						l_arg_name.append_integer (i)
@@ -688,9 +724,40 @@ end
 						l_buf.put_string (".data")
 						l_buf.put_character (';')
 						l_buf.put_new_line
-						l_has_expanded := True
+					elseif t.is_separate then
+							-- Declare a variable that tells whether an argument is uncontrolled.
+						l_buf.put_new_line
+						l_buf.put_string ("EIF_BOOLEAN uarg")
+						l_buf.put_integer (i)
+						l_buf.put_string (" = (EIF_BOOLEAN) RTS_OU (Current, arg")
+						l_buf.put_integer (i)
+						l_buf.put_two_character (')', ';')
+							-- Record that a request chain is required to lock arguments.
+						context.set_has_request_chain (True)
 					end
 					i := i + 1
+				end
+				if context.has_request_chain then
+						-- Declare a variable that tells whether a request chain is required.
+						-- Its value is computed as "uargK || ... || uargM"
+					l_buf.put_new_line
+					l_buf.put_string ("EIF_BOOLEAN uarg = ")
+					from
+						i := l_arguments.lower
+					until
+						i > nb
+					loop
+						if real_type (l_arguments.item (i)).is_separate then
+							if is_next then
+								l_buf.put_four_character (' ', '|', '|', ' ')
+							end
+							l_buf.put_string ("uarg")
+							l_buf.put_integer (i)
+							is_next := True
+						end
+						i := i + 1
+					end
+					l_buf.put_character (';')
 				end
 			end
 		end
@@ -889,7 +956,7 @@ end
 				context.set_local_index ("saved_except", create {NAMED_REGISTER}.make ("saved_except", reference_c_type))
 			end
 
-			generate_expanded_arguments
+			generate_argument_initialization
 
 				-- Generate temporary locals under the control of the GC
 			context.generate_temporary_ref_variables
@@ -956,31 +1023,23 @@ end
 						i <= 0
 					loop
 						c_type := context.real_type (types [i]).c_type
-						buf.put_new_line_only
 						if not c_type.is_reference then
 								-- The argument type is not reference, so it might be boxed.
-							buf.put_indentation
+							buf.put_new_line
 							buf.put_string ("if (arg")
 							buf.put_integer (i)
 							buf.put_string ("x.type == SK_REF) arg")
 							buf.put_integer (i)
-							buf.put_string ("x.")
+							buf.put_two_character ('x', '.')
 							c_type.generate_typed_field (buf)
-							buf.put_string (" = * ")
+							buf.put_five_character (' ', '=', ' ', '*', ' ')
 							c_type.generate_access_cast (buf)
-							buf.put_string (" arg")
+							buf.put_four_character (' ', 'a', 'r', 'g')
 							buf.put_integer (i)
-							buf.put_string ("x.")
+							buf.put_two_character ('x', '.')
 							reference_c_type.generate_typed_field (buf)
 							buf.put_character (';')
-							buf.put_new_line_only
 						end
-						buf.put_string ("#define arg")
-						buf.put_integer (i)
-						buf.put_string (" arg")
-						buf.put_integer (i)
-						buf.put_string ("x.")
-						c_type.generate_typed_field (buf)
 						i := i - 1
 					end
 					buf.put_new_line
@@ -1046,38 +1105,55 @@ end
 			have_assert		: BOOLEAN
 			inh_assert		: INHERITED_ASSERTION
 			buf				: GENERATION_BUFFER
-			keep_assertions: BOOLEAN
 			i: like arguments.count
 		do
 			buf := buffer
-			if attached arguments as a then
+			if attached arguments as a and then context.has_request_chain then
+					-- There are separate arguments.
+					-- They should be locked if they are not controlled yet.
+					-- Locking is done for all the uncontrolled arguments at once.
+					-- A request chain is created for that.
+					-- If argument is controlled, there is no need to lock it again.
+					-- The generated code looks like
+					--    if (uarg) {
+					--       RTS_RC (Current);                  // Create request chain.
+					--       if (uargN) RTS_RS (Current, argN); // Register uncontrolled argument in the chain.
+					--       ...                                // Repeat for other arguments.
+					--       if (uarg) RTS_RW (Current);        // Wait until all arguments are locked.
+					--    }
+				buf.put_new_line
+				buf.put_string ("if (uarg) {")
+				buf.indent
+				buf.put_new_line
+				buf.put_string ("RTS_RC (Current);");
 				from
 					i := a.count
 				until
 					i <= 0
 				loop
 					if real_type (a [i]).is_separate then
-						if not context.has_request_chain then
-							context.set_has_request_chain (True)
-							buf.put_new_line
-							buf.put_string ("RTS_RC (Current);")
-						end
+							-- Register uncontrolled argument in the request chain.
 						buf.put_new_line
-						buf.put_string ("RTS_RS (Current, arg")
+						buf.put_string ("if (uarg")
+						buf.put_integer (i)
+						buf.put_string (") RTS_RS (Current, arg")
 						buf.put_integer (i)
 						buf.put_two_character (')', ';')
 					end
 					i := i - 1
 				end
-				if context.has_request_chain then
-					buf.put_new_line
-					buf.put_string ("RTS_RW (Current);")
-				end
+				buf.put_new_line
+				buf.put_string ("RTS_RW (Current);");
+				buf.exdent
+				buf.put_new_line
+				buf.put_character ('}')
 			end
 			context.set_assertion_type (In_precondition)
 			workbench_mode := context.workbench_mode
-			keep_assertions := workbench_mode or else context.system.keep_assertions
-			if keep_assertions then
+				-- Preconditions are always generated in workbench mode.
+				-- In finalized mode they are generated if requested by user
+				-- and when there are uncontrolled arguments.
+			if workbench_mode or else context.system.keep_assertions or else context.has_request_chain then
 				inh_assert := Context.inherited_assertion
 				if Context.origin_has_precondition then
 					have_assert := (precondition /= Void or else inh_assert.has_precondition)
@@ -1118,11 +1194,9 @@ end
 			have_assert: BOOLEAN
 			inh_assert: INHERITED_ASSERTION
 			buf: GENERATION_BUFFER
-			keep_assertions: BOOLEAN
 		do
 			workbench_mode := context.workbench_mode
-			keep_assertions := workbench_mode or else context.system.keep_assertions
-			if keep_assertions then
+			if workbench_mode or else context.system.keep_assertions then
 				inh_assert := Context.inherited_assertion
 				have_assert := (postcondition /= Void or else inh_assert.has_postcondition)
 				if have_assert then
@@ -1215,7 +1289,7 @@ end
 					buf.put_two_character (')', ';')
 				end
 				rescue_clause.generate
-				generate_profile_stop
+				generate_monitoring_stop
 				buf.put_new_line
 				buf.put_string ("/* NOTREACHED */")
 				buf.put_new_line
@@ -1274,13 +1348,15 @@ end
 					buf.put_new_line
 					buf.put_string ("RTED;")
 						-- We only need this for finalized mode...
-					if trace_enabled then
-						buf.put_new_line
-						buf.put_string ("RTLT;")
-					end
-					if profile_enabled then
-						buf.put_new_line
-						buf.put_string ("RTLP;")
+					if context.final_mode then
+						if trace_enabled then
+							buf.put_new_line
+							buf.put_string ("RTLT;")
+						end
+						if profile_enabled then
+							buf.put_new_line
+							buf.put_string ("RTLP;")
+						end
 					end
 				end
 			end
@@ -1345,54 +1421,77 @@ end
 		end
 
 	trace_enabled: BOOLEAN
-			-- Is the trace enabled for the associated class
-			-- in final mode?
+			-- Is the trace enabled for the associated class in final mode?
+		require
+			in_final_mode: context.final_mode
 		do
-			Result := not context.workbench_mode and
-				Context.associated_class.trace_level.is_yes
+			Result := Context.associated_class.trace_level.is_yes
 		end
 
 	profile_enabled: BOOLEAN
-			-- Is the profile enabled for the associated class
-			-- in final mode?
+			-- Is the profile enabled for the associated class in final mode?
+		require
+			in_final_mode: context.final_mode
 		do
-			Result := not context.workbench_mode and
-				Context.associated_class.profile_level.is_yes
+			Result := Context.associated_class.profile_level.is_yes
 		end
 
-	generate_profile_start
-			-- Generate the "start of profile" macro
-		do
-			if profile_enabled then
-				generate_option_macro ("RTPR", False)
-			end
-		end
-
-	generate_profile_stop
-			-- Generate the "stop of progile" macro
+	generate_monitoring_start
+			-- Generate the start of various monitoring facilities.
 		local
-			buf: GENERATION_BUFFER
+			buf: like buffer
 		do
-			if profile_enabled then
+			if context.workbench_mode then
 				buf := buffer
 				buf.put_new_line
-				buf.put_string ("RTXP;")
+				buf.put_string ("RTME(")
+				context.generate_current_dtype
+				buf.put_two_character (',', ' ')
+					-- Externals routines cannot perform tracing
+					-- as it could invalidate pointer values that correspond
+					-- to Eiffel object via the $ operator (see eweasel test#exec333)
+				if is_external then
+					buf.put_integer (1)
+				else
+					buf.put_integer (0)
+				end
+				buf.put_two_character (')', ';')
+			else
+				if trace_enabled and not is_external then
+					generate_option_macro ("RTTR", True)
+				end
+				if profile_enabled then
+					generate_option_macro ("RTPR", False)
+				end
 			end
 		end
 
-	generate_trace_start
-			-- Generate the "start of trace" macro
+	generate_monitoring_stop
+			-- Generate the stop of various monitoring facilities.
+		local
+			buf: like buffer
 		do
-			if trace_enabled then
-				generate_option_macro ("RTTR", True)
-			end
-		end
-
-	generate_trace_stop
-			-- Generate the "end of trace" macro
-		do
-			if trace_enabled then
-				generate_option_macro ("RTXT", True)
+			if context.workbench_mode then
+				buf := buffer
+				buf.put_new_line
+				buf.put_string ("RTMD(")
+					-- Externals routines cannot perform tracing
+					-- as it could invalidate pointer values that correspond
+					-- to Eiffel object via the $ operator (see eweasel test#exec333)
+				if is_external then
+					buf.put_integer (1)
+				else
+					buf.put_integer (0)
+				end
+				buf.put_two_character (')', ';')
+			else
+				if trace_enabled and not is_external then
+					generate_option_macro ("RTXT", True)
+				end
+				if profile_enabled then
+					buffer.put_new_line
+					buffer.put_string ("RTXP;")
+				end
 			end
 		end
 
@@ -1459,14 +1558,13 @@ end
 
 			generate_rtdbgd_leave
 
+				-- Stop monitoring before releasing the GC hooks
+			generate_monitoring_stop
+
 				-- Generate the remove of the GC hooks
 			context.remove_gc_hooks
 				-- Generate the update of the locals stack used to debug in C
 			context.generate_pop_debug_locals (arguments)
-				-- Generate trace macro (stop)
-			generate_trace_stop
-				-- Generate profile macro (stop)
-			generate_profile_stop
 				-- Generate the update of the trace stack before quitting
 				-- the routine
 			generate_pop_execution_trace
@@ -1483,24 +1581,23 @@ end
 			l_arg: ARGUMENT_BL
 			l_optimize_like_current: BOOLEAN
 		do
-			if context.workbench_mode or system.check_for_catcall_at_runtime then
-					-- We do not have to generate a catcall detection for some features of ANY
-					-- which are properly handled at runtime.
-				l_name_id := context.current_feature.feature_name_id
-				l_any_class_id := system.any_id
-				if
-					context.current_feature.written_in /= l_any_class_id or else
-					(l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
-					l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id)
-				then
-					nb := argument_count
-					if nb > 0 then
+			l_argument_types := arguments
+			if l_argument_types /= Void and then context.workbench_mode or system.check_for_catcall_at_runtime then
+				nb := l_argument_types.count
+				if nb > 0 then
+						-- We do not have to generate a catcall detection for some features of ANY
+						-- which are properly handled at runtime.
+					l_name_id := context.current_feature.feature_name_id
+					l_any_class_id := system.any_id
+					if
+						context.current_feature.written_in /= l_any_class_id or else
+						(l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
+						l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id)
+					then
 						from
-							l_argument_types := arguments
 							i := l_argument_types.lower
-							nb := i + l_argument_types.upper
 						until
-							i = nb
+							i > nb
 						loop
 							l_type := l_argument_types [i]
 								-- We instantiate `l_type' in current context to see if it is
@@ -1512,6 +1609,10 @@ end
 								if l_any_type = Void or else l_any_type.class_id /= l_any_class_id then
 									if l_arg = Void then
 										create l_arg
+											-- See eweasel test#catcall006 and test#incr330 for a case where it is important
+											-- to detect such assignments.
+											-- See eweasel test#catcall006 and test#incr330 for a case where it is important
+											-- to detect such assignments.
 										l_optimize_like_current := not attribute_assignment_detector.has_attribute_assignment (Current)
 									end
 									l_arg.set_position (i)
@@ -1804,12 +1905,6 @@ feature {NONE} -- Typing
 feature {NONE} -- Convenience
 
 	local_var: LOCAL_B
-			-- Instance used to generate local variable name
-		once
-			create Result
-		end
-
-	arg_var: ARGUMENT_B
 			-- Instance used to generate local variable name
 		once
 			create Result
