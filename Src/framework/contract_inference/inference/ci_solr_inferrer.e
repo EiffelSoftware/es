@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Inferred to generate Solr related files (instead of actually inferring contracts)"
 	author: ""
 	date: "$Date$"
@@ -128,11 +128,17 @@ feature{NONE} -- Implementation
 			if not l_retried then
 				create l_file.make_create_read_write (a_file_path)
 				if a_transition_data.transition.is_passing then
-					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
+					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
+--					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
+					l_objects.set_serialization_internal (a_transition_data.serialization_info.post_serialization)
 					l_objects.set_properties (a_transition_data.transition.postconditions)
 				else
-					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
-					l_objects.set_properties (a_transition_data.transition.preconditions)
+--					fixme ("We only use pre-state serialization because quite often, post-state serialization will cause a deserialization mismatch crash, don't know why. Perhaps because we evaluated expressions through the debugger. 30.10.2010 Jasonw")
+					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
+					l_objects.set_serialization_internal (a_transition_data.serialization_info.pre_serialization)
+					l_objects.set_properties (a_transition_data.transition.postconditions)
+--					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
+--					l_objects.set_properties (a_transition_data.transition.preconditions)
 				end
 
 				create l_writer.make_with_medium (l_file)

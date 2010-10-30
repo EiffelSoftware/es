@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Pick postconditions which can be considered as class invariants"
 	author: ""
 	date: "$Date$"
@@ -133,7 +133,7 @@ feature{NONE} -- Implementation
 				-- Generate simple postcondition if the feature body is
 				-- a single assignment to Result.
 			context_feature := a_feature
-			current_written_class := context_class
+			current_written_class := context_feature.written_class
 			create l_post_gen
 			l_post_gen.generate (context_class, a_feature)
 			l_post_str := l_post_gen.last_postcondition

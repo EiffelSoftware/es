@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Symbolic constraint solver based on Mathematica"
 	author: ""
 	date: "$Date$"
@@ -216,6 +216,8 @@ feature{NONE} -- Implementation
 			-- String representation of `a_expression' in Mathematica format
 		do
 			create Result.make_from_string (a_expression.text)
+			Result.replace_substring_all ("and then", "and")
+			Result.replace_substring_all ("or else", "or")
 			Result.replace_substring_all (" and ", " && ")
 			Result.replace_substring_all (" = ", " == ")
 

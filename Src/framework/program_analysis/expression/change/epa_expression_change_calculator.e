@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Calculator to measure the change from an expression to another expression"
 	author: ""
 	date: "$Date$"
@@ -215,9 +215,9 @@ feature{NONE} -- Process/Data
 						-- Integer delta relaxation
 					if is_integer_change_relaxation_enabled then
 						if l_delta > 0 then
-							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, 1, 1 + positive_relaxation_delta)
+							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, expression.feature_, 1, 1 + positive_relaxation_delta)
 						else
-							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, -negative_relaxation_delta, 0)
+							l_changes := create {EPA_INTEGER_RANGE}.make (expression.class_, expression.feature_, -negative_relaxation_delta, 0)
 						end
 						l_change_list.extend (new_expression_change (expression, l_changes, True, 0.1))
 					end

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents a set of objects along with their properties, which can be queried"
 	author: ""
 	date: "$Date$"
@@ -172,6 +172,12 @@ feature -- Setting
 			-- Adaption means possible context transformation.
 		do
 			set_state (a_properties, properties)
+		end
+
+	set_serialization_internal (a_serialization: like serialization_internal)
+			-- Set `serialization_internal' with `a_serialization'.
+		do
+			serialization_internal := a_serialization
 		end
 
 feature -- Visitor

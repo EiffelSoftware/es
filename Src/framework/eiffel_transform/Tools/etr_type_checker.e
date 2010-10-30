@@ -571,10 +571,8 @@ feature {NONE} -- Implementation
 			-- If `a_type' is formal, return its actual type in context of `a_context'
 			-- otherwise return `a_type' itself.
 		do
-			if a_type.is_formal then
-				if attached {FORMAL_A} a_type as l_formal then
-					Result := l_formal.constrained_type (a_context)
-				end
+			if attached {FORMAL_A} a_type as l_formal then
+				Result := l_formal.constrained_type (a_context)
 			else
 				Result := a_type
 			end

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Objects that represents integer ranges"
 	author: ""
 	date: "$Date$"
@@ -25,7 +25,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_context_class: CLASS_C; a_lower: INTEGER; a_upper: INTEGER)
+	make (a_context_class: CLASS_C; a_feature: FEATURE_I; a_lower: INTEGER; a_upper: INTEGER)
 			-- Initialize Current.
 		local
 			l_expr: EPA_AST_EXPRESSION
@@ -35,7 +35,7 @@ feature{NONE} -- Initialization
 			make_set (a_upper - a_lower + 1)
 			set_equality_tester (expression_equality_tester)
 			across a_lower |..| a_upper as l_elements loop
-				create l_expr.make_with_text (a_context_class, Void, l_elements.item.out, a_context_class)
+				create l_expr.make_with_text (a_context_class, a_feature, l_elements.item.out, a_context_class)
 				force_last (l_expr)
 			end
 		end

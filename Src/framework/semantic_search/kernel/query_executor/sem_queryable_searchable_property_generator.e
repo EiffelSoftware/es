@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to generate searchable properties for a queryable"
 	author: ""
 	date: "$Date$"
@@ -896,7 +896,12 @@ feature{NONE} -- Implementation
 						queryable_as_feature_transition.postconditions.force_last (l_equation)
 					else
 							-- Add current property as a absolute change of a feature transition.					
-						queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False, a_negated), a_expression)
+						if attached{EPA_NUMERIC_RANGE_VALUE} a_value as l_range then
+							queryable_as_feature_transition.changes.force_last (
+								value_range_change (a_expression, l_range.lower, l_range.upper, False), a_expression)
+						else
+							queryable_as_feature_transition.changes.force_last (value_change (a_expression, create {EPA_AST_EXPRESSION}.make_with_text (context_class, context_feature, a_value.item.out, context_class), False, a_negated), a_expression)
+						end
 					end
 				end
 			end
@@ -908,7 +913,7 @@ feature{NONE} -- Implementation
 			l_change_set: EPA_INTEGER_RANGE
 			l_change: EPA_EXPRESSION_CHANGE
 		do
-			create l_change_set.make (context_class, a_lower, a_upper)
+			create l_change_set.make (context_class, context_feature, a_lower, a_upper)
 			create Result.make
 			create l_change.make (a_expression, l_change_set, a_relative)
 			Result.extend (l_change)

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to find queries with an integer argument which is within a known range defined by the minimal and maximal values"
 	author: ""
 	date: "$Date$"
@@ -13,6 +13,8 @@ inherit
 	EPA_UTILITY
 
 	SHARED_NAMES_HEAP
+
+	EPA_SHARED_EQUALITY_TESTERS
 
 create
 	make
@@ -139,6 +141,9 @@ feature{NONE} -- Implementation
 			l_min: LINKED_LIST [EPA_EXPRESSION]
 			l_max: LINKED_LIST [EPA_EXPRESSION]
 			l_set1, l_set2: DS_HASH_SET [EPA_EXPRESSION]
+			l_expr: EPA_AST_EXPRESSION
+			l_old_expr: EPA_EXPRESSION
+			l_text: STRING
 		do
 				-- Get candidate assertions.
 			l_set1 := contract_extractor.precondition_expression_set (a_context_class, a_feature)
@@ -152,7 +157,6 @@ feature{NONE} -- Implementation
 			l_relevant_constraints := l_finder.relevant_constraints
 			l_constraint_table := l_finder.constraint_table
 			l_constraining_expressions := l_finder.constraining_expressions
-
 			create l_args.make
 			l_args.extend (a_argument)
 			create l_constraining_exprs.make
