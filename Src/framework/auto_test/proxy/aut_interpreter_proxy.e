@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 
 		"Proxy for Erl-G interpreters"
@@ -527,7 +527,7 @@ feature -- Execution
 				-- in the replay mode, there will be a problem, either because some feature is not found,
 				-- or the type of argument are not correct.
 			create l_invoke_request.make (system, l_feature.feature_name, a_target, an_argument_list)
-			if a_feature /= Void then
+			if aut_feature /= Void then
 				l_invoke_request.set_feature_id (aut_feature.id)
 			end
 			l_invoke_request.set_target_type (l_target_type)
