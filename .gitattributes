@@ -2714,6 +2714,10 @@ Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticIndexWrit
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticQueryTranslator.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticToLuceneDocumentTranslator.java -text
 Src/framework/semantic_search/engine/solr/config/schema.xml -text
+Src/framework/semantic_search/engine/sql/schema/schema.sql -text
+Src/framework/semantic_search/engine/sql/schema/schema_diagram.jpg -text
+Src/framework/semantic_search/engine/sql/schema/schema_readme.doc -text
+Src/framework/semantic_search/engine/sql/schema/schema_visio.vsd -text
 Src/framework/semantic_search/lucene_server/Lucene_server.iml -text
 Src/framework/semantic_search/lucene_server/lib/lucene-core-3.0.1.jar -text
 Src/framework/semantic_search/lucene_server/src/Main.java -text
