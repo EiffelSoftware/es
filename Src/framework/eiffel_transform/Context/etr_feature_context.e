@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Feature-context of a transformable."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -109,9 +109,9 @@ feature {NONE} -- Creation
 			-- compute explicit type
 			if a_written_feature.has_return_value then
 				unresolved_type := a_written_feature.type
-				type := type_checker.explicit_type (a_written_feature.type, l_context_class, a_written_feature)
+				type := type_checker.explicit_type (a_written_feature.type.actual_type, l_context_class, a_written_feature)
 				if type = Void then
-					type := type_checker.explicit_type (a_written_feature.type, l_written_class, a_written_feature)
+					type := type_checker.explicit_type (a_written_feature.type.actual_type, l_written_class, a_written_feature)
 				end
 				has_return_value := true
 			end
@@ -130,9 +130,9 @@ feature {NONE} -- Creation
 				until
 					l_e_feat.arguments.after or l_e_feat.argument_names.after
 				loop
-					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_context_class, a_written_feature)
+					l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item.actual_type, l_context_class, a_written_feature)
 					if l_expl_type = Void then
-						l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item, l_written_class, a_written_feature)
+						l_expl_type := type_checker.explicit_type (l_e_feat.arguments.item.actual_type, l_written_class, a_written_feature)
 					end
 					l_name := l_e_feat.argument_names.item
 					l_arg_list.extend (create {ETR_TYPED_VAR}.make (l_name, l_expl_type, l_e_feat.arguments.item))
@@ -167,7 +167,7 @@ feature {NONE} -- Creation
 					l_e_feat.locals.after
 				loop
 					l_written_type := type_checker.written_type_from_type_as (l_e_feat.locals.item.type, a_written_feature, class_context.written_class)
-					l_expl_type := type_checker.explicit_type (l_written_type, class_context.written_class, a_written_feature)
+					l_expl_type := type_checker.explicit_type (l_written_type.actual_type, class_context.written_class, a_written_feature)
 
 					-- add a local for each name
 					from
