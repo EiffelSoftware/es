@@ -17,7 +17,8 @@ inherit
 			{NONE} all
 			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition, set_is_inherited
 		redefine
-			set_routine_ids
+			set_routine_ids,
+			match_list_of_class
 		end
 
 	SHARED_AST_CONTEXT
@@ -685,6 +686,11 @@ feature {NONE} -- Type checking
 			if l_error_level = error_level then
 				an_ast.process (Current)
 			end
+		end
+
+	match_list_of_class (a_class_id: INTEGER): LEAF_AS_LIST
+			-- Match list object for class id `a_class_id'
+		do
 		end
 
 note
