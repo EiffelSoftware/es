@@ -32,7 +32,7 @@ feature
 			name := a_name
 			replace := a_replace
 			context := ""
-			
+
 			construct_state_export
 		end
 
@@ -100,7 +100,7 @@ feature
 			feat_i := find_feature
 
 			if attached feat_i then
-				args := actual_args (replace.call)
+				-- args := actual_args (replace.call)
 				from
 					i := 1
 				until
@@ -120,7 +120,7 @@ feature
 		local
 			feat_name: STRING
 		do
-			feat_name := call_name (replace.call)
+			-- feat_name := call_name (replace.call)
 			Result := replace.type.associated_class.feature_named_32 (feat_name)
 		end
 

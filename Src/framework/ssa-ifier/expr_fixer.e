@@ -16,24 +16,28 @@ inherit
 			process_access_feat_as,
 			process_bool_as,
 			process_unary_as,
-			process_integer_as
+			process_integer_as,
+			process_current_as
 		end
+
+create
+	make
 
 feature
 	make
 		do
-			reset
+			reset_state
 		end
 
 	convert_ast (expr: EXPR_AS): SSA_EXPR
 		do
-			reset
+			reset_state
 			safe_process (expr)
 			Result := last_expr
 		end
 
 
-	reset
+	reset_state
 		do
 			constructor := Void
 			last_expr   := Void
@@ -49,7 +53,7 @@ feature
 
 	last_expr_name: STRING
 		do
-			if attached {SSA_NESTED} last_expr as nested then
+			if attached {SSA_EXPR_NESTED} last_expr as nested then
 				Result := nested.name
 			elseif attached {SSA_EXPR_VAR} last_expr as var then
 				Result := var.name
@@ -58,7 +62,7 @@ feature
 
 	last_expr_args: LIST [SSA_EXPR]
 		do
-			if attached {SSA_NESTED} last_expr as nested then
+			if attached {SSA_EXPR_NESTED} last_expr as nested then
 				Result := nested.args
 			else
 				Result := empty_args
@@ -72,7 +76,17 @@ feature
 
 	construct_nested (a_target: SSA_EXPR; a_name: STRING; a_args: LIST [SSA_EXPR]): SSA_EXPR
 		do
-			create {SSA_NESTED} Result.make (a_target, a_name, a_args)
+			create {SSA_EXPR_NESTED} Result.make (a_target, a_name, a_args)
+		end
+
+	process_current_as (l_as: CURRENT_AS)
+		do
+			if attached constructor then
+				constructor.call ([l_as.access_name, empty_args])
+				last_expr := constructor.last_result
+			else
+				last_expr := create {SSA_EXPR_VAR}.make (l_as.access_name)
+			end
 		end
 
 	process_id_as (l_as: ID_AS)
@@ -94,7 +108,6 @@ feature
 			end
 
 			safe_process (l_as.message)
-
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -103,7 +116,7 @@ feature
 				constructor.call ([l_as.access_name_8, params_list (l_as.parameters)])
 				last_expr := constructor.last_result
 			else
-				last_expr := create {SSA_NESTED}.make (Void, l_as.access_name_8, params_list (l_as.parameters))
+				last_expr := create {SSA_EXPR_NESTED}.make (Void, l_as.access_name_8, params_list (l_as.parameters))
 			end
 		end
 
@@ -114,25 +127,29 @@ feature
 			saved_constr: FUNCTION [ANY, TUPLE[STRING, LIST[SSA_EXPR]], SSA_EXPR]
 		do
 			create {ARRAYED_LIST [SSA_EXPR]} Result.make (10)
-			saved_expr := last_expr
-			saved_constr := constructor
 
-			from
-				l_params.start
-				reset
-			until
-				l_params.after
-			loop
-				expr_as := l_params.item
-				safe_process (expr_as)
-				Result.extend (last_expr)
+			if attached l_params then
+				saved_expr := last_expr
+				saved_constr := constructor
 
-				reset
-				l_params.forth
+				from
+					l_params.start
+					reset_state
+				until
+					l_params.after
+				loop
+					expr_as := l_params.item
+					safe_process (expr_as)
+					Result.extend (last_expr)
+
+					reset_state
+					l_params.forth
+				end
+
+				constructor := saved_constr
+				last_expr := saved_expr
 			end
 
-			constructor := saved_constr
-			last_expr := saved_expr
 		end
 
 	process_bool_as (l_as: BOOL_AS)
@@ -147,9 +164,9 @@ feature
 			safe_process (l_as.expr)
 			e := last_expr
 
-			reset
+			reset_state
 
-			create {SSA_EXPR_UNARY} last_expr.make (l_as.operator_name_32, last_expr)
+			create {SSA_EXPR_UNARY} last_expr.make (l_as.operator_name_32, e)
 		end
 
 	process_binary_as (l_as: BINARY_AS)
@@ -158,11 +175,11 @@ feature
 		do
 			safe_process (l_as.left)
 			e1 := last_expr
-			reset
+			reset_state
 
 			safe_process (l_as.right)
 			e2 := last_expr
-			reset
+			reset_state
 
 			create {SSA_EXPR_BIN} last_expr.make (l_as.op_name.name_32, e1, e2)
 		end

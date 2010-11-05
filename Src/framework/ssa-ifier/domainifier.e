@@ -14,9 +14,6 @@ feature
 
 	make (a_class: CLASS_C)
 		local
-			ssa_temps: SSA_CHAIN_BREAKER
-			ssa_temps_printer: SSA_REPLACEMENTS_CREATOR
-			ssa_typer: SSA_TYPER
 			c2d: CLASS_TO_DOMAIN
 			ssa_printer: SSA_FEATURE_PRINTER
 			p: PRINTER

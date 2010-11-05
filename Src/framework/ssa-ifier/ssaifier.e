@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Top-level annotation of a class' feature."
 	author: ""
 	date: "$Date$"
@@ -6,20 +6,25 @@ note
 
 class SSAIFIER
 
+inherit
+	SSA_SHARED
+
 create
 	make
 
 feature
-	class_c: CLASS_C
-
 	make (a_class: CLASS_C; a_name: STRING)
 			-- Process the feature `a_name' from the class `a_class'.
+		require
+			non_void_class: attached a_class
 		local
 			ssa_printer: SSA_PRINTER
-			p: PRINTER
 		do
-			class_c := a_class
-			create ssa_printer.make_with_feature (a_class, a_name)
+			set_class (a_class)
+			set_feature (a_class.feature_named_32 (a_name))
+
+			create ssa_printer.make_for_ssa
+
 			ssa_printer.process
 			print ("Expanded Class:%N")
 			print (ssa_printer.text)

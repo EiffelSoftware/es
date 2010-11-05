@@ -21,6 +21,11 @@ feature
 
 	boolean: BOOLEAN
 
+	replacements: LIST [SSA_REPLACEMENT]
+		do
+			create {ARRAYED_LIST [SSA_REPLACEMENT]} Result.make (10)
+		end
+
 	as_code: STRING
 		do
 			Result := boolean.out

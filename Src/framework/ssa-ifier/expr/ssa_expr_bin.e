@@ -29,4 +29,9 @@ feature
 			Result := "(" + expr1.as_code + ") " + op + " (" + expr2.as_code + ")"
 		end
 
+	replacements: LIST [SSA_REPLACEMENT]
+		do
+			check unimplemented: False end
+		end
+
 end
