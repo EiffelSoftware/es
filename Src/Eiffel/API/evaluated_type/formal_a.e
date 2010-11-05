@@ -169,9 +169,7 @@ feature -- Property
 	is_initialization_required: BOOLEAN
 			-- Is initialization required for this type in void-safe mode?
 		do
-			if not is_expanded and then not has_detachable_mark then
-				Result := True
-			end
+			Result := not is_expanded and then not has_detachable_mark
 		end
 
 	annotation_flags: NATURAL_16
@@ -202,7 +200,14 @@ feature -- IL code generation
 feature -- Comparison
 
 	is_equivalent (other: FORMAL_A): BOOLEAN
-			-- Is `other' equivalent to the current object ?
+			-- Is `other' equivalent to the current object?
+		do
+			Result := is_equivalent_excluding_attachment (other) and then
+				is_attached = other.is_attached
+		end
+
+	is_equivalent_excluding_attachment (other: FORMAL_A): BOOLEAN
+			-- Is `other' equivalent to the current object without taking attachment status into account?
 		do
 			Result := position = other.position and then
 				is_reference = other.is_reference and then
@@ -502,7 +507,7 @@ feature {FORMAL_A} -- Conformance
 			a_context_class_attached: attached a_context_class
 			other_attached: attached other
 		do
-			if is_equivalent (other) then
+			if is_equivalent_excluding_attachment (other) then
 					-- The rules are as follows, but we need to take care about implicit attachment status:
     				-- 1. !G conforms to G, ?G and !G.
 					-- 2. G conforms to G and ?G.
@@ -619,14 +624,16 @@ feature -- Access
 		end
 
 	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A
-			-- Instantiation of Current in the context of `class_type',
+			-- Instantiation of Current in the context of `type',
 			-- assuming that Current is written in class of id `written_id'.
 		local
 			t: ATTACHABLE_TYPE_A
 			l_class: CLASS_C
 			l_type_set: TYPE_SET_A
 		do
-			if attached {CL_TYPE_A} type.actual_type as l_cl_type then
+				-- The type should be evaluated in the context of the associated conformance type.
+				-- `type.conformance_type' is used because `type.actual_type' does not work for {LIKE_CURRENT}.
+			if attached {CL_TYPE_A} type.conformance_type as l_cl_type then
 				Result := l_cl_type.instantiation_of (Current, written_id).to_other_attachment (Current)
 			else
 				Result := Current

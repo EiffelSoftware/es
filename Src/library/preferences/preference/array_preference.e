@@ -95,7 +95,7 @@ feature -- Status Setting
 			values: LIST [STRING]
 			l_value: like value
 		do
-			create internal_value.make_filled ("", 0, 1)
+			create internal_value.make_empty
 			values := a_value.split (';')
 			if values.count > 1 or not values.first.is_empty then
 				from
