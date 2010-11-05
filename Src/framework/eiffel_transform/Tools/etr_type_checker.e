@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Type operations."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -591,9 +591,11 @@ feature -- Type checking
 			-- Make result available in `last_type'.
 		do
 			error_handler.wipe_out
+			context.set_locals (local_info (a_context_class, a_feature))
 			context.initialize (a_context_class, a_context_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)
+
 			expression_type_check_and_code (a_feature, a_expr)
 
 			if error_handler.has_error then
@@ -656,7 +658,7 @@ feature {NONE} -- Type checking
 			l_error_level: like error_level
 		do
 			reset
-			is_byte_node_enabled := True
+			is_byte_node_enabled := False
 			current_feature := a_feature
 
 			l_cl := context.current_class
@@ -679,6 +681,7 @@ feature {NONE} -- Type checking
 					reset
 					context.restore (l_ctx)
 				end
+
 				context.init_attribute_scopes
 				context.init_local_scopes
 				type_a_checker.init_for_checking (a_feature, l_cl, Void, error_handler)

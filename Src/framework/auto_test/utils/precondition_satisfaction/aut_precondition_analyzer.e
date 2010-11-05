@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {AUT_LINEAR_CONSTRAIN_SOLVABLE_VISITOR}."
 	author: ""
 	date: "$Date$"
@@ -134,7 +134,7 @@ feature -- Basic operation
 				(not last_predicate_access_patterns.there_exists (agent has_target_operand)) and then
 				last_predicates.there_exists (agent has_constraining_query)
 			then
-				l_not_void_pred := target_not_void_predicate_and_access_pattern (current_feature.type)
+				l_not_void_pred := target_not_void_predicate_and_access_pattern (current_feature.type, a_feature.feature_)
 				last_predicates.force_last (l_not_void_pred.predicate)
 				last_predicate_access_patterns.force_last (l_not_void_pred.access_pattern)
 			end
@@ -785,7 +785,7 @@ feature{NONE} -- Implmentation
 			Result := l_keys
 		end
 
-	target_not_void_predicate_and_access_pattern (a_type: TYPE_A): TUPLE [predicate: AUT_PREDICATE; access_pattern: AUT_PREDICATE_ACCESS_PATTERN] is
+	target_not_void_predicate_and_access_pattern (a_type: TYPE_A; a_feature: FEATURE_I): TUPLE [predicate: AUT_PREDICATE; access_pattern: AUT_PREDICATE_ACCESS_PATTERN] is
 			-- "not_void" predicate for `a_type' and its access pattern.
 		require
 			a_type_attached: a_type /= Void
@@ -810,7 +810,7 @@ feature{NONE} -- Implmentation
 			create l_target.initialize ("a__target")
 			create l_ne_binary.initialize (l_target, l_void, l_ne_operator)
 			create l_ne_operator.make ({EIFFEL_TOKENS}.TE_NE, 0, 0, 0, 0)
-			create l_assertion.make (l_ne_binary, current_context_class, current_written_class)
+			create l_assertion.make_with_feature (current_context_class, a_feature, l_ne_binary, current_written_class)
 			create l_access_pattern.make (current_feature, l_predicate, l_pattern_table, l_assertion)
 
 			Result := [l_predicate, l_access_pattern]
