@@ -54,6 +54,7 @@ CREATE TABLE  `semantic_search`.`Conformance` (
 
 CREATE TABLE  `semantic_search`.`PropertySpec1` (
   `prop_id` int(10) unsigned NOT NULL,
+  `prop_type` int(5) unsigned NOT NULL,
   `doc_id` int(10) unsigned NOT NULL,
   `var1` smallint(5) unsigned NOT NULL,
   `type1` int(10) unsigned NOT NULL,
@@ -70,6 +71,7 @@ CREATE TABLE  `semantic_search`.`PropertySpec1` (
 
 CREATE TABLE  `semantic_search`.`PropertySpec2` (
   `prop_id` int(10) unsigned NOT NULL,
+  `prop_type` int(5) unsigned NOT NULL,
   `doc_id` int(10) unsigned NOT NULL,
   `var1` smallint(5) unsigned NOT NULL,
   `type1` int(10) unsigned NOT NULL,
@@ -90,6 +92,7 @@ CREATE TABLE  `semantic_search`.`PropertySpec2` (
 
 CREATE TABLE  `semantic_search`.`PropertySpec3` (
   `prop_id` int(10) unsigned NOT NULL,
+  `prop_type` int(5) unsigned NOT NULL,
   `doc_id` int(10) unsigned NOT NULL,
   `var1` smallint(5) unsigned NOT NULL,
   `type1` int(10) unsigned NOT NULL,
@@ -114,6 +117,7 @@ CREATE TABLE  `semantic_search`.`PropertySpec3` (
 
 CREATE TABLE  `semantic_search`.`PropertySpec4` (
   `prop_id` int(10) unsigned NOT NULL,
+  `prop_type` int(5) unsigned NOT NULL,
   `doc_id` int(10) unsigned NOT NULL,
   `var1` smallint(5) unsigned NOT NULL,
   `type1` int(10) unsigned NOT NULL,
