@@ -1028,9 +1028,10 @@ feature {NONE} -- Implementation: preparation
 				l_error_handler.set_debug_to_file (output_stream)
 			end
 
-			find_types_under_test
-			setup_for_precondition_evaluation
-
+			if is_random_testing_enabled then
+				find_types_under_test
+				setup_for_precondition_evaluation
+			end
 		end
 
 	initiate_testing_task
