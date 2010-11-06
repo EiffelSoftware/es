@@ -247,95 +247,47 @@ feature -- Type evaluation
 			l_retried: BOOLEAN
 			l_type: TYPE_A
 		do
-			if a_type.is_none or else a_type.is_explicit then
-				Result := a_type
-			else
-				if a_feature.written_class.class_id /= a_context_class.class_id then
-					set_is_inherited (True)
-				end
-				error_handler.wipe_out
-				context.initialize (a_context_class, a_context_class.actual_type)
-				context.set_written_class (a_feature.written_class)
-				type_a_checker.init_for_checking (a_feature, a_context_class, Void, error_handler)
-				inherited_type_a_checker.init_for_checking (a_feature, a_context_class, Void, error_handler)
-				set_current_feature (a_feature)
-				if is_inherited then
-						-- Perform simple check that TYPE_A is valid, `l_type' should not be
-						-- Void after this call since it was not Void when checking the parent
-						-- class
-					l_type := inherited_type_a_checker.solved (a_type, Void)
-					check l_type_not_void: l_type /= Void end
-					l_type := l_type.evaluated_type_in_descendant (context.written_class,
-									context.current_class, current_feature)
-					l_type := actual_type_from_formal_type (l_type, a_feature.written_class)
+			if not l_retried then
+				if a_type.is_none or else a_type.is_explicit then
+					Result := a_type
 				else
-						-- Perform simple check that TYPE_A is valid.
-					l_type := type_a_checker.check_and_solved (a_type, Void)
-					l_type := actual_type_from_formal_type (l_type, a_context_class)
+					Result := a_type.actual_type.instantiation_in (a_context_class.constraint_actual_type, a_context_class.class_id)
+					if Result /= Void then
+						Result := actual_type_from_formal_type (Result, a_context_class)
+					end
+					if Result.is_loose then
+						if a_feature.written_class.class_id /= a_context_class.class_id then
+							set_is_inherited (True)
+						end
+						error_handler.wipe_out
+						context.initialize (a_context_class, a_context_class.actual_type)
+						context.set_written_class (a_feature.written_class)
+						type_a_checker.init_for_checking (a_feature, a_context_class, Void, error_handler)
+						inherited_type_a_checker.init_for_checking (a_feature, a_feature.written_class, Void, error_handler)
+						set_current_feature (a_feature)
+						if is_inherited then
+								-- Perform simple check that TYPE_A is valid, `l_type' should not be
+								-- Void after this call since it was not Void when checking the parent
+								-- class
+							l_type := inherited_type_a_checker.solved (a_type, Void)
+							check l_type_not_void: l_type /= Void end
+							l_type := l_type.evaluated_type_in_descendant (context.written_class,
+											context.current_class, current_feature)
+							l_type := actual_type_from_formal_type (l_type, a_feature.written_class)
+						else
+								-- Perform simple check that TYPE_A is valid.
+							l_type := type_a_checker.check_and_solved (a_type, Void)
+							l_type := actual_type_from_formal_type (l_type, a_context_class)
+						end
+						if not error_handler.has_error then
+							last_type := l_type
+						else
+							last_type := Void
+						end
+						Result := last_type
+					end
 				end
-				if not error_handler.has_error then
-					last_type := l_type
-				else
-					last_type := Void
-				end
-				Result := last_type
 			end
---			if not l_retried then
---				Result := a_type.actual_type.instantiation_in (a_written_class.actual_type, a_written_class.class_id)
---				Result := actual_type_from_formal_type (Result, a_written_clas
---			end
---		end
-
---			if not a_type.is_valid then
---				-- It probably hasn't been solved yet
---				type_a_checker.init_for_checking (a_written_feature, a_written_class, void, void)
---				Result := type_a_checker.solved(a_type, void)
---				Result := Result.actual_type
---			elseif a_type.is_formal then
---				if attached {FORMAL_A} a_type as l_formal then
---					Result :=  l_formal.constraints (a_written_class)
-
---					if attached {TYPE_SET_A}Result as typeset then
---						Result := typeset.first
-
---						if typeset.count>1 then
---							etr_error_handler.add_error (Current, "explicit_type", "Multiple constraints are not supported.")
---						end
---					end
---				end
---			elseif a_type.has_like_current then
---				Result := a_written_class.actual_type
---			elseif a_type.has_like then
---				Result := a_type.actual_type
---			else
---				Result := a_type
---			end
-
---			if Result.has_generics then
---				-- check if all generics are explicit
---				-- duplicate so the original type is not changed
---				Result := Result.duplicate
---				if attached {GEN_TYPE_A}Result as gen then
---					from
---						l_index := gen.generics.lower
---					until
---						l_index > gen.generics.upper
---					loop
---						gen.generics[l_index] := explicit_type (gen.generics[l_index], a_written_class, a_written_feature)
---						l_index := l_index + 1
---					end
---				end
---			end
-
---			if not Result.is_valid then
---				etr_error_handler.add_error (Current, "explicit type", "Type is invalid and unable to be resolved.")
---			elseif not Result.is_explicit then
---				if a_type.same_type (Result) and then a_type.is_equivalent (Result) then
---					etr_error_handler.add_error (Current, "explicit type", "Unable to resolve explicit type.")
---				else
---					Result := explicit_type (Result, a_written_class, a_written_feature)
---				end
---			end
 		ensure
 			is_explicit: Result.is_explicit
 			has_associated_class: Result.associated_class /= void or Result.is_none
