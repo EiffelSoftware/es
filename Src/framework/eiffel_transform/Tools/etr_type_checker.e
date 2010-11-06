@@ -358,13 +358,15 @@ feature -- Type evaluation
 				set_is_inherited (True)
 			end
 			if a_feature.is_routine then
-				if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
-					if l_routine.locals /= Void then
-						type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
-						inherited_type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
-						context.locals.wipe_out
-						check_locals (l_routine)
-						Result := context.locals
+				if a_feature.body /= Void then
+					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
+						if l_routine.locals /= Void then
+							type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
+							inherited_type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
+							context.locals.wipe_out
+							check_locals (l_routine)
+							Result := context.locals
+						end
 					end
 				end
 			end
@@ -591,7 +593,9 @@ feature -- Type checking
 			-- Make result available in `last_type'.
 		do
 			error_handler.wipe_out
-			context.set_locals (local_info (a_context_class, a_feature))
+			if not a_feature.is_invariant then
+				context.set_locals (local_info (a_context_class, a_feature))
+			end
 			context.initialize (a_context_class, a_context_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)

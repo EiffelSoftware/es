@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to extract contracts from program elements"
 	author: ""
 	date: "$Date$"
@@ -213,7 +213,7 @@ feature{NONE} -- Implementation
 					if a_written_feature = Void then
 						create l_expr.make (l_expr_as, a_written_class, a_context_class)
 					else
-						create l_expr.make_with_feature (a_context_class, a_written_feature, l_expr_as, a_written_class)
+						create l_expr.make_with_feature (a_context_class, a_context_feature, l_expr_as, a_written_class)
 					end
 					if attached {ID_AS} a_asserts.item.tag as l_tag then
 						l_expr.set_tag (l_tag.name)
