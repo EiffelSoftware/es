@@ -362,7 +362,7 @@ feature -- Type evaluation
 					if attached {ROUTINE_AS} a_feature.body.body.as_routine as l_routine then
 						if l_routine.locals /= Void then
 							type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
-							inherited_type_a_checker.init_for_checking (a_feature, a_class, Void, error_handler)
+							inherited_type_a_checker.init_for_checking (a_feature, a_feature.written_class, Void, error_handler)
 							context.locals.wipe_out
 							check_locals (l_routine)
 							Result := context.locals
