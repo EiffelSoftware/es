@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to replace variables in an expression with special format"
 	author: ""
 	date: "$Date$"
@@ -43,6 +43,11 @@ feature -- Basic operations
 	ast_text (a_ast: AST_EIFFEL; a_replacements: like replacements): STRING
 			-- Text of `a_ast' with `a_replacements'
 		do
+			if should_keep_encountered_names then
+				create encountered_names.make
+			else
+				encountered_names := Void
+			end
 			output.reset
 			replacements := a_replacements
 			last_was_unqualified := true
@@ -53,6 +58,11 @@ feature -- Basic operations
 	expression_text (a_expr: EPA_EXPRESSION; a_replacements: like replacements): STRING
 			-- Text of `a_expr' with `a_replacements'
 		do
+			if should_keep_encountered_names then
+				create encountered_names.make
+			else
+				encountered_names := Void
+			end
 			output.reset
 			replacements := a_replacements
 			last_was_unqualified := true
@@ -63,12 +73,38 @@ feature -- Basic operations
 	expression_value_text (a_expr_value: EPA_EXPRESSION_VALUE; a_replacements: like replacements): STRING
 			-- Text of `a_expr_value' with `a_replacements'
 		do
+			if should_keep_encountered_names then
+				create encountered_names.make
+			else
+				encountered_names := Void
+			end
 			output.reset
 			replacements := a_replacements
 			last_was_unqualified := true
 
 			a_expr_value.process (Current)
 			Result := output.string_representation.twin
+		end
+
+	encountered_names: detachable LINKED_LIST [STRING]
+			-- List of replaced names, appearing in the same order as they appear in the original expression
+			-- Only has effect if `should_keep_encountered_names' is True, otherwise, it is set to Void.
+
+feature -- Status report
+
+	should_keep_encountered_names: BOOLEAN
+			-- Should encountered names (that are replaced) be kept?
+			-- If so, those names are put into `encounted_names'.
+			-- Default: False
+
+feature -- Setting
+
+	set_should_keep_encountered_names (b: BOOLEAN)
+			-- Set `should_keep_encountered_names' with `b'.
+		do
+			should_keep_encountered_names := b
+		ensure
+			should_keep_encountered_names_set: should_keep_encountered_names = b
 		end
 
 feature {AST_EIFFEL} -- Processing
@@ -169,8 +205,16 @@ feature {NONE} -- Implementation
 
 	process_access_name (a_name: STRING)
 			-- Process accessed variable named `a_name'.
+		local
+			l_name: STRING
+			l_encountered: like encountered_names
 		do
-			if attached {STRING} replacements.item (a_name.as_lower) as l_new_name then
+			l_name := a_name.as_lower
+			if attached {STRING} replacements.item (l_name) as l_new_name then
+				l_encountered := encountered_names
+				if l_encountered /= Void then
+					l_encountered.extend (l_name)
+				end
 				output.append_string (l_new_name)
 			else
 				output.append_string (a_name)

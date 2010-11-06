@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Analyzer to extract functions from test case state expressions"
 	author: ""
 	date: "$Date$"
@@ -233,9 +233,9 @@ feature{NONE} -- Implementation
 			l_actual_arg: EPA_FUNCTION
 			l_maped_values: DS_HASH_SET [EPA_FUNCTION_ARGUMENT_VALUE_MAP]
 			l_var_expr: EPA_AST_EXPRESSION
+			l_arg_type: TYPE_A
 		do
 			create Result.make
-
 				-- Analyze the structure of the expression.
 			l_expr := a_equation.expression
 			l_value := a_equation.value
@@ -326,13 +326,18 @@ feature{NONE} -- Implementation
 					l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 2)
 
 						-- Create function argument for argument.
+					if l_argument_variable.is_integer then
+						l_arg_type := integer_type
+					else
+						l_arg_type := context.variable_type (l_argument_variable)
+					end
 					l_actual_args.force_last (
 						create {EPA_FUNCTION}.make_from_expression (
-							create {EPA_AST_EXPRESSION}.make_with_text (
+							create {EPA_AST_EXPRESSION}.make_with_text_and_type (
 								context.class_,
 								context.feature_,
 								l_argument_variable,
-								context.feature_.written_class)))
+								context.feature_.written_class, l_arg_type)))
 				else
 					create l_argument_types.make (1, 1)
 					l_argument_types.put (l_target_type, 1)

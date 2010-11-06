@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Field names used in queryable documents"
 	author: ""
 	date: "$Date$"
@@ -180,6 +180,22 @@ feature -- Access
 	interface_variable_short: STRING = "ifc"
 
 	hit_break_points_field: STRING = "hit_breakpoints"
+	timestamp_field: STRING = "timestamp"
+
+	precondition_property_prefix: STRING = "pre"
+
+	postcondition_property_prefix: STRING = "post"
+
+	change_property_prefix: STRING = "ch"
+
+	relative_change_property_prefix: STRING = "by"
+	absolute_change_property_prefix: STRING = "to"
+
+	property_field_name: STRING = "property"
+
+	object_property_prefix: STRING = "prop"
+
+	object_info_field: STRING = "object_info"
 
 feature -- Access
 
@@ -189,6 +205,9 @@ feature -- Access
 			-- Separator to separate field name and field value
 
 	field_value_separator: CHARACTER = ';'
+			-- Field value separator
+
+	field_section_separator: CHARACTER = '%T'
 			-- Field value separator
 
 	default_variable_prefix: STRING = "v_"

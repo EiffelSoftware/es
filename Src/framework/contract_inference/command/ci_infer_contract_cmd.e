@@ -559,8 +559,8 @@ feature{NONE} -- Actions
 
 					-- Setup break points to evaluate expressions, and
 					-- break points for expression evaluation.
-				las_pre_state_expression_evaluation_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
-				las_pre_state_expression_evaluation_manager.toggle_breakpoints (True)
+				last_pre_state_expression_evaluation_manager := breakpoint_manager_for_expression_evaluation (last_test_case_info, True)
+				last_pre_state_expression_evaluation_manager.toggle_breakpoints (True)
 
 				if last_test_case_info.is_passing then
 					last_post_state_expression_evaluation_manger := breakpoint_manager_for_expression_evaluation (last_test_case_info, False)
@@ -832,6 +832,7 @@ feature{NONE} -- Implementation
 			l_constant_change_inferrer: CI_CONSTANT_CHANGE_INFERRER
 			l_semantic_search_inferrer: CI_SEMANTIC_SEARCH_DATA_COLLECTOR_INFERRER
 			l_solr_inferrer: CI_SOLR_INFERRER
+			l_sql_inferrer: CI_SQL_INFERRER
 		do
 			create inferrers.make
 
@@ -915,6 +916,13 @@ feature{NONE} -- Implementation
 				l_solr_inferrer.set_config (config)
 				l_solr_inferrer.set_logger (log_manager)
 				inferrers.extend (l_solr_inferrer)
+			end
+
+			if config.should_generate_sql then
+				create l_sql_inferrer
+				l_sql_inferrer.set_config (config)
+				l_sql_inferrer.set_logger (log_manager)
+				inferrers.extend (l_sql_inferrer)
 			end
 		end
 
@@ -1075,7 +1083,7 @@ feature{NONE} -- Results
 			-- The list of breakpoint slots that were hit during the last execution
 			-- of `feature_'
 
-	las_pre_state_expression_evaluation_manager: like breakpoint_manager_for_expression_evaluation
+	last_pre_state_expression_evaluation_manager: like breakpoint_manager_for_expression_evaluation
 	last_post_state_expression_evaluation_manger: like breakpoint_manager_for_expression_evaluation
 			-- Breakpoint expression evaluation manager
 

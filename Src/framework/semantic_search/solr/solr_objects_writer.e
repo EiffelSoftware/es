@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to write objects into Solr documents"
 	author: ""
 	date: "$Date$"
@@ -34,7 +34,7 @@ feature -- Basic operations
 			queryable_dynamic_type_name_table := type_name_table (queryable.variable_dynamic_type_table)
 
 			medium.put_string (once "<add><doc>%N")
-			append_queryable_type
+			append_queryable_type (queryable)
 			append_uuid
 			append_variables (queryable.variables, variables_field, True, False, False)
 			append_variables (queryable.variables, variable_types_field, False, True, False)
@@ -151,7 +151,7 @@ feature{NONE} -- Implementation
 		end
 
 	append_content
-			-- Append content from `queryab'e to `medium'.
+			-- Append content from `queryable'e to `medium'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_types: HASH_TABLE [INTEGER, STRING]

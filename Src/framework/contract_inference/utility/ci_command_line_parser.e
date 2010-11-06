@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Command line parser for contract inference"
 	author: ""
 	date: "$Date$"
@@ -66,6 +66,7 @@ feature -- Basic operations
 			l_use_mock_option: AP_FLAG
 			l_solr_option: AP_STRING_OPTION
 			l_breakpoint_monitoring_flag: AP_FLAG
+			l_sql_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -212,6 +213,10 @@ feature -- Basic operations
 			l_solr_option.set_description ("Enable generating solr files. Format: --generate-solr [on|off]. Default: off")
 			l_parser.options.force_last (l_solr_option)
 
+			create l_sql_option.make_with_long_form ("generate-sql")
+			l_sql_option.set_description ("Enable generating sql files. Format: --generate-sql [on|off]. Default: off")
+			l_parser.options.force_last (l_sql_option)
+
 			create l_breakpoint_monitoring_flag.make_with_long_form ("monitor-breakpoint")
 			l_breakpoint_monitoring_flag.set_description ("Should breakpoint visit status of feature under analysis be monitored? Default: False")
 			l_parser.options.force_last (l_breakpoint_monitoring_flag)
@@ -352,6 +357,12 @@ feature -- Basic operations
 				setup_generate_solr_property (config, Void)
 			end
 
+			if l_sql_option.was_found then
+				setup_generate_sql_property (config, l_sql_option.parameter)
+			else
+				setup_generate_sql_property (config, Void)
+			end
+
 			if l_breakpoint_monitoring_flag.was_found then
 				config.set_is_breakpoint_monitoring_enabled (True)
 			end
@@ -372,6 +383,16 @@ feature{NONE} -- Implementation
 				config.set_should_generate_solr (False)
 			elseif a_parameter.is_case_insensitive_equal ("on") then
 				config.set_should_generate_solr (True)
+			end
+		end
+
+	setup_generate_sql_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
+			-- Setup sql property
+		do
+			if a_parameter = Void or else a_parameter.is_case_insensitive_equal ("off") then
+				config.set_should_generate_sql (False)
+			elseif a_parameter.is_case_insensitive_equal ("on") then
+				config.set_should_generate_sql (True)
 			end
 		end
 

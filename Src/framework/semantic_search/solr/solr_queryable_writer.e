@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Writer for SOLR documents"
 	author: ""
 	date: "$Date$"
@@ -10,6 +10,8 @@ deferred class
 inherit
 	SOLR_UTILITY
 
+	SEM_FIELD_BASED_QUERYABLE_WRITER [G]
+
 feature -- Access
 
 	queryable: G
@@ -17,57 +19,9 @@ feature -- Access
 		deferred
 		end
 
-	uuid: detachable UUID
-			-- UUID used for the queryable to write
-			-- If Void, a new UUID will be generated
-
-feature -- Setting
-
-	set_uuid (a_uuid: like uuid)
-			-- Set `uuid' with `a_uuid'.
-		do
-			uuid := a_uuid
-		ensure
-			uuid_set: uuid = a_uuid
-		end
+	xx: TWO_WAY_TREE [INTEGER]
 
 feature{NONE} -- Implementation
-
-	append_field_with_data (a_name: STRING; a_value: STRING; a_type: INTEGER; a_boost: DOUBLE)
-			-- Write field specified through `a_name', `a_value', `a_type' and `a_boost' into `output'.
-		do
-			append_field (create {IR_FIELD}.make_with_raw_value (a_name, a_value, a_type, a_boost))
-		end
-
-	append_field (a_field: IR_FIELD)
-			-- append `a_field' into `medium'.
-		do
-			if not written_fields.has (a_field) then
-				medium.put_character (' ')
-				medium.put_character (' ')
-				medium.put_string (xml_element_for_field (a_field))
-				medium.put_character ('%N')
-				written_fields.force_last (a_field)
-			end
-		end
-
-	append_string_field (a_name: STRING; a_value: STRING)
-			-- Append a string field with `a_name' and `a_value' and default boost value.
-		do
-			append_field (create {IR_FIELD}.make_as_string (a_name, a_value, default_boost_value))
-		end
-
-	append_boolean_field (a_name: STRING; a_value: BOOLEAN)
-			-- Append a boolean field with `a_name' and `a_value' and default boost value.
-		do
-			append_field (create {IR_FIELD}.make_as_boolean (a_name, a_value, default_boost_value))
-		end
-
-	append_integer_field (a_name: STRING; a_value: INTEGER)
-			-- Append an integer field with `a_name' and `a_value' and default boost value.
-		do
-			append_field (create {IR_FIELD}.make_as_integer (a_name, a_value, default_boost_value))
-		end
 
 	append_variables (a_variables: detachable EPA_HASH_SET[EPA_EXPRESSION]; a_field: STRING; a_print_position: BOOLEAN; a_print_ancestor: BOOLEAN; a_static_type: BOOLEAN)
 			-- Append operands in `queryable' to `medium'.
@@ -80,22 +34,6 @@ feature{NONE} -- Implementation
 			l_values := variable_info (a_variables, queryable, a_print_position, a_print_ancestor, a_static_type)
 			if not l_values.is_empty then
 				append_field_with_data (a_field, l_values, ir_string_value_type, default_boost_value)
-			end
-		end
-
-	append_queryable_type
-			-- Append type of `queryable' into `medium'.
-		do
-			append_field (queryable_type_field (queryable))
-		end
-
-	append_uuid
-			-- Append an UUID into `medium'.
-		do
-			if uuid = Void then
-				append_string_field (uuid_field, uuid_generator.generate_uuid.out)
-			else
-				append_string_field (uuid_field, uuid.out)
 			end
 		end
 
@@ -207,5 +145,12 @@ feature{NONE} -- Implementation
 			Result.append (a_value_text)
 			Result.append_character (';')
 		end
+
+	string_representation_of_field (a_field: IR_FIELD): STRING
+			-- String representation of `a_field'
+		do
+			Result := xml_element_for_field (a_field)
+		end
+
 
 end

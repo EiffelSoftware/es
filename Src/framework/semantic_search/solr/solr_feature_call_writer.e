@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to write a feature call transition into Solr format"
 	author: ""
 	date: "$Date$"
@@ -27,116 +27,6 @@ feature{NONE} -- Initialization
 			set_medium (a_medium)
 		end
 
-feature -- Access
-
-	pre_state_serialization: detachable STRING
-			-- Pre-state serialization
-
-	pre_state_object_info: detachable STRING
-			-- Object info in pre-state
-
-	recipient: detachable STRING
-			-- The recipient feature if the transition to be written represents a failing test case
-
-	recipient_class: detachable STRING
-			-- The class of `recipient'  if the transition to be written represents a failing test case
-
-	exception_break_point_slot: detachable STRING
-			-- The break point slot of the exception if the transition to be written represents a failing test case
-
-	exception_code: detachable STRING
-			-- The error code of the exception if the transition to be written represents a failing test case
-
-	exception_meaning: detachable STRING
-			-- The error meaning of the exception if the transition to be written represents a failing test case
-
-	exception_trace: detachable STRING
-			-- Trace of the exception if the transition to be written represents a failing test case
-
-	exception_tag: detachable STRING
-			-- Tag of the failing assertion  if the transition to be written represents a failing test case
-
-	fault_id: detachable STRING
-			-- Fault identifier if the transition to be written represents a failing test case
-
-feature -- Setting
-
-	set_pre_state_serialization (a_data: like pre_state_serialization)
-			-- Set `pre_state_serialization' with `a_data'.
-		do
-			pre_state_serialization := a_data
-		end
-
-	set_pre_state_object_info (a_data: like pre_state_object_info)
-			-- Set `pre_state_object_info' with `a_data'.
-		do
-			pre_state_object_info := a_data
-		end
-
-	set_recipient (a_data: like recipient)
-			-- Set `recipient' with `a_data'.
-		do
-			recipient := a_data
-		ensure
-			recipient_set: recipient = a_data
-		end
-
-	set_recipient_class (a_data: like recipient_class)
-			-- Set `recipient_class' with `a_data'.
-		do
-			recipient_class := a_data
-		ensure
-			recipient_class_set: recipient_class = a_data
-		end
-
-	set_exception_break_point_slot (a_data: like exception_break_point_slot)
-			-- Set `exception_break_point_slot' with `a_data'.
-		do
-			exception_break_point_slot := a_data
-		ensure
-			exception_break_point_slot_set: exception_break_point_slot = a_data
-		end
-
-	set_exception_code (a_data: like exception_code)
-			-- Set `exception_code' with `a_data'.
-		do
-			exception_code := a_data
-		ensure
-			exception_code_set: exception_code = a_data
-		end
-
-	set_exception_meaning (a_data: like exception_meaning)
-			-- Set `exception_meaning' with `a_data'.
-		do
-			exception_meaning := a_data
-		ensure
-			exception_meaning_set: exception_meaning = a_data
-		end
-
-	set_exception_trace (a_data: like exception_trace)
-			-- Set `exception_trace' with `a_data'.
-		do
-			exception_trace := a_data
-		ensure
-			exception_trace_set: exception_trace = a_data
-		end
-
-	set_fault_id (a_data: like fault_id)
-			-- Set `fault_id' with `a_data'.
-		do
-			fault_id := a_data
-		ensure
-			fault_id_set: fault_id = a_data
-		end
-
-	set_exception_tag (a_data: like exception_tag)
-			-- Set `exception_tag' with `a_data'.
-		do
-			exception_tag := a_data
-		ensure
-			exception_tag_set: exception_tag = a_data
-		end
-
 feature -- Basic operations
 
 	write (a_transition: like queryable)
@@ -162,20 +52,6 @@ feature -- Basic operations
 			medium.put_string (once "</doc></add>%N")
 		end
 
-	clear_for_write
-			-- Clear intermediate data for next `write'.
-		do
-			set_pre_state_serialization (Void)
-			set_pre_state_object_info (Void)
-			set_recipient (Void)
-			set_recipient_class (Void)
-			set_exception_break_point_slot (Void)
-			set_exception_code (Void)
-			set_exception_meaning (Void)
-			set_exception_trace (Void)
-			set_fault_id (Void)
-		end
-
 feature{NONE} -- Implementation
 
 	queryable_static_type_name_table: like type_name_table
@@ -187,12 +63,12 @@ feature{NONE} -- Implementation
 	append_basic_info
 			-- Append basic information of `queryable' into `medium'.
 		do
-			append_queryable_type
-			append_class_and_feature
+			append_queryable_type (queryable)
+			append_class_and_feature (queryable)
 			append_uuid
-			append_library
-			append_feature_type
-			append_transition_status
+			append_library (queryable)
+			append_feature_type (queryable)
+			append_transition_status (queryable)
 --			append_variables (queryable.inputs.union (queryable.outputs), dynamic_variables_field, True, False, False)
 --			append_variables (queryable.inputs.union (queryable.outputs), variables_field, True, False, True)
 --			append_variables (queryable.inputs.union (queryable.outputs), variable_types_field, False, True, False)
@@ -201,29 +77,7 @@ feature{NONE} -- Implementation
 			append_variables (queryable.variables, variable_types_field, False, True, False)
 			append_interface_variable_positions
 			append_content
-			append_hit_breakpoints
-		end
-
-	append_hit_breakpoints
-			-- Append hit breakpoint information into `medium'.
-		local
-			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
-			l_data: STRING
-		do
-			create l_data.make (128)
-			from
-				l_cursor := queryable.hit_breakpoints.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if not l_data.is_empty then
-					l_data.append_character (',')
-				end
-				l_data.append_integer (l_cursor.item)
-				l_cursor.forth
-			end
-			append_string_field (hit_break_points_field, l_data)
+			append_hit_breakpoints (queryable)
 		end
 
 	append_interface_variable_positions
@@ -323,42 +177,6 @@ feature{NONE} -- Implementation
 			append_string_field (once "t_d_" + a_category, l_dfield_value)
 			append_string_field (once "s_s_" + a_category, l_meta_field_value)
 			append_string_field (once "s_d_" + a_category, l_meta_field_value)
-		end
-
-	append_transition_status
-			-- Append transition status into `medium'.
-		do
-			if queryable.is_passing then
-				append_string_field (test_case_status_field, test_case_status_passing)
-			else
-				append_string_field (test_case_status_field, test_case_status_failing)
-			end
-		end
-
-	append_feature_type
-			-- Append feature type fields into `medium'.
-		do
-			if queryable.feature_.has_return_value then
-				append_string_field (feature_type_field, feature_type_query)
-			else
-				append_string_field (feature_type_field, feature_type_command)
-			end
-			append_boolean_field (is_creation_field, queryable.is_creation)
-			append_integer_field (operand_count_field, queryable.feature_.argument_count + 1)
-			append_integer_field (argument_count_field, queryable.feature_.argument_count)
-		end
-
-	append_library
-			-- Append library information of `queryable' into `medium'.
-		do
-			append_string_field (library_field, queryable.class_.group.name)
-		end
-
-	append_class_and_feature
-			-- Append class and feature of `queryable' into `medium'.
-		do
-			append_string_field (class_field, queryable.class_.name_in_upper)
-			append_string_field (feature_field, queryable.feature_.feature_name.as_lower)
 		end
 
 	append_contracts
@@ -616,35 +434,6 @@ feature{NONE} -- Implementation
 			if pre_state_serialization /= Void and then pre_state_object_info /= Void then
 				append_string_field (pre_serialization_field, pre_state_serialization)
 				append_string_field (pre_object_info_field, pre_state_object_info)
-			end
-		end
-
-	append_exception
-			-- Append exception related fields into `medium'.
-		do
-			if recipient_class /= Void then
-				append_string_field (recipient_class_field, recipient_class)
-			end
-			if recipient /= Void then
-				append_string_field (recipient_field, recipient)
-			end
-			if exception_break_point_slot /= Void then
-				append_integer_field (exception_break_point_slot_field, exception_break_point_slot.to_integer)
-			end
-			if exception_code /= Void then
-				append_integer_field (exception_code_field, exception_code.to_integer)
-			end
-			if exception_meaning /= Void then
-				append_string_field (exception_meaning_field, exception_meaning)
-			end
-			if exception_tag /= Void then
-				append_string_field (exception_tag_field, exception_tag)
-			end
-			if fault_id /= Void then
-				append_string_field (fault_id_field, fault_id)
-			end
-			if exception_trace /= Void then
-				append_string_field (exception_trace_field, once "<![CDATA[%N" +  exception_trace + once "]]>%N")
 			end
 		end
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents a concept that can be queried"
 	author: ""
 	date: "$Date$"

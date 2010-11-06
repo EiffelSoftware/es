@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Semantic search related document writer"
 	author: ""
 	date: "$Date$"
