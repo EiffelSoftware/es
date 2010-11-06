@@ -37,7 +37,7 @@ feature -- Access
 				l_asserts.after
 			loop
 				l_exprs := l_asserts.item_for_iteration.assertions
-				Result.append (tags (l_asserts.item_for_iteration.source_class, l_asserts.item_for_iteration.source_class.invariant_feature, a_class, a_class.invariant_feature, l_exprs, False, False, False, False))
+				Result.append (tags (l_asserts.item_for_iteration.source_class, l_asserts.item_for_iteration.source_class.invariant_feature, a_class, l_asserts.item_for_iteration.source_class.invariant_feature, l_exprs, False, False, False, False))
 				l_asserts.forth
 			end
 		ensure
@@ -241,7 +241,7 @@ feature{NONE} -- Implementation
 			until
 				a_exprs.after
 			loop
-				if a_test.item ([a_exprs.item_for_iteration]) then
+				if a_test.item ([a_exprs.item_for_iteration]) and then not a_exprs.item_for_iteration.text.has ('{') then
 					if a_feature = Void then
 						create l_expr.make_with_text (a_context_class, a_exprs.item.written_class.invariant_feature, text_from_ast (a_exprs.item_for_iteration.ast), a_exprs.item_for_iteration.written_class)
 					else

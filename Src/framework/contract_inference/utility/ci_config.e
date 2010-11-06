@@ -308,7 +308,7 @@ feature -- Access
 	should_enable_post_serialization_retrieval: BOOLEAN
 			-- Should post-state object serialization be enabled?
 		do
-			Result := should_generate_mocking or should_generate_solr
+			Result := should_generate_mocking or should_generate_solr or should_generate_sql
 		end
 
 	is_breakpoint_monitoring_enabled: BOOLEAN
