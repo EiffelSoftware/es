@@ -75,6 +75,8 @@ inherit
 
 	AUT_SHARED_TYPE_FORMATTER
 
+	AUT_SHARED_ONLINE_STATISTICS
+
 create
 	make
 
@@ -473,6 +475,7 @@ feature -- Execution
 			last_request.set_response (last_response)
 			proxy_log_printers.set_end_time (test_duration)
 			proxy_log_printers.report_request (Current, last_request)
+			online_statistics.add_test_case (last_request)
 			if not last_response.is_bad then
 --				is_ready := True
 				if not last_response.is_error then
@@ -546,6 +549,7 @@ feature -- Execution
 			last_request.set_response (last_response)
 			proxy_log_printers.set_end_time (test_duration)
 			proxy_log_printers.report_request (Current, last_request)
+			online_statistics.add_test_case (last_request)
 			if not last_response.is_bad or last_response.is_error then
 --				is_ready := True
 			else
@@ -600,6 +604,7 @@ feature -- Execution
 			last_request.set_response (last_response)
 			proxy_log_printers.set_end_time (test_duration)
 			proxy_log_printers.report_request (Current, last_request)
+			online_statistics.add_test_case (last_request)
 			if not last_response.is_bad then
 --				is_ready := True
 				if not last_response.is_error then
@@ -977,6 +982,7 @@ feature -- Socket IPC
 		ensure
 			result_attached: Result /= Void
 		end
+
 
 	next_port_number: INTEGER
 			-- Next port number to connect through socket

@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 
 		"Exception"
@@ -11,7 +11,7 @@ note
 class AUT_EXCEPTION
 
 inherit
-	ANY
+	HASHABLE
 
 	EXCEP_CONST
 		export {NONE} all end
@@ -49,6 +49,18 @@ feature {NONE} -- Initialization
 			set_is_invariant_violation_on_feature_entry (an_inv_violation_on_entry_flag)
 			parse_trace (trace, Void, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
 			is_test_invalid := is_test_invalid or else is_invariant_violation_on_feature_entry
+
+			create signature.make (64)
+			signature.append (class_name)
+			signature.append_character ('.')
+			signature.append (recipient_name)
+			signature.append_character ('.')
+			signature.append (code.out)
+			signature.append_character ('.')
+			signature.append (break_point_slot.out)
+			signature.append_character ('.')
+			signature.append (tag_name)
+			hash_code := signature.hash_code
 		ensure
 			exception_code_set: code = an_exception_code
 			exception_recipient_name_set: recipient_name = an_exception_recipient_name
@@ -126,6 +138,12 @@ feature -- Access
 				Result := "Serialization_exception"
 			end
 		end
+
+	hash_code: INTEGER
+			-- Hash code value
+
+	signature: STRING
+			-- Signature of current exception
 
 feature -- Status report
 

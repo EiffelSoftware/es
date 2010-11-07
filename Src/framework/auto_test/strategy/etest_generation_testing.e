@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Task performing testing part of test generation either randomly or by replaying a log.
 	]"
@@ -27,6 +27,8 @@ inherit
 		export
 			{NONE} all
 		end
+
+	AUT_SHARED_ONLINE_STATISTICS
 
 create
 	make_random --, make_replay
@@ -306,6 +308,9 @@ feature {NONE} -- Status setting
 			end
 			generation.flush_output
 			progress := {REAL_32} 0.0
+
+				-- Output online statistics.
+			log_online_statistics
 		end
 
 feature {NONE} -- Implementation
@@ -351,6 +356,99 @@ feature {NONE} -- Factory
 
 				-- FIXME: ensure `last_interpreter' is attached, even if executable does not exist!
 			Result := l_itp_gen.last_interpreter
+		end
+
+feature{NONE} -- Logging
+
+	log_online_statistics
+			-- Log `online_statistics'.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make_from_string (generation.output_dirname)
+			l_file_name.extend ("log")
+			l_file_name.set_file_name ("statistics.txt")
+			create l_file.make_create_read_write (l_file_name)
+
+			log_test_cases (online_statistics.passing_statistics, "passing", l_file)
+			log_test_cases (online_statistics.failing_statistics, "failing", l_file)
+			log_faults (online_statistics.faults, l_file)
+			l_file.close
+		end
+
+	log_faults (faults: DS_HASH_SET [AUT_EXCEPTION]; a_file: PLAIN_TEXT_FILE)
+			-- Log `faults' into `a_file'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_EXCEPTION]
+		do
+			from
+				l_cursor := faults.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				a_file.put_string (once "<fault>%N")
+				a_file.put_string (once "<class>%N")
+				a_file.put_string (l_cursor.item.class_name)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</class>%N")
+				a_file.put_string (once "<recipient>%N")
+				a_file.put_string (l_cursor.item.recipient_name)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</recipient>%N")
+				a_file.put_string (once "<code>%N")
+				a_file.put_string (l_cursor.item.code.out)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</code>%N")
+				a_file.put_string (once "<break_point>%N")
+				a_file.put_string (l_cursor.item.break_point_slot.out)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</break_point>%N")
+				a_file.put_string (once "<tag>%N")
+				a_file.put_string (l_cursor.item.tag_name)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</tag>%N")
+				a_file.put_string (once "<trace>%N")
+				a_file.put_string (l_cursor.item.trace)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</trace>%N")
+				a_file.put_string (once "</fault>%N")
+				l_cursor.forth
+			end
+		end
+
+	log_test_cases (a_test_cases: DS_HASH_TABLE [INTEGER, AUT_FEATURE_OF_TYPE]; a_type: STRING; a_file: PLAIN_TEXT_FILE)
+			-- Log `a_test_cases' into `a_file'.
+		local
+			l_tcs_cursor: DS_HASH_TABLE_CURSOR [INTEGER, AUT_FEATURE_OF_TYPE]
+		do
+			from
+				l_tcs_cursor := online_statistics.passing_statistics.new_cursor
+				l_tcs_cursor.start
+			until
+				l_tcs_cursor.after
+			loop
+				a_file.put_string (once "<test_cases>%N")
+				a_file.put_string (once "<type>%N")
+				a_file.put_string (a_type)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</type>%N")
+				a_file.put_string (once "<class>%N")
+				a_file.put_string (l_tcs_cursor.key.type.associated_class.name)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</class>%N")
+				a_file.put_string (once "<feature>%N")
+				a_file.put_string (l_tcs_cursor.key.feature_.feature_name_32)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</feature>%N")
+				a_file.put_string (once "<number>%N")
+				a_file.put_string (l_tcs_cursor.item.out)
+				a_file.put_character ('%N')
+				a_file.put_string (once "</number>%N")
+				a_file.put_string (once "</test_cases>%N")
+				l_tcs_cursor.forth
+			end
 		end
 
 feature {NONE} -- Implementation: log replay
