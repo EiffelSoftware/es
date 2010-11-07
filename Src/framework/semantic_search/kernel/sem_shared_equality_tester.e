@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Shared equality testers"
 	author: ""
 	date: "$Date$"
@@ -26,6 +26,12 @@ feature -- Access
 
 	sem_transition_variable_position_equality_tester: SEM_TRANSITION_VARIABLE_POSITION_EQUALITY_TESTER
 			-- Equality tester for {SEM_TRANSITION_VARIABLE_POSITION} objects
+		once
+			create Result
+		end
+
+	sql_type_equality_tester: SQL_TYPE_EQUALITY_TESTER
+			-- Equality tester for {SQL_TYPE}
 		once
 			create Result
 		end
