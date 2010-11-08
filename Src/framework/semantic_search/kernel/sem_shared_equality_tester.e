@@ -36,4 +36,10 @@ feature -- Access
 			create Result
 		end
 
+	semq_term_equality_tester: SEMQ_TERM_EQUALITY_TESTER
+			-- Equality tester for {SEMQ_TERM}
+		once
+			create Result
+		end
+
 end

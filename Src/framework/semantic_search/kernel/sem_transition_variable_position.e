@@ -84,6 +84,31 @@ feature -- Access
 			Result := position
 		end
 
+	text: STRING
+			-- Text representation of Current
+		do
+			create Result.make (128)
+			Result.append (once " at ")
+			if is_unspecified then
+				if is_argument then
+					Result.append (once "some argument")
+				elseif is_operand then
+					Result.append (once "some operand")
+				elseif is_interface then
+					Result.append (once "some interface variable position")
+				end
+			else
+				if is_target then
+					Result.append (once "target")
+				elseif is_result then
+					Result.append (once "result")
+				elseif is_argument then
+					Result.append (position.out)
+					Result.append (once "-th argument")
+				end
+			end
+		end
+
 feature -- Status report
 
 	is_target: BOOLEAN
