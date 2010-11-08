@@ -248,7 +248,7 @@ feature -- Type evaluation
 			l_type: TYPE_A
 		do
 			if not l_retried then
-				if a_type.is_none or else a_type.is_explicit then
+				if a_type.is_none then
 					Result := a_type
 				else
 					Result := a_type.actual_type.instantiation_in (a_context_class.constraint_actual_type, a_context_class.class_id)
