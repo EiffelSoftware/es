@@ -19,6 +19,7 @@ feature
 			non_void_class: attached a_class
 		local
 			ssa_printer: SSA_PRINTER
+			dummy: SSA_EXTRACT_PRECOND_STATE
 		do
 			set_class (a_class)
 			set_feature (a_class.feature_named_32 (a_name))
