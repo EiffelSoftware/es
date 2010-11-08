@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 		"Batch compiler without invoking the -loop. This is the root%
 		%class for the personal version (which does allow c compilation)."
@@ -1287,11 +1287,14 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_CONTRACT_INFERENCE} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-semantic_search") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_SEMANTIC_SEARCH} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-boogie") then
 				create {EWB_BOOGIE_VERIFICATION} command
 			elseif option.is_equal ("-dead_plan") then
 				workbench.set_planned_class_name (argument (current_option + 1))
-
 				current_option := argument_count + 2
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
