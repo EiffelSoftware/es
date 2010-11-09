@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class to generate terms"
 	author: ""
 	date: "$Date$"
@@ -58,7 +58,11 @@ feature{NONE} -- Process
 			until
 				l_vars.after
 			loop
-				create l_variable_term.make (l_vars.item, a_call)
+				if a_call.interface_variable_positions.has (l_vars.item) then
+					create l_variable_term.make_with_position (l_vars.item, a_call.interface_variable_positions.item (l_vars.item), a_call)
+				else
+					create l_variable_term.make (l_vars.item, a_call)
+				end
 				if term_occurrence_function /= Void then
 					l_variable_term.set_occurrence (term_occurrence_function.item ([l_variable_term]))
 				end

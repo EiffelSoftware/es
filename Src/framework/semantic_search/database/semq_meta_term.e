@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents a meta term"
 	author: ""
 	date: "$Date$"
@@ -16,7 +16,8 @@ inherit
 	EPA_UTILITY
 
 create
-	make
+	make,
+	make_with_string
 
 feature{NONE} -- Initialization
 
@@ -30,6 +31,13 @@ feature{NONE} -- Initialization
 			hash_code := text_from_ast (a_entity).hash_code
 			set_boost (default_boost_value)
 			set_occurrence (term_occurrence_must)
+		end
+
+	make_with_string (a_entity: STRING; a_type: like type; a_queryable: like queryable)
+			-- Initialize `entity' with `a_entity', `type' with `a_type' and
+			-- `queryable' with `a_queryable'.
+		do
+			make (ast_from_expression_text (a_entity), a_type, a_queryable)
 		end
 
 feature -- Access
@@ -50,12 +58,12 @@ feature -- Access
 			-- Text representation of Current term
 		do
 			create Result.make (128)
+			Result.append (once "Meta: ")
 			Result.append (text_from_ast (entity))
 			Result.append_character (',')
 			Result.append_character (' ')
 			Result.append (term_occurrence_name (occurrence))
-			Result.append_character (',')
-			Result.append_character (' ')
+			Result.append (once ", boost= ")
 			Result.append_double (boost)
 		end
 

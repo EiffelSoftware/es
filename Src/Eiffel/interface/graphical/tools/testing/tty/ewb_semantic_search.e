@@ -55,6 +55,7 @@ feature -- Properties
 			l_parser: SEM_COMMAND_LINE_PARSER
 			l_config: SEM_CONFIG
 			l_add_doc_cmd: SEM_ADD_DOCUMENT_TO_MYSQL_CMD
+			l_update_ranking_cmd: SEM_UPDATE_RANKING_CMD
 		do
 			create l_parser.make_with_arguments (semantic_search_arguments, system)
 			l_parser.parse
@@ -62,6 +63,9 @@ feature -- Properties
 			if l_config.should_add_sql_document then
 				create l_add_doc_cmd.make (l_config)
 				l_add_doc_cmd.execute
+			elseif l_config.should_update_ranking then
+				create l_update_ranking_cmd.make (l_config)
+				l_update_ranking_cmd.execute
 			end
 		end
 

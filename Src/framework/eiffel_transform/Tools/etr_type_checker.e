@@ -545,7 +545,7 @@ feature -- Type checking
 			-- Make result available in `last_type'.
 		do
 			error_handler.wipe_out
-			if not a_feature.is_invariant then
+			if not a_feature.is_invariant and then a_feature.feature_id > 0 then
 				context.set_locals (local_info (a_context_class, a_feature))
 			end
 			context.initialize (a_context_class, a_context_class.actual_type)

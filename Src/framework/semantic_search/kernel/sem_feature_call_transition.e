@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Objects that represent transition materialized through a feature call"
 	author: ""
 	date: "$Date$"

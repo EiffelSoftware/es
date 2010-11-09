@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents a variable position term"
 	author: ""
 	date: "$Date$"
@@ -108,6 +108,7 @@ feature -- Access
 			-- Text representation of Current term
 		do
 			create Result.make (128)
+			Result.append (once "Variable: ")
 			Result.append (variable.text)
 			Result.append_character (',')
 			Result.append_character (' ')
@@ -117,8 +118,7 @@ feature -- Access
 				Result.append_character (' ')
 			end
 			Result.append (term_occurrence_name (occurrence))
-			Result.append_character (',')
-			Result.append_character (' ')
+			Result.append (once ", boost= ")
 			Result.append_double (boost)
 		end
 

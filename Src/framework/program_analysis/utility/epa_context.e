@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Context for type checking"
 	author: ""
 	date: "$Date$"
@@ -266,7 +266,7 @@ feature -- Type checking
 
 feature{NONE} -- Implementation
 
-	environment_feature (a_variable: HASH_TABLE [TYPE_A, STRING]): FEATURE_I
+	environment_feature (a_variables: HASH_TABLE [TYPE_A, STRING]): FEATURE_I
 			-- Environment feature in which type checking is done for transition of `a_feature' viewed from `a_context_class'
 			-- `a_variables' are the set of variables in the transition, key is variable name,
 			-- value is type name of that variable.
@@ -282,6 +282,16 @@ feature{NONE} -- Implementation
 			create l_body.make (64)
 			l_body.append (once "feature ")
 			l_body.append (transition_feature_name)
+			if not a_variables.is_empty then
+				l_body.append (once " (")
+				across a_variables as l_var_list loop
+					l_body.append (l_var_list.key)
+					l_body.append_character (':')
+					l_body.append (l_var_list.item.name)
+					l_body.append_character (';')
+				end
+				l_body.append (once ") ")
+			end
 			l_body.append (once " do end")
 
 				-- Parse this fake feature.

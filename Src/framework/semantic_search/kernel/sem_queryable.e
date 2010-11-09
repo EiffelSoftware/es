@@ -385,6 +385,42 @@ feature -- Access
 		deferred
 		end
 
+	as_objects: detachable SEM_OBJECTS
+			-- Current as objects
+		do
+			if attached {SEM_OBJECTS} Current as l_objects then
+				Result := l_objects
+			end
+		end
+
+	as_feature_call_transition: detachable SEM_FEATURE_CALL_TRANSITION
+			-- Current as feature call transition
+		do
+			if attached {SEM_FEATURE_CALL_TRANSITION} Current as l_call then
+				Result := l_call
+			end
+		end
+
+	uuid: detachable STRING
+			-- UUID of current transition
+
+	variable_with_uuid (a_variable: EPA_EXPRESSION): SEM_VARIABLE_WITH_UUID
+			-- Variable with UUID for `a_variable'
+		require
+			uuid_exists: uuid /= Void
+		do
+			create Result.make (a_variable.text, uuid)
+		end
+
+	variable_with_uuid_from_name (a_var_name: STRING): SEM_VARIABLE_WITH_UUID
+			-- Variable with UUID for the variable named `a_var_name'
+		require
+			a_var_name_exists: variable_by_name (a_var_name) /= Void
+			uuid_exists: uuid /= Void
+		do
+			create Result.make (a_var_name, uuid)
+		end
+
 feature -- Status report
 
 	has_variable (a_variable: EPA_EXPRESSION): BOOLEAN
@@ -459,6 +495,18 @@ feature -- Type status report
 	is_transition: BOOLEAN
 			-- Is Current a transition querable (either a feature call or a snippet)?
 		do
+		end
+
+feature -- Setting
+
+	set_uuid (a_uuid: like uuid)
+			-- Set `uuid' with `a_uuid'.
+		do
+			if a_uuid = Void then
+				uuid := Void
+			else
+				uuid := a_uuid.twin
+			end
 		end
 
 feature -- Visitor

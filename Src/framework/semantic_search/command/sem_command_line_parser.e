@@ -44,6 +44,9 @@ feature -- Basic operations
 			l_mysql_password: AP_STRING_OPTION
 			l_directory: AP_STRING_OPTION
 			l_mysql_schema: AP_STRING_OPTION
+			l_class: AP_STRING_OPTION
+			l_feature: AP_STRING_OPTION
+			l_update_ranking_flag: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -78,6 +81,18 @@ feature -- Basic operations
 			l_mysql_schema.set_description ("Specify the schema of the semantic search database.")
 			l_parser.options.force_last (l_mysql_schema)
 
+			create l_class.make_with_long_form ("class")
+			l_class.set_description ("Specify name of the class to analyze.")
+			l_parser.options.force_last (l_class)
+
+			create l_feature.make_with_long_form ("feature")
+			l_class.set_description ("Specify name of the feature to analyze. If current option is present, the --class option must be present as well.")
+			l_parser.options.force_last (l_feature)
+
+			create l_update_ranking_flag.make_with_long_form ("update-ranking")
+			l_update_ranking_flag.set_description ("Update property rankings. The class and feature whose properties are to be ranked are specified through --class and --feature options.")
+			l_parser.options.force_last (l_update_ranking_flag)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -106,6 +121,18 @@ feature -- Basic operations
 
 			if l_mysql_schema.was_found then
 				config.set_mysql_schema (l_mysql_schema.parameter)
+			end
+
+			if l_class.was_found then
+				config.set_class_name (l_class.parameter)
+			end
+
+			if l_feature.was_found then
+				config.set_feature_name (l_feature.parameter)
+			end
+
+			if l_update_ranking_flag.was_found then
+				config.set_should_update_ranking (True)
 			end
 		end
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents an equation term"
 	author: ""
 	date: "$Date$"
@@ -58,13 +58,25 @@ feature -- Access
 			-- Text representation of Current term
 		do
 			create Result.make (128)
+			if is_precondition then
+				Result.append (once "Precondition: ")
+			elseif is_postcondition then
+				Result.append (once "Postcondition: ")
+			elseif is_property then
+				Result.append (once "Property: ")
+			end
 			Result.append (equation.text)
 			Result.append_character (',')
 			Result.append_character (' ')
 			Result.append (term_occurrence_name (occurrence))
-			Result.append_character (',')
-			Result.append_character (' ')
+			Result.append (once ", boost= ")
 			Result.append_double (boost)
+			if is_searched then
+				Result.append (once ", searched")
+			end
+			if is_required then
+				Result.append (once ", required")
+			end
 		end
 
 feature -- Status report

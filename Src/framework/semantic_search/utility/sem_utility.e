@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Utilities"
 	author: ""
 	date: "$Date$"
@@ -368,7 +368,7 @@ feature -- Access
 			l_type: TYPE_A
 		do
 			l_expr_as := ast_from_expression_text (a_variable_name)
-			l_type := a_context.expression_type (l_expr_as)
+			l_type := a_context.variable_type (a_variable_name)
 			if l_type=void then
 				create {NONE_A}l_type
 			end

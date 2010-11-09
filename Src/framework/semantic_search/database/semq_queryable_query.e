@@ -5,10 +5,10 @@
 	revision: "$Revision$"
 
 class
-	SEMQ_QUERYABLE_QUERY [G -> SEM_QUERYABLE]
+	SEMQ_QUERYABLE_QUERY
 
 inherit
-	SEMQ_QUERY [G]
+	SEMQ_QUERY
 
 create
 	make
@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	queryable: G
+	queryable: SEM_QUERYABLE
 			-- Queryable wrapped by Current query
 
 	terms: LINKED_LIST [SEMQ_TERM]
@@ -54,7 +54,7 @@ feature{NONE} -- Setting
 
 feature -- Process
 
-	process (a_visitor: SEMQ_QUERY_VISITOR [G])
+	process (a_visitor: SEMQ_QUERY_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
 			a_visitor.process_queryable_query (Current)

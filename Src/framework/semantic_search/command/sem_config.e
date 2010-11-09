@@ -51,10 +51,19 @@ feature -- Access
 	mysql_schema: STRING
 			-- Name of the database schema
 
+	class_name: detachable STRING
+			-- Specified class name
+
+	feature_name: detachable STRING
+			-- Specified feature name
+
 feature -- Status report
 
 	should_add_sql_document: BOOLEAN
 			-- Should sql document be added?
+
+	should_update_ranking: BOOLEAN
+			-- Should update rankings of properties?
 
 feature -- Setting
 
@@ -100,6 +109,34 @@ feature -- Setting
 			should_add_sql_document := b
 		ensure
 			should_add_sql_document_set: should_add_sql_document = b
+		end
+
+	set_should_update_ranking (b: BOOLEAN)
+			-- Set `should_update_ranking' with `b'.
+		do
+			should_update_ranking := b
+		ensure
+			should_update_ranking_set: should_update_ranking = b
+		end
+
+	set_class_name (a_class_name: like class_name)
+			-- Set `class_name' with `a_class_name'.
+		do
+			if a_class_name = Void then
+				class_name := Void
+			else
+				class_name := a_class_name.twin
+			end
+		end
+
+	set_feature_name (a_feature_name: like feature_name)
+			-- Set `feature_name' with `a_feature_name'.
+		do
+			if a_feature_name = Void then
+				feature_name := Void
+			else
+				feature_name := a_feature_name.twin
+			end
 		end
 
 end

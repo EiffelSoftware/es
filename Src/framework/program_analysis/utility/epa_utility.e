@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {EPA_UTILITY}."
 	author: ""
 	date: "$Date$"
@@ -26,6 +26,8 @@ inherit
 		rename
 			error_handler as etr_error_handler
 		end
+
+	SHARED_NAMES_HEAP
 
 feature -- AST
 
@@ -172,6 +174,39 @@ feature -- AST
 			else
 				create {ETR_FEATURE_CONTEXT} Result.make (a_feature, l_class_ctxt)
 			end
+		end
+
+	locals_from_feature_as (a_feature: FEATURE_AS; a_context_class: CLASS_C): HASH_TABLE [TYPE_A, STRING]
+			-- Locals from `a_feature'
+			-- The returned TYPE_As are not guaranteed to be explicit.
+		local
+			l_type: TYPE_AS
+			l_type_a: TYPE_A
+			l_names_heap: like names_heap
+		do
+			create Result.make (10)
+			Result.compare_objects
+			if attached {BODY_AS} a_feature.body as l_body and then attached {ROUTINE_AS} l_body.as_routine as l_routine then
+				if attached {EIFFEL_LIST [TYPE_DEC_AS]} l_routine.locals as l_lcls then
+					l_names_heap := names_heap
+					l_type := l_lcls.item.type
+					l_type_a := type_a_from_string (text_from_ast (l_type), a_context_class)
+					across l_lcls as l_locals loop
+						across l_locals.item.id_list as l_vars loop
+							Result.put (l_type_a, l_names_heap.item (l_vars.item))
+						end
+					end
+				end
+			end
+		end
+
+	arguments_from_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
+			-- Arguments from `a_feature'
+			-- Key of result is argument name, value is type of that argument.
+			-- The returned TYPE_As are not guaranteed to be explicit.
+		do
+			Result := operand_name_types_with_feature (a_feature, a_context_class)
+			Result.remove (ti_current)
 		end
 
 feature -- Contract extractor
@@ -458,26 +493,28 @@ feature -- Class/feature related
 		do
 			fixme ("Code copied from EB_FEATURE_FOR_COMPLETION.tooltip_text")
 			create Result.make_empty
-			l_comments := comment_extractor.feature_comments (a_feature.e_feature)
-			if attached l_comments then
-				from l_comments.start until l_comments.after loop
-					if attached l_comments.item as l_comment_line then
-						l_text := l_comment_line.content
-						l_text.left_adjust
-						l_text.right_adjust
+			if a_feature.feature_id /= 0 then
+				l_comments := comment_extractor.feature_comments (a_feature.e_feature)
+				if attached l_comments then
+					from l_comments.start until l_comments.after loop
+						if attached l_comments.item as l_comment_line then
+							l_text := l_comment_line.content
+							l_text.left_adjust
+							l_text.right_adjust
 
-						if not l_text.is_empty then
-							Result.append_string_general (l_text)
-							Result.append_character (' ')
-							l_nls := 0
-						else
-							if l_nls >= 2 and then not l_comments.islast then
-								Result.append ("%N%N")
+							if not l_text.is_empty then
+								Result.append_string_general (l_text)
+								Result.append_character (' ')
+								l_nls := 0
+							else
+								if l_nls >= 2 and then not l_comments.islast then
+									Result.append ("%N%N")
+								end
 							end
+							l_nls := l_nls + 1
 						end
-						l_nls := l_nls + 1
+						l_comments.forth
 					end
-					l_comments.forth
 				end
 			end
 		end
@@ -506,6 +543,14 @@ feature -- Class/feature related
 				l_upper := l_upper + 1
 			end
 			create Result.make (l_lower, l_upper)
+		end
+
+	root_class_of_system: detachable CLASS_C
+			-- Root class of Current system, if any
+			-- If current system is compiled using "all-class" option, there
+			-- is no root class, current query will return Void.
+		do
+			Result := workbench.system.root_type.associated_class
 		end
 
 feature -- String manipulation
@@ -641,6 +686,24 @@ feature -- Expressions
 			-- For example, "has (v)" will be: "{0}.has ({1})", given those variable positions.			
 		do
 			Result := expression_rewriter.expression_text (a_expression, a_replacements)
+		end
+
+feature -- Context
+
+	variable_position_mapping_from_context (a_context: EPA_CONTEXT): HASH_TABLE [STRING, INTEGER]
+			-- A straitforward assignment of positions of variable in `a_context'
+			-- The variable position starts from 1.
+			-- Key is position, value is the variable at that position.
+		local
+			i: INTEGER
+		do
+				-- Setup variable positions.			
+			create Result.make (10)
+			i := 1
+			across a_context.variables as l_variables loop
+				Result.force (l_variables.key, i)
+				i := i + 1
+			end
 		end
 
 end

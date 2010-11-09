@@ -42,4 +42,10 @@ feature -- Access
 			create Result
 		end
 
+	sem_variable_with_uuid_equality_tester: SEM_VARIABLE_WITH_UUID_EQUALITY_TESTER
+			-- Equality test for {SEM_VARIABLE_WITH_UUUID}
+		once
+			create Result
+		end
+
 end
