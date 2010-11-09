@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EWB_AUTO_FIX
+	EWB_SEMANTIC_SEARCH
 
 inherit
 	EWB_CMD
