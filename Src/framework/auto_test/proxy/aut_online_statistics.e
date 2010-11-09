@@ -61,7 +61,7 @@ feature -- Basic operations
 							if not l_exception.is_invariant_violation_on_feature_entry then
 								l_class := workbench.universe.classes_with_name (l_exception.class_name).first.compiled_representation
 								l_feat := l_class.feature_named_32 (l_exception.recipient_name)
-								if l_feature /= Void then
+								if l_feat /= Void then
 									faults.force_last (l_exception)
 									create l_feature.make (l_feat, l_class.constraint_actual_type)
 									failing_statistics.search (l_feature)
