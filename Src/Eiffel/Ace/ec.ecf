@@ -290,6 +290,7 @@
 				<exclude>/eb_gui_preferences\.e$</exclude>
 				<exclude>/dbg_preferences\.e$</exclude>
 				<exclude>/ewb_auto_fix\.e$</exclude>
+				<exclude>/ewb_semantic_search\.e$</exclude>
 				<exclude>/eb_diagram_html_generator\.e$</exclude>
 				<exclude>/ewb_contract_inference\.e$</exclude>
 				<exclude>/ewb_auto_test\.e$</exclude>
