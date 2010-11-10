@@ -424,7 +424,7 @@ feature{NONE} -- Logging
 			l_tcs_cursor: DS_HASH_TABLE_CURSOR [INTEGER, AUT_FEATURE_OF_TYPE]
 		do
 			from
-				l_tcs_cursor := online_statistics.passing_statistics.new_cursor
+				l_tcs_cursor := a_test_cases.new_cursor
 				l_tcs_cursor.start
 			until
 				l_tcs_cursor.after
