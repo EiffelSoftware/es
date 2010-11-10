@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Constants for semantic search"
 	author: ""
 	date: "$Date$"
@@ -71,7 +71,6 @@ feature -- Property type form name
 
 feature -- Status report
 
-
 	is_type_form_valid (a_form: INTEGER): BOOLEAN
 			-- Is `a_form' a valid type form?
 		do
@@ -79,6 +78,14 @@ feature -- Status report
 				a_form = dynamic_type_form or else
 				a_form = static_type_form or else
 				a_form = anonymous_type_form
+		end
+
+	is_queryable_type_valid (a_type: STRING): BOOLEAN
+			-- Is `a_type' a valid queryable type?
+		do
+			Result :=
+				a_type ~ transition_field_value or
+				a_type ~ object_field_value
 		end
 
 feature -- Field constants

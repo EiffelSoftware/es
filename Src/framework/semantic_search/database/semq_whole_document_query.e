@@ -10,26 +10,36 @@ class
 inherit
 	SEMQ_QUERY
 
+	SEM_FIELD_NAMES
+
 create
 	make,
 	make_with_variable_mappings
 
 feature{NONE} -- Initialization
 
-	make (a_uuid: STRING)
+	make (a_uuid: STRING; a_queryable_type: STRING)
 			-- Initialize `uuid' with `a_uuid'.
+		require
+			a_queryable_type_valid: is_queryable_type_valid (a_queryable_type)
 		do
 			uuid := a_uuid.twin
+			queryable_type := a_queryable_type
 		end
 
-	make_with_variable_mappings (a_uuid: STRING; a_mappings: like variable_mappings)
+	make_with_variable_mappings (a_uuid: STRING; a_mappings: like variable_mappings; a_queryable_type: STRING)
 			-- Initialize `uuid' with `a_uuid' and `variable_mappings' with `a_variable_mappings'.
+		require
+			a_queryable_type_valid: is_queryable_type_valid (a_queryable_type)
 		do
-			make (a_uuid)
+			make (a_uuid, a_queryable_type)
 			set_variable_mappings (a_mappings)
 		end
 
 feature -- Access
+
+	queryable_type: STRING
+			-- Type of the queryable to be returned			
 
 	uuid: STRING
 			-- UUID of the document to retrieve

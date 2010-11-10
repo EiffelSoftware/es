@@ -34,7 +34,7 @@ feature{NONE} -- Initialization
 			create object_value_table.make (1024)
 			object_value_table.compare_objects
 		end
-		
+
 feature -- Setting
 
 	set_medium (a_medium: like medium)
@@ -259,6 +259,7 @@ feature{NONE} -- Implementation
 			l_should_process: BOOLEAN
 			l_var_text: STRING
 			l_prefix_length: INTEGER
+			l_is_primitive_type: INTEGER
 		do
 			l_prefix_length := default_variable_prefix.count
 			if a_human_written then
@@ -281,14 +282,17 @@ feature{NONE} -- Implementation
 				if attached {EPA_INTEGER_VALUE} a_value as l_int then
 					l_value_text := l_int.item
 					l_equal_value_text := l_value_text
+					l_is_primitive_type := 1
 				elseif attached {EPA_BOOLEAN_VALUE} a_value as l_bool then
 					if l_bool.item then
 						l_value_text := 1
 					else
 						l_value_text := 0
 					end
+					l_is_primitive_type := 1
 					l_equal_value_text := l_value_text
 				else
+					l_is_primitive_type := 0
 					l_value_text := a_reference_value_table.item (a_value.text)
 					if a_object_equivalent_classes /= Void then
 						a_object_equivalent_classes.search (a_expr)
@@ -333,6 +337,8 @@ feature{NONE} -- Implementation
 				l_data.append (l_operands)
 				l_data.append_character (field_section_separator)
 				l_data.append (l_operand_types)
+				l_data.append_character (field_section_separator)
+				l_data.append (l_is_primitive_type.out)
 				l_data.append_character (field_section_separator)
 				l_data.append (l_value_text.out)
 				l_data.append_character (field_section_separator)
