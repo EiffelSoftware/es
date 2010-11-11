@@ -126,6 +126,7 @@ feature{NONE} -- Implementation
 			l_post_gen: EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
 			l_post_str: detachable STRING
 			l_post_expr: EPA_EXPRESSION
+			l_text: STRING
 		do
 			l_posts := postcondition_of_feature (a_feature, context_class)
 
@@ -149,7 +150,10 @@ feature{NONE} -- Implementation
 			loop
 				if l_posts.item_for_iteration /= Void then
 					current_written_class := l_posts.item_for_iteration.written_class
-					generate_invariant_from_string (l_posts.item_for_iteration.text)
+					l_text := l_posts.item_for_iteration.text
+					if not (l_text.has_substring (once "attached") or else l_text.has ('{')) then
+						generate_invariant_from_string (l_text)
+					end
 				end
 				l_posts.forth
 			end
