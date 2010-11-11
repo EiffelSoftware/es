@@ -47,21 +47,17 @@ feature {NONE} -- Initialization
 				-- Register events
 			if blackboard.is_initialized then
 				overview_panel.update_blackboard_data
---				overview_panel.initialize_from_blackboard
 			else
---				blackboard.data_initialized_event.subscribe (agent overview_panel.initialize_from_blackboard)
 				blackboard.data_initialized_event.subscribe (agent overview_panel.update_blackboard_data)
 			end
 
--- For the moment always recreate display
---			blackboard.data_changed_event.subscribe (agent overview_panel.update_display)
---			blackboard.data_changed_event.subscribe (agent overview_panel.initialize_from_blackboard)
 			blackboard.data_changed_event.subscribe (agent overview_panel.update_blackboard_data)
 			blackboard.tool_execution_changed_event.subscribe (agent progress_panel.update_display)
 
---			create update_task.make (agent overview_panel.initialize_from_blackboard, 5000)
-			create update_task.make (agent overview_panel.update_blackboard_data, 5000)
+			create update_task.make (agent overview_panel.update_blackboard_data, 10000)
+			update_task.start
 			rota.run_task (update_task)
+			create update_progress_panel_task.make (agent progress_panel.update_display, 200)
 		end
 
 	create_widget: EV_NOTEBOOK
@@ -119,12 +115,12 @@ feature {NONE} -- Initialization
 	build_tool_interface (root_widget: EV_NOTEBOOK)
 			-- <Precursor>
 		do
---			create system_grid.make
 			create overview_panel.make (develop_window)
 			create progress_panel.make
 			create configuration_panel.make
 
---			user_widget.extend (system_grid)
+			user_widget.selection_actions.extend (agent on_panel_selected)
+
 			user_widget.extend (overview_panel.grid)
 			user_widget.extend (progress_panel.grid)
 			user_widget.extend (configuration_panel.panel)
@@ -159,6 +155,21 @@ feature -- Access
 feature -- Status report
 
 feature {NONE} -- Event handlers
+
+	on_panel_selected
+		do
+			update_task.cancel
+			update_progress_panel_task.cancel
+			if user_widget.selected_item = overview_panel.grid then
+				overview_panel.update_blackboard_data
+				update_task.start
+				rota.run_task (update_task)
+			elseif user_widget.selected_item = progress_panel.grid then
+				progress_panel.update_display
+				update_progress_panel_task.start
+				rota.run_task (update_progress_panel_task)
+			end
+		end
 
 	on_start_control_clicked
 			--
@@ -197,6 +208,9 @@ feature {NONE} -- Implementation
 
 	update_task: ROTA_TIMED_AGENT_TASK
 			-- Task to update display periodically.
+
+	update_progress_panel_task: ROTA_TIMED_AGENT_TASK
+			-- Task to update progress panel periodically.
 
 	show_attributes_session_id: STRING_8 = "com.eiffel.eve.blackboard.show_attributes"
 	control_session_id: STRING_8 = "com.eiffel.eve.blackboard.control"

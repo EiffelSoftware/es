@@ -47,7 +47,7 @@ feature {NONE} -- Initialization
 
 			l_col := grid.column (last_change_column)
 			l_col.set_width (100)
-			l_col.set_title ("Last change")
+			l_col.set_title ("Elapsed time [s]")
 		end
 
 feature -- Access
@@ -88,7 +88,8 @@ feature {NONE} -- Implementation
 			l_text: EV_GRID_TEXT_ITEM
 			l_button: EV_GRID_TEXT_ITEM
 			l_color: EV_COLOR
-			l_time: DATE_TIME
+			l_time: STRING
+			l_end: DATE_TIME
 		do
 			l_row := grid.extended_new_row
 			l_row.set_data (a_execution)
@@ -100,22 +101,22 @@ feature {NONE} -- Implementation
 				l_button.pointer_button_release_actions.force_extend (agent cancel_execution (a_execution))
 				create l_text.make_with_text ("Running")
 				create l_color.make_with_rgb (0.9, 1.0, 0.9)
-				l_time := a_execution.started_time
+				l_time := time_difference_in_seconds (create {TIME}.make_now, a_execution.started_time.time).out
 			elseif a_execution.is_canceled then
 				create l_text.make_with_text ("Canceled")
 				create l_color.make_with_rgb (1.0, 0.9, 0.9)
-				l_time := a_execution.finished_time
+				l_time := ""
 			elseif a_execution.is_finished then
 				create l_text.make_with_text ("Finished")
 				create l_color.make_with_rgb (0.9, 0.9, 1.0)
-				l_time := a_execution.finished_time
+				l_time := time_difference_in_seconds (a_execution.finished_time.time, a_execution.started_time.time).out
 			else
 				create l_button.make_with_text ("")
 				l_button.set_pixmap (icon_pixmaps.debug_stop_icon)
 				l_button.pointer_button_release_actions.force_extend (agent cancel_execution (a_execution))
 				create l_text.make_with_text ("Waiting")
 				create l_color.make_with_rgb (1.0, 1.0, 0.9)
-				l_time := a_execution.created_time
+				l_time := ""
 			end
 			if l_button /= Void then
 				l_row.set_item (cancel_column, l_button)
@@ -136,7 +137,7 @@ feature {NONE} -- Implementation
 			l_row.set_item (input_column, l_text)
 
 				-- Time
-			create l_text.make_with_text (l_time.time.out)
+			create l_text.make_with_text (l_time)
 			l_row.set_item (last_change_column, l_text)
 		end
 
@@ -155,6 +156,14 @@ feature {NONE} -- Implementation
 	configuration_column: INTEGER = 4
 	input_column: INTEGER = 5
 	last_change_column: INTEGER = 6
+
+	time_difference_in_seconds (a_end_time, a_start_time: TIME): INTEGER
+			-- Elapsed time since `a_time'.
+		local
+			l_now: TIME
+		do
+			Result := a_end_time.relative_duration (a_start_time).seconds_count
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"

@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 						l_found := True
 					else
 						l_class_data ?= l_row.data
-						if l_class_data.class_name < a_class_data.class_name then
+						if a_class_data.class_name < l_class_data.class_name then
 							l_insert_position := i
 						end
 					end
@@ -239,7 +239,7 @@ feature {NONE} -- Implementation
 						l_found := True
 					else
 						l_feature_data ?= l_row.data
-						if l_feature_data.feature_name < a_feature_data.feature_name then
+						if a_feature_data.feature_name < l_feature_data.feature_name then
 							l_insert_position := i
 						end
 					end

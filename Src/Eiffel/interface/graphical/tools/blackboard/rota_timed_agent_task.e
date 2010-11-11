@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 		do
 			action := a_action
 			sleep_time := a_sleep_time
-			has_next_step := True
+			start
 		ensure
 			action_set: action = a_action
 			sleep_time_set: sleep_time = a_sleep_time
@@ -46,6 +46,12 @@ feature -- Status report
 			-- <Precursor>
 
 feature -- Basic operations
+
+	start
+			-- Start task.
+		do
+			has_next_step := True
+		end
 
 	cancel
 			-- <Precursor>
