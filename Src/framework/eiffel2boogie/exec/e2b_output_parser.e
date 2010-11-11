@@ -70,6 +70,8 @@ feature {NONE} -- Implementation
 					elseif verifying_regexp.matches (l_line) then
 						-- name of procedure: verifying_regexp.captured_substring (1)
 						l_current_procedure := verifying_regexp.captured_substring (1)
+							-- Create error without knowing if it actually is an error, but
+							-- successive lines may assume that error object is already created.
 						create l_current_error.make
 
 					elseif verified_regexp.matches (l_line) then
@@ -83,6 +85,7 @@ feature {NONE} -- Implementation
 							check verified_regexp.captured_substring (2).is_equal ("error") end
 							l_current_error.set_procedure_name (l_current_procedure)
 							l_current_error.set_time (verified_regexp.captured_substring (1).to_real)
+							l_current_error.process
 							last_result.verification_errors.extend (l_current_error)
 						end
 						l_total_time := l_total_time + verified_regexp.captured_substring (1).to_real
@@ -95,7 +98,7 @@ feature {NONE} -- Implementation
 						-- column: error_regexp.captured_substring (3).to_integer
 						-- error code: error_regexp.captured_substring (4)
 						-- error message: error_regexp.captured_substring (5)
-						l_current_error.set_location ([
+						l_current_error.set_boogie_location ([
 							error_regexp.captured_substring (1),
 							error_regexp.captured_substring (2).to_integer,
 							error_regexp.captured_substring (3).to_integer
@@ -108,7 +111,7 @@ feature {NONE} -- Implementation
 						-- line: related_regexp.captured_substring (2).to_integer
 						-- column: related_regexp.captured_substring (3).to_integer
 						-- message: related_regexp.captured_substring (4)
-						l_current_error.set_related_location ([
+						l_current_error.set_boogie_related_location ([
 							related_regexp.captured_substring (1),
 							related_regexp.captured_substring (2).to_integer,
 							related_regexp.captured_substring (3).to_integer,

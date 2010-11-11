@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			create data.make
 			create {EBB_IDLE_CONTROL} control.make
 			create {LINKED_LIST [EBB_TOOL]} tools.make
-			create {LINKED_LIST [EBB_FEATURE_VERIFICATION_RESULT]} verification_results.make
+			create {LINKED_LIST [EBB_VERIFICATION_RESULT]} verification_results.make
 			create executions.make
 
 			initialize
@@ -64,17 +64,14 @@ feature -- Status report
 feature -- Element change
 
 	set_control (a_control: attached like control)
-			-- Set `control' to `a_control'.
+			-- <Precursor>
 		do
 			control := a_control
-		ensure
-			control_set: control = a_control
 		end
 
 feature -- Basic operations
 
-	add_verification_result (a_result: EBB_FEATURE_VERIFICATION_RESULT)
-			-- Add `a_result' to list of verification results.
+	add_verification_result (a_result: EBB_VERIFICATION_RESULT)
 		do
 			if is_recording_results then
 				verification_results.extend (a_result)
@@ -83,8 +80,6 @@ feature -- Basic operations
 				verification_results.extend (a_result)
 				commit_results
 			end
-		ensure
-			recording_state_unchanged: is_recording_results = old is_recording_results
 		end
 
 	record_results
@@ -101,14 +96,16 @@ feature -- Basic operations
 			-- Commit all verification results added since last commit of results.
 		require
 			recording_results: is_recording_results
+		local
+			l_feature_data: EBB_FEATURE_DATA
 		do
 			across verification_results as l_cursor loop
-				data.feature_data (l_cursor.item.associated_feature).update_with_new_result (l_cursor.item)
-				data.feature_data (l_cursor.item.associated_feature).recalculate_correctness_confidence
-				data.feature_data (l_cursor.item.associated_feature).set_fresh
---				data.class_data (l_cursor.item.associated_class).verification_state.calculate_confidence
+				if data.has_feature (l_cursor.item.associated_feature) then
+					data.feature_data (l_cursor.item.associated_feature).add_tool_result (l_cursor.item)
+				end
 			end
 			verification_results.wipe_out
+
 			is_recording_results := False
 			data_changed_event.publish ([])
 		ensure
@@ -158,7 +155,7 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	verification_results: LIST [EBB_FEATURE_VERIFICATION_RESULT]
+	verification_results: LIST [EBB_VERIFICATION_RESULT]
 			-- List of verification results.
 
 	safe_dispose (a_explicit: BOOLEAN)

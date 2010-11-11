@@ -1,58 +1,69 @@
 note
-	description: "Shim class for proof tool."
+	description: "A timed task executing an agent in each iteration."
 	date: "$Date$"
 	revision: "$Revision$"
 
-frozen class
-	ES_BLACKBOARD_TOOL
+class
+	ROTA_TIMED_AGENT_TASK
 
 inherit
-	ES_STONABLE_TOOL [ES_BLACKBOARD_TOOL_PANEL]
 
-create {NONE}
-	default_create
+	ROTA_TIMED_TASK_I
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_action: like action; a_sleep_time: like sleep_time)
+			-- Initialize task.
+		require
+			a_action_not_void: a_action /= Void
+		do
+			action := a_action
+			sleep_time := a_sleep_time
+			has_next_step := True
+		ensure
+			action_set: action = a_action
+			sleep_time_set: sleep_time = a_sleep_time
+			has_next_step: has_next_step
+		end
 
 feature -- Access
 
-	title: STRING_32
+	action: PROCEDURE [ANY, TUPLE []]
+			-- Procedure which is executed in each iteration.
+
+	sleep_time: NATURAL
+			-- <Precursor>
+
+feature -- Status report
+
+	has_next_step: BOOLEAN
+			-- <Precursor>
+
+	is_interface_usable: BOOLEAN = True
+			-- <Precursor>
+
+feature -- Basic operations
+
+	cancel
 			-- <Precursor>
 		do
-			Result :=  locale_formatter.translation (t_title)
+			has_next_step := False
 		end
 
-	icon: EV_PIXEL_BUFFER
+feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Implementation
+
+	step
 			-- <Precursor>
 		do
-			Result := stock_pixmaps.tool_watch_icon_buffer
+			action.call ([])
 		end
 
-	icon_pixmap: EV_PIXMAP
-			-- <Precursor>
-		do
-			Result := stock_pixmaps.tool_watch_icon
-		end
-
-feature {NONE} -- Factory
-
-	new_tool: ES_BLACKBOARD_TOOL_PANEL
-			-- <Precursor>
-		do
-			create Result.make (window, Current)
-		end
-
-	is_stone_usable_internal (a_stone: like stone): BOOLEAN
-			-- <Precursor>
-		do
-			Result := True
-		end
-
-feature {NONE} -- Internationalization
-
-	t_title: STRING = "Verification Assistant"
-
-;note
+note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.

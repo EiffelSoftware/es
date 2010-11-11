@@ -601,6 +601,7 @@ feature {NONE} -- Menu section, Granularity 2.
 				extend_class_refactoring_menus (a_menu, l_stonec)
 				extend_debug_class_menus (a_menu, l_stonec.e_class)
 				extend_add_to_menu (a_menu, l_stone)
+				(create {ES_BLACKBOARD_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
 			elseif l_stonei /= Void then
 				extend_basic_opening_menus (a_menu, l_stonei, True)
 				extend_separator (a_menu)

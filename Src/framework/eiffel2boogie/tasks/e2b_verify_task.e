@@ -57,6 +57,14 @@ feature -- Status report
 	is_interface_usable: BOOLEAN = True
 			-- <Precursor>
 
+feature -- Element change
+
+	append_task (a_task: ROTA_TASK_I)
+			-- Append a task to do after other tasks finished.
+		do
+			remaining_tasks.extend (a_task)
+		end
+
 feature {NONE} -- Implementation
 
 	remove_task (a_task: attached like sub_task; a_cancel: BOOLEAN)

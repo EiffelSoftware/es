@@ -112,7 +112,7 @@ feature -- Access
 			end
 		end
 
-feature {NONE} -- Access
+feature --{NONE} -- Access
 
 	sub_task: AUT_TASK
 			-- <Precursor>

@@ -12,8 +12,10 @@
 		<library name="eve_proofs" location="$EIFFEL_SRC\framework\eve_proofs\eve_proofs.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
 		<library name="uuid" location="$EIFFEL_SRC\library\uuid\uuid.ecf"/>
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>

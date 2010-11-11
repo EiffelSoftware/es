@@ -9,10 +9,6 @@ deferred class
 inherit
 
 	EBB_DATA_ELEMENT
-		redefine
-			set_stale,
-			set_fresh
-		end
 
 feature -- Access
 
@@ -26,47 +22,21 @@ feature -- Element change
 		do
 			if attached {CHILD} Current as l_current then
 				if attached parent then
-					parent.children.prune (l_current)
+					check parent.children.has (l_current) end
+					parent.children.prune_all (l_current)
+					check not parent.children.has (l_current) end
 				end
 				parent := a_parent
 				if attached parent then
+					check not parent.children.has (l_current) end
 					parent.children.extend (l_current)
+					check parent.children.has (l_current) end
 				end
 			else
 				check False end
 			end
 		ensure
 			parent_set: parent = a_parent
-		end
-
-feature -- Basic operations
-
-	set_stale
-			-- <Precursor>
-		do
-			Precursor {EBB_DATA_ELEMENT}
-			if attached parent as l_parent then
-				l_parent.set_stale
-			end
-		end
-
-	set_fresh
-			-- <Precursor>
-		do
-			Precursor {EBB_DATA_ELEMENT}
-			if attached parent as l_parent then
-				if across parent.children as l_children all not l_children.item.is_stale end then
-					parent.set_fresh
-				end
-			end
-		end
-
-	recalculate_correctness_confidence
-			-- <Precursor>
-		do
-			if attached parent as l_parent then
-				l_parent.recalculate_correctness_confidence
-			end
 		end
 
 end

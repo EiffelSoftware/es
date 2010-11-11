@@ -12,7 +12,8 @@ inherit
 		redefine
 			on_before_initialize,
 			on_after_initialized,
-			internal_recycle
+			internal_recycle,
+			create_mini_tool_bar_items
 		end
 
 	EBB_SHARED_BLACKBOARD
@@ -45,15 +46,22 @@ feature {NONE} -- Initialization
 
 				-- Register events
 			if blackboard.is_initialized then
-				system_grid.initialize_from_blackboard
+				overview_panel.update_blackboard_data
+--				overview_panel.initialize_from_blackboard
 			else
-				blackboard.data_initialized_event.subscribe (agent system_grid.initialize_from_blackboard)
+--				blackboard.data_initialized_event.subscribe (agent overview_panel.initialize_from_blackboard)
+				blackboard.data_initialized_event.subscribe (agent overview_panel.update_blackboard_data)
 			end
 
 -- For the moment always recreate display
 --			blackboard.data_changed_event.subscribe (agent overview_panel.update_display)
-			blackboard.data_changed_event.subscribe (agent system_grid.initialize_from_blackboard)
+--			blackboard.data_changed_event.subscribe (agent overview_panel.initialize_from_blackboard)
+			blackboard.data_changed_event.subscribe (agent overview_panel.update_blackboard_data)
 			blackboard.tool_execution_changed_event.subscribe (agent progress_panel.update_display)
+
+--			create update_task.make (agent overview_panel.initialize_from_blackboard, 5000)
+			create update_task.make (agent overview_panel.update_blackboard_data, 5000)
+			rota.run_task (update_task)
 		end
 
 	create_widget: EV_NOTEBOOK
@@ -69,19 +77,60 @@ feature {NONE} -- Initialization
 		do
 		end
 
+   create_mini_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+            -- Retrieves a list of tool bar items to display on the window title
+		local
+			l_button: SD_TOOL_BAR_BUTTON
+			l_toggle_button: SD_TOOL_BAR_TOGGLE_BUTTON
+        do
+        	create Result.make (10)
+
+        	create l_button.make
+        	l_button.set_pixel_buffer (stock_pixmaps.debug_run_icon_buffer)
+        	l_button.set_pixmap (stock_pixmaps.debug_run_icon)
+        	l_button.set_tooltip ("Start verification assistant")
+        	register_action (l_button.select_actions, agent on_start_control_clicked)
+        	Result.put_last (l_button)
+        	start_control_button := l_button
+
+        	create l_button.make
+        	l_button.set_pixel_buffer (stock_pixmaps.debug_stop_icon_buffer)
+        	l_button.set_pixmap (stock_pixmaps.debug_stop_icon)
+        	l_button.set_tooltip ("Stop verification assistant")
+        	l_button.disable_sensitive
+        	register_action (l_button.select_actions, agent on_stop_control_clicked)
+        	Result.put_last (l_button)
+        	stop_control_button := l_button
+
+			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+
+        	create l_toggle_button.make
+        	l_toggle_button.set_pixel_buffer (stock_pixmaps.feature_attribute_icon_buffer)
+        	l_toggle_button.set_pixmap (stock_pixmaps.feature_attribute_icon)
+        	l_toggle_button.set_tooltip ("Show attributes")
+--        	register_action (l_toggle_button.select_actions, agent on_show_verification_status)
+        	Result.put_last (l_toggle_button)
+--        	show_verification_status_button := l_toggle_button
+
+			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+
+        end
+
 	build_tool_interface (root_widget: EV_NOTEBOOK)
 			-- <Precursor>
 		do
-			create system_grid.make
+--			create system_grid.make
+			create overview_panel.make (develop_window)
 			create progress_panel.make
 			create configuration_panel.make
 
-			user_widget.extend (system_grid)
+--			user_widget.extend (system_grid)
+			user_widget.extend (overview_panel.grid)
 			user_widget.extend (progress_panel.grid)
 			user_widget.extend (configuration_panel.panel)
 
-			user_widget.item_tab (system_grid).set_text ("Overview")
-			user_widget.item_tab (system_grid).set_pixmap (stock_pixmaps.general_information_icon)
+			user_widget.item_tab (overview_panel.grid).set_text ("Overview")
+			user_widget.item_tab (overview_panel.grid).set_pixmap (stock_pixmaps.general_information_icon)
 
 			user_widget.item_tab (progress_panel.grid).set_text ("Progress")
 			user_widget.item_tab (progress_panel.grid).set_pixmap (stock_pixmaps.debug_run_icon)
@@ -92,9 +141,6 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	system_grid: ES_BLACKBOARD_SYSTEM_GRID
-			-- Panel for system overview.
-
 	overview_panel: ES_BLACKBOARD_OVERVIEW_PANEL
 			-- Panel for system overview.
 
@@ -104,25 +150,57 @@ feature -- Access
 	configuration_panel: ES_BLACKBOARD_CONFIGURATION_PANEL
 			-- Panel for configuring blackboard.
 
+	start_control_button: SD_TOOL_BAR_BUTTON
+			-- Button to start control.
+
+	stop_control_button: SD_TOOL_BAR_BUTTON
+			-- Button to stop control.
+
 feature -- Status report
+
+feature {NONE} -- Event handlers
+
+	on_start_control_clicked
+			--
+		do
+			blackboard.control.start
+
+			start_control_button.disable_sensitive
+			stop_control_button.enable_sensitive
+		end
+
+	on_stop_control_clicked
+			--
+		do
+			blackboard.control.stop
+
+			start_control_button.enable_sensitive
+			stop_control_button.disable_sensitive
+		end
 
 feature {NONE} -- Implementation
 
 	frozen rota: ROTA_S
-			-- Access to rota service
+			-- Access to rota service.
 		local
 			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
-		do
+		once
 			create l_service_consumer
 			if l_service_consumer.is_service_available then
 				Result := l_service_consumer.service
 			else
 				check False end
 			end
+		ensure
+			result_attached: Result /= Void
 		end
 
-feature {NONE} -- User interface items
+	update_task: ROTA_TIMED_AGENT_TASK
+			-- Task to update display periodically.
 
+	show_attributes_session_id: STRING_8 = "com.eiffel.eve.blackboard.show_attributes"
+	control_session_id: STRING_8 = "com.eiffel.eve.blackboard.control"
+			-- Session IDs
 
 feature {NONE} -- Events
 
@@ -137,6 +215,7 @@ feature {NONE} -- Clean up
 			-- <Precursor>
 		do
 			manager.prune (Current)
+			update_task.cancel
 			Precursor
 		end
 

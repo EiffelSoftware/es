@@ -90,9 +90,18 @@ feature {NONE} -- User interface initialization
 						show_signatures_button.disable_select
 					end
 				end
+				if attached {BOOLEAN_REF} l_session.value_or_default (show_verification_status_session_id, False) as l_toggle4 then
+					if l_toggle4.item then
+						show_verification_status_button.enable_select
+					else
+						show_verification_status_button.disable_select
+					end
+				end
 
 				l_session.session_connection.connect_events (Current)
 			end
+
+			(create {ES_BLACKBOARD_BENCH_HELPER}).connect_features_tool (features_tree)
 		end
 
 feature {NONE} -- Clean up
@@ -120,6 +129,9 @@ feature {NONE} -- User interface elements
 
 	show_signatures_button: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Are signatures to be shown in the features tree?	
+
+	show_verification_status_button: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Is verification status to be shown in the features tree?	
 
 feature {NONE} -- Access
 
@@ -157,6 +169,14 @@ feature {ES_FEATURES_GRID} -- Status report
 		do
 			if is_initialized then
 				Result := show_signatures_button.is_selected
+			end
+		end
+
+	is_showing_verification_status: BOOLEAN
+			-- Is verification status to be shown in the feature tree?
+		do
+			if is_initialized then
+				Result := show_verification_status_button.is_selected
 			end
 		end
 
@@ -244,6 +264,20 @@ feature {NONE} -- Event handlers
 		end
 
 feature {NONE} -- Action handlers
+
+	on_show_verification_status
+			-- Called when the show verification status mini tool bar button is toggled
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		do
+				-- Set session data
+
+			if session_manager.is_service_available then
+				session_data.set_value (show_verification_status_button.is_selected, show_verification_status_session_id)
+			end
+			features_tree.update_all
+		end
 
 	on_show_alias_toggled
 			-- Called when the show alias mini tool bar button is toggled
@@ -384,9 +418,17 @@ feature {NONE} -- Factory
         do
         	l_window := develop_window
 
-        	create Result.make (4)
+        	create Result.make (5)
 
         	Result.put_last (l_window.commands.new_feature_cmd.new_mini_sd_toolbar_item)
+
+        	create l_button.make
+        	l_button.set_pixel_buffer (stock_mini_pixmaps.breakpoints_enable_icon_buffer)
+        	l_button.set_pixmap (stock_mini_pixmaps.breakpoints_enable_icon)
+        	l_button.set_tooltip ("Show verification status")
+        	register_action (l_button.select_actions, agent on_show_verification_status)
+        	Result.put_last (l_button)
+        	show_verification_status_button := l_button
 
         	create l_button.make
         	l_button.set_pixel_buffer (stock_mini_pixmaps.completion_show_alias_icon_buffer)
@@ -418,6 +460,7 @@ feature {NONE} -- Constants
 	show_alias_session_id: STRING_8 = "com.eiffel.features_tool.show_alias"
 	show_assigners_session_id: STRING_8 = "com.eiffel.features_tool.show_assigners"
 	show_signatures_session_id: STRING_8 = "com.eiffel.features_tool.show_signature"
+	show_verification_status_session_id: STRING_8 = "com.eiffel.features_tool.show_verification_status"
 			-- Session IDs
 
 invariant

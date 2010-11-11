@@ -9,13 +9,8 @@ class
 inherit
 
 	EBB_CHILD_ELEMENT [EBB_CLASS_DATA, EBB_FEATURE_DATA]
-		redefine
-			recalculate_correctness_confidence
-		end
 
 	EBB_FEATURE_ASSOCIATION
-
-	EBB_SHARED_VERIFICATION_PROPERTIES
 
 	SHARED_WORKBENCH
 		export {NONE} all end
@@ -29,84 +24,134 @@ feature {NONE} -- Initialization
 			-- Initialize empty feature data associated to `a_feature'.
 		do
 			make_with_feature (a_feature)
-			create verification_results.make
-			create verification_state.make (a_feature)
-			create applicable_verification_properties.make
 
-			set_up_properties
-
-			correctness_confidence := verification_state.correctness_confidence
+			create tool_results.make
 		ensure
 			consistent: system.class_of_id (class_id) = a_feature.written_class
 			consistent2: associated_feature.rout_id_set ~ a_feature.rout_id_set
 		end
 
-	set_up_properties
-			-- Set up properties.
+feature -- Access
+
+	verification_score: REAL
+			-- Combined verification score.
+		local
+			l_static: REAL
+			l_dynamic: REAL
 		do
-			if not associated_feature.is_attribute then
-				applicable_verification_properties.extend (postcondition_satisfied)
-				applicable_verification_properties.extend (class_invariant_satisfied)
-				applicable_verification_properties.extend (frame_condition_satisfied)
-				applicable_verification_properties.extend (preconditions_of_calls_satisfied)
-				applicable_verification_properties.extend (checks_satisfied)
+			l_static := static_score
+			l_dynamic := dynamic_score
+			if l_static < 0.0 and l_dynamic < 0.0 then
+				Result := -1.0
+			elseif l_static < 0.0 then
+				Result := l_dynamic * 0.5
+			elseif l_dynamic < 0.0 then
+				Result := l_static * 0.5
+			else
+				Result := (l_static + l_dynamic) * 0.5
 			end
 		end
 
-feature -- Access
-
-	applicable_verification_properties: attached LINKED_LIST [attached EBB_VERIFICATION_PROPERTY]
-			-- List of verification properties applicable to this feature.
-
-	verification_properties: attached HASH_TABLE [attached EBB_VERIFICATION_PROPERTY_VALUE, attached EBB_VERIFICATION_PROPERTY]
-			-- Current values for each verification property.
-
-
-
-
-
-	verification_state: attached EBB_FEATURE_VERIFICATION_STATE
-			-- Current verification state of this feature.
-			-- This is the accumulated information from the individual verification results.
-
---	verification_properties: attached HASH_TABLE [EBB_VERIFICATION_PROPERTY_VALUE, EBB_VERIFICATION_PROPERTY]
-
-	verification_results: attached LINKED_LIST [attached EBB_FEATURE_VERIFICATION_RESULT]
-			-- List of verification results.
-
-	last_result: detachable EBB_FEATURE_VERIFICATION_RESULT
-			-- Last verification result, if any.
+	static_score: REAL
+			-- Score of static verification tools.
+		local
+			l_tool: EBB_TOOL
 		do
-			if not verification_results.is_empty then
-				Result := verification_results.last
+			Result := -1.0
+			from
+				tool_results.start
+			until
+				tool_results.after or Result >= 0.0
+			loop
+				l_tool := tool_results.item.tool
+				if l_tool.category = {EBB_TOOL_CATEGORY}.static_verification then
+					Result := tool_results.item.score
+				end
+				tool_results.forth
+			end
+		end
+
+	dynamic_score: REAL
+			-- Score of dynamic verification tools.
+		local
+			l_tool: EBB_TOOL
+		do
+			Result := -1.0
+			from
+				tool_results.start
+			until
+				tool_results.after or Result >= 0.0
+			loop
+				l_tool := tool_results.item.tool_configuration.tool
+				if l_tool.category = {EBB_TOOL_CATEGORY}.dynamic_verification then
+					Result := tool_results.item.score
+				end
+				tool_results.forth
+			end
+		end
+
+	message: STRING
+			-- Latest message to be displayed.
+		do
+			if tool_results.is_empty then
+				Result := ""
+			else
+				Result := tool_results.first.message
+			end
+		end
+
+	tool_results: LINKED_LIST [EBB_VERIFICATION_RESULT]
+			-- List of tool results.
+
+feature -- Status report
+
+	has_verification_score: BOOLEAN
+			-- Is a verification score set?
+		do
+			Result := verification_score >= 0.0
+		end
+
+	is_stale: BOOLEAN
+			-- Is data stale?
+		do
+			Result := is_dynamic_score_stale or is_static_score_stale
+		end
+
+	is_dynamic_score_stale: BOOLEAN
+			-- Is dynamic score stale?
+
+	is_static_score_stale: BOOLEAN
+			-- Is static score stale?
+
+feature -- Element change
+
+	add_tool_result (a_result: EBB_VERIFICATION_RESULT)
+			-- TODO
+		do
+			tool_results.put_front (a_result)
+			if a_result.tool.category = {EBB_TOOL_CATEGORY}.static_verification then
+				is_static_score_stale := False
+			elseif a_result.tool.category = {EBB_TOOL_CATEGORY}.dynamic_verification then
+				is_dynamic_score_stale := False
 			end
 		end
 
 feature -- Basic operations
 
-	update_with_new_result (a_result: attached EBB_FEATURE_VERIFICATION_RESULT)
-			-- Update `verification_state' with `a_result'.
+	append_message (a_text_formatter: TEXT_FORMATTER)
+			-- Append message to `a_text_formatter'.
 		do
-			if is_stale then
-					-- Previous information is out of date. Clear first.
-				verification_results.wipe_out
+			if not tool_results.is_empty then
+				a_text_formatter.add (tool_results.first.tool.name + ": ")
+				tool_results.first.single_line_message (a_text_formatter)
 			end
-			
-			set_last_check_time (a_result.time)
-			set_last_check_tool (a_result.tool)
-
-			verification_results.extend (a_result)
-
-			verification_state.update_with_new_result (a_result)
 		end
 
-	recalculate_correctness_confidence
+	set_stale
 			-- <Precursor>
 		do
-			correctness_confidence := verification_state.correctness_confidence
-			Precursor
+			is_dynamic_score_stale := True
+			is_static_score_stale := True
 		end
-
-feature {NONE} -- Implementation
 
 end

@@ -65,8 +65,8 @@ feature -- Basic operations
 			end
 
 -- MML test
---			write_precondition_predicate (a_feature)
---			write_postcondition_predicate (a_feature)
+			write_precondition_predicate (a_feature)
+			write_postcondition_predicate (a_feature)
 -- TODO: refactor
 			if feature_list.is_pure (a_feature) and a_feature.has_return_value then
 				write_functional_predicate (a_feature)

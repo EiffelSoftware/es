@@ -48,8 +48,8 @@ feature -- Access
 	feature_data (a_feature: FEATURE_I): attached EBB_FEATURE_DATA
 			-- Blackboard data for feature `a_feature'.
 		do
-			check feature_data_table.has_key (a_feature.rout_id_set.first) end
-			Result := feature_data_table.item (a_feature.rout_id_set.first)
+			check feature_data_table.has_key (a_feature.body_index) end
+			Result := feature_data_table.item (a_feature.body_index)
 		end
 
 	clusters: LIST [EBB_CLUSTER_DATA]
@@ -87,7 +87,7 @@ feature -- Status report
 	has_feature (a_feature: FEATURE_I): BOOLEAN
 			-- Does system have data about feature `a_feature'?
 		do
-			Result := feature_data_table.has_key (a_feature.rout_id_set.first)
+			Result := feature_data_table.has_key (a_feature.body_index)
 		end
 
 feature -- Update
@@ -136,7 +136,6 @@ feature -- Update
 					l_features.forth
 				end
 			end
-
 		end
 
 	remove_class (a_class: CLASS_I)
@@ -147,8 +146,11 @@ feature -- Update
 			l_class := class_data (a_class)
 			check l_class /= Void end
 
+			across l_class.children as l_children loop
+				remove_feature (l_children.item.associated_feature)
+			end
+
 			class_data_table.remove (a_class.name)
-			-- TODO: also remove features
 		end
 
 	update_class (a_class: CLASS_I)
@@ -182,9 +184,11 @@ feature -- Update
 			l_class := class_data (a_feature.written_class.original_class)
 			check l_class /= Void end
 
+			check l_class.children.has (l_feature) end
+			check l_feature.parent = l_class end
 			l_feature.set_parent (Void)
 			check not l_class.children.has (l_feature) end
-			feature_data_table.remove (a_feature.rout_id_set.first)
+			feature_data_table.remove (a_feature.body_index)
 		end
 
 	update_feature (a_feature: FEATURE_I)
@@ -228,9 +232,6 @@ feature {NONE} -- Implementation
 			loop
 				l_class := a_cluster.classes.item_for_iteration
 				add_class (universe.class_named (l_class.name, a_cluster))
---				if l_class.is_compiled then
---					internal_update_class (universe.class_named (l_class.name, a_cluster).compiled_class)
---				end
 				a_cluster.classes.forth
 			end
 		end
@@ -259,8 +260,6 @@ feature {NONE} -- Implementation
 				internal_update_feature (l_features.item, l_class_data)
 				l_features.forth
 			end
-
-			--l_class_data.verification_state.calculate_confidence
 		end
 
 	internal_update_feature (a_feature: FEATURE_I; a_class_data: EBB_CLASS_DATA)
@@ -268,16 +267,16 @@ feature {NONE} -- Implementation
 		local
 			l_feature_data: EBB_FEATURE_DATA
 		do
-			if not feature_data_table.has_key (a_feature.rout_id_set.first) then
+			if not feature_data_table.has_key (a_feature.body_index) then
 				create l_feature_data.make (a_feature)
-				feature_data_table.extend (l_feature_data, a_feature.rout_id_set.first)
+				feature_data_table.extend (l_feature_data, a_feature.body_index)
 			else
-				l_feature_data := feature_data_table.item (a_feature.rout_id_set.first)
+				l_feature_data := feature_data_table.item (a_feature.body_index)
 			end
 
 			l_feature_data.set_parent (a_class_data)
 
-			if not a_feature.is_attribute then
+			if not a_feature.is_attribute and not a_feature.is_deferred then
 				l_feature_data.set_stale
 			end
 		end

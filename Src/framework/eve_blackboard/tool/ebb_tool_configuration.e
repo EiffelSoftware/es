@@ -71,4 +71,24 @@ feature -- Access
 			end
 		end
 
+feature -- Element change
+
+	put_string_setting (a_value: STRING; a_key: STRING)
+			-- Set value for `a_key' to `a_value'.
+		do
+			settings.put (a_value, a_key)
+		end
+
+	put_integer_setting (a_value: INTEGER; a_key: STRING)
+			-- Set value for `a_key' to `a_value'.
+		do
+			settings.put (a_value.out, a_key)
+		end
+
+	put_boolean_setting (a_value: BOOLEAN; a_key: STRING)
+			-- Set value for `a_key' to `a_value'.
+		do
+			settings.put (a_value.out, a_key)
+		end
+
 end

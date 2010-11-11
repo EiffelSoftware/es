@@ -37,6 +37,12 @@ feature -- Access
 	classes_to_verify: !LIST [!CLASS_C]
 			-- Classes which will be verified
 
+	category: INTEGER
+			-- <Precursor>
+		do
+			Result := {EBB_TOOL_CATEGORY}.static_verification
+		end
+
 feature -- Element change
 
 	add_class_to_verify (a_class: !CLASS_C)

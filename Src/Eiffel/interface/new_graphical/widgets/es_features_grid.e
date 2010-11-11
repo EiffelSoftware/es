@@ -185,6 +185,7 @@ feature -- Basic operations
 		do
 			update_states
 			recursive_do_all (agent update_row)
+			update_verification_status
 		end
 
 	recursive_do_all (ag: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
@@ -201,6 +202,24 @@ feature -- Basic operations
 				ag.call ([row (r)])
 				r := r + 1
 			end
+		end
+
+	update_verification_status
+			-- Updates verification status of all feature tree ndoes.
+		do
+			if features_tool.is_showing_verification_status then
+				(create {ES_BLACKBOARD_BENCH_HELPER}).refresh_features_grid_verification_status (Current)
+			else
+				recursive_do_all (
+					agent (a_row: EV_GRID_ROW)
+						do
+							if a_row.count > 0 and then attached {E_FEATURE} a_row.data as l_ef then
+								a_row.item (1).set_background_color (create {EV_COLOR}.make_with_rgb (1.0, 1.0, 1.0))
+							end
+						end
+				)
+			end
+			redraw
 		end
 
 feature -- Basic operations
@@ -1042,6 +1061,11 @@ feature {NONE} -- Tree item factory
 				lab.set_data (ef)
 				i := lab
 			end
+
+			if features_tool.is_showing_verification_status then
+				(create {ES_BLACKBOARD_BENCH_HELPER}).style_feature_grid_item (i, ef)
+			end
+
 			if is_clickable then
 				i.pointer_button_press_actions.extend (agent button_go_to (ef, ?, ?, ?, ?, ?, ?, ?, ?))
 			end

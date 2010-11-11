@@ -75,7 +75,7 @@ feature -- Status setting
 	start
 			-- Start blackboard service.
 		require
-			usable: is_interface_usable
+			interface_usable: is_interface_usable
 		do
 			is_running := True
 			if attached rota as l_rota then
@@ -106,6 +106,15 @@ feature -- Status setting
 			data_initialized_event.publish ([])
 		ensure
 			initialized: is_initialized
+		end
+
+feature -- Element change
+
+	set_control (a_control: attached like control)
+			-- Set `control' to `a_control'.
+		deferred
+		ensure
+			control_set: control = a_control
 		end
 
 feature -- Basic operations
@@ -163,7 +172,10 @@ feature {NONE} -- Implementation
 			-- <Precursor>
 		do
 			executions.check_running_tool_executions
-			control.create_new_tool_executions
+			if control.is_running then
+				control.think
+				control.create_new_tool_executions
+			end
 			executions.start_waiting_tool_executions
 		end
 

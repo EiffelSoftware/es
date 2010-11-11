@@ -31,6 +31,11 @@ feature -- Access
 			Result := configurations.first
 		end
 
+	category: attached INTEGER
+			-- Category this tool belongs to.
+		deferred
+		end
+
 feature -- Basic operations
 
 	create_new_instance (a_execution: attached EBB_TOOL_EXECUTION)
@@ -46,5 +51,8 @@ feature -- Basic operations
 			-- Last created instance, if any.
 		deferred
 		end
+
+invariant
+	valid_category: (create {EBB_TOOL_CATEGORY}).is_valid_category (category)
 
 end

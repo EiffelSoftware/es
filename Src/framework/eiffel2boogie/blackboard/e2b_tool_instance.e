@@ -28,10 +28,13 @@ feature {EBB_TOOL_EXECUTION} -- Basic operations
 			-- Start instance.
 		local
 			l_input: E2B_TRANSLATOR_INPUT
+			l_update_blackboard_task: E2B_UPDATE_BLACKBOARD_TASK
 		do
 			create l_input.make
 			l_input.class_list.append (input.classes)
 			create verify_task.make (l_input)
+			create l_update_blackboard_task.make (Current, verify_task)
+			verify_task.append_task (l_update_blackboard_task)
 
 			rota.run_task (verify_task)
 		end

@@ -234,9 +234,11 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			if a_node.is_built_in then
+				expression.put ("div(")
 				safe_process (a_node.left)
-				expression.put (" / ")
+				expression.put (", ")
 				safe_process (a_node.right)
+				expression.put (")")
 			else
 				process_binary_infix (a_node)
 			end

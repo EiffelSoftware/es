@@ -120,6 +120,7 @@ feature -- Basic operations
 		end
 
 invariant
+	max_number_of_running_executions: running_executions.count <= max_parallel_executions
 	consistent_waiting: across waiting_executions as c all not c.item.is_running and not c.item.is_finished end
 	consistent_running: across running_executions as c all c.item.is_running xor c.item.is_finished end
 	consistent_finished: across finished_executions as c all not c.item.is_running and c.item.is_finished end

@@ -373,7 +373,7 @@ feature {NONE} -- Implementation
 				l_found
 			loop
 				if procedure_name_regexp.matches (input_lines.item) then
-					Result := feature_with_name (procedure_name_regexp.captured_substring (1), procedure_name_regexp.captured_substring (2))
+					Result := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
 					l_found := True
 				end
 				input_lines.back
@@ -470,7 +470,7 @@ feature {NONE} -- Regular expressions
 			-- Regular expression assertion for instruction location in Boogie source.
 		once
 			create Result.make
-			Result.compile ("^procedure proc\.(\w*)\.(\w*)\(.*$")
+			Result.compile ("^procedure (proc|create)\.(\w*)\.(\w*)\(.*$")
 		end
 
 end

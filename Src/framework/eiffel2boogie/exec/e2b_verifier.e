@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			-- Initialize Boogie verifier.
 		do
 			create {E2B_PLATFORM_EXECUTABLE_IMPL} executable
+--			create {E2B_REMOTE_EXECUTABLE} executable
 			create output_parser.make
 			create input.make
 		end

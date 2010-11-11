@@ -26,6 +26,12 @@ feature -- Access
 			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "Default"))
 		end
 
+	category: INTEGER
+			-- <Precursor>
+		do
+			Result := {EBB_TOOL_CATEGORY}.static_verification
+		end
+
 feature -- Basic operations
 
 	create_new_instance (a_execution: attached EBB_TOOL_EXECUTION)

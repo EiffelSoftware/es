@@ -9,19 +9,8 @@ class
 inherit
 
 	EBB_CHILD_ELEMENT [EBB_CLUSTER_DATA, EBB_CLASS_DATA]
-		redefine
-			has_correctness_confidence,
-			recalculate_correctness_confidence
-		end
 
 	EBB_PARENT_ELEMENT [EBB_CLASS_DATA, EBB_FEATURE_DATA]
-		undefine
-			set_stale,
-			set_fresh
-		redefine
-			has_correctness_confidence,
-			recalculate_correctness_confidence
-		end
 
 	EBB_CLASS_ASSOCIATION
 
@@ -40,22 +29,14 @@ feature {NONE} -- Initialization
 		do
 			make_parent
 			make_with_class (a_class)
-			if a_class.is_compiled then
-				create verification_state.make (a_class.compiled_class)
-			end
-			create verification_history.make
+
+			work_state := {EBB_STATE}.compilation
+			result_state := {EBB_STATE}.unknown
 		ensure
 			consistent: associated_class = a_class
-			consistent: verification_state.class_id = class_id
 		end
 
 feature -- Access
-
-	verification_state: attached EBB_CLASS_VERIFICATION_STATE
-			-- Current verification state of this feature.
-
-	verification_history: attached LINKED_LIST [EBB_CLASS_VERIFICATION_STATE]
-			-- Past verification state of this feature.
 
 	features: attached LIST [EBB_FEATURE_DATA]
 			-- List of features of this class.
@@ -66,21 +47,154 @@ feature -- Access
 			end
 		end
 
+	work_state: INTEGER
+			-- Work state of class.
+
+	result_state: INTEGER
+			-- Result state of class.
+
+	verification_score: REAL
+			-- Combined verification score.
+		local
+			l_score: REAL
+			l_sum: REAL
+			l_count: INTEGER
+		do
+			from
+				children.start
+			until
+				children.after
+			loop
+				l_score := children.item.verification_score
+				if l_score >= 0.0 then
+					l_count := l_count + 1
+					l_sum := l_sum + l_score
+				end
+				children.forth
+			end
+			if l_count > 0 then
+				Result := l_sum / l_count
+			else
+				Result := -1.0
+			end
+		end
+
+	static_score: REAL
+			-- Score of static verification tools.
+		local
+			l_score: REAL
+			l_sum: REAL
+			l_count: INTEGER
+		do
+			from
+				children.start
+			until
+				children.after
+			loop
+				l_score := children.item.static_score
+				if l_score >= 0.0 then
+					l_count := l_count + 1
+					l_sum := l_sum + l_score
+				end
+				children.forth
+			end
+			if l_count > 0 then
+				Result := l_sum / l_count
+			else
+				Result := -1.0
+			end
+		end
+
+	dynamic_score: REAL
+			-- Score of dynamic verification tools.
+		local
+			l_score: REAL
+			l_sum: REAL
+			l_count: INTEGER
+		do
+			from
+				children.start
+			until
+				children.after
+			loop
+				l_score := children.item.dynamic_score
+				if l_score >= 0.0 then
+					l_count := l_count + 1
+					l_sum := l_sum + l_score
+				end
+				children.forth
+			end
+			if l_count > 0 then
+				Result := l_sum / l_count
+			else
+				Result := -1.0
+			end
+		end
+
+	message: STRING
+			-- Latest message to be displayed.
+		do
+			Result := ""
+		end
+
 feature -- Status report
 
-	has_correctness_confidence: BOOLEAN
-			-- <Precursor>
+	is_stale: BOOLEAN
+			-- Is data stale?
 		do
-			Result := is_compiled and then Precursor
+			Result := is_dynamic_score_stale or is_static_score_stale
 		end
 
-feature -- Basic operations
-
-	recalculate_correctness_confidence
-			-- <Precursor>
+	is_dynamic_score_stale: BOOLEAN
+			-- Is dynamic score stale?
 		do
-			Precursor {EBB_PARENT_ELEMENT}
-			Precursor {EBB_CHILD_ELEMENT}
+			from
+				children.start
+			until
+				children.after or Result
+			loop
+				Result := children.item.is_dynamic_score_stale
+				children.forth
+			end
 		end
+
+	is_static_score_stale: BOOLEAN
+			-- Is static score stale?
+		do
+			from
+				children.start
+			until
+				children.after or Result
+			loop
+				Result := children.item.is_static_score_stale
+				children.forth
+			end
+		end
+
+feature -- Element change
+
+	set_work_state (a_state: like work_state)
+			-- Set `work_state' to `a_state'.
+		require
+			(create {EBB_STATE}).is_valid_work_state (a_state)
+		do
+			work_state := a_state
+		ensure
+			work_state_set: work_state = a_state
+		end
+
+	set_result_state (a_state: like result_state)
+			-- Set `result_state' to `a_state'.
+		require
+			(create {EBB_STATE}).is_valid_result_state (a_state)
+		do
+			result_state := a_state
+		ensure
+			result_state_set: result_state = a_state
+		end
+
+invariant
+	work_state_valid: (create {EBB_STATE}).is_valid_work_state (work_state)
+	result_state_valid: (create {EBB_STATE}).is_valid_result_state (result_state)
 
 end

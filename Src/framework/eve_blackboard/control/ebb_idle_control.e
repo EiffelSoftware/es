@@ -20,6 +20,11 @@ feature -- Access
 
 feature -- Basic operations
 
+	think
+			-- <Precursor>
+		do
+		end
+
 	create_new_tool_executions
 			-- <Precursor>
 		do
