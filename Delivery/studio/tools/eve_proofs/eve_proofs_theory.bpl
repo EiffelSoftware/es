@@ -118,6 +118,13 @@ type unknown;
 const Unknown: unknown;
 
 // ----------------------------------------------------------------------
+// Integer division
+
+function div(a: int, b: int) returns (int);
+
+axiom (forall a, b: int :: div(a, b) * b == a);
+
+// ----------------------------------------------------------------------
 // Agent theory
 
 // Precondition functions for different number of arguments
