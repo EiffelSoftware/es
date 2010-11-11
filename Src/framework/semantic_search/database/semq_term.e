@@ -112,6 +112,16 @@ feature -- Status report
 		do
 		end
 
+	is_absolute_change: BOOLEAN
+			-- Is Current an absolute change term?
+		do
+		end
+
+	is_relative_change: BOOLEAN
+			-- Is Current an relative change term?
+		do
+		end
+
 feature -- Setting
 
 	set_is_searched (b: BOOLEAN)

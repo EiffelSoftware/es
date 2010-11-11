@@ -13,7 +13,9 @@ inherit
 			is_precondition,
 			is_postcondition,
 			is_human_written,
-			is_property
+			is_property,
+			is_absolute_change,
+			is_relative_change
 		end
 
 create
@@ -93,6 +95,12 @@ feature -- Status report
 	is_property: BOOLEAN
 			-- Is current a property term (for objects)?
 
+	is_absolute_change: BOOLEAN
+			-- Is Current an absolute change term?
+
+	is_relative_change: BOOLEAN
+			-- Is Current an relative change term?
+
 feature -- Setting
 
 	set_is_precondition (b: BOOLEAN)
@@ -128,6 +136,22 @@ feature -- Setting
 			is_property := b
 		ensure
 			is_property_set: is_property = b
+		end
+
+	set_is_absolute_change (b: BOOLEAN)
+			-- Set `is_absolute_change' with `b'.
+		do
+			is_absolute_change := b
+		ensure
+			is_absolute_change_set: is_absolute_change = b
+		end
+
+	set_is_relative_change (b: BOOLEAN)
+			-- Set `is_relative_change' with `b'.
+		do
+			is_relative_change := b
+		ensure
+			is_relative_change_set: is_relative_change = b
 		end
 
 feature -- Process

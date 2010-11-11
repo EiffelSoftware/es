@@ -240,7 +240,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	append_equation (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE; a_property_type: STRING; a_human_written: BOOLEAN; a_object_equivalent_classes: detachable DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]; a_reference_value_table: HASH_TABLE [INTEGER, STRING])
+	append_equation (a_queryable: SEM_QUERYABLE; a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE; a_property_type: STRING; a_human_written: BOOLEAN; a_object_equivalent_classes: detachable DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]; a_reference_value_table: HASH_TABLE [INTEGER, STRING])
 				-- Append `a_expr' with `a_value' into `medium'
 		local
 			l_full_text: STRING
@@ -346,7 +346,14 @@ feature{NONE} -- Implementation
 				l_data.append_character (field_section_separator)
 				l_data.append (l_boost_value.out)
 				l_data.append_character (field_section_separator)
-				append_string_field (property_field_name, l_data)
+				l_data.append_character (field_section_separator)
+				if l_canonical_text ~ once "$" then
+					l_data.append (a_queryable.variable_positions.item (a_expr).out)
+					append_string_field (variable_field_name, l_data)
+				else
+					l_data.append (once "0")
+					append_string_field (property_field_name, l_data)
+				end
 			end
 		end
 

@@ -32,7 +32,7 @@ feature -- Basic operations
 			append_uuid
 			append_content
 			append_serialization
-			append_properties
+			append_properties (a_document)
 		end
 
 	clear_for_write
@@ -88,7 +88,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	append_properties
+	append_properties (a_objects: SEM_OBJECTS)
 			-- Append propertie from `queryable' into `medium'.
 		local
 			l_obj_equiv_sets: like object_equivalent_classes
@@ -96,10 +96,10 @@ feature{NONE} -- Implementation
 				-- Appending preconditions.
 			setup_reference_value_table (queryable.properties)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.properties)
-			append_properties_internal (queryable.properties, l_obj_equiv_sets)
+			append_properties_internal (queryable.properties, l_obj_equiv_sets, a_objects)
 		end
 
-	append_properties_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes)
+	append_properties_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_objects: SEM_OBJECTS)
 			-- Append `a_state' into `medium' as properties.
 			-- `a_object_equivalent_classes' indicates which expressions in `a_state' are object-equivalent to each other.
 		local
@@ -116,7 +116,7 @@ feature{NONE} -- Implementation
 				l_value := l_cursor.item.value
 				l_expr := l_cursor.item.expression
 				if not l_value.is_nonsensical then
-					append_equation (l_expr, l_value, object_property_prefix, False, a_object_equivalent_classes, reference_value_table)
+					append_equation (a_objects, l_expr, l_value, object_property_prefix, False, a_object_equivalent_classes, reference_value_table)
 				end
 				l_cursor.forth
 			end

@@ -197,6 +197,8 @@ feature -- Access
 
 	object_info_field: STRING = "object_info"
 
+	variable_field_name: STRING = "variable"
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

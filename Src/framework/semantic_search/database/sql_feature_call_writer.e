@@ -29,8 +29,8 @@ feature -- Basic operations
 		do
 			queryable := a_document
 			append_basic_info
-			append_contracts
-			append_changes
+			append_contracts (a_document)
+			append_changes (a_document)
 			append_serialization
 			append_exception
 		end
@@ -71,7 +71,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	append_contracts
+	append_contracts (a_transition: SEM_FEATURE_CALL_TRANSITION)
 			-- Append contracts from `queryable' into `medium'.
 		local
 			l_obj_equiv_sets: like object_equivalent_classes
@@ -79,21 +79,21 @@ feature{NONE} -- Implementation
 				-- Appending preconditions.
 			setup_reference_value_table (queryable.preconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.preconditions)
-			append_contracts_internal (queryable.preconditions, l_obj_equiv_sets, True, False)
+			append_contracts_internal (queryable.preconditions, l_obj_equiv_sets, True, False, a_transition)
 			create l_obj_equiv_sets.make (0)
 			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
-			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True)
+			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True, a_transition)
 
 				-- Appending preconditions.
 			setup_reference_value_table (queryable.postconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.preconditions)
-			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, False)
+			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, False, a_transition)
 			create l_obj_equiv_sets.make (0)
 			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
-			append_contracts_internal (queryable.written_postconditions, l_obj_equiv_sets, False, True)
+			append_contracts_internal (queryable.written_postconditions, l_obj_equiv_sets, False, True, a_transition)
 		end
 
-	append_contracts_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_precondition: BOOLEAN; a_human_written: BOOLEAN)
+	append_contracts_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_precondition: BOOLEAN; a_human_written: BOOLEAN; a_transition: SEM_FEATURE_CALL_TRANSITION)
 			-- Append `a_state' into `medium' as precondition if `a_precondition' is True; otherwise as postcondition'.
 			-- `a_object_equivalent_classes' indicates which expressions in `a_state' are object-equivalent to each other.
 			-- `a_human_written' indicates if expressions in `a_state' is human-written contracts.
@@ -116,12 +116,12 @@ feature{NONE} -- Implementation
 			loop
 				l_value := l_cursor.item.value
 				l_expr := l_cursor.item.expression
-				append_equation (l_expr, l_value, l_property_type, a_human_written, a_object_equivalent_classes, reference_value_table)
+				append_equation (a_transition, l_expr, l_value, l_property_type, a_human_written, a_object_equivalent_classes, reference_value_table)
 				l_cursor.forth
 			end
 		end
 
-	append_changes
+	append_changes (a_transition: SEM_FEATURE_CALL_TRANSITION)
 			-- Append state-changes of `queryable' to `medium'.
 		local
 			l_change_calculator: EPA_EXPRESSION_CHANGE_CALCULATOR
@@ -141,13 +141,13 @@ feature{NONE} -- Implementation
 				until
 					l_cursor.after
 				loop
-					l_cursor.item.do_all (agent append_change (?, default_boost_value))
+					l_cursor.item.do_all (agent append_change (?, default_boost_value, a_transition))
 					l_cursor.forth
 				end
 			end
 		end
 
-	append_change (a_change: EPA_EXPRESSION_CHANGE; a_boost_value: DOUBLE)
+	append_change (a_change: EPA_EXPRESSION_CHANGE; a_boost_value: DOUBLE; a_transition: SEM_FEATURE_CALL_TRANSITION)
 			-- Append `a_change' into `medium'.
 		local
 			l_value_text: STRING
@@ -166,7 +166,7 @@ feature{NONE} -- Implementation
 				else
 					l_prefix := absolute_change_property_prefix
 				end
-				append_equation (a_change.expression, l_value, l_prefix, False, Void, reference_value_table)
+				append_equation (a_transition, a_change.expression, l_value, l_prefix, False, Void, reference_value_table)
 			end
 		end
 
