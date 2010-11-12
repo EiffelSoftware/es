@@ -43,6 +43,7 @@ feature {NONE} -- Initialization
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Basic"))
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Random"))
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("State"))
+			control_box.set_text ("Basic")
 			control_box.change_actions.extend (agent on_control_change)
 
 			l_horziontal_box.extend (l_label)

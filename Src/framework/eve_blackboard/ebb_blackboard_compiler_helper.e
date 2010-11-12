@@ -28,6 +28,16 @@ feature -- Basic operations
 			end
 		end
 
+	handle_changed_invariant (a_class: CLASS_C)
+			-- Handle that invariant of class `a_class' changed.
+			--
+			-- Added to {INHERIT_TABLE}.pass2
+		do
+			if attached blackboard as l_blackboard and then l_blackboard.is_running then
+				l_blackboard.handle_changed_invariant (a_class.original_class)
+			end
+		end
+
 	handle_added_class (a_class: CLASS_I)
 			-- Handle that class `a_class' was added.
 		do

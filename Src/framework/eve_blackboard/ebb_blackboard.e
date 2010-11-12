@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			-- Initialize empty blackboard.
 		do
 			create data.make
-			create {EBB_IDLE_CONTROL} control.make
+			create {EBB_BASIC_CONTROL} control.make
 			create {LINKED_LIST [EBB_TOOL]} tools.make
 			create {LINKED_LIST [EBB_VERIFICATION_RESULT]} verification_results.make
 			create executions.make
@@ -46,6 +46,16 @@ feature -- Access
 
 	tools: LIST [EBB_TOOL]
 			-- <Precursor>
+
+	default_tool_of_type (a_type: INTEGER): EBB_TOOL
+			-- Default tool of type `a_type'.
+		do
+			across tools as c loop
+				if c.item.category = a_type then
+					Result := c.item
+				end
+			end
+		end
 
 	control: EBB_CONTROL
 			-- <Precursor>
@@ -115,15 +125,33 @@ feature -- Basic operations
 	handle_added_class (a_class: CLASS_I)
 			-- Handle that `a_class' was added.
 		do
-			data.add_class (a_class)
-			executions.handle_changed_class (a_class)
-			data_changed_event.publish ([])
+			if not a_class.group.is_internal then
+				data.add_class (a_class)
+				executions.handle_changed_class (a_class)
+				data_changed_event.publish ([])
+			end
 		end
 
 	handle_removed_class (a_class: CLASS_I)
 			-- Handle that `a_class' was removed.
 		do
-			data.remove_class (a_class)
+			if data.has_class (a_class) then
+				data.remove_class (a_class)
+				executions.handle_changed_class (a_class)
+				data_changed_event.publish ([])
+			end
+		end
+
+	handle_changed_invariant (a_class: CLASS_I)
+			-- Handle that invariant of class `a_class' has changed.
+		do
+			if data.has_class (a_class) then
+				across data.class_data (a_class).features as c loop
+					if is_feature_data_verified (c.item) then
+						c.item.set_stale
+					end
+				end
+			end
 			executions.handle_changed_class (a_class)
 			data_changed_event.publish ([])
 		end

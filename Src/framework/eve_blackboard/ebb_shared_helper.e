@@ -14,17 +14,32 @@ feature {NONE} -- Helper functions
 			l_feature: FEATURE_I
 		do
 			create {LINKED_LIST [FEATURE_I]} Result.make
-			from
-				a_class.feature_table.start
-			until
-				a_class.feature_table.after
-			loop
-				l_feature := a_class.feature_table.item_for_iteration
-				if l_feature.written_in = a_class.class_id then
-					Result.extend (l_feature)
+			if a_class.feature_table /= Void then
+				from
+					a_class.feature_table.start
+				until
+					a_class.feature_table.after
+				loop
+					l_feature := a_class.feature_table.item_for_iteration
+					if l_feature.written_in = a_class.class_id then
+						Result.extend (l_feature)
+					end
+					a_class.feature_table.forth
 				end
-				a_class.feature_table.forth
 			end
 		end
+
+	is_feature_verified (a_feature: FEATURE_I): BOOLEAN
+			-- Is feature `a_feature' verified?
+		do
+			Result := not a_feature.is_attribute and not a_feature.is_deferred and not a_feature.is_external
+		end
+
+	is_feature_data_verified (a_feature_data: EBB_FEATURE_DATA): BOOLEAN
+			-- Is feature `a_feature_data' verified?
+		do
+			Result := is_feature_verified (a_feature_data.associated_feature)
+		end
+
 
 end

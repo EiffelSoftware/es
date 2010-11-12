@@ -25,6 +25,18 @@ feature -- Basic operations
 	think
 			-- <Precursor>
 		do
+			if
+				blackboard.executions.running_executions.is_empty and
+				blackboard.executions.waiting_executions.is_empty and
+				not eiffel_project.is_compiling and
+				not blackboard.tools.is_empty
+			then
+				current_class_index := current_class_index + 1
+				if current_class_index > blackboard.data.classes.count then
+					current_class_index := 1
+				end
+--				io.put_string ("Think: selected class " + current_class.class_name + "%N")
+			end
 		end
 
 	create_new_tool_executions
@@ -48,60 +60,37 @@ feature -- Basic operations
 				not blackboard.tools.is_empty
 			then
 
-				l_class := next_class
-				if l_class = Void then
-						-- Nothing to do
-				else
-						-- Create input set
+				l_class := current_class
+				if l_class.is_compiled and then l_class.is_stale then
 					create l_input.make
-					l_input.add_class (l_class.compiled_class)
+					l_input.add_class (current_class.compiled_class)
+					if l_class.is_static_score_stale then
+						l_tool := blackboard.default_tool_of_type ({EBB_TOOL_CATEGORY}.static_verification)
+					else
+						l_tool := blackboard.default_tool_of_type ({EBB_TOOL_CATEGORY}.dynamic_verification)
+					end
+					if l_tool /= Void then
+						l_configuration := l_tool.default_configuration
 
-						-- Select tool and configuration.
---					l_tool := blackboard.tools.i_th (1)
-					l_tool := blackboard.tools.i_th (2)
-					l_configuration := l_tool.default_configuration
-
-						-- Add tool execution to waiting list
-					create l_execution.make (l_tool, l_configuration, l_input)
-					blackboard.executions.queue_tool_execution (l_execution)
+--						io.put_string ("Execute: selected tool " + l_tool.name + "%N")
+							-- Add tool execution to waiting list
+						create l_execution.make (l_tool, l_configuration, l_input)
+						blackboard.executions.queue_tool_execution (l_execution)
+					end
 				end
 			end
 		end
 
-	next_class: detachable EBB_CLASS_DATA
-			-- Select next class to work on.
-		local
-			l_classes: LIST [EBB_CLASS_DATA]
+feature {NONE} -- Implementation
+
+	current_class_index: INTEGER
+			-- Index of current class being verified.
+
+	current_class: EBB_CLASS_DATA
+			-- Current class being verified.
 		do
-			from
-				l_classes := blackboard.data.classes
-				l_classes.start
-			until
-				l_classes.after or attached Result
-			loop
-				if l_classes.item.is_stale and l_classes.item.is_compiled then
-					Result := l_classes.item
-				end
-				l_classes.forth
-			end
+			Result := blackboard.data.classes.i_th (current_class_index)
 		end
 
-	next_feature: detachable EBB_FEATURE_DATA
-			-- Select next feature to work on.
-		local
-			l_features: LIST [EBB_FEATURE_DATA]
-		do
-			from
-				l_features := blackboard.data.features
-				l_features.start
-			until
-				l_features.after or attached Result
-			loop
-				if l_features.item.is_stale then
-					Result := l_features.item
-				end
-				l_features.forth
-			end
-		end
 
 end

@@ -173,12 +173,19 @@ feature {NONE} -- Parsing class types
 		local
 			l_name: STRING
 			l_type_as: TYPE_AS
+			l_new_line_index: INTEGER
 		do
-			if a_name.is_case_insensitive_equal ("NONE") then
+			l_new_line_index := a_name.index_of ('%N', 1)
+			if l_new_line_index > 0 then
+				l_name := a_name.substring (1, l_new_line_index - 1)
+			else
+				l_name := a_name
+			end
+			if l_name.is_case_insensitive_equal ("NONE") then
 				Result := none_type
 			else
-					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string_32 ("type " + a_name, Void)
+					-- Parse `l_name' into a type AST node.
+				type_parser.parse_from_string_32 ("type " + l_name, Void)
 				l_type_as := type_parser.type_node
 
 					-- Generate TYPE_A object from type AST node.

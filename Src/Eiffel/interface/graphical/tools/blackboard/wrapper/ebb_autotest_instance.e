@@ -60,11 +60,10 @@ feature -- Basic operations
 
 			test_generator.set_time_out_in_seconds (configuration.integer_setting ("timeout").as_natural_32)
 
---			test_generator.set_integer_lower_bound (-1000)
---			test_generator.set_integer_upper_bound (1000)
+			test_generator.set_integer_lower_bound (-1_000_000)
+			test_generator.set_integer_upper_bound (1_000_000)
 --			test_generator.set_enforce_precondition_satisfaction (True)
---			test_generator.set_is_console_output_enabled (True)
---			test_generator.set_is_precondition_evaluation_enabled (True)
+			test_generator.set_is_precondition_evaluation_enabled (True)
 			test_generator.set_is_passing_test_case_serialization_enabled (True)
 			test_generator.set_is_failing_test_case_serialization_enabled (True)
 
@@ -72,6 +71,8 @@ feature -- Basic operations
 --			test_generator.error_handler.set_warning_standard
 --			test_generator.error_handler.set_error_standard
 --			test_generator.error_handler.set_info_standard
+--			test_generator.set_is_interpreter_log_enabled (True)
+--			test_generator.set_is_console_output_enabled (True)
 
 
 			if test_suite.is_service_available then
@@ -88,52 +89,6 @@ feature -- Basic operations
 		do
 			test_generator.cancel
 		end
-
-feature {EBB_TEST_GENERATOR} -- Basic operations
-
---	handle_failed_test (a_feature: FEATURE_I)
---			-- Handle test of `a_feature' failed.
---		local
-----			l_verification_result: EBB_FEATURE_VERIFICATION_RESULT
---			l_result: EBB_AUTOTEST_VERIFICATION_RESULT
---		do
---			create l_result.make (a_feature, configuration, 0.0)
-
---			blackboard.add_v_result (l_result)
-
-----			create l_verification_result.make (a_feature)
-
-----			l_verification_result.set_time (create {DATE_TIME}.make_now)
-----			l_verification_result.set_tool (tool)
-----			l_verification_result.is_postcondition_proven.set_proven_to_fail
-----			l_verification_result.is_postcondition_proven.set_update
-----			l_verification_result.is_class_invariant_proven.set_proven_to_fail
-----			l_verification_result.is_class_invariant_proven.set_update
-
-----			blackboard.add_verification_result (l_verification_result)
---		end
-
---	handle_passed_test (a_feature: FEATURE_I)
---			-- Handle test of `a_feature' successful.
---		local
-----			l_verification_result: EBB_FEATURE_VERIFICATION_RESULT
---			l_result: EBB_AUTOTEST_VERIFICATION_RESULT
---		do
---			create l_result.make (a_feature, configuration, 1.0)
-
---			blackboard.add_v_result (l_result)
-
-----			create l_verification_result.make (a_feature)
-
-----			l_verification_result.set_time (create {DATE_TIME}.make_now)
-----			l_verification_result.set_tool (tool)
-----			l_verification_result.is_postcondition_proven.set_proven_to_hold
-----			l_verification_result.is_postcondition_proven.set_update
-----			l_verification_result.is_class_invariant_proven.set_proven_to_hold
-----			l_verification_result.is_class_invariant_proven.set_update
-
-----			blackboard.add_verification_result (l_verification_result)
---		end
 
 feature {NONE} -- Implementation
 

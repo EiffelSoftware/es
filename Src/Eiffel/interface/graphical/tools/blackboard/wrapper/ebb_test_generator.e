@@ -15,9 +15,10 @@ inherit
 		redefine
 			remove_task,
 			print_test_set
+--			step
 		end
 
-	EBB_SHARED_BLACKBOARD
+	EBB_SHARED_ALL
 
 create
 	make
@@ -58,11 +59,26 @@ feature -- Basic operations
 			-- `a_list': List of test case results to be printed to a test set.
 		do
 			current_results := a_list
-
 --			Precursor (a_list)
-
 			current_results := Void
 		end
+
+--	step
+--			-- <Precursor>
+--		local
+--			l_retry: BOOLEAN
+--		do
+--			if l_retry then
+--				instance.execution.cancel
+--			else
+--				Precursor
+--			end
+--		rescue
+--			if not l_retry then
+--				l_retry := True
+--				retry
+--			end
+--		end
 
 feature {NONE}
 
@@ -126,7 +142,7 @@ feature {NONE}
 
 			l_feature := feature_with_name (l_class_name, l_feature_name)
 
-			if not l_feature.is_attribute and not l_feature.is_deferred then
+			if is_feature_verified (l_feature) then
 				if l_type ~ "passing" then
 					if l_number >= 50 then
 						create l_result.make (l_feature, instance.configuration, 1.0)

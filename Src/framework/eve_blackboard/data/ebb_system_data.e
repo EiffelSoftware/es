@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 
 			l_feature_data.set_parent (a_class_data)
 
-			if not a_feature.is_attribute and not a_feature.is_deferred then
+			if is_feature_data_verified (l_feature_data) then
 				l_feature_data.set_stale
 			end
 		end

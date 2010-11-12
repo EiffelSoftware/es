@@ -383,6 +383,10 @@ feature
 
 					-- Compute invariant clause
 				compute_invariant;
+
+				if invariant_changed or invariant_removed then
+					(create {EBB_BLACKBOARD_COMPILER_HELPER}).handle_changed_invariant (a_class)
+				end
 			end;
 
 				-- Check sum error
