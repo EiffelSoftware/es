@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that represents a field"
 	author: ""
 	date: "$Date$"
@@ -122,6 +122,12 @@ feature -- Access
 			Result.append (name)
 			Result.append ({EPA_CONSTANTS}.query_value_separator)
 			Result.append (value.text)
+		end
+
+	value_text: STRING
+			-- Text representation of `value'
+		do
+			Result := value.text
 		end
 
 	full_text: STRING

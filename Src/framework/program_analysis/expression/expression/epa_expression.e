@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "An item in a state"
 	author: ""
 	date: "$Date$"
@@ -119,6 +119,10 @@ feature -- Access
 	tag: detachable STRING
 			-- Tag for current expression
 			-- For example, an assertion can be associated with a tag
+
+	boost: DOUBLE
+			-- Boost value of current expression
+			-- Used for semantic seach system as weight of current expression
 
 feature --Logic operations
 
@@ -379,6 +383,14 @@ feature -- Setting
 			else
 				tag := a_tag.twin
 			end
+		end
+
+	set_boost (a_boost: DOUBLE)
+			-- Set `boost' with `a_boost'.
+		do
+			boost := a_boost
+		ensure
+			boost_set: boost = a_boost
 		end
 
 feature -- Visitor/Process

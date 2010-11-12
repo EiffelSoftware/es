@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Command to rewrite current project into one that contains infrastructure to support contract inference"
 	author: ""
 	date: "$Date$"
@@ -270,8 +270,15 @@ feature{NONE} -- Initialization
 			test_cases.compare_objects
 			initialize_test_cases
 			if argument_count = 0 then
-				execute_test_cases (Void)
-			else
+				execute_test_cases (Void)			
+			elseif argument_count = 1 then
+				execute_test_cases (argument (1))
+			elseif argument_count = 2 then
+				start_test_case := argument (1).to_integer
+				end_test_case := argument (2).to_integer
+			elseif argument_count = 3 then				
+				start_test_case := argument (2).to_integer
+				end_test_case := argument (3).to_integer
 				execute_test_cases (argument (1))
 			end
 		end
@@ -287,6 +294,12 @@ feature -- Access
 			
 	memory: MEMORY
 			-- GC controller
+			
+	start_test_case: INTEGER
+			-- The test case to start, this is 1-based
+			
+	end_test_case: INTEGER
+			-- The test case number to end, this is 1-based
 
 feature -- Basic operations
 
@@ -296,16 +309,28 @@ feature -- Basic operations
 		local
 			l_cursor: CURSOR
 			l_tests: ARRAYED_LIST [EQA_SERIALIZED_TEST_SET]
+			l_tc_number: INTEGER
 		do
-			l_cursor := test_cases.cursor
+			l_cursor := test_cases.cursor			
 			from
+				l_tc_number := 1
 				test_cases.start
 			until
 				test_cases.after
 			loop
 				if a_feature_name /= Void implies a_feature_name ~ test_cases.key_for_iteration then
 					l_tests := test_cases.item_for_iteration
-					l_tests.do_all (agent execute_test_case)
+					from
+						l_tests.start
+					until
+						l_tests.after
+					loop
+						if start_test_case > 0 implies (start_test_case <= l_tc_number and l_tc_number <= end_test_case) then
+							execute_test_case (l_tests.item_for_iteration)
+						end
+						l_tests.forth
+						l_tc_number := l_tc_number + 1
+					end
 				end
 				test_cases.forth
 			end

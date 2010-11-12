@@ -156,7 +156,7 @@ feature{NONE} -- Implementation
 			l_test_case_info_bp_manager.toggle_breakpoints (True)
 
 				-- Start debugger.
-			start_debugger (debugger_manager, feature_.feature_name.as_lower, config.working_directory, {EXEC_MODES}.run, False)
+			start_debugger (debugger_manager, feature_.feature_name.as_lower + " " + config.start_test_case_number.out + " " + config.end_test_case_number.out, config.working_directory, {EXEC_MODES}.run, False)
 
 				-- Clean up debugger.
 			l_test_case_info_bp_manager.toggle_breakpoints (False)
@@ -507,6 +507,7 @@ feature{NONE} -- Actions
 		do
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
+				next_object_equivalent_class_id := 0
 					-- Enable the flag to calculate post-state information if needed.
 				l_dummy_value := debugger_manager.expression_evaluation ("set_is_pre_state_information_enabled (True)")
 				if config.should_enable_post_serialization_retrieval then
@@ -582,14 +583,18 @@ feature{NONE} -- Actions
 
 				-- Store results.
 			if a_pre_execution then
-				last_pre_execution_evaluations := a_state.cloned_object
-				mutate_equality_comparision_expressions (last_pre_execution_evaluations)
+				last_pre_execution_evaluations := a_state
+--				last_pre_execution_evaluations := a_state.cloned_object
+				setup_object_equivalent_classes (last_pre_execution_evaluations)
+--				mutate_equality_comparision_expressions (last_pre_execution_evaluations)
 			else
 				if a_state = Void then
 					create last_post_execution_evaluations.make (0, class_, feature_)
 				else
-					last_post_execution_evaluations := a_state.cloned_object
-					mutate_equality_comparision_expressions (last_post_execution_evaluations)
+					last_post_execution_evaluations := a_state
+--					last_post_execution_evaluations := a_state.cloned_object
+					setup_object_equivalent_classes (last_post_execution_evaluations)
+--					mutate_equality_comparision_expressions (last_post_execution_evaluations)
 				end
 				build_last_transition
 			end
@@ -1038,6 +1043,105 @@ feature{NONE} -- Implementation
 			a_state.append (l_set)
 		end
 
+	setup_object_equivalent_classes (a_state: EPA_STATE)
+			-- Setup object equivalent classes in `a_state'.
+		local
+			l_equiv_sets: LINKED_LIST [DS_HASH_SET [EPA_EXPRESSION]]
+			l_set: DS_HASH_SET [EPA_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+			l_expr: EPA_EXPRESSION
+			l_value: EPA_EXPRESSION_VALUE
+			l_left_expr: EPA_AST_EXPRESSION
+			l_right_expr: EPA_AST_EXPRESSION
+			l_expr_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_class_id: INTEGER
+			l_expressions: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
+			l_tilda_equations: DS_HASH_SET [EPA_EQUATION]
+		do
+			create l_expressions.make (a_state.count)
+			l_expressions.set_key_equality_tester (expression_equality_tester)
+
+			create l_tilda_equations.make (100)
+			l_tilda_equations.set_equality_tester (equation_equality_tester)
+
+			create l_equiv_sets.make
+			from
+				l_cursor := a_state.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_expr := l_cursor.item.expression
+				l_value := l_cursor.item.value
+					-- We only care about expressions in form "expr1 ~ expr2" = True.
+				if attached {BIN_TILDE_AS} l_expr.ast as l_tilda then
+					l_tilda_equations.force_last (l_cursor.item)
+					if l_value.is_true_boolean then
+						create l_left_expr.make_with_feature (l_expr.class_, l_expr.feature_, l_tilda.left, l_expr.written_class)
+						create l_right_expr.make_with_feature (l_expr.class_, l_expr.feature_, l_tilda.right, l_expr.written_class)
+
+						l_set := Void
+							-- Iterate through all known equivalent classes, check if `l_left_expr' or `l_right_expr' is in the set.
+						across l_equiv_sets as l_sets until l_set /= Void loop
+							if l_sets.item.has (l_left_expr) or else l_sets.item.has (l_right_expr) then
+								l_set := l_sets.item
+							end
+						end
+
+						if l_set = Void then
+							create l_set.make (10)
+							l_set.set_equality_tester (expression_equality_tester)
+							l_equiv_sets.extend (l_set)
+						end
+
+							-- Put `l_left_expr' and `l_right_expr' into the set equivalent class.
+						if not l_set.has (l_left_expr) then
+							l_set.force_last (l_left_expr)
+						end
+						if not l_set.has (l_right_expr) then
+							l_set.force_last (l_right_expr)
+						end
+					end
+				else
+					if l_value.is_reference then
+						l_expressions.force_last (l_value, l_expr)
+					end
+				end
+				l_cursor.forth
+			end
+
+			next_object_equivalent_class_id := next_object_equivalent_class_id + 1
+			across l_equiv_sets as l_sets loop
+				from
+					l_expr_cursor := l_sets.item.new_cursor
+					l_expr_cursor.start
+				until
+					l_expr_cursor.after
+				loop
+					l_expressions.search (l_expr_cursor.item)
+					if l_expressions.found then
+						check attached {EPA_REFERENCE_VALUE} l_expressions.found_item as l_ref_value then
+							l_ref_value.set_object_equivalent_class_id (next_object_equivalent_class_id)
+						end
+					end
+					l_expr_cursor.forth
+				end
+				next_object_equivalent_class_id := next_object_equivalent_class_id + 1
+			end
+
+				-- Remove tilda-based equations.
+			from
+				l_tilda_equations.start
+			until
+				l_tilda_equations.after
+			loop
+				a_state.remove (l_tilda_equations.item_for_iteration)
+				l_tilda_equations.forth
+			end
+		end
+
+	next_object_equivalent_class_id: INTEGER
+			-- Next ID for object equivalent class
 
 	log_final_contracts
 			-- Log final contracts in `last_postconditions'.

@@ -199,6 +199,8 @@ feature -- Access
 
 	variable_field_name: STRING = "variable"
 
+	void_value_id: INTEGER = 32768
+
 feature -- Access
 
 	serialization_field_array_separator: CHARACTER = ','

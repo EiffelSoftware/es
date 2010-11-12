@@ -57,6 +57,9 @@ feature -- Access
 	feature_name: detachable STRING
 			-- Specified feature name
 
+	timestamp: detachable STRING
+			-- Time stamp
+
 feature -- Status report
 
 	should_add_sql_document: BOOLEAN
@@ -137,6 +140,12 @@ feature -- Setting
 			else
 				feature_name := a_feature_name.twin
 			end
+		end
+
+	set_timestamp (a_timestamp: like timestamp)
+			-- Set `timestamp' with `a_timestamp'.
+		do
+			timestamp := a_timestamp
 		end
 
 end

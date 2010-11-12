@@ -80,7 +80,6 @@ feature{NONE} -- Implementation
 	next_object_equivalent_class_id: INTEGER
 			-- ID for the next object equivalent class
 
-
 	object_equivalent_classes (a_state: EPA_STATE): DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
 			-- Object equivalent classes from `a_state'
 			-- Return a hash table, key is an expression in `a_state',
@@ -98,6 +97,9 @@ feature{NONE} -- Implementation
 			l_class_id: INTEGER
 		do
 			create l_equiv_sets.make
+			create Result.make (50)
+			Result.set_key_equality_tester (expression_equality_tester)
+
 			from
 				l_cursor := a_state.new_cursor
 				l_cursor.start
@@ -105,50 +107,15 @@ feature{NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_expr := l_cursor.item.expression
-					-- We only care about expressions in form "expr1 ~ expr2" = True.
-				if attached {BIN_TILDE_AS} l_expr.ast as l_tilda and then l_cursor.item.value.is_true_boolean then
-					create l_left_expr.make_with_feature (l_expr.class_, l_expr.feature_, l_tilda.left, l_expr.written_class)
-					create l_right_expr.make_with_feature (l_expr.class_, l_expr.feature_, l_tilda.right, l_expr.written_class)
-
-					l_set := Void
-						-- Iterate through all known equivalent classes, check if `l_left_expr' or `l_right_expr' is in the set.
-					across l_equiv_sets as l_sets until l_set /= Void loop
-						if l_sets.item.has (l_left_expr) or else l_sets.item.has (l_right_expr) then
-							l_set := l_sets.item
+				if attached {EPA_REFERENCE_VALUE} l_cursor.item.value as l_ref_value then
+					if l_ref_value.object_equivalent_class_id > 0 then
+						Result.force_last (l_ref_value.object_equivalent_class_id, l_expr)
+						if l_ref_value.object_equivalent_class_id > next_object_equivalent_class_id then
+							next_object_equivalent_class_id := l_ref_value.object_equivalent_class_id + 1
 						end
-					end
-
-					if l_set = Void then
-						create l_set.make (10)
-						l_set.set_equality_tester (expression_equality_tester)
-					end
-
-						-- Put `l_left_expr' and `l_right_expr' into the set equivalent class.
-					if not l_set.has (l_left_expr) then
-						l_set.force_last (l_left_expr)
-					end
-					if not l_set.has (l_right_expr) then
-						l_set.force_last (l_right_expr)
 					end
 				end
 				l_cursor.forth
-			end
-
-			create Result.make (50)
-			Result.set_key_equality_tester (expression_equality_tester)
-			next_object_equivalent_class_id := next_object_equivalent_class_id + 1
-			across l_equiv_sets as l_sets loop
-				from
-					l_expr_cursor := l_sets.item.new_cursor
-					l_expr_cursor.start
-				until
-					l_expr_cursor.after
-				loop
-
-					Result.force_last (next_object_equivalent_class_id, l_expr_cursor.item)
-					l_expr_cursor.forth
-				end
-				next_object_equivalent_class_id := next_object_equivalent_class_id + 1
 			end
 		end
 
@@ -161,6 +128,7 @@ feature{NONE} -- Implementation
 			l_value: EPA_EXPRESSION_VALUE
 			l_value_text: STRING
 			l_ast: EXPR_AS
+			l_class_id: INTEGER
 		do
 				-- Iterate through all expressions in `a_state', for an expression,
 				-- if it is not connected through a "=", "/=" ,"~", "/~", we collect
@@ -182,15 +150,18 @@ feature{NONE} -- Implementation
 						-- if its evaluation ended with an exception.
 					if not l_value.is_nonsensical then
 						if l_value.is_void then
-								-- We use the minimal value of INTEGER_32 to represent Void.
-								-- This is a hack though.
-							l_value_text := {INTEGER}.min_value.out
+								-- We use the max value of INTEGER_16 + 1 to represent Void.
+								-- This is a hack though.							
+							l_class_id := void_value_id
+							l_value_text := l_class_id.out
 						else
 							l_value_text := l_value.text
-						end
-						if not l_value_tbl.has (l_value.text) then
-							l_value_tbl.put (next_reference_equivalent_class_id, l_value_text)
+							l_class_id := next_reference_equivalent_class_id
 							next_reference_equivalent_class_id := next_reference_equivalent_class_id + 1
+						end
+						if not l_value_tbl.has (l_value_text) then
+							l_value_tbl.put (l_class_id, l_value_text)
+
 						end
 					end
 				end
@@ -293,18 +264,26 @@ feature{NONE} -- Implementation
 					l_value_type := 1
 				else
 					l_value_type := 0
-					l_value_text := a_reference_value_table.item (a_value.text)
-					if a_object_equivalent_classes /= Void then
-						a_object_equivalent_classes.search (a_expr)
-						if a_object_equivalent_classes.found then
-							l_equal_value_text := a_object_equivalent_classes.found_item
+					if a_value.is_void then
+						l_value_text := a_reference_value_table.item (void_value_id.out)
+					else
+						l_value_text := a_reference_value_table.item (a_value.text)
+					end
+					if a_value.is_void then
+						l_equal_value_text := void_value_id
+					else
+						if a_object_equivalent_classes /= Void then
+							a_object_equivalent_classes.search (a_expr)
+							if a_object_equivalent_classes.found then
+								l_equal_value_text := a_object_equivalent_classes.found_item
+							else
+								l_equal_value_text := a_reference_value_table.found_item
+								next_object_equivalent_class_id := next_object_equivalent_class_id + 1
+							end
 						else
 							l_equal_value_text := a_reference_value_table.found_item
 							next_object_equivalent_class_id := next_object_equivalent_class_id + 1
 						end
-					else
-						l_equal_value_text := a_reference_value_table.found_item
-						next_object_equivalent_class_id := next_object_equivalent_class_id + 1
 					end
 				end
 
@@ -345,13 +324,11 @@ feature{NONE} -- Implementation
 				l_data.append (l_equal_value_text.out)
 				l_data.append_character (field_section_separator)
 				l_data.append (l_boost_value.out)
-				l_data.append_character (field_section_separator)
-				l_data.append_character (field_section_separator)
 				if l_canonical_text ~ once "$" then
+					l_data.append_character (field_section_separator)
 					l_data.append (a_queryable.variable_positions.item (a_expr).out)
 					append_string_field (variable_field_name, l_data)
 				else
-					l_data.append (once "0")
 					append_string_field (property_field_name, l_data)
 				end
 			end

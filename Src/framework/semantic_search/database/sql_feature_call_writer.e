@@ -84,9 +84,9 @@ feature{NONE} -- Implementation
 			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
 			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True, a_transition)
 
-				-- Appending preconditions.
+				-- Appending postconditions.
 			setup_reference_value_table (queryable.postconditions)
-			l_obj_equiv_sets := object_equivalent_classes (queryable.preconditions)
+			l_obj_equiv_sets := object_equivalent_classes (queryable.postconditions)
 			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, False, a_transition)
 			create l_obj_equiv_sets.make (0)
 			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)

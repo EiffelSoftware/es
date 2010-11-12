@@ -47,6 +47,7 @@ feature -- Basic operations
 			l_class: AP_STRING_OPTION
 			l_feature: AP_STRING_OPTION
 			l_update_ranking_flag: AP_FLAG
+			l_timestamp: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -93,6 +94,10 @@ feature -- Basic operations
 			l_update_ranking_flag.set_description ("Update property rankings. The class and feature whose properties are to be ranked are specified through --class and --feature options.")
 			l_parser.options.force_last (l_update_ranking_flag)
 
+			create l_timestamp.make_with_long_form ("timestamp")
+			l_timestamp.set_description ("Specify timestamp of the documents.")
+			l_parser.options.force_last (l_timestamp)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -133,6 +138,10 @@ feature -- Basic operations
 
 			if l_update_ranking_flag.was_found then
 				config.set_should_update_ranking (True)
+			end
+
+			if l_timestamp.was_found then
+				config.set_timestamp (l_timestamp.parameter)
 			end
 		end
 

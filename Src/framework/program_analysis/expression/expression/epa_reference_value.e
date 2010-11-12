@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "A value representing address of a reference"
 	author: ""
 	date: "$Date$"
@@ -48,10 +48,23 @@ feature -- Access
 			Result := Current
 		end
 
+	object_equivalent_class_id: INTEGER
+			-- Object equivalent class id
+
 feature -- Status report
 
 	is_reference: BOOLEAN = True
 			-- Is current a reference value?
+
+feature -- Setting
+
+	set_object_equivalent_class_id (a_id: INTEGER)
+			-- Set `object_equivalent_class_id' with `a_id'.
+		do
+			object_equivalent_class_id := a_id
+		ensure
+			object_equivalent_class_id_set: object_equivalent_class_id = a_id
+		end
 
 feature -- Process
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Class to find function for a feature based on types of variables in the given context. 
 		Those functions are buiding blocks for contracts to be inferred
@@ -122,9 +122,9 @@ feature -- Status
 			-- Default: False	
 
 	should_include_operand_and_expression_comparison: BOOLEAN
-			-- Should expressions comparing equality between two operands, one operand and an argument-less query,
+			-- Should expressions comparing object equality between two operands, one operand and an argument-less query,
 			-- or two argument-less queries be generated?
-			-- For example, "v_0 = v_1.item", where v_0 and v_1 are operands.
+			-- For example, "v_0 ~ v_1.item", where v_0 and v_1 are operands.
 			-- Default: False
 
 feature -- Setting
@@ -200,7 +200,7 @@ feature -- Access
 			-- quasi_constant_functions.is_superset (variable_functions)
 			-- `quasi_constant_functions' is superset of `variale_functions', `argumentless_functions' and `variable_functions'.
 
-	variable_functions: DS_HASH_SET [EPA_FUNCTION]
+	variable_functions: EPA_HASH_SET [EPA_FUNCTION]
 			-- Functions for `variables'
 			-- quasi_constant_functions.is_superset (variable_functions)
 			-- `variable_functions', argumentless_functions and `composed_functions' are disjoint.
@@ -669,101 +669,106 @@ feature{NONE} -- Implementation
 		do
 			if should_include_operand_and_expression_comparison then
 				l_tilda_functions := equality_comparision_functions
-				from
-					l_cursor := variable_functions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					from
-						l_cursor2 := variable_functions.new_cursor
-						l_cursor2.start
-					until
-						l_cursor2.after
-					loop
-						if l_cursor.item /= l_cursor2.item then
-							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
-							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
-						end
-						l_cursor2.forth
-					end
-					l_cursor.forth
+
+				across variable_functions.combinations (2) as l_pairs loop
+					l_tilda_functions.force_last (equality_comparision_function (l_pairs.item.first, l_pairs.item.last, ti_tilda))
 				end
+
+--				from
+--					l_cursor := variable_functions.new_cursor
+--					l_cursor.start
+--				until
+--					l_cursor.after
+--				loop
+--					from
+--						l_cursor2 := variable_functions.new_cursor
+--						l_cursor2.start
+--					until
+--						l_cursor2.after
+--					loop
+--						if l_cursor.item /= l_cursor2.item then
+--							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
+----							l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+--						end
+--						l_cursor2.forth
+--					end
+--					l_cursor.forth
+--				end
 
 					-- Build comparisons between an operand and an argument-less query.
 					-- The operand and the argument-less query must have the same type, and this type is non-basic.
-				l_type_tbl := variable_type_table
-				across operand_function_table as l_operand_functions loop
-					l_operand_function := l_operand_functions.item
-					l_operand_name := l_operand_function.body
-					l_opd_type := l_type_tbl.item (l_operand_name)
-					from
-						l_cursor2 := argumentless_functions.new_cursor
-						l_cursor2.start
-					until
-						l_cursor2.after
-					loop
-						l_fun_type := l_cursor2.item.result_type
-						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
-							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
-							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
-						end
-						l_cursor2.forth
-					end
-				end
+--				l_type_tbl := variable_type_table
+--				across operand_function_table as l_operand_functions loop
+--					l_operand_function := l_operand_functions.item
+--					l_operand_name := l_operand_function.body
+--					l_opd_type := l_type_tbl.item (l_operand_name)
+--					from
+--						l_cursor2 := argumentless_functions.new_cursor
+--						l_cursor2.start
+--					until
+--						l_cursor2.after
+--					loop
+--						l_fun_type := l_cursor2.item.result_type
+--						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
+--							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
+----							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
+--						end
+--						l_cursor2.forth
+--					end
+--				end
 
 					-- Build comparisons between two argument-less queries.
 					-- Those two argument-less queries must have integer type.
-				from
-					l_cursor := argumentless_functions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					l_type1 := l_cursor.item.result_type
-					from
-						l_cursor2 := argumentless_functions.new_cursor
-						l_cursor2.start
-					until
-						l_cursor2.after
-					loop
-						if l_cursor.item /= l_cursor2.item then
-							l_type2 := l_cursor2.item.result_type
-							if
-								(l_type1.is_integer and then l_type2.is_integer)
---								(l_type1.is_boolean and then l_type2.is_boolean)
-							then
---								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
-								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
-							end
-						end
-						l_cursor2.forth
-					end
-					l_cursor.forth
-				end
+--				from
+--					l_cursor := argumentless_functions.new_cursor
+--					l_cursor.start
+--				until
+--					l_cursor.after
+--				loop
+--					l_type1 := l_cursor.item.result_type
+--					from
+--						l_cursor2 := argumentless_functions.new_cursor
+--						l_cursor2.start
+--					until
+--						l_cursor2.after
+--					loop
+--						if l_cursor.item /= l_cursor2.item then
+--							l_type2 := l_cursor2.item.result_type
+--							if
+--								(l_type1.is_integer and then l_type2.is_integer)
+----								(l_type1.is_boolean and then l_type2.is_boolean)
+--							then
+----								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_tilda))
+----								l_tilda_functions.force_last (equality_comparision_function (l_cursor.item, l_cursor2.item, ti_equal))
+--							end
+--						end
+--						l_cursor2.forth
+--					end
+--					l_cursor.forth
+--				end
 
 					-- Build comparisions between an operand and a single argument query.
 					-- The operand and the single argument query must have the same type, and that
 					-- type is non-basic.
-				l_type_tbl := variable_type_table
-				across operand_function_table as l_operand_functions loop
-					l_operand_function := l_operand_functions.item
-					l_operand_name := l_operand_function.body
-					l_opd_type := l_type_tbl.item (l_operand_name)
-					from
-						l_cursor2 := composed_functions.new_cursor
-						l_cursor2.start
-					until
-						l_cursor2.after
-					loop
-						l_fun_type := l_cursor2.item.result_type
-						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
-							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
-							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
-						end
-						l_cursor2.forth
-					end
-				end
+--				l_type_tbl := variable_type_table
+--				across operand_function_table as l_operand_functions loop
+--					l_operand_function := l_operand_functions.item
+--					l_operand_name := l_operand_function.body
+--					l_opd_type := l_type_tbl.item (l_operand_name)
+--					from
+--						l_cursor2 := composed_functions.new_cursor
+--						l_cursor2.start
+--					until
+--						l_cursor2.after
+--					loop
+--						l_fun_type := l_cursor2.item.result_type
+--						if l_opd_type.same_type (l_fun_type) and then not l_opd_type.is_basic then
+--							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_tilda))
+----							l_tilda_functions.force_last (equality_comparision_function (l_operand_function, l_cursor2.item, ti_equal))
+--						end
+--						l_cursor2.forth
+--					end
+--				end
 			end
 		end
 

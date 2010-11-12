@@ -315,6 +315,12 @@ feature -- Access
 			-- Should breakpoints in feature under analysis be monitored?
 			-- Default: False
 
+	start_test_case_number: INTEGER
+			-- Start test case number
+
+	end_test_case_number: INTEGER
+			-- End test case number
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -617,6 +623,13 @@ feature -- Setting
 			is_breakpoint_monitoring_enabled := b
 		ensure
 			is_breakpoint_monitoring_enabled_set: is_breakpoint_monitoring_enabled = b
+		end
+
+	set_test_case_range (a_start_number: INTEGER; a_end_number: INTEGER)
+			-- Set `start_test_case_number' and `end_test_case_number'.
+		do
+			start_test_case_number := a_start_number
+			end_test_case_number := a_end_number
 		end
 
 feature{NONE} -- Implementation

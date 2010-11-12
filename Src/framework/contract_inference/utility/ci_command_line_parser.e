@@ -67,6 +67,7 @@ feature -- Basic operations
 			l_solr_option: AP_STRING_OPTION
 			l_breakpoint_monitoring_flag: AP_FLAG
 			l_sql_option: AP_STRING_OPTION
+			l_test_case_range: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -221,6 +222,10 @@ feature -- Basic operations
 			l_breakpoint_monitoring_flag.set_description ("Should breakpoint visit status of feature under analysis be monitored? Default: False")
 			l_parser.options.force_last (l_breakpoint_monitoring_flag)
 
+			create l_test_case_range.make_with_long_form ("test-case-range")
+			l_test_case_range.set_description ("Specify the range of test cases to run. Format --test-case-range start,end. start and end are two integer numbers. 0,0 means to run all test cases. Default: 0,0")
+			l_parser.options.force_last (l_test_case_range)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -372,9 +377,32 @@ feature -- Basic operations
 
 			config.set_should_freeze (l_freeze_option.was_found)
 			config.set_is_tilda_enabled ( l_tilda_option.was_found)
+
+			if l_test_case_range.was_found then
+				setup_test_case_range (config, l_test_case_range.parameter)
+			else
+				setup_test_case_range (config, "0,0")
+			end
 		end
 
 feature{NONE} -- Implementation
+
+	setup_test_case_range (a_config: CI_CONFIG; a_value: STRING)
+			-- Setup test case range.
+		local
+			l_parts: LIST [STRING]
+		do
+			l_parts := a_value.split (',')
+			if l_parts.count = 2 then
+				l_parts.first.left_adjust
+				l_parts.first.right_justify
+				l_parts.last.left_adjust
+				l_parts.last.right_adjust
+				config.set_test_case_range (l_parts.first.to_integer, l_parts.last.to_integer)
+			else
+				config.set_test_case_range (0, 0)
+			end
+		end
 
 	setup_generate_solr_property (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup solr property

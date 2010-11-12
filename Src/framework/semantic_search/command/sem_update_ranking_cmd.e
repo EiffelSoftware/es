@@ -37,6 +37,29 @@ feature -- Basic operations
 	execute
 			-- Execute current command
 		do
+			find_transitions
+		end
+
+feature{NONE} -- Implementation
+
+	find_transitions
+			-- Find transition ssql files.
+		local
+			l_finder: EPA_FILE_SEARCHER
+		do
+			create l_finder.make_with_pattern ("tran.+\.ssql")
+			l_finder.file_found_actions.extend (agent on_file_found)
+			l_finder.search (config.mysql_file_directory)
+		end
+
+	on_file_found (a_path: STRING; a_file_name: STRING)
+			-- Action to be performed if `a_path' is found
+		local
+			l_loader: SEMQ_QUERYABLE_LOADER
+		do
+			io.put_string ("Loading " + a_file_name + "%N")
+			create l_loader
+			l_loader.load (a_path)
 		end
 
 end

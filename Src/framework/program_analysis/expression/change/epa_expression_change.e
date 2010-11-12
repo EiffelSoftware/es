@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Objects that represent changes to the value of an expression"
 	author: ""
 	date: "$Date$"
@@ -61,6 +61,10 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 
+	boost: DOUBLE
+			-- Boost of current change
+			-- Used by semantic search system as weight of curent change
+
 feature -- Status report	
 
 	is_relative: BOOLEAN
@@ -117,6 +121,14 @@ feature -- Setting
 			is_negated := b
 		ensure
 			is_negated_set: is_negated = b
+		end
+
+	set_boost (a_boost: DOUBLE)
+			-- Set `boost' with `a_boost'.
+		do
+			boost := a_boost
+		ensure
+			boost_set: boost = a_boost
 		end
 
 feature -- Status report
