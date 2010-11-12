@@ -218,11 +218,11 @@ static  char    *names [] = {
 "BC_PTUPLE",
 "BC_STRING32",
 "BC_ONCE_STRING32",
-"BC_NOTUSED_172",
-"BC_NOTUSED_173",
-"BC_NOTUSED_174",
-"BC_NOTUSED_175",
-"BC_NOTUSED_176",
+"BC_TRY",
+"BC_TRY_END",
+"BC_TRY_END_EXCEPT",
+"BC_DO_RESCUE",
+"BC_DO_RESCUE_END",
 "BC_NOTUSED_177",
 "BC_NOTUSED_178",
 "BC_NOTUSED_179",
@@ -437,20 +437,12 @@ static  void    print_byte_code (void)
 	uint32 n;
 	EIF_NATURAL_8   once_mark;
 	BODY_INDEX	once_key;
-	EIF_BOOLEAN once_is_precomp;
-	EIF_INTEGER_16 once_class_id;
-	EIF_INTEGER_32 once_called, once_except, once_result;
 	uint32 once_end_break_index;				/* Index in once table */
 
 	ip = body;
 
 	once_mark = get_uint8(&ip);  /* Once mark */
 	once_key = 0;
-	once_is_precomp = 0;
-	once_class_id = 0;
-	once_called = 0;
-	once_except = 0;
-	once_result = 0;
 	once_end_break_index = 0;
 
 	switch (once_mark)
@@ -461,17 +453,6 @@ static  void    print_byte_code (void)
 		once_end_break_index = get_uint32(&ip);		/* break index of end statement */
 		break;
 	case ONCE_MARK_OBJECT_RELATIVE:
-		once_is_precomp = get_bool(&ip);		/* is_precompiled */
-		once_class_id = get_type_id(&ip); 		/* class id */
-		if (once_is_precomp) {
-			once_called = get_offset(&ip); 		/* called */
-			once_except = get_offset(&ip);		/* except */
-			once_result = get_offset(&ip); 		/* result */
-		} else {
-			once_called = get_feature_id(&ip); 		/* called */
-			once_except = get_feature_id(&ip);		/* except */
-			once_result = get_feature_id(&ip); 		/* result */
-		}
 		once_end_break_index = get_uint32(&ip);		/* break index of end statement */
 		break;
 	}
@@ -501,7 +482,7 @@ static  void    print_byte_code (void)
 		fprintf (ofp,"Once routine : process-relative (%u)\n", once_key);
 		break;
 	case ONCE_MARK_OBJECT_RELATIVE:
-		fprintf (ofp,"Once routine : object-relative (%u, %u, %u, %u,%u,%u)\n", once_is_precomp, once_class_id, once_called, once_except, once_result, once_end_break_index);
+		fprintf (ofp,"Once routine : object-relative (end_bp=%u)\n", once_end_break_index);
 		break;
 	case ONCE_MARK_ATTRIBUTE:
 		fprintf (ofp,"Attribute\n");
@@ -644,7 +625,10 @@ static  void    print_instructions (void)
 
 	while ((code != BC_NULL)     &&
 		   (code != BC_INV_NULL) &&
-		   (code != BC_END_RESCUE))
+		   (code != BC_END_RESCUE) &&
+		   (code != BC_TRY_END) &&
+		   (code != BC_TRY_END_EXCEPT) &&
+		   (code != BC_DO_RESCUE_END))
 	{
 		switch (code)
 		{
@@ -1380,11 +1364,51 @@ static  void    print_instructions (void)
 				break;
 			case  BC_RESCUE :
 				break;
+			case BC_TRY:
+				{
+					char    has_except_part; 
+					has_except_part = get_bool(&ip);
+					if (has_except_part) {
+						NEWL;
+						fprintf (ofp,"Try-Except offset: %d\n", get_int32(&ip));
+					}
+					print_instructions ();
+					if (has_except_part) {
+						fprintf (ofp,"Try-Except clause: start\n");
+						print_instructions ();
+						fprintf (ofp,"Try-Except clause: end");
+					}
+				}
+				break;
+			case BC_TRY_END:
+					fprintf (ofp,"Try-End\n");
+				break;
+			case BC_TRY_END_EXCEPT:
+					fprintf (ofp,"Try-End-Except\n");
+				break;
+			case BC_DO_RESCUE:
+				{
+					char    has_do_rescue; 
+					has_do_rescue = get_bool(&ip);
+					if (has_do_rescue) {
+						NEWL;
+						fprintf (ofp,"Do-Rescue offset: %d\n", get_int32(&ip));
+					}
+					print_instructions ();
+					if (has_do_rescue) {
+						fprintf (ofp,"Do-Rescue clause: start\n");
+						print_instructions ();
+						fprintf (ofp,"Do-Rescue clause: end");
+					}
+				}
+				break;
+			case BC_DO_RESCUE_END:
+				break;
 
 /* NOTE: Separate codes not included yet */
 
 			default:
-				fprintf (stderr,"Illegal byte code %d\n", (int) code);
+				fprintf (ofp,"%d: Illegal byte code %d\n", (int)(ip - body), (int) code);
 				panic ();
 		}
 

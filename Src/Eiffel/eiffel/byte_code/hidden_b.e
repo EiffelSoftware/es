@@ -9,23 +9,25 @@ class
 	HIDDEN_B
 
 inherit
-	BYTE_NODE
+	BYTE_LIST [BYTE_NODE]
 		redefine
-			enlarge_tree, analyze, generate,
-			assigns_to, is_unsafe, optimized_byte_node,
-			calls_special_features, size, pre_inlined_code,
-			inlined_byte_code
+			generate, process
 		end
 
 create
-	make
+	make,
+	make_filled,
+	make_wrapper
 
 feature {NONE} -- Initialization
 
-	make (a_node: BYTE_NODE)
+	make_wrapper (a_node: BYTE_NODE)
 			-- Initialization	
+		require
+			a_node_attached: a_node /= Void
 		do
-			node := a_node
+			make (1)
+			extend (a_node)
 		end
 
 feature -- Visitor
@@ -38,16 +40,10 @@ feature -- Visitor
 
 feature -- Access
 
-	node: detachable BYTE_NODE
-
-feature -- Code analyzis
-
-	analyze
-			-- Loop over `list' and analyze each item
+	wrapped_into_byte_list: BYTE_LIST [BYTE_NODE]
 		do
-			if attached node as l_node then
-				l_node.analyze
-			end
+			create Result.make (1)
+			Result.extend (Current)
 		end
 
 feature -- C generation
@@ -55,81 +51,9 @@ feature -- C generation
 	generate
 			-- Generate `node'
 		do
-			if attached node as l_node then
-				context.enter_hidden_code
-				l_node.generate
-				context.exit_hidden_code
-			end
-		end
-
-feature -- Tree enlargment
-
-	enlarge_tree
-			-- Loop ovet `list' and enlarges each item
-		do
-			if attached node as l_node then
-				if l_node.need_enlarging then
-					node := l_node.enlarged
-				else
-					l_node.enlarge_tree
-				end
-			end
-		end
-
-feature -- Array optimization
-
-	assigns_to (n: INTEGER): BOOLEAN
-		do
-			if attached node as l_node then
-				Result := l_node.assigns_to (n)
-			end
-		end
-
-	calls_special_features (array_desc: INTEGER): BOOLEAN
-		do
-			if attached node as l_node then
-				Result := l_node.calls_special_features (array_desc)
-			end
-		end
-
-	is_unsafe: BOOLEAN
-		do
-			if attached node as l_node then
-				Result := l_node.is_unsafe
-			end
-		end
-
-	optimized_byte_node: like Current
-		do
-			Result := Current
-			if attached node as l_node then
-				node := l_node.optimized_byte_node
-			end
-		end
-
-feature -- Inlining
-
-	size: INTEGER
-		do
-			if attached node as l_node then
-				Result := l_node.size
-			end
-		end
-
-	pre_inlined_code: like Current
-		do
-			Result := Current
-			if attached node as l_node then
-				node := l_node.pre_inlined_code
-			end
-		end
-
-	inlined_byte_code: like Current
-		do
-			Result := Current
-			if attached node as l_node then
-				node := l_node.inlined_byte_code
-			end
+			context.enter_hidden_code
+			Precursor
+			context.exit_hidden_code
 		end
 
 note

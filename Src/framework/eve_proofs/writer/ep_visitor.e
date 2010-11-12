@@ -626,4 +626,22 @@ feature {BYTE_NODE} -- Visitors
 			-- Empty implementation to make current compile during EVE merge. 24.8.2010 Jasonw
 		end
 
+	process_hidden_if_b	(a_node: HIDDEN_IF_B)
+			-- Process `a_node'.
+		do
+			-- Empty implementation to make current compile during EVE merge. 12.11.2010 Julian
+		end
+
+	process_do_rescue_b (a_node: DO_RESCUE_B)
+			-- Process `a_node'
+		do
+			-- Empty implementation to make current compile during EVE merge. 12.11.2010 Julian
+		end
+
+	process_try_b (a_node: TRY_B)
+			-- Process `a_node'
+		do
+			-- Empty implementation to make current compile during EVE merge. 12.11.2010 Julian
+		end
+
 end

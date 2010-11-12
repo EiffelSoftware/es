@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 		"EiffelVision horizontal box. GTK+ implementation."
 	legal: "See notice at end of class."

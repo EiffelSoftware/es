@@ -1362,9 +1362,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define scoop_task_signify_end_of_new_chain 5
 #define scoop_task_add_supplier_to_request_chain 6
 #define scoop_task_wait_for_supplier_processor_locks 7
-#define	scoop_task_add_predicate 8
-#define scoop_task_add_command 9
-#define	scoop_task_add_function 10
+#define scoop_task_add_call 8
+#define scoop_task_add_synchronous_call 9
+#define scoop_task_wait_for_processor_redundancy 10
 
 #define EIFNULL 0
 
@@ -1405,9 +1405,11 @@ RT_LNK void eif_exit_eiffel_code(void);
  */
 #define RTS_PA(o) \
 	{                                                                                     \
-		EIF_INTEGER_32 pid;                                                           \
-		RTS_TCB(scoop_task_assign_processor,RTS_PID(o),EIFNULL,EIFNULL,EIFNULL,&pid); \
-		RTS_PID(o) = pid;                                                             \
+		EIF_TYPED_VALUE pid; \
+		pid.it_i4 = 0; \
+		pid.type = SK_INT32;                                                          \
+		RTS_TCB(scoop_task_assign_processor,RTS_PID(o),EIFNULL,EIFNULL,&pid,EIFNULL); \
+		RTS_PID(o) = pid.it_i4;                                                             \
 	}
 
 /*
@@ -1431,14 +1433,16 @@ RT_LNK void eif_exit_eiffel_code(void);
  * RTS_CC(s,f,d,a)     - call a creation procedure on a static type s with a feature id f on a target of dynamic type d and arguments a
  */
 #define RTS_CF(s,f,n,t,a,r) \
-	{                                                 \
-		((call_data*)(a)) -> result = &(r);       \
-		eif_log_call (s, f, RTS_PID(Current), a); \
+	{                                                       \
+		((call_data*)(a)) -> result = &(r);             \
+		((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+		eif_log_call (s, f, RTS_PID(Current), a);       \
 	}
 #define RTS_CFP(s,f,n,t,a,r) \
-	{                                                  \
-		((call_data*)(a)) -> result = &(r);        \
-		eif_log_callp (s, f, RTS_PID(Current), a); \
+	{                                                       \
+		((call_data*)(a)) -> result = &(r);             \
+		((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+		eif_log_callp (s, f, RTS_PID(Current), a);      \
 	}
 #define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), a)
 #define RTS_CPP(s,f,n,t,a) eif_log_callp (s, f, RTS_PID(Current), a)
@@ -1449,13 +1453,15 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Separate call arguments:
  * RTS_AC(n,t,a) - allocate container a that can hold n arguments for target t
  * RTS_AA(v,f,t,n,a) - register argument v corresponding to field f of type t at position n in a
+ * RTS_AS(v,f,t,n,a) - same as RTS_AA except that that argument is checked if it is controlled or not that is recorded to make synchronous call if required
  */
 #define RTS_AC(n,t,a) \
 	{                                                                                \
 		a = cmalloc (sizeof (call_data) + sizeof (EIF_TYPED_VALUE) * ((n) - 1)); \
-		((call_data*)(a)) -> target = eif_protect (t);                                       \
+		((call_data*)(a)) -> target = eif_protect (t);                           \
 		((call_data*)(a)) -> count = (n);                                        \
 		((call_data*)(a)) -> result = (EIF_TYPED_VALUE *) 0;                     \
+		((call_data*)(a)) -> is_synchronous = EIF_FALSE;                         \
 	}
 #define RTS_AA(v,f,t,n,a) \
 	{                                                                                                                          \
@@ -1463,6 +1469,15 @@ RT_LNK void eif_exit_eiffel_code(void);
 		if ((t) == SK_REF)                                                                                                 \
 			((call_data*)(a)) -> argument [(n) - 1].it_r = eif_protect (((call_data*)(a)) -> argument [(n) - 1].it_r); \
 	}
+#define RTS_AS(v,f,t,n,a) \
+	{                                                               \
+		RTS_AA(v,f,t,n,a);                                      \
+		if (!RTS_OU(((call_data*)(a)) -> argument [(n) - 1]))   \
+			((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+	}
+
+
+#define RTS_WPR RTS_TCB(scoop_task_wait_for_processor_redundancy,EIFNULL,EIFNULL,EIFNULL,EIFNULL,EIFNULL)
 
  /*
  * Macros for workbench

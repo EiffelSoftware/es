@@ -569,10 +569,13 @@ feature -- Properties
 				-- we need to make sure that its `is_in_system' flag is set.
 			root_creators.do_all (
 				agent (a_root: SYSTEM_ROOT)
+					local
+						cl: CLASS_C
 					do
-						if a_root.class_type.associated_class.original_class.is_compiled and then
-						   a_root.class_type.associated_class.is_precompiled then
-							a_root.class_type.associated_class.record_precompiled_class_in_system
+						cl := a_root.class_type.associated_class
+						if cl.original_class.is_compiled and then
+						   cl.is_precompiled then
+							cl.record_precompiled_class_in_system
 						end
 					end)
 		end
@@ -3666,8 +3669,7 @@ feature {NONE} -- Finalization implementation
 				i > nb
 			loop
 				a_class := class_array.item (i)
-					-- Since a class can be removed, test if `a_class�
-					-- is not Void.
+					-- Since a class can be removed, test if `a_class' is not Void.
 				if a_class /= Void then
 					if not a_class.is_precompiled or else a_class.is_in_system then
 						deg_output.put_degree_minus_3 (a_class, j)
@@ -4382,7 +4384,13 @@ feature -- Generation
 				class_type := class_types.item (i)
 				check class_type_not_void: class_type /= Void end
 				class_type.skeleton.generate_size (buffer, False)
-				buffer.put_string (",%N")
+				buffer.put_character (',')
+				if class_type.type /= Void then
+					buffer.put_string (" /* " + class_type.type.dump + " */")
+				else
+					buffer.put_string (" /* " + class_type.associated_class.name_in_upper + " */")
+				end
+				buffer.put_character ('%N')
 				i := i + 1
 			end
 			buffer.put_string ("};%N")
@@ -5367,6 +5375,12 @@ feature -- Pattern table generation
 	}
 					}"
 				)
+			end
+
+			if attached ise_scoop_manager_class then
+					-- Wait for SCOOP Processor redundancy.
+				buffer.put_new_line
+				buffer.put_string ("RTS_WPR")
 			end
 
 			buffer.generate_block_close
