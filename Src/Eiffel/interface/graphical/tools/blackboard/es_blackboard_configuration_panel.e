@@ -40,10 +40,16 @@ feature {NONE} -- Initialization
 			create l_label.make_with_text ("Control: ")
 			create control_box
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Idle"))
-			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Basic"))
+			control_box.last.set_data (create {EBB_IDLE_CONTROL}.make)
+			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Static only"))
+			control_box.last.set_data (create {EBB_STATIC_ONLY_CONTROL}.make)
+			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Static then dynamic"))
+			control_box.last.set_data (create {EBB_BASIC_CONTROL}.make)
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("Random"))
+			control_box.last.set_data (create {EBB_RANDOM_CONTROL}.make)
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("State"))
-			control_box.set_text ("Basic")
+			control_box.last.set_data (create {EBB_STATE_CONTROL}.make)
+			control_box.set_text ("Static only")
 			control_box.change_actions.extend (agent on_control_change)
 
 			l_horziontal_box.extend (l_label)
@@ -83,17 +89,13 @@ feature {NONE} -- Implementation
 			-- Handle event that control selection changed.
 		local
 			l_running: BOOLEAN
+			l_control: EBB_CONTROL
 		do
 			l_running := blackboard.is_running
 			blackboard.stop
-			if control_box.text.is_equal ("Idle") then
-				blackboard.set_control (create {EBB_IDLE_CONTROL}.make)
-			elseif control_box.text.is_equal ("Basic") then
-				blackboard.set_control (create {EBB_BASIC_CONTROL}.make)
-			elseif control_box.text.is_equal ("Random") then
-				blackboard.set_control (create {EBB_RANDOM_CONTROL}.make)
-			elseif control_box.text.is_equal ("State") then
-				blackboard.set_control (create {EBB_STATE_CONTROL}.make)
+			l_control ?= control_box.selected_item.data
+			if l_control /= Void then
+				blackboard.set_control (l_control)
 			end
 			if l_running then
 				blackboard.start

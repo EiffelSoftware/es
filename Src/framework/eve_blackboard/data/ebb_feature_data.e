@@ -114,7 +114,12 @@ feature -- Status report
 	is_stale: BOOLEAN
 			-- Is data stale?
 		do
-			Result := is_dynamic_score_stale or is_static_score_stale
+			if static_score >= 0 then
+				Result := is_static_score_stale
+			end
+			if not Result and dynamic_score >= 0 then
+				Result := is_dynamic_score_stale
+			end
 		end
 
 	is_dynamic_score_stale: BOOLEAN

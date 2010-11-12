@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			-- Initialize empty blackboard.
 		do
 			create data.make
-			create {EBB_BASIC_CONTROL} control.make
+			create {EBB_STATIC_ONLY_CONTROL} control.make
 			create {LINKED_LIST [EBB_TOOL]} tools.make
 			create {LINKED_LIST [EBB_VERIFICATION_RESULT]} verification_results.make
 			create executions.make
