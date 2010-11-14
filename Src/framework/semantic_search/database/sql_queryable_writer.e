@@ -21,6 +21,8 @@ inherit
 			clear_for_write
 		end
 
+	ITP_SHARED_CONSTANTS
+
 feature{NONE} -- Initialization
 
 	make_with_medium (a_medium: like medium)
@@ -79,6 +81,12 @@ feature{NONE} -- Implementation
 
 	next_object_equivalent_class_id: INTEGER
 			-- ID for the next object equivalent class
+
+	next_augxiliary_variable_id: INTEGER
+			-- ID for the next auxiliary variable
+			-- Auxiliary variables are used to represent integer argument as a variable.
+			-- For example: we use an auxiliary variable v_20 to represent the integer
+			-- argument 1 in the expression: l.i_th (1).
 
 	object_equivalent_classes (a_state: EPA_STATE): DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
 			-- Object equivalent classes from `a_state'
@@ -231,6 +239,13 @@ feature{NONE} -- Implementation
 			l_var_text: STRING
 			l_prefix_length: INTEGER
 			l_value_type: INTEGER
+			l_int_arg: INTEGER
+			l_aug_var: STRING
+			l_aug_var_id: INTEGER
+			l_matcher: like single_integer_argument_query_matcher
+			l_new_expr_text: STRING
+			l_aug_var_value: INTEGER
+			l_new_canonical_text: STRING
 		do
 			l_prefix_length := default_variable_prefix.count
 			if a_human_written then
@@ -277,11 +292,13 @@ feature{NONE} -- Implementation
 							if a_object_equivalent_classes.found then
 								l_equal_value_text := a_object_equivalent_classes.found_item
 							else
-								l_equal_value_text := a_reference_value_table.found_item
+--								l_equal_value_text := a_reference_value_table.found_item
+								l_equal_value_text := next_object_equivalent_class_id
 								next_object_equivalent_class_id := next_object_equivalent_class_id + 1
 							end
 						else
-							l_equal_value_text := a_reference_value_table.found_item
+--							l_equal_value_text := a_reference_value_table.found_item
+							l_equal_value_text := next_object_equivalent_class_id
 							next_object_equivalent_class_id := next_object_equivalent_class_id + 1
 						end
 					end
@@ -324,13 +341,124 @@ feature{NONE} -- Implementation
 				l_data.append (l_equal_value_text.out)
 				l_data.append_character (field_section_separator)
 				l_data.append (l_boost_value.out)
+				l_data.append_character (field_section_separator)
 				if l_canonical_text ~ once "$" then
-					l_data.append_character (field_section_separator)
 					l_data.append (a_queryable.variable_positions.item (a_expr).out)
 					append_string_field (variable_field_name, l_data)
 				else
+					l_data.append (once "0")
 					append_string_field (property_field_name, l_data)
 				end
+
+					-- Check if `a_expr' is of form "a.query (i)" where i is an integer.
+					-- If so, we introuce an auxiliary variable for that integer argument,
+					-- and introduce a new property using that auxiliary variable.
+				if l_canonical_text /~ once "$" then
+					l_matcher := single_integer_argument_query_matcher
+					l_matcher.match (a_expr.text)
+					if l_matcher.has_matched then
+							-- Calculate data about the augxiliary variable.
+						l_aug_var := variable_name_prefix + next_augxiliary_variable_id.out
+						l_aug_var_id := next_augxiliary_variable_id
+						next_augxiliary_variable_id := next_augxiliary_variable_id + 1
+						l_aug_var_value := l_matcher.captured_substring (1).to_integer
+						l_new_expr_text := a_expr.text.substring (1, l_matcher.captured_start_position (1) - 1) + l_aug_var + a_expr.text.substring (l_matcher.captured_end_position (1) + 1, a_expr.text.count)
+
+							-- Generate augxiliary variable.
+						create l_data.make (128)
+						l_data.append (l_aug_var)
+						l_data.append_character (field_section_separator)
+						l_data.append (once "$")
+						l_data.append_character (field_section_separator)
+						l_data.append (a_property_type)
+						l_data.append_character (field_section_separator)
+						l_data.append_integer (1)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_aug_var_id.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (once "INTEGER_32")
+						l_data.append_character (field_section_separator)
+						l_data.append_integer (2)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_aug_var_value.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_aug_var_value.out)
+						l_data.append_character (field_section_separator)
+						l_data.append_double (default_boost_value)
+						l_data.append_character (field_section_separator)
+						l_data.append_integer (-1)
+						append_string_field (variable_field_name, l_data)
+
+							-- Generate `a_expr' with the integer argument replaced with the auxiliary variable.
+						l_matcher.match (l_canonical_text)
+						l_new_canonical_text := l_canonical_text.substring (1, l_matcher.captured_start_position (1) - 1) + once "$" + l_canonical_text.substring (l_matcher.captured_end_position (1) + 1, l_canonical_text.count)
+
+						create l_data.make (128)
+						l_data.append (l_new_expr_text)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_new_canonical_text)
+						l_data.append_character (field_section_separator)
+						l_data.append (a_property_type)
+						l_data.append_character (field_section_separator)
+						l_data.append_integer (c + 1)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_operands + once ";" + l_aug_var_id.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_operand_types + once ";INTEGER_32")
+						l_data.append_character (field_section_separator)
+						l_data.append (l_value_type.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_value_text.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_equal_value_text.out)
+						l_data.append_character (field_section_separator)
+						l_data.append (l_boost_value.out)
+						l_data.append_character (field_section_separator)
+						l_data.append_integer (-1)
+						append_string_field (property_field_name, l_data)
+					end
+				end
+			end
+		end
+
+	single_integer_argument_query_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- Regular expresion matcher for integer argument queries.
+		once
+			create Result.make
+			Result.set_caseless (True)
+			Result.set_extended (True)
+			Result.compile (".*\(([-0-9]+)\)")
+		end
+
+	max_vairable_id_from_queryable (a_queryable: SEM_QUERYABLE): INTEGER
+			-- Maximal vairable id from `a_queryable'
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_var_name: STRING
+			l_var_prefix: STRING
+			l_var_prefix_count: INTEGER
+			l_id: INTEGER
+		do
+			l_var_prefix := variable_name_prefix
+			l_var_prefix_count := l_var_prefix.count
+			Result := 1
+			from
+				l_cursor := a_queryable.variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_var_name := l_cursor.item.text.twin
+				if l_var_name.starts_with (l_var_prefix) then
+					l_var_name.remove_head (l_var_prefix_count)
+					if l_var_name.is_integer then
+						l_id := l_var_name.to_integer
+						if l_id > Result then
+							Result := l_id
+						end
+					end
+				end
+				l_cursor.forth
 			end
 		end
 

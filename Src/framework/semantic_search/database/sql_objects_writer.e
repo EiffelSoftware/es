@@ -27,6 +27,7 @@ feature -- Basic operations
 	write (a_document: SEM_OBJECTS)
 			-- Write `a_document' into `output'.
 		do
+			next_augxiliary_variable_id := max_vairable_id_from_queryable (a_document)
 			queryable := a_document
 			append_queryable_type (queryable)
 			append_uuid
@@ -44,6 +45,7 @@ feature -- Basic operations
 
 			next_reference_equivalent_class_id := 1
 			next_object_equivalent_class_id := 1
+			next_augxiliary_variable_id := 1
 		end
 
 feature{NONE} -- Implementation

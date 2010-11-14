@@ -210,19 +210,24 @@ feature{NONE} -- Implementation
 			loop
 				l_line := l_file.last_string.twin
 				l_line.left_adjust
+				l_line.right_adjust
 				l_colon_index := l_line.index_of (':', 1)
 				l_field_name := l_line.substring (1, l_colon_index - 1)
 				l_field_value := l_line.substring (l_colon_index + 2, l_line.count)
-				create l_field.make_as_string (l_field_name, l_field_value, 0)
-				fields.extend (l_field)
-				fields_by_name.search (l_field_name)
-				if fields_by_name.found then
-					l_fields := fields_by_name.found_item
+				if (l_field_name ~ property_field_name or l_field_name ~ variable_field_name) and l_field_value.ends_with (once "-1") then
+					-- We ignore augxiliary variable and properties.
 				else
-					create l_fields.make
-					fields_by_name.force (l_fields, l_field_name)
+					create l_field.make_as_string (l_field_name, l_field_value, 0)
+					fields.extend (l_field)
+					fields_by_name.search (l_field_name)
+					if fields_by_name.found then
+						l_fields := fields_by_name.found_item
+					else
+						create l_fields.make
+						fields_by_name.force (l_fields, l_field_name)
+					end
+					l_fields.extend (l_field)
 				end
-				l_fields.extend (l_field)
 				l_file.read_line
 			end
 			l_file.close

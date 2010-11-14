@@ -27,6 +27,7 @@ feature -- Basic operations
 	write (a_document: SEM_FEATURE_CALL_TRANSITION)
 			-- Write `a_document' into `output'.
 		do
+			next_augxiliary_variable_id := max_vairable_id_from_queryable (a_document)
 			queryable := a_document
 			append_basic_info
 			append_contracts (a_document)
@@ -44,6 +45,7 @@ feature -- Basic operations
 
 			next_reference_equivalent_class_id := 1
 			next_object_equivalent_class_id := 1
+			next_augxiliary_variable_id := 1
 		end
 
 feature{NONE} -- Implementation

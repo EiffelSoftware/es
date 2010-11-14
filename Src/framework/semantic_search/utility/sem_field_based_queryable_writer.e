@@ -268,19 +268,23 @@ feature{NONE} -- Implementation
 		local
 			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
 			l_data: STRING
+			l_list: SORTED_TWO_WAY_LIST [INTEGER]
+
 		do
 			create l_data.make (128)
+			create l_list.make
+			a_transtion.hit_breakpoints.do_all (agent l_list.extend)
+
 			from
-				l_cursor := a_transtion.hit_breakpoints.new_cursor
-				l_cursor.start
+				l_list.start
 			until
-				l_cursor.after
+				l_list.after
 			loop
 				if not l_data.is_empty then
 					l_data.append_character (',')
 				end
-				l_data.append_integer (l_cursor.item)
-				l_cursor.forth
+				l_data.append_integer (l_list.item)
+				l_list.forth
 			end
 			append_string_field (hit_break_points_field, l_data)
 		end
