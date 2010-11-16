@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Interpreter for line based Eiffel like interpreter language.
 		Depends on a generated Erl-G reflection library.
@@ -82,6 +82,9 @@ feature {NONE} -- Initialization
 				-- Create object pool
 			create store.make
 			store.set_is_typed_search_enabled (is_test_case_serialization_enabled)
+
+				-- Create agent creation information book-keeper.
+			create agent_creation_info.make (200)
 
 				-- Create storage for object state retrieval.
 			initialize_query_value_holders
@@ -1498,6 +1501,11 @@ feature -- Test case serialization
 
 	is_duplicated_test_case_serialized: BOOLEAN
 			-- Should duplicated test case be serialized?
+
+	agent_creation_info: HASH_TABLE [ITP_AGENT_CREATION_INFO, INTEGER]
+			-- Information about already created agent objects.
+			-- Key is variable ID, value is the agent creation information describing
+			-- how that agent is created.
 
 invariant
 	log_file_open_write: log_file.is_open_write
