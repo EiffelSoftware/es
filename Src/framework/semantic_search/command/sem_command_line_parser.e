@@ -142,6 +142,8 @@ feature -- Basic operations
 
 			if l_timestamp.was_found then
 				config.set_timestamp (l_timestamp.parameter)
+			else
+				config.set_timestamp ("")
 			end
 		end
 
