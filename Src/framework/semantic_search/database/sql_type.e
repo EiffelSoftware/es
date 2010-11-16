@@ -38,7 +38,7 @@ feature{NONE} -- Initialization
 			type := a_type
 			id := a_id
 			context_class := a_context_class
-			name := a_type.name
+			name := output_type_name (a_type.name)
 			hash_code := name.hash_code
 		end
 

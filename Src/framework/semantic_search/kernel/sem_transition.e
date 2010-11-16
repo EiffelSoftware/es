@@ -41,7 +41,6 @@ feature -- Access
 	postconditions: EPA_STATE assign set_postconditions
 			-- Postcondition of Current transition
 			-- Assertions may mention variables other than feature operands (including result).
-			-- Assertions may mention variables other than feature operands (including result).
 			-- For a list of assertions only mentioning feature operands, see `interface_postconditions'.
 			-- Relationship: `postconditions' is a superset of `interface_postconditions',
 			-- `interface_postconditoin' is a superset of `written_postcondition'.
