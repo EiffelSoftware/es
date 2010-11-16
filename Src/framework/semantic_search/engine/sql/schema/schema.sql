@@ -367,6 +367,7 @@ CREATE TABLE  `semantic_search`.`PropertyBindings9` (
   `boost` double unsigned NOT NULL,
   `prop_kind` tinyint(3) unsigned NOT NULL,
   `value_type_kind` tinyint(3) unsigned NOT NULL,
+  `position` int(11) NOT NULL,
   `vars` varchar(256) NOT NULL,
   KEY `sb9_index` (`qry_id`, `prop_id`) USING BTREE,
   KEY `sb9_qry_id_fk` (`qry_id`),
