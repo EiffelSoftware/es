@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Represents an expression in a contract"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -35,6 +35,9 @@ feature {NONE} -- Creation
 
 			source_class := a_source_feature.written_class
 			source_feature := source_class.feature_of_rout_id_set (a_source_feature.rout_id_set)
+			if source_feature = Void then
+				source_feature := source_class.feature_of_body_index (a_source_feature.body_index)
+			end
 		end
 
 	make_invariant (a_invariant: INVARIANT_AS; a_source_class: like source_class)

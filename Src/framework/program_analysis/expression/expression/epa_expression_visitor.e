@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Visitor for {EPA_EXPRESSION}"
 	author: ""
 	date: "$Date$"
@@ -15,6 +15,11 @@ feature -- Process
 		end
 
 	process_universal_quantified_expression (a_expr: EPA_UNIVERSAL_QUANTIFIED_EXPRESSION)
+			-- Process `a_expr'.
+		deferred
+		end
+
+	process_existential_quantified_expression (a_expr: EPA_EXISTENTIAL_QUANTIFIED_EXPRESSION)
 			-- Process `a_expr'.
 		deferred
 		end

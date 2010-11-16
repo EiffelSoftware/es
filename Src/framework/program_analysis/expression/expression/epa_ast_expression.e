@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "State item based on an expression AST node"
 	author: ""
 	date: "$Date$"
@@ -35,7 +35,8 @@ create
 	make_with_text,
 	make_with_text_and_type,
 	make_with_type,
-	make_with_feature
+	make_with_feature,
+	make_with_standard_text_and_type
 
 feature{NONE} -- Initialization
 
@@ -56,6 +57,25 @@ feature{NONE} -- Initialization
 
 	make_with_text_and_type (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_type: like type)
 			-- Initialize Current.
+		do
+			set_class (a_class)
+			set_feature (a_feature)
+			set_written_class (a_written_class)
+			parse_text (a_text)
+			set_type (a_type)
+			if not has_syntax_error then
+				set_text (a_text)
+			else
+				check should_not_happen: False end
+			end
+		end
+
+	make_with_standard_text_and_type (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class; a_type: like type)
+			-- Initialize Current.
+			-- `a_text' is standard, meaning that it is already pretty-printed.
+			-- Standard text are used to compare expression equatity, so it is very important to make sure
+			-- `a_text' is standard.
+			-- This creation procedure is fast because it does not do type-checking and AST-to-text generation.
 		do
 			set_class (a_class)
 			set_feature (a_feature)

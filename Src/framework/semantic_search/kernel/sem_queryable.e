@@ -582,6 +582,7 @@ feature{NONE} -- Implementation
 				l_type := a_type_checking_context.expression_type (l_new_expr)
 				if l_type /= Void then
 					create l_expr.make_with_type (a_type_checking_context.class_, a_type_checking_context.feature_, l_new_expr, a_type_checking_context.class_, l_type)
+					l_expr.set_boost (a_equation.expression.boost)
 					if attached {EPA_AST_EXPRESSION_VALUE} a_equation.value as l_ast_value then
 						fixme ("Use a visitor to process a_equation.value is safer. 29.4.2010 Jasonw")
 						if attached {EXPR_AS} ast_in_other_context (l_ast_value.item, a_source_context, a_target_context) as l_new_value_ast then
@@ -652,6 +653,14 @@ feature{NONE} -- Implementation
 		do
 			a_target_state.wipe_out
 			adapt_state (a_source_state, a_target_state)
+		end
+
+	set_state_unsafe (a_source_state: EPA_STATE; a_target_state: EPA_STATE)
+			-- Directly set the content of `a_target_state' with `a_source_state'.
+			-- No context rewriting is done.
+		do
+			a_target_state.wipe_out
+			a_source_state.do_all (agent a_target_state.force_last)
 		end
 
 	variable_position_name_map: HASH_TABLE [STRING, INTEGER]

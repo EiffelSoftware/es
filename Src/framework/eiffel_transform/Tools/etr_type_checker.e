@@ -18,7 +18,9 @@ inherit
 			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition, set_is_inherited
 		redefine
 			set_routine_ids,
-			match_list_of_class
+			match_list_of_class,
+			process_there_exists_as,
+			process_for_all_as
 		end
 
 	SHARED_AST_CONTEXT
@@ -650,6 +652,30 @@ feature {NONE} -- Type checking
 	match_list_of_class (a_class_id: INTEGER): LEAF_AS_LIST
 			-- Match list object for class id `a_class_id'
 		do
+		end
+
+feature -- Quantification
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+				-- We assume that the existential quantification is type correct
+				-- and always set `last_type' to boolean_type.
+				-- The reason is the we cannot type check the quantification variables
+				-- inside the expression. (We can, but it needs to setup extra local variables)
+				-- 15.11.2010 Jasonw			
+			last_type := boolean_type
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
+				-- We assume that the existential quantification is type correct
+				-- and always set `last_type' to boolean_type.
+				-- The reason is the we cannot type check the quantification variables
+				-- inside the expression. (We can, but it needs to setup extra local variables)
+				-- 15.11.2010 Jasonw			
+			last_type := boolean_type
 		end
 
 note

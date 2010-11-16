@@ -1,4 +1,4 @@
-note
+﻿note
 	description	: "Shared text format items."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -225,6 +225,12 @@ feature -- Keywords
 	ti_xor_keyword: STRING = "xor"
 			-- "xor" keyword
 
+	ti_there_exists_keyword: STRING = "there__exists"
+			-- "there__exists" keyword
+
+	ti_for_all_keyword: STRING = "for__all"
+			-- "for__all" keyword
+
 feature -- Symbol names
 
 	ti_Assign: STRING = ":="
@@ -380,7 +386,7 @@ feature -- Standard classes
 			-- `BIT' class.
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

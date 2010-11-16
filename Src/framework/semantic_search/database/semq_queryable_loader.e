@@ -97,9 +97,13 @@ feature{NONE} -- Implementation
 			l_integer_value: EPA_INTEGER_VALUE
 			l_reference_value: EPA_REFERENCE_VALUE
 			l_any_type: TYPE_A
+			l_integer_type: TYPE_A
+			l_boolean_type: TYPE_A
 		do
 			create Result.make (100, a_class, a_feature)
 			l_any_type := workbench.system.any_type
+			l_integer_type := integer_type
+			l_boolean_type := boolean_type
 			across fields as l_fields loop
 				l_field := l_fields.item
 				if a_filter.item ([l_field]) then
@@ -107,22 +111,24 @@ feature{NONE} -- Implementation
 					l_value_type_kind := l_parts.i_th (7).to_integer
 					l_value := l_parts.i_th (8)
 					l_equal_value := l_parts.i_th (9)
-					create l_expr.make_with_text (a_class, a_feature, l_parts.first, a_class)
-					l_expr.set_boost (l_parts.last.to_double)
 					if l_value_type_kind = 1 then
 							-- Boolean type.
-						create l_boolean_value.make (l_value ~ once "1")
+						create l_boolean_value.make (l_value.to_integer = 1)
+						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_boolean_type)
 						create l_equation.make (l_expr, l_boolean_value)
 					elseif l_value_type_kind = 2 then
 							-- Integer type.
 						create l_integer_value.make (l_value.to_integer)
+						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_integer_type)
 						create l_equation.make (l_expr, l_integer_value)
 					else
 							-- Reference type.						
-						create l_reference_value.make (once "0x" + l_value, l_any_Type)
+						create l_reference_value.make (once "0x" + l_value, l_any_type)
+						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_any_type)
 						l_reference_value.set_object_equivalent_class_id (l_equal_value.to_integer)
 						create l_equation.make (l_expr, l_reference_value)
 					end
+					l_expr.set_boost (l_parts.i_th (10).to_double)
 					Result.force_last (l_equation)
 				end
 			end
@@ -266,8 +272,8 @@ feature{NONE} -- Implementation
 			l_tran.set_uuid (uuid)
 			l_tran.set_is_passing (fields_by_name.item (test_case_status_field).first.value_text.to_boolean)
 			l_tran.hit_breakpoints.append (hit_breakpoints)
-			l_tran.set_preconditions (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property))
-			l_tran.set_postconditions (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property))
+			l_tran.set_preconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property))
+			l_tran.set_postconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property))
 			load_changes (l_tran)
 
 				-- Setup meta data.
@@ -329,7 +335,11 @@ feature{NONE} -- Implementation
 			l_value: STRING
 			l_changes: DS_HASH_TABLE [LIST [EPA_EXPRESSION_CHANGE], EPA_EXPRESSION]
 			l_change_list: LIST [EPA_EXPRESSION_CHANGE]
+			l_boolean_type: TYPE_A
+			l_integer_type: TYPE_A
 		do
+			l_boolean_type := boolean_type
+			l_integer_type := integer_type
 			l_class := a_transition.class_
 			l_feature := a_transition.feature_
 			l_changes := a_transition.changes
@@ -338,22 +348,23 @@ feature{NONE} -- Implementation
 				if is_change_property (l_field) then
 					l_parts := l_field.value.text.split ('%T')
 					l_is_relative := l_parts.i_th (3) ~ relative_change_property_prefix
-					create l_expr.make_with_text (l_class, l_feature, l_parts.first, l_class)
 					create l_values.make (1)
 					l_value_type_kind := l_parts.i_th (7).to_integer
 					l_value := l_parts.i_th (8)
 					if l_value_type_kind = 1 then
 							-- Boolean type.
-						create l_value_expr.make_with_text (l_class, l_feature, (l_value = once "1").out, l_class)
+						create l_value_expr.make_with_standard_text_and_type (l_class, l_feature, (l_value.to_integer = 1).out, l_class, l_boolean_type)
+						create l_expr.make_with_standard_text_and_type (l_class, l_feature, l_parts.first, l_class, l_boolean_type)
 					elseif l_value_type_kind = 2 then
 							-- Integer type.						
-						create l_value_expr.make_with_text (l_class, l_feature, l_value, l_class)
+						create l_value_expr.make_with_standard_text_and_type (l_class, l_feature, l_value, l_class, l_integer_type)
+						create l_expr.make_with_standard_text_and_type (l_class, l_feature, l_parts.first, l_class, l_integer_type)
 					else
 						check should_not_be_here: False end
 					end
 					l_values.force_last (l_value_expr)
 					create l_change.make (l_expr, l_values, l_is_relative)
-					l_change.set_boost (l_parts.last.to_double)
+					l_change.set_boost (l_parts.i_th (10).to_double)
 
 						-- Insert `l_change' into `a_transition'.
 					l_changes.search (l_expr)

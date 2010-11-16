@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Expression printer to output inferred contracts in a more readable format"
 	author: ""
 	date: "$Date$"
@@ -14,6 +14,8 @@ inherit
 		redefine
 			process_nested_as
 		end
+
+	EPA_UTILITY
 
 create
 	make
@@ -51,23 +53,16 @@ feature{NONE} -- Process
 			process_quantified_expression (a_expr)
 		end
 
+	process_existential_quantified_expression (a_expr: EPA_EXISTENTIAL_QUANTIFIED_EXPRESSION)
+			-- Process `a_expr'.
+		do
+			process_quantified_expression (a_expr)
+		end
+
 	process_quantified_expression (a_expr: EPA_QUANTIFIED_EXPRESSION)
 			-- Process `a_expr'.
-		local
-			i: INTEGER
 		do
-			internal_output.append_string (a_expr.quantifier_name)
-			internal_output.append_string (ti_space)
-			i := 1
-			across a_expr.variables	as l_variables loop
-				internal_output.append_string (l_variables.key)
-				if i < a_expr.variables.count then
-					internal_output.append_string (once ", ")
-				end
-				i := i + 1
-			end
-			internal_output.append_string (once " :: ")
-			a_expr.predicate.ast.process (Current)
+			internal_output.append_string (text_from_ast (a_expr.ast))
 		end
 
 feature{NONE} -- Process

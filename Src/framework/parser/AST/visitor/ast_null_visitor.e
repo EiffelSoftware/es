@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Class that parses an Eiffel class an does nothing"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -696,6 +696,18 @@ feature -- Implementation
 			-- Process `l_as'.
 		do
 			process_eiffel_list (l_as)
+		end
+
+feature -- Quantification
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
 		end
 
 note

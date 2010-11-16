@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Visitor to traverse an AST."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -1135,6 +1135,18 @@ feature {AST_EIFFEL} -- Clickable visitor
 			-- Process `l_as'.
 		require
 			non_void_as: l_as /= Void
+		deferred
+		end
+
+feature -- Quantification
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		deferred
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
 		deferred
 		end
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Objects that represent quantified expressions"
 	author: ""
 	date: "$Date$"
@@ -13,7 +13,40 @@ inherit
 			text_in_context
 		redefine
 			is_quantified,
-			text
+			text,
+			ast
+		end
+
+feature{NONE} -- Initialization
+
+	make (a_variable: STRING; a_variable_type: TYPE_A; a_predicate: like predicate; a_class: like class_; a_feature: like feature_; a_written_class: like written_class)
+			-- Initialize Current.
+		do
+			create variables.make (1)
+			variables.compare_objects
+			variables.put (a_variable_type, a_variable.twin)
+			set_class (a_class)
+			set_feature (a_feature)
+			set_written_class (a_written_class)
+			predicate := a_predicate
+			text := text_with_predicate (predicate.text)
+			type := boolean_type
+			if ast = Void then
+				build_ast (a_variable, a_predicate.ast)
+			end
+		end
+
+feature{NONE} -- Initialization
+
+	make_from_ast (a_for_all_as: QUANTIFIED_AS; a_variable_type: TYPE_A; a_class: like class_; a_feature: like feature_; a_written_class: like written_class)
+			-- Initialize Current from `a_for_all_as'. `a_variable_Type' is the type for the single variable inside `a_for_all_as'.
+			-- For the moment, we only support single varaible in `a_for_all_as'.
+		local
+			l_predicate: EPA_AST_EXPRESSION
+		do
+			ast := a_for_all_as
+			create l_predicate.make_with_text_and_type (a_class, a_feature, text_from_ast (a_for_all_as.expression), a_written_class, boolean_type)
+			make (a_for_all_as.variables.first.name, a_variable_type, l_predicate, a_class, a_feature, a_written_class)
 		end
 
 feature -- Access
@@ -25,6 +58,12 @@ feature -- Access
 
 	predicate: EPA_EXPRESSION
 			-- Predicate of current quantification
+
+	type: TYPE_A
+			-- Type of Current expression
+
+	ast: QUANTIFIED_AS
+			-- AST of current expression
 
 	text: STRING
 			-- Expression text of current item
@@ -63,7 +102,7 @@ feature -- Access
 				l_variables.forth
 			end
 			l_variables.go_to (l_cursor)
-			Result.append (once " :: ")
+			Result.append (once " : ")
 			Result.append (a_predicate)
 		end
 
@@ -102,6 +141,29 @@ feature -- Access
 	quantifier_name: STRING
 			-- Name of the quantifier
 		deferred
+		end
+
+feature{NONE} -- Implementation
+
+	build_ast (a_variable_name: STRING; a_expression: EXPR_AS)
+			-- Build `ast' from `a_variable_name' and `a_expression'
+		deferred
+		end
+
+	build_ast_internal (a_variable_name: STRING; a_expression: EXPR_AS; a_universal: BOOLEAN)
+			-- Build `ast' from `a_variable_name' and `a_expression'
+		local
+			l_var_id: ID_AS
+			l_var_ids: EIFFEL_LIST [ID_AS]
+		do
+			create l_var_id.initialize (a_variable_name)
+			create l_var_ids.make (1)
+			l_var_ids.extend (l_var_id)
+			if a_universal then
+				create {FOR_ALL_AS} ast.initialize (l_var_ids, a_expression)
+			else
+				create {THERE_EXISTS_AS} ast.initialize (l_var_ids, a_expression)
+			end
 		end
 
 invariant

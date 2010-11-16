@@ -188,6 +188,20 @@ feature -- Status setting
 			set_state (a_post, postconditions)
 		end
 
+	set_preconditions_unsafe (a_pre: like preconditions)
+			-- Set `preconditions' with `a_pre'.
+			-- No context rewriting is done.
+		do
+			set_state_unsafe (a_pre, preconditions)
+		end
+
+	set_postconditions_unsafe (a_post: like postconditions)
+			-- Set `postconditions' with `a_post'.
+			-- No context rewriting is done.
+		do
+			set_state_unsafe (a_post, postconditions)
+		end
+
 	set_name (a_name: like name)
 			-- Set `name' with `a_name'.
 			-- Make a copy of `a_name'.

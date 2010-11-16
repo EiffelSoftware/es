@@ -711,9 +711,15 @@ feature{NONE} -- Actions
 
 	on_right_before_test_hit (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
 			-- Agent to be called when the feature `right_before_test' is hit.
+		local
+			l_feature: FEATURE_I
 		do
 			if config.is_breakpoint_monitoring_enabled then
-				create last_feature_under_test_breakpoint_manager.make (last_test_case_info.feature_under_test.written_class, last_test_case_info.feature_under_test.written_class.feature_of_rout_id_set (feature_.rout_id_set))
+				l_feature := last_test_case_info.feature_under_test.written_class.feature_of_rout_id_set (feature_.rout_id_set)
+				if l_feature = Void then
+					l_feature := last_test_case_info.feature_under_test.written_class.feature_of_body_index (last_test_case_info.feature_under_test.body_index)
+				end
+				create last_feature_under_test_breakpoint_manager.make (last_test_case_info.feature_under_test.written_class, l_feature)
 				last_feature_under_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_breakpoint_in_feature_under_test_hit)
 				last_feature_under_test_breakpoint_manager.toggle_breakpoints (True)
 			end

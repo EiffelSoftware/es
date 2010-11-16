@@ -174,6 +174,13 @@ feature -- Setting
 			set_state (a_properties, properties)
 		end
 
+	set_properties_unsafe (a_properties: like properties)
+			-- Set `properties' with `a_properties'.
+			-- No context rewriting is done.
+		do
+			set_state_unsafe (a_properties, properties)
+		end
+
 	set_serialization_internal (a_serialization: like serialization_internal)
 			-- Set `serialization_internal' with `a_serialization'.
 		do

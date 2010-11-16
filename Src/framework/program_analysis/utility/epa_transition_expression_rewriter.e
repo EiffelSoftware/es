@@ -247,6 +247,12 @@ feature {NONE} -- Process/expression
 			process_quantified_expression (a_expr)
 		end
 
+	process_existential_quantified_expression (a_expr: EPA_EXISTENTIAL_QUANTIFIED_EXPRESSION)
+			-- Process `a_expr'.
+		do
+			process_quantified_expression (a_expr)
+		end
+
 	process_quantified_expression (a_expr: EPA_QUANTIFIED_EXPRESSION)
 			-- Process `a_expr'.
 		local

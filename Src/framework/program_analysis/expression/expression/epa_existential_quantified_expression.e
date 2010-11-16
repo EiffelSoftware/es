@@ -1,18 +1,18 @@
 ﻿note
-	description: "Summary description for {EPA_UNIVERSAL_QUANTIFIED_EXPRESSION}."
+	description: "Class for existential quantified expressions"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EPA_UNIVERSAL_QUANTIFIED_EXPRESSION
+	EPA_EXISTENTIAL_QUANTIFIED_EXPRESSION
 
 inherit
 	EPA_QUANTIFIED_EXPRESSION
 		redefine
 			is_valid,
 			is_ast_available,
-			is_universal_quantified,
+			is_existential_quantified,
 			quantifier_name,
 			type
 		end
@@ -48,8 +48,8 @@ feature -- Access
 
 feature -- Status report
 
-	is_universal_quantified: BOOLEAN = True
-			-- Is Current expression universally quantified?
+	is_existential_quantified: BOOLEAN = True
+			-- Is Current expression existentially quantified?
 
 
 	is_ast_available: BOOLEAN = True
@@ -65,7 +65,7 @@ feature -- Visitor/Process
 	process (a_visitor: EPA_EXPRESSION_VISITOR)
 			-- Process Current using `a_visitor'.
 		do
-			a_visitor.process_universal_quantified_expression (Current)
+			a_visitor.process_existential_quantified_expression (Current)
 		end
 
 feature{NONE} -- Implementation
@@ -73,7 +73,7 @@ feature{NONE} -- Implementation
 	quantifier_name: STRING
 			-- <Precursor>
 		do
-			Result := ti_for_all_keyword
+			Result := ti_there_exists_keyword
 		end
 
 feature{NONE} -- Implementation
@@ -81,7 +81,7 @@ feature{NONE} -- Implementation
 	build_ast (a_variable_name: STRING; a_expression: EXPR_AS)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		do
-			build_ast_internal (a_variable_name, a_expression, True)
+			build_ast_internal (a_variable_name, a_expression, False)
 		end
 
 end

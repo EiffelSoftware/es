@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Process ast to decorated output text."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -4128,7 +4128,24 @@ feature {NONE} -- Implementation
 --			safe_process (l_as.handler)
 --		end
 
+feature -- Quantification
 
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+				-- Standard Eiffel does not support universal quantification,
+				-- so roundtrip parser should not reach this point. 15.11.2010 Jasonw
+			check should_not_be_here: False end
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
+				-- Standard Eiffel does not support universal quantification,
+				-- so roundtrip parser should not reach this point. 15.11.2010 Jasonw
+			check should_not_be_here: False end
+		end
+		
 feature -- Expression visitor
 
 	expr_type (a_expr: EXPR_AS): TYPE_A

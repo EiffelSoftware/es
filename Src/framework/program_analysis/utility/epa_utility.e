@@ -84,8 +84,64 @@ feature -- AST
 			-- AST node from expression `a_text'
 			-- `a_text' must be as an expression.
 		do
-			expression_parser.parse_from_utf8_string (once "check " + a_text, Void)
-			Result := expression_parser.expression_node
+			if a_text.starts_with (ti_for_all_keyword) then
+				Result := parsed_quantification (a_text)
+			elseif a_text.starts_with (ti_there_exists_keyword) then
+				Result := parsed_quantification (a_text)
+			else
+				expression_parser.parse_from_utf8_string (once "check " + a_text, Void)
+				Result := expression_parser.expression_node
+			end
+		end
+
+	parsed_quantification (a_string: STRING): detachable QUANTIFIED_AS
+			-- Parsed quantification from `a_string'
+			-- Note: This is a very simple implmenetation.
+			-- We assume that the syntax of the quantification is correct.
+		local
+			l_is_existential: BOOLEAN
+			l_ok: BOOLEAN
+			l_string: STRING
+			l_index: INTEGER
+			l_variable: STRING
+			l_var_ids: EIFFEL_LIST [ID_AS]
+			l_var_id: ID_AS
+			l_vars: LIST [STRING]
+			l_expr: EXPR_AS
+		do
+			l_string := a_string.twin
+			if l_string.starts_with (ti_there_exists_keyword + " ") then
+				l_string.remove_head (ti_there_exists_keyword.count + 1)
+				l_is_existential := True
+				l_ok := True
+			elseif l_string.starts_with (ti_for_all_keyword + " ") then
+				l_string.remove_head (ti_for_all_keyword.count + 1)
+				l_is_existential := False
+				l_ok := True
+			end
+			if l_ok then
+				l_index := l_string.index_of (':', 1)
+
+					-- Parse variables
+				l_vars := l_string.substring (1, l_index - 1).split (',')
+				create l_var_ids.make (l_vars.count)
+				across l_vars as l_variables loop
+					l_variable := l_variables.item
+					l_variable.left_adjust
+					l_variable.right_adjust
+					create l_var_id.initialize (l_variable)
+					l_var_ids.extend (l_var_id)
+				end
+
+					-- Parse quantified predicate.
+				l_expr := ast_from_expression_text (l_string.substring (l_index + 1, l_string.count))
+				if l_is_existential then
+					create {THERE_EXISTS_AS} Result.initialize (l_var_ids, l_expr)
+				else
+					create {FOR_ALL_AS} Result.initialize (l_var_ids, l_expr)
+				end
+
+			end
 		end
 
 	ast_without_old_expression (a_ast: EXPR_AS): EXPR_AS

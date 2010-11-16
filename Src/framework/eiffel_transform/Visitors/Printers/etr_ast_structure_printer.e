@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Prints an ast while depending purely on structure information (no matchlist needed)."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -118,7 +118,9 @@ inherit
 			process_reverse_as,
 			process_formal_argu_dec_list_as,
 			process_loop_expr_as,
-			process_iteration_as
+			process_iteration_as,
+			process_there_exists_as,
+			process_for_all_as
 		end
 
 	SHARED_TEXT_ITEMS
@@ -1580,6 +1582,33 @@ feature {AST_EIFFEL} -- Roundtrip: Agents
 				end
 			end
 		end
+
+feature -- Quantifications
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+			output.append_string (ti_there_exists_keyword)
+			output.append_string (ti_space)
+			process_child_list(a_as.variables, ti_comma + ti_Space, a_as, 1)
+			output.append_string (ti_space)
+			output.append_string (ti_comma)
+			output.append_string (ti_space)
+			process_child (a_as.expression, a_as, 1)
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
+			output.append_string (ti_for_all_keyword)
+			output.append_string (ti_space)
+			process_child_list(a_as.variables, ti_comma + ti_Space, a_as, 1)
+			output.append_string (ti_space)
+			output.append_string (ti_comma)
+			output.append_string (ti_space)
+			process_child (a_as.expression, a_as, 1)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Perform type checking as well as generation of BYTE_NODE tree."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -7792,6 +7792,20 @@ feature {NONE} -- Implementation
 			-- Process `l_as'.
 		do
 			process_eiffel_list (l_as)
+		end
+
+feature -- Quantification
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+			-- Empty
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
+			-- Empty
 		end
 
 feature {NONE} -- Predefined types

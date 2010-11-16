@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					Roundtrip visitor to simply iterate an AST tree and do nothing
 					Usage:
@@ -1351,6 +1351,24 @@ feature
 			safe_process (l_as.lsqure_symbol (match_list))
 			process_eiffel_list (l_as)
 			safe_process (l_as.rsqure_symbol (match_list))
+		end
+
+feature -- Quantification
+
+	process_there_exists_as (a_as: THERE_EXISTS_AS)
+			-- Process `a_as'.
+		do
+				-- Standard Eiffel does not support universal quantification,
+				-- so roundtrip parser should not reach this point. 15.11.2010 Jasonw
+			check should_not_be_here: False end
+		end
+
+	process_for_all_as (a_as: FOR_ALL_AS)
+			-- Process `a_as'.
+		do
+				-- Standard Eiffel does not support universal quantification,
+				-- so roundtrip parser should not reach this point. 15.11.2010 Jasonw
+			check should_not_be_here: False end
 		end
 
 feature
