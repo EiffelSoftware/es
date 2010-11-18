@@ -100,16 +100,33 @@ feature {NONE} -- Initialization
 
 			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
 
-        	create l_toggle_button.make
-        	l_toggle_button.set_pixel_buffer (stock_pixmaps.feature_attribute_icon_buffer)
-        	l_toggle_button.set_pixmap (stock_pixmaps.feature_attribute_icon)
-        	l_toggle_button.set_tooltip ("Show attributes")
---        	register_action (l_toggle_button.select_actions, agent on_show_verification_status)
-        	Result.put_last (l_toggle_button)
---        	show_verification_status_button := l_toggle_button
+
+			create filter_button.make
+			filter_button.set_pixmap (stock_pixmaps.metric_filter_icon)
+			filter_button.set_pixel_buffer (stock_pixmaps.metric_filter_icon_buffer)
+			filter_button.set_tooltip (interface_names.f_filter_warnings)
+--			filter_button.set_popup_widget (filter_widget)
+			Result.put_last (filter_button)
+
+			create text_filter
+			text_filter.set_minimum_width_in_characters (7)
+			text_filter.key_release_actions.force_extend (agent do overview_panel.set_class_filter (text_filter.text) end)
+			Result.put_last (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (text_filter))
+
+				-- clear button
+			create l_button.make
+			l_button.set_pixmap (stock_mini_pixmaps.general_delete_icon)
+			l_button.pointer_button_press_actions.force_extend (
+				agent
+					do
+						text_filter.set_text ("")
+						overview_panel.set_class_filter ("")
+					end
+				)
+			Result.put_last (l_button)
 
 			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
-
+			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
         end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
@@ -151,6 +168,13 @@ feature -- Access
 
 	stop_control_button: SD_TOOL_BAR_BUTTON
 			-- Button to stop control.
+
+	filter_button: SD_TOOL_BAR_POPUP_BUTTON
+			-- Button to open filter settings.
+
+	text_filter: EV_TEXT_FIELD
+			-- Text field to enter filter
+
 
 feature -- Status report
 

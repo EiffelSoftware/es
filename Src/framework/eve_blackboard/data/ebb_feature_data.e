@@ -41,31 +41,62 @@ feature -- Access
 		do
 			l_static := static_score
 			l_dynamic := dynamic_score
-			if l_static < 0.0 and l_dynamic < 0.0 then
-				Result := -1.0
-			elseif l_static < 0.0 then
-				Result := l_dynamic * 0.5
-			elseif l_dynamic < 0.0 then
-				Result := l_static * 0.5
+			if l_static = {EBB_VERIFICATION_SCORE}.not_verified and l_dynamic = {EBB_VERIFICATION_SCORE}.not_verified then
+				Result := {EBB_VERIFICATION_SCORE}.not_verified
+			elseif l_dynamic = {EBB_VERIFICATION_SCORE}.not_verified then
+				if l_static = {EBB_VERIFICATION_SCORE}.failed then
+					Result := {EBB_VERIFICATION_SCORE}.failed
+				else
+					Result := l_static * 0.5
+				end
+			elseif l_static = {EBB_VERIFICATION_SCORE}.not_verified then
+				if l_dynamic = {EBB_VERIFICATION_SCORE}.failed then
+					Result := {EBB_VERIFICATION_SCORE}.failed
+				else
+					Result := l_dynamic * 0.5
+				end
 			else
-				Result := (l_static + l_dynamic) * 0.5
+				if l_dynamic = {EBB_VERIFICATION_SCORE}.failed then
+					Result := {EBB_VERIFICATION_SCORE}.failed
+				elseif l_static = {EBB_VERIFICATION_SCORE}.failed then
+					Result := l_dynamic * 0.5
+				else
+					Result := (l_dynamic + l_static) * 0.5
+				end
 			end
+
+
+--			if l_static < 0.0 and l_dynamic < 0.0 then
+--				Result := -1.0
+--			elseif l_static < 0.0 then
+--				Result := l_dynamic * 0.5
+--			elseif l_dynamic < 0.0 then
+--				Result := l_static * 0.5
+--			else
+--				if l_static = 0.0 or l_dynamic = 0.0 then
+--					Result := 0.0
+--				else
+--					Result := (l_static + l_dynamic) * 0.5
+--				end
+--			end
 		end
 
 	static_score: REAL
 			-- Score of static verification tools.
 		local
 			l_tool: EBB_TOOL
+			l_done: BOOLEAN
 		do
-			Result := -1.0
+			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				tool_results.start
 			until
-				tool_results.after or Result >= 0.0
+				tool_results.after or l_done
 			loop
 				l_tool := tool_results.item.tool
 				if l_tool.category = {EBB_TOOL_CATEGORY}.static_verification then
 					Result := tool_results.item.score
+					l_done := True
 				end
 				tool_results.forth
 			end
@@ -75,16 +106,18 @@ feature -- Access
 			-- Score of dynamic verification tools.
 		local
 			l_tool: EBB_TOOL
+			l_done: BOOLEAN
 		do
-			Result := -1.0
+			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				tool_results.start
 			until
-				tool_results.after or Result >= 0.0
+				tool_results.after or l_done
 			loop
 				l_tool := tool_results.item.tool_configuration.tool
 				if l_tool.category = {EBB_TOOL_CATEGORY}.dynamic_verification then
 					Result := tool_results.item.score
+					l_done := True
 				end
 				tool_results.forth
 			end

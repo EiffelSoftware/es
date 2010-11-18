@@ -57,51 +57,6 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			has_next_step := False
 		end
 
---			from
---				a_result.verified_procedures.start
---			until
---				a_result.verified_procedures.after
---			loop
---				procedure_name_regexp.match (a_result.verified_procedures.item.procedure_name)
---				l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
-
---				create l_result.make (l_feature)
---				l_result.set_time (create {DATE_TIME}.make_now)
---				l_result.set_tool (blackboard.tools.first)
---				l_result.is_postcondition_proven.set_proven_to_hold
---				l_result.is_postcondition_proven.set_update
---				l_result.is_class_invariant_proven.set_proven_to_hold
---				l_result.is_class_invariant_proven.set_update
-
---				l_result.set_message ("Verified")
---				blackboard.add_verification_result (l_result)
-
---				a_result.verified_procedures.forth
---			end
---			from
---				a_result.verification_errors.start
---			until
---				a_result.verification_errors.after
---			loop
---				procedure_name_regexp.match (a_result.verification_errors.item.procedure_name)
---				l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
-
-
---				create l_result.make (l_feature)
---				l_result.set_time (create {DATE_TIME}.make_now)
---				l_result.set_tool (blackboard.tools.first)
---				l_result.is_postcondition_proven.set_proven_to_fail
---				l_result.is_postcondition_proven.set_update
---				l_result.is_class_invariant_proven.set_proven_to_fail
---				l_result.is_class_invariant_proven.set_update
-
---				blackboard.add_verification_result (l_result)
-
---				a_result.verification_errors.forth
---			end
---		end
-
-
 	cancel
 			-- <Precursor>
 		do
@@ -118,7 +73,7 @@ feature {NONE} -- Implementation
 			procedure_name_regexp.match (a_procedure_result.procedure_name)
 			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
 
-			create l_feature_result.make (l_feature, tool_instance.configuration, 1.0)
+			create l_feature_result.make (l_feature, tool_instance.configuration, {EBB_VERIFICATION_SCORE}.successful)
 			blackboard.add_verification_result (l_feature_result)
 		end
 
@@ -130,7 +85,7 @@ feature {NONE} -- Implementation
 			procedure_name_regexp.match (a_verification_error.procedure_name)
 			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
 
-			create l_feature_result.make (l_feature, tool_instance.configuration, 0.0)
+			create l_feature_result.make (l_feature, tool_instance.configuration, {EBB_VERIFICATION_SCORE}.failed)
 			l_feature_result.set_error (a_verification_error)
 			blackboard.add_verification_result (l_feature_result)
 		end

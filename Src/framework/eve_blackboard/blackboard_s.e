@@ -37,7 +37,7 @@ feature {NONE} -- Initalization
 			l_shared_project.eiffel_project.manager.load_agents.extend (agent data.update_from_universe)
 			l_shared_project.eiffel_project.manager.load_agents.extend (agent set_initialized)
 
-			sleep_time := 500
+			sleep_time := 200
 		end
 
 feature -- Access

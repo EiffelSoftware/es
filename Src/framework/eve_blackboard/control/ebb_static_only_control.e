@@ -40,7 +40,7 @@ feature -- Basic operations
 				if current_class_index > blackboard.data.classes.count then
 					current_class_index := 1
 				end
-				if current_class.is_compiled and then (current_class.is_static_score_stale or current_class.static_score < 0) then
+				if current_class.is_compiled and then (current_class.is_static_score_stale or current_class.static_score = {EBB_VERIFICATION_SCORE}.not_verified) then
 					create l_input.make
 					l_input.add_class (current_class.compiled_class)
 					l_tool := blackboard.default_tool_of_type ({EBB_TOOL_CATEGORY}.static_verification)

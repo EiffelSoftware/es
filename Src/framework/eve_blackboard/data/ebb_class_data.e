@@ -60,22 +60,25 @@ feature -- Access
 			l_sum: REAL
 			l_count: INTEGER
 		do
+			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				children.start
 			until
-				children.after
+				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
 			loop
 				l_score := children.item.verification_score
-				if l_score >= 0.0 then
-					l_count := l_count + 1
-					l_sum := l_sum + l_score
+				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
+					if l_score = {EBB_VERIFICATION_SCORE}.failed then
+						Result := {EBB_VERIFICATION_SCORE}.failed
+					else
+						l_count := l_count + 1
+						l_sum := l_sum + l_score
+					end
 				end
 				children.forth
 			end
-			if l_count > 0 then
+			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
 				Result := l_sum / l_count
-			else
-				Result := -1.0
 			end
 		end
 
@@ -86,22 +89,25 @@ feature -- Access
 			l_sum: REAL
 			l_count: INTEGER
 		do
+			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				children.start
 			until
-				children.after
+				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
 			loop
 				l_score := children.item.static_score
-				if l_score >= 0.0 then
-					l_count := l_count + 1
-					l_sum := l_sum + l_score
+				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
+					if l_score = {EBB_VERIFICATION_SCORE}.failed then
+						Result := {EBB_VERIFICATION_SCORE}.failed
+					else
+						l_count := l_count + 1
+						l_sum := l_sum + l_score
+					end
 				end
 				children.forth
 			end
-			if l_count > 0 then
+			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
 				Result := l_sum / l_count
-			else
-				Result := -1.0
 			end
 		end
 
@@ -112,22 +118,25 @@ feature -- Access
 			l_sum: REAL
 			l_count: INTEGER
 		do
+			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				children.start
 			until
-				children.after
+				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
 			loop
 				l_score := children.item.dynamic_score
-				if l_score >= 0.0 then
-					l_count := l_count + 1
-					l_sum := l_sum + l_score
+				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
+					if l_score = {EBB_VERIFICATION_SCORE}.failed then
+						Result := {EBB_VERIFICATION_SCORE}.failed
+					else
+						l_count := l_count + 1
+						l_sum := l_sum + l_score
+					end
 				end
 				children.forth
 			end
-			if l_count > 0 then
+			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
 				Result := l_sum / l_count
-			else
-				Result := -1.0
 			end
 		end
 

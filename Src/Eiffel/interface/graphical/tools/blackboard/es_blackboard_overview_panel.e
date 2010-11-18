@@ -13,6 +13,8 @@ inherit
 
 	ES_SHARED_FONTS_AND_COLORS
 
+	EB_SHARED_PIXMAPS
+
 create
 	make
 
@@ -58,6 +60,9 @@ feature -- Access
 	grid: ES_GRID
 			-- Grid to display system data.
 
+	class_filter: STRING
+			-- Text to filter classes with.
+
 feature -- Initialization
 
 	update_blackboard_data
@@ -94,6 +99,58 @@ feature -- Initialization
 			loop
 				update_class_data (l_classes.item)
 				l_classes.forth
+			end
+		end
+
+feature -- Basic operations
+
+	set_class_filter (a_text: STRING)
+			-- Set class filter to `a_text'.
+		do
+			class_filter := a_text
+			update_visibility
+		end
+
+	update_visibility
+			-- Update row visibility.
+		local
+			l_row: EV_GRID_ROW
+			l_count, i: INTEGER
+			l_class_data: EBB_CLASS_DATA
+		do
+			from
+				i := 1
+				l_count := grid.row_count
+			until
+				i > l_count
+			loop
+				l_row := grid.row (i)
+				l_class_data ?= l_row.data
+				if l_class_data /= Void then
+					if is_class_visible (l_class_data) then
+						l_row.show
+							-- TODO: follow feature rows
+					else
+						l_row.hide
+					end
+					if class_filter /= Void then
+					end
+				end
+				i := i + 1
+			end
+		end
+
+	is_class_visible (a_class_data: EBB_CLASS_DATA): BOOLEAN
+			-- Is class `a_class_data' visible?
+		local
+			l_text: STRING
+		do
+			Result := True
+			if class_filter /= Void and not class_filter.is_empty then
+				l_text := class_filter.as_upper
+				if not a_class_data.class_name.has_substring (l_text) then
+					Result := False
+				end
 			end
 		end
 
@@ -182,7 +239,19 @@ feature {NONE} -- Implementation
 				-- Message
 			if attached {EV_GRID_TEXT_ITEM} a_row.item (message_column) as l_text then
 				create l_ebb_state
-				l_text.set_text ("(" + l_ebb_state.name_of_state (a_class_data.work_state) + "/" + l_ebb_state.name_of_state (a_class_data.result_state) + ")")
+				if a_class_data.is_stale then
+					l_text.set_text ("data is stale")
+				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.not_verified then
+					l_text.set_text ("not yet verified")
+				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.failed then
+					l_text.set_text ("verification failed")
+				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.successful then
+					l_text.set_text ("successfully verified")
+				else
+					l_text.set_text ("partially verified")
+				end
+
+--				l_text.set_text ("(" + l_ebb_state.name_of_state (a_class_data.work_state) + "/" + l_ebb_state.name_of_state (a_class_data.result_state) + ")")
 			end
 
 				-- Children
@@ -346,17 +415,30 @@ feature {NONE} -- Implementation
 			-- TODO
 		local
 			l_formatted_score: STRING
+			l_pixmap: EV_PIXMAP
 		do
 			if attached {EV_GRID_TEXT_ITEM} a_row.item (a_column) as l_text then
-				if a_score < 0 then
-					l_text.set_text ("-")
+				if a_stale then
+					l_formatted_score := "*"
 				else
-					l_formatted_score := real_formatter.formatted (a_score)
-					if a_stale then
-						l_text.set_text ("*" + l_formatted_score)
-					else
-						l_text.set_text (l_formatted_score)
-					end
+					l_formatted_score := ""
+				end
+				if a_score = {EBB_VERIFICATION_SCORE}.not_verified then
+					l_formatted_score := "-"
+					l_pixmap := Void
+				elseif a_score = {EBB_VERIFICATION_SCORE}.failed then
+					l_pixmap := mini_pixmaps.debugger_error_icon_buffer
+				elseif a_score = {EBB_VERIFICATION_SCORE}.successful then
+					l_pixmap := mini_pixmaps.breakpoints_enable_icon
+				else
+					l_formatted_score.append (real_formatter.formatted (a_score))
+					l_pixmap := Void
+				end
+				l_text.set_text (l_formatted_score)
+				if l_pixmap = Void then
+					l_text.remove_pixmap
+				else
+					l_text.set_pixmap (l_pixmap)
 				end
 				l_text.set_background_color (background_color (a_score, a_stale))
 			end
@@ -366,8 +448,15 @@ feature {NONE} -- Implementation
 		local
 			l_helper: ES_BLACKBOARD_BENCH_HELPER
 		do
-			if a_score < 0 then
+			if a_score = {EBB_VERIFICATION_SCORE}.not_verified then
 				Result := white_color
+			elseif a_score = {EBB_VERIFICATION_SCORE}.failed then
+				create l_helper
+				if a_stale then
+					Result := l_helper.color_for_stale_correctness (0.0)
+				else
+					Result := l_helper.color_for_correctness (0.0)
+				end
 			else
 				create l_helper
 				if a_stale then

@@ -49,7 +49,7 @@ feature {NONE} -- Initialization
 			control_box.last.set_data (create {EBB_RANDOM_CONTROL}.make)
 			control_box.extend (create {EV_LIST_ITEM}.make_with_text ("State"))
 			control_box.last.set_data (create {EBB_STATE_CONTROL}.make)
-			control_box.set_text ("Static only")
+			control_box.set_text ("Static then dynamic")
 			control_box.change_actions.extend (agent on_control_change)
 
 			l_horziontal_box.extend (l_label)
