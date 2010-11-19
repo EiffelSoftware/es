@@ -28,7 +28,10 @@ feature {NONE} -- Initialization
 		local
 			l_result: INTEGER
 		do
+			print ("%N start test")
 			set_size (800, 400)
+
+			create command_handler.make
 
 			-- !!! Attach Ribbon by COM here !!!
 			if attached {EV_WINDOW_IMP} implementation as l_imp then
@@ -59,6 +62,9 @@ feature {NONE} -- Implementation
 			com_uninitialize
 		end
 
+	command_handler: ER_COMMAND_HANDLER
+			-- EiffelRibbon command handler
+
 feature {NONE} -- Externals
 
 	com_initialize
@@ -73,7 +79,7 @@ feature {NONE} -- Externals
 			}
 			]"
 		end
-		
+
 	com_uninitialize
 			-- Clean up COM resources
 		external
@@ -81,7 +87,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				CoUninitialize();			
+				CoUninitialize();
 			}
 			]"
 		end

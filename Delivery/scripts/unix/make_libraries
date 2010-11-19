@@ -13,6 +13,8 @@ exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/base base
 fullrd base/ise/runtime/scoop
 remtrace base_extension
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/base_extension base_extension 
+remtrace cURL
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/cURL cURL
 remtrace diff
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/diff diff
 remtrace docking
@@ -52,6 +54,8 @@ remtrace store
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/store store 
 remtrace testing
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/testing testing
+remtrace text
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/text text 
 remtrace thread
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/thread thread 
 remtrace time
@@ -71,6 +75,8 @@ remtrace vision2_extension
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/vision2_extension vision2_extension
 remtrace web
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/web web 
+remtrace web_browser
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/web_browser web_browser 
 remtrace wel
 exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/$2/wel wel 
 

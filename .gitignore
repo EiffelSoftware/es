@@ -334,6 +334,7 @@ Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
 Src/examples/docking/simple/EIFGENs
 Src/examples/proofs/account/EIFGENs
 Src/examples/proofs/demo/EIFGENs
+Src/examples/ribbon/simple/EIFGENs
 Src/examples/scoop/baboon_crossing/EIFGENs
 Src/examples/scoop/barbershop/EIFGENs
 Src/examples/scoop/concurrency/concurrency/EIFGENs
