@@ -104,10 +104,11 @@ feature -- AST
 			l_string: STRING
 			l_index: INTEGER
 			l_variable: STRING
-			l_var_ids: EIFFEL_LIST [ID_AS]
-			l_var_id: ID_AS
-			l_vars: LIST [STRING]
+			l_vars: STRING
 			l_expr: EXPR_AS
+			l_vars_def: EIFFEL_LIST [TYPE_DEC_AS]
+			l_parser: like entity_declaration_parser
+			l_var_text: STRING
 		do
 			l_string := a_string.twin
 			if l_string.starts_with (ti_there_exists_keyword + " ") then
@@ -120,25 +121,26 @@ feature -- AST
 				l_ok := True
 			end
 			if l_ok then
-				l_index := l_string.index_of (':', 1)
+				l_index := l_string.substring_index (ti_quantification_sperator, 1)
 
-					-- Parse variables
-				l_vars := l_string.substring (1, l_index - 1).split (',')
-				create l_var_ids.make (l_vars.count)
-				across l_vars as l_variables loop
-					l_variable := l_variables.item
-					l_variable.left_adjust
-					l_variable.right_adjust
-					create l_var_id.initialize (l_variable)
-					l_var_ids.extend (l_var_id)
-				end
+					-- Parse quantified varaible.
+					-- Note: We only support one variable for the moment.
+				l_vars := l_string.substring (1, l_index - 1)
+				create l_var_text.make (l_vars.count + 10)
+				l_var_text.append (ti_local_keyword)
+				l_var_text.append_character ('%N')
+				l_var_text.append (l_vars)
+				l_parser := entity_declaration_parser
+				l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+				l_parser.parse_from_ascii_string (l_var_text, Void)
+				l_vars_def := l_parser.entity_declaration_node
 
 					-- Parse quantified predicate.
-				l_expr := ast_from_expression_text (l_string.substring (l_index + 1, l_string.count))
+				l_expr := ast_from_expression_text (l_string.substring (l_index + ti_quantification_sperator.count, l_string.count))
 				if l_is_existential then
-					create {THERE_EXISTS_AS} Result.initialize (l_var_ids, l_expr)
+					create {THERE_EXISTS_AS} Result.initialize (l_vars_def, l_expr)
 				else
-					create {FOR_ALL_AS} Result.initialize (l_var_ids, l_expr)
+					create {FOR_ALL_AS} Result.initialize (l_vars_def, l_expr)
 				end
 
 			end

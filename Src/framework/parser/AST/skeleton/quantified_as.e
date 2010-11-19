@@ -25,7 +25,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	variables: EIFFEL_LIST [ID_AS]
+	variables: EIFFEL_LIST [TYPE_DEC_AS]
 			-- List of variables of Current quantification
 
 	expression: EXPR_AS

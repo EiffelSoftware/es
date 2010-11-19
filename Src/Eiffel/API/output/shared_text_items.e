@@ -385,6 +385,8 @@ feature -- Standard classes
 	ti_Bit_class: STRING = "BIT";
 			-- `BIT' class.
 
+	ti_quantification_sperator: STRING = "::";
+
 note
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

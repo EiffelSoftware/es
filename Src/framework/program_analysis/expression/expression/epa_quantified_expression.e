@@ -32,21 +32,21 @@ feature{NONE} -- Initialization
 			text := text_with_predicate (predicate.text)
 			type := boolean_type
 			if ast = Void then
-				build_ast (a_variable, a_predicate.ast)
+				build_ast (a_variable, a_variable_type, a_predicate.ast)
 			end
 		end
 
 feature{NONE} -- Initialization
 
-	make_from_ast (a_for_all_as: QUANTIFIED_AS; a_variable_type: TYPE_A; a_class: like class_; a_feature: like feature_; a_written_class: like written_class)
-			-- Initialize Current from `a_for_all_as'. `a_variable_Type' is the type for the single variable inside `a_for_all_as'.
+	make_from_ast (a_quantification: QUANTIFIED_AS; a_class: like class_; a_feature: like feature_; a_written_class: like written_class)
+			-- Initialize Current from `a_quantification'.
 			-- For the moment, we only support single varaible in `a_for_all_as'.
 		local
 			l_predicate: EPA_AST_EXPRESSION
 		do
-			ast := a_for_all_as
-			create l_predicate.make_with_text_and_type (a_class, a_feature, text_from_ast (a_for_all_as.expression), a_written_class, boolean_type)
-			make (a_for_all_as.variables.first.name, a_variable_type, l_predicate, a_class, a_feature, a_written_class)
+			ast := a_quantification
+			create l_predicate.make_with_text_and_type (a_class, a_feature, text_from_ast (a_quantification.expression), a_written_class, boolean_type)
+			make (a_quantification.variables.first.item_name (1), type_a_from_string (text_from_ast (a_quantification.variables.first.type), a_class), l_predicate, a_class, a_feature, a_written_class)
 		end
 
 feature -- Access
@@ -145,24 +145,33 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	build_ast (a_variable_name: STRING; a_expression: EXPR_AS)
+	build_ast (a_variable_name: STRING; a_type: TYPE_A; a_expression: EXPR_AS)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		deferred
 		end
 
-	build_ast_internal (a_variable_name: STRING; a_expression: EXPR_AS; a_universal: BOOLEAN)
+	build_ast_internal (a_variable_name: STRING; a_type: TYPE_A; a_expression: EXPR_AS; a_universal: BOOLEAN)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		local
-			l_var_id: ID_AS
-			l_var_ids: EIFFEL_LIST [ID_AS]
+			l_vars_def: EIFFEL_LIST [TYPE_DEC_AS]
+			l_text: STRING
+			l_parser: like entity_declaration_parser
 		do
-			create l_var_id.initialize (a_variable_name)
-			create l_var_ids.make (1)
-			l_var_ids.extend (l_var_id)
+			create l_text.make (32)
+			l_text.append (ti_local_keyword)
+			l_text.append_character ('%N')
+			l_text.append (a_variable_name)
+			l_text.append_character (':')
+			l_text.append (a_type.name)
+
+			l_parser := entity_declaration_parser
+			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+			l_parser.parse_from_ascii_string (l_text, Void)
+			l_vars_def := l_parser.entity_declaration_node
 			if a_universal then
-				create {FOR_ALL_AS} ast.initialize (l_var_ids, a_expression)
+				create {FOR_ALL_AS} ast.initialize (l_vars_def, a_expression)
 			else
-				create {THERE_EXISTS_AS} ast.initialize (l_var_ids, a_expression)
+				create {THERE_EXISTS_AS} ast.initialize (l_vars_def, a_expression)
 			end
 		end
 

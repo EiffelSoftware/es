@@ -280,10 +280,8 @@ feature{NONE} -- Implementation
 			until
 				l_list.after
 			loop
-				if not l_data.is_empty then
-					l_data.append_character (',')
-				end
 				l_data.append_integer (l_list.item)
+				l_data.append_character (';')
 				l_list.forth
 			end
 			append_string_field (hit_break_points_field, l_data)

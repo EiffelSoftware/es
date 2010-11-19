@@ -78,10 +78,10 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	build_ast (a_variable_name: STRING; a_expression: EXPR_AS)
+	build_ast (a_variable_name: STRING; a_type: TYPE_A; a_expression: EXPR_AS)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		do
-			build_ast_internal (a_variable_name, a_expression, True)
+			build_ast_internal (a_variable_name, a_type, a_expression, True)
 		end
 
 end
