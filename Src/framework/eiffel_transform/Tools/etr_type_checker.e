@@ -20,7 +20,8 @@ inherit
 			set_routine_ids,
 			match_list_of_class,
 			process_there_exists_as,
-			process_for_all_as
+			process_for_all_as,
+			process_un_old_as
 		end
 
 	SHARED_AST_CONTEXT
@@ -676,6 +677,20 @@ feature -- Quantification
 				-- inside the expression. (We can, but it needs to setup extra local variables)
 				-- 15.11.2010 Jasonw			
 			last_type := boolean_type
+		end
+
+	process_un_old_as (l_as: UN_OLD_AS)
+		local
+			b: BOOLEAN
+		do
+			b := is_checking_postcondition
+			if not b then
+				set_is_checking_postcondition (True)
+			end
+			Precursor (l_as)
+			if not b then
+				set_is_checking_postcondition (b)
+			end
 		end
 
 note
