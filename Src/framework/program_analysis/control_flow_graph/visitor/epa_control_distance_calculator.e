@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {EPA_CONTROL_DISTANCE_CALCULATOR}."
 	author: ""
 	date: "$Date$"
@@ -74,7 +74,8 @@ feature -- Basic operation
 							-- Build control flow graph for the feature body.
 							create l_builder
 							l_builder.set_is_single_instruction_block (True)
-							l_builder.build_from_compound (l_do.compound, context_class, context_feature, context_feature.first_breakpoint_slot_index)
+							l_builder.set_next_block_number (context_feature.first_breakpoint_slot_index)
+							l_builder.build_from_compound (l_do.compound, context_class, context_feature)
 							graph := l_builder.last_control_flow_graph.reversed_graph
 --							use_breakpoint_index_as_node_id
 

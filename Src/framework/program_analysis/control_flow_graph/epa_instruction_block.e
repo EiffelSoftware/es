@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {EPA_INSTRUCTION_BLOCK}."
 	author: ""
 	date: "$Date$"
@@ -15,7 +15,8 @@ inherit
 
 	EPA_CFG_UTILITY
 		undefine
-			is_equal
+			is_equal,
+			out
 		end
 
 create

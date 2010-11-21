@@ -19,7 +19,8 @@ inherit
 create
 	make,
 	make_empty,
-	make_with_data
+	make_with_data,
+	make_with_transition
 
 feature{NONE} -- Initialization
 
@@ -73,6 +74,60 @@ feature{NONE} -- Initialization
 				uuid := l_parts.last.twin
 			else
 				uuid := ""
+			end
+		end
+
+	make_with_transition (a_test_case_class: CLASS_C; a_test_case_feature: FEATURE_I; a_transition: SEM_FEATURE_CALL_TRANSITION)
+			-- Initialize Current with data.
+		local
+			l_parts: LIST [STRING]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_var_name: STRING
+			l_prefix_count: INTEGER
+		do
+			test_case_class := a_test_case_class
+			class_under_test := a_transition.class_
+			feature_under_test := a_transition.feature_
+			test_feature := a_test_case_feature
+			is_feature_under_test_query := a_transition.is_query
+			is_feature_under_test_creation := a_transition.is_creation
+			is_passing := a_transition.is_passing
+
+			create operand_variable_indexes.make (64)
+			l_prefix_count := variable_name_prefix.count
+			across 0 |..| operand_count_of_feature (feature_under_test) as l_indexes loop
+				if not operand_variable_indexes.is_empty then
+					operand_variable_indexes.append_character (',')
+				end
+				operand_variable_indexes.append_integer (l_indexes.item)
+				operand_variable_indexes.append_character (',')
+				l_var_name := a_transition.reversed_variable_position.item (l_indexes.item).text
+				l_var_name.remove_head (l_prefix_count)
+				operand_variable_indexes.append_integer (l_var_name.to_integer)
+			end
+
+			setup_operand_map (operand_variable_indexes)
+
+				-- Setup variables.
+			create variables.make (20)
+			variables.compare_objects
+			from
+				l_cursor := a_transition.variables.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				variables.force (l_cursor.item.type, l_cursor.item.text)
+				l_cursor.forth
+			end
+
+			hash_code := test_case_class.name_in_upper.hash_code
+
+				-- Setup UUID.
+			if a_transition.uuid = Void then
+				uuid := ""
+			else
+				uuid := a_transition.uuid
 			end
 		end
 

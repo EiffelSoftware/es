@@ -39,8 +39,8 @@ feature -- Access
 					l_test_case.transition.context,
 					l_test_case.transition.is_creation)
 				l_transition.set_uuid (l_original_transition.uuid)
-				l_transition.set_preconditions (l_original_transition.interface_preconditions.subtraction (l_original_transition.written_preconditions))
-				l_transition.set_postconditions (l_original_transition.interface_postconditions.subtraction (l_original_transition.written_postconditions))
+				l_transition.set_preconditions_unsafe (l_original_transition.interface_preconditions.subtraction (l_original_transition.written_preconditions))
+				l_transition.set_postconditions_unsafe (l_original_transition.interface_postconditions.subtraction (l_original_transition.written_postconditions))
 				Result.force_last (l_transition, l_test_case)
 			end
 		end

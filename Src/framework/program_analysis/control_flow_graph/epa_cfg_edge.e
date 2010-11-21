@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Edge in control flow graph (CFG), which is directed, from start_node to end_node"
 	author: ""
 	date: "$Date$"
@@ -9,6 +9,14 @@ deferred class
 
 inherit
 	HASHABLE
+		undefine
+			out
+		end
+
+	DEBUG_OUTPUT
+		redefine
+			out
+		end
 
 feature{NONE} -- Initialization
 
@@ -34,6 +42,12 @@ feature -- Access
 				hash_code_internal := (start_node.hash_code.out + "," + end_node.hash_code.out).hash_code
 			end
 			Result := hash_code_internal
+		end
+
+	out: STRING
+			-- String representation of Current
+		do
+			Result := debug_output
 		end
 
 feature -- Status report

@@ -30,6 +30,8 @@ inherit
 
 	EXCEPTION_CODE_MEANING
 
+	ITP_SHARED_CONSTANTS
+
 create
 	make
 
@@ -115,6 +117,9 @@ feature -- Basic operations
 
 			if config.should_use_mocking then
 				initialize_with_mocking
+				on_application_exited (debugger_manager)
+			elseif config.should_use_ssql then
+				initialize_with_ssql
 				on_application_exited (debugger_manager)
 			else
 					-- Compile project			
@@ -1363,46 +1368,120 @@ feature{NONE} -- Implementation
 			-- Initialize data through mockings.
 		do
 				-- Iterate through all files storing transition information and load those transitions.
-			transition_file_paths (config.semantic_search_document_directory).do_all (agent build_last_transition_from_file)
+			transition_file_paths (config.semantic_search_document_directory, ".+\.tran").do_all (agent build_last_transition_from_file)
 		end
 
-	transition_file_paths (a_directory: STRING): LINKED_LIST [STRING]
+	initialize_with_ssql
+			-- Initialize data through ssql files.
+		do
+				-- Iterate through all files storing transition information and load those transitions.
+			transition_file_paths (config.sql_directory, "tran.+\.ssql").do_all (agent build_last_transition_from_ssql)
+		end
+
+	transition_file_paths (a_directory: STRING; a_pattern: STRING): LINKED_LIST [STRING]
 			-- Absolute file paths for transitions in `a_directory'
 		local
-			l_dir: DIRECTORY
-			l_file_path: FILE_NAME
-
+			l_file_searcher: EPA_FILE_SEARCHER
 		do
 			create Result.make
-			create l_dir.make_open_read (config.semantic_search_document_directory)
-			from
-				l_dir.readentry
-			until
-				l_dir.lastentry = Void
-			loop
-				if l_dir.lastentry.ends_with (once ".tran") then
-					create l_file_path.make_from_string (config.semantic_search_document_directory)
-					l_file_path.set_file_name (l_dir.lastentry)
-					Result.extend (l_file_path)
-				end
-				l_dir.readentry
-			end
-			l_dir.close
+			create l_file_searcher.make_with_pattern (a_pattern)
+			l_file_searcher.file_found_actions.extend (
+				agent (a_path: STRING; a_file: STRING; a_result: LINKED_LIST [STRING])
+					do
+						a_result.extend (a_path)
+					end (?, ?, Result))
+
+			l_file_searcher.search (a_directory)
+		end
+
+	test_case_info_from_transition (a_transition: SEM_FEATURE_CALL_TRANSITION): CI_TEST_CASE_INFO
+			-- Test case info from `a_tranition'.
+		local
+			l_tc_class: CLASS_C
+			l_tc_feature: FEATURE_I
+		do
+			l_tc_class := root_class_of_system
+			l_tc_feature := root_feature_of_system
+			create Result.make_with_transition (l_tc_class, l_tc_feature, a_transition)
+		end
+
+	function_valuations_from_state (a_state: EPA_STATE; a_transition: SEM_FEATURE_CALL_TRANSITION; a_test_case_info: CI_TEST_CASE_INFO): DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			-- Function valuations `a_state' in `a_transition' and `a_test_case_info'
+		local
+			l_func_analyzer: CI_FUNCTION_ANALYZER
+		do
+			create l_func_analyzer
+			l_func_analyzer.analyze (
+				a_state,
+				a_transition.context,
+				a_test_case_info.operand_map,
+				a_test_case_info.class_under_test,
+				a_test_case_info.feature_under_test,
+				a_test_case_info.class_under_test.constraint_actual_type)
+			Result := l_func_analyzer.valuations
+		end
+
+	build_last_transition_from_ssql (a_absolute_path: STRING)
+			-- Build transition from ssql file specified by `a_absolute_path'.
+		local
+			l_loader: SEMQ_QUERYABLE_LOADER
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_tc_info: CI_TEST_CASE_INFO
+			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
+			l_pre_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_post_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
+			l_pre_integer_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
+			l_post_integer_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
+			l_signature: STRING
+		do
+			log_manager.push_fine_level
+			log_manager.put_line_with_time ("Loading test case from file: " + a_absolute_path)
+			log_manager.pop_level
+
+			create l_loader
+			l_loader.load (a_absolute_path)
+			l_transition ?= l_loader.last_queryable
+			l_tc_info := test_case_info_from_transition (l_transition)
+				-- Logging.			
+			l_pre_valuations := function_valuations_from_state (l_transition.preconditions, l_transition, l_tc_info)
+			l_post_valuations := function_valuations_from_state (l_transition.postconditions, l_transition, l_tc_info)
+
+				-- Note: The ssql files do not include integer-bounded functions yet, so we cannot
+				-- use them to infer sequence-based contracts. 20.11.2010 Jasonw
+			create l_pre_integer_bounded_functions.make (0)
+			l_pre_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			create l_post_integer_bounded_functions.make (0)
+			l_post_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+
+				-- Fabricate transition info for the last executed test case.
+			l_signature := "loaded_test_case_" + (transition_data.count + 1).out
+			create l_transition_info.make_with_signature (
+				l_tc_info,
+				l_transition,
+				l_pre_valuations,
+				l_post_valuations,
+				l_pre_integer_bounded_functions,
+				l_post_integer_bounded_functions,
+				l_signature)
+
+			transition_data.extend (l_transition_info)
 		end
 
 	build_last_transition_from_file (a_absolute_path: STRING)
-			-- Build transition from `a_transition', `a_test_case_info' and
-			-- `a_serialization_info' and store resulting transition in `transitions'.
+			-- Build transition from mocking file specified by `a_absolute_path'.
 		local
 			l_transition: SEM_FEATURE_CALL_TRANSITION
 			l_context: EPA_CONTEXT
-			l_func_analyzer: CI_FUNCTION_ANALYZER
 			l_pre_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
 			l_post_valuations: DS_HASH_TABLE [EPA_FUNCTION_VALUATIONS, EPA_FUNCTION]
 			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
 			l_loader: CI_FEATURE_CALL_TRANSITION_LOADER
 			l_test_case_info: CI_TEST_CASE_INFO
 		do
+			log_manager.push_fine_level
+			log_manager.put_line_with_time ("(Mocking) Loading test case from file: " + a_absolute_path)
+			log_manager.pop_level
+
 			create l_loader
 			l_loader.load_from_file (a_absolute_path)
 
@@ -1411,35 +1490,10 @@ feature{NONE} -- Implementation
 
 
 				-- Analyze functions in pre-execution state.
-			create l_func_analyzer
-			l_func_analyzer.analyze (
-				l_transition.preconditions,
-				l_transition.context,
-				l_test_case_info.operand_map,
-				l_test_case_info.class_under_test,
-				l_test_case_info.feature_under_test,
-				l_test_case_info.class_under_test.constraint_actual_type)
-			l_pre_valuations := l_func_analyzer.valuations
-
-				-- Logging.
-			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
-			log_manager.put_line_with_time ("(Mocking) Function analysis in pre-state:")
-			log_manager.put_line (l_func_analyzer.dumped_result)
+			l_pre_valuations := function_valuations_from_state (l_transition.preconditions, l_transition, l_test_case_info)
 
 				-- Analyze functions in post-execution state.
-			create l_func_analyzer
-			l_func_analyzer.analyze (
-				l_transition.postconditions,
-				l_transition.context,
-				l_test_case_info.operand_map,
-				l_test_case_info.class_under_test,
-				l_test_case_info.feature_under_test,
-				l_test_case_info.class_under_test.constraint_actual_type)
-			l_post_valuations := l_func_analyzer.valuations
-
-			log_manager.put_line_with_time ("(Mocking) Function analysis in post-state:")
-			log_manager.put_line (l_func_analyzer.dumped_result)
-			log_manager.pop_level
+			l_post_valuations := function_valuations_from_state (l_transition.postconditions, l_transition, l_test_case_info)
 
 				-- Fabricate transition info for the last executed test case.
 			create l_transition_info.make (

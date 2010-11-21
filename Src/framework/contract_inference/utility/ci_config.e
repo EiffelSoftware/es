@@ -293,6 +293,10 @@ feature -- Access
 			-- Should use mocking information instead of re-run the test suite?
 			-- Default: False
 
+	should_use_ssql: BOOLEAN
+			-- Should use ssql information instead of re-run the test suite?
+			-- Default: False
+
 	should_generate_mocking: BOOLEAN
 			-- Should generate mocking information?
 			-- Default: False
@@ -630,6 +634,14 @@ feature -- Setting
 		do
 			start_test_case_number := a_start_number
 			end_test_case_number := a_end_number
+		end
+
+	set_should_use_ssql (b: BOOLEAN)
+			-- Set `should_use_ssql' with `b'.
+		do
+			should_use_ssql := b
+		ensure
+			should_use_ssql_set: should_use_ssql = b
 		end
 
 feature{NONE} -- Implementation

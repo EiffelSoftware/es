@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Simple graph printer for DOT format"
 	author: ""
 	date: "$Date$"
@@ -111,6 +111,17 @@ feature -- Setting
 			node_id_agent_set: node_id_agent = a_agent
 		end
 
+	save_last_printing_to_file (a_path: STRING)
+			-- Safe `last_printing' to file specified by `a_path'.
+			-- Always try to create a new file for `a_path'.
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_create_read_write (a_path)
+			l_file.put_string (last_printing)
+			l_file.close
+		end
+
 feature -- Print
 
 	print_graph (a_graph: EGX_GENERAL_GRAPH [N, L]) is
@@ -139,6 +150,15 @@ feature -- Print
 			last_printing.append ("}%N")
 		ensure then
 			last_printing_attached: last_printing /= Void
+		end
+
+	print_and_save_graph (a_graph: EGX_GENERAL_GRAPH [N, L]; a_path: STRING)
+			-- Print `a_graph' into `last_printing' and save `last_printing' into
+			-- the file specified by `a_path'.
+			-- Always try to create a new file for `a_path'.
+		do
+			print_graph (a_graph)
+			save_last_printing_to_file (a_path)
 		end
 
 feature{NONE} -- Implementation/Visiting

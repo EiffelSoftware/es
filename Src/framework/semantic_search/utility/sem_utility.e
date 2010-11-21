@@ -18,6 +18,8 @@ inherit
 
 	SEM_FIELD_NAMES
 
+	ITP_SHARED_CONSTANTS
+
 feature -- Access
 
 	principal_variable_from_anon_content (a_string: STRING): INTEGER
@@ -151,7 +153,7 @@ feature -- Names
 			-- for example, "v_12" if `a_prefix' is "v_" and `a_id' is 12.
 		do
 			create Result.make (5)
-			Result.append (once "v_")
+			Result.append (variable_name_prefix)
 			Result.append (a_id.out)
 		end
 

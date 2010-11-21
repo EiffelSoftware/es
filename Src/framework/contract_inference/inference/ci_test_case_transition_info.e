@@ -11,7 +11,8 @@ inherit
 	HASHABLE
 
 create
-	make
+	make,
+	make_with_signature
 
 feature{NONE} -- Initialization
 
@@ -32,6 +33,16 @@ feature{NONE} -- Initialization
 			integer_bounded_functions.put (a_post_bounded_functions, False)
 
 			hash_code := a_tc_info.hash_code
+			signature := a_tc_info.test_case_class.name_in_upper.twin
+		end
+
+	make_with_signature (a_tc_info: like test_case_info; a_transition: like transition;
+		  a_pre_valuations: like pre_state_valuations; a_post_valuations: like post_state_valuations;
+		  a_pre_bounded_functions: like pre_state_integer_bounded_functions; a_post_bounded_functions: like post_state_integer_bounded_functions; a_signature: STRING)
+			-- Initialize Current.
+		do
+			make (a_tc_info, a_transition, a_pre_valuations, a_post_valuations, a_pre_bounded_functions, a_post_bounded_functions)
+			signature := a_signature.twin
 		end
 
 feature -- Access
@@ -84,6 +95,9 @@ feature -- Access
 	serialization_info: detachable CI_TEST_CASE_SERIALIZATION_INFO
 			-- Serialization information
 			-- Have effect only if semantic search support is enabled
+
+	signature: STRING
+			-- Signature of Current class
 
 feature -- Setting
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Objects that represents true-branch edges in CFG"
 	author: ""
 	date: "$Date$"
@@ -20,5 +20,13 @@ feature -- Status report
 
 	is_true_branch: BOOLEAN = True
 			-- Is Current an true-branch edge?
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := (True).out
+		end
 
 end

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {EPA_BASIC_BLOCK}."
 	author: ""
 	date: "$Date$"
@@ -10,16 +10,20 @@ deferred class
 inherit
 	DEBUG_OUTPUT
 		redefine
-			is_equal
+			is_equal,
+			out
 		end
 
 	HASHABLE
+		undefine
+			out
 		redefine
 			is_equal
 		end
 
 	EPA_UTILITY
 		undefine
+			out,
 			is_equal
 		end
 
@@ -53,6 +57,12 @@ feature -- Access
 		deferred
 		end
 
+	out: STRING
+			-- String representation of Current
+		do
+			Result := debug_output
+		end
+
 feature -- Debug output
 
 	debug_output: STRING
@@ -69,8 +79,6 @@ feature -- Debug output
 				l_ast_list.after
 			loop
 				Result.append (text_from_ast (l_ast_list.item_for_iteration))
-				Result.append ("%N")
-
 				l_ast_list.forth
 			end
 		end

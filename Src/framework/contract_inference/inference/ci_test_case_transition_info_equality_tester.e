@@ -27,9 +27,7 @@ feature -- Status report
 				Result := False
 			else
 				Result :=
-					v.test_case_info.test_case_class /= Void and then
-					u.test_case_info.test_case_class /= Void and then
-					v.test_case_info.test_case_class.name_in_upper ~ u.test_case_info.test_case_class.name_in_upper
+					v.signature ~ u.signature
 			end
 		end
 

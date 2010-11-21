@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {EPA_FALSE_CFG_EDGE}."
 	author: ""
 	date: "$Date$"
@@ -20,5 +20,13 @@ feature -- Status report
 
 	is_false_branch: BOOLEAN = True
 			-- Is Current an false-branch edge?
-			
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := (False).out
+		end
+
 end

@@ -50,7 +50,7 @@ feature{NONE} -- Implementation
 			-- Is `a_field' a precondition field?
 		do
 			Result :=
-				a_field.name ~ property_field_name and then
+				(a_field.name ~ property_field_name or else a_field.name  ~ variable_field_name) and then
 				a_field.value_text.split ('%T').i_th (3) ~ precondition_property_prefix
 		end
 
@@ -58,7 +58,7 @@ feature{NONE} -- Implementation
 			-- Is `a_field' a precondition field?
 		do
 			Result :=
-				a_field.name ~ property_field_name and then
+				(a_field.name ~ property_field_name or else a_field.name  ~ variable_field_name) and then
 				a_field.value_text.split ('%T').i_th (3) ~ postcondition_property_prefix
 		end
 

@@ -115,8 +115,8 @@ feature{NONE} -- Implementation
 					l_tc.test_case_info.operand_map,
 					l_tc.transition.context,
 					l_tc.transition.is_creation)
-				l_transition.set_preconditions (l_transition.preconditions)
-				l_transition.set_postconditions (l_transition.postconditions)
+				l_transition.set_preconditions_unsafe (l_transition.preconditions)
+				l_transition.set_postconditions_unsafe (l_transition.postconditions)
 				transition_table.force_last (l_transition, l_tc)
 				l_cursor.forth
 			end

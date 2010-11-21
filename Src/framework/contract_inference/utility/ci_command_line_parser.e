@@ -68,6 +68,7 @@ feature -- Basic operations
 			l_breakpoint_monitoring_flag: AP_FLAG
 			l_sql_option: AP_STRING_OPTION
 			l_test_case_range: AP_STRING_OPTION
+			l_use_ssql_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -207,7 +208,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_generate_mock_option)
 
 			create l_use_mock_option.make_with_long_form ("use-mock")
-			l_use_mock_option.set_description ("Enable using mocking information.")
+			l_use_mock_option.set_description ("Enable using mocking information. Default: False")
 			l_parser.options.force_last (l_use_mock_option)
 
 			create l_solr_option.make_with_long_form ("generate-solr")
@@ -225,6 +226,11 @@ feature -- Basic operations
 			create l_test_case_range.make_with_long_form ("test-case-range")
 			l_test_case_range.set_description ("Specify the range of test cases to run. Format --test-case-range start,end. start and end are two integer numbers. 0,0 means to run all test cases. Default: 0,0")
 			l_parser.options.force_last (l_test_case_range)
+
+			create l_use_ssql_option.make_with_long_form ("use-ssql")
+			l_use_ssql_option.set_description ("Enable using ssql information. Default: False")
+			l_parser.options.force_last (l_use_ssql_option)
+
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -373,6 +379,7 @@ feature -- Basic operations
 			end
 
 			config.set_should_use_mocking (l_use_mock_option.was_found)
+			config.set_should_use_ssql (l_use_ssql_option.was_found)
 			config.set_should_generate_mocking (l_generate_mock_option.was_found)
 
 			config.set_should_freeze (l_freeze_option.was_found)

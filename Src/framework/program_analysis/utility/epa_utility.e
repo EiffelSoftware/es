@@ -611,6 +611,16 @@ feature -- Class/feature related
 			Result := workbench.system.root_type.associated_class
 		end
 
+	root_feature_of_system: detachable FEATURE_I
+			-- Root feature of Current system, if any
+			-- If current system is compiled using "all-class" option, there
+			-- is no root class, hence, there is no root feature.
+		do
+			if attached {CLASS_C} root_class_of_system as l_root_class then
+				Result := l_root_class.feature_named (workbench.system.root_creation_name)
+			end
+		end
+
 feature -- String manipulation
 
 	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
