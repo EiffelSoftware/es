@@ -34,6 +34,13 @@ feature -- Basic operations
 			append_changes (a_document)
 			append_serialization
 			append_exception
+			append_test_case (test_case)
+			if pre_integer_bounded_functions /= Void then
+				append_string_field (prestate_bounded_functions_field, pre_integer_bounded_functions)
+			end
+			if post_integer_bounded_functions /= Void then
+				append_string_field (poststate_bounded_functions_field, post_integer_bounded_functions)
+			end
 		end
 
 	clear_for_write

@@ -116,13 +116,13 @@ feature -- Access
 			safe_recursive_create_directory (l_path)
 		end
 
-	sql_directory: STRING
+	ssql_directory: STRING
 			-- Directory for sql documents
 		local
 			l_path: FILE_NAME
 		do
 			create l_path.make_from_string (contract_output_directory)
-			l_path.extend ("sql")
+			l_path.extend ("ssql")
 			Result := l_path
 			safe_recursive_create_directory (l_path)
 		end

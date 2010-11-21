@@ -34,6 +34,7 @@ feature -- Basic operations
 			append_content
 			append_serialization
 			append_properties (a_document)
+			append_test_case (test_case)
 		end
 
 	clear_for_write

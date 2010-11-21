@@ -44,7 +44,6 @@ feature -- Setting
 		deferred
 		end
 
-
 feature{NONE} -- Implementation
 
 	string_representation_of_field (a_field: IR_FIELD): STRING

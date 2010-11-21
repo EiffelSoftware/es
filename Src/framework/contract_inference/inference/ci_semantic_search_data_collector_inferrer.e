@@ -14,6 +14,8 @@ inherit
 
 	SEM_FIELD_NAMES
 
+	CI_UTILITY
+
 feature -- Basic operations
 
 	infer (a_data: like data)
@@ -119,53 +121,8 @@ feature{NONE} -- Implementation
 
 				-- Setup fields for integer-bounded functions.
 			across a_transition_info.integer_bounded_functions as l_states loop
-				Result.force_last (feild_for_integer_bounded_functions (l_states.item, l_states.key))
+				Result.force_last (field_for_integer_bounded_functions (l_states.item, l_states.key))
 			end
-		end
-
-	feild_for_integer_bounded_functions (a_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]; a_pre_state: BOOLEAN): IR_FIELD
-			-- Field for `a_function'
-			-- `a_pre_state' inidcates prestate or poststate.
-		local
-			l_field_name: STRING
-			l_cursor: DS_HASH_SET_CURSOR [CI_FUNCTION_WITH_INTEGER_DOMAIN]
-			l_value: STRING
-			l_func: CI_FUNCTION_WITH_INTEGER_DOMAIN
-		do
-			if a_pre_state then
-				l_field_name := prestate_bounded_functions_field
-			else
-				l_field_name := poststate_bounded_functions_field
-			end
-
-			create l_value.make (256)
-			from
-				l_cursor := a_functions.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_func := l_cursor.item
-				l_value.append (l_func.target_operand_index.out)
-				l_value.append_character (';')
-				l_value.append (l_func.target_variable_name)
-				l_value.append_character (';')
-				l_value.append (l_func.function_name)
-				l_value.append_character (';')
-				l_value.append (l_func.lower_bound.out)
-				l_value.append_character (';')
-				l_value.append (l_func.upper_bound.out)
-				l_value.append_character (';')
-				l_value.append (l_func.lower_bound_expression)
-				l_value.append_character (';')
-				l_value.append (l_func.upper_bound_expression)
-
-				if not l_cursor.is_last then
-					l_value.append_character (field_value_separator)
-				end
-				l_cursor.forth
-			end
-			create Result.make_as_string (l_field_name, l_value, default_boost_value)
 		end
 
 	test_case_info_from_fields (a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_INFO

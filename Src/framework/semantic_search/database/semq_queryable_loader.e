@@ -311,6 +311,12 @@ feature{NONE} -- Implementation
 			if fields_by_name.has (fault_id_field) then
 				last_meta.put (fields_by_name.item (fault_id_field).first.value_text, fault_id_field)
 			end
+			if fields_by_name.has (prestate_bounded_functions_field) then
+				last_meta.put (fields_by_name.item (prestate_bounded_functions_field).first.value_text, prestate_bounded_functions_field)
+			end
+			if fields_by_name.has (poststate_bounded_functions_field) then
+				last_meta.put (fields_by_name.item (poststate_bounded_functions_field).first.value_text, poststate_bounded_functions_field)
+			end
 			last_queryable := l_tran
 		end
 

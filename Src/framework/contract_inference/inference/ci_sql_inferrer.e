@@ -10,6 +10,8 @@ class
 inherit
 	CI_INFERRER
 
+	CI_UTILITY
+
 feature -- Basic operations
 
 	infer (a_data: like data)
@@ -61,7 +63,7 @@ feature{NONE} -- Implementation
 		local
 			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (config.sql_directory)
+			create l_path.make_from_string (config.ssql_directory)
 			l_path.set_file_name (once "tran_" + a_transition.class_.name_in_upper + "__" + a_transition.feature_.feature_name.as_lower + "__" + a_uuid.out + ".ssql")
 			Result := l_path.out
 		end
@@ -71,7 +73,7 @@ feature{NONE} -- Implementation
 		local
 			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (config.sql_directory)
+			create l_path.make_from_string (config.ssql_directory)
 			l_path.set_file_name (once "objt_" + a_transition.class_.name_in_upper + "__" + a_transition.feature_.feature_name.as_lower + "__" + a_uuid.out + ".ssql")
 			Result := l_path.out
 		end
@@ -112,6 +114,17 @@ feature{NONE} -- Implementation
 				l_transition_writer.set_exception_tag (a_transition_data.test_case_info.exception_tag)
 				l_transition_writer.set_fault_id (a_transition_data.test_case_info.fault_id)
 			end
+			l_transition_writer.set_test_case (a_transition_data.test_case_info.test_case_class.name)
+			if not a_transition_data.integer_bounded_functions.item (True).is_empty then
+				l_transition_writer.set_pre_integer_bounded_functions (field_for_integer_bounded_functions (a_transition_data.pre_state_integer_bounded_functions, True).value_text)
+			else
+				l_transition_writer.set_pre_integer_bounded_functions (Void)
+			end
+			if not a_transition_data.integer_bounded_functions.item (False).is_empty then
+				l_transition_writer.set_post_integer_bounded_functions (field_for_integer_bounded_functions (a_transition_data.post_state_integer_bounded_functions, False).value_text)
+			else
+				l_transition_writer.set_post_integer_bounded_functions (Void)
+			end
 			l_transition_writer.write (l_transition)
 			l_file.close
 		end
@@ -143,7 +156,7 @@ feature{NONE} -- Implementation
 --					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
 --					l_objects.set_properties (a_transition_data.transition.preconditions)
 				end
-
+				l_writer.set_test_case (a_transition_data.test_case_info.test_case_class.name.twin)
 				l_writer.write (l_objects)
 				l_file.close
 			end

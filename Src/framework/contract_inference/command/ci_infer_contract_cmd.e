@@ -1375,7 +1375,7 @@ feature{NONE} -- Implementation
 			-- Initialize data through ssql files.
 		do
 				-- Iterate through all files storing transition information and load those transitions.
-			transition_file_paths (config.sql_directory, "tran.+\.ssql").do_all (agent build_last_transition_from_ssql)
+			transition_file_paths (config.ssql_directory, "tran.+\.ssql").do_all (agent build_last_transition_from_ssql)
 		end
 
 	transition_file_paths (a_directory: STRING; a_pattern: STRING): LINKED_LIST [STRING]
@@ -1433,6 +1433,9 @@ feature{NONE} -- Implementation
 			l_pre_integer_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
 			l_post_integer_bounded_functions: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
 			l_signature: STRING
+			l_bounded_integer_function_fields: HASH_TABLE [IR_FIELD, STRING]
+			l_field: IR_FIELD
+			l_bounded_integer_functions: like bounded_functions_from_fields
 		do
 			log_manager.push_fine_level
 			log_manager.put_line_with_time ("Loading test case from file: " + a_absolute_path)
@@ -1446,12 +1449,30 @@ feature{NONE} -- Implementation
 			l_pre_valuations := function_valuations_from_state (l_transition.preconditions, l_transition, l_tc_info)
 			l_post_valuations := function_valuations_from_state (l_transition.postconditions, l_transition, l_tc_info)
 
-				-- Note: The ssql files do not include integer-bounded functions yet, so we cannot
-				-- use them to infer sequence-based contracts. 20.11.2010 Jasonw
-			create l_pre_integer_bounded_functions.make (0)
-			l_pre_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
-			create l_post_integer_bounded_functions.make (0)
-			l_post_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			create l_bounded_integer_function_fields.make (2)
+			l_bounded_integer_function_fields.compare_objects
+			if l_loader.last_meta.has (prestate_bounded_functions_field) then
+				create l_field.make_as_string (prestate_bounded_functions_field, l_loader.last_meta.item (prestate_bounded_functions_field), default_boost_value)
+				l_bounded_integer_function_fields.force (l_field, prestate_bounded_functions_field)
+			end
+			if l_loader.last_meta.has (poststate_bounded_functions_field) then
+				create l_field.make_as_string (poststate_bounded_functions_field, l_loader.last_meta.item (poststate_bounded_functions_field), default_boost_value)
+				l_bounded_integer_function_fields.force (l_field, poststate_bounded_functions_field)
+			end
+			l_bounded_integer_functions := bounded_functions_from_fields (l_transition, l_bounded_integer_function_fields)
+			if l_bounded_integer_functions.has (True) then
+				l_pre_integer_bounded_functions := l_bounded_integer_functions.item (True)
+			else
+				create l_pre_integer_bounded_functions.make (0)
+				l_pre_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			end
+
+			if l_bounded_integer_functions.has (False) then
+				l_post_integer_bounded_functions := l_bounded_integer_functions.item (False)
+			else
+				create l_post_integer_bounded_functions.make (0)
+				l_post_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+			end
 
 				-- Fabricate transition info for the last executed test case.
 			l_signature := "loaded_test_case_" + (transition_data.count + 1).out

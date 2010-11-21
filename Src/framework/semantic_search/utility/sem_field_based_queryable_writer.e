@@ -66,6 +66,15 @@ feature -- Access
 	fault_id: detachable STRING
 			-- Fault identifier if the transition to be written represents a failing test case
 
+	test_case: STRING
+			-- Test case
+
+	pre_integer_bounded_functions: detachable STRING
+			-- String representation of integer-bounded functions in pre-state
+
+	post_integer_bounded_functions: detachable STRING
+			-- String representation of integer-bounded functions in pre-state
+
 feature -- Setting
 
 	set_pre_state_serialization (a_data: like pre_state_serialization)
@@ -150,6 +159,24 @@ feature -- Setting
 			uuid := a_uuid
 		ensure
 			uuid_set: uuid = a_uuid
+		end
+
+	set_test_case (a_test_case: STRING)
+			-- Set `test_case' with `a_test_case'.
+		do
+			test_case := a_test_case
+		end
+
+	set_pre_integer_bounded_functions (a_functions: like pre_integer_bounded_functions)
+			-- Set `pre_integer_bounded_functions' with `a_functions'.
+		do
+			pre_integer_bounded_functions := a_functions
+		end
+
+	set_post_integer_bounded_functions (a_functions: like post_integer_bounded_functions)
+			-- Set `post_integer_bounded_functions' with `a_functions'.
+		do
+			post_integer_bounded_functions := a_functions
 		end
 
 	clear_for_write
@@ -291,6 +318,12 @@ feature{NONE} -- Implementation
 			-- Append `a_stamp' into `medium'.
 		do
 			append_string_field (timestamp_field, a_stamp)
+		end
+
+	append_test_case (a_test_case: STRING)
+			-- Append `a_test_case' into `medium'.
+		do
+			append_string_field (test_case_field, a_test_case)
 		end
 
 	append_exception

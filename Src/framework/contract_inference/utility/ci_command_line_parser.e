@@ -215,8 +215,8 @@ feature -- Basic operations
 			l_solr_option.set_description ("Enable generating solr files. Format: --generate-solr [on|off]. Default: off")
 			l_parser.options.force_last (l_solr_option)
 
-			create l_sql_option.make_with_long_form ("generate-sql")
-			l_sql_option.set_description ("Enable generating sql files. Format: --generate-sql [on|off]. Default: off")
+			create l_sql_option.make_with_long_form ("generate-ssql")
+			l_sql_option.set_description ("Enable generating sql files. Format: --generate-ssql [on|off]. Default: off")
 			l_parser.options.force_last (l_sql_option)
 
 			create l_breakpoint_monitoring_flag.make_with_long_form ("monitor-breakpoint")

@@ -14,6 +14,8 @@ inherit
 
 	CI_SHARED_EQUALITY_TESTERS
 
+	CI_UTILITY
+
 feature -- Access
 
 	last_feature_call_transition: SEM_FEATURE_CALL_TRANSITION
@@ -67,58 +69,6 @@ feature{NONE} -- Implementation
 			l_serialization_info := serialization_info_from_fields (l_transition_loader.last_queryable, l_test_case_info, l_transition_loader.fields)
 			l_bounded_functions := bounded_functions_from_fields (l_transition_loader.last_queryable, l_transition_loader.fields)
 			Result := [l_transition_loader.last_queryable, l_test_case_info, l_serialization_info, l_bounded_functions]
-		end
-
-	bounded_functions_from_fields (a_transition: SEM_FEATURE_CALL_TRANSITION; a_fields: HASH_TABLE [IR_FIELD, STRING]): HASH_TABLE [DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN], BOOLEAN]
-			-- Bounded functions from `a_fields'
-		local
-			l_field_name: STRING
-			l_parts: LIST [STRING]
-			l_context: EPA_CONTEXT
-			l_target_operand_index: INTEGER
-			l_target_variable_name: STRING
-			l_function_name: STRING
-			l_lower_bound: INTEGER
-			l_upper_bound: INTEGER
-			l_lower_bound_expr: STRING
-			l_upper_bound_expr: STRING
-			l_func: CI_FUNCTION_WITH_INTEGER_DOMAIN
-			l_func_set: DS_HASH_SET [CI_FUNCTION_WITH_INTEGER_DOMAIN]
-		do
-			l_context := a_transition.context
-
-			create Result.make (2)
-			create l_func_set.make (10)
-			l_func_set.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
-			Result.force (l_func_set, True)
-			create l_func_set.make (10)
-			l_func_set.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
-			Result.force (l_func_set, False)
-
-			across <<True, False>> as l_states loop
-				l_func_set := Result.item (l_states.item)
-				if l_states.item then
-					l_field_name := prestate_bounded_functions_field
-				else
-					l_field_name := poststate_bounded_functions_field
-				end
-
-				a_fields.search (l_field_name)
-				if a_fields.found then
-					across string_slices (a_fields.found_item.value.text, field_value_separator.out) as l_functions loop
-						l_parts := l_functions.item.split (';')
-						l_target_operand_index := l_parts.i_th (1).to_integer
-						l_target_variable_name := l_parts.i_th (2)
-						l_function_name := l_parts.i_th (3)
-						l_lower_bound := l_parts.i_th (4).to_integer
-						l_upper_bound := l_parts.i_th (5).to_integer
-						l_lower_bound_expr := l_parts.i_th (6)
-						l_upper_bound_expr := l_parts.i_th (7)
-						create l_func.make (l_target_operand_index, l_target_variable_name, l_function_name, l_lower_bound, l_upper_bound, l_context, l_lower_bound_expr, l_upper_bound_expr)
-						l_func_set.force_last (l_func)
-					end
-				end
-			end
 		end
 
 	test_case_info_from_fields (a_fields: HASH_TABLE [IR_FIELD, STRING]): CI_TEST_CASE_INFO
