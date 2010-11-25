@@ -107,6 +107,14 @@ feature -- Basic operations
 			a_dm.breakpoints_manager.notify_breakpoints_changes
 		end
 
+	kill_debuggee (a_dm: DEBUGGER_MANAGER)
+			-- Kill the debuggee.
+		do
+			if a_dm.application.is_running then
+				a_dm.application.kill
+			end
+		end
+
 feature -- Evaluation
 
 	evaluated_value_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: EPA_EXPRESSION): EPA_EXPRESSION_VALUE

@@ -386,15 +386,20 @@ feature -- Test routine
         note
             testing: "$(GENERATION_TYPE)"
             testing: "$(SUMMARY)"
-        local
-$(VAR_DECLARATION)
         do
-        		-- Initialize objects.
-$(VAR_INITIALIZATION)
 $(BODY)
         end
                 
 feature -- Test case information
+
+$(VAR_DECLARATION)
+	
+	initialize_objects
+			-- Initialize object used in current test case.
+		do
+			wipe_out_caches
+$(VAR_INITIALIZATION)
+		end
 
 	tci_class_name: STRING do Result := "$(CLASS_NAME)" end
 			-- Name of current class.

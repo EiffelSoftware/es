@@ -161,6 +161,7 @@ feature{NONE} -- Implementation
 			l_test_case_info_bp_manager.toggle_breakpoints (True)
 
 				-- Start debugger.
+			create timeout.make_with_action (1000 * config.test_case_execution_timeout, True, agent on_execution_timeout (system.eiffel_system.name))
 			start_debugger (debugger_manager, feature_.feature_name.as_lower + " " + config.start_test_case_number.out + " " + config.end_test_case_number.out, config.working_directory, {EXEC_MODES}.run, False)
 
 				-- Clean up debugger.
@@ -168,6 +169,10 @@ feature{NONE} -- Implementation
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_exited_agent)
 			remove_debugger_session
+			if not timeout.has_terminated then
+				timeout.set_should_terminate (True)
+				timeout.join
+			end
 		end
 
 	breakpoint_manager_for_setup_test_case: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
@@ -588,6 +593,14 @@ feature{NONE} -- Actions
 				else
 					last_post_state_expression_evaluation_manger := Void
 				end
+				if not timeout.has_started then
+					timeout.start
+				else
+					if not timeout.has_paused then
+						timeout.pause
+					end
+					timeout.resume
+				end
 			end
 		end
 
@@ -607,6 +620,7 @@ feature{NONE} -- Actions
 				setup_object_equivalent_classes (last_pre_execution_evaluations)
 --				mutate_equality_comparision_expressions (last_pre_execution_evaluations)
 			else
+				timeout.pause
 				if a_state = Void then
 					create last_post_execution_evaluations.make (0, class_, feature_)
 				else
@@ -657,6 +671,7 @@ feature{NONE} -- Actions
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application is stopped in the debugger
 		do
+			timeout.pause
 			if a_dm.application_is_executing or a_dm.application_is_stopped then
 				if a_dm.application_status.reason_is_catcall then
 					a_dm.controller.resume_workbench_application
@@ -689,6 +704,13 @@ feature{NONE} -- Actions
 			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
 			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
 		do
+			if timeout /= Void then
+				if timeout.has_started and then not timeout.has_terminated then
+					timeout.pause
+					timeout.set_should_terminate (True)
+					timeout.join
+				end
+			end
 				-- Setup results.
 			create l_preconditions.make (100)
 			l_preconditions.set_equality_tester (expression_equality_tester)
@@ -755,6 +777,20 @@ feature{NONE} -- Actions
 			end
 			if last_right_after_test_breakpoint_manager /= Void then
 				last_right_after_test_breakpoint_manager.toggle_breakpoints (False)
+			end
+		end
+
+	on_execution_timeout (a_executable_base_name: STRING)
+			-- Agent to be called when current test case execution (including state expression evaluation) times out.
+		local
+			l_exe_env: EXECUTION_ENVIRONMENT
+		do
+			timeout.set_should_terminate (True)
+			create l_exe_env
+			if {PLATFORM}.is_windows then
+				l_exe_env.system ("taskkill /IM " + a_executable_base_name + ".exe")
+			else
+				l_exe_env.system ("killall " + a_executable_base_name)
 			end
 		end
 
@@ -1543,5 +1579,9 @@ feature{NONE} -- Implementation
 			l_transition_info.set_serialization_info (l_loader.last_serialization_info)
 			transition_data.extend (l_transition_info)
 		end
+
+	timeout: EPA_THREAD_BASED_TIMER
+			-- Timer to terminate debuggee if the execution
+			-- takes too long
 
 end

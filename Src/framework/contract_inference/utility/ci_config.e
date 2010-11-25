@@ -325,6 +325,10 @@ feature -- Access
 	end_test_case_number: INTEGER
 			-- End test case number
 
+	test_case_execution_timeout: INTEGER
+			-- Maximal time in seconds for a test case to run
+			-- Default: 120
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -642,6 +646,14 @@ feature -- Setting
 			should_use_ssql := b
 		ensure
 			should_use_ssql_set: should_use_ssql = b
+		end
+
+	set_test_case_execution_timeout (i: INTEGER)
+			-- Set `test_case_execution_timeout' with `i'.
+		do
+			test_case_execution_timeout := i
+		ensure
+			test_case_execution_timeout_set: test_case_execution_timeout = i
 		end
 
 feature{NONE} -- Implementation
