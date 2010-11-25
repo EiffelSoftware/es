@@ -1006,11 +1006,19 @@ feature{NONE} -- Implementations
 			a_feature_valid: a_feature.argument_count = 1 and then a_feature.has_return_value and then a_feature.arguments.i_th (1).is_integer
 		local
 			l_bound_checker: EPA_LINEAR_BOUNDED_ARGUMENT_FINDER
+			l_feat_id: STRING
 		do
-			create l_bound_checker.make (output_directory, context_type)
-			l_bound_checker.analyze_bounds (a_class, a_feature)
-			if l_bound_checker.is_bound_found then
-				Result := integer_domain_from_bounds (l_bound_checker.minimal_values, l_bound_checker.maximal_values)
+			l_feat_id := feature_identifier (a_class, a_feature)
+			integer_bounds_cache.search (l_feat_id)
+			if integer_bounds_cache.found then
+				Result := integer_bounds_cache.found_item
+			else
+				create l_bound_checker.make (output_directory, context_type)
+				l_bound_checker.analyze_bounds (a_class, a_feature)
+				if l_bound_checker.is_bound_found then
+					Result := integer_domain_from_bounds (l_bound_checker.minimal_values, l_bound_checker.maximal_values)
+				end
+				integer_bounds_cache.force (Result, l_feat_id)
 			end
 		end
 
@@ -1241,6 +1249,28 @@ feature{NONE} -- Implementation
 				Result :=
 					a_feature.feature_name ~ "at"
 			end
+		end
+
+	integer_bounds_cache: HASH_TABLE [detachable EPA_INTEGER_RANGE_DOMAIN, STRING]
+			-- Cache for integer-bounds
+			-- Keys are feature identifier in form "CLASS_NAME.feature_name".
+			-- Values are symbolic integer bounds over the argument of that feature.
+			-- A Void value means that there is no bound for that feature.
+		once
+			create Result.make (100)
+			Result.compare_objects
+		end
+
+	clear_integer_bounds_cache
+			-- Clear `integer_bounds_cache'.
+		do
+			integer_bounds_cache.wipe_out
+		end
+
+	feature_identifier (a_class: CLASS_C; a_feature: FEATURE_I): STRING
+			-- Identifier from `a_feature' in `a_class' in form "CLASS_NAME.feature_name'
+		do
+			Result := a_class.name_in_upper + "." + a_feature.feature_name
 		end
 
 end

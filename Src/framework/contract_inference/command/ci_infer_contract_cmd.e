@@ -259,6 +259,7 @@ feature{NONE} -- Implementation
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
+
 		end
 
 	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
@@ -480,12 +481,25 @@ feature{NONE} -- Implementation
 
 	log_new_test_case_found (a_tc_info: CI_TEST_CASE_INFO)
 			-- Log that a test case `a_tc_info' has been found.
+		local
+			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
 		do
 			test_case_count := test_case_count + 1
 			log_manager.put_line (msg_separator)
 			log_manager.put_line_with_time (msg_found_test_case + test_case_count.out)
 			log_manager.put_line (msg_test_class_name + a_tc_info.test_case_class.name)
 			log_manager.put_line (msg_feature_under_test + a_tc_info.class_under_test.name_in_upper + once "." + a_tc_info.feature_under_test.feature_name)
+
+				-- Write a file to indicate which test case we are currently working on.
+				-- This file is used to recover from a failing run (for example, the test case execution does not terminate).
+			if config.start_test_case_number > 0 then
+				create l_file_name.make_from_string (config.log_directory)
+				l_file_name.set_file_name (once "test_case_number.txt")
+				create l_file.make_create_read_write (l_file_name)
+				l_file.put_integer (config.start_test_case_number + test_case_count - 1)
+				l_file.close
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -778,11 +792,11 @@ feature{NONE} -- Implementation
 			if last_pre_execution_evaluations = Void then
 				create last_pre_execution_evaluations.make (0, class_, feature_)
 			end
-			l_transition.set_preconditions (last_pre_execution_evaluations)
+			l_transition.set_preconditions_unsafe (last_pre_execution_evaluations)
 			if last_post_execution_evaluations = Void then
 				create last_post_execution_evaluations.make (0, last_pre_execution_evaluations.class_, last_pre_execution_evaluations.feature_)
 			end
-			l_transition.set_postconditions (last_post_execution_evaluations)
+			l_transition.set_postconditions_unsafe (last_post_execution_evaluations)
 
 				-- Analyze functions in pre-execution state.
 			create l_func_analyzer

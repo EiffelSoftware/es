@@ -143,12 +143,10 @@ feature{NONE} -- Implementation
 				l_writer.set_uuid (a_uuid)
 				if a_transition_data.transition.is_passing then
 					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
---					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.post_serialization)
 					l_objects.set_serialization_internal (a_transition_data.serialization_info.post_serialization)
 					l_objects.set_properties (a_transition_data.transition.postconditions)
 					l_writer.set_pre_state_object_info (a_transition_data.serialization_info.post_object_type_as_string)
 				else
---					fixme ("We only use pre-state serialization because quite often, post-state serialization will cause a deserialization mismatch crash, don't know why. Perhaps because we evaluated expressions through the debugger. 30.10.2010 Jasonw")
 					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
 					l_objects.set_serialization_internal (a_transition_data.serialization_info.pre_serialization)
 					l_objects.set_properties (a_transition_data.transition.preconditions)
