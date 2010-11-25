@@ -143,7 +143,7 @@ feature -- Access
 			-- Feature under test
 
 	test_feature: FEATURE_I
-			-- Wrapping feature with execute `feature_under_test'
+			-- Wrapping feature which executes `feature_under_test'
 
 	before_test_break_point_slot: INTEGER
 			-- Break point slot before the execution of `feature_under_test'
@@ -341,10 +341,35 @@ feature -- Access
 			l_cursor: CURSOR
 			l_variables: like variables
 			l_class_ctxt: ETR_CLASS_CONTEXT
+			l_typed_var: ETR_TYPED_VAR
+			l_feat_tbl: FEATURE_TABLE
+			l_fcursor: CURSOR
+			l_var_prefix: STRING
+			l_type: TYPE_A
 		do
+			l_var_prefix := variable_name_prefix
+			l_feat_tbl := a_test_case_class.feature_table
+
+			create l_locals.make (20)
+			l_locals.compare_objects
+			l_fcursor := l_feat_tbl.cursor
+			from
+				l_feat_tbl.start
+			until
+				l_feat_tbl.after
+			loop
+				if l_feat_tbl.item_for_iteration.feature_name.starts_with (l_var_prefix) then
+					l_type := l_feat_tbl.item_for_iteration.type
+					create l_typed_var.make (l_feat_tbl.item_for_iteration.feature_name, l_type, l_type)
+					l_locals.force (l_typed_var, l_typed_var.name)
+				end
+				l_feat_tbl.forth
+			end
+			l_feat_tbl.go_to (l_fcursor)
+
 			create l_class_ctxt.make (a_test_case_class)
 			create l_feature_context.make (a_test_case_class.feature_named (test_feature_name), l_class_ctxt)
-			l_locals := l_feature_context.local_by_name
+--			l_locals := l_feature_context.local_by_name
 
 			create l_variables.make (l_locals.count)
 			l_variables.compare_objects

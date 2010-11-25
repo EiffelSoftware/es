@@ -296,20 +296,47 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
 			l_data: STRING
 			l_list: SORTED_TWO_WAY_LIST [INTEGER]
-
+			l_last_index: INTEGER
+			i: INTEGER
+			l_bp_count: INTEGER
 		do
+			l_bp_count := a_transtion.feature_.number_of_breakpoint_slots
+			append_string_field (breakpoint_number_field, l_bp_count.out)
+			append_string_field (first_body_breakpoint_field, a_transtion.feature_.first_breakpoint_slot_index.out)
 			create l_data.make (128)
 			create l_list.make
 			a_transtion.hit_breakpoints.do_all (agent l_list.extend)
-
 			from
 				l_list.start
 			until
 				l_list.after
 			loop
+				if l_list.item >= l_last_index + 1 then
+					from
+						i := l_last_index + 1
+					until
+						i = l_list.item
+					loop
+						l_data.append_character ('_')
+						l_data.append_character (';')
+						i := i + 1
+					end
+				end
 				l_data.append_integer (l_list.item)
 				l_data.append_character (';')
+				l_last_index := l_list.item
 				l_list.forth
+			end
+			if l_last_index < l_bp_count then
+				from
+					i := l_last_index
+				until
+					i > l_bp_count
+				loop
+					l_data.append_character ('_')
+					l_data.append_character (';')
+					i := i + 1
+				end
 			end
 			append_string_field (hit_break_points_field, l_data)
 		end
