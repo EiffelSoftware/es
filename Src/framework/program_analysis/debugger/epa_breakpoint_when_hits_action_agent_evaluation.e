@@ -30,6 +30,10 @@ feature -- Access
 
 	expression_retriever: FUNCTION [ANY, TUPLE, DS_HASH_SET [EPA_EXPRESSION]]
 			-- Agent to fetch expressions to be evaluate
+		note
+     		option: transient
+   		attribute
+   		end
 
 feature -- Basic operations
 

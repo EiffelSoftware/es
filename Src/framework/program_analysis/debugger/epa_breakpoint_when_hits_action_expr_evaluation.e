@@ -37,6 +37,10 @@ feature -- Access
 
 	expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions to be evaluate
+		note
+     		option: transient
+   		attribute
+   		end
 
 feature -- Basic operations
 
