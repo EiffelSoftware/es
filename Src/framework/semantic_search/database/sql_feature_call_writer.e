@@ -89,17 +89,17 @@ feature{NONE} -- Implementation
 			setup_reference_value_table (queryable.preconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.preconditions)
 			append_contracts_internal (queryable.preconditions, l_obj_equiv_sets, True, False, a_transition)
-			create l_obj_equiv_sets.make (0)
-			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
-			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True, a_transition)
+--			create l_obj_equiv_sets.make (0)
+--			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
+--			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True, a_transition)
 
 				-- Appending postconditions.
 			setup_reference_value_table (queryable.postconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.postconditions)
 			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, False, a_transition)
-			create l_obj_equiv_sets.make (0)
-			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
-			append_contracts_internal (queryable.written_postconditions, l_obj_equiv_sets, False, True, a_transition)
+--			create l_obj_equiv_sets.make (0)
+--			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
+--			append_contracts_internal (queryable.written_postconditions, l_obj_equiv_sets, False, True, a_transition)
 		end
 
 	append_contracts_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_precondition: BOOLEAN; a_human_written: BOOLEAN; a_transition: SEM_FEATURE_CALL_TRANSITION)
