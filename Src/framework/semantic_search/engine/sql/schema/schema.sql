@@ -369,6 +369,8 @@ CREATE TABLE  `semantic_search`.`PropertyBindings9` (
   `value_type_kind` tinyint(3) unsigned NOT NULL,
   `position` int(11) NOT NULL,
   `vars` varchar(256) NOT NULL,
+  `breakpoint_number` int(10) unsigned NOT NULL,
+  `first_body_breakpoint` int(10) unsigned NOT NULL,
   KEY `sb9_index` (`qry_id`, `prop_id`) USING BTREE,
   KEY `sb9_qry_id_fk` (`qry_id`),
   KEY `sb9_type1_fk` (`type1`),
@@ -393,4 +395,10 @@ CREATE TABLE  `semantic_search`.`PropertyBindings9` (
   CONSTRAINT `sb9_qry_id_fk` FOREIGN KEY (`qry_id`) REFERENCES `Queryables` (`qry_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE  `semantic`.`HitBreakpoints` (
+  `qry_id` int(10) unsigned NOT NULL,
+  `bp_slot` int(10) unsigned NOT NULL,
+  KEY `bpslot_index` (`qry_id`),
+  CONSTRAINT `bpslot_qry_id_fk` FOREIGN KEY (`qry_id`) REFERENCES `Queryables` (`qry_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
