@@ -371,6 +371,7 @@ CREATE TABLE  `semantic_search`.`PropertyBindings9` (
   `vars` varchar(256) NOT NULL,
   `breakpoint_number` int(10) unsigned NOT NULL,
   `first_body_breakpoint` int(10) unsigned NOT NULL,
+  `test_case_name` varchar(300),
   KEY `sb9_index` (`qry_id`, `prop_id`) USING BTREE,
   KEY `sb9_qry_id_fk` (`qry_id`),
   KEY `sb9_type1_fk` (`type1`),
