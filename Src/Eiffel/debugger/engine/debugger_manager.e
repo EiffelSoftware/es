@@ -1099,11 +1099,12 @@ feature -- Expression evaluation
 			end
 		end
 
-	expression_evaluation_with_assertion_checking (a_expr: STRING; a_checking_assertion: BOOLEAN): DUMP_VALUE
+	expression_evaluation_with_assertion_checking (a_expr: STRING; a_checking_assertion: BOOLEAN; a_side_effect_free: BOOLEAN): DUMP_VALUE
 			-- Expression evaluation's result for `a_expr' in current context
 			-- (note: Result = Void implies an error occurred)
 			-- `a_checking_assertion' indicate if assertions associated with `a_expr' are checked
 			-- during expression evaluation.
+			-- `a_side_effect_free' indicates if `a_expr' is allowed to have side effects.
 		require
 			safe_application_is_stopped: safe_application_is_stopped
 		local
@@ -1115,6 +1116,7 @@ feature -- Expression evaluation
 				exp.set_keep_assertion_checking (a_checking_assertion)
 				if not exp.error_occurred then
 					create eval.make (exp)
+					eval.set_side_effect_forbidden (a_side_effect_free)
 					eval.evaluate
 					if not eval.error_occurred then
 						Result := eval.value
