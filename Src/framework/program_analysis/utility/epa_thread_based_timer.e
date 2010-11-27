@@ -108,12 +108,14 @@ feature{NONE} -- Implementation
 			l_slices: INTEGER
 			i: INTEGER
 			l_paused_times: INTEGER
+			l_count: INTEGER
 		do
 			l_slices := timeout // 5 + 1
 			i := 1
 			from until l_should_exit loop
 				l_paused_times := paused_times
 				sleep (5 * 1_000_000)
+				l_count := l_count + 1
 				if not should_terminate and then (l_paused_times = paused_times) then
 					if i > l_slices then
 						if not should_terminate and then not has_paused then
@@ -126,9 +128,14 @@ feature{NONE} -- Implementation
 					end
 				else
 					i := 1
+					l_count := 0
 				end
 				if not l_should_exit then
 					l_should_exit := should_terminate
+				end
+					-- This is hack to avoid that the current thread never ends.
+				if not l_should_exit then
+					l_should_exit := l_count > 200 * 60 * 10 -- 10 minutes.
 				end
 			end
 		end

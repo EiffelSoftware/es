@@ -673,6 +673,10 @@ feature{NONE} -- Actions
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application is stopped in the debugger
+		local
+			l_post_state: EPA_STATE
+			l_old_stack: INTEGER
+			l_test_feature_stack_number: INTEGER
 		do
 			timeout.pause
 			if a_dm.application_is_executing or a_dm.application_is_stopped then
@@ -690,8 +694,27 @@ feature{NONE} -- Actions
 						if not a_dm.application_status.exception_meaning.as_lower.has_substring ("mismatch") then
 							if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
 							else
-								if not last_test_case_info.is_passing then
-									on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+								if last_test_case_info /= Void then
+--									if
+--										a_dm.application_status.exception_meaning ~ "Postcondition violated." and then
+--										a_dm.application_status.e_feature.name ~ last_test_case_info.feature_under_test.feature_name and then
+--										a_dm.application_status.e_feature.associated_class.name ~ last_test_case_info.class_under_test.name
+--									then
+											-- The exception is postcondition violation in the feature under test,
+											-- we try to get some post-state expressions evaluated.										
+										l_old_stack := debugger_manager.application.current_execution_stack_number
+										l_test_feature_stack_number := call_stack_index (debugger_manager, last_test_case_info.test_feature_name)
+										if l_test_feature_stack_number > 0 then
+											debugger_manager.application.set_current_execution_stack_number (l_test_feature_stack_number)
+											l_post_state := expression_evaluations (last_test_case_info, expressions_to_evaluate (last_test_case_info, False))
+											on_state_expression_evaluated (Void, l_post_state, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+											debugger_manager.application.set_current_execution_stack_number (l_old_stack)
+										else
+											on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+										end
+--									elseif not last_test_case_info.is_passing then
+--										on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+--									end
 								end
 							end
 						end
@@ -1587,4 +1610,26 @@ feature{NONE} -- Implementation
 			-- Timer to terminate debuggee if the execution
 			-- takes too long
 
+	expression_evaluations (a_test_case_info: CI_TEST_CASE_INFO; a_expressions: DS_HASH_SET [EPA_EXPRESSION]): EPA_STATE
+			-- Evaluations of `a_expressions'
+		local
+			l_state_value: EPA_EQUATION
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_dm: like debugger_manager
+		do
+			create Result.make (a_expressions.count, a_test_case_info.test_case_class, a_test_case_info.test_feature)
+
+				-- Evaluate `expressions'.
+			l_dm := debugger_manager
+			from
+				l_cursor := a_expressions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				create l_state_value.make (l_cursor.item, evaluated_value_from_debugger (l_dm, l_cursor.item))
+				Result.force_last (l_state_value)
+				l_cursor.forth
+			end
+		end
 end

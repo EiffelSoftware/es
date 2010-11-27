@@ -126,7 +126,7 @@ feature -- Evaluation
 	evaluated_string_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: STRING): EPA_EXPRESSION_VALUE
 			-- Value of `a_expression' evaluated through debugger
 		do
-			Result := expression_value_from_dump (a_dm.expression_evaluation_with_assertion_checking (a_expression, True), a_expression)
+			Result := expression_value_from_dump (a_dm.expression_evaluation_with_assertion_checking (a_expression, True, False), a_expression)
 		end
 
 	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE; a_expression_text: STRING): EPA_EXPRESSION_VALUE
