@@ -184,7 +184,8 @@ feature -- Status report
 				a_type = object_state_request_flag or else
 				a_type = type_request_flag or else
 				a_type = precondition_evaluation_request_flag or else
-				a_type = predicate_evaluation_request_flag
+				a_type = predicate_evaluation_request_flag or else
+				a_type = execute_agent_creation_flag
 		end
 
 	should_generate_log: BOOLEAN
@@ -279,7 +280,7 @@ feature {NONE} -- Handlers
 			-- Report execute request.
 		require
 			last_request_attached: last_request /= Void
-			last_request_is_execute_request: last_request_type = execute_request_flag
+			last_request_is_execute_request: last_request_type = execute_request_flag or last_request_type = execute_agent_creation_flag
 		local
 			l_bcode: detachable STRING
 			l_cstring: C_STRING

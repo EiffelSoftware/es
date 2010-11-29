@@ -157,6 +157,16 @@ feature{NONE} -- Construction
 		deferred
 		end
 
+	tc_is_function: BOOLEAN
+			-- Is the feature under test a function?
+		deferred
+		end
+
+	tc_is_attribute: BOOLEAN
+			-- Is the feature under test an attribute?
+		deferred
+		end
+
     tc_is_creation: BOOLEAN
             -- Is the feature under test a creation feature?
         deferred
@@ -363,7 +373,8 @@ feature{NONE} -- Constants
 	ph_post_state: STRING = "$(POST_STATE)"
 	ph_feature_type: STRING = "$(FEATURE_TYPE)"
 	ph_command: STRING = "CMD"
-	ph_query: STRING = "QRY"
+	ph_function: STRING = "FUN"
+	ph_attribute: STRING = "ATT"
 
 	tc_name_extension: STRING = "e"
 	tc_feature_name: STRING = "generated_test_1"

@@ -193,7 +193,11 @@ feature{NONE} -- Class content
 				l_name.replace_substring_all (ph_class_under_test, tc_class_under_test)
 				l_name.replace_substring_all (ph_feature_under_test, tc_feature_under_test)
 				if tc_is_query then
-					l_name.replace_substring_all (ph_feature_type, ph_query)
+					if tc_is_function then
+						l_name.replace_substring_all (ph_feature_type, ph_function)
+					else
+						l_name.replace_substring_all (ph_feature_type, ph_attribute)
+					end
 				else
 					l_name.replace_substring_all (ph_feature_type, ph_command)
 				end
@@ -217,6 +221,19 @@ feature{NONE} -- Class content
 			-- <Precursor>
 		do
 			Result := current_data.is_feature_query
+		end
+
+
+	tc_is_function: BOOLEAN
+			-- Is the feature under test a function?
+		do
+			Result := current_data.feature_.is_function
+		end
+
+	tc_is_attribute: BOOLEAN
+			-- Is the feature under test an attribute?
+		do
+			Result := current_data.feature_.is_attribute
 		end
 
     tc_is_creation: BOOLEAN
