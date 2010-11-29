@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -359,6 +359,11 @@ feature {AUT_REQUEST} -- Processing
 			print_indentation
 			output_stream.put_line ("end")
 			ot_counter := ot_counter + 1
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		do
+			fixme("not implemented yet")
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)

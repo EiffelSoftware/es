@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 
 		"AutoTest command line parser"
@@ -12,6 +12,9 @@ class AUTO_TEST_COMMAND_LINE_PARSER
 
 inherit
 	AUT_SHARED_RANDOM
+
+	AUT_SHARED_AGENT_SETTINGS
+		export {NONE} all end
 
 	KL_SHARED_ARGUMENTS
 
@@ -90,6 +93,7 @@ feature{NONE} -- Initialization
 			l_8times_option: AP_STRING_OPTION
 			l_9times_option: AP_STRING_OPTION
 			l_freeze_flag: AP_FLAG
+			l_agents_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -324,6 +328,10 @@ feature{NONE} -- Initialization
 			create l_freeze_flag.make_with_short_form ('f')
 			l_freeze_flag.set_description ("Freeze the target system before testing. Default: False")
 			parser.options.force_last (l_freeze_flag)
+
+			create l_agents_option.make_with_long_form ("agents")
+			l_agents_option.set_description ("Should features with agent type arguments be processed? Possible options: none, only, all. Default: all")
+			parser.options.force_last (l_agents_option)
 
 			parser.parse_list (a_arguments)
 
@@ -772,6 +780,15 @@ feature{NONE} -- Initialization
 				should_freeze_before_testing := True
 			end
 
+			if not error_handler.has_error and then l_agents_option.was_found then
+				if l_agents_option.parameter ~ "only" then
+					agent_settings.toggle_only_agents
+				elseif l_agents_option.parameter ~ "none" then
+					agent_settings.toggle_no_agents
+				else
+					error_handler.report_statistics_format_error (l_agents_option.parameter)
+				end
+			end
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1080,7 +1097,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

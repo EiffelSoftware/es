@@ -418,17 +418,59 @@ feature -- Execution
 			retry
 		end
 
-	create_agent (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_feature: FEATURE_I; a_operands: HASH_TABLE [detachable ITP_EXPRESSION, INTEGER])
+	create_agent (a_receiver: ITP_VARIABLE; a_receiver_type: TYPE_A;
+				  a_feature: AUT_FEATURE_OF_TYPE;
+				  a_operands: DS_BILINEAR_TABLE [detachable ITP_VARIABLE, INTEGER])
 			-- Create an agent object of `a_type' and store it `a_receiver'.
 			-- The created agent can be either an agent for a procedure or an agent for function.
 			-- The created agent should wrap around `a_feature'.
 			-- `a_operands' specify which operands are closed for the created agent.
 			-- `a_operands' is a table, key is 0-based operand index, value (when attached) is the expression for that closed operand;
 			-- (when void) is the indication that the corresponding operand is open.
-			-- operand index is 0-based, 0 means target, 1 means the first argument, and so on.
+			-- operand index is 1-based, 1 means the first argument, and so on.	
 		require
-			a_feature_is_procedure: a_feature.has_return_value implies a_feature.is_function
+			a_feature_is_procedure: a_feature.feature_.has_return_value implies a_feature.feature_.is_function
+		local
+			normal_response:AUT_NORMAL_RESPONSE
+			l_request:AUT_CREATE_AGENT_REQUEST
 		do
+			create l_request.make (system, a_receiver, a_receiver_type, a_feature, a_operands)
+			last_request := l_request
+			last_request.process (socket_data_printer)
+
+			set_test_case_index (l_request)
+
+			proxy_log_printers.set_start_time (test_duration)
+			flush_process
+			parse_invoke_response
+			last_request.set_response (last_response)
+			proxy_log_printers.set_end_time (test_duration)
+
+			proxy_log_printers.report_request (Current, last_request)
+			if not last_response.is_bad then
+				if not last_response.is_error then
+					normal_response ?= last_response
+					check
+						normal_response_not_void: normal_response /= Void
+					end
+				end
+			else
+				is_ready := False
+			end
+
+			stop_process_on_problems (last_response)
+			if is_ready and normal_response /= Void and then normal_response.exception = Void then
+				if not is_replaying then
+						-- If we are not in replay mode, we generate "type" request to get the
+						-- dynamic type of the assignment target. If we are in replay mode,
+						-- the "type" request will be already in the replay list, so we don't need to
+						-- generate them automatically.					
+					retrieve_type_of_variable (a_receiver)
+				end
+			end
+			log_speed
+		ensure
+			last_request_not_void: last_request /= Void
 		end
 
 	create_object (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_procedure: FEATURE_I; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; a_feature: detachable AUT_FEATURE_OF_TYPE)

@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -54,6 +54,11 @@ feature {AUT_REQUEST} -- Processing
 			is_relevant := False
 		end
 
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		do
+			fixme("Not implemented")
+		end
+
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
 			is_relevant := variables.has (a_request.target)
@@ -99,7 +104,7 @@ invariant
 	no_variable_void: not variables.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

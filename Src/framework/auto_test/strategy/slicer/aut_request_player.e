@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -136,6 +136,11 @@ feature {AUT_REQUEST} -- Processing
 			a_request.set_response (interpreter.last_request.response)
 		end
 
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		do
+			fixme("Not implemented")
+		end
+
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
 			if a_request.argument_list /= Void and then interpreter.variable_table.are_expressions_valid (a_request.argument_list) then
@@ -222,7 +227,7 @@ invariant
 	request_list_cursor_valid: request_list_cursor.container = request_list
 	interpreter_in_replay_mode: interpreter.is_replaying
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

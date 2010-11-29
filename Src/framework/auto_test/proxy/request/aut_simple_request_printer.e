@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Objects creating a simple readable expression from a request.
 	]"
@@ -90,6 +90,12 @@ feature {AUT_REQUEST} -- Visitors
 				string.append_string (a_request.creation_procedure.feature_name)
 				append_arguments (a_request)
 			end
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+			-- <Precursor>
+		do
+			fixme("Not implemented")
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)

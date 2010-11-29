@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Printer to print requests into text form"
 	author: ""
 	date: "$Date$"
@@ -98,6 +98,14 @@ feature {AUT_REQUEST} -- Processing
 				print_argument_list (a_request.argument_list)
 			end
 			output_stream.put_new_line
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		local
+			l_text: STRING
+		do
+			output_stream.put_string (execute_request_header)
+			output_stream.put_string (a_request.agent_assignment_code (once ""))
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)

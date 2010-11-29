@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -323,6 +323,9 @@ feature -- Report events
 					end
 					if attached {AUT_CREATE_OBJECT_REQUEST} l_caller then
 						l_msg.append_string ("create ")
+					end
+					if attached {AUT_CREATE_AGENT_REQUEST} l_caller then
+						l_msg.append_string ("agent ")
 					end
 					l_msg.append_string (type_name (l_caller.target_type, l_caller.feature_to_call))
 					l_msg.append_character ('.')

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {AUT_PROXY_LOG_PROCESSOR}."
 	author: ""
 	date: "$Date$"
@@ -428,6 +428,12 @@ feature{AUT_REQUEST} -- Processing requests
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
+			-- Process `a_request'.
+		do
+			process_call_based_request (a_request)
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
 			-- Process `a_request'.
 		do
 			process_call_based_request (a_request)

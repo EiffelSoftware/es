@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -51,6 +51,11 @@ feature {AUT_REQUEST} -- Processing
 	process_stop_request (a_request: AUT_STOP_REQUEST)
 		do
 			-- Do nothing.
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		do
+			fixme("Not implemented")
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)

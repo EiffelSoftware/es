@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Object pool for AutoTest"
 	author: ""
 	date: "$Date$"
@@ -140,6 +140,14 @@ feature -- Access
 
 	root_class: CLASS_C
 			-- Root class of Current system
+
+	variable_type (a_variable: ITP_VARIABLE): TYPE_A
+			-- Type of `a_variable'
+		do
+			Result := storage.item (a_variable)
+		ensure
+			result_set: Result = storage.item (a_variable)
+		end
 
 feature -- Status report
 

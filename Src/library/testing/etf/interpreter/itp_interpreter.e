@@ -314,7 +314,7 @@ feature {NONE} -- Handlers
 						l_bcode.count)
 
 						-- Test case serialization: retrieve pre-TC state.
-					if is_test_case_serialization_enabled then
+					if is_test_case_serialization_enabled and then not is_test_case_agent_creation then
 						retrieve_test_case_prestate (l_last_request.l_data)
 					end
 
@@ -345,7 +345,7 @@ feature {NONE} -- Handlers
 					end
 
 						-- Test case serialization.
-					if is_test_case_serialization_enabled then
+					if is_test_case_serialization_enabled and then not is_test_case_agent_creation then
 						retrieve_post_test_case_state
 						log_test_case_serialization
 					end
@@ -608,9 +608,13 @@ feature {NONE} -- Parsing
 				if last_request = Void then
 					report_error (once "Received data is not recognized as a request.")
 				else
+					is_test_case_agent_creation := False
 					inspect
 						last_request_type
 					when execute_request_flag then
+						report_execute_request
+					when execute_agent_creation_flag then
+						is_test_case_agent_creation := True
 						report_execute_request
 					when type_request_flag then
 						report_type_request
@@ -1506,6 +1510,9 @@ feature -- Test case serialization
 			-- Information about already created agent objects.
 			-- Key is variable ID, value is the agent creation information describing
 			-- how that agent is created.
+
+	is_test_case_agent_creation: BOOLEAN
+			-- Is the test case to-be-executed an agent creation?
 
 invariant
 	log_file_open_write: log_file.is_open_write

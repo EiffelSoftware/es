@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "AutoTest request processor"
 	author: ""
 	date: "$Date$"
@@ -31,6 +31,12 @@ feature {AUT_REQUEST} -- Processing
 			-- Process `a_request'.
 		do
 			do_all (agent a_request.process (?))
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+			-- Process `a_request'.
+		do
+			fixme("Not implemented")
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
@@ -76,7 +82,7 @@ feature {AUT_REQUEST} -- Processing
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

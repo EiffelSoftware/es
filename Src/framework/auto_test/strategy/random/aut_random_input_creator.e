@@ -1,4 +1,4 @@
-note
+﻿note
 
 	description:
 
@@ -19,6 +19,9 @@ inherit
 		export {NONE} all end
 
 	ERL_G_TYPE_ROUTINES
+		export {NONE} all end
+
+	AUT_CREATE_AGENT_UTILITIES
 		export {NONE} all end
 
 	REFACTORING_HELPER
@@ -61,6 +64,9 @@ feature -- Access
 	object_creator: AUT_RANDOM_OBJECT_CREATOR
 			-- Task that will be used to create the individual objects
 
+	agent_creator: AUT_RANDOM_AGENT_CREATOR
+			-- Agent creator used to create agents
+
 	types: DS_LIST [TYPE_A]
 			-- List containing the types that the objects
 			-- in `constants' will conform to;
@@ -95,6 +101,7 @@ feature -- Execution
 			has_next_step := True
 			receivers.wipe_out
 			object_creator := Void
+			agent_creator := Void
 			has_error := False
 		ensure then
 			no_receivers: receivers.count = 0
@@ -105,6 +112,7 @@ feature -- Execution
 		local
 			i: INTEGER
 			receiver: ITP_VARIABLE
+			l_type: TYPE_A
 		do
 			if object_creator /= Void then
 				object_creator.step
@@ -116,17 +124,32 @@ feature -- Execution
 					end
 					object_creator := Void
 				end
-			elseif receivers.count < types.count then
-				random.forth
-				i := (random.item  \\ 5)
-				if i = 0 or types.item (receivers.count + 1).is_expanded then
-					create_object_creator
+			elseif agent_creator /= Void then
+				if agent_creator.has_next_step then
+					agent_creator.step
+				elseif agent_creator.receiver /= Void then
+					receivers.force_last (agent_creator.receiver)
+					agent_creator := Void
 				else
-					receiver := interpreter.typed_object_pool.random_conforming_variable (interpreter_root_class, types.item (receivers.count + 1))
-					if receiver /= Void then
-						receivers.force_last (receiver)
+					cancel
+				end
+			elseif receivers.count < types.count then
+
+				l_type := types.item (receivers.count + 1)
+				if l_type.has_associated_class and then is_agent_type(l_type) then
+						create_agent_creator
+				else
+					random.forth
+					i := (random.item  \\ 5)
+					if i = 0 or l_type.is_expanded then
+						create_object_creator
 					else
-						cancel
+						receiver := interpreter.typed_object_pool.random_conforming_variable (interpreter_root_class, l_type)
+						if receiver /= Void then
+							receivers.force_last (receiver)
+						else
+							cancel
+						end
 					end
 				end
 			else
@@ -141,6 +164,12 @@ feature -- Execution
 		end
 
 feature {NONE} -- Steps
+
+	create_agent_creator
+		do
+			create agent_creator.make (system, interpreter, types.item (receivers.count+1), feature_table)
+			agent_creator.start
+		end
 
 	create_object_creator
 			-- Create object creator for next receiver.
@@ -259,7 +288,7 @@ invariant
 	has_error_implies_over: has_error implies not has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

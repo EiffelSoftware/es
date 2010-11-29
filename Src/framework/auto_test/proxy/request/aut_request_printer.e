@@ -1,4 +1,4 @@
-note
+﻿note
 	description:
 
 		"Serializes request so they can be sent to interpreter"
@@ -96,6 +96,13 @@ feature {AUT_REQUEST} -- Processing
 	process_stop_request (a_request: AUT_STOP_REQUEST)
 		do
 			last_request := [quit_request_flag, ""]
+		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+		local
+			l_code:STRING_8
+		do
+			last_request := [execute_request_flag, [a_request.byte_code, once "agent " + a_request.agent_feature.feature_name, Void]]
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Constants used by interpeter
 	]"
@@ -33,7 +33,10 @@ feature -- AutoTest socket request flags
 			-- Flag for "precondition" request
 
 	predicate_evaluation_request_flag: NATURAL_8 = 7
-			-- Flag for "predicate" request			
+			-- Flag for "predicate" request		
+
+	execute_agent_creation_flag: NATURAL_8 = 8
+			-- Flag for "agent creation" request	
 
 feature -- AutoTest socket reponse flags
 
@@ -81,7 +84,7 @@ feature -- Strings
 			-- Prefix for variables
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

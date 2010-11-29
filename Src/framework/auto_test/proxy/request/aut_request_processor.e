@@ -49,6 +49,14 @@ feature{AUT_REQUEST} -- Processing
 		deferred
 		end
 
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+			-- Process `a_request'.
+		require
+			a_request_not_void: a_request /= void
+			a_request_is_valid: is_request_valid (a_request)
+		deferred
+		end
+
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 			-- Process `a_request'.
 		require
@@ -98,7 +106,7 @@ feature{AUT_REQUEST} -- Processing
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Objects that record request logs with their corresponding response.
 	]"
@@ -120,6 +120,13 @@ feature {NONE} -- Implementation
 				a_request.set_response (l_last_response)
 			end
 		end
+
+	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
+			-- <Precursor>
+		do
+			fixme("not implemented yet")
+		end
+
 
 	process_start_request (a_request: AUT_START_REQUEST)
 			-- <Precursor>
