@@ -422,12 +422,9 @@ feature -- Execution
 				  a_feature: AUT_FEATURE_OF_TYPE;
 				  a_operands: DS_BILINEAR_TABLE [detachable ITP_VARIABLE, INTEGER])
 			-- Create an agent object of `a_type' and store it `a_receiver'.
-			-- The created agent can be either an agent for a procedure or an agent for function.
 			-- The created agent should wrap around `a_feature'.
 			-- `a_operands' specify which operands are closed for the created agent.
-			-- `a_operands' is a table, key is 0-based operand index, value (when attached) is the expression for that closed operand;
-			-- (when void) is the indication that the corresponding operand is open.
-			-- operand index is 1-based, 1 means the first argument, and so on.	
+			-- `a_operands' is a table, key is 0-based operand index, value is the expression for that closed operand
 		require
 			a_feature_is_procedure: a_feature.feature_.has_return_value implies a_feature.feature_.is_function
 		local
