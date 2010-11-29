@@ -678,7 +678,6 @@ feature{NONE} -- Actions
 			l_old_stack: INTEGER
 			l_test_feature_stack_number: INTEGER
 		do
-			timeout.pause
 			if a_dm.application_is_executing or a_dm.application_is_stopped then
 				if a_dm.application_status.reason_is_catcall then
 					a_dm.controller.resume_workbench_application
@@ -706,7 +705,11 @@ feature{NONE} -- Actions
 										l_test_feature_stack_number := call_stack_index (debugger_manager, last_test_case_info.test_feature_name)
 										if l_test_feature_stack_number > 0 then
 											debugger_manager.application.set_current_execution_stack_number (l_test_feature_stack_number)
+											if timeout.has_paused then
+												timeout.resume
+											end
 											l_post_state := expression_evaluations (last_test_case_info, expressions_to_evaluate (last_test_case_info, False))
+											timeout.pause
 											on_state_expression_evaluated (Void, l_post_state, False, last_test_case_info, last_post_state_expression_evaluation_manger)
 											debugger_manager.application.set_current_execution_stack_number (l_old_stack)
 										else
@@ -721,6 +724,9 @@ feature{NONE} -- Actions
 						a_dm.controller.resume_workbench_application
 					end
 				end
+			end
+			if not timeout.has_paused then
+				timeout.pause
 			end
 		end
 
