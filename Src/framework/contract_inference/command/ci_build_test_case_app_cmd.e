@@ -58,12 +58,14 @@ feature{NONE} -- Implementation
 			l_subdir_name: STRING
 			l_file_name: FILE_NAME
 			l_feature_name: STRING
-			l_sections: LIST [STRING]
 			l_test_tbl: HASH_TABLE [LINKED_LIST [STRING], STRING]
 			l_tests: LINKED_LIST [STRING]
 			l_test_name: STRING
 			l_feature_specified: BOOLEAN
+			l_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
+			create l_matcher.make
+			l_matcher.compile ("(.+)__[0-9]+$")
 			l_feature_specified := attached config.feature_name_for_test_cases
 			create test_cases.make (100)
 			test_cases.compare_objects
@@ -76,9 +78,9 @@ feature{NONE} -- Implementation
 			loop
 				l_subdir_name := l_class_dir.lastentry.twin
 				if not (l_subdir_name ~ once "." or l_subdir_name ~ once "..") then
-					l_sections := string_slices (l_subdir_name, once "__")
-					if l_sections.count = 2 then
-						l_feature_name := l_sections.first
+					l_matcher.match (l_subdir_name)
+					if l_matcher.has_matched then
+						l_feature_name := l_matcher.captured_substring (1)
 						if l_feature_specified implies config.feature_name_for_test_cases.has (l_feature_name) then
 							if test_cases.has (l_feature_name) then
 								l_test_tbl := test_cases.item (l_feature_name)
