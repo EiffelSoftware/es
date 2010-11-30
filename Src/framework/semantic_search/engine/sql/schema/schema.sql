@@ -398,7 +398,7 @@ CREATE TABLE  `semantic_search`.`PropertyBindings9` (
   CONSTRAINT `sb9_qry_id_fk` FOREIGN KEY (`qry_id`) REFERENCES `Queryables` (`qry_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE  `semantic`.`HitBreakpoints` (
+CREATE TABLE  `semantic_search`.`HitBreakpoints` (
   `qry_id` int(10) unsigned NOT NULL,
   `bp_slot` int(10) unsigned NOT NULL,
   KEY `bpslot_index` (`qry_id`),
