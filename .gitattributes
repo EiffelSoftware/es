@@ -2201,6 +2201,10 @@ Src/compatible/library/process/tests/tests.lic -text
 Src/compatible/library/testing/testing-safe.lic -text
 Src/compatible/library/testing/testing.lic -text
 Src/compatible/library/testing/tests/tests.lic -text
+Src/compatible/library/text/parser/xml/parser/callbacks/README.TXT -text
+Src/compatible/library/text/parser/xml/parser/license.lic -text
+Src/compatible/library/text/parser/xml/tree/README.TXT -text
+Src/compatible/library/text/parser/xml/tree/license.lic -text
 Src/compatible/library/thread/tests/tests.lic -text
 Src/compatible/library/thread/thread-safe.lic -text
 Src/compatible/library/thread/thread.lic -text
