@@ -117,6 +117,11 @@ feature -- Options: basic
 	is_slicing_enabled: BOOLEAN
 			-- Should test cases be minimized via slicing?
 
+	is_executing_agent_features_enabled: BOOLEAN
+			-- Should features with agent type arguments be used for test cases?
+
+	is_executing_normal_features_enabled: BOOLEAN
+			-- Should features without arguments of agent type be used for test cases?
 
 	is_ddmin_enabled: BOOLEAN assign set_is_ddmin_enabled
 			-- Should test cases be minimized via ddmin?
@@ -619,6 +624,22 @@ feature -- Status setting
 			is_html_statistics_format_enabled := a_html_statistics
 		ensure
 			set: is_html_statistics_format_enabled = a_html_statistics
+		end
+
+	set_is_executing_agent_features_enabled(b: BOOLEAN)
+			-- Set `is_executing_agent_features_enabled'
+		do
+			is_executing_agent_features_enabled := b
+		ensure
+			is_executing_agent_features_enabled = b
+		end
+
+	set_is_executing_normal_features_enabled(b: BOOLEAN)
+			-- Set `is_executing_normal_features_enabled'
+		do
+			is_executing_normal_features_enabled := b
+		ensure
+			is_executing_normal_features_enabled = b
 		end
 
 	set_proxy_timeout (a_timeout: like proxy_time_out)

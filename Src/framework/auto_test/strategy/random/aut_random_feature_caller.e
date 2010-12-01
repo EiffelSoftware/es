@@ -21,13 +21,6 @@ inherit
 	AUT_SHARED_CONSTANTS
 		export {NONE} all end
 
-	AUT_SHARED_AGENT_SETTINGS
-		rename
-			make as make_agent_settings
-		export
-			{NONE} all
-		end
-
 	AUT_CREATE_AGENT_UTILITIES
 		export {NONE} all end
 
@@ -121,6 +114,14 @@ feature -- Access
 
 	feature_: AUT_FEATURE_OF_TYPE
 			-- Feature to be called
+
+	configuration: TEST_GENERATOR
+			-- Configuration of Current testing session
+		do
+			Result := interpreter.configuration
+		ensure
+			good_result: Result = interpreter.configuration
+		end
 
 feature -- Change
 
@@ -277,9 +278,9 @@ feature {NONE} -- Steps
 			feature_need_argument: feature_to_call /= Void and then feature_to_call.argument_count > 0
 		do
 			create argument_creator.make (system, interpreter, feature_table)
-			if agent_settings.execute_no_agent_features and then contains_agent_arguments (feature_) then
+			if not configuration.is_executing_agent_features_enabled and then contains_agent_arguments (feature_) then
 				cancel
-			elseif agent_settings.execute_only_agent_features and then not contains_agent_arguments (feature_) then
+			elseif not configuration.is_executing_normal_features_enabled and then not contains_agent_arguments (feature_) then
 				cancel
 			else
 				add_feature_argument_type_in_input_creator (feature_to_call, type, argument_creator)

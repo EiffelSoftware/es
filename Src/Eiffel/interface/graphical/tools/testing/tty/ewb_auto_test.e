@@ -153,6 +153,12 @@ feature -- Execution
 				        -- Should evolutionary algorithm be used?
 				l_generator.set_is_evolutionary_testing_enabled (l_ap.is_evolutionary_enabled)
 
+						-- Should agent features be tested?
+				l_generator.set_is_executing_agent_features_enabled (l_ap.is_executing_agent_features_enabled)
+
+						-- Should normal features be tested?
+				l_generator.set_is_executing_normal_features_enabled (l_ap.is_executing_normal_features_enabled)
+
 					-- Should precondition checking be enabled?
 				l_generator.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
 

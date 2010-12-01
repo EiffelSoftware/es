@@ -100,7 +100,7 @@ feature {AUT_REQUEST} -- Processing
 
 	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
 		do
-			last_request := [execute_request_flag, [a_request.byte_code, once "agent " + a_request.agent_feature.feature_name, Void]]
+			last_request := [execute_agent_creation_flag, [a_request.byte_code, once "agent " + a_request.agent_feature.feature_name, Void]]
 		end
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)

@@ -32,6 +32,11 @@ inherit
 			system
 		end
 
+	EPA_TYPE_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -284,19 +289,13 @@ feature {NONE} -- Implementation
 			l_return_type_agent := return_type
 			l_target_type_agent := target_type
 
-			l_return_type_feature := resolve_type(a_feature.feature_.type, a_feature.type)
-			l_target_type_feature := a_feature.type.deep_actual_type
+			l_return_type_feature := explicit_type_in_context (a_feature.feature_.type, a_feature.type)
+			l_target_type_feature := a_feature.type
 
 			Result := check_conform (l_return_type_feature,l_return_type_agent)
 				      and then check_conform (l_target_type_feature, l_target_type_agent)
 				      and then not has_anchored_arguments (a_feature.feature_)
 				      and then argument_types_conform (a_feature)
-		end
-
-	resolve_type (a_type: TYPE_A; context_type: TYPE_A): TYPE_A
-			-- resolve generics, anchored types etc
-		do
-			Result := a_type.deep_actual_type.instantiation_in (context_type, context_type.associated_class.class_id)
 		end
 
 	check_conform (a_type_1:TYPE_A;a_type_2:TYPE_A): BOOLEAN

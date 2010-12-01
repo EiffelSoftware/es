@@ -13,9 +13,6 @@ class AUTO_TEST_COMMAND_LINE_PARSER
 inherit
 	AUT_SHARED_RANDOM
 
-	AUT_SHARED_AGENT_SETTINGS
-		export {NONE} all end
-
 	KL_SHARED_ARGUMENTS
 
 create
@@ -780,11 +777,16 @@ feature{NONE} -- Initialization
 				should_freeze_before_testing := True
 			end
 
+			is_executing_agent_features_enabled := True
+			is_executing_normal_features_enabled := True
+
 			if not error_handler.has_error and then l_agents_option.was_found then
 				if l_agents_option.parameter ~ "only" then
-					agent_settings.toggle_only_agents
+					is_executing_normal_features_enabled := False
 				elseif l_agents_option.parameter ~ "none" then
-					agent_settings.toggle_no_agents
+					is_executing_agent_features_enabled := False
+				elseif l_agents_option.parameter ~ "all" then
+					-- Do nothing
 				else
 					error_handler.report_statistics_format_error (l_agents_option.parameter)
 				end
@@ -910,6 +912,12 @@ feature -- Status report
 
 	is_html_statistics_format_enabled: BOOLEAN
 			-- Should statistics be output static HTML?
+
+	is_executing_agent_features_enabled: BOOLEAN
+			-- Should features with agent type arguments be used for test cases?
+
+	is_executing_normal_features_enabled: BOOLEAN
+			-- Should features without arguments of agent type be used for test cases?
 
 	is_slicing_enabled: BOOLEAN
 			-- Should test cases be minimized via slicing?

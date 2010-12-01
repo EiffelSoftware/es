@@ -40,6 +40,17 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	explicit_type_in_context (a_type: TYPE_A; a_context_type: TYPE_A): TYPE_A
+			-- Explicit type resolved from `a_type' in the context of `a_context_type'
+			-- The returned explicit type will not have anchors and formal generics.
+		require
+			a_context_type_has_associated_class: a_context_type.has_associated_class
+		do
+			Result := actual_type_from_formal_type (a_type.actual_type, a_context_type.associated_class)
+			--a_type.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
+			Result := Result.context_free_type
+		end
+
 	type_a_from_string (a_name: STRING; a_context_class: CLASS_C): TYPE_A
 			-- Type parsed from `a_name'
 			-- If `a_name' is "NONE", return {NONE_A}.
