@@ -7,7 +7,7 @@ require
     l.count = i    
 */
 
-SELECT q.feature, q.content, q.qry_id, p1.value as "l.count", i.value as "i", q.hit_breakpoints
+SELECT q.feature, q.content, q.qry_id, p1.value as "l.count", i.value as "i", q.hit_breakpoints, p1.var1 as "l"
 FROM Queryables q, PropertyBindings1 i, PropertyBindings1 l, PropertyBindings1 p1
 WHERE
 q.feature = "move" AND
