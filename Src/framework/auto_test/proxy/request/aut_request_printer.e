@@ -99,8 +99,6 @@ feature {AUT_REQUEST} -- Processing
 		end
 
 	process_create_agent_request (a_request: AUT_CREATE_AGENT_REQUEST)
-		local
-			l_code:STRING_8
 		do
 			last_request := [execute_request_flag, [a_request.byte_code, once "agent " + a_request.agent_feature.feature_name, Void]]
 		end

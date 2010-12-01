@@ -330,7 +330,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_freeze_flag)
 
 			create l_agents_option.make_with_long_form ("agents")
-			l_agents_option.set_description ("Should features with agent type arguments be processed? Possible options: none, only, all. Default: all")
+			l_agents_option.set_description ("Should features with agent type arguments be processed? Possible options: none, only, all. None means: don't process features of this kind. Only means: discard all but features of this kind. All means: Process all features. Default: all")
 			parser.options.force_last (l_agents_option)
 
 			parser.parse_list (a_arguments)
@@ -1097,7 +1097,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
