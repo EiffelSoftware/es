@@ -36,7 +36,7 @@ feature -- Basic operations
 			l_ppt_name: STRING
 			l_invs: DS_HASH_SET [DKN_INVARIANT]
 		do
-			create last_invariants.make (20)
+			create last_invariants.make_equal (20)
 			create l_sections.make
 			create l_stream.make (a_string)
 

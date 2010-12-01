@@ -9,7 +9,7 @@ class
 
 inherit
 
-	DS_HASH_TABLE [DS_HASH_TABLE[DS_HASH_SET[V], K2], K1]
+	DS_HASH_TABLE [DS_HASH_TABLE[EPA_HASH_SET[V], K2], K1]
 		rename
 			make_with_equality_testers as make_table_with_equality_testers
 		end
@@ -70,7 +70,7 @@ feature -- Access
 			Result := value_event_cache
 		end
 
-	value_set (a_k2: K2; a_k1: K1): detachable DS_HASH_SET[V]
+	value_set (a_k2: K2; a_k1: K1): detachable EPA_HASH_SET[V]
 			-- Values under key 'a_k1' and 'a_k2'.
 		do
 			if has (a_k1) and then attached value (a_k1) as lt_table then
@@ -128,12 +128,28 @@ feature -- Status report
 
 feature -- Store
 
+	put_value_set (a_value_set: EPA_HASH_SET [V]; a_k2: K2; a_k1: K1)
+			-- Put `a_value_set' as the set of values under the secondary key 'a_k2' and the primary key 'a_k1'.
+		require
+			value_set_attached: a_value_set /= Void
+		local
+			l_table: DS_HASH_TABLE [EPA_HASH_SET [V], K2]
+		do
+			if has (a_k1) and then (attached value (a_k1) as lt_table) then
+				lt_table.force (a_value_set, a_k2)
+			else
+				create l_table.make_equal (10)
+				l_table.force (a_value_set, a_k2)
+				force (l_table, a_k1)
+			end
+		end
+
 	put_value (a_val: V; a_k2: K2; a_k1: K1)
-			-- Put 'a_val' under secondary key 'a_k2' and primary key 'a_k1'.
+			-- Put 'a_val' under the secondary key 'a_k2' and the primary key 'a_k1'.
 		local
 			l_is_unique: BOOLEAN
-			l_set: DS_HASH_SET [V]
-			l_table: DS_HASH_TABLE[DS_HASH_SET[V], K2]
+			l_set: EPA_HASH_SET [V]
+			l_table: DS_HASH_TABLE[EPA_HASH_SET[V], K2]
 		do
 			l_is_unique := False
 			if not has_value (a_val, a_k2, a_k1) then

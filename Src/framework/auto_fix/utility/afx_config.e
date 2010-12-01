@@ -10,6 +10,8 @@ class
 inherit
 	AFX_UTILITY
 
+	AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT
+
 	SHARED_EXEC_ENVIRONMENT
 
 create
@@ -229,7 +231,46 @@ feature -- Test case analysis
 			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
 			--		`is_combining_integral_expressions_in_breakpoint' is True.
 
+feature -- Fault localization
+
+	is_breakpoint_specific: BOOLEAN assign set_breakpoint_specific
+			-- Is comparison between expressions breakpoint-specific?
+
+	set_breakpoint_specific (a_flag: BOOLEAN)
+			-- Set `is_breakpoint_specific'.
+		do
+			is_breakpoint_specific := a_flag
+		end
+
+	is_CFG_usage_optimistic: BOOLEAN
+			-- Is CFG usage optimistic?
+		do
+			Result := CFG_usage = CFG_usage_optimistic
+		end
+
+	is_CFG_usage_pessimistic: BOOLEAN
+			-- Is CFG usage pessimistic?
+		do
+			Result := CFG_usage = CFG_usage_pessimistic
+		end
+
+	is_program_state_extended: BOOLEAN
+			-- Is monitoring extended program states?
+
+	rank_computation_mean_type: INTEGER
+			-- The ranks of fixing targets are computed as the mean values of the suspiciousness value, the data distance, and the control distance.
+			-- The attribute specifies which kind of mean value would be used.
+			-- Refer to {AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.
+
 feature -- Fix generation
+
+	max_fix_candidate: INTEGER
+			-- Maximal number of fixes to be generated and evaluated.
+			-- 0 for no limit.
+
+	max_fixing_target: INTEGER
+			-- Maximal number of fixing targets to be examined.
+			-- 0 for no limit.
 
 	max_valid_fix_number: INTEGER
 			-- Maximal number of valid fixes
@@ -321,6 +362,14 @@ feature -- Setting
 		do
 			is_using_random_based_strategy_cache := b
 			is_using_model_based_strategy_cache := not b
+		end
+
+	set_rank_computation_mean_type (a_type: INTEGER)
+			-- Set `rank_computation_mean_type'.
+		require
+			valid_mean_type: is_valid_mean_type (a_type)
+		do
+			rank_computation_mean_type := a_type
 		end
 
 	set_is_using_model_based_strategy (b: BOOLEAN)
@@ -493,6 +542,40 @@ feature -- Setting
 			model_directory := a_directory.twin
 		end
 
+	set_CFG_usage_optimistic
+			-- Set `CFG_usage'.
+		do
+			CFG_usage := CFG_usage_optimistic
+		end
+
+	set_CFG_usage_pessimistic
+			-- Set `CFG_usage'.
+		do
+			CFG_usage := CFG_usage_pessimistic
+		end
+
+	set_program_state_extended (a_flag: BOOLEAN)
+			-- Set `is_program_state_extended'.
+		do
+			is_program_state_extended := a_flag
+		end
+
+	set_max_fix_candidate (a_max: INTEGER)
+			-- Set `max_fix_candidate'.
+		require
+			max_ge_zero: a_max >= 0
+		do
+			max_fix_candidate := a_max
+		end
+
+	set_max_fixing_target (a_max: INTEGER)
+			-- Set `max_fixing_target'.
+		require
+			max_ge_zero: a_max >= 0
+		do
+			max_fixing_target := a_max
+		end
+
 feature{NONE} -- Implementation
 
 	working_directory_cache: detachable STRING
@@ -525,6 +608,12 @@ feature{NONE} -- Implementation
 	is_monitoring_breakpointwise_cache: BOOLEAN
 			-- Cache for `is_monitoring_breakpointwise'.
 
+	CFG_usage: INTEGER
+			-- How to use the dependance information from CFG.
+			-- The value can be `CFG_usage_optimistic' or `CFG_usage_pessimistic'.
+
+	CFG_usage_optimistic: INTEGER = 0
+	CFG_usage_pessimistic: INTEGER = 1
 
 feature{NONE} -- Implementation
 

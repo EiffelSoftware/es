@@ -10,6 +10,8 @@ deferred class
 inherit
 	AFX_UTILITY
 
+	AFX_FIX_SKELETON_CONSTANT
+
 feature{NONE} -- Initialization
 
 	make (a_spot: like exception_spot; a_analyzer: like structure_analyzer; a_fixing_locations: like fixing_locations; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
@@ -49,13 +51,13 @@ feature -- Access
 			-- Key is the UUID of a test case, value is the execution status
 			-- assoicated with that test case
 
-feature -- Constants
+--feature -- Constants
 
-	afore_skeleton_complexity: INTEGER is 1
-			-- Complexity level for afore fix skeleton
+--	afore_skeleton_complexity: INTEGER is 1
+--			-- Complexity level for afore fix skeleton
 
-	wrapping_skeleton_complexity: INTEGER is 2
-			-- Complexity level for wrapping fix skeleton
+--	wrapping_skeleton_complexity: INTEGER is 2
+--			-- Complexity level for wrapping fix skeleton
 
 feature -- Basic operations
 

@@ -56,6 +56,7 @@ feature -- Properties
 		local
 			l_parser: AFX_COMMAND_LINE_PARSER
 			l_config: AFX_CONFIG
+			l_session: AFX_SESSION
 			l_build_tc_cmd: AFX_TEST_CASE_APP_BUILDER
 			l_analyze_tc_cmd: AFX_TEST_CASE_APP_ANALYZER
 			l_initializer: AFX_INITIALIZER
@@ -66,7 +67,8 @@ feature -- Properties
 			l_parser.parse
 			l_config := l_parser.config
 
-			set_autofix_config (l_config)
+			create l_session.make (l_config)
+			set_session (l_session)
 
 			create l_initializer
 			l_initializer.prepare (l_config)
@@ -86,7 +88,7 @@ feature -- Properties
 				check using_random_based_strategy: l_config.is_using_random_based_strategy end
 
 				if l_config.should_build_test_cases then
-					create l_fixing_project_builder.make (l_config)
+					create l_fixing_project_builder.make
 					l_fixing_project_builder.execute
 				end
 

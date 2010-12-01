@@ -68,7 +68,7 @@ feature -- Query
 		    l_class_ids: DS_BILINEAR[INTEGER]
 		    l_system: SYSTEM_I
 		do
-		    l_system := autofix_config.eiffel_system
+		    l_system := session.config.eiffel_system
 		    create l_list.make_default
 
 		    if attached value (effective_extractor) as lt_table then

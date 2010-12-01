@@ -16,7 +16,7 @@ feature -- Basic operation
 			-- <Precursor>
 		local
 			l_exp: EPA_EXPRESSION
-			l_program_state_exp: EPA_PROGRAM_STATE_EXPRESSION
+			l_program_state_exp: AFX_PROGRAM_STATE_EXPRESSION
 			l_feature: FEATURE_I
 			l_first_index, l_last_index: INTEGER
 			l_index: INTEGER
@@ -35,7 +35,7 @@ feature -- Basic operation
 				l_exp := a_skeleton.item_for_iteration
 				l_exp_text := l_exp.text
 
-				check attached {EPA_PROGRAM_STATE_EXPRESSION} l_exp as lt_exp then
+				check attached {AFX_PROGRAM_STATE_EXPRESSION} l_exp as lt_exp then
 					l_index := lt_exp.breakpoint_slot
 					check valid_index: (l_index /= 0) implies (l_first_index <= l_index and then l_index <= l_last_index) end
 

@@ -9,25 +9,29 @@ class
 
 inherit
 	DKN_CONSTANTS
-	
+
 feature -- Access	
 
-	encoded_daikon_name (a_string: STRING): STRING
-			-- Encoded string from `a_string', used as program point name
-			-- All spaces in `a_string' is encoded as `escaped_space'
-			-- in the result string.
+	encoded_daikon_name (a_name: STRING): STRING
+			-- Escaped variable name from `a_name'.
+			-- Replacing ' ' with "\_", and "\" with "\\".
+		require
+			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			create Result.make_from_string (a_string)
-			Result.replace_substring_all (space, escaped_space)
+			create Result.make_from_string (a_name)
+			Result.replace_substring_all ("\", "\\")
+			Result.replace_substring_all (" ", "\_")
 		end
 
-	decoded_daikon_name (a_string: STRING): STRING
-			-- Decoded string from a Daikon name `a_string'
-			-- All `escape_space' in `a_string' is replaced by
-			-- `space' in result string.
+	decoded_daikon_name (a_name: STRING): STRING
+			-- Unescape variable names from `a_name'.
+			-- Replacing "\_" with " ", and "\\" with "\".
+		require
+			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			create Result.make_from_string (a_string)
-			Result.replace_substring_all (escaped_space, space)
+			create Result.make_from_string (a_name)
+			Result.replace_substring_all ("\_", " ")
+			Result.replace_substring_all ("\\", "\")
 		end
 
 end

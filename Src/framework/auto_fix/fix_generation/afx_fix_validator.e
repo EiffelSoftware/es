@@ -63,7 +63,7 @@ feature{NONE} -- Initialization
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
 				agent (af, bf: AFX_FIX): BOOLEAN
 					do
-						Result := af.ranking.syntax_score < bf.ranking.syntax_score
+						Result := af.ranking.pre_validation_score < bf.ranking.pre_validation_score
 					end))
 
 			l_sorter.sort (l_fixes)
@@ -357,8 +357,8 @@ feature{NONE} -- Implementation
 				agent (af, bf: AFX_FIX): BOOLEAN
 					do
 						Result :=
-							af.ranking.semantics_score < bf.ranking.semantics_score or else
-							af.ranking.syntax_score < bf.ranking.syntax_score
+							af.ranking.post_validation_score < bf.ranking.post_validation_score or else
+							af.ranking.pre_validation_score < bf.ranking.pre_validation_score
 
 					end))
 			l_sorter.sort (l_fixes)

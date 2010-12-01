@@ -11,11 +11,15 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
-	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
+--	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
+
+	AFX_SHARED_SERVER_EXPRESSIONS_TO_MONITOR
 
 	EPA_DEBUGGER_UTILITY
 
 	AFX_SHARED_STATE_SERVER
+
+	AFX_SHARED_SESSION
 
 	SHARED_EIFFEL_PARSER
 
@@ -34,26 +38,18 @@ create
 
 feature -- Initialization
 
-	make (a_config: AFX_CONFIG)
+	make
 			-- Initialization.
 		local
 			l_repos: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 		do
-			config := a_config
-
 			create should_activate_monitor.put (False)
-
-			create l_repos.make
-			set_repository (l_repos)
 
 			monitor_activated_actions.extend (agent update_current_test_case_info)
 			monitor_deactivated_actions.extend (agent on_monitor_deactivated)
 		end
 
 feature -- Access
-
-	config: AFX_CONFIG
-			-- AutoFix configuration.
 
 	feature_as_monitor_activator: detachable FEATURE_I
 			-- Feature whose execution would activate execution monitoring.
@@ -105,7 +101,10 @@ feature -- Basic operation
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_app_exited_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_class: CLASS_C
+			l_config: AFX_CONFIG
 		do
+			l_config := session.config
+
 			-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 
@@ -118,7 +117,7 @@ feature -- Basic operation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
 
 			-- Start debugging the application step-by-step.
-			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, {EXEC_MODES}.Run, False)
+			start_debugger (debugger_manager, "--analyze-tc " + l_config.interpreter_log_path + " false", l_config.working_directory, {EXEC_MODES}.Run, False)
 
 			-- Unregister debugger event listener.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -297,7 +296,7 @@ feature{NONE} -- Implementation
 			l_status: APPLICATION_STATUS
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_expression_set: DS_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 			l_execution_state: AFX_PROGRAM_EXECUTION_STATE
 			l_state: EPA_STATE
 			l_state_value: EPA_EQUATION
@@ -316,7 +315,7 @@ feature{NONE} -- Implementation
 				l_class := l_status.dynamic_class
 				l_feature := l_status.e_feature.associated_feature_i
 				l_index := l_status.break_index
-				l_expression_set := state_expression_server.expression_set (l_class, l_feature)
+				l_expression_set := server_expressions_to_monitor.set_of_expressions_to_monitor_without_bp_index (l_class, l_feature)
 
 				-- Evaluate current state.
 				create l_state.make (l_expression_set.count, l_class, l_feature)
@@ -440,11 +439,11 @@ feature{NONE} -- Access
 	is_monitor_activated: BOOLEAN
 			-- Is monitor activated?
 
-	state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
-			-- Server from which program-state-expressions associated with a feature can be queried.
-		once
-			create Result.make (config, 5)
-		end
+--	state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
+--			-- Server from which program-state-expressions associated with a feature can be queried.
+--		once
+--			create Result.make (5)
+--		end
 
 feature -- Status set
 

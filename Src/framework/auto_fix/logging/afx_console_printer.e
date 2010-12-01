@@ -121,7 +121,7 @@ feature -- Actions
 		do
 			if a_valid then
 				valid_fix_count := valid_fix_count + 1
-				log_line ("Good fix No." + valid_fix_count.out + "; semantics ranking = " + a_candidate.ranking.semantics_score.out)
+				log_line ("Good fix No." + valid_fix_count.out + "; semantics ranking = " + a_candidate.ranking.post_validation_score.out)
 				lines_with_prefixes (formated_fix (a_candidate), <<"   ">>).do_all (agent log_line)
 			else
 				log_line (" Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out)

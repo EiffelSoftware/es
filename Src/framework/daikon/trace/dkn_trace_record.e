@@ -70,7 +70,7 @@ feature -- Access
 			until
 				l_cur.after
 			loop
-				Result.append (l_cur.item.daikon_name)
+				Result.append (l_cur.item.name)
 				Result.append_character ('%N')
 				l_value := l_values.item (l_cur.item)
 				Result.append (l_value.value)

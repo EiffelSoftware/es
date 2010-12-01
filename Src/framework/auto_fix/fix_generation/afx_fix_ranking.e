@@ -32,19 +32,29 @@ feature -- Access
 			-- changes after applying the fix.
 			-- The smaller the value, the better
 
-	syntax_score: DOUBLE
+	relevance_to_failure: REAL assign set_relevance_to_failure
+			-- Relevance of the object states the fix is about to change to the program failure.
+
+	set_relevance_to_failure (a_relevance: REAL)
+			-- Set `relevance_to_failure'.
+		do
+			relevance_to_failure := a_relevance
+		end
+
+	pre_validation_score: DOUBLE
 			-- Syntax ranking for a fix, which describe how large is
 			-- the syntax change when the fix is applied to the original feature.
 			-- Small is better.
 		do
 			Result :=
-				(scope_levels            / max_scope_levels)          * max_scope_levels +
+				(scope_levels            / max_scope_levels)          * scope_levels_weight +
 				(relevant_instructions   / max_relevant_instructions) * relevant_instructions_weight +
 				(fix_skeleton_complexity / max_skeleton_complexity)   * skeleton_complexity_weight +
-				(snippet_complexity      / max_snippet_complexity)    * snippet_complexity_weight
+				(snippet_complexity      / max_snippet_complexity)    * snippet_complexity_weight +
+				relevance_to_failure * relevance_weight
 		end
 
-	semantics_score: DOUBLE
+	post_validation_score: DOUBLE
 			-- Sementics ranking for a fix, which describe how large is the change
 			-- of the post state of all the passing test cases when the fix is applied.
 			-- Ideally, the fix should not change the output of the passing test cases.
@@ -84,6 +94,9 @@ feature -- Constants
 
 	snippet_complexity_weight: DOUBLE = 5.0
 			-- Weight of `snippet_complexity' in final syntax ranking calculation
+
+	relevance_weight: DOUBLE = 5.0
+			-- Weight of `relevance_to_failure' in pre-validation ranking calculation.
 
 feature -- Setting
 

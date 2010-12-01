@@ -13,6 +13,11 @@ inherit
 	 	out
 	  end
 
+	AFX_DAIKON_VARIABLE_NAME_CODEC
+		redefine
+			out
+		end
+
 create
 	make,
 	make_with_expression
@@ -29,12 +34,13 @@ feature{NONE} -- Initialization
 			-- Initialize Current variable declaraction with `a_expression'.
 		do
 			var_kind := "variable"
- 			dec_type := a_expression.text
  			rep_type := get_rep_type (a_expression.type)
+ 			dec_type := rep_type.twin
  			-- flags := "non_null"
 
- 			variable_name := a_expression.text
- 			remove_space(variable_name)
+-- 			variable_name := a_expression.text
+-- 			remove_space(variable_name)
+ 			variable_name := escaped_variable_name (a_expression.text)
 		end
 
 feature -- Set

@@ -2566,6 +2566,7 @@ Src/examples/wel/xcell/spades9.bmp -text
 Src/examples/wel/xcell/start.bmp -text
 Src/examples/wel/xcell/xcell.bmp -text
 Src/examples/wel/xcell/xcell_demo.ico -text
+Src/framework/auto_fix/fault_localization/state_to_monitor/afx_program_state_expressions_server.e.bak -text
 Src/framework/auto_test/Clib/lp_solve/README.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL-overview.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL_LGPL.txt -text

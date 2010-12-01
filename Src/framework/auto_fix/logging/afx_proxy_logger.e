@@ -143,7 +143,7 @@ feature -- Actions
 			l_message.append ("Validity: ")
 			l_message.append (a_valid.out)
 			if a_valid then
-				l_message.append ("; semantics ranking = " + a_candidate.ranking.semantics_score.out)
+				l_message.append ("; semantics ranking = " + a_candidate.ranking.post_validation_score.out)
 				log_line (l_message)
 				log_line ({AUT_SHARED_CONSTANTS}.multi_line_value_start_tag)
 				lines_with_prefixes (formated_fix (a_candidate), <<"   ">>).do_all (agent log_line)

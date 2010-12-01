@@ -9,11 +9,17 @@ class
 
 feature -- Escape strings
 
-	escaped_space: STRING = "__"
+	escaped_space: STRING = "\_"
 			-- Encoded space string
 
 	space: STRING = " "
 			-- Space string
+
+	backslash: STRING = "\"
+			-- Backslash
+
+	double_backslash: STRING = "\\"
+			-- Double baskslash.
 
 feature -- Program point types
 
@@ -43,6 +49,7 @@ feature -- Program point suffixes
 
 	enter_program_point_suffix: STRING = ":::ENTER"
 	exit_program_point_suffix: STRINg = ":::EXIT1"
+	ppt_tag_separator: STRING = ":::"
 
 feature -- Variable var-kind
 

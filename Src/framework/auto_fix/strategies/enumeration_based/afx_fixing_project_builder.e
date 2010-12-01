@@ -14,6 +14,8 @@ inherit
 
 	AFX_SHARED_CLASS_THEORY
 
+	AFX_SHARED_SESSION
+
 	AUT_SHARED_RANDOM
 
 	SHARED_SERVER
@@ -27,23 +29,16 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_config: AFX_CONFIG)
+	make
 			-- Initialization.
 		do
-			config := a_config
-
 			create failing_test_cases.make (5)
 			failing_test_cases.compare_objects
 
 			create passing_test_cases.make (5)
-		ensure
-			config_set: config = a_config
 		end
 
 feature -- Access
-
-	config: AFX_CONFIG
-			-- Config for AutoFix command line.
 
 	test_case_folder: STRING
 			-- Folder storing test cases.
@@ -58,30 +53,32 @@ feature -- Access
 			--		fixing project.
 			-- A value of 0 means ALL test cases would be used for fixing.
 			-- Default: 0
-		require
-			number_of_passing_test_case_positive: number_of_passing_test_case > 0
 		do
-			if max_passing_test_case_number_cache = 0 then
-				max_passing_test_case_number_cache := (number_of_passing_test_case * percentage_of_test_case_use).truncated_to_integer.max (1)
+			Result := (number_of_passing_test_case * percentage_of_test_case_use).truncated_to_integer
+			if Result = 0 or else (absolute_max_passing_test_case_number /= 0 and then Result > absolute_max_passing_test_case_number) then
+				Result := absolute_max_passing_test_case_number
 			end
-			Result := max_passing_test_case_number_cache
 		end
 
 	max_failing_test_case_number: INTEGER
 			-- Maximum number of failing test cases that will be used for fixing.
 			-- Refer to: `max_passing_test_case_number'.
-		require
-			number_of_failing_test_case_positive: number_of_failing_test_case > 0
 		do
-			if max_failing_test_case_number_cache = 0 then
-				max_failing_test_case_number_cache := (number_of_failing_test_case * percentage_of_test_case_use).truncated_to_integer.max (1)
+			Result := (number_of_failing_test_case * percentage_of_test_case_use).truncated_to_integer
+			if Result = 0 or else (absolute_max_failing_test_case_number /= 0 and then Result > absolute_max_failing_test_case_number) then
+				Result := absolute_max_failing_test_case_number
 			end
-			Result := max_failing_test_case_number_cache
 		end
 
 	percentage_of_test_case_use: REAL assign set_percentage_of_test_case_use
 			-- How many percentage of test cases from `test_case_folder'
 			-- 		would be used for fixing.
+
+	absolute_max_passing_test_case_number: INTEGER assign set_absolute_max_passing_test_case_number
+			-- Maximum number of passing test cases that we use for fixing, in absolute value.
+
+	absolute_max_failing_test_case_number: INTEGER assign set_absolute_max_failing_test_case_number
+			-- Maximum number of failing test cases that we use for fixing, in absolute value.
 
 	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_INFO]
 			-- Table of failing test cases from `test_case_folder'.
@@ -93,9 +90,19 @@ feature -- Access
 
 	number_of_passing_test_case: INTEGER
 			-- Number of passing test cases.
+		require
+			passing_test_cases_list_attached: passing_test_cases /= Void
+		do
+			Result := passing_test_cases.count
+		end
 
 	number_of_failing_test_case: INTEGER
 			-- Number of failing test cases.
+		require
+			failing_test_cases_list_attached: failing_test_cases /= Void
+		do
+			Result := failing_test_cases.count
+		end
 
 feature -- Basic operation
 
@@ -113,6 +120,22 @@ feature -- Status set
 			percentage_in_range: 0 <= a_percentage and then a_percentage <= 1.0
 		do
 			percentage_of_test_case_use := a_percentage
+		end
+
+	set_absolute_max_passing_test_case_number (a_val: INTEGER)
+			-- Set `absolute_max_passing_test_case_number'.
+		require
+			val_gt_zero: a_val > 0
+		do
+			absolute_max_passing_test_case_number := a_val
+		end
+
+	set_absolute_max_failing_test_case_number (a_val: INTEGER)
+			-- Set `absolute_max_failing_test_case_number'.
+		require
+			val_gt_zero: a_val > 0
+		do
+			absolute_max_failing_test_case_number := a_val
 		end
 
 feature{NONE} -- Implementation
@@ -221,7 +244,13 @@ feature{NONE} -- Test case selection
 			-- Randomly select test cases up to `percentage_of_test_case_use' for fixing.
 			-- Update `passing_test_cases' and `failing_test_cases'.
 		local
+			l_max_passing, l_max_failing: INTEGER
+--			l_passings, l_failings:
 		do
+			l_max_passing := max_passing_test_case_number
+			l_max_failing := max_failing_test_case_number
+
+
 		end
 
 feature{NONE} -- Types from test cases

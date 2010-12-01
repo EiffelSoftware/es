@@ -773,7 +773,7 @@ feature {NONE} -- Expression evaluation visits
 				i := 1
 				k := 1
 			until
-				i > a_body.arguments.count
+				a_body.arguments = void or else i > a_body.arguments.count
 			loop
 				from
 					j := 1

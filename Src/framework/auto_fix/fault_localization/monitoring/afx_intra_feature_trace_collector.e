@@ -9,7 +9,7 @@ class
 
 inherit
 
-	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
+--	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
 
 	EPA_DEBUGGER_UTILITY
 
@@ -21,36 +21,32 @@ inherit
 
 	EQA_TEST_EXECUTION_MODE
 
+	AFX_SHARED_SERVER_EXPRESSIONS_TO_MONITOR
+
+	AFX_SHARED_STATIC_ANALYSIS_REPORT
+
+	AFX_SHARED_SESSION
+
+	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+
 	REFACTORING_HELPER
 
-	AFX_SHARED_PROGRAM_STATE_EXPRESSIONS_SERVER
+--	AFX_SHARED_PROGRAM_STATE_EXPRESSIONS_SERVER
 
 create
 	make
 
 feature -- Initialization
 
-	make (a_config: AFX_CONFIG)
+	make
 			-- Initialization.
-		local
-			l_repos: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 		do
-			config := a_config
-
 			create test_case_start_actions
 			create test_case_breakpoint_hit_actions
 			create application_exited_actions
+
+			create test_case_execution_status_collector.make (config)
 		end
-
-feature -- Access
-
-	config: AFX_CONFIG
-			-- AutoFix configuration.
-
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Associated exception spot information.
-			-- The test case has been build in such a way that all failing test cases
-			--		fail at the same location, therefore they all share the same exception information.
 
 feature -- Actions
 
@@ -69,9 +65,6 @@ feature -- Actions
 
 feature -- Basic operation
 
-	daikon_facility: detachable AFX_DAIKON_FACILITY
-			-- Daikon Facility
-
 	register_general_action_listeners
 			-- Register general action listeners to respond to actions.
 		do
@@ -79,30 +72,23 @@ feature -- Basic operation
 			test_case_breakpoint_hit_actions.extend (agent trace_repository.extend_current_trace_with_state_and_index)
 			application_exited_actions.extend (agent unregister_test_case_handler)
 
-			-- Setup Daikon.
-			if config.is_daikon_enabled then
---				if is_mocking then
---					create {AFX_DAIKON_FACILITY_MOCK} daikon_facility.make (config)
---				else
---				end
-				create daikon_facility.make (config)
-				test_case_start_actions.extend (agent daikon_facility.on_new_test_case_found)
-				test_case_breakpoint_hit_actions.extend (agent daikon_facility.on_test_case_breakpoint_hit)
-				application_exited_actions.extend (agent daikon_facility.on_application_exited)
-			end
+				-- Setup test case execution status collector.
+			test_case_start_actions.extend (agent test_case_execution_status_collector.on_test_case_start (?, False))
+			test_case_breakpoint_hit_actions.extend (agent test_case_execution_status_collector.on_break_point_hit)
+			application_exited_actions.extend (agent test_case_execution_status_collector.on_application_exited)
 		end
 
 	reset_collector
 			-- Reset the state of collector.
 		do
+			reset_trace_repository
+
 			test_case_start_actions.wipe_out
 			test_case_breakpoint_hit_actions.wipe_out
 			application_exited_actions.wipe_out
-			daikon_facility := Void
 
 			current_test_case_info := Void
 			current_test_case_breakpoint_manager := Void
-			exception_spot := VOid
 			current_test_execution_mode := Mode_default
 			enter_test_case_breakpoint_manager := Void
 		end
@@ -110,18 +96,18 @@ feature -- Basic operation
 	collect_trace
 			-- Run current project to collect execution traces from test cases.
 		local
-			l_state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
+--			l_state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_app_exit_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_new_tc_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
-			l_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_expression_set: DS_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 		do
 			reset_collector
 
-			create l_state_expression_server.make (config, 5)
-			set_state_expression_server (l_state_expression_server)
+--			create l_state_expression_server.make (config, 5)
+--			set_state_expression_server (l_state_expression_server)
 
 			register_general_action_listeners
 
@@ -145,6 +131,12 @@ feature -- Basic operation
 			-- Clean up debugger.
 			remove_breakpoint (debugger_manager, Test_case_super_class)
 			remove_debugger_session
+
+			if config.is_program_state_extended then
+				-- Interprete state-expression based traces as state-aspect based ones.
+				set_trace_repository (trace_repository.interpretation)
+			end
+			set_test_case_execution_status (test_case_execution_status_collector.status)
 		end
 
 feature{None} -- Implementation
@@ -157,6 +149,11 @@ feature{None} -- Implementation
 
 	exception_summary: EPA_EXCEPTION_TRACE_SUMMARY
 			-- Summary information about the exception.
+
+	test_case_execution_status_collector: AFX_TEST_CASE_EXECUTION_STATUS_COLLECTOR
+			-- Test case execution status collector.
+			-- Include both passing and failing test cases.
+
 
 feature{NONE} -- Execution mode
 
@@ -197,7 +194,7 @@ feature{NONE} -- Event handler
 			l_trace: STRING
 			l_strategy: AFX_STATE_MONITORING_STRATEGY
 			l_start_index, l_end_index: INTEGER
-			l_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_expression_set: DS_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 			l_repository: like trace_repository
 		do
 			l_table := a_test_case_info.to_hash_table
@@ -215,6 +212,8 @@ feature{NONE} -- Event handler
 			l_passing := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_is_passing).out.to_boolean
 			l_uuid := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_class_uuid).out
 			l_trace := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_trace).out
+
+			io.put_string ("Entering test case " + l_uuid + "%N")
 
 			current_test_execution_mode := l_execution_mode
 
@@ -240,7 +239,7 @@ feature{NONE} -- Event handler
 			a_state.keep_if (
 				agent (a_equation: EPA_EQUATION): BOOLEAN
 					do
-						Result := a_equation.value.is_boolean
+						Result := a_equation.value.is_boolean or else a_equation.value.is_integer
 					end)
 
 			test_case_breakpoint_hit_actions.call ([current_test_case_info, a_state, a_breakpoint.breakable_line_number])
@@ -251,6 +250,7 @@ feature{NONE} -- Event handler
 			-- Action to be performed when application exited.
 		do
 			application_exited_actions.call ([a_dm])
+			set_test_case_execution_status (test_case_execution_status_collector.status)
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -306,13 +306,16 @@ feature{NONE} -- Event handler registration/unregistration
 		local
 			l_recipient_class: CLASS_C
 			l_recipient: FEATURE_I
-			l_expression_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_expression_set: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 		do
 			if current_test_case_breakpoint_manager = Void then
 				-- Set of expressions to evaluate.
-				l_recipient_class := current_test_case_info.recipient_class_
-				l_recipient := current_test_case_info.recipient_
-				l_expression_set := state_expression_server.expression_set (l_recipient_class, l_recipient)
+--				l_recipient_class := current_test_case_info.recipient_class_
+--				l_recipient := current_test_case_info.recipient_
+				l_recipient_class := exception_spot.recipient_class_
+				l_recipient := exception_spot.recipient_
+				check l_recipient_class = current_test_case_info.recipient_class_ and then l_recipient = current_test_case_info.recipient_ end
+				l_expression_set := server_expressions_to_monitor.set_of_expressions_to_monitor_without_bp_index (l_recipient_class, l_recipient)
 
 				-- Register expressions at all breakpoints.
 				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
@@ -445,13 +448,13 @@ feature{NONE} -- Implementation
 					l_exception_summary.failing_assertion_tag,
 					False, "")
 
-			create l_static_analyzer.make (config)
+			create l_static_analyzer.make
 			l_static_analyzer.analyze_exception (current_test_case_info, a_dm.application_status.exception_text)
-			exception_spot := l_static_analyzer.last_spot
+--			set_exception_spot (l_static_analyzer.last_spot)
 
-			if attached {AFX_DAIKON_FACILITY} daikon_facility as l_daikon then
-				l_daikon.set_exception_spot (exception_spot)
-			end
+--			if attached {AFX_DAIKON_FACILITY} daikon_facility as l_daikon then
+--				l_daikon.set_exception_spot (exception_spot)
+--			end
 		end
 
 feature{NONE} -- Constant

@@ -82,7 +82,7 @@ feature -- Basic operations
 			create l_action.make (a_expressions, class_, feature_)
 			l_action.on_hit_actions.extend (a_action)
 			l_act_list.extend (l_action)
-			l_bp_location := breakpoints_manager.breakpoint_location (feature_.e_feature, a_bpslot, False)
+			l_bp_location := breakpoints_manager.breakpoint_location (feature_.api_feature (class_.class_id), a_bpslot, False)
 			hit_actions.force (l_act_list, l_bp_location)
 			expressions.force (a_expressions, l_bp_location)
 		end
@@ -159,7 +159,6 @@ feature -- Basic operations
 				l_bpslot := l_bp.breakable_line_number
 				l_actions := hit_actions.item (l_bp)
 				if b then
-					l_bp_manager.set_user_breakpoint (l_routine, l_bpslot)
 					l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp)
 					l_breakpoint.set_continue_execution (True)
 					if l_actions /= Void then
@@ -174,6 +173,14 @@ feature -- Basic operations
 						end
 					end
 					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
+
+--					if l_actions /= Void then
+--						l_bp2 := l_bp_manager.breakpoint_at (l_bp, False)
+--						if l_bp2 /= Void then
+--							l_actions.do_all (agent l_bp2.remove_when_hits_action)
+--						end
+--					end
+--					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
 				end
 				l_bps.forth
 			end

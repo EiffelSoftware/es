@@ -10,18 +10,29 @@ class
 inherit
 	DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, STRING]
 		rename
-			make as make_hash_table
+			make as make_hash_table,
+			make_default as make_default_hash_table
 		end
 
 create
-	make
+	make, make_default
 
 feature -- Initialization
 
-	make
+	make (a_size: INTEGER)
+			-- Initialization.
+		require
+			size_big_enough: a_size > 0
+		do
+			make_equal (a_size)
+			reset_trace_classification
+		end
+
+	make_default
 			-- Initialization
 		do
 			make_equal (Default_initial_size)
+			reset_trace_classification
 		end
 
 feature -- Access
@@ -38,6 +49,54 @@ feature -- Access
 			current_trace_id_set: is_current_trace_id_set
 		do
 			Result := item (current_trace_id)
+		end
+
+	passing_traces: DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, STRING]
+			-- Passing traces in the repository.
+		do
+			if passing_traces_cache = Void then
+				classify_traces_by_status
+			end
+			Result := passing_traces_cache
+		ensure
+			result_attached: Result /= Void
+		end
+
+	failing_traces: DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, STRING]
+			-- Failing traces in the repository.
+		do
+			if failing_traces_cache = Void then
+				classify_traces_by_status
+			end
+			Result := failing_traces_cache
+		ensure
+			result_attached: Result /= Void
+		end
+
+	number_of_passing_traces: INTEGER
+			-- Number of passing traces in the repository.
+		do
+			Result := passing_traces.count
+		end
+
+	number_of_failing_traces: INTEGER
+			-- Number of failing traces in the repository.
+		do
+			Result := failing_traces.count
+		end
+
+feature -- Interpretation
+
+	interpretation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
+			-- Interpretation of the current trace repository w.r.t. skeletons associated with the corresponding features.
+		do
+			create Result.make (count)
+			from start
+			until after
+			loop
+				Result.force (item_for_iteration.interpretation, key_for_iteration)
+				forth
+			end
 		end
 
 feature -- Status report
@@ -57,6 +116,7 @@ feature -- Operation
 			new_id: a_tc /= Void and then not has (a_tc.uuid)
 		do
 			start_trace_with_id (a_tc.uuid)
+			reset_trace_classification
 		ensure
 			repository_count_increase: count = old count + 1
 			new_trace_in_repository: has (a_tc.uuid)
@@ -75,6 +135,8 @@ feature -- Operation
 
 			force (l_trace, a_id)
 			set_current_trace_id (a_id)
+
+			reset_trace_classification
 		ensure
 			repository_count_increase: count = old count + 1
 			new_trace_in_repository: has (a_id)
@@ -104,6 +166,49 @@ feature -- Operation
 			repository_count_unchanged: old count = count
 		end
 
+feature{NONE} -- Implementation
+
+	reset_trace_classification
+			-- Reset the classification of traces by their statuses.
+		do
+			passing_traces_cache := Void
+			failing_traces_cache := Void
+		end
+
+	classify_traces_by_status
+			-- Classify traces into `passing_traces' and `failing_traces' by the status of the traces.
+		require
+			passing_traces_cache_void: passing_traces_cache = Void
+			failing_traces_cache_void: failing_traces_cache = Void
+		local
+			l_id: STRING
+			l_trace: AFX_PROGRAM_EXECUTION_TRACE
+			l_cursor: DS_HASH_TABLE_CURSOR [AFX_PROGRAM_EXECUTION_TRACE, STRING]
+		do
+			create passing_traces_cache.make_equal (count)
+			create failing_traces_cache.make_equal (count)
+
+			l_cursor := new_cursor
+			from start
+			until after
+			loop
+				l_id := key_for_iteration
+				l_trace := item_for_iteration
+				if l_trace.is_failing then
+					failing_traces_cache.force (l_trace, l_id)
+				elseif l_trace.is_passing then
+					passing_traces_cache.force (l_trace, l_id)
+				else
+					check False end
+				end
+				forth
+			end
+			current.go_to (l_cursor)
+		ensure
+			passing_traces_cache_initialized: passing_traces_cache /= Void
+			failing_traces_cache_initialized: failing_traces_cache /= Void
+		end
+
 feature{NONE} -- Status set
 
 	set_current_trace_id (a_id: STRING)
@@ -123,6 +228,12 @@ feature{NONE} -- Cache
 
 	current_trace_id_cache: STRING
 			-- Cache for `current_trace_id'.
+
+	passing_traces_cache: like passing_traces
+			-- Cache for `passing_traces'.
+
+	failing_traces_cache: like failing_traces
+			-- Cache for `failing_traces'.
 
 
 end

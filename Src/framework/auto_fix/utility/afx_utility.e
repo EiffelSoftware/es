@@ -132,7 +132,7 @@ feature -- Logging
 			end
 			create l_fdouble.make (6, 3)
 			Result.append ("SYN_")
-			l_rank := l_fdouble.formatted (a_fix.ranking.syntax_score)
+			l_rank := l_fdouble.formatted (a_fix.ranking.pre_validation_score)
 			l_rank.left_adjust
 			Result.append (l_rank)
 			Result.append (once "__")

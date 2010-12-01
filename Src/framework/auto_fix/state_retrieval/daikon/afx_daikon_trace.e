@@ -17,6 +17,11 @@ class
 		  	 out
 		   end
 
+		AFX_DAIKON_VARIABLE_NAME_CODEC
+			redefine
+				out
+			end
+
 	create
 	   make
 feature --Constructor
@@ -26,8 +31,9 @@ feature --Constructor
 		local
 			expression_str:STRING
 		do
-			expression_str := equation.expression.text
-			remove_space(expression_str)
+--			expression_str := equation.expression.text
+--			remove_space(expression_str)
+			expression_str := (equation.expression.text)
 			output := expression_str +"%N"
 			output := output + get_value(equation) +"%N"
 			output := output + "1%N"
@@ -56,6 +62,7 @@ feature{NONE} -- Implementation
 				Result := equation.value.out
 			elseif equation.value.is_nonsensical then
 				Result := equation.value.out
+				Result := Result.substring (3, Result.count - 2)
 			else
 				Result := equation.value.out.hash_code.out
 			end
@@ -72,12 +79,13 @@ feature{NONE} -- Implementation
    			from
    				i := 1
    			until
-   				i = str.count
+   				i >= str.count
    			loop
    				if (str.at (i).is_space) then
    					str.remove_substring (i,i)
+   				else
+	   				i := i + 1
    				end
-   				i := i + 1
 
    			end
 

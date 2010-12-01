@@ -62,7 +62,7 @@ feature -- Setting
 	set_default_model_repository_directory
 			-- Set `model_repository_directory' to be default.
 		do
-		    create model_repository_directory.make_from_string (autofix_config.model_directory)
+		    create model_repository_directory.make_from_string (config.model_directory)
 --			create model_repository_directory.make_from_string ("F:\EiffelStudio\ModelBased\Project\EIFGENs\project\AutoFix\model")
 		    is_model_repository_directory_default := True
 		end

@@ -41,7 +41,13 @@ feature -- Basic operations
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 			l_fix_strategy: AP_STRING_OPTION
+			l_rank_control_dependance: AP_STRING_OPTION
+			l_program_state: AP_STRING_OPTION
+			l_breakpoint_specific_option: AP_FLAG
 			l_monitor_strategy: AP_STRING_OPTION
+			l_rank_computation_mean_type: AP_STRING_OPTION
+			l_max_fixing_target: AP_STRING_OPTION
+			l_max_fix_candidate: AP_STRING_OPTION
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
@@ -71,13 +77,37 @@ feature -- Basic operations
 			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model and random.")
 			l_parser.options.force_last (l_fix_strategy)
 
+			create l_rank_control_dependance.make_with_long_form ("CFG-usage")
+			l_rank_control_dependance.set_description ("Choose how CFG would be used to rank the fixing locations. Options: optimistic|pessimistic.")
+			l_parser.options.force_last (l_rank_control_dependance)
+
 			create l_monitor_strategy.make_with_long_form ("monitoring")
-			l_monitor_strategy.set_description ("Choose the strategy for monitoring expressions. Can be %"breakpointwise%" or %"featurewise%".")
+			l_monitor_strategy.set_description ("Choose how expressions would be monitored, i.e. only at the declaring breakpoint or at every breakpoint in the feature. Options: breakpointwise|featurewise.")
 			l_parser.options.force_last (l_monitor_strategy)
+
+			create l_rank_computation_mean_type.make_with_long_form ("rank-computation-mean-type")
+			l_rank_computation_mean_type.set_description ("The kind of mean value calculation to use for computing ranking.")
+			l_parser.options.force_last (l_rank_computation_mean_type)
+
+			create l_max_fixing_target.make_with_long_form ("max-fixing-target")
+			l_max_fixing_target.set_description ("Maximum number of fixing targets to be examined.")
+			l_parser.options.force_last (l_max_fixing_target)
+
+			create l_max_fix_candidate.make_with_long_form ("max-fix-candidate")
+			l_max_fix_candidate.set_description ("Maximum number of fix candidates to be evaluated.")
+			l_parser.options.force_last (l_max_fix_candidate)
+
+			create l_program_state.make_with_long_form ("program-state")
+			l_program_state.set_description ("Choose how the program states are to be monitored, i.e. in basic or extended expressions. Options: basic|extended")
+			l_parser.options.force_last (l_program_state)
 
 			create l_retrieve_state_option.make ('s', "retrieve-state")
 			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
 			l_parser.options.force_last (l_retrieve_state_option)
+
+			create l_breakpoint_specific_option.make_with_long_form ("breakpoint-specific")
+			l_breakpoint_specific_option.set_description ("Should we differentiate expressions based on their corresponding breakpoints?")
+			l_parser.options.force_last (l_breakpoint_specific_option)
 
 			create l_recipient.make_with_long_form ("recipient")
 			l_recipient.set_description ("Specify the recipient of the exception in the test case. The format is CLASS_NAME.feature_name. If this option is provided while the <feature_under_test> option is not provided, the value of <feature_under_test> will be set to current value as well.")
@@ -177,6 +207,24 @@ feature -- Basic operations
 				config.set_max_test_case_execution_time (5)
 			end
 
+			if l_rank_computation_mean_type.was_found then
+				if attached l_rank_computation_mean_type.parameter as lt_mean_type then
+					lt_mean_type.to_lower
+					if lt_mean_type ~ "arithmetic" then
+						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_arithmetic)
+					elseif lt_mean_type ~ "geometric" then
+						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_geometric)
+					elseif lt_mean_type ~ "harmonic" then
+						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+					else
+						-- Use harmonic mean by default
+						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+					end
+				end
+			else
+				config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+			end
+
 			if l_fix_strategy.was_found then
 				if attached l_fix_strategy.parameter as lt_strategy then
 					lt_strategy.to_lower
@@ -186,6 +234,49 @@ feature -- Basic operations
 						config.set_is_using_random_based_strategy (True)
 					else
 						-- Use the default strategy: model
+					end
+				end
+			end
+
+			if l_max_fixing_target.was_found then
+				if attached l_max_fixing_target.parameter as lt_max_fixing_target and then lt_max_fixing_target.is_integer then
+					config.set_max_fixing_target (lt_max_fixing_target.to_integer)
+				else
+					-- Ignoring invalid parameter.
+				end
+			end
+
+			if l_max_fix_candidate.was_found then
+				if attached l_max_fix_candidate.parameter as lt_max_fix_candidate and then lt_max_fix_candidate.is_integer then
+					config.set_max_fix_candidate (lt_max_fix_candidate.to_integer)
+				else
+					-- Ignoring invalid parameter.
+				end
+			end
+
+			if l_program_state.was_found then
+				if attached l_program_state.parameter as lt_program_state then
+					lt_program_state.to_lower
+					if lt_program_state ~ "extended" then
+						config.set_program_state_extended (True)
+					elseif lt_program_state ~ "basic" then
+						config.set_program_state_extended (False)
+					else
+						-- Report unrecognized parameter.
+						-- Use the default setting, i.e. "extended"
+					end
+				end
+			end
+
+			if l_rank_control_dependance.was_found then
+				if attached l_rank_control_dependance.parameter as lt_cd then
+					lt_cd.to_lower
+					if lt_cd ~ "optimistic" then
+						config.set_CFG_usage_optimistic
+					elseif lt_cd ~ "pessimistic" then
+						config.set_CFG_usage_pessimistic
+					else
+						-- Use CFG in the default way.
 					end
 				end
 			end
@@ -202,6 +293,8 @@ feature -- Basic operations
 					end
 				end
 			end
+
+			config.set_breakpoint_specific (l_breakpoint_specific_option.was_found)
 
 			if l_integral_combination_option.was_found then
 				l_combination_strategy := l_integral_combination_option.parameter

@@ -1,0 +1,109 @@
+note
+	description: "Summary description for {AFX_PROGRAM_STATE_EXPRESSIONS_SERVER}."
+	author: ""
+	date: "$Date: 2010-10-14 11:28:34 +0200 (周四, 14 十月 2010) $"
+	revision: "$Revision: 84574 $"
+
+class
+	AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
+
+inherit
+	EPA_NESTED_HASH_TABLE [EPA_PROGRAM_STATE_EXPRESSION, INTEGER, INTEGER]
+		rename
+			make as make_table
+		end
+
+	EPA_UTILITY
+		undefine
+			is_equal,
+			copy
+		end
+
+	REFACTORING_HELPER
+		undefine
+			is_equal,
+			copy
+		end
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_config: AFX_CONFIG; a_size: INTEGER)
+			-- Initialization.
+		do
+			fixme ("Use class_id -> feature_id -> bp_index as key.")
+			config := a_config
+			make_table (a_size)
+		end
+
+feature -- Access
+
+	config: AFX_CONFIG
+			-- AutoFix configuration.
+
+feature -- Basic operation
+
+	expression_set (a_class: CLASS_C a_feature: FEATURE_I): DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			-- Set of program state expressions that are associated with `a_class'.`a_feature'.
+			-- `a_class': context class.
+			-- `a_feature': feature in context class.
+		local
+			l_class_id: INTEGER
+			l_feature_id: INTEGER
+		do
+			l_class_id := a_class.class_id
+			l_feature_id := a_feature.feature_id
+
+			if attached value_set (l_feature_id, l_class_id) as lt_set then
+				Result := lt_set
+			else
+				Result := program_state_expressions (a_class, a_feature)
+				put_value_set (Result, l_feature_id, l_class_id)
+			end
+		end
+
+feature{NONE} -- Implementation
+
+	program_state_expressions (a_class: CLASS_C a_feature: FEATURE_I): EPA_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			-- Program state expressions from `a_class'.`a_feature',
+			--		together with their associated breakpoint indexes if applicable.
+			-- The set includes only expressions of type {BOOLEAN}.
+		local
+			l_collector: EPA_PROGRAM_STATE_EXPRESSION_COLLECTOR
+			l_collection: EPA_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]
+			l_extender: AFX_PROGRAM_STATE_EXPRESSION_EXTENDER
+		do
+			fixme ("Re-interprete expressions from the written class in the context class. -- Oct. 11, 2010 Max")
+
+			-- Collect expressions originated from the feature.
+			create l_collector
+			l_collector.collect_from_feature (a_class, a_feature)
+			l_collection := l_collector.last_collection
+
+			-- Extend the expression set.
+			create {AFX_PROGRAM_STATE_EXPRESSION_EXTENDER_FEATUREWISE}l_extender.make (config)
+			l_extender.set_original_expressions (l_collection)
+			l_extender.extend_original_expressions
+
+			Result := l_extender.extended_expressions
+		end
+
+	put_value_set (a_set: DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION]; a_k2: INTEGER_32; a_k1: INTEGER_32)
+			-- Use `a_set' as the value set for key `a_k1' -> `a_k2'.
+		require
+			values_not_set: value_set (a_k2, a_k1) = Void
+		local
+			l_table: DS_HASH_TABLE [DS_HASH_SET [EPA_PROGRAM_STATE_EXPRESSION], INTEGER]
+		do
+			if has (a_k1) and then attached value (a_k1) as lt_table then
+				lt_table.force (a_set, a_k2)
+			else
+				create l_table.make_equal (5)
+				l_table.force (a_set, a_k2)
+				force (l_table, a_k1)
+			end
+		end
+
+end

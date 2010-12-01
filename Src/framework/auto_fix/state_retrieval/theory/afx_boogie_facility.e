@@ -24,7 +24,7 @@ feature{NONE} -- Implementation
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (autofix_config.data_directory)
+			create l_file_name.make_from_string (session.config.data_directory)
 			l_file_name.set_file_name ("autofix.bpl")
 			Result := l_file_name
 		end

@@ -7,8 +7,11 @@ note
 class
 	AFX_DAIKON_RESULT
 
-	create
-		make_from_string
+inherit
+	AFX_DAIKON_VARIABLE_NAME_CODEC
+
+create
+	make_from_string
 
 feature
 	make_from_string (daikon_output :STRING; a_tc_info : EPA_TEST_CASE_INFO) is
@@ -20,9 +23,9 @@ feature
 		end
 
 feature -- Access
-test_case_info: EPA_TEST_CASE_INFO
+	test_case_info: EPA_TEST_CASE_INFO
 
-daikon_table: HASH_TABLE[EPA_STATE , INTEGER]
+	daikon_table: HASH_TABLE[EPA_STATE , INTEGER]
 
 feature {NONE} -- Implementation
 
@@ -33,6 +36,7 @@ feature {NONE} -- Implementation
 			states : EPA_STATE
 			equation : EPA_EQUATION
 			current_key : INTEGER
+			l_line: STRING
 		do
 			list_tokens := daikon_output.split ('%N')
 
@@ -41,11 +45,13 @@ feature {NONE} -- Implementation
 			until
 				list_tokens.after
 			loop
+				l_line := list_tokens.item_for_iteration
+
 				if list_tokens.item_for_iteration.has_substring (":::") then
 					current_key := state_name(list_tokens.item_for_iteration)
 				end
 
-				if list_tokens.item_for_iteration.has_substring (" == ") then
+				if l_line.has_substring (" == ") and then not l_line.has_substring ("orig(") then
 					states.force_last (build_equation (list_tokens.item_for_iteration))
 				end
 
@@ -70,6 +76,8 @@ feature {NONE} -- Implementation
      build_equation ( str :STRING ) :EPA_EQUATION is
      		--Takes a line output from Daikon and builds an AFX_Equation
 		local
+			l_index: INTEGER
+			l_expression_str, l_value_str: STRING
 			expression : EPA_AST_EXPRESSION
 			expression_boolean_value : EPA_BOOLEAN_VALUE
 			expression_integer_value : EPA_INTEGER_VALUE
@@ -77,26 +85,31 @@ feature {NONE} -- Implementation
 			equation : EPA_EQUATION
 			l_expr: STRING
      	do
-     		tokens := str.split ('=')
-     		l_expr := tokens.i_th (1)
-     		if l_expr.has_substring ("orig(") then
-     			l_expr.replace_substring_all ("orig(", "old(")
-     		end
-     		create expression.make_with_text (test_case_info.recipient_class_, test_case_info.recipient_, l_expr, test_case_info.recipient_class_)
+--     		if not str.has_substring ("orig(") then
+	     		l_index := str.substring_index ("==", 1)
+	     		check only_separator: str.substring_index ("==", l_index) = 0 end
 
-			tokens.i_th (3).left_adjust
-			tokens.i_th (3).right_adjust
-     		if (tokens.i_th (3).is_boolean) then
-     			create expression_boolean_value.make (tokens.i_th (3).to_boolean)
-     			create equation.make (expression,expression_boolean_value)
+	     		l_expression_str := str.substring (1, l_index - 1)
+--	      		if l_expression_str.has_substring ("orig(") then
+--	     			l_expression_str.replace_substring_all ("orig(", "old(")
+--	     		end
+	     		create expression.make_with_text (test_case_info.recipient_class_, test_case_info.recipient_,  (l_expression_str), test_case_info.recipient_class_)
 
-     		else
-     			create expression_integer_value.make (tokens.i_th (3).to_integer)
-     			create equation.make (expression,expression_integer_value)
+	     		l_value_str := str.substring (l_index + 2, str.count)
+				l_value_str.left_adjust
+				l_value_str.right_adjust
+	     		if (l_value_str.is_boolean) then
+	     			create expression_boolean_value.make (l_value_str.to_boolean)
+	     			create equation.make (expression,expression_boolean_value)
 
-     		end
+	     		else
+	     			create expression_integer_value.make (l_value_str.to_integer)
+	     			create equation.make (expression,expression_integer_value)
 
-			result := equation
+	     		end
+
+				result := equation
+--     		end
      	end
 
 
