@@ -227,6 +227,55 @@ feature -- Access
 
 feature -- Access
 
+	property_types: HASH_TABLE [INTEGER, STRING]
+			-- Property types: Property, Precondition, Postcondition
+			--                 Absolute and relative change
+			-- The value is the identifier stored in a database
+		once
+			create Result.make (5)
+			Result.put (1, "prop")
+			Result.put (2, "pre")
+			Result.put (3, "post")
+			Result.put (4, "to")
+			Result.put (5, "by")
+		end
+
+	queryable_types: HASH_TABLE [INTEGER, STRING]
+			-- Queryable types: Object, Transition
+			-- The value is the identifier stored in a database
+		once
+			create Result.make (2)
+			Result.put (1, "object")
+			Result.put (2, "transition")
+		end
+
+	queryable_feature_types: HASH_TABLE [INTEGER, STRING]
+			-- Queryable types: Object, Transition
+			-- The value is the identifier stored in a database
+		once
+			create Result.make (2)
+			Result.put (1, "command")
+			Result.put (2, "query")
+		end
+
+	queryable_true_false: HASH_TABLE [INTEGER, STRING]
+			-- Mapping True to 1 and False to 0
+		once
+			create Result.make (2)
+			Result.put (0, "False")
+			Result.put (1, "True")
+		end
+
+	queryable_transition_status: HASH_TABLE [INTEGER, STRING]
+			-- Transition status for transition field in Queryable
+		once
+			create Result.make (2)
+			Result.put (1, "failing")
+			Result.put (2, "passing")
+		end
+
+feature -- Access
+
 	begin_field_value: STRING = "begin"
 	end_field_value: STRING = "end"
 

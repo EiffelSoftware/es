@@ -74,6 +74,9 @@ feature{NONE} -- Initialization
 			create added_conformance.make (500)
 			added_conformance.set_key_equality_tester (sql_type_equality_tester)
 
+			create type_added_actions.make
+			create conformance_added_actions.make
+
 		end
 
 feature -- Access
@@ -103,6 +106,12 @@ feature -- Access
 			Result := dumped (added_types, added_conformance)
 		end
 
+	type_added_actions: ACTION_SEQUENCE [TUPLE [a_type: SQL_TYPE]]
+			-- Actions to be performed if a type is added to added_types
+
+	conformance_added_actions: ACTION_SEQUENCE [TUPLE [a_conformant_type, a_type: SQL_TYPE]]
+			-- Actions to be performed if a conformance is added to added_conformances
+
 feature -- Basic operations
 
 	add_type (a_type: SQL_TYPE)
@@ -118,6 +127,7 @@ feature -- Basic operations
 				create l_new_type.make_with_context_class (a_type.type, maximal_type_id, a_type.context_class)
 				types.force_last (l_new_type)
 				added_types.force_last (l_new_type)
+				type_added_actions.call ([l_new_type])
 				add_conformance (l_new_type, l_new_type)
 			else
 				l_new_type := types.found_item
@@ -136,6 +146,7 @@ feature -- Basic operations
 						l_ancestor_type.set_id (maximal_type_id)
 						types.force_last (l_ancestor_type)
 						added_types.force_last (l_ancestor_type)
+						type_added_actions.call ([l_ancestor_type])
 					end
 					add_conformance (l_new_type, l_ancestor_type)
 				end
@@ -182,6 +193,7 @@ feature{NONE} -- Implementation
 				end
 				if not l_set.has (a_type) then
 					l_set.force_last (a_type)
+					conformance_added_actions.call ([a_conformant_type, a_type])
 				end
 			end
 		end

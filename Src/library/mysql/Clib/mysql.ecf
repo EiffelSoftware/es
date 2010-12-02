@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="mysql" uuid="74BBC869-BC3A-4B6C-8647-46FC99F493C7" readonly="false" library_target="mysql">
+	<target name="mysql">
+		<root all_classes="true"/>
+		<option namespace="EiffelSoftware.Library.MySQL">
+		</option>
+
+		<external_include location="$(ISE_LIBRARY)\library\mysql\spec\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="$(ISE_LIBRARY)/library/mysql/spec/include">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_include>
+
+		<external_object location="$(ISE_LIBRARY)\library\mysql\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\eiffelmysql.o">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+		<external_object location="$(ISE_LIBRARY)/library/mysql/spec/$(ISE_PLATFORM)/lib/eiffelmysql.o">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_object>
+
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<cluster name="mysql" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/C</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/spec$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
+

@@ -1,6 +1,6 @@
 ﻿note
-	description: "Command to add documents to MySQL database"
-	author: ""
+	description: "Command to add queryables to MySQL database and performance maintenance tasks"
+	author: "haroth@student.ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -36,6 +36,28 @@ feature -- Basic operations
 
 	execute
 			-- Execute current command
+		local
+			importer: SEMQ_DATABASE_IMPORTER
+			maintenance: SEMQ_DATABASE_MAINTENANCE
+			example: MYSQL_EXAMPLE
 		do
+			-- Empty tables
+			if false then
+				create maintenance.make(config)
+				maintenance.empty_tables
+			end
+
+			-- Import SSQL files
+			if config.mysql_file_directory /= Void then
+				create importer.make(config)
+				importer.execute
+			end
+
+			-- Rebuild conformances
+			if false then
+				create maintenance.make(config)
+				maintenance.rebuilds_conformances
+			end
 		end
+
 end
