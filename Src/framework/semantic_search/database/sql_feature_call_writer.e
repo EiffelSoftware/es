@@ -88,7 +88,7 @@ feature{NONE} -- Implementation
 				-- Appending preconditions.
 			setup_reference_value_table (queryable.preconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.preconditions)
-			append_contracts_internal (queryable.preconditions, l_obj_equiv_sets, True, False, a_transition)
+			append_contracts_internal (queryable.preconditions, l_obj_equiv_sets, True, a_transition)
 --			create l_obj_equiv_sets.make (0)
 --			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
 --			append_contracts_internal (queryable.written_preconditions, l_obj_equiv_sets, True, True, a_transition)
@@ -96,16 +96,15 @@ feature{NONE} -- Implementation
 				-- Appending postconditions.
 			setup_reference_value_table (queryable.postconditions)
 			l_obj_equiv_sets := object_equivalent_classes (queryable.postconditions)
-			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, False, a_transition)
+			append_contracts_internal (queryable.postconditions, l_obj_equiv_sets, False, a_transition)
 --			create l_obj_equiv_sets.make (0)
 --			l_obj_equiv_sets.set_key_equality_tester (expression_equality_tester)
 --			append_contracts_internal (queryable.written_postconditions, l_obj_equiv_sets, False, True, a_transition)
 		end
 
-	append_contracts_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_precondition: BOOLEAN; a_human_written: BOOLEAN; a_transition: SEM_FEATURE_CALL_TRANSITION)
+	append_contracts_internal (a_state: EPA_STATE; a_object_equivalent_classes: like object_equivalent_classes; a_precondition: BOOLEAN; a_transition: SEM_FEATURE_CALL_TRANSITION)
 			-- Append `a_state' into `medium' as precondition if `a_precondition' is True; otherwise as postcondition'.
 			-- `a_object_equivalent_classes' indicates which expressions in `a_state' are object-equivalent to each other.
-			-- `a_human_written' indicates if expressions in `a_state' is human-written contracts.
 		local
 			l_property_type: STRING
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
@@ -125,7 +124,7 @@ feature{NONE} -- Implementation
 			loop
 				l_value := l_cursor.item.value
 				l_expr := l_cursor.item.expression
-				append_equation (a_transition, l_expr, l_value, l_property_type, a_human_written, a_object_equivalent_classes, reference_value_table)
+				append_equation (a_transition, l_expr, l_value, l_property_type, a_object_equivalent_classes, reference_value_table)
 				l_cursor.forth
 			end
 		end
@@ -175,7 +174,7 @@ feature{NONE} -- Implementation
 				else
 					l_prefix := absolute_change_property_prefix
 				end
-				append_equation (a_transition, a_change.expression, l_value, l_prefix, False, Void, reference_value_table)
+				append_equation (a_transition, a_change.expression, l_value, l_prefix, Void, reference_value_table)
 			end
 		end
 

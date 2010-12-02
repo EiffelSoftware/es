@@ -10,6 +10,8 @@ class
 inherit
 	IR_SHARED_EQUALITY_TESTERS
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 feature -- Access
 
 	sem_equation_equality_tester: SEM_EQUATION_EQUALITY_TESTER

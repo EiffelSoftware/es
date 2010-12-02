@@ -454,6 +454,7 @@ feature -- Basic operations
 			l_state: EPA_STATE
 		do
 			l_state := rewritten_contracts (contract_extractor.precondition_expression_set (class_, feature_), True)
+			l_state.do_all (agent (a_equation: EPA_EQUATION) do a_equation.expression.set_boost (default_boost_value_for_written_contracts) end)
 			adapt_state (l_state, preconditions)
 			adapt_state (l_state, written_preconditions)
 		end
@@ -464,6 +465,7 @@ feature -- Basic operations
 			l_state: EPA_STATE
 		do
 			l_state := rewritten_contracts (contract_extractor.postcondition_expression_set  (class_, feature_), False)
+			l_state.do_all (agent (a_equation: EPA_EQUATION) do a_equation.expression.set_boost (default_boost_value_for_written_contracts) end)
 			adapt_state (l_state, postconditions)
 			adapt_state (l_state, written_postconditions)
 		end
@@ -585,10 +587,12 @@ feature{NONE} -- Implementation
 				l_expr := variable_expression_from_context (a_operands.item_for_iteration, l_context)
 				l_operand_set.force_last (l_expr)
 				extend_variable (l_expr, a_operands.key_for_iteration)
-				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) then
+				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) and then l_index < l_operand_count then
 					inputs.force_last (l_expr)
 				end
-				outputs.force_last (l_expr)
+				if l_index < l_operand_count then
+					outputs.force_last (l_expr)
+				end
 				l_index := l_index + 1
 				a_operands.forth
 			end

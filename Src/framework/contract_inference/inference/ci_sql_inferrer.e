@@ -93,7 +93,9 @@ feature{NONE} -- Implementation
 		do
 			l_transition := a_transition_data.transition.cloned_object
 			l_transition.add_written_precondition
-			l_transition.add_written_postcondition
+			if a_transition_data.test_case_info.is_passing then
+				l_transition.add_written_postcondition
+			end
 
 			create l_file.make_create_read_write (a_file_path)
 			create l_transition_writer.make_with_medium (l_file)
@@ -144,12 +146,12 @@ feature{NONE} -- Implementation
 				if a_transition_data.transition.is_passing then
 					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
 					l_objects.set_serialization_internal (a_transition_data.serialization_info.post_serialization)
-					l_objects.set_properties (a_transition_data.transition.postconditions)
+					l_objects.set_properties_unsafe (a_transition_data.transition.postconditions)
 					l_writer.set_pre_state_object_info (a_transition_data.serialization_info.post_object_type_as_string)
 				else
 					create l_objects.make (a_transition_data.transition.context, a_transition_data.transition.variable_positions)
 					l_objects.set_serialization_internal (a_transition_data.serialization_info.pre_serialization)
-					l_objects.set_properties (a_transition_data.transition.preconditions)
+					l_objects.set_properties_unsafe (a_transition_data.transition.preconditions)
 					l_writer.set_pre_state_object_info (a_transition_data.serialization_info.pre_object_type_as_string)
 --					create l_objects.make_with_serialization (a_transition_data.transition.context, a_transition_data.serialization_info.pre_serialization)
 --					l_objects.set_properties (a_transition_data.transition.preconditions)

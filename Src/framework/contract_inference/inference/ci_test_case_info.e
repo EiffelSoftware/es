@@ -490,4 +490,12 @@ feature -- Setting
 			set_fault_id (l_id)
 		end
 
+	set_is_passing (b: BOOLEAN)
+			-- Set `is_passing' with `b'.
+		do
+			is_passing := b
+		ensure
+			is_passing_set: is_passing = b
+		end
+
 end

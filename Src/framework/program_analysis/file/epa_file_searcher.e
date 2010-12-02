@@ -47,7 +47,7 @@ feature -- Access
 			-- If Void, every found file is included in `last_file_files'.
 
 	file_found_actions: ACTION_SEQUENCE [TUPLE [a_path: STRING; a_name: STRING]]
-			-- Actions to be performed if a file `a_path' is found.
+			-- Actions to be performed if a file with absolute path `a_path' is found.
 			-- `a_name' is the file name or the last level directory name
 
 feature -- Status report

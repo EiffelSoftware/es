@@ -119,7 +119,7 @@ feature{NONE} -- Implementation
 				l_value := l_cursor.item.value
 				l_expr := l_cursor.item.expression
 				if not l_value.is_nonsensical then
-					append_equation (a_objects, l_expr, l_value, object_property_prefix, False, a_object_equivalent_classes, reference_value_table)
+					append_equation (a_objects, l_expr, l_value, object_property_prefix, a_object_equivalent_classes, reference_value_table)
 				end
 				l_cursor.forth
 			end

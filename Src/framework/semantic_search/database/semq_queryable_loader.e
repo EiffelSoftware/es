@@ -153,20 +153,24 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	variable_with_positions: HASH_TABLE [STRING, INTEGER]
+	variable_with_positions (a_feature: FEATURE_I): HASH_TABLE [STRING, INTEGER]
 			-- Variable with their positions
 			-- Key is variable position, value is the name of that variable at that position.
 		local
 			l_vars: LINKED_LIST [IR_FIELD]
 			l_parts: LIST [STRING]
 			l_position: INTEGER
+			l_operand_count: INTEGER
 		do
+			l_operand_count := operand_count_of_feature (a_feature)
 			create Result.make (20)
 			across fields_by_name.item (variable_field_name) as l_fields loop
 				l_parts := l_fields.item.value_text.split ('%T')
 				if l_parts.i_th (3) ~ precondition_property_prefix then
 					l_position := l_parts.last.to_integer
-					Result.force (l_parts.first, l_position)
+					if l_position < l_operand_count then
+						Result.force (l_parts.first, l_position)
+					end
 				end
 			end
 		end
@@ -267,7 +271,7 @@ feature{NONE} -- Implementation
 			l_class := first_class_starts_with_name (fields_by_name.item (class_field).first.value_text)
 			l_feature := l_class.feature_named (fields_by_name.item (feature_field).first.value_text)
 			l_context := context_from_field (fields_by_name.item (pre_object_info_field).first)
-			l_variables := variable_with_positions
+			l_variables := variable_with_positions (l_feature)
 			create l_tran.make (l_class, l_feature, l_variables, l_context, fields_by_name.item (is_creation_field).first.value_text.to_boolean)
 			l_tran.set_uuid (uuid)
 			l_tran.set_is_passing (fields_by_name.item (test_case_status_field).first.value_text.to_boolean)

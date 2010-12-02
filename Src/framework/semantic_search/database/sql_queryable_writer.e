@@ -218,7 +218,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	append_equation (a_queryable: SEM_QUERYABLE; a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE; a_property_type: STRING; a_human_written: BOOLEAN; a_object_equivalent_classes: detachable DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]; a_reference_value_table: HASH_TABLE [INTEGER, STRING])
+	append_equation (a_queryable: SEM_QUERYABLE; a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE; a_property_type: STRING; a_object_equivalent_classes: detachable DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]; a_reference_value_table: HASH_TABLE [INTEGER, STRING])
 				-- Append `a_expr' with `a_value' into `medium'
 		local
 			l_full_text: STRING
@@ -247,8 +247,8 @@ feature{NONE} -- Implementation
 			l_new_canonical_text: STRING
 		do
 			l_prefix_length := default_variable_prefix.count
-			if a_human_written then
-				l_boost_value := 2.0
+			if a_expr.boost = default_boost_value_for_written_contracts then
+				l_boost_value := default_boost_value_for_written_contracts
 			else
 				l_boost_value := default_boost_value
 			end
@@ -256,7 +256,7 @@ feature{NONE} -- Implementation
 			l_should_process := not a_value.is_nonsensical
 			if attached {BIN_EQ_AS} a_expr.ast or else attached {BIN_NE_AS} a_expr.ast or else attached {BIN_TILDE_AS} a_expr.ast or else attached {BIN_NOT_TILDE_AS} a_expr.ast then
 				if l_should_process then
-					l_should_process := a_human_written
+					l_should_process := l_boost_value = (default_boost_value_for_written_contracts)
 				end
 			end
 			if l_should_process then

@@ -266,7 +266,7 @@ feature{NONE} -- Implementation
 			-- Regular expression match engine
 		once
 			create Result.make
-			Result.compile (".*\([0-9]+\).*")
+			Result.compile (".*\([0-9\-]+\).*")
 		end
 
 end

@@ -56,10 +56,16 @@ feature{NONE} -- Implementation
 			-- Action to be performed if `a_path' is found
 		local
 			l_loader: SEMQ_QUERYABLE_LOADER
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_expression: EPA_EXPRESSION
+			l_anonymouse_form: STRING
+			l_precondition: EPA_STATE
 		do
 			io.put_string ("Loading " + a_file_name + "%N")
 			create l_loader
 			l_loader.load (a_path)
+			l_transition ?= l_loader.last_queryable
+			l_precondition := l_transition.interface_preconditions
 		end
 
 end

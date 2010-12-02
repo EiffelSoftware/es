@@ -41,8 +41,8 @@ feature -- Basic operations
 			l_feature_name_option: AP_STRING_OPTION
 			l_class_name_option: AP_STRING_OPTION
 			l_infer_option: AP_FLAG
-			l_generate_weka_option: AP_FLAG
-			l_weka_assertion_option: AP_STRING_OPTION
+--			l_generate_weka_option: AP_FLAG
+--			l_weka_assertion_option: AP_STRING_OPTION
 			l_max_tc_option: AP_INTEGER_OPTION
 			l_premise_number_option: AP_STRING_OPTION
 			l_composite_property_option: AP_STRING_OPTION
@@ -70,6 +70,10 @@ feature -- Basic operations
 			l_test_case_range: AP_STRING_OPTION
 			l_use_ssql_option: AP_FLAG
 			l_timeout: AP_INTEGER_OPTION
+			l_generate_arff_option: AP_STRING_OPTION
+			l_arff_type_option: AP_STRING_OPTION
+			l_input_option: AP_STRING_OPTION
+			l_output_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -92,18 +96,18 @@ feature -- Basic operations
 			l_infer_option.set_description ("Infer contracts for feature specified with %"feature%" option in class specified in %"class%" option.")
 			l_parser.options.force_last (l_infer_option)
 
-			create l_generate_weka_option.make_with_long_form ("generate-weka")
-			l_generate_weka_option.set_description (
-				"Generate Weka relations from test cases. %N%
-				%Format --class <CLASS_NAME> --generate-weka <test case directory> <weka relation output directory>. %N%
-				%<test case directory> can be a directory for a single feature or a directory  for a class. In the first case, a single Weka%
-				%relation will be generated; in the second case, multiple Weka relations will be generated, one for each feature in the same class.%N%
-				%<CLASS_NAME> specifies the class whose Weka relations are to be generated.")
-			l_parser.options.force_last (l_generate_weka_option)
+--			create l_generate_weka_option.make_with_long_form ("generate-weka")
+--			l_generate_weka_option.set_description (
+--				"Generate Weka relations from test cases. %N%
+--				%Format --class <CLASS_NAME> --generate-weka <test case directory> <weka relation output directory>. %N%
+--				%<test case directory> can be a directory for a single feature or a directory  for a class. In the first case, a single Weka%
+--				%relation will be generated; in the second case, multiple Weka relations will be generated, one for each feature in the same class.%N%
+--				%<CLASS_NAME> specifies the class whose Weka relations are to be generated.")
+--			l_parser.options.force_last (l_generate_weka_option)
 
-			create l_weka_assertion_option.make_with_long_form ("weka-assertion-selection")
-			l_weka_assertion_option.set_description ("Mode to select assertions as Weka attributes in the relations. Valid values are %"union%" and %"intersection%". If this option is not specified, the default is %"intersection%".")
-			l_parser.options.force_last (l_weka_assertion_option)
+--			create l_weka_assertion_option.make_with_long_form ("weka-assertion-selection")
+--			l_weka_assertion_option.set_description ("Mode to select assertions as Weka attributes in the relations. Valid values are %"union%" and %"intersection%". If this option is not specified, the default is %"intersection%".")
+--			l_parser.options.force_last (l_weka_assertion_option)
 
 			create l_max_tc_option.make_with_long_form ("max-tc-number")
 			l_max_tc_option.set_description ("Set the maximal number of test cases to execute. Format --max-tc-number <number>. <number> must be a non-negative integer. Default is 0. 0 means execute all test cases.")
@@ -236,6 +240,22 @@ feature -- Basic operations
 			l_timeout.set_description ("Specify maximal time (in seconds) for a test case to run. Format: --time-out integer. Default: 120")
 			l_parser.options.force_last (l_timeout)
 
+			create l_generate_arff_option.make_with_long_form ("generate-arff")
+			l_generate_arff_option.set_description ("Enable generation of ARFF file. Format: --generate-arff on|off. Default off. Used together with --class and --feature. If --input is set, use that location for .ssql files, Otherwise, use the default ssql directory in the project. If --output is set, use that location for output ARFF file, otherwise use the default output directory.")
+			l_parser.options.force_last (l_generate_arff_option)
+
+			create l_arff_type_option.make_with_long_form ("arff-type")
+			l_arff_type_option.set_description ("Specify on which type of files ARFF is genearted: Format: --arff-type transition|object. Default: transition. This option only has effect if --generate-arff is on.")
+			l_parser.options.force_last (l_arff_type_option)
+
+			create l_input_option.make_with_long_form ("input")
+			l_input_option.set_description ("Specify the path of input files. Format: --input path. Depending on different analysis to perform, different input files are needed.")
+			l_parser.options.force_last (l_input_option)
+
+			create l_output_option.make_with_long_form ("output")
+			l_output_option.set_description ("Specify the path of output files. Format: --output path. Depending on different analysis to perform, different output files are needed.")
+			l_parser.options.force_last (l_output_option)
+
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
@@ -251,16 +271,6 @@ feature -- Basic operations
 			end
 
 			config.set_should_infer_contracts (l_infer_option.was_found)
-
-			if l_generate_weka_option.was_found then
-				setup_generate_weka (config, l_parser.parameters)
-			end
-
-			if l_weka_assertion_option.was_found then
-				setup_weka_assertion_selection (config, l_weka_assertion_option.parameter)
-			else
-				setup_weka_assertion_selection (config, Void)
-			end
 
 			if l_max_tc_option.was_found then
 				if l_max_tc_option.parameter > 0 then
@@ -400,6 +410,30 @@ feature -- Basic operations
 			else
 				setup_test_case_range (config, "0,0")
 			end
+
+			if l_arff_type_option.was_found then
+				if l_arff_type_option.parameter ~ "object" then
+					config.set_should_generate_arff_for_transitions (False)
+				else
+					config.set_should_generate_arff_for_transitions (True)
+				end
+			else
+				config.set_should_generate_arff_for_transitions (True)
+			end
+
+			if l_input_option.was_found then
+				config.set_input_location (l_input_option.parameter)
+			else
+				config.set_input_location (Void)
+			end
+
+			if l_output_option.was_found then
+				config.set_output_location (l_output_option.parameter)
+			else
+				config.set_output_location (Void)
+			end
+
+			config.set_should_generate_arff (l_generate_arff_option.was_found)
 		end
 
 feature{NONE} -- Implementation
@@ -625,15 +659,6 @@ feature{NONE} -- Implementation
 			elseif a_parameter.is_case_insensitive_equal ("off") then
 				config.set_is_composite_property_enabled (False)
 			end
-		end
-
-	setup_generate_weka (a_config: CI_CONFIG; a_parameters: DS_LIST [STRING])
-			-- Setup `a_config' using data given in `a_parser' for Weka relation generation.
-		do
-			a_config.set_should_generate_weka_relations (True)
-			check a_parameters.count = 2 end
-			config.set_test_case_directory (a_parameters.first)
-			config.set_output_directory (a_parameters.last)
 		end
 
 	setup_weka_assertion_selection (a_config: CI_CONFIG; a_mode: detachable STRING)

@@ -143,11 +143,6 @@ feature -- Access
 			Result := Execution_environment.current_working_directory
 		end
 
-	output_directory: STRING
-			-- Directory to output generated files
-			-- Serveral options use this output_directory, including:
-			-- `generate-weka'.
-
 	max_test_case_to_execute: INTEGER
 			-- The maximal number of test cases to execute.
 			-- This is for debug reason, because execute a test case and
@@ -329,6 +324,12 @@ feature -- Access
 			-- Maximal time in seconds for a test case to run
 			-- Default: 120
 
+	input_location: STRING
+			-- The path of input file, or a directory of input files
+
+	output_location: STRING
+			-- THe path of output file, or a directory for output files
+
 feature -- Status report
 
 	should_build_project: BOOLEAN
@@ -339,6 +340,21 @@ feature -- Status report
 
 	should_generate_weka_relations: BOOLEAN
 			-- Should Weka relations be generated?			
+
+feature -- ARFF file generation
+
+	should_generate_arff: BOOLEAN
+			-- Should ARFF file be generated?					
+
+	should_generate_arff_for_transitions: BOOLEAN
+			-- Should ARFF file be generated for transitions?
+			-- Default: True			
+
+	should_generate_arff_for_objects: BOOLEAN
+			-- Should ARFF file be generated for objects?
+		do
+			Result := not should_generate_arff_for_transitions
+		end
 
 feature -- Weka relation generation
 
@@ -432,13 +448,6 @@ feature -- Setting
 			weka_assertion_selection_mode := i
 		ensure
 			weka_assertion_selection_mode_set: weka_assertion_selection_mode = i
-		end
-
-	set_output_directory (a_directory: like output_directory)
-			-- Set `output_directory' with `a_directory'.
-			-- Make a new copy of `a_directory'.
-		do
-			output_directory := a_directory.twin
 		end
 
 	set_max_test_case_to_execute (i: INTEGER)
@@ -654,6 +663,34 @@ feature -- Setting
 			test_case_execution_timeout := i
 		ensure
 			test_case_execution_timeout_set: test_case_execution_timeout = i
+		end
+
+	set_should_generate_arff (b: BOOLEAN)
+			-- Set `should_generate_arff' with `b'.
+		do
+			should_generate_arff := b
+		ensure
+			should_generate_arff_set: should_generate_arff = b
+		end
+
+	set_should_generate_arff_for_transitions (b: BOOLEAN)
+			-- Set `should_generate_arff_for_transitions' with `b'.
+		do
+			should_generate_arff_for_transitions := b
+		ensure
+			should_generate_arff_for_transitions_set: should_generate_arff_for_transitions = b
+		end
+
+	set_input_location (a_location: STRING)
+			-- Set `input_location' with `a_location'.
+		do
+			input_location := a_location
+		end
+
+	set_output_location (a_location: STRING)
+			-- Set `output_location' with `a_location'.
+		do
+			output_location := a_location
 		end
 
 feature{NONE} -- Implementation

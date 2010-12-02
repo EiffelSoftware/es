@@ -694,30 +694,23 @@ feature{NONE} -- Actions
 							if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
 							else
 								if last_test_case_info /= Void then
---									if
---										a_dm.application_status.exception_meaning ~ "Postcondition violated." and then
---										a_dm.application_status.e_feature.name ~ last_test_case_info.feature_under_test.feature_name and then
---										a_dm.application_status.e_feature.associated_class.name ~ last_test_case_info.class_under_test.name
---									then
-											-- The exception is postcondition violation in the feature under test,
-											-- we try to get some post-state expressions evaluated.										
-										l_old_stack := debugger_manager.application.current_execution_stack_number
-										l_test_feature_stack_number := call_stack_index (debugger_manager, last_test_case_info.test_feature_name)
-										if l_test_feature_stack_number > 0 then
-											debugger_manager.application.set_current_execution_stack_number (l_test_feature_stack_number)
-											if timeout.has_paused then
-												timeout.resume
-											end
-											l_post_state := expression_evaluations (last_test_case_info, expressions_to_evaluate (last_test_case_info, False))
-											timeout.pause
-											on_state_expression_evaluated (Void, l_post_state, False, last_test_case_info, last_post_state_expression_evaluation_manger)
-											debugger_manager.application.set_current_execution_stack_number (l_old_stack)
-										else
-											on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+									last_test_case_info.set_is_passing (False)
+										-- The exception is postcondition violation in the feature under test,
+										-- we try to get some post-state expressions evaluated.										
+									l_old_stack := debugger_manager.application.current_execution_stack_number
+									l_test_feature_stack_number := call_stack_index (debugger_manager, last_test_case_info.test_feature_name)
+									if l_test_feature_stack_number > 0 then
+										debugger_manager.application.set_current_execution_stack_number (l_test_feature_stack_number)
+										if timeout.has_paused then
+											timeout.resume
 										end
---									elseif not last_test_case_info.is_passing then
---										on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
---									end
+										l_post_state := expression_evaluations (last_test_case_info, expressions_to_evaluate (last_test_case_info, False))
+										timeout.pause
+										on_state_expression_evaluated (Void, l_post_state, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+										debugger_manager.application.set_current_execution_stack_number (l_old_stack)
+									else
+										on_state_expression_evaluated (Void, Void, False, last_test_case_info, last_post_state_expression_evaluation_manger)
+									end
 								end
 							end
 						end
