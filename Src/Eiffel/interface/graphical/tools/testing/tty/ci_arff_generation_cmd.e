@@ -86,7 +86,7 @@ feature -- Basic operations
 			l_file_path.set_file_name (config.class_name + "__" + config.feature_name_for_test_cases.first + ".arff")
 
 			create l_file.make_create_read_write (l_file_path)
-			l_generator.generate_maximal_arff (l_file)
+			l_generator.generate_maximal_arff (config.class_name + "__" + config.feature_name_for_test_cases.first, l_file)
 			l_file.close
 		end
 

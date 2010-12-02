@@ -76,12 +76,13 @@ feature -- Basic operatioins
 			reset
 		end
 
-	generate_maximal_arff (a_medium: IO_MEDIUM)
+	generate_maximal_arff (a_name: STRING; a_medium: IO_MEDIUM)
 			-- Generate maximal ARFF from data in Current.
 			-- In this mode, all expressions in all added queryables will appear
 			-- as an attribute in the final ARFF data. If some expressions only appear in some
 			-- queryables, in the ARFF data, the will be missing values in lines
 			-- for queryables in which those expressions does not appear.
+			-- `a_name' is the name of the ARFF relation to be generated.
 		local
 			l_arff_relation: WEKA_ARFF_RELATION
 			l_attributes: ARRAYED_LIST [WEKA_ARFF_ATTRIBUTE]
@@ -92,6 +93,7 @@ feature -- Basic operatioins
 		do
 			l_attributes := arff_attributes
 			create l_arff_relation.make (l_attributes)
+			l_arff_relation.set_name (a_name)
 			across instances as l_instances loop
 				l_instance := l_instances.item
 				create l_instance_values.make (l_attributes.count)
