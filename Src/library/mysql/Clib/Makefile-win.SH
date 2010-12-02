@@ -21,10 +21,11 @@ OBJECTS = eiffelmysql.$obj
 
 all:: $output_libraries
 	$(MKDIR) ..$(DIR)spec$(DIR)include
-	$(LN) ..$(DIR)spec$(DIR)include$(DIR)eiffelmysql.h
+	$(LN) *.h ..$(DIR)spec$(DIR)include$(DIR)eiffelmysql.h
 	$(MAKE) clean
 
 standard:: eiffelmysql.lib
+mtstandard:: eiffelmysql.lib
 
 clean:
 	$(RM) *.$obj
