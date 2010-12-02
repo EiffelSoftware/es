@@ -28,7 +28,10 @@ feature -- Access
 			-- List of intermediate local variables
 			-- Note: a new copy is created every time.
 		do
-			Result := variables.subtraction (inputs).subtraction (outputs)
+			if intermediate_variables_internal = Void then
+				intermediate_variables_internal := variables.subtraction (inputs).subtraction (outputs)
+			end
+			Result := intermediate_variables_internal
 		end
 
 	preconditions: EPA_STATE assign set_preconditions
@@ -254,6 +257,27 @@ feature -- Status report
 	is_transition: BOOLEAN = True
 			-- Is Current a transition querable (either a feature call or a snippet)?
 
+	is_interface_expression (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_expression' an interface expression?
+		local
+			l_expr_rewriter: like  expression_rewriter
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_dummy_var_name: STRING
+		do
+				-- Collect the set of intermediate variables.
+			l_dummy_var_name := "{_}"
+			create l_replacements.make (5)
+			l_replacements.compare_objects
+			intermediate_variables.do_all (
+				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
+					do
+						a_tbl.put (a_dummy_var_name, a_expr.text)
+					end (?, l_replacements, l_dummy_var_name))
+
+			l_expr_rewriter := expression_rewriter
+			Result := not l_expr_rewriter.expression_text (a_expression, l_replacements).has_substring (l_dummy_var_name)
+		end
+
 feature -- Setting
 
 	extend_ast_precondition_equation (a_equation: EPA_EQUATION)
@@ -355,6 +379,9 @@ feature{NONE} -- Implementation
 		do
 			a_hash_set.force_last (create {SEM_EQUATION}.make (a_equation, a_is_precondition, a_is_human_written))
 		end
+
+	intermediate_variables_internal: detachable like intermediate_variables
+			-- Cache for `intermediate_variables'
 
 invariant
 	inputs_valid: inputs.for_all (agent variables.has)

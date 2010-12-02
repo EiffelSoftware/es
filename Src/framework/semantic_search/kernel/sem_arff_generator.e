@@ -130,15 +130,6 @@ feature -- Status report
 			end
 		end
 
---	is_minimal_modde: BOOLEAN
---			-- In this mode, only expressions appearing in all added queryables
---			-- are included as attributes in the final ARFF data.
---			-- This reduced the size of the ARFF data, but with the risk of missing
---			-- a lot of information.
---		do
---			Result := not is_maximal_mode
---		end
-
 feature{NONE} -- Process
 
 	process_snippet (a_snippet: SEM_SNIPPET)
@@ -184,17 +175,22 @@ feature{NONE} -- Process
 				l_cursor.after
 			loop
 				l_expr := l_cursor.key
-				if l_expr.type.is_integer or l_expr.type.is_boolean then
-					across l_cursor.item as l_changes loop
-						l_change := l_changes.item
-						if l_change.is_absolute then
-							l_change_kind := property_kind_absolute_change
-						else
-							l_change_kind := property_kind_relative_change
-						end
-						if not l_change.values.is_empty then
-							l_value := value_from_expression (l_change.values.first)
-							extend_attribute (create {EPA_EQUATION}.make (l_expr, l_value), l_change_kind)
+				if a_call.is_interface_expression (l_expr) then
+					if l_expr.type.is_integer or l_expr.type.is_boolean then
+						integer_argumented_query_matcher.match (l_expr.text)
+						if not integer_argumented_query_matcher.has_matched then
+							across l_cursor.item as l_changes loop
+								l_change := l_changes.item
+								if l_change.is_absolute then
+									l_change_kind := property_kind_absolute_change
+								else
+									l_change_kind := property_kind_relative_change
+								end
+								if not l_change.values.is_empty then
+									l_value := value_from_expression (l_change.values.first)
+									extend_attribute (create {EPA_EQUATION}.make (l_expr, l_value), l_change_kind)
+								end
+							end
 						end
 					end
 				end
