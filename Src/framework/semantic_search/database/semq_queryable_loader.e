@@ -32,16 +32,25 @@ feature -- Basic operations
 	load (a_path: STRING)
 			-- Load queryable from file whose absolute path is specified in `a_path'.
 			-- Make result available in `last_queryable'.
+		local
+			l_retried: BOOLEAN
 		do
-			create fields.make
-			create fields_by_name.make (25)
-			fields_by_name.compare_objects
+			if not l_retried then
+				create fields.make
+				create fields_by_name.make (25)
+				fields_by_name.compare_objects
 
-				-- Read file in `a_path', put all fields into `fields' and `fields_by_name'.
-			load_file (a_path)
+					-- Read file in `a_path', put all fields into `fields' and `fields_by_name'.
+				load_file (a_path)
 
-				-- Analyze loaded data.
-			build_queryable
+					-- Analyze loaded data.
+				build_queryable
+			end
+		rescue
+			last_queryable := Void
+			last_meta := Void
+			l_retried := True
+			retry
 		end
 
 feature{NONE} -- Implementation

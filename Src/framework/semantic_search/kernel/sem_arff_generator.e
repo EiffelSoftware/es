@@ -22,6 +22,10 @@ inherit
 
 	ITP_SHARED_CONSTANTS
 
+	EPA_UTILITY
+
+	EPA_SHARED_EQUALITY_TESTERS
+
 create
 	make_for_feature_transition,
 	make_for_objects,
@@ -165,6 +169,9 @@ feature{NONE} -- Process
 			else
 				extend_meta_attribute (exception_tag_attribute_name, nonsensical_value, none_type)
 			end
+
+			extend_operand_equality_attributes (a_call)
+
 			a_call.interface_preconditions.do_if (agent extend_attribute (?, property_kind_precondition), agent is_equation_suitable_as_attribute)
 			a_call.interface_postconditions.do_if (agent extend_attribute (?, property_kind_postcondition), agent is_equation_suitable_as_attribute)
 
@@ -217,7 +224,178 @@ feature{NONE} -- Process
 			end
 		end
 
+	extend_operand_equality_attributes (a_transition: SEM_FEATURE_CALL_TRANSITION)
+			-- Extend attributes to represent equality relation between operands of `a_transition'.
+		local
+			l_operands: EPA_HASH_SET [EPA_EXPRESSION]
+			l_positions: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_pre_positions: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_post_positions: HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_opd_count: INTEGER
+		do
+				-- Collect all operands for `a_transition'.
+			create l_operands.make (10)
+			l_operands.set_equality_tester (expression_equality_tester)
+			a_transition.inputs.union (a_transition.outputs).do_all (agent l_operands.force_last)
+			l_opd_count := operand_count_of_feature (a_transition.feature_)
+			create l_positions.make (l_operands.count)
 
+			from
+				l_operands.start
+			until
+				l_operands.after
+			loop
+				l_positions.force (l_operands.item_for_iteration, a_transition.variable_positions.item (l_operands.item_for_iteration))
+				l_operands.forth
+			end
+
+				-- Generate attributes in pre-state.
+			l_pre_positions := l_positions.twin
+			if a_transition.is_creation then
+				l_pre_positions.remove (0)
+			end
+			if a_transition.is_query then
+				l_pre_positions.remove (l_opd_count - 1)
+			end
+			create l_operands.make (l_pre_positions.count)
+			l_operands.set_equality_tester (expression_equality_tester)
+			across l_pre_positions as l_poses loop l_operands.force_last (l_poses.item) end
+			generate_variable_equality_comparison_attributes (l_operands, a_transition, True)
+
+				-- Generate attributes in post-state.
+			l_post_positions := l_positions.twin
+			create l_operands.make (l_post_positions.count)
+			l_operands.set_equality_tester (expression_equality_tester)
+			across l_post_positions as l_poses loop l_operands.force_last (l_poses.item) end
+			generate_variable_equality_comparison_attributes (l_operands, a_transition, False)
+		end
+
+	generate_variable_equality_comparison_attributes (a_operands: DS_HASH_SET [EPA_EXPRESSION]; a_transition: SEM_FEATURE_CALL_TRANSITION; a_precondition: BOOLEAN)
+			-- Generate attributes for "var1 = var2" and "var1 ~ var2" for each variable pair in `a_operands.
+			-- `a_precondition' indicates if those variables are from pre-state.
+		local
+			l_state: EPA_STATE
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_var: EPA_EXPRESSION
+			l_equation: EPA_EQUATION
+			l_expr_text: STRING
+			l_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_var1: EPA_EXPRESSION
+			l_var2: EPA_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
+			l_expr1: EPA_EXPRESSION
+			l_expr2: EPA_EXPRESSION
+		do
+			if a_precondition then
+				l_state := a_transition.preconditions
+			else
+				l_state := a_transition.postconditions
+			end
+
+			create l_set.make (a_operands.count)
+			l_set.set_equality_tester (expression_equality_tester)
+			l_set.append (a_operands)
+
+			across l_set.combinations (2) as l_pairs loop
+				l_expr1 := l_pairs.item.first
+				l_expr2 := l_pairs.item.last
+				if attached {EPA_BOOLEAN_VALUE} value_of_var1_equal_to_var2 (l_expr1, l_expr2, l_state) as l_bool_value then
+					l_expr_text := l_expr1.text + " = " + l_expr2.text
+					create l_expr.make_with_text (l_expr1.class_, l_expr1.feature_, l_expr_text, l_expr1.written_class)
+					create l_equation.make (l_expr, l_bool_value)
+					extend_attribute (l_equation, property_kind_precondition)
+				end
+
+				if attached {EPA_BOOLEAN_VALUE} value_of_var1_object_equal_to_var2 (l_expr1, l_expr2, l_state) as l_bool_value then
+					l_expr_text := l_expr1.text + " ~ " + l_expr2.text
+					create l_expr.make_with_text (l_expr1.class_, l_expr1.feature_, l_expr_text, l_expr1.written_class)
+					create l_equation.make (l_expr, l_bool_value)
+					extend_attribute (l_equation, property_kind_precondition)
+				end
+			end
+		end
+
+	value_of_var1_equal_to_var2 (a_var1: EPA_EXPRESSION; a_var2: EPA_EXPRESSION; a_state: EPA_STATE): detachable EPA_BOOLEAN_VALUE
+			-- The value of the expression `a_var1 = a_var2' evaluated in `a_state'
+			-- Return Void if the value is not calculatable.
+		local
+			l_equ1, l_equ2: EPA_EQUATION
+			l_value1, l_value2: EPA_EXPRESSION_VALUE
+		do
+			l_equ1 := a_state.item_with_expression (a_var1)
+			l_equ2 := a_state.item_with_expression (a_var2)
+			if l_equ1 /= Void and then l_equ2 /= Void then
+				l_value1 := l_equ1.value
+				l_value2 := l_equ2.value
+				if l_value1.is_integer and then l_value2.is_integer then
+					if l_value1.as_integer.item = l_value2.as_integer.item then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				elseif l_value1.is_boolean and then l_value2.is_boolean then
+					if l_value1.as_boolean.item = l_value2.as_boolean.item then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				elseif l_value1.is_reference and then l_value2.is_reference then
+					if l_value1.as_reference.item ~ l_value2.as_reference.item then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				end
+			end
+		end
+
+	value_of_var1_object_equal_to_var2 (a_var1: EPA_EXPRESSION; a_var2: EPA_EXPRESSION; a_state: EPA_STATE): detachable EPA_BOOLEAN_VALUE
+			-- The value of the expression `a_var1 ~ a_var2' evaluated in `a_state'
+			-- Return Void if the value is not calculatable.
+		local
+			l_equ1, l_equ2: EPA_EQUATION
+			l_value1, l_value2: EPA_EXPRESSION_VALUE
+		do
+			l_equ1 := a_state.item_with_expression (a_var1)
+			l_equ2 := a_state.item_with_expression (a_var2)
+			if l_equ1 /= Void and then l_equ2 /= Void then
+				l_value1 := l_equ1.value
+				l_value2 := l_equ2.value
+				if l_value1.is_integer and then l_value2.is_integer then
+					if l_value1.as_integer.item = l_value2.as_integer.item then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				elseif l_value1.is_boolean and then l_value2.is_boolean then
+					if l_value1.as_boolean.item = l_value2.as_boolean.item then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				elseif l_value1.is_reference and then l_value2.is_reference then
+					if l_value1.as_reference.object_equivalent_class_id = l_value2.as_reference.object_equivalent_class_id then
+						Result := true_expression_value
+					else
+						Result := false_expression_value
+					end
+				end
+			end
+		end
+
+
+	true_expression_value: EPA_BOOLEAN_VALUE
+			-- True expression value
+		do
+			create Result.make (True)
+		end
+
+	false_expression_value: EPA_BOOLEAN_VALUE
+			-- True expression value
+		do
+			create Result.make (False)
+		end
 
 	class_attribute_name: STRING = "class"
 	feature_attribute_name: STRING = "feature"

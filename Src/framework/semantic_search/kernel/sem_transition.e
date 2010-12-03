@@ -259,23 +259,8 @@ feature -- Status report
 
 	is_interface_expression (a_expression: EPA_EXPRESSION): BOOLEAN
 			-- Is `a_expression' an interface expression?
-		local
-			l_expr_rewriter: like  expression_rewriter
-			l_replacements: HASH_TABLE [STRING, STRING]
-			l_dummy_var_name: STRING
 		do
-				-- Collect the set of intermediate variables.
-			l_dummy_var_name := "{_}"
-			create l_replacements.make (5)
-			l_replacements.compare_objects
-			intermediate_variables.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
-					do
-						a_tbl.put (a_dummy_var_name, a_expr.text)
-					end (?, l_replacements, l_dummy_var_name))
-
-			l_expr_rewriter := expression_rewriter
-			Result := not l_expr_rewriter.expression_text (a_expression, l_replacements).has_substring (l_dummy_var_name)
+			Result := not expression_rewriter.expression_text (a_expression, interface_variable_replacements).has_substring (dummy_var_name)
 		end
 
 feature -- Setting
@@ -341,16 +326,8 @@ feature{NONE} -- Implementation
 			l_should_keep: BOOLEAN
 			l_dummy_var_name: STRING
 		do
-				-- Collect the set of intermediate variables.
-			l_dummy_var_name := "{_}"
-			create l_replacements.make (5)
-			l_replacements.compare_objects
-			intermediate_variables.do_all (
-				agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
-					do
-						a_tbl.put (a_dummy_var_name, a_expr.text)
-					end (?, l_replacements, l_dummy_var_name))
-
+			l_dummy_var_name := dummy_var_name
+			l_replacements := interface_variable_replacements
 			l_expr_rewriter := expression_rewriter
 			Result := a_state.cloned_object
 			from
@@ -382,6 +359,33 @@ feature{NONE} -- Implementation
 
 	intermediate_variables_internal: detachable like intermediate_variables
 			-- Cache for `intermediate_variables'
+
+	interface_variable_replacements: HASH_TABLE [STRING, STRING]
+			-- Variable replacements used to detect if an expression
+			-- only mentions interface variables.
+		local
+			l_expr_rewriter: like  expression_rewriter
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_dummy_var_name: STRING
+		do
+			if interface_variable_replacements_internal = Void then
+					-- Collect the set of intermediate variables.
+				l_dummy_var_name := dummy_var_name
+				create interface_variable_replacements_internal.make (5)
+				interface_variable_replacements_internal.compare_objects
+				intermediate_variables.do_all (
+					agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
+						do
+							a_tbl.put (a_dummy_var_name, a_expr.text)
+						end (?, interface_variable_replacements_internal, l_dummy_var_name))
+			end
+			Result := interface_variable_replacements_internal
+		end
+
+	interface_variable_replacements_internal: detachable like interface_variable_replacements
+			-- Cache for `interface_variable_replacements'
+
+	dummy_var_name: STRING = "{_}"
 
 invariant
 	inputs_valid: inputs.for_all (agent variables.has)

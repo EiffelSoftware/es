@@ -532,6 +532,8 @@ feature{NONE} -- Actions
 			l_serialization_dbg_manager: like object_serialization_evaluation
 			l_except_code: INTEGER
 		do
+			last_serialization_info := Void
+			last_test_case_info := Void
 			if config.max_test_case_to_execute > 0 and then test_case_count >= config.max_test_case_to_execute then
 			else
 				next_object_equivalent_class_id := 0
@@ -1519,48 +1521,50 @@ feature{NONE} -- Implementation
 			create l_loader
 			l_loader.load (a_absolute_path)
 			l_transition ?= l_loader.last_queryable
-			l_tc_info := test_case_info_from_transition (l_transition)
-				-- Logging.			
-			l_pre_valuations := function_valuations_from_state (l_transition.preconditions, l_transition, l_tc_info)
-			l_post_valuations := function_valuations_from_state (l_transition.postconditions, l_transition, l_tc_info)
+			if l_transition /= Void then
+				l_tc_info := test_case_info_from_transition (l_transition)
+					-- Logging.			
+				l_pre_valuations := function_valuations_from_state (l_transition.preconditions, l_transition, l_tc_info)
+				l_post_valuations := function_valuations_from_state (l_transition.postconditions, l_transition, l_tc_info)
 
-			create l_bounded_integer_function_fields.make (2)
-			l_bounded_integer_function_fields.compare_objects
-			if l_loader.last_meta.has (prestate_bounded_functions_field) then
-				create l_field.make_as_string (prestate_bounded_functions_field, l_loader.last_meta.item (prestate_bounded_functions_field), default_boost_value)
-				l_bounded_integer_function_fields.force (l_field, prestate_bounded_functions_field)
-			end
-			if l_loader.last_meta.has (poststate_bounded_functions_field) then
-				create l_field.make_as_string (poststate_bounded_functions_field, l_loader.last_meta.item (poststate_bounded_functions_field), default_boost_value)
-				l_bounded_integer_function_fields.force (l_field, poststate_bounded_functions_field)
-			end
-			l_bounded_integer_functions := bounded_functions_from_fields (l_transition, l_bounded_integer_function_fields)
-			if l_bounded_integer_functions.has (True) then
-				l_pre_integer_bounded_functions := l_bounded_integer_functions.item (True)
-			else
-				create l_pre_integer_bounded_functions.make (0)
-				l_pre_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
-			end
+				create l_bounded_integer_function_fields.make (2)
+				l_bounded_integer_function_fields.compare_objects
+				if l_loader.last_meta.has (prestate_bounded_functions_field) then
+					create l_field.make_as_string (prestate_bounded_functions_field, l_loader.last_meta.item (prestate_bounded_functions_field), default_boost_value)
+					l_bounded_integer_function_fields.force (l_field, prestate_bounded_functions_field)
+				end
+				if l_loader.last_meta.has (poststate_bounded_functions_field) then
+					create l_field.make_as_string (poststate_bounded_functions_field, l_loader.last_meta.item (poststate_bounded_functions_field), default_boost_value)
+					l_bounded_integer_function_fields.force (l_field, poststate_bounded_functions_field)
+				end
+				l_bounded_integer_functions := bounded_functions_from_fields (l_transition, l_bounded_integer_function_fields)
+				if l_bounded_integer_functions.has (True) then
+					l_pre_integer_bounded_functions := l_bounded_integer_functions.item (True)
+				else
+					create l_pre_integer_bounded_functions.make (0)
+					l_pre_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+				end
 
-			if l_bounded_integer_functions.has (False) then
-				l_post_integer_bounded_functions := l_bounded_integer_functions.item (False)
-			else
-				create l_post_integer_bounded_functions.make (0)
-				l_post_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+				if l_bounded_integer_functions.has (False) then
+					l_post_integer_bounded_functions := l_bounded_integer_functions.item (False)
+				else
+					create l_post_integer_bounded_functions.make (0)
+					l_post_integer_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
+				end
+
+					-- Fabricate transition info for the last executed test case.
+				l_signature := "loaded_test_case_" + (transition_data.count + 1).out
+				create l_transition_info.make_with_signature (
+					l_tc_info,
+					l_transition,
+					l_pre_valuations,
+					l_post_valuations,
+					l_pre_integer_bounded_functions,
+					l_post_integer_bounded_functions,
+					l_signature)
+
+				transition_data.extend (l_transition_info)
 			end
-
-				-- Fabricate transition info for the last executed test case.
-			l_signature := "loaded_test_case_" + (transition_data.count + 1).out
-			create l_transition_info.make_with_signature (
-				l_tc_info,
-				l_transition,
-				l_pre_valuations,
-				l_post_valuations,
-				l_pre_integer_bounded_functions,
-				l_post_integer_bounded_functions,
-				l_signature)
-
-			transition_data.extend (l_transition_info)
 		end
 
 	build_last_transition_from_file (a_absolute_path: STRING)

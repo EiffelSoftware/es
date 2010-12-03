@@ -73,7 +73,9 @@ feature -- Basic operations
 			loop
 				create l_ssql_loader
 				l_ssql_loader.load (l_ssql_files.item_for_iteration)
-				l_generator.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+				if l_ssql_loader.last_queryable /= Void then
+					l_generator.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+				end
 				l_ssql_files.forth
 			end
 
