@@ -38,7 +38,7 @@ feature -- Access
 			end
 		end
 
-	test_set_descendants: SEARCH_TABLE [EIFFEL_CLASS_C]
+	test_set_descendants (is_compiled_successful_required: BOOLEAN): SEARCH_TABLE [EIFFEL_CLASS_C]
 			-- Classes inheriting from {EQA_TEST_SET}
 		require
 			testing_enabled: is_testing_enabled
@@ -49,7 +49,8 @@ feature -- Access
 			create Result.make (10)
 			l_server := system.classes
 			if
-				attached library_class_named (eqa_test_set_name) as l_class
+				attached library_class_named (eqa_test_set_name) as l_class and then
+				(not is_compiled_successful_required or else system.successful)
 			then
 				from
 					i := l_server.lower
@@ -233,7 +234,7 @@ feature {SYSTEM_I} -- Basic operations
 
 				-- Mark all classes in `suppliers' which are needed by test classes
 			from
-				l_descandants := test_set_descendants
+				l_descandants := test_set_descendants (False)
 				l_descandants.start
 			until
 				l_descandants.after

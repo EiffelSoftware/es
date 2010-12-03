@@ -4119,6 +4119,10 @@ feature {NONE} -- Implementation
 			l_as.identifier.process (Current)
 			l_text_formatter_decorator.exdent
 			l_text_formatter_decorator.put_new_line
+				-- Compute type of the cursor and associate cursor name with this type.
+			if attached last_type and then attached expr_type (l_as.cursor_expression) as t then
+				object_test_locals_for_current_feature.force (t.as_attached_in (current_class), l_as.identifier.name_8)
+			end
 		end
 
 --	process_explicit_processor_specification_as (l_as: EXPLICIT_PROCESSOR_SPECIFICATION_AS)
