@@ -16,7 +16,7 @@
 			</condition>
 		</external_include>
 
-		<external_object location="$(ISE_LIBRARY)\library\mysql\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\eiffelmysql.o">
+		<external_object location="$(ISE_LIBRARY)\library\mysql\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\eiffelmysql.lib">
 			<condition>
 				<platform value="windows"/>
 			</condition>
