@@ -36,6 +36,13 @@ inherit
 			out
 		end
 
+	WEKA_ARFF_ATTRIBUTE_VISITOR
+		undefine
+			is_equal,
+			copy,
+			out
+		end
+
 create
 	make
 
@@ -200,6 +207,25 @@ feature -- Access
 			end
 		end
 
+	value_set_of_attribute (a_attribute: WEKA_ARFF_ATTRIBUTE): DS_HASH_SET [STRING]
+			-- Set of values of `a_attribute' across all instances.
+			-- The order of values are preserved.
+		local
+			l_index: INTEGER
+			l_value: STRING
+		do
+			create Result.make (10)
+			Result.set_equality_tester (string_equality_tester)
+
+			l_index := attributes.index_of (a_attribute, 1)
+			across Current as l_instances loop
+				l_value := l_instances.item.i_th (l_index)
+				if not Result.has (l_value) then
+					Result.force_last (l_value)
+				end
+			end
+		end
+
 	projection (a_attribute_selection_function: FUNCTION [ANY, TUPLE [WEKA_ARFF_ATTRIBUTE], BOOLEAN]): like Current
 			-- Projection of Current by selecting only attributes that satisfies `a_attribute_selection_function'
 			-- The order of the attributes in the resulting relation is the same as in the original relation.
@@ -248,6 +274,34 @@ feature -- Access
 			Result.set_name (name)
 		end
 
+	content_cloned_object: like Current
+			-- Cloned version of Current, with content list also cloned.
+		local
+			l_instance: ARRAYED_LIST [STRING]
+			l_attribute: WEKA_ARFF_ATTRIBUTE
+			l_attributes: like attributes
+		do
+				-- Clone attributes.
+			create l_attributes.make (attributes.count)
+			l_attributes.compare_objects
+			across attributes as l_attrs loop
+				l_attribute := l_attrs.item.cloned_objects
+				l_attributes.extend (l_attribute)
+			end
+			create Result.make (l_attributes)
+
+				-- Clone instances.
+			across Current as l_instances loop
+				l_instance := l_instances.item.twin
+				Result.extend (l_instance)
+			end
+
+				-- Clone comments.
+			Result.set_comment (comment)
+			Result.set_trailing_comment (trailing_comment)
+			Result.set_name (name)
+		end
+
 	nominalized_cloned_object: like Current
 			-- Cloned version of Current, with all numeric values normalized
 		local
@@ -275,15 +329,24 @@ feature -- Access
 			-- Attribute in `attributes' with `a_name'
 		require
 			a_name_exists: has_attribute_by_name (a_name)
+		local
+			l_attr: WEKA_ARFF_ATTRIBUTE
+			l_count: INTEGER
 		do
 			across attributes as l_attrs until Result /= Void loop
-				if l_attrs.item.name ~ a_name then
-					Result := l_attrs.item
+				l_attr := l_attrs.item
+				if l_attr.name ~ a_name then
+					Result := l_attr
+				else
+					l_count := l_attr.name.count
+					if l_attr.name.item (1) = '%"' and then l_attr.name.item (l_count) = '%"' then
+						if a_name ~ l_attr.name.substring (2, l_count - 1) then
+							Result := l_attr
+						end
+					end
 				end
 			end
 		end
-
-
 
 feature -- Hash table generators
 
@@ -350,7 +413,7 @@ feature -- Status report
 			-- Is there an attribute in Current with `a_name'?
 		do
 			Result := False
-			across attributes as l_attrs until Result loop 
+			across attributes as l_attrs until Result loop
 				Result := l_attrs.item.name ~ a_name
 			end
 		end
@@ -430,6 +493,50 @@ feature -- Basic operations
 			extend (a_instance)
 		end
 
+	remove_value (a_attribute: WEKA_ARFF_ATTRIBUTE; a_value: STRING)
+			-- Remove the value `a_value' from `a_attribute'.
+			-- After removal, instances which contained `a_value' will be removed
+			-- from `instances'.
+			-- NOTE: After removal, original cursor may change.
+		require
+			a_attribute_exits: attributes.has (a_attribute)
+			a_value_valid: a_attribute.is_valid_value (a_value)
+		local
+			l_column: INTEGER
+		do
+			last_value_to_remove := a_value
+			attributes.start
+			attributes.search (a_attribute)
+			l_column := attributes.index
+				-- Remove the specified value from attribute definition
+				-- Only needed for nominal attributes.
+			attributes.item.process (Current)
+
+				-- Remove instances which mention `a_value'.
+			from
+				start
+			until
+				after
+			loop
+				if item.i_th (l_column) ~ a_value then
+					remove
+				else
+					forth
+				end
+			end
+		end
+
+	remove_values (a_attribute: WEKA_ARFF_ATTRIBUTE; a_values: DS_HASH_SET [STRING])
+			-- Remove the value `a_values' from `a_attribute'.
+			-- After removal, instances which contained `a_values' will be removed
+			-- from `instances'.
+			-- NOTE: After removal, original cursor may change.
+		require
+			a_attribute_exits: attributes.has (a_attribute)
+		do
+			a_values.do_all (agent remove_value (a_attribute, ?))
+		end
+
 feature -- Constants
 
 	initiail_data_capacity: INTEGER = 100
@@ -478,5 +585,31 @@ feature{NONE} -- Implementation
 				l_data.forth
 			end
 		end
+
+feature{NONE} -- Process
+
+	process_boolean_attribute (a_attribute: WEKA_ARFF_BOOLEAN_ATTRIBUTE)
+			-- Process `a_attribute'.
+		do
+		end
+
+	process_numeric_attribute (a_attribute: WEKA_ARFF_NUMERIC_ATTRIBUTE)
+			-- Process `a_attribute'.
+		do
+		end
+
+	process_nominal_attribute (a_attribute: WEKA_ARFF_NOMINAL_ATTRIBUTE)
+			-- Process `a_attribute'.
+		do
+			a_attribute.values.remove (last_value_to_remove)
+		end
+
+	process_string_attribute (a_attribute: WEKA_ARFF_STRING_ATTRIBUTE)
+			-- Process `a_attribute'.
+		do
+		end
+
+	last_value_to_remove: detachable STRING
+			-- Value to be removed
 
 end

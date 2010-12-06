@@ -75,6 +75,11 @@ feature -- Access
 			Result.append (type_string)
 		end
 
+	cloned_objects: like Current
+			-- Cloned version of Current.
+		deferred
+		end
+
 feature -- Constants
 
 	attribute_header: STRING = "@ATTRIBUTE"
@@ -131,6 +136,13 @@ feature -- Status report
 			-- equal to current object?
 		do
 			Result := name ~ other.name
+		end
+
+feature -- Process
+
+	process (a_visitor: WEKA_ARFF_ATTRIBUTE_VISITOR)
+			-- Visit Current with `a_visitor'.
+		deferred
 		end
 
 invariant

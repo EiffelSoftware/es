@@ -661,7 +661,9 @@ feature{NONE} -- Implementation
 			loop
 				l_rewriter.rewrite (l_cursor.item.ast, feature_, l_cursor.item.written_class, class_, l_target_prefix, l_arg_tbl)
 				if attached {EPA_EXPRESSION} expression_from_text (l_rewriter.assertion.twin, l_context) as l_expr then
-					Result.force_last (create {EPA_EQUATION}.make (l_expr, create {EPA_BOOLEAN_VALUE}.make (True)))
+					if l_expr.type /= Void then
+						Result.force_last (create {EPA_EQUATION}.make (l_expr, create {EPA_BOOLEAN_VALUE}.make (True)))
+					end
 				end
 				l_cursor.forth
 			end

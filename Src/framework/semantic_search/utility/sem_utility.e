@@ -383,4 +383,31 @@ feature -- Access
 			create Result.make
 		end
 
+	feature_operand_to_variable_mapping (a_feature: FEATURE_I; a_operand_map: HASH_TABLE [STRING, INTEGER]): HASH_TABLE [STRING, STRING]
+			-- Mapping from `a_feature' operand names (Current, Result, arguments) to
+			-- variable names.
+			-- Keys are feature operand names,values are corresponding variable names
+			-- in the test case.
+			-- `a_operand_map' is a table from operend indexes to variable names.
+			-- Keys are 0-based operand indexes, values are corresponding variable names.
+		local
+			l_operands: like operands_with_feature
+			l_cursor: DS_HASH_TABLE_CURSOR [STRING, INTEGER]
+		do
+			create Result.make (10)
+			Result.compare_objects
+
+			l_operands := operands_with_feature (a_feature)
+			create Result.make (l_operands.count)
+			from
+				l_cursor := l_operands.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.force (a_operand_map.item (l_cursor.key), l_cursor.item)
+				l_cursor.forth
+			end
+		end
+
 end

@@ -35,14 +35,13 @@ feature -- Basic operations
 			l_ssql_files: DS_LINKED_LIST [STRING]
 			l_ssql_loader: SEMQ_QUERYABLE_LOADER
 			l_file_path: FILE_NAME
-			l_file: PLAIN_TEXT_FILE
 		do
 				-- Search for all ssql files.
 			create l_ssql_files.make
 			if config.should_generate_arff_for_transitions then
-				l_file_pattern := "tran.+\.ssql"
+				l_file_pattern := "tran.+\.ssql$"
 			else
-				l_file_pattern := "objt.+\.ssql"
+				l_file_pattern := "objt.+\.ssql$"
 			end
 			create l_file_searcher.make_with_pattern (l_file_pattern)
 			l_file_searcher.file_found_actions.extend (
@@ -85,11 +84,7 @@ feature -- Basic operations
 			else
 				create l_file_path.make_from_string (config.data_directory)
 			end
-			l_file_path.set_file_name (config.class_name + "__" + config.feature_name_for_test_cases.first + ".arff")
-
-			create l_file.make_create_read_write (l_file_path)
-			l_generator.generate_maximal_arff (config.class_name + "__" + config.feature_name_for_test_cases.first, l_file)
-			l_file.close
+			l_generator.generate_maximal_arff (config.class_name + "__" + config.feature_name_for_test_cases.first, config.class_name + "__" + config.feature_name_for_test_cases.first, l_file_path)
 		end
 
 ;note

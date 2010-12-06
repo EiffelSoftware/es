@@ -20,6 +20,7 @@ inherit
 			process_access_feat_as,
 			process_nested_as,
 			process_nested_expr_as,
+			process_current_as,
 			output
 		end
 
@@ -201,6 +202,11 @@ feature {AST_EIFFEL} -- Processing
 			end
 		end
 
+	process_current_as (l_as: CURRENT_AS)
+		do
+			process_access_name (ti_current)
+		end
+
 feature {NONE} -- Implementation
 
 	process_access_name (a_name: STRING)
@@ -209,7 +215,7 @@ feature {NONE} -- Implementation
 			l_name: STRING
 			l_encountered: like encountered_names
 		do
-			l_name := a_name.as_lower
+			l_name := a_name
 			if attached {STRING} replacements.item (l_name) as l_new_name then
 				l_encountered := encountered_names
 				if l_encountered /= Void then

@@ -45,6 +45,12 @@ feature -- Access
 			create Result.make (name, a_values)
 		end
 
+	cloned_objects: like Current
+			-- Cloned version of Current.
+		do
+			create Result.make (name)
+		end
+
 feature -- Status report
 
 	is_numeric: BOOLEAN = True
@@ -58,6 +64,14 @@ feature -- Status report
 			else
 				Result := a_value.is_integer or a_value.is_real
 			end
+		end
+
+feature -- Process
+
+	process (a_visitor: WEKA_ARFF_ATTRIBUTE_VISITOR)
+			-- Visit Current with `a_visitor'.
+		do
+			a_visitor.process_numeric_attribute (Current)
 		end
 
 end

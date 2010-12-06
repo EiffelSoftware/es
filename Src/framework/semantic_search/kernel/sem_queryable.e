@@ -696,7 +696,7 @@ feature{NONE} -- Implementation
 			if l_expr_as /= Void then
 				l_type := a_context.expression_type (l_expr_as)
 				if l_type /= Void then
-					create {EPA_AST_EXPRESSION} Result.make_with_type (a_context.class_, a_context.feature_, l_expr_as, a_context.class_, l_type)
+					create {EPA_AST_EXPRESSION} Result.make_with_feature (a_context.class_, a_context.feature_, l_expr_as, a_context.class_)
 				end
 			end
 		end

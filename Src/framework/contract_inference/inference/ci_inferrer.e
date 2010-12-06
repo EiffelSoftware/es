@@ -383,7 +383,7 @@ feature{NONE} -- Implementation
 
 					-- Iterate through all quantified expressions in a test case.
 				l_transition_info := data_by_test_case_class_name (l_tc_cursor.key)
-				l_evaluator.set_transition_context (l_transition_info)
+				l_evaluator.set_context (l_transition_info.transition.preconditions, l_transition_info.transition.postconditions, l_transition_info.test_case_info.class_under_test)
 				from
 					l_qexpr_cursor := l_tc_cursor.item.new_cursor
 					l_qexpr_cursor.start
@@ -650,7 +650,7 @@ feature{NONE} -- Candidate validation
 			across transition_data as l_test_cases loop
 				l_test_case := l_test_cases.item
 				logger.put_line ("%TTest case " + l_test_case.test_case_info.test_case_class.name_in_upper)
-				l_evaluator.set_transition_context (l_test_case)
+				l_evaluator.set_context (l_test_case.transition.preconditions, l_test_case.transition.postconditions, l_test_case.test_case_info.class_under_test)
 
 					-- Iterate through all candidate properties and validate them
 					-- one by one in the context of `l_test_case'.

@@ -18,6 +18,8 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	EPA_UTILITY
+
 feature -- String
 
 	assertion: STRING

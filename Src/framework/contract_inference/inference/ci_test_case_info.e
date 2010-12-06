@@ -207,6 +207,20 @@ feature -- Access
 	exception_tag: detachable STRING
 			-- Tag of the failing assertion  if the transition to be written represents a failing test case
 
+	operand_to_variable_mapping: HASH_TABLE [STRING, STRING]
+			-- Mapping from `a_feature' operand names (Current, Result, arguments) to
+			-- variable names.
+			-- Keys are feature operand names,values are corresponding variable names
+			-- in the test case.
+			-- `a_operand_map' is a table from operend indexes to variable names.
+			-- Keys are 0-based operand indexes, values are corresponding variable names.
+		do
+			if operand_to_variable_mapping_internal = Void then
+				operand_to_variable_mapping_internal := feature_operand_to_variable_mapping (feature_under_test, operand_map)
+			end
+			Result := operand_to_variable_mapping_internal
+		end
+
 feature -- Status report
 
 	is_feature_under_test_query: BOOLEAN
@@ -497,5 +511,10 @@ feature -- Setting
 		ensure
 			is_passing_set: is_passing = b
 		end
+
+feature{NONE} -- Implementation
+
+	operand_to_variable_mapping_internal: detachable like operand_to_variable_mapping
+			-- Cache for `operand_to_variable_mapping'
 
 end

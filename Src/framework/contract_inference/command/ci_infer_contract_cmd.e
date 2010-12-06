@@ -247,6 +247,7 @@ feature{NONE} -- Implementation
 			l_context: EPA_CONTEXT
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
+			l_extra_expressions: DS_HASH_SET [EPA_EXPRESSION]
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True, True)
@@ -264,6 +265,23 @@ feature{NONE} -- Implementation
 			l_expr_finder.set_should_search_for_query_with_precondition (True)
 			l_expr_finder.search (Void)
 			l_functions := nullary_functions (l_expr_finder.functions, l_context, a_pre_execution)
+
+				-- We add extra expressions extracted from program text, such as (part of) path conditions.
+			if
+				(a_pre_execution and then not a_tc_info.is_feature_under_test_creation) or
+			   	(not a_pre_execution)
+			then
+				l_extra_expressions := extra_expressions (a_tc_info, a_pre_execution)
+				from
+					l_extra_expressions.start
+				until
+					l_extra_expressions.after
+				loop
+					l_functions.force_last (create {EPA_FUNCTION}.make_from_expression (l_extra_expressions.item_for_iteration))
+					l_extra_expressions.forth
+				end
+			end
+
 			create Result.make (l_functions.count)
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
@@ -567,12 +585,12 @@ feature{NONE} -- Actions
 					-- Setup breakpoint monitor for `feature_' if the flag is turned on.
 				create last_hit_breakpoints.make (20)
 				if config.is_breakpoint_monitoring_enabled then
-					create last_right_before_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.feat_right_before_test)
-					last_right_before_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_before_test_hit)
+					create last_right_before_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.test_feature)
+					last_right_before_test_breakpoint_manager.set_breakpoint_with_expression_and_action (last_test_case_info.right_before_test_slot, create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_before_test_hit)
 					last_right_before_test_breakpoint_manager.toggle_breakpoints (True)
 
-					create last_right_after_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.feat_right_after_test)
-					last_right_after_test_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_after_test_hit)
+					create last_right_after_test_breakpoint_manager.make (last_test_case_info.test_case_class, last_test_case_info.test_feature)
+					last_right_after_test_breakpoint_manager.set_breakpoint_with_expression_and_action (last_test_case_info.right_after_test_slot, create {DS_HASH_SET [EPA_EXPRESSION]}.make (0), agent on_right_after_test_hit)
 					last_right_after_test_breakpoint_manager.toggle_breakpoints (True)
 				else
 					last_right_before_test_breakpoint_manager := Void
@@ -1635,4 +1653,127 @@ feature{NONE} -- Implementation
 				l_cursor.forth
 			end
 		end
+
+feature{NONE} -- Expressions
+
+	expression_in_test_context (a_tc_info: CI_TEST_CASE_INFO; a_expression: EPA_EXPRESSION): EPA_EXPRESSION
+			-- Expression in test context
+			-- For example, `a_expression' = "Current.is_empty", and if in current
+			-- test context Current = v_5, then the result is: v_5.is_empty.
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_text: STRING
+		do
+			l_replacements := a_tc_info.operand_to_variable_mapping
+			l_text := expression_rewriter.ast_text (a_expression.ast, l_replacements)
+			create {EPA_AST_EXPRESSION} Result.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, l_text, a_tc_info.test_case_class)
+		end
+
+	extra_expressions (a_tc_info: CI_TEST_CASE_INFO; a_precondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
+			-- Extra expressions to evaluate
+			-- `a_precondition' indicates if those expressions should be evaluated in pre-state.
+		local
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_qualified: DS_HASH_SET [EPA_EXPRESSION]
+			l_nested_collector: EPA_NESTED_FEATURE_CALL_COLLECTOR
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_written_class: CLASS_C
+			l_expr: EPA_AST_EXPRESSION
+			l_rewritten_expr: DS_HASH_SET [EPA_EXPRESSION]
+			l_text: STRING
+			l_target_name: STRING
+			l_first_dot_index: INTEGER
+			l_operands: like operands_of_feature
+		do
+			l_class := a_tc_info.class_under_test
+			l_feature := a_tc_info.feature_under_test
+			l_written_class := l_feature.written_class
+
+			create l_exprs.make (20)
+			l_exprs.set_equality_tester (expression_equality_tester)
+
+				-- Collect path conditions from `l_feature'.
+			l_exprs.append (path_conditions (l_class, l_feature))
+
+				-- Remove expressions mentioning "Result".
+			from
+				l_exprs.start
+			until
+				l_exprs.after
+			loop
+				if l_exprs.item_for_iteration.text.has_substring (once "Result") then
+					l_exprs.remove (l_exprs.item_for_iteration)
+				else
+					l_exprs.forth
+				end
+			end
+
+				-- Collect all qualified calls.
+			l_operands := operands_of_feature (l_feature)
+			create l_qualified.make (20)
+			l_qualified.set_equality_tester (expression_equality_tester)
+			from
+				l_exprs.start
+			until
+				l_exprs.after
+			loop
+				create l_nested_collector
+				l_nested_collector.collect (l_exprs.item_for_iteration.ast)
+				across l_nested_collector.nested_calls as l_nested loop
+					l_text := text_from_ast (l_nested.item)
+					if l_text.occurrences ('(') > 1 then
+					else
+						l_first_dot_index := l_text.index_of ('.', 1)
+						l_target_name := l_text.substring (1, l_first_dot_index - 1)
+						if not l_operands.has (l_target_name) then
+							l_text := ti_current + "." + l_text
+						end
+						create l_expr.make_with_text (l_class, l_feature, l_text, l_written_class)
+						l_qualified.force_last (l_expr)
+					end
+				end
+				l_exprs.forth
+			end
+
+				-- Replace operand names with variable names.
+			create l_rewritten_expr.make (l_exprs.count)
+			l_rewritten_expr.set_equality_tester (expression_equality_tester)
+			from
+				l_qualified.start
+			until
+				l_qualified.after
+			loop
+				l_rewritten_expr.force_last (expression_in_test_context (a_tc_info, l_qualified.item_for_iteration))
+				l_qualified.forth
+			end
+			Result := l_rewritten_expr
+		end
+
+	path_conditions (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
+			-- Path conditions from `a_feature' in `a_class'
+		local
+			l_generator: EPA_SIMPLE_PATH_CONDITION_GENERATOR
+			l_feat: STRING
+		do
+			if path_conditions_internal = Void then
+				create path_conditions_internal.make (10)
+				path_conditions_internal.compare_objects
+			end
+
+			l_feat := a_class.name_in_upper + "." + a_feature.feature_name.as_lower
+			path_conditions_internal.search (l_feat)
+			if path_conditions_internal.found then
+				Result := path_conditions_internal.found_item
+			else
+				create l_generator
+				l_generator.generate (a_class, a_feature)
+				Result := l_generator.path_conditions
+				path_conditions_internal.force (Result, l_feat)
+			end
+		end
+
+	path_conditions_internal: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], STRING]
+			-- Table from feature (in form CLASS_NAME.feature_name) to the set of path conditions
+
 end

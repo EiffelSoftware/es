@@ -86,6 +86,12 @@ feature -- Access
 			create Result.make (name, a_values)
 		end
 
+	cloned_objects: like Current
+			-- Cloned version of Current.
+		do
+			create Result.make (name, values)
+		end
+
 feature -- Status report
 
 	is_nominal: BOOLEAN = True
@@ -99,7 +105,14 @@ feature -- Status report
 			else
 				Result := True
 			end
+		end
 
+feature -- Process
+
+	process (a_visitor: WEKA_ARFF_ATTRIBUTE_VISITOR)
+			-- Visit Current with `a_visitor'.
+		do
+			a_visitor.process_nominal_attribute (Current)
 		end
 
 end

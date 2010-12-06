@@ -258,7 +258,7 @@ feature{NONE} -- Implementation
 			end
 			l_operand_types := resolved_operand_types_with_feature (feature_under_test, class_under_test, class_under_test.constraint_actual_type)
 			l_evaluator := evaluator
-			l_evaluator.set_transition_context (a_tc_info)
+			l_evaluator.set_context (a_tc_info.transition.preconditions, a_tc_info.transition.postconditions, a_tc_info.test_case_info.class_under_test)
 			l_sequences := sequences
 			if a_tc_info.integer_bounded_functions [a_pre_state].is_empty then
 				create l_seq_tbl.make (2)
@@ -740,7 +740,7 @@ feature{NONE} -- Implementation
 					loop
 						l_tc := l_test_cases.item_for_iteration
 						log_message (once "    In test case: " + l_tc.test_case_info.test_case_class.name_in_upper, False, True)
-						l_evaluator.set_transition_context (l_tc)
+						l_evaluator.set_context (l_tc.transition.preconditions, l_tc.transition.postconditions, l_tc.test_case_info.class_under_test)
 						l_evaluator.set_extra_pre_state_values (sequences_as_state (l_tc, True))
 						l_evaluator.set_extra_post_state_values (sequences_as_state (l_tc, False))
 						l_evaluator.evaluate_string (resolved_property (l_property, l_tc))
@@ -912,7 +912,7 @@ feature{NONE} -- Implementation
 				-- Iterate through all integers in range to retrieve the corresponding values,
 				-- and store those values in `l_values' in the same order.
 			l_evaluator := evaluator
-			l_evaluator.set_transition_context (a_tc_info)
+			l_evaluator.set_context (a_tc_info.transition.preconditions, a_tc_info.transition.postconditions, a_tc_info.test_case_info.class_under_test)
 			create l_values.make
 			from
 				i := a_function.lower_bound

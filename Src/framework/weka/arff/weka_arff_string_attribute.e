@@ -46,6 +46,12 @@ feature -- Access
 			create Result.make (name, a_values)
 		end
 
+	cloned_objects: like Current
+			-- Cloned version of Current.
+		do
+			create Result.make (name)
+		end
+
 feature -- Status report
 
 	is_string: BOOLEAN = True
@@ -65,5 +71,12 @@ feature -- Status report
 			end
 		end
 
+feature -- Process
+
+	process (a_visitor: WEKA_ARFF_ATTRIBUTE_VISITOR)
+			-- Visit Current with `a_visitor'.
+		do
+			a_visitor.process_string_attribute (Current)
+		end
 
 end
