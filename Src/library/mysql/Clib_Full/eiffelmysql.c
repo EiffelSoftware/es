@@ -201,16 +201,17 @@ const char* _c_error(MYSQL *mysql) {
 
 int _c_stmt_prepare(MYSQL *mysql, MYSQL_STMT **stmt, MYSQL_BIND **bind, STMT_DATA **data, const char *stmt_str) {
   //printf("c_stmt_prepare: '%s'\n", stmt_str);
+  int fields;
   if ((*stmt = mysql_stmt_init(mysql)) == 0) return -1;
   *bind = 0;
   if (mysql_stmt_prepare(*stmt, stmt_str, strlen(stmt_str)) != 0) return -1;
-  int fields = mysql_stmt_param_count(*stmt);
+  fields = mysql_stmt_param_count(*stmt);
   //printf("c_stmt_prepare: %d\n", fields);
   if (fields > 0) {
-    *bind = (MYSQL_BIND*)malloc(sizeof(MYSQL_BIND[fields])); // free: _c_stmt_free
-    *data = (STMT_DATA*) malloc(sizeof(STMT_DATA [fields])); // free: _c_stmt_free
-    memset(*bind, 0, sizeof(MYSQL_BIND[fields]));
-    memset(*data, 0, sizeof(STMT_DATA [fields]));
+    *bind = (MYSQL_BIND*)malloc(sizeof(MYSQL_BIND) * fields); // free: _c_stmt_free
+    *data = (STMT_DATA*) malloc(sizeof(STMT_DATA) * fields); // free: _c_stmt_free
+    memset(*bind, 0, sizeof(MYSQL_BIND) * fields);
+    memset(*data, 0, sizeof(STMT_DATA) * fields);
   }
   return 0;
 }
@@ -278,7 +279,11 @@ int _c_stmt_field_count(MYSQL_STMT *stmt) {
 }
 
 int _c_stmt_bind_result(MYSQL_STMT *stmt, MYSQL_BIND **resbind, STMT_DATA **resdata) {
-
+  int yes;
+  int fields;
+  int i;
+    STMT_DATA* _resdata;
+    MYSQL_BIND* _resbind;
   //printf("c_stmt_bind_result: '%s'\n", mysql_stmt_error(stmt));
 
   // Metadata (check if result exists)
@@ -289,30 +294,30 @@ int _c_stmt_bind_result(MYSQL_STMT *stmt, MYSQL_BIND **resbind, STMT_DATA **resd
   //printf("c_stmt_bind_result: metadata ok\n");
 
   // Buffer entire result on client (to find string sizes)
-  int yes = 1;
+  yes = 1;
   mysql_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, &yes);
   if (mysql_stmt_store_result(stmt) != 0) return -1;
 
   //printf("c_stmt_bind_result: store ok\n");
 
   // Prepare BIND
-  int fields = mysql_stmt_field_count(stmt);
+  fields = mysql_stmt_field_count(stmt);
 
   //printf("c_stmt_bind_result: fields: %d\n", fields);
   //printf("c_stmt_bind_result: rows: %d\n", mysql_stmt_num_rows(stmt));
 
   if (fields > 0) {
     if (*resdata == 0) {
-      *resdata = (STMT_DATA*) malloc(sizeof(STMT_DATA [fields])); // free: _c_stmt_free
-      memset(*resdata, 0, sizeof(STMT_DATA[fields]));
+      *resdata = (STMT_DATA*) malloc(sizeof(STMT_DATA) * fields); // free: _c_stmt_free
+      memset(*resdata, 0, sizeof(STMT_DATA) * fields);
     }
     if (*resbind == 0) {
-      *resbind = (MYSQL_BIND*)malloc(sizeof(MYSQL_BIND[fields])); // free: _c_stmt_free
-      memset(*resbind, 0, sizeof(MYSQL_BIND[fields]));
+      *resbind = (MYSQL_BIND*)malloc(sizeof(MYSQL_BIND) * fields); // free: _c_stmt_free
+      memset(*resbind, 0, sizeof(MYSQL_BIND) * fields);
     }
-    STMT_DATA *_resdata = *resdata;
-    MYSQL_BIND *_resbind = *resbind;
-    int i = 0;
+    _resdata = *resdata;
+    _resbind = *resbind;
+    i = 0;
     while((field = mysql_fetch_field(metadata))) {
      _resbind[i].buffer_type     = field->type;
      _resbind[i].is_null         = &_resdata[i].is_null;

@@ -45,6 +45,26 @@
 			</condition>
 		</external_object>
 
+
+		<external_include location="$(ISE_LIBRARY)\library\mysql\spec\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+
+		<external_object location="$(ISE_LIBRARY)\library\mysql\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\mysqlclient.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+
+		<external_object location="$(ISE_LIBRARY)\library\mysql\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\zlib.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+
+
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<cluster name="mysql" location=".\" recursive="true">
 			<file_rule>

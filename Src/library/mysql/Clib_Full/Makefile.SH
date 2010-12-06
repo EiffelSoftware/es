@@ -46,6 +46,7 @@ all: eiffelmysql.o
 	$(CP) *.h ../spec/include
 	$(MKDIR) ../spec/$(PLATFORM)/lib
 	$(MV) $? ../spec/$(PLATFORM)/lib
+	$(CP) mysql.ecf ../
 	$(MAKE) clobber
 
 ########################################################################

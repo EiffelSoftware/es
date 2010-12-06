@@ -3205,6 +3205,8 @@ Src/library/libevent/Clib/libevent/test/Makefile.in -text
 Src/library/libevent/Clib/libevent/test/Makefile.nmake -text
 Src/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
+Src/library/mysql/Clib_Full/Makefile-win.SH -text
+Src/library/mysql/Clib_Full/README.txt.txt -text
 Src/library/objc_base/Clib/objc_callback_marshal.m -text
 Src/library/objc_base/objc_base-safe.lic -text
 Src/library/objc_base/objc_base.lic -text
