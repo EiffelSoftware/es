@@ -42,7 +42,7 @@ create
 
 feature {NONE} -- Initialization
 
-make (a_system: like system; an_interpreter: like interpreter; a_type: like receiver_type; a_feature_table: like feature_table)
+make (a_system: like system; an_interpreter: like interpreter; a_type: like receiver_type; a_feature_table: like feature_table; a_feature_target: like feature_target)
 			-- Create new agent creator.
 		require
 			a_system_not_void: a_system /= Void
@@ -51,11 +51,13 @@ make (a_system: like system; an_interpreter: like interpreter; a_type: like rece
 			a_type_associated_with_class: a_type.has_associated_class
 			a_type_is_agent_type: is_agent_type (a_type)
 			a_feature_table_attached: a_feature_table /= Void
+			a_feature_target_attached: a_feature_target /= Void
 		do
 			system := a_system
 			interpreter := an_interpreter
 			receiver_type := a_type
 			feature_table := a_feature_table
+			feature_target := a_feature_target
 			steps_completed := True
 
 			target_type := receiver_type.generics[1]
@@ -73,6 +75,7 @@ make (a_system: like system; an_interpreter: like interpreter; a_type: like rece
 			interpreter_set: interpreter = an_interpreter
 			type_set: receiver_type = a_type
 			feature_table_set: feature_table = a_feature_table
+			feature_target_set: feature_target = a_feature_target
 			steps_completed: steps_completed
 			return_type_set: return_type /= Void
 		end
@@ -95,9 +98,6 @@ feature -- Access
 	receiver: ITP_VARIABLE
 			-- Variable that will hold this new agent instance
 
-	target: ITP_VARIABLE
-			-- The target that this agent will be called on
-
 	operands: DS_HASH_TABLE[ITP_VARIABLE,INTEGER]
 			-- (Closed) Operands of the agent
 
@@ -109,6 +109,10 @@ feature -- Access
 
 	interpreter: AUT_INTERPRETER_PROXY
 			-- Proxy to the interpreter process
+
+	feature_target: ITP_VARIABLE
+			-- Target of the feature that will need this agent as an argument
+			-- Used to prevent creation of an agent with same target (can lead to endless loop)
 
 feature -- Agent characterisation
 
@@ -246,6 +250,11 @@ feature {NONE} -- Steps
 				cancel
 			end
 
+			-- Targets equal?
+			if is_target_open = False and then feature_target.is_equal (input_creator.receivers.first) then
+				cancel
+			end
+
 			create operands.make (closed_operands_positions.count)
 
 			from
@@ -274,6 +283,8 @@ feature {NONE} -- Implementation
 
 	is_target_open: BOOLEAN
 			-- Will the future agent have an open target?
+			-- Note that this is only known after create_input_creator
+			-- and should therefore not be called before
 
 	is_conform (a_feature: AUT_FEATURE_OF_TYPE) : BOOLEAN
 			-- True iff `a_feature' is conforming the requested type, i.e.

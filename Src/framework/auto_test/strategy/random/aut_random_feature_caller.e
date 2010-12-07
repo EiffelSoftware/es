@@ -284,6 +284,7 @@ feature {NONE} -- Steps
 				cancel
 			else
 				add_feature_argument_type_in_input_creator (feature_to_call, type, argument_creator)
+				argument_creator.set_feature_target (target)
 				argument_creator.start
 			end
 		ensure

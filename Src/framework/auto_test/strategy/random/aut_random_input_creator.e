@@ -82,6 +82,10 @@ feature -- Access
 	interpreter: AUT_INTERPRETER_PROXY
 			-- Proxy to the interpreter used to execute call
 
+	feature_target: detachable ITP_VARIABLE
+			-- If attached, stores the interpreter variable representing the target of the feature
+			-- which invoked this input_creator
+
 feature -- Change
 
 	add_type (a_type: TYPE_A)
@@ -92,6 +96,12 @@ feature -- Change
 			types.force_last (a_type)
 		ensure
 			added: types.last = a_type
+		end
+
+	set_feature_target (a_variable: ITP_VARIABLE)
+			-- set `feature_target'
+		do
+			feature_target := a_variable
 		end
 
 feature -- Execution
@@ -166,8 +176,10 @@ feature -- Execution
 feature {NONE} -- Steps
 
 	create_agent_creator
+		require
+			feature_target_known: feature_target /= Void
 		do
-			create agent_creator.make (system, interpreter, types.item (receivers.count+1), feature_table)
+			create agent_creator.make (system, interpreter, types.item (receivers.count+1), feature_table, feature_target)
 			agent_creator.start
 		end
 
