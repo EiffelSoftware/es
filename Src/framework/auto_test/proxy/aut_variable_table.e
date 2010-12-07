@@ -11,6 +11,9 @@ note
 class AUT_VARIABLE_TABLE
 
 inherit
+
+	AUT_CREATE_AGENT_UTILITIES
+	
 	AUT_SHARED_RANDOM
 		export {NONE} all end
 
@@ -215,7 +218,7 @@ feature -- Element change
 			a_type_attached: a_type /= Void
 		do
 			variable_type_table.force (a_type, a_variable)
-			if defining_variable_action /= Void then
+			if defining_variable_action /= Void and then a_type.has_associated_class and then is_agent_type(a_type) = False then
 				defining_variable_action.call ([a_variable, a_type])
 			end
 		ensure
@@ -311,7 +314,7 @@ invariant
 	all_variables_have_type: not variable_type_table.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
