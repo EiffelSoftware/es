@@ -195,19 +195,22 @@ feature -- Access
 	byte_code: STRING_8
 			-- generate byte code that will execute the creation of this agent
 		local
-			l_code:STRING
+			l_code: STRING
+			l_one_tab: STRING
+			l_two_tabs: STRING
 		do
 			create l_code.make (100)
-			l_code.append ("execute_byte_code%N")
-			l_code.append ("%Tlocal%N")
-			l_code.append (locals_declaration_code ("%T%T"))
-			l_code.append ("%Tdo%N")
-			l_code.append (operand_loading_code("%T%T"))
-			l_code.append ("%T%Tif not l_inv then%N")
-			l_code.append (agent_assignment_code ("%T%T%T"))
-			l_code.append (store_agent_code ("%T%T%T"))
-			l_code.append ("%T%Tend%N")
-			l_code.append ("%Tend%N")
+			l_code.append (once "execute_byte_code%N")
+			l_code.append (once "%Tlocal%N")
+			l_code.append (locals_declaration_code (two_tabs))
+			l_code.append (once "%Tdo%N")
+			l_code.append (operand_loading_code(two_tabs))
+			l_code.append (once "%T%Tif not l_inv then%N")
+			l_code.append (agent_assignment_code (three_tabs))
+			l_code.append (store_agent_code (three_tabs))
+			l_code.append (store_agent_creation_info_code (three_tabs))
+			l_code.append (once "%T%Tend%N")
+			l_code.append (once "%Tend%N")
 
 			--io.put_string (l_code)
 			Result := feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_code, True).byte_code
@@ -228,8 +231,18 @@ feature -- Code generation
 			l_op_types := operand_type_names
 
 			create Result.make (50)
+
+			-- boolean to check whether all invariants hold
 			Result.append (a_indent)
-			Result.append ("l_inv: BOOLEAN%N")
+			Result.append (once "l_inv: BOOLEAN%N")
+
+			-- Locals to store information about agent creation
+			Result.append (a_indent)
+			Result.append (once "l_operands_special: SPECIAL[INTEGER]%N")
+			Result.append (a_indent)
+			Result.append (once "l_agent_creation_info: ITP_AGENT_CREATION_INFO%N")
+
+			-- Receiver (agent)
 			Result.append (a_indent)
 			Result.append (variable_name (receiver.index))
 			Result.append (": ")
@@ -332,6 +345,7 @@ feature -- Code generation
 		end
 
 	store_agent_code (a_indent: STRING): STRING
+			-- Text representing the command to store the freshly created agent `receiver'
 		do
 			create Result.make (50)
 			Result.append(a_indent)
@@ -341,6 +355,65 @@ feature -- Code generation
 			Result.append (receiver.index.out)
 			Result.append (")%N")
 		end
+
+	store_agent_creation_info_code (a_indent: STRING): STRING
+			-- Text representing the code to put info about the creation of `receiver' into the interpreter
+			-- See `ITP_AGENT_CREATION_INFO'
+		local
+			i: INTEGER
+		do
+			create Result.make (50)
+			Result.append (a_indent)
+			Result.append (once "create l_operands_special.make_empty (")
+			Result.append_integer (operand_table.count*2)
+			Result.append_character (')')
+			Result.append_character ('%N')
+
+			from
+				operand_table.start
+				i := 0
+			until
+				operand_table.after
+			loop
+				Result.append (a_indent)
+				Result.append (once "l_operands_special.force (")
+				Result.append_integer (operand_table.key_for_iteration)
+				Result.append (once ", ")
+				Result.append_integer (i)
+				Result.append_character (')')
+				Result.append_character ('%N')
+
+				Result.append (a_indent)
+				Result.append (once "l_operands_special.force (")
+				Result.append_integer (operand_table.item_for_iteration.index)
+				Result.append (once ", ")
+				Result.append_integer (i+1)
+				Result.append_character (')')
+				Result.append_character ('%N')
+				i := i + 2
+				operand_table.forth
+			end
+
+			Result.append (a_indent)
+			Result.append (once "create l_agent_creation_info.make (")
+			Result.append_integer (receiver.index)
+			Result.append (once ", ")
+			Result.append_character ('"')
+			Result.append (agent_feature.feature_name)
+			Result.append_character ('"')
+			Result.append (once ", ")
+			Result.append (once "l_operands_special)%N")
+
+			Result.append (a_indent)
+			Result.append (once "agent_creation_info.put (l_agent_creation_info, ")
+			Result.append_integer (receiver.index)
+			Result.append_character (')')
+			Result.append_character ('%N')
+		end
+
+	one_tab: STRING = "%T"
+	two_tabs: STRING = "%T%T"
+	three_tabs: STRING = "%T%T%T"
 
 	variable_name (a_index: INTEGER): STRING
 			-- Name of variable with `a_index'.
