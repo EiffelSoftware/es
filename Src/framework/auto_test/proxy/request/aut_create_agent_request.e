@@ -196,8 +196,6 @@ feature -- Access
 			-- generate byte code that will execute the creation of this agent
 		local
 			l_code: STRING
-			l_one_tab: STRING
-			l_two_tabs: STRING
 		do
 			create l_code.make (100)
 			l_code.append (once "execute_byte_code%N")
