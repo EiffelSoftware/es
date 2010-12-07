@@ -11,4 +11,6 @@ On Linux
 
 2. In %EIFFEL_SRC%\library\mysql\Clib_Full, run "finish_freezing -library".
 
+Note: After you run "compile_library.bat or "finish_freezing -library", the mysql.ecf file in ../ will be replaced with a new one.
+Please don't commit that file.
 
