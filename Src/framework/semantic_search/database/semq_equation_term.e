@@ -29,8 +29,6 @@ feature{NONE} -- Initialization
 			equation := a_equation
 			queryable := a_queryable
 			hash_code := equation.hash_code
-			set_boost (default_boost_value)
-			set_occurrence (term_occurrence_must)
 		end
 
 feature -- Access
@@ -70,15 +68,27 @@ feature -- Access
 			Result.append (equation.text)
 			Result.append_character (',')
 			Result.append_character (' ')
-			Result.append (term_occurrence_name (occurrence))
-			Result.append (once ", boost= ")
-			Result.append_double (boost)
 			if is_searched then
 				Result.append (once ", searched")
 			end
 			if is_required then
 				Result.append (once ", required")
 			end
+		end
+
+	columns_in_result (a_start_column: INTEGER): INTEGER_INTERVAL
+			-- 1-based column ranges in the resulting SQL table starting from `a_start_column'
+			-- An equation term occupies four columns in the resulting SQL table:
+			-- 1. value          (from PropertyBindingsX.value)
+			-- 2. equal_value    (from PropertyBindingsX.equal_value)
+			-- 3. dynamic_type   (derived from PropertyBindingsX.prop_type_kind)
+			-- 4. boost          (from PropertyBindingsX.boost)
+			-- Note: Column 2-4 only make sense for single-path-expressions, for other expression,
+			-- the values for those columns are NULL in the resulting table.
+		do
+			create Result.make (a_start_column, a_start_column + 3)
+		ensure then
+			good_result: Result.lower = a_start_column and Result.upper = a_start_column + 3
 		end
 
 feature -- Status report

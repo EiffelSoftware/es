@@ -29,8 +29,6 @@ feature{NONE} -- Initialization
 			type := a_type
 			queryable := a_queryable
 			hash_code := text_from_ast (a_entity).hash_code
-			set_boost (default_boost_value)
-			set_occurrence (term_occurrence_must)
 		end
 
 	make_with_string (a_entity: STRING; a_type: like type; a_queryable: like queryable)
@@ -61,10 +59,16 @@ feature -- Access
 			Result.append (once "Meta: ")
 			Result.append (text_from_ast (entity))
 			Result.append_character (',')
-			Result.append_character (' ')
-			Result.append (term_occurrence_name (occurrence))
-			Result.append (once ", boost= ")
-			Result.append_double (boost)
+		end
+
+	columns_in_result (a_start_column: INTEGER): INTEGER_INTERVAL
+			-- 1-based column ranges in the resulting SQL table starting from `a_start_column'
+			-- A to-be-returned meta column occupies one column in the resulting SQL table.
+			-- That column stores the the value of the term.
+		do
+			create Result.make (a_start_column, a_start_column)
+		ensure then
+			good_result: Result.lower = a_start_column and Result.upper = a_start_column
 		end
 
 feature -- Status report

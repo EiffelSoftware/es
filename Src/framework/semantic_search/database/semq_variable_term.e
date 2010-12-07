@@ -30,8 +30,6 @@ feature{NONE} -- Initialization
 			variable := a_variable
 			queryable := a_queryable
 			hash_code := variable.hash_code
-			set_boost (default_boost_value)
-			set_occurrence (term_occurrence_must)
 		end
 
 	make_with_position (a_variable: like variable;  a_position: like position; a_queryable: like queryable)
@@ -117,9 +115,21 @@ feature -- Access
 				Result.append_character (',')
 				Result.append_character (' ')
 			end
-			Result.append (term_occurrence_name (occurrence))
-			Result.append (once ", boost= ")
-			Result.append_double (boost)
+		end
+
+	columns_in_result (a_start_column: INTEGER): INTEGER_INTERVAL
+			-- 1-based column ranges in the resulting SQL table starting from `a_start_column'
+			-- A to-be-returned variable occupies six columns:
+			-- 1. uuid              (derived from Queryables.uuid)
+			-- 2. object_id         (from PropertyBindings1.var1)
+			-- 3. value             (from PropertyBindings1.value)
+			-- 4. equal_value       (from PropertyBindings1.equal_value)
+			-- 5. dynamic_type_name (derived from PropertyBindings1.type1)
+			-- 6. position          (from PropertyBindings1.position)
+		do
+			create Result.make (a_start_column, a_start_column + 5)
+		ensure then
+			good_result: Result.lower = a_start_column and Result.upper = a_start_column + 5
 		end
 
 feature -- Status report

@@ -16,6 +16,8 @@ feature -- Access
 
 	last_results: detachable LINKED_LIST [SEMQ_RESULT]
 			-- Last results retrieved by `execute'
+			-- The order of the elements is meaningful of one of the
+			-- query term has ordering configuration specified.
 
 feature -- Basic operations
 

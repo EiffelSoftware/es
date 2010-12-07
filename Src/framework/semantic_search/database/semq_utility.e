@@ -38,11 +38,7 @@ feature -- Basic operations
 			l_terms := a_config.terms
 			across l_term_generator.last_terms as l_all_terms loop
 				if a_term_veto_function = Void or else a_term_veto_function.item ([l_all_terms.item]) then
-					if a_term_occurrence_function /= Void then
-						l_all_terms.item.set_occurrence (a_term_occurrence_function.item ([l_all_terms.item]))
-					end
 					l_all_terms.item.set_is_searched (True)
-					l_all_terms.item.set_is_required (True)
 					l_terms.extend (l_all_terms.item)
 				end
 			end

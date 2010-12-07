@@ -41,19 +41,40 @@ feature -- Access
 		deferred
 		end
 
-	occurrence: INTEGER
-			-- Occurrence flag for this term
-			-- Check `is_valid_occurrence' for valid values.
-			-- Default: `term_occurrence_must'
-
-	boost: DOUBLE
-			-- Boost value of for this term
-			-- Default: `default_boost_value'		
-
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
 			Result := text
+		end
+
+	return_config: detachable SEMQ_TERM_RETURN_CONFIG
+			-- Configuration to decide how current term is to be returned.
+			-- Void if current term is not to be returned.			
+
+	ordering_config: detachable SEMQ_TERM_ORDERING_CONFIG
+			-- Configuration to decide how current term is to be ordered.
+			-- Void if current term does not participart in ordering.
+
+	columns_in_result (a_start_column: INTEGER): INTEGER_INTERVAL
+			-- 1-based column ranges in the resulting SQL table starting from `a_start_column'
+		require
+			is_required: is_required
+			a_start_column_valid: a_start_column >= 1
+		deferred
+		ensure
+			good_result: not Result.is_empty and then Result.lower >= 1
+		end
+
+	column_count_in_result: INTEGER
+			-- The number of columns that current term occupies in the resulting SQL table
+		do
+			if is_required then
+				Result := columns_in_result (1).count
+			end
+		ensure
+			good_result:
+				(is_required implies Result > 0) and
+				(not is_required implies Result = 0)
 		end
 
 feature -- Status report
@@ -73,6 +94,13 @@ feature -- Status report
 			-- "not l.is_empty", and we also want to return the length of that list,
 			-- we can provide a term for "l.count", whose `is_searched' is False,
 			-- and whose `is_required' is True.
+		do
+			Result := attached return_config
+		end
+
+	is_value_grouped_by: BOOLEAN
+			-- Is the value of Current term used in "GROUP BY" in the SQL statement?
+			-- Default: False
 
 feature -- Status report
 
@@ -132,30 +160,28 @@ feature -- Setting
 			is_searched_set: is_searched = b
 		end
 
-	set_is_required (b: BOOLEAN)
-			-- Set `is_required' with `b'.
+	set_return_config (a_config: like return_config)
+			-- Set `return_config' with `a_config'.
 		do
-			is_required := b
+			return_config := a_config
 		ensure
-			is_required_set: is_required = b
+			return_config_set: return_config = a_config
 		end
 
-	set_occurrence (a_occurrence: INTEGER)
-			-- Set `occurrence' with `a_occurrence'.
-		require
-			a_occurrence_valid: is_term_occurrence_valid (a_occurrence)
+	set_ordering_config (a_config: like ordering_config)
+			-- Set `ordering_config' with `a_config'.
 		do
-			occurrence := a_occurrence
+			ordering_config := a_config
 		ensure
-			occurrence_set: occurrence = a_occurrence
+			ordering_config_set: ordering_config = a_config
 		end
 
-	set_boost (a_boost: DOUBLE)
-			-- Set `boost' with `a_boost'.
+	set_is_value_grouped_by (b: BOOLEAN)
+			-- Set `is_value_grouped_by' with `b'.
 		do
-			boost := a_boost
+			is_value_grouped_by := b
 		ensure
-			boost_set: boost = a_boost
+			is_value_grouped_by_set: is_value_grouped_by = b
 		end
 
 feature -- Process
