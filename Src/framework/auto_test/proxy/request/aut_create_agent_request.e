@@ -210,7 +210,7 @@ feature -- Access
 			l_code.append (once "%T%Tend%N")
 			l_code.append (once "%Tend%N")
 
-			io.put_string (l_code)
+			--io.put_string (l_code)
 			Result := feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_code, True).byte_code
 		ensure
 			compilation_succeeded: Result.count > 1
