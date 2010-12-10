@@ -19,6 +19,8 @@ inherit
 			system
 		end
 
+	AUT_CREATE_AGENT_UTILITIES
+
 create
 	make
 
@@ -183,16 +185,24 @@ feature -- Basic operations
 			l_cursor := sorted_types_cursor
 			l_var_tbl := variable_table
 			storage.force_last (a_type, a_variable)
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_type := l_cursor.item
-				if a_type.conform_to (l_root_class, l_type) then
-					l_var_tbl.item (l_type).force_last (a_variable)
+			if a_type.has_associated_class then
+				if is_agent_type (a_type) then
+					if not l_var_tbl.has (a_type) then
+						l_var_tbl.force_last (create {DS_ARRAYED_LIST [ITP_VARIABLE]}.make (1), a_type)
+					end
+				else
+					from
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						l_type := l_cursor.item
+						if a_type.conform_to (l_root_class, l_type) then
+							l_var_tbl.item (l_type).force_last (a_variable)
+						end
+						l_cursor.forth
+					end
 				end
-				l_cursor.forth
 			end
 		end
 
@@ -399,7 +409,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

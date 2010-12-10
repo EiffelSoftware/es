@@ -218,7 +218,7 @@ feature -- Element change
 			a_type_attached: a_type /= Void
 		do
 			variable_type_table.force (a_type, a_variable)
-			if defining_variable_action /= Void and then (a_type.has_associated_class implies is_agent_type(a_type) = False) then
+			if defining_variable_action /= Void then
 				defining_variable_action.call ([a_variable, a_type])
 			end
 		ensure

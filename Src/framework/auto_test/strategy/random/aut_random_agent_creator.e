@@ -312,8 +312,11 @@ feature {NONE} -- Implementation
 	check_conform (a_type_1:TYPE_A;a_type_2:TYPE_A): BOOLEAN
 			-- Is a_type_1 conform to a_type_2?
 		do
-			Result := a_type_2.associated_class = system.any_class.compiled_class
-				or else a_type_1.conform_to (interpreter.interpreter_root_class, a_type_2)
+			if a_type_1 = void_type then
+				Result := a_type_2 = void_type
+			else
+				Result := a_type_2.associated_class = system.any_class.compiled_class or else a_type_1.conform_to (interpreter.interpreter_root_class, a_type_2)
+			end
 		end
 
 	argument_types_conform (a_feature: AUT_FEATURE_OF_TYPE): BOOLEAN
@@ -333,7 +336,7 @@ feature {NONE} -- Implementation
 
 			i := 1
 			-- Can we leave target open?
-			if l_argument_types_agent.count > 0 and then check_conform(l_argument_types_agent[1], a_feature.type) then
+			if l_argument_types_agent.count > 0 and then check_conform(l_argument_types_agent[1], a_feature.type) and then check_conform(a_feature.type, l_argument_types_agent[1]) then
 				i := 2
 			end
 
@@ -346,7 +349,7 @@ feature {NONE} -- Implementation
 				l_argument_type_feature := l_argument_types_feature.item_for_iteration
 
 				-- First check is to prevent recursion
-				if not is_agent_type (l_argument_type_feature) and then check_conform (l_argument_type_agent, l_argument_type_feature) then
+				if not is_agent_type (l_argument_type_feature) and then check_conform (l_argument_type_agent, l_argument_type_feature) and then check_conform (l_argument_type_feature, l_argument_type_agent) then
 					i := i+1
 				end
 

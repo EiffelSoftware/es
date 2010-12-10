@@ -210,7 +210,7 @@ feature -- Access
 			l_code.append (once "%T%Tend%N")
 			l_code.append (once "%Tend%N")
 
-			--io.put_string (l_code)
+			io.put_string (l_code)
 			Result := feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_code, True).byte_code
 		ensure
 			compilation_succeeded: Result.count > 1
@@ -298,12 +298,12 @@ feature -- Code generation
 			l_op_arg: SPECIAL[STRING]
 			i: INTEGER
 		do
-			create l_op_arg.make_filled ("?", agent_feature.argument_count+1)
+			create l_op_arg.make_filled ("?", agent_feature.argument_count + 1)
 
 			from operand_table.start
 			until operand_table.after
 			loop
-				l_op_arg.put (operand_table.item_for_iteration.name (once "v_"), operand_table.key_for_iteration)
+				l_op_arg.put (operand_table.item_for_iteration.name ({ITP_SHARED_CONSTANTS}.variable_name_prefix), operand_table.key_for_iteration)
 				operand_table.forth
 			end
 
@@ -400,7 +400,10 @@ feature -- Code generation
 			Result.append (agent_feature.feature_name)
 			Result.append_character ('"')
 			Result.append (once ", ")
-			Result.append (once "l_operands_special)%N")
+			Result.append (once "l_operands_special")
+			Result.append (once ", ")
+			Result.append_integer (agent_feature.argument_count)
+			Result.append (once ")%N")
 
 			Result.append (a_indent)
 			Result.append (once "agent_creation_info.put (l_agent_creation_info, ")
