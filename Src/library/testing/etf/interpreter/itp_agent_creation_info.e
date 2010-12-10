@@ -12,12 +12,13 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_agent_variable_id: INTEGER; a_feature_name: STRING; a_closed_operands: like closed_operands)
+	make (a_agent_variable_id: INTEGER; a_feature_name: STRING; a_closed_operands: like closed_operands; a_argument_count: INTEGER)
 			-- Initialize Current.
 		do
 			agent_variable_id := a_agent_variable_id
 			feature_name := a_feature_name
 			closed_operands := a_closed_operands
+			argument_count := a_argument_count
 		end
 
 feature -- Access
@@ -28,6 +29,9 @@ feature -- Access
 	feature_name: STRING
 			-- Name of the feature used in agent creation
 
+	argument_count: INTEGER
+			-- Number of arguments of the feature named `feature_name'
+
 	closed_operands: SPECIAL [INTEGER]
 			-- List of closed operands for the agent
 			-- The format is a list of integers, those integers are in pairs,
@@ -36,8 +40,8 @@ feature -- Access
 			-- [operand_index1, object1, operand_index2, object2, ... , operand_index_n, object_n]
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
-	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
