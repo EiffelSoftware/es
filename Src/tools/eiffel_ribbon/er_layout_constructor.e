@@ -222,6 +222,7 @@ feature -- Persistance
 				if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
 					Result.add_attribute (l_constants.name, a_name_space, l_command_name)
 				end
+				l_data.add_sub_tree_nodes (Result, a_name_space)
 			elseif attached {ER_TREE_NODE_BUTTON_DATA} a_tree_node.data as l_data then
 				if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
 					Result.add_attribute (l_constants.command_name, a_name_space, l_command_name)
@@ -244,16 +245,21 @@ feature -- Persistance
 			l_parser: XML_LITE_PARSER
 			l_constants: ER_MISC_CONSTANTS
 		do
-			create l_factory
-			l_parser := l_factory.new_parser
-
-			create l_callback.make (widget)
-			l_parser.set_callbacks (l_callback)
-
 			create l_constants
-			l_parser.parse_from_filename (l_constants.xml_file_name)
+			if attached l_constants.xml_full_file_name as l_file_name then
+				create l_factory
+				l_parser := l_factory.new_parser
 
-			helper.expand_all (widget)
+				create l_callback.make (widget)
+				l_parser.set_callbacks (l_callback)
+
+				l_parser.parse_from_filename (l_file_name)
+
+				helper.expand_all (widget)
+			else
+				check should_not_happend: False end
+			end
+
 		end
 
 feature {NONE} -- Implementation

@@ -607,6 +607,7 @@ Src/tools/doc_builder/resources/xml/EIFGENs
 Src/tools/eiffel_image_embedder/EIFGENs
 Src/tools/eiffel_matrix_code_generator/*.exe
 Src/tools/eiffel_ribbon/EIFGENs
+Src/tools/eiffel_ribbon/exception_trace.log
 Src/tools/estudio/*.wb
 Src/tools/estudio/EIFGENs
 Src/tools/estudio/config/EIFGENs

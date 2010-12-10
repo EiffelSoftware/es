@@ -27,6 +27,18 @@ feature {NONE} -- Initialization
 			set_size (1280, 600)
 
 			show_actions.extend_kamikaze (agent init_docking_manager)
+
+			restore_tool_info_from_disk
+
+			show_actions.extend_kamikaze (agent
+								local
+									l_env: EV_ENVIRONMENT
+								do
+									create l_env
+									if attached l_env.application as l_app then
+										l_app.destroy_actions.extend (agent save_tool_info_when_exit)
+									end
+								end)
 		end
 
 	init_docking_manager
@@ -47,6 +59,8 @@ feature {NONE} -- Initialization
 
 	create_interface_objects
 			-- <Precursor>
+		local
+			l_project_info: ER_PROJECT_INFO
 		do
 				-- Initialize before calling Precursor all the attached attributes
 				-- from the current class.
@@ -62,9 +76,12 @@ feature {NONE} -- Initialization
 
 			create object_editor.make
 
-			create uicc_manager
+			create code_generator.make
 
 			shared_singleton.object_editor_cell.put (object_editor)
+
+			create l_project_info
+			shared_singleton.project_info_cell.put (l_project_info)
 		end
 
 	build_tool_bar: SD_TOOL_BAR_CONTENT
@@ -87,12 +104,106 @@ feature {NONE} -- Initialization
 
 			create l_item.make
 			l_item.set_text ("Generate Code")
-			l_item.select_actions.extend (agent uicc_manager.compile)
+			l_item.select_actions.extend (agent code_generator.generate_all_codes)
 			l_list.extend (l_item)
 
 			create Result.make_with_items ("MAIN_TOOL_BAR", l_list)
 		end
+
+feature {NONE} -- Agents
+
+	on_new_project_selected is
+			-- <Precursor>
+		local
+			l_folder: EV_DIRECTORY_DIALOG
+		do
+			create l_folder
+			l_folder.show_modal_to_window (Current)
+
+			if attached shared_singleton.project_info_cell.item as l_item then
+				if not l_folder.directory.is_empty then
+					l_item.set_project_location (l_folder.directory)
+				else
+					-- User didn't select any folder
+				end
+			else
+				check False end
+			end
+		end
+
+	on_open_project_selected
+			-- <Precursor>
+		local
+			l_file: EV_FILE_OPEN_DIALOG
+		do
+			create l_file
+			l_file.show_modal_to_window (Current)
+
+
+		end
+
+	on_exit_selected
+			-- <Precursor>
+		local
+			l_env: EV_ENVIRONMENT
+		do
+			create l_env
+			if attached l_env.application as l_app then
+				l_app.destroy
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	restore_tool_info_from_disk
+			--
+		local
+			l_tool_info: detachable ER_TOOL_INFO
+
+			l_file: RAW_FILE
+			l_reader: SED_MEDIUM_READER_WRITER
+			l_facility: SED_STORABLE_FACILITIES
+			l_constants: ER_MISC_CONSTANTS
+		do
+			create l_constants
+			create l_file.make (l_constants.tool_info_file_name)
+			if l_file.exists then
+			l_file.open_read
+				create l_reader.make (l_file)
+				l_reader.set_for_reading
+				create l_facility
+				if attached {ER_TOOL_INFO} l_facility.retrieved (l_reader, False) as l_tool_info_attached then
+					l_tool_info := l_tool_info_attached
+				end
+				l_file.close
+			end
+
+			if l_tool_info = Void then
+				create l_tool_info.make
+			end
+
+			shared_singleton.tool_info_cell.put (l_tool_info)
+		end
+
+	save_tool_info_when_exit
+			--
+		local
+			l_file: RAW_FILE
+			l_writer: SED_MEDIUM_READER_WRITER
+			l_facility: SED_STORABLE_FACILITIES
+			l_constants: ER_MISC_CONSTANTS
+		do
+			if attached shared_singleton.tool_info_cell.item as l_tool_info then
+				create l_constants
+				create l_file.make (l_constants.tool_info_file_name)
+				l_file.create_read_write
+				create l_writer.make (l_file)
+				l_writer.set_for_writing
+				create l_facility
+				l_facility.store (l_tool_info, l_writer)
+				l_file.close
+			end
+		end
 
 	docking_manager: detachable SD_DOCKING_MANAGER
 			--
@@ -109,6 +220,7 @@ feature {NONE} -- Implementation
 	shared_singleton: ER_SHARED_SINGLETON
 			--
 
-	uicc_manager: ER_UICC_MANAGER
+	code_generator: ER_CODE_GENERATOR
 			--
+
 end

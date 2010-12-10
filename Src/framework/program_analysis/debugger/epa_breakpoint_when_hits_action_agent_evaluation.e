@@ -35,6 +35,14 @@ feature -- Access
    		attribute
    		end
 
+feature -- Status report
+
+	is_persistent: BOOLEAN
+			-- Does the system also save this object, when it stores breakpoint?
+		do
+			Result := False
+		end
+
 feature -- Basic operations
 
 	execute (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)

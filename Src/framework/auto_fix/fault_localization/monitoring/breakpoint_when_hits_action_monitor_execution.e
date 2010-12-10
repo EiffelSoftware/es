@@ -33,6 +33,14 @@ feature -- Access
 			-- True  -> start monitoring
 			-- False -> stop monitoring
 
+feature -- Status report
+
+	is_persistent: BOOLEAN
+			-- Does the system also save this object, when it stores breakpoint?
+		do
+			Result := False
+		end
+
 feature -- Change
 
 	set_beacon (a_beacon: like beacon)

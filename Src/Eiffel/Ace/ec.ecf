@@ -48,7 +48,7 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
-		<library name="xml_utility" location="$EIFFEL_SRC\framework\xml_utility\xml_utility.ecf" readonly="false"/>
+		<library name="xml_utility" location="$EIFFEL_SRC\framework\xml\utility\xml_utility.ecf" readonly="false"/>
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>
@@ -224,6 +224,8 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
+		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser.ecf" readonly="false"/>
+		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree.ecf" readonly="false"/>
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
@@ -267,9 +269,9 @@
 			</class_option>
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>/overrides$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>^/tty$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>/overrides$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>
