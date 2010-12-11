@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Internal representation of a system."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -6467,6 +6467,7 @@ feature -- Added for Plan Generation
 			i: INTEGER
 			done: BOOLEAN
 		do
+			plan_generate_domain
 			if attached workbench.planned_class_name then
 				from i := 1
 				until i > classes.count or done
