@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 		local
 			plan_gen : PLAN_GENERATOR
 		do
-			create plan_gen.make ("Test", simple_domain, simple_problem, "/home/scott/")
+--			create plan_gen.make ("Test", simple_domain, simple_problem, "/home/scott/")
 			plan_gen.write_files
 			plan_gen.generate.do_nothing
 		end
@@ -61,10 +61,10 @@ feature {NONE} -- Initialization
 			create const_0.make_const ("0")
 			create goal.make_bin ("=", len_list, const_0)
 
-			create Result.make ( "Test"
-			                   , create {ARRAYED_LIST[OBJ]}.make_from_array (<<ob>>)
-			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<init, islist>>)
-			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<goal>>))
+--			create Result.make ( "Test"
+--			                   , create {ARRAYED_LIST[OBJ]}.make_from_array (<<ob>>)
+--			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<init, islist>>)
+--			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<goal>>))
 		end
 
 	simple_domain : ADL_DOMAIN
@@ -101,11 +101,11 @@ feature {NONE} -- Initialization
 
 			create main_expr.make_un ("add", clear_expr)
 
-			create Result.make ( "wipeout"
-			                   , create {ARRAYED_LIST[STRING]}.make_from_array (<<"l">>)
-			                   , create {ARRAYED_LIST[PRE]}.make_from_array (<<prec>>)
-			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<main_expr>>)
-			                   )
+--			create Result.make ( "wipeout"
+--			                   , create {ARRAYED_LIST[STRING]}.make_from_array (<<"l">>)
+--			                   , create {ARRAYED_LIST[PRE]}.make_from_array (<<prec>>)
+--			                   , create {ARRAYED_LIST[EXPR]}.make_from_array (<<main_expr>>)
+--			                   )
 
 		end
 

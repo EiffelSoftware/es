@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {PLAN_FILE}."
 	author: ""
 	date: "$Date$"
