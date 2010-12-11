@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Summary description for {PRE_TO_ADL}."
 	author: ""
 	date: "$Date$"
@@ -14,6 +14,7 @@ inherit
 			process_nested_as,
 			process_binary_as,
 			process_access_feat_as,
+			process_void_as,
 			process_bool_as,
 			process_unary_as,
 			process_integer_as
@@ -96,6 +97,11 @@ feature
 			l_as.expr.process (Current)
 			create un.make_un (l_as.operator_name_32, last_expr)
 			last_expr := un
+		end
+
+	process_void_as (l_as: VOID_AS)
+		do
+			create {CONST_EXPR} last_expr.make_const ("Void")
 		end
 
 	process_bool_as (l_as: BOOL_AS)
