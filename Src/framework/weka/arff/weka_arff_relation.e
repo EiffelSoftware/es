@@ -77,6 +77,35 @@ feature -- Access
 			-- It is stored in a list instead of a set because we want to make sure the order of elements
 			-- are not changed. For getting a set of attributes, see `attribute_set'.
 
+	attribute_count: INTEGER
+			-- Number of attributes in Current relation
+		do
+			Result := attributes.count
+		ensure
+			good_result: Result = attributes.count
+		end
+
+	attribute_indexes: DS_HASH_TABLE [INTEGER, WEKA_ARFF_ATTRIBUTE]
+			-- Table where keys are attributes from `attributes' and values are
+			-- their 1-based indexes indicating the column position of
+			-- the corresponding attributes.
+		do
+			if attribute_indexes_internal = Void then
+				initialize_tables
+			end
+			Result := attribute_indexes_internal
+		end
+
+	reversed_attribute_indexes: DS_HASH_TABLE [WEKA_ARFF_ATTRIBUTE, INTEGER]
+			-- Table where keys are 1-based column indexes and values are
+			-- attributes in the corresponding column position.		
+		do
+			if reversed_attribute_indexes_internal = Void then
+				initialize_tables
+			end
+			Result := reversed_attribute_indexes_internal
+		end
+
 	attribute_set: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			-- Set representation of `attributes'
 		do
@@ -267,8 +296,15 @@ feature -- Access
 	cloned_object: like Current
 			-- Cloned version of Current
 		do
-			create Result.make (attributes)
+			Result := cloned_skeleton
 			do_all (agent Result.extend)
+		end
+
+	cloned_skeleton: like Current
+			-- Cloned skeleton of Current
+			-- A skeleton contains all the information except the instances.
+		do
+			create Result.make (attributes.twin)
 			Result.set_comment (comment)
 			Result.set_trailing_comment (trailing_comment)
 			Result.set_name (name)
@@ -348,14 +384,135 @@ feature -- Access
 			end
 		end
 
-feature -- Hash table generators
+	instance_as_hash_table (a_instance: LIST [STRING]): HASH_TABLE [STRING, STRING]
+			-- Hash-table where keys are attribute names and values are attribute values for the corresponding names.
+			-- The attribute values are from `a_instance'.
+		require
+			a_instance_valid: a_instance.count = attributes.count
+		local
+			l_cursor: CURSOR
+		do
+			create Result.make (attributes.count)
+			Result.compare_objects
+
+			l_cursor := a_instance.cursor
+			a_instance.start
+			across attributes as l_attrs loop
+				Result.force (a_instance.item_for_iteration, l_attrs.item.name)
+				a_instance.forth
+			end
+			a_instance.go_to (l_cursor)
+		end
+
+	data_as_ds_hash_table (a_instance: LIST [STRING]): DS_HASH_TABLE [STRING, WEKA_ARFF_ATTRIBUTE]
+			-- Hash-table where keys are attributes and values are attribute values for the corresponding attributes.
+			-- The attribute values are from `a_instance'.
+		require
+			a_instance_valid: a_instance.count = attributes.count
+		local
+			l_cursor: CURSOR
+		do
+			create Result.make (attributes.count)
+			Result.set_key_equality_tester (weka_arff_attribute_equality_tester)
+
+			l_cursor := a_instance.cursor
+			a_instance.start
+			across attributes as l_attrs loop
+				Result.force_last (a_instance.item_for_iteration, l_attrs.item)
+				a_instance.forth
+			end
+			a_instance.go_to (l_cursor)
+		end
+
+	partitions (a_attribute: WEKA_ARFF_ATTRIBUTE; a_value_partition_function: FUNCTION [ANY, TUPLE [STRING], INTEGER]): HASH_TABLE [WEKA_ARFF_RELATION, INTEGER]
+			-- Partions from Current based on `a_value_partition_function'
+			-- `a_value_partition_function' partitions the value of `a_attribute'.
+			-- If some values should be in the same equivalent class, `a_value_partition_function' should
+			-- return the same integer for those values.
+			-- Results are a hash-table where keys are value partition number returned by `a_value_partition_function' and
+			-- items are partitioned relations.
+		require
+			a_attribute_exists: attributes.has (a_attribute)
+		local
+			l_column: INTEGER
+			l_instance: like item
+			l_partition: WEKA_ARFF_RELATION
+			l_partition_id: INTEGER
+		do
+			l_column := attribute_indexes.item (a_attribute)
+			create Result.make (5)
+			across Current as l_instances loop
+				l_instance := l_instances.item
+				l_partition_id := a_value_partition_function.item ([l_instance.i_th (l_column)])
+				Result.search (l_partition_id)
+				if Result.found then
+					l_partition := Result.found_item
+				else
+					l_partition := cloned_skeleton
+					Result.force (l_partition, l_partition_id)
+				end
+				l_partition.extend (l_instance)
+			end
+		end
+
+	partitions_by_attribute_value (a_attribute: WEKA_ARFF_ATTRIBUTE): HASH_TABLE [WEKA_ARFF_RELATION, STRING]
+			-- Partitionsfrom Current based on the values of the attribute `a_attribute'.
+			-- Results are a hash-table where keys are attribute values and
+			-- items are partitioned relations.
+		require
+			a_attribute_exists: attributes.has (a_attribute)
+		local
+			l_column: INTEGER
+			l_instance: like item
+			l_partition: WEKA_ARFF_RELATION
+			l_partition_id: INTEGER
+			l_value: STRING
+		do
+			l_column := attribute_indexes.item (a_attribute)
+			create Result.make (5)
+			Result.compare_objects
+
+			across Current as l_instances loop
+				l_instance := l_instances.item
+				l_value := l_instance.i_th (l_column)
+				Result.search (l_value)
+				if Result.found then
+					l_partition := Result.found_item
+				else
+					l_partition := cloned_skeleton
+					Result.force (l_partition, l_value)
+				end
+				l_partition.extend (l_instance)
+			end
+		end
+
+feature -- Access
+
+	value_of_item (a_attribute: WEKA_ARFF_ATTRIBUTE): STRING
+			-- Value of `a_attribute' at the instance at current cursor position
+		require
+			valid_cursor_position: not off
+			a_attribute_exists: attributes.has (a_attribute)
+		do
+			Result := item.i_th (attribute_indexes.item (a_attribute))
+		end
+
+	value_at_position (a_position: INTEGER): STRING
+			-- Value of the attribute at `a_position'-th column of the instance
+			-- at current cursor position
+		require
+			a_position_valid: a_position >= 1 and a_position <= attribute_count
+			valid_cursor_position: not off
+		do
+			Result := item.i_th (a_position)
+		end
 
 	item_as_hash_table: HASH_TABLE [STRING, STRING]
 			-- Returns a hash table where the keys are the attribute names and the values comes from the current item
 		require
 			valid_item: not off
 		do
-			Result := data_as_hash_table(item)
+			Result := instance_as_hash_table (item)
 		ensure
 			attributes.for_all (
 				agent (a_attr: WEKA_ARFF_ATTRIBUTE; a_result: HASH_TABLE [STRING, STRING]): BOOLEAN
@@ -365,10 +522,24 @@ feature -- Hash table generators
 			-- every_attribute_included: attributes.for_all (Result.has)
 		end
 
-	i_th_as_hash_table(a_i:INTEGER): HASH_TABLE[STRING, STRING]
+	item_as_ds_hash_table: DS_HASH_TABLE [STRING, WEKA_ARFF_ATTRIBUTE]
+			-- Returns a hash table where the keys are the attributes and the values comes from the current item
+		require
+			valid_item: not off
+		do
+			Result := data_as_ds_hash_table (item)
+		end
+
+	i_th_as_hash_table (a_i:INTEGER): like item_as_hash_table
 			-- returns a hash table where the keys are the attribute names and the values comes from the ith item
 		do
-			Result := data_as_hash_table (i_th (a_i))
+			Result := instance_as_hash_table (i_th (a_i))
+		end
+
+	i_th_as_ds_hash_table (a_i:INTEGER): like item_as_ds_hash_table
+			-- returns a hash table where the keys are the attribute and the values comes from the ith item
+		do
+			Result := data_as_ds_hash_table (i_th (a_i))
 		end
 
 	attributes_as_hash_table: HASH_TABLE [STRING, STRING]
@@ -544,18 +715,6 @@ feature -- Constants
 
 feature{NONE} -- Implementation
 
-	data_as_hash_table(a_list: LIST[STRING]): HASH_TABLE [STRING, STRING]
-			-- Returns an hash table where the attribute names are the keys and tha data comes from the array
-		do
-			create Result.make (attributes.count)
-			Result.compare_objects
-			from attributes.start; a_list.start until attributes.after or a_list.after loop
-				Result[attributes.item_for_iteration.name] := a_list.item_for_iteration
-				attributes.forth
-				a_list.forth
-			end
-		end
-
 	instance_string: STRING
 			-- String for the data in current `item'
 		require
@@ -611,5 +770,28 @@ feature{NONE} -- Process
 
 	last_value_to_remove: detachable STRING
 			-- Value to be removed
+
+	attribute_indexes_internal: detachable like attribute_indexes
+			-- Cache for `attribute_indexes'
+
+	reversed_attribute_indexes_internal: detachable like reversed_attribute_indexes
+			-- Cache for `reversed_attribute_indexes'
+
+	initialize_tables
+			-- Initialize internal data structures.
+		local
+			l_column: INTEGER
+		do
+			create attribute_indexes_internal.make (attributes.count)
+			attribute_indexes_internal.set_key_equality_tester (weka_arff_attribute_equality_tester)
+			create reversed_attribute_indexes_internal.make (attributes.count)
+
+			l_column := 1
+			across attributes as l_attrs loop
+				attribute_indexes_internal.force_last (l_column, l_attrs.item)
+				reversed_attribute_indexes_internal.force_last (l_attrs.item, l_column)
+				l_column := l_column + 1
+			end
+		end
 
 end

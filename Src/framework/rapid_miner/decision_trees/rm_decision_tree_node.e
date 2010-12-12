@@ -7,6 +7,9 @@ note
 class
 	RM_DECISION_TREE_NODE
 
+inherit
+	RM_CONSTANTS
+
 create
 	make
 
@@ -20,22 +23,6 @@ feature {NONE} -- Creation
 		end
 
 feature -- Access
-
---	traverse_dfs
---			 -- very useful for debuging
---		do
---			io.put_string (name)
---			if not is_leaf then
---				from edges.start until edges.after loop
---					io.put_string (edges.item_for_iteration.condition)
---					io.put_new_line
---					edges.item_for_iteration.node.traverse_dfs
---					edges.forth
---				end
---			else
---				io.put_new_line
---			end
---		end
 
 	name: STRING
 			-- The name of the node.
@@ -68,27 +55,33 @@ feature -- Interface
 			end
 		end
 
-	classification (a_instance: HASH_TABLE [STRING, STRING]): STRING
+	classification (a_instance: HASH_TABLE [STRING, STRING]; a_label: STRING; a_visited_nodes: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]): STRING
 			-- Classication of the goal attribute given the instance `a_instance'.
 			-- Given a hash table with all the attributes as keys and their respective values,
 			-- it will return the value calculated by the decision tree algorithm
 			-- Key of `a_instance' is attribute name, value is attribute value.
+			-- `a_label' is the name of the classification attribute.
+			-- `a_visited_nodes' is a list of nodes that are visied along the decision path.
 		local
 			l_is_found: BOOLEAN
 			l_next_node: detachable RM_DECISION_TREE_NODE
+			l_path_node: RM_DECISION_TREE_PATH_NODE
 		do
 			if is_leaf then
+				create l_path_node.make (a_label, "=", name, Current)
+				a_visited_nodes.extend (l_path_node)
 				Result := name
 			else
-				from edges.start until l_is_found or edges.after loop
-					if edges.item_for_iteration.is_condition_satisfied (a_instance [name]) then
-						l_next_node := edges.item_for_iteration.node
+				across edges as l_edges until l_is_found loop
+					if l_edges.item.is_condition_satisfied (a_instance [name]) then
+						l_next_node := l_edges.item.node
+						create l_path_node.make (name, l_edges.item.operator, l_edges.item.value, Current)
+						a_visited_nodes.extend (l_path_node)
 						l_is_found := True
 					end
-					edges.forth
 				end
 				if l_next_node /= Void then
-					Result := l_next_node.classification (a_instance)
+					Result := l_next_node.classification (a_instance, a_label, a_visited_nodes)
 				end
 			end
 		end
@@ -130,31 +123,52 @@ feature{RM_DECISION_TREE_PARSER} -- Implementation
 			edges.force (l_edge)
 		end
 
-	parse_samples (a_line: STRING)
+	parse_samples (a_name: STRING; a_line: STRING)
 			-- Parses the samples if any and fills the `samples' hash table
+			-- `a_name' is the value of the leaf.
 		require
-			ends_with_curly_bracket: a_line.ends_with ("}")
+			correct_ending: a_line.ends_with ("}") or a_line.ends_with (")")
 		local
 			l_index: INTEGER
 			l_all: STRING
 			l_list: LIST [STRING]
 			l_equation: LIST [STRING]
+			l_start_index: INTEGER
+			l_end_index: INTEGER
+			l_perf: STRING
 		do
 			create samples.make (5)
 			samples.compare_objects
 
-			l_index := a_line.last_index_of ('{', a_line.count)
-			l_all := a_line.substring (l_index+1, a_line.count-1)
-			l_list := l_all.split (',')
+			if a_line.ends_with (once "}") then
+					-- Native RapidMiner ending.
+				l_index := a_line.last_index_of ('{', a_line.count)
+				l_all := a_line.substring (l_index+1, a_line.count-1)
+				l_list := l_all.split (',')
 
-			from l_list.start until l_list.after loop
-				l_equation := l_list.item_for_iteration.split ('=')
-				l_equation[1].right_adjust
-				l_equation[2].right_adjust
-				l_equation[1].left_adjust
-				l_equation[2].left_adjust
-				samples.force (l_equation[2].to_integer, l_equation[1])
-				l_list.forth
+				from l_list.start until l_list.after loop
+					l_equation := l_list.item_for_iteration.split ('=')
+					l_equation[1].right_adjust
+					l_equation[2].right_adjust
+					l_equation[1].left_adjust
+					l_equation[2].left_adjust
+					samples.force (l_equation[2].to_integer, l_equation[1])
+					l_list.forth
+				end
+			else
+					-- Weka ending with ")".
+				l_start_index := a_line.last_index_of ('(', a_line.count)
+				l_end_index := a_line.last_index_of (')', a_line.count)
+				l_perf := a_line.substring (l_start_index + 1, l_end_index - 1)
+				l_index := l_perf.index_of ('/', 1)
+				if l_index > 0 then
+						-- This is not a precise node.
+					samples.force (l_perf.substring (1, l_index - 1).to_integer, a_name)
+					samples.force (l_perf.substring (l_index + 1, l_perf.count).to_integer, decision_tree_other_values_name)
+				else
+						-- This is a precise node.
+					samples.force (l_perf.to_integer, a_name)
+				end
 			end
 		end
 

@@ -155,7 +155,7 @@ feature{NONE} -- Implementation
 			-- Generate implications and store them in `last_postconditions'.
 		do
 			across a_tree.paths as l_paths loop
-				if attached {EPA_EXPRESSION} implication_from_path (l_paths.item) as l_expr then
+				if attached {EPA_EXPRESSION} implication_from_path (l_paths.item.nodes) as l_expr then
 					last_postconditions.force_last (l_expr)
 				end
 			end

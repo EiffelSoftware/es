@@ -44,7 +44,7 @@ feature
 
 	rapidminer_command: STRING
 		do
-			Result := "-- to be implemented --"
+			Result := ". rapidminer -f"
 		end
 
 end

@@ -83,7 +83,7 @@ feature{NONE} -- Implementation
 			l_var: DKN_VARIABLE
 			l_value: DKN_VARIABLE_VALUE
 			l_expr_value: EPA_EXPRESSION_VALUE
-			l_modified_flog: INTEGER
+			l_modified_flag: INTEGER
 		do
 			create Result.make (a_ppt)
 
@@ -97,11 +97,11 @@ feature{NONE} -- Implementation
 				if attached {EPA_EQUATION} a_transition.assertion_by_anonymouse_expression_text (l_var.name, a_precondition) as l_equation then
 					l_expr_value := l_equation.value
 					if l_expr_value.is_nonsensical then
-						l_modified_flog := modified_flag_2
+						l_modified_flag := modified_flag_2
 					else
-						l_modified_flog := modified_flag_0
+						l_modified_flag := modified_flag_0
 					end
-					create l_value.make (l_var, daikon_value (l_equation.value), l_modified_flog)
+					create l_value.make (l_var, daikon_value (l_equation.value), l_modified_flag)
 				else
 					create l_value.make (l_var, daikon_nonsensical_value, modified_flag_2)
 				end
@@ -188,12 +188,5 @@ feature{NONE} -- Implementation
 				Result := a_value.out.twin
 			end
 		end
-
-feature{NONE} -- Implementation
-
-	boolean_comparability: INTEGER = 1
-	integer_comparability: INTEGER = 2
-	double_comparability: INTEGER = 3
-	hash_code_comparability: INTEGER = 4
 
 end

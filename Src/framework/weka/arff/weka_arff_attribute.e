@@ -23,6 +23,16 @@ feature -- Access
 	name: STRING
 			-- name of current attribute
 
+	name_without_quotes: STRING
+			-- Name with out double quotes (if any)
+		do
+			if name.item (1) = '%"' then
+				Result := name.substring (2, name.count - 1)
+			else
+				Result := name.twin
+			end
+		end
+
 	hash_code: INTEGER
 			-- Hash code value
 		do

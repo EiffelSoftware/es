@@ -15,7 +15,7 @@ create
 
 feature -- Creation
 
-	make (a_attribute_name: STRING; a_operator_name: STRING; a_value_name: STRING)
+	make (a_attribute_name: STRING; a_operator_name: STRING; a_value_name: STRING; a_tree_node: like tree_node)
 			-- `a_attribute name' is the name of the attribute which stands on the left hand side of the operator
 			-- `a_operator_name' holds the operator
 			-- `a_value_name' holds the value in the right hand side of the operator
@@ -23,10 +23,12 @@ feature -- Creation
 			attribute_name := a_attribute_name.twin
 			operator_name := a_operator_name.twin
 			value_name := a_value_name.twin
+			tree_node := a_tree_node
 		ensure
 			attribute_name_set: attribute_name ~ a_attribute_name
 			operator_name_set: operator_name ~ a_operator_name
 			value_name_set: value_name ~ a_value_name
+			tree_node = a_tree_node
 		end
 
 feature -- Access
@@ -39,6 +41,9 @@ feature -- Access
 
 	value_name: STRING
 			-- Value of the attribute
+
+	tree_node: RM_DECISION_TREE_NODE
+			-- Decision tree node associated with Current path node.
 
 feature -- Status report
 

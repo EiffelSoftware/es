@@ -7,6 +7,11 @@ note
 class
 	RM_DECISION_TREE
 
+inherit
+	DEBUG_OUTPUT
+
+	RM_SHARED_EQUALITY_TESTERS
+
 create
 	make
 
@@ -25,27 +30,43 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	last_classification: STRING
-			-- Last result from the classify command.
-
 	root: RM_DECISION_TREE_NODE
 			-- The root node of the tree.
 
 	label_name: STRING
 			-- The name of the target attribute of that  tree
 
-	paths: LINKED_LIST [LINKED_LIST [RM_DECISION_TREE_PATH_NODE]]
+	paths: LINKED_LIST [RM_DECISION_TREE_PATH]
 			-- List of all the paths from the root of the current tree to all the nodes.
-			-- Eath inner list represents a path, the first element is the root node,
-			-- the last element is the leaf node.
 		do
 			if paths_internal = Void then
 				node_stack.wipe_out
 				create paths_internal.make
-				paths_internal.wipe_out
 				calculate_paths (root)
 			end
 			Result := paths_internal
+		end
+
+feature -- Classicification results
+
+	last_classification: detachable STRING
+			-- Classification from last `classify'
+
+	last_path: detachable RM_DECISION_TREE_PATH
+			-- The path that was followed to decide `last_classification' when
+			-- `classify' was invoked the last time
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (1024)
+
+			Result.append ("Label: ")
+			Result.append (label_name)
+			Result.append_character ('%N')
+			append_debug_output_for_node (root, 1, Result)
 		end
 
 feature -- Status report
@@ -64,10 +85,48 @@ feature -- Status report
 feature -- Clasification
 
 	classify (a_sample: HASH_TABLE [STRING, STRING])
-			-- Use current tree to classify the instance given by `a_sample', store result in `last_classification'.			
+			-- Use current tree to classify the instance given by `a_sample'.			
 			-- Key of `a_sample' is attribute name, value is the value of that attribute in `a_sample'.
+			-- Store final class in `last_classification' and store the path that was used to deduce the result
+			-- in `last_path'.
+		local
+			l_result: like classification
 		do
-			last_classification := root.classification (a_sample)
+			l_result := classification (a_sample)
+			last_classification := l_result.classification
+			last_path := l_result.path
+		end
+
+	partitioned_relations (a_relation: WEKA_ARFF_RELATION): DS_HASH_TABLE [WEKA_ARFF_RELATION, RM_DECISION_TREE_PATH]
+			-- ARFF relations that are partitioned by Current tree
+			-- Result is a hash-table, keys are paths from Current tree, values are relations having
+			-- the same attributes as `a_relation', and having the instances that follow the corresponding paths.
+		require
+			a_relation_valid: a_relation.has_attribute_by_name (label_name)
+		local
+			l_path: RM_DECISION_TREE_PATH
+			l_relation: WEKA_ARFF_RELATION
+			l_class: like classification
+			l_sample: HASH_TABLE [STRING, STRING]
+			l_result: like classification
+		do
+			create Result.make (5)
+			Result.set_key_equality_tester (rm_decision_tree_path_equality_tester)
+
+			across a_relation as l_instances loop
+				l_sample := a_relation.instance_as_hash_table (l_instances.item)
+				l_result := classification (l_sample)
+				l_path := l_result.path
+
+				Result.search (l_path)
+				if Result.found then
+					l_relation := Result.found_item
+				else
+					l_relation := a_relation.cloned_skeleton
+					Result.force (l_relation, l_path)
+				end
+				l_relation.extend (l_instances.item)
+			end
 		end
 
 feature{RM_DECISION_TREE_BUILDER} -- Setting
@@ -101,23 +160,22 @@ feature{NONE} -- Internal data holders
 
 feature{NONE} -- Implementation
 
-	calculate_paths (current_node: RM_DECISION_TREE_NODE)
+	calculate_paths (a_node: RM_DECISION_TREE_NODE)
 			-- Traverses the tree in a DFS manner. When a leaf node is encountered the stack is saved into the paths variable.
 		local
 			l_node: RM_DECISION_TREE_PATH_NODE
 		do
-			if current_node.is_leaf then
-				create l_node.make (label_name, "=", current_node.name)
+			if a_node.is_leaf then
+				create l_node.make (label_name, "=", a_node.name, a_node)
 				node_stack.put (l_node)
 				save_stack
 				node_stack.remove
 			else
-				from current_node.edges.start until current_node.edges.after loop
-					create l_node.make (current_node.name, current_node.edges.item_for_iteration.operator, current_node.edges.item_for_iteration.value)
+				across a_node.edges as l_edges loop
+					create l_node.make (a_node.name, a_node.edges.item_for_iteration.operator, l_edges.item.value, a_node)
 					node_stack.put (l_node)
-					calculate_paths (current_node.edges.item_for_iteration.node)
+					calculate_paths (l_edges.item.node)
 					node_stack.remove
-					current_node.edges.forth
 				end
 			end
 		end
@@ -127,14 +185,84 @@ feature{NONE} -- Implementation
 		local
 			l_list: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
 			l_array: ARRAYED_LIST [RM_DECISION_TREE_PATH_NODE]
+			l_path: RM_DECISION_TREE_PATH
 		do
 			create l_list.make
 			l_array := node_stack.linear_representation
 			from l_array.finish until l_array.before loop
-				l_list.force (l_array.item_for_iteration)
+				l_list.extend (l_array.item_for_iteration)
 				l_array.back
 			end
-			paths_internal.force (l_list)
+			create l_path.make (l_list)
+			paths_internal.extend (l_path)
 		end
 
+	classification (a_sample: HASH_TABLE [STRING, STRING]): TUPLE [classification: STRING; path: RM_DECISION_TREE_PATH]
+			-- Use current tree to classify the instance given by `a_sample'.			
+			-- Key of `a_sample' is attribute name, value is the value of that attribute in `a_sample'.
+			-- Store final class in `classification' and store the path that was used to deduce the result
+			-- in `path'.
+		local
+			l_visited_nodes: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
+			l_classification: STRING
+			l_path: RM_DECISION_TREE_PATH
+		do
+			create l_visited_nodes.make
+			l_classification := root.classification (a_sample, label_name, l_visited_nodes)
+			create l_path.make (l_visited_nodes)
+			Result := [l_classification, l_path]
+		end
+
+feature{NONE} -- Implementation/Output
+
+	append_debug_output_for_node (a_node: RM_DECISION_TREE_NODE; a_level: INTEGER; a_result: STRING)
+			-- Append output information for `a_node' (at level `a_level') into `a_result'.
+			-- `a_level' indicates the level of `a_node' in the whole tree, starting from 1 (root).
+		local
+			i: INTEGER
+		do
+			across a_node.edges as l_edges loop
+				a_result.append (level_heading (a_level - 1))
+				a_result.append (a_node.name)
+				a_result.append_character (' ')
+				a_result.append (l_edges.item.operator)
+				a_result.append_character (' ')
+				a_result.append (l_edges.item.value)
+				if l_edges.item.node.is_leaf then
+					a_result.append_character (' ')
+					a_result.append_character (':')
+					a_result.append_character (' ')
+					a_result.append (l_edges.item.node.name)
+					if attached {HASH_TABLE [INTEGER, STRING]} l_edges.item.node.samples as l_samples then
+						a_result.append_character (' ')
+						a_result.append_character ('(')
+						i := 0
+						across l_samples as l_samps loop
+							if i > 0 then
+								a_result.append_character (',')
+								a_result.append_character (' ')
+							end
+							a_result.append (l_samps.key)
+							a_result.append_character ('=')
+							a_result.append_integer (l_samps.item)
+							i := i + 1
+						end
+						a_result.append_character (')')
+					end
+					a_result.append_character ('%N')
+				else
+					a_result.append_character ('%N')
+					append_debug_output_for_node (l_edges.item.node, a_level + 1, a_result)
+				end
+			end
+		end
+
+	level_heading (a_count: INTEGER): STRING
+			-- `a_count' number of tree level headings
+		do
+			create Result.make (10)
+			across 1 |..| a_count as l_indexes loop
+				Result.append (once "|   ")
+			end
+		end
 end

@@ -19,8 +19,8 @@ feature {NONE} -- creation
 				operator := "<="
 				value := a_condition.substring (5, a_condition.count)
 			else
-				operator := a_condition.substring (1, 1)
-				value := a_condition.substring (3, a_condition.count)
+				operator := a_condition.substring (1, a_condition.index_of (' ', 2) - 1)
+				value := a_condition.substring (a_condition.index_of (' ', 2) + 1, a_condition.count)
 			end
 			node := a_node
 		end
@@ -44,19 +44,24 @@ feature -- Access
 
 feature -- Status report
 
-	is_condition_satisfied (a_value:STRING): BOOLEAN
+	is_condition_satisfied (a_value: STRING): BOOLEAN
 			-- Calculates if `a_value' satisfies the condition(operator and value) of that edge.
 		do
-			if operator.is_equal ("=") then
+			if operator ~ once "=" then
 				Result := a_value.is_equal (value)
-			elseif operator.is_equal ("<") then
-				Result := (a_value < value)
-			elseif operator.is_equal ("<=") then
-				Result := (a_value <= value)
-			elseif operator.is_equal (">") then
-				Result := (a_value > value)
-			elseif operator.is_equal (">=") then
-				Result := (a_value >= value)
+
+			elseif operator ~ once "<" then
+				Result := a_value.to_double < value.to_double
+
+			elseif operator ~ once "<=" then
+				Result := a_value.to_double <= value.to_double
+
+			elseif operator ~ once ">" then
+				Result := a_value.to_double > value.to_double
+
+			elseif operator ~ once ">=" then
+				Result := a_value.to_double >= value.to_double
+
 			else
 				Result := False
 			end

@@ -62,9 +62,9 @@ feature{RM_BUILDER} -- Implementation
 			l_model_parser: RM_DECISION_TREE_PARSER_INTERFACE
 		do
 			l_model_parser := parsers[algorithm_name]
-			l_model_parser.parse_model
+			l_model_parser.parse
 
-			create last_tree.make (l_model_parser.tree_root, label_name)
+			create last_tree.make (l_model_parser.last_node, label_name)
 		end
 
 	parse_performance

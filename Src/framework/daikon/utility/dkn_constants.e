@@ -113,6 +113,13 @@ feature -- Modification flag
 			Result.extend (modified_flag_2)
 		end
 
+feature -- Comparability
+
+	boolean_comparability: INTEGER = 1
+	integer_comparability: INTEGER = 2
+	double_comparability: INTEGER = 3
+	hash_code_comparability: INTEGER = 4
+
 feature -- Misc
 
 	daikon_equality_sign: STRING = " == "

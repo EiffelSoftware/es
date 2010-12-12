@@ -32,6 +32,7 @@
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
 		<library name="mysql" location="$ISE_LIBRARY\library\mysql\mysql.ecf" readonly="false"/>
+		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<cluster name="semantic_search" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/java$</exclude>

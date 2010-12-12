@@ -44,8 +44,6 @@ feature -- Access
 		deferred
 		end
 
-	tt: RM_TESTS
-
 feature -- Status report
 
 	should_remove_generated_files: BOOLEAN

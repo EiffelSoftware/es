@@ -84,7 +84,7 @@ feature -- Basic operations
 			else
 				create l_file_path.make_from_string (config.data_directory)
 			end
-			l_generator.generate_maximal_arff (config.class_name + "__" + config.feature_name_for_test_cases.first, config.class_name + "__" + config.feature_name_for_test_cases.first, l_file_path)
+			l_generator.generate_files (config.class_name + "__" + config.feature_name_for_test_cases.first, l_file_path)
 		end
 
 ;note

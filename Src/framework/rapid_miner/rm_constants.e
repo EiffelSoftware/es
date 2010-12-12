@@ -154,4 +154,14 @@ feature -- Environment
 			end
 		end
 
+feature -- Decision tree related
+
+	decision_tree_other_values_name: STRING = "[[others]]"
+			-- Name for other values
+			-- This attribute represents all the values for the label attributes that other than
+			-- the value given by a decison tree node.
+			-- The reason to introduce current attribute is that in Weka decision trees, not all label values
+			-- are listed.
+
+
 end

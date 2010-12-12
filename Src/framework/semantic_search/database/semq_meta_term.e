@@ -65,6 +65,8 @@ feature -- Access
 			-- 1-based column ranges in the resulting SQL table starting from `a_start_column'
 			-- A to-be-returned meta column occupies one column in the resulting SQL table.
 			-- That column stores the the value of the term.
+			-- A meta term only occupies one column:
+			-- 1. value    (from Queryables)
 		do
 			create Result.make (a_start_column, a_start_column)
 		ensure then

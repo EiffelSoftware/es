@@ -30,8 +30,17 @@ feature -- Interface
 			file_path = a_file_path
 		end
 
+	parse_relation_from_file (a_path: STRING)
+			-- Parse ARFF relation from `a_path' and
+			-- make result available in `last_relation'.
+		do
+			set_file_path (a_path)
+			parse_relation
+		end
+
 	parse_relation
-			-- Parses the arff file to generate a WEKA_ARFF_RELATION
+			-- Parse ARFF relation from `file_path', make
+			-- result available in `last_relation'.
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_line: STRING
@@ -125,6 +134,8 @@ feature{NONE} -- Implementation
 			create last_relation.make (l_attributes)
 
 			if not l_name.is_empty then
+				l_name.left_adjust
+				l_name.right_adjust
 				last_relation.set_name (l_name)
 			end
 
