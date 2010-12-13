@@ -157,7 +157,7 @@ feature -- Status set
 			l_daikon_output: STRING
 			l_parser: DKN_RESULT_PARSER
 			l_invariants: DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
-			l_concentrator: DKN_RESULT_CONCENTRATOR
+			l_concentrator: AFX_DKN_RESULT_CONCENTRATOR
 			l_concentrated_results: DS_HASH_TABLE [DS_HASH_SET [EPA_AST_EXPRESSION], DKN_PROGRAM_POINT]
 			l_ppt: DKN_PROGRAM_POINT
 			l_ppt_name: STRING
