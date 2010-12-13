@@ -37,6 +37,7 @@ feature -- Basic operations
 			l_invs: DS_HASH_SET [DKN_INVARIANT]
 		do
 			create last_invariants.make_equal (20)
+			last_invariants.set_key_equality_tester (daikon_program_point_equality_tester)
 			create l_sections.make
 			create l_stream.make (a_string)
 
@@ -132,7 +133,7 @@ feature{NONE} -- Implementation
 				end
 				create {DKN_ONE_OF_INVARIANT} Result.make (l_expr, l_values)
 			else
-				check False end
+				create {DKN_EXPRESSION_INVARIANT} Result.make (l_text)
 			end
 		end
 

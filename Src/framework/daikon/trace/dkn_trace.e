@@ -8,6 +8,13 @@ class
 	DKN_TRACE
 
 inherit
+	DKN_INPUT_DATA
+		undefine
+			out,
+			is_equal,
+			copy
+		end
+
 	LINKED_LIST [DKN_TRACE_RECORD]
 		redefine
 			out

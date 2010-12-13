@@ -76,7 +76,7 @@ feature -- Status report
 			-- A tree is accurate if it does correct classification on all training samples.
 		do
 			if should_calculate_is_accurate then
-				Result := root.is_sample_accurate
+				Result := root.is_accurate_with_respect_to_training_samples
 			else
 				Result := internal_is_accurate
 			end
@@ -112,6 +112,8 @@ feature -- Clasification
 		do
 			create Result.make (5)
 			Result.set_key_equality_tester (rm_decision_tree_path_equality_tester)
+
+			
 
 			across a_relation as l_instances loop
 				l_sample := a_relation.instance_as_hash_table (l_instances.item)
@@ -233,7 +235,7 @@ feature{NONE} -- Implementation/Output
 					a_result.append_character (':')
 					a_result.append_character (' ')
 					a_result.append (l_edges.item.node.name)
-					if attached {HASH_TABLE [INTEGER, STRING]} l_edges.item.node.samples as l_samples then
+					if attached {HASH_TABLE [INTEGER, STRING]} l_edges.item.node.accuracy_performance as l_samples then
 						a_result.append_character (' ')
 						a_result.append_character ('(')
 						i := 0

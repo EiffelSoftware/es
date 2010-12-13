@@ -8,6 +8,13 @@ class
 	DKN_DECLARATION
 
 inherit
+	DKN_INPUT_DATA
+		undefine
+			out,
+			copy,
+			is_equal
+		end
+
 	DS_HASH_SET [DKN_PROGRAM_POINT]
 		redefine
 			make,
