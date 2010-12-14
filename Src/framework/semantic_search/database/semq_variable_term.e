@@ -132,6 +132,21 @@ feature -- Access
 			good_result: Result.lower = a_start_column and Result.upper = a_start_column + 5
 		end
 
+	column_types_in_result (a_start_column: INTEGER): HASH_TABLE [INTEGER, INTEGER]
+			-- <Precursor>
+		local
+			l_columns: like columns_in_result
+		do
+			create Result.make (6)
+			l_columns := columns_in_result (a_start_column)
+			Result.force (mysql_string_type, l_columns.item (1))
+			Result.force (mysql_integer_type, l_columns.item (2))
+			Result.force (mysql_integer_type, l_columns.item (3))
+			Result.force (mysql_integer_type, l_columns.item (4))
+			Result.force (mysql_string_type, l_columns.item (5))
+			Result.force (mysql_integer_type, l_columns.item (6))
+		end
+
 feature -- Status report
 
 	is_variable: BOOLEAN = True

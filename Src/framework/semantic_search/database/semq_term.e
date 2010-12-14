@@ -18,6 +18,8 @@ inherit
 
 	SEM_CONSTANTS
 
+	SEMQ_MYSQL_UTILITY
+
 feature -- Access
 
 	queryable: SEM_QUERYABLE
@@ -63,6 +65,18 @@ feature -- Access
 		deferred
 		ensure
 			good_result: not Result.is_empty and then Result.lower >= 1
+		end
+
+	column_types_in_result (a_start_column: INTEGER): HASH_TABLE [INTEGER, INTEGER]
+			-- Types of columns in the resulting SQL table starting from `a_start_column'
+			-- Result is a hash-table where keys are columns in the returned SQL table,
+			-- and keys are mysql type ids (see `mysql_boolean_type', `mysql_integer_type', `mysql_real_type', and `mysql_string_type').
+		require
+			is_required: is_required
+			a_start_column_valid: a_start_column >= 1
+		deferred
+		ensure
+			good_result: across columns_in_result (a_start_column) as l_columns all Result.has (l_columns.item) end
 		end
 
 	column_count_in_result: INTEGER

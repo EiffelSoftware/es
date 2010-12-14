@@ -138,6 +138,33 @@ feature{NONE} -- SQL processing only
 			end
 		end
 
+	types_in_result: HASH_TABLE [INTEGER, INTEGER]
+			-- Types for columns in the resulting SQL table
+			-- Keys are 1-based column indexes, and values are mysql type
+			-- ids (see `mysql_integer_type', `mysql_boolean_type', `mysql_real_type' and `mysql_string_type').
+		local
+			l_term: detachable SEMQ_TERM
+			l_data: TUPLE [term: SEMQ_TERM; data_index: INTEGER]
+			l_column_index: INTEGER
+			l_term_types: HASH_TABLE [INTEGER, INTEGER]
+			l_start_column: INTEGER
+		do
+			create Result.make (column_count_in_result)
+			l_start_column := 1
+			across columns_in_result as l_columns loop
+				l_data := l_columns.item
+				l_column_index := l_columns.key
+				if l_data.term /= l_term then
+					l_term := l_data.term
+					l_term_types := l_term.column_types_in_result (l_start_column)
+				end
+				across l_column_index |..| (l_term_types.count - 1) as l_cols loop
+					Result.force (l_term_types.item (l_cols.item), l_cols.item)
+				end
+				l_start_column := l_start_column + l_term_types.count
+			end
+		end
+
 invariant
 	same_queryable: across terms as l_terms all l_terms.item.queryable = queryable end
 

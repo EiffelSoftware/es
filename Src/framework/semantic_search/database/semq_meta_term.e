@@ -73,6 +73,24 @@ feature -- Access
 			good_result: Result.lower = a_start_column and Result.upper = a_start_column
 		end
 
+	column_types_in_result (a_start_column: INTEGER): HASH_TABLE [INTEGER, INTEGER]
+			-- <Precursor>
+		local
+			l_columns: like columns_in_result
+		do
+			l_columns := columns_in_result (a_start_column)
+			create Result.make (1)
+			if type.is_boolean then
+				Result.force (mysql_boolean_type, l_columns.item (1))
+			elseif type.is_integer then
+				Result.force (mysql_integer_type, l_columns.item (1))
+			elseif type.has_associated_class and then type.associated_class.class_id = first_class_starts_with_name (once "STRING_8").class_id then
+				Result.force (mysql_string_type, l_columns.item (1))
+			else
+				check should_not_be_here: False end
+			end
+		end
+
 feature -- Status report
 
 	is_meta: BOOLEAN = True

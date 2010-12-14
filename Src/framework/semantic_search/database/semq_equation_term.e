@@ -91,6 +91,22 @@ feature -- Access
 			good_result: Result.lower = a_start_column and Result.upper = a_start_column + 3
 		end
 
+	column_types_in_result (a_start_column: INTEGER): HASH_TABLE [INTEGER, INTEGER]
+			-- <Precursor>
+		local
+			l_column: INTEGER
+			l_columns: like columns_in_result
+			l_type: INTEGER
+		do
+			create Result.make (4)
+			l_columns := columns_in_result (a_start_column)
+			l_type := mysql_type_from_eiffel_type (type)
+			Result.force (l_type, l_columns.item (1))
+			Result.force (l_type, l_columns.item (2))
+			Result.force (mysql_string_type, l_columns.item (3))
+			Result.force (mysql_real_type, l_columns.item (4))
+		end
+
 feature -- Status report
 
 	is_precondition: BOOLEAN
