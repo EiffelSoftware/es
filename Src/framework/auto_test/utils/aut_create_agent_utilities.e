@@ -16,7 +16,7 @@ feature -- Access
 	is_routine (a_type: TYPE_A): BOOLEAN
 			-- is `a_type' a routine?
 		require
-			type_exists: a_type /= Void
+			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
 			Result := a_type.associated_class.name ~ once "ROUTINE"
@@ -27,7 +27,7 @@ feature -- Access
 	is_procedure (a_type: TYPE_A): BOOLEAN
 			-- is `a_type' a procedure?
 		require
-			type_exists: a_type /= Void
+			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
 			Result := a_type.associated_class.name ~ once "PROCEDURE"
@@ -38,7 +38,7 @@ feature -- Access
 	is_function (a_type: TYPE_A): BOOLEAN
 			-- is `a_type' a function?
 		require
-			type_exists: a_type /= Void
+			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
 			Result := a_type.associated_class.name ~ once "FUNCTION"
@@ -49,7 +49,7 @@ feature -- Access
 	is_predicate (a_type: TYPE_A): BOOLEAN
 			-- is `a_type' a predicate?
 		require
-			type_exists: a_type /= Void
+			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
 			Result := a_type.associated_class.name ~ once "PREDICATE"
@@ -60,7 +60,7 @@ feature -- Access
 	is_agent_type (a_type: TYPE_A): BOOLEAN
 			-- is `a_type' a type that can be wrapped by an agent?
 		require
-			type_exists: a_type /= Void
+			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
 			Result := is_procedure(a_type) or else is_function(a_type)
@@ -70,7 +70,7 @@ feature -- Access
 	has_anchored_arguments (a_feature: FEATURE_I): BOOLEAN
 			-- Does `a_feature' have arguments that are anchored to other arguments?
 		require
-			feature_exists: a_feature /= Void
+			feature_attached: a_feature /= Void
 		do
 			Result := a_feature.arguments /= Void and then a_feature.arguments.there_exists (
 				agent (a_type:TYPE_A):BOOLEAN
@@ -83,7 +83,7 @@ feature -- Access
 	contains_agent_arguments (a_feature: AUT_FEATURE_OF_TYPE): BOOLEAN
 			-- Does `a_feature' have arguments that are of agent type?
 		require
-			feature_exists: a_feature /= Void
+			feature_attached: a_feature /= Void
 		local
 			l_args: LIST[TYPE_A]
 		do

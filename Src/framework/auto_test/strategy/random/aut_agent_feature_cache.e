@@ -43,18 +43,28 @@ feature {AUT_AGENT_FEATURE_CACHE} -- Basic operations
 			-- Was last type found?
 		do
 			Result := storage.found
+		ensure
+			passed_through: Result = storage.found
 		end
 
 	found_item: ARRAYED_LIST[AUT_FEATURE_OF_TYPE]
 			-- Result of last search
 		do
 			Result := storage.found_item
+		ensure
+			passed_through: Result = storage.found_item
 		end
 
 	put (a_list: ARRAYED_LIST[AUT_FEATURE_OF_TYPE]; a_type: TYPE_A)
 			-- Put a new list into the cache
+		require
+			a_list_attached: a_list /= Void
+			a_type_attached: a_type /= Void
+			not_yet_stored: storage.has (a_type) = False
 		do
 			storage.put (a_list, a_type)
+		ensure
+			added_list: storage.count = old storage.count + 1
 		end
 
 feature {AUT_AGENT_FEATURE_CACHE} -- Implementation

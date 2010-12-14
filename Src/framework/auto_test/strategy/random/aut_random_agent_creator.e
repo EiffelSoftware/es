@@ -87,6 +87,8 @@ feature -- Status
 			-- Is there a next step to be executed?
 		do
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
+		ensure then
+			definition: Result = interpreter.is_running and interpreter.is_ready and not steps_completed
 		end
 
 
@@ -112,7 +114,6 @@ feature -- Access
 
 	feature_target: ITP_VARIABLE
 			-- Target of the feature that will need this agent as an argument
-			-- Used to prevent creation of an agent with same target (can lead to endless loop)
 
 feature -- Agent characterisation
 
@@ -173,6 +174,8 @@ feature {NONE} -- Steps
 
 	choose_random_agent_feature
 			-- Select a feature to be wrapped arround by the agent to be created
+		require
+			not_yet_chosen: agent_feature = Void
 		local
 			l_features: like interpreter.features_under_test
 			l_feature: AUT_FEATURE_OF_TYPE
@@ -200,10 +203,16 @@ feature {NONE} -- Steps
 			else
 				cancel
 			end
+
+		ensure
+			found_or_exit: has_next_step implies agent_feature /= Void
 		end
 
 	create_input_creator
 			-- Set up an input creator to get variables for closed operands
+		require
+			not_yet_created: input_creator = Void
+			closed_operands_void: closed_operands_positions = Void
 		local
 			l_feature_arguments: LIST[TYPE_A]
 			i: INTEGER
@@ -240,10 +249,15 @@ feature {NONE} -- Steps
 			end
 
 			input_creator.start
+		ensure
+			created: input_creator /= Void
+			operand_info_populated: closed_operands_positions /= Void
 		end
 
 	fill_operands
 			-- Fill operands table to be passed on to interpreter
+		require
+			not_yet_filled: operands = Void
 		do
 			-- Void target?
 			if is_target_open = False and then typed_object_pool.variable_type (input_creator.receivers.first) = none_type then
@@ -267,6 +281,9 @@ feature {NONE} -- Steps
 				closed_operands_positions.forth
 				input_creator.receivers.forth
 			end
+		ensure
+			operands_created: operands /= Void
+			operands_filled: operands.count = closed_operands_positions.count
 		end
 
 feature {NONE} -- Implementation
@@ -289,7 +306,9 @@ feature {NONE} -- Implementation
 	is_conform (a_feature: AUT_FEATURE_OF_TYPE) : BOOLEAN
 			-- True iff `a_feature' is conforming the requested type, i.e.
 			-- Return and target type are conforming
-			-- Argument count is equal and each argument type is conforming
+			-- Argument count is greater or equal and positions that are not going to be closed match arguments of `argument_types'
+		require
+			a_feature_attached: a_feature /= Void
 		local
 			l_return_type_agent: TYPE_A
 			l_target_type_agent: TYPE_A
@@ -311,6 +330,9 @@ feature {NONE} -- Implementation
 
 	check_conform (a_type_1:TYPE_A;a_type_2:TYPE_A): BOOLEAN
 			-- Is a_type_1 conform to a_type_2?
+		require
+			a_type_1_attached: a_type_1 /= Void
+			a_type_2_attached: a_type_2 /= Void
 		do
 			if a_type_1 = void_type then
 				Result := a_type_2 = void_type
@@ -323,6 +345,8 @@ feature {NONE} -- Implementation
 			-- Can a feature with `a_argument_types_feature' argument types be used to
 			-- be wrapped around by an agent with `a_argument_types_agent' argument types
 			-- by closing (possibly none) operands?
+		require
+			a_feauture_attached: a_feature /= Void
 		local
 			i: INTEGER
 			l_argument_types_agent: like argument_types

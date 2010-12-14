@@ -38,11 +38,11 @@ feature {NONE} -- Initialization
 		  a_operands: like operand_table)
 			-- Create new request to create an agent
 		require
-			system_exists: a_system /= Void
-			receiver_exists: a_receiver /= Void
-			receiver_type_exists: a_receiver_type /= Void
-			feature_exists: a_feature /= Void
-			operands_exist: a_operands /= Void
+			system_attached: a_system /= Void
+			receiver_attached: a_receiver /= Void
+			receiver_type_attached: a_receiver_type /= Void
+			feature_attached: a_feature /= Void
+			operands_attached: a_operands /= Void
 		local
 			i:INTEGER
 			l_arg_list: DS_LINKED_LIST[ITP_VARIABLE]
@@ -88,6 +88,8 @@ feature {AUT_CREATE_AGENT_REQUEST} -- Implementation
 
 	fill_operand_indexes
 			-- Fill `operand_indexes_internal'
+		require
+			not_yet_filled: operand_indexes_internal = Void
 		local
 			i: INTEGER
 		do
@@ -105,10 +107,13 @@ feature {AUT_CREATE_AGENT_REQUEST} -- Implementation
 			end
 		ensure
 			set: operand_indexes_internal /= Void
+			good_count: operand_indexes_internal.count = operand_table.count
 		end
 
 	fill_operand_types
 			-- Fill `operand_types_internal'
+		require
+			not_yet_filled: operand_types_internal = Void
 		local
 			i:INTEGER
 			l_feat_arg_types: LIST[TYPE_A]
@@ -134,6 +139,7 @@ feature {AUT_CREATE_AGENT_REQUEST} -- Implementation
 			end
 		ensure
 			set: operand_types_internal /= Void
+			good_count: operand_types_internal.count = operand_table.count
 		end
 
 
@@ -193,7 +199,7 @@ feature -- Access
 
 
 	byte_code: STRING_8
-			-- generate byte code that will execute the creation of this agent
+			-- generate byte code that will execute the creation of this agent on proxy side
 		local
 			l_code: STRING
 		do
@@ -219,7 +225,7 @@ feature -- Access
 feature -- Code generation
 
 	locals_declaration_code (a_indent: STRING) : STRING
-			-- Text representing the declarations of the locals that will be used as operands (w/o target)
+			-- Text representing the declarations of the locals used in the source code of `byte_code'
 		local
 			l_op_ids: like operand_indexes
 			l_op_types: like operand_type_names
@@ -257,6 +263,8 @@ feature -- Code generation
 				Result.append_character ('%N')
 				i := i+1
 			end
+		ensure
+			Result_set: Result /= Void
 		end
 
 	operand_loading_code (a_indent: STRING) : STRING
@@ -290,6 +298,8 @@ feature -- Code generation
 				Result.append ("l_inv := l_inv or is_last_invariant_violated%N%N")
 				i := i+1
 			end
+		ensure
+			Result_set: Result /= Void
 		end
 
 	agent_assignment_code (a_indent: STRING) : STRING
@@ -340,6 +350,8 @@ feature -- Code generation
 				Result.append_character (')')
 				Result.append_character ('%N')
 			end
+		ensure
+			Result_set: Result /= Void
 		end
 
 	store_agent_code (a_indent: STRING): STRING
@@ -352,6 +364,8 @@ feature -- Code generation
 			Result.append_character (',')
 			Result.append (receiver.index.out)
 			Result.append (")%N")
+		ensure
+			Result_set: Result /= Void
 		end
 
 	store_agent_creation_info_code (a_indent: STRING): STRING
@@ -410,6 +424,8 @@ feature -- Code generation
 			Result.append_integer (receiver.index)
 			Result.append_character (')')
 			Result.append_character ('%N')
+		ensure
+			Result_set: Result /= Void
 		end
 
 	one_tab: STRING = "%T"
