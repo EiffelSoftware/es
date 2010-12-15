@@ -81,7 +81,7 @@ feature{NONE} -- Implementation
 						end
 						if file.last_string.starts_with (once "  property: ") or
 							file.last_string.starts_with (once "  variable: ") then
-							handle_property_new (qry_id, file.last_string)
+							handle_property (qry_id, file.last_string)
 						else
 							handle_attribute (qry_id, file.last_string)
 						end
@@ -111,7 +111,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	handle_property_new (qry_id: INTEGER; a_line: STRING)
+	handle_property (qry_id: INTEGER; a_line: STRING)
 			-- Handle a line that contains a property binding
 		local
 			data, operands, operand_types: LIST [STRING]
@@ -126,80 +126,31 @@ feature{NONE} -- Implementation
 			if operands_count > 0 and operands_count < 10 then
 				stmt_insert_binding := stmt_insert_bindings.at (operands_count)
 
-				stmt_insert_binding.set_int (0, properties.get_id (data.at (2)).to_integer) -- `prop_id` int(10) unsigned NOT NULL
-				stmt_insert_binding.set_int (1, qry_id) -- `qry_id` int(10) unsigned NOT NULL
+				stmt_insert_binding.set_int (1, properties.get_id (data.at (2)).to_integer) -- `prop_id` int(10) unsigned NOT NULL
+				stmt_insert_binding.set_int (2, qry_id) -- `qry_id` int(10) unsigned NOT NULL
 
 				from
 					i := 1
 				until
 					i > operands_count
 				loop
-					stmt_insert_binding.set_int (i*2,     operands.at (i).to_integer) -- `varX` smallint(5) unsigned NOT NULL
-					stmt_insert_binding.set_int (i*2 + 1, types.get_id (operand_types.at (i)))  -- `typeX` int(10) unsigned NOT NULL
+					stmt_insert_binding.set_int (1+i*2, operands.at (i).to_integer) -- `varX` smallint(5) unsigned NOT NULL
+					stmt_insert_binding.set_int (2+i*2, types.get_id (operand_types.at (i)))  -- `typeX` int(10) unsigned NOT NULL
 					i := i + 1
 				end
 
 				i := ( operands_count + 1 ) * 2
 
-				stmt_insert_binding.set_int (i + 0, data.at (8).to_integer) -- `value` int(11) NOT NULL
-				stmt_insert_binding.set_int (i + 1, data.at (9).to_integer) -- `equal_value` int(11) NOT NULL
-				stmt_insert_binding.set_int (i + 2, data.at (10).to_integer) -- `boost` double unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 3, sem_field_names.property_types.at (data.at (3))) -- `prop_kind` int(5) unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 4, data.at (7).to_integer) -- `value_type_kind` tinyint(3) unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 5, data.at (11).to_integer) -- `position` int(10) unsigned
-				stmt_insert_binding.set_string (i + 6, data.at (5)) -- `vars` varchar(256) NOT NULL
+				stmt_insert_binding.set_int (i + 1, data.at (8).to_integer) -- `value` int(11) NOT NULL
+				stmt_insert_binding.set_int (i + 2, data.at (9).to_integer) -- `equal_value` int(11) NOT NULL
+				stmt_insert_binding.set_int (i + 3, data.at (10).to_integer) -- `boost` double unsigned NOT NULL
+				stmt_insert_binding.set_int (i + 4, sem_field_names.property_types.at (data.at (3))) -- `prop_kind` int(5) unsigned NOT NULL
+				stmt_insert_binding.set_int (i + 5, data.at (7).to_integer) -- `value_type_kind` tinyint(3) unsigned NOT NULL
+				stmt_insert_binding.set_int (i + 6, data.at (11).to_integer) -- `position` int(10) unsigned
+				stmt_insert_binding.set_string (i + 7, data.at (5)) -- `vars` varchar(256) NOT NULL
 
 				stmt_insert_binding.execute
 			end
-		end
-
-	handle_property (qry_id: INTEGER; a_line: STRING)
-			-- Handle a line that contains a property binding
-		local
-			data, operands, operand_types: LIST [STRING]
-			stmt: STRING
-			i, operands_count, prop_id, type_id: INTEGER
-		do
-			data := a_line.split ('%T')
-			create stmt.make (150)
-			operands := data.at (5).split (';')
-			operand_types := data.at (6).split (';')
-			operands_count := data.at (4).to_integer
-			stmt.append (once "INSERT DELAYED INTO `semantic_search`.`PropertyBindings")
-			stmt.append_integer (operands_count)
-			stmt.append (once "` VALUES(")
-			stmt.append_integer (properties.get_id (data.at (2))) -- `prop_id` int(10) unsigned NOT NULL
-			stmt.append_character (',')
-			stmt.append_integer (qry_id)  -- `qry_id` int(10) unsigned NOT NULL
-			stmt.append_character (',')
-			from
-				i := 1
-			until
-				i > operands_count
-			loop
-				stmt.append (operands.at (i)) -- `varX` smallint(5) unsigned NOT NULL
-				stmt.append_character (',')
-				stmt.append_integer (types.get_id (operand_types.at (i)))  -- `typeX` int(10) unsigned NOT NULL
-				stmt.append_character (',')
-				i := i + 1
-			end
-			stmt.append (data.at (8)) -- `value` int(11) NOT NULL
-			stmt.append_character (',')
-			stmt.append (data.at (9)) -- `equal_value` int(11) NOT NULL
-			stmt.append_character (',')
-			stmt.append (data.at (10)) -- `boost` double unsigned NOT NULL
-			stmt.append_character (',')
-			stmt.append (sem_field_names.property_types.at (data.at (3)).out) -- `prop_kind` int(5) unsigned NOT NULL
-			stmt.append_character (',')
-			stmt.append (data.at (7)) -- `value_type_kind` tinyint(3) unsigned NOT NULL
-			stmt.append_character (',')
-			stmt.append (data.at (11)) -- `position` int(10) unsigned
-			stmt.append_character (',')
-			stmt.append_character ('%'')
-			stmt.append (data.at (5)) -- `vars` varchar(256) NOT NULL
-			stmt.append_character ('%'')
-			stmt.append_character (')')
-			mysql.execute_query (stmt)
 		end
 
 feature{SEMQ_DATABASE} -- MySQL Client

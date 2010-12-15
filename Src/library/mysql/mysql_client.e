@@ -15,10 +15,10 @@ feature -- Initialization
 	make (host, username, password, database: STRING)
 			-- Connects to a MySQL server (mysql_real_connect)
 		require
-			host /= Void
-			username /= Void
-			password /= Void
-			database /= Void
+			host_not_void: host /= Void
+			username_not_void: username /= Void
+			password_not_void: password /= Void
+			database_not_void: database /= Void
 		local
 			c_host, c_username, c_password, c_database: ANY
 		do
@@ -54,8 +54,8 @@ feature -- Access
 	prepare_statement (a_stmt: STRING)
 			-- Prepares an SQL statement string for execution (mysql_stmt_prepare)
 		require
-			a_stmt /= Void
-			is_connected
+			stmt_not_voud: a_stmt /= Void
+			is_connected: is_connected
 		local
 			c_stmt: ANY
 			p_stmt, p_bind, p_data: POINTER
@@ -77,7 +77,7 @@ feature -- Access
 	last_statement: MYSQL_STMT
 			-- Prepares an SQL statement string for execution (mysql_stmt_prepare)
 		require
-			has_statement
+			has_statement: has_statement
 		do
 			Result := mysql_stmt
 		end
@@ -85,8 +85,8 @@ feature -- Access
 	execute_query (a_query: STRING)
 			-- Executes an SQL query specified as a null-terminated string (mysql_query)
 		require
-			a_query /= Void
-			is_connected
+			query_not_void: a_query /= Void
+			is_connected: is_connected
 		do
 			has_result := mysql_result.execute_query (p_mysql, a_query)
 		end
@@ -94,7 +94,7 @@ feature -- Access
 	last_result: MYSQL_RESULT
 			-- Retrieves a complete result set to the client (mysql_store_result)
 		require
-			has_result
+			has_result: has_result
 		do
 			Result := mysql_result
 		end
@@ -103,7 +103,7 @@ feature -- Access
 			-- Returns the number of rows changed/deleted/inserted
 			-- by the last UPDATE, DELETE, or INSERT query (mysql_affected_rows)
 		require
-			is_connected
+			is_connected: is_connected
 		do
 			Result := c_affected_rows ($p_mysql)
 		end
@@ -111,7 +111,7 @@ feature -- Access
 	close
 			-- Closes a server connection (mysql_close)
 		require
-			is_connected
+			is_connected: is_connected
 		do
 			is_connected := False
 			has_result := False
@@ -122,7 +122,7 @@ feature -- Access
 			-- Returns the error number for the most recently
 			-- invoked MySQL function (mysql_errno)
 		require
-			is_connected
+			is_connected: is_connected
 		do
 			Result := c_errno ($p_mysql)
 		end
@@ -131,7 +131,7 @@ feature -- Access
 			-- Returns the error message for the most recently
 			-- invoked MySQL function (mysql_error)
 		require
-			is_connected
+			is_connected: is_connected
 		do
 			Result := c_error ($p_mysql)
 		end
@@ -140,7 +140,7 @@ feature -- Access
 			-- Returns the ID generated for an AUTO_INCREMENT column
 			-- by the previous query (mysql_insert_id)
 		require
-			is_connected
+			is_connected: is_connected
 		do
 			Result := c_insert_id ($p_mysql)
 		end

@@ -41,12 +41,12 @@ feature -- Initialization
 			if mysql.last_result.row_count > 0 then
 				create types.make (mysql.last_result.row_count)
 				from
-					mysql.last_result.forth
+					mysql.last_result.start
 				until
 					mysql.last_result.off
 				loop
-					type_id := mysql.last_result.at (0).to_integer
-					type := mysql.last_result.at (1)
+					type_id := mysql.last_result.at (1).to_integer
+					type := mysql.last_result.at (2)
 					types.put (type_id, type)
 					-- Conformance
 					type_conformance_calc.add_type (create {SQL_TYPE}.make_with_type_name (type, type_id))
@@ -76,14 +76,14 @@ feature -- Basic operations
 				Result := types.at (a_type)
 			else
 				-- Double check (cache might be outdated)
---				stmt_find_type.set_string (0, a_type)
+--				stmt_find_type.set_string (1, a_type)
 --				stmt_find_type.execute
 --				if stmt_find_type.num_rows > 0 then
 --					stmt_find_type.forth
---					Result := stmt_find_type.int_at (0)
+--					Result := stmt_find_type.int_at (1)
 --				else
 					is_new := True
-					stmt_insert_type.set_string (0, a_type)
+					stmt_insert_type.set_string (1, a_type)
 					stmt_insert_type.execute
 					Result := stmt_insert_type.last_insert_id
 --				end
@@ -108,8 +108,8 @@ feature -- Basic operations
 		do
 			conf_type_id := get_id (a_conformant_type.name)
 			type_id := get_id (a_type.name)
-			stmt_insert_conformance.set_int (0, conf_type_id)
-			stmt_insert_conformance.set_int (1, type_id)
+			stmt_insert_conformance.set_int (1, conf_type_id)
+			stmt_insert_conformance.set_int (2, type_id)
 			stmt_insert_conformance.execute
 		end
 

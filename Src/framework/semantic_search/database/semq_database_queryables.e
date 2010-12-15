@@ -26,7 +26,7 @@ feature -- Initialization
 			stmt_find_uuid := mysql.last_statement
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`Queryables` VALUES (NULL, 0, NULL, NULL, NULL, NULL, NULL, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL)")
 			stmt_insert_queryable := mysql.last_statement
-			stmt_insert_queryable.set_string (0, config.timestamp)
+			stmt_insert_queryable.set_string (1, config.timestamp)
 		end
 
 feature -- Basic operations
@@ -36,12 +36,12 @@ feature -- Basic operations
 		require
 			queryables /= Void
 		do
-			stmt_find_uuid.set_string (0, a_uuid)
+			stmt_find_uuid.set_string (1, a_uuid)
 			stmt_find_uuid.execute
 			if stmt_find_uuid.num_rows > 0 then
 				Result := 0
 			else
-				stmt_insert_queryable.set_string (1, a_uuid)
+				stmt_insert_queryable.set_string (2, a_uuid)
 				stmt_insert_queryable.execute
 				Result := stmt_insert_queryable.last_insert_id
 				-- Prepare for attributes
@@ -196,8 +196,8 @@ feature -- Basic operations
 					hit_breakpoints.off
 				loop
 					if hit_breakpoints.item.at (1) /= '_' then
-						stmt_insert_hitbreakpoints.set_int (0, a_qry_id)
-						stmt_insert_hitbreakpoints.set_int (1, hit_breakpoints.item.to_integer)
+						stmt_insert_hitbreakpoints.set_int (1, a_qry_id)
+						stmt_insert_hitbreakpoints.set_int (2, hit_breakpoints.item.to_integer)
 						stmt_insert_hitbreakpoints.execute
 					end
 					hit_breakpoints.forth

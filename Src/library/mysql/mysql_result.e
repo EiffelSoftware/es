@@ -26,8 +26,8 @@ feature{MYSQL_CLIENT}
 	execute_query (p_mysql: POINTER; a_query: STRING): BOOLEAN
 			-- Executes an SQL query specified as a null-terminated string (mysql_query)
 		require
-			a_query /= Void
-			mysql_client.is_connected
+			query_not_void: a_query /= Void
+			mysql_client_is_connected: mysql_client.is_connected
 		local
 			c_a_query: ANY
 		do
@@ -52,7 +52,7 @@ feature
 	row_count: INTEGER
 			-- Returns the number of rows in a result set (mysql_num_rows)
 		require
-			is_open
+			is_open: is_open
 		do
 			Result := c_num_rows ($p_result)
 		end
@@ -60,15 +60,43 @@ feature
 	field_count: INTEGER
 			-- Returns the number of columns in a result set (mysql_num_fields)
 		require
-			is_open
+			is_open: is_open
 		do
 			Result := c_num_fields ($p_result)
 		end
 
-	forth
-		-- Fetches the next row from the result set (mysql_fetch_row)
+	column_at (a_pos: INTEGER): STRING
+			-- Returns the column name at pos
 		require
-			is_open
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= field_count
+		do
+			Result := c_column_at ($p_result, a_pos-1)
+		end
+
+	go_i_th (a_pos: INTEGER)
+			-- Seeks to an arbitrary row in a query result set (mysql_data_seek)
+		require
+			is_open: is_open
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= field_count
+		do
+			c_seek ($p_result, a_pos-1)
+			forth
+		end
+
+	start
+			-- Seeks to the first row in a query result set (mysql_data_seek)
+		do
+			go_i_th (1)
+		end
+
+	forth
+			-- Fetches the next row from the result set (mysql_fetch_row)
+		require
+			is_open: is_open
 		do
 			off := True
 			if c_fetch_row ($p_result, $p_row) = 0 then
@@ -76,16 +104,16 @@ feature
 			end
 		end
 
-	at (pos: INTEGER): STRING
+	at (a_pos: INTEGER): STRING
 			-- Returns the value at pos
 		require
-			mysql_client.is_connected
-			is_open
-			not off
-			pos > 0
-			pos <= field_count
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= field_count
 		do
-			Result := c_at ($p_result, $p_row, pos)
+			Result := c_at ($p_result, $p_row, a_pos-1)
 		end
 
 	free_result
@@ -119,6 +147,16 @@ feature {NONE} -- External
 		end
 
 	c_num_fields (a_result: POINTER): INTEGER
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
+	c_seek (a_result: POINTER; a_pos: INTEGER)
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
+	c_column_at (a_result: POINTER; a_pos: INTEGER): STRING
 		external
 			"C | %"eiffelmysql.h%""
 		end

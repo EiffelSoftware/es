@@ -30,6 +30,13 @@ EIF_REFERENCE c_at(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos) {
   return eif_make_string("", 0);
 }
 
+EIF_REFERENCE c_column_at(EIF_POINTER res, EIF_INTEGER pos) {
+  return eif_make_string("", 0);
+}
+
+void c_seek(EIF_POINTER res, EIF_INTEGER pos) {
+}
+
 void c_free_result(EIF_POINTER res) {
 }
 
@@ -71,6 +78,10 @@ EIF_INTEGER c_stmt_set_int(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, 
   return (EIF_INTEGER) -1;
 }
 
+EIF_INTEGER c_stmt_set_double(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, EIF_DOUBLE val) {
+  return (EIF_INTEGER) -1;
+}
+
 EIF_INTEGER c_stmt_set_string(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, EIF_POINTER val, EIF_INTEGER len) {
   return (EIF_INTEGER) -1;
 }
@@ -107,16 +118,35 @@ EIF_INTEGER c_stmt_null_at(EIF_POINTER resbind, EIF_INTEGER pos) {
   return (EIF_INTEGER) -1;
 }
 
-EIF_INTEGER c_stmt_type_at(EIF_POINTER resbind, EIF_INTEGER pos) {
+EIF_INTEGER   c_stmt_is_int_at     (EIF_POINTER resbind, EIF_INTEGER pos) {
   return (EIF_INTEGER) -1;
 }
 
-EIF_INTEGER c_stmt_int_at(EIF_POINTER resdata, EIF_INTEGER pos) {
+EIF_INTEGER   c_stmt_is_double_at  (EIF_POINTER resbind, EIF_INTEGER pos) {
   return (EIF_INTEGER) -1;
+}
+
+EIF_INTEGER   c_stmt_is_string_at  (EIF_POINTER resbind, EIF_INTEGER pos) {
+  return (EIF_INTEGER) -1;
+}
+
+EIF_DOUBLE c_stmt_double_at(EIF_POINTER resdata, EIF_INTEGER pos) {
+  return (EIF_DOUBLE) 0.0;
+}
+
+EIF_INTEGER c_stmt_int_at(EIF_POINTER resdata, EIF_INTEGER pos) {
+  return (EIF_INTEGER) 0;
 }
 
 EIF_REFERENCE c_stmt_string_at(EIF_POINTER resdata, EIF_INTEGER pos) {
   return eif_make_string("", 0);
+}
+
+EIF_REFERENCE c_stmt_column_at(EIF_POINTER stmt, EIF_INTEGER pos) {
+  return eif_make_string("", 0);
+}
+
+void c_stmt_seek(EIF_POINTER stmt, EIF_INTEGER pos) {
 }
 
 void c_stmt_free(EIF_POINTER stmt, EIF_POINTER bind, EIF_POINTER data, EIF_POINTER resbind, EIF_POINTER resdata) {

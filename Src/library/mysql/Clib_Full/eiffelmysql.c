@@ -28,8 +28,18 @@ EIF_INTEGER c_fetch_row(EIF_POINTER res, EIF_POINTER row) {
 
 EIF_REFERENCE c_at(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos) {
   char *s;
-  int len = _c_at(*(MYSQL_RES**)res, *(MYSQL_ROW**)row, (int)pos, &s);
+  int len;
+  len = _c_at(*(MYSQL_RES**)res, *(MYSQL_ROW**)row, (int)pos, &s);
   return eif_make_string(s, len);
+}
+
+EIF_REFERENCE c_column_at(EIF_POINTER res, EIF_INTEGER pos) {
+  char *column;
+  column = (char *)_c_column_at(*(MYSQL_RES**)res, (int)pos);
+  return eif_make_string(column, strlen(column));
+}
+void c_seek (EIF_POINTER res, EIF_INTEGER pos) {
+  _c_seek(*(MYSQL_RES**)res, (int)pos);
 }
 
 void c_free_result(EIF_POINTER res) {
@@ -76,6 +86,10 @@ EIF_INTEGER c_stmt_set_int(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, 
   return (EIF_INTEGER) _c_stmt_set_int(*(MYSQL_BIND**)bind, *(STMT_DATA**)data, (int)pos, (int)val);
 }
 
+EIF_INTEGER c_stmt_set_double(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, EIF_DOUBLE val) {
+  return (EIF_INTEGER) _c_stmt_set_double(*(MYSQL_BIND**)bind, *(STMT_DATA**)data, (int)pos, (double)val);
+}
+
 EIF_INTEGER c_stmt_set_string(EIF_POINTER bind, EIF_POINTER data, EIF_INTEGER pos, EIF_POINTER val, EIF_INTEGER len) {
   return (EIF_INTEGER) _c_stmt_set_string(*(MYSQL_BIND**)bind, *(STMT_DATA**)data, (int)pos, (const char *)val, (int)len);
 }
@@ -112,29 +126,50 @@ EIF_INTEGER c_stmt_null_at(EIF_POINTER resbind, EIF_INTEGER pos) {
   return (EIF_INTEGER) _c_stmt_null_at(*(MYSQL_BIND**)resbind, (int)pos);
 }
 
-EIF_INTEGER c_stmt_type_at(EIF_POINTER resbind, EIF_INTEGER pos) {
-  return (EIF_INTEGER) _c_stmt_type_at(*(MYSQL_BIND**)resbind, (int)pos);
+EIF_INTEGER c_stmt_is_int_at(EIF_POINTER resbind, EIF_INTEGER pos) {
+  return (EIF_INTEGER) _c_stmt_is_int_at(*(MYSQL_BIND**)resbind, (int)pos);
+}
+
+EIF_INTEGER c_stmt_is_double_at(EIF_POINTER resbind, EIF_INTEGER pos) {
+  return (EIF_INTEGER) _c_stmt_is_double_at(*(MYSQL_BIND**)resbind, (int)pos);
+}
+
+EIF_INTEGER c_stmt_is_string_at(EIF_POINTER resbind, EIF_INTEGER pos) {
+  return (EIF_INTEGER) _c_stmt_is_string_at(*(MYSQL_BIND**)resbind, (int)pos);
 }
 
 EIF_INTEGER c_stmt_int_at(EIF_POINTER resdata, EIF_INTEGER pos) {
   return (EIF_INTEGER) _c_stmt_int_at(*(STMT_DATA**)resdata, (int)pos);
 }
 
+EIF_DOUBLE c_stmt_double_at(EIF_POINTER resdata, EIF_INTEGER pos) {
+  return (EIF_DOUBLE) _c_stmt_double_at(*(STMT_DATA**)resdata, (int)pos);
+}
+
 EIF_REFERENCE c_stmt_string_at(EIF_POINTER resdata, EIF_INTEGER pos) {
   char *s;
-  int len = _c_stmt_string_at(*(STMT_DATA**)resdata, (int)pos, &s);
+  int len;
+  len = _c_stmt_string_at(*(STMT_DATA**)resdata, (int)pos, &s);
   return eif_make_string(s, len);
+}
+
+EIF_REFERENCE c_stmt_column_at(EIF_POINTER stmt, EIF_INTEGER pos) {
+  char *s;
+  s = (char *)_c_stmt_column_at(*(MYSQL_STMT**)stmt, (int)pos);
+  return eif_make_string(s, strlen(s));
+}
+
+void c_stmt_seek(EIF_POINTER stmt, EIF_INTEGER pos) {
+  _c_stmt_seek(*(MYSQL_STMT**)stmt, (int)pos);
 }
 
 void c_stmt_free(EIF_POINTER stmt, EIF_POINTER bind, EIF_POINTER data, EIF_POINTER resbind, EIF_POINTER resdata) {
   _c_stmt_free(*(MYSQL_STMT**)stmt, (MYSQL_BIND**)bind, (STMT_DATA**)data, (MYSQL_BIND**)resbind, (STMT_DATA**)resdata);
 }
 
-
 /* Data structure management */
 
 int _c_real_connect(MYSQL **mysql, MYSQL_ROW **row, const char *host, const char *username, const char *password, const char *db) {
-  //printf("c_real_connect: '%s', '%s', '%s', '%s'\n", host, username, password, db);
   *mysql = (MYSQL*)malloc(sizeof(MYSQL)); // free: _c_close
   mysql_init(*mysql);
   mysql_options(*mysql, MYSQL_READ_DEFAULT_GROUP, "EiffelMySQL");
@@ -185,6 +220,13 @@ int _c_affected_rows(MYSQL *mysql) {
   return mysql_affected_rows(mysql);
 }
 
+void _c_seek(MYSQL_RES *res, int pos) {
+  mysql_data_seek(res, pos);
+}
+const char* _c_column_at(MYSQL_RES *res, int pos) {
+  return mysql_fetch_field_direct(res, pos)->name;
+}
+
 void _c_close(MYSQL *mysql) {
   mysql_close(mysql);
   if (mysql != 0) free(mysql);
@@ -200,13 +242,11 @@ const char* _c_error(MYSQL *mysql) {
 }
 
 int _c_stmt_prepare(MYSQL *mysql, MYSQL_STMT **stmt, MYSQL_BIND **bind, STMT_DATA **data, const char *stmt_str) {
-  //printf("c_stmt_prepare: '%s'\n", stmt_str);
   int fields;
   if ((*stmt = mysql_stmt_init(mysql)) == 0) return -1;
   *bind = 0;
   if (mysql_stmt_prepare(*stmt, stmt_str, strlen(stmt_str)) != 0) return -1;
   fields = mysql_stmt_param_count(*stmt);
-  //printf("c_stmt_prepare: %d\n", fields);
   if (fields > 0) {
     *bind = (MYSQL_BIND*)malloc(sizeof(MYSQL_BIND) * fields); // free: _c_stmt_free
     *data = (STMT_DATA*) malloc(sizeof(STMT_DATA) * fields); // free: _c_stmt_free
@@ -235,10 +275,19 @@ int _c_stmt_set_null(MYSQL_BIND *bind, STMT_DATA *data, int pos) {
 }
 
 int _c_stmt_set_int(MYSQL_BIND *bind, STMT_DATA *data, int pos, int val) {
-  //printf("c_stmt_set_int: %d at %d\n", val, pos);
   data[pos].length        = val;
   bind[pos].buffer_type   = MYSQL_TYPE_LONG;
   bind[pos].buffer        = &data[pos].length;
+  bind[pos].buffer_length = 0;
+  bind[pos].is_null       = 0;
+  bind[pos].length        = 0;
+  return 0;
+}
+
+int _c_stmt_set_double(MYSQL_BIND *bind, STMT_DATA *data, int pos, double val) {
+  data[pos].d             = val;
+  bind[pos].buffer_type   = MYSQL_TYPE_DOUBLE;
+  bind[pos].buffer        = &data[pos].d;
   bind[pos].buffer_length = 0;
   bind[pos].is_null       = 0;
   bind[pos].length        = 0;
@@ -258,7 +307,6 @@ int _c_stmt_set_string(MYSQL_BIND *bind, STMT_DATA *data, int pos, const char *v
 int _c_stmt_execute(MYSQL_STMT *stmt, MYSQL_BIND *bind) {
   if (mysql_stmt_bind_param(stmt, bind) != 0) return -1;
   if (mysql_stmt_execute(stmt) != 0) return -1;
-  //printf("c_stmt_execute: '%s'\n", mysql_stmt_error(stmt));
   return 0;
 }
 
@@ -282,29 +330,21 @@ int _c_stmt_bind_result(MYSQL_STMT *stmt, MYSQL_BIND **resbind, STMT_DATA **resd
   int yes;
   int fields;
   int i;
-    STMT_DATA* _resdata;
-    MYSQL_BIND* _resbind;
-  //printf("c_stmt_bind_result: '%s'\n", mysql_stmt_error(stmt));
+  STMT_DATA* _resdata;
+  MYSQL_BIND* _resbind;
 
   // Metadata (check if result exists)
   MYSQL_RES *metadata = mysql_stmt_result_metadata(stmt);
   MYSQL_FIELD *field;
   if (metadata == 0) return -1; // no result set
 
-  //printf("c_stmt_bind_result: metadata ok\n");
-
   // Buffer entire result on client (to find string sizes)
   yes = 1;
   mysql_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, &yes);
   if (mysql_stmt_store_result(stmt) != 0) return -1;
 
-  //printf("c_stmt_bind_result: store ok\n");
-
   // Prepare BIND
   fields = mysql_stmt_field_count(stmt);
-
-  //printf("c_stmt_bind_result: fields: %d\n", fields);
-  //printf("c_stmt_bind_result: rows: %d\n", mysql_stmt_num_rows(stmt));
 
   if (fields > 0) {
     if (*resdata == 0) {
@@ -353,12 +393,46 @@ int _c_stmt_null_at(MYSQL_BIND *resbind, int pos) {
   return *resbind[pos].is_null;
 }
 
-int _c_stmt_type_at(MYSQL_BIND *resbind, int pos) {
-  return resbind[pos].buffer_type;
+int _c_stmt_is_int_at(MYSQL_BIND *resbind, int pos) {
+  switch(resbind[pos].buffer_type) {
+    case MYSQL_TYPE_TINY:
+    case MYSQL_TYPE_SHORT:
+    case MYSQL_TYPE_INT24:
+    case MYSQL_TYPE_LONG: // TODO: unsigned
+    case MYSQL_TYPE_LONGLONG: // TODO: (unsigned) long long
+    return 1;
+  }
+  return 0;
+}
+
+int _c_stmt_is_double_at(MYSQL_BIND *resbind, int pos) {
+  switch(resbind[pos].buffer_type) {
+    case MYSQL_TYPE_FLOAT:
+    case MYSQL_TYPE_DOUBLE:
+    return 1;
+  }
+  return 0;
+}
+
+int _c_stmt_is_string_at(MYSQL_BIND *resbind, int pos) {
+  switch(resbind[pos].buffer_type) {
+    case MYSQL_TYPE_STRING:
+    case MYSQL_TYPE_VAR_STRING:
+    case MYSQL_TYPE_TINY_BLOB:
+    case MYSQL_TYPE_BLOB:
+    case MYSQL_TYPE_MEDIUM_BLOB:
+    case MYSQL_TYPE_LONG_BLOB:
+    return 1;
+  }
+  return 0;
 }
 
 int _c_stmt_int_at(STMT_DATA *resdata, int pos) {
   return *(int*)(resdata[pos].buffer);
+}
+
+double _c_stmt_double_at(STMT_DATA *resdata, int pos) {
+  return *(double*)(resdata[pos].buffer);
 }
 
 int _c_stmt_string_at(STMT_DATA *resdata, int pos, char **s) {
@@ -366,9 +440,21 @@ int _c_stmt_string_at(STMT_DATA *resdata, int pos, char **s) {
   return resdata[pos].length;
 }
 
+void _c_stmt_seek(MYSQL_STMT *stmt, int pos) {
+  mysql_stmt_data_seek(stmt, pos);
+}
+
+const char* _c_stmt_column_at(MYSQL_STMT *stmt, int pos) {
+  MYSQL_RES *metadata;
+  metadata = mysql_stmt_result_metadata(stmt);
+  mysql_field_seek(metadata, pos);
+  return mysql_fetch_field(metadata)->name;
+}
+
 void  _c_stmt_free(MYSQL_STMT *stmt, MYSQL_BIND **bind, STMT_DATA **data, MYSQL_BIND **resbind, STMT_DATA **resdata) {
+  int i, fields;
   if(*resdata != 0) {
-    int i, fields = mysql_stmt_field_count(stmt);
+    fields = mysql_stmt_field_count(stmt);
     for(i = 0; i < fields; ++i) {
       if ((*resdata)[i].string != 0) {
         free((*resdata)[i].string);

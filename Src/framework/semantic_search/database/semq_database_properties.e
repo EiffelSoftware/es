@@ -35,12 +35,12 @@ feature -- Initialization
 			if mysql.last_result.row_count > 0 then
 				create properties.make (mysql.last_result.row_count)
 				from
-					mysql.last_result.forth
+					mysql.last_result.start
 				until
 					mysql.last_result.off
 				loop
-					prop_id := mysql.last_result.at (0).to_integer
-					prop := mysql.last_result.at (1)
+					prop_id := mysql.last_result.at (1).to_integer
+					prop := mysql.last_result.at (2)
 					properties.put (prop_id, prop)
 					mysql.last_result.forth
 				end
@@ -61,13 +61,13 @@ feature -- Basic operations
 				Result := properties.at (a_property)
 			else
 				-- Double check (cache might be outdated)
---				stmt_find_property.set_string (0, a_property)
+--				stmt_find_property.set_string (1, a_property)
 --				stmt_find_property.execute
 --				if stmt_find_property.num_rows > 0 then
 --					stmt_find_property.forth
---					Result := stmt_find_property.int_at (0)
+--					Result := stmt_find_property.int_at (1)
 --				else
-					stmt_insert_property.set_string (0, a_property)
+					stmt_insert_property.set_string (1, a_property)
 					stmt_insert_property.execute
 					Result := stmt_insert_property.last_insert_id
 --				end
