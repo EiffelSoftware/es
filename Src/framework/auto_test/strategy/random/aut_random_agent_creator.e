@@ -212,6 +212,7 @@ feature {NONE} -- Steps
 			-- Set up an input creator to get variables for closed operands
 		require
 			not_yet_created: input_creator = Void
+			feature_chosen: agent_feature /= Void
 			closed_operands_void: closed_operands_positions = Void
 		local
 			l_feature_arguments: LIST[TYPE_A]
