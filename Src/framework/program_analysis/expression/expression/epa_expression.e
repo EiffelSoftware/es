@@ -331,6 +331,19 @@ feature -- Status report
 			Result := text.is_boolean
 		end
 
+	is_constant: BOOLEAN
+			-- Is Current a constant?
+		do
+			if attached {EXPR_AS} ast as l_ast then
+				Result :=
+					attached {INTEGER_AS} l_ast or else
+					attached {BOOL_AS} l_ast or else
+					attached {STRING_AS} l_ast or else
+					attached {CHAR_AS} l_ast or else
+					attached {REAL_AS} l_ast
+			end
+		end
+
 feature -- Equality
 
 	is_equal (other: like Current): BOOLEAN
