@@ -4271,10 +4271,6 @@ Src/tools/objc2eif/documentation/Documentation.pdf -text
 Src/tools/objc2eif/source/application.e -text
 Src/tools/objc2eif/source/configuration.e -text
 Src/tools/objc2eif/source/examples/CircleApp/Changed[!!-~]Classes.rtf -text
-Src/tools/objc2eif/source/examples/CircleApp/CircleApp.app/Contents/Info.plist -text
-Src/tools/objc2eif/source/examples/CircleApp/CircleApp.app/Contents/MacOS/circleapp -text
-Src/tools/objc2eif/source/examples/CircleApp/CircleApp.app/Contents/PkgInfo -text
-Src/tools/objc2eif/source/examples/CircleApp/CircleApp.app/Contents/Resources/MainNib.nib -text
 Src/tools/objc2eif/source/examples/CircleApp/CircleApp.ecf -text
 Src/tools/objc2eif/source/examples/CircleApp/Resources/Info.plist -text
 Src/tools/objc2eif/source/examples/CircleApp/Resources/MainNib.xib -text
@@ -4283,10 +4279,6 @@ Src/tools/objc2eif/source/examples/CircleApp/application_delegate.e -text
 Src/tools/objc2eif/source/examples/CircleApp/circle_view.e -text
 Src/tools/objc2eif/source/examples/CircleApp/cocoa_application.e -text
 Src/tools/objc2eif/source/examples/CircleApp/createApp.sh -text
-Src/tools/objc2eif/source/examples/ClickMe/ClickMe.app/Contents/Info.plist -text
-Src/tools/objc2eif/source/examples/ClickMe/ClickMe.app/Contents/MacOS/clickme -text
-Src/tools/objc2eif/source/examples/ClickMe/ClickMe.app/Contents/PkgInfo -text
-Src/tools/objc2eif/source/examples/ClickMe/ClickMe.app/Contents/Resources/MainNib.nib -text
 Src/tools/objc2eif/source/examples/ClickMe/ClickMe.ecf -text
 Src/tools/objc2eif/source/examples/ClickMe/Resources/Info.plist -text
 Src/tools/objc2eif/source/examples/ClickMe/Resources/MainNib.xib -text
