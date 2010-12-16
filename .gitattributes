@@ -130,6 +130,7 @@ Delivery/esbuilder/bitmaps/png/widgets.png -text
 Delivery/esbuilder/pixmaps/eiffel_wizard.png -text
 Delivery/esbuilder/pixmaps/eiffel_wizard_icon.png -text
 Delivery/esbuilder/pixmaps/wizard.png -text
+Delivery/notes/new_development_period_todo.txt -text
 Delivery/scripts/unix/README.packaging -text
 Delivery/scripts/unix/compile_eweasel -text
 Delivery/scripts/unix/make_debian_package -text
