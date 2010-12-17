@@ -152,6 +152,7 @@ test non-conform-precondition-inheritance			noncon019 tcf pass non-conforming
 test incorrect-vrle-error						noncon020 tcf pass non-conforming
 test non-conforming-reference-attribute-access	noncon021 tcf pass non-conforming
 test non-conforming-constant-access	noncon022 tcf pass non-conforming
+test non-conforming-crash						noncon023 tcf pass non-conforming
 
 -- Replication
 test replicate-precursor				replication001 tcf pass replication
@@ -506,6 +507,7 @@ test	generic-rename-with-alias		valid264 tcf fail validity generic rename
 test	variant-with-anchored-type		valid265 tcf fail validity
 test	vtcg7-precondition-violation	valid266 tcf fail validity
 test	bogus-vdrd2-error				valid267 tcf fail validity
+test	crash-on-veen2a					valid268 tcf pass validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1572,6 +1574,7 @@ test	catcall-in-expanded-class-invariant	exec330 tcf fail execution catcall
 test	once-string-seg-fault			exec331 tcf fail execution
 test	object-test-wrong-with-expanded-generic	exec332 tcf fail execution
 test	tracing-memory-corruption		exec333 tcf pass execution
+test	special-make-empty				exec334 tcf pass execution special
 
 -- Once specific
 

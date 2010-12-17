@@ -213,6 +213,84 @@ feature -- Access
 			end
 		end
 
+feature -- Options
+
+	free_configuration_values: detachable ARRAYED_LIST [detachable TUPLE [name, value: STRING]]
+			-- Option 's value indexed by key
+
+	has_free_configuration (a_name: STRING): BOOLEAN
+		local
+			c: like free_configuration_values.new_cursor
+		do
+			if attached free_configuration_values as opts then
+				c := opts.new_cursor
+				from
+					c.start
+				until
+					c.after or Result
+				loop
+					Result := attached c.item as i and then a_name.is_case_insensitive_equal (i.name)
+					c.forth
+				end
+			end
+		end
+
+	free_configuration_item (a_name: STRING): detachable TUPLE [name, value: STRING]
+		local
+			c: like free_configuration_values.new_cursor
+		do
+			if attached free_configuration_values as opts then
+				c := opts.new_cursor
+				from
+					c.start
+				until
+					c.after or Result /= Void
+				loop
+					if attached c.item as i and then a_name.is_case_insensitive_equal (i.name) then
+						Result := i
+					end
+					c.forth
+				end
+			end
+		end
+
+	free_configuration_value (a_name: STRING): detachable STRING
+		do
+			if attached free_configuration_item (a_name) as i then
+				Result := i.value
+			end
+		end
+
+	add_free_configuration (a_name, a_value: STRING)
+		local
+			opts: like free_configuration_values
+		do
+			opts := free_configuration_values
+			if opts = Void then
+				create opts.make (3)
+				opts.compare_objects
+				free_configuration_values := opts
+			end
+			if
+				has_free_configuration (a_name) and then
+				attached free_configuration_item (a_name) as i
+			then
+				i.value := a_value
+			else
+				opts.force ([a_name, a_value])
+			end
+		end
+
+	add_comment (a_commented_text: STRING)
+		local
+			n: INTEGER
+		do
+			if attached free_configuration_values as opts then
+				n := opts.count
+			end
+			add_free_configuration ("#" + n.out, a_commented_text)
+		end
+
 feature -- Element change
 
 	set_location (v: like location)
