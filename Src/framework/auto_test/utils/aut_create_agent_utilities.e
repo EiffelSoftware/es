@@ -85,7 +85,7 @@ feature -- Access
 		require
 			feature_attached: a_feature /= Void
 		local
-			l_args: LIST[TYPE_A]
+			l_args: LIST [TYPE_A]
 		do
 			l_args := feature_argument_types (a_feature.feature_, a_feature.type)
 			Result := l_args.there_exists (agent is_agent_type)

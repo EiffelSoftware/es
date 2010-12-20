@@ -100,7 +100,7 @@ feature -- Access
 	receiver: ITP_VARIABLE
 			-- Variable that will hold this new agent instance
 
-	operands: DS_HASH_TABLE[ITP_VARIABLE,INTEGER]
+	operands: DS_HASH_TABLE [ITP_VARIABLE,INTEGER]
 			-- (Closed) Operands of the agent
 
 	input_creator: AUT_RANDOM_INPUT_CREATOR
@@ -124,7 +124,7 @@ feature -- Agent characterisation
 	target_type: TYPE_A
 			-- Target type that the future agent must comply to
 
-	argument_types: ARRAY[TYPE_A]
+	argument_types: ARRAY [TYPE_A]
 			-- Argument types that the future agent must comply to
 
 	return_type: TYPE_A
@@ -179,7 +179,7 @@ feature {NONE} -- Steps
 		local
 			l_features: like interpreter.features_under_test
 			l_feature: AUT_FEATURE_OF_TYPE
-			l_table: ARRAYED_LIST[AUT_FEATURE_OF_TYPE]
+			l_table: ARRAYED_LIST [AUT_FEATURE_OF_TYPE]
 			l_cache: AUT_AGENT_FEATURE_CACHE
 			i: INTEGER
 		do
@@ -215,7 +215,7 @@ feature {NONE} -- Steps
 			feature_chosen: agent_feature /= Void
 			closed_operands_void: closed_operands_positions = Void
 		local
-			l_feature_arguments: LIST[TYPE_A]
+			l_feature_arguments: LIST [TYPE_A]
 			i: INTEGER
 		do
 			create input_creator.make (system, interpreter, feature_table)
@@ -289,11 +289,11 @@ feature {NONE} -- Steps
 
 feature {NONE} -- Implementation
 
-	closed_operands_positions: LINKED_LIST[INTEGER]
+	closed_operands_positions: LINKED_LIST [INTEGER]
 			-- Lists the positions of operands that will be closed
 			-- Indexed by 0 for target, 1 for first argument etc
 
-	feature_table: HASH_TABLE[ARRAY[FEATURE_I],CLASS_C]
+	feature_table: HASH_TABLE [ARRAY [FEATURE_I],CLASS_C]
 			-- Feature table
 
 	steps_completed: BOOLEAN
@@ -351,7 +351,7 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 			l_argument_types_agent: like argument_types
-			l_argument_types_feature: LIST[TYPE_A]
+			l_argument_types_feature: LIST [TYPE_A]
 			l_argument_type_agent: TYPE_A
 			l_argument_type_feature: TYPE_A
 		do

@@ -69,7 +69,7 @@ feature {AUT_AGENT_FEATURE_CACHE} -- Basic operations
 
 feature {AUT_AGENT_FEATURE_CACHE} -- Implementation
 
-	storage: HASH_TABLE[ARRAYED_LIST[AUT_FEATURE_OF_TYPE],TYPE_A]
+	storage: HASH_TABLE [ARRAYED_LIST [AUT_FEATURE_OF_TYPE],TYPE_A]
 			-- Stores previously searched conforming features for an agent type argument
 
 	storage_capacity: INTEGER = 100

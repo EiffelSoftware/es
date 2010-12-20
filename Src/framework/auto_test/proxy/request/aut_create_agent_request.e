@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 			operands_attached: a_operands /= Void
 		local
 			i:INTEGER
-			l_arg_list: DS_LINKED_LIST[ITP_VARIABLE]
+			l_arg_list: DS_LINKED_LIST [ITP_VARIABLE]
 		do
 			system := a_system
 			receiver := a_receiver
@@ -80,10 +80,10 @@ feature {AUT_CREATE_AGENT_REQUEST} -- Implementation
 	is_target_open: BOOLEAN
 			-- Is the target of the agent going to be left open?
 
-	operand_indexes_internal: SPECIAL[INTEGER]
+	operand_indexes_internal: SPECIAL [INTEGER]
 			-- special holding the values for `operand_indexes'
 
-	operand_types_internal: SPECIAL[TYPE_A]
+	operand_types_internal: SPECIAL [TYPE_A]
 			-- special holding the values for `operand_types'
 
 	fill_operand_indexes
@@ -116,7 +116,7 @@ feature {AUT_CREATE_AGENT_REQUEST} -- Implementation
 			not_yet_filled: operand_types_internal = Void
 		local
 			i:INTEGER
-			l_feat_arg_types: LIST[TYPE_A]
+			l_feat_arg_types: LIST [TYPE_A]
 		do
 			create operand_types_internal.make_empty (operand_table.count)
 			l_feat_arg_types := feature_argument_types (agent_feature, agent_feature_of_type.type)
@@ -167,7 +167,7 @@ feature -- Access
 	receiver_type: TYPE_A
 			-- (static) type of `receiver'
 
-	operand_table: DS_BILINEAR_TABLE[ITP_VARIABLE,INTEGER]
+	operand_table: DS_BILINEAR_TABLE [ITP_VARIABLE,INTEGER]
 			-- Table of operands for closed arguments of the agent
 			-- 0-indexed by their position in the agent expression: 0 is the target, 1 is the first argument etc
 
@@ -242,7 +242,7 @@ feature -- Code generation
 
 			-- Locals to store information about agent creation
 			Result.append (a_indent)
-			Result.append (once "l_operands_special: SPECIAL[INTEGER]%N")
+			Result.append (once "l_operands_special: SPECIAL [INTEGER]%N")
 			Result.append (a_indent)
 			Result.append (once "l_agent_creation_info: ITP_AGENT_CREATION_INFO%N")
 
@@ -305,7 +305,7 @@ feature -- Code generation
 	agent_assignment_code (a_indent: STRING) : STRING
 			-- Text representing the code line where the agent (with operand names) is assigned to the receiver
 		local
-			l_op_arg: SPECIAL[STRING]
+			l_op_arg: SPECIAL [STRING]
 			i: INTEGER
 		do
 			create l_op_arg.make_filled ("?", agent_feature.argument_count + 1)
