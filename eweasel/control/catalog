@@ -1575,6 +1575,7 @@ test	once-string-seg-fault			exec331 tcf fail execution
 test	object-test-wrong-with-expanded-generic	exec332 tcf fail execution
 test	tracing-memory-corruption		exec333 tcf pass execution
 test	special-make-empty				exec334 tcf pass execution special
+test	standard-twin-on-formal			exec335 tcf pass execution
 
 -- Once specific
 
@@ -1782,6 +1783,9 @@ test	skeleton-adapted-in-crash		term192 tcf fail termination
 test	is-valid-for-class-precondition		term193 tcf fail termination 
 test	is-less-equal-postcondition-violation-2	term194 tcf fail termination
 test	testing-class-removal-crash			term195 tcf pass termination
+test	across-with-constrained-generic-crash	term196 tcf fail termination
+test	shared-library-with-generic-root	term197 tcf fail termination
+test	iteration-over-inline-agent		term198 tcf fail termination
 
 -- Config
 
@@ -1914,6 +1918,7 @@ test	expanded-generic-object-test	ccomp082 tcf fail c_compilation expanded
 test	c-header-mismatch-3				ccomp083 tcf fail c_compilation
 test	large-real-constant-c-compile-failure		ccomp084 tcf fail c_compilation
 test	c-header-sequence				ccomp085 tcf fail c_compilation
+test	finalize-without-then-with-assertions		ccomp086 tcf fail c_compilation
 
 -- Storable tests
 
