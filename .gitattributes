@@ -2383,7 +2383,6 @@ Src/examples/obsolete/vision2/test_all_widgets/pixmaps/vision_tower.xpm -text sv
 Src/examples/preferences/display.png -text
 Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
-Src/examples/ribbon/simple/Clib/Makefile-win.SH -text
 Src/examples/ribbon/simple/res/AddTableL.bmp -text
 Src/examples/ribbon/simple/res/AddTableS.bmp -text
 Src/examples/ribbon/simple/res/Button_Image.bmp -text
@@ -3224,6 +3223,7 @@ Src/library/process/classic/windows/wel_process_toolhelp_constants.e -text
 Src/library/process/process-safe.lic -text
 Src/library/process/process.lic -text
 Src/library/process/tests/tests.lic -text
+Src/library/ribbon/Clib/Makefile-win.SH -text
 Src/library/scoopli/support/scoop_base.ecf.noany -text
 Src/library/store/dbms/rdbms/mysql/Readme -text
 Src/library/testing/testing-safe.lic -text

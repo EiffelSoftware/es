@@ -18,6 +18,7 @@ feature {NONE} -- Initialization
 			create constants
 			create shared_singleton
 			create tree_node_factory.make
+			create vision_xml_translator.make
 
 			build_ui
 			build_docking_content
@@ -36,22 +37,14 @@ feature {NONE} -- Initialization
 			--
 		local
 			l_tree_item_app: EV_TREE_ITEM
-			l_tree_item_commands, l_tree_item_view: EV_TREE_ITEM
 		do
 			create widget
+			widget.key_press_actions.extend (agent on_tree_key_press)
 
-			create l_tree_item_app.make_with_text ("Application")
+			create l_tree_item_app.make_with_text (constants.ribbon_tabs)
+			l_tree_item_app.drop_actions.set_veto_pebble_function (agent on_veto_pebble_function (?, constants.ribbon_tabs))
+			l_tree_item_app.drop_actions.extend (agent on_drop (?, l_tree_item_app))
 			widget.extend (l_tree_item_app)
-
-			create l_tree_item_commands.make_with_text (constants.application_commands)
-			l_tree_item_commands.drop_actions.set_veto_pebble_function (agent on_veto_pebble_function (?, constants.application_commands))
-			l_tree_item_commands.drop_actions.extend (agent on_drop (?, l_tree_item_commands))
-			l_tree_item_app.extend (l_tree_item_commands)
-
-			create l_tree_item_view.make_with_text ("Application.Views")
-			l_tree_item_view.drop_actions.set_veto_pebble_function (agent on_veto_pebble_function (?, constants.application_views))
-			l_tree_item_view.drop_actions.extend (agent on_drop (?, l_tree_item_view))
-			l_tree_item_app.extend (l_tree_item_view)
 
 			helper.expand_all (widget)
 		end
@@ -67,9 +60,21 @@ feature -- Command
 			content.set_default_editor_position
 		end
 
+feature -- Query
+
 	widget: EV_TREE
 			-- Main dockig content widget
-			
+
+	all_items_with (a_text: STRING): ARRAYED_LIST [EV_TREE_NODE]
+			-- All tree items which text equal `a_text'
+		require
+			not_void: a_text /= Void
+		do
+			create Result.make (50)
+			check widget.count = 1 end
+			recrusive_all_items_with (a_text, widget.i_th (1), Result)
+		end
+
 feature -- Factory
 
 	tree_item_factory_method (a_item_text: STRING): EV_TREE_ITEM
@@ -147,6 +152,18 @@ feature {NONE} -- Action handing
 			end
 		end
 
+	on_tree_key_press (a_key: EV_KEY)
+			--
+		do
+			if a_key.code = {EV_KEY_CONSTANTS}.Key_delete then
+				if attached widget.selected_item as l_selected_node then
+					if attached l_selected_node.parent as l_parent then
+						l_parent.prune_all (l_selected_node)
+					end
+				end
+			end
+		end
+
 feature -- Persistance
 
 	save_tree
@@ -156,9 +173,8 @@ feature -- Persistance
 			l_output_stream: ER_XML_OUTPUT_STREAM
 			l_document: XML_DOCUMENT
 		do
-			create l_document.make
-
-			xml_from_widget (l_document)
+			vision_xml_translator.add_xml_nodes_by_vision_tree (widget)
+			l_document := vision_xml_translator.xml_document
 
 			create l_printer.make
 
@@ -168,76 +184,8 @@ feature -- Persistance
 			l_document.process (l_printer)
 
 			l_output_stream.close
-		end
 
-	xml_from_widget (a_document: XML_DOCUMENT)
-			--
-		local
-			l_tree: EV_TREE
-			l_tree_node: EV_TREE_NODE
-			l_name_space: XML_NAMESPACE
-			l_element: XML_ELEMENT
-		do
-			l_tree := widget
-			check l_tree.count = 1 end -- Only allow one <Application> as root node
-			l_tree.start
-			l_tree_node := l_tree.item
-			create l_name_space.make_default
-			create l_element.make_root (a_document, "Application", l_name_space)
-			l_element.add_attribute ("xmlns", l_name_space, "http://schemas.microsoft.com/windows/2009/Ribbon")
 
-			from
-				l_tree_node.start
-			until
-				l_tree_node.after
-			loop
-				xml_from_widget_imp (l_element, l_name_space, l_tree_node.item)
-				l_tree_node.forth
-			end
-		end
-
-	xml_from_widget_imp (a_parent: XML_ELEMENT; a_name_space: XML_NAMESPACE; a_tree_node: EV_TREE_NODE)
-			--
-		local
-			l_xml_element: XML_ELEMENT
-		do
-			l_xml_element := tree_node_to_xml_element (a_tree_node, a_parent, a_name_space)
-			a_parent.put_last (l_xml_element)
-			from
-				a_tree_node.start
-			until
-				a_tree_node.after
-			loop
-				xml_from_widget_imp (l_xml_element, a_name_space, a_tree_node.item)
-				a_tree_node.forth
-			end
-		end
-
-	tree_node_to_xml_element (a_tree_node: EV_TREE_NODE; a_parent: XML_ELEMENT; a_name_space: XML_NAMESPACE): XML_ELEMENT
-			--
-		local
-			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
-		do
-			create l_constants
-			create Result.make (a_parent, a_tree_node.text, a_name_space)
-
-			if attached {ER_TREE_NODE_COMMAND_DATA} a_tree_node.data as l_data then
-				if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
-					Result.add_attribute (l_constants.name, a_name_space, l_command_name)
-				end
-				l_data.add_sub_tree_nodes (Result, a_name_space)
-			elseif attached {ER_TREE_NODE_BUTTON_DATA} a_tree_node.data as l_data then
-				if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
-					Result.add_attribute (l_constants.command_name, a_name_space, l_command_name)
-				end
-			elseif attached {ER_TREE_NODE_GROUP_DATA} a_tree_node.data as l_data then
-				if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
-					Result.add_attribute (l_constants.command_name, a_name_space, l_command_name)
-				end
-				if attached l_data.size_definition as l_size_definition and then not l_size_definition.is_empty then
-					Result.add_attribute (l_constants.size_definition, a_name_space, l_size_definition)
-				end
-			end
 		end
 
 	load_tree
@@ -258,14 +206,36 @@ feature -- Persistance
 
 				l_parser.parse_from_filename (l_file_name)
 
+				vision_xml_translator.update_vision_tree_after_load (widget)
+
 				helper.expand_all (widget)
 			else
 				check should_not_happend: False end
 			end
-
 		end
 
 feature {NONE} -- Implementation
+
+	recrusive_all_items_with (a_text: STRING; a_tree_node: EV_TREE_NODE; a_list: ARRAYED_LIST [EV_TREE_NODE])
+			-- Recursive find tree node which text is same as `a_text'
+		require
+			not_void: a_text /= Void
+			not_void: a_tree_node /= Void
+			not_void: a_list /= Void
+		do
+			if a_tree_node.text.same_string (a_text) then
+				a_list.extend (a_tree_node)
+			end
+			from
+				a_tree_node.start
+			until
+				a_tree_node.after
+			loop
+				recrusive_all_items_with (a_text, a_tree_node.item, a_list)
+
+				a_tree_node.forth
+			end
+		end
 
 	content: SD_CONTENT
 			--
@@ -280,5 +250,8 @@ feature {NONE} -- Implementation
 			--			
 
 	tree_node_factory: ER_TREE_NODE_DATA_FACTORY
+			--
+
+	vision_xml_translator: ER_VISION_XML_TREE_TRANSLATOR
 			--
 end

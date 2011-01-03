@@ -48,6 +48,12 @@ feature -- Command
 				else
 					name.remove_text
 				end
+
+				if attached a_data.label_title as l_label_title then
+					label.set_text (l_label_title)
+				else
+					label.remove_text
+				end
 			end
 		end
 
@@ -64,4 +70,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	on_label_changes
+			-- Called by `change_actions' of `label'.
+		do
+			if attached tree_node_data as l_data then
+				l_data.set_label_title (label.text)
+			end
+		end
 end
