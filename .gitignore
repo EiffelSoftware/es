@@ -616,6 +616,7 @@ Src/tools/estudio/estudio.rc
 Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
 Src/tools/quick_finalize/quick_finalize.rc
+Src/tools/repository_tool/data/db
 Src/tools/repository_tool/lib/eapml
 Src/tools/repository_tool/lib/eel
 Src/tools/repository_tool/mydata

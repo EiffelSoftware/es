@@ -517,6 +517,7 @@ Src/C/CONFIGS/haiku-x86 -text
 Src/C/CONFIGS/iphone-arm -text
 Src/C/CONFIGS/iphone-x86 -text
 Src/C/CONFIGS/macosx-x86-64 -text
+Src/C/CONFIGS/openbsd-x86-64 -text
 Src/C/CONFIGS/windows-x86-64-mingw -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
@@ -2459,6 +2460,7 @@ Src/examples/wel/comctrls/toolbar.bmp -text
 Src/examples/wel/commands/commands_demo.ico -text
 Src/examples/wel/controls/controls_demo.ico -text
 Src/examples/wel/ctlcolor/ctlcolor_demo.ico -text
+Src/examples/wel/cursors/README -text
 Src/examples/wel/cursors/cursors_demo.ico -text
 Src/examples/wel/cursors/custom.cur svneol=native#unset
 Src/examples/wel/diskspace/diskspace_demo.ico -text

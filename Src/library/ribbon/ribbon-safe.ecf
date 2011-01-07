@@ -16,16 +16,28 @@
 		<option warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="all" namespace="EiffelSoftware.Library.Ribbon">
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
+		<external_include location="$(ISE_LIBRARY)\library\ribbon\spec\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="$(ISE_LIBRARY)\library\ribbon\Clib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="$(ISE_LIBRARY)\library\ribbon\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\eiffel_ribbon.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf" readonly="true"/>
-
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf" readonly="true"/>
-
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel-safe.ecf" readonly="true">
 			<condition>
 				<platform value="windows"/>
 			</condition>
 		</library>
-	
 		<cluster name="ribbon" location=".\" recursive="true">
 			<option namespace="Ribbon">
 			</option>
