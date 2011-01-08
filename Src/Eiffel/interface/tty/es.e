@@ -1294,8 +1294,9 @@ feature -- Update
 			elseif option.is_equal ("-boogie") then
 				create {EWB_BOOGIE_VERIFICATION} command
 			elseif option.is_equal ("-dead_plan") then
-				workbench.set_planned_class_name (argument (current_option + 1))
-				current_option := argument_count + 2
+				workbench.set_planned_class_and_feature_name (argument (current_option + 1),
+				                                              argument (current_option + 2))
+				current_option := argument_count + 3
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
@@ -1442,7 +1443,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

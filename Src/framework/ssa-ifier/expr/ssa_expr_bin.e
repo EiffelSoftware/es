@@ -30,8 +30,43 @@ feature
 		end
 
 	replacements: LIST [SSA_REPLACEMENT]
+    local
+      repl1, repl2: LIST [SSA_REPLACEMENT]
+      repl: SSA_REPLACEMENT
+      repls: ARRAYED_LIST [SSA_REPLACEMENT]
+      text: STRING
 		do
-			check unimplemented: False end
+      create repls.make (10)
+      repl1 := expr1.replacements
+      repl2 := expr2.replacements
+
+      repls.append (repl1)
+      repls.append (repl2)
+
+      text := repl1.last.var + op + repl2.last.var
+      
+      create repl.make (res_type (repl1.last.type),
+                        ssa_prefix,
+                        text,
+                        Void,
+                        feat (repl1.last.type)
+                        )
+
+      repls.extend (repl)
+      Result := repls
 		end
 
+  res_type (a_type: TYPE_A): TYPE_A
+    local
+      epa_expr: EPA_AST_EXPRESSION
+    do
+      create epa_expr.make_with_text (class_c, feature_i, as_code, class_c)
+      Result := epa_expr.type
+    end
+
+  feat (a_type: TYPE_A): FEATURE_I
+    do
+      Result := Void
+    end
+ 
 end

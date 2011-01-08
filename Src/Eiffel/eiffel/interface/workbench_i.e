@@ -735,13 +735,14 @@ feature -- Automatic backup
 		end
 
 feature -- Added for Planning
-	set_planned_class_name (a_name : STRING)
+	set_planned_class_and_feature_name (a_class_name, a_feature_name: STRING)
 		do
-			planned_class_name := a_name
+			planned_class_name := a_class_name
+			planned_feature_name := a_feature_name
 		end
 
 	planned_class_name: STRING
-
+	planned_feature_name: STRING
 feature -- Added for SCOOP
 	is_degree_scoop_processing: BOOLEAN
 		-- Is the degree SCOOP processing?
@@ -1005,7 +1006,7 @@ feature {NONE} -- Implementation
 			-- Was there a problem during running the pre and post compile actions?
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -32,7 +32,7 @@ feature
 			type := epa_expr.type
 
 			pref_name := ssa_prefix
-			create repl.make (type, pref_name , pref_name + " := " + name, req)
+			create repl.make (type, pref_name , pref_name + " := " + name, Void, Void)
 
 			create {ARRAYED_LIST [SSA_REPLACEMENT]} Result.make (10)
 			Result.extend (repl)

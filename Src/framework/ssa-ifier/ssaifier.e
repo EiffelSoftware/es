@@ -1,34 +1,41 @@
 ﻿note
-	description: "Top-level annotation of a class' feature."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+description: "Top-level annotation of a class' feature."
+author: ""
+date: "$Date$"
+revision: "$Revision$"
 
 class SSAIFIER
 
 inherit
-	SSA_SHARED
+  SSA_SHARED
 
 create
-	make
+  make
 
 feature
-	make (a_class: CLASS_C; a_name: STRING)
-			-- Process the feature `a_name' from the class `a_class'.
-		require
-			non_void_class: attached a_class
-		local
-			ssa_printer: SSA_PRINTER
-			dummy: SSA_EXTRACT_PRECOND_STATE
-		do
-			set_class (a_class)
-			set_feature (a_class.feature_named_32 (a_name))
+  make (a_class: CLASS_C; a_name: STRING)
+    -- Process the feature `a_name' from the class `a_class'.
+    require
+      non_void_class: attached a_class
+    local
+      ssa_printer: SSA_PRINTER
+      dummy: SSA_EXTRACT_PRECOND_STATE
+    do
+      set_class (a_class)
 
-			create ssa_printer.make_for_ssa
+      if attached a_class.feature_named_32 (a_name) as feat then
+        set_feature (feat)
+      else
+        io.put_string ("Feature " + a_name + " not found in " + a_class.name)
+        io.new_line
+        check False end
+      end
+      
+      create ssa_printer.make_for_ssa
 
-			ssa_printer.process
-			print ("Expanded Class:%N")
-			print (ssa_printer.text)
+      ssa_printer.process
+      print ("Expanded Class:%N")
+      print (ssa_printer.text)
 		end
 
 	write_default_instrumented

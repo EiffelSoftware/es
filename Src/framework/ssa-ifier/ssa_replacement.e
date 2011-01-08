@@ -14,23 +14,33 @@ feature
 	make (a_type: TYPE_A;
 	      a_var: STRING;
 	      a_text: STRING;
-	      --a_target: STRING;
-	      --a_call: AST_EIFFEL;
-	      a_req: REQUIRE_AS)
+        a_args: LIST [STRING]
+	      a_feat: FEATURE_I)
 		do
 			type := a_type
 			var := a_var
---			target := a_target
---			call := a_call
 			repl_text := a_text
-			req := a_req
+      args := a_args
+			feat := a_feat
 		end
 
 
 	type: TYPE_A
+      -- Type of the replacement
+  
 	var: STRING
-	--target: STRING
-	--call: AST_EIFFEL
-	repl_text: STRING
-	req: REQUIRE_AS
+      -- Resulting variable this is placed into
+
+  repl_text: STRING
+      -- Text of the replacement call
+
+
+  feat: FEATURE_I
+      -- Feature being called
+
+  args: LIST [STRING]
+      -- List of variable names instantiating arguments to the call.
+  
+  req: REQUIRE_AS
+      -- Requires clause for associated with the cal
 end

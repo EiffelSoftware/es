@@ -32,22 +32,30 @@ feature
 			epa_expr: EPA_AST_EXPRESSION
 			text: STRING
 			type: TYPE_A
+      arg_strs: LIST [STRING]
 		do
 			create {ARRAYED_LIST [SSA_REPLACEMENT]} Result.make (10)
-			text := name_and_args (Result)
 
+			arg_strs := arg_strings (Result)
+      text := compose_name_and_args (arg_strs)
+      
 			if attached target then
 				repls := target.replacements
 				Result.append (repls)
-
+        
 				text := repls.last.var + "." + text
 
-				create repl.make (res_type (repls.last.type), ssa_prefix, text, req (repls.last.type))
+				create repl.make (res_type (repls.last.type),
+                          ssa_prefix,
+                          text,
+                          arg_strs,
+                          feat (repls.last.type)
+                          )
 			else
 				create epa_expr.make_with_text (class_c, feature_i, as_code, class_c)
 				type := epa_expr.type
 
-				create repl.make (type, ssa_prefix, text, req (Void))
+				create repl.make (type, ssa_prefix, text, arg_strs, feat (Void))
 			end
 
 			Result.extend (repl)
@@ -58,7 +66,7 @@ feature
 			Result := target_type.associated_class.feature_named_32 (name).type
 		end
 
-	req (type: TYPE_A): REQUIRE_AS
+	feat (type: TYPE_A): FEATURE_I
 		local
 			clas: CLASS_C
 			body: BODY_AS
@@ -69,22 +77,38 @@ feature
 				clas := class_c
 			end
 
-			body := clas.feature_named_32 (name).body.body
-
-			if attached body.as_routine as rout then
-				Result := rout.precondition
-			end
+      Result := clas.feature_named_32 (name)
 		end
 
-	name_and_args (repls: LIST [SSA_REPLACEMENT]): STRING
+  compose_name_and_args (a_args: LIST [STRING]): STRING
+    do
+      Result := name
+
+      if not a_args.empty then
+        Result :=  result + " ("
+        
+        from a_args.start
+        until a_args.after
+        loop
+          Result := Result + a_args.item
+          a_args.forth
+
+          if not a_args.after then
+            Result := Result + ", "
+          end
+        end
+        Result := Result + ")"
+      end
+    end
+  
+	arg_strings (repls: LIST [SSA_REPLACEMENT]): ARRAYED_LIST [STRING]
 		local
 			arg_repls: LIST [SSA_REPLACEMENT]
+      str: STRING
 		do
-			Result := name
+			create Result.make (10)
 
 			if not args.is_empty then
-				Result := Result + " ("
-
 				from
 					args.start
 				until
@@ -94,17 +118,15 @@ feature
 					repls.append (arg_repls)
 
 					if not arg_repls.is_empty then
-						Result := Result + arg_repls.last.var
+						str := arg_repls.last.var
 					else
-						Result := Result + args.item.as_code
+						str := args.item.as_code
 					end
 
+          Result.extend (str)
+          
 					args.forth
-					if not args.after then
-						Result := Result + ", "
-					end
 				end
-				Result := Result + ")"
 			end
 		end
 

@@ -37,7 +37,7 @@ inherit
 --			process_symbol_stub_as
 		end
 
-	INTERNAL_COMPILER_STRING_EXPORTER
+  INTERNAL_COMPILER_STRING_EXPORTER
 
 	SSA_SHARED
 
@@ -55,10 +55,14 @@ feature
 
 feature -- AST
 	process_assign_as (l_as: ASSIGN_AS)
+    local
+      str: STRING
 		do
+      str := fix_print (l_as.source)
+      put_raw_string ("%N")
 			put_raw_string (l_as.target.access_name)
 			put_raw_string (" := ")
-			put_raw_string (fix_print (l_as.source))
+      put_raw_string (str)
 		end
 
 	in_body: BOOLEAN
@@ -122,14 +126,51 @@ feature -- AST
 				loop
 					Result := repls.item.var
 					put_raw_string ("%N" + "-- planning step")
+          print_plan_call (repls.item)
 					put_raw_string ("%N" + Result  + " := " + repls.item.repl_text)
 					repls.forth
 				end
 			else
---				put_raw_string (l_as.text (match_list))
+        -- print nothing, we only operate in the body
 			end
 		end
 
+  print_plan_call (a_repl: SSA_REPLACEMENT)
+    do
+      put_raw_string ("%N" + "rely_call (")
+
+      put_raw_string (req_to_lisp (a_repl.feat, a_repl.args))
+      
+      put_raw_string (")")
+    end
+
+
+  req_to_lisp (a_feat: FEATURE_I; a_args: LIST [STRING]): STRING
+    local
+      pre: REQUIRE_AS
+      pre_trans: PRE_TO_ADL
+      lexpr: EXPR
+      args: LIST [STRING]
+    do
+      if not attached a_args then
+        args := create {ARRAYED_LIST [STRING]}.make (10)
+      else
+        args := a_args
+      end
+
+      create pre_trans.make (args)
+      
+      if
+        attached a_feat as feat and then
+        attached feat.body.body.as_routine as rout then
+          pre := rout.precondition
+          pre.process (pre_trans)
+          Result := pre_trans.last_expr.print_string
+      else
+        Result := "TRUE"
+      end
+    end
+  
 feature
 	context: STRING
 
