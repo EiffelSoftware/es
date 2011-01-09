@@ -49,12 +49,14 @@ feature
 
 			p.add_nl ("(set-initial-world)")
 
-			p.add_nl ("(def-defined-predicate (this-goal)")
+			p.add_nl ("(set-goal-type extended)")
+			-- p.add_nl ("(def-defined-predicate (this-goal)")
+			p.add_nl ("(set-goal")
 			goal_print (p)
 			p.add_nl (")")
 
-			p.add_nl ("(set-goal-addendum (this-goal))")
-			p.add_nl ("(set-goal)")
+			-- p.add_nl ("(set-goal-addendum (this-goal))")
+			-- p.add_nl ("(set-goal)")
 			p.add_nl ("(plan)")
 			p.add_nl ("(exit)")
 		end

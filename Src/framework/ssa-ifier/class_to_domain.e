@@ -168,11 +168,11 @@ feature
 			post_convert: POST_TO_ADL
 		do
 			if is_require then
-				create pre_convert.make (action_params)
+				create pre_convert.make_for_domain (action_params)
 				l_as.expr.process (pre_convert)
 				action_pre_sect.pre_exprs.extend (pre_convert.last_expr)
 			else
-				create post_convert.make (action_params)
+				create post_convert.make_for_domain (action_params)
 				post_convert.wrap_expr_in_add (l_as)
 				action_exprs.extend (post_convert.last_expr)
 			end

@@ -14,6 +14,7 @@ feature
 	make (a_type: TYPE_A;
 	      a_var: STRING;
 	      a_text: STRING;
+        a_targ: STRING;
         a_args: LIST [STRING]
 	      a_feat: FEATURE_I)
 		do
@@ -21,9 +22,13 @@ feature
 			var := a_var
 			repl_text := a_text
       args := a_args
+      target := a_targ
 			feat := a_feat
 		end
 
+
+  target: STRING
+      -- Target of the call, if there is one.
 
 	type: TYPE_A
       -- Type of the replacement

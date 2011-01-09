@@ -38,16 +38,17 @@ feature
 
 			arg_strs := arg_strings (Result)
       text := compose_name_and_args (arg_strs)
-      
+
 			if attached target then
 				repls := target.replacements
 				Result.append (repls)
-        
+
 				text := repls.last.var + "." + text
 
 				create repl.make (res_type (repls.last.type),
                           ssa_prefix,
                           text,
+                          repls.last.var,
                           arg_strs,
                           feat (repls.last.type)
                           )
@@ -55,7 +56,7 @@ feature
 				create epa_expr.make_with_text (class_c, feature_i, as_code, class_c)
 				type := epa_expr.type
 
-				create repl.make (type, ssa_prefix, text, arg_strs, feat (Void))
+				create repl.make (type, ssa_prefix, text, "Current", arg_strs, feat (Void))
 			end
 
 			Result.extend (repl)
@@ -86,7 +87,7 @@ feature
 
       if not a_args.empty then
         Result :=  result + " ("
-        
+
         from a_args.start
         until a_args.after
         loop
@@ -100,7 +101,7 @@ feature
         Result := Result + ")"
       end
     end
-  
+
 	arg_strings (repls: LIST [SSA_REPLACEMENT]): ARRAYED_LIST [STRING]
 		local
 			arg_repls: LIST [SSA_REPLACEMENT]
@@ -124,7 +125,7 @@ feature
 					end
 
           Result.extend (str)
-          
+
 					args.forth
 				end
 			end

@@ -44,10 +44,11 @@ feature
       repls.append (repl2)
 
       text := repl1.last.var + op + repl2.last.var
-      
+
       create repl.make (res_type (repl1.last.type),
                         ssa_prefix,
                         text,
+                        Void,
                         Void,
                         feat (repl1.last.type)
                         )
@@ -68,5 +69,5 @@ feature
     do
       Result := Void
     end
- 
+
 end

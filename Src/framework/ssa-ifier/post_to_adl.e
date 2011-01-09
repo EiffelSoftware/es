@@ -11,7 +11,7 @@ inherit
 	PRE_TO_ADL
 
 create
-	make
+	make_for_domain
 
 feature
 	wrap_expr_in_add (l_as: EXPR_AS)

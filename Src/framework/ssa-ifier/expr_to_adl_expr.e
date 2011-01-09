@@ -21,35 +21,114 @@ inherit
 		end
 
 create
-	make
+	make_for_domain,
+  make_for_instr
 
-feature
-	make (a_params: LIST [STRING])
+feature {NONE}
+  make (a_in_dom: BOOLEAN; a_target: STRING; a_params: LIST [STRING])
+    require
+      a_in_dom implies not attached a_target
 		do
+      target := a_target
+      in_dom := a_in_dom
 			params := a_params
 			params.compare_objects
 		end
+  
+feature
+	make_for_domain (a_params: LIST [STRING])
+		do
+      make (True, "Current", a_params)
+		end
 
+  make_for_instr (a_target: STRING; a_instn: HASH_TABLE [STRING, STRING])
+    require
+      name_present: attached a_target and then not a_target.is_empty
+    do
+      make (False, a_target, create {ARRAYED_LIST[STRING]}.make (10))
+      instn := a_instn
+    end
+
+  instn: HASH_TABLE [STRING, STRING]
+  target: STRING
+      -- Target of non-prefixed id's
+  in_dom: BOOLEAN
+      -- Is this run part of processing a domain file? If not, then 
+      -- it is instrumentation.
 	params: LIST [STRING]
 
 	last_expr: EXPR
 
+  const_expr (str: STRING): CONST_EXPR
+    do
+      create Result.make_const (str)
+    end
+
+  var_expr (str: STRING): VAR_EXPR
+    do
+      create Result.make_var (str)
+    end
+
+
+  process_unprefixed_id (str: STRING): EXPR
+    local
+      targ: EXPR
+    do
+      if in_dom then
+        if not params.has (str) then
+          targ := var_expr (target)
+          create {UN_EXPR} Result.make_un (str, targ)
+        else
+          Result := const_expr (target)
+        end
+      else
+        if not instn.has_key (str) then
+          io.print ("Didn't find: " + str + "%N")
+
+          from instn.start
+          until instn.after
+          loop
+            io.print (instn.key_for_iteration + "%N")
+            instn.forth
+          end
+          
+          targ := const_expr (target)
+          create {UN_EXPR} Result.make_un (str, targ)
+        else
+          Result := const_expr (instn.found_item)
+        end
+      end
+      
+      -- if not params.has (str) then
+      --   if in_dom then
+      --     targ := var_expr (target)
+      --   else
+      --     targ := const_expr (target)
+      --   end
+
+			-- 	create {UN_EXPR} Result.make_un (str, targ)
+			-- else
+      --   if in_dom then
+      --     Result := var_expr (target)
+      --   else
+      --     Result := const_expr (target)
+      --   end
+      -- end
+    end
+  
 	process_id_as (l_as: ID_AS)
 		do
 			if attached last_expr then
 				create {UN_EXPR} last_expr.make_un (l_as.name_8, last_expr)
-			elseif not params.has (l_as.name_8) then
-				create {UN_EXPR} last_expr.make_un (l_as.name_8, create {VAR_EXPR}.make_var ("Current"))
 			else
-				create {VAR_EXPR} last_expr.make_var (l_as.name_8)
-			end
+        last_expr := process_unprefixed_id (l_as.name_8)
+      end
 		end
-
+  
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			args: ARRAYED_LIST [EXPR]
 			expr: EXPR
-			var: VAR_EXPR
 		do
 			if attached last_expr then
 				print (l_as.access_name_8 +"%N")
@@ -67,11 +146,8 @@ feature
 				end
 				create expr.make (l_as.access_name_8, args)
 				last_expr := expr
-			elseif not params.has (l_as.access_name_8) then
-				create {UN_EXPR} last_expr.make_un (l_as.access_name_8, create {VAR_EXPR}.make_var ("Current"))
 			else
-				create var.make_var (l_as.access_name_8)
-				last_expr := var
+        last_expr := process_unprefixed_id (l_as.access_name_8)
 			end
 
 		end
