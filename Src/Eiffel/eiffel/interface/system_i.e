@@ -6482,6 +6482,7 @@ feature -- Added for Plan Generation
 			class_ := find_class (workbench.planned_class_name)
 			if attached class_ then
 				create domifier.make (class_)
+        domifier.write_default_plan
 			end
 		end
 
