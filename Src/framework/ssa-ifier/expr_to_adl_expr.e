@@ -34,21 +34,27 @@ feature {NONE}
 		end
   
 feature
-	make_for_domain (a_params: LIST [STRING])
+	make_for_domain (a_class_name: STRING; a_params: LIST [STRING])
     require
       non_void_params: attached a_params
 		do
       make (True, "Current", a_params)
+      class_name := a_class_name
 		end
 
-  make_for_instr (a_target: STRING; a_instn: HASH_TABLE [STRING, STRING])
+  make_for_instr (a_class_name: STRING;
+                  a_target: STRING;
+                  a_instn: HASH_TABLE [STRING, STRING])
     require
       name_present: attached a_target and then not a_target.is_empty
+                    
     do
       make (False, a_target, create {ARRAYED_LIST[STRING]}.make (10))
       instn := a_instn
+      class_name := a_class_name
     end
 
+  class_name: STRING
   instn: HASH_TABLE [STRING, STRING]
   target: STRING
       -- Target of non-prefixed id's
@@ -77,43 +83,18 @@ feature
       if in_dom then
         if not params.has (str) then
           targ := var_expr (target)
-          create {UN_EXPR} Result.make_un (str, targ)
+          create {UN_EXPR} Result.make_un (class_name + "_" + str, targ)
         else
           Result := var_expr (str)
         end
       else
         if not instn.has_key (str) then
-          io.print ("Didn't find: " + str + "%N")
-
-          from instn.start
-          until instn.after
-          loop
-            io.print (instn.key_for_iteration + "%N")
-            instn.forth
-          end
-          
           targ := const_expr (target)
-          create {UN_EXPR} Result.make_un (str, targ)
+          create {UN_EXPR} Result.make_un (class_name + "_" + str, targ)
         else
           Result := const_expr (instn.found_item)
         end
       end
-      
-      -- if not params.has (str) then
-      --   if in_dom then
-      --     targ := var_expr (target)
-      --   else
-      --     targ := const_expr (target)
-      --   end
-
-			-- 	create {UN_EXPR} Result.make_un (str, targ)
-			-- else
-      --   if in_dom then
-      --     Result := var_expr (target)
-      --   else
-      --     Result := const_expr (target)
-      --   end
-      -- end
     end
   
 	process_id_as (l_as: ID_AS)

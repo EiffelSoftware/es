@@ -152,7 +152,8 @@ feature -- AST
         from i := 1
         until i > pres.count
         loop
-          create pre_trans.make_for_instr (a_repl.target,
+          create pre_trans.make_for_instr (class_c.name,
+                                           a_repl.target,
                                            inst_args (args, feat.arguments))
 
           pres [i].process (pre_trans)

@@ -22,8 +22,7 @@ inherit
 		end
 
 create
-	make_for_domain,
-  make_for_instr
+	make_for_domain
 
 feature {NONE}
   make (a_in_dom: BOOLEAN; a_target: STRING; a_params: LIST [STRING])
@@ -35,22 +34,18 @@ feature {NONE}
 		end
   
 feature
-	make_for_domain (a_feature_name: STRING; a_params: LIST [STRING])
+	make_for_domain (a_class_name: STRING;
+                   a_feature_name: STRING;
+                   a_params: LIST [STRING])
     require
       non_void_params: attached a_params
 		do
       make (True, "Current", a_params)
       feature_name := a_feature_name
+      class_name := a_class_name
 		end
 
-  make_for_instr (a_target: STRING; a_instn: HASH_TABLE [STRING, STRING])
-    require
-      name_present: attached a_target and then not a_target.is_empty
-    do
-      make (False, a_target, create {ARRAYED_LIST[STRING]}.make (10))
-      instn := a_instn
-    end
-
+  class_name: STRING
   feature_name: STRING
 
   instn: HASH_TABLE [STRING, STRING]
@@ -80,7 +75,7 @@ feature
       if in_dom then
         if not params.has (str) then
           targ := var_expr (target)
-          create {UN_EXPR} Result.make_un (str, targ)
+          create {UN_EXPR} Result.make_un (class_name + "_" + str, targ)
         else
           Result := var_expr (str)
         end

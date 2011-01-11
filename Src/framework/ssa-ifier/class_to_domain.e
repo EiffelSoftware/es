@@ -271,16 +271,18 @@ feature
       func_convert: FUNCTION_TO_ADL
 		do
 			if is_require then
-				create pre_convert.make_for_domain (action_params)
+				create pre_convert.make_for_domain (class_name, action_params)
 				l_as.expr.process (pre_convert)
 				action_pre_sect.pre_exprs.extend (pre_convert.last_expr)
 			elseif is_ensure then
         if in_function then
-          create func_convert.make_for_domain (feature_name, action_params)
+          create func_convert.make_for_domain (class_name,
+                                               feature_name,
+                                               action_params)
           l_as.expr.process (func_convert)
           action_exprs.extend (func_convert.last_expr)
         else
-          create post_convert.make_for_domain (action_params)
+          create post_convert.make_for_domain (class_name, action_params)
           post_convert.wrap_expr_in_add (l_as)
           action_exprs.extend (post_convert.last_expr)
         end
