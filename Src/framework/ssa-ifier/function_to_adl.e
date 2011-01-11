@@ -24,23 +24,16 @@ inherit
 create
 	make_for_domain
 
-feature {NONE}
-  make (a_in_dom: BOOLEAN; a_target: STRING; a_params: LIST [STRING])
-		do
-      target := a_target
-      in_dom := a_in_dom
-			params := a_params
-			params.compare_objects
-		end
-  
 feature
 	make_for_domain (a_class_name: STRING;
                    a_feature_name: STRING;
                    a_params: LIST [STRING])
     require
+      non_void_names: attached a_class_name and attached a_feature_name
       non_void_params: attached a_params
 		do
-      make (True, "Current", a_params)
+      params := a_params
+      params.compare_objects
       feature_name := a_feature_name
       class_name := a_class_name
 		end
@@ -48,12 +41,8 @@ feature
   class_name: STRING
   feature_name: STRING
 
-  instn: HASH_TABLE [STRING, STRING]
-  target: STRING
-      -- Target of non-prefixed id's
-  in_dom: BOOLEAN
-      -- Is this run part of processing a domain file? If not, then 
-      -- it is instrumentation.
+  target: STRING = "Current"
+  
 	params: LIST [STRING]
 
 	last_expr: EXPR
@@ -72,20 +61,11 @@ feature
     local
       targ: EXPR
     do
-      if in_dom then
-        if not params.has (str) then
-          targ := var_expr (target)
-          create {UN_EXPR} Result.make_un (class_name + "_" + str, targ)
-        else
-          Result := var_expr (str)
-        end
+      if not params.has (str) then
+        targ := var_expr (target)
+        create {UN_EXPR} Result.make_un (class_name + "_" + str, targ)
       else
-        if not instn.has_key (str) then
-          targ := const_expr (target)
-          create {UN_EXPR} Result.make_un (str, targ)
-        else
-          Result := const_expr (instn.found_item)
-        end
+        Result := var_expr (str)
       end
     end
   
@@ -184,7 +164,7 @@ feature
       if result_seen and op.is_equal ("=") then
         op := ":="
         result_seen := False
-        e1 := create {CONST_EXPR}.make_const (feature_name)
+        e1 := create {CONST_EXPR}.make_const (class_name + "_" + feature_name)
       end
       
 			last_expr := Void
@@ -195,5 +175,4 @@ feature
 
 			last_expr := bin
 		end
-
 end
