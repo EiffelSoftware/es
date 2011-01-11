@@ -162,7 +162,7 @@ feature -- AST
           i := i + 1
         end
       else
-        Result := "(TRUE)"
+        Result := Result + "(TRUE)"
       end
       
       Result := Result + ")"
