@@ -1,11 +1,11 @@
 ﻿note
-	description: "Summary description for {PRE_TO_ADL}."
+	description: "Summary description for {FUNCTION_TO_ADL}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PRE_TO_ADL
+	FUNCTION_TO_ADL
 
 inherit
 	AST_ITERATOR
@@ -17,7 +17,8 @@ inherit
 			process_void_as,
 			process_bool_as,
 			process_unary_as,
-			process_integer_as
+			process_integer_as,
+      process_result_as
 		end
 
 create
@@ -34,11 +35,12 @@ feature {NONE}
 		end
   
 feature
-	make_for_domain (a_params: LIST [STRING])
+	make_for_domain (a_feature_name: STRING; a_params: LIST [STRING])
     require
       non_void_params: attached a_params
 		do
       make (True, "Current", a_params)
+      feature_name := a_feature_name
 		end
 
   make_for_instr (a_target: STRING; a_instn: HASH_TABLE [STRING, STRING])
@@ -48,6 +50,8 @@ feature
       make (False, a_target, create {ARRAYED_LIST[STRING]}.make (10))
       instn := a_instn
     end
+
+  feature_name: STRING
 
   instn: HASH_TABLE [STRING, STRING]
   target: STRING
@@ -69,7 +73,6 @@ feature
       create Result.make_var (str)
     end
 
-
   process_unprefixed_id (str: STRING): EXPR
     local
       targ: EXPR
@@ -83,37 +86,12 @@ feature
         end
       else
         if not instn.has_key (str) then
-          io.print ("Didn't find: " + str + "%N")
-
-          from instn.start
-          until instn.after
-          loop
-            io.print (instn.key_for_iteration + "%N")
-            instn.forth
-          end
-          
           targ := const_expr (target)
           create {UN_EXPR} Result.make_un (str, targ)
         else
           Result := const_expr (instn.found_item)
         end
       end
-      
-      -- if not params.has (str) then
-      --   if in_dom then
-      --     targ := var_expr (target)
-      --   else
-      --     targ := const_expr (target)
-      --   end
-
-			-- 	create {UN_EXPR} Result.make_un (str, targ)
-			-- else
-      --   if in_dom then
-      --     Result := var_expr (target)
-      --   else
-      --     Result := const_expr (target)
-      --   end
-      -- end
     end
   
 	process_id_as (l_as: ID_AS)
@@ -188,22 +166,37 @@ feature
 			last_expr := cons
 		end
 
+  result_seen: BOOLEAN
+  
+  process_result_as (l_as: RESULT_AS)
+    do
+      result_seen := True
+    end
+  
 	process_binary_as (l_as: BINARY_AS)
 		local
 			bin: BIN_EXPR
 			e1: EXPR
 			e2: EXPR
+      op: STRING
 		do
 			last_expr := Void
 			l_as.left.process (Current)
 			e1 := last_expr
---			print (last_expr.op+"%N")
 
+      op := l_as.op_name.name_8
+      
+      if result_seen and op.is_equal ("=") then
+        op := ":="
+        result_seen := False
+        e1 := create {CONST_EXPR}.make_const (feature_name)
+      end
+      
 			last_expr := Void
 			l_as.right.process (Current)
 			e2 := last_expr
---			print (last_expr.op+"%N")
-			create bin.make_bin (l_as.op_name.name_8, e1, e2)
+
+			create bin.make_bin (op, e1, e2)
 
 			last_expr := bin
 		end

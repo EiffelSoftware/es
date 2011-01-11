@@ -14,14 +14,17 @@ create
 	make
 
 feature
-	make (a_symbs : LIST [SYMBOL_DEF]
-	     ;a_acts : LIST [ADL_ACTION]
-	     )
+	make (a_symbs : LIST [SYMBOL_DEF];
+        a_def_funcs: LIST [DEFINED_FUNC];
+        a_acts : LIST [ADL_ACTION]
+        )
 		do
 			symbols := a_symbs
 			acts := a_acts
+      def_funcs := a_def_funcs
 		end
 
+  def_funcs: LIST [DEFINED_FUNC]
 	symbols : LIST [SYMBOL_DEF]
 	acts    : LIST [ADL_ACTION]
 
@@ -29,11 +32,23 @@ feature
 		do
 			print_desc_symbs (p)
 			p.newline
+      print_def_funcs (p)
+      p.newline
 			print_acts (p)
 			p.newline
 		end
 
 feature {NONE}
+  print_def_funcs (p: PRINTER)
+    do
+      from def_funcs.start
+      until def_funcs.after
+      loop
+        def_funcs.item.to_printer (p)
+        def_funcs.forth
+      end
+    end
+  
 	print_desc_symbs (p: PRINTER)
 		do
 			p.add ("(clear-world-symbols)")
