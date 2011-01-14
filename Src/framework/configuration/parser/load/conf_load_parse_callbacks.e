@@ -273,7 +273,7 @@ feature -- Callbacks
 						if note_level > 0 then
 							l_element := current_element_under_note.item
 							l_element.set_content (current_content)
-						else
+						elseif current_tag.item /= 0 then
 							set_parse_error_message (conf_interface_names.e_parse_invalid_content (current_content))
 						end
 					end
@@ -1943,7 +1943,6 @@ feature {NONE} -- Note Implementation
 	tag_from_state_transitions (a_tag: INTEGER; a_local_part: STRING): INTEGER
 			-- Get number presentation from current tag state transitions.
 		require
-			a_tag_greater_than_zero: a_tag > 0
 			a_local_part_not_void: a_local_part /= Void
 		local
 			l_trans: HASH_TABLE [INTEGER, STRING]
@@ -2643,7 +2642,7 @@ invariant
 	factory_not_void: factory /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
