@@ -101,9 +101,8 @@ feature -- Callbacks
 							-- known version, this is an error
 						set_parse_error_message (conf_interface_names.e_parse_invalid_tag (a_local_part))
 					end
-				else
-					current_tag.extend (l_tag)
 				end
+				current_tag.extend (l_tag)
 			end
 		end
 
