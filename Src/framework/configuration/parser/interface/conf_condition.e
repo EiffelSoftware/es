@@ -46,9 +46,6 @@ feature -- Access
 	concurrency: EQUALITY_TUPLE [TUPLE [value: ARRAYED_LIST [INTEGER]; invert: BOOLEAN]]
 			-- Concurrency setting where it is is enabled or for which it is disabled (if `invert' is true)
 
-	multithreaded: CELL [BOOLEAN]
-			-- Enabled for multithreaded?
-
 	dotnet: CELL [BOOLEAN]
 			-- Enabled for dotnet?
 
@@ -76,10 +73,6 @@ feature -- Queries
 			l_var_key, l_var_val: STRING_GENERAL
 		do
 			Result := True
-				-- multithreaded
-			if Result and multithreaded /= Void then
-				Result := a_state.is_multithreaded = multithreaded.item
-			end
 
 				-- concurrency
 			if Result and concurrency /= Void then
@@ -217,12 +210,6 @@ feature -- Update
 			build_void: build = Void
 		end
 
-	set_multithreaded (a_value: BOOLEAN)
-			-- Set `multithreaded' to `a_value'.
-		do
-			create multithreaded.put (a_value)
-		end
-
 	add_concurrency (a_concurrency: INTEGER)
 			-- Add requirement on `a_concurrency'.
 		require
@@ -268,12 +255,6 @@ feature -- Update
 			-- Set `dynamic_runtime' to `a_value'.
 		do
 			create dynamic_runtime.put (a_value)
-		end
-
-	unset_multithreaded
-			-- Unset `multithreaded'.
-		do
-			multithreaded := Void
 		end
 
 	unset_dotnet
@@ -355,52 +336,12 @@ feature -- Output
 
 	out: STRING
 			-- Text representation for the conditions.
-		local
-			l_conc: STRING
-			l_lst: ARRAYED_LIST [INTEGER]
 		do
 			create Result.make_empty
-			if platform /= Void then
-				if platform.item.invert then
-					Result.append ("not ")
-					l_conc := " and "
-				else
-					l_conc := " or "
-				end
-				Result.append ("(")
-				from
-					l_lst := platform.item.value
-					l_lst.start
-				until
-					l_lst.after
-				loop
-					Result.append (platform_names.item (l_lst.item) + l_conc)
-					l_lst.forth
-				end
-				Result.remove_tail (l_conc.count)
-				Result.append (") and ")
-			end
 
-			if build /= Void then
-				if build.item.invert then
-					Result.append ("not ")
-					l_conc := " and "
-				else
-					l_conc := " or "
-				end
-				Result.append ("(")
-				from
-					l_lst := build.item.value
-					l_lst.start
-				until
-					l_lst.after
-				loop
-					Result.append (build_names.item (l_lst.item) + l_conc)
-					l_lst.forth
-				end
-				Result.remove_tail (l_conc.count)
-				Result.append (") and ")
-			end
+			append_list (platform, platform_names, Result)
+			append_list (build, build_names, Result)
+			append_list (concurrency, concurrency_names, Result)
 
 			from
 				version.start
@@ -423,14 +364,6 @@ feature -- Output
 					Result.append (".NET and ")
 				else
 					Result.append ("not .NET and ")
-				end
-			end
-
-			if multithreaded /= Void then
-				if multithreaded.item then
-					Result.append ("multithreaded and ")
-				else
-					Result.append ("not multithreaded and ")
 				end
 			end
 
@@ -469,14 +402,49 @@ feature -- Output
 			Result_not_void: Result /= Void
 		end
 
+feature {NONE} -- Output
+
+	append_list (data: like platform; names: like platform_names; output: STRING)
+			-- Append `data' (if any) to `output' using specified `names'.
+		require
+			names_attached: attached names
+			output_attached: attached output
+		local
+			c: STRING
+		do
+			if attached data then
+				check attached data.item as i and then attached i.value as v then
+					if i.invert then
+						output.append ("not ")
+						c := " and "
+					else
+						c := " or "
+					end
+					output.append_character ('(')
+					from
+						v.start
+					until
+						v.after
+					loop
+						output.append (names.item (v.item))
+						output.append (c)
+						v.forth
+					end
+					output.remove_tail (c.count)
+					output.append (") and ")
+				end
+			end
+		end
+
 invariant
 	platform_ok: platform /= Void implies platform.item.value /= Void
 	build_ok: build /= Void implies build.item.value /= Void
+	concurrency_ok: attached concurrency as c implies attached c.item as i and then attached i.value
 	version_not_void: version /= Void
 	custom_not_void: custom /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
