@@ -406,14 +406,16 @@ feature {NONE} -- Implementation
 			l_message: STRING
 		do
 				-- Item column
---			if attached {EV_GRID_TEXT_ITEM} a_row.item (item_column) then
+			if attached {EV_GRID_TEXT_ITEM} a_row.item (item_column) then
 				token_generator.wipe_out_lines
 				a_class_data.associated_class.append_name (token_generator)
 				l_editor_item := create_clickable_grid_item (token_generator.last_line, True)
 				l_editor_item.set_pixmap (pixmap_factory.pixmap_from_class_i (a_class_data.associated_class))
 --				l_editor_item.set_background_color (background_color (a_class_data.score, a_class_data.is_stale))
 				a_row.set_item (item_column, l_editor_item)
---			end
+			elseif attached {EB_GRID_EDITOR_TOKEN_ITEM} a_row.item (item_column) as l_token_item then
+				l_token_item.set_pixmap (pixmap_factory.pixmap_from_class_i (a_class_data.associated_class))
+			end
 
 				-- Verification score
 			set_score (a_row, score_column, a_class_data.score, a_class_data.is_stale, a_class_data.has_manual_score)

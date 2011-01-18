@@ -142,23 +142,22 @@ feature -- Access
 
 			if {l_formal: FORMAL_A} l_type then
 				Result := "G" + l_formal.position.out
--- TODO: UNCOMMENT / MML TEST
---			elseif {l_gen_type: GEN_TYPE_A} l_type then
---				Result := l_gen_type.associated_class.name_in_upper.twin
---				Result.append ("^")
---				from
---					i := l_gen_type.generics.lower
---				until
---					i > l_gen_type.generics.upper
---				loop
---					l_type_name := type_name (l_gen_type.generics.item (i))
---					Result.append (l_type_name)
---					if i < l_gen_type.generics.upper then
---						Result.append ("#")
---					end
---					i := i + 1
---				end
---				Result.append ("^")
+			elseif {l_gen_type: GEN_TYPE_A} l_type then
+				Result := l_gen_type.associated_class.name_in_upper.twin
+				Result.append ("^")
+				from
+					i := l_gen_type.generics.lower
+				until
+					i > l_gen_type.generics.upper
+				loop
+					l_type_name := type_name (l_gen_type.generics.item (i))
+					Result.append (l_type_name)
+					if i < l_gen_type.generics.upper then
+						Result.append ("#")
+					end
+					i := i + 1
+				end
+				Result.append ("^")
 			else
 				Result := l_type.associated_class.name_in_upper.twin
 			end

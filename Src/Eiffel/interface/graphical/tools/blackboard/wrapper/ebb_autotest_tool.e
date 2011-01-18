@@ -22,8 +22,8 @@ feature -- Access
 			-- <Precursor>
 		once
 			create Result.make
-			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "10 seconds"))
-			Result.last.put_integer_setting (10, "timeout")
+			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "15 seconds"))
+			Result.last.put_integer_setting (15, "timeout")
 			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "1 minute"))
 			Result.last.put_integer_setting (60, "timeout")
 			Result.extend (create {EBB_TOOL_CONFIGURATION}.make (Current, "5 minutes"))
@@ -57,7 +57,7 @@ feature -- Options
 			-- Generate test case for faults (default: False)
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

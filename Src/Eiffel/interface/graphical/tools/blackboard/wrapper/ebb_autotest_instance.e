@@ -39,8 +39,14 @@ feature -- Basic operations
 			l_test_suite: TEST_SUITE_S
 			l_log_options: HASH_TABLE [BOOLEAN, STRING]
 		do
+			online_statistics.passing_statistics.wipe_out
+			online_statistics.failing_statistics.wipe_out
+			online_statistics.faults.wipe_out
+
 			create test_generator.make (Current, test_suite.service, etest_suite)
 			test_generator.add_class_name (input.classes.first.name_in_upper)
+			test_generator.set_is_random_testing_enabled (True)
+			test_generator.set_is_precondition_evaluation_enabled (True)
 
 			create l_log_options.make (10)
 			l_log_options.compare_objects
@@ -59,11 +65,6 @@ feature -- Basic operations
 			test_generator.set_html_statistics (True)
 			test_generator.set_text_statistics (True)
 
-			online_statistics.passing_statistics.wipe_out
-			online_statistics.failing_statistics.wipe_out
-			online_statistics.faults.wipe_out
-
-
 			create l_session
 			l_session.service.retrieve (True).set_value (input.classes.first.name, {TEST_SESSION_CONSTANTS}.types)
 			launch_test_generation (test_generator, l_session.service, False)
@@ -71,6 +72,14 @@ feature -- Basic operations
 			test_generator.set_time_out_in_seconds (configuration.integer_setting ("timeout").as_natural_32)
 			test_generator.set_is_random_testing_enabled (True)
 			test_generator.set_is_precondition_evaluation_enabled (True)
+			test_generator.set_is_executing_normal_features_enabled (True)
+			test_generator.set_integer_lower_bound ({INTEGER}.min_value)
+			test_generator.set_integer_upper_bound ({INTEGER}.max_value)
+			test_generator.set_is_slicing_enabled (True)
+			test_generator.set_object_state_config (create {AUT_OBJECT_STATE_CONFIG}.make)
+
+			test_generator.set_is_failing_test_case_serialization_enabled (True)
+			test_generator.set_is_failing_test_case_deserialization_enabled (True)
 
 			if test_suite.is_service_available then
 				l_test_suite := test_suite.service

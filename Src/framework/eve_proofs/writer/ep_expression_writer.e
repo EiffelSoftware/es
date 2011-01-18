@@ -36,6 +36,7 @@ inherit
 			process_bin_power_b,
 			process_bin_slash_b,
 			process_bin_star_b,
+			process_bin_tilde_b,
 			process_bin_xor_b,
 			process_bit_const_b,
 			process_bool_const_b,
@@ -411,6 +412,14 @@ feature {BYTE_NODE} -- Visitors
 		do
 			safe_process (a_node.left)
 			expression.put (" != ")
+			safe_process (a_node.right)
+		end
+
+	process_bin_tilde_b (a_node: BIN_TILDE_B)
+			-- Process `a_node'.
+		do
+			safe_process (a_node.left)
+			expression.put (" == ")
 			safe_process (a_node.right)
 		end
 
