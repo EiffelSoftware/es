@@ -6,6 +6,10 @@ note
 deferred class
 	EBB_TOOL
 
+inherit
+
+	HASHABLE
+
 feature -- Access
 
 	name: attached STRING
@@ -34,6 +38,12 @@ feature -- Access
 	category: attached INTEGER
 			-- Category this tool belongs to.
 		deferred
+		end
+
+	hash_code: INTEGER
+			-- <Precursor>
+		do
+			Result := name.hash_code
 		end
 
 feature -- Basic operations

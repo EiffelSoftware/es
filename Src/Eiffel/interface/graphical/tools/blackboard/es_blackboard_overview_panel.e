@@ -29,21 +29,25 @@ feature {NONE} -- Initialization
 			grid.enable_tree
 			grid.set_column_count_to (message_column)
 
+--			l_col := grid.column (status_column)
+--			l_col.set_width (25)
+--			l_col.set_title ("")
+
 			l_col := grid.column (item_column)
 			l_col.set_width (200)
 			l_col.set_title ("Item")
 
-			l_col := grid.column (combined_score_column)
-			l_col.set_width (40)
-			l_col.set_title ("VS")
+			l_col := grid.column (score_column)
+			l_col.set_width (50)
+			l_col.set_title ("Score")
 
-			l_col := grid.column (static_score_column)
-			l_col.set_width (40)
-			l_col.set_title ("S")
+			l_col := grid.column (score2_column)
+			l_col.set_width (25)
+			l_col.set_title ("L")
 
-			l_col := grid.column (dynamic_score_column)
-			l_col.set_width (40)
-			l_col.set_title ("D")
+			l_col := grid.column (weight_column)
+			l_col.set_width (25)
+			l_col.set_title ("W")
 
 			l_col := grid.column (message_column)
 			l_col.set_width (300)
@@ -53,6 +57,20 @@ feature {NONE} -- Initialization
 			grid_token_support.enable_grid_item_pnd_support
 			grid_token_support.enable_ctrl_right_click_to_open_new_window
 			grid_token_support.set_context_menu_factory_function (agent (a_window.menus).context_menu_factory)
+
+			grid.item_select_actions.extend (agent on_item_selected)
+			grid.item_deselect_actions.extend (agent on_item_deselected)
+
+				-- Set up default filter
+			class_name_filter := Void
+			feature_name_filter := Void
+			is_filtering_score := False
+			is_filtering_weight := False
+			is_query_visible := True
+			is_command_visible := True
+			is_routine_visible := True
+			is_attribute_visible := True
+			is_only_compiled_visible := False
 		end
 
 feature -- Access
@@ -60,8 +78,44 @@ feature -- Access
 	grid: ES_GRID
 			-- Grid to display system data.
 
-	class_filter: STRING
-			-- Text to filter classes with.
+	class_name_filter: STRING
+			-- Text to filter class names with.
+
+	feature_name_filter: STRING
+			-- Text to filter feature names with.
+
+	is_filtering_class_names: BOOLEAN
+			-- Is filtering by name enabled?
+		do
+			Result := class_name_filter /= Void and then not class_name_filter.is_empty
+		end
+
+	is_filtering_feature_names: BOOLEAN
+			-- Is filtering by name enabled?
+		do
+			Result := feature_name_filter /= Void and then not feature_name_filter.is_empty
+		end
+
+	is_filtering_score: BOOLEAN
+			-- Is filtering by scores enabled?
+
+	is_filtering_weight: BOOLEAN
+			-- Is filtering by weight enabled?
+
+	is_query_visible: BOOLEAN
+			-- Are queries visible?
+
+	is_command_visible: BOOLEAN
+			-- Are commands visible?
+
+	is_attribute_visible: BOOLEAN
+			-- Are attributes visible?
+
+	is_routine_visible: BOOLEAN
+			-- Are routines visible?
+
+	is_only_compiled_visible: BOOLEAN
+			-- Are only compiled classes visible?
 
 feature -- Initialization
 
@@ -104,36 +158,81 @@ feature -- Initialization
 
 feature -- Basic operations
 
-	set_class_filter (a_text: STRING)
+	set_class_name_filter (a_text: STRING)
 			-- Set class filter to `a_text'.
 		do
-			class_filter := a_text
+			class_name_filter := a_text
+			update_visibility
+		end
+
+	set_feature_name_filter (a_text: STRING)
+			-- Set class filter to `a_text'.
+		do
+			feature_name_filter := a_text
 			update_visibility
 		end
 
 	update_visibility
 			-- Update row visibility.
 		local
-			l_row: EV_GRID_ROW
-			l_count, i: INTEGER
+			l_class_row, l_feature_row: EV_GRID_ROW
+			l_count_class, l_count_features, i, j: INTEGER
 			l_class_data: EBB_CLASS_DATA
+			l_feature_data: EBB_FEATURE_DATA
+			l_any_feature_visible: BOOLEAN
 		do
 			from
 				i := 1
-				l_count := grid.row_count
+				l_count_class := grid.row_count
 			until
-				i > l_count
+				i > l_count_class
 			loop
-				l_row := grid.row (i)
-				l_class_data ?= l_row.data
+				l_class_row := grid.row (i)
+				l_class_data ?= l_class_row.data
 				if l_class_data /= Void then
-					if is_class_visible (l_class_data) then
-						l_row.show
-							-- TODO: follow feature rows
-					else
-						l_row.hide
+					from
+						j := 1
+						l_count_features := l_class_row.subrow_count
+						l_any_feature_visible := False
+					until
+						j > l_count_features
+					loop
+						l_feature_row := l_class_row.subrow (j)
+						l_feature_data ?= l_feature_row.data
+						check l_feature_data /= Void end
+						check l_class_data.children.has (l_feature_data) end
+						if is_feature_visible (l_feature_data) then
+							l_feature_row.show
+							l_any_feature_visible := True
+						else
+							l_feature_row.hide
+						end
+						j := j + 1
 					end
-					if class_filter /= Void then
+					if is_filtering_class_names and is_filtering_feature_names then
+						if l_any_feature_visible and then is_class_visible (l_class_data) then
+							l_class_row.show
+						else
+							l_class_row.hide
+						end
+					elseif is_filtering_class_names then
+						if is_class_visible (l_class_data) then
+							l_class_row.show
+						else
+							l_class_row.hide
+						end
+					elseif is_filtering_feature_names then
+						if l_any_feature_visible then
+							l_class_row.show
+						else
+							l_class_row.hide
+						end
+					else
+						if l_any_feature_visible or else is_class_visible (l_class_data) then
+							l_class_row.show
+						else
+							l_class_row.hide
+						end
 					end
 				end
 				i := i + 1
@@ -146,11 +245,93 @@ feature -- Basic operations
 			l_text: STRING
 		do
 			Result := True
-			if class_filter /= Void and not class_filter.is_empty then
-				l_text := class_filter.as_upper
-				if not a_class_data.class_name.has_substring (l_text) then
+			if is_filtering_class_names then
+				if not a_class_data.class_name.has_substring (class_name_filter.as_upper) then
 					Result := False
 				end
+			end
+			if is_filtering_score then
+
+			end
+			if is_filtering_weight then
+
+			end
+			if is_only_compiled_visible and not a_class_data.is_compiled then
+				Result := False
+			end
+		end
+
+	is_feature_visible (a_feature_data: EBB_FEATURE_DATA): BOOLEAN
+			-- Is feature `a_feature_data' visible?
+		local
+			l_text: STRING
+			l_feature: FEATURE_I
+		do
+			Result := True
+			l_feature := a_feature_data.associated_feature
+			if is_filtering_feature_names then
+				if not a_feature_data.feature_name.as_lower.has_substring (feature_name_filter.as_lower) then
+					Result := False
+				end
+			end
+			if is_filtering_score then
+
+			end
+			if is_filtering_weight then
+
+			end
+			if l_feature.has_return_value and not is_query_visible then
+				Result := False
+			end
+			if not l_feature.has_return_value and not is_command_visible then
+				Result := False
+			end
+			if l_feature.is_attribute and not is_attribute_visible then
+				Result := False
+			end
+			if l_feature.is_routine and not is_routine_visible then
+				Result := False
+			end
+		end
+
+	on_item_selected (a_item: EV_GRID_ITEM)
+			-- Action when `a_item' is selected.
+		local
+			i, l_count: INTEGER
+		do
+			apply_background_color_recursively (a_item.row, gray_color)
+			if attached {EBB_CLASS_DATA} a_item.row.data as l_class_data then
+				update_class_data (l_class_data)
+			elseif attached {EBB_FEATURE_DATA} a_item.row.data as l_feature_data then
+				update_feature_data (a_item.row.parent_row, l_feature_data)
+			end
+		end
+
+	on_item_deselected (a_item: EV_GRID_ITEM)
+			-- Action when `a_item' is deselected.
+		do
+			apply_background_color_recursively (a_item.row, Void)
+			if attached {EBB_CLASS_DATA} a_item.row.data as l_class_data then
+				update_class_data (l_class_data)
+			elseif attached {EBB_FEATURE_DATA} a_item.row.data as l_feature_data then
+				update_feature_data (a_item.row.parent_row, l_feature_data)
+			end
+		end
+
+	apply_background_color_recursively (a_row: EV_GRID_ROW; a_color: EV_COLOR)
+			-- Apply `a_color' to `a_row' and all its subrows.
+		local
+			i, l_count: INTEGER
+		do
+			a_row.set_background_color (a_color)
+			l_count := a_row.subrow_count
+			from
+				i := 1
+			until
+				i > l_count
+			loop
+				apply_background_color_recursively (a_row.subrow (i), a_color)
+				i := i + 1
 			end
 		end
 
@@ -161,12 +342,16 @@ feature {NONE} -- Implementation
 		local
 			l_grid_text_item: EV_GRID_TEXT_ITEM
 		do
+--			a_row.set_item (status_column, create {EV_GRID_TEXT_ITEM})
 			a_row.set_item (item_column, create {EV_GRID_TEXT_ITEM})
 			create l_grid_text_item
 			l_grid_text_item.set_font (fonts.highlighted_label_font)
-			a_row.set_item (combined_score_column, l_grid_text_item)
-			a_row.set_item (static_score_column, create {EV_GRID_TEXT_ITEM})
-			a_row.set_item (dynamic_score_column, create {EV_GRID_TEXT_ITEM})
+			l_grid_text_item.align_text_center
+			a_row.set_item (score_column, l_grid_text_item)
+			create l_grid_text_item
+			l_grid_text_item.align_text_center
+			a_row.set_item (score2_column, l_grid_text_item)
+			a_row.set_item (weight_column, create {EV_GRID_TEXT_ITEM})
 			a_row.set_item (message_column, create {EV_GRID_TEXT_ITEM})
 		end
 
@@ -218,37 +403,47 @@ feature {NONE} -- Implementation
 			l_feature_data: EBB_FEATURE_DATA
 			i: INTEGER
 			l_ebb_state: EBB_STATE
+			l_message: STRING
 		do
 				-- Item column
-			token_generator.wipe_out_lines
-			a_class_data.associated_class.append_name (token_generator)
-			l_editor_item := create_clickable_grid_item (token_generator.last_line, True)
-			l_editor_item.set_pixmap (pixmap_factory.pixmap_from_class_i (a_class_data.associated_class))
-			l_editor_item.set_background_color (background_color (a_class_data.verification_score, a_class_data.is_stale))
-			a_row.set_item (item_column, l_editor_item)
+--			if attached {EV_GRID_TEXT_ITEM} a_row.item (item_column) then
+				token_generator.wipe_out_lines
+				a_class_data.associated_class.append_name (token_generator)
+				l_editor_item := create_clickable_grid_item (token_generator.last_line, True)
+				l_editor_item.set_pixmap (pixmap_factory.pixmap_from_class_i (a_class_data.associated_class))
+--				l_editor_item.set_background_color (background_color (a_class_data.score, a_class_data.is_stale))
+				a_row.set_item (item_column, l_editor_item)
+--			end
 
 				-- Verification score
-			set_score (a_row, combined_score_column, a_class_data.verification_score, a_class_data.is_stale)
+			set_score (a_row, score_column, a_class_data.score, a_class_data.is_stale, a_class_data.has_manual_score)
 
-				-- Static
-			set_score (a_row, static_score_column, a_class_data.static_score, a_class_data.is_static_score_stale)
+				-- Lowest score
+			if a_class_data.non_verified_feature_count > 0 then
+				set_score (a_row, score2_column, a_class_data.lowest_feature_score, a_class_data.is_stale, a_class_data.has_manual_score)
+			else
+				set_score (a_row, score2_column, {REAL}.nan, a_class_data.is_stale, a_class_data.has_manual_score)
+			end
 
-				-- Dynamic
-			set_score (a_row, dynamic_score_column, a_class_data.dynamic_score, a_class_data.is_dynamic_score_stale)
+
+				-- Weight
+			set_weight (a_row, weight_column, a_class_data.weight)
 
 				-- Message
 			if attached {EV_GRID_TEXT_ITEM} a_row.item (message_column) as l_text then
 				create l_ebb_state
 				if a_class_data.is_stale then
-					l_text.set_text ("data is stale")
-				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.not_verified then
-					l_text.set_text ("not yet verified")
-				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.failed then
-					l_text.set_text ("verification failed")
-				elseif a_class_data.verification_score = {EBB_VERIFICATION_SCORE}.successful then
-					l_text.set_text ("successfully verified")
+					l_text.set_text ("Data is stale")
+				elseif not a_class_data.has_score then
+					l_text.set_text ("Not yet verified")
+				elseif a_class_data.score = {EBB_VERIFICATION_SCORE}.successful then
+					l_text.set_text ("Successfully verified")
+				elseif a_class_data.score = {EBB_VERIFICATION_SCORE}.failed then
+					l_text.set_text ("Verification failed")
 				else
-					l_text.set_text ("partially verified")
+					l_message := a_class_data.features_below_threshold (0.0).out + " features failed. "
+					l_message := l_message + a_class_data.features_above_threshold (0.0).out + " features verified."
+					l_text.set_text (l_message)
 				end
 
 --				l_text.set_text ("(" + l_ebb_state.name_of_state (a_class_data.work_state) + "/" + l_ebb_state.name_of_state (a_class_data.result_state) + ")")
@@ -332,26 +527,26 @@ feature {NONE} -- Implementation
 			correct_row2: a_row.parent_row /= Void and then a_row.parent_row.data = a_feature_data.parent
 		local
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
+			l_tool_results: like {EBB_FEATURE_DATA}.tool_results_list
 			l_tool_result: EBB_VERIFICATION_RESULT
 			l_index: INTEGER
 			l_row: EV_GRID_ROW
 		do
 				-- Item column
-			token_generator.wipe_out_lines
-			a_feature_data.associated_feature.e_feature.append_name (token_generator)
-			l_editor_item := create_clickable_grid_item (token_generator.last_line, True)
-			l_editor_item.set_pixmap (pixmap_factory.pixmap_from_e_feature (a_feature_data.associated_feature.e_feature))
-			l_editor_item.set_background_color (background_color (a_feature_data.verification_score, a_feature_data.is_stale))
-			a_row.set_item (item_column, l_editor_item)
+			if attached {EV_GRID_TEXT_ITEM} a_row.item (item_column) then
+				token_generator.wipe_out_lines
+				a_feature_data.associated_feature.e_feature.append_name (token_generator)
+				l_editor_item := create_clickable_grid_item (token_generator.last_line, True)
+				l_editor_item.set_pixmap (pixmap_factory.pixmap_from_e_feature (a_feature_data.associated_feature.e_feature))
+--				l_editor_item.set_background_color (background_color (a_feature_data.score, a_feature_data.is_stale))
+				a_row.set_item (item_column, l_editor_item)
+			end
 
 				-- Verification score
-			set_score (a_row, combined_score_column, a_feature_data.verification_score, a_feature_data.is_stale)
+			set_score (a_row, score_column, a_feature_data.score, a_feature_data.is_stale, a_feature_data.has_manual_score)
 
-				-- Static
-			set_score (a_row, static_score_column, a_feature_data.static_score, a_feature_data.is_static_score_stale)
-
-				-- Dynamic
-			set_score (a_row, dynamic_score_column, a_feature_data.dynamic_score, a_feature_data.is_dynamic_score_stale)
+				-- Weight
+			set_weight (a_row, weight_column, a_feature_data.weight)
 
 				-- Message
 			token_generator.wipe_out_lines
@@ -361,10 +556,14 @@ feature {NONE} -- Implementation
 
 				-- Children
 			from
+--				l_tool_results := a_feature_data.tool_results_list
+--				l_tool_results.start
 				a_feature_data.tool_results.start
 			until
+--				l_tool_results.after
 				a_feature_data.tool_results.after
 			loop
+--				l_tool_result := l_tool_results.item.verification_result
 				l_tool_result := a_feature_data.tool_results.item
 				l_index := a_feature_data.tool_results.index
 
@@ -385,6 +584,8 @@ feature {NONE} -- Implementation
 
 	update_tool_result_row (a_row: EV_GRID_ROW; a_result: EBB_VERIFICATION_RESULT; a_stale: BOOLEAN)
 			-- Update `a_row' with data from `a_result'.
+		require
+			correct_row: a_row.data = a_result
 		local
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
 		do
@@ -393,15 +594,9 @@ feature {NONE} -- Implementation
 				l_text.set_text (a_result.tool.name + " - " + a_result.tool_configuration.name)
 			end
 				-- Verification score
-			--set_score (a_row, combined_score_column, -1.0, False)
-				-- Static
-			if a_result.tool.category = {EBB_TOOL_CATEGORY}.static_verification then
-				set_score (a_row, static_score_column, a_result.score, False)
-			end
-				-- Dynamic
-			if a_result.tool.category = {EBB_TOOL_CATEGORY}.dynamic_verification then
-				set_score (a_row, dynamic_score_column, a_result.score, False)
-			end
+			set_score (a_row, score_column, a_result.score, a_stale, False)
+				-- Weight
+			set_weight (a_row, weight_column, a_result.weight)
 				-- Message
 			token_generator.wipe_out_lines
 			token_generator.enable_multiline
@@ -410,8 +605,7 @@ feature {NONE} -- Implementation
 			a_row.set_item (message_column, l_editor_item)
 		end
 
-
-	set_score (a_row: EV_GRID_ROW; a_column: INTEGER; a_score: REAL; a_stale: BOOLEAN)
+	set_score (a_row: EV_GRID_ROW; a_column: INTEGER; a_score: REAL; a_stale: BOOLEAN; a_manual: BOOLEAN)
 			-- TODO
 		local
 			l_formatted_score: STRING
@@ -423,46 +617,71 @@ feature {NONE} -- Implementation
 				else
 					l_formatted_score := ""
 				end
-				if a_score = {EBB_VERIFICATION_SCORE}.not_verified then
-					l_formatted_score := "-"
-					l_pixmap := Void
-				elseif a_score = {EBB_VERIFICATION_SCORE}.failed then
-					l_pixmap := mini_pixmaps.debugger_error_icon_buffer
-				elseif a_score = {EBB_VERIFICATION_SCORE}.successful then
-					l_pixmap := mini_pixmaps.breakpoints_enable_icon
+				if a_score.is_nan then
+					l_text.set_text (l_formatted_score)
+--					l_text.remove_pixmap
+					if a_manual then
+						l_text.set_background_color (background_color (0, False, a_manual, a_row.background_color /= Void))
+					else
+						l_text.set_background_color (Void)
+					end
+--				elseif a_score = 1.0 then
+--					l_text.set_text (l_formatted_score)
+--					l_text.set_pixmap (icon_pixmaps.general_tick_icon)
+--					l_text.set_background_color (background_color (a_score, a_stale, a_manual))
 				else
-					l_formatted_score.append (real_formatter.formatted (a_score))
-					l_pixmap := Void
+					l_formatted_score.append ((a_score * 100.0).rounded.out)
+					l_text.set_text (l_formatted_score)
+--					l_text.remove_pixmap
+					l_text.set_background_color (background_color (a_score, a_stale, a_manual, a_row.background_color /= Void))
 				end
-				l_text.set_text (l_formatted_score)
-				if l_pixmap = Void then
-					l_text.remove_pixmap
-				else
-					l_text.set_pixmap (l_pixmap)
-				end
-				l_text.set_background_color (background_color (a_score, a_stale))
 			end
 		end
 
-	background_color (a_score: REAL; a_stale: BOOLEAN): EV_COLOR
+	set_weight (a_row: EV_GRID_ROW; a_column: INTEGER; a_weight: REAL)
+			-- TODO
+		local
+			l_formatted_score: STRING
+			l_pixmap: EV_PIXMAP
+		do
+			if attached {EV_GRID_TEXT_ITEM} a_row.item (a_column) as l_text then
+				if a_weight <= 0.5 then
+					l_text.set_pixmap (eve_pixmaps.weights_tiny_icon)
+				elseif a_weight <= 1.5 then
+					l_text.set_pixmap (eve_pixmaps.weights_small_icon)
+				elseif a_weight <= 2.5 then
+					l_text.set_pixmap (eve_pixmaps.weights_normal_icon)
+				elseif a_weight <= 3.5 then
+					l_text.set_pixmap (eve_pixmaps.weights_large_icon)
+				else
+					l_text.set_pixmap (eve_pixmaps.weights_huge_icon)
+				end
+				l_text.set_tooltip ("Weight: " + real_formatter.formatted (a_weight))
+			end
+		end
+
+	background_color (a_score: REAL; a_stale: BOOLEAN; a_manual: BOOLEAN; a_highlight: BOOLEAN): EV_COLOR
 		local
 			l_helper: ES_BLACKBOARD_BENCH_HELPER
+			l_hue, l_saturation, l_value: REAL
 		do
-			if a_score = {EBB_VERIFICATION_SCORE}.not_verified then
+			if a_score.is_nan then
 				Result := white_color
-			elseif a_score = {EBB_VERIFICATION_SCORE}.failed then
-				create l_helper
-				if a_stale then
-					Result := l_helper.color_for_stale_correctness (0.0)
-				else
-					Result := l_helper.color_for_correctness (0.0)
-				end
 			else
 				create l_helper
+				l_hue := ((a_score + 1.0) * 0.5)
+				l_saturation := 1.0
 				if a_stale then
-					Result := l_helper.color_for_stale_correctness (a_score)
+					l_value := 0.6
+				elseif a_highlight then
+					l_value := 1.0
 				else
-					Result := l_helper.color_for_correctness (a_score)
+					l_value := 0.9
+				end
+				if a_manual then
+					Result := l_helper.gradient_color_hsv (l_hue, 0.55, 0.55, l_saturation, l_value)
+				else
+					Result := l_helper.gradient_color_hsv (l_hue, 0.0, 0.333, l_saturation, l_value)
 				end
 			end
 		end
@@ -472,17 +691,23 @@ feature {NONE} -- Implementation
 			create Result.make_with_rgb (1.0, 1.0, 1.0)
 		end
 
+	gray_color: EV_COLOR
+		once
+			create Result.make_with_rgb (0.93, 0.93, 0.93)
+		end
+
 	real_formatter: FORMAT_DOUBLE
 		once
-			create Result.make (1, 2)
+			create Result.make (1, 1)
 		end
 
 feature {NONE} -- Implementation
 
+	--status_column: INTEGER = 1
 	item_column: INTEGER = 1
-	combined_score_column: INTEGER = 2
-	static_score_column: INTEGER = 3
-	dynamic_score_column: INTEGER = 4
+	score_column: INTEGER = 2
+	score2_column: INTEGER = 3
+	weight_column: INTEGER = 4
 	message_column: INTEGER = 5
 
 feature {NONE} -- Helpers
@@ -667,7 +892,7 @@ feature {NONE} -- Internal cache
 			-- Note: Do not use directly!
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 			procedure_name_regexp.match (a_procedure_result.procedure_name)
 			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
 
-			create l_feature_result.make (l_feature, tool_instance.configuration, {EBB_VERIFICATION_SCORE}.successful)
+			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.successful)
 			blackboard.add_verification_result (l_feature_result)
 		end
 
@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 			procedure_name_regexp.match (a_verification_error.procedure_name)
 			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
 
-			create l_feature_result.make (l_feature, tool_instance.configuration, {EBB_VERIFICATION_SCORE}.failed)
+			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.failed)
 			l_feature_result.set_error (a_verification_error)
 			blackboard.add_verification_result (l_feature_result)
 		end

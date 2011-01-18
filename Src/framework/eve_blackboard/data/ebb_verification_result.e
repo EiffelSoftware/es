@@ -19,6 +19,8 @@ feature {NONE} -- Initialization
 			make_with_feature (a_feature)
 			tool_configuration := a_configuration
 			score := a_score
+
+			weight := 1.0
 		end
 
 feature -- Access
@@ -34,6 +36,9 @@ feature -- Access
 
 	score: REAL
 			-- Final score of this result.
+
+	weight: REAL
+			-- Weight of this result.
 
 	message: STRING
 			-- Message describing result.

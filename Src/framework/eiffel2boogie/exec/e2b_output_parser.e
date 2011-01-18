@@ -42,7 +42,9 @@ feature {NONE} -- Implementation
 			l_current_error: E2B_VERIFICATION_ERROR
 			l_current_error_model: E2B_ERROR_MODEL
 			l_total_time: REAL
+			l_current_errors: LINKED_LIST [E2B_VERIFICATION_ERROR]
 		do
+			create l_current_errors.make
 			from
 				lines.start
 			until
@@ -72,7 +74,8 @@ feature {NONE} -- Implementation
 						l_current_procedure := verifying_regexp.captured_substring (1)
 							-- Create error without knowing if it actually is an error, but
 							-- successive lines may assume that error object is already created.
-						create l_current_error.make
+						l_current_errors.wipe_out
+						l_current_error := Void
 
 					elseif verified_regexp.matches (l_line) then
 						-- time in seconds: verified_regexp.captured_substring (1).to_real
@@ -82,13 +85,22 @@ feature {NONE} -- Implementation
 							last_result.verified_procedures.last.set_procedure_name (l_current_procedure)
 							last_result.verified_procedures.last.set_time (verified_regexp.captured_substring (1).to_real)
 						else
-							check verified_regexp.captured_substring (2).is_equal ("error") end
-							l_current_error.set_procedure_name (l_current_procedure)
-							l_current_error.set_time (verified_regexp.captured_substring (1).to_real)
-							l_current_error.process
-							last_result.verification_errors.extend (l_current_error)
+							check verified_regexp.captured_substring (2).starts_with ("error") end
+							check not l_current_errors.is_empty end
+							if l_current_error_model /= Void then
+								l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_error_model (l_current_error_model))
+							end
+							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_procedure_name (l_current_procedure))
+							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_time (verified_regexp.captured_substring (1).to_real))
+							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.process)
+							last_result.verification_errors.append (l_current_errors)
+--							l_current_error.set_procedure_name (l_current_procedure)
+--							l_current_error.set_time (verified_regexp.captured_substring (1).to_real)
+--							l_current_error.process
+--							last_result.verification_errors.extend (l_current_error)
 						end
 						l_total_time := l_total_time + verified_regexp.captured_substring (1).to_real
+						l_current_errors.wipe_out
 						l_current_error := Void
 						l_current_procedure := Void
 
@@ -98,6 +110,8 @@ feature {NONE} -- Implementation
 						-- column: error_regexp.captured_substring (3).to_integer
 						-- error code: error_regexp.captured_substring (4)
 						-- error message: error_regexp.captured_substring (5)
+						create l_current_error.make
+						l_current_errors.extend (l_current_error)
 						l_current_error.set_boogie_location ([
 							error_regexp.captured_substring (1),
 							error_regexp.captured_substring (2).to_integer,
@@ -171,7 +185,6 @@ feature {NONE} -- Implementation
 						])
 
 					elseif model_end_regexp.matches (l_line) then
-						l_current_error.set_error_model (l_current_error_model)
 						l_current_error_model := Void
 
 					else

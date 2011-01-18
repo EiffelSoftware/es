@@ -16,6 +16,7 @@ feature {NONE} -- Initialization
 		do
 			tool := a_tool
 			name := a_name.twin
+			time_category := {EBB_TIME_CATEGORY}.unknown
 			create description.make_empty
 			create settings.make (10)
 		ensure
@@ -33,6 +34,9 @@ feature -- Access
 
 	description: attached STRING
 			-- Description for this configuration.
+
+	time_category: INTEGER
+			-- Time category of this configuration.
 
 	settings: attached HASH_TABLE [STRING, STRING]
 			-- Settings for this configuration.
@@ -72,6 +76,16 @@ feature -- Access
 		end
 
 feature -- Element change
+
+	set_time_category (a_value: like time_category)
+			-- Set `time_category' to `a_value'.
+		require
+			a_value_valid: (create {EBB_TIME_CATEGORY}).is_valid_category (a_value)
+		do
+			time_category := a_value
+		ensure
+			time_category_set: time_category = a_value
+		end
 
 	put_string_setting (a_value: STRING; a_key: STRING)
 			-- Set value for `a_key' to `a_value'.

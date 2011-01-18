@@ -36,7 +36,11 @@ feature {NONE} -- Initialization
 			initialize
 
 				-- Autostart Blackboard
-			eiffel_project.manager.load_agents.extend (agent start)
+			if eiffel_project.manager.is_project_loaded then
+				start
+			else
+				eiffel_project.manager.load_agents.extend (agent start)
+			end
 		end
 
 feature -- Access
@@ -146,7 +150,7 @@ feature -- Basic operations
 			-- Handle that invariant of class `a_class' has changed.
 		do
 			if data.has_class (a_class) then
-				across data.class_data (a_class).features as c loop
+				across data.class_data (a_class).children as c loop
 					if is_feature_data_verified (c.item) then
 						c.item.set_stale
 					end

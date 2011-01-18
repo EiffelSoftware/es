@@ -47,6 +47,15 @@ feature -- Basic operations
 	last_instance: EBB_AUTOTEST_INSTANCE
 			-- <Precursor>
 
+feature -- Options
+
+	timeout: STRING = "timeout"
+			-- Timeout in seconds (default: 10)
+	use_boundary_integers: STRING = "use_boundary_integers"
+			-- Use {INTEGER}.max_value and {INTEGER}.min_value for input (default: False)
+	generate_test_case: STRING = "generate_test_case"
+			-- Generate test case for faults (default: False)
+
 ;note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

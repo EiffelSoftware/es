@@ -9,10 +9,11 @@ class
 
 inherit
 
-	TEST_GENERATOR
+	TEST_GENERATOR_WRAPPER
 		rename
 			make as make_generator
 		redefine
+			error_handler,
 			remove_task,
 			print_test_set
 --			step
@@ -30,7 +31,7 @@ feature {NONE} -- Initialization
 		do
 			make_generator (a_test_suite, a_etest_suite)
 			instance := a_instance
-			number_of_tests_needed := 20
+			number_of_tests_needed := 100
 		end
 
 feature -- Access
@@ -40,6 +41,9 @@ feature -- Access
 
 	number_of_tests_needed: INTEGER
 			-- Number of tests needed for a passing score.
+
+	error_handler: EBB_AUT_ERROR_HANDLER
+			-- <Precursor>
 
 feature -- Element change
 
@@ -63,7 +67,7 @@ feature -- Basic operations
 			-- `a_list': List of test case results to be printed to a test set.
 		do
 			current_results := a_list
-			Precursor (a_list)
+--			Precursor (a_list)
 			current_results := Void
 		end
 
@@ -149,9 +153,9 @@ feature {NONE}
 			if is_feature_verified (l_feature) then
 				if l_type ~ "passing" then
 					if l_number >= number_of_tests_needed then
-						create l_result.make (l_feature, instance.configuration, {EBB_VERIFICATION_SCORE}.successful)
+						create l_result.make (l_feature, instance.configuration, 0.9)
 					else
-						create l_result.make (l_feature, instance.configuration, (l_number / number_of_tests_needed).truncated_to_real)
+						create l_result.make (l_feature, instance.configuration, (l_number / number_of_tests_needed).truncated_to_real * 0.9)
 					end
 					l_result.set_number_of_passing (l_number)
 					blackboard.add_verification_result (l_result)
@@ -235,7 +239,7 @@ feature {NONE}
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

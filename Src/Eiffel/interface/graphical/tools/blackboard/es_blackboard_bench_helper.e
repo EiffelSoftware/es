@@ -20,11 +20,11 @@ feature
 		do
 			if blackboard.data.has_feature (a_feature.associated_feature_i) then
 				l_feature_data := blackboard.data.feature_data (a_feature.associated_feature_i)
-				if l_feature_data.has_verification_score then
+				if l_feature_data.has_score then
 					if l_feature_data.is_stale then
-						a_grid_item.set_background_color (light_color_for_stale_correctness (l_feature_data.verification_score))
+						a_grid_item.set_background_color (light_color_for_stale_correctness (l_feature_data.score))
 					else
-						a_grid_item.set_background_color (light_color_for_correctness (l_feature_data.verification_score))
+						a_grid_item.set_background_color (light_color_for_correctness (l_feature_data.score))
 					end
 					a_grid_item.set_tooltip ("statically verified")
 				end
@@ -103,27 +103,44 @@ feature -- Helper
 
 	light_color_for_correctness (a_value: REAL): EV_COLOR
 		do
-			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.1, 1.0)
+			Result := gradient_color_hsv (a_value, 0.0, 0.333, 0.1, 1.0)
 		end
 
 	light_color_for_stale_correctness (a_value: REAL): EV_COLOR
 		do
-			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.1, 0.8)
+			Result := gradient_color_hsv (a_value, 0.0, 0.333, 0.1, 0.8)
 		end
 
 	color_for_correctness (a_value: REAL): EV_COLOR
+		require
+			a_value_in_range: 0.0 <= a_value and a_value <= 1.0
 		do
-			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.4, 1.0)
+			Result := gradient_color_hsv (a_value, 0.0, 0.333, 1.0, 1.0)
 		end
 
 	color_for_stale_correctness (a_value: REAL): EV_COLOR
+		require
+			a_value_in_range: 0.0 <= a_value and a_value <= 1.0
 		do
-			Result := gradient_color_hsv (a_value, 0.0, 0.32, 0.4, 0.8)
+			Result := gradient_color_hsv (a_value, 0.0, 0.333, 1.0, 0.6)
+		end
+
+	color_for_manual_correctness (a_value: REAL): EV_COLOR
+		require
+			a_value_in_range: 0.0 <= a_value and a_value <= 1.0
+		do
+			Result := gradient_color_hsv (0.0, 0.6, 0.6, 0.8, 1.0)
 		end
 
 	gradient_color_hsv (a_gradient, a_start, a_end, a_saturation, a_value: REAL): EV_COLOR
 			-- Gradient color.
 			-- all values are between 0 and 1.
+		require
+			a_gradient_in_range: 0.0 <= a_gradient and a_gradient <= 1.0
+			a_start_in_range: 0.0 <= a_start and a_start <= 1.0
+			a_end_in_range: 0.0 <= a_end and a_end <= 1.0
+			a_saturation_in_range: 0.0 <= a_saturation and a_saturation <= 1.0
+			a_value_in_range: 0.0 <= a_value and a_value <= 1.0
 		local
 			l_hue, l_saturation, l_value, m, n, f: REAL
 			i: INTEGER
@@ -133,6 +150,9 @@ feature -- Helper
 			l_value := a_value
 
 			i := l_hue.floor
+			if i < 0 then
+				i := i + 6
+			end
 			f := l_hue - i
 			if i \\ 2 = 0 then
 				f := 1 - f
@@ -158,7 +178,7 @@ feature -- Helper
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

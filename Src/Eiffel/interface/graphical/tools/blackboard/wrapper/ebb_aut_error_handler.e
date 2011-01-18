@@ -1,52 +1,24 @@
 note
-	description: "Shim class for proof tool."
+	description: "Summary description for {EBB_AUT_ERROR_HANDLER}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-frozen class
-	ES_EVE_PROOFS_TOOL
+class
+	EBB_AUT_ERROR_HANDLER
 
 inherit
-	ES_TOOL [ES_EVE_PROOFS_TOOL_PANEL]
 
-create {NONE}
-	default_create
+	AUT_ERROR_HANDLER
 
-feature -- Access
+create
+	make
 
-	title: STRING_32
-			-- <Precursor>
-		do
-			Result :=  locale_formatter.translation (t_title)
-		end
+feature
 
-	icon: EV_PIXEL_BUFFER
-			-- <Precursor>
-		do
-			Result := stock_pixmaps.general_tick_icon_buffer
-		end
-
-	icon_pixmap: EV_PIXMAP
-			-- <Precursor>
-		do
-			Result := stock_pixmaps.general_tick_icon
-		end
-
-feature {NONE} -- Factory
-
-	new_tool: ES_EVE_PROOFS_TOOL_PANEL
-			-- <Precursor>
-		do
-			create Result.make (window, Current)
-		end
-
-feature {NONE} -- Internationalization
-
-	t_title: STRING = "AutoProof"
-
-;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.

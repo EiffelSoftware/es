@@ -18,6 +18,12 @@ feature -- Access
 	successful: REAL_32 = 1.0
 			-- Successful verification score.
 
+	lowest_score: REAL_32 = 0.0
+			-- Lowest possible verification score.
+
+	highest_score: REAL_32 = 1.0
+			-- Highest possible verification score.
+
 	partialy_verified (a_degree: REAL_32): REAL_32
 			-- Score for partial verification.
 		require

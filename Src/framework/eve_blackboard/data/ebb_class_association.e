@@ -10,6 +10,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature {NONE} -- Initialization
 
 	make_with_class_id (a_class_id: like class_id)
@@ -17,15 +19,18 @@ feature {NONE} -- Initialization
 		require
 			class_exists: system.class_of_id (a_class_id) /= Void
 		do
-			associated_class := system.class_of_id (a_class_id).original_class
+			system.names.put (system.class_of_id (a_class_id).name)
+			class_name_id := system.names.id_of (system.class_of_id (a_class_id).name)
 		ensure
 			class_id_set: class_id = a_class_id
+			compiled_class_set: compiled_class.class_id = class_id
 		end
 
 	make_with_class (a_class: attached like associated_class)
 			-- Initialize associated to `a_class'.
 		do
-			associated_class := a_class
+			system.names.put (a_class.name)
+			class_name_id := system.names.id_of (a_class.name)
 		ensure
 			class_id_set: associated_class = a_class
 		end
@@ -34,6 +39,16 @@ feature -- Access
 
 	associated_class: attached CLASS_I
 			-- Class associated with this data.
+		local
+			l_class_name: STRING
+		do
+			if associated_class_cache = Void then
+				l_class_name := system.names.item_32 (class_name_id)
+				associated_class_cache := system.universe.classes_with_name (l_class_name).first
+			end
+			check associated_class_cache /= Void end
+			Result := associated_class_cache
+		end
 
 	class_name: attached STRING
 			-- Class name of class associated with this data.
@@ -46,10 +61,10 @@ feature -- Access
 		require
 			compiled: is_compiled
 		do
-			if internal_class_id = 0 and associated_class.is_compiled then
-				internal_class_id := associated_class.compiled_class.class_id
+			if class_id_cache = 0 and associated_class.is_compiled then
+				class_id_cache := associated_class.compiled_class.class_id
 			end
-			Result := internal_class_id
+			Result := class_id_cache
 		end
 
 	compiled_class: attached CLASS_C
@@ -57,7 +72,11 @@ feature -- Access
 		require
 			compiled: is_compiled
 		do
-			Result := associated_class.compiled_class
+			if compiled_class_cache = Void then
+				compiled_class_cache := associated_class.compiled_class
+			end
+			check compiled_class_cache /= Void end
+			Result := compiled_class_cache
 		end
 
 feature -- Status report
@@ -70,8 +89,29 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	internal_class_id: INTEGER
-			-- Class id of associated class (if any).
+	class_name_id: INTEGER
+			-- Name id of associated class.
+
+	class_id_cache: INTEGER
+			-- Cached value of class id of associated class (if any).
+		note
+			option: transient
+		attribute
+		end
+
+	associated_class_cache: CLASS_I
+			-- Cached reference to associated class.
+		note
+			option: transient
+		attribute
+		end
+
+	compiled_class_cache: CLASS_C
+			-- Cached reference to compiled class.
+		note
+			option: transient
+		attribute
+		end
 
 invariant
 	class_id_set: is_compiled implies class_id /= 0

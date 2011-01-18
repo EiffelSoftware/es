@@ -11,6 +11,7 @@ inherit
 
 	EBB_VERIFICATION_RESULT
 		redefine
+			make,
 			single_line_message
 		end
 
@@ -20,6 +21,17 @@ inherit
 create
 	make
 
+feature {NONE} -- Initialization
+
+	make (a_feature: FEATURE_I; a_configuration: EBB_TOOL_CONFIGURATION; a_score: REAL_32)
+			-- <Precursor>
+		do
+			Precursor (a_feature, a_configuration, a_score)
+			if a_score = {EBB_VERIFICATION_SCORE}.failed then
+				weight := 100
+			end
+		end
+
 feature -- Access
 
 	message: STRING
@@ -27,9 +39,9 @@ feature -- Access
 		do
 			if is_fault then
 				if code = postcondition then
-					Result := "Postcondition violated"
+					Result := "Contract violated"
 				elseif code = precondition then
-					Result := "Precondition violated"
+					Result := "Contract violated"
 				elseif code = class_invariant then
 					Result := "Class invariant violated"
 				elseif code = check_instruction then
@@ -38,7 +50,7 @@ feature -- Access
 					Result := "Error code " + code.out
 				end
 			elseif is_passing then
-				Result := "Tests passed"
+				Result := number_of_passing.out + " tests passed"
 			else
 				check False end
 			end
@@ -118,7 +130,7 @@ feature -- Basic operations
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

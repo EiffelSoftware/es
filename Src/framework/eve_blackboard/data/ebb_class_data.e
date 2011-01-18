@@ -38,149 +38,201 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	features: attached LIST [EBB_FEATURE_DATA]
-			-- List of features of this class.
+	score: REAL
+			-- Correctness score for this class in interval [-1, 1].
 		do
-			create {LINKED_LIST [EBB_FEATURE_DATA]} Result.make
-			across features_written_in_class (compiled_class) as l_cursor loop
-				Result.extend (blackboard.data.feature_data (l_cursor.item))
+			if has_manual_score then
+				Result := manual_score
+			else
+				Result := automatic_score
+			end
+		ensure
+			score_in_range: not score.is_nan implies -1.0 <= score and score <= 1.0
+		end
+
+	automatic_score: REAL
+			-- Correctness score calculated from score of individual routines.
+		local
+			l_weight: REAL
+			l_total_weight: REAL
+			l_feature_data: EBB_FEATURE_DATA
+		do
+			if is_compiled then
+				from
+					Result := 0
+					children.start
+				until
+					children.after
+				loop
+					l_feature_data := children.item
+					if l_feature_data.has_score then
+						l_weight := l_feature_data.weight
+						l_total_weight := l_total_weight + l_weight
+						Result := Result + (l_weight * l_feature_data.score)
+					end
+					children.forth
+				end
+				if l_total_weight > 0 then
+					Result := Result / l_total_weight
+				else
+					Result := {REAL}.nan
+				end
+			else
+				Result := {REAL}.nan
 			end
 		end
 
-	work_state: INTEGER
-			-- Work state of class.
-
-	result_state: INTEGER
-			-- Result state of class.
-
-	verification_score: REAL
-			-- Combined verification score.
-		local
-			l_score: REAL
-			l_sum: REAL
-			l_count: INTEGER
+	manual_score: REAL
+			-- Correctness score set manually.
 		do
-			Result := {EBB_VERIFICATION_SCORE}.not_verified
+			if is_compiled and then compiled_class.ast.top_indexes /= Void then
+				Result := correctness_override (associated_class.compiled_class.ast.top_indexes).value
+			else
+				Result := {REAL}.nan
+			end
+		end
+
+	weight: REAL
+			-- Weight of this class for correctness of whole system.
+		do
+			if has_manual_weight then
+				Result := manual_weight
+			else
+				Result := automatic_weight
+			end
+		ensure
+			weight_not_negative: Result >= 0.0
+		end
+
+	automatic_weight: REAL
+			-- Weight of this class determined automatically.
+		do
+			Result := 1.0
+			if is_compiled then
+				Result := importance_weight (associated_class.compiled_class.ast.top_indexes)
+			end
+		end
+
+	manual_weight: REAL
+			-- Weight of this class set manually.
+		do
+			if is_compiled then
+				Result := weight_override (associated_class.compiled_class.ast.top_indexes)
+			else
+				Result := {REAL}.nan
+			end
+		end
+
+	lowest_feature_score: REAL
+			-- Lowest score of a child feature.
+		local
+			l_feature_data: EBB_FEATURE_DATA
+		do
+			Result := {REAL}.nan
 			from
 				children.start
 			until
-				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
+				children.after
 			loop
-				l_score := children.item.verification_score
-				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
-					if l_score = {EBB_VERIFICATION_SCORE}.failed then
-						Result := {EBB_VERIFICATION_SCORE}.failed
-					else
-						l_count := l_count + 1
-						l_sum := l_sum + l_score
-					end
+				l_feature_data := children.item
+				if l_feature_data.has_score and then
+					(l_feature_data.score < Result or else Result.is_nan)
+				then
+					Result := l_feature_data.score
 				end
 				children.forth
 			end
-			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
-				Result := l_sum / l_count
-			end
 		end
 
-	static_score: REAL
-			-- Score of static verification tools.
+	non_verified_feature_count: INTEGER
+			-- Number of features with a score below or equal to 0.
 		local
-			l_score: REAL
-			l_sum: REAL
-			l_count: INTEGER
+			l_feature_data: EBB_FEATURE_DATA
 		do
-			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				children.start
 			until
-				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
+				children.after
 			loop
-				l_score := children.item.static_score
-				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
-					if l_score = {EBB_VERIFICATION_SCORE}.failed then
-						Result := {EBB_VERIFICATION_SCORE}.failed
-					else
-						l_count := l_count + 1
-						l_sum := l_sum + l_score
-					end
+				l_feature_data := children.item
+				if l_feature_data.has_score and then
+					(l_feature_data.score <= 0)
+				then
+					Result := Result + 1
 				end
 				children.forth
 			end
-			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
-				Result := l_sum / l_count
-			end
 		end
 
-	dynamic_score: REAL
-			-- Score of dynamic verification tools.
+	features_below_threshold (a_threshold: REAL): INTEGER
+			-- Number of features with a score below or equal to `a_threshold'.
 		local
-			l_score: REAL
-			l_sum: REAL
-			l_count: INTEGER
+			l_feature_data: EBB_FEATURE_DATA
 		do
-			Result := {EBB_VERIFICATION_SCORE}.not_verified
 			from
 				children.start
 			until
-				children.after or Result = {EBB_VERIFICATION_SCORE}.failed
+				children.after
 			loop
-				l_score := children.item.dynamic_score
-				if l_score /= {EBB_VERIFICATION_SCORE}.not_verified then
-					if l_score = {EBB_VERIFICATION_SCORE}.failed then
-						Result := {EBB_VERIFICATION_SCORE}.failed
-					else
-						l_count := l_count + 1
-						l_sum := l_sum + l_score
-					end
+				l_feature_data := children.item
+				if l_feature_data.has_score and then
+					(l_feature_data.score < a_threshold)
+				then
+					Result := Result + 1
 				end
 				children.forth
 			end
-			if l_count > 0 and Result /= {EBB_VERIFICATION_SCORE}.failed then
-				Result := l_sum / l_count
-			end
 		end
 
-	message: STRING
-			-- Latest message to be displayed.
+	features_above_threshold (a_threshold: REAL): INTEGER
+			-- Number of features with a score below or equal to `a_threshold'.
+		local
+			l_feature_data: EBB_FEATURE_DATA
 		do
-			Result := ""
+			from
+				children.start
+			until
+				children.after
+			loop
+				l_feature_data := children.item
+				if l_feature_data.has_score and then
+					(l_feature_data.score > a_threshold)
+				then
+					Result := Result + 1
+				end
+				children.forth
+			end
 		end
 
 feature -- Status report
 
+	has_score: BOOLEAN
+			-- Is a score set?
+		do
+			Result := not score.is_nan
+		end
+
+	has_manual_score: BOOLEAN
+			-- Is a manual score set?
+		do
+			Result := not manual_score.is_nan
+		end
+
+	has_manual_weight: BOOLEAN
+			-- Is a manual weight set?
+		do
+			Result := not manual_weight.is_nan
+		end
+
 	is_stale: BOOLEAN
 			-- Is data stale?
 		do
-			if static_score >= 0 then
-				Result := is_static_score_stale
-			end
-			if not Result and dynamic_score >= 0 then
-				Result := is_dynamic_score_stale
-			end
-		end
-
-	is_dynamic_score_stale: BOOLEAN
-			-- Is dynamic score stale?
-		do
 			from
 				children.start
 			until
 				children.after or Result
 			loop
-				Result := children.item.is_dynamic_score_stale
-				children.forth
-			end
-		end
-
-	is_static_score_stale: BOOLEAN
-			-- Is static score stale?
-		do
-			from
-				children.start
-			until
-				children.after or Result
-			loop
-				Result := children.item.is_static_score_stale
+				Result := children.item.is_stale
 				children.forth
 			end
 		end
@@ -206,6 +258,14 @@ feature -- Element change
 		ensure
 			result_state_set: result_state = a_state
 		end
+
+feature
+
+	work_state: INTEGER
+			-- Work state of class.
+
+	result_state: INTEGER
+			-- Result state of class.
 
 invariant
 	work_state_valid: (create {EBB_STATE}).is_valid_work_state (work_state)

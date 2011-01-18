@@ -55,6 +55,7 @@ feature -- Access
 
 invariant
 	feature_id_set: feature_id /= Void
+	associated_feature_set: associated_feature /= Void
 	associated_feature_consistent: associated_feature.written_in = class_id and associated_feature.feature_id = feature_id
 
 end

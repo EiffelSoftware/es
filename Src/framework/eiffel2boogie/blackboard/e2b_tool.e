@@ -13,7 +13,7 @@ inherit
 
 feature -- Access
 
-	name: attached STRING = "Eiffel2Boogie"
+	name: attached STRING = "AutoProof"
 			-- <Precursor>
 
 	description: attached STRING = "Translating Eiffel to Boogie."

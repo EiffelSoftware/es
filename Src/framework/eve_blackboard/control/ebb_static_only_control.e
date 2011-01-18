@@ -30,25 +30,25 @@ feature -- Basic operations
 			l_tool: EBB_TOOL
 			l_configuration: EBB_TOOL_CONFIGURATION
 		do
-			if
-				blackboard.executions.running_executions.is_empty and
-				blackboard.executions.waiting_executions.is_empty and
-				not eiffel_project.is_compiling and
-				not blackboard.tools.is_empty
-			then
-				current_class_index := current_class_index + 1
-				if current_class_index > blackboard.data.classes.count then
-					current_class_index := 1
-				end
-				if current_class.is_compiled and then (current_class.is_static_score_stale or current_class.static_score = {EBB_VERIFICATION_SCORE}.not_verified) then
-					create l_input.make
-					l_input.add_class (current_class.compiled_class)
-					l_tool := blackboard.default_tool_of_type ({EBB_TOOL_CATEGORY}.static_verification)
-					l_configuration := l_tool.default_configuration
-					create next_tool_execution.make (l_tool, l_configuration, l_input)
-				end
+--			if
+--				blackboard.executions.running_executions.is_empty and
+--				blackboard.executions.waiting_executions.is_empty and
+--				not eiffel_project.is_compiling and
+--				not blackboard.tools.is_empty
+--			then
+--				current_class_index := current_class_index + 1
+--				if current_class_index > blackboard.data.classes.count then
+--					current_class_index := 1
+--				end
+--				if current_class.is_compiled and then (current_class.is_static_score_stale or current_class.static_score = {EBB_VERIFICATION_SCORE}.not_verified) then
+--					create l_input.make
+--					l_input.add_class (current_class.compiled_class)
+--					l_tool := blackboard.default_tool_of_type ({EBB_TOOL_CATEGORY}.static_verification)
+--					l_configuration := l_tool.default_configuration
+--					create next_tool_execution.make (l_tool, l_configuration, l_input)
+--				end
 
-			end
+--			end
 		end
 
 	create_new_tool_executions
