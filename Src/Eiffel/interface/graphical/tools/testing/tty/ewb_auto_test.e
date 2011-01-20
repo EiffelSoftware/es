@@ -80,6 +80,7 @@ feature -- Execution
 			l_type, l_types: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
+			l_exceptions: EXCEPTIONS
 		do
 			l_args := auto_test_arguments
 			if l_args /= Void then
@@ -87,6 +88,13 @@ feature -- Execution
 				create l_error_handler.make (l_project.system.system)
 				create l_ap.make_with_arguments (l_args, l_error_handler)
 				--l_ap.process_arguments (l_args)
+
+				if l_ap.should_display_help_message then
+					io.put_string (l_ap.help_message)
+						-- Exit after displaying help message.
+					create l_exceptions
+					l_exceptions.die (0)
+				end
 
 				create l_generator.make (a_test_suite, etest_suite)
 				l_error_handler.set_configuration (l_generator)
