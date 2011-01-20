@@ -83,7 +83,7 @@ feature{NONE} -- Tests
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_relation: WEKA_ARFF_RELATION
-			l_rel_parser: WEKA_ARFF_RELATION_PARSER
+			l_rel_parser: WEKA_ARFF_RELATION_LOADER
 			attr_set: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			set: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			label: WEKA_ARFF_ATTRIBUTE

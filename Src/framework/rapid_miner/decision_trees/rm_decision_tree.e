@@ -113,7 +113,7 @@ feature -- Clasification
 			create Result.make (5)
 			Result.set_key_equality_tester (rm_decision_tree_path_equality_tester)
 
-			
+
 
 			across a_relation as l_instances loop
 				l_sample := a_relation.instance_as_hash_table (l_instances.item)
@@ -174,7 +174,7 @@ feature{NONE} -- Implementation
 				node_stack.remove
 			else
 				across a_node.edges as l_edges loop
-					create l_node.make (a_node.name, a_node.edges.item_for_iteration.operator, l_edges.item.value, a_node)
+					create l_node.make (a_node.name, l_edges.item.operator, l_edges.item.value, a_node)
 					node_stack.put (l_node)
 					calculate_paths (l_edges.item.node)
 					node_stack.remove

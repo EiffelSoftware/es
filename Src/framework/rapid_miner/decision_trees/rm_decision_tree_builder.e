@@ -20,7 +20,7 @@ create
 
 feature -- Create
 
-	make(a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
+	make (a_arff_file_path: STRING; a_selected_attributes: LIST [STRING]; a_label_name: STRING)
 			-- creates a decision tree builder with default decision_tree algorithm and
 			-- 'no_validation'
 		require
