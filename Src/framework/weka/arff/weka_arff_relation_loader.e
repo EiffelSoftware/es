@@ -5,22 +5,32 @@ note
 	revision: "$Revision$"
 
 class
-	WEKA_ARFF_RELATION_PARSER
-create
-	make
+	WEKA_ARFF_RELATION_LOADER
 
 feature -- Access
 
-	file_path: STRING
-			-- the path to the arff file we are going to parse
-
 	last_relation: WEKA_ARFF_RELATION
-			-- The last relation parsed by the `parse_relation' command.
+			-- The last relation parsed by the `load_relation' command.
+
+feature -- Status report
 
 	had_errors: BOOLEAN
-			-- Were errors encountered during parsing.
+			-- Were errors encountered during last `load_relation'?
 
-feature -- Interface
+feature -- Basic operations
+
+	load_relation (a_path: STRING)
+			-- Parse ARFF relation from `a_path' and
+			-- make result available in `last_relation'.
+		do
+			set_file_path (a_path)
+			parse_relation
+		end
+
+feature{NONE} -- Implementation
+
+	file_path: STRING
+			-- the path to the arff file we are going to parse
 
 	set_file_path (a_file_path: STRING)
 			-- `a_file_path' is the absolute file path to the arff file
@@ -28,14 +38,6 @@ feature -- Interface
 			file_path := a_file_path
 		ensure
 			file_path = a_file_path
-		end
-
-	parse_relation_from_file (a_path: STRING)
-			-- Parse ARFF relation from `a_path' and
-			-- make result available in `last_relation'.
-		do
-			set_file_path (a_path)
-			parse_relation
 		end
 
 	parse_relation
@@ -68,14 +70,6 @@ feature -- Interface
 					end
 				end
 			end
-		end
-
-feature{NONE} -- creation
-
-	make(a_file_path: STRING)
-			-- `a_file_path' is the absolute file path to the arff file
-		do
-			file_path := a_file_path
 		end
 
 feature{NONE} -- Implementation

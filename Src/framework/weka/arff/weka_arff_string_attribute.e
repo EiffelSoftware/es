@@ -61,11 +61,12 @@ feature -- Status report
 			-- Is `a_value' a valid value for current attribute?
 		do
 			if a_value /= Void then
-				if a_value.has (' ') or a_value.has ('%T') then
-					Result := a_value.item (1) = '%"' and a_value.item (a_value.count) = '%"'
-				else
-					Result := True
-				end
+--				if a_value.has (' ') or a_value.has ('%T') then
+--					Result := a_value.item (1) = '%"' and a_value.item (a_value.count) = '%"'
+--				else
+--					Result := True
+--				end
+				Result := True
 			else
 				Result := True
 			end
