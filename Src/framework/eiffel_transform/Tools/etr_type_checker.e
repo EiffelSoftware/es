@@ -548,7 +548,7 @@ feature -- Type checking
 			-- Make result available in `last_type'.
 		do
 			error_handler.wipe_out
-			if not a_feature.is_invariant and then a_feature.feature_id > 0 then
+			if not a_feature.is_invariant and then a_feature.feature_id >= 0 then
 				context.set_locals (local_info (a_context_class, a_feature))
 			end
 			context.initialize (a_context_class, a_context_class.actual_type)
@@ -694,7 +694,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
