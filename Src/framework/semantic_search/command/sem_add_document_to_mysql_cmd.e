@@ -48,7 +48,7 @@ feature -- Basic operations
 			end
 
 			-- Import SSQL files
-			if config.mysql_file_directory /= Void then
+			if config.input /= Void then
 				create importer.make(config)
 				importer.execute
 			end

@@ -2754,6 +2754,7 @@ Src/framework/semantic_search/engine/sql/example_queries/q8.sql -text
 Src/framework/semantic_search/engine/sql/example_queries/q9.sql -text
 Src/framework/semantic_search/engine/sql/example_queries/ranking_select_properties_with_2_operands.sql -text
 Src/framework/semantic_search/engine/sql/example_queries/ranking_select_the_number_of_values_for_a_property.sql -text
+Src/framework/semantic_search/engine/sql/example_queries/temp.sql -text
 Src/framework/semantic_search/engine/sql/example_queries/transitions_change_is_empty_to_False_in_DS_LINKED_LIST.sql -text
 Src/framework/semantic_search/engine/sql/example_queries/transitions_yielding_equal_DS_LINKED_LIST.sql -text
 Src/framework/semantic_search/engine/sql/schema/schema.jpg -text

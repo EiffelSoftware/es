@@ -7,6 +7,9 @@
 class
 	SEM_CONFIG
 
+inherit
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 	make
 
@@ -45,8 +48,10 @@ feature -- Access
 	mysql_password: STRING
 			-- Password for `mysql_user'
 
-	mysql_file_directory: STRING
-			-- Path to sql files
+	input: detachable STRING
+			-- Path for inputs
+			-- Depending on the operation to perform, this attribute
+			-- may point to a file or a directory.
 
 	mysql_schema: STRING
 			-- Name of the database schema
@@ -60,6 +65,20 @@ feature -- Access
 	timestamp: detachable STRING
 			-- Time stamp
 
+	output: detachable STRING
+			-- Output file/directory for some operation
+
+	feature_kinds: DS_HASH_SET [STRING]
+			-- Set of specified feature kinds
+
+feature -- Constants
+
+	all_feature_kind: STRING = "all"
+	command_feature_kind: STRING = "command"
+	query_feature_kind: STRING = "query"
+	attribute_feature_kind: STRING = "attribute"
+	function_feature_kind: STRING = "function"
+
 feature -- Status report
 
 	should_add_sql_document: BOOLEAN
@@ -67,6 +86,12 @@ feature -- Status report
 
 	should_update_ranking: BOOLEAN
 			-- Should update rankings of properties?
+
+	should_generate_arff: BOOLEAN
+			-- Should ARFF files be generated from ssql files?	
+
+	should_generate_invariant: BOOLEAN
+			-- Should invariants be generated?
 
 feature -- Setting
 
@@ -100,10 +125,10 @@ feature -- Setting
 			mysql_port := a_port
 		end
 
-	set_mysql_file_directory (a_sql_file_directory: like mysql_file_directory)
-			-- Set `mysql_sql_file_directory' with `a_sql_file_directory'.
+	set_input (a_input: like input)
+			-- Set `input' with `a_input'.
 		do
-			mysql_file_directory := a_sql_file_directory.twin
+			input := a_input
 		end
 
 	set_should_add_sql_document (b: BOOLEAN)
@@ -146,6 +171,50 @@ feature -- Setting
 			-- Set `timestamp' with `a_timestamp'.
 		do
 			timestamp := a_timestamp
+		end
+
+	set_output (a_output: like output)
+			-- Set `output' with `a_output'.
+		do
+			output := a_output
+		end
+
+	set_feature_kinds (a_kinds: LIST [STRING])
+			-- Set feature kinds from `a_kinds' into `feature_kindes'.
+		local
+			l_kind: STRING
+		do
+			create feature_kinds.make (5)
+			feature_kinds.set_equality_tester (string_equality_tester)
+
+			across a_kinds as l_kinds loop
+				l_kind := l_kinds.item.as_lower
+				if
+					l_kind ~ all_feature_kind or else
+					l_kind ~ command_feature_kind or else
+					l_kind ~ query_feature_kind or else
+					l_kind ~ attribute_feature_kind or else
+					l_kind ~ function_feature_kind
+				then
+					feature_kinds.force_last (l_kind)
+				end
+			end
+		end
+
+	set_should_generate_arff (b: BOOLEAN)
+			-- Set `should_generate_arff' with `b'.
+		do
+			should_generate_arff := b
+		ensure
+			should_generate_arff_set: should_generate_arff = b
+		end
+
+	set_should_generate_invariant (b: BOOLEAN)
+			-- Set `should_generate_invariant' with `b'.
+		do
+			should_generate_invariant := b
+		ensure
+			should_generate_invariant_set: should_generate_invariant = b
 		end
 
 end

@@ -453,4 +453,7 @@ feature -- Property types
 	integer_type_prefix: STRING = "i::"
 			-- Prefix for an integer type
 
+	reference_type_prefix: STRING = "r::"
+			-- Prefix for a reference type
+
 end

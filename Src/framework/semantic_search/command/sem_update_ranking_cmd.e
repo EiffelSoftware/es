@@ -49,7 +49,7 @@ feature{NONE} -- Implementation
 		do
 			create l_finder.make_with_pattern ("tran.+\.ssql")
 			l_finder.file_found_actions.extend (agent on_file_found)
-			l_finder.search (config.mysql_file_directory)
+			l_finder.search (config.input)
 		end
 
 	on_file_found (a_path: STRING; a_file_name: STRING)

@@ -11,7 +11,8 @@ inherit
 	EGX_DOT_GRAPH_PRINTER [N, L]
 
 create
-	make
+	make,
+	make_default
 
 feature{NONE} -- Initialization
 
@@ -22,6 +23,12 @@ feature{NONE} -- Initialization
 			set_edge_label_agent (a_edge_label_agent)
 			set_node_style_agent (Void)
 			set_edge_style_agent (Void)
+		end
+
+	make_default
+			-- Initialize Current.
+		do
+			make (default_node_label, default_edge_label)
 		end
 
 feature -- Last printing
@@ -287,7 +294,7 @@ feature{NONE} -- Implementation
 						if n = Void then
 							Result := "Void"
 						else
-							Result := ($n).out
+							Result := n.out
 						end
 					end
 
@@ -299,7 +306,11 @@ feature{NONE} -- Implementation
 			Result :=
 				agent (sn: N; en: N; l: L): STRING
 					do
-						Result := ""
+						if l = Void then
+							Result := ""
+						else
+							Result := l.out
+						end
 					end
 		end
 

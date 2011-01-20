@@ -149,7 +149,7 @@ feature -- Basic operatioins
 			-- in `last_relations', `last_fault_relations', `last_only_passing_relation' and `last_fault_relations'.
 			-- In this mode, all expressions in all added queryables will appear
 			-- as an attribute in the final ARFF data. If some expressions only appear in some
-			-- queryables, in the ARFF data, the will be missing values in lines
+			-- queryables, in the ARFF data, there will be missing values in lines
 			-- for queryables in which those expressions does not appear.
 			-- `a_base_relation_name' is the basic part of the ARFF relation name, depending on the type of
 			-- ARFF file to generate (see `should_generate_arff_for_all_test_cases'), extra part
@@ -377,15 +377,15 @@ feature{NONE} -- Process
 			extend_operand_equality_attributes (a_call)
 
 				-- Generate attributes for pre- and post-conditions.
-			a_call.interface_preconditions.do_if (agent extend_attribute (?, property_kind_precondition), agent is_equation_suitable_as_attribute (?, a_call))
-			a_call.interface_postconditions.do_if (agent extend_attribute (?, property_kind_postcondition), agent is_equation_suitable_as_attribute (?, a_call))
+			a_call.interface_preconditions.do_if (agent extend_attribute (?, property_kind_precondition, a_call), agent is_equation_suitable_as_attribute (?, a_call))
+			a_call.interface_postconditions.do_if (agent extend_attribute (?, property_kind_postcondition, a_call), agent is_equation_suitable_as_attribute (?, a_call))
 
 				-- Generate attributes for extra expressions including interesting expression, path conditions
 				-- extracted from the source code of the feature under analysis.
 			create_expresion_evaluator (a_call)
 			l_extra_expressions := extra_expressions_for_transitions (a_call, True)
 			l_evaluations := expression_evaluations (l_extra_expressions)
-			l_evaluations.do_all (agent extend_attribute (?, property_kind_precondition))
+			l_evaluations.do_all (agent extend_attribute (?, property_kind_precondition, a_call))
 
 				-- Generate attributes for changes.
 			from
@@ -408,7 +408,7 @@ feature{NONE} -- Process
 								end
 								if not l_change.values.is_empty then
 									l_value := value_from_expression (l_change.values.first)
-									extend_attribute (create {EPA_EQUATION}.make (l_expr, l_value), l_change_kind)
+									extend_attribute (create {EPA_EQUATION}.make (l_expr, l_value), l_change_kind, a_call)
 								end
 							end
 						end
@@ -449,25 +449,27 @@ feature{NONE} -- Implementation
 			l_position: INTEGER
 			l_type: TYPE_A
 		do
-			if a_equation.expression.type.is_boolean or a_equation.expression.type.is_integer then
+--			if a_equation.expression.type.is_boolean or a_equation.expression.type.is_integer then
 				if a_transition.inputs.has (a_equation.expression) or else a_transition.outputs.has (a_equation.expression) then
 					l_position := a_transition.operand_variable_positions.item (a_equation.expression)
 					l_feat := a_transition.feature_
 					if l_position = 0 then
-						Result := False
+						Result := True
 					elseif l_position > l_feat.argument_count then
 						if l_feat.has_return_value then
-							Result := l_feat.type.is_integer or l_feat.type.is_boolean
+							Result := True
+--							Result := l_feat.type.is_integer or l_feat.type.is_boolean
 						end
 					else
 						l_type := l_feat.arguments.i_th (l_position)
-						Result := l_type.is_integer or l_type.is_boolean
+						Result := True
+--						Result := l_type.is_integer or l_type.is_boolean
 					end
 				else
 					integer_argumented_query_matcher.match (a_equation.text)
 					Result := not integer_argumented_query_matcher.has_matched
 				end
-			end
+--			end
 		end
 
 	extend_operand_equality_attributes (a_transition: SEM_FEATURE_CALL_TRANSITION)
@@ -547,17 +549,27 @@ feature{NONE} -- Implementation
 				l_expr1 := l_pairs.item.first
 				l_expr2 := l_pairs.item.last
 				if attached {EPA_BOOLEAN_VALUE} value_of_var1_equal_to_var2 (l_expr1, l_expr2, l_state) as l_bool_value then
-					l_expr_text := l_expr1.text + " = " + l_expr2.text
+					create l_expr_text.make (64)
+					l_expr_text.append_character ('(')
+					l_expr_text.append (l_expr1.text)
+					l_expr_text.append (once " = ")
+					l_expr_text.append (l_expr2.text)
+					l_expr_text.append_character (')')
 					create l_expr.make_with_text (l_expr1.class_, l_expr1.feature_, l_expr_text, l_expr1.written_class)
 					create l_equation.make (l_expr, l_bool_value)
-					extend_attribute (l_equation, property_kind_precondition)
+					extend_attribute (l_equation, property_kind_precondition, a_transition)
 				end
 
 				if attached {EPA_BOOLEAN_VALUE} value_of_var1_object_equal_to_var2 (l_expr1, l_expr2, l_state) as l_bool_value then
-					l_expr_text := l_expr1.text + " ~ " + l_expr2.text
+					create l_expr_text.make (64)
+					l_expr_text.append_character ('(')
+					l_expr_text.append (l_expr1.text)
+					l_expr_text.append (once " ~ ")
+					l_expr_text.append (l_expr2.text)
+					l_expr_text.append_character (')')
 					create l_expr.make_with_text (l_expr1.class_, l_expr1.feature_, l_expr_text, l_expr1.written_class)
 					create l_equation.make (l_expr, l_bool_value)
-					extend_attribute (l_equation, property_kind_precondition)
+					extend_attribute (l_equation, property_kind_precondition, a_transition)
 				end
 			end
 		end
@@ -742,7 +754,7 @@ feature{NONE} -- Implementation
 			create l_equation.make (l_expr, l_bool)
 
 				-- Extend new attribute.
-			extend_attribute (l_equation, property_kind_postcondition)
+			extend_attribute (l_equation, property_kind_postcondition, a_transition)
 		end
 
 feature{NONE} -- Status report
@@ -767,22 +779,36 @@ feature{NONE} -- Implementation
 			instances.extend (last_instance)
 		end
 
-	extend_attribute (a_equation: EPA_EQUATION; a_attribute_kind: INTEGER)
+	extend_attribute (a_equation: EPA_EQUATION; a_attribute_kind: INTEGER; a_queryable: SEM_QUERYABLE)
 			-- Extend attribute described in `a_equation' into Current generator.
 			-- `a_attribute_kind' indicates the kind of `a_equation'.
+			-- `a_queryable' is the queryable where `a_equation' is from.
 		require
 			a_attribute_kind_valid: is_property_kind_valid (a_attribute_kind)
 		local
 			l_attr_name: STRING
 			l_attributes: like attributes
+			l_type: detachable TYPE_A
+			l_pos_tbl: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
+			l_operand_index: INTEGER
 		do
 				-- Construct attribute name.
 			create l_attr_name.make (64)
-			l_attr_name.append (attribute_prefix (a_equation.expression.type, a_attribute_kind))
+			if attached {SEM_FEATURE_CALL_TRANSITION} a_queryable as l_transition then
+				l_pos_tbl := l_transition.variable_positions
+				l_pos_tbl.search (a_equation.expression)
+				if l_pos_tbl.found then
+					l_operand_index := l_pos_tbl.found_item
+					l_type := operand_types_with_feature (l_transition.feature_, l_transition.class_).item (l_operand_index)
+				end
+			end
+			if l_type = Void then
+				l_type := a_equation.expression.type
+			end
+			l_attr_name.append (attribute_prefix (l_type, a_attribute_kind))
 			l_attr_name.append (anonymous_form (a_equation.expression))
-
 			if not attributes.has (l_attr_name) then
-				extend_new_attribute (l_attr_name, a_equation, a_attribute_kind)
+				extend_new_attribute (l_attr_name, a_equation, a_attribute_kind, l_type)
 			end
 			last_instance.force (value_of_attribute (a_equation), l_attr_name)
 		end
@@ -798,55 +824,55 @@ feature{NONE} -- Implementation
 			create Result.make (10)
 			Result.set_equality_tester (expression_equality_tester)
 
-			l_text := "i < Current.lower - 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i < Current.lower - 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "i = Current.lower - 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i = Current.lower - 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "i > Current.lower - 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i > Current.lower - 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "i > Current.upper + 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i > Current.upper + 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "i = Current.upper + 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i = Current.upper + 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "i < Current.upper + 1"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "i < Current.upper + 1"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "not ((i = Current.upper + 1) or (i = Current.lower - 1))"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "not ((i = Current.upper + 1) or (i = Current.lower - 1))"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "(Current.upper.max (i) - Current.lower.min (i) + 1) > Current.area.capacity"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "(Current.upper.max (i) - Current.lower.min (i) + 1) > Current.area.capacity"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "Current.lower.min (i) < Current.lower"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "Current.lower.min (i) < Current.lower"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
-			l_text := "Current.upper.max (i) - Current.lower.min (i) + 1 > Current.area.count"
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
-			l_expr := expression_in_test_context (a_call, l_expr)
-			Result.force_last (l_expr)
+--			l_text := "Current.upper.max (i) - Current.lower.min (i) + 1 > Current.area.count"
+--			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
+--			l_expr := expression_in_test_context (a_call, l_expr)
+--			Result.force_last (l_expr)
 
 		end
 
@@ -913,15 +939,16 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	extend_new_attribute (a_name: STRING; a_equation: EPA_EQUATION; a_kind: INTEGER)
+	extend_new_attribute (a_name: STRING; a_equation: EPA_EQUATION; a_kind: INTEGER; a_type: TYPE_A)
 			-- Extend new attribute name `a_name' with content `a_equation' of property kind `a_kind'.
+			-- `a_type' is the type of the expression in `a_equation'.
 		require
 			a_kind_valid: is_property_kind_valid (a_kind)
 			a_name_not_exist: not attributes.has (a_name)
 		do
 			attributes.force_last (a_name)
-			attribute_types.force (a_equation.type, a_name)
-			default_values.force (default_value (a_equation.type, a_kind), a_name)
+			attribute_types.force (a_type, a_name)
+			default_values.force (default_value (a_type, a_kind), a_name)
 		end
 
 	extend_meta_attribute (a_name: STRING; a_value: STRING; a_type: TYPE_A)
@@ -989,7 +1016,7 @@ feature{NONE} -- Implementation
 			elseif a_type.is_integer then
 				Result.append (integer_type_prefix)
 			else
-				Result.append (integer_type_prefix)
+				Result.append (reference_type_prefix)
 			end
 		end
 
@@ -1023,10 +1050,12 @@ feature{NONE} -- Implementation
 				l_type := attribute_types.item (l_attr_name)
 				if l_type.is_boolean or l_type.is_integer then
 					create {WEKA_ARFF_NUMERIC_ATTRIBUTE} l_attribute.make (l_attr_name)
-				elseif l_type.is_void then
-					create {WEKA_ARFF_STRING_ATTRIBUTE} l_attribute.make (l_attr_name)
+--				elseif l_type.is_void then
+--					create {WEKA_ARFF_STRING_ATTRIBUTE} l_attribute.make (l_attr_name)
 				elseif l_type.is_none then
 					create {WEKA_ARFF_NOMINAL_ATTRIBUTE} l_attribute.make (l_attr_name, values_for_attribute.item (l_attr_name))
+				else
+					create {WEKA_ARFF_STRING_ATTRIBUTE} l_attribute.make (l_attr_name)
 				end
 				Result.extend (l_attribute)
 				l_cursor.forth

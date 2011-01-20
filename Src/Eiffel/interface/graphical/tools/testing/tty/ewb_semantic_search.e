@@ -56,6 +56,8 @@ feature -- Properties
 			l_config: SEM_CONFIG
 			l_add_doc_cmd: SEM_ADD_DOCUMENT_TO_MYSQL_CMD
 			l_update_ranking_cmd: SEM_UPDATE_RANKING_CMD
+			l_generate_arff_cmd: SEM_GENERATE_ARFF_CMD
+			l_generate_inv_cmd: SEM_GENERATE_DAIKON_INVARIANT_CMD
 		do
 			create l_parser.make_with_arguments (semantic_search_arguments, system)
 			l_parser.parse
@@ -66,11 +68,17 @@ feature -- Properties
 			elseif l_config.should_update_ranking then
 				create l_update_ranking_cmd.make (l_config)
 				l_update_ranking_cmd.execute
+			elseif l_config.should_generate_arff then
+				create l_generate_arff_cmd.make (l_config)
+				l_generate_arff_cmd.execute
+			elseif l_config.should_generate_invariant then
+				create l_generate_inv_cmd.make (l_config)
+				l_generate_inv_cmd.execute
 			end
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

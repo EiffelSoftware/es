@@ -36,7 +36,7 @@ feature -- Basic operations
 			create file_searcher.make_with_pattern (once "ssql")
 			file_searcher.file_found_actions.extend (agent import_file (?, ?))
 			file_searcher.set_is_search_recursive (true) -- CAREFUL
-			file_searcher.search (config.mysql_file_directory)
+			file_searcher.search (config.input)
 
 			-- Cleanup
 			queryables.close_mysql

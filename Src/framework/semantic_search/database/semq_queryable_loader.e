@@ -92,7 +92,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	state_with_filter (a_class: CLASS_C; a_feature: FEATURE_I; a_filter: FUNCTION [ANY, TUPLE [IR_FIELD], BOOLEAN]): EPA_STATE
+	state_with_filter (a_class: CLASS_C; a_feature: FEATURE_I; a_filter: FUNCTION [ANY, TUPLE [IR_FIELD], BOOLEAN]; a_context: EPA_CONTEXT): EPA_STATE
 			-- State from loaded data.
 		local
 			l_field: IR_FIELD
@@ -108,11 +108,15 @@ feature{NONE} -- Implementation
 			l_any_type: TYPE_A
 			l_integer_type: TYPE_A
 			l_boolean_type: TYPE_A
+			l_context_class: CLASS_C
+			l_context_feature: FEATURE_I
 		do
 			create Result.make (100, a_class, a_feature)
 			l_any_type := workbench.system.any_type
 			l_integer_type := integer_type
 			l_boolean_type := boolean_type
+			l_context_class := a_context.class_
+			l_context_feature := a_context.feature_
 			across fields as l_fields loop
 				l_field := l_fields.item
 				if a_filter.item ([l_field]) then
@@ -123,17 +127,20 @@ feature{NONE} -- Implementation
 					if l_value_type_kind = 1 then
 							-- Boolean type.
 						create l_boolean_value.make (l_value.to_integer = 1)
-						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_boolean_type)
+--						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_boolean_type)
+						create l_expr.make_with_text (l_context_class, l_context_feature, l_parts.first, l_context_class)
 						create l_equation.make (l_expr, l_boolean_value)
 					elseif l_value_type_kind = 2 then
 							-- Integer type.
 						create l_integer_value.make (l_value.to_integer)
-						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_integer_type)
+--						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_integer_type)
+						create l_expr.make_with_text (l_context_class, l_context_feature, l_parts.first, l_context_class)
 						create l_equation.make (l_expr, l_integer_value)
 					else
 							-- Reference type.						
 						create l_reference_value.make (once "0x" + l_value, l_any_type)
-						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_any_type)
+--						create l_expr.make_with_standard_text_and_type (a_class, a_feature, l_parts.first, a_class, l_any_type)
+						create l_expr.make_with_text (l_context_class, l_context_feature, l_parts.first, l_context_class)
 						l_reference_value.set_object_equivalent_class_id (l_equal_value.to_integer)
 						create l_equation.make (l_expr, l_reference_value)
 					end
@@ -285,8 +292,8 @@ feature{NONE} -- Implementation
 			l_tran.set_uuid (uuid)
 			l_tran.set_is_passing (fields_by_name.item (test_case_status_field).first.value_text.to_boolean)
 			l_tran.hit_breakpoints.append (hit_breakpoints)
-			l_tran.set_preconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property))
-			l_tran.set_postconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property))
+			l_tran.set_preconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property, l_context))
+			l_tran.set_postconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property, l_context))
 			load_changes (l_tran)
 
 				-- Setup meta data.

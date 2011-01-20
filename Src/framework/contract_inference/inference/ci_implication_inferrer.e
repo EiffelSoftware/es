@@ -28,7 +28,7 @@ feature -- Basic operations
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
 		local
-			l_loader: WEKA_ARFF_RELATION_PARSER
+			l_loader: WEKA_ARFF_RELATION_LOADER
 		do
 				-- Initialize.
 			data := a_data

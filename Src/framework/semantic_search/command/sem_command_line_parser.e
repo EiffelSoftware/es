@@ -1,4 +1,5 @@
-﻿note
+﻿
+note
 	description: "Command line parser for semantic search functionalities"
 	author: ""
 	date: "$Date$"
@@ -48,6 +49,12 @@ feature -- Basic operations
 			l_feature: AP_STRING_OPTION
 			l_update_ranking_flag: AP_FLAG
 			l_timestamp: AP_STRING_OPTION
+			l_output: AP_STRING_OPTION
+			l_input: AP_STRING_OPTION
+			l_generate_arff: AP_FLAG
+			l_feature_kind: AP_STRING_OPTION
+			l_generate_inv: AP_FLAG
+			l_str_list: LINKED_LIST [STRING]
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -74,8 +81,9 @@ feature -- Basic operations
 			l_mysql_password.set_description ("Specify password of MySQL server.")
 			l_parser.options.force_last (l_mysql_password)
 
-			create l_directory.make_with_long_form ("directory")
-			l_directory.set_description ("Specify the directory of the sql related files.")
+				-- Note: this option is duplicated with l_ssql_directory.
+			create l_directory.make_with_long_form ("input")
+			l_directory.set_description ("Specify the path for inputs. Depending on the operation to perform, input can point to a file or a directory.")
 			l_parser.options.force_last (l_directory)
 
 			create l_mysql_schema.make_with_long_form ("mysql-schema")
@@ -98,6 +106,40 @@ feature -- Basic operations
 			l_timestamp.set_description ("Specify timestamp of the documents.")
 			l_parser.options.force_last (l_timestamp)
 
+			create l_output.make_with_long_form ("output")
+			l_output.set_description ("Specify the path for outputs. Depending on the operation to perform, output can point to a file or a directory.")
+			l_parser.options.force_last (l_output)
+
+			create l_generate_arff.make_with_long_form ("generate-arff")
+			l_generate_arff.set_description (
+				"Generate ARFF files from ssql files. %
+				%Format: --generate-arff [--class CLASS_NAME] [--feature FEATURE_NAME] [--feature-kind FEAT_KIND[,FEAT_KIND]] --input SSQL_DIR --output OUTPUT_DIR.%
+				%SSQL_DIR is the directory storing ssql files. If CLASS_NAME is given, we assume SSQL_DIR contains ssql files for only that class;%
+				%If CLASS_NAME is not given, we assume SSQL_DIR stores ssql files for a set of classes, and we'll generate ARFF for all found classes.%N%
+				%FEAT_KIND specifies the kinds of features, valid kinds include all, command, query, attribute, function. If feature-kind is not present,%
+				%the default is all.%N. FEATURE_NAME specifies the feature whose ARFF needs to be generated. If not present, ARFF files will be generated%N%
+				%for all features passing the feature-kind test. OUTPUT_DIR is the place to store generated ARFF files.%N")
+			l_parser.options.force_last (l_generate_arff)
+
+			create l_feature_kind.make_with_long_form ("feature-kind")
+			l_feature_kind.set_description (
+				"Specifiy the kinds of features used in some operation.%N%
+				%Format: --feature-kind FEAT_KIND[,FEAT_KIND]%N%
+				%Valid values for FEAT_KIND are: all, command, query, attribute, function.%N")
+			l_parser.options.force_last (l_feature_kind)
+
+
+			create l_generate_inv.make_with_long_form ("generate-invariant")
+			l_generate_inv.set_description (
+				"Generate invariants using Daikon files from ARFF files. %
+				%Format: --generate-arff [--class CLASS_NAME] [--feature FEATURE_NAME] [--feature-kind FEAT_KIND[,FEAT_KIND]] --input ARFF_DIR --output OUTPUT_DIR.%
+				%ARFF_DIR is the directory storing ARFF files. If CLASS_NAME is given, we assume SSQL_DIR contains ssql files for only that class;%
+				%If CLASS_NAME is not given, we assume ARFF_DIR stores ARFF files for a set of classes, and we'll generate invariants for all found classes.%N%
+				%FEAT_KIND specifies the kinds of features, valid kinds include all, command, query, attribute, function. If feature-kind is not present,%
+				%the default is all.%N. FEATURE_NAME specifies the feature whose invariants needs to be generated. If not present, invariant files will be generated%N%
+				%for all features passing the feature-kind test. OUTPUT_DIR is the place to store generated invariant files.%N")
+			l_parser.options.force_last (l_generate_inv)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -105,7 +147,11 @@ feature -- Basic operations
 			end
 
 			if l_directory.was_found then
-				config.set_mysql_file_directory (l_directory.parameter)
+				config.set_input (l_directory.parameter)
+			end
+
+			if l_output.was_found then
+				config.set_output (l_output.parameter)
 			end
 
 			if l_mysql_host.was_found then
@@ -144,6 +190,22 @@ feature -- Basic operations
 				config.set_timestamp (l_timestamp.parameter)
 			else
 				config.set_timestamp ("")
+			end
+
+			if l_feature_kind.was_found then
+				config.set_feature_kinds (l_feature_kind.parameter.split (','))
+			else
+				create l_str_list.make
+				l_str_list.extend ({SEM_CONFIG}.all_feature_kind)
+				config.set_feature_kinds (l_str_list)
+			end
+
+			if l_generate_arff.was_found then
+				config.set_should_generate_arff (True)
+			end
+
+			if l_generate_inv.was_found then
+				config.set_should_generate_invariant (True)
 			end
 		end
 
