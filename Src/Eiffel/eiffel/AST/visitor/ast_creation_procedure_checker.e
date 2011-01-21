@@ -31,6 +31,7 @@ inherit
 			process_nested_as,
 			process_once_as,
 			process_precursor_as,
+			process_retry_as,
 			process_routine_as
 		end
 
@@ -233,7 +234,11 @@ feature {AST_EIFFEL} -- Visitor: access to features
 					end
 					if not bodies.has (f.body_index) then
 							-- This feature has not been processed yet.
-						if f.is_routine then
+						if f.is_failing then
+								-- The feature never exits, all bets after calling it are off.
+								-- In particular all the attributes may be considered initialized.
+							attribute_initialization.set_all
+						elseif f.is_routine then
 							process (f)
 						elseif f.is_attribute then
 							if is_attachment then
@@ -419,6 +424,13 @@ feature {AST_EIFFEL} -- Visitor: compound
 			safe_process (a.variant_part)
 		end
 
+	process_retry_as (a: RETRY_AS)
+		do
+				-- The code after this instruction is never reached.
+				-- All the variables may be considered properly initialized.
+			attribute_initialization.set_all
+		end
+
 	process_routine_as (a: ROUTINE_AS)
 		do
 			safe_process (a.precondition)
@@ -509,7 +521,7 @@ feature {NONE} -- Access
 			-- Bodies that are being processed
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

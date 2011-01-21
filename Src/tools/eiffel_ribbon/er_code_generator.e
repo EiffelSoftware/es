@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 			create l_constants
 			create l_singleton
 			if attached l_singleton.project_info_cell.item as l_info then
-				if attached l_constants.project_configuration_file_name as l_project_config then
+				if attached l_constants.project_full_file_name as l_project_config then
 					create l_file.make (l_project_config)
 					l_file.create_read_write
 					create l_sed.make (l_file)
@@ -210,32 +210,48 @@ feature {NONE} -- Implementation
 		end
 
 	generate_readonly_classes
+			--
+		local
+			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
+			l_singleton: ER_SHARED_SINGLETON
+		do
+			-- Parse EV_TREE until Ribbon.Tabs
+--			from
+				create l_singleton
+				l_list := l_singleton.layout_constructor_list
+--				l_list.start
+--			until
+--				l_list.after
+--			loop
+--				generate_readonly_classes_imp (l_list.item)
+--				l_list.forth
+--			end
+			-- FIXME: Current only generate classes for default window (application mode is 0)
+			generate_readonly_classes_imp (l_list.first)
+		end
+
+	generate_readonly_classes_imp (a_layout_constructor: ER_LAYOUT_CONSTRUCTOR)
 			-- Generate readonly ribbon widget classes
 		local
-			l_singleton: ER_SHARED_SINGLETON
 			l_tree: EV_TREE
 			l_tree_node: detachable EV_TREE_NODE
 			l_xml: ER_XML_CONSTANTS
 		do
-			-- Parse EV_TREE until Ribbon.Tabs
-			create l_singleton
-			if attached l_singleton.layout_constructor_cell.item as l_layout_constructor then
-				from
-					create l_xml
-					l_tree := l_layout_constructor.widget
-					l_tree.start
-				until
-					l_tree.after or l_tree_node /= Void
-				loop
-					l_tree_node := tree_node_with_text (l_tree.item, l_xml.ribbon_tabs)
+			from
+				create l_xml
+				l_tree := a_layout_constructor.widget
+				l_tree.start
+			until
+				l_tree.after or l_tree_node /= Void
+			loop
+				l_tree_node := tree_node_with_text (l_tree.item, l_xml.ribbon_tabs)
 
-					l_tree.forth
-				end
+				l_tree.forth
+			end
 
-				if l_tree_node /= Void then
-					-- Start real generation
-					generate_tool_bar_class (l_tree_node)
-				end
+			if l_tree_node /= Void then
+				-- Start real generation
+				generate_tool_bar_class (l_tree_node)
 			end
 		end
 
@@ -456,9 +472,9 @@ feature {NONE} -- Implementation
 
 			create l_singleton
 			l_sub_dir := "code_generated_once_change_by_user"
-			l_tool_bar_tab_file := "ribbon_tab"
+			l_tool_bar_tab_file := "ribbon_tab_imp"
 			l_sub_imp_dir := "code_generated_everytime"
-			l_tool_bar_tab_imp_file := "ribbon_tab_imp"
+			l_tool_bar_tab_imp_file := "ribbon_tab"
 
 			if attached l_singleton.project_info_cell.item as l_project_info then
 				if attached l_project_info.project_location as l_project_location then
@@ -664,9 +680,9 @@ feature {NONE} -- Implementation
 
 			create l_singleton
 			l_sub_dir := "code_generated_once_change_by_user"
-			l_tool_bar_group_file := "ribbon_group"
+			l_tool_bar_group_file := "ribbon_group_imp"
 			l_sub_imp_dir := "code_generated_everytime"
-			l_tool_bar_group_imp_file := "ribbon_group_imp"
+			l_tool_bar_group_imp_file := "ribbon_group"
 
 			if attached l_singleton.project_info_cell.item as l_project_info then
 				if attached l_project_info.project_location as l_project_location then

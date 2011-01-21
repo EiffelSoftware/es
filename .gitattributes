@@ -515,12 +515,6 @@ Documentation/tools/web/trunk/misc/patches/eiffel.php -text
 Documentation/tools/web/trunk/misc/patches/htaccess -text
 Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
-Src/C/CONFIGS/haiku-x86 -text
-Src/C/CONFIGS/iphone-arm -text
-Src/C/CONFIGS/iphone-x86 -text
-Src/C/CONFIGS/macosx-x86-64 -text
-Src/C/CONFIGS/openbsd-x86-64 -text
-Src/C/CONFIGS/windows-x86-64-mingw -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/run-time/include/gc_pthread_redirects.h -text
