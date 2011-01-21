@@ -44,6 +44,11 @@ feature -- Access
 		deferred
 		end
 
+	temp_directory: STRING
+			-- Temp directory from current user
+		deferred
+		end
+
 feature -- Status report
 
 	should_remove_generated_files: BOOLEAN

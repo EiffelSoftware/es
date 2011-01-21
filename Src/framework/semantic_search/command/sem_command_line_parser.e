@@ -55,6 +55,10 @@ feature -- Basic operations
 			l_feature_kind: AP_STRING_OPTION
 			l_generate_inv: AP_FLAG
 			l_str_list: LINKED_LIST [STRING]
+			l_generate_decision_tree: AP_FLAG
+			l_rapidminer_home: AP_STRING_OPTION
+			l_rapidminer_process: AP_STRING_OPTION
+			l_dot_path: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -140,6 +144,28 @@ feature -- Basic operations
 				%for all features passing the feature-kind test. OUTPUT_DIR is the place to store generated invariant files.%N")
 			l_parser.options.force_last (l_generate_inv)
 
+			create l_generate_decision_tree.make_with_long_form ("generate-decision-tree")
+			l_generate_decision_tree.set_description (
+				"Generate decision tree using RapidMiner from ARFF file.%N%
+				%Format: --generate-decision-tree --rapidminer-process PROCESS_FILE --rapidminer-home RAPID_MINER --input ARFF_FILE --output TREE_FILE [--dot DOT_FILE]%N%
+				%PROCESS_FILE is the absolute path to the RapidMiner process file. This process file should have two placeholders ${INPUT} and ${OUTPUT}.%N%
+				%${INPUT} will be replaced by ARFF_FILE, and ${OUTPUT} will be replaced by TREE_FILE.%N%
+				%if DOT_FILE is specified, the Dot representation of the generated tree will be saved in DOT_FILE.%N%
+				%RAPID_MINER is the home directory of the RapidMiner installation.%N")
+			l_parser.options.force_last (l_generate_decision_tree)
+
+			create l_dot_path.make_with_long_form ("dot")
+			l_dot_path.set_description ("Specify the path to save dot representation for generated decision trees. See --generate-decision-tree for more details.")
+			l_parser.options.force_last (l_dot_path)
+
+			create l_rapidminer_home.make_with_long_form ("rapidminer-home")
+			l_rapidminer_home.set_description ("Specify the home directory of RapidMiner installation.")
+			l_parser.options.force_last (l_rapidminer_home)
+
+			create l_rapidminer_process.make_with_long_form ("rapidminer-process")
+			l_rapidminer_process.set_description ("Specify the process file used by RapidMiner.")
+			l_parser.options.force_last (l_rapidminer_process)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -206,6 +232,22 @@ feature -- Basic operations
 
 			if l_generate_inv.was_found then
 				config.set_should_generate_invariant (True)
+			end
+
+			if l_generate_decision_tree.was_found then
+				config.set_should_generate_decision_tree (True)
+			end
+
+			if l_dot_path.was_found then
+				config.set_dot_path (l_dot_path.parameter)
+			end
+
+			if l_rapidminer_home.was_found then
+				config.set_rapidminer_home (l_rapidminer_home.parameter)
+			end
+
+			if l_rapidminer_process.was_found then
+				config.set_rapidminer_process_path (l_rapidminer_process.parameter)
 			end
 		end
 

@@ -286,58 +286,63 @@ feature{NONE} -- Implementation
 				-- Set transition.
 			l_class := first_class_starts_with_name (fields_by_name.item (class_field).first.value_text)
 			l_feature := l_class.feature_named (fields_by_name.item (feature_field).first.value_text)
-			l_context := context_from_field (fields_by_name.item (pre_object_info_field).first)
-			l_variables := variable_with_positions (l_feature)
-			create l_tran.make (l_class, l_feature, l_variables, l_context, fields_by_name.item (is_creation_field).first.value_text.to_boolean)
-			l_tran.set_uuid (uuid)
-			l_tran.set_is_passing (fields_by_name.item (test_case_status_field).first.value_text.to_boolean)
-			l_tran.hit_breakpoints.append (hit_breakpoints)
-			l_tran.set_preconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property, l_context))
-			l_tran.set_postconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property, l_context))
-			load_changes (l_tran)
+			if fields_by_name.item (pre_object_info_field) /= Void then
+				l_context := context_from_field (fields_by_name.item (pre_object_info_field).first)
+				l_variables := variable_with_positions (l_feature)
+				create l_tran.make (l_class, l_feature, l_variables, l_context, fields_by_name.item (is_creation_field).first.value_text.to_boolean)
+				l_tran.set_uuid (uuid)
+				l_tran.set_is_passing (fields_by_name.item (test_case_status_field).first.value_text.to_boolean)
+				l_tran.hit_breakpoints.append (hit_breakpoints)
+				l_tran.set_preconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_precondition_property, l_context))
+				l_tran.set_postconditions_unsafe (state_with_filter (l_tran.class_, l_tran.feature_, agent is_postcondition_property, l_context))
+				load_changes (l_tran)
 
-				-- Setup meta data.
-			if fields_by_name.has (pre_serialization_field) then
-				last_meta.put (fields_by_name.item (pre_serialization_field).first.value_text, pre_serialization_field)
-			end
-			if fields_by_name.has (timestamp_field) then
-				last_meta.put (fields_by_name.item (timestamp_field).first.value_text, timestamp_field)
-			end
-			if fields_by_name.has (pre_serialization_field) then
-				last_meta.put (fields_by_name.item (pre_serialization_field).first.value_text, pre_serialization_field)
-			end
+					-- Setup meta data.
+				if fields_by_name.has (pre_serialization_field) then
+					last_meta.put (fields_by_name.item (pre_serialization_field).first.value_text, pre_serialization_field)
+				end
+				if fields_by_name.has (timestamp_field) then
+					last_meta.put (fields_by_name.item (timestamp_field).first.value_text, timestamp_field)
+				end
+				if fields_by_name.has (pre_serialization_field) then
+					last_meta.put (fields_by_name.item (pre_serialization_field).first.value_text, pre_serialization_field)
+				end
 
-			if fields_by_name.has (recipient_field) then
-				last_meta.put (fields_by_name.item (recipient_field).first.value_text, recipient_field)
+				if fields_by_name.has (recipient_field) then
+					last_meta.put (fields_by_name.item (recipient_field).first.value_text, recipient_field)
+				end
+				if fields_by_name.has (recipient_class_field) then
+					last_meta.put (fields_by_name.item (recipient_class_field).first.value_text, recipient_class_field)
+				end
+				if fields_by_name.has (exception_break_point_slot_field) then
+					last_meta.put (fields_by_name.item (exception_break_point_slot_field).first.value_text, exception_break_point_slot_field)
+				end
+				if fields_by_name.has (exception_code_field) then
+					last_meta.put (fields_by_name.item (exception_code_field).first.value_text, exception_code_field)
+				end
+				if fields_by_name.has (exception_meaning_field) then
+					last_meta.put (fields_by_name.item (exception_meaning_field).first.value_text, exception_meaning_field)
+				end
+				if fields_by_name.has (exception_trace_field) then
+					last_meta.put (fields_by_name.item (exception_trace_field).first.value_text, exception_trace_field)
+				end
+				if fields_by_name.has (exception_tag_field) then
+					last_meta.put (fields_by_name.item (exception_tag_field).first.value_text, exception_tag_field)
+				end
+				if fields_by_name.has (fault_id_field) then
+					last_meta.put (fields_by_name.item (fault_id_field).first.value_text, fault_id_field)
+				end
+				if fields_by_name.has (prestate_bounded_functions_field) then
+					last_meta.put (fields_by_name.item (prestate_bounded_functions_field).first.value_text, prestate_bounded_functions_field)
+				end
+				if fields_by_name.has (poststate_bounded_functions_field) then
+					last_meta.put (fields_by_name.item (poststate_bounded_functions_field).first.value_text, poststate_bounded_functions_field)
+				end
+				last_queryable := l_tran
+			else
+				last_queryable := Void
+				last_meta := Void
 			end
-			if fields_by_name.has (recipient_class_field) then
-				last_meta.put (fields_by_name.item (recipient_class_field).first.value_text, recipient_class_field)
-			end
-			if fields_by_name.has (exception_break_point_slot_field) then
-				last_meta.put (fields_by_name.item (exception_break_point_slot_field).first.value_text, exception_break_point_slot_field)
-			end
-			if fields_by_name.has (exception_code_field) then
-				last_meta.put (fields_by_name.item (exception_code_field).first.value_text, exception_code_field)
-			end
-			if fields_by_name.has (exception_meaning_field) then
-				last_meta.put (fields_by_name.item (exception_meaning_field).first.value_text, exception_meaning_field)
-			end
-			if fields_by_name.has (exception_trace_field) then
-				last_meta.put (fields_by_name.item (exception_trace_field).first.value_text, exception_trace_field)
-			end
-			if fields_by_name.has (exception_tag_field) then
-				last_meta.put (fields_by_name.item (exception_tag_field).first.value_text, exception_tag_field)
-			end
-			if fields_by_name.has (fault_id_field) then
-				last_meta.put (fields_by_name.item (fault_id_field).first.value_text, fault_id_field)
-			end
-			if fields_by_name.has (prestate_bounded_functions_field) then
-				last_meta.put (fields_by_name.item (prestate_bounded_functions_field).first.value_text, prestate_bounded_functions_field)
-			end
-			if fields_by_name.has (poststate_bounded_functions_field) then
-				last_meta.put (fields_by_name.item (poststate_bounded_functions_field).first.value_text, poststate_bounded_functions_field)
-			end
-			last_queryable := l_tran
 		end
 
 	build_objects

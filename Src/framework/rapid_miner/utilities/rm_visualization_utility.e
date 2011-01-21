@@ -87,5 +87,5 @@ feature{NONE} -- Implementation
 		do
 			Result := a_string ~ b_string
 		end
-		
+
 end

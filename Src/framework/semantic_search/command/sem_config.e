@@ -71,6 +71,15 @@ feature -- Access
 	feature_kinds: DS_HASH_SET [STRING]
 			-- Set of specified feature kinds
 
+	dot_path: detachable STRING
+			-- Path to store dot file
+
+	rapidminer_home: detachable STRING
+			-- Path to the home directory of RapidMiner installation
+
+	rapidminer_process_path: detachable STRING
+			-- Path to the process file to be executed by RapidMiner
+
 feature -- Constants
 
 	all_feature_kind: STRING = "all"
@@ -92,6 +101,9 @@ feature -- Status report
 
 	should_generate_invariant: BOOLEAN
 			-- Should invariants be generated?
+
+	should_generate_decision_tree: BOOLEAN
+			-- Should decision tree be generated from an ARFF file?
 
 feature -- Setting
 
@@ -215,6 +227,32 @@ feature -- Setting
 			should_generate_invariant := b
 		ensure
 			should_generate_invariant_set: should_generate_invariant = b
+		end
+
+	set_should_generate_decision_tree (b: BOOLEAN)
+			-- Set `should_generate_decision_tree' with `b'.
+		do
+			should_generate_decision_tree := b
+		ensure
+			should_generate_decision_tree_set: should_generate_decision_tree = b
+		end
+
+	set_dot_path (a_path: STRING)
+			-- Set `dot_path' with `a_path'.
+		do
+			dot_path := a_path
+		end
+
+	set_rapidminer_home (a_home: STRING)
+			-- Set `rapidminer_home' with `a_home'.
+		do
+			rapidminer_home := a_home
+		end
+
+	set_rapidminer_process_path (a_path: STRING)
+			-- Set `rapidminer_process_path' with `a_path'.
+		do
+			rapidminer_process_path := a_path
 		end
 
 end

@@ -131,11 +131,15 @@ feature{NONE} -- Implementation
 
 			create l_arff_gen.make_for_feature_transition
 			across l_files as l_ssqls loop
+				io.put_string ("%T" + l_ssqls.item + "%N")
 				create l_path.make_from_string (a_directory)
 				l_path.set_file_name (l_ssqls.item)
 				create l_ssql_loader
 				l_ssql_loader.load (l_path)
-				l_arff_gen.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+					-- If the file is corrupted, we ignore it.
+				if l_ssql_loader.last_queryable /= Void then
+					l_arff_gen.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+				end
 			end
 
 				-- Generate ARFF files for `a_feature'.

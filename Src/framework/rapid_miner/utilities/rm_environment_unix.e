@@ -47,4 +47,10 @@ feature
 			Result := ". rapidminer -f"
 		end
 
+	temp_directory: STRING
+			-- Temp directory from current user
+		do
+			Result := "/tmp"
+		end
+
 end
