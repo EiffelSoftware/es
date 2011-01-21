@@ -20,6 +20,8 @@ inherit
 
 	RM_VISUALIZATION_UTILITY
 
+	EGX_UTILITY
+
 create
 	make
 
@@ -97,8 +99,6 @@ feature{NONE} -- Implementation
 			l_runner: RM_PROCESS_RUNNER
 			l_tree_loader: RM_DECISION_TREE_PARSER
 			l_graph: like graph_of_decision_tree
-			l_file: PLAIN_TEXT_FILE
-			l_graph_printer: EGX_SIMPLE_DOT_GRAPH_PRINTER [STRING, STRING]
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
@@ -113,11 +113,7 @@ feature{NONE} -- Implementation
 					create l_tree_loader.make (a_output_file)
 					l_tree_loader.parse
 					l_graph := graph_of_decision_tree (l_tree_loader.last_node_as_tree ("fault_signature"))
-					create l_graph_printer.make_default
-					l_graph_printer.print_graph (l_graph)
-					create l_file.make_create_read_write (a_dot_file)
-					l_file.put_string (l_graph_printer.last_printing)
-					l_file.close
+					save_graph_to_dot_file (l_graph, a_dot_file)
 				end
 			end
 		rescue
