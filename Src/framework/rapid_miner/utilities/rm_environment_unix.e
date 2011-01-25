@@ -34,7 +34,7 @@ feature
 
 	rapidminer_working_directory: STRING
 		do
-			Result := "/home/"
+			Result := "/tmp"
 		end
 
 	rapidminer_test_arff_path: STRING
