@@ -122,6 +122,8 @@ feature{NONE} -- Implementation
 			l_name_part: STRING
 			l_invariants: like invariants_from_arff_relation
 			l_file: PLAIN_TEXT_FILE
+			l_invs: DS_ARRAYED_LIST [STRING]
+			l_sorter: DS_QUICK_SORTER [STRING]
 		do
 			create l_files.make
 			create l_finder.make_with_pattern (".+\.arff$")
@@ -159,14 +161,32 @@ feature{NONE} -- Implementation
 				until
 					l_invariants.after
 				loop
-					l_file.put_string (l_invariants.key_for_iteration.name + "%N")
-					from
-						l_invariants.item_for_iteration.start
-					until
-						l_invariants.item_for_iteration.after
-					loop
-						l_file.put_string ("%T" + decoded_daikon_name (l_invariants.item_for_iteration.item_for_iteration.debug_output) + "%N")
-						l_invariants.item_for_iteration.forth
+					fixme ("We only output preconditions for the moment. Jasonw 25.01.2011")
+					if l_invariants.key_for_iteration.name.has_substring ("ppt1") then
+						create l_invs.make (l_invariants.item_for_iteration.count)
+						from
+							l_invariants.item_for_iteration.start
+						until
+							l_invariants.item_for_iteration.after
+						loop
+							l_invs.force_last (decoded_daikon_name (l_invariants.item_for_iteration.item_for_iteration.debug_output))
+							l_invariants.item_for_iteration.forth
+						end
+						create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [STRING]}.make (
+							agent (a, b: STRING): BOOLEAN
+								do
+									Result := a < b
+								end))
+						l_sorter.sort (l_invs)
+						from
+							l_invs.start
+						until
+							l_invs.after
+						loop
+							l_file.put_string (l_invs.item_for_iteration)
+							l_file.put_character ('%N')
+							l_invs.forth
+						end
 					end
 					l_invariants.forth
 					l_file.put_string ("%N")
