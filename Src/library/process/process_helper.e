@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PROCESS_UTILITY
+	PROCESS_HELPER
 
 feature -- Process
 

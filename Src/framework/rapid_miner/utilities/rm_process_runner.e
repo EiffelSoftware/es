@@ -10,7 +10,7 @@ class
 inherit
 	RM_CONSTANTS
 
-	PROCESS_UTILITY
+	PROCESS_HELPER
 
 create
 	make

@@ -8,6 +8,6 @@ class
 	EPA_PROCESS_UTILITY
 
 inherit
-	PROCESS_UTILITY
+	PROCESS_HELPER
 
 end
