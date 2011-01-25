@@ -141,9 +141,15 @@ feature {NONE} -- Visit operations
 			l_exp: EXPR_AS
 		do
 			l_exp ?= ast_in_other_context (l_as.left, written_context, context)
+			if attached {PARAN_AS} l_exp as l_paran then
+				l_exp := l_paran.expr
+			end
 			create l_left_epa.make_with_feature (context_class, context_feature, l_exp, context_class)
 
 			l_exp ?= ast_in_other_context (l_as.right, written_context, context)
+			if attached {PARAN_AS} l_exp as l_paran then
+				l_exp := l_paran.expr
+			end			
 			create l_right_epa.make_with_feature (context_class, context_feature, l_exp, context_class)
 
 			create l_relevant_set.make_default
