@@ -23,6 +23,8 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	EPA_UTILITY
+
 feature -- Access
 
 	last_postcondition: detachable STRING
@@ -66,27 +68,22 @@ feature -- Generation
 --			end
 
 			if not l_done then
-				if attached {BODY_AS} a_feature.body.body as l_body then
-					if attached {ROUTINE_AS} l_body.content as l_routine then
-						if attached {DO_AS} l_routine.routine_body as l_do then
-							if l_do.compound.count = 1 then
-								if attached {ASSIGN_AS} l_do.compound.first as l_assign then
-									if attached {RESULT_AS} l_assign.target as l_result then
-										is_suitable := True
-										l_assign.source.process (Current)
-										if is_suitable then
-											l_text := l_assign.source.original_text (match_list_server.item (a_feature.written_class.class_id))
-											l_text.prepend ("Result = (")
-											l_text.append (once ")")
-											last_postcondition.append (l_text)
-										end
-									end
+				if attached {DO_AS} body_ast_from_feature (a_feature) as l_do then
+					if l_do.compound.count = 1 then
+						if attached {ASSIGN_AS} l_do.compound.first as l_assign then
+							if attached {RESULT_AS} l_assign.target as l_result then
+								is_suitable := True
+								l_assign.source.process (Current)
+								if is_suitable then
+									l_text := l_assign.source.original_text (match_list_server.item (a_feature.written_class.class_id))
+									l_text.prepend ("Result = (")
+									l_text.append (once ")")
+									last_postcondition.append (l_text)
 								end
 							end
 						end
 					end
 				end
-
 			end
 		end
 

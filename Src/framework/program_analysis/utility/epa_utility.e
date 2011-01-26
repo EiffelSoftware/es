@@ -774,4 +774,16 @@ feature -- Context
 			end
 		end
 
+	body_ast_from_feature (a_feature: FEATURE_I): detachable DO_AS
+			-- Body AST from `a_feature', if any
+		do
+			if attached {BODY_AS} a_feature.body.body as l_body then
+				if attached {ROUTINE_AS} l_body.content as l_routine then
+					if attached {DO_AS} l_routine.routine_body as l_do then
+						Result := l_do
+					end
+				end
+			end
+		end
+
 end

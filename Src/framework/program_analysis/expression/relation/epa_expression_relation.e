@@ -260,6 +260,39 @@ feature -- Dependent Expressions
 			l_printer.dump_file ("/home/marc/Desktop/")
 		end
 
+feature -- Helper features
+
+	relevant_expressions_for_operands (a_class: CLASS_C; a_feature: FEATURE_I; a_should_merge: BOOLEAN): DS_HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], EPA_EXPRESSION]
+			-- Expressions that are relevant to operands (target and arguments) of `a_feature', viewed in `a_class'
+			-- Keys are operand expression of `a_feature', values are expressions that are relevant to those operands.
+			-- See `relevant_expressions'.`a_should_merge' for the meaning of `a_should_merge'.
+		local
+			l_text: STRING
+			l_expr: EPA_AST_EXPRESSION
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, STRING]
+			l_written_class: CLASS_C
+			l_context: ETR_FEATURE_CONTEXT
+		do
+			create Result.make (10)
+			Result.set_key_equality_tester (expression_equality_tester)
+			create l_context.make (a_feature, create {ETR_CLASS_CONTEXT}.make (a_class))
+
+			l_written_class := a_feature.written_class
+			from
+				l_cursor := operands_of_feature (a_feature).new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_text := l_cursor.key
+				if l_text /~ ti_result then
+					create l_expr.make_with_text (a_class, a_feature, l_text, l_written_class)
+					Result.force_last (relevant_expressions (l_expr, l_context, a_should_merge), l_expr)
+				end
+				l_cursor.forth
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	relevant_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
