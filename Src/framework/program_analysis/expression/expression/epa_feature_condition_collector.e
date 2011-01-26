@@ -12,7 +12,8 @@ inherit
 		redefine
 			process_if_as,
 			process_assign_as,
-			process_elseif_as
+			process_elseif_as,
+			process_loop_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -151,6 +152,21 @@ feature{NONE} -- Process
 
 			l_as.expr.process (Current)
 			safe_process (l_as.compound)
+		end
+
+	process_loop_as (l_as: LOOP_AS)
+		local
+			l_condition: EPA_AST_EXPRESSION
+		do
+			safe_process (l_as.iteration)
+			safe_process (l_as.from_part)
+			safe_process (l_as.invariant_part)
+			create l_condition.make_with_feature (context_class, context_feature, l_as.stop, written_class)
+			conditions.force_last (l_condition)
+			assignments.force_last (visited_assigments.twin, l_condition)
+			safe_process (l_as.stop)
+			safe_process (l_as.compound)
+			safe_process (l_as.variant_part)
 		end
 
 end
