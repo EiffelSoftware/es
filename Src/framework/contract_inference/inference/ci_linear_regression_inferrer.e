@@ -388,7 +388,7 @@ feature{NONE} -- Logging
 		local
 			l_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
 		do
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line_with_time (a_message)
 			from
 				l_cursor := a_attributes.new_cursor

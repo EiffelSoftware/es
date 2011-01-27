@@ -26,7 +26,7 @@ feature -- Basic operations
 			data := a_data
 			setup_data_structures
 			operand_string_table := operand_string_table_for_feature (feature_under_test)
-			logger.put_line_with_time_at_info_level ("Start inferring properties in DNF format.")
+			logger.put_line_with_time_and_level ("Start inferring properties in DNF format.", {ELOG_CONSTANTS}.debug_level)
 
 			setup_transition_table
 			remove_missing_expressions_in_transition_table
@@ -527,20 +527,18 @@ feature{NONE} -- Logging
 		local
 			l_cursor: like anonymous_postconditions.new_cursor
 		do
-			if logger.level_threshold >= {EPA_LOG_MANAGER}.fine_level then
-				logger.push_fine_level
-				logger.put_line_with_time ("Found the following component expressions:")
-				from
-					l_cursor := anonymous_postconditions.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					logger.put_line (once "%T" + l_cursor.item)
-					l_cursor.forth
-				end
-				logger.pop_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
+			logger.put_line_with_time ("Found the following component expressions:")
+			from
+				l_cursor := anonymous_postconditions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				logger.put_line (once "%T" + l_cursor.item)
+				l_cursor.forth
 			end
+			logger.pop_level
 		end
 
 end

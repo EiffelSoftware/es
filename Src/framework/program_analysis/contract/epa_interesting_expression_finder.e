@@ -297,7 +297,7 @@ feature{NONE} -- Implementation
 					l_cursor2.after
 				loop
 					l_qualifier.process_expression (l_cursor2.item, l_replacements)
-					if not l_qualifier.is_local_detected then
+					if not l_qualifier.is_local_detected and then not l_qualifier.is_old_detected then
 						create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
 						if l_expr.type /= Void then
 							l_set.force_last (l_expr)

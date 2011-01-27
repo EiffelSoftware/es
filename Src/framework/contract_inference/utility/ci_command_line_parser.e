@@ -478,12 +478,12 @@ feature{NONE} -- Implementation
 	setup_verbose_level (a_config: CI_CONFIG; a_parameter: detachable STRING)
 			-- Setup verbose level.
 		do
-			a_config.set_verbose_level ({EPA_LOG_MANAGER}.info_level)
+			a_config.set_verbose_level ({ELOG_LOG_MANAGER}.info_level)
 			if a_parameter /= Void then
 				if a_parameter.is_case_insensitive_equal ("info") then
-					a_config.set_verbose_level ({EPA_LOG_MANAGER}.info_level)
-				elseif a_parameter.is_case_insensitive_equal ("fine") then
-					a_config.set_verbose_level ({EPA_LOG_MANAGER}.fine_level)
+					a_config.set_verbose_level ({ELOG_LOG_MANAGER}.info_level)
+				elseif a_parameter.is_case_insensitive_equal ("debug") then
+					a_config.set_verbose_level ({ELOG_LOG_MANAGER}.debug_level)
 				end
 			end
 		end

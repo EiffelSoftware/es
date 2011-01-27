@@ -31,7 +31,7 @@ feature -- Basic operations
 			setup_data_structures
 			operand_string_table := operand_string_table_for_feature (feature_under_test)
 
-			logger.put_line_with_time_at_fine_level ("Start inferring simple equality properties.")
+			logger.put_line_with_time_and_level ("Start inferring simple equality properties.", {ELOG_CONSTANTS}.debug_level)
 			collect_potentially_equal_expressions
 			generate_equality_candidates
 			log_candidate_properties (candidate_properties, "Found the following candidate properties:")
@@ -293,7 +293,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line_with_time ("Found the following left-hand-side expressions:")
 			from
 				l_expr_cur := left_expressions.new_cursor

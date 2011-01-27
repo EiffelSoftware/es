@@ -75,7 +75,7 @@ feature -- Basic operations
 			setup_last_contracts
 
 				-- Logging.
-			logger.push_info_level
+			logger.push_level ({ELOG_CONSTANTS}.info_level)
 			logger.put_line (once "Valid frame properties:")
 			from
 				l_valid_frame_properties.start
@@ -254,7 +254,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line (once "Found the following base functions:")
 			from
 				l_cursor := base_functions.new_cursor
@@ -677,7 +677,7 @@ feature{NONE} -- Logging
 		local
 			l_quantified_expr_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
 		do
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line ("Built the following frame property candidates:")
 			from
 				l_quantified_expr_cursor := a_exprs.new_cursor

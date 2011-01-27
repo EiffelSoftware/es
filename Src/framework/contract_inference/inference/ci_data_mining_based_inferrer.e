@@ -41,7 +41,7 @@ feature{NONE} -- Logging
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 		do
-			logger.push_info_level
+			logger.push_level ({ELOG_CONSTANTS}.info_level)
 			logger.put_line_with_time (a_message)
 			from
 				l_cursor := a_contracts.new_cursor

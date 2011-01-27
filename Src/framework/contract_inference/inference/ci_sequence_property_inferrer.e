@@ -29,7 +29,7 @@ feature -- Basic operations
 		local
 			l_cursor: DS_HASH_SET_CURSOR [STRING]
 		do
-			logger.put_line_with_time_at_info_level ("Start analyzing sequence-based frame properties.")
+			logger.put_line_with_time_and_level ("Start analyzing sequence-based frame properties.", {ELOG_CONSTANTS}.debug_level)
 			data := a_data
 			setup_data_structures
 			calculate_sequences
@@ -389,13 +389,13 @@ feature{NONE} -- Implementation
 					across l_pre_signatures as l_pre_sigs all l_pre_sigs.item.is_equal (l_pre_first_sigs) end and
 					across l_post_signatures as l_post_sigs all l_post_sigs.item.is_equal (l_post_first_sigs) end
 				if is_sequence_consistent then
-					logger.put_line_with_time_at_info_level ("Found sequences are consistent across all test cases.")
+					logger.put_line_with_time_and_level ("Found sequences are consistent across all test cases.", {ELOG_CONSTANTS}.debug_level)
 
 						-- Setup `pre_state_signatures' and `post_state_signatures'.
 					pre_state_signatures.append_last (l_pre_first_sigs)
 					post_state_signatures.append_last (l_post_first_sigs)
 				else
-					logger.put_line_with_time_at_info_level ("Found sequences are NOT consistent.")
+					logger.put_line_with_time_and_level ("Found sequences are NOT consistent.", {ELOG_CONSTANTS}.debug_level)
 				end
 			end
 		end
@@ -775,7 +775,7 @@ feature{NONE} -- Implementation/Logging
 			-- Log `a_message' with time if `a_time' is True.
 			-- Put a new line into the log if `a_new_line' is True.
 		do
-			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			if a_new_line then
 				if a_time then
 					logger.put_line_with_time (a_message)

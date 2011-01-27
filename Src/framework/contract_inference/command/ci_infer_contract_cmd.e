@@ -50,9 +50,9 @@ feature{NONE} -- Initialization
 			create l_file_name.make_from_string (config.log_directory)
 			l_file_name.set_file_name (class_.name_in_upper + "__" + feature_.feature_name.as_lower + "__log.txt")
 			create log_file.make_create_read_write (l_file_name)
-			log_manager.set_time_logging_mode ({EPA_LOG_MANAGER}.duration_time_logging_mode)
-			log_manager.loggers.extend (create {EPA_CONSOLE_LOGGER})
-			log_manager.loggers.extend (create {EPA_FILE_LOGGER}.make (log_file))
+			log_manager.set_time_logging_mode ({ELOG_LOG_MANAGER}.duration_time_logging_mode)
+			log_manager.loggers.extend (create {ELOG_CONSOLE_LOGGER})
+			log_manager.loggers.extend (create {ELOG_FILE_LOGGER}.make (log_file))
 
 				-- Enable verbose logging (for debugging purpose)
 				-- When the code is ready, use a concise logging level will save some time.
@@ -71,7 +71,7 @@ feature -- Access
 	feature_: FEATURE_I
 			-- Feature (viewed in `class_') whose contracts are to be inferred
 
-	log_manager: EPA_LOG_MANAGER
+	log_manager: ELOG_LOG_MANAGER
 			-- Log manager
 
 	context_type: TYPE_A
@@ -656,7 +656,7 @@ feature{NONE} -- Actions
 			end
 
 				-- Logging.
-			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			log_manager.put_line (once "---------------------------------------------------%N")
 			if a_pre_execution then
 				log_manager.put_line_with_time (once "Pre-execution state:")
@@ -891,7 +891,7 @@ feature{NONE} -- Implementation
 			l_pre_valuations := l_func_analyzer.valuations
 
 				-- Logging.
-			log_manager.push_level ({EPA_LOG_MANAGER}.fine_level)
+			log_manager.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			log_manager.put_line_with_time ("Function analysis in pre-state:")
 			log_manager.put_line (l_func_analyzer.dumped_result)
 
@@ -1257,7 +1257,7 @@ feature{NONE} -- Implementation
 		do
 				-- Logging.
 			create l_printer.make
-			log_manager.push_info_level
+			log_manager.push_level ({ELOG_CONSTANTS}.info_level)
 			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
 			from
 				l_cursor := last_postconditions.new_cursor
@@ -1408,8 +1408,8 @@ feature{NONE} -- Implementation
 			i, l_count: INTEGER
 		do
 				-- Logging.
-			log_manager.push_fine_level
-			if log_manager.is_logging_needed then
+			log_manager.push_level ({ELOG_CONSTANTS}.debug_level)
+			if log_manager.is_current_logging_level_active then
 				log_manager.put_line_with_time ("Statistics of interface expressions:")
 				across <<True, False>> as l_states loop
 					if l_states.item then
@@ -1532,7 +1532,7 @@ feature{NONE} -- Implementation
 			l_field: IR_FIELD
 			l_bounded_integer_functions: like bounded_functions_from_fields
 		do
-			log_manager.push_fine_level
+			log_manager.push_level ({ELOG_CONSTANTS}.debug_level)
 			log_manager.put_line_with_time ("Loading test case from file: " + a_absolute_path)
 			log_manager.pop_level
 
@@ -1596,7 +1596,7 @@ feature{NONE} -- Implementation
 			l_loader: CI_FEATURE_CALL_TRANSITION_LOADER
 			l_test_case_info: CI_TEST_CASE_INFO
 		do
-			log_manager.push_fine_level
+			log_manager.push_level ({ELOG_CONSTANTS}.debug_level)
 			log_manager.put_line_with_time ("(Mocking) Loading test case from file: " + a_absolute_path)
 			log_manager.pop_level
 

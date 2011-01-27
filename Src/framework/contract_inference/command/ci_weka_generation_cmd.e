@@ -23,7 +23,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			config := a_config
-			create logger.make_with_logger_array (<<create{EPA_CONSOLE_LOGGER}>>)
+			create logger.make_with_logger_array (<<create{ELOG_CONSOLE_LOGGER}>>)
 			logger.set_duration_time_mode
 			logger.set_level_threshold_to_fine
 		ensure
@@ -35,7 +35,7 @@ feature -- Access
 	config: CI_CONFIG
 			-- Config of current contract inference session
 
-	logger: EPA_LOG_MANAGER
+	logger: ELOG_LOG_MANAGER
 			-- Logger
 
 feature -- Basic operations

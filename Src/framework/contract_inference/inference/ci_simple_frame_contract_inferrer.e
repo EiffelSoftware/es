@@ -40,7 +40,7 @@ feature -- Basic operations
 			setup_last_contracts
 
 				-- Logging.
-			logger.push_info_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line (once "Valid frame properties:")
 			from
 				l_valid_frame_properties.start
@@ -117,7 +117,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
-			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			logger.put_line_with_time (once "Candidate frame properties:")
 			from
 				Result.start

@@ -30,7 +30,7 @@ feature -- Basic operations
 			generate_daikon_files
 
 				-- Execute Daikon and parse output.
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line ("Command: " + daikon_command)
 			logger.put_line ("Daikon output:")
 			l_daikon_output := output_from_program (daikon_command, Void)

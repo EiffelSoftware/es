@@ -31,7 +31,7 @@ feature -- Basic operations
 			setup_data_structures
 			operand_string_table := operand_string_table_for_feature (feature_under_test)
 
-			logger.put_line_with_time_at_fine_level ("Start inferring constant-change properties.")
+			logger.put_line_with_time_and_level ("Start inferring constant-change properties.", {ELOG_CONSTANTS}.debug_level)
 
 			collect_single_change_expressions
 			generate_equality_candidates

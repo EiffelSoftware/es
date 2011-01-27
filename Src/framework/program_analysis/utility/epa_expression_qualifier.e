@@ -10,7 +10,8 @@ class
 inherit
 	EPA_TRANSITION_EXPRESSION_REWRITER
 		redefine
-			process_access_name
+			process_access_name,
+			process_un_old_as
 		end
 
 	EPA_UTILITY
@@ -19,6 +20,9 @@ feature -- Status report
 
 	is_local_detected: BOOLEAN
 			-- Is there any local variable detected during last `process_expression'?
+
+	is_old_detected: BOOLEAN
+			-- Is there any old expression detected during last `process_expression'?
 
 feature -- Access
 
@@ -44,6 +48,7 @@ feature -- Basic operation
 			arguments := arguments_of_feature (feature_)
 			create output.make
 			is_local_detected := False
+			is_old_detected := False
 			last_replacements := a_replacements
 			l_qualified_expr := expression_text (a_expression, last_replacements)
 			last_expression := output.string_representation
@@ -134,6 +139,14 @@ feature{NONE} -- Processing
 			else
 				output.append_string (a_name)
 			end
+		end
+
+	process_un_old_as (l_as: UN_OLD_AS)
+		do
+			if not is_old_detected then
+				is_old_detected := True
+			end
+			Precursor (l_as)
 		end
 
 end

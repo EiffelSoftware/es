@@ -28,7 +28,7 @@ inherit
 
 feature -- Access
 
-	logger: EPA_LOG_MANAGER
+	logger: ELOG_LOG_MANAGER
 			-- Logger
 
 	config: CI_CONFIG
@@ -305,7 +305,7 @@ feature{NONE} -- Implementation
 			l_test_cases.go_to (l_tc_cursor)
 
 				-- Logging.
-			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			logger.put_line_with_time (once "Quantifier-free expressions for candidate frame properties:")
 			from
 				Result.start
@@ -368,7 +368,7 @@ feature{NONE} -- Implementation
 			l_evaluator.set_is_ternary_logic_enabled (a_ternary_logic)
 
 				-- Logging.
-			logger.push_level ({EPA_LOG_MANAGER}.fine_level)
+			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
 			logger.put_line_with_time ("Start evaluating quantifier-free expressions.")
 
 				-- Iterate through all test cases.
@@ -639,7 +639,7 @@ feature{NONE} -- Candidate validation
 			l_candidate_properties: EPA_HASH_SET [EPA_FUNCTION]
 		do
 			logger.put_line_with_time (a_message)
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 
 				-- Iterate through all test cases, and validate all properties in `candidate_properties'
 				-- in the context text of each test case.
@@ -674,16 +674,16 @@ feature{NONE} -- Candidate validation
 					end
 
 						-- Logging.					
-					if logger.level_threshold >= {EPA_LOG_MANAGER}.fine_level then
-						logger.put_string (once "%T%T")
-						logger.put_string (l_resolved_function.body)
-						logger.put_string (once " == ")
-						if l_evaluator.has_error then
-							logger.put_line (l_evaluator.error_reason)
-						else
-							logger.put_line (l_evaluator.last_value.out)
-						end
+					logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
+					logger.put_string (once "%T%T")
+					logger.put_string (l_resolved_function.body)
+					logger.put_string (once " == ")
+					if l_evaluator.has_error then
+						logger.put_line (l_evaluator.error_reason)
+					else
+						logger.put_line (l_evaluator.last_value.out)
 					end
+					logger.pop_level
 				end
 			end
 
@@ -695,20 +695,18 @@ feature{NONE} -- Candidate validation
 		local
 			l_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
 		do
-			if logger.level_threshold <= {EPA_LOG_MANAGER}.fine_level then
-				logger.push_fine_level
-				logger.put_line_with_time (a_message)
-				from
-					l_cursor := a_candidates.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					logger.put_line (once "%T" + l_cursor.item.body)
-					l_cursor.forth
-				end
-				logger.pop_level
+			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
+			logger.put_line_with_time (a_message)
+			from
+				l_cursor := a_candidates.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				logger.put_line (once "%T" + l_cursor.item.body)
+				l_cursor.forth
 			end
+			logger.pop_level
 		end
 
 	setup_inferred_contracts_in_last_postconditions (a_candidates: DS_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_mapping_agent: detachable PROCEDURE [ANY, TUPLE [a_expr: EPA_EXPRESSION; a_func: EPA_FUNCTION]])

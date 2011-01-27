@@ -303,7 +303,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line ("Found boolean premises:")
 			from
 				l_attr_cursor := boolean_premise_attributes.new_cursor
@@ -398,7 +398,7 @@ feature{NONE} -- Implementation
 			end
 
 				-- Logging.
-			logger.push_fine_level
+			logger.push_level ({ELOG_CONSTANTS}.debug_level)
 			logger.put_line ("Found boolean consequences:")
 			from
 				l_attr_cursor := consequent_attributes.new_cursor
