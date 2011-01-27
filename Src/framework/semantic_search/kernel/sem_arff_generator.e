@@ -124,6 +124,16 @@ feature -- Setting
 			should_generate_arff_for_each_fault_set: should_generate_arff_for_each_fault = b
 		end
 
+	set_extra_expression (a_expressions: DS_HASH_SET [EPA_EXPRESSION])
+			-- Set `extra_expressions' with `a_expressions'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+		do
+			create extra_expressions.make (a_expressions.count)
+			extra_expressions.set_equality_tester (expression_equality_tester)
+			a_expressions.do_all (agent extra_expressions.force_last)
+		end
+
 feature -- Basic operatioins
 
 	extend_queryable (a_queryable: SEM_QUERYABLE; a_meta: detachable HASH_TABLE [STRING, STRING])
@@ -819,61 +829,25 @@ feature{NONE} -- Implementation
 		local
 			l_expr: EPA_EXPRESSION
 			l_text: STRING
-			l_path_condition_generator: EPA_SIMPLE_PATH_CONDITION_GENERATOR
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 		do
 			create Result.make (10)
 			Result.set_equality_tester (expression_equality_tester)
 
---			l_text := "i < Current.lower - 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "i = Current.lower - 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "i > Current.lower - 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "i > Current.upper + 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "i = Current.upper + 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "i < Current.upper + 1"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "not ((i = Current.upper + 1) or (i = Current.lower - 1))"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "(Current.upper.max (i) - Current.lower.min (i) + 1) > Current.area.capacity"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "Current.lower.min (i) < Current.lower"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
---			l_text := "Current.upper.max (i) - Current.lower.min (i) + 1 > Current.area.count"
---			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_call.class_, a_call.feature_, l_text, a_call.class_)
---			l_expr := expression_in_test_context (a_call, l_expr)
---			Result.force_last (l_expr)
-
+			if extra_expressions /= Void then
+				from
+					l_cursor := extra_expressions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_expr := expression_in_test_context (a_call, l_cursor.item)
+					if l_expr /= Void and then l_expr.type /= Void then
+						Result.force_last (l_expr)
+					end
+					l_cursor.forth
+				end
+			end
 		end
 
 	expression_evaluations (a_expressions: DS_HASH_SET [EPA_EXPRESSION]): DS_HASH_SET [EPA_EQUATION]
@@ -1111,5 +1085,9 @@ feature{NONE} -- Implementation
 
 	expression_evaluator: SEM_EXPRESSION_EVALUATOR
 			-- Expression evaluator
+
+	extra_expressions: DS_HASH_SET [EPA_EXPRESSION]
+			-- Extra expressions to be evaluated (if possible) and added
+			-- into the generated ARFF files as attributes
 
 end

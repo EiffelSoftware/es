@@ -119,6 +119,7 @@ feature{NONE} -- Implementation
 			l_ssql_loader: SEMQ_QUERYABLE_LOADER
 			l_path: FILE_NAME
 			l_directory: FILE_NAME
+			l_predicate_finder: EPA_INTERESTING_PREDICATE_FINDER
 		do
 			create l_files.make
 			create l_finder.make_with_pattern ("tran.+\.ssql$")
@@ -129,7 +130,14 @@ feature{NONE} -- Implementation
 					end (?, ?, l_files))
 			l_finder.search (a_directory)
 
+				-- Find interesting predicates for `a_feature', which (if evaluable) will be added into
+				-- the generated ARFF file as additional attributes.
+			create l_predicate_finder
+			l_predicate_finder.find (a_class, a_feature)
+
 			create l_arff_gen.make_for_feature_transition
+			l_arff_gen.set_extra_expression
+			 (l_predicate_finder.last_predicates)
 			across l_files as l_ssqls loop
 				io.put_string ("%T" + l_ssqls.item + "%N")
 				create l_path.make_from_string (a_directory)
