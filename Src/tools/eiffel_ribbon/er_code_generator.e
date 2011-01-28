@@ -75,6 +75,7 @@ feature {NONE} -- Implementation
 			create l_constants
 			create l_singleton
 			if attached l_singleton.project_info_cell.item as l_info then
+				l_info.update_ribbon_names_from_ui
 				if attached l_constants.project_full_file_name as l_project_config then
 					create l_file.make (l_project_config)
 					l_file.create_read_write
@@ -215,19 +216,90 @@ feature {NONE} -- Implementation
 			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
 			l_singleton: ER_SHARED_SINGLETON
 		do
-			-- Parse EV_TREE until Ribbon.Tabs
---			from
+			create l_singleton
+			l_list := l_singleton.layout_constructor_list
+			generate_window_classes
+			generate_readonly_classes_imp (l_list.first)
+		end
+
+	generate_window_classes
+			-- Generate window classes
+		local
+			l_singleton: ER_SHARED_SINGLETON
+			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
+			l_window_file, l_sub_dir, l_last_string: STRING
+			l_constants: ER_MISC_CONSTANTS
+			l_file_name, l_dest_file_name: FILE_NAME
+			l_file, l_dest_file: RAW_FILE
+		do
+			l_window_file := "main_window"
+			l_sub_dir := "code_generated_everytime"
+
+			from
 				create l_singleton
 				l_list := l_singleton.layout_constructor_list
---				l_list.start
---			until
---				l_list.after
---			loop
---				generate_readonly_classes_imp (l_list.item)
---				l_list.forth
---			end
-			-- FIXME: Current only generate classes for default window (application mode is 0)
-			generate_readonly_classes_imp (l_list.first)
+				l_list.start
+			until
+				l_list.after
+			loop
+				if attached l_singleton.project_info_cell.item as l_project_info then
+					if attached l_project_info.project_location as l_project_location then
+						create l_constants
+
+						-- Generate tool bar class
+						create l_file_name.make_from_string (l_constants.template)
+						l_file_name.set_subdirectory (l_sub_dir)
+						l_file_name.set_file_name (l_window_file + ".e")
+						create l_file.make (l_file_name)
+						if l_file.exists and then l_file.is_readable then
+							create l_dest_file_name.make_from_string (l_project_location)
+							if l_list.index /= 1 then
+								l_dest_file_name.set_file_name (l_window_file + "_" + l_list.index.out + ".e")
+							else
+								l_dest_file_name.set_file_name (l_window_file + ".e")
+							end
+
+							create l_dest_file.make_create_read_write (l_dest_file_name)
+							from
+								l_file.open_read
+								l_file.start
+							until
+								l_file.after
+							loop
+								l_file.read_line
+								l_last_string := l_file.last_string
+								if attached {ER_TREE_NODE_RIBBON_DATA} l_list.item.widget.i_th (1).data as l_data
+									and then attached l_data.command_name as l_identifer_name
+									and then not l_identifer_name.is_empty then
+
+									l_last_string.replace_substring_all ("$RIBBON_NAME", l_identifer_name.as_upper)
+								else
+									if l_list.index = 1 then
+										l_last_string.replace_substring_all ("$RIBBON_NAME", "RIBBON")
+									else
+										l_last_string.replace_substring_all ("$RIBBON_NAME", "RIBBON_" + l_list.index.out)
+									end
+								end
+
+								if l_list.index = 1 then
+									l_last_string.replace_substring_all ("$INDEX", "")
+								else
+									l_last_string.replace_substring_all ("$INDEX", "_" + l_list.index.out)
+								end
+
+								l_dest_file.put_string (l_last_string + "%N")
+							end
+
+							l_file.close
+							l_dest_file.close
+						end
+
+					end
+				end
+
+				l_list.forth
+			end
+
 		end
 
 	generate_readonly_classes_imp (a_layout_constructor: ER_LAYOUT_CONSTRUCTOR)
@@ -236,23 +308,31 @@ feature {NONE} -- Implementation
 			l_tree: EV_TREE
 			l_tree_node: detachable EV_TREE_NODE
 			l_xml: ER_XML_CONSTANTS
+			l_singleton: ER_SHARED_SINGLETON
+			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
 		do
+
 			from
-				create l_xml
-				l_tree := a_layout_constructor.widget
-				l_tree.start
+				create l_singleton
+				l_list := l_singleton.layout_constructor_list
+				l_list.start
 			until
-				l_tree.after or l_tree_node /= Void
+				l_list.after
 			loop
+
+				create l_xml
+				l_tree := l_list.item.widget
+				l_tree.start
 				l_tree_node := tree_node_with_text (l_tree.item, l_xml.ribbon_tabs)
 
-				l_tree.forth
+				if l_tree_node /= Void then
+						-- Start real generation		
+					generate_tool_bar_class (l_tree_node, l_list.index)
+				end
+
+				l_list.forth
 			end
 
-			if l_tree_node /= Void then
-				-- Start real generation
-				generate_tool_bar_class (l_tree_node)
-			end
 		end
 
 	tree_node_with_text (a_tree_node: EV_TREE_NODE; a_text: STRING): detachable EV_TREE_NODE
@@ -281,7 +361,7 @@ feature {NONE} -- Implementation
 	uicc_manager: ER_UICC_MANAGER
 			--
 
-	generate_tool_bar_class (a_tabs_root_note: EV_TREE_NODE)
+	generate_tool_bar_class (a_tabs_root_note: EV_TREE_NODE; a_index: INTEGER)
 			--
 		require
 			not_void: a_tabs_root_note /= Void
@@ -293,36 +373,52 @@ feature {NONE} -- Implementation
 			l_file_name, l_dest_file_name: FILE_NAME
 			l_singleton: ER_SHARED_SINGLETON
 			l_sub_dir, l_tool_bar_file, l_sub_imp_dir: STRING
-			l_last_string: STRING
+			l_last_string, l_set_modes_string: STRING
 			l_tab_creation_string, l_tab_registry_string, l_tab_declaration_string: STRING
+			l_identifier_name: detachable STRING
 		do
 			-- First check how many tabs
 			l_tab_count := a_tabs_root_note.count
 
 			create l_singleton
 			l_sub_dir := "code_generated_once_change_by_user"
-			l_tool_bar_file := "ribbon.e"
+			l_tool_bar_file := "ribbon"
 			l_sub_imp_dir := "code_generated_everytime"
 
 			if attached l_singleton.project_info_cell.item as l_project_info then
 				if attached l_project_info.project_location as l_project_location then
 					create l_constants
+					if attached {ER_TREE_NODE_RIBBON_DATA} a_tabs_root_note.data as l_data
+						and then attached l_data.command_name as l_identifier
+						and then not l_identifier.is_empty then
+						l_identifier_name := l_identifier
+					end
 
 					-- Generate tool bar class
 					create l_file_name.make_from_string (l_constants.template)
 					l_file_name.set_subdirectory (l_sub_dir)
-					l_file_name.set_file_name (l_tool_bar_file)
+					l_file_name.set_file_name (l_tool_bar_file + ".e")
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_file)
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + ".e")
+						else
+							if a_index /= 1 then
+								l_dest_file_name.set_file_name (l_tool_bar_file + "_" + a_index.out + ".e")
+							else
+								l_dest_file_name.set_file_name (l_tool_bar_file + ".e")
+							end
+						end
+
 						create l_dest_file.make_create_read_write (l_dest_file_name)
 						from
 							l_file.open_read
 							l_file.start
-							l_tab_creation_string := tag_creation_string (a_tabs_root_note)
+							l_tab_creation_string := tab_creation_string (a_tabs_root_note)
 							l_tab_registry_string := tab_registry_string (a_tabs_root_note)
 							l_tab_declaration_string := tab_declaration_string (a_tabs_root_note)
+							l_set_modes_string := "%T%T%Tset_modes (" + (a_index - 1).out + ")"
 						until
 							l_file.after
 						loop
@@ -331,6 +427,20 @@ feature {NONE} -- Implementation
 							l_last_string.replace_substring_all ("$TAB_CREATION", l_tab_creation_string)
 							l_last_string.replace_substring_all ("$TAB_REGISTRY", l_tab_registry_string)
 							l_last_string.replace_substring_all ("$TAB_DECLARATION", l_tab_declaration_string)
+							if l_identifier_name /= Void then
+								l_last_string.replace_substring_all ("$INDEX", l_identifier_name.as_upper)
+							else
+								if a_index = 1 then
+									l_last_string.replace_substring_all ("$INDEX", "RIBBON")
+								else
+									l_last_string.replace_substring_all ("$INDEX", "RIBBON_" + a_index.out)
+								end
+							end
+							if a_index = 1 then
+								l_last_string.replace_substring_all ("$SET_MODES", "")
+							else
+								l_last_string.replace_substring_all ("$SET_MODES", l_set_modes_string)
+							end
 
 							l_dest_file.put_string (l_last_string + "%N")
 						end
@@ -342,7 +452,8 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			-- Generate tab classes
+
+				-- Generate tab classes
 			from
 				a_tabs_root_note.start
 			until
@@ -355,7 +466,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	tag_creation_string (a_tabs_root_note: EV_TREE_NODE): STRING
+	tab_creation_string (a_tabs_root_note: EV_TREE_NODE): STRING
 			--
 		require
 			not_void: a_tabs_root_note /= Void
@@ -366,7 +477,7 @@ feature {NONE} -- Implementation
 			l_generated: detachable STRING
 		do
 			create Result.make_empty
-			l_template := "%T%T%Tcreate tab_$INDEX.make_with_command_list ($COMMAND_IDS)"
+			l_template := "%T%T%Tcreate $INDEX.make_with_command_list ($COMMAND_IDS)"
 
 			from
 				l_index := 1
@@ -375,15 +486,18 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", l_index.out)
+
 				if attached {ER_TREE_NODE_TAB_DATA} a_tabs_root_note.i_th (l_index).data as l_group_data then
 					if attached l_group_data.command_name as l_command_name and then not l_command_name.is_empty then
 						l_command_string := "<<{" + command_name_constants.as_upper + "}." + l_command_name + ">>"
+						l_generated.replace_substring_all ("$INDEX", l_command_name.as_lower)
 					else
 						l_command_string := "<<>>"
+						l_generated.replace_substring_all ("$INDEX", "tab_" + l_index.out)
 					end
 				else
 					l_command_string := "<<>>"
+					l_generated.replace_substring_all ("$INDEX", "tab_" + l_index.out)
 				end
 				l_generated.replace_substring_all ("$COMMAND_IDS", l_command_string)
 				l_index := l_index + 1
@@ -405,7 +519,7 @@ feature {NONE} -- Implementation
 		do
 			--"tabs.extend (tab_1)"
 			create Result.make_empty
-			l_template := "%T%T%Ttabs.extend (tab_$TAB)"
+			l_template := "%T%T%Ttabs.extend ($TAB)"
 
 			from
 				l_index := 1
@@ -414,7 +528,15 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$TAB", l_index.out)
+				if attached {ER_TREE_NODE_TAB_DATA} a_tabs_root_note.i_th (l_index).data as l_tab_data then
+					if attached l_tab_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_generated.replace_substring_all ("$TAB", l_command_name.as_lower)
+					else
+						l_generated.replace_substring_all ("$TAB", "tab_" + l_index.out)
+					end
+				else
+					l_generated.replace_substring_all ("$TAB", "tab_" + l_index.out)
+				end
 
 				l_index := l_index + 1
 				if l_generated /= Void then
@@ -434,7 +556,7 @@ feature {NONE} -- Implementation
 			l_generated: detachable STRING
 		do
 			create Result.make_empty
-			l_template := "%Ttab_$INDEX: RIBBON_TAB_$INDEX"
+			l_template := "%T$INDEX_1: $INDEX_2"
 
 			from
 				l_index := 1
@@ -443,8 +565,18 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", l_index.out)
-
+				if attached {ER_TREE_NODE_TAB_DATA} a_tabs_root_note.i_th (l_index).data as l_tab_data then
+					if attached l_tab_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_generated.replace_substring_all ("$INDEX_1", l_command_name.as_lower)
+						l_generated.replace_substring_all ("$INDEX_2", l_command_name.as_upper)
+					else
+						l_generated.replace_substring_all ("$INDEX_1", "tab_" + l_index.out)
+						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_TAB_" + l_index.out)
+					end
+				else
+					l_generated.replace_substring_all ("$INDEX_1", "tab_" + l_index.out)
+					l_generated.replace_substring_all ("$INDEX_2", "RIBBON_TAB_" + l_index.out)
+				end
 				l_index := l_index + 1
 				if l_generated /= Void then
 					Result.append (l_generated + "%N")
@@ -466,6 +598,7 @@ feature {NONE} -- Implementation
 			l_sub_dir, l_tool_bar_tab_file, l_sub_imp_dir, l_tool_bar_tab_imp_file: STRING
 			l_group_creation_string, l_group_registry_string, l_group_declaration_string: STRING
 			l_last_string: STRING
+			l_identifier_name: detachable STRING
 		do
 			-- First check how many groups
 			l_group_count := a_tab_node.count
@@ -483,12 +616,24 @@ feature {NONE} -- Implementation
 					-- Generate tool bar tab class
 					create l_file_name.make_from_string (l_constants.template)
 					l_file_name.set_subdirectory (l_sub_dir)
+					if attached {ER_TREE_NODE_TAB_DATA} a_tab_node.data as l_data then
+						if attached l_data.command_name as l_command_name  and then not l_command_name.is_empty then
+							l_identifier_name := l_command_name
+						end
+					end
 					l_file_name.set_file_name (l_tool_bar_tab_file + ".e")
+
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_tab_file)
-						create l_dest_file.make_create_read_write (l_dest_file_name + "_" + a_index.out + ".e")
+						if l_identifier_name /= void  then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + "_imp.e")
+							create l_dest_file.make_create_read_write (l_dest_file_name)
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_tab_file)
+							create l_dest_file.make_create_read_write (l_dest_file_name + "_" + a_index.out + ".e")
+						end
+
 						from
 							l_group_creation_string := group_creation_string (a_tab_node)
 							l_group_registry_string := group_registry_string (a_tab_node)
@@ -505,7 +650,11 @@ feature {NONE} -- Implementation
 							l_last_string.replace_substring_all ("$GROUP_REGISTRY", l_group_registry_string)
 							l_last_string.replace_substring_all ("$GROUP_DECLARATION", l_group_declaration_string)
 
-							l_last_string.replace_substring_all ("$INDEX", a_index.out)
+							if l_identifier_name /= Void then
+								l_last_string.replace_substring_all ("$INDEX", l_identifier_name.as_upper + "_IMP")
+							else
+								l_last_string.replace_substring_all ("$INDEX", "RIBBON_TAB_IMP_" + a_index.out)
+							end
 
 							l_dest_file.put_string (l_last_string + "%N")
 						end
@@ -518,11 +667,18 @@ feature {NONE} -- Implementation
 					create l_file_name.make_from_string (l_constants.template)
 					l_file_name.set_subdirectory (l_sub_imp_dir)
 					l_file_name.set_file_name (l_tool_bar_tab_imp_file + ".e")
+
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_tab_imp_file)
-						create l_dest_file.make (l_dest_file_name + "_" + a_index.out + ".e")
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + ".e")
+							create l_dest_file.make (l_dest_file_name)
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_tab_imp_file)
+							create l_dest_file.make (l_dest_file_name + "_" + a_index.out + ".e")
+						end
+
 						-- Don't replace destination file if exists
 						if not l_dest_file.exists then
 							l_dest_file.create_read_write
@@ -535,7 +691,13 @@ feature {NONE} -- Implementation
 								-- replace/add tab codes here
 								l_file.read_line
 								l_last_string := l_file.last_string
-								l_last_string.replace_substring_all ("$INDEX", a_index.out)
+								if l_identifier_name /= Void then
+									l_last_string.replace_substring_all ("$INDEX_1", l_identifier_name.as_upper)
+									l_last_string.replace_substring_all ("$INDEX_2", l_identifier_name.as_upper + "_IMP")
+								else
+									l_last_string.replace_substring_all ("$INDEX_1", "RIBBON_TAB_" + a_index.out)
+									l_last_string.replace_substring_all ("$INDEX_2", "RIBBON_TAB_IMP_" + a_index.out)
+								end
 								l_dest_file.put_string (l_last_string + "%N")
 							end
 
@@ -571,7 +733,7 @@ feature {NONE} -- Implementation
 			l_generated: detachable STRING
 		do
 			create Result.make_empty
-			l_template := "%T%T%Tcreate group_$INDEX.make_with_command_list ($COMMAND_IDS)"
+			l_template := "%T%T%Tcreate $INDEX.make_with_command_list ($COMMAND_IDS)"
 
 			from
 				l_index := 1
@@ -580,7 +742,14 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", (group_counter + l_index).out)
+				if attached {ER_TREE_NODE_GROUP_DATA} a_tab_node.i_th(l_index).data as l_data
+					and then attached l_data.command_name as l_identify_name
+					and then not l_identify_name.is_empty then
+					l_generated.replace_substring_all ("$INDEX", l_identify_name.as_lower)
+				else
+					l_generated.replace_substring_all ("$INDEX", "group_" + (group_counter + l_index).out)
+				end
+
 				if attached {ER_TREE_NODE_GROUP_DATA} a_tab_node.i_th (l_index).data as l_group_data then
 					if attached l_group_data.command_name as l_command_name and then not l_command_name.is_empty then
 						l_command_string := "<<{" + command_name_constants.as_upper + "}." + l_command_name + ">>"
@@ -610,7 +779,7 @@ feature {NONE} -- Implementation
 		do
 			--"groups.extend (group_1)"
 			create Result.make_empty
-			l_template := "%T%T%Tgroups.extend (group_$INDEX)"
+			l_template := "%T%T%Tgroups.extend ($INDEX)"
 
 			from
 				l_index := 1
@@ -619,7 +788,13 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", (group_counter + l_index).out)
+				if attached {ER_TREE_NODE_GROUP_DATA} a_tab_node.i_th(l_index).data as l_data
+					and then attached l_data.command_name as l_identify_name
+					and then not l_identify_name.is_empty then
+					l_generated.replace_substring_all ("$INDEX", l_identify_name.as_lower)
+				else
+					l_generated.replace_substring_all ("$INDEX", "group_" + (group_counter + l_index).out)
+				end
 
 				l_index := l_index + 1
 				if l_generated /= Void then
@@ -639,7 +814,7 @@ feature {NONE} -- Implementation
 			l_generated: detachable STRING
 		do
 			create Result.make_empty
-			l_template := "%Tgroup_$INDEX: RIBBON_GROUP_$INDEX"
+			l_template := "%T$INDEX_1: $INDEX_2"
 
 			from
 				l_index := 1
@@ -648,7 +823,16 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", (group_counter + l_index).out)
+				if attached {ER_TREE_NODE_GROUP_DATA} a_tab_node.i_th(l_index).data as l_data
+					and then attached l_data.command_name as l_identify_name
+					and then not l_identify_name.is_empty then
+
+					l_generated.replace_substring_all ("$INDEX_1", l_identify_name.as_lower)
+					l_generated.replace_substring_all ("$INDEX_2", l_identify_name.as_upper)
+				else
+					l_generated.replace_substring_all ("$INDEX_1", "group_" + (group_counter + l_index).out)
+					l_generated.replace_substring_all ("$INDEX_2", "RIBBON_GROUP_" + (group_counter + l_index).out)
+				end
 
 				l_index := l_index + 1
 				if l_generated /= Void then
@@ -674,6 +858,7 @@ feature {NONE} -- Implementation
 			l_sub_dir, l_tool_bar_group_file, l_sub_imp_dir, l_tool_bar_group_imp_file: STRING
 			l_last_string: STRING
 			l_button_creation_string, l_button_registry_string, l_button_declaration_string: STRING
+			l_identifier_name: detachable STRING
 		do
 			-- First check how many groups
 			l_button_count := a_group_node.count
@@ -693,10 +878,23 @@ feature {NONE} -- Implementation
 					l_file_name.set_subdirectory (l_sub_dir)
 					l_file_name.set_file_name (l_tool_bar_group_file + ".e")
 					create l_file.make (l_file_name)
+
+					if attached {ER_TREE_NODE_GROUP_DATA} a_group_node.data as l_data then
+						if attached l_data.command_name as l_command_name  and then not l_command_name.is_empty then
+							l_identifier_name := l_command_name
+						end
+					end
+
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_group_file + "_" + a_index.out + ".e")
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + "_imp.e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_group_file + "_" + a_index.out + ".e")
+						end
+
 						create l_dest_file.make_create_read_write (l_dest_file_name)
+
 						from
 							l_button_creation_string := button_creation_string (a_group_node)
 							l_button_registry_string := button_registry_string (a_group_node)
@@ -712,8 +910,12 @@ feature {NONE} -- Implementation
 							l_last_string.replace_substring_all ("$BUTTON_CREATION", l_button_creation_string)
 							l_last_string.replace_substring_all ("$BUTTON_REGISTRY", l_button_registry_string)
 							l_last_string.replace_substring_all ("$BUTTON_DECLARATION", l_button_declaration_string)
+							if l_identifier_name /= Void then
+								l_last_string.replace_substring_all ("$INDEX", l_identifier_name.as_upper + "_IMP")
+							else
+								l_last_string.replace_substring_all ("$INDEX", "RIBBON_GROUP_IMP_" + a_index.out)
+							end
 
-							l_last_string.replace_substring_all ("$INDEX", a_index.out)
 							l_dest_file.put_string (l_last_string + "%N")
 						end
 
@@ -728,7 +930,12 @@ feature {NONE} -- Implementation
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_group_imp_file + "_" + a_index.out + ".e")
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + ".e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_group_imp_file + "_" + a_index.out + ".e")
+						end
+
 						create l_dest_file.make (l_dest_file_name)
 						-- Don't replace destination file if exists
 						if not l_dest_file.exists then
@@ -742,7 +949,14 @@ feature {NONE} -- Implementation
 								-- replace/add tab codes here
 								l_file.read_line
 								l_last_string := l_file.last_string
-								l_last_string.replace_substring_all ("$INDEX", a_index.out)
+								if l_identifier_name /= Void then
+									l_last_string.replace_substring_all ("$INDEX_1", l_identifier_name.as_upper)
+									l_last_string.replace_substring_all ("$INDEX_2", l_identifier_name.as_upper + "_IMP")
+								else
+									l_last_string.replace_substring_all ("$INDEX_1", "RIBBON_GROUP_" + a_index.out)
+									l_last_string.replace_substring_all ("$INDEX_2", "RIBBON_GROUP_IMP_" + a_index.out)
+								end
+
 								l_dest_file.put_string (l_last_string + "%N")
 							end
 
@@ -784,7 +998,7 @@ feature {NONE} -- Implementation
 			l_generated: detachable STRING
 		do
 			create Result.make_empty
-			l_template := "%T%T%Tcreate button_$INDEX.make_with_command_list ($COMMAND_IDS)"
+			l_template := "%T%T%Tcreate $INDEX.make_with_command_list ($COMMAND_IDS)"
 
 			from
 				l_index := 1
@@ -793,7 +1007,14 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", (button_counter + l_index).out)
+				if attached {ER_TREE_NODE_BUTTON_DATA} a_group_node.i_th(l_index).data as l_data
+					and then attached l_data.command_name as l_identify_name
+					and then not l_identify_name.is_empty then
+					l_generated.replace_substring_all ("$INDEX", l_identify_name.as_lower)
+				else
+					l_generated.replace_substring_all ("$INDEX", "button_" + (button_counter + l_index).out)
+				end
+
 				if attached {ER_TREE_NODE_BUTTON_DATA} a_group_node.i_th (l_index).data as l_group_data then
 					if attached l_group_data.command_name as l_command_name and then not l_command_name.is_empty then
 						l_command_string := "<<{" + command_name_constants.as_upper + "}." + l_command_name + ">>"
@@ -823,7 +1044,7 @@ feature {NONE} -- Implementation
 		do
 			--"groups.extend (group_1)"
 			create Result.make_empty
-			l_template := "%T%T%Tbuttons.extend (button_$INDEX)"
+			l_template := "%T%T%Tbuttons.extend ($INDEX)"
 
 			from
 				l_index := 1
@@ -832,7 +1053,13 @@ feature {NONE} -- Implementation
 				l_count < l_index
 			loop
 				l_generated := l_template.twin
-				l_generated.replace_substring_all ("$INDEX", (button_counter + l_index).out)
+				if attached {ER_TREE_NODE_BUTTON_DATA} a_group_node.i_th(l_index).data as l_data
+					and then attached l_data.command_name as l_identify_name
+					and then not l_identify_name.is_empty then
+					l_generated.replace_substring_all ("$INDEX", l_identify_name.as_lower)
+				else
+					l_generated.replace_substring_all ("$INDEX", "button_" + (button_counter + l_index).out)
+				end
 
 				l_index := l_index + 1
 				if l_generated /= Void then
@@ -848,13 +1075,12 @@ feature {NONE} -- Implementation
 			valid: a_group_node.text.is_equal ({ER_XML_CONSTANTS}.group)
 		local
 			l_count, l_index: INTEGER
-			l_template, l_checkbox_template: STRING
+			l_template: STRING
 			l_generated: detachable STRING
 			l_constants: ER_XML_CONSTANTS
 		do
 			create Result.make_empty
-			l_template := "%Tbutton_$INDEX: RIBBON_BUTTON_$INDEX"
-			l_checkbox_template := "%Tbutton_$INDEX: RIBBON_CHECKBOX_$INDEX"
+			l_template := "%T$INDEX_1: $INDEX_2"
 			from
 				create l_constants
 				l_index := 1
@@ -862,16 +1088,32 @@ feature {NONE} -- Implementation
 			until
 				l_count < l_index
 			loop
+				l_generated := l_template.twin
 				if a_group_node.i_th (1).text.same_string (l_constants.button) then
-					l_generated := l_template.twin
+					if attached {ER_TREE_NODE_BUTTON_DATA} a_group_node.i_th(l_index).data as l_data
+						and then attached l_data.command_name as l_identify_name
+						and then not l_identify_name.is_empty then
+						l_generated.replace_substring_all ("$INDEX_1", l_identify_name.as_lower)
+						l_generated.replace_substring_all ("$INDEX_2", l_identify_name.as_upper)
+					else
+						l_generated.replace_substring_all ("$INDEX_1", "button_" + (button_counter + l_index).out)
+						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_BUTTON_" + (button_counter + l_index).out)
+					end
 				elseif a_group_node.i_th (1).text.same_string (l_constants.check_box) then
-					l_generated := l_checkbox_template.twin
+					if attached {ER_TREE_NODE_BUTTON_DATA} a_group_node.i_th(l_index).data as l_data
+						and then attached l_data.command_name as l_identify_name
+						and then not l_identify_name.is_empty then
+						l_generated.replace_substring_all ("$INDEX_1", l_identify_name.as_lower)
+						l_generated.replace_substring_all ("$INDEX_2", l_identify_name.as_upper)
+					else
+						l_generated.replace_substring_all ("$INDEX_1", "checkbox_" + (button_counter + l_index).out)
+						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_CHECKBOX_" + (button_counter + l_index).out)
+					end
+
 				else
 					create l_generated.make_empty
 					check not_implemented: False end
 				end
-
-				l_generated.replace_substring_all ("$INDEX", (button_counter + l_index).out)
 
 				l_index := l_index + 1
 				if l_generated /= Void then
@@ -892,6 +1134,7 @@ feature {NONE} -- Implementation
 			l_singleton: ER_SHARED_SINGLETON
 			l_sub_dir, l_tool_bar_button_file, l_sub_imp_dir, l_tool_bar_button_imp_file: STRING
 			l_last_string: STRING
+			l_identifier_name: detachable STRING
 		do
 			create l_singleton
 			l_sub_dir := "code_generated_once_change_by_user"
@@ -907,11 +1150,21 @@ feature {NONE} -- Implementation
 					create l_file_name.make_from_string (l_constants.template)
 					l_file_name.set_subdirectory (l_sub_dir)
 					l_file_name.set_file_name (l_tool_bar_button_file + ".e")
+					if attached {ER_TREE_NODE_BUTTON_DATA} a_buttn_node.data as l_data then
+						if attached l_data.command_name as l_command_name  and then not l_command_name.is_empty then
+							l_identifier_name := l_command_name
+						end
+					end
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_button_file + "_" + a_index.out + ".e")
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name + "_imp.e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_button_file + "_" + a_index.out + ".e")
+						end
 						create l_dest_file.make_create_read_write (l_dest_file_name)
+
 						from
 							l_file.open_read
 							l_file.start
@@ -921,7 +1174,12 @@ feature {NONE} -- Implementation
 							-- replace/add tab codes here
 							l_file.read_line
 							l_last_string := l_file.last_string
-							l_last_string.replace_substring_all ("$INDEX", a_index.out)
+							if l_identifier_name /= Void then
+								l_last_string.replace_substring_all ("$INDEX", l_identifier_name.as_upper + "_IMP")
+							else
+								l_last_string.replace_substring_all ("$INDEX", "RIBBON_BUTTON_IMP_" + a_index.out)
+							end
+
 							l_dest_file.put_string (l_last_string + "%N")
 						end
 
@@ -936,7 +1194,12 @@ feature {NONE} -- Implementation
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_button_imp_file + "_" + a_index.out + ".e")
+						if l_identifier_name /= void then
+							l_dest_file_name.set_file_name (l_identifier_name + ".e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_button_imp_file + "_" + a_index.out + ".e")
+						end
+
 						create l_dest_file.make (l_dest_file_name)
 						if not l_dest_file.exists then
 							l_dest_file.create_read_write
@@ -949,7 +1212,14 @@ feature {NONE} -- Implementation
 								-- replace/add tab codes here
 								l_file.read_line
 								l_last_string := l_file.last_string
-								l_last_string.replace_substring_all ("$INDEX", a_index.out)
+								if l_identifier_name /= void then
+									l_last_string.replace_substring_all ("$INDEX_1", l_identifier_name.as_upper)
+									l_last_string.replace_substring_all ("$INDEX_2", l_identifier_name.as_upper + "_IMP")
+								else
+									l_last_string.replace_substring_all ("$INDEX_1", "RIBBON_BUTTON_" + a_index.out)
+									l_last_string.replace_substring_all ("$INDEX_2", "RIBBON_BUTTON_IMP_" + a_index.out)
+								end
+
 								l_dest_file.put_string (l_last_string + "%N")
 							end
 
@@ -974,6 +1244,7 @@ feature {NONE} -- Implementation
 			l_singleton: ER_SHARED_SINGLETON
 			l_sub_dir, l_tool_bar_button_file, l_sub_imp_dir, l_tool_bar_button_imp_file: STRING
 			l_last_string: STRING
+			l_identifier_name: detachable STRING
 		do
 			create l_singleton
 			l_sub_dir := "code_generated_once_change_by_user"
@@ -992,7 +1263,17 @@ feature {NONE} -- Implementation
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_button_file + "_" + a_index.out + ".e")
+						if attached {ER_TREE_NODE_BUTTON_DATA} a_checkbox_node.data as l_data then
+							if attached l_data.command_name as l_command_name  and then not l_command_name.is_empty then
+								l_identifier_name := l_command_name
+							end
+						end
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + "_imp.e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_button_file + "_" + a_index.out + ".e")
+						end
+
 						create l_dest_file.make_create_read_write (l_dest_file_name)
 						from
 							l_file.open_read
@@ -1003,7 +1284,12 @@ feature {NONE} -- Implementation
 							-- replace/add tab codes here
 							l_file.read_line
 							l_last_string := l_file.last_string
-							l_last_string.replace_substring_all ("$INDEX", a_index.out)
+							if l_identifier_name /= Void then
+								l_last_string.replace_substring_all ("$INDEX", l_identifier_name.as_upper + "_IMP")
+							else
+								l_last_string.replace_substring_all ("$INDEX", "RIBBON_CHECKBOX_IMP_" + a_index.out)
+							end
+
 							l_dest_file.put_string (l_last_string + "%N")
 						end
 
@@ -1018,7 +1304,12 @@ feature {NONE} -- Implementation
 					create l_file.make (l_file_name)
 					if l_file.exists and then l_file.is_readable then
 						create l_dest_file_name.make_from_string (l_project_location)
-						l_dest_file_name.set_file_name (l_tool_bar_button_imp_file + "_" + a_index.out + ".e")
+						if l_identifier_name /= Void then
+							l_dest_file_name.set_file_name (l_identifier_name.as_lower + ".e")
+						else
+							l_dest_file_name.set_file_name (l_tool_bar_button_imp_file + "_" + a_index.out + ".e")
+						end
+
 						create l_dest_file.make (l_dest_file_name)
 						if not l_dest_file.exists then
 							l_dest_file.create_read_write
@@ -1031,7 +1322,14 @@ feature {NONE} -- Implementation
 								-- replace/add tab codes here
 								l_file.read_line
 								l_last_string := l_file.last_string
-								l_last_string.replace_substring_all ("$INDEX", a_index.out)
+								if l_identifier_name /= Void then
+									l_last_string.replace_substring_all ("$INDEX_1", l_identifier_name.as_upper)
+									l_last_string.replace_substring_all ("$INDEX_2", l_identifier_name.as_upper + "_IMP")
+								else
+									l_last_string.replace_substring_all ("$INDEX_1", "RIBBON_CHECKBOX_" + a_index.out)
+									l_last_string.replace_substring_all ("$INDEX_2", "RIBBON_CHECKBOX_IMP_" + a_index.out)
+								end
+
 								l_dest_file.put_string (l_last_string + "%N")
 							end
 

@@ -8,7 +8,7 @@ note
 	revision: "$Revision$"
 
 class
-	MAIN_WINDOW
+	MAIN_WINDOW$INDEX
 
 inherit
 	EV_RIBBON_TITLED_WINDOW
@@ -71,7 +71,7 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	ribbon: RIBBON
+	ribbon: $RIBBON_NAME
 			-- Ribbon attached to current
 
 end

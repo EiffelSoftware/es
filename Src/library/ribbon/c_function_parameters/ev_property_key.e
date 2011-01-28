@@ -16,7 +16,9 @@ class
 	EV_PROPERTY_KEY
 
 create
-	share_from_pointer
+	share_from_pointer,
+	make_boolean,
+	make_label
 
 feature {NONE}  -- Initialization
 
@@ -24,6 +26,18 @@ feature {NONE}  -- Initialization
 			-- Creation method
 		do
 			pointer := a_property_key
+		end
+
+	make_boolean
+			-- Make a boolean key
+		do
+			share_from_pointer (c_ui_pkey_boolean_value)
+		end
+
+	make_label
+			-- Make a label key
+		do
+			share_from_pointer (c_ui_pkey_label)
 		end
 
 feature -- Query
@@ -40,10 +54,17 @@ feature -- Query
 			Result := c_pid (pointer)
 		end
 
-feature {NONE} -- Implementation
-
 	pointer: POINTER
 			--
+
+	is_label: BOOLEAN
+			-- Is current label key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_label
+			Result := l_tmp.guid.is_equal (guid)
+		end
 
 feature {NONE} -- Externals
 
@@ -60,7 +81,7 @@ feature {NONE} -- Externals
 			}
 			]"
 		end
-	
+
 	c_pid (a_property_key: POINTER): NATURAL_32
 			--
 		external
@@ -75,4 +96,27 @@ feature {NONE} -- Externals
 			]"
 		end
 
+	c_ui_pkey_boolean_value: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_BooleanValue;
+			}
+			]"
+		end
+
+	c_ui_pkey_label: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_Label;
+			}
+			]"
+		end
 end

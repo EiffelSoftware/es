@@ -263,6 +263,8 @@ feature {NONE} -- Initialization
 			toolbarable_commands.extend (restart_cmd)
 			create quit_cmd.make
 			toolbarable_commands.extend (quit_cmd)
+			create detach_cmd.make
+			toolbarable_commands.extend (detach_cmd)
 
 			create toggle_exec_replay_recording_mode_cmd.make
 			toolbarable_commands.extend (toggle_exec_replay_recording_mode_cmd)
@@ -311,6 +313,7 @@ feature {NONE} -- Initialization
 			no_stop_cmd.enable_sensitive
 			stop_cmd.disable_sensitive
 			quit_cmd.disable_sensitive
+			detach_cmd.disable_sensitive
 			restart_cmd.disable_sensitive
 			ignore_breakpoints_cmd.disable_sensitive
 
@@ -501,6 +504,9 @@ feature {EB_EXEC_FORMAT_CMD, EB_DOCKING_LAYOUT_MANAGER, ES_DBG_TOOLBARABLE_AND_M
 
 	quit_cmd: EB_EXEC_QUIT_CMD
 			-- Command that can kill the execution.
+
+	detach_cmd: EB_EXEC_DETACH_CMD
+			-- Command that can detach the execution.
 
 	step_cmd: EB_EXEC_STEP_CMD
 			-- Step by step command.
@@ -797,6 +803,13 @@ feature -- tools management
 			Result.extend (l_item)
 			a_recycler.auto_recycle (l_item)
 
+			l_item := detach_cmd.new_menu_item
+			Result.extend (l_item)
+			a_recycler.auto_recycle (l_item)
+
+				-- Separator.
+			create sep
+			Result.extend (sep)
 
 -- SCOOP REPLAY
 			-- Just initialization of items.
@@ -1351,6 +1364,7 @@ feature -- Change
 			force_debug_mode_cmd.update (w)
 			stop_cmd.update (w)
 			quit_cmd.update (w)
+			detach_cmd.update (w)
 			step_cmd.update (w)
 			out_cmd.update (w)
 			into_cmd.update (w)
@@ -1938,6 +1952,7 @@ feature -- Debugging events
 				-- Modify the debugging window display.
 			stop_cmd.enable_sensitive
 			quit_cmd.enable_sensitive
+			detach_cmd.enable_sensitive
 			restart_cmd.enable_sensitive
 			no_stop_cmd.disable_sensitive
 			debug_cmd.disable_sensitive
@@ -2172,6 +2187,7 @@ feature -- Debugging events
 				-- Make related buttons insensitive.
 			stop_cmd.disable_sensitive
 			quit_cmd.disable_sensitive
+			detach_cmd.disable_sensitive
 			restart_cmd.disable_sensitive
 			debug_cmd.enable_sensitive
 			debug_cmd.set_launched (False)
@@ -2769,7 +2785,7 @@ feature {NONE} -- MSIL system implementation
 			-- DLL type constant for MSIL system
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

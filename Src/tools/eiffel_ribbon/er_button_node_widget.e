@@ -10,9 +10,6 @@ class
 
 inherit
 	ER_BUTTON_NODE_WIDGET_IMP
-		redefine
-			create_interface_objects
-		end
 
 
 feature {NONE} -- Initialization
@@ -40,14 +37,13 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	create_interface_objects
+	user_create_interface_objects
 			-- <Precursor>
 		do
 				-- Initialize before calling Precursor all the attached attributes
 				-- from the current class.
 
 				-- Proceed with vision2 objects creation.
-			Precursor
 			create small_image.make
 			create large_image.make
 		end
@@ -95,10 +91,11 @@ feature {NONE} -- Implementation
 
 	on_command_name_text_change
 			-- <Precursor>
+		local
+			l_checker: ER_IDENTIFIER_UNIQUENESS_CHECKER
 		do
-			if attached tree_node_data as l_data then
-				l_data.set_command_name (command_name.text)
-			end
+			create l_checker
+			l_checker.on_identifier_name_change (command_name, tree_node_data)
 		end
 
 	on_label_text_change

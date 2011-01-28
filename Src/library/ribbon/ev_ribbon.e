@@ -18,11 +18,22 @@ feature -- Command
 			-- Creation method
 		local
 			l_result: INTEGER
+			l_resources: EV_RIBBON_RESOURCES
 		do
 			if attached {EV_WINDOW_IMP} a_window.implementation as l_imp then
 				com_initialize
 				l_result := create_ribbon_com_framework (l_imp.wel_item)
+				item := get_ribbon_framework
+				command_handler := get_command_handler
+				create l_resources
+				l_resources.ribbon_list.extend (Current)
 			end
+		end
+
+	set_modes (a_mode: INTEGER)
+			-- Set application mode for current ribbon framework
+		do
+			c_set_modes (a_mode, item)
 		end
 
 	destroy
@@ -40,8 +51,14 @@ feature -- Query
 	height: INTEGER
 			-- Get current ribbon height
 		do
-			get_height ($Result)
+			get_height ($Result, item)
 		end
+
+	item: POINTER
+			-- Ribbon framework object
+
+	command_handler: POINTER
+			-- Command handler C object
 
 feature {EV_RIBBON_TITLED_WINDOW_IMP} -- Externals
 
@@ -94,29 +111,98 @@ feature {EV_RIBBON_TITLED_WINDOW_IMP} -- Externals
 			]"
 		end
 
-	get_height (a_height: TYPED_POINTER[INTEGER])
+	get_height (a_height: TYPED_POINTER[INTEGER]; a_ribbon_framework: POINTER)
 			-- Get ribbon height
 		external
 			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
-				GetRibbonHeight ($a_height);	
+				GetRibbonHeight ($a_height, $a_ribbon_framework);	
 			}
 			]"
 		end
 
-	set_modes (a_mode: INTEGER)
+	c_set_modes (a_mode: INTEGER; a_ribbon_framework: POINTER)
 			-- Set application mode
 		external
 			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
-				SetModes ($a_mode);
+				SetModes ($a_mode, $a_ribbon_framework);
 			}
 			]"
 		end
 
+	get_ribbon_framework: POINTER
+			-- Get Ribbon framework pointer
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				return GetRibbonFramwork ();
+			}
+			]"
+		end
+
+	get_command_handler: POINTER
+			-- Get Ribbon command handler C object
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				return GetCommandHandler ();
+			}
+			]"
+		end
+
+feature {EV_RIBBON_CHECKBOX, EV_RIBBON_BUTTON} -- Query
+
+	get_ui_command_property (a_command_id: NATURAL_32; a_proper_key: POINTER; a_proper_variant: POINTER; a_framework: POINTER)
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				HRESULT l_r;
+				l_r = GetUICommandProperty ($a_command_id, $a_proper_key, $a_proper_variant, $a_framework);
+				if (SUCCEEDED (l_r))
+				{
+					printf ("\nsuccess");
+				}else
+				{
+					printf ("\nfail %x", l_r);
+				}
+			}
+			]"
+		end
+
+	set_ui_command_property (a_command_id: NATURAL_32; a_proper_key: POINTER; a_proper_variant: POINTER; a_framework: POINTER)
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				SetUICommandProperty ($a_command_id, $a_proper_key, $a_proper_variant, $a_framework);
+			}
+			]"
+		end
+
+	c_invalidate_ui_command (a_command_id: NATURAL_32; a_flags: INTEGER; a_proper_key: POINTER; a_framework: POINTER)
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				InvalidateUICommand($a_command_id, $a_flags, $a_proper_key, $a_framework);
+			}
+			]"
+		end
 end
 

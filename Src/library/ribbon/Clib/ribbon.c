@@ -21,6 +21,7 @@ IUIApplicationVtbl myRibbon_Vtbl = {QueryInterface,
 
 LONG OutstandingObjects = 0;
 IUIFramework *g_pFramework = NULL;  // Reference to the Ribbon framework.
+IUIFramework *last_pFramework = NULL;  // Reference to the Ribbon framework when calling "OnCreateUICommand"
 IUICommandHandler	*pCommandHandler = NULL;
 
 HRESULT STDMETHODCALLTYPE QueryInterface(IUIApplication *This, REFIID vtblID, void **ppv)
@@ -60,8 +61,11 @@ HRESULT STDMETHODCALLTYPE OnCreateUICommand(IUIApplication *This, UINT32 command
 
 	HRESULT	hr;
 
-	if (NULL == pCommandHandler)
+	// only create a new command handler if `g_pFramwork' changed since last time
+	if (g_pFramework != last_pFramework) 
 	{
+		last_pFramework = g_pFramework;
+		
 		/* allocate pApplication */
 		pCommandHandler = (IUICommandHandler *)GlobalAlloc(GMEM_FIXED, sizeof(IUICommandHandler));
 		if(!pCommandHandler) {
@@ -153,32 +157,78 @@ void DestroyRibbon()
 //  PURPOSE:  Get the ribbon height.
 //
 //
-HRESULT GetRibbonHeight(UINT* ribbonHeight)
+HRESULT GetRibbonHeight(UINT* ribbonHeight, IUIFramework *a_framework)
 {
-    HRESULT hr = S_OK;
+	HRESULT hr = S_OK;
 
-    if (g_pFramework)
-    {
-        IUIRibbon* pRibbon = NULL;
+	if (a_framework)
+	{
+		IUIRibbon* pRibbon = NULL;
 
-        if (SUCCEEDED(g_pFramework->lpVtbl->GetView(g_pFramework, 0, &IID_IUIRIBBON, &(pRibbon))))
-        {
-            hr = pRibbon->lpVtbl->GetHeight(pRibbon, ribbonHeight);
-            pRibbon->lpVtbl->Release(pRibbon);
-        }
-    }
+		if (SUCCEEDED(a_framework->lpVtbl->GetView(a_framework, 0, &IID_IUIRIBBON, &(pRibbon))))
+		{
+			hr = pRibbon->lpVtbl->GetHeight(pRibbon, ribbonHeight);
+			pRibbon->lpVtbl->Release(pRibbon);
+		}
+	}
 
-    return hr;
+	return hr;
 }
 
-HRESULT SetModes(INT32 iModes)
+HRESULT SetModes(INT32 iModes, IUIFramework *a_framework)
 {
-	  HRESULT hr = S_OK;
+	HRESULT hr = S_OK;
 
-    if (g_pFramework)
-    {
-    	hr = g_pFramework->lpVtbl->SetModes(g_pFramework, UI_MAKEAPPMODE(iModes));
-    }
-    
-    return hr;
+	if (a_framework)
+	{
+		hr = a_framework->lpVtbl->SetModes(g_pFramework, UI_MAKEAPPMODE(iModes));
+	}
+
+	return hr;
+}
+
+HRESULT GetUICommandProperty(UINT32 commandId, REFPROPERTYKEY key, PROPVARIANT *value, IUIFramework *a_framework)
+{
+	HRESULT hr = S_OK;
+
+	if (a_framework)
+	{
+		hr = a_framework->lpVtbl->GetUICommandProperty(a_framework, commandId, key, value);
+	}
+
+	return hr;
+}
+
+HRESULT SetUICommandProperty (UINT32 commandId, REFPROPERTYKEY key, PROPVARIANT *value, IUIFramework *a_framework)
+{
+	HRESULT hr = S_OK;
+
+	if (a_framework)
+	{
+		hr = a_framework->lpVtbl->SetUICommandProperty(a_framework, commandId, key, value);
+	}
+
+	return hr;
+}
+
+HRESULT InvalidateUICommand(UINT32 commandId, UI_INVALIDATIONS flags, const PROPERTYKEY *key, IUIFramework *a_framework)
+{
+	HRESULT hr = S_OK;
+
+	if (a_framework)
+	{
+		hr = a_framework->lpVtbl->InvalidateUICommand(a_framework, commandId, flags, key);
+	}
+
+	return hr;	
+}
+
+IUIFramework *GetRibbonFramwork()
+{
+		return g_pFramework;
+}
+
+IUICommandHandler *GetCommandHandler()
+{
+		return pCommandHandler;
 }
