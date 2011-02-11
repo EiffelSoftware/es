@@ -978,6 +978,7 @@ test 	has-stable-attribute-crash		incr409 tcf fail incrementality stable attache
 test 	type-to-create-crash			incr410 tcf fail incrementality attached_types
 test 	rout-entry-crash-3			incr411 tcf fail incrementality
 test 	create-qualified-explicit-crash		incr412 tcf fail incrementality anchored_types
+test 	adding-removing-transient			incr413 tcf fail incrementality transient
 
 
 -- Melting
@@ -1391,7 +1392,7 @@ test	negative-integer-8		exec130  tcf pass execution
 test	melted-memory-copy		exec131  tcf pass execution
 test	is-integer-accepts-invalid	exec132  tcf pass execution
 test	agent-lighter-tuple-arg		exec133  tcf pass execution tuple
-test	insert-hash-table-zero		exec134  tcf pass execution
+test	insert-hash-table-zero		exec134  tcf pass execution table
 test	store-expanded-retrieve-wrong	exec135  tcf pass execution storable
 test	store-expanded-retrieve-dies	exec136  tcf pass execution storable
 test	array-expanded-not-deep-equal	exec137  tcf pass execution
@@ -1620,6 +1621,7 @@ test once-per-object-rescue-gc			once017 tcf fail once
 test once-per-object-nonconforming-inheritance	once018 tcf fail once
 test once-per-object-redefined-precursor	once019 tcf fail once
 test once-per-object-nonconforming-2		once020 tcf fail once non-conforming
+test once-per-object-generic-precursor		once021 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1972,14 +1974,14 @@ test	storable-with-attached-type-1	store019 tcf pass storable attached_types
 test	storable-with-attached-type-by-63	store020 tcf pass storable attached_types
 test	storable-removing-attachment-marks	store021 tcf pass storable attached_types
 test	store-expanded-class-type-2	store022 tcf pass storable expanded
-test	store-transient-attributes	store023 tcf pass storable
+test	store-transient-attributes	store023 tcf pass storable transient
 test	stream-independent-store	store024 tcf pass storable stream special
 test	attached-independent-store	store025 tcf pass storable void-safe
 test	storable-formats-63			store026 tcf pass storable
 test	storable-with-special-type	store027 tcf pass storable
 test	storable-with-tuple-type	store028 tcf pass storable
 test	storable-formats-63-2		store029 tcf pass storable
-test	store-retrieve-transient-attributes	store030 tcf pass storable
+test	store-retrieve-transient-attributes	store030 tcf pass storable transient
 test	store-retrieve-with-version	store031 tcf pass storable
 test	store-in-different-thread	store032 tcf pass storable multithreaded
 test	store-bounded-queues-stacks	store033 tcf pass storable
@@ -2502,6 +2504,7 @@ test	detachable-formal-attached-constraint		attach078 tcf pass attached_types fo
 test	empty-attribute-body-bogus-vevi			attach079 tcf pass attached_types validity
 test	bogus-object-test						attach080 tcf pass attached_types object_test execution
 test	nonconforming-inheritance-bogus-vevi		attach081 tcf fail attached_types non-conforming
+test	repeated-inheritance-bogus-vevi			attach082 tcf fail attached_types
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance

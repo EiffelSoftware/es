@@ -295,6 +295,16 @@ feature -- Output
 
 	ext_append_to (st: TEXT_FORMATTER; c: CLASS_C)
 		do
+			if
+				not has_attached_mark and then not has_detachable_mark and then
+				not is_attached and then not is_implicitly_attached
+			then
+					-- There is no explicit attachment mark, let's put an assumed one.
+				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_l_bracket)
+				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_detachable_keyword, Void)
+				st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_r_bracket)
+				st.add_space
+			end
 			ext_append_marks (st)
 			if has_expanded_mark then
 				st.process_keyword_text ({SHARED_TEXT_ITEMS}.ti_expanded_keyword, Void)
@@ -800,6 +810,7 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 			l_generics, l_result_generics: like generics
 			l_class: like associated_class
 			i, nb: INTEGER
+			l_new_type: TYPE_A
 		do
 			if associated_class = c then
 					-- Same class, nothing to do.
@@ -827,7 +838,15 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 							-- for H in C is the one coming from X, we would not find the match with A when
 							-- we should have.
 						if attached {TYPE_FEATURE_I} l_class.feature_of_rout_id_set (c.formal_rout_id_set_at_position (i)) as l_type_feat then
-							l_result_generics.put (l_generics.item (l_type_feat.position), i)
+							l_new_type := l_generics.item (l_type_feat.position)
+							if l_new_type /= l_result_generics.item (i) then
+									-- Because `Result' is originally `c.actua_type', we are not allowed
+									-- to modify it there otherwise it would be the compiler, see eweasel
+									-- test#ccomp086 and test#incr405.
+								Result := Result.duplicate_for_instantiation
+								l_result_generics := Result.generics
+								l_result_generics.put (l_new_type, i)
+							end
 						else
 								-- No match.
 							Result := Void
@@ -953,7 +972,7 @@ invariant
 		class_declaration_mark = no_mark or class_declaration_mark = expanded_mark
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

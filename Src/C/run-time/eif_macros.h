@@ -1386,7 +1386,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  * RTS_OU(c,o) - tells if object o is uncontrolled by the processor associated with object c
  */
 #define EIF_IS_DIFFERENT_PROCESSOR(o1,o2) (RTS_PID(o1) != RTS_PID(o2))
-#define RTS_OU(c,o) EIF_TRUE
+#define RTS_OU(c,o) (o != EIFNULL && EIF_IS_DIFFERENT_PROCESSOR (c, o))
 
 /*
  * Processor:
@@ -1419,7 +1419,7 @@ RT_LNK void eif_exit_eiffel_code(void);
  * Separate call (versions ending with P stand for calls to precompiled routines, the first two arguments to them have a different meaning):
  * RTS_CF(s,f,n,t,a,r) - call a function on a static type s with a feature id f and name n on a target t and arguments a and result r
  * RTS_CP(s,f,n,t,a)   - call a procedure on a static type s with a feature id f and name n on a target t and arguments a
- * RTS_CC(s,f,d,a)     - call a creation procedure on a static type s with a feature id f on a target of dynamic type d and arguments a
+ * RTS_CC(s,f,d,a)     - call a creation procedure (asynchronous) on a static type s with a feature id f on a target of dynamic type d and arguments a
  */
 #define RTS_CF(s,f,n,t,a,r) \
 	{                                                       \
@@ -1433,10 +1433,11 @@ RT_LNK void eif_exit_eiffel_code(void);
 		((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
 		eif_log_callp (s, f, RTS_PID(Current), a);      \
 	}
-#define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), a)
-#define RTS_CPP(s,f,n,t,a) eif_log_callp (s, f, RTS_PID(Current), a)
-#define RTS_CC(s,f,d,a)    eif_log_call  (s, f, RTS_PID(Current), a)
-#define RTS_CCP(s,f,d,a)   eif_log_callp (s, f, RTS_PID(Current), a)
+#define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), a);
+#define RTS_CPP(s,f,n,t,a) eif_log_callp (s, f, RTS_PID(Current), a);
+
+#define RTS_CC(s,f,d,a)  eif_log_call  (s, f, RTS_PID(Current), a);
+#define RTS_CCP(s,f,d,a) eif_log_callp  (s, f, RTS_PID(Current), a);
 
 /*
  * Separate call arguments:
@@ -1452,20 +1453,19 @@ RT_LNK void eif_exit_eiffel_code(void);
 		((call_data*)(a)) -> result = (EIF_TYPED_VALUE *) 0;                     \
 		((call_data*)(a)) -> is_synchronous = EIF_FALSE;                         \
 	}
-#define RTS_AA(v,f,t,n,a) \
-	{                                                                                           \
-		((call_data*)(a)) -> argument [(n) - 1] = (v);                                      \
-		if ((t) == SK_REF)                                                                  \
-			((call_data*)(a)) -> argument [(n) - 1].it_r =                              \
-			(EIF_REFERENCE) eif_protect (((call_data*)(a)) -> argument [(n) - 1].it_r); \
-	}
+#define RTS_AA(v,f,t,n,a) RTS_AS(v,f,t,n,a)
 #define RTS_AS(v,f,t,n,a) \
-	{                                                               \
-		RTS_AA(v,f,t,n,a);                                      \
-		if (!RTS_OU(t, ((call_data*)(a)) -> argument [(n) - 1]))   \
-			((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+	{	\
+		((call_data*)(a)) -> argument [(n) - 1] = (v);	\
+		if ((t) == SK_REF) 	\
+		{			\
+			if ( ( ((call_data*)(a)) -> is_synchronous == EIF_FALSE ) && ( !RTS_OU(Current, v.it_r) ) )	\
+			{ \
+				((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+			} \
+			((call_data*)(a)) -> argument [(n) - 1].it_r = eif_protect (v.it_r); \
+		} \
 	}
-
 
 #define RTS_WPR RTS_TCB(scoop_task_wait_for_processor_redundancy,EIFNULL,EIFNULL,EIFNULL,EIFNULL,EIFNULL)
 

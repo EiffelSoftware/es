@@ -1277,6 +1277,7 @@ feature {NONE} -- Implementation
 			inline_agent_assertion: ROUTINE_ASSERTIONS
 			l_built_in_as: BUILT_IN_AS
 			l_text_formatter_decorator: like text_formatter_decorator
+			l_has_note: BOOLEAN
 		do
 			check
 				not_expr_type_visiting: not expr_type_visiting
@@ -1308,6 +1309,22 @@ feature {NONE} -- Implementation
 				end
 				l_text_formatter_decorator.put_origin_comment
 				l_text_formatter_decorator.exdent
+				if current_feature.is_transient or current_feature.is_stable then
+						-- Transiant/stable attributes always have a body thus we can handle the transient/stable
+						-- property here by adding a `note' clause just after the comments.
+					l_text_formatter_decorator.process_keyword_text (ti_note_keyword, Void)
+					l_text_formatter_decorator.indent
+					l_text_formatter_decorator.put_new_line
+					if current_feature.is_transient and current_feature.is_stable then
+						l_text_formatter_decorator.add_string ("option: stable, transient")
+					elseif current_feature.is_transient then
+						l_text_formatter_decorator.add_string ("option: transient")
+					else
+						l_text_formatter_decorator.add_string ("option: stable")
+					end
+					l_text_formatter_decorator.exdent
+					l_text_formatter_decorator.put_new_line
+				end
 			end
 			l_text_formatter_decorator.set_first_assertion (True)
 
@@ -2345,6 +2362,7 @@ feature {NONE} -- Implementation
 				l_text_formatter_decorator.put_new_line
 			end
 			cont := l_as.body.content
+				-- Are we handling a constant or an attribute without a body?
 			is_const_or_att := cont = Void or else cont.is_constant
 			if is_const_or_att then
 				l_text_formatter_decorator.indent
@@ -5054,7 +5072,7 @@ invariant
 	object_test_locals_for_current_feature_not_void: object_test_locals_for_current_feature /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
