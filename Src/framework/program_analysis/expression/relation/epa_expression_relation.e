@@ -1,5 +1,5 @@
 ﻿note
-	description: "Class to access to relationships between expressions"
+	description: "Class to access relationships between expressions"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -39,6 +39,7 @@ feature -- Access
 			end
 			create l_empty_set.make_default
 			Result := l_empty_set
+			Result.set_equality_tester (expression_equality_tester)
 			from
 				i := 1
 			until
@@ -47,7 +48,8 @@ feature -- Access
 				if
 					relevant_expression_sets.i_th (i) /= Void and then relevant_expression_sets.i_th (i).has (a_expr)
 				then
-					Result := relevant_expression_sets.i_th (i)
+					Result.merge (relevant_expression_sets.i_th (i))
+					--Result.append (relevant_expression_sets.i_th (i))
 				end
 				i := i + 1
 			end
@@ -89,19 +91,20 @@ feature -- Access
 		end
 
 	dependent_expressions (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
-			-- Set of expressions that `a_expr' dependents on in `a_context'
-			-- `a_context' indicates in which scope the relevance relation is calculated.
-			-- Depencency is defined as follows:
-			-- If `a_expr' appears as a left-hand value of an assignment and another expression, `b_expr', appears in the right-hand expression
-			-- of the same assignment, then `a_expr' is dependent on `b_expr'.
-			-- For example, in assignment "total := price + tax", "total" is dependent on both "price" and "tax'.
-			-- Note: Recalculate result every time, no cache is maintained. So if this feature is used frequently,
-			-- please do the caching somewhere else.		
-		do
-		ensure
-			good_result: Result /= Void
-			equality_tester_set: Result.equality_tester = expression_equality_tester
-		end
+            -- Set of expressions that `a_expr' dependends on in `a_context'
+            -- `a_context' indicates in which scope the relevance relation is calculated.
+            -- Depencency is defined as follows:
+            -- If `a_expr' appears as a left-hand value of an assignment and another expression, `b_expr', appears in the right-hand expression
+            -- of the same assignment, then `a_expr' is dependent on `b_expr'.
+            -- For example, in assignment "total := price + tax", "total" is dependent on both "price" and "tax'.
+            -- Note: Recalculate result every time, no cache is maintained. So if this feature is used frequently,
+            -- please do the caching somewhere else.
+        do
+        	fixme("Not yet implemented. Feb 13, 2011. megg")
+        ensure
+            good_result: Result /= Void
+            equality_tester_set: Result.equality_tester = expression_equality_tester
+        end
 
 feature -- Status report
 
@@ -169,96 +172,17 @@ feature -- Status report
 		end
 
 	is_expression_dependent (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
-			-- Is `a_expr' dependent on `b_expr'?
-			-- `a_context' indicates in which scope the relevance relation is calculated.
-			-- Depencency is defined as follows:
-			-- If `a_expr' appears as a left-hand value of an assignment and `b_expr' appears in the right-hand expression
-			-- of the same assignment, then `a_expr' is dependent on `b_expr'.
-			-- For example, in assignment "total := price + tax", "total" is dependent on both "price" and "tax'.
-			-- Note: Recalculate result every time, no cache is maintained. So if this feature is used frequently,
-			-- please do the caching somewhere else.		
-		local
-			l_printer: EPA_DEPENDENT_EXPRESSION_FINDER
-		do
-		end
-
-feature -- Dependent Expressions
-
-	dependent_visit_feature (a_class_name: STRING; a_feature_name: STRING)
-			--
-		require
-			a_class_name_not_void: a_class_name /= Void
-			a_feature_name_not_void: a_feature_name /= Void
-		local
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-			l_printer: EPA_DEPENDENT_EXPRESSION_FINDER
-			l_context: ETR_FEATURE_CONTEXT
-			l_class_context: ETR_CLASS_CONTEXT
-		do
-			l_class := first_class_starts_with_name (a_class_name)
-			l_feature := l_class.feature_named (a_feature_name)
-			create l_class_context.make (l_feature.written_class)
-			create l_context.make (l_feature, l_class_context)
-			create l_printer.make
-			l_printer.set_context_class (l_class)
-			l_printer.set_written_class (l_feature.written_class)
-			l_printer.set_context_feature (l_feature)
-			l_feature.e_feature.ast.process (l_printer)
-			across precondition_of_feature (l_feature, l_class) as l_preconditions loop
-				l_preconditions.item.ast.process (l_printer)
-			end
-			across postcondition_of_feature (l_feature, l_class) as l_postcondition loop
-				l_postcondition.item.ast.process (l_printer)
-			end
-			l_printer.dump_file ("/home/marc/Desktop/")
-		end
-
-	dependent_visit_class (a_class_name: STRING)
-			--
-		require
-			a_class_name_not_void: a_class_name /= Void
-		local
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-			l_printer: EPA_DEPENDENT_EXPRESSION_FINDER
-			l_context: ETR_FEATURE_CONTEXT
-			l_class_context: ETR_CLASS_CONTEXT
-			l_feat_tbl: FEATURE_TABLE
-			l_cursor: CURSOR
-		do
-			l_class := first_class_starts_with_name (a_class_name)
-			l_feat_tbl := l_class.feature_table
-
-			create l_printer.make
-
-			l_cursor := l_feat_tbl.cursor
-			from
-				l_feat_tbl.start
-			until
-				l_feat_tbl.after
-			loop
-				l_feature := l_feat_tbl.item_for_iteration
-				create l_class_context.make (l_feature.written_class)
-				create l_context.make (l_feature, l_class_context)
-				l_printer.set_context_class (l_class)
-				l_printer.set_written_class (l_feature.written_class)
-				l_printer.set_context_feature (l_feature)
-				l_feature.e_feature.ast.process (l_printer)
-				across precondition_of_feature (l_feature, l_class) as l_preconditions loop
-					l_preconditions.item.ast.process (l_printer)
-				end
-				across postcondition_of_feature (l_feature, l_class) as l_postcondition loop
-					l_postcondition.item.ast.process (l_printer)
-				end
-				l_feat_tbl.forth
-			end
-			l_feat_tbl.go_to (l_cursor)
-			across invariant_of_class (l_class) as l_invariants loop
-				l_invariants.item.ast.process (l_printer)
-			end
-			l_printer.dump_file ("/home/marc/Desktop/")
-		end
+            -- Is `a_expr' dependent on `b_expr'?
+            -- `a_context' indicates in which scope the relevance relation is calculated.
+            -- Dependency is defined as follows:
+            -- If `a_expr' appears as a left-hand value of an assignment and `b_expr' appears in the right-hand expression
+            -- of the same assignment, then `a_expr' is dependent on `b_expr'.
+            -- For example, in assignment "total := price + tax", "total" is dependent on both "price" and "tax'.
+            -- Note: Recalculate result every time, no cache is maintained. So if this feature is used frequently,
+            -- please do the caching somewhere else.
+        do
+        	fixme("Not yet implemented. Feb 13, 2011. megg")
+        end
 
 feature -- Helper features
 
@@ -299,7 +223,7 @@ feature {NONE} -- Implementation
 			-- Data structure containing sets of relevant expressions.
 
 	find_relevant_expressions (a_context: ETR_CONTEXT)
-			--
+			-- Finds all relevant expression in `a_context'.
 		require
 			a_context_not_void: a_context /= Void
 		local
@@ -307,11 +231,13 @@ feature {NONE} -- Implementation
 			l_feat_tbl: FEATURE_TABLE
 			l_cursor: CURSOR
 			l_feature: FEATURE_I
+			l_features: LINKED_LIST[FEATURE_I]
 		do
 			create l_relevancy_finder.make (a_context)
 			if attached {ETR_CLASS_CONTEXT} a_context as l_class_ctxt then
 				l_relevancy_finder.set_context_class (l_class_ctxt.context_class)
 				l_relevancy_finder.set_written_class (l_class_ctxt.written_class)
+				create l_features.make
 				l_feat_tbl := l_class_ctxt.written_class.feature_table
 				l_cursor := l_feat_tbl.cursor
 				from
@@ -319,7 +245,16 @@ feature {NONE} -- Implementation
 				until
 					l_feat_tbl.after
 				loop
-					l_feature := l_feat_tbl.item_for_iteration
+					l_features.extend (l_feat_tbl.item_for_iteration)
+					l_feat_tbl.forth
+				end
+				l_feat_tbl.go_to (l_cursor)
+				from
+					l_features.start
+				until
+					l_features.after
+				loop
+					l_feature := l_features.item_for_iteration
 					l_relevancy_finder.set_context_feature (l_feature)
 					l_relevancy_finder.set_written_class (l_feature.written_class)
 					l_relevancy_finder.find (l_feature.e_feature.ast)
@@ -329,10 +264,8 @@ feature {NONE} -- Implementation
 					across postcondition_of_feature (l_feature, l_class_ctxt.context_class) as l_postconditions loop
 						l_relevancy_finder.find (l_postconditions.item.ast)
 					end
-					l_feat_tbl.forth
+					l_features.forth
 				end
-				l_feat_tbl.go_to (l_cursor)
-
 				across invariant_of_class (l_class_ctxt.context_class) as l_invariants loop
 					l_relevancy_finder.find (l_invariants.item.ast)
 				end
@@ -355,7 +288,9 @@ feature {NONE} -- Implementation
 		end
 
 	merge_not_disjoint_sets
-			-- Merges the sets of relevant expressions if two different sets are not disjoint.
+			-- Merges the sets of relevant expressions (`relevant_expression_sets') if two different sets are not disjoint.
+		require
+			relevant_expression_sets_not_void: relevant_expression_sets /= Void
 		local
 			m,n: INTEGER
 			l_count: INTEGER
@@ -369,17 +304,23 @@ feature {NONE} -- Implementation
 				m > l_count
 			loop
 				from
-					n := m + 1
+					n := 1
 				until
 					n > l_count
 				loop
 					if
+						m /= n and then
 						l_rev_sets.i_th (m) /= Void and then
-						l_rev_sets.i_th (n) /= Void and then
-						not expression_set_without_constants (l_rev_sets.i_th (m)).is_disjoint (expression_set_without_constants (l_rev_sets.i_th (n)))
+						l_rev_sets.i_th (n) /= Void
 					then
-						l_rev_sets.i_th (m).merge (l_rev_sets.i_th (n))
-						l_rev_sets.put_i_th (Void, n)
+						if
+							not expression_set_without_constants (l_rev_sets.i_th (m)).is_disjoint (expression_set_without_constants (l_rev_sets.i_th (n)))
+						then
+							l_rev_sets.i_th (m).merge (l_rev_sets.i_th (n))
+							l_rev_sets.put_i_th (Void, n)
+							m := 1
+							n := 1
+						end
 					end
 					n := n + 1
 				end
@@ -396,10 +337,15 @@ feature {NONE} -- Implementation
 
 	expression_set_without_constants (a_set: EPA_HASH_SET [EPA_EXPRESSION]): EPA_HASH_SET [EPA_EXPRESSION]
 			-- A set whose elements are non-constant elements from `a_set'.
+		require
+			a_set_not_void: a_set /= Void
 		do
 			create Result.make (a_set.count)
 			Result.set_equality_tester (expression_equality_tester)
 			a_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant end)
+		ensure
+			Result_not_void: Result /= Void
+			equality_tester_set: Result.equality_tester = expression_equality_tester
 		end
 
 end
