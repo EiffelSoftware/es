@@ -21,7 +21,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_operands: like operands; a_content: like content; a_source: STRING)
+	make (a_operands: like operands; a_content: like content; a_holes: like holes; a_source: STRING)
 			-- Initialize Current.
 		require
 			not_a_content_is_empty: not a_content.is_empty
@@ -45,8 +45,12 @@ feature -- Access
 			-- Keys are variable names (in lower case), values are types of those
 			-- variables.
 
+	holes: DS_HASH_TABLE [EXT_HOLE, STRING]
+			-- Set of holes in current snippet
+			-- Keys are names of holes, values are the holes.
+
 	content: STRING
-			-- Content of current snippet.
+			-- Textual representation of current snippet.
 			-- The content should be a parse-able string.
 
 	source: STRING
