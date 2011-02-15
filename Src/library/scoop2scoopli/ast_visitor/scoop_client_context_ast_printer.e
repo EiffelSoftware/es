@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					A roundtrip visitor for the generation of common client class elements. In particular:
 					
@@ -57,7 +57,8 @@ inherit
 			process_elseif_as,
 			process_object_test_as,
 			process_inline_agent_creation_as,
-			process_agent_routine_creation_as
+			process_agent_routine_creation_as,
+			process_tuple_as
 		end
 
 	SCOOP_CLASS_NAME
@@ -205,7 +206,10 @@ feature {NONE} -- Parameter list processing
 				(
 					previous_level_exists and then
 					previous_level.is_separate and
-					not is_in_ignored_group (previous_level.type.associated_class)
+					(
+						(not is_in_ignored_group (previous_level.type.associated_class))
+						or overridden_base_classes.has (previous_level.type.associated_class.name.as_upper)
+					)
 				) or
 				add_prefix_current_cc
 			then
@@ -251,7 +255,10 @@ feature {NONE} -- Parameter list processing
 				(
 					previous_level_exists and then
 					previous_level.is_separate and
-					not is_in_ignored_group (previous_level.type.associated_class)
+					(
+						(not is_in_ignored_group (previous_level.type.associated_class))
+						or overridden_base_classes.has (previous_level.type.associated_class.name.as_upper)
+					)
 				) or
 				add_prefix_current_cc
 			then
@@ -1045,6 +1052,18 @@ feature {NONE} -- Expressions processing
 			end
 		end
 
+	process_tuple_as (l_as: TUPLE_AS)
+			-- Update the current level with 'l_as'.
+		local
+
+			l_type_expression_visitor: SCOOP_TYPE_EXPR_VISITOR
+		do
+			add_levels_layer
+			Precursor (l_as)
+			remove_current_levels_layer
+			update_current_level_with_expression (l_as)
+		end
+
 feature {NONE} -- Features processing
 
 	process_feature_as (l_as: FEATURE_AS)
@@ -1543,18 +1562,19 @@ feature {NONE} -- Creation handling
 feature {NONE} -- Eiffel list processing
 
 	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-			-- Reset the current levels layer before each non-empty list of instructions, type declarations, or assertion clauses and after each instruction, assertion, or type declaration.
+			-- Reset the current levels layer before each non-empty list of instructions, type declarations, assertion clauses, or expressions and after each instruction, assertion, type declaration, or expression.
 			-- Levels layers are relevant in type declarations because processing a type declaration can involve processing calls in anchor types.
 			-- Reset the current object tests layer before each non-empty list of instructions or assertion clauses and after each instruction or assertion clause.
 		local
 			i, l_count: INTEGER
 		do
 			if l_as.count > 0 then
-				-- Reset the current levels layer before every list of instructions, type declarations, or assertion clauses.
+				-- Reset the current levels layer before every list of instructions, type declarations, assertion clauses, or expressions.
 				if
 					attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
 					attached {EIFFEL_LIST [TYPE_DEC_AS]} l_as as l_type_declaration_list or
-					attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
+					attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list or
+					attached {EIFFEL_LIST [EXPR_AS]} l_as as l_expression_list
 				then
 					reset_current_levels_layer
 				end
@@ -1583,11 +1603,12 @@ feature {NONE} -- Eiffel list processing
 						i := i + 1
 					end
 
-					-- Reset the current levels layer after each instruction, type declaration, or assertion clause.
+					-- Reset the current levels layer after each instruction, type declaration, assertion clause, or expression.
 					if
 						attached {EIFFEL_LIST [INSTRUCTION_AS]} l_as as l_instruction_list or
 						attached {EIFFEL_LIST [TYPE_DEC_AS]} l_as as l_type_declaration_list or
-						attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list
+						attached {EIFFEL_LIST [TAGGED_AS]} l_as as l_assertion_clause_list or
+						attached {EIFFEL_LIST [EXPR_AS]} l_as as l_expression_list
 					then
 						reset_current_levels_layer
 					end
@@ -2035,10 +2056,9 @@ feature {NONE} -- Agent handling
 				end
 			end
 
-			update_current_level_with_expression (l_as)
-
 			add_inline_agents_layer
 			Precursor (l_as)
+			update_current_level_with_expression (l_as)
 			remove_current_inline_agents_layer
 			reset_current_inline_agents_layer
 		end

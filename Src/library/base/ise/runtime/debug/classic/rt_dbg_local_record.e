@@ -183,7 +183,7 @@ feature {NONE} -- Internal Implementation
 		require
 			r_attached: r /= Void
 		do
-			if attached {RT_DBG_LOCAL_RECORD [like value]} r as ot_record then
+			if attached {RT_DBG_LOCAL_RECORD [G]} r as ot_record then
 				set_local_value_at (callstack_depth, position, rt_type, ot_record.value)
 			else
 				check should_not_occur: False end

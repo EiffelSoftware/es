@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					List of classes that are not transformed
 					into client- and proxy-classes.
@@ -177,6 +177,22 @@ feature -- Basic type declaration
 				Result := False
 			end
 		end
+
+	feature
+		overridden_base_classes: CONTAINER[STRING]
+			-- This set contains all the classes which are overridden at the scoop degree by a handcrafted scoop version
+			local
+				l_overridden_base_classes: ARRAYED_SET[STRING]
+				l_string: STRING
+			once
+				create l_overridden_base_classes.make (4)
+				l_overridden_base_classes.compare_objects
+				l_overridden_base_classes.extend ("PROCEDURE")
+				l_overridden_base_classes.extend ("FUNCTION")
+				l_overridden_base_classes.extend ("ROUTINE")
+				l_overridden_base_classes.extend ("PREDICATE")
+				Result := l_overridden_base_classes
+			end
 
 note
 	copyright:	"Copyright (c) 1984-2010, Chair of Software Engineering"

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Internal representation of the workbench."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -803,6 +803,15 @@ feature {NONE} -- Added for SCOOP
 				-- Add the override to the universe target.
 				universe.target.add_override (l_override)
 
+				-- Create a new override for the SCOOP static override cluster.
+				l_loc := l_factory.new_location_from_path ({SCOOP_SYSTEM_CONSTANTS}.static_override_cluster_path, universe.target)
+				l_override := l_factory.new_override ({SCOOP_SYSTEM_CONSTANTS}.static_override_cluster_name, l_loc, universe.target)
+				l_override.set_recursive (true)
+				l_override.set_internal (true)
+
+				-- Add the static override to the universe target.
+				universe.target.add_override (l_override)
+
 				-- Save the updated universe target configuration.
 				universe.target.system.store
 			end
@@ -813,6 +822,9 @@ feature {NONE} -- Added for SCOOP
 		do
 			-- Remove the override for the SCOOP override cluster.
 			universe.target.remove_override ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
+
+			-- Remove the override for the SCOOP static override cluster.
+			universe.target.remove_override ({SCOOP_SYSTEM_CONSTANTS}.static_override_cluster_name)
 
 			-- Save the updated universe target configuration.
 			universe.target.system.store

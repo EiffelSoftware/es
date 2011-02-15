@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "SCOOP System level constants."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -22,6 +22,10 @@ feature -- Scoop system constants
 
 	override_cluster_name: STRING = "scoop_override_cluster"
 
+	static_override_cluster_name: STRING = "scoop_static_override_cluster"
+
+	static_override_cluster_path: STRING = "$ISE_LIBRARY\library\scoopli\static_override"
+
 	caller_formal_argument_name: STRING = "a_caller_"
 
 	scoop_library_name: STRING = "scoopli"
@@ -29,6 +33,8 @@ feature -- Scoop system constants
 	scoop_library_path: STRING = "$ISE_LIBRARY\library\scoopli\scoopli.ecf"
 
 	scoop_library_processor_setter_name: STRING = "set_processor_"
+
+	scoop_library_processor_inline_setter_name: STRING = "with_processor_"
 
 	scoop_library_processor_getter_name: STRING = "processor_"
 

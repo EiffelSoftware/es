@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					Roundtrip visitor to create a locking request feature in a client class, based on an original feature.
 					

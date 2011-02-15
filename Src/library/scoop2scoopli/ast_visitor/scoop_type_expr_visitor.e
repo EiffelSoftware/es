@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					Roundtrip visitor to evaluate the type of expressions and to resolve types.
 					
@@ -55,7 +55,8 @@ inherit
 			process_void_as,
 			process_object_test_as,
 			process_inline_agent_creation_as,
-			process_agent_routine_creation_as
+			process_agent_routine_creation_as,
+			process_tuple_as
 		end
 
 	SCOOP_WORKBENCH
@@ -141,13 +142,37 @@ feature -- Expression and call evaluation access
 			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
+	evaluate_expression_type_in_type_and_feature (
+		a_expression: EXPR_AS;
+		a_context_type: TYPE_A;
+		a_context_feature: FEATURE_I;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_expression' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
+		require
+			a_expression_is_valid: a_expression /= Void
+			a_context_type_is_valid: a_context_type /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
+		do
+			object_test_context := a_object_test_context
+			inline_agent_context := a_inline_agent_context
+			context_feature := a_context_feature;
+			expression_type := a_context_type
+			evaluate_expression_type (a_expression)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
+		end
+
 	evaluate_expression_type_in_type (
 		a_expression: EXPR_AS;
 		a_context_type: TYPE_A;
 		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
 		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
 	)
-			-- Evaluate the type of 'a_expression' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Evaluate the type of 'a_expression' in the context 'a_context_type', 'a_object_test_context', and 'a_inline_agent_context'.
 			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
 			a_expression_is_valid: a_expression /= Void
@@ -230,13 +255,36 @@ feature -- Expression and call evaluation access
 			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
 		end
 
+	evaluate_call_type_in_type_and_feature (
+		a_call: CALL_AS;
+		a_context_type: TYPE_A;
+		a_context_feature: FEATURE_I;
+		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
+		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
+	)
+			-- Evaluate the type of 'a_call' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
+		require
+			a_call_is_valid: a_call /= Void
+			a_context_type_is_valid: a_context_type /= Void
+			a_object_test_context_is_valid: a_object_test_context /= Void
+			a_inline_agent_context_is_valid: a_inline_agent_context /= Void
+		local
+			l_call_expression: EXPR_CALL_AS
+		do
+			create l_call_expression.initialize (a_call)
+			evaluate_expression_type_in_type_and_feature (l_call_expression, a_context_type, a_context_feature, a_object_test_context, a_inline_agent_context)
+		ensure
+			result_is_valid: is_query implies (expression_type /= Void and object_test_context_update /= Void)
+		end
+
 	evaluate_call_type_in_type (
 		a_call: CALL_AS;
 		a_context_type: TYPE_A;
 		a_object_test_context: HASH_TABLE[OBJECT_TEST_AS, STRING];
 		a_inline_agent_context: HASH_TABLE[TYPE_AS, STRING]
 	)
-			-- Evaluate the type of 'a_call' in the context 'a_context_type', 'a_context_feature', 'a_object_test_context', and 'a_inline_agent_context'.
+			-- Evaluate the type of 'a_call' in the context 'a_context_type', 'a_object_test_context', and 'a_inline_agent_context'.
 			-- Indicate the result in 'is_query', 'is_expression_separate', 'expression_type', and 'object_test_context_update'.
 		require
 			a_call_is_valid: a_call /= Void
@@ -858,6 +906,40 @@ feature {NONE} -- Expression evaluation visits
 			else
 				Result := resolved_type_in_expression_type (l_agent_type).resolved_type
 			end
+		end
+
+	process_tuple_as (l_as: TUPLE_AS)
+		-- Update the interface with 'l_as'.
+		do
+			update_interface (
+				derived_tuple_type (l_as)
+			)
+		end
+
+	derived_tuple_type (a_tuple: TUPLE_AS): TYPE_A
+			-- The type of a tuple 'a_tuple'.
+		local
+			i: INTEGER
+			l_tuple_type_elements: ARRAY [TYPE_A]
+			l_type_expression_visitor: like Current
+		do
+			-- Note: tuple expressions do not have labels.
+			-- Go through the tuple elements. For each tuple element get the type.
+			from
+				i := 1
+				create l_tuple_type_elements.make (1, a_tuple.expressions.count)
+				l_type_expression_visitor := scoop_visitor_factory.new_type_expr_visitor
+
+			until
+				i > a_tuple.expressions.count
+			loop
+				l_type_expression_visitor.evaluate_expression_type_in_workbench (a_tuple.expressions.i_th (i), object_test_context, inline_agent_context)
+				l_tuple_type_elements.put (l_type_expression_visitor.expression_type, i)
+				i := i + 1
+			end
+
+			-- Create the tuple type with the types of the tuple elements.
+			create {TUPLE_TYPE_A} Result.make (system.tuple_class.compiled_representation.class_id, l_tuple_type_elements)
 		end
 
 	process_bracket_as (l_as: BRACKET_AS)

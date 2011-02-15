@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 				A class visitor to create a proxy class.
 				
@@ -445,7 +445,9 @@ feature {NONE} -- Implementation
 			end
 
 			if a_feature.is_function or a_feature.is_attribute or a_feature.is_constant then
+
 				context.add_string ("%N%T%T%T" + {SCOOP_SYSTEM_CONSTANTS}.client_agent_local_name + ": " + system.function_class.name + "[" + system.any_class.name + ", " + system.tuple_class.name + ", ")
+
 				if a_feature.body.type /= void then
 					-- Fix for redeclarations if feature is query type:
 					-- If `l_as.type' is non separate but was separate in an ancestor version we need to make it separate

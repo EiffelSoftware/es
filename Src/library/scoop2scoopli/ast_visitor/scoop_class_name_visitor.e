@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 					Roundtrip visitor to process class names.
 					Usage: See note in `SCOOP_CONTEXT_AST_PRINTER'.
@@ -69,7 +69,7 @@ feature {SCOOP_CLASS_NAME} -- Access
 	process_id_str (l_class_name: STRING; a_set_prefix: BOOLEAN) is
 			-- Process `l_as', name as string.
 		do
-			if a_set_prefix and then (scoop_classes.has (l_class_name.as_upper)) then
+			if a_set_prefix and then (scoop_classes.has (l_class_name.as_upper) or overridden_base_classes.has (l_class_name.as_upper)) then
 				context.add_string (scoop_prefix)
 			end
 			context.add_string (l_class_name)
@@ -93,7 +93,10 @@ feature {NONE} -- Roundtrip: process nodes
 			last_index := l_as.index
 
 			if is_set_prefix and then
-			   (is_scoop_string or scoop_classes.has (l_as.name.as_upper))
+			   	(	is_scoop_string or
+					scoop_classes.has (l_as.name.as_upper) or
+					overridden_base_classes.has (l_as.name.as_upper)
+				)
 			   then
 
 				-- add 'SCOOP_SEPARATE__' prefix
