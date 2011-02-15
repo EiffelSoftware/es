@@ -8,36 +8,51 @@ class
 	AFX_PROXY_LOGGER
 
 inherit
+	AFX_EVENT_LISTENER
+		redefine
+			on_session_starts,
+			on_session_ends,
+			on_test_case_analysis_starts,
+			on_test_case_analysis_ends,
+			on_fix_generation_starts,
+			on_fix_generation_ends,
+			on_fix_validation_starts,
+			on_fix_validation_ends,
+			on_new_test_case_found,
+			on_break_point_hits,
+			on_fix_candidate_validation_starts,
+			on_fix_candidate_validation_ends,
+			on_interpreter_starts,
+			on_interpreter_start_failed,
+			on_test_case_execution_time_out
+		end
+
 	AFX_TIME_UTILITY
 
 	AFX_UTILITY
+
+	AFX_SHARED_SESSION
 
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config)
+	make
 			-- Initialize Current.
 		do
-			config := a_config
 			create log_file.make_create_read_write (config.proxy_log_path)
 			create break_point_hit_statistics.make (50)
-		ensure
-			config_set: config = a_config
 		end
 
 feature -- Access
-
-	config: AFX_CONFIG
-			-- Configuration of current AutoFix session
 
 	log_file: PLAIN_TEXT_FILE
 			-- File to store logs
 
 feature -- Actions
 
-	on_sesson_starts
+	on_session_starts
 			-- Action to be performed when the whole AutoFix session starts
 		do
 			start_time := time_now
@@ -50,13 +65,13 @@ feature -- Actions
 			log_time_stamp (session_end_message)
 		end
 
-	on_test_case_analyzing_starts
+	on_test_case_analysis_starts
 			-- Action to be performed when test case analyzing starts
 		do
 			log_time_stamp (test_case_analyzing_start_message)
 		end
 
-	on_test_case_analyzing_ends
+	on_test_case_analysis_ends
 			-- Action to be performed when test case analyzing ends
 		do
 			log_time_stamp (test_case_analyzing_end_message)

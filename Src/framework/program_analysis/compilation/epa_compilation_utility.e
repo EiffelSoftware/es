@@ -99,7 +99,10 @@ feature -- Basic operations
 				l_feature_checker.init (l_ast_context)
 				l_feature_checker.type_check_and_code (a_feature, True, False)
 
-				if attached {ROUTINE_AS} a_feature.e_feature.ast.body.content as l_routine then
+				if attached {ROUTINE_AS} a_feature.e_feature.ast.body.content as l_routine
+						-- Fixme: Without the following condition, call to check_locals might fail in certain cases. Jan-7-2011, Max
+					and then l_routine.locals /= Void
+				then
 					l_feature_checker.context.clear_local_context
 					l_feature_checker.check_locals (l_routine)
 					l_locals := l_feature_checker.context.locals.twin

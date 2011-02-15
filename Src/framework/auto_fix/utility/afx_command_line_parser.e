@@ -42,6 +42,9 @@ feature -- Basic operations
 			l_args: DS_LINKED_LIST [STRING]
 			l_fix_strategy: AP_STRING_OPTION
 			l_rank_control_dependance: AP_STRING_OPTION
+			l_rank_condition_preference: AP_STRING_OPTION
+			l_generate_report: AP_STRING_OPTION
+			l_fault_localization_strategy: AP_STRING_OPTION
 			l_program_state: AP_STRING_OPTION
 			l_breakpoint_specific_option: AP_FLAG
 			l_monitor_strategy: AP_STRING_OPTION
@@ -67,6 +70,9 @@ feature -- Basic operations
 			l_max_fix_postcondition: AP_INTEGER_OPTION
 			l_model_xml_option: AP_STRING_OPTION
 			l_path_name: FILE_NAME
+
+			l_report_file_name_str: FILE_NAME
+			l_report_file: PLAIN_TEXT_FILE
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -81,9 +87,21 @@ feature -- Basic operations
 			l_rank_control_dependance.set_description ("Choose how CFG would be used to rank the fixing locations. Options: optimistic|pessimistic.")
 			l_parser.options.force_last (l_rank_control_dependance)
 
+			create l_rank_condition_preference.make_with_long_form ("condition-preference")
+			l_rank_condition_preference.set_description ("Prefer the source from which fix conditions come from. Options: invariant|evidence.")
+			l_parser.options.force_last (l_rank_condition_preference)
+
+			create l_fault_localization_strategy.make_with_long_form ("fault-localization-strategy")
+			l_fault_localization_strategy.set_description ("Choose the strategy for fault localization.")
+			l_parser.options.force_last (l_fault_localization_strategy)
+
 			create l_monitor_strategy.make_with_long_form ("monitoring")
 			l_monitor_strategy.set_description ("Choose how expressions would be monitored, i.e. only at the declaring breakpoint or at every breakpoint in the feature. Options: breakpointwise|featurewise.")
 			l_parser.options.force_last (l_monitor_strategy)
+
+			create l_generate_report.make_with_long_form ("generate-report")
+			l_generate_report.set_description ("Generate AutoFix report. Optional argument: name of the file to which the report will be appended.")
+			l_parser.options.force_last (l_generate_report)
 
 			create l_rank_computation_mean_type.make_with_long_form ("rank-computation-mean-type")
 			l_rank_computation_mean_type.set_description ("The kind of mean value calculation to use for computing ranking.")
@@ -211,18 +229,63 @@ feature -- Basic operations
 				if attached l_rank_computation_mean_type.parameter as lt_mean_type then
 					lt_mean_type.to_lower
 					if lt_mean_type ~ "arithmetic" then
-						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_arithmetic)
+						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_arithmetic)
 					elseif lt_mean_type ~ "geometric" then
-						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_geometric)
+						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_geometric)
 					elseif lt_mean_type ~ "harmonic" then
-						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_harmonic)
 					else
-						-- Use harmonic mean by default
-						config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+						-- Error: invalid parameter.
+						config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
 					end
 				end
 			else
-				config.set_rank_computation_mean_type ({AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.Mean_type_harmonic)
+				config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
+			end
+
+			if l_rank_condition_preference.was_found then
+				if attached l_rank_condition_preference.parameter as lt_con_pref then
+					lt_con_pref.to_lower
+					if lt_con_pref ~ "invariant" then
+						config.set_fix_condition_preference ({AFX_CONFIG}.Fix_condition_preference_invariant)
+					elseif lt_con_pref ~ "evidence" then
+						config.set_fix_condition_preference ({AFX_CONFIG}.Fix_condition_preference_evidence)
+					else
+						-- Error: invalid parameter, use the default setting.
+						config.set_fix_condition_preference ({AFX_CONFIG}.Default_fix_condition_preference)
+					end
+				end
+			else
+				config.set_fix_condition_preference ({AFX_CONFIG}.Default_fix_condition_preference)
+			end
+
+			if l_fault_localization_strategy.was_found then
+				if attached l_fault_localization_strategy.parameter as lt_suspicious then
+					lt_suspicious.to_lower
+					if lt_suspicious ~ "heuristicIII-old" then
+						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_old)
+					elseif lt_suspicious ~ "heuristicIII-new" then
+						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
+					else
+						-- Error: invalid parameter.
+						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Default_fault_localization_strategy)
+					end
+				end
+			else
+				config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Default_fault_localization_strategy)
+			end
+
+			config.set_generate_report (l_generate_report.was_found)
+			if l_generate_report.was_found then
+				if attached l_generate_report.parameter as lt_report_file_name then
+					create l_report_file.make_open_read_append (lt_report_file_name)
+					if l_report_file.is_open_append then
+						config.set_report_file (l_report_file)
+					end
+				end
+				if config.report_file = Void then
+					config.set_report_file (io.output)
+				end
 			end
 
 			if l_fix_strategy.was_found then

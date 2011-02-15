@@ -26,9 +26,20 @@ feature -- Access
 		do
 			l_time_now := system_clock.date_time_now
 			l_duration := l_time_now.duration (a_start_time)
-			l_duration.set_time_canonical
-			Result := l_duration.millisecond_count
+			Result := duration_in_milliseconds (l_duration)
 		end
+
+	duration_in_milliseconds (a_duration: DT_DATE_TIME_DURATION): INTEGER
+			-- Duration in milliseconds.
+		do
+			if a_duration = Void then
+				Result := 0
+			else
+				a_duration.set_time_canonical
+				Result := a_duration.millisecond_count
+			end
+		end
+
 note
 	copyright: "Copyright (c) 1984-2010, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

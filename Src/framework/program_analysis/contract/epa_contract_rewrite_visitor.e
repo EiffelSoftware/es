@@ -13,7 +13,8 @@ inherit
 			process_nested_as,
 			process_current_as,
 			process_access_feat_as,
-			append_string
+			append_string,
+			process_parameter_list_as
 		end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -55,11 +56,11 @@ feature{NONE} -- Process
 		local
 			l_parts: LIST [STRING]
 			l_final_name: STRING
+			l_previous_nested_level: INTEGER
 		do
 			nested_level := nested_level + 1
 			l_as.target.process (Current)
 			append_string (".")
-
 			if nested_level = 1 then
 					-- We finished with all the remote part in a nested expression.
 				fixme ("Does not support nested expression within another nested expressions, for example: a(b.c).foo. 13.12.2009 Jasonw")
@@ -67,12 +68,13 @@ feature{NONE} -- Process
 				l_final_name := final_id_name (l_parts.first)
 				nested_prefix.replace_substring (l_final_name, 1, l_parts.first.count)
 			end
+
 			is_processing_nested_message := True
 			l_as.message.process (Current)
 			is_processing_nested_message := False
 			nested_level := nested_level - 1
 			if nested_level = 0 then
-				append_string (nested_prefix)
+				append_string_in_context (nested_prefix)
 				create nested_prefix.make (32)
 			end
 		end
@@ -90,9 +92,11 @@ feature{NONE} -- Process
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		local
+			l_cursor: INTEGER
 		do
 
-			if not is_using_nested_prefix_buffer or else (nested_level = 1 and then is_processing_nested_message) then
+			if not is_using_nested_prefix_buffer then -- or else (nested_level = 1 and then is_processing_nested_message) then
 				append_string_in_context (final_id_name (l_as.access_name))
 			else
 				append_string (l_as.access_name)
@@ -100,7 +104,49 @@ feature{NONE} -- Process
 
 			if attached l_as.parameters as l_para then
 				append_string (" (")
-				safe_process (l_para)
+				from
+					l_cursor := l_para.index
+					l_para.start
+				until
+					l_para.after
+				loop
+					if attached l_para.item as l_item then
+						l_item.process (Current)
+					else
+						check
+							False
+						end
+					end
+					l_para.forth
+				end
+				l_para.go_i_th (l_cursor)
+				append_string (")")
+			end
+		end
+
+
+	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
+			-- Process `l_as'.
+			-- NB.: No renaming for parameters.
+		local
+			l_cursor: CURSOR
+			l_parameter: STRING
+		do
+			if attached l_as.parameters as l_list then
+				append_string ("(")
+				l_cursor := l_list.cursor
+				from
+					l_list.start
+				until
+					l_list.after
+				loop
+					append_string (text_from_ast (l_list.item_for_iteration))
+					if l_list.index < l_list.count then
+						append_string (", ")
+					end
+					l_list.forth
+				end
+				l_list.go_to (l_cursor)
 				append_string (")")
 			end
 		end

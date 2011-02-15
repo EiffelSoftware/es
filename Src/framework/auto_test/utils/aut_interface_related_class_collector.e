@@ -2,7 +2,7 @@ note
 	description: "[
 			Given a list of basic classes, collect the list of classes that are used in the interface
 			of the basic classes.
-			Usage: -autotest -a --collect-interface [--data-output output_dir] class_name_1 class_name_2 
+			Usage: -autotest -a --collect-interface [--data-output output_dir] class_name_1 class_name_2
 		]"
 	author: ""
 	date: "$Date$"
@@ -113,7 +113,9 @@ feature{NONE} -- Implementation
 			l_related_classes.set_equality_tester (case_insensitive_string_equality_tester)
 			last_interface_related_classes.force_new (l_related_classes, a_class)
 
-			if attached {CLASS_C}first_class_starts_with_name (a_class) as lt_class then
+			if attached {CLASS_C}first_class_starts_with_name (a_class) as lt_class
+					and then not lt_class.is_deferred
+			then
 				l_feature_table := lt_class.feature_table
 				from l_feature_table.start
 				until l_feature_table.after

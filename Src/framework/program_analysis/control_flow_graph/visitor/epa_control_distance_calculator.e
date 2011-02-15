@@ -138,17 +138,36 @@ feature -- Access
 			-- An interpretation of `last_report', based only on breakpoint index information.
 			-- Key: breakpoint indexes
 			-- Val: control distance from the key-bp_index to the reference bp_index.
+		local
+			l_report_cursor: DS_HASH_TABLE_CURSOR [INTEGER_32, EPA_BASIC_BLOCK]
+			l_report_key: EPA_BASIC_BLOCK
+			l_report_item: INTEGER
 		do
 			if last_report_concerning_bp_indexes_cache = Void then
 				create last_report_concerning_bp_indexes_cache.make_equal (last_report.count)
 			end
 			if last_report_concerning_bp_indexes_cache.count /= last_report.count then
 				last_report_concerning_bp_indexes_cache.wipe_out
-				last_report.do_all_with_key (
-						agent (a_table: DS_HASH_TABLE [INTEGER, INTEGER]; a_dis: INTEGER; a_blk: EPA_BASIC_BLOCK)
-							do
-								a_table.force (a_dis, a_blk.asts.first.breakpoint_slot)
-							end (last_report_concerning_bp_indexes_cache, ?, ?))
+				from
+					l_report_cursor := last_report.new_cursor
+					l_report_cursor.start
+				until
+					l_report_cursor.after
+				loop
+					l_report_key := l_report_cursor.key
+					l_report_item := l_report_cursor.item
+
+					if not l_report_key.asts.is_empty then
+						last_report_concerning_bp_indexes_cache.force (l_report_item, l_report_key.asts.first.breakpoint_slot)
+					end
+
+					l_report_cursor.forth
+				end
+--				last_report.do_all_with_key (
+--						agent (a_table: DS_HASH_TABLE [INTEGER, INTEGER]; a_dis: INTEGER; a_blk: EPA_BASIC_BLOCK)
+--							do
+--								a_table.force (a_dis, a_blk.asts.first.breakpoint_slot)
+--							end (last_report_concerning_bp_indexes_cache, ?, ?))
 			end
 			Result := last_report_concerning_bp_indexes_cache
 		ensure

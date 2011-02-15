@@ -10,7 +10,7 @@ class
 inherit
 	AFX_UTILITY
 
-	AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT
+--	AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT
 
 	SHARED_EXEC_ENVIRONMENT
 
@@ -231,7 +231,7 @@ feature -- Test case analysis
 			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
 			--		`is_combining_integral_expressions_in_breakpoint' is True.
 
-feature -- Fault localization
+feature -- Distinguishing expressions based on their breakpoint index
 
 	is_breakpoint_specific: BOOLEAN assign set_breakpoint_specific
 			-- Is comparison between expressions breakpoint-specific?
@@ -240,6 +240,27 @@ feature -- Fault localization
 			-- Set `is_breakpoint_specific'.
 		do
 			is_breakpoint_specific := a_flag
+		end
+
+	is_program_state_extended: BOOLEAN
+			-- Is monitoring extended program states?
+
+feature -- Usage of Control Flow Graph (CFG) in rank computation
+
+	CFG_usage: INTEGER
+			-- How to use the dependance information from CFG.
+			-- The value can be `CFG_usage_optimistic' or `CFG_usage_pessimistic'.
+
+	set_CFG_usage_optimistic
+			-- Set `CFG_usage'.
+		do
+			CFG_usage := CFG_usage_optimistic
+		end
+
+	set_CFG_usage_pessimistic
+			-- Set `CFG_usage'.
+		do
+			CFG_usage := CFG_usage_pessimistic
 		end
 
 	is_CFG_usage_optimistic: BOOLEAN
@@ -254,13 +275,122 @@ feature -- Fault localization
 			Result := CFG_usage = CFG_usage_pessimistic
 		end
 
-	is_program_state_extended: BOOLEAN
-			-- Is monitoring extended program states?
+	CFG_usage_optimistic: INTEGER = 0
+	CFG_usage_pessimistic: INTEGER = 1
+
+feature -- Type of mean value for rank computation
 
 	rank_computation_mean_type: INTEGER
 			-- The ranks of fixing targets are computed as the mean values of the suspiciousness value, the data distance, and the control distance.
 			-- The attribute specifies which kind of mean value would be used.
 			-- Refer to {AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT}.
+
+	set_rank_computation_mean_type (a_type: INTEGER)
+			-- Set `rank_computation_mean_type'.
+		require
+			valid_mean_type: is_valid_mean_type (a_type)
+		do
+			rank_computation_mean_type := a_type
+		end
+
+	is_valid_mean_type (a_mean_type: INTEGER): BOOLEAN
+			-- Is `a_mean_type' a valid mean type?
+		do
+			Result := a_mean_type = Mean_type_arithmetic
+					or else a_mean_type = Mean_type_geometric
+					or else a_mean_type = Mean_type_harmonic
+		end
+
+	is_using_arithmetic_mean: BOOLEAN
+			-- Is using arithmetic mean value as the ranking value.
+		do
+			Result := rank_computation_mean_type = Mean_type_arithmetic
+		end
+
+	is_using_geometric_mean: BOOLEAN
+			-- Is using geometric mean value as the ranking value.
+		do
+			Result := rank_computation_mean_type = Mean_type_geometric
+		end
+
+	is_using_harmonic_mean: BOOLEAN
+			-- Is using harmonic mean value as the ranking value.
+		do
+			Result := rank_computation_mean_type = Mean_type_harmonic
+		end
+
+	Mean_type_arithmetic: INTEGER = 1
+	Mean_type_geometric: INTEGER = 2
+	Mean_type_harmonic: INTEGER = 3
+	Default_mean_type: INTEGER = 3
+
+feature -- Type of fault localization algorithm
+
+	type_of_fault_localization_strategy: INTEGER
+			-- Type of fault localization strategy.
+
+	set_type_of_fault_localization_strategy (a_type: INTEGER)
+			-- Set `type_of_fault_localization_strategy'.
+		require
+			is_valid_type: is_valid_fault_localization_strategy (a_type)
+		do
+			type_of_fault_localization_strategy := a_type
+		end
+
+	is_valid_fault_localization_strategy (a_strategy: INTEGER): BOOLEAN
+			-- Is `a_strategy' standing for a valid localization strategy?
+		do
+			Result := a_strategy = Fault_localization_strategy_heuristicIII_old
+					or else a_strategy = Fault_localization_strategy_heuristicIII_new
+		end
+
+	is_using_strategy_heuristicIII_old: BOOLEAN
+			-- Is using HeuristicIII-old as the fault localization strategy?
+		do
+			Result := type_of_fault_localization_strategy = Fault_localization_strategy_heuristicIII_old
+		end
+
+	is_using_strategy_heuristicIII_new: BOOLEAN
+			-- Is using heuristicIII-new as the fault localization strategy?
+		do
+			Result := type_of_fault_localization_strategy = Fault_localization_strategy_heuristicIII_new
+		end
+
+	Fault_localization_strategy_heuristicIII_old: INTEGER = 11
+	Fault_localization_strategy_heuristicIII_new: INTEGER = 12
+	Default_fault_localization_strategy: INTEGER = 12
+
+feature -- Fix condition preference
+
+	fix_condition_preference: INTEGER
+			-- Preference of sources of fix conditions.
+
+	set_fix_condition_preference (a_pref: INTEGER)
+			-- Set `fix_condition_preference'.
+		require
+			is_valid_preference: is_valid_fix_condition_preference (a_pref)
+		do
+			fix_condition_preference := a_pref
+		end
+
+	is_valid_fix_condition_preference (a_pref: INTEGER): BOOLEAN
+		do
+			Result := (a_pref = Fix_condition_preference_invariant) or else (a_pref = is_fix_condition_preferring_evidence)
+		end
+
+	is_fix_condition_preferring_invariant: BOOLEAN
+		do
+			Result := fix_condition_preference = Fix_condition_preference_invariant
+		end
+
+	is_fix_condition_preferring_evidence: BOOLEAN
+		do
+			Result := fix_condition_preference = Fix_condition_preference_evidence
+		end
+
+	Fix_condition_preference_invariant: INTEGER = 1
+	Fix_condition_preference_evidence: INTEGER = 2
+	Default_fix_condition_preference: INTEGER = 2
 
 feature -- Fix generation
 
@@ -306,6 +436,28 @@ feature -- Fix generation
 	max_fixing_location_scope_level: INTEGER = 2
 			-- The control structure distance level away from the failing assertion.
 			-- Minimal is 1. Default: 2
+
+feature -- AutoFix report
+
+	should_generate_report: BOOLEAN
+			-- Should a report be generated regarding the AutoFix process?
+
+	set_generate_report (a_flag: BOOLEAN)
+			-- Set `should_generate_report'.
+		do
+			should_generate_report := a_flag
+		end
+
+	report_file: PLAIN_TEXT_FILE
+			-- File to which the AutoFix report will be sent.
+
+	set_report_file (a_file: PLAIN_TEXT_FILE)
+			-- Set `report_file'.
+		require
+			file_appendable: a_file.is_open_append
+		do
+			report_file := a_file
+		end
 
 feature -- Status report
 
@@ -362,14 +514,6 @@ feature -- Setting
 		do
 			is_using_random_based_strategy_cache := b
 			is_using_model_based_strategy_cache := not b
-		end
-
-	set_rank_computation_mean_type (a_type: INTEGER)
-			-- Set `rank_computation_mean_type'.
-		require
-			valid_mean_type: is_valid_mean_type (a_type)
-		do
-			rank_computation_mean_type := a_type
 		end
 
 	set_is_using_model_based_strategy (b: BOOLEAN)
@@ -542,18 +686,6 @@ feature -- Setting
 			model_directory := a_directory.twin
 		end
 
-	set_CFG_usage_optimistic
-			-- Set `CFG_usage'.
-		do
-			CFG_usage := CFG_usage_optimistic
-		end
-
-	set_CFG_usage_pessimistic
-			-- Set `CFG_usage'.
-		do
-			CFG_usage := CFG_usage_pessimistic
-		end
-
 	set_program_state_extended (a_flag: BOOLEAN)
 			-- Set `is_program_state_extended'.
 		do
@@ -607,13 +739,6 @@ feature{NONE} -- Implementation
 
 	is_monitoring_breakpointwise_cache: BOOLEAN
 			-- Cache for `is_monitoring_breakpointwise'.
-
-	CFG_usage: INTEGER
-			-- How to use the dependance information from CFG.
-			-- The value can be `CFG_usage_optimistic' or `CFG_usage_pessimistic'.
-
-	CFG_usage_optimistic: INTEGER = 0
-	CFG_usage_pessimistic: INTEGER = 1
 
 feature{NONE} -- Implementation
 

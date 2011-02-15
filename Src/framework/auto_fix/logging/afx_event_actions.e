@@ -27,6 +27,9 @@ feature{NONE} -- Initialization
 			create fix_validation_start_actions
 			create fix_validation_end_actions
 
+			create report_generation_start_actions
+			create report_generation_end_actions
+
 			create new_test_case_found_actions
 			create break_point_hit_actions
 
@@ -37,6 +40,28 @@ feature{NONE} -- Initialization
 			create interpreter_start_failed_actions
 
 			create test_case_execution_time_out_actions
+		end
+
+feature -- Subscribe
+
+	subscribe_action_listener (a_listener: AFX_EVENT_LISTENER)
+			-- Subscribe `a_listener' to listen to the current events.
+		do
+			session_start_actions.extend (agent a_listener.on_session_starts)
+			session_end_actions.extend (agent a_listener.on_session_ends)
+			test_case_analysis_start_actions.extend (agent a_listener.on_test_case_analysis_starts)
+			test_case_analysis_end_actions.extend (agent a_listener.on_test_case_analysis_ends)
+			fix_generation_start_actions.extend (agent a_listener.on_fix_generation_starts)
+			fix_generation_end_actions.extend (agent a_listener.on_fix_generation_ends)
+			fix_validation_start_actions.extend (agent a_listener.on_fix_validation_starts)
+			fix_validation_end_actions.extend (agent a_listener.on_fix_validation_ends)
+			new_test_case_found_actions.extend (agent a_listener.on_new_test_case_found)
+			break_point_hit_actions.extend (agent a_listener.on_break_point_hits)
+			fix_candidate_validation_start_actions.extend (agent a_listener.on_fix_candidate_validation_starts)
+			fix_candidate_validation_end_actions.extend (agent a_listener.on_fix_candidate_validation_ends)
+			interpreter_start_actions.extend (agent a_listener.on_interpreter_starts)
+			interpreter_start_failed_actions.extend (agent a_listener.on_interpreter_start_failed)
+			test_case_execution_time_out_actions.extend (agent a_listener.on_test_case_execution_time_out)
 		end
 
 feature -- Access
@@ -66,6 +91,12 @@ feature -- Access
 	fix_validation_end_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when fix validation ends
 
+	report_generation_start_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be perforomed when report generation starts.
+
+	report_generation_end_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be performed when report generation ends.
+
 	new_test_case_found_actions: ACTION_SEQUENCE [TUPLE [tc_info: EPA_TEST_CASE_INFO]]
 			-- Actions to be performed when test case indicated by `tc_info' is found during test case analysis phase
 
@@ -79,7 +110,7 @@ feature -- Access
 			-- Actions to be performed when a fix candidate `a_candidate' finishes to be validated.
 			-- `a_valid' indicates whether `a_candidate' is valid.
 			-- `a_passing_count' and `a_failing_count' indicate the number of the test cases that `a_candidate' passes and failes, respectively.
-			
+
 	interpreter_start_actions: ACTION_SEQUENCE [TUPLE [a_port: INTEGER]]
 			-- Actions to be performed when the interpreter starts
 			-- `a_port' is the port number used for inter-process communication.
@@ -140,6 +171,18 @@ feature -- actions
 			-- Call actions in `fix_validation_end_actions'.
 		do
 			fix_validation_end_actions.call (Void)
+		end
+
+	notify_on_report_generation_starts
+			-- Call actions in `report_generation_start_actions'.
+		do
+			report_generation_start_actions.call (Void)
+		end
+
+	notify_on_report_generation_ends
+			-- Call actions in `report_generation_end_actions'.
+		do
+			report_generation_end_actions.call (Void)
 		end
 
 	notify_on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)

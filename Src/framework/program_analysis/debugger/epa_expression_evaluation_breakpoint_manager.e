@@ -155,32 +155,34 @@ feature -- Basic operations
 				l_bps.after
 			loop
 				l_bp := l_bps.key_for_iteration
-				l_routine := l_bp.routine
-				l_bpslot := l_bp.breakable_line_number
-				l_actions := hit_actions.item (l_bp)
-				if b then
-					l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp)
-					l_breakpoint.set_continue_execution (True)
-					if l_actions /= Void then
-						l_actions.do_all (agent l_breakpoint.add_when_hits_action)
-					end
-					l_bp_manager.add_breakpoint (l_breakpoint)
-				else
-					if l_actions /= Void then
-						l_bp2 := l_bp_manager.breakpoint_at (l_bp, False)
-						if l_bp2 /= Void then
-							l_actions.do_all (agent l_bp2.remove_when_hits_action)
+				if not l_bp.is_corrupted then
+					l_routine := l_bp.routine
+					l_bpslot := l_bp.breakable_line_number
+					l_actions := hit_actions.item (l_bp)
+					if b then
+						l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp)
+						l_breakpoint.set_continue_execution (True)
+						if l_actions /= Void then
+							l_actions.do_all (agent l_breakpoint.add_when_hits_action)
 						end
-					end
-					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
+						l_bp_manager.add_breakpoint (l_breakpoint)
+					else
+						if l_actions /= Void then
+							l_bp2 := l_bp_manager.breakpoint_at (l_bp, False)
+							if l_bp2 /= Void then
+								l_actions.do_all (agent l_bp2.remove_when_hits_action)
+							end
+						end
+						l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
 
---					if l_actions /= Void then
---						l_bp2 := l_bp_manager.breakpoint_at (l_bp, False)
---						if l_bp2 /= Void then
---							l_actions.do_all (agent l_bp2.remove_when_hits_action)
---						end
---					end
---					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
+	--					if l_actions /= Void then
+	--						l_bp2 := l_bp_manager.breakpoint_at (l_bp, False)
+	--						if l_bp2 /= Void then
+	--							l_actions.do_all (agent l_bp2.remove_when_hits_action)
+	--						end
+	--					end
+	--					l_bp_manager.remove_user_breakpoint (l_routine, l_bpslot)
+					end
 				end
 				l_bps.forth
 			end
