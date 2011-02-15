@@ -7,6 +7,9 @@ note
 class
 	EPA_SHARED_EQUALITY_TESTERS
 
+inherit
+	EPA_TYPE_UTILITY
+
 feature -- Equality tester
 
 	equation_equality_tester: EPA_EQUATION_EQUALITY_TESTER
@@ -49,6 +52,16 @@ feature -- Equality tester
 			-- Equality tester for {EPA_FUNCTION_ARGUMENT_VALUE_MAP}
 		once
 			create Result
+		end
+
+	type_name_equality_tester: AGENT_BASED_EQUALITY_TESTER [TYPE_A]
+			-- Equality tester for type names
+		once
+			create Result.make (
+				agent (a_type: TYPE_A; b_type: TYPE_A): BOOLEAN
+					do
+						Result := output_type_name (a_type.name) ~ output_type_name (b_type.name)
+					end)
 		end
 
 end
