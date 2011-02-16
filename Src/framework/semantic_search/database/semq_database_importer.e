@@ -10,6 +10,8 @@ class
 inherit
 	SEMQ_DATABASE
 
+	EPA_UTILITY
+
 create
 	make
 
@@ -198,5 +200,23 @@ feature{NONE} -- Prepared Statements
 		end
 
 	stmt_insert_bindings: ARRAY [MYSQL_STMT]
+
+feature{NONE} -- Implementation
+
+	class_and_feature_name_from_ssql_file_name (a_ssql_file_name: STRING): TUPLE [class_name: STRING; feature_name: STRING]
+			-- Class and feature name in `a_test_case_name'
+			-- `a_ssql_file_name' is the name of the ssql file, assuming that
+			-- the file name followed the usual convention:
+			-- tran_CLASS_NAME__feature_name__UUID.ssql or
+			-- objt_CLASS_NAME__feature_name__UUID.ssql
+		local
+			l_str: STRING
+			l_parts: LIST [STRING]
+		do
+			l_str := a_ssql_file_name.twin
+			l_str.remove_head (5)
+			l_parts := string_slices (l_str, once "__")
+			Result := [l_parts.i_th (1), l_parts.i_th (2)]
+		end
 
 end
