@@ -49,7 +49,6 @@ feature -- Access
 					relevant_expression_sets.i_th (i) /= Void and then relevant_expression_sets.i_th (i).has (a_expr)
 				then
 					Result.merge (relevant_expression_sets.i_th (i))
-					--Result.append (relevant_expression_sets.i_th (i))
 				end
 				i := i + 1
 			end
@@ -311,16 +310,13 @@ feature {NONE} -- Implementation
 					if
 						m /= n and then
 						l_rev_sets.i_th (m) /= Void and then
-						l_rev_sets.i_th (n) /= Void
+						l_rev_sets.i_th (n) /= Void and then
+						expression_set_without_constants (l_rev_sets.i_th (m)).is_disjoint (expression_set_without_constants (l_rev_sets.i_th (n)))
 					then
-						if
-							not expression_set_without_constants (l_rev_sets.i_th (m)).is_disjoint (expression_set_without_constants (l_rev_sets.i_th (n)))
-						then
-							l_rev_sets.i_th (m).merge (l_rev_sets.i_th (n))
-							l_rev_sets.put_i_th (Void, n)
-							m := 1
-							n := 1
-						end
+						l_rev_sets.i_th (m).merge (l_rev_sets.i_th (n))
+						l_rev_sets.put_i_th (Void, n)
+						m := 1
+						n := 1
 					end
 					n := n + 1
 				end

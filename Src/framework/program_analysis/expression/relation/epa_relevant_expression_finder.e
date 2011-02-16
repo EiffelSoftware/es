@@ -104,18 +104,11 @@ feature -- Basic operation
 feature {NONE} -- Visit operations
 
 	process_body_as (l_as: BODY_AS)
-		local
-			l_feature_body_representation: STRING
 		do
-			l_feature_body_representation := text_from_ast (l_as)
-			if
-				not l_feature_body_representation.has_substring ("attached")
-			then
-				safe_process (l_as.arguments)
-				safe_process (l_as.type)
-				safe_process (l_as.assigner)
-				safe_process (l_as.content)
-			end
+			safe_process (l_as.arguments)
+			safe_process (l_as.type)
+			safe_process (l_as.assigner)
+			safe_process (l_as.content)
 		end
 
 	process_require_as (l_as: REQUIRE_AS)
