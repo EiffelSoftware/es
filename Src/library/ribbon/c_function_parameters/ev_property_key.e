@@ -22,14 +22,18 @@ create
 	make_small_image,
 	make_large_image,
 	make_small_high_contrast_image,
-	make_large_high_contrast_image
+	make_large_high_contrast_image,
+	make_decimal,
+	make_items_source,
+	make_categories,
+	make_selected_item
 
 feature {NONE}  -- Initialization
 
 	share_from_pointer (a_property_key: POINTER)
 			-- Creation method
 		do
-			pointer := a_property_key
+			item := a_property_key
 		end
 
 	make_boolean
@@ -68,22 +72,54 @@ feature {NONE}  -- Initialization
 			share_from_pointer (c_ui_pkey_large_high_contrast_image)
 		end
 
-feature -- Query
+	make_decimal
+			-- Make a decimal key
+		do
+			share_from_pointer (c_ui_pkey_decimal)
+		end
+
+	make_items_source
+			-- Make a items source key
+		do
+			share_from_pointer (c_ui_pkey_items_source)
+		end
+
+	make_categories
+			-- Make a items source key
+		do
+			share_from_pointer (c_ui_pkey_categories)
+		end
+
+	make_selected_item
+			-- Make a selected item key
+		do
+			share_from_pointer (c_ui_pkey_selected_item)
+		end
+
+feature -- Access
 
 	guid: WEL_GUID
 			--
 		do
-			create Result.share_from_pointer (c_guid_pointer (pointer))
+			create Result.share_from_pointer (c_guid_pointer (item))
 		end
 
 	pid: NATURAL_32
 			--
 		do
-			Result := c_pid (pointer)
+			Result := c_pid (item)
 		end
 
-	pointer: POINTER
+	item: POINTER
 			--
+
+feature -- Status Report
+
+	exists: BOOLEAN
+			-- Does current exists?
+		do
+			Result := item /= default_pointer
+		end
 
 	is_label: BOOLEAN
 			-- Is current label key?
@@ -130,6 +166,42 @@ feature -- Query
 			Result := l_tmp.guid.is_equal (guid)
 		end
 
+	is_decimal: BOOLEAN
+			-- Is current decimal value key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_decimal
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_items_source: BOOLEAN
+			-- Is current items source key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_items_source
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_categories: BOOLEAN
+			-- Is current categories?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_categories
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_selected_item: BOOLEAN
+			-- Is current selected item?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_selected_item
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
 feature {NONE} -- Externals
 
 	c_guid_pointer (a_property_key: POINTER): POINTER
@@ -167,7 +239,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_BooleanValue;
+				return (EIF_POINTER) &UI_PKEY_BooleanValue;
 			}
 			]"
 		end
@@ -179,7 +251,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_Label;
+				return (EIF_POINTER) &UI_PKEY_Label;
 			}
 			]"
 		end
@@ -191,7 +263,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_SmallImage;
+				return (EIF_POINTER) &UI_PKEY_SmallImage;
 			}
 			]"
 		end
@@ -203,7 +275,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_LargeImage;
+				return (EIF_POINTER) &UI_PKEY_LargeImage;
 			}
 			]"
 		end
@@ -215,7 +287,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_SmallHighContrastImage;
+				return (EIF_POINTER) &UI_PKEY_SmallHighContrastImage;
 			}
 			]"
 		end
@@ -227,7 +299,55 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				return &UI_PKEY_LargeHighContrastImage;
+				return (EIF_POINTER) &UI_PKEY_LargeHighContrastImage;
+			}
+			]"
+		end
+
+	c_ui_pkey_decimal: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return (EIF_POINTER) &UI_PKEY_DecimalValue;
+			}
+			]"
+		end
+
+	c_ui_pkey_items_source: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return (EIF_POINTER) &UI_PKEY_ItemsSource;
+			}
+			]"
+		end
+
+	c_ui_pkey_categories: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return (EIF_POINTER) &UI_PKEY_Categories;
+			}
+			]"
+		end
+
+	c_ui_pkey_selected_item: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return (EIF_POINTER) &UI_PKEY_SelectedItem;
 			}
 			]"
 		end

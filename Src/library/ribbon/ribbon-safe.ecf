@@ -31,8 +31,6 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
-		<external_object location="Propsys.lib"/>
-		<external_object location="Shlwapi.lib"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf" readonly="true"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf" readonly="true"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel-safe.ecf" readonly="true">

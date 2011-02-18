@@ -132,9 +132,15 @@ feature -- Launching
 				s := Execution_environment.get (Ise_timeout_varname)
 				if s /= Void and then s.is_integer then
 					ise_timeout := s.to_integer
-				else
+				end
+				if ise_timeout <= 0 then
 					ise_timeout := 30
 				end
+			end
+
+			ise_ending_timeout := Debugger_manager.classic_debugger_ending_timeout
+			if ise_ending_timeout <= 0 then
+				ise_ending_timeout := 100
 			end
 
 			s := Debugger_manager.classic_debugger_location
@@ -170,7 +176,7 @@ feature -- Launching
 					from
 						n := 0
 					until
-						not is_ecdbgd_alive or n > 500 --| timeout: 500ms
+						not is_ecdbgd_alive or n > ise_ending_timeout
 					loop
 						sleep (1_000_000) -- i.e: 1 ms
 						n := n + 1
@@ -204,11 +210,17 @@ feature -- Status
 		end
 
 	ise_ecdbgd_path: FILE_NAME
+			-- Path to the debugger daemon (i.e ecdbgd) executable
+
 	ise_timeout: INTEGER
+			-- Timeout when initializing ipc connection
+
+	ise_ending_timeout: INTEGER
+			-- Timeout when ending ipc connection
 
 	valid_ise_ecdbgd_executable: BOOLEAN
 		do
-			Result := ise_ecdbgd_path /= Void and then valid_executable (ise_ecdbgd_path)
+			Result := attached ise_ecdbgd_path as p and then valid_executable (p)
 		end
 
 	close_ecdbgd_on_end_of_debugging: BOOLEAN
@@ -301,6 +313,7 @@ feature {NONE} -- Implementation
 feature {ANY} -- Constants
 
 	Ise_timeout_varname: STRING = "ISE_TIMEOUT"
+
 	Ise_ecdbgd_varname: STRING = "ISE_ECDBGD"
 
 feature {NONE} -- Externals

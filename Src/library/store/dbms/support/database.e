@@ -83,6 +83,13 @@ feature -- For DATABASE_FORMAT
 
 	string_format (object: detachable STRING): STRING
 			-- String representation in SQL of `object'
+		obsolete
+			"Use `string_format_32' instead."
+		deferred
+		end
+
+	string_format_32 (object: detachable READABLE_STRING_GENERAL): STRING_32
+			-- String representation in SQL of `object'
 		deferred
 		end
 
@@ -104,7 +111,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 		deferred
 		end
 
-	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [ANY]; ht_order: detachable ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: STRING): BOOLEAN
+	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [ANY]; ht_order: detachable ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- Prepare string `sql' by appending map
 			-- variables name from to `sql'. Map variables are used
 			-- for set input arguments
@@ -222,6 +229,16 @@ feature -- DATABASE_CHARACTER
 feature -- DATABASE_INTEGER
 
 	sql_name_integer: STRING
+			-- SQL type name for integer
+		deferred
+		end
+
+	sql_name_integer_16: STRING
+			-- SQL type name for integer
+		deferred
+		end
+
+	sql_name_integer_64: STRING
 			-- SQL type name for integer
 		deferred
 		end
@@ -446,6 +463,18 @@ feature -- For DATABASE_REPOSITORY
 		deferred
 		end
 
+	sql_wstring: STRING
+			-- Database type of a string
+			-- with a size less than Max_char_size
+		deferred
+		end
+
+	sql_wstring2 (int: INTEGER): STRING
+			-- Database type of a string
+			-- with a size more than Max_char_size
+		deferred
+		end
+
 feature -- For DATABASE_DYN_STORE
 
 	unset_catalog_flag (desc: INTEGER)
@@ -470,9 +499,198 @@ feature -- For database types
 			Valid_result: Result /= Void
 		end
 
+feature {NONE} -- Unicode conversion
+
+	utf8_to_utf32 (a_string: STRING_8): STRING_32
+			-- UTF8 to UTF32 conversion, Eiffel implementation.
+		require
+			a_string_not_void: a_string /= Void
+		local
+			i, nb: INTEGER
+			l_ref: INTEGER_32_REF
+		do
+			from
+				i := 1
+				nb := a_string.count
+				create Result.make (nb)
+				create l_ref
+			until
+				i > nb
+			loop
+				Result.append_character (read_character_from_utf8 (i, l_ref, a_string))
+				i := i + l_ref.item
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	utf32_to_utf8 (a_string: STRING_32): STRING_8
+			-- Convert UTF32 to UTF8.
+		require
+			a_string_not_void: a_string /= Void
+		local
+			bytes_written: INTEGER
+			i: INTEGER
+			l_code: NATURAL_32
+			l_string_length: INTEGER
+		do
+			l_string_length := a_string.count
+
+				-- First compute how many bytes we need to convert `a_string' to UTF-8.
+			from
+				i := l_string_length
+				bytes_written := 0
+			until
+				i = 0
+			loop
+				l_code := a_string.code (i)
+				if l_code <= 127 then
+					bytes_written := bytes_written + 1
+				elseif l_code <= 0x7FF then
+					bytes_written := bytes_written + 2
+				elseif l_code <= 0xFFFF then
+					bytes_written := bytes_written + 3
+				else -- l_code <= 0x10FFFF
+					bytes_written := bytes_written + 4
+				end
+				i := i - 1
+			end
+
+				-- Fill `utf_ptr8' with the converted data.
+			from
+				i := 1
+				create Result.make (bytes_written)
+			until
+				i > l_string_length
+			loop
+				l_code := a_string.code (i)
+				append_code_point_to_utf8 (l_code, Result)
+				i := i + 1
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	append_code_point_to_utf8 (a_code: NATURAL_32; a_string: STRING_8)
+			-- Append an unicode code point `a_code' to an utf8 stream.
+		require
+			a_string_not_void: a_string /= Void
+				-- According to ISO/IEC 10646, the maximum unicode point is 10FFFF.
+			a_code_is_valid: a_code >= 0 and then a_code <= 0x10FFFF
+		do
+				if a_code <= 127 then
+						-- Of the form 0xxxxxxx.
+					a_string.append_code (a_code)
+				elseif a_code <= 0x7FF then
+						-- Insert 110xxxxx 10xxxxxx.
+					a_string.append_code (0xC0 | (a_code |>> 6))
+					a_string.append_code (0x80 | (a_code & 0x3F))
+				elseif a_code <= 0xFFFF then
+						-- Start with 1110xxxx
+					a_string.append_code (0xE0 | (a_code |>> 12))
+					a_string.append_code (0x80 | ((a_code |>> 6) & 0x3F))
+					a_string.append_code (0x80 | (a_code & 0x3F))
+				else -- a_code <= 0x10FFFF then
+						-- Start with 11110xxx
+					check
+						max_4_bytes: a_code <= 0x10FFFF
+						-- UTF-8 has been restricted to 4 bytes characters
+					end
+					a_string.append_code (0xF0 | (a_code |>> 18))
+					a_string.append_code (0x80 | ((a_code |>> 12) & 0x3F))
+					a_string.append_code (0x80 | ((a_code |>> 6) & 0x3F))
+					a_string.append_code (0x80 | (a_code & 0x3F))
+				end
+		ensure
+			a_string_appended: (a_code <= 127 implies a_string.count = old a_string.count + 1) and
+								((a_code > 127 and a_code <= 0x7FF) implies a_string.count = old a_string.count + 2) and
+								((a_code > 0x7FF and a_code <= 0xFFFF) implies a_string.count = old a_string.count + 3) and
+								((a_code > 0xFFFF and a_code <= 0x10FFFF) implies a_string.count = old a_string.count + 4)
+		end
+
+	read_character_from_utf8 (a_position: INTEGER; a_read_bytes: detachable INTEGER_32_REF; a_string: STRING_8): CHARACTER_32
+			-- Read a Unicode character from UTF-8 string.
+			-- `a_string' is in UTF-8.
+			-- `a_position' is the starting byte point of a character.
+			-- `a_read_bytes' is the number of bytes read.
+		require
+			a_string_not_void: a_string /= Void
+			a_position_in_range: a_position > 0 and a_position <= a_string.count
+			a_position_valid: a_string.code (a_position).to_natural_8 <= 127 or
+								(a_string.code (a_position).to_natural_8 & 0xE0) = 0xC0 or
+								(a_string.code (a_position).to_natural_8 & 0xF0) = 0xE0 or
+								(a_string.code (a_position).to_natural_8 & 0xF8) = 0xF0 or
+								(a_string.code (a_position).to_natural_8 & 0xFC) = 0xF8 or
+								(a_string.code (a_position).to_natural_8 & 0xFE) = 0xFC
+		local
+			l_pos: INTEGER
+			l_nat8: NATURAL_8
+			l_code: NATURAL_32
+		do
+			l_pos := a_position
+			l_nat8 := a_string.code (l_pos).to_natural_8
+			if l_nat8 <= 127 then
+					-- Form 0xxxxxxx.
+				Result := l_nat8.to_character_32
+
+			elseif (l_nat8 & 0xE0) = 0xC0 then
+					-- Form 110xxxxx 10xxxxxx.
+				l_code := (l_nat8 & 0x1F).to_natural_32 |<< 6
+				l_pos := l_pos + 1
+				l_nat8 := a_string.code (l_pos).to_natural_8
+				l_code := l_code | (l_nat8 & 0x3F).to_natural_32
+				Result := l_code.to_character_32
+
+			elseif (l_nat8 & 0xF0) = 0xE0 then
+				-- Form 1110xxxx 10xxxxxx 10xxxxxx.
+				l_code := (l_nat8 & 0x0F).to_natural_32 |<< 12
+				l_nat8 := a_string.code (l_pos + 1).to_natural_8
+				l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
+				l_nat8 := a_string.code (l_pos + 2).to_natural_8
+				l_code := l_code | (l_nat8 & 0x3F).to_natural_32
+				Result := l_code.to_character_32
+				l_pos := l_pos + 2
+
+			elseif (l_nat8 & 0xF8) = 0xF0 then
+				-- Form 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx.
+				l_code := (l_nat8 & 0x07).to_natural_32 |<< 18
+				l_nat8 := a_string.code (l_pos + 1).to_natural_8
+				l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 12)
+				l_nat8 := a_string.code (l_pos + 2).to_natural_8
+				l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
+				l_nat8 := a_string.code (l_pos + 3).to_natural_8
+				l_code := l_code | (l_nat8 & 0x3F).to_natural_32
+				Result := l_code.to_character_32
+				l_pos := l_pos + 3
+
+			elseif (l_nat8 & 0xFC) = 0xF8 then
+				-- Starts with 111110xx
+				-- This seems to be a 5 bytes character,
+				-- but UTF-8 is restricted to 4, then substitute with a space
+				Result := ' '
+				l_pos := l_pos + 4
+
+			else
+				-- Starts with 1111110x
+				-- This seems to be a 6 bytes character,
+				-- but UTF-8 is restricted to 4, then substitute with a space
+				Result := ' '
+				l_pos := l_pos + 5
+
+			end
+			if a_read_bytes /= Void then
+				a_read_bytes.set_item (l_pos - a_position + 1)
+			end
+		end
+
 feature -- External features
 
 	get_error_message: POINTER
+			-- Function related with the error processing
+		deferred
+		end
+
+	get_error_message_string: STRING_32
 			-- Function related with the error processing
 		deferred
 		end
@@ -487,6 +705,11 @@ feature -- External features
 		deferred
 		end
 
+	get_warn_message_string: STRING_32
+			-- Function related with the error processing
+		deferred
+		end
+
 	new_descriptor: INTEGER
 			-- A descriptor is used to store a row fetched by FETCH command
 			-- Whenever perform a SELECT statement, allocate a new descriptor
@@ -495,7 +718,7 @@ feature -- External features
 		deferred
 		end
 
-	init_order (no_descriptor: INTEGER; command: STRING)
+	init_order (no_descriptor: INTEGER; command: READABLE_STRING_GENERAL)
 			-- In DYNAMICALLY EXECUTE mode perform the SQL statement
 			-- But this routine only get things ready for dynamic execution:
 			-- 1. get the SQL statement PREPAREd; and check if there are
@@ -540,7 +763,7 @@ feature -- External features
 		deferred
 		end
 
-	exec_immediate (no_descriptor: INTEGER; command: STRING)
+	exec_immediate (no_descriptor: INTEGER; command: READABLE_STRING_GENERAL)
 			-- In IMMEDIATE EXECUTE mode perform the SQL statement,
 			-- and then check if there is warning message for the execution,
 		deferred
@@ -554,6 +777,11 @@ feature -- External features
 		end
 
 	put_data (no_descriptor: INTEGER; index: INTEGER; ar: STRING; max_len:INTEGER): INTEGER
+			-- Function used to get data from structure SQLDA filled  by FETCH clause.
+		deferred
+		end
+
+	put_data_32 (no_descriptor: INTEGER; index: INTEGER; ar: STRING_32; max_len:INTEGER): INTEGER
 			-- Function used to get data from structure SQLDA filled  by FETCH clause.
 		deferred
 		end
@@ -613,6 +841,16 @@ feature -- External features
 		end
 
 	get_integer_data (no_descriptor: INTEGER; ind: INTEGER): INTEGER
+			-- Function used to get data from structure SQLDA filled  by FETCH clause.
+		deferred
+		end
+
+	get_integer_16_data (no_descriptor: INTEGER; ind: INTEGER): INTEGER_16
+			-- Function used to get data from structure SQLDA filled  by FETCH clause.
+		deferred
+		end
+
+	get_integer_64_data (no_descriptor: INTEGER; ind: INTEGER): INTEGER_64
 			-- Function used to get data from structure SQLDA filled  by FETCH clause.
 		deferred
 		end
@@ -677,12 +915,27 @@ feature -- External features
 		deferred
 		end
 
+	c_wstring_type: INTEGER
+			-- String Eiffel type
+		deferred
+		end
+
 	c_character_type: INTEGER
 			-- Character Eiffel type
 		deferred
 		end
 
 	c_integer_type: INTEGER
+			-- Integer Eiffel type
+		deferred
+		end
+
+	c_integer_16_type: INTEGER
+			-- Integer Eiffel type
+		deferred
+		end
+
+	c_integer_64_type: INTEGER
 			-- Integer Eiffel type
 		deferred
 		end

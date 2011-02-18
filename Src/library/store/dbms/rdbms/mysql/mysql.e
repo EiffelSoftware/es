@@ -22,6 +22,13 @@ inherit
 			default_create
 		end
 
+	GLOBAL_SETTINGS
+		export
+			{NONE} all
+		redefine
+			default_create
+		end
+
 feature {NONE} -- Initialization
 
 	default_create
@@ -94,15 +101,23 @@ feature -- For DATABASE_FORMAT
 				"-" + object.date.day.out + "'"
 		end
 
-	string_format (object: STRING): STRING
+	string_format (object: detachable STRING): STRING
+			-- String representation in SQL of `object'.
+		obsolete
+			"Use `string_format_32' instead."
+		do
+			Result := string_format_32 (object)
+		end
+
+	string_format_32 (object: detachable READABLE_STRING_GENERAL): STRING_32
 			-- String representation in MySQL of `object'
 			-- WARNING: use "IS NULL" if object is empty instead of "= NULL"
 			--          (which does not work)
 		do
 			if object = Void then
-				Result := "IS NULL"
+				Result := {STRING_32}"IS NULL"
 			else
-				Result := "'" + object + "'"
+				Result := {STRING_32}"'" + object.as_string_32 + {STRING_32}"'"
 			end
 		end
 
@@ -123,7 +138,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 		end
 
 	parse (descriptor: INTEGER; uht: DB_STRING_HASH_TABLE [ANY]
-		ht_order: ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: STRING): BOOLEAN
+		ht_order: ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- ???
 		do
 		end
@@ -176,6 +191,10 @@ feature -- DATABASE_INTEGER
 
 	sql_name_integer: STRING = "INTEGER"
 
+	sql_name_integer_16: STRING = "SMALLINT"
+
+	sql_name_integer_64: STRING = "BIGINT"
+
 feature -- DATABASE_BOOLEAN
 
 	sql_name_boolean: STRING = "TINYINT(1)"
@@ -185,7 +204,8 @@ feature -- LOGIN and DATABASE_APPL only for password_ok
 	password_ok (upassword: STRING): BOOLEAN
 			-- Is the given `upassword' correct?
 		do
-			Result := upassword /= Void and then not upassword.is_empty
+				-- Password can be empty.
+			Result := upassword /= Void
 		end
 
 	password_ensure (name, password, uname, upassword: STRING): BOOLEAN
@@ -208,13 +228,29 @@ feature -- For database types
 					create data_type
 					if r_any.is_equal ("varchar") or else r_any.is_equal ("char") then
 						data_type.set_item (c_string_type)
-					elseif r_any.is_equal ("double") then
+					elseif r_any.is_equal ("nvarchar") or else r_any.is_equal ("nchar") then
+						data_type.set_item (c_wstring_type)
+					elseif r_any.is_equal ("double") or else r_any.is_equal ("decimal") then
 						data_type.set_item (c_float_type)
+					elseif r_any.is_equal ("float") then
+						data_type.set_item (c_real_type)
 					elseif
 						r_any.is_equal ("int") or else r_any.is_equal ("bit") or else
-						r_any.is_equal ("tinyint")
+						r_any.is_equal ("tinyint") or else r_any.is_equal ("mediumint")
 					then
-						data_type.set_item (c_integer_type)
+						if not use_extended_types then
+							data_type.set_item (c_integer_type)
+						else
+							if r_any.is_equal ("tinyint") then
+								data_type.set_item (c_integer_16_type)
+							else
+								data_type.set_item (c_integer_type)
+							end
+						end
+					elseif r_any.is_equal ("smallint") then
+						data_type.set_item (c_integer_16_type)
+					elseif r_any.is_equal ("bigint") then
+						data_type.set_item (c_integer_64_type)
 					elseif r_any.is_equal ("datetime") or else r_any.is_equal ("date") then
 						data_type.set_item (c_date_type)
 					else
@@ -295,6 +331,15 @@ feature -- For DATABASE_REPOSITORY
 			Result.append_character (')')
 		end
 
+	sql_wstring: STRING = "NVARCHAR ("
+
+	sql_wstring2 (int: INTEGER): STRING
+		do
+			Result := "NVARCHAR ("
+			Result.append (int.out)
+			Result.append (")")
+		end
+
 feature -- External features
 
 	get_error_message: POINTER
@@ -304,6 +349,17 @@ feature -- External features
 		do
 			Result := eif_mysql_get_error_message (mysql_pointer)
 			is_error_updated := True
+		end
+
+	get_error_message_string: STRING_32
+			-- The error message as returned by the RDBMS after the last
+			-- action.
+			-- This feature also sets is_error_updated to True
+		local
+			l_s: SQL_STRING
+		do
+			create l_s.make_by_pointer (get_error_message)
+			Result := l_s.string
 		end
 
 	get_error_code: INTEGER
@@ -321,6 +377,17 @@ feature -- External features
 		do
 			Result := eif_mysql_get_warn_message (mysql_pointer)
 			is_error_updated := True
+		end
+
+	get_warn_message_string: STRING_32
+			-- The warning message as returned by the RDBMS after the last
+			-- action.
+			-- This feature also sets is_error_updated to True
+		local
+			l_s: SQL_STRING
+		do
+			create l_s.make_by_pointer (get_warn_message)
+			Result := l_s.string
 		end
 
 	new_descriptor: INTEGER
@@ -343,7 +410,7 @@ feature -- External features
 			end
 		end
 
-	init_order (no_descriptor: INTEGER; command: STRING)
+	init_order (no_descriptor: INTEGER; command: READABLE_STRING_GENERAL)
 		do
 			descriptors.put (command, no_descriptor)
 		end
@@ -351,10 +418,10 @@ feature -- External features
 	start_order (no_descriptor: INTEGER)
 		local
 			l_db_result: POINTER
-			l_c_string: C_STRING
+			l_c_string: SQL_STRING
 		do
 			if attached descriptors.item (no_descriptor) as l_descriptor then
-				create l_c_string.make (l_descriptor)
+				create l_c_string.make (utf32_to_utf8 (l_descriptor.as_string_32))
 				l_db_result := eif_mysql_execute (mysql_pointer, l_c_string.item)
 				result_pointers.put (l_db_result, no_descriptor)
 				is_error_updated := False
@@ -391,7 +458,7 @@ feature -- External features
 		do
 		end
 
-	exec_immediate (no_descriptor: INTEGER; command: STRING)
+	exec_immediate (no_descriptor: INTEGER; command: READABLE_STRING_GENERAL)
 		do
 		end
 
@@ -449,6 +516,42 @@ feature -- External features
 			end
 		end
 
+	put_data_32 (no_descriptor: INTEGER; ind: INTEGER; ar: STRING_32
+		max_len: INTEGER): INTEGER
+			-- Put the data of field `ind' from result set
+			-- `no_descriptor' into `ar', with a maximum length of
+			-- `max_len' and return the length of data in `ar'
+		local
+			i: INTEGER
+			l_area: MANAGED_POINTER
+			l_length: INTEGER
+			l_count: INTEGER
+			l_str: STRING
+			l_str32: STRING_32
+		do
+			create l_area.make (max_len)
+			l_length := get_data_len (no_descriptor, ind)
+			l_count := eif_mysql_column_data (
+				row_pointers.item (no_descriptor), ind, l_area.item, l_length)
+			check
+				l_count <= max_len
+			end
+			create l_str.make (l_count)
+			from
+				i := 1
+			until
+				i > l_count
+			loop
+				l_str.put (l_area.read_integer_8 (i - 1).to_character_8, i)
+				i := i + 1
+			end
+			l_str.set_count (l_count)
+			l_str32 := utf8_to_utf32 (l_str)
+			ar.wipe_out
+			ar.append (l_str32)
+			Result := l_str32.count
+		end
+
 	conv_type (indicator: INTEGER; index: INTEGER): INTEGER
 		do
 			Result := index
@@ -488,6 +591,20 @@ feature -- External features
 			-- Get the integer for field `ind' in row set `no_descriptor'
 		do
 			Result := eif_mysql_integer_data (row_pointers.item (
+				no_descriptor), ind)
+		end
+
+	get_integer_16_data (no_descriptor: INTEGER; ind: INTEGER): INTEGER_16
+			-- Get the integer for field `ind' in row set `no_descriptor'
+		do
+			Result := eif_mysql_integer_16_data (row_pointers.item (
+				no_descriptor), ind)
+		end
+
+	get_integer_64_data (no_descriptor: INTEGER; ind: INTEGER): INTEGER_64
+			-- Get the integer for field `ind' in row set `no_descriptor'
+		do
+			Result := eif_mysql_integer_64_data (row_pointers.item (
 				no_descriptor), ind)
 		end
 
@@ -641,6 +758,11 @@ feature -- External features
 			Result := eif_mysql_c_string_type
 		end
 
+	c_wstring_type: INTEGER
+		do
+			Result := eif_mysql_c_wstring_type
+		end
+
 	c_character_type: INTEGER
 		do
 			Result := eif_mysql_c_character_type
@@ -649,6 +771,16 @@ feature -- External features
 	c_integer_type: INTEGER
 		do
 			Result := eif_mysql_c_int_type
+		end
+
+	c_integer_16_type: INTEGER
+		do
+			Result := eif_mysql_c_int16_type
+		end
+
+	c_integer_64_type: INTEGER
+		do
+			Result := eif_mysql_c_int64_type
 		end
 
 	c_float_type: INTEGER
@@ -725,7 +857,7 @@ feature -- External features
 
 feature {NONE} -- Attributes
 
-	descriptors: ARRAY [detachable STRING]
+	descriptors: ARRAY [detachable READABLE_STRING_GENERAL]
 			-- Array of descriptors, so that we can keep track of requests
 			-- made to the database
 			--| This is done in Eiffel, so that we can guarantee that the Clib
@@ -794,6 +926,20 @@ feature {NONE} -- C Externals
 			"EIF_MYSQL_C_INTEGER_TYPE"
 		end
 
+	eif_mysql_c_int16_type: INTEGER
+		external
+			"C [macro %"eif_mysql.h%"]"
+		alias
+			"EIF_MYSQL_C_INTEGER_16_TYPE"
+		end
+
+	eif_mysql_c_int64_type: INTEGER
+		external
+			"C [macro %"eif_mysql.h%"]"
+		alias
+			"EIF_MYSQL_C_INTEGER_64_TYPE"
+		end
+
 	eif_mysql_c_real_type: INTEGER
 		external
 			"C [macro %"eif_mysql.h%"]"
@@ -806,6 +952,13 @@ feature {NONE} -- C Externals
 			"C [macro %"eif_mysql.h%"]"
 		alias
 			"EIF_MYSQL_C_STRING_TYPE"
+		end
+
+	eif_mysql_c_wstring_type: INTEGER
+		external
+			"C [macro %"eif_mysql.h%"]"
+		alias
+			"EIF_MYSQL_C_WSTRING_TYPE"
 		end
 
 	eif_mysql_column_data (row_ptr: POINTER; ind: INTEGER; ar: POINTER
@@ -881,6 +1034,16 @@ feature {NONE} -- C Externals
 		end
 
 	eif_mysql_integer_data (row_ptr: POINTER; ind: INTEGER): INTEGER
+		external
+			"C | %"eif_mysql.h%""
+		end
+
+	eif_mysql_integer_16_data (row_ptr: POINTER; ind: INTEGER): INTEGER_16
+		external
+			"C | %"eif_mysql.h%""
+		end
+
+	eif_mysql_integer_64_data (row_ptr: POINTER; ind: INTEGER): INTEGER_64
 		external
 			"C | %"eif_mysql.h%""
 		end

@@ -1,6 +1,6 @@
 /*
 indexing
-	description: "Functions used by the class ER_COMMAND_HANDLER."
+	description: "Functions used by the class EV_COMMAND_HANDLER."
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
@@ -21,6 +21,10 @@ indexing
 #ifndef EIF_WINDOWS 
 #include <sys/time.h>
 #include <unistd.h> 
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 typedef EIF_NATURAL_32 (* EIF_RIBBON_UPDATE_PROPERTY_PROC) (
@@ -45,14 +49,10 @@ typedef EIF_INTEGER (* EIF_RIBBON_EXECUTE_PROC) (
 	EIF_POINTER  /* IUISimplePropertySet* pCommandExecutionProperties */
 	);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void c_set_object(EIF_REFERENCE a_address);
 extern void c_release_object(void);
-extern void c_set_execute_address(EIF_POINTER a_address);
-extern void c_set_update_property_address( EIF_POINTER a_address);
+extern void c_set_execute_address (EIF_RIBBON_EXECUTE_PROC a_address);
+extern void c_set_update_property_address(EIF_RIBBON_UPDATE_PROPERTY_PROC a_address);
 
 extern EIF_OBJECT eiffel_command_handler_object;
 	/* Address of Eiffel object ER_COMMAND_HANDLER */
@@ -64,6 +64,5 @@ extern EIF_RIBBON_UPDATE_PROPERTY_PROC eiffel_update_property_function;
 #ifdef __cplusplus
 }
 #endif
-	
 	
 #endif	

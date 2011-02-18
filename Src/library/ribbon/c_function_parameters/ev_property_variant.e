@@ -25,13 +25,21 @@ feature {NONE}  -- Initialization
 	share_from_pointer (a_property_variant: POINTER)
 			-- Creation method
 		do
-			create pointer.share_from_pointer (a_property_variant, size)
+			create internal_data.share_from_pointer (a_property_variant, size)
 		end
 
 	make_empty
 			--
 		do
-			create pointer.make (size)
+			create internal_data.make (size)
+		end
+
+feature -- Access
+
+	item: POINTER
+			-- Associated C memory.
+		do
+			Result := internal_data.item
 		end
 
 feature -- Command
@@ -39,7 +47,7 @@ feature -- Command
 	set_boolean_value (a_value: BOOLEAN)
 			-- Set value with `a_value'
 		do
-			c_init_prop_variant_from_boolean (pointer.item, a_value)
+			c_init_prop_variant_from_boolean (item, a_value)
 		end
 
 	set_string_value (a_value: STRING_32)
@@ -48,7 +56,14 @@ feature -- Command
 			l_wel_string: WEL_STRING
 		do
 			create l_wel_string.make (a_value)
-			c_init_prop_variant_from_string (pointer.item, l_wel_string.item)
+			c_init_prop_variant_from_string (item, l_wel_string.item)
+			-- FIXME: should call CoTaskMemFree to free string?
+		end
+
+	set_decimal_value (a_value: REAL_64)
+			-- Set value with `a_value'
+		do
+			c_init_prop_variant_from_decimal (item, a_value)
 		end
 
 	set_image (a_image: EV_PIXEL_BUFFER)
@@ -66,14 +81,20 @@ feature -- Command
 			end
 
 			if l_iui_image /= default_pointer then
-				c_init_prop_variant_from_iunknown (pointer.item, l_iui_image)
+				c_init_prop_variant_from_iunknown (item, l_iui_image)
 			end
+		end
+
+	set_uint32 (a_natural: NATURAL_32)
+			-- Set value with `a_natural'
+		do
+			c_init_prop_variant_from_uint32 (item, a_natural)
 		end
 
 	destroy
 			-- clean up current
 		do
-			c_prop_variant_clear (pointer.item)
+			c_prop_variant_clear (item)
 		end
 
 feature -- Query
@@ -81,13 +102,13 @@ feature -- Query
 	var_type: NATURAL_16
 			--
 		do
-			Result := c_var_type (pointer.item)
+			Result := c_var_type (item)
 		end
 
 	boolean_value: BOOLEAN
 			-- Value type is based on `var_type'
 		do
-			c_read_boolean (pointer.item, $Result)
+			c_read_boolean (item, $Result)
 		end
 
 	string_value: STRING_32
@@ -96,20 +117,28 @@ feature -- Query
 			l_wel_string: WEL_STRING
 			l_pointer: POINTER
 		do
-			c_read_string (pointer.item, $l_pointer)
+			c_read_string (item, $l_pointer)
 			create l_wel_string.make_by_pointer (l_pointer)
 			Result := l_wel_string.string
-			c_co_task_mem_free (l_pointer)
 		end
 
-	pointer: MANAGED_POINTER
-			--
+	decimal_value: REAL_64
+			-- Decimal value of current
+		do
+			Result := c_read_decimal (item)
+		end
+
+feature {NONE} -- Implementation
+
+	internal_data: MANAGED_POINTER
+			-- The property variant structure.
+
 feature {NONE} -- Externals
 
 	c_var_type (a_property_variant: POINTER): NATURAL_16
 			--
 		external
-			"C inline use %"PropIdl.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -123,11 +152,19 @@ feature {NONE} -- Externals
 	c_read_boolean (a_item: POINTER; a_result: TYPED_POINTER [BOOLEAN])
 			--
 		external
-			"C inline use %"PropIdl.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
-				PropVariantToBoolean ($a_item, $a_result);
+				//PropVariantToBoolean ($a_item, $a_result);
+				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
+				if ((ppropvar->boolVal) == VARIANT_TRUE)
+				{
+					*($a_result) = EIF_TRUE;
+				}else
+				{
+					*($a_result) = EIF_FALSE;
+				}			
 			}
 			]"
 		end
@@ -135,13 +172,27 @@ feature {NONE} -- Externals
 	c_read_string (a_item: POINTER; a_pwstr: TYPED_POINTER [POINTER])
 			--
 		external
-			"C inline use %"Propvarutil.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
-				PropVariantToStringAlloc ($a_item, $a_pwstr);
+				//PropVariantToStringAlloc ($a_item, $a_pwstr);
+				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
+				*($a_pwstr) = ppropvar->pwszVal;
 			}
 			]"
+		end
+
+	c_read_decimal (a_item: POINTER): REAL_64
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"{
+				DOUBLE val;
+				VarR8FromDec(&((PROPVARIANT *) $a_item)->decVal, &val);
+				return val;
+			}"
 		end
 
 	c_co_task_mem_free (a_pointer: POINTER)
@@ -149,17 +200,13 @@ feature {NONE} -- Externals
 		external
 			"C inline use %"Objbase.h%""
 		alias
-			"[
-			{
-				CoTaskMemFree ($a_pointer);
-			}
-			]"
+			"CoTaskMemFree ($a_pointer);"
 		end
 
 	c_init_prop_variant_from_boolean (a_item: POINTER; a_value: BOOLEAN)
 			--
 		external
-			"C inline use %"Propvarutil.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -174,7 +221,7 @@ feature {NONE} -- Externals
 	c_init_prop_variant_from_string (a_item: POINTER; a_string: POINTER)
 			--
 		external
-			"C inline use %"Shlwapi.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -182,12 +229,39 @@ feature {NONE} -- Externals
 				HRESULT hr;
 				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
 				ppropvar->vt = VT_LPWSTR;
-				hr = SHStrDupW($a_string, &ppropvar->pwszVal);
-				if (FAILED(hr))
-				{
-				PropVariantInit(ppropvar);
+				hr = SHStrDupW_eiffel($a_string, &ppropvar->pwszVal);
+				if (FAILED(hr))	{
+					PropVariantInit(ppropvar);
 				}
-				return hr;
+			}
+			]"
+		end
+
+	c_init_prop_variant_from_decimal (a_item: POINTER; a_value: REAL_64)
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
+				ppropvar->vt = VT_DECIMAL;
+				VarDecFromR8($a_value, &ppropvar->decVal);
+			}
+			]"
+		end
+
+	c_init_prop_variant_from_uint32 (a_item: POINTER; a_value: NATURAL_32)
+			--
+		external
+			"C inline use <ribbon.h>"
+		alias
+			"[
+			{
+				//InitPropVariantFromUInt32 only available for C++
+				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
+				ppropvar->vt = VT_UI4;
+				ppropvar->ulVal = $a_value;
 			}
 			]"
 		end
@@ -195,7 +269,7 @@ feature {NONE} -- Externals
 	c_init_prop_variant_from_iunknown (a_item: POINTER; a_iunknown: POINTER)
 			--
 		external
-			"C inline use %"Propidl.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -209,7 +283,7 @@ feature {NONE} -- Externals
 	size: INTEGER
 			--
 		external
-			"C inline use %"PropIdl.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -221,7 +295,7 @@ feature {NONE} -- Externals
 	c_prop_variant_clear (a_item: POINTER)
 			--
 		external
-			"C inline use %"PropIdl.h%""
+			"C inline use <ribbon.h>"
 		alias
 			"[
 			{
@@ -237,7 +311,7 @@ feature {NONE} -- Externals
 		alias
 			"[
 			{
-				CreateIUIImageFromBitmap ($a_hbitmap, $a_result_iui_image);
+				CreateIUIImageFromBitmap ((HBITMAP) $a_hbitmap, (IUIImage **) $a_result_iui_image);
 			}
 			]"
 		end

@@ -9,4 +9,9 @@ deferred class
 inherit
 	EV_RIBBON_BUTTON
 
+feature -- Query
+
+	buttons: detachable ARRAYED_LIST [EV_RIBBON_ITEM]
+			-- All items in current group
+
 end

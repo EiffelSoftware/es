@@ -1354,6 +1354,10 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define scoop_task_add_call 8
 #define scoop_task_add_synchronous_call 9
 #define scoop_task_wait_for_processor_redundancy 10
+#define scoop_task_add_processor_reference 11
+#define scoop_task_remove_processor_reference 12
+#define scoop_task_check_uncontrolled 13
+
 
 #define EIFNULL 0
 
@@ -1385,8 +1389,12 @@ RT_LNK void eif_exit_eiffel_code(void);
  * EIF_IS_DIFFERENT_PROCESSOR (o1, o2) - tells if o1 and o2 run on different processors
  * RTS_OU(c,o) - tells if object o is uncontrolled by the processor associated with object c
  */
+ 
 #define EIF_IS_DIFFERENT_PROCESSOR(o1,o2) (RTS_PID(o1) != RTS_PID(o2))
-#define RTS_OU(c,o) (o != EIFNULL && EIF_IS_DIFFERENT_PROCESSOR (c, o))
+#define RTS_OU_FUNC(c,o) ( (scp_mnger != EIFNULL) && EIF_TEST(eif_is_uncontrolled(RTS_PID(c),RTS_PID(o))) )
+#define RTS_OU(c,o) \
+	( (o != EIFNULL ) ? RTS_OU_FUNC(c, o) : FALSE ) 
+	/* ( (o != EIFNULL && EIF_IS_DIFFERENT_PROCESSOR(c, o)) ? RTS_OU_FUNC(c, o) : FALSE ) */
 
 /*
  * Processor:
@@ -1398,7 +1406,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 		pid.it_i4 = 0; \
 		pid.type = SK_INT32;                                                          \
 		RTS_TCB(scoop_task_assign_processor,RTS_PID(o),EIFNULL,EIFNULL,&pid,EIFNULL); \
-		RTS_PID(o) = pid.it_i4;                                                             \
+		RTS_PID(o) = (EIF_SCP_PID) pid.it_i4;                                         \
 	}
 
 /*
@@ -1459,11 +1467,11 @@ RT_LNK void eif_exit_eiffel_code(void);
 		((call_data*)(a)) -> argument [(n) - 1] = (v);	\
 		if ((t) == SK_REF) 	\
 		{			\
-			if ( ( ((call_data*)(a)) -> is_synchronous == EIF_FALSE ) && ( !RTS_OU(Current, v.it_r) ) )	\
+			if ( ( ((call_data*)(a)) -> is_synchronous == EIF_FALSE ) && ( !RTS_OU(Current, (v).it_r) ) )	\
 			{ \
 				((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
 			} \
-			((call_data*)(a)) -> argument [(n) - 1].it_r = eif_protect (v.it_r); \
+			((call_data*)(a)) -> argument [(n) - 1].it_r = (EIF_REFERENCE) eif_protect ((v).it_r); \
 		} \
 	}
 
