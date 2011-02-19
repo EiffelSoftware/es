@@ -7,15 +7,21 @@
 class
 	MYSQL_STMT
 
+inherit
+	DISPOSABLE
+	ITERABLE [MYSQL_STMT]
+
 create
 	make
 
-feature{MYSQL_CLIENT}
+feature{MYSQL_CLIENT} -- Initialization
 
 	make (a_mysql: MYSQL_CLIENT; a_stmt, a_bind, a_data: POINTER)
-			-- Initializer
+			-- Create an empty prepared statement for a MySQL client in `a_client'.
+			-- `a_stmt', `a_bind' and `a_data' are pointers
+			-- to the C datastructures for a prepared statement.
 		do
-			-- MYSQL_CLIENT
+			-- Client
 			mysql := a_mysql
 			-- Datastructures for C
 			p_stmt := a_stmt
@@ -28,37 +34,185 @@ feature{MYSQL_CLIENT}
 			create string_parameters.make_filled (Void, 0, param_count - 1)
 		end
 
-feature
+feature -- Access: Cursor
 
-	is_open: BOOLEAN
-		-- Whether this statement was closed
-
-	is_executed: BOOLEAN
-		-- Whether this statement was executed successfully
-
-	off: BOOLEAN
-		-- Is there no more row?
-
-	close
-		-- Frees memory used by a prepared statement (mysql_stmt_close)
-		-- Free the resources allocated to a statement handle (mysql_stmt_free)
+	new_cursor: MYSQL_STMT_CURSOR
+			-- <Precursor>
 		do
-			is_open := False
-			string_parameters.wipe_out
-			c_stmt_free ($p_stmt, $p_bind, $p_data, $p_resbind, $p_resdata)
-			c_stmt_close ($p_stmt)
+			create Result.make (Current)
 		end
 
+feature -- Access
+
+	is_open: BOOLEAN
+		-- Has this query result set not yet been `disposed'?
+
+	is_executed: BOOLEAN
+		-- Has the last call to `execute' succeeded?
+
+	off: BOOLEAN
+		-- Are there no more rows?
+
 	param_count: INTEGER
-		-- Returns the number of parameters in a prepared statement (mysql_stmt_param_count)
+		-- The number of parameters in this prepared statement
 		require
 			is_open: is_open
 		do
 			Result := c_stmt_param_count ($p_stmt)
 		end
 
+	row_count: INTEGER
+			-- The number of rows in this result set
+		require
+			is_open: is_open
+			is_executed: is_executed
+		do
+			Result := c_stmt_num_rows ($p_stmt)
+		end
+
+	affected_rows: INTEGER
+			-- The number of rows modified by the last call to `execute'
+		require
+			is_open: is_open
+			is_executed: is_executed
+		do
+			Result := c_stmt_affected_rows ($p_stmt)
+		end
+
+	last_insert_id: INTEGER
+			-- The ID generated for an AUTO_INCREMENT column by the last call to `execute'
+		require
+			is_open: is_open
+			is_executed: is_executed
+		do
+			Result := c_stmt_insert_id ($p_stmt)
+		end
+
+	column_count: INTEGER
+		-- The number of  columns in the result set of the most recent call to `execute'
+		require
+			is_open: is_open
+		do
+			Result := c_stmt_field_count ($p_stmt)
+		end
+
+	column_name_at (a_pos: INTEGER): STRING
+			-- The column name at column index `a_pos'
+		require
+			is_open: is_open
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= param_count
+		do
+			Result := c_stmt_column_at ($p_stmt, a_pos-1)
+		end
+
+	is_int_at (a_pos: INTEGER): BOOLEAN
+			-- Is the value in the current row at column index `a_pos' an integer?
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_is_int_at ($p_resbind, a_pos-1) > 0
+		end
+
+	is_double_at (a_pos: INTEGER): BOOLEAN
+			-- Is the value in the current row at column index `a_pos' a double/float?
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_is_double_at ($p_resbind, a_pos-1) > 0
+		end
+
+	is_string_at (a_pos: INTEGER): BOOLEAN
+			-- Is the value in the current row at column index `a_pos' a char/string/blob?
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_is_string_at ($p_resbind, a_pos-1) > 0
+		end
+
+	null_at (a_pos: INTEGER): BOOLEAN
+			-- Is the value in the current row at column index `a_pos' NULL?
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_null_at ($p_resbind, a_pos-1) > 0
+		end
+
+	int_at (a_pos: INTEGER): INTEGER
+			-- The integer value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_int_at ($p_resdata, a_pos-1)
+		end
+
+	double_at (a_pos: INTEGER): DOUBLE
+			-- The double value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_double_at ($p_resdata, a_pos-1)
+		end
+
+	string_at (a_pos: INTEGER): STRING
+			-- The string value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_string_at ($p_resdata, a_pos-1)
+		end
+
+feature -- Commands
+
+	dispose
+		-- Dispose of this prepared statenement
+		do
+			if is_open then
+				c_stmt_free ($p_stmt, $p_bind, $p_data, $p_resbind, $p_resdata)
+				c_stmt_close ($p_stmt)
+			end
+			is_open := False
+			string_parameters.wipe_out
+		end
+
 	set_null (a_pos: INTEGER)
-		-- Set parameter at position to NULL (MYSQL_BIND)
+		-- Set parameter `a_pos' to NULL
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
@@ -69,7 +223,7 @@ feature
 		end
 
 	set_int (a_pos, a_value: INTEGER)
-		-- Set parameter at position to value (MYSQL_BIND)
+		-- Set integer parameter `a_pos' to `a_value'
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
@@ -80,7 +234,7 @@ feature
 		end
 
 	set_double (a_pos: INTEGER; a_value: DOUBLE)
-		-- Set parameter at position to value (MYSQL_BIND)
+		-- Set double parameter `a_pos' to `a_value'
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
@@ -91,7 +245,7 @@ feature
 		end
 
 	set_string (a_pos: INTEGER; a_value: STRING)
-		-- Set parameter at position to value (MYSQL_BIND)
+		-- Set char/string/blob parameter `a_pos' to `a_value'
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
@@ -103,8 +257,8 @@ feature
 		end
 
 	execute
-		-- Executes a prepared statement (mysql_stmt_execute)
-		-- Associates application data buffers with columns in a result set (mysql_stmt_bind_result)
+		-- Execute this prepared statement with the parameters set by
+		-- `set_null', `set_int', `set_double' and `set_string'
 		require
 			is_open: is_open
 		local
@@ -131,65 +285,19 @@ feature
 			end
 		end
 
-	num_rows: INTEGER
-			-- Returns the number of rows in a result set (mysql_num_rows)
-		require
-			is_open: is_open
-			is_executed: is_executed
-		do
-			Result := c_stmt_num_rows ($p_stmt)
-		end
-
-	affected_rows: INTEGER
-			-- Returns the number of rows changed, deleted, or inserted by prepared UPDATE, DELETE, or INSERT statement (mysql_stmt_affected_rows)
-		require
-			is_open: is_open
-			is_executed: is_executed
-		do
-			Result := c_stmt_affected_rows ($p_stmt)
-		end
-
-	last_insert_id: INTEGER
-			-- Returns the ID generated for an AUTO_INCREMENT column by a prepared statement (mysql_stmt_insert_id)
-		require
-			is_open: is_open
-			is_executed: is_executed
-		do
-			Result := c_stmt_insert_id ($p_stmt)
-		end
-
-	field_count: INTEGER
-		-- Returns the number of result columns for the most recent statement (mysql_stmt_field_count)
-		require
-			is_open: is_open
-		do
-			Result := c_stmt_field_count ($p_stmt)
-		end
-
-	column_at (a_pos: INTEGER): STRING
-			-- Returns the column name at pos
-		require
-			is_open: is_open
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= param_count
-		do
-			Result := c_stmt_column_at ($p_stmt, a_pos-1)
-		end
-
 	go_i_th (a_pos: INTEGER)
-			-- Seeks to an arbitrary row in a query result set (mysql_stmt_data_seek)
+			-- Seek to row index `a_pos' in this statement's result set
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= num_rows
+			valid_position_upper: a_pos <= row_count
 		do
 			c_stmt_seek ($p_stmt, a_pos-1)
 			forth
 		end
 
 	start
-			-- Seeks to first row in a query result set (mysql_stmt_data_seek)
+			-- Seeks to the first row in this statement's result set
 		require
 			is_open: is_open
 			is_executed: is_executed
@@ -198,7 +306,7 @@ feature
 		end
 
 	forth
-			-- Fetches the next row of data from a result set and returns data for all bound columns (mysql_stmt_fetch)
+			-- Fetch the next row from this statement's result set
 		require
 			is_open: is_open
 			is_executed: is_executed
@@ -209,105 +317,14 @@ feature
 			end
 		end
 
-	is_int_at (a_pos: INTEGER): BOOLEAN
-			-- Returns true if value at pos is an integer
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_is_int_at ($p_resbind, a_pos-1) > 0
-		end
-
-	is_double_at (a_pos: INTEGER): BOOLEAN
-			-- Returns true if value at pos is an integer
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_is_double_at ($p_resbind, a_pos-1) > 0
-		end
-
-	is_string_at (a_pos: INTEGER): BOOLEAN
-			-- Returns true if value at pos is an integer
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_is_string_at ($p_resbind, a_pos-1) > 0
-		end
-
-	null_at (a_pos: INTEGER): BOOLEAN
-			-- Returns true if value at pos is NULL
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_null_at ($p_resbind, a_pos-1) > 0
-		end
-
-	int_at (a_pos: INTEGER): INTEGER
-			-- Returns the integer value at pos
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_int_at ($p_resdata, a_pos-1)
-		end
-
-	double_at (a_pos: INTEGER): DOUBLE
-			-- Returns the integer value at pos
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_double_at ($p_resdata, a_pos-1)
-		end
-
-	string_at (a_pos: INTEGER): STRING
-			-- Returns the string value at pos
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
-		do
-			Result := c_stmt_string_at ($p_resdata, a_pos-1)
-		end
-
-feature -- Parents
+feature -- Implementation
 
 	mysql: MYSQL_CLIENT
 
-feature{NONE} -- Implementation
+feature{NONE} -- Implementation	
 
 	string_parameters: ARRAY [STRING]
-			-- Avoid garbage collection of string in parameters
+			-- Avoid garbage collection of strings in parameters
 
 feature{NONE} -- External
 

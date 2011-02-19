@@ -38,7 +38,7 @@ feature -- Basic operations
 		do
 			stmt_find_uuid.set_string (1, a_uuid)
 			stmt_find_uuid.execute
-			if stmt_find_uuid.num_rows > 0 then
+			if stmt_find_uuid.row_count > 0 then
 				Result := 0
 			else
 				stmt_insert_queryable.set_string (2, a_uuid)
@@ -226,9 +226,9 @@ feature{SEMQ_DATABASE} -- MySQL Client
 	cleanup_mysql
 			-- Close statements
 		do
-			stmt_insert_hitbreakpoints.close
-			stmt_find_uuid.close
-			stmt_insert_queryable.close
+			stmt_insert_hitbreakpoints.dispose
+			stmt_find_uuid.dispose
+			stmt_insert_queryable.dispose
 		end
 
 feature{NONE} -- Prepared Statements

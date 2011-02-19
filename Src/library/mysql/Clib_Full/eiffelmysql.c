@@ -2,8 +2,8 @@
 
 /* Parameter and return value casting */
 
-EIF_INTEGER c_real_connect(EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db) {
-  return (EIF_INTEGER) _c_real_connect((MYSQL**)mysql, (MYSQL_ROW**)row, (const char *)host, (const char *)username, (const char *)password, (const char *)db);
+EIF_INTEGER c_real_connect(EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db, EIF_INTEGER port) {
+  return (EIF_INTEGER) _c_real_connect((MYSQL**)mysql, (MYSQL_ROW**)row, (const char *)host, (int)port, (const char *)username, (const char *)password, (const char *)db);
 }
 
 EIF_INTEGER c_query(EIF_POINTER mysql, EIF_POINTER query) {
@@ -169,11 +169,11 @@ void c_stmt_free(EIF_POINTER stmt, EIF_POINTER bind, EIF_POINTER data, EIF_POINT
 
 /* Data structure management */
 
-int _c_real_connect(MYSQL **mysql, MYSQL_ROW **row, const char *host, const char *username, const char *password, const char *db) {
+int _c_real_connect(MYSQL **mysql, MYSQL_ROW **row, const char *host, int port, const char *username, const char *password, const char *db) {
   *mysql = (MYSQL*)malloc(sizeof(MYSQL)); // free: _c_close
   mysql_init(*mysql);
   mysql_options(*mysql, MYSQL_READ_DEFAULT_GROUP, "EiffelMySQL");
-  if (mysql_real_connect(*mysql, host, username, password, db, 0, NULL, 0) == 0) return -1;
+  if (mysql_real_connect(*mysql, host, username, password, db, port, NULL, 0) == 0) return -1;
   *row = (MYSQL_ROW*)malloc(sizeof(MYSQL_ROW));
   return 0;
 }

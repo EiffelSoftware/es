@@ -3,7 +3,7 @@
 #include "eif_macros.h"
 
 /* Parameter and return value casting */
-EIF_INTEGER   c_real_connect (EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db);
+EIF_INTEGER   c_real_connect (EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db, EIF_INTEGER port);
 EIF_INTEGER   c_query        (EIF_POINTER mysql, EIF_POINTER query);
 EIF_INTEGER   c_store_result (EIF_POINTER mysql, EIF_POINTER res);
 EIF_INTEGER   c_num_rows     (EIF_POINTER res);

@@ -62,6 +62,7 @@ feature{NONE} -- Implementation
 			uuid: STRING
 			file: PLAIN_TEXT_FILE
 			qry_id: INTEGER
+			class_and_feature: like class_and_feature_name_from_ssql_file_name
 		do
 --			print ("SEMQ_DATABASE_IMPORTER.import_file: location = "+name+"%N")
 			uuid := uuid_from_filename(location)
@@ -70,6 +71,11 @@ feature{NONE} -- Implementation
 				print (once "SEMQ_DATABASE_IMPORTER.import_file: qry_id = ")
 				print (qry_id)
 				print ('%N')
+				-- Set class and feature name from filename
+				class_and_feature := class_and_feature_name_from_ssql_file_name (name)
+				queryables.set_attribute (qry_id, once "class", class_and_feature.class_name)
+				queryables.set_attribute (qry_id, once "feature", class_and_feature.feature_name)
+				-- Parse file
 				from
 					create file.make_open_read (location)
 				until
@@ -167,7 +173,7 @@ feature{SEMQ_DATABASE} -- MySQL Client
 			until
 				i > 9
 			loop
-				stmt_insert_bindings.at (i).close
+				stmt_insert_bindings.at (i).dispose
 				i := i + 1
 			end
 		end

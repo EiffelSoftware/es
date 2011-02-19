@@ -15,7 +15,7 @@ feature
 			stmt, stmt_insert: MYSQL_STMT
 		do
 			-- Initialization
-			create client.make ("127.0.0.1", "root", "", "test")
+			create client.make ("127.0.0.1", "root", "", "test", 0)
 			print("is_connected: "+client.is_connected.out+"%N%N")
 
 			if client.is_connected then
@@ -36,10 +36,10 @@ feature
 			-- It is imperative that the last_result be freed for queries that have a result set (or it will leak memory)
 			client.execute_query ("SELECT * FROM eiffelmysql")
 			print ("last_result.row_count: "+client.last_result.row_count.out+"%N")
-			print ("last_result.field_count: "+client.last_result.field_count.out+"%N")
-			print ("%TField 1: "+client.last_result.column_at (1)+"%N")
-			print ("%TField 2: "+client.last_result.column_at (2)+"%N")
-			print ("%TField 3: "+client.last_result.column_at (3)+"%N")
+			print ("last_result.field_count: "+client.last_result.column_count.out+"%N")
+			print ("%TField 1: "+client.last_result.column_name_at (1)+"%N")
+			print ("%TField 2: "+client.last_result.column_name_at (2)+"%N")
+			print ("%TField 3: "+client.last_result.column_name_at (3)+"%N")
 			from
 				client.last_result.start
 			until
@@ -48,8 +48,15 @@ feature
 				print ("%Tlast_result.at: "+client.last_result.at (1)+", '"+client.last_result.at (2)+"', "+client.last_result.at (3)+"%N")
 				client.last_result.forth
 			end
-			client.last_result.free_result
+			client.last_result.dispose
 			print("%N")
+
+			-- Using across syntax
+--			across
+--				client.last_result as c
+--			loop
+--				print ("%Tlast_result.at: "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
+--			end
 
 			-- Prepared Statement (INSERT)
 			-- It is imperative that the stmt be closed (or it will leak memory)
@@ -70,10 +77,10 @@ feature
 			stmt := client.last_statement
 			stmt.set_string(1, "foo")
 			stmt.execute
-			print ("stmt.num_rows: "+stmt.num_rows.out+"%N")
-			print ("%TField 1: "+stmt.column_at (1)+"%N")
-			print ("%TField 2: "+stmt.column_at (2)+"%N")
-			print ("%TField 3: "+stmt.column_at (3)+"%N")
+			print ("stmt.num_rows: "+stmt.row_count.out+"%N")
+			print ("%TField 1: "+stmt.column_name_at (1)+"%N")
+			print ("%TField 2: "+stmt.column_name_at (2)+"%N")
+			print ("%TField 3: "+stmt.column_name_at (3)+"%N")
 			from
 				stmt.start
 			until
@@ -89,12 +96,12 @@ feature
 			stmt_insert.set_null   (2)
 			stmt_insert.set_double (3, 55.5)
 			stmt_insert.execute
-			stmt_insert.close
+			stmt_insert.dispose
 
 			-- Run same query again (SELECT)
 			stmt.set_string (1, "baz")
 			stmt.execute
-			print ("stmt.num_rows: "+stmt.num_rows.out+"%N")
+			print ("stmt.num_rows: "+stmt.row_count.out+"%N")
 			from
 				stmt.start
 			until
@@ -103,11 +110,18 @@ feature
 				print ("%Tstmt.at: "+stmt.int_at (1).out+", '"+stmt.string_at (2).out+"', "+stmt.null_at (3).out+"%N")
 				stmt.forth
 			end
-			stmt.close
+
+			-- Using across syntax
+--			across
+--				stmt as c
+--			loop
+--				print ("%Tstmt.at: "+c.item.int_at (1).out+", '"+c.item.string_at (2).out+"', "+c.item.null_at (3).out+"%N")
+--			end
 
 			-- Cleanup
+			stmt.dispose
 			client.execute_query ("DROP TABLE eiffelmysql")
-			client.close
+			client.dispose
 			end
 		end
 

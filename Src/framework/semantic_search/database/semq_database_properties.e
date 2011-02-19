@@ -47,7 +47,7 @@ feature -- Initialization
 			else
 				create properties.make (1000)
 			end
-			mysql.last_result.free_result
+			mysql.last_result.dispose
 		end
 
 feature -- Basic operations
@@ -85,8 +85,8 @@ feature{SEMQ_DATABASE} -- MySQL Client
 	cleanup_mysql
 			-- Close statements
 		do
-			stmt_find_property.close
-			stmt_insert_property.close
+			stmt_find_property.dispose
+			stmt_insert_property.dispose
 		end
 
 feature{NONE} -- Prepared Statements

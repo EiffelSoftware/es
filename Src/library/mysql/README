@@ -1,0 +1,55 @@
+MySQL Library for Eiffel
+========================
+
+AUTHORS:
+
+  * Hannes Roth <haroth@student.ethz.ch>
+
+  * Yi Wei <yi.wei@inf.ethz.ch>
+
+DESCRIPTION:
+
+  * MySQL C API wrapper for Eiffel
+    http://dev.mysql.com/doc/refman/5.0/en/c.html
+
+  * Contains both C and Eiffel code
+
+IMPORTANT:
+
+  * The Clib folder contains a dummy implementation
+    without any functionality to allow compilation of
+    Eve for users without MySQL. Please follow the
+    steps outlined below to install a working copy.
+
+REQUIREMENTS:
+
+  * MySQL Header Files
+      Unix/Linux: Usually available as a package, eg. libmysqlclient10-dev
+      Mac OS X/Windows: http://dev.mysql.com/downloads/connector/c/
+
+  * EiffelStudio 6.8
+
+INSTALLATION UNIX/LINUX/MAC OS X:
+
+  * Ensure that you have the MySQL header files in
+    /usr/include/mysql and the library in /usr/lib
+
+  * In %EIFFEL_SRC%/library/mysql/Clib_Full, run "finish_freezing -library"
+
+INSTALLATION WINDOWS:
+
+  * Ensure that "MySQL Connector" is installed in
+    %EIFFEL_SRC%\library\mysql\Clib_Full\connector-win
+
+  * In %EIFFEL_SRC%\library\mysql\Clib_Full, run "compile_library.bat"
+
+NOTES:
+
+  * After you run "compile_library.bat or "finish_freezing -library",
+    the mysql.ecf file in %EIFFEL_SRC%\library\mysql will be replaced
+    with a new one. Please do not commit that file.
+
+USAGE:
+
+  * Please look at example/mysql_example.e
+

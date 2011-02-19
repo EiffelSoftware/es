@@ -20,7 +20,7 @@ typedef struct {
 #endif
 
 /* Parameter and return value casting */
-EIF_INTEGER   c_real_connect (EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db);
+EIF_INTEGER   c_real_connect (EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db, EIF_INTEGER port);
 EIF_INTEGER   c_query        (EIF_POINTER mysql, EIF_POINTER query);
 EIF_INTEGER   c_store_result (EIF_POINTER mysql, EIF_POINTER res);
 EIF_INTEGER   c_num_rows     (EIF_POINTER res);
@@ -62,7 +62,7 @@ EIF_REFERENCE c_stmt_string_at     (EIF_POINTER resdata, EIF_INTEGER pos);
 void          c_stmt_free          (EIF_POINTER stmt, EIF_POINTER bind,       EIF_POINTER data, EIF_POINTER resbind, EIF_POINTER resdata);
 
 /* Data structure management */
-int   _c_real_connect (MYSQL **mysql, MYSQL_ROW **row, const char *host, const char *username, const char *password, const char *db);
+int   _c_real_connect (MYSQL **mysql, MYSQL_ROW **row, const char *host, int port, const char *username, const char *password, const char *db);
 int   _c_query        (MYSQL *mysql, const char *query);
 int   _c_store_result (MYSQL *mysql, MYSQL_RES **res);
 int   _c_num_rows     (MYSQL_RES *res);

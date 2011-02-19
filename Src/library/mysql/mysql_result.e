@@ -7,15 +7,20 @@
 class
 	MYSQL_RESULT
 
+inherit
+	DISPOSABLE
+	ITERABLE [MYSQL_RESULT]
+
 create
 	make
 
-feature{MYSQL_CLIENT}
+feature{MYSQL_CLIENT} -- Initialization
 
 	make (a_client: MYSQL_CLIENT; a_row: POINTER)
-			-- Initializer
+			-- Create an empty query result set for a MySQL client in `a_client'.
+			-- `a_row' is the pointer to the C datastructure for a row.
 		do
-			-- MYSQL_CLIENT
+			-- Client
 			mysql_client := a_client
 			-- Datastructures for C
 			p_row := a_row
@@ -23,8 +28,12 @@ feature{MYSQL_CLIENT}
 			is_open := False
 		end
 
-	execute_query (p_mysql: POINTER; a_query: STRING): BOOLEAN
-			-- Executes an SQL query specified as a null-terminated string (mysql_query)
+feature{MYSQL_CLIENT} -- Commands
+
+	execute_query (p_mysql: POINTER; a_query: STRING)
+			-- Execute the SQL query in `a_query'.
+			-- `p_mysql' is the pointer to the C datastructure
+			-- containing the client connection state.
 		require
 			query_not_void: a_query /= Void
 			mysql_client_is_connected: mysql_client.is_connected
@@ -38,63 +47,85 @@ feature{MYSQL_CLIENT}
 					is_open := True
 				end
 			end
-			Result := is_open
 		end
 
-feature
+feature -- Access: Cursor
+
+	new_cursor: MYSQL_RESULT_CURSOR
+			-- <Precursor>
+		do
+			create Result.make (Current)
+		end
+
+feature -- Access
 
 	is_open: BOOLEAN
-			-- Whether this result set was freed (mysql_free_result)
+			-- Has the last call to `execute_query' succeeded,
+			-- and has this query result set not yet been `disposed'?
 
 	off: BOOLEAN
-			-- Is there no more row?
+			-- Are there no more rows?
 
 	row_count: INTEGER
-			-- Returns the number of rows in a result set (mysql_num_rows)
+			-- The number of rows in this query result set
 		require
 			is_open: is_open
 		do
 			Result := c_num_rows ($p_result)
 		end
 
-	field_count: INTEGER
-			-- Returns the number of columns in a result set (mysql_num_fields)
+	column_count: INTEGER
+			-- The number of columns in this query result set
 		require
 			is_open: is_open
 		do
 			Result := c_num_fields ($p_result)
 		end
 
-	column_at (a_pos: INTEGER): STRING
-			-- Returns the column name at pos
+	column_name_at (a_pos: INTEGER): STRING
+			-- The column name at column index `a_pos'
 		require
 			mysql_client_is_connected: mysql_client.is_connected
 			is_open: is_open
 			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
+			valid_position_upper: a_pos <= column_count
 		do
 			Result := c_column_at ($p_result, a_pos-1)
 		end
 
+	at (a_pos: INTEGER): STRING
+			-- The string value at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_at ($p_result, $p_row, a_pos-1)
+		end
+
+feature -- Commands
+
 	go_i_th (a_pos: INTEGER)
-			-- Seeks to an arbitrary row in a query result set (mysql_data_seek)
+			-- Seek to row index `a_pos' in this query result set
 		require
 			is_open: is_open
 			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
+			valid_position_upper: a_pos <= column_count
 		do
 			c_seek ($p_result, a_pos-1)
 			forth
 		end
 
 	start
-			-- Seeks to the first row in a query result set (mysql_data_seek)
+			-- Seeks to the first row in this query result set
 		do
 			go_i_th (1)
 		end
 
 	forth
-			-- Fetches the next row from the result set (mysql_fetch_row)
+			-- Fetch the next row from this query result set
 		require
 			is_open: is_open
 		do
@@ -104,29 +135,20 @@ feature
 			end
 		end
 
-	at (a_pos: INTEGER): STRING
-			-- Returns the value at pos
-		require
-			mysql_client_is_connected: mysql_client.is_connected
-			is_open: is_open
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= field_count
+	dispose
+			-- Dispose of this result set
 		do
-			Result := c_at ($p_result, $p_row, a_pos-1)
+			if is_open then
+				c_free_result ($p_result)
+			end
+			is_open := False
 		end
 
-	free_result
-			-- Frees memory used by a result set (mysql_free_result)
-		do
-			c_free_result ($p_result)
-		end
-
-feature -- Parents
+feature -- Implementation
 
 	mysql_client: MYSQL_CLIENT
 
-feature {NONE} -- External
+feature{NONE} -- External
 
 	p_result, p_row: POINTER
 			-- Pointer to MYSQL_RES, MYSQL_ROW structures

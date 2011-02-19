@@ -2,7 +2,7 @@
 
 /* Parameter and return value casting */
 
-EIF_INTEGER c_real_connect(EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db) {
+EIF_INTEGER c_real_connect(EIF_POINTER mysql, EIF_POINTER row, EIF_POINTER host, EIF_POINTER username, EIF_POINTER password, EIF_POINTER db, EIF_INTEGER port) {
   return (EIF_INTEGER) -1;
 }
 

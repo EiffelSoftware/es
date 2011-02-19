@@ -55,7 +55,7 @@ feature -- Initialization
 			else
 				create types.make (100)
 			end
-			mysql.last_result.free_result
+			mysql.last_result.dispose
 
 			-- Only for new types
 			type_conformance_calc.type_added_actions.extend (agent add_type (?))
@@ -123,9 +123,9 @@ feature{SEMQ_DATABASE} -- MySQL Client
 	cleanup_mysql
 			-- Close statements
 		do
-			stmt_find_type.close
-			stmt_insert_type.close
-			stmt_insert_conformance.close
+			stmt_find_type.dispose
+			stmt_insert_type.dispose
+			stmt_insert_conformance.dispose
 		end
 
 feature{NONE} -- Prepared Statements
