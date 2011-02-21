@@ -49,7 +49,10 @@ feature{NONE} -- Initialization
 			parse_text (a_text)
 			if not has_syntax_error then
 				set_text (text_from_ast (ast))
-				check_type
+				fixme ("This is a hack, because for the moment, the type checker crashes quite often on expressions with {G}. 21.2.2011 Jasonw")
+				if not a_text.has ('{') then
+					check_type
+				end
 			else
 				check should_not_happen: False end
 			end
