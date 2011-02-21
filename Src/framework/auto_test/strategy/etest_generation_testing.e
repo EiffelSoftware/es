@@ -35,6 +35,9 @@ create
 
 feature {NONE} -- Initialization
 
+	prestate_invariant: AUT_STATE_INVARIANT
+	retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+
 	make (a_generation: like generation)
 			-- Initialize `Current'.
 			--
@@ -503,7 +506,7 @@ invariant
 	minimizing_implies_test_task_has_next_step: minimize_task_cache = sub_task implies test_task.has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

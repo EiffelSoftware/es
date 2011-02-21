@@ -91,6 +91,12 @@ feature{NONE} -- Initialization
 			l_9times_option: AP_STRING_OPTION
 			l_freeze_flag: AP_FLAG
 			l_agents_option: AP_STRING_OPTION
+			l_sem_host_optioN: AP_STRING_OPTION
+			l_sem_user_option: AP_STRING_OPTION
+			l_sem_password_option: AP_STRING_OPTION
+			l_sem_schema_option: AP_STRING_OPTION
+			l_sem_port_option: AP_INTEGER_OPTION
+			l_precondition_reduction_file_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -329,6 +335,30 @@ feature{NONE} -- Initialization
 			create l_agents_option.make_with_long_form ("agents")
 			l_agents_option.set_description ("Should features with agent type arguments be processed? Possible options: none, only, all. None means: don't process features of this kind. Only means: discard all but features of this kind. All means: Process all features. Default: all")
 			parser.options.force_last (l_agents_option)
+
+			create l_sem_host_option.make_with_long_form ("sem-host")
+			l_sem_host_option.set_description ("Setup host name of the semantic database server. Default: localhost")
+			parser.options.force_last (l_sem_host_option)
+
+			create l_sem_schema_option.make_with_long_form ("sem-schema")
+			l_sem_schema_option.set_description ("Setup schema of the semantic database server. Default: semantic_search")
+			parser.options.force_last (l_sem_schema_option)
+
+			create l_sem_user_option.make_with_long_form ("sem-user")
+			l_sem_user_option.set_description ("Setup user of the semantic database server. Default: root")
+			parser.options.force_last (l_sem_user_option)
+
+			create l_sem_password_option.make_with_long_form ("sem-password")
+			l_sem_password_option.set_description ("Setup password of the semantic database server.")
+			parser.options.force_last (l_sem_password_option)
+
+			create l_sem_port_option.make_with_long_form ("sem-port")
+			l_sem_port_option.set_description ("Setup schema of the semantic database server. Default: 3306")
+			parser.options.force_last (l_sem_port_option)
+
+			create l_precondition_reduction_file_option.make_with_long_form ("precondion-reduction")
+			l_precondition_reduction_file_option.set_description ("Use precondition reduction strategy. Format: precondition-reduction <file_name>. Where <file_name> specify the file containing pre-state invariant.")
+			parser.options.force_last (l_precondition_reduction_file_option)
 
 			parser.parse_list (a_arguments)
 
@@ -791,6 +821,46 @@ feature{NONE} -- Initialization
 					error_handler.report_statistics_format_error (l_agents_option.parameter)
 				end
 			end
+
+			if l_sem_host_option.was_found then
+				if semantic_data_base_config = Void then
+					create semantic_data_base_config.make
+				end
+				semantic_data_base_config.set_host (l_sem_host_option.parameter)
+			end
+
+			if l_sem_schema_option.was_found then
+				if semantic_data_base_config = Void then
+					create semantic_data_base_config.make
+				end
+				semantic_data_base_config.set_schema (l_sem_schema_option.parameter)
+			end
+
+			if l_sem_user_option.was_found then
+				if semantic_data_base_config = Void then
+					create semantic_data_base_config.make
+				end
+				semantic_data_base_config.set_user (l_sem_user_option.parameter)
+			end
+
+			if l_sem_password_option.was_found then
+				if semantic_data_base_config = Void then
+					create semantic_data_base_config.make
+				end
+				semantic_data_base_config.set_password (l_sem_password_option.parameter)
+			end
+
+			if l_sem_port_option.was_found then
+				if semantic_data_base_config = Void then
+					create semantic_data_base_config.make
+				end
+				semantic_data_base_config.set_port (l_sem_port_option.parameter)
+			end
+
+			if l_precondition_reduction_file_option.was_found then
+				precondition_reduction_file := l_precondition_reduction_file_option.parameter.twin
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1096,6 +1166,18 @@ feature -- Status report
 			-- Should the target system be freezed before testing?
 			-- Default: False
 
+	semantic_data_base_config: AUT_SEMANTIC_DATABASE_CONFIG
+			-- Config for semantic database
+
+	precondition_reduction_file: STRING
+			-- File containing pre-state invariants
+
+	is_precondition_reduction_enabled: BOOLEAN
+			-- Is precondition-reduction enabled?
+		do
+			Result := precondition_reduction_file /= Void
+		end
+
 feature {NONE} -- Constants
 
 	default_time_out: NATURAL = 5
@@ -1105,7 +1187,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
