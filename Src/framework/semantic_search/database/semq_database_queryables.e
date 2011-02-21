@@ -21,11 +21,11 @@ feature -- Initialization
 			create queryables.make (1) -- there should only be one at a time
 			open_mysql
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`HitBreakpoints` VALUES (?, ?)")
-			stmt_insert_hitbreakpoints := mysql.last_statement
+			stmt_insert_hitbreakpoints := mysql.last_prepared_statement
 			mysql.prepare_statement (once "SELECT `qry_id` FROM `semantic_search`.`Queryables` WHERE `uuid` = ?")
-			stmt_find_uuid := mysql.last_statement
+			stmt_find_uuid := mysql.last_prepared_statement
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`Queryables` VALUES (NULL, 0, NULL, NULL, NULL, NULL, NULL, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL)")
-			stmt_insert_queryable := mysql.last_statement
+			stmt_insert_queryable := mysql.last_prepared_statement
 			stmt_insert_queryable.set_string (1, config.timestamp)
 		end
 

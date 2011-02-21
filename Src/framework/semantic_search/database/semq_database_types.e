@@ -135,11 +135,11 @@ feature{NONE} -- Prepared Statements
 		do
 			open_mysql
 			mysql.prepare_statement (once "SELECT `type_id` FROM `semantic_search`.`Types` WHERE `type_name` = ?")
-			stmt_find_type := mysql.last_statement
+			stmt_find_type := mysql.last_prepared_statement
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`Types` VALUES (NULL, ?)")
-			stmt_insert_type := mysql.last_statement
+			stmt_insert_type := mysql.last_prepared_statement
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`Conformances` VALUES (?, ?)")
-			stmt_insert_conformance := mysql.last_statement
+			stmt_insert_conformance := mysql.last_prepared_statement
 		end
 
 	stmt_find_type: MYSQL_PREPARED_STATEMENT

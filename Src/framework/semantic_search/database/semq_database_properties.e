@@ -96,9 +96,9 @@ feature{NONE} -- Prepared Statements
 		do
 			open_mysql
 			mysql.prepare_statement (once "SELECT `prop_id` FROM `semantic_search`.`Properties` WHERE `text` = ?")
-			stmt_find_property := mysql.last_statement
+			stmt_find_property := mysql.last_prepared_statement
 			mysql.prepare_statement (once "INSERT INTO `semantic_search`.`Properties` VALUES (NULL, ?)")
-			stmt_insert_property := mysql.last_statement
+			stmt_insert_property := mysql.last_prepared_statement
 		end
 
 	stmt_find_property: MYSQL_PREPARED_STATEMENT
