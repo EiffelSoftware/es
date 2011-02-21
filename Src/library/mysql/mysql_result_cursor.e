@@ -8,7 +8,7 @@ class
 	MYSQL_RESULT_CURSOR
 
 inherit
-	ITERATION_CURSOR [MYSQL_RESULT]
+	ITERATION_CURSOR [ARRAY [STRING]]
 		redefine
 			target
 		end
@@ -18,11 +18,20 @@ create
 
 feature -- Access
 
-	item: MYSQL_RESULT
+	item: ARRAY [STRING]
 			-- Item at current cursor position
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_target: like target
 		do
-			target.go_i_th (cursor_index)
-			Result := target
+			l_target := target
+			l_target.go_i_th (cursor_index)
+			create Result.make_filled (Void, 1, l_target.column_count)
+			across 1 |..| l_target.column_count as l_indexes loop
+				i := l_indexes.item
+				Result.put (l_target.at (i), i)
+			end
 		end
 
 	after: BOOLEAN

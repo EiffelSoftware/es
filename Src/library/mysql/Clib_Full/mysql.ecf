@@ -2,9 +2,8 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="mysql" uuid="74BBC869-BC3A-4B6C-8647-46FC99F493C7" readonly="false" library_target="mysql">
 	<target name="mysql">
 		<root all_classes="true"/>
-		<option namespace="EiffelSoftware.Library.MySQL">
+		<option syntax="provisional" namespace="EiffelSoftware.Library.MySQL">
 		</option>
-
 		<external_include location="$(ISE_LIBRARY)\library\mysql\spec\include">
 			<condition>
 				<platform value="windows"/>

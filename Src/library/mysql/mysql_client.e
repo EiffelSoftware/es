@@ -34,7 +34,7 @@ feature -- Initialization
 			-- Defaults
 			is_connected := False
 			has_result := False
-			has_statement := False
+			has_prepared_statement := False
 			mysql_stmt := Void
 			-- Try to connect
 			if c_real_connect ($p_mysql, $p_row, $c_host, $c_username, $c_password, $c_database, port) = 0 then
@@ -44,7 +44,7 @@ feature -- Initialization
 			end
 		end
 
-feature -- Access
+feature -- Status report
 
 	is_connected: BOOLEAN
 			-- Has the last connection attempt succeeded?
@@ -52,13 +52,15 @@ feature -- Access
 	has_result: BOOLEAN
 			-- Has the last call to `execute_query' succeeded?
 
-	has_statement: BOOLEAN
+	has_prepared_statement: BOOLEAN
 			-- Has the last call to `prepare_statement' succeeded?
 
-	last_statement: MYSQL_STMT
+feature -- Access
+
+	last_prepared_statement: MYSQL_PREPARED_STATEMENT
 			-- Current prepared statement, available after call to `prepare_statement'.
 		require
-			has_statement: has_statement
+			has_statement: has_prepared_statement
 		do
 			Result := mysql_stmt
 		end
@@ -78,7 +80,6 @@ feature -- Access
 		do
 			Result := c_affected_rows ($p_mysql)
 		end
-
 
 	last_errno: INTEGER
 			-- The error number for the most recently invoked MySQL API call
@@ -123,10 +124,10 @@ feature -- Commands
 			-- Pointer for C
 			c_stmt := a_stmt.to_c
 			mysql_stmt := Void
-			has_statement := False
+			has_prepared_statement := False
 			if c_stmt_prepare ($p_mysql, $p_stmt, $p_bind, $p_data, $c_stmt) = 0 then
 				create mysql_stmt.make (Current, p_stmt, p_bind, p_data)
-				has_statement := True
+				has_prepared_statement := True
 			end
 		end
 
@@ -154,7 +155,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	mysql_stmt: MYSQL_STMT
+	mysql_stmt: MYSQL_PREPARED_STATEMENT
 			-- Current prepared statement
 
 	mysql_result: MYSQL_RESULT

@@ -8,8 +8,9 @@ class
 	MYSQL_RESULT
 
 inherit
+	ITERABLE [ARRAY [STRING]]
+
 	DISPOSABLE
-	ITERABLE [MYSQL_RESULT]
 
 create
 	make
@@ -20,9 +21,9 @@ feature{MYSQL_CLIENT} -- Initialization
 			-- Create an empty query result set for a MySQL client in `a_client'.
 			-- `a_row' is the pointer to the C datastructure for a row.
 		do
-			-- Client
+				-- Client
 			mysql_client := a_client
-			-- Datastructures for C
+				-- Datastructures for C
 			p_row := a_row
 			-- State
 			is_open := False
@@ -57,7 +58,7 @@ feature -- Access: Cursor
 			create Result.make (Current)
 		end
 
-feature -- Access
+feature -- Status report
 
 	is_open: BOOLEAN
 			-- Has the last call to `execute_query' succeeded,
@@ -65,6 +66,14 @@ feature -- Access
 
 	off: BOOLEAN
 			-- Are there no more rows?
+
+	after: BOOLEAN
+			-- Are there no more rows?
+		do
+			Result := off
+		end
+
+feature -- Access
 
 	row_count: INTEGER
 			-- The number of rows in this query result set
@@ -144,9 +153,10 @@ feature -- Commands
 			is_open := False
 		end
 
-feature -- Implementation
+feature -- Access
 
 	mysql_client: MYSQL_CLIENT
+			-- MySQL client reference from which Current result is retrieved
 
 feature{NONE} -- External
 

@@ -5,14 +5,14 @@
 	revision: "$Revision$"
 
 class
-	MYSQL_EXAMPLE
+	MYSQL_EXAMPLES
 
 feature
 
 	run_example
 		local
 			client: MYSQL_CLIENT
-			stmt, stmt_insert: MYSQL_STMT
+			stmt, stmt_insert: MYSQL_PREPARED_STATEMENT
 		do
 			-- Initialization
 			create client.make ("127.0.0.1", "root", "", "test", 0)
@@ -48,20 +48,21 @@ feature
 				print ("%Tlast_result.at: "+client.last_result.at (1)+", '"+client.last_result.at (2)+"', "+client.last_result.at (3)+"%N")
 				client.last_result.forth
 			end
+
 			client.last_result.dispose
 			print("%N")
 
 			-- Using across syntax
---			across
---				client.last_result as c
---			loop
---				print ("%Tlast_result.at: "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
---			end
+			across
+				client.last_result as c
+			loop
+				print ("%Tlast_result.at: "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
+			end
 
 			-- Prepared Statement (INSERT)
 			-- It is imperative that the stmt be closed (or it will leak memory)
 			client.prepare_statement ("INSERT INTO eiffelmysql VALUES (?, ?, ?)")
-			stmt_insert := client.last_statement
+			stmt_insert := client.last_prepared_statement
 			stmt_insert.set_int    (1, 3)
 			stmt_insert.set_string (2, "baz")
 			stmt_insert.set_null   (3)
@@ -74,7 +75,7 @@ feature
 			-- Prepared Statement (SELECT)
 			-- It is imperative that the stmt be closed (or it will leak memory)
 			client.prepare_statement("SELECT * FROM eiffelmysql WHERE t = ?")
-			stmt := client.last_statement
+			stmt := client.last_prepared_statement
 			stmt.set_string(1, "foo")
 			stmt.execute
 			print ("stmt.num_rows: "+stmt.row_count.out+"%N")
@@ -86,7 +87,7 @@ feature
 			until
 				stmt.off
 			loop
-				print ("%Tstmt.at: "+stmt.int_at (1).out+", '"+stmt.string_at (2)+"', "+stmt.double_at (3).out+"%N")
+				print ("%Tstmt.at: "+stmt.integer_at (1).out+", '"+stmt.string_at (2)+"', "+stmt.double_at (3).out+"%N")
 				stmt.forth
 			end
 			print("%N")
@@ -107,7 +108,7 @@ feature
 			until
 				stmt.off
 			loop
-				print ("%Tstmt.at: "+stmt.int_at (1).out+", '"+stmt.string_at (2).out+"', "+stmt.null_at (3).out+"%N")
+				print ("%Tstmt.at: "+stmt.integer_at (1).out+", '"+stmt.string_at (2).out+"', "+stmt.is_null_at (3).out+"%N")
 				stmt.forth
 			end
 

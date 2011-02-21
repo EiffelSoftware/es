@@ -5,25 +5,37 @@ note
 	revision: "$Revision$"
 
 class
-	MYSQL_STMT_CURSOR
+	MYSQL_PREPARED_STATEMENT_CURSOR
 
 inherit
-	ITERATION_CURSOR [MYSQL_STMT]
+	ITERATION_CURSOR [ARRAY [STRING]]
 		redefine
 			target
 		end
+
+	REFACTORING_HELPER
 
 create
 	make
 
 feature -- Access
 
-	item: MYSQL_STMT
+	item: ARRAY [STRING]
 			-- Item at current cursor position
+		local
+			i: INTEGER
+			l_target: like target
 		do
-			target.go_i_th (cursor_index)
-			Result := target
+			l_target := target
+			l_target.go_i_th (cursor_index)
+			create Result.make_filled (Void, 1, l_target.column_count)
+			across 1 |..| l_target.column_count as l_indexes loop
+				i := l_indexes.item
+				Result.put (l_target.at (i), i)
+			end
 		end
+
+
 
 	after: BOOLEAN
 			-- Is there no valid cursor position to the right of cursor?
@@ -33,7 +45,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	target: MYSQL_STMT
+	target: MYSQL_PREPARED_STATEMENT
 			-- <Precursor>
 
 end

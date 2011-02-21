@@ -5,11 +5,14 @@
 	revision: "$Revision$"
 
 class
-	MYSQL_STMT
+	MYSQL_PREPARED_STATEMENT
 
 inherit
+	ITERABLE [ARRAY [STRING]]
+
 	DISPOSABLE
-	ITERABLE [MYSQL_STMT]
+
+	MYSQL_CONSTANTS
 
 create
 	make
@@ -36,22 +39,13 @@ feature{MYSQL_CLIENT} -- Initialization
 
 feature -- Access: Cursor
 
-	new_cursor: MYSQL_STMT_CURSOR
+	new_cursor: MYSQL_PREPARED_STATEMENT_CURSOR
 			-- <Precursor>
 		do
 			create Result.make (Current)
 		end
 
 feature -- Access
-
-	is_open: BOOLEAN
-		-- Has this query result set not yet been `disposed'?
-
-	is_executed: BOOLEAN
-		-- Has the last call to `execute' succeeded?
-
-	off: BOOLEAN
-		-- Are there no more rows?
 
 	param_count: INTEGER
 		-- The number of parameters in this prepared statement
@@ -107,7 +101,76 @@ feature -- Access
 			Result := c_stmt_column_at ($p_stmt, a_pos-1)
 		end
 
-	is_int_at (a_pos: INTEGER): BOOLEAN
+	integer_at (a_pos: INTEGER): INTEGER
+			-- The integer value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_int_at ($p_resdata, a_pos-1)
+		end
+
+	double_at (a_pos: INTEGER): DOUBLE
+			-- The double value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_double_at ($p_resdata, a_pos-1)
+		end
+
+	string_at (a_pos: INTEGER): STRING
+			-- The string value in the current row at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			Result := c_stmt_string_at ($p_resdata, a_pos-1)
+		end
+
+	at (a_pos: INTEGER): STRING
+			-- String representation of the value at `a_pos'
+			-- For NULL data value, return the string "NULL".
+		require
+			mysql_client_is_connected: mysql.is_connected
+			is_open: is_open
+			is_executed: is_executed
+			not_off: not off
+			valid_position_lower: a_pos > 0
+			valid_position_upper: a_pos <= column_count
+		do
+			if is_integer_at (a_pos) then
+				Result := integer_at (a_pos).out
+			elseif is_double_at (a_pos) then
+				Result := double_at (a_pos).out
+			elseif is_string_at (a_pos) then
+				Result := string_at (a_pos)
+			else
+				Result := mysql_null_string
+			end
+		end
+
+feature -- Status report
+
+	is_open: BOOLEAN
+		-- Has this query result set not yet been `disposed'?
+
+	is_executed: BOOLEAN
+		-- Has the last call to `execute' succeeded?
+
+	is_integer_at (a_pos: INTEGER): BOOLEAN
 			-- Is the value in the current row at column index `a_pos' an integer?
 		require
 			mysql_client_is_connected: mysql.is_connected
@@ -146,7 +209,7 @@ feature -- Access
 			Result := c_stmt_is_string_at ($p_resbind, a_pos-1) > 0
 		end
 
-	null_at (a_pos: INTEGER): BOOLEAN
+	is_null_at (a_pos: INTEGER): BOOLEAN
 			-- Is the value in the current row at column index `a_pos' NULL?
 		require
 			mysql_client_is_connected: mysql.is_connected
@@ -159,43 +222,13 @@ feature -- Access
 			Result := c_stmt_null_at ($p_resbind, a_pos-1) > 0
 		end
 
-	int_at (a_pos: INTEGER): INTEGER
-			-- The integer value in the current row at column index `a_pos'
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= column_count
-		do
-			Result := c_stmt_int_at ($p_resdata, a_pos-1)
-		end
+	off: BOOLEAN
+		-- Are there no more rows?
 
-	double_at (a_pos: INTEGER): DOUBLE
-			-- The double value in the current row at column index `a_pos'
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= column_count
+	after: BOOLEAN
+			-- Are there no more rows?
 		do
-			Result := c_stmt_double_at ($p_resdata, a_pos-1)
-		end
-
-	string_at (a_pos: INTEGER): STRING
-			-- The string value in the current row at column index `a_pos'
-		require
-			mysql_client_is_connected: mysql.is_connected
-			is_open: is_open
-			is_executed: is_executed
-			not_off: not off
-			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= column_count
-		do
-			Result := c_stmt_string_at ($p_resdata, a_pos-1)
+			Result := off
 		end
 
 feature -- Commands
