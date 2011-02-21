@@ -114,7 +114,7 @@ feature{NONE} -- Implementation
 
 			if l_text.has_substring (equation_separator) then
 					-- This is an expression invariant.				
-				l_text.replace_substring_all (equation_separator, once " = ")
+--				l_text.replace_substring_all (equation_separator, once " = ")
 				create {DKN_EXPRESSION_INVARIANT} Result.make (l_text)
 
 			elseif l_text.has_substring (one_of_string) then

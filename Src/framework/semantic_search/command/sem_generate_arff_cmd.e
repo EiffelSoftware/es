@@ -120,6 +120,8 @@ feature{NONE} -- Implementation
 			l_path: FILE_NAME
 			l_directory: FILE_NAME
 			l_predicate_finder: EPA_INTERESTING_PREDICATE_FINDER
+			l_dir: DIRECTORY
+			l_done: BOOLEAN
 		do
 			create l_files.make
 			create l_finder.make_with_pattern ("tran.+\.ssql$")
@@ -130,32 +132,45 @@ feature{NONE} -- Implementation
 					end (?, ?, l_files))
 			l_finder.search (a_directory)
 
-				-- Find interesting predicates for `a_feature', which (if evaluable) will be added into
-				-- the generated ARFF file as additional attributes.
-			create l_predicate_finder
-			l_predicate_finder.find (a_class, a_feature)
+			if not l_files.is_empty then
 
-			create l_arff_gen.make_for_feature_transition
-			l_arff_gen.set_extra_expression
-			 (l_predicate_finder.last_predicates)
-			across l_files as l_ssqls loop
-				io.put_string ("%T" + l_ssqls.item + "%N")
-				create l_path.make_from_string (a_directory)
-				l_path.set_file_name (l_ssqls.item)
-				create l_ssql_loader
-				l_ssql_loader.load (l_path)
-					-- If the file is corrupted, we ignore it.
-				if l_ssql_loader.last_queryable /= Void then
-					l_arff_gen.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+					-- Generate ARFF files for `a_feature'.
+					-- First we decide if ARFF files for `a_feature' already exist.
+				create l_directory.make_from_string (config.output)
+				l_directory.extend (a_class.name_in_upper)
+				l_directory.extend (a_feature.feature_name.as_lower)
+
+				create l_dir.make (l_directory)
+				if l_dir.exists then
+					l_done := not config.is_arff_generation_forced
+				else
+					l_done := False
+					file_system.recursive_create_directory (l_directory)
+				end
+
+				if not l_done then
+						-- Find interesting predicates for `a_feature', which (if evaluable) will be added into
+						-- the generated ARFF file as additional attributes.
+					create l_predicate_finder
+					l_predicate_finder.find (a_class, a_feature)
+
+					create l_arff_gen.make_for_feature_transition
+					l_arff_gen.set_extra_expression (l_predicate_finder.last_predicates)
+					across l_files as l_ssqls loop
+						io.put_string ("%T" + l_ssqls.item + "%N")
+						create l_path.make_from_string (a_directory)
+						l_path.set_file_name (l_ssqls.item)
+						create l_ssql_loader
+						l_ssql_loader.load (l_path)
+							-- If the file is corrupted, we ignore it.
+						if l_ssql_loader.last_queryable /= Void then
+							l_arff_gen.extend_queryable (l_ssql_loader.last_queryable, l_ssql_loader.last_meta)
+						end
+					end
+
+					l_arff_gen.generate_files (a_class.name_in_upper + "__" + a_feature.feature_name.as_lower, l_directory)
 				end
 			end
-
-				-- Generate ARFF files for `a_feature'.
-			create l_directory.make_from_string (config.output)
-			l_directory.extend (a_class.name_in_upper)
-			l_directory.extend (a_feature.feature_name.as_lower)
-			file_system.recursive_create_directory (l_directory)
-			l_arff_gen.generate_files (a_class.name_in_upper + "__" + a_feature.feature_name.as_lower, l_directory)
 		end
 
 	is_feature_considered (a_class: CLASS_C; a_feature_name: STRING): BOOLEAN

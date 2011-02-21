@@ -786,4 +786,14 @@ feature -- Context
 			end
 		end
 
+	body_compound_ast_from_feature (a_feature: FEATURE_I): detachable EIFFEL_LIST [INSTRUCTION_AS]
+			-- Body compound AST from `a_feature', if any
+		do
+			if attached {DO_AS} body_ast_from_feature (a_feature) as l_body then
+				if attached {EIFFEL_LIST [INSTRUCTION_AS]} l_body.compound as l_compound then
+					Result := l_compound
+				end
+			end
+		end
+
 end

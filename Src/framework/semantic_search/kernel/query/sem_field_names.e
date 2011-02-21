@@ -104,6 +104,8 @@ feature -- Access
 
 	is_creation_field: STRING = "is_creation"
 
+	is_query_field: STRING = "is_query"
+
 	operand_count_field: STRING = "operand_count"
 
 	argument_count_field: STRING = "argument_count"

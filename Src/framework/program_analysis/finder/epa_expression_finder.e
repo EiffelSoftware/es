@@ -9,12 +9,12 @@ deferred class
 
 feature -- Access
 
-	last_found_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+	last_found_expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions that are found by last `search'
 
 feature --  Basic operations
 
-	search (a_expression_repository: EPA_HASH_SET [EPA_EXPRESSION])
+	search (a_expression_repository: DS_HASH_SET [EPA_EXPRESSION])
 			-- Search for potentially interesting expressions, make newly found
 			-- expressions avaiable in `last_found_expressions'.
 			-- `a_expression_repository' is a set of existing expression, only new

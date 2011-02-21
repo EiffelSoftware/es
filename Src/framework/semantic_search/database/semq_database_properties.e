@@ -101,7 +101,7 @@ feature{NONE} -- Prepared Statements
 			stmt_insert_property := mysql.last_statement
 		end
 
-	stmt_find_property: MYSQL_STMT
-	stmt_insert_property: MYSQL_STMT
+	stmt_find_property: MYSQL_PREPARED_STATEMENT
+	stmt_insert_property: MYSQL_PREPARED_STATEMENT
 
 end

@@ -54,10 +54,11 @@ feature -- Status report
 
 feature -- Basic operations
 
-	analyze_bounds (a_context_class: CLASS_C; a_feature: FEATURE_I)
+	analyze_bounds (a_context_class: CLASS_C; a_feature: FEATURE_I; a_argument_index: INTEGER)
 			-- Check if `a_feature' viewed from `a_context_class' satisfy the bounded
 			-- single integer argument criterion. If so, set `is_bound_found' to True, and
 			-- set `minimal_value' and `maximal_value' accordingly.
+			-- `a_argument_index' is the index of argument in `a_feature'
 		local
 			l_done: BOOLEAN
 			l_expr: EPA_AST_EXPRESSION
@@ -68,10 +69,11 @@ feature -- Basic operations
 			create minimal_values.make
 			create maximal_values.make
 
-			l_done := (not a_feature.has_return_value) or (a_feature.argument_count /= 1)
+--			l_done := (not a_feature.has_return_value) or (a_feature.argument_count /= 1)
+			l_done := False
 			if not l_done then
 					-- Check if the argument is of type INTEGER.
-				create l_expr.make_with_text (a_context_class, a_feature, a_feature.arguments.item_name (1), a_feature.written_class)
+				create l_expr.make_with_text (a_context_class, a_feature, a_feature.arguments.item_name (a_argument_index), a_feature.written_class)
 				l_done := not l_expr.resolved_type (context_type).is_integer
 			end
 

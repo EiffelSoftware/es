@@ -298,17 +298,21 @@ feature{NONE} -- Implementation
 				loop
 					l_qualifier.process_expression (l_cursor2.item, l_replacements)
 					if not l_qualifier.is_local_detected and then not l_qualifier.is_old_detected then
-						create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
-						if l_expr.type /= Void then
-							l_set.force_last (l_expr)
+						if not l_qualifier.last_expression.has ('{') then
+							create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
+							if l_expr.type /= Void then
+								l_set.force_last (l_expr)
+							end
 						end
 					end
 					l_cursor2.forth
 				end
 				l_qualifier.process_expression (l_key, l_replacements)
-				create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
-				if l_expr /= Void then
-					Result.force_last (l_set, l_expr)
+				if not l_qualifier.last_expression.has ('{') then
+					create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
+					if l_expr /= Void then
+						Result.force_last (l_set, l_expr)
+					end
 				end
 				l_cursor.forth
 			end

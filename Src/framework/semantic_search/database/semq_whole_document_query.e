@@ -52,6 +52,7 @@ feature -- Access
 			-- variable names replaced by the names specified in the keys of this table.
 
 feature -- Setting
+
 	set_variable_mappings (a_mappings: like variable_mappings)
 			-- Set `variable_mappings' with `a_mappings'.
 			do

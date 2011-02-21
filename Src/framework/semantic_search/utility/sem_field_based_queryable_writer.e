@@ -263,6 +263,7 @@ feature{NONE} -- Implementation
 				append_string_field (feature_type_field, feature_type_command)
 			end
 			append_boolean_field (is_creation_field, a_transition.is_creation)
+			append_boolean_field (is_query_field, a_transition.is_query)
 			append_integer_field (operand_count_field, a_transition.feature_.argument_count + 1)
 			append_integer_field (argument_count_field, a_transition.feature_.argument_count)
 		end

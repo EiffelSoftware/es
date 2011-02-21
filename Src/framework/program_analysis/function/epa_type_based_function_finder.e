@@ -21,6 +21,8 @@ inherit
 
 	SHARED_TYPES
 
+	EPA_TEMPORARY_DIRECTORY_UTILITY
+
 create
 	make_for_feature,
 	make_for_variables
@@ -1014,7 +1016,7 @@ feature{NONE} -- Implementations
 				Result := integer_bounds_cache.found_item
 			else
 				create l_bound_checker.make (output_directory, context_type)
-				l_bound_checker.analyze_bounds (a_class, a_feature)
+				l_bound_checker.analyze_bounds (a_class, a_feature, 1)
 				if l_bound_checker.is_bound_found then
 					Result := integer_domain_from_bounds (l_bound_checker.minimal_values, l_bound_checker.maximal_values)
 				end
@@ -1274,3 +1276,4 @@ feature{NONE} -- Implementation
 		end
 
 end
+

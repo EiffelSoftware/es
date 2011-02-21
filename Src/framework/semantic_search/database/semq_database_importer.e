@@ -124,7 +124,7 @@ feature{NONE} -- Implementation
 		local
 			data, operands, operand_types: LIST [STRING]
 			i, operands_count, prop_id, type_id: INTEGER
-			stmt_insert_binding: MYSQL_STMT
+			stmt_insert_binding: MYSQL_PREPARED_STATEMENT
 		do
 			data := a_line.split ('%T')
 			operands := data.at (5).split (';')
@@ -205,7 +205,7 @@ feature{NONE} -- Prepared Statements
 			stmt_insert_bindings.put (mysql.last_statement, 9)
 		end
 
-	stmt_insert_bindings: ARRAY [MYSQL_STMT]
+	stmt_insert_bindings: ARRAY [MYSQL_PREPARED_STATEMENT]
 
 feature{NONE} -- Implementation
 

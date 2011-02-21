@@ -52,7 +52,7 @@ feature -- Access
 
 feature -- Operation
 
-	search (a_expression_repository: EPA_HASH_SET [EPA_EXPRESSION])
+	search (a_expression_repository: DS_HASH_SET [EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_features: LIST [FEATURE_I]
@@ -87,7 +87,7 @@ feature -- Operation
 --			l_ast.process (Current)
 		end
 
-	search_in_feature (a_expression_repository: EPA_HASH_SET [EPA_EXPRESSION]; a_feature: FEATURE_I)
+	search_in_feature (a_expression_repository: DS_HASH_SET [EPA_EXPRESSION]; a_feature: FEATURE_I)
 			-- Search in 'a_feature' for all expressions that are not in 'a_expression_repository'.
 		require
 			feature_from_context_class: context_class.feature_of_feature_id (a_feature.feature_id) ~ a_feature
@@ -109,6 +109,20 @@ feature -- Operation
 
 			-- Collect all expressions.
 			l_ast.process (Current)
+		end
+
+	search_in_ast (a_expression_repository: DS_HASH_SET [EPA_EXPRESSION]; a_ast: AST_EIFFEL; a_feature: FEATURE_I)
+			-- Search in `a_ast' for all expressions that are not in `a_expression_repository'.
+		require
+			feature_from_context_class: context_class.feature_of_feature_id (a_feature.feature_id) ~ a_feature
+		local
+			l_written_class: CLASS_C
+		do
+			current_feature := a_feature
+			l_written_class := a_feature.written_class
+
+			-- Collect all expressions.
+			a_ast.process (Current)
 		end
 
 feature{NONE} -- Auxiliary

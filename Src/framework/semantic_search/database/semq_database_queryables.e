@@ -233,8 +233,8 @@ feature{SEMQ_DATABASE} -- MySQL Client
 
 feature{NONE} -- Prepared Statements
 
-	stmt_insert_hitbreakpoints: MYSQL_STMT
-	stmt_find_uuid: MYSQL_STMT
-	stmt_insert_queryable: MYSQL_STMT
+	stmt_insert_hitbreakpoints: MYSQL_PREPARED_STATEMENT
+	stmt_find_uuid: MYSQL_PREPARED_STATEMENT
+	stmt_insert_queryable: MYSQL_PREPARED_STATEMENT
 
 end

@@ -142,8 +142,8 @@ feature{NONE} -- Prepared Statements
 			stmt_insert_conformance := mysql.last_statement
 		end
 
-	stmt_find_type: MYSQL_STMT
-	stmt_insert_type: MYSQL_STMT
-	stmt_insert_conformance: MYSQL_STMT
+	stmt_find_type: MYSQL_PREPARED_STATEMENT
+	stmt_insert_type: MYSQL_PREPARED_STATEMENT
+	stmt_insert_conformance: MYSQL_PREPARED_STATEMENT
 
 end

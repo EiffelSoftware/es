@@ -59,6 +59,7 @@ feature -- Basic operations
 			l_rapidminer_home: AP_STRING_OPTION
 			l_rapidminer_process: AP_STRING_OPTION
 			l_dot_path: AP_STRING_OPTION
+			l_arff_force: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -166,6 +167,10 @@ feature -- Basic operations
 			l_rapidminer_process.set_description ("Specify the process file used by RapidMiner.")
 			l_parser.options.force_last (l_rapidminer_process)
 
+			create l_arff_force.make_with_long_form ("force")
+			l_arff_force.set_description ("Should generation of files be forced? Meaning that regenerate files even if they exist. Default: False")
+			l_parser.options.force_last (l_arff_force)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -248,6 +253,10 @@ feature -- Basic operations
 
 			if l_rapidminer_process.was_found then
 				config.set_rapidminer_process_path (l_rapidminer_process.parameter)
+			end
+
+			if l_arff_force.was_found then
+				config.set_is_arff_generation_forced (True)
 			end
 		end
 

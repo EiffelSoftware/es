@@ -39,7 +39,7 @@ feature -- Basic operations
 		local
 			importer: SEMQ_DATABASE_IMPORTER
 			maintenance: SEMQ_DATABASE_MAINTENANCE
-			example: MYSQL_EXAMPLE
+			example: MYSQL_EXAMPLES
 		do
 			-- Empty tables
 			if false then

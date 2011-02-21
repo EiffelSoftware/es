@@ -105,6 +105,10 @@ feature -- Status report
 	should_generate_decision_tree: BOOLEAN
 			-- Should decision tree be generated from an ARFF file?
 
+	is_arff_generation_forced: BOOLEAN
+			-- Should we generate ARFF files even if they exist?
+			-- Default: False
+
 feature -- Setting
 
 	set_mysql_host (a_host: like mysql_host)
@@ -253,6 +257,14 @@ feature -- Setting
 			-- Set `rapidminer_process_path' with `a_path'.
 		do
 			rapidminer_process_path := a_path
+		end
+
+	set_is_arff_generation_forced (b: BOOLEAN)
+			-- Set `is_arff_generation_forced' with `b'.
+		do
+			is_arff_generation_forced := b
+		ensure
+			is_arff_generation_forced_set: is_arff_generation_forced = b
 		end
 
 end
