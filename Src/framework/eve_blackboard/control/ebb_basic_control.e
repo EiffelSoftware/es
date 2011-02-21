@@ -13,8 +13,8 @@ inherit
 	SHARED_EIFFEL_PROJECT
 		export {NONE} all end
 
-	SHARED_DEBUGGER_MANAGER
-		export {NONE} all end
+--	SHARED_DEBUGGER_MANAGER
+--		export {NONE} all end
 
 	EBB_SHARED_HELPER
 		export {NONE} all end
@@ -41,8 +41,8 @@ feature -- Basic operations
 				blackboard.executions.running_executions.is_empty and
 				blackboard.executions.waiting_executions.is_empty and
 				not eiffel_project.is_compiling and
-				not blackboard.tools.is_empty and
-				not debugger_manager.application_is_executing
+				not blackboard.tools.is_empty --and
+--				not debugger_manager.application_is_executing
 			then
 					-- Try to run the proof tools
 				current_class_index := current_class_index + 1
