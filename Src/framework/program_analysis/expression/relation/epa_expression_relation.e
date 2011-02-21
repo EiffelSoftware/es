@@ -293,42 +293,65 @@ feature {NONE} -- Implementation
 		local
 			m,n: INTEGER
 			l_count: INTEGER
-			l_rev_sets: like relevant_expression_sets
+			l_sets, l_sets_without_constants: like relevant_expression_sets
 		do
-			l_rev_sets := relevant_expression_sets
-			l_count := l_rev_sets.count
+			l_sets_without_constants := remove_constants (relevant_expression_sets.twin)
+			l_sets := relevant_expression_sets
+			l_count := l_sets_without_constants.count
 			from
 				m := 1
 			until
 				m > l_count
 			loop
 				from
-					n := 1
+					n := m + 1
 				until
 					n > l_count
 				loop
 					if
 						m /= n and then
-						l_rev_sets.i_th (m) /= Void and then
-						l_rev_sets.i_th (n) /= Void and then
-						expression_set_without_constants (l_rev_sets.i_th (m)).is_disjoint (expression_set_without_constants (l_rev_sets.i_th (n)))
+						l_sets_without_constants.i_th (m) /= Void and then
+						l_sets_without_constants.i_th (n) /= Void and then
+						l_sets_without_constants.i_th (m).is_disjoint (l_sets_without_constants.i_th (n))
 					then
-						l_rev_sets.i_th (m).merge (l_rev_sets.i_th (n))
-						l_rev_sets.put_i_th (Void, n)
-						m := 1
-						n := 1
+						l_sets.i_th (m).merge (l_sets.i_th (n))
+						l_sets.put_i_th (Void, n)
+						l_sets_without_constants.i_th (m).merge (l_sets_without_constants.i_th (n))
+						l_sets_without_constants.put_i_th (Void, n)
+						n := m + 1
+					else
+						n := n + 1
 					end
-					n := n + 1
 				end
-					-- Find the next set which may be merged with another set.
+				-- Find the next set which may be merged with another set.
 				from
 					m := m + 1
 				until
-				   m > l_count or else l_rev_sets.i_th (m) /= Void
+				   m > l_count or else l_sets_without_constants.i_th (m) /= Void
 				loop
 					m := m + 1
 				end
 			end
+		end
+
+	remove_constants (a_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]): ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
+			-- A list whose elements are sets with non-constant elements from `a_sets'.
+		require
+			a_sets_not_void: a_sets /= Void
+		local
+			i: INTEGER
+		do
+			Result := a_sets
+			from
+				i := 1
+			until
+				i > Result.count
+			loop
+				Result.put_i_th (expression_set_without_constants (Result.i_th (i)), i)
+				i := i + 1
+			end
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 	expression_set_without_constants (a_set: EPA_HASH_SET [EPA_EXPRESSION]): EPA_HASH_SET [EPA_EXPRESSION]
