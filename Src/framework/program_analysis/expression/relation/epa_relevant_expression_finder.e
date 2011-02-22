@@ -37,6 +37,7 @@ feature -- Creation Procedure
 			create written_context_cache.make (5)
 		ensure
 			context_set: context = a_context
+			relevant_expression_sets_not_void: relevant_expression_sets /= Void
 			written_context_cache_not_void: written_context_cache /= Void
 		end
 
@@ -178,9 +179,9 @@ feature -- Dumping
 					Result.append_character (';')
 				end
 				Result.append_character ('{')
-				j := 0
 				from
 					l_sets.item.start
+					j := 0
 				until
 					l_sets.item.after
 				loop
