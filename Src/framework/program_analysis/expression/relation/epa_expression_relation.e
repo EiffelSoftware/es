@@ -294,12 +294,12 @@ feature {NONE} -- Implementation
                 -- Process feature
                 l_relevancy_finder.find (l_feature.e_feature.ast)
 
-                -- Process precondition
+                -- Process preconditions
                 across precondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_preconditions loop
                     l_relevancy_finder.find (l_preconditions.item.ast)
                 end
 
-                -- Process postcondition
+                -- Process postconditions
                 across postcondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_postconditions loop
                     l_relevancy_finder.find (l_postconditions.item.ast)
                 end
