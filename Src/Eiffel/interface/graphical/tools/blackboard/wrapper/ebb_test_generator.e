@@ -56,7 +56,7 @@ feature -- Element change
 		do
 			create time_out.make (0, 0, 0, 0, 0, a_time_out.as_integer_32)
 		ensure
-			time_out_set: time_out.second_count = a_time_out
+			time_out_set: time_out.second_count = a_time_out.to_integer_32
 		end
 
 feature -- Basic operations

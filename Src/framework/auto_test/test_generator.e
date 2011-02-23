@@ -132,7 +132,7 @@ feature -- Options: basic
 	is_debugging: BOOLEAN
 			-- True if debugging output should be written to log.
 
-	integer_lower_bound: INTEGER is
+	integer_lower_bound: INTEGER
 			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
 			-- Default is -512.
 		do
@@ -141,7 +141,7 @@ feature -- Options: basic
 			good_result: Result = integer_lower_bound_cache
 		end
 
-	integer_upper_bound: INTEGER is
+	integer_upper_bound: INTEGER
 			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
 			-- Default is 512.
 		do
@@ -283,7 +283,7 @@ feature -- Options: precondition satisfaction
 			good_result: Result = object_selection_for_precondition_satisfaction_rate_cache
 		end
 
-	smt_enforce_old_value_rate: INTEGER is
+	smt_enforce_old_value_rate: INTEGER
 			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
 			-- Default is 25
 		do
@@ -292,7 +292,7 @@ feature -- Options: precondition satisfaction
 			good_result: Result = smt_enforce_old_value_rate_cache
 		end
 
-	smt_use_predefined_value_rate: INTEGER is
+	smt_use_predefined_value_rate: INTEGER
 			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
 			-- Default is 25
 		do
@@ -301,7 +301,7 @@ feature -- Options: precondition satisfaction
 			good_result: Result = smt_use_predefined_value_rate_cache
 		end
 
-	is_random_cursor_used: BOOLEAN is
+	is_random_cursor_used: BOOLEAN
 			-- When searching in predicate pool, should random cursor be used?
 			-- Default: False
 		do
@@ -346,7 +346,7 @@ feature -- Options: precondition satisfaction
 
 feature -- Options: object State exploration
 
-	is_object_state_exploration_enabled: BOOLEAN is
+	is_object_state_exploration_enabled: BOOLEAN
 			-- Is object state exploration enabled?
 		do
 			Result := object_state_exploration_cache
@@ -425,13 +425,13 @@ feature -- Options: test case deserialization
 			Result := is_passing_test_case_deserialization_enabled or is_failing_test_case_deserialization_enabled
 		end
 
-	is_passing_test_case_deserialization_enabled: BOOLEAN is
+	is_passing_test_case_deserialization_enabled: BOOLEAN
 			-- <Precursor>
 		do
 			Result := is_passing_test_case_deserialization_enabled_cache
 		end
 
-	is_failing_test_case_deserialization_enabled: BOOLEAN is
+	is_failing_test_case_deserialization_enabled: BOOLEAN
 			-- <Precursor>
 		do
 			Result := is_failing_test_case_deserialization_enabled_cache
@@ -675,7 +675,7 @@ feature -- Status setting
 			end
 		end
 
-	set_load_file_path (a_path: like log_file_path) is
+	set_load_file_path (a_path: like log_file_path)
 			-- Set `log_file_path' with `a_path'.
 		do
 			log_file_path_cache := a_path
@@ -683,7 +683,7 @@ feature -- Status setting
 			log_file_path_set: log_file_path = a_path
 		end
 
-	set_is_random_testing_enabled (b: BOOLEAN) is
+	set_is_random_testing_enabled (b: BOOLEAN)
 			-- Set `is_random_testing_enabled' with `b'.
 		do
 			is_random_testing_enabled_cache := b
@@ -691,7 +691,7 @@ feature -- Status setting
 			is_random_testing_enabled_set: is_random_testing_enabled = b
 		end
 
-	set_is_evolutionary_testing_enabled (b: BOOLEAN) is
+	set_is_evolutionary_testing_enabled (b: BOOLEAN)
 			-- Set `is_evolutionary_testing_enabled' with `b'.
 		do
 			is_evolutionary_testing_enabled_cache := b
@@ -699,7 +699,7 @@ feature -- Status setting
 			is_evolutionary_testing_enabled_set: is_evolutionary_testing_enabled = b
 		end
 
-	set_object_state_config (a_config: like object_state_config) is
+	set_object_state_config (a_config: like object_state_config)
 			-- Set `object_state_config' with `a_config'.
 		do
 			object_state_config := a_config
@@ -707,7 +707,7 @@ feature -- Status setting
 			object_state_config_set: object_state_config = a_config
 		end
 
-	set_is_precondition_evaluation_enabled (b: BOOLEAN) is
+	set_is_precondition_evaluation_enabled (b: BOOLEAN)
 			-- Set `is_precondition_checking_enabled' with `b'.
 		do
 			precondition_evaluation_cache := b
@@ -715,7 +715,7 @@ feature -- Status setting
 			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
 		end
 
-	set_is_linear_solving_enabled (b: BOOLEAN) is
+	set_is_linear_solving_enabled (b: BOOLEAN)
 			-- Set `is_precondition_checking_enabled' with `b'.
 		do
 			linear_solving_cache := b
@@ -723,7 +723,7 @@ feature -- Status setting
 			is_linear_solving_enabled_set: is_linear_constraint_solving_enabled = b
 		end
 
-	set_is_object_state_exploration_enabled (b: BOOLEAN) is
+	set_is_object_state_exploration_enabled (b: BOOLEAN)
 			-- Set `is_precondition_checking_enabled' with `b'.
 		do
 			object_state_exploration_cache := b
@@ -731,7 +731,7 @@ feature -- Status setting
 			is_object_state_exploration_enabled_set: is_object_state_exploration_enabled = b
 		end
 
-	set_log_processor (a_processor: like log_processor) is
+	set_log_processor (a_processor: like log_processor)
 			-- Set `log_processor' with `a_processor'.
 		do
 			if a_processor /= Void then
@@ -741,7 +741,7 @@ feature -- Status setting
 			end
 		end
 
-	set_log_processor_output (a_processor_output: like log_processor_output) is
+	set_log_processor_output (a_processor_output: like log_processor_output)
 			-- Set `log_processor_output' with `a_processor_output'.
 		do
 			if a_processor_output /= Void then
@@ -751,7 +751,7 @@ feature -- Status setting
 			end
 		end
 
-	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries) is
+	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries)
 			-- Set `max_precondition_search_tries' with `a_tries'.
 		do
 			max_precondition_search_tries_cache := a_tries
@@ -759,7 +759,7 @@ feature -- Status setting
 			good_result: max_precondition_search_tries = a_tries
 		end
 
-	set_max_precondition_search_time (a_time: like max_precondition_search_time) is
+	set_max_precondition_search_time (a_time: like max_precondition_search_time)
 			-- Set `max_precondition_search_time' with `a_time'.
 		do
 			max_precondition_search_time_cache := a_time
@@ -767,7 +767,7 @@ feature -- Status setting
 			good_result: max_precondition_search_time = a_time
 		end
 
-	set_max_candidate_count (a_count: like max_candidate_count) is
+	set_max_candidate_count (a_count: like max_candidate_count)
 			-- Set `is_object_state_request_logged' with `a_count'.
 		do
 			max_candidate_count_cache := a_count
@@ -775,7 +775,7 @@ feature -- Status setting
 			max_candidate_count_cache_set: max_candidate_count_cache = a_count
 		end
 
-	set_is_smt_linear_constraint_solver_enabled (b: BOOLEAN) is
+	set_is_smt_linear_constraint_solver_enabled (b: BOOLEAN)
 			-- Set `is_smt_linear_constraint_solver_enabled' with `b'.
 		do
 			is_smt_linear_constraint_solver_enabled_cache := b
@@ -783,7 +783,7 @@ feature -- Status setting
 			is_smt_linear_constraint_solver_enabled_set: is_smt_linear_constraint_solver_enabled = b
 		end
 
-	set_is_lpsolve_linear_constraint_solver_enabled (b: BOOLEAN) is
+	set_is_lpsolve_linear_constraint_solver_enabled (b: BOOLEAN)
 			-- Set `is_lpsolve_linear_constraint_solver_enabled' with `b'.
 		do
 			is_lpsolve_linear_constraint_solver_enabled_cache := b
@@ -791,7 +791,7 @@ feature -- Status setting
 			is_lpsolve_linear_constraint_solver_enabled_set: is_lpsolve_linear_constraint_solver_enabled = b
 		end
 
-	set_object_selection_for_precondition_satisfaction_rate (a_value: INTEGER) is
+	set_object_selection_for_precondition_satisfaction_rate (a_value: INTEGER)
 			-- Set `object_selection_for_precondition_satisfaction_rate' with `a_value'.
 		do
 			object_selection_for_precondition_satisfaction_rate_cache := a_value
@@ -799,7 +799,7 @@ feature -- Status setting
 			object_selection_for_precondition_satisfaction_rate_set: object_selection_for_precondition_satisfaction_rate = a_value
 		end
 
-	set_smt_enforce_old_value_rate (a_rate: INTEGER) is
+	set_smt_enforce_old_value_rate (a_rate: INTEGER)
 			-- Set `smt_enforce_old_value_rate' with `a_rate'.
 		do
 			smt_enforce_old_value_rate_cache := a_rate
@@ -807,7 +807,7 @@ feature -- Status setting
 			smt_enforce_old_value_rate_set: smt_enforce_old_value_rate_cache = a_rate
 		end
 
-	set_smt_use_predefined_value_rate (a_rate: INTEGER) is
+	set_smt_use_predefined_value_rate (a_rate: INTEGER)
 			-- Set `smt_use_predefined_value_rate' with `a_rate'.
 		do
 			smt_use_predefined_value_rate_cache := a_rate
@@ -815,7 +815,7 @@ feature -- Status setting
 			good_result: smt_use_predefined_value_rate = a_rate
 		end
 
-	set_integer_lower_bound (a_bound: INTEGER) is
+	set_integer_lower_bound (a_bound: INTEGER)
 			-- Set `integer_lower_bound' with `a_bound'.
 		do
 			integer_lower_bound_cache := a_bound
@@ -823,7 +823,7 @@ feature -- Status setting
 			integer_lower_bound_set: integer_lower_bound = a_bound
 		end
 
-	set_integer_upper_bound (a_bound: INTEGER) is
+	set_integer_upper_bound (a_bound: INTEGER)
 			-- Set `integer_upper_bound' with `a_bound'.
 		do
 			integer_upper_bound_cache := a_bound
@@ -831,7 +831,7 @@ feature -- Status setting
 			integer_upper_bound_set: integer_upper_bound = a_bound
 		end
 
-	set_is_random_cursor_used (b: BOOLEAN) is
+	set_is_random_cursor_used (b: BOOLEAN)
 			-- Set `is_random_cursor_used' with `b'.
 		do
 			is_random_cursor_used_cache := b
@@ -839,7 +839,7 @@ feature -- Status setting
 			is_random_cursor_used_set: is_random_cursor_used = b
 		end
 
-	set_is_passing_test_case_serialization_enabled (b: BOOLEAN) is
+	set_is_passing_test_case_serialization_enabled (b: BOOLEAN)
 			-- Set `is_passing_test_case_serialization_enabled' with `b'.
 		do
 			is_passing_test_case_serialization_enabled_cache := b
@@ -847,7 +847,7 @@ feature -- Status setting
 			is_passing_test_case_serialization_enabled_set: is_passing_test_case_serialization_enabled = b
 		end
 
-	set_is_failing_test_case_serialization_enabled (b: BOOLEAN) is
+	set_is_failing_test_case_serialization_enabled (b: BOOLEAN)
 			-- Set `is_failing_test_case_serialization_enabled' with `b'.
 		do
 			is_failing_test_case_serialization_enabled_cache := b
@@ -855,7 +855,7 @@ feature -- Status setting
 			is_failing_test_case_serialization_enabled_set: is_failing_test_case_serialization_enabled = b
 		end
 
-	set_is_passing_test_case_deserialization_enabled (b: BOOLEAN) is
+	set_is_passing_test_case_deserialization_enabled (b: BOOLEAN)
 			-- Set `is_passing_test_case_deserialization_enabled' with `b'.
 		do
 			is_passing_test_case_deserialization_enabled_cache := b
@@ -863,7 +863,7 @@ feature -- Status setting
 			is_passing_test_case_deserialization_enabled_set: is_passing_test_case_deserialization_enabled = b
 		end
 
-	set_is_failing_test_case_deserialization_enabled (b: BOOLEAN) is
+	set_is_failing_test_case_deserialization_enabled (b: BOOLEAN)
 			-- Set `is_failing_test_case_deserialization_enabled' with `b'.
 		do
 			is_failing_test_case_deserialization_enabled_cache := b
@@ -945,7 +945,7 @@ feature -- Status setting
 			is_post_state_serialized_set: is_post_state_serialized = b
 		end
 
-	set_types_under_test (a_types: like types_under_test) is
+	set_types_under_test (a_types: like types_under_test)
 			-- Set `types_under_test' with `a_types'.
 		do
 			create {DS_ARRAYED_LIST [CL_TYPE_A]} types_under_test.make (a_types.count)
@@ -1172,7 +1172,7 @@ feature {NONE} -- Constants
 
 feature -- Precondition satisfaction
 
-	find_types_under_test is
+	find_types_under_test
 			-- Find types under test and add them into `configuration'.`types_under_test'.
 		do
 			set_types_under_test (types_under_test_from_names (class_names, system.root_type.associated_class))
@@ -1255,7 +1255,7 @@ feature -- Precondition satisfaction
 			end
 		end
 
-	setup_for_precondition_evaluation is
+	setup_for_precondition_evaluation
 			-- Setup for precondition evaluation.
 		local
 			l_initializer: AUT_PRECONDITION_SATISFACTION_INITIALIZER
@@ -1405,7 +1405,7 @@ feature -- Option caches
 	is_post_state_serialized_cache: BOOLEAN
 			-- Cache for `is_post_state_serialized_cache'
 
-	is_load_log_enabled: BOOLEAN is
+	is_load_log_enabled: BOOLEAN
 			-- Should a specified load file be loaded?
 		do
 			Result := log_file_path /= Void
