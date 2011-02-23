@@ -123,8 +123,8 @@ feature{NONE} -- Implementation
 			l_loader.load (interpreter.configuration.prestate_invariant_path)
 			prestate_invariants.append (l_loader.last_invariants)
 
---			create l_retriever
---			l_retriever.retrieve_objects (l_loader.last_invariants.first.expression, l_loader.last_class, l_loader.last_feature, False, connection)
+			create l_retriever
+			l_retriever.retrieve_objects (l_loader.last_invariants.first.expression, l_loader.last_class, l_loader.last_feature, False, connection)
 		end
 
 	connection: MYSQL_CLIENT
@@ -136,6 +136,7 @@ feature{NONE} -- Implementation
 			-- List of pre-state invariants that are to be considered
 
 	violated_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
+
 			-- Set of pre-state invariants that are already violated
 
 	failed_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
