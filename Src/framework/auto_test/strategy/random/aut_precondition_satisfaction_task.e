@@ -29,7 +29,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_vars: DS_LIST [ITP_VARIABLE]; a_interpreter: like interpreter) is
+	make (a_feature: like feature_; a_vars: DS_LIST [ITP_VARIABLE]; a_interpreter: like interpreter)
 			-- Initialize current.
 		require
 			a_feature_attached: a_feature /= Void
@@ -58,7 +58,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	system: SYSTEM_I is
+	system: SYSTEM_I
 			-- Current system
 		do
 			Result := interpreter.system
@@ -110,7 +110,7 @@ feature -- Access
 			-- Number of object combinations that need to be
 			-- tried out in the worst case
 
-	configuration: TEST_GENERATOR is
+	configuration: TEST_GENERATOR
 			-- Configuration from `interpreter'
 		do
 			Result := interpreter.configuration
@@ -120,7 +120,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_precondition: BOOLEAN is
+	has_precondition: BOOLEAN
 			-- Does `feature_' have precondition?
 		do
 			Result := has_normal_precondition or has_linear_solvable_precondition
@@ -128,19 +128,19 @@ feature -- Status report
 			good_result: Result = has_normal_precondition or has_linear_solvable_precondition
 		end
 
-	has_normal_precondition: BOOLEAN is
+	has_normal_precondition: BOOLEAN
 			-- Does `feature_' have normal precondition?
 		do
 			Result := not normal_preconditions.is_empty
 		end
 
-	has_linear_solvable_precondition: BOOLEAN is
+	has_linear_solvable_precondition: BOOLEAN
 			-- Does `feature_' have linear solvable precondition?
 		do
 			Result := not linear_solvable_preconditions.is_empty
 		end
 
-	set_last_precondition_satisfaction_level (a_level: INTEGER) is
+	set_last_precondition_satisfaction_level (a_level: INTEGER)
 			-- Set `last_precondition_satisfaction_level' with `a_leve'.
 		require
 			a_level_valid: is_valid_precondition_satisfaction_level (a_level)
@@ -152,13 +152,13 @@ feature -- Status report
 
 feature -- Constants
 
-	precondition_satisfaction_not_satisfied: INTEGER is 0
+	precondition_satisfaction_not_satisfied: INTEGER = 0
 			-- Flag to indicate that `last_evaluated_operands' does not satisfy `feature_''s precondition
 
-	precondition_satisfaction_satisfied: INTEGER is 1
+	precondition_satisfaction_satisfied: INTEGER = 1
 			-- Flag to indicate that `last_evaluated_operands' satisfy `feature_''s precondition
 
-	precondition_satisfaction_partially_satisfied: INTEGER is 2
+	precondition_satisfaction_partially_satisfied: INTEGER = 2
 			-- Flag to indicate that `last_evaluated_operands' partially satisfy `feature_''s precondition
 
 	last_precondition_satisfaction_level: INTEGER
@@ -169,13 +169,13 @@ feature -- Status
 	steps_completed: BOOLEAN
 			-- Has all steps completed?
 
-	has_next_step: BOOLEAN is
+	has_next_step: BOOLEAN
 			-- Is there a next step to execute?
 		do
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
 		end
 
-	is_valid_precondition_satisfaction_level (a_level: INTEGER): BOOLEAN is
+	is_valid_precondition_satisfaction_level (a_level: INTEGER): BOOLEAN
 			-- Is `a_level' a valid precondition satisfaction level?
 		do
 			Result :=
@@ -192,7 +192,7 @@ feature -- Status
 
 feature -- Setting
 
-	set_start_time (a_start_time: INTEGER) is
+	set_start_time (a_start_time: INTEGER)
 			-- Set `start_time' with `a_start_time'.
 		do
 			start_time := a_start_time
@@ -200,7 +200,7 @@ feature -- Setting
 			start_time_set: start_time = a_start_time
 		end
 
-	set_end_time (a_end_time: INTEGER) is
+	set_end_time (a_end_time: INTEGER)
 			-- Set `end_time' with `a_end_time'.
 		do
 			end_time := a_end_time
@@ -210,7 +210,7 @@ feature -- Setting
 
 feature -- Execution
 
-	should_use_precondition_satisfaction: BOOLEAN is
+	should_use_precondition_satisfaction: BOOLEAN
 			-- Should precondition satisfaction be used for `feature_'?
 		local
 			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
@@ -237,7 +237,7 @@ feature -- Execution
 			end
 		end
 
-	should_use_constraint_solver: BOOLEAN is
+	should_use_constraint_solver: BOOLEAN
 			-- Is constraint solver be used for linearly solvable preconditions of `feature_'?
 		local
 			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
@@ -275,7 +275,7 @@ feature -- Execution
 	is_precondition_satisfaction_performed: BOOLEAN
 			-- Is precondition satisfaction performed the last when `start' is called?
 
-	start is
+	start
 			-- <Precursor>
 		do
 			set_start_time (interpreter.duration_until_now.millisecond_count)
@@ -330,7 +330,7 @@ feature -- Execution
 			time_valid_if_finished: steps_completed implies (end_time >= start_time)
 		end
 
-	step is
+	step
 			-- <Precursor>
 		local
 			l_candidate_index: INTEGER
@@ -396,7 +396,7 @@ feature{NONE} -- Implementation
 	untried_candidate_count: INTEGER
 			-- Number of candidates that have not been tried in `operand_candidates'.
 
-	to_be_retrieved_candidate_count: INTEGER is
+	to_be_retrieved_candidate_count: INTEGER
 			-- Max number of candidates that are to be retrieved.
 			-- The actual retrieved candidates can be fewer than this.
 		do
@@ -405,7 +405,7 @@ feature{NONE} -- Implementation
 			good_result: Result = configuration.max_candidate_count
 		end
 
-	load_candidates is
+	load_candidates
 			-- Load candidate operands satisfying preconditions of `feature_'
 			-- into `operand_candidates'.
 		require
@@ -437,7 +437,7 @@ feature{NONE} -- Implementation
 			partial_candidate := predicate_pool.last_partial_candidate
 		end
 
-	evaluate_precondition (a_operands: like initial_operands; a_ignore_linearly_constraint_predicates: BOOLEAN) is
+	evaluate_precondition (a_operands: like initial_operands; a_ignore_linearly_constraint_predicates: BOOLEAN)
 			-- Evalute precondition of `feature_' on `a_operands'.
 			-- Set `is_last_precondition_evaluation_satisfied',
 			-- and put operands that satisfied the precondition into
@@ -473,7 +473,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	setup_precondition_predicates is
+	setup_precondition_predicates
 			-- Set `normal_preconditions' and `linear_solvable_preconditions' for `feature_'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
@@ -511,7 +511,7 @@ feature{NONE} -- Implementation
 			linear_solvable_preconditions_attached: linear_solvable_preconditions /= Void
 		end
 
-	update_last_evaluated_operands_with_initial_operands is
+	update_last_evaluated_operands_with_initial_operands
 			-- Update unassigned operands in `last_evaluated_operands' with corresponding ones in `initial_operands'.
 		local
 			i: INTEGER
@@ -539,7 +539,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Linear constraint solving
 
-	insert_integers_in_pool (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
+	insert_integers_in_pool (a_integers: DS_HASH_TABLE [INTEGER, INTEGER])
 			-- Insert linearly solved integers in `a_integers' into object pool.
 			-- Update arguments in `last_evaluated_operands' accordingly.
 		require
@@ -575,11 +575,11 @@ feature{NONE} -- Linear constraint solving
 			end
 		end
 
-	max_used_value_cache: INTEGER is 30
+	max_used_value_cache: INTEGER = 30
 			-- Max number of cached used integer values for a linearly solvable operand
 			-- of a feature.
 
-	store_used_values (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
+	store_used_values (a_integers: DS_HASH_TABLE [INTEGER, INTEGER])
 			-- Store `a_integers' as used values for `feature_'.
 		require
 			a_integers_attached: a_integers /= Void
@@ -641,7 +641,7 @@ invariant
 	last_precondition_satisfaction_level_valid: is_valid_precondition_satisfaction_level (last_precondition_satisfaction_level)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

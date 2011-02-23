@@ -34,7 +34,7 @@ feature -- Access
 	configuration: TEST_GENERATOR
 			-- Configuration
 
-	witness_observers: LIST [AUT_WITNESS_OBSERVER] is
+	witness_observers: LIST [AUT_WITNESS_OBSERVER]
 			-- List of observers for witness.
 		do
 			if witness_observers_internal = Void then
@@ -51,7 +51,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_witness_veto_function (a_function: like witness_veto_function) is
+	set_witness_veto_function (a_function: like witness_veto_function)
 			-- Set `witness_veto_function' with `a_function'.
 		do
 			witness_veto_function := a_function
@@ -59,7 +59,7 @@ feature -- Setting
 			witness_veto_function_set: witness_veto_function = a_function
 		end
 
-	register_witness_observer (a_observer: AUT_WITNESS_OBSERVER) is
+	register_witness_observer (a_observer: AUT_WITNESS_OBSERVER)
 			-- Register `a_observer' into `witness_observers'.
 		do
 			witness_observers.extend (a_observer)
@@ -85,7 +85,7 @@ feature{NONE} -- Implementation
 	witness_observers_internal: detachable like witness_observers
 			-- Implementation of `witness_observers'
 
-	unprocessed_witnesses: DS_LINKED_QUEUE [AUT_ABS_WITNESS] is
+	unprocessed_witnesses: DS_LINKED_QUEUE [AUT_ABS_WITNESS]
 			-- Queu of unprocessed witness
 		do
 			if unprocessed_witnesses_internal = Void then
@@ -116,7 +116,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	notify_observers is
+	notify_observers
 			-- Notify all witnessed in `unprocessed_witnesses' to `witness_observers',
 			-- and wipe out `unprocessed_witnesses'.
 		local
@@ -146,7 +146,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

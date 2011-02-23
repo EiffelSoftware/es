@@ -92,7 +92,7 @@ feature -- Access
 			definition: Result = class_of_target_type.feature_named_32 (feature_name)
 		end
 
-	operand_indexes: SPECIAL [INTEGER] is
+	operand_indexes: SPECIAL [INTEGER]
 			-- Indexes of operands for the feature call
 			-- in current
 		local
@@ -198,7 +198,7 @@ invariant
 	no_argument_void: not argument_list.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

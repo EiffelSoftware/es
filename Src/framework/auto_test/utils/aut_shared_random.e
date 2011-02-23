@@ -22,7 +22,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_within_probability (a_probability: DOUBLE): BOOLEAN is
+	is_within_probability (a_probability: DOUBLE): BOOLEAN
 			-- Is the next random fall into the probality of [0, a_probality]?
 		require
 			a_probability_in_range: a_probability >= 0.0 and a_probability <= 1.0
@@ -33,7 +33,7 @@ feature -- Status report
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -47,7 +47,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern; a_assertion: EPA_EXPRESSION) is
+	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern; a_assertion: EPA_EXPRESSION)
 			-- Initialize current.
 		require
 			a_feature_attached: a_feature /= Void
@@ -72,7 +72,7 @@ feature -- Access
 	feature_: AUT_FEATURE_OF_TYPE
 			-- Feature whose predicates are represented in Current
 
-	context_class: CLASS_C is
+	context_class: CLASS_C
 			-- Class associated with `feature_'
 		do
 			Result := feature_.associated_class
@@ -130,7 +130,7 @@ feature -- Status report
 
 feature -- Status report
 
-	is_argument_operand_mapping_valid (a_mapping: like access_pattern; a_predicate: like predicate; a_feature: like feature_): BOOLEAN is
+	is_argument_operand_mapping_valid (a_mapping: like access_pattern; a_predicate: like predicate; a_feature: like feature_): BOOLEAN
 			-- Is `a_mapping' from 0-based call operand index to 1-based predicate argument valid in the context
 			-- of `a_predicate' and `a_feature'?
 		require
@@ -172,7 +172,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_break_point_slot (a_index: INTEGER) is
+	set_break_point_slot (a_index: INTEGER)
 			-- Set `break_point_slot' with `a_index'.
 		do
 			break_point_slot := a_index
@@ -191,7 +191,7 @@ invariant
 	access_pattern_valid: is_argument_operand_mapping_valid (access_pattern, predicate, feature_)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

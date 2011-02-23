@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_precondition (a_feature: AUT_FEATURE_OF_TYPE; a_access_pattern: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
+	make_with_precondition (a_feature: AUT_FEATURE_OF_TYPE; a_access_pattern: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN])
 			-- Initialize current with precondition `a_predicates' which should be evaluted in the context of `a_feature'.
 		require
 			a_feature_attached: a_feature /= Void
@@ -60,7 +60,7 @@ feature -- Access
 	constraint_operand_indexes: DS_HASH_SET [INTEGER]
 			-- 0-based indexes of feature call variables that are constraint
 
-	operand_index (a_pattern: AUT_PREDICATE_ACCESS_PATTERN; a_predicate_argument_index: INTEGER): INTEGER is
+	operand_index (a_pattern: AUT_PREDICATE_ACCESS_PATTERN; a_predicate_argument_index: INTEGER): INTEGER
 			-- 0-based feature call index of argument in 1-based position `a_predicate_argument_index' in `a_pattern'
 		require
 			a_pattern_attached: a_pattern /= Void
@@ -71,7 +71,7 @@ feature -- Access
 			good_result: Result = argument_operand_mapping.item (a_pattern).item (a_predicate_argument_index)
 		end
 
-	access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN] is
+	access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Predicates associated in `argument_operand_mapping'.
 		do
 			create Result.make_from_linear (argument_operand_mapping.keys)
@@ -81,7 +81,7 @@ feature -- Access
 			good_result: argument_operand_mapping.keys.for_all (agent Result.has)
 		end
 
-	associated_predicates: DS_HASH_SET [AUT_PREDICATE] is
+	associated_predicates: DS_HASH_SET [AUT_PREDICATE]
 			-- Predicates associated with current constraint
 			-- Note: In Current constraint, a predicate can appear for more than once,
 			-- becauese a feature can have the same predicates as different precondition assertions,
@@ -113,7 +113,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_predicate (a_predicate: AUT_PREDICATE): BOOLEAN is
+	has_predicate (a_predicate: AUT_PREDICATE): BOOLEAN
 			-- Is `a_predicate' contained in current constraint?
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -123,7 +123,7 @@ feature -- Status report
 			good_result: Result = associated_predicates.has (a_predicate)
 		end
 
-	is_constraint_operand_bound (a_variables: ARRAY [detachable ITP_VARIABLE]): BOOLEAN is
+	is_constraint_operand_bound (a_variables: ARRAY [detachable ITP_VARIABLE]): BOOLEAN
 			-- Are all variables whose indexes are given by `constraint_operand_indexes'
 			-- are bound in `a_variables'?
 		require
@@ -144,7 +144,7 @@ invariant
 	constraint_variable_indexes_attached: constraint_operand_indexes /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

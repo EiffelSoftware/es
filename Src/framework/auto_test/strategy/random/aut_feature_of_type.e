@@ -72,7 +72,7 @@ feature -- Access
 			Result := feature_.feature_name_id
 		end
 
-	associated_class: CLASS_C is
+	associated_class: CLASS_C
 			-- Class from which current feature is viewed
 		do
 			Result := type.associated_class
@@ -80,7 +80,7 @@ feature -- Access
 			good_result: Result = type.associated_class
 		end
 
-	feature_name: STRING is
+	feature_name: STRING
 			-- Name of current feature
 		do
 			Result := feature_.feature_name
@@ -89,7 +89,7 @@ feature -- Access
 			good_result: Result.is_equal (feature_.feature_name)
 		end
 
-	argument_count: INTEGER is
+	argument_count: INTEGER
 			-- Number of arguments in `feature_'
 		do
 			Result := feature_.argument_count
@@ -112,7 +112,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_creator (b: BOOLEAN) is
+	set_is_creator (b: BOOLEAN)
 			-- Set `is_creator' with `b'.
 		do
 			is_creator := b
@@ -122,7 +122,7 @@ feature -- Setting
 
 feature -- Precondition satisfaction
 
-	id: INTEGER is
+	id: INTEGER
 			-- Identifier for precondition satisfaction
 		do
 			feature_id_table.search (full_name)
@@ -131,7 +131,7 @@ feature -- Precondition satisfaction
 			end
 		end
 
-	full_name: STRING is
+	full_name: STRING
 			-- Full name of Current in form of "CLASS_NAME.feature_name'
 		do
 			if full_name_cache = Void then
@@ -152,7 +152,7 @@ invariant
 	type_not_void: type /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

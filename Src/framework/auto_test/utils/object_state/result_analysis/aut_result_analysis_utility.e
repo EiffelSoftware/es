@@ -12,7 +12,7 @@ inherit
 
 feature -- Access
 
-	feature_under_test (a_witness: AUT_ABS_WITNESS): AUT_FEATURE_OF_TYPE is
+	feature_under_test (a_witness: AUT_ABS_WITNESS): AUT_FEATURE_OF_TYPE
 			-- Feature under test in `a_witness' in `a_system'
 		local
 			l_test_case: AUT_TEST_CASE_RESULT
@@ -21,7 +21,7 @@ feature -- Access
 			create Result.make (l_test_case.feature_, l_test_case.class_.actual_type)
 		end
 
-	features_with_non_trivial_precondition (a_classes: LIST [CLASS_C]; a_system: SYSTEM_I): DS_HASH_SET [AUT_FEATURE_OF_TYPE] is
+	features_with_non_trivial_precondition (a_classes: LIST [CLASS_C]; a_system: SYSTEM_I): DS_HASH_SET [AUT_FEATURE_OF_TYPE]
 			-- Features from `a_classes' which have non-trivial preconditions (preocnditions stronger than True)
 		local
 			l_feat_table: FEATURE_TABLE
@@ -63,7 +63,7 @@ feature -- Access
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

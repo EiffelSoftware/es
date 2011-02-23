@@ -156,7 +156,7 @@ feature {NONE} -- Query
 			result_not_none: Result /= none_type
 		end
 
-	should_use_void (a_var: ITP_VARIABLE): BOOLEAN is
+	should_use_void (a_var: ITP_VARIABLE): BOOLEAN
 			-- Use use Void instead `a_var' in feature argument?
 		do
 			if used_vars /= Void then
@@ -644,7 +644,7 @@ invariant
 	valid_expression_printer_output_stream: expression_printer.output_stream = output_stream
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

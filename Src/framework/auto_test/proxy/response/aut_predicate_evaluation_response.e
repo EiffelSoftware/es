@@ -22,7 +22,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_evaluation_result: like evaluation_result) is
+	make (a_evaluation_result: like evaluation_result)
 			-- Initialize.
 		require
 			a_evaluation_result_attached: a_evaluation_result /= Void
@@ -51,7 +51,7 @@ feature -- Process
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

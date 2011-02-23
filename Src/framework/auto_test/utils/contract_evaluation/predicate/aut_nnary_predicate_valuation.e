@@ -20,7 +20,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_predicate: like predicate) is
+	make (a_predicate: like predicate)
 			-- Initialize `predicate' with `a_predicate'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -38,7 +38,7 @@ feature -- Access
 	count: INTEGER
 			-- Number of object combinations that satisfy the associated predicate.
 
-	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Valuation of objects in `a_arguments'
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		local
@@ -50,7 +50,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Does `a_variable' exist in current valuation?
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
@@ -81,7 +81,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
+	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN)
 			-- Set valuation for `a_arguments' with `a_value'.
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		local
@@ -104,7 +104,7 @@ feature -- Basic operations
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current all valuations.
 		do
 			storage.wipe_out
@@ -113,7 +113,7 @@ feature -- Basic operations
 			storage_wiped_out: storage.is_empty
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all valuations related to `a_variable'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
@@ -156,7 +156,7 @@ feature -- Basic operations
 
 feature -- Process
 
-	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR) is
+	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR)
 			-- Prcoess current with `a_visitor'.
 		do
 			a_visitor.process_nnary_predicate_valuation (Current)
@@ -169,14 +169,14 @@ feature{AUT_PREDICATE_VALUATION_CURSOR} -- Implementation
 
 feature{NONE} -- Implementation
 
-	initial_storage_capacity: INTEGER is 100
+	initial_storage_capacity: INTEGER = 100
 			-- Initial capacity for `storage'
 
 invariant
 	storage_attached: storage /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

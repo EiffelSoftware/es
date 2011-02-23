@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_predicate: like predicate) is
+	make (a_predicate: like predicate)
 			-- Initialize `predicate' with `a_predicate'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -28,7 +28,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	count: INTEGER is
+	count: INTEGER
 			-- <Precursor>
 		do
 			if value then
@@ -38,7 +38,7 @@ feature -- Access
 			end
 		end
 
-	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- <Precursor>
 		do
 			Result := value
@@ -48,7 +48,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Does `a_variable' exist in current valuation?
 		do
 			Result := False
@@ -56,7 +56,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
+	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN)
 			-- Set valuation for `a_arguments' with `a_value'.
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		do
@@ -65,7 +65,7 @@ feature -- Basic operations
 			good_result: value = a_value
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current all valuations.
 		do
 			value := False
@@ -73,7 +73,7 @@ feature -- Basic operations
 			good_result: value = False
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all valuations related to `a_variable'.
 		do
 			-- Do nothing
@@ -81,7 +81,7 @@ feature -- Basic operations
 
 feature -- Process
 
-	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR) is
+	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR)
 			-- Prcoess current with `a_visitor'.
 		do
 			a_visitor.process_nullary_predicate_valuation (Current)
@@ -93,7 +93,7 @@ feature{AUT_NULLARY_PREDICATE_VALUATION_CURSOR} -- Implementation
 			-- Value of current nullary predicate valuation
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -72,13 +72,13 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	predefined_values: ARRAY[INTEGER] is
+	predefined_values: ARRAY[INTEGER]
 			-- Array of predefined values (must be sorted)
 		once
 			Result := <<{INTEGER_32}.min_value,{INTEGER_16}.min_value, -100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER_16}.max_value,{INTEGER_32}.max_value>>
 		end
 
-	predefined_values_in_bounds: ARRAY[INTEGER] is
+	predefined_values_in_bounds: ARRAY[INTEGER]
 			-- Return those predefined_values that are inside the range of the abstract integer
 		local
 			i: INTEGER
@@ -172,7 +172,7 @@ invariant
 	size_greater_zero: size > 0
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

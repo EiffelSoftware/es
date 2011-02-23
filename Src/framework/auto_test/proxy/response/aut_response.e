@@ -50,23 +50,23 @@ feature -- Status report
 		do
 		end
 
-	is_precondition_violation: BOOLEAN is
+	is_precondition_violation: BOOLEAN
 			-- Does response contain a precondition violation from the testee feature?
 			-- True means current test case is invalid.
 		do
 		end
 
-	is_postcondition_violation: BOOLEAN is
+	is_postcondition_violation: BOOLEAN
 			-- Does response contain a postcondition violation from the testee feature?
 		do
 		end
 
-	is_class_invariant_violation_on_entry: BOOLEAN is
+	is_class_invariant_violation_on_entry: BOOLEAN
 			-- Does response contain a class invariant violation on feature entry?
 		do
 		end
 
-	is_class_invariant_violation_on_exit: BOOLEAN is
+	is_class_invariant_violation_on_exit: BOOLEAN
 			-- Does response contain a class invariant violation on feature exit?
 		do
 		end
@@ -120,7 +120,7 @@ invariant
 	raw_text_attached: raw_text /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -88,26 +88,26 @@ feature -- Status report
 			good_result: Result = (exception /= Void)
 		end
 
-	is_precondition_violation: BOOLEAN is
+	is_precondition_violation: BOOLEAN
 			-- Does response contain a precondition violation from the testee feature?
 			-- True means current test case is invalid.
 		do
 			Result := exception /= Void and then exception.code = {EXCEP_CONST}.precondition
 		end
 
-	is_postcondition_violation: BOOLEAN is
+	is_postcondition_violation: BOOLEAN
 			-- Does response contain a postcondition violation from the testee feature?
 		do
 			Result := exception /= Void and then exception.code = {EXCEP_CONST}.postcondition
 		end
 
-	is_class_invariant_violation_on_entry: BOOLEAN is
+	is_class_invariant_violation_on_entry: BOOLEAN
 			-- Does response contain a class invariant violation on feature entry?
 		do
 			Result := exception /= Void and then exception.is_invariant_violation_on_feature_entry
 		end
 
-	is_class_invariant_violation_on_exit: BOOLEAN is
+	is_class_invariant_violation_on_exit: BOOLEAN
 			-- Does response contain a class invariant violation on feature exit?
 		do
 			Result := exception /= Void and then exception.code = {EXCEP_CONST}.class_invariant and then not (exception.is_invariant_violation_on_feature_entry)
@@ -127,7 +127,7 @@ feature -- Process
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

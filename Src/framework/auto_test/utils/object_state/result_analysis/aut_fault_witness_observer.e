@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Initialize.
 		do
 			system := a_system
@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Process
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		do
 			if a_witness.is_fail and then not witnesses.has (a_witness) then
@@ -48,7 +48,7 @@ feature{NONE} -- Implementation
 	system: SYSTEM_I;
 			-- Current system
 
-	faulty_witness_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_WITNESS] is
+	faulty_witness_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_WITNESS]
 			-- Tester to decide if `a_witness' and `b_witness' reveals the same fault
 		do
 			create Result.make (agent (a_witness, b_witness: AUT_WITNESS): BOOLEAN
@@ -61,7 +61,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

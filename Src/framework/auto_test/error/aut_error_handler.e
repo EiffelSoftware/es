@@ -344,7 +344,7 @@ feature -- Report events
 			last_testing_request := Void
 		end
 
-	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING)
 			-- Report comment line `a_line'.
 		do
 			-- Do nothing.		
@@ -663,7 +663,7 @@ invariant
 	system_attached: system /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

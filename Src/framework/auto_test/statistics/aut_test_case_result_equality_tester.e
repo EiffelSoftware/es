@@ -39,11 +39,11 @@ feature -- Status report
 
 feature{NONE} -- Fault comparison
 
-	is_only_original_fault_count: BOOLEAN is True
+	is_only_original_fault_count: BOOLEAN = True
 			-- Should only original faults be counted?
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
@@ -14,7 +14,7 @@ create
 	make
 
 feature -- Creation
-	make is
+	make
 			--
 		do
 			is_loaded := false
@@ -24,7 +24,7 @@ feature -- Creation
 
 feature -- Load
 
-	load_parameters is
+	load_parameters
 		-- Load the files from the evolve directory
 		do
 
@@ -78,7 +78,7 @@ feature -- State
 
 feature -- Set
 
-	set_folder_location (str :STRING) is
+	set_folder_location (str :STRING)
     		-- Set the folder location
     	require
     		str /= void
@@ -95,7 +95,7 @@ feature -- Set
 feature -- Get
 
 
-	get_next_boolean :BOOLEAN is
+	get_next_boolean :BOOLEAN
 			-- Return the next Boolean value evolved
 		do
 			if boolean_list.count > 0 then
@@ -112,7 +112,7 @@ feature -- Get
 		end
 
 
-	get_next_character_8 :CHARACTER_8 is
+	get_next_character_8 :CHARACTER_8
 			-- Return the next Character_8 evolved
 		do
 			if character_8_list.count > 0 then
@@ -128,7 +128,7 @@ feature -- Get
 
 		end
 
-	get_next_character_32:CHARACTER_32 is
+	get_next_character_32:CHARACTER_32
 			--
 		do
 			if character_32_list.count > 0 then
@@ -143,7 +143,7 @@ feature -- Get
 			end
 		end
 
-	get_next_object_creation_number: INTEGER is
+	get_next_object_creation_number: INTEGER
 			--
 		local
 		  i : INTEGER
@@ -162,7 +162,7 @@ feature -- Get
 
 		end
 
-	    get_next_method_call: INTEGER is
+	    get_next_method_call: INTEGER
 			--
 		do
 			if  method_sequence_list.count > 0 then
@@ -181,7 +181,7 @@ feature -- Get
 
 		end
 
-		get_next_diversity_probability: BOOLEAN is
+		get_next_diversity_probability: BOOLEAN
 			--
 	    local
 	    	r:DOUBLE
@@ -202,7 +202,7 @@ feature -- Get
 		end
 
 
-	get_next_real_32: REAL_32 is
+	get_next_real_32: REAL_32
 			--
 		do
 			if real_32_list.count > 0 then
@@ -218,7 +218,7 @@ feature -- Get
 
 		end
 
-	get_next_real_64 :REAL_64 is
+	get_next_real_64 :REAL_64
 			--
 		do
 			if real_64_list.count > 0 then
@@ -233,7 +233,7 @@ feature -- Get
 			end
 		end
 
-	get_next_integer_8 :INTEGER_8 is
+	get_next_integer_8 :INTEGER_8
 			--
 		do
 			if integer_8_list.count > 0 then
@@ -248,7 +248,7 @@ feature -- Get
 			end
 		end
 
-		get_next_seed :INTEGER is
+		get_next_seed :INTEGER
 			--
 		do
 			if  sed_list.count > 0 then
@@ -264,7 +264,7 @@ feature -- Get
 		end
 
 
-	get_next_integer_16:INTEGER_16 is
+	get_next_integer_16:INTEGER_16
 			--
 		do
 			if integer_16_list.count > 0 then
@@ -279,7 +279,7 @@ feature -- Get
 			end
 		end
 
-	get_next_integer_32:INTEGER_32 is
+	get_next_integer_32:INTEGER_32
 			--
 		do
 			if integer_32_list.count > 0 then
@@ -295,7 +295,7 @@ feature -- Get
 
 		end
 
-	get_next_integer_64 :INTEGER_64 is
+	get_next_integer_64 :INTEGER_64
 			--
 		do
 			if integer_64_list.count > 0 then
@@ -310,7 +310,7 @@ feature -- Get
 			end
 		end
 
-	get_next_natural_8 : NATURAL_8 is
+	get_next_natural_8 : NATURAL_8
 			--
 		do
 			if  natural_8_list.count > 0 then
@@ -325,7 +325,7 @@ feature -- Get
 			end
 		end
 
-	get_next_natural_16 : NATURAL_16 is
+	get_next_natural_16 : NATURAL_16
 			--
 		do
 			if  natural_16_list.count > 0 then
@@ -340,7 +340,7 @@ feature -- Get
 			end
 		end
 
-	get_next_natural_32 : NATURAL_32 is
+	get_next_natural_32 : NATURAL_32
 			--
 		do
 			if  natural_32_list.count > 0 then
@@ -356,7 +356,7 @@ feature -- Get
 
 		end
 
-	get_next_natural_64:NATURAL_64 is
+	get_next_natural_64:NATURAL_64
 			--
 		do
 			if  natural_64_list.count > 0 then
@@ -395,26 +395,26 @@ feature {NONE } -- Implementation
 
 
 	-- File names for the parameters
-	boolean_file_name:      STRING is "boolean.txt"
-	character_8_file_name : STRING is "character_8.txt"
-	character_32_file_name: STRING is "character_32.txt"
-	real_32_file_name:      STRING is "real_32.txt"
-	real_64_file_name:      STRING is "real_64.txt"
-	integer_8_file_name :   STRING is "integer_8.txt"
-	integer_16_file_name:   STRING is "integer_16.txt"
-	integer_32_file_name:   STRING is "integer_32.txt"
-	integer_64_file_name:   STRING is "integer_64.txt"
-	natural_8_file_name :   STRING is "natural_8.txt"
-	natural_16_file_name:   STRING is "natural_16.txt"
-	natural_32_file_name:   STRING is "natural_32.txt"
-	natural_64_file_name:   STRING is "natural_64.txt"
-	sed_file_name:          STRING is "seed.txt"
-	creation_probability_file_name:  STRING is "creation_probability.txt"
-	diversity_probability_file_name: STRING is "diversity_probability.txt"
-	method_call_sequence_file_name:  STRING is "method_call_sequence.txt"
+	boolean_file_name:      STRING = "boolean.txt"
+	character_8_file_name : STRING = "character_8.txt"
+	character_32_file_name: STRING = "character_32.txt"
+	real_32_file_name:      STRING = "real_32.txt"
+	real_64_file_name:      STRING = "real_64.txt"
+	integer_8_file_name :   STRING = "integer_8.txt"
+	integer_16_file_name:   STRING = "integer_16.txt"
+	integer_32_file_name:   STRING = "integer_32.txt"
+	integer_64_file_name:   STRING = "integer_64.txt"
+	natural_8_file_name :   STRING = "natural_8.txt"
+	natural_16_file_name:   STRING = "natural_16.txt"
+	natural_32_file_name:   STRING = "natural_32.txt"
+	natural_64_file_name:   STRING = "natural_64.txt"
+	sed_file_name:          STRING = "seed.txt"
+	creation_probability_file_name:  STRING = "creation_probability.txt"
+	diversity_probability_file_name: STRING = "diversity_probability.txt"
+	method_call_sequence_file_name:  STRING = "method_call_sequence.txt"
 
 
-load_configuration is
+load_configuration
 			-- open the primitive file and load the list
 		local
 			file: PLAIN_TEXT_FILE
@@ -498,7 +498,7 @@ load_configuration is
 		end
 
 
-	load_primitive is
+	load_primitive
 			-- open the primitive file and load the list
 		local
 			file: PLAIN_TEXT_FILE
@@ -785,7 +785,7 @@ load_configuration is
 		end
 
 
-	load_double_from_file (file : PLAIN_TEXT_FILE ; list : DS_LINKED_LIST[DOUBLE] ) is
+	load_double_from_file (file : PLAIN_TEXT_FILE ; list : DS_LINKED_LIST[DOUBLE] )
 		--
 		do
 			from
@@ -799,7 +799,7 @@ load_configuration is
 
 		end
 
-	load_integer_from_file (file : PLAIN_TEXT_FILE ; list : DS_LINKED_LIST[INTEGER] ) is
+	load_integer_from_file (file : PLAIN_TEXT_FILE ; list : DS_LINKED_LIST[INTEGER] )
 		--
 		do
 			from
@@ -817,7 +817,7 @@ invariant
 	invariant_clause: True -- Your invariant here
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

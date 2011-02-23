@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Objects that ..."
 	author: ""
@@ -336,7 +336,7 @@ feature {NONE} -- Steps
 	last_constant: ITP_CONSTANT
 			-- Last chosen constant
 
-choose_boolean_constant is
+choose_boolean_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		local
@@ -354,7 +354,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_character_8_constant is
+	choose_character_8_constant
 			-- Choose CHARACTER_8 constant and set it to
 			-- `last_constant'.
 		local
@@ -367,7 +367,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_character_32_constant is
+	choose_character_32_constant
 			-- Choose CHARACTER_32 constant and set it to
 			-- `last_constant'.
 		local
@@ -380,7 +380,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_double_constant is
+	choose_double_constant
 			-- Choose double constant and set it to
 			-- `last_constant'.
 		local
@@ -419,7 +419,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_8_constant is
+	choose_integer_8_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -468,7 +468,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_16_constant is
+	choose_integer_16_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -517,7 +517,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_constant is
+	choose_integer_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -584,7 +584,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_integer_64_constant is
+	choose_integer_64_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -633,7 +633,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_8_constant is
+	choose_natural_8_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -682,7 +682,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_16_constant is
+	choose_natural_16_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -732,7 +732,7 @@ choose_boolean_constant is
 		end
 
 
-	choose_natural_32_constant is
+	choose_natural_32_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -781,7 +781,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_natural_64_constant is
+	choose_natural_64_constant
 			-- Choose integer constant and set it to
 			-- `last_constant'.
 		local
@@ -830,7 +830,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_pointer_constant is
+	choose_pointer_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		do
@@ -839,7 +839,7 @@ choose_boolean_constant is
 			last_constant_not_void: last_constant /= Void
 		end
 
-	choose_real_constant is
+	choose_real_constant
 			-- Choose boolean constant and set it to
 			-- `last_constant'.
 		local
@@ -876,7 +876,7 @@ choose_boolean_constant is
 		ensure
 			last_constant_not_void: last_constant /= Void
 		end
-		
+
 	feature_table: HASH_TABLE [ARRAY [FEATURE_I], CLASS_C]
 		-- Table used to store features in a class
 
@@ -888,7 +888,7 @@ feature -- Precondition satisfaction
 	precondition_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
 			-- Precondition evaluator
 
-	create_precondition_evaluator is
+	create_precondition_evaluator
 			-- Create `precondition_evaluator'.
 		local
 			l_vars: DS_LINKED_LIST [detachable ITP_VARIABLE]
@@ -905,7 +905,7 @@ feature -- Precondition satisfaction
 	arguments: DS_LINKED_LIST [ITP_EXPRESSION]
 			-- Arguments used for `creation_procedure'
 
-	set_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
+	set_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION])
 			-- Set `target' and `arguments' from `a_variables'.
 		require
 			a_variables_attached: a_variables /= Void
@@ -916,7 +916,7 @@ feature -- Precondition satisfaction
 			arguments.remove_at
 		end
 
-	set_arguments_from_candidate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE]) is
+	set_arguments_from_candidate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE])
 			-- Set `arguments' with `a_candidate'.
 		local
 			i: INTEGER
@@ -960,7 +960,7 @@ feature -- Precondition satisfaction
 			set_arguments_from_array (l_vars)
 		end
 
-	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN is
+	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN
 			-- Is `a_variable' defined in object pool?
 		do
 			Result := a_variable /= Void and then interpreter.typed_object_pool.is_variable_defined (a_variable)
@@ -974,7 +974,7 @@ invariant
 	receiver_defined: receiver /= Void implies interpreter.variable_table.is_variable_defined (receiver)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

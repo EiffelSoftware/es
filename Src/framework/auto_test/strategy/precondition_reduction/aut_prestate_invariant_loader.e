@@ -37,23 +37,48 @@ feature -- Basic operations
 		local
 			l_parts: LIST [STRING]
 			l_file: PLAIN_TEXT_FILE
+			l_file_searcher: EPA_FILE_SEARCHER
+			l_files: LINKED_LIST [STRING]
 		do
 			fixme ("This splitting does not work if some features ends with underscore.")
-			l_parts := string_slices (file_system.basename (a_path), "__")
-			last_class := first_class_starts_with_name (l_parts.i_th (1))
-			last_feature := last_class.feature_named (l_parts.i_th (2))
-			create last_invariants.make
-
-			create l_file.make_open_read (a_path)
-			from
-				l_file.read_line
-			until
-				l_file.after
-			loop
-				parse_invariant_from_string (l_file.last_string.twin)
-				l_file.read_line
+				-- Collect all invariant files specified by `a_path'.
+			create l_files.make
+			create l_file.make (a_path)
+			if l_file.is_directory then
+				create l_file_searcher.make_with_pattern (".+all__noname\.inv$")
+				l_file_searcher.set_is_dir_matched (False)
+				l_file_searcher.set_is_search_recursive (True)
+				l_file_searcher.file_found_actions.extend (
+					agent (a_full_path: STRING; a_file_name: STRING; l_list: LINKED_LIST [STRING])
+						do
+							l_list.extend (a_full_path)
+						end (?, ?, l_files))
+				l_file_searcher.search (a_path)
+			else
+				l_files.extend (a_path)
 			end
-			l_file.close
+
+				-- Collect all invariants from files.
+			create last_invariants.make
+			across l_files as l_inv_files loop
+				l_parts := string_slices (file_system.basename (l_inv_files.item), "__")
+				last_class := first_class_starts_with_name (l_parts.i_th (1))
+				last_feature := last_class.feature_named (l_parts.i_th (2))
+
+				if not last_feature.has_return_value then
+						-- We only consider commands for the moment.
+					create l_file.make_open_read (l_inv_files.item)
+					from
+						l_file.read_line
+					until
+						l_file.after
+					loop
+						parse_invariant_from_string (l_file.last_string.twin)
+						l_file.read_line
+					end
+					l_file.close
+				end
+			end
 		end
 
 feature{NONE} -- Implementation

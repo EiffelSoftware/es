@@ -44,14 +44,14 @@ feature -- Access
 	string_representation: STRING_32
 			-- String representation of the items, for HASHABLE
 
-	as_array: ARRAY [ITP_VARIABLE] is
+	as_array: ARRAY [ITP_VARIABLE]
 			-- Return the internal array (ugly workaround)
 			-- DO NOT MODIFY THE RETURNED ARRAY, will invalidate hash_code
 		do
 			Result := internal_variables_array
 		end
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of variables in Current
 		do
 			Result := internal_variables_array.count
@@ -59,7 +59,7 @@ feature -- Access
 			good_result: Result = internal_variables_array.count
 		end
 
-	item (i: INTEGER): ITP_VARIABLE is
+	item (i: INTEGER): ITP_VARIABLE
 			-- Variable at `i'-th position
 		require
 			i_valid: i > 0 and then i <= count
@@ -108,7 +108,7 @@ invariant
 	string_representation_attached: string_representation /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

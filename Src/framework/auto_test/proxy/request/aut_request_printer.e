@@ -293,7 +293,7 @@ feature {AUT_REQUEST} -- Processing
 
 feature {NONE} -- Byte code generation
 
-	new_check_invariant_feature_call (a_local_index: INTEGER; a_object_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is
+	new_check_invariant_feature_call (a_local_index: INTEGER; a_object_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B
 			-- New FEATURE_B instance to check class invariant of the `a_local_index'-th local variable.
 			-- `a_local_type' is the type of that local variable, whose index in the object pool is `a_object_index'.
 		require
@@ -334,7 +334,7 @@ feature {NONE} -- Byte code generation
 	record_query_feature_name: STRING = "record_query"
 			-- Name of the feature used to record value of a query
 
-	new_record_query_feature_call (a_agent_argument: ROUTINE_CREATION_B): BYTE_NODE is
+	new_record_query_feature_call (a_agent_argument: ROUTINE_CREATION_B): BYTE_NODE
 			-- New FEATURE_B instance to record a feature's value. That feature is wrapped
 			-- in `a_agent_argument'.
 		require
@@ -568,7 +568,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Precondition satisfaction
 
-	extra_data_for_execute_request (a_request: AUT_CALL_BASED_REQUEST): detachable ANY is
+	extra_data_for_execute_request (a_request: AUT_CALL_BASED_REQUEST): detachable ANY
 			-- Extract data for `a_request'
 		require
 			a_request_attached: a_request /= Void
@@ -596,7 +596,7 @@ feature{NONE} -- Precondition satisfaction
 			Result := l_array
 		end
 
-	setup_extra_data_for_test_case_serialization (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+	setup_extra_data_for_test_case_serialization (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY])
 			-- Set up extra data for test case serialization for `a_request' in `a_data'.
 		require
 			a_request_attached: a_request /= Void
@@ -635,7 +635,7 @@ feature{NONE} -- Precondition satisfaction
 			end
 		end
 
-	setup_extra_data_for_precondition_satisfaction (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY]) is
+	setup_extra_data_for_precondition_satisfaction (a_request: AUT_CALL_BASED_REQUEST; a_data: detachable ARRAY [detachable ANY])
 			-- Set up extra data for precondition satisfaction for `a_request' in `a_data'.
 		require
 			a_request_attached: a_request /= Void
@@ -656,7 +656,7 @@ feature{NONE} -- Precondition satisfaction
 			end
 		end
 
-	extra_data_for_predicate_evaluation (a_request: AUT_CALL_BASED_REQUEST): TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]] is
+	extra_data_for_predicate_evaluation (a_request: AUT_CALL_BASED_REQUEST): TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]
 			-- Extra data used for predicate evaluation.
 		local
 			i: INTEGER
@@ -684,7 +684,7 @@ invariant
 	expression_b_visitor_attached: expression_b_visitor /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

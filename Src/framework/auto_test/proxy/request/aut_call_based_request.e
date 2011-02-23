@@ -80,14 +80,14 @@ feature -- Access
 			-- Id of the feature to call
 			-- This is an ID used for predicate evaluation
 
-	operand_indexes: SPECIAL [INTEGER] is
+	operand_indexes: SPECIAL [INTEGER]
 			-- Indexes of operands for the feature call in current
 			-- Index 0 is for the target object, index 1 is for the first argument, and so on.
 			-- The result object (if any) is placed in (Result.count - 1)-th position.
 		deferred
 		end
 
-	operand_type_names: SPECIAL [STRING] is
+	operand_type_names: SPECIAL [STRING]
 			-- Type names of operands
 		local
 			l_types: like operand_types
@@ -170,7 +170,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_feature_id (a_id: INTEGER) is
+	set_feature_id (a_id: INTEGER)
 			-- Set `feature_id' with `a_id'.
 		require
 			a_id_valid: a_id >= 0
@@ -181,7 +181,7 @@ feature -- Setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -30,7 +30,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_config: like configuration) is
+	make (a_system: like system; a_config: like configuration)
 			-- Initialize.
 		require
 			a_system_attached: a_system /= Void
@@ -55,7 +55,7 @@ feature -- Access
 
 feature -- Process
 
-	process is
+	process
 			-- Process log file specified in `configuration'.
 		local
 			l_log_publisher: AUT_RESULT_REPOSITORY_PUBLISHER
@@ -138,7 +138,7 @@ feature{NONE} -- Implementation
 
 feature -- Result printing
 
-	print_last_time_stamp (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_last_time_stamp (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print `last_time_stamp' into `a_output_stream'.
 		do
 			a_output_stream.put_line ("--[Last time stamp]")
@@ -146,7 +146,7 @@ feature -- Result printing
 			a_output_stream.put_character ('%N')
 		end
 
-	print_class_under_test (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_class_under_test (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print classes under test into `a_output_stream'.
 		do
 			a_output_stream.put_line ("--[Class under test]")
@@ -161,7 +161,7 @@ feature -- Result printing
 			a_output_stream.put_character ('%N')
 		end
 
-	print_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
+	print_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM)
 			-- Print simplified information about found faults to `a_output_file'.
 		local
 			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
@@ -194,7 +194,7 @@ feature -- Result printing
 			a_output_file.put_string ("%N")
 		end
 
-	print_sorted_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
+	print_sorted_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM)
 			-- Print sorted simplified information about found faults to `a_output_file'.
 		local
 			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
@@ -257,7 +257,7 @@ feature -- Result printing
 			a_output_file.put_string ("%N")
 		end
 
-	print_feature_statistics (a_output_file: KI_TEXT_OUTPUT_STREAM) is
+	print_feature_statistics (a_output_file: KI_TEXT_OUTPUT_STREAM)
 			-- Print feature statistics.
 		local
 			l_testable_features: like features_under_test
@@ -363,7 +363,7 @@ feature -- Result printing
 			a_output_file.put_string ("%N")
 		end
 
-	print_test_case_generation_speed (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_test_case_generation_speed (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Generate valid test case generation speed to `a_output_stream'.
 		local
 			l_speed: ARRAY [INTEGER]
@@ -388,7 +388,7 @@ feature -- Result printing
 			a_output_stream.put_string ("%N")
 		end
 
-	print_untested_features (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_untested_features (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print information about untested feature into `a_output_stream'.
 		local
 			l_untested_features: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, STRING_8], AUT_FEATURE_OF_TYPE]
@@ -444,7 +444,7 @@ feature -- Result printing
 			a_output_stream.put_string ("%N")
 		end
 
-	print_precondition_evaluation_overhead (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_precondition_evaluation_overhead (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print precondition evaluation overhead into `a_output_stream'.
 		local
 			l_stat: DS_LINKED_LIST [TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: INTEGER; class_name: STRING; feature_name: STRING]]
@@ -506,7 +506,7 @@ feature -- Result printing
 
 		end
 
-	print_fault_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_fault_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print found faults in detail into `a_output_stream'.
 		local
 			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
@@ -535,7 +535,7 @@ feature -- Result printing
 		end
 
 
-	print_evolutionary_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_evolutionary_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print detail used by the evolutionary algorithm
 		local
 			l_faults: DS_ARRAYED_LIST [AUT_ABS_WITNESS]
@@ -611,7 +611,7 @@ feature -- Result printing
 
 	end
 
-	print_precondition_satisfaction_failure_rate (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_precondition_satisfaction_failure_rate (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print precondition satisfaction failure rate statistics into `a_output_stream'.
 		local
 			l_data: TUPLE [time_in_second: INTEGER; full_suggested: INTEGER; full_failed: INTEGER; partial_suggested: INTEGER; partial_failed: INTEGER]
@@ -651,7 +651,7 @@ feature -- Result printing
 			a_output_stream.put_character ('%N')
 		end
 
-	print_failed_precondition_proposal (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_failed_precondition_proposal (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print failed precondition proposal statistics into `a_output_stream'.
 		local
 			l_data: TUPLE [class_name: STRING; feature_name: STRING; predicate: STRING; time: INTEGER]
@@ -687,7 +687,7 @@ feature -- Result printing
 			a_output_stream.put_character ('%N')
 		end
 
-	print_incorrect_lpsolve_file (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_incorrect_lpsolve_file (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print incorrect lpsolve file statistics into `a_output_stream'.
 		local
 			l_data: TUPLE [class_name: STRING; feature_name: STRING; time: INTEGER]
@@ -719,7 +719,7 @@ feature -- Result printing
 			a_output_stream.put_character ('%N')
 		end
 
-	print_pool_statistics (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_pool_statistics (a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print pool statistics into `a_output_stream'.
 		local
 			l_data: DS_ARRAYED_LIST [TUPLE [type_name: STRING; time: INTEGER; size: INTEGER]]
@@ -819,7 +819,7 @@ feature -- Process
 	class_under_test: DS_HASH_SET [CLASS_C]
 			-- Classes under test
 
-	process_comment_line (a_line: STRING) is
+	process_comment_line (a_line: STRING)
 			-- Process `a_line'.
 		local
 			l_parts: LIST [STRING]
@@ -858,14 +858,14 @@ feature -- Process
 			end
 		end
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		do
 		end
 
-	class_under_test_header: STRING is "-- classes under test: "
+	class_under_test_header: STRING = "-- classes under test: "
 
-	features_under_test (a_classes: DS_HASH_SET [CLASS_C]): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+	features_under_test (a_classes: DS_HASH_SET [CLASS_C]): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			-- Features in `a_classes' that are under test
 		do
 			create Result.make
@@ -885,7 +885,7 @@ feature -- Process
 	last_time_stamp: INTEGER
 			-- Last time stamp im millisecond appeared in the log file
 
-	print_non_tested_feature (a_feature: AUT_FEATURE_OF_TYPE; a_precondition_violation: HASH_TABLE [INTEGER, STRING]; a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+	print_non_tested_feature (a_feature: AUT_FEATURE_OF_TYPE; a_precondition_violation: HASH_TABLE [INTEGER, STRING]; a_output_stream: KI_TEXT_OUTPUT_STREAM)
 			-- Print non-tested feature `a_feature'.
 		do
 			a_output_stream.put_string (a_feature.type.associated_class.name_in_upper)
@@ -911,7 +911,7 @@ feature -- Process
 			a_output_stream.put_character ('%N')
 		end
 
-	fault_signature (a_witness: AUT_ABS_WITNESS): STRING is
+	fault_signature (a_witness: AUT_ABS_WITNESS): STRING
 			-- Signature of the fault revealed by `a_witness'
 		require
 			a_witness_is_failing: a_witness.is_fail
@@ -945,7 +945,7 @@ feature -- Process
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

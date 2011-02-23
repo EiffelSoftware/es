@@ -20,7 +20,7 @@ create
 
 feature{NONE} -- Initializaiton
 
-	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_constrained_arguments: like constrained_arguments; a_constraining_queries: like constraining_queries) is
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_constrained_arguments: like constrained_arguments; a_constraining_queries: like constraining_queries)
 			-- Initialize current.
 		require
 			a_types_attached: a_types /= Void
@@ -45,7 +45,7 @@ feature{NONE} -- Initializaiton
 
 feature -- Status report
 
-	is_linear_solvable: BOOLEAN is True
+	is_linear_solvable: BOOLEAN = True
 			-- Is current predicate linearly solvable?
 
 feature -- Access
@@ -59,7 +59,7 @@ feature -- Access
 			-- Query names are final names (feature renaming has been resolved)			
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

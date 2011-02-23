@@ -23,7 +23,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	load_model is
+	load_model
 			-- Load model.
 			-- If there is a model for `constrained_operands', set `has_model' to True,
 			-- and then load valuations of constrained arguments into `valuation'.
@@ -32,7 +32,7 @@ feature -- Basic operations
 
 feature -- Setting
 
-	set_constrained_arguments (a_args: like constrained_operands) is
+	set_constrained_arguments (a_args: like constrained_operands)
 			-- Set `constrained_operands' with `a_args'.
 		do
 			create constrained_operands.make (a_args.count)
@@ -41,7 +41,7 @@ feature -- Setting
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

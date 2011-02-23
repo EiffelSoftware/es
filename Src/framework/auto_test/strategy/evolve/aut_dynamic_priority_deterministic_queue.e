@@ -1,4 +1,4 @@
-indexing
+note
 
 	description: "Objects that ..."
 	author: ""
@@ -81,7 +81,7 @@ feature -- Access
 	highest_dynamic_priority: INTEGER
 			-- Highest dynamic priority
 
-	features_under_test: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+	features_under_test: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			-- List of features under test
 		do
 			create Result.make
@@ -190,7 +190,7 @@ feature -- Basic routines
 	static_feature_list : DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			-- Static list of all features to call
 
-	set_feature_table() is
+	set_feature_table()
 			--
 		local
 			feat: AUT_FEATURE_OF_TYPE
@@ -350,7 +350,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	register_feature (a_feature: FEATURE_I; a_type: TYPE_A; a_creator: BOOLEAN; a_priority: INTEGER) is
+	register_feature (a_feature: FEATURE_I; a_type: TYPE_A; a_creator: BOOLEAN; a_priority: INTEGER)
 			-- Register `a_feature' declared in `a_type' to be a test candidate.
 			-- `a_creator' indicates if `a_feature' should be registered as a creator.
 			-- `a_priority' is the priority under which `a_feature' should be tested.
@@ -449,7 +449,7 @@ invariant
 	tables_valid: are_tables_valid
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

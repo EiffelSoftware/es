@@ -114,7 +114,7 @@ feature -- Status report
 			end
 		end
 
-	is_same_original_bug (other: like Current): BOOLEAN is
+	is_same_original_bug (other: like Current): BOOLEAN
 			-- Is `other' witnessing the same original bug as this witness?
 			-- Note that this is a heuristics that considers class, feature and exception only.
 		require
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

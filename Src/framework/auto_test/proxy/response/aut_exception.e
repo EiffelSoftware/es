@@ -153,7 +153,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_invariant_violation_on_feature_entry (b: BOOLEAN) is
+	set_is_invariant_violation_on_feature_entry (b: BOOLEAN)
 			-- Set `is_invariant_violation_on_feature_entry' with `b'.
 		do
 			is_invariant_violation_on_feature_entry := b
@@ -162,7 +162,7 @@ feature -- Setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

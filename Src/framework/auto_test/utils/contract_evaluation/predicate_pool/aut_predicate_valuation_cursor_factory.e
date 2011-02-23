@@ -22,7 +22,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_random (b: BOOLEAN) is
+	set_is_random (b: BOOLEAN)
 			-- Set `is_random' with `b'.
 		do
 			is_random := b
@@ -32,7 +32,7 @@ feature -- Setting
 
 feature -- Basic operation
 
-	generate_cursor (a_valuation: AUT_PREDICATE_VALUATION; a_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partial_candidate: like partial_candidate) is
+	generate_cursor (a_valuation: AUT_PREDICATE_VALUATION; a_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partial_candidate: like partial_candidate)
 			-- Generate cursor for `a_valuation' and
 			-- store generated cursor in `last_cursor'.
 		require
@@ -54,7 +54,7 @@ feature -- Basic operation
 
 feature -- Process
 
-	process_nullary_predicate_valuation (a_valuation: AUT_NULLARY_PREDICATE_VALUATION) is
+	process_nullary_predicate_valuation (a_valuation: AUT_NULLARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		do
 			create {AUT_NULLARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, predicate_access_pattern, constraint, partial_candidate)
@@ -65,7 +65,7 @@ feature -- Process
 			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
-	process_unary_predicate_valuation (a_valuation: AUT_UNARY_PREDICATE_VALUATION) is
+	process_unary_predicate_valuation (a_valuation: AUT_UNARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		do
 			if is_random then
@@ -80,7 +80,7 @@ feature -- Process
 			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
-	process_binary_predicate_valuation (a_valuation: AUT_BINARY_PREDICATE_VALUATION) is
+	process_binary_predicate_valuation (a_valuation: AUT_BINARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		do
 			if is_random then
@@ -95,7 +95,7 @@ feature -- Process
 			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
-	process_nnary_predicate_valuation (a_valuation: AUT_NNARY_PREDICATE_VALUATION) is
+	process_nnary_predicate_valuation (a_valuation: AUT_NNARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		do
 			if is_random then
@@ -122,7 +122,7 @@ feature{NONE} -- Implementation
 			-- Partial candidate
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

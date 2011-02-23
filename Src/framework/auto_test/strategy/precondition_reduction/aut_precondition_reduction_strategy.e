@@ -21,6 +21,11 @@ inherit
 
 	AUT_SHARED_EQUALITY_TESTER
 
+	EPA_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 

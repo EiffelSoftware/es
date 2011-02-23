@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_time_unit: INTEGER) is
+	make (a_system: like system; a_time_unit: INTEGER)
 			-- Initialize.
 		require
 			a_time_unit_is_valid: a_time_unit = 1 or a_time_unit = 1000 or a_time_unit = 60 * 1000 or a_time_unit = 60*60*1000
@@ -33,7 +33,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	number_of_test_cases: ARRAY [INTEGER] is
+	number_of_test_cases: ARRAY [INTEGER]
 			--
 		local
 			i: INTEGER
@@ -57,7 +57,7 @@ feature -- Access
 
 feature -- Process
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		local
 			l_new_time: INTEGER
@@ -100,7 +100,7 @@ feature{NONE} -- Implementation
 			-- Index of this list is the time interval.
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

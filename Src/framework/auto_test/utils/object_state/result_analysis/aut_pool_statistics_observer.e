@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Initialize `system' with `a_system'.
 		do
 			system := a_system
@@ -45,7 +45,7 @@ feature -- Access
 	last_time: INTEGER
 			-- Last time in millisecond when the pool statistics was logged.
 
-	sorted_object_pool_data (a_tester: like type_time_tester): like object_pool is
+	sorted_object_pool_data (a_tester: like type_time_tester): like object_pool
 			-- Sorted data from `object_pool' using `a_test'
 		local
 			l_sorter: DS_QUICK_SORTER [like object_pool_anchor_type]
@@ -55,7 +55,7 @@ feature -- Access
 			l_sorter.sort (Result)
 		end
 
-	sorted_predicate_pool_data (a_tester: like type_time_tester): like predicate_pool is
+	sorted_predicate_pool_data (a_tester: like type_time_tester): like predicate_pool
 			-- Sorted data from `predicate_pool' using `a_test'
 		local
 			l_sorter: DS_QUICK_SORTER [like predicate_pool_anchor_type]
@@ -65,7 +65,7 @@ feature -- Access
 			l_sorter.sort (Result)
 		end
 
-	type_time_tester: AGENT_BASED_EQUALITY_TESTER [like object_pool_anchor_type] is
+	type_time_tester: AGENT_BASED_EQUALITY_TESTER [like object_pool_anchor_type]
 			-- Tester to decide the order for `object_pool_anchor_type'
 			-- First type name, and then access time.
 		do
@@ -79,7 +79,7 @@ feature -- Access
 				end)
 		end
 
-	time_type_tester: AGENT_BASED_EQUALITY_TESTER [like object_pool_anchor_type] is
+	time_type_tester: AGENT_BASED_EQUALITY_TESTER [like object_pool_anchor_type]
 			-- Tester to decide the order for `object_pool_anchor_type'
 			-- First access time and then type name.
 		do
@@ -93,7 +93,7 @@ feature -- Access
 				end)
 		end
 
-	predicate_time_tester: AGENT_BASED_EQUALITY_TESTER [like predicate_pool_anchor_type] is
+	predicate_time_tester: AGENT_BASED_EQUALITY_TESTER [like predicate_pool_anchor_type]
 			-- Tester to decide the order for `predicate_pool_anchor_type'
 			-- First predicate name and then access time.
 		do
@@ -107,7 +107,7 @@ feature -- Access
 				end)
 		end
 
-	time_predicate_tester: AGENT_BASED_EQUALITY_TESTER [like predicate_pool_anchor_type] is
+	time_predicate_tester: AGENT_BASED_EQUALITY_TESTER [like predicate_pool_anchor_type]
 			-- Tester to decide the order for `predicate_pool_anchor_type'
 			-- First access time and then predicate name.
 		do
@@ -124,7 +124,7 @@ feature -- Access
 
 feature -- Process
 
-	process_comment_line (a_line: STRING) is
+	process_comment_line (a_line: STRING)
 			-- Process `a_line'.
 		local
 			l_header: STRING
@@ -181,23 +181,23 @@ feature -- Process
 			end
 		end
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		do
 		end
 
 feature{NONE} -- Implementation
 
-	precondition_eval_header: STRING is "-- Precondition_evaluation: "
+	precondition_eval_header: STRING = "-- Precondition_evaluation: "
 			-- Header of precondition evaluation comment
 
-	pool_statistics_header: STRING is "-- Pool statistics: "
+	pool_statistics_header: STRING = "-- Pool statistics: "
 			-- Header of pool statistics logging
 
-	object_pool_header: STRING is "-- object_pool: "
+	object_pool_header: STRING = "-- object_pool: "
 			-- Header for object pool logging
 
-	predicate_pool_header: STRING is "-- predicate_pool: "
+	predicate_pool_header: STRING = "-- predicate_pool: "
 			-- Header for predicate pool logging
 
 	system: SYSTEM_I;
@@ -206,7 +206,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -176,7 +176,7 @@ feature {NONE} -- Reporting
 --			reported_request_count := reported_request_count + 1
 --		end
 
-	report_comment_line (a_line: STRING) is
+	report_comment_line (a_line: STRING) 
 			-- Report comment line `a_line'.
 		do
 			report_event (create {AUT_COMMENT_EVENT}.make (a_line))
@@ -350,7 +350,7 @@ invariant
 --	last_start_index_small_enough: last_start_index <= request_history.count -- TODO: reenable and fix bug! (inv does not hold before processing and after start request)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

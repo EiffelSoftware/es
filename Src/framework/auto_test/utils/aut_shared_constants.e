@@ -50,24 +50,24 @@ feature -- Access
 
 	object_state_void_value: STRING = "<void>"
 
-	object_state_invariant_violation: STRING is "invariant_violation"
+	object_state_invariant_violation: STRING = "invariant_violation"
 
-	object_is_void: STRING is "object_is_void"
+	object_is_void: STRING = "object_is_void"
 
-	test_case_start_tag: STRING is "TC start"
+	test_case_start_tag: STRING = "TC start"
 			-- Log tag for test case start
 
-	test_case_end_tag: STRING is "TC end"
+	test_case_end_tag: STRING = "TC end"
 			-- Log tag for test case end
 
-	start_request_tag: STRING is "start"
+	start_request_tag: STRING = "start"
 
-	time_stamp_header: STRING is "-- time stamp: "
+	time_stamp_header: STRING = "-- time stamp: "
 
-	test_case_index_header: STRING is "-- test case No."
+	test_case_index_header: STRING = "-- test case No."
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

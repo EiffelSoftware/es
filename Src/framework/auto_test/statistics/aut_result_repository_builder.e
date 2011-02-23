@@ -40,7 +40,7 @@ feature -- Access
 	result_repository: AUT_TEST_CASE_RESULT_REPOSITORY
 			-- Last result repository built by `build'
 
-	comment_processors: LINKED_LIST [PROCEDURE [ANY, TUPLE [STRING]]] is
+	comment_processors: LINKED_LIST [PROCEDURE [ANY, TUPLE [STRING]]]
 			-- list of processors for comment lines
 		do
 			if comment_processors_internal = Void then
@@ -95,7 +95,7 @@ feature{NONE} -- Processing
 			update_result_repository
 		end
 
-	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING)
 			-- Report comment line `a_line'.
 		local
 			l_processors: like comment_processors
@@ -140,7 +140,7 @@ feature -- Time measurement
 	last_test_case_end_time: INTEGER
 			-- Time in millisecond when the last test case ended
 
-	test_case_time_comment_processor (a_line: STRING) is
+	test_case_time_comment_processor (a_line: STRING)
 			-- Process `a_line' if it is a time stamp for test cases start/end.
 		local
 			l_line: STRING
@@ -151,7 +151,7 @@ feature -- Time measurement
 			end
 		end
 
-	analyze_time_stamp (a_line: STRING) is
+	analyze_time_stamp (a_line: STRING)
 			-- Analyze time stamp in `a_line'.
 		local
 			l_parts: LIST [STRING]
@@ -168,7 +168,7 @@ feature -- Time measurement
 			end
 		end
 
-	test_case_index_comment_processor (a_line: STRING) is
+	test_case_index_comment_processor (a_line: STRING)
 			-- Process `a_line' if it is a test case index comment.
 		local
 			l_line: STRING
@@ -226,7 +226,7 @@ feature -- Time measurement
 			end
 		end
 
-	exception_thrown_comment_processor (a_line: STRING) is
+	exception_thrown_comment_processor (a_line: STRING)
 			-- Process `a_line' if it is an exception thrown line.
 		do
 				-- Ilinca, "number of faults law" experiment
@@ -245,7 +245,7 @@ feature -- Time measurement
 			-- Implementation of `comment_processors'
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

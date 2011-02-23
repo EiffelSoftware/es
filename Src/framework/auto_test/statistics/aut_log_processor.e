@@ -17,7 +17,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_log_provided: BOOLEAN is
+	is_log_provided: BOOLEAN
 			-- Is log file(s) provided?
 		do
 			Result := configuration /= Void and then configuration.log_file_path /= Void
@@ -25,7 +25,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_configuration (a_config: like configuration) is
+	set_configuration (a_config: like configuration)
 			-- Set `configuration' with `a_config'.
 		do
 			configuration := a_config
@@ -35,7 +35,7 @@ feature -- Setting
 
 feature -- Process
 
-	process is
+	process
 			-- Process log file specified in `configuration'.
 		require
 --			configuration_set: is_configuration_set
@@ -44,7 +44,7 @@ feature -- Process
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

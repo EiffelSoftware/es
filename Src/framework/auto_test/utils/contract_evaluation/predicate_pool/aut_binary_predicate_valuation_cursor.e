@@ -28,7 +28,7 @@ feature -- Access
 
 feature -- Cursor movement
 
-	start is
+	start
 			-- Move cursor to first position.
 		local
 			l_free_vars: like free_variables
@@ -78,7 +78,7 @@ feature -- Cursor movement
 			end
 		end
 
-	forth is
+	forth
 			-- Move cursor to next position.
 		do
 			if free_variables.is_empty then
@@ -106,7 +106,7 @@ feature -- Cursor movement
 
 feature -- Basic operations
 
-	update_candidate_with_item is
+	update_candidate_with_item
 			-- Update `candidate' with objects at the position of current cursor.
 		local
 			l_free_vars: like free_variables
@@ -145,7 +145,7 @@ invariant
 	free_variables_valid: free_variables.count >= 0 and then free_variables.count <= 2
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

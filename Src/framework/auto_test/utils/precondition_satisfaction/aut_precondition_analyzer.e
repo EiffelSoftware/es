@@ -57,7 +57,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize.
 		do
 			create {DS_HASH_TABLE [STRING, INTEGER]} constrained_variables.make (2)
@@ -86,7 +86,7 @@ feature -- Access
 
 feature -- Basic operation
 
-	generate_precondition_predicates (a_feature: AUT_FEATURE_OF_TYPE) is
+	generate_precondition_predicates (a_feature: AUT_FEATURE_OF_TYPE)
 			-- Generate predicates from preconditions of `a_feature'.
 			-- Store result in `last_predicates' and
 			-- `last_predicate_access_patterns'.
@@ -344,7 +344,7 @@ feature{NONE} -- Process
 			process_anchored_type (l_as)
 		end
 
-	process_anchored_type (l_as: TYPE_AS) is
+	process_anchored_type (l_as: TYPE_AS)
 			-- Process `l_as'.
 		local
 			l_type: TYPE_A
@@ -371,7 +371,7 @@ feature{NONE} -- Process
 	nested_list: DS_LINKED_LIST [DS_LINKED_STACK [BOOLEAN]]
 			-- List for nested structures
 
-	check_access_name (a_name: STRING) is
+	check_access_name (a_name: STRING)
 			-- Check if access identifier is of type integer.
 			-- `a_name' is assumed to be in lower case.
 		local
@@ -433,7 +433,7 @@ feature{NONE} -- Process
 			end
 		end
 
-	operand_index (a_name: STRING; a_assertion: EPA_EXPRESSION; a_feature: FEATURE_I): INTEGER is
+	operand_index (a_name: STRING; a_assertion: EPA_EXPRESSION; a_feature: FEATURE_I): INTEGER
 			-- 0-based operand index of an operand with `a_name' in `a_assertion' of `a_feature'.
 			-- Operand index here can only be larger than 0 because target is not included, so
 			-- if current feature returns 0, it means that `a_name' is not an argument name.
@@ -471,13 +471,13 @@ feature{NONE} -- Implementation
 	current_feature: detachable AUT_FEATURE_OF_TYPE
 			-- Feature where `current_assertion' is written
 
-	current_context_class: CLASS_C is
+	current_context_class: CLASS_C
 			-- Context class where `current_feature' is viewed
 		do
 			Result := current_feature.associated_class
 		end
 
-	current_written_class: CLASS_C is
+	current_written_class: CLASS_C
 			-- Class where `current_feature' is written
 		do
 			Result := current_feature.feature_.written_class
@@ -510,7 +510,7 @@ feature{NONE} -- Implementation
 			-- An assertion needs linearly constraint solving only when
 			-- its integer operands are mentioned.
 
-	find_integer_operands is
+	find_integer_operands
 			-- Find arguments of integer type in the feature where `current_assertion'
 			-- is written and put them into `integer_operands'.
 		require
@@ -563,7 +563,7 @@ feature{NONE} -- Implementation
 --	last_processed_nested_as: detachable NESTED_AS
 --			-- Last process nested structure
 
-	place_holder (a_index: INTEGER): STRING is
+	place_holder (a_index: INTEGER): STRING
 			-- Place holder for `a_index'-th variable accessed in
 			-- currently processed assertion
 		do
@@ -573,7 +573,7 @@ feature{NONE} -- Implementation
 			Result.append_character ('$')
 		end
 
-	replace_text (a_call_index: INTEGER; a_predicate_index: INTEGER) is
+	replace_text (a_call_index: INTEGER; a_predicate_index: INTEGER)
 			--
 		local
 			l_call_str: STRING
@@ -592,7 +592,7 @@ feature{NONE} -- Implementation
 			text.replace_substring_all (l_call_str, l_pred_str)
 		end
 
-	analyze_predicate is
+	analyze_predicate
 			-- Analyze the last processed assertion
 			-- and generate a predicate out of it.
 			-- Store result in `last_predicates' and
@@ -694,7 +694,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	check_assertion (a_assertion: EPA_EXPRESSION; a_context_feature: AUT_FEATURE_OF_TYPE) is
+	check_assertion (a_assertion: EPA_EXPRESSION; a_context_feature: AUT_FEATURE_OF_TYPE)
 			-- Analyze `a_assertion' from `a_context_feature'.
 			-- If the constaints in `a_assertion' which is written in `a_context_feature'
 			-- is linear solvable, set `is_linear_solvable' to True and put integer arguments
@@ -726,7 +726,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Equality tester
 
-	is_string_equal (a_str, b_str: STRING): BOOLEAN is
+	is_string_equal (a_str, b_str: STRING): BOOLEAN
 			-- Is `a_str' equal to `b_str'?
 		do
 			Result := a_str ~ b_str
@@ -740,7 +740,7 @@ feature{NONE} -- Implmentation
 			-- Is linear constraint in the last process
 			-- assertion solvable?
 
-	string_equal_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
+	string_equal_tester: AGENT_BASED_EQUALITY_TESTER [STRING]
 			-- Tester to decide if two strings are equal
 		do
 			create Result.make (agent is_string_equal)
@@ -772,7 +772,7 @@ feature{NONE} -- Implmentation
 	type_checker: TYPE_A_CHECKER
 			-- Type checker			
 
-	sorted_keys (a_table: DS_HASH_TABLE [ANY, INTEGER]): DS_LIST [INTEGER] is
+	sorted_keys (a_table: DS_HASH_TABLE [ANY, INTEGER]): DS_LIST [INTEGER]
 			-- ascendingly sorted list of keys in `a_table'
 		local
 			l_sorter: DS_QUICK_SORTER [INTEGER]
@@ -785,7 +785,7 @@ feature{NONE} -- Implmentation
 			Result := l_keys
 		end
 
-	target_not_void_predicate_and_access_pattern (a_type: TYPE_A; a_feature: FEATURE_I): TUPLE [predicate: AUT_PREDICATE; access_pattern: AUT_PREDICATE_ACCESS_PATTERN] is
+	target_not_void_predicate_and_access_pattern (a_type: TYPE_A; a_feature: FEATURE_I): TUPLE [predicate: AUT_PREDICATE; access_pattern: AUT_PREDICATE_ACCESS_PATTERN]
 			-- "not_void" predicate for `a_type' and its access pattern.
 		require
 			a_type_attached: a_type /= Void
@@ -820,7 +820,7 @@ feature{NONE} -- Implmentation
 
 feature -- Status report
 
-	is_linear_solvable_predicate (a_predicate: AUT_PREDICATE): BOOLEAN is
+	is_linear_solvable_predicate (a_predicate: AUT_PREDICATE): BOOLEAN
 			-- Is `a_predicate' linearly solvable?
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -830,7 +830,7 @@ feature -- Status report
 			good_result: Result = a_predicate.is_linear_solvable
 		end
 
-	has_target_operand (a_access_pattern: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN is
+	has_target_operand (a_access_pattern: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN
 			-- Does `a_access_pattern' contain a normal predicate and then
 			-- access the target operand (the 0-th) object of a feature call?
 		require
@@ -841,7 +841,7 @@ feature -- Status report
 			end
 		end
 
-	has_constraining_query (a_predicate: AUT_PREDICATE): BOOLEAN is
+	has_constraining_query (a_predicate: AUT_PREDICATE): BOOLEAN
 			-- Is `a_predicate' a linear solvable predicate containing
 			-- constraining queries?
 		require
@@ -853,7 +853,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Initialize `system' with `a_system'.
 		do
 			system := a_system
@@ -33,7 +33,7 @@ feature -- Access
 			-- witnesses for that feature
 			-- Only features that are not tested AT ALL are listed here.
 
-	failed_assertions: DS_HASH_TABLE [HASH_TABLE [INTEGER, STRING], AUT_FEATURE_OF_TYPE] is
+	failed_assertions: DS_HASH_TABLE [HASH_TABLE [INTEGER, STRING], AUT_FEATURE_OF_TYPE]
 			-- Table of failed assertions for features
 			-- Key is the feature under test. Value is a hashtable, key of that hashtable is
 			-- tag name of the failing assertion, value of that hashtable is the number of times
@@ -75,7 +75,7 @@ feature -- Access
 			end
 		end
 
-	failed_tag_name (a_witness: AUT_ABS_WITNESS): STRING is
+	failed_tag_name (a_witness: AUT_ABS_WITNESS): STRING
 			-- Name of the failed assertion in `a_witness'
 		require
 			a_witness_is_invalid: a_witness.is_invalid or a_witness.is_bad_response
@@ -97,7 +97,7 @@ feature -- Access
 
 feature -- handler
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		local
 			l_feature: AUT_FEATURE_OF_TYPE
@@ -131,7 +131,7 @@ feature{NONE} -- Implementation
 invariant
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

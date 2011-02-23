@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_position: like position) is
+	make (a_feature: like feature_; a_position: like position)
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
@@ -45,7 +45,7 @@ feature -- Access
 	feature_: AUT_FEATURE_OF_TYPE
 			-- Feature from which current signature entity comes
 
-	argument_count: INTEGER is
+	argument_count: INTEGER
 			-- Number of arguments in `feature_'
 		do
 			Result := feature_.feature_.argument_count
@@ -71,7 +71,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_result_value: BOOLEAN is
+	is_result_value: BOOLEAN
 			-- Does current represent result value of `feature_'?
 		do
 			Result := position = feature_.feature_.argument_count + 1
@@ -79,7 +79,7 @@ feature -- Status report
 			good_result: Result = (position = feature_.feature_.argument_count + 1)
 		end
 
-	is_position_valid (a_position: like position; a_feature: like feature_): BOOLEAN is
+	is_position_valid (a_position: like position; a_feature: like feature_): BOOLEAN
 			-- Is `a_position' valid in the context of `a_feature'?
 		local
 			l_feat: FEATURE_I
@@ -99,7 +99,7 @@ invariant
 	position_valid: is_position_valid (position, feature_)
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

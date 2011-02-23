@@ -16,7 +16,7 @@ inherit
 
 feature -- Access
 
-	feature_signature_type_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_FEATURE_SIGNATURE_TYPE] is
+	feature_signature_type_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_FEATURE_SIGNATURE_TYPE]
 			-- Equality tester for {AUT_FEATURE_SIGNATURE_TYPE}
 		do
 			create Result.make (
@@ -27,51 +27,51 @@ feature -- Access
 				)
 		end
 
-	predicate_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE] is
+	predicate_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE]
 			-- Equality tester for predicate
 		do
 			create Result.make (agent (a, b: AUT_PREDICATE): BOOLEAN do Result := a = b or else a.is_equal (b) end)
 		end
 
-	feature_of_type_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER is
+	feature_of_type_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
 			-- Equality tester for feature of type
 		do
 			create Result.make
 		end
 
-	feature_of_type_loose_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER is
+	feature_of_type_loose_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
 			-- Equality tester for feature of type
 			-- Doesn't take {AUT_FEATURE_OF_TYPE}.is_creator into consideration.
 		do
 			create Result.make_with_creator_flag (False)
 		end
 
-	feature_of_type_name_equality_tester (a_system: SYSTEM_I): AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST is
+	feature_of_type_name_equality_tester (a_system: SYSTEM_I): AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST
 			-- Equality tester for feature of type based on feature names
 		do
 			create Result.make (a_system)
 		end
 
-	hashable_variable_array_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_HASHABLE_ITP_VARIABLE_ARRAY] is
+	hashable_variable_array_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
 			-- Equality tester for hashable variable array
 		do
 			create Result.make (agent (a, b: AUT_HASHABLE_ITP_VARIABLE_ARRAY): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
-	predicate_access_pattern_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_ACCESS_PATTERN] is
+	predicate_access_pattern_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Equality test for predicate access pattern
 		do
 			create Result.make (agent (a, b: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
-	variable_equality_tester: AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE] is
+	variable_equality_tester: AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE]
 			-- Equality test for predicate access pattern
 		do
 			create Result.make (agent (a, b: ITP_VARIABLE): BOOLEAN do Result := a.index = b.index end)
 		end
 feature -- Access
 
-	testable_features_from_type (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+	testable_features_from_type (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			-- Features in `a_type' in `a_system' which are testable by AutoTest
 		require
 			a_type_has_class: a_type.has_associated_class
@@ -109,7 +109,7 @@ feature -- Access
 			l_feat_table.go_to (l_cursor)
 		end
 
-	testable_features_from_types (a_types: DS_LIST [TYPE_A]; a_system: SYSTEM_I): DS_HASH_SET [AUT_FEATURE_OF_TYPE] is
+	testable_features_from_types (a_types: DS_LIST [TYPE_A]; a_system: SYSTEM_I): DS_HASH_SET [AUT_FEATURE_OF_TYPE]
 			-- Features from `a_types' that are testable by AutoTest
 		require
 			a_types_attached: a_types /= Void
@@ -129,7 +129,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	normalized_argument_name (a_argument_index: INTEGER): STRING is
+	normalized_argument_name (a_argument_index: INTEGER): STRING
 			-- Normalized name for the `a_argument_index'-th argument
 			-- in form of "a_arg_0", "a_arg_1" and so on.
 		require
@@ -138,12 +138,12 @@ feature -- Access
 			Result :=normalized_argument_name_prefix + a_argument_index.out
 		end
 
-	normalized_argument_name_prefix: STRING is "a_arg_";
+	normalized_argument_name_prefix: STRING = "a_arg_";
 		-- Prefix for normalized argument name
 
 feature -- Constraint solving related
 
-	constrained_operands_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING] is
+	constrained_operands_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING]
 			-- Names of contrained arguments in `a_patterns'
 		require
 			a_patterns_attached: a_patterns /= Void
@@ -179,7 +179,7 @@ feature -- Constraint solving related
 			result_attached: Result /= Void
 		end
 
-	constraining_queries_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING] is
+	constraining_queries_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING]
 			-- Names of constraining queries in `a_patterns'
 		require
 			a_patterns_attached: a_patterns /= Void
@@ -204,7 +204,7 @@ feature -- Constraint solving related
 			result_attached: Result /= Void
 		end
 
-	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]] is
+	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
 			-- Predicate assertions in `a_patterns'
 		require
 			a_patterns_attached: a_patterns /= Void
@@ -229,7 +229,7 @@ feature -- Constraint solving related
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

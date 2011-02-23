@@ -77,7 +77,7 @@ feature -- Basic operations
 			last_response := Void
 		end
 
-	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING)
 			-- Report comment line `a_line'.
 		do
 			-- Do nothing.
@@ -249,7 +249,7 @@ invariant
 	no_void_request_in_history: not request_history.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

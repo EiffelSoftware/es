@@ -16,7 +16,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_linear_solvable_predicates: like linear_solvable_predicates; a_context_queries: like context_queries; a_config: like configuration) is
+	make (a_feature: like feature_; a_linear_solvable_predicates: like linear_solvable_predicates; a_context_queries: like context_queries; a_config: like configuration)
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
@@ -72,7 +72,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	solve is
+	solve
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
 			-- If there is a solution, set `has_last_solution' to True and put that solution into
 			-- `last_solution'. Otherwise, set `has_last_solution' to False.
@@ -84,7 +84,7 @@ feature{NONE} -- Implementation
 	linear_solvable_operands: DS_HASH_SET [STRING]
 			-- Names of linearly solvable arguments
 
-	set_last_solution (a_valuation: HASH_TABLE [INTEGER, STRING]) is
+	set_last_solution (a_valuation: HASH_TABLE [INTEGER, STRING])
 			-- Set `last_solution' with `a_valuation'.
 		require
 			a_valuation_attached: a_valuation /= Void
@@ -108,7 +108,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

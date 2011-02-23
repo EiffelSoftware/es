@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 			is_creator_checked := True
 		end
 
-	make_with_creator_flag (b: BOOLEAN) is
+	make_with_creator_flag (b: BOOLEAN)
 			-- Initialize `is_creator_checked' with `b'.
 		do
 			is_creator_checked := b
@@ -66,7 +66,7 @@ feature -- Status report
 			-- Default: True
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

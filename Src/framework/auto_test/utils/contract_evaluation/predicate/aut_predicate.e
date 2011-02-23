@@ -25,7 +25,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class) is
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class)
 			-- Initialize current.
 		require
 			a_types_attached: a_types /= Void
@@ -46,7 +46,7 @@ feature -- Access
 			-- Used for fast identification
 			-- Note: this id is not used in equality comparison
 
-	context_class: CLASS_C is
+	context_class: CLASS_C
 			-- Class where current predicate is viewed
 		do
 			fixme ("To be removed because `context_class' should be accessible through `expression.context_class'.");
@@ -78,7 +78,7 @@ feature -- Access
 			-- And all the calls are changed to qualified.
 			-- "{1}" means the first argument of the predicate.
 
-	text_with_type_name: STRING is
+	text_with_type_name: STRING
 			-- Text of Current predicate with type name.
 		local
 			l_text: STRING
@@ -169,12 +169,12 @@ feature -- Equality
 
 feature -- Status report
 
-	is_linear_solvable: BOOLEAN is
+	is_linear_solvable: BOOLEAN
 			-- Is current predicate linearly solvable?
 		deferred
 		end
 
-	is_nullary: BOOLEAN is
+	is_nullary: BOOLEAN
 			-- Does current predicate have no argument?
 		do
 			Result := arity = 0
@@ -182,7 +182,7 @@ feature -- Status report
 			good_result: Result = (arity = 0)
 		end
 
-	is_unary: BOOLEAN is
+	is_unary: BOOLEAN
 			-- Is current a unary predicate?
 		do
 			Result := arity = 1
@@ -190,7 +190,7 @@ feature -- Status report
 			good_result: Result = (arity = 1)
 		end
 
-	is_binary: BOOLEAN is
+	is_binary: BOOLEAN
 			-- Is Current a binary predicate?
 		do
 			Result := arity = 2
@@ -198,7 +198,7 @@ feature -- Status report
 			good_result: Result = (arity = 2)
 		end
 
-	is_argument_used_as_target (i: INTEGER): BOOLEAN is
+	is_argument_used_as_target (i: INTEGER): BOOLEAN
 			-- Is the `i'-th argument used as a target of a feature
 			-- call in Current?
 		require
@@ -227,7 +227,7 @@ feature -- Setting
 			id_set: id = a_id
 		end
 
-	set_arguments_as_target (a_targets: like targets) is
+	set_arguments_as_target (a_targets: like targets)
 			-- Set `targets' with `a_targets'.
 		do
 			targets.wipe_out
@@ -250,7 +250,7 @@ invariant
 	targets_attached: targets /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

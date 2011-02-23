@@ -12,7 +12,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_container: like container; a_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate) is
+	make (a_container: like container; a_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate)
 			-- Initialize.
 		require
 			a_container_attached: a_container /= Void
@@ -41,12 +41,12 @@ feature -- Status report
 	before: BOOLEAN
 			-- Is there no valid cursor position to the left of cursor?
 
-	after: BOOLEAN is
+	after: BOOLEAN
 			-- Is there no valid position to right of cursor?
 		deferred
 		end
 
-	off: BOOLEAN is
+	off: BOOLEAN
 			-- Is there a valid position under current cursor?
 		do
 			Result := before or after
@@ -93,12 +93,12 @@ feature -- Status report
 
 feature -- Cursor movement
 
-	start is
+	start
 			-- Move cursor to first position.
 		deferred
 		end
 
-	forth is
+	forth
 			-- Move cursor to next position.
 		require
 			not_after: not after
@@ -107,7 +107,7 @@ feature -- Cursor movement
 
 feature -- Basic operations
 
-	update_candidate_with_item is
+	update_candidate_with_item
 			-- Update `candidate' with objects at the position of current cursor.
 		require
 			valid_position: not off
@@ -116,7 +116,7 @@ feature -- Basic operations
 			candidate_updated: free_variables.for_all (agent (ind: INTEGER): BOOLEAN do Result := candidate.item (ind) /= Void end)
 		end
 
-	update_candidate_with_free_variables is
+	update_candidate_with_free_variables
 			-- Update `candidate' by setting all `free_variables' to Void.
 		do
 			free_variables.do_all (agent (ind: INTEGER) do candidate.put (Void, ind) end)
@@ -124,7 +124,7 @@ feature -- Basic operations
 			candidate_updated: free_variables.for_all (agent (ind: INTEGER): BOOLEAN do Result := candidate.item (ind) = Void end)
 		end
 
-	calculate_free_variables is
+	calculate_free_variables
 			-- Calculate `free_variables' from `candidate'.
 		local
 			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
@@ -150,7 +150,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	variable_from_index (a_index: INTEGER): ITP_VARIABLE is
+	variable_from_index (a_index: INTEGER): ITP_VARIABLE
 			-- Interpreter variable from `a_index'.
 		do
 			create Result.make (a_index)
@@ -158,7 +158,7 @@ feature{NONE} -- Implementation
 			good_result: Result /= Void and then Result.index = a_index
 		end
 
-	variable_in_candidate (a_index: INTEGER): ITP_VARIABLE is
+	variable_in_candidate (a_index: INTEGER): ITP_VARIABLE
 			-- Variable at `a_index'-th position in `candidate'
 		require
 			a_index_valid: candidate.lower <= a_index and then a_index <= candidate.upper
@@ -179,7 +179,7 @@ invariant
 	predicate_access_pattern_valid: predicate_access_pattern.predicate.is_equal (container.predicate)
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

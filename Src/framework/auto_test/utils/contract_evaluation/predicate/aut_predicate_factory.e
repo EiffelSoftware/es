@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize current factory.
 		do
 			initialize
@@ -28,7 +28,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	initialize is
+	initialize
 			-- Initialize current factory.
 		do
 			create predicates.make (100)
@@ -36,7 +36,7 @@ feature -- Basic operations
 			next_predicate_id := 1
 		end
 
-	normal_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C): AUT_NORMAL_PREDICATE is
+	normal_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C): AUT_NORMAL_PREDICATE
 			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class',
 			-- create one and put it into `predicates' and then return that predicate.
 			-- Otherwise return the existing predicate.
@@ -50,7 +50,7 @@ feature -- Basic operations
 			end
 		end
 
-	linear_solvable_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C; a_constrained_arguments: DS_HASH_SET [INTEGER]; a_constraining_queries: DS_HASH_SET [STRING]): AUT_LINEAR_SOLVABLE_PREDICATE is
+	linear_solvable_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C; a_constrained_arguments: DS_HASH_SET [INTEGER]; a_constraining_queries: DS_HASH_SET [STRING]): AUT_LINEAR_SOLVABLE_PREDICATE
 			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class',
 			-- create one and put it into `predicates' and then return that predicate.
 			-- Otherwise return the existing predicate.
@@ -69,7 +69,7 @@ feature{NONE} -- Implementation
 	next_predicate_id: INTEGER
 			-- Id that is to be used for the next created predicate
 
-	actual_predicate (a_predicate: AUT_PREDICATE): AUT_PREDICATE is
+	actual_predicate (a_predicate: AUT_PREDICATE): AUT_PREDICATE
 			-- if `predicates' already contains `a_predicate', return that predicate
 			-- which is in `predicates', otherwise return `a_predicate' (as a side effect, .
 			-- insert `a_predicate' into `predicates'.
@@ -85,7 +85,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -9,7 +9,7 @@ deferred class
 
 feature -- Access
 
-	has (a_values: ARRAY [INTEGER]): BOOLEAN is
+	has (a_values: ARRAY [INTEGER]): BOOLEAN
 			-- Does current contain `a_values'?
 		require
 			a_values_attached: a_values /= Void
@@ -22,12 +22,12 @@ feature -- Access
 
 feature -- Access
 
-	item: ARRAY [INTEGER] is
+	item: ARRAY [INTEGER]
 			-- Item values at current location
 		deferred
 		end
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of elements
 		deferred
 		ensure
@@ -36,23 +36,23 @@ feature -- Access
 
 feature -- Status report
 
-	before: BOOLEAN is
+	before: BOOLEAN
 			-- Is before?
 		deferred
 		end
 
-	after: BOOLEAN is
+	after: BOOLEAN
 			-- Is after?
 		deferred
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Is Current empty?
 		do
 			Result := count = 0
 		end
 
-	is_item_valid (a_array: like item): BOOLEAN is
+	is_item_valid (a_array: like item): BOOLEAN
 			-- is `a_array' valid to be put into Current?
 		require
 			a_array_attached: a_array /= Void
@@ -62,17 +62,17 @@ feature -- Status report
 
 feature -- Basic operations
 
-	start is
+	start
 			-- Start
 		deferred
 		end
 
-	forth is
+	forth
 			-- Forth
 		deferred
 		end
 
-	put (a_values: like item) is
+	put (a_values: like item)
 			-- Put `a_values' into Current.
 		require
 			a_values_attached: a_values /= Void
@@ -80,7 +80,7 @@ feature -- Basic operations
 		deferred
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current.
 		deferred
 		ensure
@@ -91,7 +91,7 @@ invariant
 	arity_positive: arity > 0
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

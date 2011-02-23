@@ -26,7 +26,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_types_under_test: DS_LIST [TYPE_A]; a_root_class: CLASS_C) is
+	make (a_system: like system; a_types_under_test: DS_LIST [TYPE_A]; a_root_class: CLASS_C)
 			-- Initialize current.
 		require
 			a_system_attached: a_system /= Void
@@ -66,7 +66,7 @@ feature -- Access
 	sorted_types_cursor: DS_ARRAYED_LIST_CURSOR [TYPE_A]
 			-- Cursor to iterate `sorted_types'.
 
-	conforming_variables (a_context_class: CLASS_C; a_type: TYPE_A): DS_ARRAYED_LIST [ITP_VARIABLE] is
+	conforming_variables (a_context_class: CLASS_C; a_type: TYPE_A): DS_ARRAYED_LIST [ITP_VARIABLE]
 			-- List of variables whose type conforms to `a_type' viewed fron `a_context_class'
 		require
 			a_context_class_attached: a_context_class /= Void
@@ -163,7 +163,7 @@ feature -- Status report
 			good_result: Result = storage.has (a_variable)
 		end
 
-	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN is
+	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN
 			-- Is variable with `a_index' defined?
 		require
 			a_index_valid: a_index > 0
@@ -173,7 +173,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A) is
+	put_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A)
 			-- Put `a_variable' of `a_type' into current pool.
 		local
 			l_cursor: like sorted_types_cursor
@@ -206,7 +206,7 @@ feature -- Basic operations
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current pool.
 		local
 			l_vtable: like variable_table
@@ -226,7 +226,7 @@ feature -- Basic operations
 			storage_wiped_out: storage.is_empty
 		end
 
-	mark_invalid_object (a_index: INTEGER; a_context_class: CLASS_C) is
+	mark_invalid_object (a_index: INTEGER; a_context_class: CLASS_C)
 			-- Mark that object with index `a_index' violates it class invariant.
 		require
 			a_index_positive: a_index > 0
@@ -265,7 +265,7 @@ feature{NONE} -- Implementation
 	storage: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			-- Table of all variables along with their type
 
-	sort_types (a_types: DS_LINEAR [TYPE_A]) is
+	sort_types (a_types: DS_LINEAR [TYPE_A])
 			-- Sort types in `a_types' topologically
 			-- and store resultin `sorted_types'.
 			-- The most specific types appear at first in `sorted_types'.
@@ -308,7 +308,7 @@ feature{NONE} -- Implementation
 			sorted_types_cursor := sorted_types.new_cursor
 		end
 
-	suppliers_of_types (a_types: DS_LIST [TYPE_A]): DS_LIST [TYPE_A] is
+	suppliers_of_types (a_types: DS_LIST [TYPE_A]): DS_LIST [TYPE_A]
 			-- Supplier types of `a_types'.
 			-- Suppliers only include `a_types' and type of arguments appear in `a_types'.
 		local
@@ -356,10 +356,10 @@ feature{NONE} -- Implementation
 			l_type_set.do_all (agent Result.force_last)
 		end
 
-	initial_object_list_capacity: INTEGER is 500
+	initial_object_list_capacity: INTEGER = 500
 			-- Initial capacity for the list to store object of each type
 
-	setup_variable_table is
+	setup_variable_table
 			-- Setup `variable_table'.
 		local
 			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
@@ -385,7 +385,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	remove_variable_from_list (a_variable: ITP_VARIABLE; a_var_list: DS_ARRAYED_LIST [ITP_VARIABLE]) is
+	remove_variable_from_list (a_variable: ITP_VARIABLE; a_var_list: DS_ARRAYED_LIST [ITP_VARIABLE])
 			-- Remove `a_variable' from `a_var_list'.
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [ITP_VARIABLE]
@@ -409,7 +409,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

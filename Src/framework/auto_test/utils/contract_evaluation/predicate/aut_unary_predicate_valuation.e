@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_predicate: like predicate) is
+	make (a_predicate: like predicate)
 			-- Initialize `predicate' with `a_predicate'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -29,7 +29,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of object combinations that satisfy the associated predicate.
 		do
 			Result := storage.count
@@ -37,7 +37,7 @@ feature -- Access
 			good_result: Result = storage.count
 		end
 
-	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Valuation of objects in `a_arguments'
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		do
@@ -60,7 +60,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Does `a_variable' exist in current valuation?
 		do
 			Result := storage.has (a_variable.index)
@@ -68,7 +68,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
+	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN)
 			-- Set valuation for `a_arguments' with `a_value'.
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		local
@@ -96,7 +96,7 @@ feature -- Basic operations
 				(not a_value implies not item (a_arguments))
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current all valuations.
 		do
 			storage.wipe_out
@@ -105,7 +105,7 @@ feature -- Basic operations
 			storage_wiped_out: storage.is_empty
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all valuations related to `a_variable'.
 		do
 			storage.remove (a_variable.index)
@@ -114,7 +114,7 @@ feature -- Basic operations
 
 feature -- Process
 
-	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR) is
+	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR)
 			-- Prcoess current with `a_visitor'.
 		do
 			a_visitor.process_unary_predicate_valuation (Current)
@@ -127,7 +127,7 @@ feature{AUT_PREDICATE_VALUATION_CURSOR}  -- Storage
 
 feature{NONE} -- Implementation
 
-	initial_storage_capacity: INTEGER is 1000
+	initial_storage_capacity: INTEGER = 1000
 			-- Initial capacity for `storage'
 
 	array_represention_cache: detachable like array_represention
@@ -137,7 +137,7 @@ invariant
 	storage_attached: storage /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

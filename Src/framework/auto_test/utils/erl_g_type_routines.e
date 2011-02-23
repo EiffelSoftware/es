@@ -131,7 +131,7 @@ feature -- Access
 				(a_type.has_associated_class implies Result = exported_creators (a_type.associated_class, a_system).count)
 		end
 
-	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
+	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN
 			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
 		require
 			a_feature_attached: a_feature /= Void
@@ -272,7 +272,7 @@ feature{NONE} -- Implementation
 
 feature -- Types
 
-	resolved_type_from_name (a_type_name: STRING; a_context: CLASS_C): detachable TYPE_A is
+	resolved_type_from_name (a_type_name: STRING; a_context: CLASS_C): detachable TYPE_A
 			-- Note: Code taken from `build_types_and_classes_under_test'
 		local
 			l_type: TYPE_A
@@ -423,7 +423,7 @@ feature -- Types
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

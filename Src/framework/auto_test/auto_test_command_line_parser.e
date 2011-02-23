@@ -862,6 +862,10 @@ feature{NONE} -- Initialization
 				is_automatic_testing_enabled := False
 			end
 
+			if semantic_data_base_config = Void then
+				create semantic_data_base_config.make
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)

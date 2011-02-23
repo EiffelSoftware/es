@@ -33,7 +33,7 @@ feature -- Basic operations
 			end
 		end
 
-	setup_feature_id_table is
+	setup_feature_id_table
 			-- Setup `feature_id_table'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_FEATURE_OF_TYPE]
@@ -52,7 +52,7 @@ feature -- Basic operations
 			end
 		end
 
-	build_relevant_predicate_with_operand_table is
+	build_relevant_predicate_with_operand_table
 			-- Build `relevant_predicate_with_operand_table'.
 		local
 			l_feat_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE]
@@ -99,7 +99,7 @@ feature -- Basic operations
 			end
 		end
 
-	find_precondition_predicates is
+	find_precondition_predicates
 			-- Find precondition predicates from `features_under_test',
 			-- store those predicates into `predicates', and store
 			-- the access patterns of those predicates into
@@ -131,7 +131,7 @@ feature -- Basic operations
 			end
 		end
 
-	find_relevant_predicates is
+	find_relevant_predicates
 			-- For each feature in `features_under_test',
 			-- find relevant predicates that needs to be reevalated
 			-- every time when that feature is executed.
@@ -173,7 +173,7 @@ feature -- Basic operations
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

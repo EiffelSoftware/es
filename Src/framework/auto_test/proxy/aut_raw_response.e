@@ -42,13 +42,13 @@ feature -- Access
 			-- Flag of current response
 			-- See {ITP_SHARED_CONSTANTS} for defined values for `a_flag'.
 
-	is_interpreter_error: BOOLEAN is
+	is_interpreter_error: BOOLEAN
 			-- Is `error' an interpreter error?
 		do
 			Result := flag = {ITP_SHARED_CONSTANTS}.internal_error_respones_flag
 		end
 
-	is_invariant_violation_on_entry: BOOLEAN is
+	is_invariant_violation_on_entry: BOOLEAN
 			-- Does current response contain an invariant violation on
 			-- entry of testee feature?
 		do
@@ -82,7 +82,7 @@ feature -- Setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

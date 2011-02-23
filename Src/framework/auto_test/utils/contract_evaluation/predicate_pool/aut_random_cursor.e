@@ -12,7 +12,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_storage: like storage; a_random: like random) is
+	make (a_storage: like storage; a_random: like random)
 			-- Initialize.
 		require
 			a_storage_attached: a_storage /= Void
@@ -27,7 +27,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	item: G is
+	item: G
 			-- Item at current position
 		require
 			not off
@@ -43,7 +43,7 @@ feature -- Status report
 	after: BOOLEAN
 			-- Is there no valid position to right of cursor?
 
-	off: BOOLEAN is
+	off: BOOLEAN
 			-- Is there a valid position under current cursor?
 		do
 			Result := before or after
@@ -51,7 +51,7 @@ feature -- Status report
 			good_result: Result = (before or after)
 		end
 
-	is_last: BOOLEAN is
+	is_last: BOOLEAN
 			-- Is current position the last position?
 		do
 			Result := not off and then unvisited_item_count = 1
@@ -59,13 +59,13 @@ feature -- Status report
 
 feature -- Cursor movement
 
-	start is
+	start
 			-- Move cursor to first position.
 		do
 			internal_forth
 		end
 
-	forth is
+	forth
 			-- Move cursor to next position.
 		require
 			not_after: not after
@@ -85,7 +85,7 @@ feature{NONE} -- Implementation
 	unvisited_item_count: INTEGER
 			-- Number of items in storage that are not visited
 
-	internal_forth is
+	internal_forth
 			-- Forth to the next item.
 		local
 			l_index: INTEGER
@@ -118,7 +118,7 @@ invariant
 	random_attached: random /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

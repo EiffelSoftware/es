@@ -21,7 +21,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_feature: like feature_; a_variables: DS_LIST [ITP_VARIABLE]) is
+	make (a_system: like system; a_feature: like feature_; a_variables: DS_LIST [ITP_VARIABLE])
 			-- Initialize Current.
 		do
 			old_make (a_system)
@@ -48,7 +48,7 @@ feature -- Processing
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

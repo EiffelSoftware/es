@@ -58,7 +58,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_configuration (a_config: like configuration) is
+	set_configuration (a_config: like configuration)
 			-- Set `configuration' with `a_config'.
 		do
 			configuration := a_config
@@ -230,7 +230,7 @@ invariant
 	output_stream_attached: output_stream /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

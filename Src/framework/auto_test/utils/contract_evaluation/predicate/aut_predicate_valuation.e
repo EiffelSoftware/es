@@ -17,7 +17,7 @@ feature -- Access
 	predicate: AUT_PREDICATE
 			-- Predicate whose evaluation is to be stored in Current.
 
-	arity: INTEGER is
+	arity: INTEGER
 			-- Arity of `predicate'
 		do
 			Result := predicate.arity
@@ -25,14 +25,14 @@ feature -- Access
 			good_result: Result = predicate.arity
 		end
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of object combinations that satisfy the associated predicate.
 		deferred
 		ensure
 			good_result: Result >= 0
 		end
 
-	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Valuation of objects in `a_arguments'
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		require
@@ -42,7 +42,7 @@ feature -- Access
 
 feature -- Status report
 
-	has (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	has (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Does current have evaluation for `a_arguments'.
 			-- It is True because we assume this valuation class containts
 			-- all possible valuations for `predicate', although we only store
@@ -54,7 +54,7 @@ feature -- Status report
 			Result := True
 		end
 
-	is_valid_arguments (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	is_valid_arguments (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Is `a_arguments' valid for `predcicate'?
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		do
@@ -69,7 +69,7 @@ feature -- Status report
 					not a_arguments.has (Void)
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			-- Does current contain no element?
 		do
 			Result := count = 0
@@ -77,7 +77,7 @@ feature -- Status report
 			good_result: Result = (count = 0)
 		end
 
-	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Does `a_variable' exist in current valuation?
 		require
 			a_variable_attached: a_variable /= Void
@@ -94,7 +94,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
+	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN)
 			-- Set valuation for `a_arguments' with `a_value'.
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		require
@@ -104,14 +104,14 @@ feature -- Basic operations
 			good_result: item (a_arguments) = a_value
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current all valuations.
 		deferred
 		ensure
 			valuations_wiped_out: count = 0
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all valuations related to `a_variable'.
 		require
 			a_variable_attached: a_variable /= Void
@@ -122,7 +122,7 @@ feature -- Basic operations
 
 feature -- Process
 
-	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR) is
+	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR)
 			-- Prcoess current with `a_visitor'.
 		require
 			a_visitor_attached: a_visitor /= Void
@@ -143,7 +143,7 @@ invariant
 	count_non_negative: count >= 0
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

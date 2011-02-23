@@ -16,7 +16,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize current
 		do
 				-- Uses `equal' for key comparison
@@ -39,7 +39,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_candidate_satisfied (a_constraint: AUT_PREDICATE_CONSTRAINT; a_arguments: ARRAY [detachable ITP_VARIABLE]; a_predicate_veto_function: detachable PREDICATE [ANY, TUPLE [AUT_PREDICATE]]): BOOLEAN is
+	is_candidate_satisfied (a_constraint: AUT_PREDICATE_CONSTRAINT; a_arguments: ARRAY [detachable ITP_VARIABLE]; a_predicate_veto_function: detachable PREDICATE [ANY, TUPLE [AUT_PREDICATE]]): BOOLEAN
 			-- Is `a_arguments' satisfy `a_constraint'?
 			-- If `a_predicate_veto_function' is attached, only predicates that makes `a_preciate_veto_function' return True is evaluated.
 		require
@@ -107,7 +107,7 @@ feature -- Status report
 			-- is a candidate which only satisfies part of the required predicate to be returned?			
 			-- Default: True
 
-	has_valuation (a_predicate: AUT_PREDICATE): BOOLEAN is
+	has_valuation (a_predicate: AUT_PREDICATE): BOOLEAN
 			-- Is there a True valuation for `a_predicate'?
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -117,7 +117,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_partial_satisfaction_enabled (b: BOOLEAN) is
+	set_is_partial_satisfaction_enabled (b: BOOLEAN)
 			-- Set `is_partial_satisfaction_enabled' with `b'.
 		do
 			is_partial_satisfaction_enabled := b
@@ -268,7 +268,7 @@ feature -- Setting
 
 feature -- Basic operations
 
-	setup_predicates (a_predicates: DS_HASH_SET [AUT_PREDICATE]) is
+	setup_predicates (a_predicates: DS_HASH_SET [AUT_PREDICATE])
 			-- Setup `valuation_table' for `a_predicates'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
@@ -292,7 +292,7 @@ feature -- Basic operations
 						end (?, ?, a_predicates))
 		end
 
-	update_predicate_valuation (a_predicate: AUT_PREDICATE; a_arguments: ARRAY [ITP_VARIABLE]; a_valuation: BOOLEAN) is
+	update_predicate_valuation (a_predicate: AUT_PREDICATE; a_arguments: ARRAY [ITP_VARIABLE]; a_valuation: BOOLEAN)
 			-- Update the valuation of `a_predicate' with `a_arguments' to `a_valuation'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -309,7 +309,7 @@ feature -- Basic operations
 		end
 
 	generate_candidates (a_constraint: AUT_PREDICATE_CONSTRAINT; a_max_solution_count: INTEGER; a_initial_candidate: ARRAY [detachable ITP_VARIABLE];
-						 a_feature: AUT_FEATURE_OF_TYPE; a_linear_solvable_constraints:  DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]; a_interpreter: AUT_INTERPRETER_PROXY) is
+						 a_feature: AUT_FEATURE_OF_TYPE; a_linear_solvable_constraints:  DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]; a_interpreter: AUT_INTERPRETER_PROXY)
 			-- Generate candidate object combinations satisfy `a_constraint', and store result
 			-- in `last_candidates'.
 			-- If `a_max_solution_count' > 0, store at most `a_max_solution_count' candidates.		
@@ -468,13 +468,13 @@ feature -- Basic operations
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current prediate pool.
 		do
 			valuation_table.do_all (agent {AUT_PREDICATE_VALUATION}.wipe_out)
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all predicate valuations related to `a_variable'.
 		require
 			a_variable_attached: a_variable /= Void
@@ -487,7 +487,7 @@ feature{NONE} -- Implementation
 	valuation_cursor_factory: AUT_PREDICATE_VALUATION_CURSOR_FACTORY
 			-- Factory to create cursors for predicate valuation
 
-	sorted_valuation_cursors (a_constraint: AUT_PREDICATE_CONSTRAINT; a_candidate: ARRAY [detachable ITP_VARIABLE]; a_config: TEST_GENERATOR): DS_ARRAYED_LIST [AUT_PREDICATE_VALUATION_CURSOR] is
+	sorted_valuation_cursors (a_constraint: AUT_PREDICATE_CONSTRAINT; a_candidate: ARRAY [detachable ITP_VARIABLE]; a_config: TEST_GENERATOR): DS_ARRAYED_LIST [AUT_PREDICATE_VALUATION_CURSOR]
 			-- List of sorted predicate valuation cursors for predicates in `a_constraint'.
 			-- The cursor with the least candicates will appear first in the sorted list.
 			-- `a_cofig' is the configuration of current test session.
@@ -540,7 +540,7 @@ feature{NONE} -- Implementation
 			result_not_has_void: not Result.has (Void)
 		end
 
-	new_predicate_valuation (a_predicate: AUT_PREDICATE): AUT_PREDICATE_VALUATION is
+	new_predicate_valuation (a_predicate: AUT_PREDICATE): AUT_PREDICATE_VALUATION
 			-- New valuation for `a_predicate'
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -561,7 +561,7 @@ feature{NONE} -- Implementation
 			result_valid: Result.predicate = a_predicate
 		end
 
-	fix_free_variables (a_dest_candidate: ARRAY [detachable ITP_VARIABLE]; a_source_candidate: ARRAY [detachable ITP_VARIABLE]) is
+	fix_free_variables (a_dest_candidate: ARRAY [detachable ITP_VARIABLE]; a_source_candidate: ARRAY [detachable ITP_VARIABLE])
 			-- Set corresponding variables in `a_source_candidate' into `a_dest_candidate' in case if that variable in `a_dest_candidate'
 			-- is free.
 		require
@@ -580,7 +580,7 @@ feature{NONE} -- Implementation
 					end)
 		end
 
-	fixed_operand_indexes (a_candidate: ARRAY [detachable ITP_VARIABLE]): HASH_TABLE [ITP_VARIABLE, INTEGER] is
+	fixed_operand_indexes (a_candidate: ARRAY [detachable ITP_VARIABLE]): HASH_TABLE [ITP_VARIABLE, INTEGER]
 			-- Table of variables that are fixed
 			-- [Variable, its 0-based operand index in `a_candidates']
 		local
@@ -609,7 +609,7 @@ invariant
 	cursor_factory_attached: valuation_cursor_factory /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

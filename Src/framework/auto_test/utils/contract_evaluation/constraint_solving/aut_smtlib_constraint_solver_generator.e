@@ -58,7 +58,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	generate_smtlib (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns) is
+	generate_smtlib (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns)
 			-- Generate smtlib file to solve linear constrains in preconditions in `a_feature'.
 			-- `a_patterns' are access patterns of preconditions for that feature.
 			-- If there is any linear constraints for `a_feature', set `has_linear_constraints' to True and then
@@ -86,13 +86,13 @@ feature -- Basic operations
 
 feature -- Setting
 
-	set_used_values (a_used_values: like used_values) is
+	set_used_values (a_used_values: like used_values)
 			-- Set `used_values' with `a_used_values'.
 		do
 			used_values := a_used_values
 		end
 
-	set_is_used_value_enforced (b: BOOLEAN) is
+	set_is_used_value_enforced (b: BOOLEAN)
 			-- Set `is_used_value_enforced' with `b'.
 		do
 			is_used_values_enforced := b
@@ -100,7 +100,7 @@ feature -- Setting
 			is_used_values_enforced_set: is_used_values_enforced = b
 		end
 
-	set_use_predefined_values_rate (a_rate: DOUBLE) is
+	set_use_predefined_values_rate (a_rate: DOUBLE)
 			-- Set `use_predefined_values_rate' with `a_rate'.
 		do
 			use_predefined_values_rate := a_rate
@@ -124,7 +124,7 @@ feature{NONE} -- Implementation
 	access_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Access patterns of `current_feature'
 
-	current_name: STRING is "current"
+	current_name: STRING = "current"
 
 	current_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
 			-- Access pattern for current processed predicate assertion
@@ -201,7 +201,7 @@ feature{NONE} -- Process
 
 feature{NONE} -- Generation
 
-	generate_formula is
+	generate_formula
 			-- Generate the formula part of the SMT-LIB.
 		local
 			l_data: TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
@@ -235,7 +235,7 @@ feature{NONE} -- Generation
 			last_smtlib.append ("%N))")
 		end
 
-	generate_predefined_value_constraint (a_operand: STRING) is
+	generate_predefined_value_constraint (a_operand: STRING)
 			-- Generate constraints for `a_operand' to have predefined values and
 			-- store result in `last_smtlib'.
 		require
@@ -265,7 +265,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	generate_constraints_for_used_values is
+	generate_constraints_for_used_values
 			-- Generate constraints for used values.
 			-- If `is_used_values_enforced' is True, the generated solution only contains
 			-- values that are already in `used_values', otherwise, the generated solution
@@ -314,7 +314,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	generate_used_values (a_values: ARRAY [INTEGER]; a_operands: DS_ARRAYED_LIST [STRING]) is
+	generate_used_values (a_values: ARRAY [INTEGER]; a_operands: DS_ARRAYED_LIST [STRING])
 			-- Generate used values `a_values' in `last_smtlib'.
 		require
 			operand_number_valid: a_values.count = a_operands.count
@@ -354,7 +354,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	generate_integer_value (a_value: INTEGER) is
+	generate_integer_value (a_value: INTEGER)
 			-- Generate `a_value' into `last_smtlib'.
 		local
 			l_smtlib: like last_smtlib
@@ -369,7 +369,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	generate_header is
+	generate_header
 			-- Generate header SMT-LIB part.
 		do
 			last_smtlib.append ("(benchmark ")
@@ -381,7 +381,7 @@ feature{NONE} -- Generation
 			last_smtlib.append (":logic QF_LIA%N%N")
 		end
 
-	generate_extra_functions is
+	generate_extra_functions
 			-- Generate the extra functions part of the SMT-LIB.
 		local
 			l_names: LINKED_LIST [STRING]
@@ -408,7 +408,7 @@ feature{NONE} -- Generation
 			last_smtlib.append ("%N")
 		end
 
-	generate_assumptions is
+	generate_assumptions
 			-- Generate the assumption part of the SMT-LIB.
 		local
 			l_names: LINKED_LIST [STRING]
@@ -430,7 +430,7 @@ feature{NONE} -- Generation
 			last_smtlib.append ("%N")
 		end
 
-	final_argument_name (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): detachable STRING is
+	final_argument_name (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): detachable STRING
 			-- Final name of the argument `a_name' in `a_feature'
 		local
 			i: INTEGER
@@ -441,7 +441,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	normalized_string (a_string: STRING): STRING is
+	normalized_string (a_string: STRING): STRING
 			-- Normalized version of `a_string'.
 			-- Normalization means remoing all leading and trailing
 			-- spaces, and turning all letters in non-capital ones.
@@ -456,7 +456,7 @@ feature{NONE} -- Generation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

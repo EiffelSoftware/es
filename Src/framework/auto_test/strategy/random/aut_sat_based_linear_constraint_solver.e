@@ -31,13 +31,13 @@ feature -- Access
 
 feature -- Setting
 
-	set_use_predefined_value_rate (a_rate: INTEGER) is
+	set_use_predefined_value_rate (a_rate: INTEGER)
 			-- Set `use_predefined_value_rate'.
 		do
 			use_predefined_value_rate := a_rate.to_double / 100
 		end
 
-	set_enforce_used_value_rate (a_rate: INTEGER) is
+	set_enforce_used_value_rate (a_rate: INTEGER)
 			-- Set `enforce_used_value_rate' with `a_rate'.
 		do
 			enforce_used_value_rate := a_rate.to_double / 100
@@ -45,7 +45,7 @@ feature -- Setting
 
 feature -- Basic operations
 
-	solve is
+	solve
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
 		local
 			l_value_set: detachable AUT_INTEGER_VALUE_SET
@@ -68,14 +68,14 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	smtlib_file_path: FILE_NAME is
+	smtlib_file_path: FILE_NAME
 			-- Full path for the generated SMT-LIB file
 		do
 			create Result.make_from_string (universe.project_location.workbench_path)
 			Result.set_file_name ("linear.smt")
 		end
 
-	generate_smtlib_file (a_content: STRING) is
+	generate_smtlib_file (a_content: STRING)
 			-- Generate SMT-LIB file with `a_content'
 			-- at location `smtlib_file_path'.
 		local
@@ -86,7 +86,7 @@ feature{NONE} -- Implementation
 			l_file.close
 		end
 
-	solve_arguments is
+	solve_arguments
 			-- Solve linear constraints for constrained argument.
 			-- Store result in `last_solver_output'.
 		local
@@ -127,13 +127,13 @@ feature{NONE} -- Implementation
 	last_solver_output: STRING
 			-- Output from last launched solver
 
-	append_solver_output (a_string: STRING) is
+	append_solver_output (a_string: STRING)
 			-- Append `a_string' at the end of `last_solver_output'.
 		do
 			last_solver_output.append (a_string)
 		end
 
-	sovled_linear_model_loader (a_operands: DS_HASH_SET [STRING]; a_stream: KL_STRING_INPUT_STREAM): AUT_SAT_BASED_LINEAR_MODEL_LOADER is
+	sovled_linear_model_loader (a_operands: DS_HASH_SET [STRING]; a_stream: KL_STRING_INPUT_STREAM): AUT_SAT_BASED_LINEAR_MODEL_LOADER
 			-- Loader of a solved linear model
 		require
 			a_operands_attached: a_operands /= Void
@@ -146,7 +146,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	linear_constraint_solver_command (a_smtlib_file_path: STRING): STRING is
+	linear_constraint_solver_command (a_smtlib_file_path: STRING): STRING
 			-- Command to sovle linear constraints, with input file `a_smtlib_file_path'
 		do
 			if {PLATFORM}.is_windows then
@@ -156,7 +156,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	internal_solve (a_used_values: AUT_INTEGER_VALUE_SET; a_enforce_used_values: BOOLEAN) is
+	internal_solve (a_used_values: AUT_INTEGER_VALUE_SET; a_enforce_used_values: BOOLEAN)
 			-- Solve linear constraints.
 			-- `a_used_values' are used values for `feature_'.
 			-- If `a_enforce_used_values' is True, the generated solution only contains values from `a_used_values',
@@ -226,7 +226,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

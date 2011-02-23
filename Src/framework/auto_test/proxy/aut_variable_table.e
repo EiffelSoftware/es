@@ -52,7 +52,7 @@ feature -- Status report
 			Result := variable_type_table.has (a_variable)
 		end
 
-	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN is
+	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN
 			-- Is variable with `a_index' defined?
 		require
 			a_index_valid: a_index > 0
@@ -251,10 +251,10 @@ feature -- Class invariant violation management
 	invalid_objects: DS_HASH_SET [INTEGER]
 			-- Indexes of objects which violate their invariants
 
-	default_invalid_objects_size: INTEGER is 1000
+	default_invalid_objects_size: INTEGER = 1000
 			-- Default size of `invalid_objects'
 
-	mark_invalid_object (a_index: INTEGER) is
+	mark_invalid_object (a_index: INTEGER)
 			-- Mark that object with index `a_index' violates it class invariant.
 		require
 			a_index_positive: a_index > 0
@@ -271,7 +271,7 @@ feature -- Class invariant violation management
 			-- Action to be performed when object with index `a_index' is
 			-- marked as class invariant violating
 
-	set_object_marked_invalid_action (a_action: like object_marked_invalid_action) is
+	set_object_marked_invalid_action (a_action: like object_marked_invalid_action)
 			-- Set `object_marked_invalid_action' with `a_action'.
 		do
 			object_marked_invalid_action := a_action
@@ -284,7 +284,7 @@ feature -- Actions
 	defining_variable_action: detachable PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
 			-- Action to be called if a new variable is defined
 
-	wipe_out_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE]] is
+	wipe_out_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE]]
 			-- Action to be performed when current is wiped out
 		do
 			if internal_wipe_out_actions = Void then
@@ -295,7 +295,7 @@ feature -- Actions
 			result_attached: Result /= Void
 		end
 
-	set_defining_variable_action (a_action: like defining_variable_action) is
+	set_defining_variable_action (a_action: like defining_variable_action)
 			-- Set `defining_variable_action' with `a_action'.
 		do
 			defining_variable_action := a_action
@@ -314,7 +314,7 @@ invariant
 	all_variables_have_type: not variable_type_table.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

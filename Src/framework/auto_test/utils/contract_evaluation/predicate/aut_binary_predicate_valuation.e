@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_predicate: like predicate) is
+	make (a_predicate: like predicate)
 			-- Initialize `predicate' with `a_predicate'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -37,7 +37,7 @@ feature -- Access
 	count: INTEGER
 			-- Number of object combinations that satisfy the associated predicate.
 
-	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+	item (a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN
 			-- Valuation of objects in `a_arguments'
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		local
@@ -74,7 +74,7 @@ feature -- Access
 
 feature -- Status report
 
-	is_predicate_valid (a_predicate: like predicate): BOOLEAN is
+	is_predicate_valid (a_predicate: like predicate): BOOLEAN
 			-- Is `a_predicate' a valid predicate for current valuation?
 			-- Check the arity of `a_predicate'.
 		do
@@ -83,7 +83,7 @@ feature -- Status report
 			good_result: Result = a_predicate.is_binary
 		end
 
-	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN
 			-- Does `a_variable' exist in current valuation?
 		do
 			Result := first_argument_table.has (a_variable.index) or second_argument_table.has (a_variable.index)
@@ -91,7 +91,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
+	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN)
 			-- Set valuation for `a_arguments' with `a_value'.
 			-- Index of `a_arguments' is 1-based. They are arguments for `predicate'.
 		local
@@ -117,7 +117,7 @@ feature -- Basic operations
 			end
 		end
 
-	put_valuation (a_table: like first_argument_table; a_index1, a_index2: INTEGER; a_value: BOOLEAN; a_is_first: BOOLEAN) is
+	put_valuation (a_table: like first_argument_table; a_index1, a_index2: INTEGER; a_value: BOOLEAN; a_is_first: BOOLEAN)
 			-- Put valuation `a_value' for object combination (a_index1, a_index2) into `a_table'.
 			-- If `a_is_first' is True, `a_table' is `first_argument_table', otherwise, `a_table' is `second_argument_table'.
 		require
@@ -158,7 +158,7 @@ feature -- Basic operations
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out current all valuations.
 		do
 			first_argument_table.wipe_out
@@ -171,7 +171,7 @@ feature -- Basic operations
 			second_argument_table_wiped_out: second_argument_table.is_empty
 		end
 
-	remove_variable (a_variable: ITP_VARIABLE) is
+	remove_variable (a_variable: ITP_VARIABLE)
 			-- Remove all valuations related to `a_variable'.
 		local
 			l_var_index: INTEGER
@@ -193,7 +193,7 @@ feature -- Basic operations
 
 feature -- Process
 
-	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR) is
+	process (a_visitor: AUT_PREDICATE_VALUATION_VISITOR)
 			-- Prcoess current with `a_visitor'.
 		do
 			a_visitor.process_binary_predicate_valuation (Current)
@@ -212,11 +212,11 @@ feature{AUT_PREDICATE_VALUATION_CURSOR} -- Implementation
 
 feature{NONE} -- Implementation
 
-	argument_table_initial_capacity: INTEGER is 500
+	argument_table_initial_capacity: INTEGER = 500
 			-- Initial capacity for `first_argument_table' and
 			-- `second_argument_table'
 
-	barrel_set_initial_capacity: INTEGER is 10
+	barrel_set_initial_capacity: INTEGER = 10
 			-- Initial capacity for second indexed arguments
 
 	first_argument_array_representation_cache: detachable like first_argument_array_representation
@@ -236,7 +236,7 @@ invariant
 		argument_tables.item (2) = second_argument_table
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

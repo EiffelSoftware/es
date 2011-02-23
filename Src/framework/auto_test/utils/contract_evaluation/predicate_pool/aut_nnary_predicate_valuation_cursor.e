@@ -19,7 +19,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_container: like container; a_predicate_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate) is
+	make (a_container: like container; a_predicate_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate)
 			-- Initialize.
 		do
 			Precursor (a_container, a_predicate_access_pattern, a_constraint, a_partical_candidate)
@@ -39,7 +39,7 @@ feature -- Access
 
 feature -- Cursor movement
 
-	start is
+	start
 			-- Move cursor to first position.
 		do
 			before := False
@@ -47,7 +47,7 @@ feature -- Cursor movement
 			forth_until_found
 		end
 
-	forth is
+	forth
 			-- Move cursor to next position.
 		do
 			forth_until_found
@@ -55,7 +55,7 @@ feature -- Cursor movement
 
 feature -- Basic operations
 
-	update_candidate_with_item is
+	update_candidate_with_item
 			-- Update `candidate' with objects at the position of current cursor.
 		local
 			l_item: AUT_HASHABLE_ITP_VARIABLE_ARRAY
@@ -84,7 +84,7 @@ feature{NONE} -- Implementation
 	storage_cursor: detachable DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
 			-- Cursor of `container'.`storage'
 
-	set_bound_arguments is
+	set_bound_arguments
 			-- Set bound arguments from `candidate' into `predicate_arguments'.
 		local
 			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
@@ -104,7 +104,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	forth_until_found is
+	forth_until_found
 			-- Forth current until a satisfying object combination
 			-- is found or after.
 		require
@@ -132,7 +132,7 @@ feature{NONE} -- Implementation
 			after := l_cursor.after
 		end
 
-	is_predicate_argument_matched (a_valuation: AUT_HASHABLE_ITP_VARIABLE_ARRAY): BOOLEAN is
+	is_predicate_argument_matched (a_valuation: AUT_HASHABLE_ITP_VARIABLE_ARRAY): BOOLEAN
 			-- Is `predicate_arguments' match the corresponding ones in `a_valuation'?
 		require
 			a_valuation_attached: a_valuation /= Void
@@ -161,7 +161,7 @@ invariant
 	predicate_arguments_valid: predicate_arguments.lower = 1 and then predicate_arguments.count = container.arity
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

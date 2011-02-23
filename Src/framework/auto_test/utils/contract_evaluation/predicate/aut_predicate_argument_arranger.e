@@ -24,7 +24,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_predicate: like predicate; a_system: like system) is
+	make (a_predicate: like predicate; a_system: like system)
 			-- Initialize `predicate' with `a_predicate'.
 		require
 			a_predicate_attached: a_predicate /= Void
@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	arrangements_for_feature (a_feature: AUT_FEATURE_OF_TYPE): like arrangements is
+	arrangements_for_feature (a_feature: AUT_FEATURE_OF_TYPE): like arrangements
 			-- List of possible arrangement of (possibly a subset of) objects from `a_feature' that
 			-- is suitable to be used to evaluate `predicate'
 		local
@@ -77,7 +77,7 @@ feature -- Basic operations
 			Result := arrangements (l_objs)
 		end
 
-	arrangements (a_object_set: DS_HASH_SET [AUT_FEATURE_SIGNATURE_TYPE]): DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]] is
+	arrangements (a_object_set: DS_HASH_SET [AUT_FEATURE_SIGNATURE_TYPE]): DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
 			-- List of possible arrangement of (possibly a subset of) objects from `a_object_set' that
 			-- is suitable to be used to evaluate `predicate'
 		require
@@ -163,7 +163,7 @@ feature -- Status report
 
 feature -- Setting
 
-	set_is_universal_conformant_to_any (b: BOOLEAN) is
+	set_is_universal_conformant_to_any (b: BOOLEAN)
 			-- Set `is_universal_conformant_to_any' with `b'.
 		do
 			is_universal_conformant_to_any := b
@@ -171,7 +171,7 @@ feature -- Setting
 			is_universal_conformant_to_any_set: is_universal_conformant_to_any = b
 		end
 
-	set_should_contain_result (b: BOOLEAN) is
+	set_should_contain_result (b: BOOLEAN)
 			-- Set `should_contain_result' with `b'.
 		do
 			should_contain_result := b
@@ -181,7 +181,7 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	conformant_types (a_object_set: DS_HASH_SET [AUT_FEATURE_SIGNATURE_TYPE]): ARRAY [LINKED_LIST [AUT_FEATURE_SIGNATURE_TYPE]] is
+	conformant_types (a_object_set: DS_HASH_SET [AUT_FEATURE_SIGNATURE_TYPE]): ARRAY [LINKED_LIST [AUT_FEATURE_SIGNATURE_TYPE]]
 			-- Array of list of types, all the types in a list conforms to the type of the argument in `predicate' at the location
 			-- The conformance comparison takes `is_universal_conformant_to_any' into consideration.
 		require
@@ -220,7 +220,7 @@ feature{NONE} -- Implementation
 			good_result: Result.count = predicate.arity
 		end
 
-	is_signature_type_conformant_to_type (a_signature_type: AUT_FEATURE_SIGNATURE_TYPE; a_type: TYPE_A): BOOLEAN is
+	is_signature_type_conformant_to_type (a_signature_type: AUT_FEATURE_SIGNATURE_TYPE; a_type: TYPE_A): BOOLEAN
 			-- Is type in `a_signature_type' conformant to `a_type'?
 			-- The conformance comparison takes `is_universal_conformant_to_any' into consideration.
 		require
@@ -247,7 +247,7 @@ invariant
 	system_attached: system /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

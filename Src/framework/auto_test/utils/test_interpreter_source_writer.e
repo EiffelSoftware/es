@@ -35,7 +35,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_config: like configuration) is
+	make (a_config: like configuration)
 			-- Initialize `configuration' with `a_config'.
 		do
 			configuration := a_config
@@ -251,7 +251,7 @@ feature {NONE} -- Implementation
 
 feature -- Predicate evaluation
 
-	put_predicate_related_routines is
+	put_predicate_related_routines
 			-- Geneate routines for predicate monitoring.
 		local
 			l_writer: AUT_PREDICATE_SOURCE_WRITER
@@ -262,7 +262,7 @@ feature -- Predicate evaluation
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

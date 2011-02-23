@@ -28,7 +28,7 @@ feature -- Access
 
 feature -- Cursor movement
 
-	start is
+	start
 			-- Move cursor to first position.
 		do
 			before := False
@@ -44,7 +44,7 @@ feature -- Cursor movement
 			storage_cursor_valid: (not free_variables.is_empty) implies storage_cursor /= Void
 		end
 
-	forth is
+	forth
 			-- Move cursor to next position.
 		do
 			if free_variables.is_empty then
@@ -59,7 +59,7 @@ feature -- Cursor movement
 
 feature -- Basic operations
 
-	update_candidate_with_item is
+	update_candidate_with_item
 			-- Update `candidate' with objects at the position of current cursor.
 		do
 			if not free_variables.is_empty then
@@ -76,7 +76,7 @@ invariant
 	free_variables_valid: free_variables.count = 0 or free_variables.count = 1
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

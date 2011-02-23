@@ -9,28 +9,28 @@ deferred class
 
 feature -- Process
 
-	process_nullary_predicate_valuation (a_valuation: AUT_NULLARY_PREDICATE_VALUATION) is
+	process_nullary_predicate_valuation (a_valuation: AUT_NULLARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		require
 			a_valuation_attached: a_valuation /= Void
 		deferred
 		end
 
-	process_unary_predicate_valuation (a_valuation: AUT_UNARY_PREDICATE_VALUATION) is
+	process_unary_predicate_valuation (a_valuation: AUT_UNARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		require
 			a_valuation_attached: a_valuation /= Void
 		deferred
 		end
 
-	process_binary_predicate_valuation (a_valuation: AUT_BINARY_PREDICATE_VALUATION) is
+	process_binary_predicate_valuation (a_valuation: AUT_BINARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		require
 			a_valuation_attached: a_valuation /= Void
 		deferred
 		end
 
-	process_nnary_predicate_valuation (a_valuation: AUT_NNARY_PREDICATE_VALUATION) is
+	process_nnary_predicate_valuation (a_valuation: AUT_NNARY_PREDICATE_VALUATION)
 			-- Process `a_valuation'.
 		require
 			a_valuation_attached: a_valuation /= Void
@@ -38,7 +38,7 @@ feature -- Process
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

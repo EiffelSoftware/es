@@ -78,7 +78,7 @@ feature{NONE} -- Initialization
 --			end
 --		end
 
-	make_from_normal_response (a_response: AUT_NORMAL_RESPONSE) is
+	make_from_normal_response (a_response: AUT_NORMAL_RESPONSE)
 			-- Initialize Current with `a_response'.
 		require
 			a_response_attached: a_response /= Void and then a_response.is_normal
@@ -148,7 +148,7 @@ invariant
 	query_results_attached: query_results /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -16,7 +16,7 @@ create
 
 feature -- Basic operations
 
-	solve is
+	solve
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
 			-- If there is a solution, set `has_last_solution' to True and put that solution into
 			-- `last_solution'. Otherwise, set `has_last_solution' to False.
@@ -121,14 +121,14 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	lpsolve_file_path: FILE_NAME is
+	lpsolve_file_path: FILE_NAME
 			-- Full path for the generated lpsolve file
 		do
 			create Result.make_from_string (universe.project_location.workbench_path)
 			Result.set_file_name ("lpsolve.lp")
 		end
 
-	generate_lpsolve_file (a_content: STRING) is
+	generate_lpsolve_file (a_content: STRING)
 			-- Generate lpsolve file with `a_content'
 			-- at location `lpsolve_file_path'.
 		local
@@ -139,7 +139,7 @@ feature{NONE} -- Implementation
 			l_file.close
 		end
 
-	solve_argument (a_proof_obligation: STRING) is
+	solve_argument (a_proof_obligation: STRING)
 			-- Solve linear constraints for constrained argument.
 		local
 			c_filename: C_STRING
@@ -162,7 +162,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	get_lpsolve_solution (a_filename, a_out_solution: POINTER): INTEGER is
+	get_lpsolve_solution (a_filename, a_out_solution: POINTER): INTEGER
 			-- Call to external lp_solve API.
 			-- Reads `a_filename' into model, solves it and writes solution to `a_out_solution'
 			-- Return value:
@@ -210,7 +210,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

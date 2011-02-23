@@ -20,7 +20,7 @@ feature{NONE} -- Initialization
 			is_only_argumentless := False
 		end
 
-	make_with_string (a_config: STRING) is
+	make_with_string (a_config: STRING)
 			-- Initialize Current with configuration defined in `config'.
 		require
 			a_config_attached: a_config /= Void
@@ -56,7 +56,7 @@ feature -- Access
 			-- For the moment, "all" means argument-less and single argument queries.
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

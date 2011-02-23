@@ -276,7 +276,7 @@ feature -- Basic operations
 			a_response.process (response_printer)
 		end
 
-	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING)
 			-- Report comment line `a_line'.
 		do
 			output_stream.put_string (a_line)
@@ -513,7 +513,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

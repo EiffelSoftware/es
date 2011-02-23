@@ -56,7 +56,7 @@ feature -- Access
 			-- A 0 value means that current request is not a test case request.
 			-- only creation request and execute request are test case request.
 
-	duration: INTEGER is
+	duration: INTEGER
 			-- Duration in milliseconds of executing current request
 		do
 			Result := end_time - start_time
@@ -67,7 +67,7 @@ feature -- Access
 	time: DT_DATE_TIME_DURATION
 			-- Duration of current request
 
-	set_time (a_time: like time) is
+	set_time (a_time: like time)
 			-- Set `time' with `a_time'.
 		do
 			time := a_time
@@ -78,7 +78,7 @@ feature -- Access
 	start_time: INTEGER
 			-- Start time in millisecond relative to current AutoTest run
 
-	end_time: INTEGER is
+	end_time: INTEGER
 			-- End time in millisecond relative to current AutoTest run
 		do
 				-- Sometimes, the end time is not correctly set, because
@@ -111,7 +111,7 @@ feature -- Change
 			response_set: response = Void
 		end
 
-	set_test_case_index (a_index: like test_case_index) is
+	set_test_case_index (a_index: like test_case_index)
 			-- Set `test_case_index' with `a_index'.
 		require
 			a_index_non_negative: a_index >= 0
@@ -121,7 +121,7 @@ feature -- Change
 			test_case_index_set: test_case_index = a_index
 		end
 
-	set_start_time (a_start_time: like start_time) is
+	set_start_time (a_start_time: like start_time)
 			-- Set `start_time' with `a_start_time'.
 		do
 			start_time := a_start_time
@@ -129,7 +129,7 @@ feature -- Change
 			start_time_set: start_time = a_start_time
 		end
 
-	set_end_time (a_end_time: like end_time) is
+	set_end_time (a_end_time: like end_time)
 			-- Set `end_time' with `a_end_time'.
 		do
 			end_time_internal := a_end_time
@@ -176,7 +176,7 @@ invariant
 	system_not_void: system /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

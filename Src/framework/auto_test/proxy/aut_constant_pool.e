@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize Current.
 		do
 			create integer_32_values.make (1000)
@@ -27,7 +27,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	variable (a_constant: ITP_CONSTANT): detachable ITP_VARIABLE is
+	variable (a_constant: ITP_CONSTANT): detachable ITP_VARIABLE
 			-- Variable which contains the same value as `a_constant' in object pool
 			-- Void if no variable in the object pool has value `a_constant'.
 		do
@@ -36,7 +36,7 @@ feature -- Access
 			end
 		end
 
-	value (a_variable: ITP_VARIABLE): detachable ITP_CONSTANT is
+	value (a_variable: ITP_VARIABLE): detachable ITP_CONSTANT
 			-- Constant from `a_variable'
 		local
 			l_tbl: like integer_32_variables
@@ -51,7 +51,7 @@ feature -- Access
 
 feature -- Status report
 
-	has (a_constant: ITP_CONSTANT): BOOLEAN is
+	has (a_constant: ITP_CONSTANT): BOOLEAN
 			-- Does current pool contain `a_constant'?
 		do
 			if attached {FUNCTION [ANY, TUPLE [ITP_CONSTANT], detachable ITP_VARIABLE]} variable_retriever_table.item (a_constant.type_name) as l_retriever then
@@ -61,7 +61,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	put (a_constant: ITP_CONSTANT; a_variable: ITP_VARIABLE) is
+	put (a_constant: ITP_CONSTANT; a_variable: ITP_VARIABLE)
 			-- Put `a_variable' storing `a_constant' into Current pool.
 		require
 			a_constant_attached: a_constant /= Void
@@ -75,7 +75,7 @@ feature -- Basic operations
 --			variable_put: has (a_constant) and then (variable (a_constant) /= Void and then variable (a_constant).index = a_variable.index)
 		end
 
-	put_with_value_and_type (a_value: STRING; a_type: TYPE_A; a_variable: ITP_VARIABLE) is
+	put_with_value_and_type (a_value: STRING; a_type: TYPE_A; a_variable: ITP_VARIABLE)
 			-- Put `a_variable' with value `a_value', whose type is `a_type' into Current pool.
 		require
 			a_value_attached: a_value /= Void
@@ -91,7 +91,7 @@ feature -- Basic operations
 			end
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe all values.
 		do
 			integer_32_values.wipe_out
@@ -115,7 +115,7 @@ feature{NONE} -- Implementation
 			-- Table for constant value retrievers indexed by type names
 			-- [constant variable retriever, type name]
 
-	variable_index_of_integer_32_value (a_constant: ITP_CONSTANT): detachable ITP_VARIABLE is
+	variable_index_of_integer_32_value (a_constant: ITP_CONSTANT): detachable ITP_VARIABLE
 			-- Variable index for {INTEGER_32} value stored in `a_constant'
 			-- Void if no value is available.
 		require
@@ -138,7 +138,7 @@ invariant
 	variable_retriever_table_attached: variable_retriever_table /= Void
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

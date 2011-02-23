@@ -12,7 +12,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_operands: like constrained_operands; a_stream: like input_stream) is
+	make (a_operands: like constrained_operands; a_stream: like input_stream)
 			-- Initialize `constrained_operands' with `a_operands' and
 			-- `input_stream' with `a_stream'.
 		require
@@ -30,7 +30,7 @@ feature -- Access
 
 feature -- Setting
 
-	set_input_stream (a_stream: like input_stream) is
+	set_input_stream (a_stream: like input_stream)
 			-- Set `input_stream' with `a_stream'.
 		do
 			input_stream := a_stream
@@ -39,7 +39,7 @@ feature -- Setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

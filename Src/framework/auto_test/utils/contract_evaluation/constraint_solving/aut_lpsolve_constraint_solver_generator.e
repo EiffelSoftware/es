@@ -53,7 +53,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	generate_lpsolve (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns; a_solver_config: TEST_GENERATOR) is
+	generate_lpsolve (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns; a_solver_config: TEST_GENERATOR)
 			-- Generate lpsolve format to solve linear constrains in preconditions in `a_feature'.
 			-- `a_patterns' are access patterns of preconditions for that feature.
 			-- `a_solver_config' is the configuration of the solver
@@ -100,7 +100,7 @@ feature{NONE} -- Implementation
 	access_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Access patterns of `current_feature'
 
-	current_name: STRING is "current"
+	current_name: STRING = "current"
 
 	current_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
 			-- Access pattern for current processed predicate assertion
@@ -175,14 +175,14 @@ feature{NONE} -- Process
 
 feature{NONE} -- Generation
 
-	generate_feature_comment (a_feature: AUT_FEATURE_OF_TYPE) is
+	generate_feature_comment (a_feature: AUT_FEATURE_OF_TYPE)
 			-- Generate a simple comment indicating which feature on which type the predicates belong to
 		do
 			last_lpsolve.append ("%N/* " + a_feature.debug_output + " */%N")
 		end
 
 
-	generate_constraints is
+	generate_constraints
 			-- Generate the constraints part of the lpsolve format.
 		local
 			l_data: TUPLE [assertion: EPA_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
@@ -226,7 +226,7 @@ feature{NONE} -- Generation
 			last_lpsolve.append ("%N")
 		end
 
-	generate_bound_var_placeholders is
+	generate_bound_var_placeholders
 			-- Generate placeholders that will get replaced when variables are bound
 		do
 			from
@@ -243,7 +243,7 @@ feature{NONE} -- Generation
 			last_lpsolve.append ("%N")
 		end
 
-	generate_var_declarations is
+	generate_var_declarations
 			-- Generate the variables declarations part of the lpsolve format.
 		do
 			from
@@ -261,7 +261,7 @@ feature{NONE} -- Generation
 			last_lpsolve.append ("%N")
 		end
 
-	final_argument_name (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): detachable STRING is
+	final_argument_name (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): detachable STRING
 			-- Final name of the argument `a_name' in `a_feature'
 		local
 			i: INTEGER
@@ -272,7 +272,7 @@ feature{NONE} -- Generation
 			end
 		end
 
-	normalized_string (a_string: STRING): STRING is
+	normalized_string (a_string: STRING): STRING
 			-- Normalized version of `a_string'.
 			-- Normalization means remoing all leading and trailing
 			-- spaces, and turning all letters in non-capital ones.
@@ -287,7 +287,7 @@ feature{NONE} -- Generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

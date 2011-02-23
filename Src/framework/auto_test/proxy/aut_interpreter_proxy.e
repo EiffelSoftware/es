@@ -278,7 +278,7 @@ feature -- Settings
 			log_line ("-- An existing proxy has switched to this log file.")
 		end
 
-	set_is_test_case_index_logging_enabled (b: BOOLEAN) is
+	set_is_test_case_index_logging_enabled (b: BOOLEAN)
 			-- Set `is_test_case_index_logging_enabled' with `b'.
 		do
 			is_test_case_index_logging_enabled := b
@@ -791,7 +791,7 @@ feature -- Execution
 			retry
 		end
 
-	is_state_recording_enabled: BOOLEAN is
+	is_state_recording_enabled: BOOLEAN
 			-- Is object state recording enabled?
 		do
 			Result := configuration.is_object_state_retrieval_enabled
@@ -1202,7 +1202,7 @@ feature {NONE} -- Logging
 			last_request.set_time (duration)
 		end
 
-	set_test_case_index (a_request: like last_request) is
+	set_test_case_index (a_request: like last_request)
 			-- Set test case index into `a_request'.
 		require
 			a_request_attached: a_request /= Void
@@ -1274,7 +1274,7 @@ feature{NONE} -- Speed logging
 	test_case_log_count: INTEGER
 			-- Test case count for speed logging
 
-	set_is_speed_logging_enabled (b: BOOLEAN) is
+	set_is_speed_logging_enabled (b: BOOLEAN)
 			-- Set `is_speed_logging_enabled' with `b'.
 		do
 			is_speed_logging_enabled := b
@@ -1282,7 +1282,7 @@ feature{NONE} -- Speed logging
 			is_speed_logging_enabled_set: is_speed_logging_enabled = b
 		end
 
-	log_speed is
+	log_speed
 			-- Log testing speed when `is_speed_logging_enabled' is True.
 		local
 			l_time_now: DT_DATE_TIME
@@ -1312,7 +1312,7 @@ feature{NONE} -- Speed logging
 			end
 		end
 
-	failure_log_speed is
+	failure_log_speed
 			-- Log testing speed when `is_speed_logging_enabled' is True.
 		local
 			l_time_now: DT_DATE_TIME
@@ -1338,7 +1338,7 @@ feature{NONE} -- Speed logging
 
 feature -- Precondition satisfaction
 
-	generate_typed_object_pool is
+	generate_typed_object_pool
 			-- Generate `typed_object_pool' and
 			-- initialize it with `a_types'.
 		local
@@ -1353,7 +1353,7 @@ feature -- Precondition satisfaction
 			variable_table.wipe_out_actions.extend (agent used_integer_values.wipe_out)
 		end
 
-	log_types_under_test is
+	log_types_under_test
 			-- Log `types_under_test'.
 		local
 			l_types: DS_LINEAR [TYPE_A]
@@ -1379,7 +1379,7 @@ feature -- Precondition satisfaction
 			log_line ("")
 		end
 
-	duration_until_now: DT_DATE_TIME_DURATION is
+	duration_until_now: DT_DATE_TIME_DURATION
 			-- Duration from the start of current AutoTest run until now
 		local
 			time_now: DT_DATE_TIME
@@ -1390,7 +1390,7 @@ feature -- Precondition satisfaction
 			Result.set_time_canonical
 		end
 
-	log_precondition_evaluation (a_type: TYPE_A; a_feature: FEATURE_I; a_tried_count: INTEGER; a_worst_case_count: INTEGER; a_start_time: INTEGER; a_end_time: INTEGER; a_succeed_level: INTEGER) is
+	log_precondition_evaluation (a_type: TYPE_A; a_feature: FEATURE_I; a_tried_count: INTEGER; a_worst_case_count: INTEGER; a_start_time: INTEGER; a_end_time: INTEGER; a_succeed_level: INTEGER)
 			-- Log precondition evaluation statistics.
 			-- `a_feature' is the feature whose preconditions are evaluated.
 			-- `a_type' is where `a_feature' is from.
@@ -1446,7 +1446,7 @@ feature -- Precondition satisfaction
 
 feature -- Predicate evaluation
 
-	evaluate_predicates (a_predicates: LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]]) is
+	evaluate_predicates (a_predicates: LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]])
 			-- Evaluate `a_predicates'.
 		require
 			a_predicates_attached: a_predicates /= Void
@@ -1466,7 +1466,7 @@ feature -- Predicate evaluation
 			stop_process_on_problems (last_response)
 		end
 
-	parse_predicate_evaluation_response is
+	parse_predicate_evaluation_response
 			-- Parse the response of the last predicate evaluation request.
 		do
 			if attached {AUT_PREDICATE_EVALUATION_REQUEST} last_request as l_request then
@@ -1474,7 +1474,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	retrieve_predicate_evaluation_response is
+	retrieve_predicate_evaluation_response
 			-- Retrieve response of the last predicate evaluation request.
 		local
 			l_data: TUPLE [evaluation_result: detachable LINKED_LIST [TUPLE [INTEGER, SPECIAL [NATURAL_8]]]; output: detachable STRING; error: detachable STRING]
@@ -1505,7 +1505,7 @@ feature -- Predicate evaluation
 			retry
 		end
 
-	update_predicate_pool_on_precondition_violation (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
+	update_predicate_pool_on_precondition_violation (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE])
 			-- Update predicate pool if there is a precondition violation when `a_feature' was executed with `a_related_objects'.
 		local
 			l_bp_slot: INTEGER
@@ -1562,7 +1562,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	log_failed_precondition_satisfaction_proposal (a_feature: AUT_FEATURE_OF_TYPE; a_failed_predicate: AUT_PREDICATE) is
+	log_failed_precondition_satisfaction_proposal (a_feature: AUT_FEATURE_OF_TYPE; a_failed_predicate: AUT_PREDICATE)
 			-- Log a message saying that the precondition satisfaction propsal for `a_failed_predicate' in `a_feature' is wrong.
 		require
 			a_feature_attached: a_feature /= Void
@@ -1589,7 +1589,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	calculate_feature_invalid_test_case_rate (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
+	calculate_feature_invalid_test_case_rate (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE])
 			-- Calculate invalid test case rate for `a_feature' and store result in `feature_invalid_test_case_rate'.
 		require
 			a_feature_attached: a_feature /= Void
@@ -1618,7 +1618,7 @@ feature -- Predicate evaluation
 			l_rate.put_integer (l_rate.all_times + 1, 2)
 		end
 
-	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE) is
+	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE)
 			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with relevant objects consisting
 			-- `a_target', `a_arguments' and `a_result'.
 		require
@@ -1630,7 +1630,7 @@ feature -- Predicate evaluation
 			calculate_feature_invalid_test_case_rate (a_feature, l_related_objects)
 		end
 
-	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is
+	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE]
 			-- Relevant objects
 		local
 			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
@@ -1666,7 +1666,7 @@ feature -- Predicate evaluation
 			result_valid: Result.lower = 0
 		end
 
-	update_predicate (a_predicate: AUT_PREDICATE; a_arguments: LINKED_LIST [INTEGER]; a_result: BOOLEAN) is
+	update_predicate (a_predicate: AUT_PREDICATE; a_arguments: LINKED_LIST [INTEGER]; a_result: BOOLEAN)
 			-- Update the value of `a_predicate' evaluated with `a_arguments' to `a_result' in predicate pool.
 			-- `a_arguments' stored the object index of the corresponding argument for `a_predicate'.
 		require
@@ -1681,7 +1681,7 @@ feature -- Predicate evaluation
 
 		end
 
-	variables_from_indexes (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE] is
+	variables_from_indexes (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE]
 			-- Variables from object indexes
 		require
 			a_indexes_attached: a_indexes /= Void
@@ -1703,7 +1703,7 @@ feature -- Predicate evaluation
 			result_attached: Result /= Void
 		end
 
-	log_seed is
+	log_seed
 			-- Log seed.
 		do
 			log_line ("-- Seed: " + random.seed.out)
@@ -1729,7 +1729,7 @@ feature -- Predicate evaluation
 			-- the predicate pool, they only satisfy part of the feature's
 			-- precondition, not all of them.
 
-	increase_failed_precondition_count is
+	increase_failed_precondition_count
 			-- Increase the number of failed preconditions.
 		local
 			l_evaluator: like precondition_evaluator
@@ -1744,7 +1744,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	increase_suggested_precondition_count is
+	increase_suggested_precondition_count
 			-- Increase `suggested_precondition_count' by 1.
 		do
 			suggested_precondition_count := suggested_precondition_count + 1
@@ -1752,7 +1752,7 @@ feature -- Predicate evaluation
 			suggested_precondition_count_increase: suggested_precondition_count = old suggested_precondition_count + 1
 		end
 
-	increase_suggested_precondition_count_partial is
+	increase_suggested_precondition_count_partial
 			-- Increase `suggested_precondition_count_partial' by 1.
 		do
 			suggested_precondition_count_partial := suggested_precondition_count_partial + 1
@@ -1760,10 +1760,10 @@ feature -- Predicate evaluation
 			suggested_precondition_count_partial_increase: suggested_precondition_count_partial = old suggested_precondition_count_partial + 1
 		end
 
-	precondition_satisfaction_failure_rate_header: STRING is "-- Precondition satisfactoin failure rate:"
+	precondition_satisfaction_failure_rate_header: STRING = "-- Precondition satisfactoin failure rate:"
 			-- Header for precondition satisfaction failure rate logging
 
-	log_precondition_evaluation_failure_rate (a_duration: DT_DATE_TIME_DURATION) is
+	log_precondition_evaluation_failure_rate (a_duration: DT_DATE_TIME_DURATION)
 			-- Log failure rate of precondition satisfaction.
 			-- `a_duration' is the duration relative to the starting of current test run.
 		require
@@ -1780,7 +1780,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	log_precondition_evaluation_overhead (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature_to_call: FEATURE_I) is
+	log_precondition_evaluation_overhead (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature_to_call: FEATURE_I)
 			-- Log overhead of current precondition evaluation task.
 		require
 			a_preconditior_evaluation_attached: a_precondition_evaluatior /= Void
@@ -1809,7 +1809,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	log_lpsolve_input_file_error (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature: FEATURE_I) is
+	log_lpsolve_input_file_error (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature: FEATURE_I)
 			-- Log that there is an incorrect lpsolve input file generated for `a_feature' in `a_type'.
 		require
 			a_precondition_evaluatior_attached: a_precondition_evaluatior /= Void
@@ -1829,7 +1829,7 @@ feature -- Predicate evaluation
 			log_message_line (l_message, precondition_satisfaction_message_type)
 		end
 
-	log_pool_statistics (a_duration: DT_DATE_TIME_DURATION) is
+	log_pool_statistics (a_duration: DT_DATE_TIME_DURATION)
 			-- Log statistics about predicate pool.
 			-- `a_duration' is the time duration relative to the starting of current test run
 		local
@@ -1872,7 +1872,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	mark_invalid_object (a_index: INTEGER) is
+	mark_invalid_object (a_index: INTEGER)
 			-- Mark object with `a_index' as invalid, because its class invariants are violated.
 		require
 			a_index_valid: a_index > 0
@@ -1886,7 +1886,7 @@ feature -- Predicate evaluation
 			end
 		end
 
-	mark_invalid_objects is
+	mark_invalid_objects
 			-- Mark objects from `last_request' as invalid because there is a class invariant violation.
 		do
 			if attached {AUT_CALL_BASED_REQUEST} last_request as l_request then
@@ -1906,7 +1906,7 @@ feature -- Predicate evaluation
 	precondition_evaluator: detachable AUT_PRECONDITION_SATISFACTION_TASK
 			-- Last used precondition evaluator
 
-	set_precondition_evaluator (a_evaluator: like precondition_evaluator) is
+	set_precondition_evaluator (a_evaluator: like precondition_evaluator)
 			-- Set `precondition_evaluator' with `a_evaluator'.
 		do
 			precondition_evaluator := a_evaluator
@@ -1914,7 +1914,7 @@ feature -- Predicate evaluation
 			precondition_evaluator_set: precondition_evaluator = a_evaluator
 		end
 
-	update_predicates_in_pool (a_results: detachable TUPLE [feature_id: INTEGER; results: detachable ARRAY [NATURAL_8]]) is
+	update_predicates_in_pool (a_results: detachable TUPLE [feature_id: INTEGER; results: detachable ARRAY [NATURAL_8]])
 			-- Update `predicate_pool' with `a_results'.
 		local
 			l_predicates: detachable ARRAY [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
@@ -2076,7 +2076,7 @@ feature -- Objec state retrieval
 			end
 		end
 
-	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
+	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING]
 			-- State of `a_variable'
 			-- Value is in the form [query value, query name].
 		local
@@ -2143,7 +2143,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -15,7 +15,7 @@ create
 
 feature -- Initialization
 
-	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter; a_tried_context: like tried_context; a_bound_operands: like bound_operands) is
+	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter; a_tried_context: like tried_context; a_bound_operands: like bound_operands)
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
@@ -66,7 +66,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	solve is
+	solve
 			-- Solve linear constraint.
 			-- If there is a solution, set `has_solution' to True and put the solution in `solution';
 			-- otherwise set `has_solution' to False.
@@ -147,7 +147,7 @@ feature{NONE} -- Implementation
 	interpreter: AUT_INTERPRETER_PROXY
 			-- Interpreter of current test session
 
-	configuration: TEST_GENERATOR is
+	configuration: TEST_GENERATOR
 			-- Configuration of current test session
 		do
 			Result := interpreter.configuration
@@ -155,7 +155,7 @@ feature{NONE} -- Implementation
 			good_result: Result = interpreter.configuration
 		end
 
-	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER is
+	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER
 			-- SMT-based linear constraint solver with context queries stored in `a_state'
 		require
 			a_state_attached: a_state /= void
@@ -166,7 +166,7 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	lp_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
+	lp_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER
 			-- lpsolve linear constraint solver with context queries stored in `a_state'
 		require
 			a_state_attached: a_state /= void
@@ -183,7 +183,7 @@ feature{NONE} -- Implementation
 			-- for lpsolver in a simple form. This means that there are cases where the model cannot
 			-- be handled by lpsolve while it can be handled by SMT based solver.		
 
-	context_representation (a_state: HASH_TABLE [STRING, STRING]): STRING is
+	context_representation (a_state: HASH_TABLE [STRING, STRING]): STRING
 			-- Context representation for `tried_context'
 		require
 			a_state_attached: a_state /= Void
@@ -217,14 +217,14 @@ feature{NONE} -- Implementation
 			result_attached: Result /= Void
 		end
 
-	agent_based_string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
+	agent_based_string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING]
 			-- Equality tester for string
 		do
 			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a ~ b end)
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

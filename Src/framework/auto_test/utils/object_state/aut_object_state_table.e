@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	encountered_object_states (a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE] is
+	encountered_object_states (a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE]
 			-- List of encountered object states of the given type
 		require
 			a_type_attached: a_type /= Void
@@ -42,7 +42,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	invoked_source_object_states (a_feature: FEATURE_I; a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE] is
+	invoked_source_object_states (a_feature: FEATURE_I; a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE]
 			-- List of object states which were already invoke for given feature (of given type)
 		require
 			a_feature_attached: a_feature /= Void
@@ -66,7 +66,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	untried_object_states (a_feature: FEATURE_I; a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE] is
+	untried_object_states (a_feature: FEATURE_I; a_type: TYPE_A): DS_ARRAYED_LIST[AUT_OBJECT_STATE]
 			-- List of object states which were not yet invoked for given feature (of given type)
 		require
 			a_feature_attached: a_feature /= Void
@@ -92,7 +92,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	random_variable (an_object_state: AUT_OBJECT_STATE; a_type: TYPE_A): ITP_VARIABLE is
+	random_variable (an_object_state: AUT_OBJECT_STATE; a_type: TYPE_A): ITP_VARIABLE
 			-- Choose a random variable among all those in given object state (of given type)
 		require
 			an_object_state_attached: an_object_state /= Void
@@ -129,7 +129,7 @@ feature -- Access
 
 feature -- Element change
 
-	put_variable (a_variable: ITP_VARIABLE; an_object_state: AUT_OBJECT_STATE; a_type: TYPE_A) is
+	put_variable (a_variable: ITP_VARIABLE; an_object_state: AUT_OBJECT_STATE; a_type: TYPE_A)
 			-- Puts the variable in a given object state and of a given type into the table
 		require
 			a_variable_attached: a_variable /= Void
@@ -160,7 +160,7 @@ feature -- Element change
 			variables_by_object_states_table_not_smaller: variables_by_object_states_table.count >= old variables_by_object_states_table.count
 		end
 
-	put_invoked_source_object_state (an_object_state: AUT_OBJECT_STATE; a_feature: FEATURE_I; a_type: TYPE_A) is
+	put_invoked_source_object_state (an_object_state: AUT_OBJECT_STATE; a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Puts the object state into the table of invoked source object states
 		require
 			an_object_state_attached: an_object_state /= Void
@@ -204,7 +204,7 @@ invariant
 	invoked_source_object_states_table_attached: invoked_source_object_states_table /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

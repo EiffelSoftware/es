@@ -180,7 +180,7 @@ feature -- Byte node generation
 			create Result.make (a_call, 1)
 		end
 
-	new_argumentless_agent (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): ROUTINE_CREATION_B is
+	new_argumentless_agent (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): ROUTINE_CREATION_B
 			-- New node for agent creation
 			-- `a_target_type' is the type of the target object for the agent.
 			-- `a_feature' is the feature wrapped by the agent.
@@ -308,7 +308,7 @@ feature -- Byte node generation
 			result_attached: Result /= Void
 		end
 
-	new_agent_as_parameter (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): PARAMETER_B is
+	new_agent_as_parameter (a_target_type: TYPE_A; a_feature: FEATURE_I; a_target_node: BYTE_NODE): PARAMETER_B
 			-- New agent call as parameter
 		local
 			l_routine_creation: ROUTINE_CREATION_B
@@ -320,7 +320,7 @@ feature -- Byte node generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -69,7 +69,7 @@ feature -- Measurement
 
 feature -- Status report
 
-	textual_vector_representation: STRING is
+	textual_vector_representation: STRING
 			-- Return a textual vector representation of current object state
 		do
 			Result := "<"
@@ -141,7 +141,7 @@ invariant
 	boolean_query_results_attached: boolean_query_results /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Initialize `system' with `a_system'.
 		do
 			system := a_system
@@ -32,7 +32,7 @@ feature{NONE} -- Initialization
 feature
 	precondition_table: DS_HASH_TABLE [REAL,STRING]
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 		-- Handle `a_witness'.
 		local
 			l_request: AUT_REQUEST
@@ -85,7 +85,7 @@ feature
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

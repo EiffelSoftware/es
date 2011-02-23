@@ -15,7 +15,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialize.
 		do
 			create storage.make (20)
@@ -26,7 +26,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	has (a_values: ARRAY [INTEGER]): BOOLEAN is
+	has (a_values: ARRAY [INTEGER]): BOOLEAN
 			-- Does current contain `a_values'?
 		do
 			if a_values.count = 1 then
@@ -36,13 +36,13 @@ feature -- Access
 
 feature -- Access
 
-	item: ARRAY [INTEGER] is
+	item: ARRAY [INTEGER]
 			-- Item values at current location
 		do
 			Result := <<storage.item_for_iteration>>
 		end
 
-	count: INTEGER is
+	count: INTEGER
 			-- Number of elements
 		do
 			Result := storage.count
@@ -50,13 +50,13 @@ feature -- Access
 
 feature -- Status report
 
-	before: BOOLEAN is
+	before: BOOLEAN
 			-- Is before?
 		do
 			Result := storage.before
 		end
 
-	after: BOOLEAN is
+	after: BOOLEAN
 			-- Is after?
 		do
 			Result := storage.after
@@ -64,25 +64,25 @@ feature -- Status report
 
 feature -- Basic operations
 
-	start is
+	start
 			-- Start
 		do
 			storage.start
 		end
 
-	forth is
+	forth
 			-- Forth
 		do
 			storage.forth
 		end
 
-	wipe_out is
+	wipe_out
 			-- Wipe out.
 		do
 			storage.wipe_out
 		end
 
-	put (a_values: like item) is
+	put (a_values: like item)
 			-- Put `a_values' into Current.
 		do
 			if a_values.count = 1 then
@@ -96,7 +96,7 @@ feature{NONE} -- Impelementation
 			-- Internal storage of integers
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

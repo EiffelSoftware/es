@@ -18,7 +18,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system) is
+	make (a_system: like system)
 			-- Initialize `system' with `a_system'.
 		do
 			system := a_system
@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- Process
 
-	process_comment_line (a_line: STRING) is
+	process_comment_line (a_line: STRING)
 			-- Process `a_line'.
 		local
 			l_header: STRING
@@ -91,14 +91,14 @@ feature -- Process
 			end
 		end
 
-	process_witness (a_witness: AUT_ABS_WITNESS) is
+	process_witness (a_witness: AUT_ABS_WITNESS)
 			-- Handle `a_witness'.
 		do
 		end
 
 feature{NONE} -- Implementation
 
-	precondition_eval_header: STRING is "-- Precondition_evaluation: "
+	precondition_eval_header: STRING = "-- Precondition_evaluation: "
 			-- Header of precondition evaluation comment
 
 	system: SYSTEM_I;
@@ -106,7 +106,7 @@ feature{NONE} -- Implementation
 
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
