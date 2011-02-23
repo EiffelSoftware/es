@@ -114,6 +114,32 @@ feature -- Access
 			Result := c_at ($p_result, $p_row, a_pos-1)
 		end
 
+	data_as_table: HASH_TABLE [STRING, STRING]
+			-- The string value at column index `a_pos'
+		require
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+			not_off: not off
+		do
+			create Result.make (column_count)
+			Result.compare_objects
+			across 1 |..| column_count as l_indexes loop
+				Result.force (at (l_indexes.item), column_name_at (l_indexes.item))
+			end
+		end
+
+	column_names: ARRAY [STRING]
+			-- List of column names
+		require
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+		do
+			create Result.make_filled (Void, 1, column_count)
+			across 1 |..| column_count as l_indexes loop
+				Result.put (column_name_at (l_indexes.item), l_indexes.item)
+			end
+		end
+
 feature -- Commands
 
 	go_i_th (a_pos: INTEGER)

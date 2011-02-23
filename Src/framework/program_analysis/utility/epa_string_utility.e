@@ -10,6 +10,8 @@ class
 inherit
 	EPA_TYPE_UTILITY
 
+	EPA_UTILITY
+
 feature -- Access
 
 	curly_brace_surrounded_integer (i: INTEGER): STRING
@@ -49,6 +51,49 @@ feature -- Access
 			-- Format: {`a_position'}, for example "{0}".
 		do
 			Result := curly_brace_surrounded_integer (a_position)
+		end
+
+
+	curly_braced_operands_from_operands (a_feature: FEATURE_I; a_class: CLASS_C): HASH_TABLE [STRING, STRING]
+			-- A mapping from actual operands from `a_feature' viewed in `a_class' to
+			-- the curly-braced integer form of those operands.
+			-- For example, if `a_feature' is ARRAY.put, then the result would be:
+			-- Current -> {0}, v -> {1}, i -> {2}.
+		local
+			l_operands: like operands_of_feature
+		do
+			l_operands := operands_of_feature (a_feature)
+			create Result.make (l_operands.count)
+			Result.compare_objects
+			from
+				l_operands.start
+			until
+				l_operands.after
+			loop
+				Result.force (curly_brace_surrounded_integer (l_operands.item_for_iteration), l_operands.key_for_iteration)
+				l_operands.forth
+			end
+		end
+
+	operands_from_curly_braced_operands (a_feature: FEATURE_I; a_class: CLASS_C): HASH_TABLE [STRING, STRING]
+			-- A mapping from curly-braced operands from `a_feature' viewed in `a_class' to
+			-- actual operands of those operands.
+			-- For example, if `a_feature' is ARRAY.put, then the result would be:
+			-- {0} -> Current, {1} -> v, {2} -> i.
+		local
+			l_operands: like operands_of_feature
+		do
+			l_operands := operands_of_feature (a_feature)
+			create Result.make (l_operands.count)
+			Result.compare_objects
+			from
+				l_operands.start
+			until
+				l_operands.after
+			loop
+				Result.force (l_operands.key_for_iteration, curly_brace_surrounded_integer (l_operands.item_for_iteration))
+				l_operands.forth
+			end
 		end
 
 end

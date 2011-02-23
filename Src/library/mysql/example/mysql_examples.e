@@ -30,7 +30,7 @@ feature
 
 			-- Error
 			client.execute_query ("SELECT")
-			print ("last_error: "+client.last_error+" ("+client.last_errno.out+"%N%N")
+			print ("last_error: "+client.last_error+" ("+client.last_error_number.out+"%N%N")
 
 			-- Simple result
 			-- It is imperative that the last_result be freed for queries that have a result set (or it will leak memory)
@@ -63,7 +63,7 @@ feature
 			-- It is imperative that the stmt be closed (or it will leak memory)
 			client.prepare_statement ("INSERT INTO eiffelmysql VALUES (?, ?, ?)")
 			stmt_insert := client.last_prepared_statement
-			stmt_insert.set_int    (1, 3)
+			stmt_insert.set_integer    (1, 3)
 			stmt_insert.set_string (2, "baz")
 			stmt_insert.set_null   (3)
 			stmt_insert.execute

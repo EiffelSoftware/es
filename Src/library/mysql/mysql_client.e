@@ -81,7 +81,7 @@ feature -- Access
 			Result := c_affected_rows ($p_mysql)
 		end
 
-	last_errno: INTEGER
+	last_error_number: INTEGER
 			-- The error number for the most recently invoked MySQL API call
 		require
 			is_connected: is_connected

@@ -151,14 +151,15 @@ feature -- Access
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
 		do
-			if is_integer_at (a_pos) then
+			if is_null_at (a_pos) then
+				Result := mysql_null_string
+			elseif is_integer_at (a_pos) then
 				Result := integer_at (a_pos).out
 			elseif is_double_at (a_pos) then
 				Result := double_at (a_pos).out
 			elseif is_string_at (a_pos) then
 				Result := string_at (a_pos)
-			else
-				Result := mysql_null_string
+
 			end
 		end
 
@@ -255,7 +256,7 @@ feature -- Commands
 			c_stmt_set_null ($p_bind, $p_data, a_pos-1)
 		end
 
-	set_int (a_pos, a_value: INTEGER)
+	set_integer (a_pos, a_value: INTEGER)
 		-- Set integer parameter `a_pos' to `a_value'
 		require
 			is_open: is_open

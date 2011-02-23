@@ -1,4 +1,5 @@
-﻿note
+﻿
+note
 	description: "Class that represents a result item of a semantic query"
 	author: ""
 	date: "$Date$"

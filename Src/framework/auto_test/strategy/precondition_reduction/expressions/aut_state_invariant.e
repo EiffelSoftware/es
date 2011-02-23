@@ -10,9 +10,11 @@ class
 inherit
 	EPA_UTILITY
 
+	HASHABLE
+
 create
 	make
-	
+
 feature{NONE} -- Initialization
 
 	make (a_expression: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I)
@@ -22,6 +24,13 @@ feature{NONE} -- Initialization
 			expression := a_expression
 			context_class := a_context_class
 			feature_ := a_feature
+			create id.make (64)
+			id.append (a_context_class.name_in_upper)
+			id.append_character ('.')
+			id.append (a_feature.feature_name)
+			id.append_character ('.')
+			id.append (a_expression.text)
+			hash_code := id.hash_code
 		end
 
 feature -- Access
@@ -34,6 +43,18 @@ feature -- Access
 
 	expression: EPA_EXPRESSION
 			-- Expression representing the state invariant
+
+	hash_code: INTEGER
+			-- Hash code value
+
+	id: STRING
+			-- Identifier of current invariant
+
+	text: STRING
+			-- String representation of `expression'
+		do
+			Result := expression.text
+		end
 
 feature -- Basic operations
 

@@ -196,8 +196,8 @@ feature -- Basic operations
 					hit_breakpoints.off
 				loop
 					if hit_breakpoints.item.at (1) /= '_' then
-						stmt_insert_hitbreakpoints.set_int (1, a_qry_id)
-						stmt_insert_hitbreakpoints.set_int (2, hit_breakpoints.item.to_integer)
+						stmt_insert_hitbreakpoints.set_integer (1, a_qry_id)
+						stmt_insert_hitbreakpoints.set_integer (2, hit_breakpoints.item.to_integer)
 						stmt_insert_hitbreakpoints.execute
 					end
 					hit_breakpoints.forth

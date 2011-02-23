@@ -14,7 +14,7 @@ feature -- Process
 		deferred
 		end
 
-	process_whole_document_query (a_query: SEMQ_WHOLE_DOCUMENT_QUERY)
+	process_whole_document_query (a_query: SEMQ_WHOLE_QUERYABLE_QUERY)
 			-- Process `a_query'.
 		deferred
 		end

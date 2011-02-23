@@ -57,7 +57,11 @@ feature {NONE} -- Status setting
 					system.make_update (False)
 					initiate_testing_task
 					if attached interpreter_root_class then
-						if is_random_testing_enabled then
+						if is_precondition_reduction_enabled then
+							create l_test_task.make_precondition_reduction (Current, class_names)
+							l_test_task.start
+							sub_task := l_test_task
+						elseif is_random_testing_enabled then
 							create l_test_task.make_random (Current, class_names)
 							l_test_task.start
 							sub_task := l_test_task
@@ -159,7 +163,7 @@ feature {NONE} -- Factory
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

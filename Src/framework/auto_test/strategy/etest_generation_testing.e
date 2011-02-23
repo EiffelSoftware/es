@@ -31,7 +31,8 @@ inherit
 	AUT_SHARED_ONLINE_STATISTICS
 
 create
-	make_random --, make_replay
+	make_random, --, make_replay
+	make_precondition_reduction
 
 feature {NONE} -- Initialization
 
@@ -89,6 +90,33 @@ feature {NONE} -- Initialization
 				-- TODO: initialize replay
 
 			make (a_generation)
+		end
+
+	make_precondition_reduction (a_generation: like generation; a_class_names: detachable DS_LINEAR [STRING])
+			-- Initialize `Current' to perform random testing.
+			--
+			-- `a_generation': Creation session which launches `Current'.
+			-- `a_class_names': Class/type names which shall be tested.
+		require
+			a_generation_attached: a_generation /= Void
+		local
+			l_itp: like new_interpreter
+			l_task: AUT_PRECONDITION_REDUCTION_STRATEGY
+		do
+			make (a_generation)
+
+			l_itp := new_interpreter
+--			if a_generation.is_html_statistics_format_enabled or a_generation.is_minimization_enabled then
+--				l_itp.add_observer (result_repository_builder)
+--			end
+			l_itp.set_is_logging_enabled (True)
+
+			create l_task.make (l_itp, generation.system, generation.error_handler)
+--			l_task.add_class_names (a_class_names)
+			test_task := l_task
+			sub_task := l_task
+		ensure
+			generation_set: generation = a_generation
 		end
 
 feature -- Access

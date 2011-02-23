@@ -1,38 +1,31 @@
 note
-	description: "Summary description for {AUT_ABSTRACT_BOOLEAN}."
+	description: "Equality tester for {AUT_STATE_INVARIANT}"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_ABSTRACT_BOOLEAN
+	AUT_STATE_INVARIANT_EQUALITY_TESTER
 
 inherit
-	AUT_ABSTRACT_VALUE
-
-create
-	make
-
-feature{NONE} -- Initialization
-
-	make (a_value: like value)
-			-- Set `value' with `a_value'.
-		do
-			value := a_value
-		ensure
-			value_set: value = a_value
+	KL_EQUALITY_TESTER [AUT_STATE_INVARIANT]
+		redefine
+			test
 		end
 
-feature -- Access
+feature -- Status report
 
-	value: BOOLEAN
-			-- Value of Current abstract value
-
-	out: STRING
-			-- New string containing terse printable representation
-			-- of current object
+	test (v, u: AUT_STATE_INVARIANT): BOOLEAN
 		do
-			Result := value.out.as_lower
+			if v = u then
+				Result := True
+			elseif v = Void then
+				Result := False
+			elseif u = Void then
+				Result := False
+			else
+				Result := v.id ~ u.id
+			end
 		end
 
 note

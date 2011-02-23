@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that call features in a deterministic manner."
 	author: "$Author$"
 	date: "$Date$"
@@ -323,7 +323,7 @@ feature {NONE} -- Steps
 			end
 		end
 
-	internal_finish is
+	internal_finish
 			-- Finish curent task.
 		do
 			if target /= Void and then interpreter.variable_table.is_variable_defined (target) then
@@ -453,7 +453,7 @@ feature -- Precondition evaluation
 	precondition_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
 			-- Precondition evaluator
 
-	create_precondition_evaluator is
+	create_precondition_evaluator
 			-- Create `precondition_evaluator'.
 		local
 			l_vars: DS_LINKED_LIST [ITP_VARIABLE]
@@ -467,7 +467,7 @@ feature -- Precondition evaluation
 			precondition_evaluator.start
 		end
 
-	set_target_and_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
+	set_target_and_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION])
 			-- Set `target' and `arguments' from `a_variables'.
 		require
 			a_variables_attached: a_variables /= Void
@@ -480,7 +480,7 @@ feature -- Precondition evaluation
 			recheck_type_and_feature
 		end
 
-	set_target_and_argument_from_candiate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE]) is
+	set_target_and_argument_from_candiate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE])
 			-- Set `target' and `arguments' with `a_candidate'.		
 		local
 			i: INTEGER
@@ -526,7 +526,7 @@ feature -- Precondition evaluation
 			set_target_and_arguments_from_array (l_vars)
 		end
 
-	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN is
+	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN
 			-- Is `a_variable' defined in object pool?
 		do
 			Result := a_variable /= Void and then interpreter.typed_object_pool.is_variable_defined (a_variable)
@@ -542,7 +542,7 @@ invariant
 	error_handler_not_void: error_handler /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

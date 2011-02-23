@@ -12,12 +12,26 @@ inherit
 
 	REFACTORING_HELPER
 
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_connection: like connection)
+			-- Inialize Current.
+		do
+			connection := a_connection
+		end
+
 feature -- Access
 
 	last_results: detachable LINKED_LIST [SEMQ_RESULT]
 			-- Last results retrieved by `execute'
 			-- The order of the elements is meaningful of one of the
 			-- query term has ordering configuration specified.
+
+	connection: MYSQL_CLIENT
+			-- Database connection
 
 feature -- Basic operations
 
@@ -36,10 +50,14 @@ feature{NONE} -- Process
 			to_implement ("Introduce a separate class to handle this type of query. 8.11.2010 Jasonw")
 		end
 
-	process_whole_document_query (a_query: SEMQ_WHOLE_DOCUMENT_QUERY)
+	process_whole_document_query (a_query: SEMQ_WHOLE_QUERYABLE_QUERY)
 			-- Process `a_query'.
+		local
+			l_executor: SEMQ_WHOLE_QUERYABLE_QUERY_EXECUTOR
 		do
-			to_implement ("Introduce a separate class to handle this type of query. 8.11.2010 Jasonw")
+			create l_executor.make (connection)
+			l_executor.execute (a_query)
+			last_results := l_executor.last_results
 		end
 
 end

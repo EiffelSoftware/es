@@ -356,7 +356,7 @@ feature{NONE} -- Initialization
 			l_sem_port_option.set_description ("Setup schema of the semantic database server. Default: 3306")
 			parser.options.force_last (l_sem_port_option)
 
-			create l_precondition_reduction_file_option.make_with_long_form ("precondion-reduction")
+			create l_precondition_reduction_file_option.make_with_long_form ("precondition-reduction")
 			l_precondition_reduction_file_option.set_description ("Use precondition reduction strategy. Format: precondition-reduction <file_name>. Where <file_name> specify the file containing pre-state invariant.")
 			parser.options.force_last (l_precondition_reduction_file_option)
 
@@ -859,6 +859,7 @@ feature{NONE} -- Initialization
 
 			if l_precondition_reduction_file_option.was_found then
 				precondition_reduction_file := l_precondition_reduction_file_option.parameter.twin
+				is_automatic_testing_enabled := False
 			end
 
 --			if parser.parameters.count = 0 then

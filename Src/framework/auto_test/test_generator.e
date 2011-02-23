@@ -968,6 +968,14 @@ feature -- Status setting
 			should_freeze_before_testing_set: should_freeze_before_testing = b
 		end
 
+	set_is_precondition_reduction_enabled (b: BOOLEAN)
+			-- Set `is_precondition_reduction_enabled' with `b'.
+		do
+			is_precondition_reduction_enabled := b
+		ensure
+			is_precondition_reduction_enabled_set: is_precondition_reduction_enabled = b
+		end
+
 feature -- Basic operations
 
 	step
@@ -1049,7 +1057,7 @@ feature {NONE} -- Implementation: preparation
 				l_error_handler.set_debug_to_file (output_stream)
 			end
 
-			if is_random_testing_enabled then
+			if is_random_testing_enabled or is_precondition_reduction_enabled then
 				find_types_under_test
 				setup_for_precondition_evaluation
 			end
@@ -1425,6 +1433,9 @@ feature -- Option caches
 			result_set: Result = is_evolutionary_testing_enabled_cache
 		end
 
+	is_precondition_reduction_enabled: BOOLEAN
+			-- Is precondition reduction strategy enabled?
+
 	is_random_testing_enabled_cache: like is_random_testing_enabled assign set_is_random_testing_enabled
 			-- Cache for `is_random_testing_enabled'		
 
@@ -1434,8 +1445,30 @@ feature -- Option caches
 	popular_features_cache: like popular_features
 			-- Cache for `popular_features'
 
+	semantic_database_config: AUT_SEMANTIC_DATABASE_CONFIG
+			-- Database config for precondition reduction
+
+	prestate_invariant_path: STRING
+			-- Path to the file storing prestate invariants
+
+	set_semantic_database_config (a_config: like semantic_database_config)
+			-- Set `semantic_database_config' with `a_config'.
+		do
+			semantic_database_config := a_config
+		ensure
+			semantic_database_config_set: semantic_database_config = a_config
+		end
+
+	set_prestate_invariant_path (a_path: STRING)
+			-- Set `prestate_invariant_path' with `a_path'.
+		do
+			prestate_invariant_path := a_path
+		ensure
+			prestate_invariant_path_set: prestate_invariant_path = a_path
+		end
+
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

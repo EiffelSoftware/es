@@ -13,13 +13,13 @@ create
 
 feature{NONE} -- Initialization
 
-	make is
+	make
 			-- Initialization.
 		do
 			create ranges.make (10)
 		end
 
-	make_with_ranges (a_ranges: ARRAY [AUT_ABSTRACT_RANGE [AUT_ABSTRACT_VALUE]]) is
+	make_with_ranges (a_ranges: ARRAY [AUT_ABSTRACT_RANGE [AUT_ABSTRACT_VALUE]])
 			-- Extend `a_ranges' into Current.
 		require
 			a_ranges_attached: a_ranges /= Void
@@ -36,7 +36,7 @@ feature -- Access
 			-- all the components are boolean values.
 			-- Note: Do not change `ranges' during iteration.
 
-	item: LIST [AUT_ABSTRACT_VALUE] is
+	item: LIST [AUT_ABSTRACT_VALUE]
 			-- State at current cursor
 		require
 			available: not before and then not after
@@ -56,7 +56,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	item_with_name: HASH_TABLE [AUT_ABSTRACT_VALUE, STRING] is
+	item_with_name: HASH_TABLE [AUT_ABSTRACT_VALUE, STRING]
 			-- `item' associated with names in their ranges
 		require
 			available: not before and then not after
@@ -106,7 +106,7 @@ feature -- Access
 
 feature -- Status report
 
-	before: BOOLEAN is
+	before: BOOLEAN
 			-- Is enumeration started?
 		do
 			Result := ranges.is_empty or else (enum_stack = Void or else enum_stack.is_empty)
@@ -117,7 +117,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	start is
+	start
 			-- Start enumeration.
 		do
 			after := False
@@ -125,7 +125,7 @@ feature -- Basic operations
 			forth
 		end
 
-	forth is
+	forth
 			-- Step further in the state enumeration.
 		local
 			l_index: INTEGER
@@ -173,7 +173,7 @@ invariant
 	ranges_attached: ranges /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -392,10 +392,10 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- String constants
 
-	citadel_enable_monitoring: STRING is "enable_monitoring"
-	citadel_disable_monitoring: STRING is "disable_monitoring"
+	citadel_enable_monitoring: STRING = "enable_monitoring"
+	citadel_disable_monitoring: STRING = "disable_monitoring"
 
-	code_added: STRING is
+	code_added: STRING =
 "feature {NONE} -- Implementation%N%
 %%N%
 %	last_object: ANY%N%
@@ -560,8 +560,8 @@ feature {NONE} -- String constants
 %		end%N"
 
 
-note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

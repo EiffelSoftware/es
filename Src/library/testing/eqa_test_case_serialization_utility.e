@@ -199,8 +199,42 @@ feature{NONE} -- Implementation
             Result := l_variable_table
         end
 
-feature{NONE} -- Implementation
+	array_from_comma_separated_string (a_string: STRING): ARRAY [NATURAL_8]
+			-- Array from `a_string', which is a list of numbers separted by comma
+		local
+			l_index, l_index2: INTEGER
+			l_count: INTEGER
+			l_numbers: LINKED_LIST [NATURAL_8]
+		do
+			create l_numbers.make
+			l_count := a_string.count
+			from
+				l_index := 0
+			until
+				l_index > l_count
+			loop
+				l_index2 := a_string.index_of (',', l_index + 1)
+				if l_index2 = 0 then
+					l_index2 := l_count + 1
+				end
+				l_numbers.extend (a_string.substring (l_index + 1, l_index2 - 1).to_natural_8)
+				l_index := l_index2
+			end
+			create Result.make_filled (0, 1, l_numbers.count)
 
+			from
+				l_index := 1
+				l_numbers.start
+			until
+				l_numbers.after
+			loop
+				Result.put (l_numbers.item, l_index)
+				l_index := l_index + 1
+				l_numbers.forth
+			end
+		end
+
+feature{NONE} -- Implementation
 
     keys_from_table (a_tbl: HASH_TABLE [detachable ANY, INTEGER]): STRING
     		-- A string containing comma separated indexes of keys in `a_tbl'
@@ -293,7 +327,7 @@ feature -- Utilities
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

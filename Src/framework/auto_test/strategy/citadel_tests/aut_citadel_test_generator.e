@@ -288,7 +288,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	citadel_global_class_code: STRING is
+	citadel_global_class_code: STRING =
 "class CITADEL_GLOBAL%N%
 %%N%
 %feature -- Flag setting%N%
@@ -320,8 +320,8 @@ feature {NONE} -- Implementation
 %end"
 
 
-note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+;note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

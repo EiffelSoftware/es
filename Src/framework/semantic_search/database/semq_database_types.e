@@ -108,8 +108,8 @@ feature -- Basic operations
 		do
 			conf_type_id := get_id (a_conformant_type.name)
 			type_id := get_id (a_type.name)
-			stmt_insert_conformance.set_int (1, conf_type_id)
-			stmt_insert_conformance.set_int (2, type_id)
+			stmt_insert_conformance.set_integer (1, conf_type_id)
+			stmt_insert_conformance.set_integer (2, type_id)
 			stmt_insert_conformance.execute
 		end
 

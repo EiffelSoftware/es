@@ -238,6 +238,11 @@ feature -- Execution
 				l_generator.set_collecting_interface_related_classes (l_ap.is_collecting_interface_related_classes)
 				l_generator.set_should_freeze_before_testing (l_ap.should_freeze_before_testing)
 
+					-- Setup for precondition reduction strategy.
+				l_generator.set_is_precondition_reduction_enabled (l_ap.is_precondition_reduction_enabled)
+				l_generator.set_semantic_database_config (l_ap.semantic_data_base_config)
+				l_generator.set_prestate_invariant_path (l_ap.precondition_reduction_file)
+
 				a_test_suite.launch_session (l_generator)
 			else
 
@@ -285,7 +290,7 @@ feature -- Execution
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

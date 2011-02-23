@@ -134,27 +134,27 @@ feature{NONE} -- Implementation
 			if operands_count > 0 and operands_count < 10 then
 				stmt_insert_binding := stmt_insert_bindings.at (operands_count)
 
-				stmt_insert_binding.set_int (1, properties.get_id (data.at (2)).to_integer) -- `prop_id` int(10) unsigned NOT NULL
-				stmt_insert_binding.set_int (2, qry_id) -- `qry_id` int(10) unsigned NOT NULL
+				stmt_insert_binding.set_integer (1, properties.get_id (data.at (2)).to_integer) -- `prop_id` int(10) unsigned NOT NULL
+				stmt_insert_binding.set_integer (2, qry_id) -- `qry_id` int(10) unsigned NOT NULL
 
 				from
 					i := 1
 				until
 					i > operands_count
 				loop
-					stmt_insert_binding.set_int (1+i*2, operands.at (i).to_integer) -- `varX` smallint(5) unsigned NOT NULL
-					stmt_insert_binding.set_int (2+i*2, types.get_id (operand_types.at (i)))  -- `typeX` int(10) unsigned NOT NULL
+					stmt_insert_binding.set_integer (1+i*2, operands.at (i).to_integer) -- `varX` smallint(5) unsigned NOT NULL
+					stmt_insert_binding.set_integer (2+i*2, types.get_id (operand_types.at (i)))  -- `typeX` int(10) unsigned NOT NULL
 					i := i + 1
 				end
 
 				i := ( operands_count + 1 ) * 2
 
-				stmt_insert_binding.set_int (i + 1, data.at (8).to_integer) -- `value` int(11) NOT NULL
-				stmt_insert_binding.set_int (i + 2, data.at (9).to_integer) -- `equal_value` int(11) NOT NULL
-				stmt_insert_binding.set_int (i + 3, data.at (10).to_integer) -- `boost` double unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 4, sem_field_names.property_types.at (data.at (3))) -- `prop_kind` int(5) unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 5, data.at (7).to_integer) -- `value_type_kind` tinyint(3) unsigned NOT NULL
-				stmt_insert_binding.set_int (i + 6, data.at (11).to_integer) -- `position` int(10) unsigned
+				stmt_insert_binding.set_integer (i + 1, data.at (8).to_integer) -- `value` int(11) NOT NULL
+				stmt_insert_binding.set_integer (i + 2, data.at (9).to_integer) -- `equal_value` int(11) NOT NULL
+				stmt_insert_binding.set_integer (i + 3, data.at (10).to_integer) -- `boost` double unsigned NOT NULL
+				stmt_insert_binding.set_integer (i + 4, sem_field_names.property_types.at (data.at (3))) -- `prop_kind` int(5) unsigned NOT NULL
+				stmt_insert_binding.set_integer (i + 5, data.at (7).to_integer) -- `value_type_kind` tinyint(3) unsigned NOT NULL
+				stmt_insert_binding.set_integer (i + 6, data.at (11).to_integer) -- `position` int(10) unsigned
 				stmt_insert_binding.set_string (i + 7, data.at (5)) -- `vars` varchar(256) NOT NULL
 
 				stmt_insert_binding.execute

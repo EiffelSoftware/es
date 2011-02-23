@@ -10,6 +10,14 @@ class
 inherit
 	REFACTORING_HELPER
 
+	EPA_UTILITY
+
+	EPA_STRING_UTILITY
+
+	SEMQ_TABLE_CONSTANTS
+
+	SEM_SHARED_EQUALITY_TESTER
+
 feature -- Access
 
 	last_objects: LINKED_LIST [SEMQ_RESULT]
@@ -17,13 +25,115 @@ feature -- Access
 
 feature -- Basic operations
 
-	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN)
+	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN; a_connection: MYSQL_CLIENT)
 			-- Retrieve objects that satisfying `a_predicate' if `a_satisfying' is True;
 			-- otherwise, retrieve objects that violating `a_predicate'.
 			-- Make result available in `last_objects'.
 			-- `a_context_class' and `a_feature' compose the context where `a_predicate' appears.
+			-- `a_connection' includes the config used to connect to the semantic database.
+		local
+			l_sql_gen: SEM_SIMPLE_QUERY_GENERATOR
+			l_select: STRING
+			l_curly_expr: STRING
+			l_row: ARRAY [STRING]
+			l_column_names: ARRAY [STRING]
+			i: INTEGER
+			l_sql_result: MYSQL_RESULT
+			l_operand_mapping: like operands_from_curly_braced_operands
+			l_column_name: STRING
+			l_mapping: HASH_TABLE [SEM_VARIABLE_WITH_UUID, STRING]
+			l_var_count: INTEGER
+			l_data_row: HASH_TABLE [STRING, STRING]
+			l_opd_name: STRING
+			l_uuid: STRING
+			l_var_with_uuid: SEM_VARIABLE_WITH_UUID
+			l_result_item: SEMQ_RESULT
+			l_qry_id: INTEGER
+			l_uuids: DS_HASH_TABLE [SEMQ_RESULT, STRING]
+			l_query: SEMQ_WHOLE_QUERYABLE_QUERY
+			l_query_executor: SEMQ_WHOLE_QUERYABLE_QUERY_EXECUTOR
+			l_obj_list: LINKED_LIST [SEM_QUERYABLE]
+			l_obj_meta: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			l_tmp_result: SEMQ_RESULT
 		do
-			to_implement ("To implement. 21.2.2011 Jasonw")
+			create last_objects.make
+
+			l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
+			create l_sql_gen
+			l_select := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5)
+			a_connection.execute_query (l_select)
+			if a_connection.last_error_number = 0 then
+				l_sql_result := a_connection.last_result
+				l_column_names := l_sql_result.column_names
+				l_var_count := l_sql_result.column_count - 1
+				l_operand_mapping := operands_from_curly_braced_operands (a_feature, a_context_class)
+
+				from
+					l_sql_result.start
+				until
+					l_sql_result.after
+				loop
+					create l_mapping.make (l_var_count)
+					l_mapping.compare_objects
+					l_data_row := l_sql_result.data_as_table
+					l_uuid := l_data_row.item (queryables_uuid)
+					l_qry_id := l_data_row.item (queryables_qry_id).to_integer
+					across l_operand_mapping as l_map loop
+						l_data_row.search (l_map.key)
+						if l_data_row.found then
+							create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_data_row.found_item.out, l_uuid)
+							l_mapping.force (l_var_with_uuid, l_operand_mapping.item (l_map.key))
+						end
+					end
+					create l_result_item.make
+					across l_mapping as l_map loop
+						l_result_item.variable_mapping.force (l_map.item, l_map.key)
+					end
+					last_objects.extend (l_result_item)
+					l_sql_result.forth
+				end
+
+					-- Retrieve actual objects.
+				create l_uuids.make (5)
+				l_uuids.set_key_equality_tester (string_equality_tester)
+				from
+					last_objects.start
+				until
+					last_objects.after
+				loop
+					across last_objects.item_for_iteration.variable_mapping as l_map loop
+						l_uuid := l_map.item.uuid
+						if l_uuids.has (l_map.item.uuid) then
+							l_tmp_result := l_uuids.item (l_map.item.uuid)
+						else
+							create l_query.make (l_uuid, {SEM_CONSTANTS}.object_field_value)
+							create l_query_executor.make (a_connection)
+							l_query_executor.execute (l_query)
+							l_tmp_result := l_query_executor.last_results.first
+							l_uuids.force_last (l_tmp_result, l_uuid)
+							last_objects.item_for_iteration.queryables.append (l_tmp_result.queryables)
+							across last_objects.item_for_iteration.meta  as l_meta loop
+								last_objects.item_for_iteration.meta.force (l_meta.item, l_meta.key)
+							end
+						end
+					end
+					last_objects.forth
+				end
+			end
+		end
+
+	curly_braced_integer_form (a_expression: EPA_EXPRESSION; a_class: CLASS_C; a_feature: FEATURE_I): STRING
+			-- Curly-braced integer form for `a_expression', viewed from `a_feature' in `a_class'.
+			-- All occurrences of operands in `a_expression' will be replaced by curly-braced integers.
+			-- For example, if `a_expression' is "Current.has (v)", the result would be
+			-- "{0}.has ({1})", given that "v" is the first argument in `a_feature'.
+		local
+			l_operands: like operands_of_feature
+			l_replacements: HASH_TABLE [STRING, STRING]
+		do
+			l_operands := operands_of_feature (a_feature)
+			l_replacements := curly_braced_operands_from_operands (a_feature, a_class)
+			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
 note

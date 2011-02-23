@@ -5,7 +5,7 @@
 	revision: "$Revision$"
 
 class
-	SEMQ_WHOLE_DOCUMENT_QUERY
+	SEMQ_WHOLE_QUERYABLE_QUERY
 
 inherit
 	SEMQ_QUERY

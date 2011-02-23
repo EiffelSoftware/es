@@ -16,7 +16,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_values (a_name: like name; a_values: ARRAY [G]) is
+	make_with_values (a_name: like name; a_values: ARRAY [G])
 			-- Extend `a_values' into Current.
 			-- Set name of current range with `a_name'.
 		require
@@ -30,7 +30,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	name: STRING is
+	name: STRING
 			-- Name of current value
 		do
 			if name_internal = Void then
@@ -48,7 +48,7 @@ feature{NONE} -- Implementation
 			-- Implementation of `name'
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

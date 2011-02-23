@@ -277,6 +277,7 @@ feature -- Access
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
 			-- `a_expression' must have boolean type.
+			-- `a_expression' is in curly-braced integer form, for example: {0}.has ({1})
 			-- `a_limit' indicates the maximal number of row to retrieve from database. 0 means unlimited rows.
 		local
 			l_operands: like variables_from_expression
@@ -316,7 +317,7 @@ feature -- Access
 			l_var_preds.force ("q.qry_id", "qry_id")
 
 			l_from.append ("FROM Queryables q")
-			l_select.append ("SELECT q.qry_id as %"query_id%"")
+			l_select.append ("SELECT q.uuid as %"uuid%", q.qry_id as %"qry_id%"")
 			l_where.append ("WHERE%N")
 			l_where.append ("q.qry_kind=1 AND%N")
 			l_where.append ("q.class=%"" + a_context_class.name_in_upper + "%"")
