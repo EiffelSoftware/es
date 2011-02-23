@@ -240,9 +240,15 @@ feature -- Status report
 		end
 
 	is_result: BOOLEAN
-			-- Does current expression "Result"?
+			-- Is current expression "Result"?
 		do
 			Result := text.is_case_insensitive_equal (ti_result)
+		end
+
+	is_void: BOOLEAN
+			-- Is current expression "Void"?
+		do
+			Result := text.is_case_insensitive_equal (ti_void)
 		end
 
 	is_attribute: BOOLEAN

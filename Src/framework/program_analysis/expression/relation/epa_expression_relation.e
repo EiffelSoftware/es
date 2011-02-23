@@ -316,15 +316,15 @@ feature {NONE} -- Implementation
 		local
 			m,n: INTEGER
 			l_count: INTEGER
-			l_sets, l_sets_without_constants: like relevant_expression_sets
+			l_sets, l_edited_sets: like relevant_expression_sets
 		do
 			l_sets := relevant_expression_sets
-			create l_sets_without_constants.make (relevant_expression_sets.count)
+			create l_edited_sets.make (relevant_expression_sets.count)
 			across relevant_expression_sets as l_revs loop
-				l_sets_without_constants.extend (l_revs.item.cloned_object)
+				l_edited_sets.extend (l_revs.item.cloned_object)
 			end
-			remove_constants (l_sets_without_constants)
-			l_count := l_sets_without_constants.count
+			remove_unnecessary_expressions (l_edited_sets)
+			l_count := l_edited_sets.count
 
 			from
 				m := 1
@@ -340,14 +340,14 @@ feature {NONE} -- Implementation
 					-- Merge sets
 					if
 						m /= n and then
-						l_sets_without_constants.i_th (m) /= Void and then
-						l_sets_without_constants.i_th (n) /= Void and then
-						l_sets_without_constants.i_th (m).is_disjoint (l_sets_without_constants.i_th (n))
+						l_edited_sets.i_th (m) /= Void and then
+						l_edited_sets.i_th (n) /= Void and then
+						l_edited_sets.i_th (m).is_disjoint (l_edited_sets.i_th (n))
 					then
 						l_sets.i_th (m).merge (l_sets.i_th (n))
 						l_sets.put_i_th (Void, n)
-						l_sets_without_constants.i_th (m).merge (l_sets_without_constants.i_th (n))
-						l_sets_without_constants.put_i_th (Void, n)
+						l_edited_sets.i_th (m).merge (l_edited_sets.i_th (n))
+						l_edited_sets.put_i_th (Void, n)
 						n := m + 1
 					else
 						n := n + 1
@@ -358,38 +358,39 @@ feature {NONE} -- Implementation
 				from
 					m := m + 1
 				until
-				   m > l_count or else l_sets_without_constants.i_th (m) /= Void
+				   m > l_count or else l_edited_sets.i_th (m) /= Void
 				loop
 					m := m + 1
 				end
 			end
 		end
 
-	remove_constants (a_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]])
-			-- Removes non-constant elements from `a_sets'.
+	remove_unnecessary_expressions (a_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]])
+			-- Removes the unnecessary expressions from `a_sets' namely
+			-- constants and the expression "Void".
 		require
-			a_sets_not_void: a_sets /= Void
+			a_expression_sets_not_void: a_expression_sets /= Void
 		local
 			i: INTEGER
 		do
 			from
 				i := 1
 			until
-				i > a_sets.count
+				i > a_expression_sets.count
 			loop
-				a_sets.put_i_th (expression_set_without_constants (a_sets.i_th (i)), i)
+				a_expression_sets.put_i_th (set_without_unnecessary_expressions (a_expression_sets.i_th (i)), i)
 				i := i + 1
 			end
 		end
 
-	expression_set_without_constants (a_set: EPA_HASH_SET [EPA_EXPRESSION]): EPA_HASH_SET [EPA_EXPRESSION]
-			-- A set whose elements are non-constant elements from `a_set'.
+	set_without_unnecessary_expressions (a_expression_set: EPA_HASH_SET [EPA_EXPRESSION]): EPA_HASH_SET [EPA_EXPRESSION]
+			-- A set whose elements are non-constant and non-void expressions from `a_set'.
 		require
-			a_set_not_void: a_set /= Void
+			a_expression_set_not_void: a_expression_set /= Void
 		do
-			create Result.make (a_set.count)
+			create Result.make (a_expression_set.count)
 			Result.set_equality_tester (expression_equality_tester)
-			a_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant end)
+			a_expression_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant and not a_expr.is_void end)
 		ensure
 			Result_not_void: Result /= Void
 			equality_tester_set: Result.equality_tester = expression_equality_tester
