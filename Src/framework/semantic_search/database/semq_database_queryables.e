@@ -10,6 +10,8 @@ class
 inherit
 	SEMQ_DATABASE
 
+	EPA_UTILITY
+
 create
 	make
 
@@ -57,13 +59,28 @@ feature -- Basic operations
 			stmt: STRING
 			attributes: HASH_TABLE [STRING, STRING]
 			hit_breakpoints: LIST [STRING]
+			l_str: STRING
+			l_parts: LIST [STRING]
 		do
 			-- Setup
 			attributes := queryables.at (a_qry_id)
 			make_sem_field_names
 
-			create stmt.make (65536) -- Serialization can be very large
+			-- Fix missing `is_query` attribute in SSQL file
+			if not attributes.has (once "is_query") and attributes.has (once "test_case_name") then
+				l_str := attributes.at (once "test_case_name").twin
+				l_parts := string_slices (l_str, once "__")
+				if l_parts.i_th (4).same_string (once "CMD") then
+					attributes.put (once "False", once "is_query")
+				else
+					attributes.put (once "True", once "is_query")
+				end
+			end
+
+			-- Serialization can be very large
+			create stmt.make (65536)
 			stmt.append (once "UPDATE `semantic_search`.`Queryables` SET `uuid` = `uuid`")
+
 			-- `qry_kind` tinyint(3) unsigned NOT NULL
 			if attributes.has (once "document_type") then
 				stmt.append (once ", `qry_kind` = "+sem_field_names.queryable_types.at (attributes.at (once "document_type")).out)
