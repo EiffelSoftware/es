@@ -342,7 +342,7 @@ feature {NONE} -- Implementation
 						m /= n and then
 						l_edited_sets.i_th (m) /= Void and then
 						l_edited_sets.i_th (n) /= Void and then
-						l_edited_sets.i_th (m).is_disjoint (l_edited_sets.i_th (n))
+						not l_edited_sets.i_th (m).is_disjoint (l_edited_sets.i_th (n))
 					then
 						l_sets.i_th (m).merge (l_sets.i_th (n))
 						l_sets.put_i_th (Void, n)
