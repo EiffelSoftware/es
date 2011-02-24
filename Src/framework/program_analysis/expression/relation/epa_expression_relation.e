@@ -390,7 +390,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make (a_expression_set.count)
 			Result.set_equality_tester (expression_equality_tester)
-			a_expression_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant and not a_expr.is_void end)
+			a_expression_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant and not a_expr.is_void and not a_expr.is_result end)
 		ensure
 			Result_not_void: Result /= Void
 			equality_tester_set: Result.equality_tester = expression_equality_tester
