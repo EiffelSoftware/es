@@ -15,7 +15,8 @@ feature
 			stmt, stmt_insert: MYSQL_PREPARED_STATEMENT
 		do
 			-- Initialization
-			create client.make ("127.0.0.1", "root", "", "test", 0)
+			create client.make -- uses default values: host "localhost", user "root", empty password, port 3306
+			client.connect
 			print("is_connected: "+client.is_connected.out+"%N%N")
 
 			if client.is_connected then

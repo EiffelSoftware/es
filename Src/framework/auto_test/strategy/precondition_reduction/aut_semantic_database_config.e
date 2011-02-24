@@ -44,7 +44,13 @@ feature -- Access
 	connection: MYSQL_CLIENT
 			-- Connection object for data operations
 		do
-			create Result.make (host, user, password, schema, port)
+			create Result.make
+			Result.set_host (host)
+			Result.set_username (user)
+			Result.set_password (password)
+			Result.set_database (schema)
+			Result.set_port (port)
+			Result.connect
 		end
 
 feature -- Setting

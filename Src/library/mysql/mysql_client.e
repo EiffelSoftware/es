@@ -15,7 +15,58 @@ create
 
 feature -- Initialization
 
-	make (host, username, password, database: STRING; port: INTEGER)
+	make
+		do
+			-- State
+			is_connected := False
+			has_result := False
+			has_prepared_statement := False
+			mysql_stmt := Void
+			-- Defaults
+			host := once "localhost"
+			username := once "root"
+			password := once ""
+			database := once "test"
+			port := 0
+		end
+
+feature -- Connect
+
+	host, username, password, database: STRING
+	port: INTEGER
+			-- Connection details
+
+	set_host (a_host: STRING)
+			-- Set MySQL hostname to `a_host'
+		do
+			host := a_host
+		end
+
+	set_username (a_username: STRING)
+			-- Set MySQL username to `a_username'
+		do
+			username := a_username
+		end
+
+	set_password (a_password: STRING)
+			-- Set MySQL password to `a_password'
+		do
+			password := a_password
+		end
+
+	set_database (a_database: STRING)
+			-- Set MySQL database to `a_database'
+		do
+			database := a_database
+		end
+
+	set_port (a_port: INTEGER)
+			-- Set MySQL port to `a_port'
+		do
+			port := a_port
+		end
+
+	connect
 			-- Connects to a MySQL server at `host':`port' with
 			-- `username' and `password'. Selects `database'.
 		require
@@ -26,6 +77,10 @@ feature -- Initialization
 		local
 			c_host, c_username, c_password, c_database: ANY
 		do
+			-- Close previous connection
+			if is_connected then
+				close
+			end
 			-- Pointers for C
 			c_host := host.to_c
 			c_username := username.to_c
@@ -141,7 +196,7 @@ feature -- Commands
 			has_result := mysql_result.is_open
 		end
 
-	dispose
+	close
 			-- Close a server connection.
 		do
 			if is_connected then
@@ -150,6 +205,15 @@ feature -- Commands
 			end
 			is_connected := False
 			has_result := False
+			has_prepared_statement := False
+			mysql_stmt := Void
+		end
+
+
+	dispose
+			-- Close a server connection.
+		do
+			close
 		end
 
 
@@ -166,7 +230,7 @@ feature{NONE} -- External
 	p_mysql, p_row: POINTER
 			-- Pointer to MYSQL, MYSQL_ROW structures
 
-	c_real_connect (a_mysql, a_row, a_host, a_username, a_password, a_database: POINTER; port: INTEGER): INTEGER
+	c_real_connect (a_mysql, a_row, a_host, a_username, a_password, a_database: POINTER; a_port: INTEGER): INTEGER
 		external
 			"C | %"eiffelmysql.h%""
 		end
