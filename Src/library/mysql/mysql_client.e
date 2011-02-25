@@ -11,7 +11,8 @@ inherit
 	DISPOSABLE
 
 create
-	make
+	make,
+	make_with_database
 
 feature -- Initialization
 
@@ -30,9 +31,30 @@ feature -- Initialization
 			port := 0
 		end
 
+	make_with_database (a_host: STRING; a_username: STRING; a_password: STRING; a_database: STRING; a_port: INTEGER)
+			-- Initialize Current.
+		do
+			set_host (a_host)
+			set_username (a_username)
+			set_password (a_password)
+			set_database (a_database)
+			set_port (a_port)
+		end
+
 feature -- Connect
 
-	host, username, password, database: STRING
+	host: STRING
+			-- Host name of the database server
+
+	username: STRING
+			-- User name used to connect to the database server
+
+	password: STRING
+			-- Password used to connect to the database server
+
+	database: STRING
+			-- Schema name of the database
+
 	port: INTEGER
 			-- Connection details
 
