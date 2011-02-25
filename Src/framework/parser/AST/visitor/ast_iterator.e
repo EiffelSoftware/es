@@ -73,6 +73,7 @@ feature -- Roundtrip
 			-- Process `l_as'.
 		do
 		end
+		
 	process_break_as (l_as: BREAK_AS)
 			-- Process `l_as'.
 		do
@@ -955,7 +956,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
