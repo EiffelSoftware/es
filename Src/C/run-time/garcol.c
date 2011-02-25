@@ -1329,6 +1329,7 @@ rt_public void reclaim(void)
 			rt_extension_obj = NULL;
 #endif
 			except_mnger = NULL;
+			scp_mnger = NULL;
 
 			plsc ();
 
@@ -1489,6 +1490,9 @@ rt_private void full_mark (EIF_CONTEXT_NOARG)
 	}
 #endif
 	except_mnger = MARK_SWITCH(&except_mnger);	/* EXCEPTION_MANAGER */
+	if (scp_mnger) {
+		scp_mnger = MARK_SWITCH(&scp_mnger);	/* ISE_SCOOP_MANAGER */
+	}
 
 		/* Deal with once manifest strings. */
 #ifndef EIF_THREADS
@@ -3847,6 +3851,9 @@ rt_private void mark_new_generation(EIF_CONTEXT_NOARG)
 	if (rt_extension_obj && !(HEADER(rt_extension_obj)->ov_flags & EO_OLD))
 		rt_extension_obj = GEN_SWITCH(&rt_extension_obj);
 #endif
+	if (scp_mnger && !(HEADER(scp_mnger)->ov_flags & EO_OLD))
+		scp_mnger = GEN_SWITCH(&scp_mnger);
+
 	if (except_mnger && !(HEADER(except_mnger)->ov_flags & EO_OLD))
 		except_mnger = GEN_SWITCH(&except_mnger);
 
@@ -4110,6 +4117,7 @@ rt_private EIF_REFERENCE gscavenge(EIF_REFERENCE root)
 	union overhead *zone;		/* Malloc header zone */
 	uint16 age;				/* Object's age */
 	uint16 flags;				/* Eiffel flags */
+	uint16 pid;			/* SCOOP Processor ID */
 	EIF_TYPE_INDEX dftype, dtype;
 	EIF_REFERENCE new;							/* Address of new object (tenured) */
 	rt_uint_ptr size;							/* Size of scavenged object */
@@ -4119,6 +4127,7 @@ rt_private EIF_REFERENCE gscavenge(EIF_REFERENCE root)
 	flags = zone->ov_flags;				/* Eiffel flags */
 	dftype = zone->ov_dftype;
 	dtype = zone->ov_dtype;
+	pid = zone->ov_pid;
 
 	if (gen_scavenge & GS_STOP)			/* Generation scavenging was stopped */
 		if (!(flags & EO_NEW))			/* Object inside scavenge zone */
@@ -4234,6 +4243,7 @@ rt_private EIF_REFERENCE gscavenge(EIF_REFERENCE root)
 			zone->ov_flags = flags;		/* Copy flags for new object */
 			zone->ov_dftype = dftype;
 			zone->ov_dtype = dtype;
+			zone->ov_pid = pid;
 			zone->ov_size &= ~B_C;		/* Object is an Eiffel one */
 
 			CHECK("Valid size", size <= (zone->ov_size & B_SIZE));

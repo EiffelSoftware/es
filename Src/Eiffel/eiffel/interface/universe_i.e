@@ -175,9 +175,10 @@ feature -- Properties
 		end
 
 	all_possible_client_classes (a_class: CLASS_I): SEARCH_TABLE [CLASS_I]
-			-- Retrieves all classes that could potential be a client to the class `a_class'.
+			-- Retrieves all classes that can reach `a_class' in the Universe. It is a subset of `all_classes'.
 		require
 			a_class_attached: a_class /= Void
+			is_eiffel_class: attached {EIFFEL_CLASS_I} a_class
 		local
 			l_clusters: ARRAYED_LIST [CONF_CLUSTER]
 			l_cluster_classes: ARRAYED_LIST [CONF_CLASS]
@@ -193,14 +194,12 @@ feature -- Properties
 			l_uuid: UUID
 			l_cursor: CURSOR
 		do
-			check is_eiffel_class: ({detachable EIFFEL_CLASS_I}) #? a_class /= Void end
-
 				-- Step #1
 				-- Retrieve class target and applicable extended targets for the supplied class.
 			l_class_target := a_class.target
 			l_target_system := l_class_target.system
 
-				-- Retireve a list of targets			
+				-- Retrieve a list of targets			
 			l_targets := l_target_system.targets.linear_representation
 				-- Remove current class target as we know all classes in the target are reachable
 			l_targets.start
@@ -213,16 +212,22 @@ feature -- Properties
 			l_apt_targets.extend (l_class_target)
 
 				-- Build list of applicable targets
-			from l_targets.start until l_targets.is_empty or else l_targets.after loop
+			from
+				l_targets.start
+			until
+				l_targets.is_empty or else l_targets.after
+			loop
 				l_target := l_targets.item
 				if l_target.extends /= Void then
 					if l_apt_targets.has (l_target.extends) then
 							-- Remove applicable target and reiterate
 						l_targets.remove
-						l_targets.start
-
 						l_apt_targets.extend (l_target)
+					else
+						l_targets.forth
 					end
+				else
+					l_targets.forth
 				end
 			end
 				-- Done with target list
@@ -297,14 +302,16 @@ feature -- Properties
 				l_target := l_apt_targets.item
 				l_clusters := l_target.clusters.linear_representation
 				from l_clusters.start until l_clusters.after loop
-					l_cluster_classes := l_clusters.item.classes.linear_representation
-					from l_cluster_classes.start until l_cluster_classes.after loop
-						if attached {CLASS_I} l_cluster_classes.item_for_iteration as l_class_i and then l_class_i.target = l_target then
-							if not Result.has (l_class_i) then
-								Result.force (l_class_i)
+					if attached l_clusters.item.classes as l_classes then
+						l_cluster_classes := l_classes.linear_representation
+						from l_cluster_classes.start until l_cluster_classes.after loop
+							if attached {CLASS_I} l_cluster_classes.item_for_iteration as l_class_i and then l_class_i.target = l_target then
+								if not Result.has (l_class_i) then
+									Result.force (l_class_i)
+								end
 							end
+							l_cluster_classes.forth
 						end
-						l_cluster_classes.forth
 					end
 					l_clusters.forth
 				end

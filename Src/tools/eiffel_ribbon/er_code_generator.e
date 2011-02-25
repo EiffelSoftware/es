@@ -26,6 +26,11 @@ feature -- Command
 			button_counter := 0
 
 			uicc_manager.compile
+
+			-- FIXME: how to detect where EIFGENs folder (for generated project) is?
+			-- Otherwise users have to copy generated ribbon.h, ribbon.bml and eiffelribbon.rc to one-level up folder of "EIFGENs" folder
+--			copy_generated_file_to_eifgen_if_needed
+
 			-- Check XML compilation error here?
 			save_project_info
 			generate_ecf
@@ -1028,6 +1033,12 @@ feature {NONE} -- Implementation
 					l_gen_info.set_default_item_class_name_prefix ("RIBBON_SPLIT_BUTTON_IMP_")
 					l_gen_info.set_item_file ("ribbon_split_button")
 					l_gen_info.set_item_imp_file ("ribbon_split_button_imp")
+				elseif a_group_node.item.text.same_string ({ER_XML_CONSTANTS}.drop_down_gallery) then
+					create l_gen_info
+					l_gen_info.set_default_item_class_imp_name_prefix ("RIBBON_DROP_DOWN_GALLERY_")
+					l_gen_info.set_default_item_class_name_prefix ("RIBBON_DROP_DOWN_GALLERY_IMP_")
+					l_gen_info.set_item_file ("ribbon_drop_down_gallery")
+					l_gen_info.set_item_imp_file ("ribbon_drop_down_gallery_imp")
 				else
 					check not_implemented: False end
 					create l_gen_info
@@ -1178,7 +1189,7 @@ feature {NONE} -- Implementation
 						l_generated.replace_substring_all ("$INDEX_1", l_identify_name.as_lower)
 						l_generated.replace_substring_all ("$INDEX_2", l_identify_name.as_upper)
 					else
-						l_generated.replace_substring_all ("$INDEX_1", "toggle_button_" + (button_counter + l_index).out)
+						l_generated.replace_substring_all ("$INDEX_1", "spinner_button_" + (button_counter + l_index).out)
 						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_SPINNER_" + (button_counter + l_index).out)
 					end
 				elseif a_group_node.i_th (1).text.same_string (l_constants.combo_box) then
@@ -1200,6 +1211,16 @@ feature {NONE} -- Implementation
 					else
 						l_generated.replace_substring_all ("$INDEX_1", "split_button_" + (button_counter + l_index).out)
 						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_SPLIT_BUTTON_" + (button_counter + l_index).out)
+					end
+				elseif a_group_node.i_th (1).text.same_string (l_constants.drop_down_gallery) then
+					if attached {ER_TREE_NODE_DATA} a_group_node.i_th (l_index).data as l_data
+						and then attached l_data.command_name as l_identify_name
+						and then not l_identify_name.is_empty then
+						l_generated.replace_substring_all ("$INDEX_1", l_identify_name.as_lower)
+						l_generated.replace_substring_all ("$INDEX_2", l_identify_name.as_upper)
+					else
+						l_generated.replace_substring_all ("$INDEX_1", "drop_down_gallery_" + (button_counter + l_index).out)
+						l_generated.replace_substring_all ("$INDEX_2", "RIBBON_DROP_DOWN_GALLERY_" + (button_counter + l_index).out)
 					end
 				else
 					create l_generated.make_empty
@@ -1343,19 +1364,15 @@ feature {NONE} -- Implementation
 			--
 		require
 			not_void: a_item_node /= void
---			not_void: a_file_generated /= Void and then a_file_generated.is_open_write
 		local
-			l_button_regiestry_string: STRING
-			l_button_creation_string, l_button_registry_string, l_button_declaration_string: STRING
-			l_file_content: STRING
-			l_last_string: STRING
+			l_button_registry_string: STRING
+			l_button_creation_string, l_button_declaration_string: STRING
 		do
 			if attached {ER_TREE_NODE_SPLIT_BUTTON_DATA} a_item_node.data as l_data then
 				l_button_creation_string := button_creation_string (a_item_node)
 				l_button_registry_string := button_registry_string (a_item_node)
 				l_button_declaration_string := button_declaration_string (a_item_node)
 
---				a_last_string := a_file_generated.last_string
 				a_last_string.replace_substring_all ("$BUTTON_CREATION", l_button_creation_string)
 				a_last_string.replace_substring_all ("$BUTTON_REGISTRY", l_button_registry_string)
 				a_last_string.replace_substring_all ("$BUTTON_DECLARATION", l_button_declaration_string)

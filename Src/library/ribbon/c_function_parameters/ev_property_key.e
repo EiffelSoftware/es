@@ -26,7 +26,11 @@ create
 	make_decimal,
 	make_items_source,
 	make_categories,
-	make_selected_item
+	make_selected_item,
+	make_global_background_color,
+	make_global_text_color,
+	make_global_highlight_color,
+	make_item_image
 
 feature {NONE}  -- Initialization
 
@@ -94,6 +98,30 @@ feature {NONE}  -- Initialization
 			-- Make a selected item key
 		do
 			share_from_pointer (c_ui_pkey_selected_item)
+		end
+
+	make_global_background_color
+			-- Make a global background color
+		do
+			share_from_pointer (c_ui_pkey_globalbackgroundcolor)
+		end
+
+	make_global_text_color
+			-- Make a global text color
+		do
+			share_from_pointer (c_ui_pkey_globaltextcolor)
+		end
+
+	make_global_highlight_color
+			-- Make a global hightligh color
+		do
+			share_from_pointer (c_ui_pkey_globalhighlightcolor)
+		end
+
+	make_item_image
+			-- Make a item image
+		do
+			share_from_pointer (c_ui_pkey_item_image)
 		end
 
 feature -- Access
@@ -199,6 +227,15 @@ feature -- Status Report
 			l_tmp: EV_PROPERTY_KEY
 		do
 			create l_tmp.make_selected_item
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_item_image: BOOLEAN
+			-- Is current item image?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_item_image
 			Result := l_tmp.guid.is_equal (guid)
 		end
 
@@ -348,6 +385,54 @@ feature {NONE} -- Externals
 			"[
 			{
 				return (EIF_POINTER) &UI_PKEY_SelectedItem;
+			}
+			]"
+		end
+
+	c_ui_pkey_globalbackgroundcolor: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_GlobalBackgroundColor;
+			}
+			]"
+		end
+
+	c_ui_pkey_globaltextcolor: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_GlobalTextColor;
+			}
+			]"
+		end
+
+	c_ui_pkey_globalhighlightcolor: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_GlobalHighlightColor;
+			}
+			]"
+		end
+
+	c_ui_pkey_item_image: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_ItemImage;
 			}
 			]"
 		end
