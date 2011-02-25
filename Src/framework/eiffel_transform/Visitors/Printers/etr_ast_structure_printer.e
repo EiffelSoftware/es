@@ -1492,6 +1492,7 @@ feature {AST_EIFFEL} -- Roundtrip: Routine body
 			if processing_needed (l_as.compound, l_as, 1) then
 				process_child_block_list (l_as.compound, void, l_as, 1)
 			end
+			output.append_string (ti_end_keyword+ti_New_line)
 		end
 
 	process_once_as (l_as: ONCE_AS)
@@ -1610,7 +1611,7 @@ feature -- Quantifications
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
