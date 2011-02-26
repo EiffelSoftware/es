@@ -12,7 +12,7 @@ inherit
 
 	EPA_ACCESS_AGENT_UTILITY
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 feature -- Access
 
@@ -140,7 +140,7 @@ feature{NONE} -- Implementation
 				until
 					a_atomic_predicates.after
 				loop
-					if l_status.item_for_iteration = {AFX_SOLVER_FACILITY}.predicate_valid then
+					if l_status.item_for_iteration = {EPA_SOLVER_FACILITY}.predicate_valid then
 						l_valid := True
 					end
 					a_atomic_predicates.forth
@@ -153,7 +153,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	possible_implications (a_class: CLASS_C; a_atomic_predicates: AFX_STATE_SKELETON): DS_HASH_SET [AFX_IMPLICATION_EXPR]
+	possible_implications (a_class: CLASS_C; a_atomic_predicates: EPA_STATE_SKELETON): DS_HASH_SET [AFX_IMPLICATION_EXPR]
 			-- Possible implications from `a_class'.
 			-- All implications which are equivalent to any predicate
 			-- in `a_atomic_predicates' are removed from the result.
@@ -165,8 +165,8 @@ feature{NONE} -- Implementation
 				-- Get a set of implications from source code, and only keep those
 				-- satisfiable implications.
 			l_implications := implication_mutants (a_class)
-			l_satisfiable_implications := predicate_satisfiability (l_implications, a_class, False, {AFX_SOLVER_FACILITY}.predicate_satisfiable)
-			l_satisfiable_implications := predicate_satisfiability (l_satisfiable_implications, a_class, True, {AFX_SOLVER_FACILITY}.predicate_satisfiable)
+			l_satisfiable_implications := predicate_satisfiability (l_implications, a_class, False, {EPA_SOLVER_FACILITY}.predicate_satisfiable)
+			l_satisfiable_implications := predicate_satisfiability (l_satisfiable_implications, a_class, True, {EPA_SOLVER_FACILITY}.predicate_satisfiable)
 			l_non_equiv_implications := non_equivelant_implications (l_satisfiable_implications, a_atomic_predicates)
 			result := l_non_equiv_implications
 		end
@@ -186,7 +186,7 @@ feature{NONE} -- Implementation
 			l_satis: NATURAL_8
 			l_expr: EPA_EXPRESSION
 			l_negated_expr: EPA_EXPRESSION
-			l_skeleton: AFX_STATE_SKELETON
+			l_skeleton: EPA_STATE_SKELETON
 		do
 				-- Transform predicates into {AFX_EXPRESSION}.
 			create l_exprs.make (a_predicates.count)
@@ -265,7 +265,7 @@ feature{NONE} -- Implementation
 			good_result: Result.count = 4
 		end
 
-	atomic_predicates (a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
+	atomic_predicates (a_class: CLASS_C; a_feature: FEATURE_I): EPA_STATE_SKELETON
 			-- List of predicates that are used as atomic terms
 			-- in implication generation
 		local

@@ -22,7 +22,7 @@ inherit
 
 	AFX_FIX_ID_SERVER
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 feature -- Access
 
@@ -168,8 +168,8 @@ feature -- Basic operations
 			l_pre_hie: like state_hierarchy
 			l_post_hie: like state_hierarchy
 			l_premises: ARRAY [EPA_EXPRESSION]
-			l_premise_skeleton: AFX_STATE_SKELETON
-			l_premise_combi: LINKED_LIST [AFX_STATE_SKELETON]
+			l_premise_skeleton: EPA_STATE_SKELETON
+			l_premise_combi: LINKED_LIST [EPA_STATE_SKELETON]
 			i, k: INTEGER
 			l_snippets: like fix_snippets
 			l_fix: AFX_FIX
@@ -211,7 +211,7 @@ feature{NONE} -- Implementation
 			l_postcondition: detachable EPA_STATE
 			l_bpslots: TUPLE [passing_bpslot: INTEGER; failing_bpslot: INTEGER]
 			l_failing_state: detachable EPA_STATE
-			l_necessary_conditions: AFX_STATE_SKELETON
+			l_necessary_conditions: EPA_STATE_SKELETON
 			l_culprit_predicate: detachable EPA_EXPRESSION
 			l_abq_analyzer: EPA_ABQ_STRUCTURE_ANALYZER
 			l_value: BOOLEAN
@@ -321,7 +321,7 @@ feature{NONE} -- Implementation
 			create Result.make_with_text (a_class, a_feature, l_text, a_feature.written_class)
 		end
 
-	strongest_predicates (a_skeleton: AFX_STATE_SKELETON; a_theory: AFX_THEORY): LINKED_LIST [EPA_EXPRESSION]
+	strongest_predicates (a_skeleton: EPA_STATE_SKELETON; a_theory: EPA_THEORY): LINKED_LIST [EPA_EXPRESSION]
 			-- Expressions in `a_skeleton' which implies all the rest expressions in `a_skeleton'.
 			-- `a_theory' is in which the reasoning is based.
 			-- For example, if `a_skeleton' contains 3 predicates a, b, and c.
@@ -329,7 +329,7 @@ feature{NONE} -- Implementation
 		local
 			l_tbl: HASH_TABLE [EPA_EXPRESSION, EPA_EXPRESSION]
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
-			l_temp_skeleton: AFX_STATE_SKELETON
+			l_temp_skeleton: EPA_STATE_SKELETON
 			l_implication: EPA_EXPRESSION
 			l_implications: LINKED_LIST [EPA_EXPRESSION]
 			l_valid_imps: LINKED_LIST [EPA_EXPRESSION]
@@ -692,11 +692,11 @@ feature{NONE} -- Implementation
 			-- Fix snippets to change the system from `a_source_state' to `a_target_state'
 		local
 			l_sequences: like call_sequences
-			l_premise_skeleton: AFX_STATE_SKELETON
+			l_premise_skeleton: EPA_STATE_SKELETON
 			i, k: INTEGER
-			l_combinations: LINKED_LIST [AFX_STATE_SKELETON]
+			l_combinations: LINKED_LIST [EPA_STATE_SKELETON]
 			l_temp: HASH_TABLE [LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]], EPA_EXPRESSION]
-			l_comb: AFX_STATE_SKELETON
+			l_comb: EPA_STATE_SKELETON
 		do
 			create Result.make
 			l_sequences := call_sequences (a_source_state, a_target_state)

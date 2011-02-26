@@ -5,14 +5,14 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_THEORY
+	EPA_THEORY
 
 inherit
-	AFX_SOLVER_CONSTANTS
+	EPA_SOLVER_CONSTANTS
 
 	DEBUG_OUTPUT
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
@@ -28,8 +28,8 @@ feature{NONE} -- Initializatoin
 			class_ := a_class
 			create functions.make (50)
 			create axioms.make (50)
-			functions.set_equality_tester (create {AFX_SOLVER_EXPR_EQUALITY_TESTER})
-			axioms.set_equality_tester (create {AFX_SOLVER_EXPR_EQUALITY_TESTER})
+			functions.set_equality_tester (create {EPA_SOLVER_EXPR_EQUALITY_TESTER})
+			axioms.set_equality_tester (create {EPA_SOLVER_EXPR_EQUALITY_TESTER})
 		ensure
 			class_set: class_ = a_class
 		end
@@ -54,13 +54,13 @@ feature -- Access
 			-- If Void, it means that Current theory is for `class_',
 			-- not for a particular feature.
 
-	functions: DS_HASH_SET [AFX_SOLVER_EXPR]
+	functions: DS_HASH_SET [EPA_SOLVER_EXPR]
 			-- List of functions
 
-	axioms: DS_HASH_SET [AFX_SOLVER_EXPR]
+	axioms: DS_HASH_SET [EPA_SOLVER_EXPR]
 			-- List of axioms
 
-	statements: DS_HASH_SET [AFX_SOLVER_EXPR]
+	statements: DS_HASH_SET [EPA_SOLVER_EXPR]
 			-- All statements consisting both `functions' and `axioms'
 			-- A new copy of `functions' and `axioms'.
 		do
@@ -71,7 +71,7 @@ feature -- Access
 			good_result: Result.count = functions.count + axioms.count
 		end
 
-	union alias "+" (other: like Current): like Current is
+	union alias "+" (other: like Current): like Current
 			-- Clone of current set to which all items
 			-- of `other' have been added
 		require
@@ -101,7 +101,7 @@ feature -- Status report
 			Result.append (":%N")
 
 			statements.do_all (
-				agent (a_item: AFX_SOLVER_EXPR; a_result: STRING)
+				agent (a_item: EPA_SOLVER_EXPR; a_result: STRING)
 					do
 						a_result.append (a_item.expression)
 						a_result.append_character ('%N')
@@ -142,7 +142,7 @@ feature -- Basic operations
 			end
 		end
 
-	extend_statement (a_stmt: AFX_SOLVER_EXPR)
+	extend_statement (a_stmt: EPA_SOLVER_EXPR)
 			-- Extend `a_stmt' into Current.
 		do
 			if a_stmt.expression.starts_with (smtlib_function_header) then
@@ -172,13 +172,13 @@ feature -- Basic operations
 			extend_axiom (new_solver_expression_from_string (a_str))
 		end
 
-	extend_function (a_expr: AFX_SOLVER_EXPR)
+	extend_function (a_expr: EPA_SOLVER_EXPR)
 			-- Extend `a_expr' into `functions'.
 		do
 			functions.force_last (a_expr)
 		end
 
-	extend_axiom (a_expr: AFX_SOLVER_EXPR)
+	extend_axiom (a_expr: EPA_SOLVER_EXPR)
 			-- Extend `a_expr' into `axioms'.
 		do
 			axioms.force_last (a_expr)

@@ -5,14 +5,14 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SMTLIB_FILE_GENERATOR
+	EPA_SMTLIB_FILE_GENERATOR
 
 inherit
-	AFX_SOLVER_FILE_GENERATOR
+	EPA_SOLVER_FILE_GENERATOR
 
 feature -- Access
 
-	implied_expression (a_left: AFX_SOLVER_EXPR; a_right: AFX_SOLVER_EXPR): AFX_SOLVER_EXPR
+	implied_expression (a_left: EPA_SOLVER_EXPR; a_right: EPA_SOLVER_EXPR): EPA_SOLVER_EXPR
 			-- SMTLIB expression for the implication: `a_left' implies `a_right'
 		local
 			l_content: STRING
@@ -26,7 +26,7 @@ feature -- Access
 			Result := new_solver_expression_from_string (l_content)
 		end
 
-	connected_expression (a_exprs: LIST [AFX_SOLVER_EXPR]; a_operator: STRING): AFX_SOLVER_EXPR
+	connected_expression (a_exprs: LIST [EPA_SOLVER_EXPR]; a_operator: STRING): EPA_SOLVER_EXPR
 			-- SMTLIB expressions from `a_exprs', connected by `a_operator'
 		local
 			l_content: STRING
@@ -64,7 +64,7 @@ feature{NONE} -- Implementation
 			]")
 		end
 
-	generate_formula (a_formula: AFX_SOLVER_EXPR)
+	generate_formula (a_formula: EPA_SOLVER_EXPR)
 			-- Generate `a_formula' into `last_content'.
 		do
 			last_content.append (":formula (not (%N")
@@ -72,7 +72,7 @@ feature{NONE} -- Implementation
 			last_content.append ("%N)))")
 		end
 
-	generate_formulae_internal (a_formulae: LIST [AFX_SOLVER_EXPR])
+	generate_formulae_internal (a_formulae: LIST [EPA_SOLVER_EXPR])
 			-- Generate `a_formulae' into `last_content'.
 		do
 			fixme ("Support multiple formulae in SMTLIB.")

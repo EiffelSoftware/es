@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_BOOGIE_EXPR
+	EPA_BOOGIE_EXPR
 
 inherit
-	AFX_SOLVER_EXPR
+	EPA_SOLVER_EXPR
 		redefine
 			is_boogie
 		end

@@ -106,7 +106,7 @@ feature -- Access
 			Result := test_case_info.tag
 		end
 
-	skeleton: AFX_STATE_SKELETON
+	skeleton: EPA_STATE_SKELETON
 			-- Expressions that should be included in the
 			-- state model for current exception spot
 

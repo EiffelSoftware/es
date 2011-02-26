@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 feature -- Access
 
@@ -23,7 +23,7 @@ feature -- Access
 
 feature -- Solver input file generator
 
-	solver_file_generator: AFX_SOLVER_FILE_GENERATOR
+	solver_file_generator: EPA_SOLVER_FILE_GENERATOR
 			-- Generator for solver input file.
 		do
 			if is_for_smtlib then
@@ -35,7 +35,7 @@ feature -- Solver input file generator
 
 feature -- Solver expression generator
 
-	solver_expression_generator: AFX_SOLVER_EXPRESSION_GENERATOR
+	solver_expression_generator: EPA_SOLVER_EXPRESSION_GENERATOR
 			-- SMTLIB generator
 		do
 			if is_for_smtlib then
@@ -47,7 +47,7 @@ feature -- Solver expression generator
 
 feature -- Solver launcher
 
-	solver_launcher: AFX_SOLVER_FACILITY
+	solver_launcher: EPA_SOLVER_FACILITY
 			-- Z3 launcher
 		do
 			if is_for_smtlib then
@@ -59,13 +59,13 @@ feature -- Solver launcher
 
 feature -- Access
 
-	new_solver_expression_from_string (a_text: STRING): AFX_SOLVER_EXPR
+	new_solver_expression_from_string (a_text: STRING): EPA_SOLVER_EXPR
 			-- New solver expression from `a_text'
 		do
 			if is_for_smtlib then
-				create {AFX_SMTLIB_EXPR} Result.make (a_text)
+				create {EPA_SMTLIB_EXPR} Result.make (a_text)
 			else
-				create {AFX_BOOGIE_EXPR} Result.make (a_text)
+				create {EPA_BOOGIE_EXPR} Result.make (a_text)
 			end
 		end
 
@@ -99,37 +99,37 @@ feature{NONE} -- Implementation
 			create Result.put (False)
 		end
 
-	smtlib_file_generator: AFX_SMTLIB_FILE_GENERATOR
+	smtlib_file_generator: EPA_SMTLIB_FILE_GENERATOR
 			-- SMTLIB file generator
 		once
 			create Result
 		end
 
-	bpl_generator: AFX_BPL_GENERATOR
+	bpl_generator: EPA_BPL_GENERATOR
 			-- Boogie PL generator
 		once
 			create Result
 		end
 
-	z3_launcher: AFX_SMTLIB_FACILITY
+	z3_launcher: EPA_SMTLIB_FACILITY
 			-- Z3 launcher
 		once
 			create Result
 		end
 
-	boogie_launcher: AFX_BOOGIE_FACILITY
+	boogie_launcher: EPA_BOOGIE_FACILITY
 			-- Z3 launcher
 		once
 			create Result
 		end
 
-	smtlib_expression_generator: AFX_SMTLIB_GENERATOR
+	smtlib_expression_generator: EPA_SMTLIB_GENERATOR
 			-- SMTLIB generator
 		once
 			create Result.make
 		end
 
-	boogie_expression_generator: AFX_BOOGIE_EXPRESSION_GENERATOR
+	boogie_expression_generator: EPA_BOOGIE_EXPRESSION_GENERATOR
 			-- Boogie BPL code generator
 		once
 			create Result.make

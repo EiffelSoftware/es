@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SMTLIB_EXPR
+	EPA_SMTLIB_EXPR
 
 inherit
-	AFX_SOLVER_EXPR
+	EPA_SOLVER_EXPR
 		redefine
 			is_smtlib,
 			is_axiom,
@@ -36,13 +36,13 @@ feature -- Status report
 	is_axiom: BOOLEAN
 			-- Is current expression an axiom?
 		do
-			Result := expression.starts_with ({AFX_SOLVER_CONSTANTS}.smtlib_axiom_header)
+			Result := expression.starts_with ({EPA_SOLVER_CONSTANTS}.smtlib_axiom_header)
 		end
 
 	is_function: BOOLEAN
 			-- Is current expression a function declaration?
 		do
-			Result := expression.starts_with ({AFX_SOLVER_CONSTANTS}.smtlib_function_header)
+			Result := expression.starts_with ({EPA_SOLVER_CONSTANTS}.smtlib_function_header)
 		end
 
 end

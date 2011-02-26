@@ -16,7 +16,7 @@ feature -- Generation
 			-- <Precursor>
 		local
 			l_gen: EPA_NESTED_EXPRESSION_GENERATOR
-			l_skeleton: AFX_STATE_SKELETON
+			l_skeleton: EPA_STATE_SKELETON
 		do
 			create l_gen.make
 			l_gen.generate (a_spot.recipient_written_class, a_spot.recipient_)
@@ -28,7 +28,7 @@ feature -- Generation
 
 feature{NONE} -- Implementation
 
-	accesses_as_skeleton (a_accesses: LIST [EPA_ACCESS]; a_class: CLASS_C; a_feature: detachable FEATURE_I): AFX_STATE_SKELETON
+	accesses_as_skeleton (a_accesses: LIST [EPA_ACCESS]; a_class: CLASS_C; a_feature: detachable FEATURE_I): EPA_STATE_SKELETON
 			-- `accesses' as skeleton in the context of
 			-- `a_class' and `a_feature'.
 		do

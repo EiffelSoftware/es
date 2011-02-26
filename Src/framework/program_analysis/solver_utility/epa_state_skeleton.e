@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_STATE_SKELETON
+	EPA_STATE_SKELETON
 
 inherit
 	EPA_HASH_SET [EPA_EXPRESSION]
@@ -38,7 +38,7 @@ inherit
 			copy
 		end
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 		undefine
 			is_equal,
 			copy
@@ -163,7 +163,7 @@ feature -- Status report
 
 feature -- Access
 
-	smtlib_expressions: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
+	smtlib_expressions: DS_HASH_TABLE [EPA_SOLVER_EXPR, EPA_EXPRESSION]
 			-- Table of SMTLIB representation for items in Current skeleton
 			-- Key is items in Current, value is its SMTLIB representation.
 		do
@@ -173,7 +173,7 @@ feature -- Access
 			Result := smtlib_expressions_cache
 		end
 
-	theory: AFX_THEORY
+	theory: EPA_THEORY
 			-- SMTLIB theory for current skeleton needed for reasoning about `smtlib_expressions'
 		do
 			if theory_cache = Void then
@@ -198,7 +198,7 @@ feature -- Access
 			Result := l_list
 		end
 
-	slices (n: INTEGER): LINKED_LIST [AFX_STATE_SKELETON]
+	slices (n: INTEGER): LINKED_LIST [EPA_STATE_SKELETON]
 			-- Split current skeleton into `n' approximately equally large slices
 			-- and return those slices.
 		require
@@ -309,7 +309,7 @@ feature -- Status report
 
 feature -- Element change
 
-	put (v: like item) is
+	put (v: like item)
 			-- Add `v' to set, replacing any existing item.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -319,7 +319,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	put_new (v: like item) is
+	put_new (v: like item)
 			-- Add `v' to set.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -329,7 +329,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	put_last (v: like item) is
+	put_last (v: like item)
 			-- Add `v' at the end of set if not already included,
 			-- or replace it otherwise.
 			-- (Use `equality_tester''s comparison criterion
@@ -340,7 +340,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	force (v: like item) is
+	force (v: like item)
 			-- Add `v' to set, replacing any existing item.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -351,7 +351,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	force_new (v: like item) is
+	force_new (v: like item)
 			-- Add `v' to set.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -362,7 +362,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	force_last (v: like item) is
+	force_last (v: like item)
 			-- Add `v' at the end of set if not already included,
 			-- or replace it otherwise.
 			-- (Use `equality_tester''s comparison criterion
@@ -374,7 +374,7 @@ feature -- Element change
 			Precursor (v)
 		end
 
-	extend (other: DS_LINEAR [like item]) is
+	extend (other: DS_LINEAR [like item])
 			-- Add items of `other' to set, replacing any existing item.
 			-- Add `other.first' first, etc.
 			-- Do not move cursors.
@@ -383,7 +383,7 @@ feature -- Element change
 			Precursor (other)
 		end
 
-	extend_last (other: DS_LINEAR [like item]) is
+	extend_last (other: DS_LINEAR [like item])
 			-- Add items of `other' to set, replacing any existing item.
 			-- Add `other.first' first, etc.
 			-- If items of `other' were not included yet, insert
@@ -394,7 +394,7 @@ feature -- Element change
 			Precursor (other)
 		end
 
-	append (other: DS_LINEAR [like item]) is
+	append (other: DS_LINEAR [like item])
 			-- Add items of `other' to set, replacing any existing item.
 			-- Add `other.first' first, etc.
 			-- Resize set if necessary.
@@ -404,7 +404,7 @@ feature -- Element change
 			Precursor (other)
 		end
 
-	append_last (other: DS_LINEAR [like item]) is
+	append_last (other: DS_LINEAR [like item])
 			-- Add items of `other' to set, replacing any existing item.
 			-- Add `other.first' first, etc.
 			-- If items of `other' were not included yet, insert
@@ -418,7 +418,7 @@ feature -- Element change
 
 feature -- Basic operations
 
-	merge (other: DS_SET [like item]) is
+	merge (other: DS_SET [like item])
 			-- Add all items of `other' to current set.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -428,7 +428,7 @@ feature -- Basic operations
 			Precursor (other)
 		end
 
-	intersect (other: DS_SET [like item]) is
+	intersect (other: DS_SET [like item])
 			-- Remove all items not included in `other'.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -438,7 +438,7 @@ feature -- Basic operations
 			Precursor (other)
 		end
 
-	subtract (other: DS_SET [like item]) is
+	subtract (other: DS_SET [like item])
 			-- Remove all items also included in `other'.
 			-- (Use `equality_tester''s comparison criterion
 			-- if not void, use `=' criterion otherwise.)
@@ -448,7 +448,7 @@ feature -- Basic operations
 			Precursor (other)
 		end
 
-	symdif (other: DS_SET [like item]) is
+	symdif (other: DS_SET [like item])
 			-- Add items of `other' which are not included
 			-- in current set and remove those which are.
 			-- (Use `equality_tester''s comparison criterion
@@ -488,9 +488,9 @@ feature{NONE} -- Implementation
 	calculate_smtlib_expressions
 			-- Calculate `smtlib_expressions'.
 		local
-			l_data: TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]; theory: AFX_THEORY]
+			l_data: TUPLE [exprs: DS_HASH_TABLE [EPA_SOLVER_EXPR, EPA_EXPRESSION]; theory: EPA_THEORY]
 		do
-			l_data := (create {AFX_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
+			l_data := (create {EPA_SHARED_CLASS_THEORY}).expressions_with_theory (linear_representation, class_, feature_)
 			smtlib_expressions_cache := l_data.exprs
 			theory_cache := l_data.theory
 		end

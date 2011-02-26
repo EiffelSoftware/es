@@ -5,17 +5,19 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_BOOGIE_FACILITY
+	EPA_BOOGIE_FACILITY
 
 inherit
-	AFX_SOLVER_FACILITY
+	EPA_SOLVER_FACILITY
 		rename
 			solver_output as raw_solver_output
 		end
 
-	AFX_SHARED_SESSION
+	EPA_SOLVER_CONSTANTS
 
-	AFX_SOLVER_CONSTANTS
+	EPA_TEMPORARY_DIRECTORY_UTILITY
+
+	PROCESS_HELPER
 
 feature{NONE} -- Implementation
 
@@ -24,8 +26,8 @@ feature{NONE} -- Implementation
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (session.config.data_directory)
-			l_file_name.set_file_name ("autofix.bpl")
+			create l_file_name.make_from_string (temporary_directory)
+			l_file_name.set_file_name ("theory.bpl")
 			Result := l_file_name
 		end
 
@@ -71,7 +73,7 @@ feature{NONE} -- Implementation
 			-- output can be either "verified" or "error".
 		local
 			l_raw_output: STRING
-			l_parser: AFX_BOOGIE_OUTPUT_PARSER
+			l_parser: EPA_BOOGIE_OUTPUT_PARSER
 			l_tbl: like bpl_procedure_to_expression_table
 			l_temp_store: HASH_TABLE [STRING, STRING]
 		do

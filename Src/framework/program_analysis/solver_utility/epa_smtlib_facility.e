@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SMTLIB_FACILITY
+	EPA_SMTLIB_FACILITY
 
 inherit
-	AFX_SOLVER_FACILITY
+	EPA_SOLVER_FACILITY
 
 --feature -- Basic operations
 
@@ -26,12 +26,12 @@ inherit
 
 feature{NONE} -- Implementation
 
-	smtlib_file_directory: STRING is "/tmp"
+	smtlib_file_directory: STRING = "/tmp"
 
-	smtlib_file_path: STRING is "/tmp/autofix.smt"
+	smtlib_file_path: STRING = "/tmp/autofix.smt"
 			-- Full path of the generated smtlib file
 
-	z3_command: STRING is "/bin/sh -c %"/home/jasonw/apps/z3/bin/z3.exe /smt: autofix.smt%""
+	z3_command: STRING = "/bin/sh -c %"/home/jasonw/apps/z3/bin/z3.exe /smt: autofix.smt%""
 			-- Command to launch Z3 SMT solver
 
 	generate_file (a_content: STRING)

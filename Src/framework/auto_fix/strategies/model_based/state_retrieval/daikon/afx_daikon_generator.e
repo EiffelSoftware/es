@@ -36,7 +36,7 @@ feature -- Declaration
 			create daikon_state_list.make
 		end
 
-   	add_state (a_skeleton: AFX_STATE_SKELETON; a_state: EPA_STATE; break_point: INTEGER; is_failing: BOOLEAN)
+   	add_state (a_skeleton: EPA_STATE_SKELETON; a_state: EPA_STATE; break_point: INTEGER; is_failing: BOOLEAN)
    			-- Add traces for a breakpoint
    			-- `a_skeleton' is the template for all possible variables/expressions.
    		local
@@ -230,7 +230,7 @@ feature -- Access
 			end
 		end
 
-	declaraction_for_skeleton (a_skeleton: AFX_STATE_SKELETON; a_class: CLASS_C; a_feature: FEATURE_I; a_failing: BOOLEAN): STRING
+	declaraction_for_skeleton (a_skeleton: EPA_STATE_SKELETON; a_class: CLASS_C; a_feature: FEATURE_I; a_failing: BOOLEAN): STRING
 			-- String representing the Daikon variable declaraction for `a_skeleton' for `a_feature'
 			-- If `a_failing' is True, the generated declaraction is for failing test cases,
 			-- otherwise, for passing test casese.

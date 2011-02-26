@@ -24,7 +24,7 @@ feature -- Access
 --			same_feature_context: a_state1.feature_ ~ a_state2.feature_
 		local
 			s1, s2: EPA_STATE
-			l_common_skeleton: AFX_STATE_SKELETON
+			l_common_skeleton: EPA_STATE_SKELETON
 			l_equation1, l_equation2: EPA_EQUATION
 		do
 			l_common_skeleton := skeleton_from_state (a_state1).intersection (skeleton_from_state (a_state2))

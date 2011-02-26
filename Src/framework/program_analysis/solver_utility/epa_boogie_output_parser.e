@@ -1,11 +1,11 @@
-indexing
+note
 	description:
 		"[
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class AFX_BOOGIE_OUTPUT_PARSER
+class EPA_BOOGIE_OUTPUT_PARSER
 
 inherit
 	SHARED_WORKBENCH

@@ -242,6 +242,7 @@ feature -- Execution
 				l_generator.set_is_precondition_reduction_enabled (l_ap.is_precondition_reduction_enabled)
 				l_generator.set_semantic_database_config (l_ap.semantic_data_base_config)
 				l_generator.set_prestate_invariant_path (l_ap.precondition_reduction_file)
+				l_generator.set_should_check_invariant_violating_objects (l_ap.should_check_invariant_violating_objects)
 
 				a_test_suite.launch_session (l_generator)
 			else

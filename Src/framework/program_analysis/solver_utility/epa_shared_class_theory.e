@@ -5,20 +5,20 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SHARED_CLASS_THEORY
+	EPA_SHARED_CLASS_THEORY
 
 inherit
-	AFX_UTILITY
+--	AFX_UTILITY
 
-	AFX_SOLVER_CONSTANTS
+	EPA_SOLVER_CONSTANTS
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 	EPA_THEORY_UTILITY
 
 feature -- Access
 
-	class_theories: HASH_TABLE [AFX_THEORY, CLASS_C]
+	class_theories: HASH_TABLE [EPA_THEORY, CLASS_C]
 			-- Storage for class theories
 			-- Key is the class, value is the theory for that class
 		once
@@ -27,7 +27,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	resolved_class_theory (a_class: CLASS_C): AFX_THEORY
+	resolved_class_theory (a_class: CLASS_C): EPA_THEORY
 			-- SMTLIB theory for `a_class' with all qualified call resolved.
 		local
 			l_statements: LINKED_LIST [STRING]
@@ -44,17 +44,17 @@ feature -- Basic operations
 			solver_expression_generator.last_statements.do_all (agent Result.extend_function_with_string)
 		end
 
-	expressions_with_theory (a_exprs: LINEAR [EPA_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]; theory: AFX_THEORY]
+	expressions_with_theory (a_exprs: LINEAR [EPA_EXPRESSION]; a_class: CLASS_C; a_feature: detachable FEATURE_I): TUPLE [exprs: DS_HASH_TABLE [EPA_SOLVER_EXPR, EPA_EXPRESSION]; theory: EPA_THEORY]
 			-- Expressions and their supporting theories for `a_exprs' in the context of `a_class' and `a_feature'.
 			-- If `a_feature' is Void, it means that `a_exprs' are for `a_class', not for a particular feature.
 			-- `exprs' are the SMTLIB expressions for `a_exprs', `theory' are the support theories.
 		local
 			l_smt_gen: like solver_expression_generator
 			l_processed: like class_with_prefix_set
-			l_theory: AFX_THEORY
+			l_theory: EPA_THEORY
 			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: like class_with_prefix_set]
 			l_base_prefix: EPA_CLASS_WITH_PREFIX
-			l_generated_exprs: DS_HASH_TABLE [AFX_SOLVER_EXPR, EPA_EXPRESSION]
+			l_generated_exprs: DS_HASH_TABLE [EPA_SOLVER_EXPR, EPA_EXPRESSION]
 			l_raw_text: STRING
 		do
 			l_smt_gen := solver_expression_generator
@@ -106,7 +106,7 @@ feature -- Access
 		require
 			a_class_not_generated: not class_theories.has (a_class)
 		local
-			l_theory: AFX_THEORY
+			l_theory: EPA_THEORY
 		do
 			create l_theory.make (a_class)
 
@@ -185,11 +185,11 @@ feature -- Access
 			Result := [l_resolved, l_mentioned_prefixes]
 		end
 
-	resolved_class_theory_internal (a_class_with_prefix: EPA_CLASS_WITH_PREFIX; a_theory: AFX_THEORY; a_processed: like class_with_prefix_set)
+	resolved_class_theory_internal (a_class_with_prefix: EPA_CLASS_WITH_PREFIX; a_theory: EPA_THEORY; a_processed: like class_with_prefix_set)
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
-			l_theory: AFX_THEORY
-			l_statements: LINKED_LIST [AFX_SOLVER_EXPR]
+			l_theory: EPA_THEORY
+			l_statements: LINKED_LIST [EPA_SOLVER_EXPR]
 			l_resolved: TUPLE [a_statement: STRING; a_mentioned_class: like class_with_prefix_set]
 			l_new: like class_with_prefix_set
 

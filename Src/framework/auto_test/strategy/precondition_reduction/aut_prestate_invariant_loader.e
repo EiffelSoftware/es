@@ -62,10 +62,10 @@ feature -- Basic operations
 			create last_invariants.make
 			across l_files as l_inv_files loop
 				l_parts := string_slices (file_system.basename (l_inv_files.item), "__")
-				last_class := first_class_starts_with_name (l_parts.i_th (1))
-				last_feature := last_class.feature_named (l_parts.i_th (2))
+				last_class := first_class_starts_with_name (l_parts.i_th (1).out)
+				last_feature := last_class.feature_named (l_parts.i_th (2).out)
 
-				if not last_feature.has_return_value then
+				if last_feature /= Void and then not last_feature.has_return_value then
 						-- We only consider commands for the moment.
 					create l_file.make_open_read (l_inv_files.item)
 					from

@@ -46,7 +46,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	implications_for_class (a_implications: ARRAY [STRING]; a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
+	implications_for_class (a_implications: ARRAY [STRING]; a_class: CLASS_C; a_feature: FEATURE_I): EPA_STATE_SKELETON
 			-- Implications and their rankings for `a_class'
 		local
 			i: INTEGER
@@ -128,7 +128,7 @@ feature{NONE} -- Implementation
 			a_file.close
 		end
 
-	implications_from_file (a_tc: EPA_TEST_CASE_INFO; a_file: PLAIN_TEXT_FILE): AFX_STATE_SKELETON
+	implications_from_file (a_tc: EPA_TEST_CASE_INFO; a_file: PLAIN_TEXT_FILE): EPA_STATE_SKELETON
 			-- Implications loaded from `a_file' for test case `a_tc'
 		local
 			l_imps: LINKED_LIST [STRING]

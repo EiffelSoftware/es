@@ -5,14 +5,14 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_SOLVER_FILE_GENERATOR
+	EPA_SOLVER_FILE_GENERATOR
 
 inherit
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
+	EPA_SOLVER_UTILITY
+	
 	REFACTORING_HELPER
-
-	AFX_UTILITY
 
 feature -- Access
 
@@ -21,7 +21,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	generate (a_formula: AFX_SOLVER_EXPR; a_theory: AFX_THEORY)
+	generate (a_formula: EPA_SOLVER_EXPR; a_theory: EPA_THEORY)
 			-- Generate solver file to check `a_formula' in `a_theory'.
 			-- Store result in `last_content'.
 		do
@@ -31,7 +31,7 @@ feature -- Basic operations
 			generate_formula (a_formula)
 		end
 
-	generate_formulae (a_formulae: LIST [AFX_SOLVER_EXPR]; a_theory: AFX_THEORY)
+	generate_formulae (a_formulae: LIST [EPA_SOLVER_EXPR]; a_theory: EPA_THEORY)
 			-- Generate solver file to check formulaes in `a_formulae' in the context of `a_theory'.
 			-- Store result in `last_content'.
 		do
@@ -41,7 +41,7 @@ feature -- Basic operations
 			generate_formulae_internal (a_formulae)
 		end
 
-	generate_for_tautology_checking (a_expr: EPA_EXPRESSION; a_state: AFX_STATE_SKELETON)
+	generate_for_tautology_checking (a_expr: EPA_EXPRESSION; a_state: EPA_STATE_SKELETON)
 			-- Generate file to check if `a_expr' is a tautology in the context of `a_state'.
 			-- Store result in `last_content'.
 		do
@@ -49,12 +49,12 @@ feature -- Basic operations
 
 		end
 
-	generate_for_implied_checking (a_exprs1: LINEAR [EPA_EXPRESSION]; a_exprs2: LINEAR [EPA_EXPRESSION]; a_theory: AFX_THEORY)
+	generate_for_implied_checking (a_exprs1: LINEAR [EPA_EXPRESSION]; a_exprs2: LINEAR [EPA_EXPRESSION]; a_theory: EPA_THEORY)
 			-- Generate file to check if `a_expr2' can be implied from `a_exprs1' in the context of `a_theory'.
 			-- Store result in `last_content'.
 		local
-			l_exprs1: LINKED_LIST [AFX_SOLVER_EXPR]
-			l_exprs2: LINKED_LIST [AFX_SOLVER_EXPR]
+			l_exprs1: LINKED_LIST [EPA_SOLVER_EXPR]
+			l_exprs2: LINKED_LIST [EPA_SOLVER_EXPR]
 		do
 			l_exprs1 := expressions_to_solver_expressions (a_exprs1)
 			l_exprs2 := expressions_to_solver_expressions (a_exprs2)
@@ -64,24 +64,24 @@ feature -- Basic operations
 
 feature -- Access
 
-	implied_expression (a_left: AFX_SOLVER_EXPR; a_right: AFX_SOLVER_EXPR): AFX_SOLVER_EXPR
+	implied_expression (a_left: EPA_SOLVER_EXPR; a_right: EPA_SOLVER_EXPR): EPA_SOLVER_EXPR
 			-- Solver expression for the implication: `a_left' implies `a_right'
 		deferred
 		end
 
-	connected_expression (a_exprs: LIST [AFX_SOLVER_EXPR]; a_operator: STRING): AFX_SOLVER_EXPR
+	connected_expression (a_exprs: LIST [EPA_SOLVER_EXPR]; a_operator: STRING): EPA_SOLVER_EXPR
 			-- Solver expressions from `a_exprs', connected by `a_operator'
 		deferred
 		end
 
 feature{NONE} -- Implementation
 
-	expressions_to_solver_expressions (a_exprs: LINEAR [EPA_EXPRESSION]): LINKED_LIST [AFX_SOLVER_EXPR]
+	expressions_to_solver_expressions (a_exprs: LINEAR [EPA_EXPRESSION]): LINKED_LIST [EPA_SOLVER_EXPR]
 			-- Expressions to solver expressions.
 		do
-			create {LINKED_LIST [AFX_SOLVER_EXPR]} Result.make
+			create {LINKED_LIST [EPA_SOLVER_EXPR]} Result.make
 			a_exprs.do_all (
-				agent (a_exp: EPA_EXPRESSION; a_list: LINKED_LIST [AFX_SOLVER_EXPR])
+				agent (a_exp: EPA_EXPRESSION; a_list: LINKED_LIST [EPA_SOLVER_EXPR])
 					do
 						a_list.extend (solver_expression (a_exp))
 					end (?, Result))
@@ -92,25 +92,25 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
-	generate_theory (a_theory: AFX_THEORY)
+	generate_theory (a_theory: EPA_THEORY)
 			-- Generate `a_theory' into `last_content'.
 		do
 			a_theory.functions.do_all (agent append_line)
 			a_theory.axioms.do_all (agent append_line)
 		end
 
-	generate_formula (a_formula: AFX_SOLVER_EXPR)
+	generate_formula (a_formula: EPA_SOLVER_EXPR)
 			-- Generate `a_formula' into `last_content'.
 		deferred
 		end
 
-	generate_formulae_internal (a_formulae: LIST [AFX_SOLVER_EXPR])
+	generate_formulae_internal (a_formulae: LIST [EPA_SOLVER_EXPR])
 			-- Generate `a_formulae' into `last_content'.
 		deferred
 		end
 
 
-	append_line (a_content: AFX_SOLVER_EXPR)
+	append_line (a_content: EPA_SOLVER_EXPR)
 			-- Append `a_content' into `last_content' in its own line.
 		do
 			last_content.append (a_content.expression)

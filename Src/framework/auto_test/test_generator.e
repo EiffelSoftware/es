@@ -976,6 +976,30 @@ feature -- Status setting
 			is_precondition_reduction_enabled_set: is_precondition_reduction_enabled = b
 		end
 
+	set_should_check_invariant_violating_objects (b: BOOLEAN)
+			-- Set `should_check_invariant_violating_objects' with `b'.
+		do
+			should_check_invariant_violating_objects := b
+		ensure
+			should_check_invariant_violating_objects_set: should_check_invariant_violating_objects = b
+		end
+		
+	set_semantic_database_config (a_config: like semantic_database_config)
+			-- Set `semantic_database_config' with `a_config'.
+		do
+			semantic_database_config := a_config
+		ensure
+			semantic_database_config_set: semantic_database_config = a_config
+		end
+
+	set_prestate_invariant_path (a_path: STRING)
+			-- Set `prestate_invariant_path' with `a_path'.
+		do
+			prestate_invariant_path := a_path
+		ensure
+			prestate_invariant_path_set: prestate_invariant_path = a_path
+		end
+
 feature -- Basic operations
 
 	step
@@ -1451,21 +1475,10 @@ feature -- Option caches
 	prestate_invariant_path: STRING
 			-- Path to the file storing prestate invariants
 
-	set_semantic_database_config (a_config: like semantic_database_config)
-			-- Set `semantic_database_config' with `a_config'.
-		do
-			semantic_database_config := a_config
-		ensure
-			semantic_database_config_set: semantic_database_config = a_config
-		end
-
-	set_prestate_invariant_path (a_path: STRING)
-			-- Set `prestate_invariant_path' with `a_path'.
-		do
-			prestate_invariant_path := a_path
-		ensure
-			prestate_invariant_path_set: prestate_invariant_path = a_path
-		end
+	should_check_invariant_violating_objects: BOOLEAN
+			-- Should we check if there are some invariant-violating
+			-- objects available in the semantic database, instead of
+			-- performing precondition-reduction or testing?
 
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

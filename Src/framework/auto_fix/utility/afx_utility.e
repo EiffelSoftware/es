@@ -10,7 +10,7 @@ class
 inherit
 	EPA_CONTRACT_EXTRACTOR
 
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 	EPA_UTILITY
 
@@ -179,34 +179,6 @@ feature -- State
 
 feature -- Access
 
-	solver_expression (a_expr: EPA_EXPRESSION): AFX_SOLVER_EXPR
-			-- Solver expression from `a_expr'
-		local
-			l_resolved: TUPLE [resolved_str: STRING; mentioned_classes: DS_HASH_SET [EPA_CLASS_WITH_PREFIX]]
-			l_shared_theory: AFX_SHARED_CLASS_THEORY
-			l_raw_text: STRING
-		do
-			create l_shared_theory
-			l_shared_theory.solver_expression_generator.initialize_for_generation
-			l_shared_theory.solver_expression_generator.generate_expression (a_expr.ast, a_expr.class_, a_expr.written_class, a_expr.feature_)
-			l_raw_text := l_shared_theory.solver_expression_generator.last_statements.first
-			l_resolved := l_shared_theory.resolved_smt_statement (l_raw_text, create {EPA_CLASS_WITH_PREFIX}.make (a_expr.class_, ""))
-			Result := new_solver_expression_from_string (l_resolved.resolved_str)
-		end
-
-	expression_as_state_skeleton (a_expr: EPA_EXPRESSION): AFX_STATE_SKELETON
-			-- State skeleton including `a_expr'
-		require
-			a_expr_is_predicate: a_expr.is_predicate
-		local
-			l_exprs: LINKED_LIST [EPA_EXPRESSION]
-		do
-			create l_exprs.make
-			l_exprs.extend (a_expr)
-
-			create Result.make_with_expressions (a_expr.class_, a_expr.feature_, l_exprs)
-		end
-
 	equation_as_state (a_equation: EPA_EQUATION): EPA_STATE
 			-- State representing `a_equation'.
 			-- The returned state only contains Current as the only predicate.
@@ -217,7 +189,7 @@ feature -- Access
 
 feature -- State related
 
-	state_projected_by_skeleton (a_state: EPA_STATE; a_skeleton: AFX_STATE_SKELETON): EPA_STATE
+	state_projected_by_skeleton (a_state: EPA_STATE; a_skeleton: EPA_STATE_SKELETON): EPA_STATE
 			-- Projection of `a_state' only containing expressions in `a_skeleton'
 		local
 			l_removed: LINKED_LIST [EPA_EQUATION]
@@ -226,13 +198,13 @@ feature -- State related
 			Result := a_state.cloned_object
 			Result.do_if (
 				agent Result.remove,
-				agent (a_equation: EPA_EQUATION; a_ske: AFX_STATE_SKELETON): BOOLEAN
+				agent (a_equation: EPA_EQUATION; a_ske: EPA_STATE_SKELETON): BOOLEAN
 					do
 						Result := not a_ske.has (a_equation.expression)
 					end (?, a_skeleton))
 		end
 
-	padded_state (a_state: EPA_STATE; a_skeleton: AFX_STATE_SKELETON): EPA_STATE
+	padded_state (a_state: EPA_STATE; a_skeleton: EPA_STATE_SKELETON): EPA_STATE
 			-- State from `a_state' containing all predicates in `a_skeleton'.
 			-- Predicates in `a_skeleton' but not presented in Current
 			-- will be assigned to a random value in the returned state.
@@ -258,14 +230,14 @@ feature -- State related
 			result_is_padded: predicate_skeleton (Result).is_subset (a_skeleton) and a_skeleton.is_subset (predicate_skeleton (Result))
 		end
 
-	predicate_skeleton (a_state: EPA_STATE): AFX_STATE_SKELETON
+	predicate_skeleton (a_state: EPA_STATE): EPA_STATE_SKELETON
 			-- Predicate skeleton of `a_state'
 		require
 			all_expressions_boolean: a_state.for_all (agent (a_equation: EPA_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
 		do
 			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
 			a_state.do_all (
-				agent (a_pred: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_pred: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
 					do
 						a_skeleton.force_last (a_pred.expression)
 					end (?, Result))
@@ -273,23 +245,23 @@ feature -- State related
 			good_result: Result.count = a_state.count
 		end
 
-	skeleton_with_value (a_state: EPA_STATE): AFX_STATE_SKELETON
+	skeleton_with_value (a_state: EPA_STATE): EPA_STATE_SKELETON
 			-- Skeleton from consisting of predicate rewritten as predicates in `a_state'.
 		do
 			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
 			a_state.do_all (
-				agent (a_pred: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_pred: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
 					do
 						a_skeleton.force_last (a_pred.as_predicate)
 					end (?, Result))
 		end
 
-	skeleton_from_state (a_state: EPA_STATE): AFX_STATE_SKELETON
+	skeleton_from_state (a_state: EPA_STATE): EPA_STATE_SKELETON
 			-- Expression skeleton from `a_state'
 		do
 			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
 			a_state.do_all (
-				agent (a_equation: EPA_EQUATION; a_skeleton: AFX_STATE_SKELETON)
+				agent (a_equation: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
 					do
 						a_skeleton.force_last (a_equation.expression)
 					end (?, Result))

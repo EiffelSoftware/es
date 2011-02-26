@@ -10,6 +10,8 @@ class
 inherit
 	AFX_SHARED_STATE_SERVER
 
+	PROCESS_HELPER
+
 create
 	make
 
@@ -216,15 +218,13 @@ feature{NONE} -- Implementation
 	load_daikon_result is
 			-- Load the result from the Daikon execution
 		local
-			shell : AFX_BOOGIE_FACILITY
 			pass_CMD : STRING
 			fail_CMD : STRING
 		do
-			create shell
 			pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
 			fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
-			daikon_fail_result := shell.output_from_program (fail_cmd, void)
-			daikon_pass_result := shell.output_from_program (pass_cmd, void)
+			daikon_fail_result := output_from_program (fail_cmd, void)
+			daikon_pass_result := output_from_program (pass_cmd, void)
 		end
 
 	daikon_command: STRING

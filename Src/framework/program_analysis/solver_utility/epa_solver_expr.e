@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_SOLVER_EXPR
+	EPA_SOLVER_EXPR
 
 inherit
 	HASHABLE

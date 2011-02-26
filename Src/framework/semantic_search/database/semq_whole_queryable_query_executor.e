@@ -125,12 +125,16 @@ feature -- Basic operations
 			l_any_type := workbench.system.any_type
 			l_class := a_objects.context.class_
 			l_feature := a_objects.context.feature_
-			l_text := a_data.item (properties_text)
-			across 1 |..| a_variable_count as l_vars loop
-				l_index := l_text.index_of ('$', 1)
-				l_text := l_text.substring (1, l_index - 1) + variable_name_prefix + a_data.item (properties_var_prefix + l_vars.item.out) + l_text.substring (l_index + 1, l_text.count)
-				create l_expr.make_with_text (l_class, l_feature, l_text, l_class)
+			l_text := a_data.item (properties_text).twin
+			if l_text.count = 1 and then l_text.item (1) = '$' then
+				l_text := variable_name_prefix + a_data.item (properties_var_prefix + "1")
+			else
+				across 1 |..| a_variable_count as l_vars loop
+					l_index := l_text.index_of ('$', 1)
+					l_text := l_text.substring (1, l_index - 1) + variable_name_prefix + a_data.item (properties_var_prefix + l_vars.item.out) + l_text.substring (l_index + 1, l_text.count)
+				end
 			end
+			create l_expr.make_with_text (l_class, l_feature, l_text, l_class)
 			l_value_type_kind := a_data.item (properties_value_type_kind).to_integer
 			if l_value_type_kind = 1 then
 					-- Boolean type

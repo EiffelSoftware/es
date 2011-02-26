@@ -13,7 +13,7 @@ inherit
 
 	SHARED_DEBUGGER_MANAGER
 
-	AFX_SHARED_CLASS_THEORY
+	EPA_SHARED_CLASS_THEORY
 
 	EPA_DEBUGGER_UTILITY
 
@@ -154,7 +154,7 @@ feature{NONE} -- Access
 	mark_test_case_feature_name: STRING = "mark_test_case"
 			-- Name of feature to indicate that a new test case is about to run
 
-	test_case_info_skeleton (a_class: CLASS_C; a_feature: FEATURE_I): AFX_STATE_SKELETON
+	test_case_info_skeleton (a_class: CLASS_C; a_feature: FEATURE_I): EPA_STATE_SKELETON
 			-- State skeleton containing expressions to retrieve test case information from `a_feature'
 		local
 			l_exprs: LINKED_LIST [STRING]
@@ -183,7 +183,7 @@ feature{NONE} -- Implementation
 		local
 			l_new_tc_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_mark_tc_feat: FEATURE_I
-			l_tc_info_skeleton: AFX_STATE_SKELETON
+			l_tc_info_skeleton: EPA_STATE_SKELETON
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_app_exited_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 		do

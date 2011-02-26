@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SOLVER_CONSTANTS
+	EPA_SOLVER_CONSTANTS
 
 inherit
-	AFX_SOLVER_FACTORY
+	EPA_SOLVER_FACTORY
 
 feature -- SMTLIB
 

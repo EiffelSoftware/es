@@ -103,6 +103,28 @@ feature{NONE} -- Implementation
 	sub_task: AUT_TASK
 			-- Current sub task
 
+	configuration: TEST_GENERATOR
+			-- Config of current test session
+		do
+			Result := interpreter.configuration
+		end
+
+	connection: MYSQL_CLIENT
+			-- Database connection
+
+	prestate_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
+			-- List of pre-state invariants that are to be considered
+
+	violated_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
+
+			-- Set of pre-state invariants that are already violated
+
+	failed_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
+			-- Set of pre-state invariants that we fail to violate
+			-- (after a maximum steps of tries)
+
+feature{NONE} -- Implementation
+
 	assign_void
 			-- Assign void to the next free variable.
 			-- Note: Copied from {AUT_RANDOM_STRATEGY}
@@ -125,30 +147,74 @@ feature{NONE} -- Implementation
 			l_con: MYSQL_CLIENT
 		do
 			create l_loader
-			l_loader.load (interpreter.configuration.prestate_invariant_path)
-			prestate_invariants.append (l_loader.last_invariants)
+			l_loader.load (configuration.prestate_invariant_path)
 
-			create l_retriever
-			l_retriever.retrieve_objects (l_loader.last_invariants.first.expression, l_loader.last_class, l_loader.last_feature, False, connection)
+			if configuration.should_check_invariant_violating_objects then
+				check_invariant_violating_objects (l_loader.last_invariants)
+			else
+				prestate_invariants.append (l_loader.last_invariants)
+			end
 		end
 
-	connection: MYSQL_CLIENT
-			-- Database connection
+	check_invariant_violating_objects (a_invariants: LINKED_LIST [AUT_STATE_INVARIANT])
+			-- Check if there are objects violating invariants from `a_invariants'.
+			-- Put invariants with no violating objects into `configuration'.`data_output'.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+			l_processed: DS_HASH_SET [STRING]
+			l_file2: PLAIN_TEXT_FILE
+		do
+			create l_file2.make_open_append ("/home/jasonw/statements.txt")
+			l_file2.put_string ("---------------%N")
+			l_file2.close
+			create l_file.make (configuration.data_output)
+			create l_processed.make (1000)
+			l_processed.set_equality_tester (string_equality_tester)
+			if l_file.exists then
+				create l_file.make_open_read (configuration.data_output)
+				from
+					l_file.read_line
+				until
+					l_file.after
+				loop
+					if not l_file.last_string.is_empty then
+						if not l_file.last_string.starts_with (once "---")  then
+							l_processed.force_last (l_file.last_string.twin)
+						end
+					end
+					l_file.read_line
+				end
+				l_file.close
+			end
 
-feature{NONE} -- Implementation
+			create l_file.make_open_append (configuration.data_output)
+				-- Iterate through invariants in `a_invariants' and
+				-- for each invariant, check if there exists some objects
+				-- in the semantic database which break that invariant.
+			create l_retriever
+			across a_invariants as l_invs loop
+				if not l_invs.item.expression.text.has_substring ("index_set") then
+					if not l_processed.has (l_invs.item.id) then
+						l_retriever.retrieve_objects (
+							l_invs.item.expression,
+							l_invs.item.context_class,
+							l_invs.item.feature_,
+							False,
+							connection)
+						if l_retriever.last_objects.is_empty then
+							io.put_string (l_invs.item.id + "%N")
+							l_file.put_string (l_invs.item.id + "%N")
+							l_file.flush
+						end
+					end
+				end
+			end
 
-	prestate_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
-			-- List of pre-state invariants that are to be considered
+			l_file.close
+		end
 
-	violated_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
-
-			-- Set of pre-state invariants that are already violated
-
-	failed_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
-			-- Set of pre-state invariants that we fail to violate
-			-- (after a maximum steps of tries)
-
-;note
+note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
