@@ -96,7 +96,7 @@ feature -- Access
 			is_open: is_open
 			not_off: not off
 			valid_position_lower: a_pos > 0
-			valid_position_upper: a_pos <= param_count
+			valid_position_upper: a_pos <= column_count
 		do
 			Result := c_stmt_column_at ($p_stmt, a_pos-1)
 		end
