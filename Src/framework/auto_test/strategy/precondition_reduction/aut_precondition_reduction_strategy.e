@@ -33,6 +33,8 @@ inherit
 			system
 		end
 
+	EPA_SHARED_CLASS_THEORY
+
 create
 	make
 
@@ -211,6 +213,7 @@ feature{NONE} -- Implementation
 			l_processed: DS_HASH_SET [STRING]
 			l_file2: PLAIN_TEXT_FILE
 			l_tautologies: DS_HASH_SET [EPA_EXPRESSION]
+			l_parts: LIST [STRING]
 		do
 			create l_file.make (configuration.data_output)
 			create l_processed.make (1000)
@@ -224,7 +227,10 @@ feature{NONE} -- Implementation
 				loop
 					if not l_file.last_string.is_empty then
 						if not l_file.last_string.starts_with (once "---")  then
-							l_processed.force_last (l_file.last_string.twin)
+							l_parts := l_file.last_string.split (';')
+							if l_parts.count = 2 then
+								l_processed.force_last (l_parts.first)
+							end
 						end
 					end
 					l_file.read_line
@@ -236,6 +242,7 @@ feature{NONE} -- Implementation
 				-- Iterate through invariants in `a_invariants' and
 				-- for each invariant, check if there exists some objects
 				-- in the semantic database which break that invariant.
+			l_file.put_string ("%N%N")
 			create l_retriever
 			across a_invariants as l_invs loop
 				if not l_invs.item.expression.text.has_substring ("index_set") then
@@ -256,6 +263,9 @@ feature{NONE} -- Implementation
 						end
 							-- We only check invariants which are not tautologies.
 						if not l_tautologies.has (l_invs.item.expression) then
+							io.put_string (l_invs.item.id)
+							l_file.put_string (l_invs.item.id)
+							l_file.flush
 							l_retriever.retrieve_objects (
 								l_invs.item.expression,
 								l_invs.item.context_class,
@@ -263,10 +273,13 @@ feature{NONE} -- Implementation
 								False,
 								connection)
 							if l_retriever.last_objects.is_empty then
-								io.put_string (l_invs.item.id + "%N")
-								l_file.put_string (l_invs.item.id + "%N")
-								l_file.flush
+								l_file.put_string (";Bad%N")
+								io.put_string (";Bad%N")
+							else
+								io.put_string (";OK%N")
+								l_file.put_string (";OK%N")
 							end
+							l_file.flush
 						end
 					end
 				end
@@ -304,7 +317,10 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_true_value: EPA_BOOLEAN_VALUE
 			l_candidates: LINKED_LIST [EPA_EXPRESSION]
+			l_new_theory: EPA_THEORY
+			l_processed: like class_with_prefix_set
 		do
+			l_processed := class_with_prefix_set
 			create l_candidates.make
 			a_candidates.do_all (agent l_candidates.extend)
 			create l_state.make (a_candidates.count, a_class, a_feature)
@@ -318,7 +334,13 @@ feature{NONE} -- Implementation
 				l_state.force_last (equation_with_value (l_cursor.item, l_true_value))
 				l_cursor.forth
 			end
-			l_theory := skeleton_from_state (l_state).theory
+			l_theory := skeleton_from_state (l_state).theory.cloned_object
+			solver_expression_generator.initialize_for_generation
+			solver_expression_generator.generate_precondition_axioms (a_class, a_feature)
+			create l_new_theory.make (a_class)
+			solver_expression_generator.last_statements.do_all (agent l_new_theory.extend_axiom_with_string)
+			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), l_theory, l_processed, l_new_theory)
+
 			l_valid_exprs := solver_launcher.valid_expressions (l_candidates, l_theory)
 			create Result.make (10)
 			Result.set_equality_tester (expression_equality_tester)

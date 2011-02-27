@@ -94,7 +94,9 @@ feature -- Basic operations
 					loop
 						l_data := hash_table_from_row (l_stmt)
 						l_property := property_from_data (a_objects, l_data, l_vars.item)
-						l_state.force_last (l_property)
+						if l_property /= Void then
+							l_state.force_last (l_property)
+						end
 						l_stmt.forth
 					end
 				end
@@ -121,6 +123,9 @@ feature -- Basic operations
 			l_bool_value: EPA_BOOLEAN_VALUE
 			l_value_str: STRING
 			l_any_type: TYPE_A
+			l_tmp_text: STRING
+			l_tmp_var_name: STRING
+			i: INTEGER
 		do
 			l_any_type := workbench.system.any_type
 			l_class := a_objects.context.class_
@@ -129,9 +134,22 @@ feature -- Basic operations
 			if l_text.count = 1 and then l_text.item (1) = '$' then
 				l_text := variable_name_prefix + a_data.item (properties_var_prefix + "1")
 			else
-				across 1 |..| a_variable_count as l_vars loop
+				from
+					i := 1
+				until
+					i > a_variable_count
+				loop
 					l_index := l_text.index_of ('$', 1)
-					l_text := l_text.substring (1, l_index - 1) + variable_name_prefix + a_data.item (properties_var_prefix + l_vars.item.out) + l_text.substring (l_index + 1, l_text.count)
+					create l_tmp_text.make (128)
+					create l_tmp_var_name.make (20)
+					l_tmp_text.append (l_text.substring (1, l_index - 1))
+					l_tmp_text.append (variable_name_prefix)
+					l_tmp_var_name.append (properties_var_prefix)
+					l_tmp_var_name.append (i.out)
+					l_tmp_text.append (a_data.item (l_tmp_var_name))
+					l_tmp_text.append (l_text.substring (l_index + 1, l_text.count))
+					l_text :=  l_tmp_text
+					i := i + 1
 				end
 			end
 			create l_expr.make_with_text (l_class, l_feature, l_text, l_class)
@@ -147,7 +165,7 @@ feature -- Basic operations
 			elseif l_value_type_kind = 0 then
 					-- Reference type
 				l_value_str := a_data.item (properties_value)
-				if l_value_str ~ once "32768" then
+				if l_value_str ~ {SEM_CONSTANTS}.integer_value_for_void then
 						-- Void reference
 					create l_void_value.make
 					l_value := l_void_value
@@ -158,7 +176,11 @@ feature -- Basic operations
 					l_value := l_ref_value
 				end
 			end
-			create Result.make (l_expr, l_value)
+				-- FIXME: l_value_type_kind sometimes can be out of range of {0, 1, 2}.
+				-- Check why this happens. 27.2.2011 Jasonw
+			if l_expr /= Void and then l_value /= Void then
+				create Result.make (l_expr, l_value)
+			end
 		end
 
 	select_statement_for_properties (a_variable_count: INTEGER): STRING

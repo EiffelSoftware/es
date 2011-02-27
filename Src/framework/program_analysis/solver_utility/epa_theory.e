@@ -86,6 +86,13 @@ feature -- Access
 			other.axioms.do_all (agent Result.extend_axiom)
 		end
 
+	cloned_object: like Current
+			-- Cloned object
+		do
+			create Result.make_with_feature (class_, feature_)
+			statements.do_all (agent Result.extend_statement)
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -183,4 +190,5 @@ feature -- Basic operations
 		do
 			axioms.force_last (a_expr)
 		end
+
 end

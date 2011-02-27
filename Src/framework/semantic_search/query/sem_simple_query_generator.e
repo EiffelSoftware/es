@@ -14,6 +14,8 @@ inherit
 
 	EPA_TYPE_UTILITY
 
+	EPA_STRING_UTILITY
+
 feature -- Access
 
 	variables_from_expression (a_expression: STRING): HASH_TABLE [INTEGER, STRING]
@@ -307,7 +309,77 @@ feature -- Access
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_gen: SEM_PROPERTY_PRINTER
 			l_expr: STRING
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
+			l_pres: LINKED_LIST [EPA_EXPRESSION]
+			l_expression: EPA_AST_EXPRESSION
+			l_text: STRING
+			l_final_expr: STRING
+			l_pre_set: DS_HASH_SET [EPA_EXPRESSION]
+			l_rep: HASH_TABLE [STRING, STRING]
+			l_rep1: HASH_TABLE [STRING, STRING]
+			l_qualifier: EPA_EXPRESSION_QUALIFIER
 		do
+			create l_contract_extractor
+			l_pres := l_contract_extractor.precondition_of_feature (a_feature, a_context_class).twin
+			create l_pre_set.make (l_pres.count)
+			l_pre_set.set_equality_tester (expression_equality_tester)
+			from
+				l_pres.start
+			until
+				l_pres.after
+			loop
+				if
+					not l_pres.item.text.has ('{') and then
+					not l_pres.item.text.has ('.') and then
+					not l_pres.item.text.has ('(') and then
+					not l_pres.item.text.has_substring (once "attached")
+				then
+					l_pre_set.force_last (l_pres.item)
+				end
+				l_pres.forth
+			end
+
+			if l_pre_set.count > 0 and l_pre_set.count <= 2 then
+					-- We don't allow too many precondition predicates,
+					-- because otherwise, the query will take a long long time.
+				create l_qualifier
+				create l_rep1.make (1)
+				l_rep1.compare_objects
+				l_rep1.force (ti_current + ".", "")
+
+				create l_text.make (128)
+				if a_negated then
+					l_text.append ("not ")
+				end
+				l_text.append_character ('(')
+				l_text.append (a_expression)
+				l_text.append (once ") and (")
+				from
+					l_pre_set.start
+				until
+					l_pre_set.after
+				loop
+					l_text.append_character ('(')
+					l_rep := curly_braced_operands_from_operands (a_feature, a_context_class)
+					l_qualifier.process_expression (l_pre_set.item_for_iteration, l_rep1)
+					l_text.append (expression_rewriter.ast_text (ast_from_expression_text (l_qualifier.last_expression), l_rep))
+					l_text.append_character (')')
+					if not l_pre_set.is_last then
+						l_text.append (" and ")
+					end
+					l_pre_set.forth
+				end
+				l_text.append_character (')')
+				l_final_expr := l_text
+			else
+				if a_negated then
+					l_final_expr := "NOT (" + a_expression + ")"
+				else
+					l_final_expr := a_expression
+				end
+
+			end
+
 			create l_replacements.make (5)
 			l_replacements.compare_objects
 
@@ -316,8 +388,8 @@ feature -- Access
 			create l_from.make (128)
 			create l_where.make (512)
 
-			l_operands := variables_from_expression (a_expression)
-			l_subexprs := subexpressions (a_expression, a_context_class, a_feature)
+			l_operands := variables_from_expression (l_final_expr)
+			l_subexprs := subexpressions (l_final_expr, a_context_class, a_feature)
 
 			create l_var_preds.make (2)
 			l_var_preds.compare_objects
@@ -384,16 +456,16 @@ feature -- Access
 			Result.append_character ('%N')
 
 			create l_gen.make
-			l_expr := variabled_expression (a_expression)
+			l_expr := variabled_expression (l_final_expr)
 			l_gen.process_property (ast_from_expression_text (l_expr), l_replacements)
 			Result.append ("%NAND%N")
-			if a_negated then
-				Result.append ("NOT (")
-			end
+--			if a_negated then
+--				Result.append ("NOT (")
+--			end
 			Result.append (l_gen.last_output)
-			if a_negated then
-				Result.append (")")
-			end
+--			if a_negated then
+--				Result.append (")")
+--			end
 			Result.append_character ('%N')
 
 			if a_limit > 0 then

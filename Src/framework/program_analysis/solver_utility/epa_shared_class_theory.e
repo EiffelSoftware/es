@@ -36,7 +36,7 @@ feature -- Basic operations
 			l_processed := class_with_prefix_set
 
 			create Result.make (a_class)
-			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed)
+			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), Result, l_processed, Void)
 
 				-- Generate dummy function for expression "Void"
 			solver_expression_generator.initialize_for_generation
@@ -77,7 +77,7 @@ feature -- Basic operations
 				l_raw_text := l_smt_gen.last_statements.first
 				l_resolved := resolved_smt_statement (l_raw_text, l_base_prefix)
 				l_generated_exprs.force_last (new_solver_expression_from_string (l_resolved.resolved_str), a_exprs.item_for_iteration)
-				l_resolved.mentioned_classes.do_all (agent resolved_class_theory_internal (?, l_theory, l_processed))
+				l_resolved.mentioned_classes.do_all (agent resolved_class_theory_internal (?, l_theory, l_processed, Void))
 				a_exprs.forth
 			end
 
@@ -186,7 +186,7 @@ feature -- Access
 			Result := [l_resolved, l_mentioned_prefixes]
 		end
 
-	resolved_class_theory_internal (a_class_with_prefix: EPA_CLASS_WITH_PREFIX; a_theory: EPA_THEORY; a_processed: like class_with_prefix_set)
+	resolved_class_theory_internal (a_class_with_prefix: EPA_CLASS_WITH_PREFIX; a_theory: EPA_THEORY; a_processed: like class_with_prefix_set; a_source_theory: EPA_THEORY)
 			-- SMT theory for `a_class' with prefix `a_prefix'
 		local
 			l_theory: EPA_THEORY
@@ -207,7 +207,12 @@ feature -- Access
 
 					-- Resolve statements in the theory of `l_class'.
 					-- Remove all prefixes.
-				l_theory := class_theories.item (l_class)
+				if a_source_theory = Void then
+					l_theory := class_theories.item (l_class)
+				else
+					l_theory := a_source_theory
+				end
+
 				create l_statements.make
 				l_theory.statements.do_all (agent l_statements.extend)
 				l_new := class_with_prefix_set
@@ -223,7 +228,7 @@ feature -- Access
 				end
 
 					-- Process newly discovered classes.
-				l_new.do_all (agent resolved_class_theory_internal (?, a_theory, a_processed))
+				l_new.do_all (agent resolved_class_theory_internal (?, a_theory, a_processed, Void))
 			end
 		end
 

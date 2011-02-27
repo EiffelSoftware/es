@@ -152,7 +152,6 @@ feature -- Basic operations
 			l_text: STRING
 			l_axiom: STRING
 			l_stmt: STRING
-			l_paran_needed: BOOLEAN
 		do
 			create l_gen
 			across l_gen.quries (a_class) as l_queries loop
@@ -166,6 +165,30 @@ feature -- Basic operations
 				l_axiom.append (dummy_semicolon)
 				last_statements.extend (l_axiom)
 			end
+		end
+
+	generate_precondition_axioms (a_class: CLASS_C; a_feature: FEATURE_I)
+			-- Generate preconditions from `a_feature' viewed from `a_class' as axioms.
+		local
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
+			l_pre: EPA_EXPRESSION
+			l_axiom: STRING
+			l_stmt: STRING
+		do
+			create l_contract_extractor
+			across l_contract_extractor.precondition_of_feature (a_feature, a_class) as l_pres loop
+				l_pre := l_pres.item
+				if not l_pre.text.has ('{') and not l_pre.text.has_substring ("attached") then
+					create l_axiom.make (128)
+					l_axiom.append (solver_axiom_header)
+					l_stmt := solver_expression_as_string (ast_from_expression_text (l_pre.text), a_class, a_class, a_feature)
+					l_axiom.append_character ('(')
+					l_axiom.append (l_stmt)
+					l_axiom.append_character (')')
+					l_axiom.append (dummy_semicolon)
+					last_statements.extend (l_axiom)
+				end
+		  	end
 		end
 
 	generate_expression (a_expr: EXPR_AS; a_class: CLASS_C; a_written_class: CLASS_C; a_feature: detachable FEATURE_I)
