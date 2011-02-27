@@ -112,6 +112,8 @@ feature -- Field constants
 			create Result
 		end
 
+	integer_value_for_void: STRING = "32768"
+
 end
 
 

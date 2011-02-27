@@ -123,6 +123,7 @@ feature -- Access
 				-- Generate class invariant axioms.
 			solver_expression_generator.initialize_for_generation
 			solver_expression_generator.generate_invariant_axioms (a_class)
+			solver_expression_generator.generate_constant_axioms (a_class)
 			solver_expression_generator.last_statements.do_all (agent l_theory.extend_axiom_with_string)
 
 				-- Generate postconditions as class invariant axioms.

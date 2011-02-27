@@ -26,6 +26,13 @@ inherit
 			system
 		end
 
+	EPA_SOLVER_UTILITY
+
+	EPA_SHARED_EQUALITY_TESTERS
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -43,8 +50,21 @@ feature {NONE} -- Initialization
 			create failed_prestate_invariants.make (50)
 			failed_prestate_invariants.set_equality_tester (aut_state_invariant_equality_tester)
 
+			create prestate_invariants_by_feature.make (100)
+			prestate_invariants_by_feature.compare_objects
+
+			create tautologies_by_feature.make (100)
+			tautologies_by_feature.compare_objects
+
 			connection := interpreter.configuration.semantic_database_config.connection
 			load_prestate_invariants
+
+			if configuration.should_check_invariant_violating_objects then
+					-- Check invariant-violating objects only,
+					-- do not perform testing.
+				check_invariant_violating_objects (prestate_invariants)
+				prestate_invariants.wipe_out
+			end
 		end
 
 feature -- Status report
@@ -115,6 +135,11 @@ feature{NONE} -- Implementation
 	prestate_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
 			-- List of pre-state invariants that are to be considered
 
+	prestate_invariants_by_feature: HASH_TABLE [DS_HASH_SET [AUT_STATE_INVARIANT], STRING]
+			-- List of pre-state invariants, organized by features
+			-- Keys are feature identifier, in form of "CLASS_NAME.feature_name",
+			-- values are pre-state invariants associated with those features
+
 	violated_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
 
 			-- Set of pre-state invariants that are already violated
@@ -122,6 +147,11 @@ feature{NONE} -- Implementation
 	failed_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
 			-- Set of pre-state invariants that we fail to violate
 			-- (after a maximum steps of tries)
+
+	tautologies_by_feature: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], STRING]
+			-- Tautology expressions in pre-state of features
+			-- Keys are feature identifiers in form of "CLASS_NAME.feature_name",
+			-- values are tautologies in the pre-state of those features.
 
 feature{NONE} -- Implementation
 
@@ -139,21 +169,37 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	put_invariants_in_prestate_invariants_by_feature (a_invariants: LINKED_LIST [AUT_STATE_INVARIANT])
+			-- Put `a_invariants' into `prestate_invariants_by_feature'.
+		local
+			l_feat_id: STRING
+			l_set: DS_HASH_SET [AUT_STATE_INVARIANT]
+			l_inv_by_feat: like prestate_invariants_by_feature
+		do
+			l_inv_by_feat := prestate_invariants_by_feature
+			across a_invariants as l_invs loop
+				l_feat_id := l_invs.item.feature_id
+				l_inv_by_feat.search (l_feat_id)
+				if l_inv_by_feat.found then
+					l_set := l_inv_by_feat.found_item
+				else
+					create l_set.make (100)
+					l_set.set_equality_tester (aut_state_invariant_equality_tester)
+					l_inv_by_feat.force (l_set, l_feat_id)
+				end
+				l_set.force_last (l_invs.item)
+			end
+		end
+
 	load_prestate_invariants
 			-- Load pre-state invariants into `prestate_invariants'.
 		local
 			l_loader: AUT_PRESTATE_INVARIANT_LOADER
-			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
-			l_con: MYSQL_CLIENT
 		do
 			create l_loader
 			l_loader.load (configuration.prestate_invariant_path)
-
-			if configuration.should_check_invariant_violating_objects then
-				check_invariant_violating_objects (l_loader.last_invariants)
-			else
-				prestate_invariants.append (l_loader.last_invariants)
-			end
+			prestate_invariants.append (l_loader.last_invariants)
+			put_invariants_in_prestate_invariants_by_feature (l_loader.last_invariants)
 		end
 
 	check_invariant_violating_objects (a_invariants: LINKED_LIST [AUT_STATE_INVARIANT])
@@ -164,10 +210,8 @@ feature{NONE} -- Implementation
 			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
 			l_processed: DS_HASH_SET [STRING]
 			l_file2: PLAIN_TEXT_FILE
+			l_tautologies: DS_HASH_SET [EPA_EXPRESSION]
 		do
-			create l_file2.make_open_append ("/home/jasonw/statements.txt")
-			l_file2.put_string ("---------------%N")
-			l_file2.close
 			create l_file.make (configuration.data_output)
 			create l_processed.make (1000)
 			l_processed.set_equality_tester (string_equality_tester)
@@ -196,22 +240,91 @@ feature{NONE} -- Implementation
 			across a_invariants as l_invs loop
 				if not l_invs.item.expression.text.has_substring ("index_set") then
 					if not l_processed.has (l_invs.item.id) then
-						l_retriever.retrieve_objects (
-							l_invs.item.expression,
-							l_invs.item.context_class,
-							l_invs.item.feature_,
-							False,
-							connection)
-						if l_retriever.last_objects.is_empty then
-							io.put_string (l_invs.item.id + "%N")
-							l_file.put_string (l_invs.item.id + "%N")
-							l_file.flush
+
+							-- We first check if the invariant is a tautology.
+						tautologies_by_feature.search (l_invs.item.feature_id)
+						if tautologies_by_feature.found then
+							l_tautologies := tautologies_by_feature.found_item
+						else
+								-- If feature pre-state tautologies have not been checked,
+								-- we do that now.
+							l_tautologies := tautologies_with_feature (
+								l_invs.item.context_class,
+								l_invs.item.feature_,
+								invariants_as_expressions (prestate_invariants_by_feature.item (l_invs.item.feature_id)))
+							tautologies_by_feature.force (l_tautologies, l_invs.item.feature_Id)
+						end
+							-- We only check invariants which are not tautologies.
+						if not l_tautologies.has (l_invs.item.expression) then
+							l_retriever.retrieve_objects (
+								l_invs.item.expression,
+								l_invs.item.context_class,
+								l_invs.item.feature_,
+								False,
+								connection)
+							if l_retriever.last_objects.is_empty then
+								io.put_string (l_invs.item.id + "%N")
+								l_file.put_string (l_invs.item.id + "%N")
+								l_file.flush
+							end
 						end
 					end
 				end
 			end
 
 			l_file.close
+		end
+
+	invariants_as_expressions (a_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]): DS_HASH_SET [EPA_EXPRESSION]
+			-- List of expressions from `a_invariants'
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_STATE_INVARIANT]
+		do
+			create Result.make (a_invariants.count)
+			Result.set_equality_tester (expression_equality_tester)
+			from
+				l_cursor := a_invariants.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.force_last (l_cursor.item.expression)
+				l_cursor.forth
+			end
+		end
+
+	tautologies_with_feature (a_class: CLASS_C; a_feature: FEATURE_I; a_candidates: DS_HASH_SET [EPA_EXPRESSION]): DS_HASH_SET [EPA_EXPRESSION]
+			-- Set of invariants from `a_candidates' which are tautologies (with respect to class invariants in `a_class' and
+			-- written preconditions of `a_feature'
+		local
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_theory: EPA_THEORY
+			l_valid_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_state: EPA_STATE
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_true_value: EPA_BOOLEAN_VALUE
+			l_candidates: LINKED_LIST [EPA_EXPRESSION]
+		do
+			create l_candidates.make
+			a_candidates.do_all (agent l_candidates.extend)
+			create l_state.make (a_candidates.count, a_class, a_feature)
+			from
+				create l_true_value.make (True)
+				l_cursor := a_candidates.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_state.force_last (equation_with_value (l_cursor.item, l_true_value))
+				l_cursor.forth
+			end
+			l_theory := skeleton_from_state (l_state).theory
+			l_valid_exprs := solver_launcher.valid_expressions (l_candidates, l_theory)
+			create Result.make (10)
+			Result.set_equality_tester (expression_equality_tester)
+			across l_valid_exprs as l_exps loop
+				Result.force_last (l_exps.item)
+			end
 		end
 
 note

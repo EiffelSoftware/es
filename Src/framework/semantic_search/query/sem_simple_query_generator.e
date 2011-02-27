@@ -199,7 +199,11 @@ feature -- Access
 				l_where_clause.append_character ('.')
 				l_where_clause.append (l_preds.key)
 				l_where_clause.append_character ('=')
-				l_where_clause.append (l_preds.item)
+				if l_preds.item ~ ti_void then
+					l_where_clause.append ({SEM_CONSTANTS}.integer_value_for_void)
+				else
+					l_where_clause.append (l_preds.item)
+				end
 			end
 
 			if a_type /= Void then
@@ -249,7 +253,11 @@ feature -- Access
 				l_where_clause.append_character ('.')
 				l_where_clause.append (l_preds.key)
 				l_where_clause.append_character ('=')
-				l_where_clause.append (l_preds.item)
+				if l_preds.item ~ ti_void then
+					l_where_clause.append ({SEM_CONSTANTS}.integer_value_for_void)
+				else
+					l_where_clause.append (l_preds.item)
+				end
 			end
 
 				-- Setup property operand mapping.

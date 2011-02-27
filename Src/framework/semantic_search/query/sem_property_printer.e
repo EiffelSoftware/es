@@ -15,10 +15,13 @@ inherit
 			process_bin_not_tilde_as,
 			process_bool_as,
 			process_binary_as,
-			process_nested_as
+			process_nested_as,
+			process_void_as
 		end
 
 	EPA_UTILITY
+
+	SEM_CONSTANTS
 
 create
 	make
@@ -169,6 +172,11 @@ feature{NONE} -- Process
 			else
 				output.append_string (l_text)
 			end
+		end
+
+	process_void_as (l_as: VOID_AS)
+		do
+			output.append_string (integer_value_for_void)
 		end
 
 end

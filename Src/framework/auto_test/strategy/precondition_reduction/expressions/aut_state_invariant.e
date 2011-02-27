@@ -12,6 +12,7 @@ inherit
 
 	HASHABLE
 
+
 create
 	make
 
@@ -31,6 +32,8 @@ feature{NONE} -- Initialization
 			id.append_character ('.')
 			id.append (a_expression.text)
 			hash_code := id.hash_code
+
+			feature_id := a_context_class.name_in_upper + "." + feature_.feature_name.as_lower
 		end
 
 feature -- Access
@@ -49,6 +52,10 @@ feature -- Access
 
 	id: STRING
 			-- Identifier of current invariant
+
+	feature_id: STRING
+			-- Indentifer of `context_class'.`feature_'
+			-- In form of "CLASS_NAME.feature_name'
 
 	text: STRING
 			-- String representation of `expression'

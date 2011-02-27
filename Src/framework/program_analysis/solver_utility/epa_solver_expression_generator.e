@@ -37,6 +37,8 @@ inherit
 			process_access_feat_as
 		end
 
+	EPA_UTILITY
+
 feature{NONE} -- Initialization
 
 	make
@@ -123,7 +125,8 @@ feature -- Basic operations
 			loop
 				create l_axiom.make (128)
 				l_axiom.append (solver_axiom_header)
-				l_ast_text := l_inv.item_for_iteration.ast.text (match_list_server.item (l_inv.item_for_iteration.written_class.class_id))
+--				l_ast_text := l_inv.item_for_iteration.ast.text (match_list_server.item (l_inv.item_for_iteration.written_class.class_id))
+				l_ast_text := text_from_ast (l_inv.item_for_iteration.ast)
 				l_regexp.match (l_ast_text)
 				if not l_regexp.has_matched then
 					l_stmt := solver_expression_as_string (l_inv.item_for_iteration.ast, a_class, l_inv.item_for_iteration.written_class, Void)
@@ -139,6 +142,29 @@ feature -- Basic operations
 					last_statements.extend (l_axiom)
 				end
 				l_inv.forth
+			end
+		end
+
+	generate_constant_axioms (a_class: CLASS_C)
+			-- Generate axioms describing constant features in `a_class'.
+		local
+			l_gen: EPA_CONSTANT_QUERY_COLLECTOR
+			l_text: STRING
+			l_axiom: STRING
+			l_stmt: STRING
+			l_paran_needed: BOOLEAN
+		do
+			create l_gen
+			across l_gen.quries (a_class) as l_queries loop
+				create l_axiom.make (128)
+				l_axiom.append (solver_axiom_header)
+				l_text := "(" + l_queries.key + ") = " + l_queries.item
+				l_stmt := solver_expression_as_string (ast_from_expression_text (l_text), a_class, a_class, Void)
+				l_axiom.append_character ('(')
+				l_axiom.append (l_stmt)
+				l_axiom.append_character (')')
+				l_axiom.append (dummy_semicolon)
+				last_statements.extend (l_axiom)
 			end
 		end
 
@@ -452,6 +478,7 @@ feature{NONE} -- Process
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			l_name: STRING
+			l_args: like arguments_from_feature
 		do
 			l_name := l_as.access_name.as_lower
 			check_name (l_name)
@@ -468,7 +495,14 @@ feature{NONE} -- Process
 				safe_process (l_as.internal_parameters)
 				output_buffer.append (once ")")
 			elseif not is_in_nested then
-				output_buffer.append (dummy_paranthesis)
+				if context_feature /= Void then
+					l_args := arguments_from_feature (context_feature, context_class)
+					if not l_args.has (final_name) then
+						output_buffer.append (dummy_paranthesis)
+					end
+				else
+					output_buffer.append (dummy_paranthesis)
+				end
 			end
 		end
 
@@ -500,7 +534,9 @@ feature{NONE} -- Process
 				nested_prefix.remove
 			end
 			if nested_level = 0 then
-				output_buffer.append (dummy_paranthesis)
+				if not output_buffer.ends_with (once ")") then
+					output_buffer.append (dummy_paranthesis)
+				end
 			end
 			if nested_level = 0 then
 				is_in_nested := False

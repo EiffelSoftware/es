@@ -93,9 +93,18 @@ feature{NONE} -- Implementation
 			l_operands: like operands_with_feature
 			l_text: STRING
 			l_expr: EPA_AST_EXPRESSION
+			l_index: INTEGER
+			l_sub_text: STRING
+			l_left, l_right: EPA_AST_EXPRESSION
 		do
-				-- Replace Daikon style "==" with Eiffel style "=".
+				-- Replace Daikon style "==" with Eiffel style "=".			
 			l_text := a_text.twin
+			l_index := l_text.substring_index (" == ", 1)
+
+			if l_index > 0 then
+				l_sub_text := l_text.substring (1, l_index - 1)
+			end
+
 			if l_text.has_substring (" == ") then
 				l_text.replace_substring_all (" == ", ") = ")
 				l_text.prepend ("(")
@@ -129,11 +138,36 @@ feature{NONE} -- Implementation
 					l_opd_index > 9
 				loop
 					l_text.replace_substring_all (curly_brace_surrounded_integer (l_opd_index), l_operands.item (l_opd_index))
+					if l_sub_text /= Void then
+						l_sub_text.replace_substring_all (curly_brace_surrounded_integer (l_opd_index), l_operands.item (l_opd_index))
+					end
 					l_opd_index := l_opd_index + 1
 				end
-				create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
-				if l_expr.type /= Void then
-					last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+
+				if l_sub_text /= Void and then attached {BIN_EQ_AS} ast_from_expression_text (l_sub_text) as l_eq then
+						-- Remove expressions "exp1 = exp2" where exp1 and exp2 have different type categories.
+						-- For example, exp1 is of type ANY, and exp2 is of type INTEGER.
+						-- If we don't remove those expressions, the last generated Boogie program will be incorrect.
+						-- 27.2.2011 Jasonw
+					create l_left.make_with_feature (last_class, last_feature, l_eq.left, last_class)
+					create l_right.make_with_feature (last_class, last_feature, l_eq.right, last_class)
+					if l_left.type /= Void and then l_right.type /= Void then
+						if
+							(l_left.type.is_integer and l_right.type.is_integer) or else
+							(l_left.type.is_boolean and l_right.type.is_boolean) or else
+							(l_left.type.is_reference and l_right.type.is_reference)
+						then
+						else
+							l_done := True
+						end
+					end
+				end
+
+				if not l_done then
+					create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
+					if l_expr.type /= Void then
+						last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+					end
 				end
 			end
 		end

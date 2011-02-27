@@ -21,6 +21,20 @@ feature -- Access
 			Result := is_for_boogie_cell.item
 		end
 
+
+	skeleton_from_state (a_state: EPA_STATE): EPA_STATE_SKELETON
+			-- Expression skeleton from `a_state'
+		do
+			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
+			a_state.do_all (
+				agent (a_equation: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
+					do
+						a_skeleton.force_last (a_equation.expression)
+					end (?, Result))
+		ensure
+			good_result: Result.count = a_state.count
+		end
+
 feature -- Solver input file generator
 
 	solver_file_generator: EPA_SOLVER_FILE_GENERATOR
