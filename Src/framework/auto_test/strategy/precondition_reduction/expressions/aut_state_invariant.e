@@ -12,6 +12,8 @@ inherit
 
 	HASHABLE
 
+	EPA_STRING_UTILITY
+
 
 create
 	make
@@ -32,8 +34,7 @@ feature{NONE} -- Initialization
 			id.append_character ('.')
 			id.append (a_expression.text)
 			hash_code := id.hash_code
-
-			feature_id := a_context_class.name_in_upper + "." + feature_.feature_name.as_lower
+			feature_id := class_name_dot_feature_name (a_context_class, feature_)
 		end
 
 feature -- Access

@@ -96,4 +96,13 @@ feature -- Access
 			end
 		end
 
+	class_name_dot_feature_name (a_class: CLASS_C; a_feature: FEATURE_I): STRING
+			-- String in form of "CLASS_NAME.feature_name' where
+			-- the class name is from `a_class' and feature name is from `a_feature'
+		do
+			create Result.make (a_class.name.count + a_feature.feature_name.count + 1)
+			Result.append (a_class.name_in_upper)
+			Result.append_character ('.')
+			Result.append (a_feature.feature_name)
+		end
 end

@@ -621,6 +621,31 @@ feature -- Class/feature related
 			end
 		end
 
+feature -- Status report
+
+	is_argument_mentioned (a_expression: EPA_EXPRESSION; a_feature: FEATURE_I; a_class: CLASS_C): BOOLEAN
+			-- Is any argument of `a_feature' mentioned in `a_expression'?
+		local
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, STRING]
+		do
+			if a_feature.argument_count > 0 then
+				create l_replacements.make (a_feature.argument_count)
+				l_replacements.compare_objects
+
+				from
+					l_cursor := arguments_of_feature (a_feature).new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_replacements.force (once "@@", l_cursor.key)
+					l_cursor.forth
+				end
+				Result := expression_rewriter.expression_text (a_expression, l_replacements).has_substring (once "@@")
+			end
+		end
+
 feature -- String manipulation
 
 	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
