@@ -20,7 +20,7 @@ inherit
 			on_fix_validation_ends
 		end
 
-	AFX_TIME_UTILITY
+	EPA_TIME_UTILITY
 
 create
 	reset

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_TIME_UTILITY
+	EPA_TIME_UTILITY
 
 inherit
 	DT_SHARED_SYSTEM_CLOCK

@@ -27,7 +27,7 @@ inherit
 			on_test_case_execution_time_out
 		end
 
-	AFX_TIME_UTILITY
+	EPA_TIME_UTILITY
 
 	AFX_UTILITY
 
