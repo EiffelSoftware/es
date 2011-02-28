@@ -90,6 +90,16 @@ feature -- Options: basic
 	output_dirname: STRING
 			-- Name of output directory
 
+	log_dirname: STRING
+			-- Name of the directory to store logs
+		local
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make_from_string (output_dirname)
+			l_file_name.extend ("log")
+			Result := l_file_name.out
+		end
+
 	class_names: DS_HASH_SET [STRING]
 			-- List of class names to be tested
 
@@ -983,7 +993,7 @@ feature -- Status setting
 		ensure
 			should_check_invariant_violating_objects_set: should_check_invariant_violating_objects = b
 		end
-		
+
 	set_semantic_database_config (a_config: like semantic_database_config)
 			-- Set `semantic_database_config' with `a_config'.
 		do

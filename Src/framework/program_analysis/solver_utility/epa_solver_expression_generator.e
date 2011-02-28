@@ -405,6 +405,10 @@ feature{NONE}	-- Implementation
 			initial_written_class_set: initial_written_class = a_class
 		end
 
+	is_last_name_argument: BOOLEAN
+	is_last_name_local: BOOLEAN
+	is_last_name_feature: BOOLEAN
+
 	check_name (a_name: STRING)
 			-- Check access name `a_name'
 			-- Setup `final_name' and `last_type' according to `a_name'.
@@ -415,6 +419,10 @@ feature{NONE}	-- Implementation
 			l_locals: HASH_TABLE [LOCAL_INFO, INTEGER]
 			l_done: BOOLEAN
 		do
+			is_last_name_argument := False
+			is_last_name_local := False
+			is_last_name_feature := False
+
 			if last_prefix.is_empty then
 					-- Check if `a_name' is a feature name.
 				check current_written_class /= Void end
@@ -423,6 +431,7 @@ feature{NONE}	-- Implementation
 				if l_found then
 					final_name := l_feat.feature_name.as_lower
 					last_type := l_feat.type.instantiated_in (context_class.actual_type)
+					is_last_name_feature := True
 				end
 
 				check not l_found implies context_feature /= Void end
@@ -435,6 +444,7 @@ feature{NONE}	-- Implementation
 					if i > 0 then
 						final_name := context_feature.arguments.item_name (i)
 						last_type := context_feature.arguments.i_th (i).instantiation_in (context_class.actual_type, context_class.class_id).actual_type
+						is_last_name_argument := True
 					else
 							-- Must be a local.
 						check context_feature /= Void end
@@ -448,6 +458,7 @@ feature{NONE}	-- Implementation
 							if final_name.is_case_insensitive_equal (names_heap.item (l_locals.key_for_iteration)) then
 								last_type := l_locals.item_for_iteration.type.instantiation_in (context_class.actual_type, context_class.class_id).actual_type
 								l_done := True
+								is_last_name_local := True
 							end
 							l_locals.forth
 						end
@@ -456,6 +467,7 @@ feature{NONE}	-- Implementation
 			else
 				final_name := a_name.twin
 				last_type := last_type.associated_class.feature_named (final_name).type.instantiated_in (last_type)
+				is_last_name_feature := True
 			end
 		end
 
@@ -507,7 +519,9 @@ feature{NONE} -- Process
 			check_name (l_name)
 			if nested_level = 0 then
 					-- Needed for routine arguments.
-				output_buffer.append (solver_prefix ("", context_class))
+				if not is_last_name_local and then not is_last_name_argument then
+					output_buffer.append (solver_prefix ("", context_class))
+				end
 			end
 			output_buffer.append (final_name)
 

@@ -1,4 +1,5 @@
-﻿note
+﻿
+note
 	description: "State item based on an expression AST node"
 	author: ""
 	date: "$Date$"

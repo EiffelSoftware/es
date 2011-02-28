@@ -15,7 +15,7 @@ inherit
 	AST_FEATURE_CHECKER_GENERATOR
 		export
 			{NONE} all
-			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition, set_is_inherited
+			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition, set_is_inherited, set_is_checking_precondition, is_checking_precondition
 		redefine
 			set_routine_ids,
 			match_list_of_class,
@@ -302,7 +302,10 @@ feature -- Type evaluation
 
 	local_info (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [LOCAL_INFO, INTEGER]
 			-- Local information for `a_feature' in `a_class'.
+		local
+			l_status: BOOLEAN
 		do
+			l_status := ast_context.is_ignoring_export
 			ast_context.set_is_ignoring_export (True)
 			ast_context.initialize (a_class, a_class.actual_type)
 			ast_context.set_current_feature (a_feature)
@@ -328,6 +331,7 @@ feature -- Type evaluation
 			if Result = Void then
 				create Result.make (0)
 			end
+			ast_context.set_is_ignoring_export (l_status)
 		end
 
 feature -- Type checking
@@ -380,6 +384,7 @@ feature -- Type checking
 			l_ast_string: STRING
 			l_feat: FEATURE_I
 			l_parser: like etr_expr_parser
+			l_status: BOOLEAN
 		do
 			-- reparse the ast as expression, so it can be type-checked correctly
 			l_ast_string := ast_tools.ast_to_string(an_ast)
@@ -390,6 +395,7 @@ feature -- Type checking
 				etr_error_handler.add_error (Current, "check_ast_type", "Cannot parse an_ast as EXPR_AS")
 			else
 				context.clear_all
+				l_status := ast_context.is_ignoring_export
 				ast_context.set_is_ignoring_export (True)
 				ast_context.initialize (a_context.class_context.written_class, a_context.class_context.written_class.actual_type)
 				ast_context.set_written_class (a_context.class_context.written_class)
@@ -400,6 +406,7 @@ feature -- Type checking
 				end
 
 				check_expr_type (a_context, l_parser.expression_node)
+				ast_context.set_is_ignoring_export (l_status)
 			end
 		end
 

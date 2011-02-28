@@ -16,6 +16,10 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 
+	SHARED_AST_CONTEXT
+
+	EPA_SHARED_EXPR_TYPE_CHECKER
+
 feature -- Access
 
 	last_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
@@ -96,6 +100,9 @@ feature{NONE} -- Implementation
 			l_index: INTEGER
 			l_sub_text: STRING
 			l_left, l_right: EPA_AST_EXPRESSION
+			l_parts: LIST [STRING]
+			l_status: BOOLEAN
+			l_pre_status: BOOLEAN
 		do
 				-- Replace Daikon style "==" with Eiffel style "=".			
 			l_text := a_text.twin
@@ -114,6 +121,20 @@ feature{NONE} -- Implementation
 				-- it is a tautology.
 			if l_text ~ once "{0} /= Void" then
 				l_done := True
+			end
+
+				-- Ingore expressions which contain more than 1 nested level, for example, a.b.c,
+				-- because the theory generator cannot support such expressions.
+			if not l_done then
+				l_parts := l_text.split (' ')
+				from
+					l_parts.start
+				until
+					l_parts.after or else l_done
+				loop
+					l_done := l_parts.item_for_iteration.occurrences ('.') > 1
+					l_parts.forth
+				end
 			end
 
 				-- Ignore Daikon "has only one value" invariant.
@@ -164,10 +185,16 @@ feature{NONE} -- Implementation
 				end
 
 				if not l_done then
+					l_status := context.is_ignoring_export
+					l_pre_status := expression_type_checker.is_checking_precondition
+					context.set_is_ignoring_export (False)
+					expression_type_checker.set_is_checking_precondition (True)
 					create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
 					if l_expr.type /= Void then
 						last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
 					end
+					context.set_is_ignoring_export (l_status)
+					expression_type_checker.set_is_checking_precondition (l_pre_status)
 				end
 			end
 		end

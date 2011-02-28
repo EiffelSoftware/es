@@ -294,7 +294,17 @@ feature{NONE} -- Invariant-violating invariants checking
 			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
 			l_processed: DS_HASH_SET [STRING]
 			l_tautologies: DS_HASH_SET [EPA_EXPRESSION]
+			l_log_manager: ELOG_LOG_MANAGER
+			l_file_logger: ELOG_FILE_LOGGER
+			l_log_file_name: FILE_NAME
 		do
+			create l_log_file_name.make_from_string (configuration.log_dirname)
+			l_log_file_name.set_file_name ("queries.txt")
+			create l_file_logger.make_with_path (l_Log_file_name)
+			create l_log_manager.make_with_logger_array (<<l_file_logger>>)
+			l_log_manager.set_start_time_as_now
+			l_log_manager.set_duration_time_mode
+
 				-- Check which invariants are already processed in
 				-- `configuration'.`data_output'.
 			l_processed := processed_invariants (configuration.data_output)
@@ -305,6 +315,7 @@ feature{NONE} -- Invariant-violating invariants checking
 				-- in the semantic database which break that invariant.
 			l_file.put_string ("%N%N")
 			create l_retriever
+			l_retriever.set_log_manager (l_log_manager)
 			across a_invariants as l_invs loop
 				if not l_invs.item.expression.text.has_substring ("index_set") then
 					if not l_processed.has (l_invs.item.id) then
@@ -338,7 +349,6 @@ feature{NONE} -- Invariant-violating invariants checking
 					end
 				end
 			end
-
 			l_file.close
 		end
 

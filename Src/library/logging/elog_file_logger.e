@@ -10,8 +10,11 @@ class
 inherit
 	ELOG_LOGGER
 
+	DISPOSABLE
+
 create
-	make
+	make,
+	make_with_path
 
 feature{NONE} -- Initialization
 
@@ -19,8 +22,18 @@ feature{NONE} -- Initialization
 			-- Initialize `file' with `a_file'.
 		do
 			file := a_file
+			if not file.is_open_write then
+				file.open_append
+			end
 		ensure
 			file_set: file = a_file
+		end
+
+	make_with_path (a_path: STRING)
+			-- Initialize `file' pointing to a location given
+			-- by `a_path'.
+		do
+			create {PLAIN_TEXT_FILE} file.make_open_append (a_path)
 		end
 
 feature -- Access
@@ -36,6 +49,17 @@ feature -- Basic Operations.
 			file.put_string (a_string)
 			file.flush
 		end
+
+feature -- Disposal
+
+	dispose
+			-- <Precursor>
+		do
+			if not file.is_closed then
+				file.close
+			end
+		end
+
 
 --	put_string_with_level (a_string: STRING; a_level: INTEGER)
 			-- Log `a_string' with `a_level'.

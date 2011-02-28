@@ -82,6 +82,7 @@ feature -- Validity checking
 			create l_new_theory.make (a_class)
 			solver_expression_generator.last_statements.do_all (agent l_new_theory.extend_axiom_with_string)
 			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), l_theory, l_processed, l_new_theory)
+			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, "Current."), l_theory, l_processed, l_new_theory)
 
 			l_valid_exprs := solver_launcher.valid_expressions (l_candidates, l_theory)
 			create Result.make (10)
