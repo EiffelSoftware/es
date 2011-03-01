@@ -61,6 +61,24 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
+	ast_from_compound_text (a_text: STRING): AST_EIFFEL
+			-- AST node from `a_text'
+			-- `a_text' must be the textual representation of a compound AS.
+		local
+			l_text: STRING
+		do
+			l_text := "feature dummy__feature do%N" + a_text + "%Nend"
+			entity_feature_parser.parse_from_utf8_string (l_text, Void)
+
+			if attached {DO_AS} entity_feature_parser.feature_node.body.as_routine.routine_body as l_do then
+				if attached l_do.compound then
+					Result := l_do.compound
+				end
+			end
+
+			check Result /= Void end
+		end
+
 	ast_from_statement_text (a_text: STRING): AST_EIFFEL
 			-- AST node from `a_text'
 			-- `a_text' must a statement AST and must be able to be parsed in to a single AST node.
@@ -247,9 +265,9 @@ feature -- AST
 			if attached {BODY_AS} a_feature.body as l_body and then attached {ROUTINE_AS} l_body.as_routine as l_routine then
 				if attached {EIFFEL_LIST [TYPE_DEC_AS]} l_routine.locals as l_lcls then
 					l_names_heap := names_heap
-					l_type := l_lcls.item.type
-					l_type_a := type_a_from_string (text_from_ast (l_type), a_context_class)
 					across l_lcls as l_locals loop
+						l_type := l_locals.item.type
+						l_type_a := type_a_from_string (text_from_ast (l_type), a_context_class)
 						across l_locals.item.id_list as l_vars loop
 							Result.put (l_type_a, l_names_heap.item (l_vars.item))
 						end
@@ -257,7 +275,7 @@ feature -- AST
 				end
 			end
 		end
-
+		
 	arguments_from_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
 			-- Arguments from `a_feature'
 			-- Key of result is argument name, value is type of that argument.
