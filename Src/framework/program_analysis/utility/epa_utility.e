@@ -664,6 +664,32 @@ feature -- Status report
 			end
 		end
 
+	is_feature_of_same_signature (a_feature: FEATURE_I; b_feature: FEATURE_I): BOOLEAN
+			-- Do `a_feature' and `b_feature' have the same signature (arguments and return type)?
+		do
+				-- Check return type equality.
+			Result := a_feature.has_return_value = b_feature.has_return_value
+			if Result then
+				if a_feature.has_return_value then
+					Result :=
+						a_feature.type.same_type (b_feature.type) and then
+						a_feature.type.is_equivalent (b_feature.type)
+				end
+			end
+				-- Check argument type equality.
+			if Result then
+				Result := a_feature.argument_count = b_feature.argument_count
+			end
+
+			if Result and then a_feature.argument_count > 0 then
+				Result :=
+					across 1 |..| a_feature.argument_count as l_indexes all
+						a_feature.arguments.i_th (l_indexes.item).same_type (b_feature.arguments.i_th (l_indexes.item)) and then
+						a_feature.arguments.i_th (l_indexes.item).is_equivalent (b_feature.arguments.i_th (l_indexes.item))
+					end
+			end
+		end
+
 feature -- String manipulation
 
 	string_slices (a_string: STRING; a_separater: STRING): LIST [STRING]
@@ -817,13 +843,15 @@ feature -- Context
 			end
 		end
 
-	body_ast_from_feature (a_feature: FEATURE_I): detachable DO_AS
+	body_ast_from_feature (a_feature: FEATURE_I): detachable INTERNAL_AS
 			-- Body AST from `a_feature', if any
 		do
 			if attached {BODY_AS} a_feature.body.body as l_body then
 				if attached {ROUTINE_AS} l_body.content as l_routine then
 					if attached {DO_AS} l_routine.routine_body as l_do then
 						Result := l_do
+					elseif attached {ONCE_AS} l_routine.routine_body as l_once then
+						Result := l_once
 					end
 				end
 			end
@@ -834,6 +862,10 @@ feature -- Context
 		do
 			if attached {DO_AS} body_ast_from_feature (a_feature) as l_body then
 				if attached {EIFFEL_LIST [INSTRUCTION_AS]} l_body.compound as l_compound then
+					Result := l_compound
+				end
+			elseif attached {ONCE_AS} body_ast_from_feature (a_feature) as l_once then
+				if attached {EIFFEL_LIST [INSTRUCTION_AS]} l_once.compound as l_compound then
 					Result := l_compound
 				end
 			end
