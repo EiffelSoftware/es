@@ -33,11 +33,22 @@ EIF_REFERENCE c_at(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos) {
   return eif_make_string(s, len);
 }
 
+EIF_INTEGER c_at_new(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos, EIF_POINTER str) {
+  return _c_at(*(MYSQL_RES**)res, *(MYSQL_ROW**)row, (int)pos, (char**)str);
+}
+
 EIF_REFERENCE c_column_at(EIF_POINTER res, EIF_INTEGER pos) {
   char *column;
   column = (char *)_c_column_at(*(MYSQL_RES**)res, (int)pos);
   return eif_make_string(column, strlen(column));
 }
+
+EIF_INTEGER c_column_at_new(EIF_POINTER res, EIF_INTEGER pos, EIF_POINTER str) {
+  char **column = (char**)str;
+  *column = (char *)_c_column_at(*(MYSQL_RES**)res, (int)pos);
+  return strlen(*column);
+}
+
 void c_seek (EIF_POINTER res, EIF_INTEGER pos) {
   _c_seek(*(MYSQL_RES**)res, (int)pos);
 }
@@ -153,10 +164,20 @@ EIF_REFERENCE c_stmt_string_at(EIF_POINTER resdata, EIF_INTEGER pos) {
   return eif_make_string(s, len);
 }
 
+EIF_INTEGER c_stmt_string_at_new(EIF_POINTER resdata, EIF_INTEGER pos, EIF_POINTER str) {
+  return _c_stmt_string_at(*(STMT_DATA**)resdata, (int)pos, (char**)str);
+}
+
 EIF_REFERENCE c_stmt_column_at(EIF_POINTER stmt, EIF_INTEGER pos) {
   char *s;
   s = (char *)_c_stmt_column_at(*(MYSQL_STMT**)stmt, (int)pos);
   return eif_make_string(s, strlen(s));
+}
+
+EIF_INTEGER c_stmt_column_at_new(EIF_POINTER stmt, EIF_INTEGER pos, EIF_POINTER str) {
+  char **s = (char**)str;
+  *s = (char *)_c_stmt_column_at(*(MYSQL_STMT**)stmt, (int)pos);
+  return strlen(*s);
 }
 
 void c_stmt_seek(EIF_POINTER stmt, EIF_INTEGER pos) {

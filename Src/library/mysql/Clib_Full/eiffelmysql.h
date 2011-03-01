@@ -26,8 +26,10 @@ EIF_INTEGER   c_store_result (EIF_POINTER mysql, EIF_POINTER res);
 EIF_INTEGER   c_num_rows     (EIF_POINTER res);
 EIF_INTEGER   c_num_fields   (EIF_POINTER res);
 EIF_REFERENCE c_column_at    (EIF_POINTER res,   EIF_INTEGER pos);
+EIF_INTEGER   c_column_at_new(EIF_POINTER res,   EIF_INTEGER pos, EIF_POINTER str);
 EIF_INTEGER   c_fetch_row    (EIF_POINTER res,   EIF_POINTER row);
 EIF_REFERENCE c_at           (EIF_POINTER res,   EIF_POINTER row,   EIF_INTEGER pos);
+EIF_INTEGER   c_at_new       (EIF_POINTER res,   EIF_POINTER row,   EIF_INTEGER pos, EIF_POINTER str);
 void          c_seek         (EIF_POINTER res,   EIF_INTEGER pos);
 void          c_free_result  (EIF_POINTER res);
 EIF_INTEGER   c_insert_id    (EIF_POINTER mysql);
@@ -49,6 +51,7 @@ EIF_INTEGER   c_stmt_insert_id     (EIF_POINTER stmt);
 EIF_INTEGER   c_stmt_num_rows      (EIF_POINTER stmt);
 EIF_INTEGER   c_stmt_field_count   (EIF_POINTER stmt);
 EIF_REFERENCE c_stmt_column_at     (EIF_POINTER stmt, EIF_INTEGER pos);
+EIF_INTEGER   c_stmt_column_at_new (EIF_POINTER stmt, EIF_INTEGER pos, EIF_POINTER str);
 void          c_stmt_seek          (EIF_POINTER stmt,    EIF_INTEGER pos);
 EIF_INTEGER   c_stmt_bind_result   (EIF_POINTER stmt,    EIF_POINTER resbind, EIF_POINTER resdata);
 EIF_INTEGER   c_stmt_fetch         (EIF_POINTER stmt);
@@ -59,6 +62,7 @@ EIF_INTEGER   c_stmt_is_string_at  (EIF_POINTER resbind, EIF_INTEGER pos);
 EIF_INTEGER   c_stmt_int_at        (EIF_POINTER resdata, EIF_INTEGER pos);
 EIF_DOUBLE    c_stmt_double_at     (EIF_POINTER resdata, EIF_INTEGER pos);
 EIF_REFERENCE c_stmt_string_at     (EIF_POINTER resdata, EIF_INTEGER pos);
+EIF_INTEGER   c_stmt_string_at_new (EIF_POINTER resdata, EIF_INTEGER pos, EIF_POINTER str);
 void          c_stmt_free          (EIF_POINTER stmt, EIF_POINTER bind,       EIF_POINTER data, EIF_POINTER resbind, EIF_POINTER resdata);
 
 /* Data structure management */

@@ -25,6 +25,7 @@ feature{MYSQL_CLIENT} -- Initialization
 			mysql_client := a_client
 				-- Datastructures for C
 			p_row := a_row
+			create p_result.default_create
 			-- State
 			is_open := False
 		end
@@ -98,8 +99,15 @@ feature -- Access
 			is_open: is_open
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
+		local
+			c_ptr: POINTER
+			c_length: INTEGER
 		do
-			Result := c_column_at ($p_result, a_pos-1)
+			create c_ptr.default_create
+			c_length := c_column_at_new ($p_result, a_pos-1, $c_ptr)
+			create Result.make (c_length+1)
+			Result.from_c_substring (c_ptr, 1, c_length)
+--			Result := c_column_at ($p_result, a_pos-1)
 		end
 
 	at (a_pos: INTEGER): STRING
@@ -110,8 +118,15 @@ feature -- Access
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
+		local
+			c_ptr: POINTER
+			c_length: INTEGER
 		do
-			Result := c_at ($p_result, $p_row, a_pos-1)
+			create c_ptr.default_create
+			c_length := c_at_new ($p_result, $p_row, a_pos-1, $c_ptr)
+			create Result.make (c_length+1)
+			Result.from_c_substring (c_ptr, 1, c_length)
+--			Result := c_at ($p_result, $p_row, a_pos-1)
 		end
 
 	data_as_table: HASH_TABLE [STRING, STRING]
@@ -219,6 +234,11 @@ feature{NONE} -- External
 			"C | %"eiffelmysql.h%""
 		end
 
+	c_column_at_new (a_result: POINTER; a_pos: INTEGER; a_str: POINTER): INTEGER
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
 	c_fetch_row (a_result, a_row: POINTER): INTEGER
 		external
 			"C | %"eiffelmysql.h%""
@@ -230,6 +250,11 @@ feature{NONE} -- External
 		end
 
 	c_at (a_result, a_row: POINTER; a_pos: INTEGER): STRING
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
+	c_at_new (a_result, a_row: POINTER; a_pos: INTEGER; a_str: POINTER): INTEGER
 		external
 			"C | %"eiffelmysql.h%""
 		end

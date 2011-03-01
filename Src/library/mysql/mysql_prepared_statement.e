@@ -30,6 +30,8 @@ feature{MYSQL_CLIENT} -- Initialization
 			p_stmt := a_stmt
 			p_bind := a_bind
 			p_data := a_data
+			create p_resbind.default_create
+			create p_resdata.default_create
 			-- State
 			is_open := True
 			is_executed := False
@@ -97,8 +99,15 @@ feature -- Access
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
+		local
+			c_ptr: POINTER
+			c_length: INTEGER
 		do
-			Result := c_stmt_column_at ($p_stmt, a_pos-1)
+			create c_ptr.default_create
+			c_length := c_stmt_column_at_new ($p_stmt, a_pos-1, $c_ptr)
+			create Result.make (c_length+1)
+			Result.from_c_substring (c_ptr, 1, c_length)
+--			Result := c_stmt_column_at ($p_stmt, a_pos-1)
 		end
 
 	integer_at (a_pos: INTEGER): INTEGER
@@ -136,8 +145,15 @@ feature -- Access
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
+		local
+			c_ptr: POINTER
+			c_length: INTEGER
 		do
-			Result := c_stmt_string_at ($p_resdata, a_pos-1)
+			create c_ptr.default_create
+			c_length := c_stmt_string_at_new ($p_resdata, a_pos-1, $c_ptr)
+			create Result.make (c_length+1)
+			Result.from_c_substring (c_ptr, 1, c_length)
+--			Result := c_stmt_string_at ($p_resdata, a_pos-1)
 		end
 
 	at (a_pos: INTEGER): STRING
@@ -435,6 +451,11 @@ feature{NONE} -- External
 			"C | %"eiffelmysql.h%""
 		end
 
+	c_stmt_column_at_new (a_stmt: POINTER; a_pos: INTEGER; a_str: POINTER): INTEGER
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
 	c_stmt_seek (a_stmt: POINTER; a_pos: INTEGER)
 		external
 			"C | %"eiffelmysql.h%""
@@ -476,6 +497,11 @@ feature{NONE} -- External
 		end
 
 	c_stmt_string_at (a_resdata: POINTER; a_pos: INTEGER): STRING
+		external
+			"C | %"eiffelmysql.h%""
+		end
+
+	c_stmt_string_at_new (a_resdata: POINTER; a_pos: INTEGER; a_str: POINTER): INTEGER
 		external
 			"C | %"eiffelmysql.h%""
 		end

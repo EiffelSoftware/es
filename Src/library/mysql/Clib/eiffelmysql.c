@@ -30,8 +30,16 @@ EIF_REFERENCE c_at(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos) {
   return eif_make_string("", 0);
 }
 
+EIF_INTEGER c_at_new(EIF_POINTER res, EIF_POINTER row, EIF_INTEGER pos, EIF_POINTER str) {
+  return 0;
+}
+
 EIF_REFERENCE c_column_at(EIF_POINTER res, EIF_INTEGER pos) {
   return eif_make_string("", 0);
+}
+
+EIF_INTEGER c_column_at_new(EIF_POINTER res, EIF_INTEGER pos, EIF_POINTER str) {
+  return 0;
 }
 
 void c_seek(EIF_POINTER res, EIF_INTEGER pos) {
@@ -142,8 +150,16 @@ EIF_REFERENCE c_stmt_string_at(EIF_POINTER resdata, EIF_INTEGER pos) {
   return eif_make_string("", 0);
 }
 
+EIF_INTEGER c_stmt_string_at_new(EIF_POINTER resdata, EIF_INTEGER pos, EIF_POINTER str) {
+  return 0;
+}
+
 EIF_REFERENCE c_stmt_column_at(EIF_POINTER stmt, EIF_INTEGER pos) {
   return eif_make_string("", 0);
+}
+
+EIF_INTEGER c_stmt_column_at_new(EIF_POINTER stmt, EIF_INTEGER pos, EIF_POINTER str) {
+  return 0;
 }
 
 void c_stmt_seek(EIF_POINTER stmt, EIF_INTEGER pos) {

@@ -29,11 +29,15 @@ feature -- Initialization
 			password := once ""
 			database := once "test"
 			port := 0
+			-- C Datastructures
+			create p_mysql.default_create
+			create p_row.default_create
 		end
 
 	make_with_database (a_host: STRING; a_username: STRING; a_password: STRING; a_database: STRING; a_port: INTEGER)
 			-- Initialize Current.
 		do
+			make
 			set_host (a_host)
 			set_username (a_username)
 			set_password (a_password)
