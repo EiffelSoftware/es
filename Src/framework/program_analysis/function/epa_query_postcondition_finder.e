@@ -16,44 +16,32 @@ inherit
 
 feature -- Access
 
-	expressions: LINKED_LIST [EPA_EXPRESSION]
+	last_expressions: LINKED_LIST [EPA_EXPRESSION]
 			-- Expressions that define the result of the feature
 			-- which was applied to `find' for the last time.
 
 feature -- Basic operations
 
-	find (a_context_class: CLASS_C; a_feature: FEATURE_I)
-			-- Search for postconditions that define the Result of `a_feature',
-			-- make result avaiable in `expressions'.
+	find (a_context_class: CLASS_C; a_feature: FEATURE_I; a_postconditions: LINKED_LIST [EPA_EXPRESSION])
+			-- Search for postconditions from `a_postconditions' that define the Result of `a_feature',
+			-- make result avaiable in `last_expressions'.
 		require
 			a_feature_is_a_query: a_feature.has_return_value
-		local
-			l_extractor: EPA_CONTRACT_EXTRACTOR
-			l_expressions: like expressions
 		do
-			create expressions.make
-
-				-- Collect all postconditions of `a_feature'.
-			create l_extractor
-			l_expressions := l_extractor.postcondition_of_feature (a_feature, a_context_class)
+			create last_expressions.make
 
 				-- Find out those postconditions that define the Result of `a_feature'.
 				-- Those postconditions should have one of the following forms:
 				-- 1. Result = expr
 				-- 2. Result implies expr
 			fixme ("This is a simple hack, more advanced analysis is needed to deliver a reliable answer. 2.5.2010 Jasonw")
-			from
-				l_expressions.start
-			until
-				l_expressions.after
-			loop
+			across a_postconditions as l_expressions loop
 				fixme ("We only can handle postconditions without qualified calls for the moment. 2.5.2010 Jasonw")
-				if not l_expressions.item_for_iteration.text.has ('.') then
-					if attached result_defining_expression (l_expressions.item_for_iteration) as l_expr then
-						expressions.extend (l_expr)
+				if not l_expressions.item.text.has ('.') then
+					if attached result_defining_expression (l_expressions.item) as l_expr then
+						last_expressions.extend (l_expr)
 					end
 				end
-				l_expressions.forth
 			end
 		end
 
@@ -75,10 +63,10 @@ feature{NONE} -- Implementation
 					end
 				end
 
-			elseif attached {BIN_IMPLIES_AS} l_ast as l_implies_as then
-				if text_from_ast (l_implies_as.left).is_case_insensitive_equal (ti_result) then
-					create {EPA_AST_EXPRESSION} Result.make_with_text (a_assertion.class_, a_assertion.feature_, text_from_ast (l_implies_as.right), a_assertion.written_class)
-				end
+--			elseif attached {BIN_IMPLIES_AS} l_ast as l_implies_as then
+--				if text_from_ast (l_implies_as.left).is_case_insensitive_equal (ti_result) then
+--					create {EPA_AST_EXPRESSION} Result.make_with_text (a_assertion.class_, a_assertion.feature_, text_from_ast (l_implies_as.right), a_assertion.written_class)
+--				end
 			end
 		end
 

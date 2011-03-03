@@ -38,10 +38,23 @@ feature -- Access
 	connection: MYSQL_CLIENT
 			-- Database connection config
 
+	log_manager: ELOG_LOG_MANAGER
+			-- Log manager
+
 feature -- Access
 
 	last_results: LINKED_LIST [SEMQ_RESULT]
 			-- Results retrieved from last `execute'
+
+feature -- Setting
+
+	set_log_manager (a_log_manager: like log_manager)
+			-- Set `log_manager' with `a_log_manager'.
+		do
+			log_manager := a_log_manager
+		ensure
+			log_manager_set: log_manager = a_log_manager
+		end
 
 feature -- Basic operations
 
@@ -74,31 +87,36 @@ feature -- Basic operations
 			-- those properties into `a_objects'.
 		local
 			l_select: STRING
-			l_stmt: MYSQL_PREPARED_STATEMENT
 			l_data: HASH_TABLE [STRING, STRING]
 			l_state: EPA_STATE
 			l_property: EPA_EQUATION
+			l_result: MYSQL_RESULT
 		do
 			create l_state.make (100, a_objects.context.class_, a_objects.context.feature_)
 			across 1 |..| 9 as l_vars loop
-				l_select := select_statement_for_properties (l_vars.item)
-				a_connection.prepare_statement (l_select)
-				l_stmt := a_connection.last_prepared_statement
-				l_stmt.set_integer (1, a_qry_id)
-				l_stmt.execute
-				if a_connection.last_error_number = 0 then
+				l_select := select_statement_for_properties (l_vars.item, a_qry_id)
+				if log_manager /= Void then
+					log_manager.put_line ("%T" + l_select)
+				end
+				a_connection.execute_query (l_select)
+				if a_connection.last_error_number /= 0 and then a_connection.last_error /= Void and then log_manager /= Void then
+					log_manager.put_line ("Error: " + a_connection.last_error)
+				end
+				if a_connection.last_error_number = 0 and then a_connection.has_result then
+					l_result := a_connection.last_result
 					from
-						l_stmt.start
+						l_result.start
 					until
-						l_stmt.after
+						l_result.after
 					loop
-						l_data := hash_table_from_row (l_stmt)
+						l_data := hash_table_from_row (l_result)
 						l_property := property_from_data (a_objects, l_data, l_vars.item)
 						if l_property /= Void then
 							l_state.force_last (l_property)
 						end
-						l_stmt.forth
+						l_result.forth
 					end
+					l_result.dispose
 				end
 			end
 			a_objects.set_properties_unsafe (l_state)
@@ -183,7 +201,7 @@ feature -- Basic operations
 			end
 		end
 
-	select_statement_for_properties (a_variable_count: INTEGER): STRING
+	select_statement_for_properties (a_variable_count: INTEGER; a_query_id: INTEGER): STRING
 			-- SQL select statement to retrieve properties for queryable
 			-- Those retrieved properties should have `a_variable_count' variables'.
 		do
@@ -194,23 +212,34 @@ feature -- Basic operations
 				Result.append (l_vars.item.out)
 			end
 			Result.append (once " FROM Properties p, PropertyBindings" + a_variable_count.out +" b ")
-			Result.append (once "WHERE b.qry_id = ? AND p.prop_id = b.prop_id") -- AND p.prop_id != (SELECT prop_id FROM Properties WHERE text = '$')")
+			Result.append (once "WHERE b.qry_id = " + a_query_id.out + " AND p.prop_id = b.prop_id") -- AND p.prop_id != (SELECT prop_id FROM Properties WHERE text = '$')")
 		end
 
 	queryable_data_from_uuid (a_connection: MYSQL_CLIENT; a_uuid: STRING): HASH_TABLE [STRING, STRING]
 			-- Queryable data with `a_uuid' from database connected through `a_connection'
 		local
-			l_qry_stmt: MYSQL_PREPARED_STATEMENT
+			l_result: MYSQL_RESULT
+			l_select: STRING
 		do
-			a_connection.prepare_statement ("SELECT qry_id, qry_kind, class, feature, library, transition_status, hit_breakpoints, timestamp, uuid, is_creation, is_query, argument_count, pre_serialization, pre_serialization_info, post_serialization, post_serialization_info, exception_recipient, exception_class, exception_breakpoint, exception_code, exception_meaning, exception_tag, exception_trace, fault_signature, feature_kind, operand_count, content, test_case_name, breakpoint_number, first_body_breakpoint, pre_bounded_functions, post_bounded_functions FROM Queryables WHERE uuid = ?")
-			l_qry_stmt := a_connection.last_prepared_statement
-			l_qry_stmt.set_string (1, a_uuid)
-			l_qry_stmt.execute
-			if a_connection.last_error_number = 0 then
-				l_qry_stmt.start
-				if not l_qry_stmt.after then
-					Result := hash_table_from_row (l_qry_stmt)
+			create l_select.make (200)
+			l_select.append ("SELECT qry_id, qry_kind, class, feature, library, transition_status, hit_breakpoints, timestamp, uuid, is_creation, is_query, argument_count, pre_serialization, pre_serialization_info, post_serialization, post_serialization_info, exception_recipient, exception_class, exception_breakpoint, exception_code, exception_meaning, exception_tag, exception_trace, fault_signature, feature_kind, operand_count, content, test_case_name, breakpoint_number, first_body_breakpoint, pre_bounded_functions, post_bounded_functions FROM Queryables WHERE uuid = ")
+			l_select.append_character ('%'')
+			l_select.append (a_uuid)
+			l_select.append_character ('%'')
+			if log_manager /= Void then
+				log_manager.put_line ("%T" + l_select)
+			end
+			a_connection.execute_query (l_select)
+			if a_connection.last_error_number /= 0 and then a_connection.last_error /= Void and then log_manager /= Void then
+				log_manager.put_line ("Error: " + a_connection.last_error)
+			end
+			if a_connection.last_error_number = 0 and then a_connection.has_result then
+				l_result := a_connection.last_result
+				l_result.start
+				if not l_result.after then
+					Result := hash_table_from_row (l_result)
 				end
+				l_result.dispose
 			end
 			if Result = Void then
 				create Result.make (20)
@@ -220,13 +249,14 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	hash_table_from_row (a_prepared_statement: MYSQL_PREPARED_STATEMENT): HASH_TABLE [STRING, STRING]
-			-- Hash-table representing the data in current row of `a_prepared_statement'
+	hash_table_from_row (a_result: MYSQL_RESULT): HASH_TABLE [STRING, STRING]
+			-- Hash-table representing the data in current row of `a_result'
 			-- Keys of the result table are column names, values are data in those columns.
 		local
 			i, c: INTEGER
+			l_value: STRING
 		do
-			c := a_prepared_statement.column_count
+			c := a_result.column_count
 			create Result.make (c)
 			Result.compare_objects
 			from
@@ -234,10 +264,11 @@ feature{NONE} -- Implementation
 			until
 				i > c
 			loop
-				if a_prepared_statement.is_null_at (i) then
-					Result.force (Void, a_prepared_statement.column_name_at (i))
+				l_value := a_result.at (i)
+				if l_value ~ {MYSQL_CONSTANTS}.mysql_null_string then
+					Result.force (Void, a_result.column_name_at (i))
 				else
-					Result.force (a_prepared_statement.at (i), a_prepared_statement.column_name_at (i))
+					Result.force (l_value, a_result.column_name_at (i))
 				end
 				i := i + 1
 			end

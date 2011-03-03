@@ -290,18 +290,16 @@ feature{NONE} -- Invariant-violating invariants checking
 			-- Check if there are objects violating invariants from `a_invariants'.
 			-- Put invariants with no violating objects into `configuration'.`data_output'.
 		local
-			l_file: PLAIN_TEXT_FILE
 			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
 			l_processed: DS_HASH_SET [STRING]
 			l_tautologies: DS_HASH_SET [EPA_EXPRESSION]
 			l_log_manager: ELOG_LOG_MANAGER
-			l_file_logger: ELOG_FILE_LOGGER
 			l_log_file_name: FILE_NAME
+			l_result_log: ELOG_LOG_MANAGER
 		do
-			create l_log_file_name.make_from_string (configuration.log_dirname)
+			create l_log_file_name.make_from_string (configuration.output_dirname)
 			l_log_file_name.set_file_name ("queries.txt")
-			create l_file_logger.make_with_path (l_Log_file_name)
-			create l_log_manager.make_with_logger_array (<<l_file_logger>>)
+			create l_log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_log_file_name)>>)
 			l_log_manager.set_start_time_as_now
 			l_log_manager.set_duration_time_mode
 
@@ -309,47 +307,45 @@ feature{NONE} -- Invariant-violating invariants checking
 				-- `configuration'.`data_output'.
 			l_processed := processed_invariants (configuration.data_output)
 
-			create l_file.make_open_append (configuration.data_output)
+			create l_result_log.make_with_logger_array (
+				<<create {ELOG_FILE_LOGGER}.make_with_path (configuration.data_output),
+				  create {ELOG_CONSOLE_LOGGER}>>)
+			l_result_log.set_duration_time_mode
+			l_result_log.set_start_time_as_now
+			l_result_log.put_line ("%N")
 				-- Iterate through invariants in `a_invariants' and
 				-- for each invariant, check if there exists some objects
 				-- in the semantic database which break that invariant.
-			l_file.put_string ("%N%N")
 			create l_retriever
 			l_retriever.set_log_manager (l_log_manager)
 			across a_invariants as l_invs loop
-				if not l_invs.item.expression.text.has_substring ("index_set") then
-					if not l_processed.has (l_invs.item.id) then
-						l_processed.force_last (l_invs.item.id)
-							-- We first check if the invariant is a tautology.
-						l_tautologies := tautology_predicates (
+				if not l_processed.has (l_invs.item.id) then
+					l_processed.force_last (l_invs.item.id)
+						-- We first check if the invariant is a tautology.
+					l_tautologies := tautology_predicates (
+						l_invs.item.context_class,
+						l_invs.item.feature_,
+						invariants_as_expressions (prestate_invariants_by_feature.item (l_invs.item.feature_id)))
+
+						-- We only check invariants which are not tautologies.
+					l_result_log.put_string_with_time (l_invs.item.context_class.name_in_upper + "%T" + l_invs.item.feature_.feature_name + "%T" + l_invs.item.expression.text)
+					if l_tautologies.has (l_invs.item.expression) then
+						l_result_log.put_line ("%T[Theory]")
+					else
+						l_retriever.retrieve_objects (
+							l_invs.item.expression,
 							l_invs.item.context_class,
 							l_invs.item.feature_,
-							invariants_as_expressions (prestate_invariants_by_feature.item (l_invs.item.feature_id)))
-
-							-- We only check invariants which are not tautologies.
-						if not l_tautologies.has (l_invs.item.expression) then
-							io.put_string (l_invs.item.id)
-							l_file.put_string (l_invs.item.id)
-							l_file.flush
-							l_retriever.retrieve_objects (
-								l_invs.item.expression,
-								l_invs.item.context_class,
-								l_invs.item.feature_,
-								False,
-								connection)
-							if l_retriever.last_objects.is_empty then
-								l_file.put_string (";Bad%N")
-								io.put_string (";Bad%N")
-							else
-								io.put_string (";OK%N")
-								l_file.put_string (";OK%N")
-							end
-							l_file.flush
+							False,
+							connection)
+						if l_retriever.last_objects.is_empty then
+							l_result_log.put_line ("%T[No]")
+						else
+							l_result_log.put_line ("%T[Objects]")
 						end
 					end
 				end
 			end
-			l_file.close
 		end
 
 note

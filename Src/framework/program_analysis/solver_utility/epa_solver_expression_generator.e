@@ -152,18 +152,14 @@ feature -- Basic operations
 			l_text: STRING
 			l_axiom: STRING
 			l_stmt: STRING
+			l_feature: FEATURE_I
 		do
 			create l_gen
 			across l_gen.quries (a_class) as l_queries loop
 				create l_axiom.make (128)
 				l_axiom.append (solver_axiom_header)
-				l_text := "(" + l_queries.key + ") = " + l_queries.item
-				l_stmt := solver_expression_as_string (ast_from_expression_text (l_text), a_class, a_class, Void)
-				l_axiom.append_character ('(')
-				l_axiom.append (l_stmt)
-				l_axiom.append_character (')')
-				l_axiom.append (dummy_semicolon)
-				last_statements.extend (l_axiom)
+				l_feature := a_class.feature_named (l_queries.key)
+				last_statements.extend (axiom_for_query_equal_to_constant (a_class, l_feature, l_queries.item))
 			end
 		end
 
@@ -189,6 +185,148 @@ feature -- Basic operations
 					last_statements.extend (l_axiom)
 				end
 		  	end
+		end
+
+	generate_extra_query_postconditions_as_axioms (a_class: CLASS_C)
+			-- Generate axioms describing results of queries in `a_class'.
+		local
+			l_feat_selector: EPA_FEATURE_SELECTOR
+			l_extractor: EPA_CONTRACT_EXTRACTOR
+			l_feat: FEATURE_I
+			l_posts: LINKED_LIST [EPA_EXPRESSION]
+			l_finder: EPA_QUERY_POSTCONDITION_FINDER
+			l_result_defining_posts: LINKED_LIST [EPA_EXPRESSION]
+			l_post_gen: EPA_SIMPLE_FUNCTION_POSTCONDITION_GENERATOR
+			l_replacements: HASH_TABLE [STRING, STRING]
+			l_feat_ref: STRING
+			l_axiom: STRING
+			l_expr: EPA_AST_EXPRESSION
+			l_exp: EPA_EXPRESSION
+			l_str: STRING
+		do
+				-- Collect all features under consideration.
+			create l_feat_selector
+			l_feat_selector.add_query_selector
+			l_feat_selector.add_argumented_feature_selector (0, 1)
+			l_feat_selector.add_selector (l_feat_selector.not_from_any_feature_selector)
+			l_feat_selector.add_exported_feature_selector
+
+				-- Iterate through all collected features, for each feature:
+				-- 1. Try to find human-written postconditions which define "Result"
+				-- 2. If no such human-written postconditions are found, try to
+				--    check if the query implementation is a single assignment to "Result".
+			create l_extractor
+			create l_finder
+			create l_post_gen
+			l_post_gen.set_should_generate_for_features_with_argument (True)
+			l_post_gen.set_should_generate_for_features_with_precondition (True)
+			across l_feat_selector.features_from_class (a_class) as l_feats loop
+				create l_result_defining_posts.make
+				l_feat := l_feats.item
+				l_posts := l_extractor.postcondition_of_feature (l_feat, a_class)
+				l_finder.find (a_class, l_feat, l_posts)
+				l_result_defining_posts.append (l_finder.last_expressions)
+				if l_result_defining_posts.is_empty then
+					l_post_gen.generate (a_class, l_feat)
+					l_finder.find (a_class, l_feat, l_post_gen.last_postconditions)
+					l_result_defining_posts.append (l_finder.last_expressions)
+--					across l_finder.last_expressions as l_exprs loop
+--						create l_expr.make_with_text (a_class, l_feat, ti_result + " = (" + l_exprs.item.text + ")", a_class)
+--						if l_expr.type /= Void then
+--							l_result_defining_posts.extend (l_expr)
+--						end
+--					end
+				end
+				from
+					l_result_defining_posts.start
+				until
+					l_result_defining_posts.after
+				loop
+					create l_expr.make_with_text (a_class, l_feat, ti_result + " = (" + l_result_defining_posts.item.text + ")", a_class)
+					if l_expr.type /= Void then
+						l_result_defining_posts.replace (l_expr)
+						l_result_defining_posts.forth
+					else
+						l_result_defining_posts.remove
+					end
+
+				end
+				if not l_result_defining_posts.is_empty then
+					across l_result_defining_posts as l_exprs loop
+						create l_axiom.make (128)
+						l_axiom.append (boogie_axiom_header)
+						l_axiom.append (once " (")
+						create l_feat_ref.make (32)
+						create l_replacements.make (2)
+						l_replacements.compare_objects
+						l_feat_ref.append (l_feat.feature_name)
+						if l_feat.has_arguments then
+							l_axiom.append (once "forall aa : ")
+							if l_feat.arguments.i_th (1).is_integer then
+								l_axiom.append ("int")
+							else
+								l_axiom.append ("ref")
+							end
+							l_axiom.append (" :: ")
+							l_feat_ref.append (once " (aa)")
+							l_replacements.force (once " (aa)", l_feat.arguments.item_name (1))
+						else
+							l_feat_ref.append (dummy_paranthesis)
+						end
+						l_replacements.force (l_feat_ref, ti_result)
+						l_exp := l_exprs.item
+						l_str := expression_rewriter.expression_text (l_exp, l_replacements)
+						l_axiom.append (solver_expression_as_string (ast_from_expression_text (l_str), a_class, a_class, l_feat))
+						l_axiom.append_character (')')
+						l_axiom.append (dummy_semicolon)
+						last_statements.extend (l_axiom)
+					end
+				end
+			end
+		end
+
+	generate_same_query_axioms (a_class: CLASS_C)
+			-- Generate axioms to say that certain queries in `a_class' always return the same value.
+		local
+			l_feature_selector: EPA_FEATURE_SELECTOR
+			l_same_feature_collector: EPA_SIMPLE_SAME_FEATURE_COLLECTOR
+			l_feats: LINKED_LIST [FEATURE_I]
+			i, j: INTEGER
+			l_feat1, l_feat2: FEATURE_I
+		do
+				-- Setup feature selectors to select queries that we consider.
+			create l_feature_selector
+			l_feature_selector.add_query_selector
+			l_feature_selector.add_argumented_feature_selector (0, 1)
+			l_feature_selector.add_selector (l_feature_selector.not_from_any_feature_selector)
+			l_feature_selector.add_exported_feature_selector
+
+				-- Collect queries with the same signature and same body.
+			create l_same_feature_collector
+			l_same_feature_collector.collect (l_feature_selector.features_from_class (a_class))
+
+				-- Iterate through features with same signature and same body and generate axioms.
+			across l_same_feature_collector.features as l_features loop
+					-- Note: i_th on LINKED_LIST is slow but the lists here are quite small. 1.3.2011 Jasonw
+				l_feats := l_features.item
+				from
+					i := 1
+				until
+					i > l_feats.count - 1
+				loop
+					l_feat1 := l_feats.i_th (i)
+					from
+						j := i + 1
+					until
+						j > l_feats.count
+					loop
+						l_feat2 := l_feats.i_th (j)
+						last_statements.extend (axiom_for_two_features_being_equal (a_class, l_feat1, l_feat2))
+						j := j + 1
+					end
+					i := i + 1
+				end
+			end
 		end
 
 	generate_expression (a_expr: EXPR_AS; a_class: CLASS_C; a_written_class: CLASS_C; a_feature: detachable FEATURE_I)
@@ -431,37 +569,51 @@ feature{NONE}	-- Implementation
 				if l_found then
 					final_name := l_feat.feature_name.as_lower
 					last_type := l_feat.type.instantiated_in (context_class.actual_type)
+					if last_type.is_formal then
+						last_type := actual_type_from_formal_type (last_type, context_class)
+					end
 					is_last_name_feature := True
 				end
 
 				check not l_found implies context_feature /= Void end
 				if not l_found then
-						-- `a_name' can be a local or an argument
-					l_feat := final_feature (context_feature.feature_name, current_written_class, context_class)
+					if context_feature /= Void then
+							-- `a_name' can be a local or an argument
+						l_feat := final_feature (context_feature.feature_name, current_written_class, context_class)
 
-						-- Can be an argument.
-					i := final_argument_index (a_name, context_feature, current_written_class)
-					if i > 0 then
-						final_name := context_feature.arguments.item_name (i)
-						last_type := context_feature.arguments.i_th (i).instantiation_in (context_class.actual_type, context_class.class_id).actual_type
-						is_last_name_argument := True
-					else
-							-- Must be a local.
-						check context_feature /= Void end
-						l_locals := expression_type_checker.local_info (context_class, context_feature)
-						final_name := a_name.twin
-						from
-							l_locals.start
-						until
-							l_locals.after or else l_done
-						loop
-							if final_name.is_case_insensitive_equal (names_heap.item (l_locals.key_for_iteration)) then
-								last_type := l_locals.item_for_iteration.type.instantiation_in (context_class.actual_type, context_class.class_id).actual_type
-								l_done := True
-								is_last_name_local := True
+							-- Can be an argument.
+						i := final_argument_index (a_name, context_feature, current_written_class)
+						if i > 0 then
+							final_name := context_feature.arguments.item_name (i)
+							last_type := context_feature.arguments.i_th (i).instantiation_in (context_class.actual_type, context_class.class_id).actual_type
+							if last_type.is_formal then
+								last_type := actual_type_from_formal_type (last_type, context_class)
 							end
-							l_locals.forth
+							is_last_name_argument := True
+						else
+								-- Must be a local.
+							check context_feature /= Void end
+							l_locals := expression_type_checker.local_info (context_class, context_feature)
+							final_name := a_name.twin
+							from
+								l_locals.start
+							until
+								l_locals.after or else l_done
+							loop
+								if final_name.is_case_insensitive_equal (names_heap.item (l_locals.key_for_iteration)) then
+									last_type := l_locals.item_for_iteration.type.instantiation_in (context_class.actual_type, context_class.class_id).actual_type
+									if last_type.is_formal then
+										last_type := actual_type_from_formal_type (last_type, context_class)
+									end
+									l_done := True
+									is_last_name_local := True
+								end
+								l_locals.forth
+							end
 						end
+					else
+						final_name := a_name.twin
+						last_type := none_type
 					end
 				end
 			else
@@ -469,6 +621,66 @@ feature{NONE}	-- Implementation
 				last_type := last_type.associated_class.feature_named (final_name).type.instantiated_in (last_type)
 				is_last_name_feature := True
 			end
+		end
+
+	axiom_for_two_features_being_equal (a_class: CLASS_C; a_feature: FEATURE_I; b_feature: FEATURE_I): STRING
+			-- An axiom stating that `a_feature' and `b_feature' in `a_class' return the same result
+		local
+			l_arg: STRING
+		do
+			create Result.make (128)
+			Result.append (boogie_axiom_header)
+			Result.append (" (")
+			if a_feature.argument_count = 0 then
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_feature.feature_name), a_class, a_class, Void))
+				Result.append (" == ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (b_feature.feature_name), a_class, a_class, Void))
+			else
+				l_arg := "aa";
+				Result.append ("forall ")
+				Result.append (l_arg)
+				if a_feature.arguments.first.is_integer then
+					Result.append (" : int")
+				else
+					Result.append (" : ref")
+				end
+				Result.append (" :: ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_feature.feature_name + "(" + l_arg + ")"), a_class, a_class, Void))
+				Result.append (" == ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (b_feature.feature_name + "(" + l_arg + ")"), a_class, a_class, Void))
+			end
+			Result.append (")")
+			Result.append (dummy_semicolon)
+		end
+
+	axiom_for_query_equal_to_constant (a_class: CLASS_C; a_feature: FEATURE_I; a_constant: STRING): STRING
+			-- An axiom stating that value of `a_feature' from `a_class' equals to `a_constant'
+		local
+			l_arg: STRING
+		do
+			create Result.make (128)
+			Result.append (boogie_axiom_header)
+			Result.append (" (")
+			if a_feature.argument_count = 0 then
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_feature.feature_name), a_class, a_class, Void))
+				Result.append (" == ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_constant), a_class, a_class, Void))
+			else
+				l_arg := "aa";
+				Result.append ("forall ")
+				Result.append (l_arg)
+				if a_feature.arguments.first.is_integer then
+					Result.append (" : int")
+				else
+					Result.append (" : ref")
+				end
+				Result.append (" :: ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_feature.feature_name + "(" + l_arg + ")"), a_class, a_class, Void))
+				Result.append (" == ")
+				Result.append (solver_expression_as_string (ast_from_expression_text (a_constant), a_class, a_class, Void))
+			end
+			Result.append (")")
+			Result.append (dummy_semicolon)
 		end
 
 feature{NONE} -- Process
@@ -519,7 +731,7 @@ feature{NONE} -- Process
 			check_name (l_name)
 			if nested_level = 0 then
 					-- Needed for routine arguments.
-				if not is_last_name_local and then not is_last_name_argument then
+				if not is_last_name_local and then not is_last_name_argument and is_last_name_feature then
 					output_buffer.append (solver_prefix ("", context_class))
 				end
 			end
@@ -534,11 +746,13 @@ feature{NONE} -- Process
 			elseif not is_in_nested then
 				if context_feature /= Void then
 					l_args := arguments_from_feature (context_feature, context_class)
-					if not l_args.has (final_name) then
+					if not l_args.has (final_name) and then is_last_name_feature then
 						output_buffer.append (dummy_paranthesis)
 					end
 				else
-					output_buffer.append (dummy_paranthesis)
+					if is_last_name_feature then
+						output_buffer.append (dummy_paranthesis)
+					end
 				end
 			end
 		end

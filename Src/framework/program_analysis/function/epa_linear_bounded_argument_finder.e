@@ -261,11 +261,13 @@ feature{NONE} -- Implementation
 			l_asserts: LINKED_LIST [EPA_EXPRESSION]
 			l_feat: FEATURE_I
 			l_arg_tbl: HASH_TABLE [STRING_8, INTEGER_32]
+			l_extractor: EPA_CONTRACT_EXTRACTOR
 		do
 			create {LINKED_LIST [EPA_EXPRESSION]} Result.make
 			create l_finder
 			create l_rewriter
 			create l_arg_tbl.make (1)
+				create l_extractor
 			l_arg_tbl.put (a_argument.text, 1)
 			l_cursor := a_precondition_features.cursor
 			from
@@ -274,8 +276,8 @@ feature{NONE} -- Implementation
 				a_precondition_features.after
 			loop
 				l_feat := a_precondition_features.item_for_iteration.feature_
-				l_finder.find (a_context_class, l_feat)
-				l_asserts := l_finder.expressions
+				l_finder.find (a_context_class, l_feat, l_extractor.precondition_of_feature (l_feat, a_context_class))
+				l_asserts := l_finder.last_expressions
 				if not l_asserts.is_empty then
 					from
 						l_asserts.start

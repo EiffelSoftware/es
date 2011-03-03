@@ -103,6 +103,10 @@ feature{NONE} -- Implementation
 			l_parts: LIST [STRING]
 			l_status: BOOLEAN
 			l_pre_status: BOOLEAN
+			l_ori_expr: EPA_AST_EXPRESSION
+			l_values: LINKED_LIST [EPA_EXPRESSION]
+			l_value: EPA_AST_EXPRESSION
+			l_str: STRING
 		do
 				-- Replace Daikon style "==" with Eiffel style "=".			
 			l_text := a_text.twin
@@ -185,16 +189,40 @@ feature{NONE} -- Implementation
 				end
 
 				if not l_done then
-					l_status := context.is_ignoring_export
-					l_pre_status := expression_type_checker.is_checking_precondition
-					context.set_is_ignoring_export (False)
-					expression_type_checker.set_is_checking_precondition (True)
-					create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
-					if l_expr.type /= Void then
-						last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+					if l_text.has_substring ("|one_of|") then
+						l_parts := string_slices (l_text, "|one_of|")
+						l_str := l_parts.first
+						l_str.left_adjust
+						l_str.right_adjust
+						create l_ori_expr.make_with_text (last_class, last_feature, l_str, last_class)
+						if l_ori_expr.type /= Void then
+							l_str := l_parts.last
+							l_str.left_adjust
+							l_str.right_adjust
+							l_str.remove_head (1)
+							l_str.remove_tail (1)
+							create l_values.make
+							across l_str.split (',') as l_strs loop
+								l_str := l_strs.item
+								l_str.left_adjust
+								l_str.right_adjust
+								create l_value.make_with_text (last_class, last_feature, l_str, last_class)
+								l_values.extend (l_value)
+							end
+							last_invariants.extend (create {AUT_STATE_INVARIANT}.make_as_one_of (l_ori_expr, l_values, last_class, last_feature))
+						end
+					else
+						l_status := context.is_ignoring_export
+						l_pre_status := expression_type_checker.is_checking_precondition
+						context.set_is_ignoring_export (False)
+						expression_type_checker.set_is_checking_precondition (True)
+						create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
+						if l_expr.type /= Void then
+							last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+						end
+						context.set_is_ignoring_export (l_status)
+						expression_type_checker.set_is_checking_precondition (l_pre_status)
 					end
-					context.set_is_ignoring_export (l_status)
-					expression_type_checker.set_is_checking_precondition (l_pre_status)
 				end
 			end
 		end

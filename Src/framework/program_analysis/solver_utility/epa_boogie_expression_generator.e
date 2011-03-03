@@ -201,6 +201,10 @@ feature{NONE} -- Process
 				l_opt := once "=="
 			elseif l_opt.is_case_insensitive_equal ("implies") then
 				l_opt := once "==>"
+			elseif l_as.op_name.name ~ "//" then
+				l_opt := "/"
+			elseif l_as.op_name.name ~ "\\" then
+				l_opt := "%%"
 			end
 
 			output_buffer.append (once " (")

@@ -61,6 +61,7 @@ feature -- Validity checking
 			l_candidates: LINKED_LIST [EPA_EXPRESSION]
 			l_new_theory: EPA_THEORY
 			l_processed: like class_with_prefix_set
+			l_feat_selector: EPA_SIMPLE_SAME_FEATURE_COLLECTOR
 		do
 			l_processed := class_with_prefix_set
 			create l_candidates.make
@@ -76,9 +77,14 @@ feature -- Validity checking
 				l_state.force_last (equation_with_value (l_cursor.item, l_true_value))
 				l_cursor.forth
 			end
+			l_state.force_last (equation_with_value (
+				create {EPA_AST_EXPRESSION}.make_with_text (a_class, a_feature, "Current.out = Current.out", a_class),
+				l_true_value))
 			l_theory := skeleton_from_state (l_state).theory.cloned_object
 			solver_expression_generator.initialize_for_generation
 			solver_expression_generator.generate_precondition_axioms (a_class, a_feature)
+			solver_expression_generator.generate_same_query_axioms (a_class)
+			solver_expression_generator.generate_extra_query_postconditions_as_axioms (a_class)
 			create l_new_theory.make (a_class)
 			solver_expression_generator.last_statements.do_all (agent l_new_theory.extend_axiom_with_string)
 			resolved_class_theory_internal (create {EPA_CLASS_WITH_PREFIX}.make (a_class, ""), l_theory, l_processed, l_new_theory)

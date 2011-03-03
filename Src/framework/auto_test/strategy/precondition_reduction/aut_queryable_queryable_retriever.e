@@ -94,10 +94,15 @@ feature -- Basic operations
 				create l_msg.make (50)
 				l_msg.append ("%TDuration: ")
 				l_msg.append_integer (duration_from_time (l_time))
-				l_msg.append_character ('s')
+				l_msg.append_string (once "ms")
 				log_manager.put_line (l_msg)
 			end
-			if a_connection.last_error_number = 0 then
+			if a_connection.last_error_number /= 0 then
+				if log_manager /= Void and then a_connection.last_error /= Void then
+					log_manager.put_line ("Error: " + a_connection.last_error)
+				end
+			end
+			if a_connection.last_error_number = 0 and then a_connection.has_result then
 				l_sql_result := a_connection.last_result
 				l_column_names := l_sql_result.column_names
 				l_var_count := l_sql_result.column_count - 1
@@ -143,6 +148,7 @@ feature -- Basic operations
 						else
 							create l_query.make (l_uuid, {SEM_CONSTANTS}.object_field_value)
 							create l_query_executor.make (a_connection)
+							l_query_executor.set_log_manager (log_manager)
 							l_query_executor.execute (l_query)
 							l_tmp_result := l_query_executor.last_results.first
 							l_uuids.force_last (l_tmp_result, l_uuid)

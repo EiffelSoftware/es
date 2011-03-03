@@ -16,7 +16,8 @@ inherit
 
 
 create
-	make
+	make,
+	make_as_one_of
 
 feature{NONE} -- Initialization
 
@@ -35,6 +36,34 @@ feature{NONE} -- Initialization
 			id.append (a_expression.text)
 			hash_code := id.hash_code
 			feature_id := class_name_dot_feature_name (a_context_class, feature_)
+			create one_of_components.make
+		end
+
+	make_as_one_of (a_expression: EPA_EXPRESSION; a_values: LINKED_LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+			-- Initialize Current as an one of invariant.
+		local
+			l_expr: EPA_AST_EXPRESSION
+			l_str: STRING
+			i: INTEGER
+		do
+			original_expression := a_expression
+			create l_str.make (128)
+			set_is_one_of_invariant (True)
+			i := 1
+			across a_values as l_values loop
+				l_str.append_character ('(')
+				l_str.append (a_expression.text)
+				l_str.append (once " = ")
+				l_str.append (l_values.item.text)
+				l_str.append_character (')')
+				if i < a_values.count then
+					l_str.append (once " or ")
+				end
+				i := i + 1
+			end
+			create l_expr.make_with_text (a_context_class, a_feature, l_str, a_context_class)
+			make (l_expr, a_context_class, a_feature)
+			one_of_components.append (a_values)
 		end
 
 feature -- Access
@@ -64,9 +93,27 @@ feature -- Access
 			Result := expression.text
 		end
 
-feature -- Basic operations
+	one_of_components: LINKED_LIST [EPA_EXPRESSION]
+			-- List of components in a "one of" invariant
+			-- Empty when Current invariant is not a "one of" invariant		
 
+	original_expression: EPA_EXPRESSION
+			-- Original expression in "one of" invariant
 
+feature -- Status report
+
+	is_one_of_invariant: BOOLEAN
+			-- Is Current invariant a "one of" invariant?
+
+feature -- Setting
+
+	set_is_one_of_invariant (b: BOOLEAN)
+			-- Set `is_one_of_invariant' with `b'.
+		do
+			is_one_of_invariant := b
+		ensure
+			is_one_of_invariant_set: is_one_of_invariant = b
+		end
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

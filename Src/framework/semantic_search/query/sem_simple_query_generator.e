@@ -331,15 +331,16 @@ feature -- Access
 				if
 					not l_pres.item.text.has ('{') and then
 					not l_pres.item.text.has ('.') and then
-					not l_pres.item.text.has ('(') and then
-					not l_pres.item.text.has_substring (once "attached")
+--					not l_pres.item.text.has ('(') and then
+					not l_pres.item.text.has_substring (once "attached") and then
+					l_pres.item.type /= Void
 				then
 					l_pre_set.force_last (l_pres.item)
 				end
 				l_pres.forth
 			end
 
-			if l_pre_set.count > 0 and l_pre_set.count <= 2 then
+			if l_pre_set.count > 0 and l_pre_set.count <= 4 then
 					-- We don't allow too many precondition predicates,
 					-- because otherwise, the query will take a long long time.
 				create l_qualifier

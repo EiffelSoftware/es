@@ -11,7 +11,7 @@ inherit
 	EPA_SOLVER_FACTORY
 
 	EPA_SOLVER_UTILITY
-	
+
 	REFACTORING_HELPER
 
 feature -- Access
@@ -113,8 +113,11 @@ feature{NONE} -- Implementation
 	append_line (a_content: EPA_SOLVER_EXPR)
 			-- Append `a_content' into `last_content' in its own line.
 		do
-			last_content.append (a_content.expression)
-			last_content.append_character ('%N')
+			fixme ("the v.Current filtering is a hack. I just don't want to check why it get generated anymore. 3.2.2011 Jasonw")
+			if a_content.expression /= Void and then not a_content.expression.has_substring (once "v.Current") then
+				last_content.append (a_content.expression)
+				last_content.append_character ('%N')
+			end
 		end
 
 end
