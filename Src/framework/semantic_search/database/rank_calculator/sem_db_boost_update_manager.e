@@ -12,9 +12,14 @@ create
 
 feature
 
+	primary_database_connection_client: MYSQL_CLIENT
+	secondary_database_connection_client: MYSQL_CLIENT
+
 		--Startup
-	make
+	make (host_address: STRING_8; username: STRING_8; password: STRING_8; database_name: STRING_8)
 		do
+			create primary_database_connection_client.make (host_address, username, password, database_name)
+			create secondary_database_connection_client.make (host_address, username, password, database_name)
 			print ("Manager Created%N%N")
 		end
 
@@ -24,9 +29,7 @@ feature
 	run_table_update (class_name: STRING_8; feature_name: STRING_8)
 		local
 			creater: SEM_SQL_STATEMENT_CREATER
-			output_file: RAW_FILE
 			all_properties_query_doc: STRING_8
-			client: MYSQL_CLIENT
 			i: INTEGER_32
 			properties_list: LINKED_LIST [STRING_8]
 			property_name: STRING_8
@@ -34,10 +37,9 @@ feature
 			create creater.make
 			create properties_list.make
 
-			create client.make ("127.0.0.1", "root", "root", "semantic_search")
-			if client.is_connected then
+			if primary_database_connection_client.is_connected then
 					--No errors occured in creating a connection to the MySQL database
-				if client.last_error.is_equal ("") then
+				if primary_database_connection_client.last_error.is_equal ("") then
 					print("No errors in connecting!%N%N")
 
 					from
@@ -53,20 +55,20 @@ feature
 						all_properties_query_doc := creater.get_mysql_select_doc
 
 							--Execute the SQL query for all peroperties
-						client.execute_query (all_properties_query_doc)
-						if client.last_error.is_equal ("") then
+						primary_database_connection_client.execute_query (all_properties_query_doc)
+						if primary_database_connection_client.last_error.is_equal ("") then
 							print ("No errors in generating ")
 							print (i)
 							print ("-variable table%N%N")
 
 								--Update all values in the SQL table for the properties of the given feature.	
-							update_table_boost_values (client, class_name, feature_name, i)
+							update_table_boost_values (class_name, feature_name, i)
 						else
 							print (all_properties_query_doc)
 							print ("An error occured in generating ")
 							print (i)
 							print ("-variable table%N%N")
-							print (client.last_error)
+							print (primary_database_connection_client.last_error)
 							print ("%N%N")
 						end
 						i := i + 1
@@ -75,7 +77,7 @@ feature
 				else
 						--Errors occured in connecting
 					print("last error = %N%T")
-					print(client.last_error)
+					print(primary_database_connection_client.last_error)
 				end
 			else
 				print ("could not connect")
@@ -87,7 +89,6 @@ feature -- Main helper methods
 
 		--Function called to actually oversee the insertion of new boost values into the MYSQL database
 	update_table_boost_values (
-			client: MYSQL_CLIENT;
 			class_name: STRING_8;
 			feature_name: STRING_8;
 			num_args: INTEGER_32)
@@ -97,9 +98,9 @@ feature -- Main helper methods
 		do
 				--Create a new client used for the updates, as the old one will not be able to do a new query without
 				--destroying the data in the SQL_RESULT from the properties query
-			create update_client.make ("127.0.0.1", "root", "root", "semantic_search")
-			if client.has_result then
-				current_result := client.last_result
+			create secondary_database_connection_client.make ("127.0.0.1", "root", "root", "semantic_search")
+			if primary_database_connection_client.has_result then
+				current_result := primary_database_connection_client.last_result
 				from
 					current_result.start
 				until
@@ -108,7 +109,6 @@ feature -- Main helper methods
 						--On every iteration, handle a new distinct property, operand placement, value triple
 						--method automatically increments
 					handle_next_property_type_considering_operand_placement_and_evaluated_value (
-						update_client,
 						current_result,
 						class_name,
 						feature_name,
@@ -127,7 +127,6 @@ feature -- Main helper methods
 		--in the query id evaluates to as a string, and the number of times that the property evaluates to this
 		--value as an integer
 	handle_next_property_type_considering_operand_placement_and_evaluated_value (
-			update_client: MYSQL_CLIENT;
 			current_result:  MYSQL_RESULT;
 			class_name: STRING_8;
 			feature_name: STRING_8;
@@ -202,13 +201,13 @@ feature -- Main helper methods
 				print (current_property_name)
 				print ("%N%N")
 
-				update_client.execute_query (creater.get_mysql_update_doc)
-				if update_client.last_error.is_equal ("") then
+				secondary_database_connection_client.execute_query (creater.get_mysql_update_doc)
+				if secondary_database_connection_client.last_error.is_equal ("") then
 					print ("No errors in executing update query! :)%N%N")
 				else
 						--Hopefully no errors!
 					print ("********************error!******************%N%N")
-					print (update_client.last_error)
+					print (secondary_database_connection_client.last_error)
 					print ("%N%N")
 				end
 

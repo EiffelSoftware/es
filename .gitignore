@@ -421,6 +421,7 @@ Src/framework/program_analysis/exception_trace_analysis/epa_failure_explainer_i.
 Src/framework/program_analysis/exception_trace_analysis/epa_faulty_exception_call_stack_frame_marking_strategy.e
 Src/framework/program_analysis/exception_trace_analysis/epa_faulty_exception_call_stack_frame_marking_strategy_i.e
 Src/framework/program_analysis/finder/epa_program_state_expression_collector.e
+Src/framework/semantic_search/database/rank_calculator/EIFGENs
 Src/framework/settable_types/EIFGENs
 Src/framework/web/xebra/c_projects/.project
 Src/framework/web/xebra/c_projects/apache_mod_xebra/*.exp
