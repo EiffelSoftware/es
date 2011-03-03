@@ -1,0 +1,69 @@
+
+precomp_base: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         select_generate @3     plus:                        
+<00000000023E05A8>                         Feature call on void target.  Fail
+-------------------------------------------------------------------------------
+APPLICATION         select_generate @3                                  
+<00000000023E05A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @6                                             
+<00000000023E05A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<00000000023E05A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+sql_statement_creater: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+MYSQL_RESULT        at @4                                               
+<00000000023B07C8>                         Precondition violated.        Fail
+-------------------------------------------------------------------------------
+MYSQL_PLAY          make @18                                            
+<00000000023B05E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @1                                             
+<00000000023B05A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<00000000023B05A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+sql_statement_creater: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+STRING_8            at @1                  index_small_enough:          
+<0000000002259048>                         Runtime check violated.       Fail
+-------------------------------------------------------------------------------
+STRING_8            at @1                                               
+<0000000002259048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         parse_out_property_name @4
+<0000000002250668>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         handle_next_property_type @4
+<0000000002250668>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         handle_sql_results @5                               
+<0000000002250668>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         get_full_table_of_results @17
+<0000000002250668>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @1                                             
+<0000000002250668>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000002250668>                         Routine failure.              Exit
+-------------------------------------------------------------------------------

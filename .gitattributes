@@ -2715,6 +2715,8 @@ Src/framework/jstar_proofs/spec_generation/parsing/parser_part2 -text
 Src/framework/parser/parser.lic -text
 Src/framework/parser_extension/parser_extension.lic -text
 Src/framework/resources/resources.lic -text
+Src/framework/semantic_search/database/rank_calculator/exception_trace.log -text
+Src/framework/semantic_search/database/rank_calculator/sql_statement_creater.rc -text
 Src/framework/semantic_search/engine/java/src/Main/Main.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocument.java -text
 Src/framework/semantic_search/engine/java/src/SemanticDocument/SemanticDocumentField.java -text
