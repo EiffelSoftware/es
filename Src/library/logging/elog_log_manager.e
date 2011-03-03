@@ -149,7 +149,7 @@ feature -- Logging basic operations
 		do
 			if is_current_logging_level_active then
 				create l_str.make (a_string.count + String_offset)
-				a_string.append (time_prefix)
+				l_str.append (time_prefix)
 				l_str.append (a_string)
 				put_string (l_str)
 			end
