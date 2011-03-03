@@ -21,7 +21,9 @@ inherit
 			process_nested_as,
 			process_nested_expr_as,
 			process_current_as,
-			output
+			output,
+			process_result_as,
+			process_void_as
 		end
 
 	EPA_EXPRESSION_VISITOR
@@ -205,6 +207,16 @@ feature {AST_EIFFEL} -- Processing
 	process_current_as (l_as: CURRENT_AS)
 		do
 			process_access_name (ti_current)
+		end
+
+	process_result_as (l_as: RESULT_AS)
+		do
+			process_access_name (ti_result)
+		end
+
+	process_void_as (l_as: VOID_AS)
+		do
+			process_access_name (ti_void)
 		end
 
 feature {NONE} -- Implementation
