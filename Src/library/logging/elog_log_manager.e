@@ -71,23 +71,31 @@ feature -- Access
 			-- Default: `no_time_logging_mode'
 			-- See `is_time_logging_mode_valid' for possible values for this attribute.
 
-	start_time: detachable DATE_TIME
+	start_time: DATE_TIME
 			-- Start time of current logging
 		do
-			if start_time_internal = Void then
+			if attached start_time_internal as sti then
+				Result := sti
+			else
 				create start_time_internal.make_now
+				check attached start_time_internal as l_time then
+					Result := l_time
+				end
 			end
-			Result := start_time_internal
 		end
 
 	duration_until_now: DATE_TIME_DURATION
 			-- Duration of current program run from `start_time' until now.
+		require
+			start_time_exists: attached start_time
 		local
-			time_now: DATE_TIME
+			date_time_now: DATE_TIME
 		do
-			create time_now.make_now
-			Result := time_now.duration
-			Result := Result.time_to_canonical
+			create date_time_now.make_now
+			check attached start_time as st then
+				Result := date_time_now.definite_duration (st)
+				Result := Result.time_to_canonical
+			end
 		end
 
 feature -- Logging basic operations
@@ -320,19 +328,19 @@ feature -- Status setters
 feature {NONE} -- Implementation
 
 	time_prefix: STRING
-			-- Prefix for time
+			-- Prefix for time.
 		local
 			l_date_time: DATE_TIME
 			l_date_time_duration: DATE_TIME_DURATION
 		do
 			create Result.make (32)
-			if time_logging_mode = duration_time_logging_mode then
+			if time_logging_mode = Duration_time_logging_mode then
 				l_date_time_duration := duration_until_now
 				l_date_time_duration.set_origin_date_time (start_time_internal)
 				Result.append (format_date_time_duration (l_date_time_duration))
 				Result.append_character (':')
 				Result.append_character (' ')
-			elseif time_logging_mode = absolute_time_logging_mode then
+			elseif time_logging_mode = Absolute_time_logging_mode then
 				create l_date_time.make_now
 				Result.append (l_date_time.out)
 				Result.append_character (':')
