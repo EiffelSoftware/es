@@ -15,7 +15,7 @@ feature
 	make
 		local
 			client: MYSQL_CLIENT
-			stmt, stmt_insert: MYSQL_STMT
+			stmt, stmt_insert: MYSQL_PREPARED_STATEMENT
 		do
 			-- Initialization
 			create client.make ("127.0.0.1", "root", "root", "test")

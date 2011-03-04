@@ -1414,6 +1414,7 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 		zone->ov_flags |= HEADER(ptr)->ov_flags & (EO_REF | EO_COMP);
 		zone->ov_dftype = HEADER(ptr)->ov_dftype;
 		zone->ov_dtype = HEADER(ptr)->ov_dtype;
+		zone->ov_pid = HEADER(ptr)->ov_pid;
 
 			/* Update flags of new object if it contains references and the object is not
 			 * in the scavenge zone anymore. */
@@ -4012,9 +4013,9 @@ rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_IN
 
 	// Set SCOOP Processor if available.
 #ifdef EIF_THREADS
-	zone->ov_head.ovu.ovs.scp_pid = (EIF_SCP_PID)(EIF_TEST(eif_thr_context->is_processor) ? eif_thr_context->logical_id : 0);
+	zone->ov_pid = (EIF_SCP_PID)(EIF_TEST(eif_thr_context->is_processor) ? eif_thr_context->logical_id : 0);
 #else
-	zone->ov_head.ovu.ovs.scp_pid = (EIF_SCP_PID)0;
+	zone->ov_pid = (EIF_SCP_PID)0;
 #endif
 	zone->ov_size &= ~B_C;		/* Object is an Eiffel one */
 	zone->ov_flags = flags;
@@ -4099,11 +4100,10 @@ rt_private EIF_REFERENCE eif_spset(EIF_REFERENCE object, EIF_BOOLEAN in_scavenge
 
 	// Set SCOOP Processor if available.
 #ifdef EIF_THREADS
-	zone->ov_head.ovu.ovs.scp_pid = (EIF_SCP_PID)(EIF_TEST(eif_thr_context->is_processor) ? eif_thr_context->logical_id : 0);
+	zone->ov_pid = (EIF_SCP_PID)(EIF_TEST(eif_thr_context->is_processor) ? eif_thr_context->logical_id : 0);
 #else
-	zone->ov_head.ovu.ovs.scp_pid = (EIF_SCP_PID)0;
+	zone->ov_pid = (EIF_SCP_PID)0;
 #endif
-
 	zone->ov_size &= ~B_C;				/* Object is an Eiffel one */
 
 #ifdef ISE_GC
