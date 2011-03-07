@@ -283,12 +283,32 @@ feature -- Access
 			Result := "PropertyBindings" + a_variable_count.out
 		end
 
-	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER): STRING
+	sql_to_select_object (a_context_class: detachable CLASS_C; a_feature: detachable FEATURE_I; a_type: TYPE_A; a_count: INTEGER): STRING
+			-- SQL statement to select at most `a_count' objects whose type conforms to `a_type'
+			-- If `a_context_class' or `a_feature' is not Void, the selection is done only in queryables
+			-- related to that class or feature.
+		do
+			create Result.make (256)
+			Result.append ("SELECT DISTINCT q.uuid, v.var1 FROM Queryables q, PropertyBindings1 v WHERE q.qry_kind = 1 %N")
+			if a_context_class /= Void then
+				Result.append ("AND q.class = '" + a_context_class.name_in_upper + "'%N")
+			end
+			if a_feature /= Void then
+				Result.append ("AND q.feature = '" + a_feature.feature_name.as_lower + "'%N")
+			end
+			Result.append ("AND v.qry_id = q.qry_id AND v.prop_id = (SELECT prop_id FROM Properties WHERE text = '$') %N")
+			Result.append ("AND v.type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type.name) + "') %N")
+			Result.append ("LIMIT " + a_count.out)
+		end
+
+	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
 			-- `a_expression' must have boolean type.
 			-- `a_expression' is in curly-braced integer form, for example: {0}.has ({1})
 			-- `a_limit' indicates the maximal number of row to retrieve from database. 0 means unlimited rows.
+			-- In result, `sql' is the select statement to retrieve queryables, `unconstrained_operands' is a
+			-- hash table, keys are names of operands (u, v, etc.) that are not mentioned in `a_expression', values are their types.
 		local
 			l_operands: like variables_from_expression
 			l_subexprs: like subexpressions
@@ -318,6 +338,12 @@ feature -- Access
 			l_rep: HASH_TABLE [STRING, STRING]
 			l_rep1: HASH_TABLE [STRING, STRING]
 			l_qualifier: EPA_EXPRESSION_QUALIFIER
+			l_feat_opds: like operands_with_feature
+			l_sql: STRING
+			l_unconstrained_operands: HASH_TABLE [TYPE_A, STRING]
+			l_opd_type: TYPE_A
+			l_opd_index: INTEGER
+			l_opd_name: STRING
 		do
 			create l_contract_extractor
 			l_pres := l_contract_extractor.precondition_of_feature (a_feature, a_context_class).twin
@@ -390,7 +416,36 @@ feature -- Access
 			create l_where.make (512)
 
 			l_operands := variables_from_expression (l_final_expr)
+			l_operands.force (0, curly_brace_surrounded_integer (0)) -- Make sure that target is always included.
 			l_subexprs := subexpressions (l_final_expr, a_context_class, a_feature)
+			l_feat_opds := operands_with_feature (a_feature).cloned_object
+
+				-- Remove "Result", if any.
+			if a_feature.has_return_value then
+				l_feat_opds.remove (a_feature.argument_count + 1)
+			end
+				-- Remove all mentioned operands.
+			across l_operands as l_mentioned_opds loop
+				l_opd_index := l_mentioned_opds.item
+				if l_feat_opds.has (l_opd_index) then
+					l_feat_opds.remove (l_opd_index)
+				end
+			end
+
+				-- Process operands that are not mentioned in the expression.
+			create l_unconstrained_operands.make (l_feat_opds.count)
+			l_unconstrained_operands.compare_objects
+			from
+				l_feat_opds.start
+			until
+				l_feat_opds.after
+			loop
+				l_opd_type := a_feature.arguments.i_th (l_feat_opds.key_for_iteration)
+				l_opd_type := actual_type_from_formal_type (l_opd_type, a_context_class)
+				l_opd_type := l_opd_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
+				l_unconstrained_operands.force (l_opd_type, l_feat_opds.item_for_iteration)
+				l_feat_opds.forth
+			end
 
 			create l_var_preds.make (2)
 			l_var_preds.compare_objects
@@ -448,30 +503,25 @@ feature -- Access
 				l_expr_cursor.forth
 			end
 
-			create Result.make (512)
-			Result.append (l_select)
-			Result.append_character ('%N')
-			Result.append (l_from)
-			Result.append_character ('%N')
-			Result.append (l_where)
-			Result.append_character ('%N')
+			create l_sql.make (512)
+			l_sql.append (l_select)
+			l_sql.append_character ('%N')
+			l_sql.append (l_from)
+			l_sql.append_character ('%N')
+			l_sql.append (l_where)
+			l_sql.append_character ('%N')
 
 			create l_gen.make
 			l_expr := variabled_expression (l_final_expr)
 			l_gen.process_property (ast_from_expression_text (l_expr), l_replacements)
-			Result.append ("%NAND%N")
---			if a_negated then
---				Result.append ("NOT (")
---			end
-			Result.append (l_gen.last_output)
---			if a_negated then
---				Result.append (")")
---			end
-			Result.append_character ('%N')
+			l_sql.append ("%NAND%N")
+			l_sql.append (l_gen.last_output)
+			l_sql.append_character ('%N')
 
 			if a_limit > 0 then
-				Result.append ("LIMIT " + a_limit.out + "%N")
+				l_sql.append ("LIMIT " + a_limit.out + "%N")
 			end
+			Result := [l_sql, l_unconstrained_operands]
 		end
 
 end

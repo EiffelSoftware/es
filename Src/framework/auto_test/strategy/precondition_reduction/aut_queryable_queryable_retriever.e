@@ -42,11 +42,13 @@ feature -- Setting
 
 feature -- Basic operations
 
-	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN; a_connection: MYSQL_CLIENT)
+	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT)
 			-- Retrieve objects that satisfying `a_predicate' if `a_satisfying' is True;
 			-- otherwise, retrieve objects that violating `a_predicate'.
 			-- Make result available in `last_objects'.
 			-- `a_context_class' and `a_feature' compose the context where `a_predicate' appears.
+			-- `a_retrieve_unconstrained_operands' indicates if operands that are not constrained by `a_predicate'
+			-- are retrieved or not.
 			-- `a_connection' includes the config used to connect to the semantic database.
 		local
 			l_sql_gen: SEM_SIMPLE_QUERY_GENERATOR
@@ -74,12 +76,26 @@ feature -- Basic operations
 			l_tmp_result: SEMQ_RESULT
 			l_msg: STRING
 			l_time: DT_DATE_TIME
+			l_main_sql: TUPLE [sql: STRING; unconstrained_vars: HASH_TABLE [TYPE_A, STRING]]
+			unconstrained_vars: HASH_TABLE [TYPE_A, STRING]
+			l_should_retrieve_unconstrained_variables: BOOLEAN
+			l_opd_type: TYPE_A
+			l_var_id: INTEGER
+			l_queryable_map: HASH_TABLE [SEM_QUERYABLE, STRING]
+			l_queryable: SEM_QUERYABLE
 		do
+			create l_queryable_map.make (10)
+			l_queryable_map.compare_objects
+			l_should_retrieve_unconstrained_variables := a_retrieve_unconstrained_operands
 			create last_objects.make
 
+				-- Check if there is objects satisfying `a_predicate' or violating `a_predicate',
+				-- depending on the value `a_satisfying'.
 			l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
 			create l_sql_gen
-			l_select := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5)
+			l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5)
+			l_select := l_main_sql.sql
+			unconstrained_vars := l_main_sql.unconstrained_vars
 
 			if log_manager /= Void then
 				log_manager.put_line_with_time ("Start query: " + a_predicate.text + " from " + a_context_class.name_in_upper + "." + a_feature.feature_name)
@@ -146,20 +162,78 @@ feature -- Basic operations
 						if l_uuids.has (l_map.item.uuid) then
 							l_tmp_result := l_uuids.item (l_map.item.uuid)
 						else
-							create l_query.make (l_uuid, {SEM_CONSTANTS}.object_field_value)
-							create l_query_executor.make (a_connection)
-							l_query_executor.set_log_manager (log_manager)
-							l_query_executor.execute (l_query)
-							l_tmp_result := l_query_executor.last_results.first
-							l_uuids.force_last (l_tmp_result, l_uuid)
-							last_objects.item_for_iteration.queryables.append (l_tmp_result.queryables)
-							across last_objects.item_for_iteration.meta  as l_meta loop
-								last_objects.item_for_iteration.meta.force (l_meta.item, l_meta.key)
+							l_tmp_result := queryable_with_uuid (l_uuid, a_connection, log_manager)
+							if l_tmp_result /= Void then
+								l_uuids.force_last (l_tmp_result, l_uuid)
+								across l_tmp_result.queryables as l_qrys loop
+									l_queryable_map.force (l_qrys.item, l_qrys.item.uuid)
+								end
+								last_objects.item_for_iteration.queryables.append (l_tmp_result.queryables)
+								across last_objects.item_for_iteration.meta  as l_meta loop
+									last_objects.item_for_iteration.meta.force (l_meta.item, l_meta.key)
+								end
 							end
 						end
 					end
 					last_objects.forth
 				end
+
+					-- Retrieve unconstrained operands.
+				if l_should_retrieve_unconstrained_variables and then not unconstrained_vars.is_empty then
+					across unconstrained_vars as l_mis_vars loop
+						l_opd_name := l_mis_vars.key
+						l_opd_type := l_mis_vars.item
+						l_select := l_sql_gen.sql_to_select_object (Void, Void, l_opd_type, 1)
+						if log_manager /= Void then
+							log_manager.put_line ("%T" + l_select)
+						end
+						a_connection.execute_query (l_select)
+						if a_connection.last_error_number = 0 and then a_connection.has_result then
+							l_sql_result := a_connection.last_result
+							if l_sql_result.row_count > 0 then
+								l_sql_result.start
+								l_uuid := l_sql_result.at (1) -- The queryable ID containing the variable
+								l_var_id := l_sql_result.at (2).to_integer -- The variable ID
+								l_sql_result.dispose
+								l_queryable := Void
+								if l_queryable_map.has (l_uuid) then
+									l_queryable := l_queryable_map.item (l_uuid)
+								else
+									l_queryable := queryable_with_uuid (l_uuid, a_connection, log_manager).queryables.first
+									if l_queryable /= Void then
+										l_queryable_map.force (l_queryable, l_uuid)
+									end
+								end
+								if l_queryable /= Void then
+									across last_objects as l_objs loop
+										l_objs.item.queryables.extend (l_queryable)
+										create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_var_id.out, l_uuid)
+										l_objs.item.variable_mapping.force (l_var_with_uuid, l_opd_name)
+									end
+								end
+							else
+								l_sql_result.dispose
+							end
+						end
+					end
+				end
+			end
+		end
+
+	queryable_with_uuid (a_uuid: STRING; a_connection: MYSQL_CLIENT; a_log_manager: detachable ELOG_LOG_MANAGER): detachable SEMQ_RESULT
+			-- Queryable with `a_uuid', retrieved from database through `a_connection'
+			-- If `a_log_manager' is attached, use it as logging facility.
+			-- Return Void if no such queryable can be found.
+		local
+			l_query: SEMQ_WHOLE_QUERYABLE_QUERY
+			l_query_executor: SEMQ_WHOLE_QUERYABLE_QUERY_EXECUTOR
+		do
+			create l_query.make (a_uuid, {SEM_CONSTANTS}.object_field_value)
+			create l_query_executor.make (a_connection)
+			l_query_executor.set_log_manager (a_log_manager)
+			l_query_executor.execute (l_query)
+			if not l_query_executor.last_results.is_empty then
+				Result := l_query_executor.last_results.first
 			end
 		end
 

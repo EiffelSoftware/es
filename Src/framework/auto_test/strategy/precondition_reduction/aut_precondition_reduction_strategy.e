@@ -273,11 +273,9 @@ feature{NONE} -- Invariant-violating invariants checking
 					l_file.after
 				loop
 					if not l_file.last_string.is_empty then
-						if not l_file.last_string.starts_with (once "---")  then
-							l_parts := l_file.last_string.split (';')
-							if l_parts.count = 2 then
-								Result.force_last (l_parts.first)
-							end
+						l_parts := l_file.last_string.split ('%T')
+						if l_parts.count = 4 then
+							Result.force_last (l_parts.first)
 						end
 					end
 					l_file.read_line
@@ -336,6 +334,7 @@ feature{NONE} -- Invariant-violating invariants checking
 							l_invs.item.expression,
 							l_invs.item.context_class,
 							l_invs.item.feature_,
+							False,
 							False,
 							connection)
 						if l_retriever.last_objects.is_empty then
