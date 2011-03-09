@@ -1016,7 +1016,7 @@ feature -- Object state checking
 		do
 			query_values.put (void_value, object_name (a_variable_index))
 			query_value_hash_list.extend (void_value.hash_code)
-			log_message ("v_" + a_variable_index.out + " is void.%N")
+			log_message (variable_name_prefix + a_variable_index.out + " is void.%N")
 		end
 
 	record_basic_value (a_variable_index: INTEGER; a_value: STRING)
@@ -1025,7 +1025,7 @@ feature -- Object state checking
 		do
 			query_values.put (a_value, object_name (a_variable_index))
 			query_value_hash_list.extend (a_value.hash_code)
-			log_message ("v_" + a_variable_index.out + " is " + a_value + "%N")
+			log_message (variable_name_prefix + a_variable_index.out + " is " + a_value + "%N")
 		end
 
 	record_invariant_violating_value (a_variable_index: INTEGER)
@@ -1072,7 +1072,7 @@ feature -- Object state checking
 			-- Name of object with `a_index'
 		do
 			create Result.make (5)
-			Result.append (once "v_")
+			Result.append (variable_name_prefix)
 			Result.append (a_index.out)
 		end
 
@@ -1523,7 +1523,7 @@ invariant
 	socket_attached: socket /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

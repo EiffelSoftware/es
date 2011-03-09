@@ -275,7 +275,7 @@ feature -- AST
 				end
 			end
 		end
-		
+
 	arguments_from_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, STRING]
 			-- Arguments from `a_feature'
 			-- Key of result is argument name, value is type of that argument.
@@ -867,6 +867,36 @@ feature -- Context
 			elseif attached {ONCE_AS} body_ast_from_feature (a_feature) as l_once then
 				if attached {EIFFEL_LIST [INSTRUCTION_AS]} l_once.compound as l_compound then
 					Result := l_compound
+				end
+			end
+		end
+
+	expression_value_from_string (a_value_text: STRING): detachable EPA_EXPRESSION_VALUE
+			-- Expression value from `a_value_text'
+			-- Result can be Void if `a_value_text' does not contain correct information.
+		local
+			l_ref_value: EPA_REFERENCE_VALUE
+		do
+			if a_value_text /= Void then
+				if a_value_text ~ {ITP_SHARED_CONSTANTS}.void_value then
+					create {EPA_VOID_VALUE} Result.make
+				elseif a_value_text ~ {ITP_SHARED_CONSTANTS}.invariant_violation_value or a_value_text ~ {ITP_SHARED_CONSTANTS}.nonsensical_value then
+						-- An exception happened during the expression evaluation,
+						-- we don't have any value for this expression.
+				else
+					if a_value_text.is_boolean then
+						create {EPA_BOOLEAN_VALUE} Result.make (a_value_text.to_boolean)
+					elseif a_value_text.is_integer then
+						create {EPA_INTEGER_VALUE} Result.make (a_value_text.to_integer)
+					else
+							-- Reference type.
+							-- Note that we does not have information about the object
+							-- equivalence, so we do not call set_object_equivalent_class_id.
+							-- This means that we cannot handle object equality checking later
+							-- in an external expression evaluation.
+						create l_ref_value.make (a_value_text, system.any_type)
+						Result := l_ref_value
+					end
 				end
 			end
 		end

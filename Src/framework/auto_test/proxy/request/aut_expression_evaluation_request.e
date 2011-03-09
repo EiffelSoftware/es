@@ -31,10 +31,15 @@ feature -- Access
 			-- variables and single-rooted expressions of those variables
 			-- inside the given expressions, to get the values of the original
 			-- expressions, use an external expression evaluator.
+			-- The expressions are in normal format, such as "Current.has (v)".
+			-- They do not mention objects in the object pool, the mapping from operands
+			-- such as "Current" to the real object in the object pool is given by `operand_map'.
 
 	context_class: CLASS_C
+			-- Context class in which `feature_' is viewed
 
 	feature_: FEATURE_I
+			-- Feature that `expressions' are evaluated in
 
 	operand_map: HASH_TABLE [INTEGER, INTEGER]
 			-- Map from opreand index to object index in the object pool.
@@ -50,6 +55,7 @@ feature -- Access
 		do
 			create l_gen
 			l_gen.generate_for_expressions (expressions, context_class, feature_, False, False, context_class.constraint_actual_type)
+			Result := [feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_gen.feature_text, True).byte_code, Void]
 		end
 
 note

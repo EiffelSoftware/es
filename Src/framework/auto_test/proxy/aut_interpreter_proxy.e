@@ -2128,6 +2128,33 @@ feature -- Objec state retrieval
 			report_event (last_response)
 		end
 
+	evaluate_expressions (a_class: CLASS_C; a_feature: FEATURE_I; a_operand_map: HASH_TABLE [INTEGER, INTEGER]; a_expressions: LINKED_LIST [EPA_EXPRESSION]; a_receiver: detachable PROCEDURE [ANY, TUPLE [HASH_TABLE [STRING, STRING]]])
+			-- Evaluate `a_expressions' in the context of `a_feature' from `a_class'.
+			-- `a_operand_map' is a mapping from opreand index to object index in the object pool.
+			-- Key is 0-based operand index.
+			-- Value is object id (used in the object pool) for that operand.
+			-- `a_expressions' are in operand-format, for example, "Current.has (v)".
+			-- If `a_receiver' is not Void, call it with the expression-value pairs after the evaluation.
+			-- The argument to `a_receiver' is a hash-table, keys are the expression texts and values are
+			-- the evaluated values of those expressions.
+		local
+			l_request: AUT_EXPRESSION_EVALUATION_REQUEST
+		do
+			create l_request.make (a_class, a_feature, a_expressions, a_operand_map)
+			last_request := l_request
+			last_request.process (socket_data_printer)
+			flush_process
+			retrieve_object_state_response
+			if attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_response then
+				if a_receiver /= Void then
+					a_receiver.call ([l_response.query_results])
+				end
+			end
+			if last_response.is_bad then
+				is_ready  := False
+			end
+		end
+
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)
 	request_printer_not_void: socket_data_printer /= Void

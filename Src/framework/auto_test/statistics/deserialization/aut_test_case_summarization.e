@@ -20,6 +20,8 @@ inherit
 
 	SHARED_TYPES
 
+	EPA_SHARED_EQUALITY_TESTERS
+
 create
 	make
 
@@ -393,7 +395,7 @@ feature{NONE} -- Implementation
 			l_new_var_name: STRING
 			l_internal: like internal
 			l_value: EPA_EXPRESSION_VALUE
-			l_equations: HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_AST_EXPRESSION]
+			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
 		do
 			l_context := context
 			l_internal := internal
@@ -408,7 +410,7 @@ feature{NONE} -- Implementation
 
 			from
 				create l_equations.make (l_list.count + 1)
-				l_equations.compare_objects
+				l_equations.set_key_equality_tester (expression_equality_tester)
 				l_list.start
 			until
 				l_list.after
@@ -460,7 +462,7 @@ feature{NONE} -- Implementation
 
 						-- Store the <expr, value> pair
 						if l_valid_exp and then not l_equations.has (l_expr) then
-							l_equations.put (l_value, l_expr)
+							l_equations.force_last (l_value, l_expr)
 						end
 					end
 				end
@@ -468,7 +470,7 @@ feature{NONE} -- Implementation
 				l_list.forth
 			end
 
-			create Result.make_from_expression_value (l_equations, class_, feature_)
+			create Result.make_from_expression_value_pairs (l_equations, class_, feature_)
 		end
 
 	test_case_from_string (a_string: STRING): AUT_CALL_BASED_REQUEST
@@ -518,7 +520,7 @@ feature{NONE} -- Implementation
 
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

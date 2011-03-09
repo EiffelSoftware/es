@@ -59,7 +59,7 @@ create
 	make,
 	make_chaos,
 	make_from_object_state,
-	make_from_expression_value,
+	make_from_expression_value_pairs,
 	make_from_state,
 	make_from_string
 
@@ -95,20 +95,24 @@ feature{NONE} -- Initialization
 			end
 		end
 
-	make_from_expression_value (a_exp_val: HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_AST_EXPRESSION]; a_class: like class_; a_feature: like feature_)
+	make_from_expression_value_pairs (a_exp_val: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]; a_class: like class_; a_feature: like feature_)
 			-- Initialize a new state from a list of expression-value pairs
 		require
 			a_class_attached: a_class /= Void
 		local
 		    l_equation: EPA_EQUATION
+		    l_cursor: DS_HASH_TABLE_CURSOR [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
 		do
 		    make (a_exp_val.count, a_class, a_feature)
-		    from a_exp_val.start
-		    until a_exp_val.after
+		    from
+		    	l_cursor := a_exp_val.new_cursor
+		    	l_cursor.start
+		    until
+		    	l_cursor.after
 		    loop
-		        create l_equation.make (a_exp_val.key_for_iteration, a_exp_val.item_for_iteration)
+		        create l_equation.make (l_cursor.key, l_cursor.item)
 		        force_last (l_equation)
-		        a_exp_val.forth
+		    	l_cursor.forth
 		    end
 		end
 
