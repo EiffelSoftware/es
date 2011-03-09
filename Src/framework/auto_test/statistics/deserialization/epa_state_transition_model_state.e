@@ -13,7 +13,7 @@ inherit
 		rename
 			make as make_epa,
 			make_from_object_state as make_epa_from_object_state,
-			make_from_expression_value as make_epa_from_expression_value,
+			make_from_expression_value_pairs as make_epa_from_expression_value,
 			make_from_string as make_epa_from_string
 		redefine
 			key_to_hash
@@ -100,7 +100,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
