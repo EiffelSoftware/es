@@ -23,60 +23,57 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_variable: like variable; a_queryable: like queryable)
-			-- Initialize `variable' with `a_variable' and
-			-- `queryable' with `a_queryable'.
+	make (a_variable: like variable)
+			-- Initialize `variable' with `a_variable'.
 		do
 			variable := a_variable
-			queryable := a_queryable
-			hash_code := variable.hash_code
+			hash_code := text_from_ast (variable).hash_code
 		end
 
-	make_with_position (a_variable: like variable;  a_position: like position; a_queryable: like queryable)
-			-- Initialize `variable' with `a_variable', `position' with `a_position' and
-			-- `queryable' with `a_queryable'.
+	make_with_position (a_variable: like variable;  a_position: like position)
+			-- Initialize `variable' with `a_variable', `position' with `a_position'.
 		do
-			make (a_variable, a_queryable)
+			make (a_variable)
 			position := a_position
 		end
 
-	make_as_target (a_variable: like variable; a_queryable: SEM_FEATURE_CALL_TRANSITION)
+	make_as_target (a_variable: like variable)
 			-- Initialize Current with `a_variable', which is supposed to be the target
 			-- operand of a transition.
 		do
 			create position.make_as_target
-			make (a_variable, a_queryable)
+			make (a_variable)
 		end
 
-	make_as_argument (a_variable: like variable; a_arg_position: INTEGER; a_queryable: SEM_FEATURE_CALL_TRANSITION)
+	make_as_argument (a_variable: like variable; a_arg_position: INTEGER)
 			-- Initialize Current with `a_variable', and `a_variable' is supposed to be the `a_arg_position'-th
 			-- argument of a transition.
 		require
 			a_arg_position_positive: a_arg_position > 0
 		do
 			create position.make_as_argument (a_arg_position)
-			make (a_variable, a_queryable)
+			make (a_variable)
 		end
 
-	make_as_some_argument (a_variable: like variable; a_queryable: SEM_FEATURE_CALL_TRANSITION)
+	make_as_some_argument (a_variable: like variable)
 			-- Initialize Current with `a_variable', and `a_variable' is supposed to be an
 			-- argument of a transition, that is to say, the exact position of the argument is unspecified.
 		do
 			create position.make_as_unspecified_argument
-			make (a_variable, a_queryable)
+			make (a_variable)
 		end
 
-	make_as_operand (a_variable: like variable; a_queryable: SEM_FEATURE_CALL_TRANSITION)
+	make_as_operand (a_variable: like variable)
 			-- Initialize Current with `a_variable', and `a_variable' is supposed to be an operand of a transition.
 			-- That is to say, the variable can be either the target or an argument.
 		do
 			create position.make_as_unspecified_operand
-			make (a_variable, a_queryable)
+			make (a_variable)
 		end
 
 feature -- Access
 
-	variable: EPA_EXPRESSION
+	variable: EXPR_AS
 			-- Variable wrapped in Current term
 
 	position: detachable SEM_TRANSITION_VARIABLE_POSITION
@@ -90,13 +87,20 @@ feature -- Access
 			-- the expression must evaluates to boolean type); or an expression describing
 			-- the information to return.
 		do
-			Result := variable.ast
+			Result := variable
 		end
 
-	type: TYPE_A
-			-- Type of `entity'
+	type: detachable TYPE_A
+			-- Type of `variable'
+			-- If not Void, only variables with types conforming to
+			-- `type' will be matched in a query.
+
+	type_name: STRING
+			-- Name of `type'
+		require
+			type_attached: type /= Void
 		do
-			Result := variable.type
+			Result := output_type_name (type.name)
 		end
 
 	hash_code: INTEGER
@@ -107,7 +111,7 @@ feature -- Access
 		do
 			create Result.make (128)
 			Result.append (once "Variable: ")
-			Result.append (variable.text)
+			Result.append (text_from_ast (variable))
 			Result.append_character (',')
 			Result.append_character (' ')
 			if position /= Void then
@@ -156,6 +160,16 @@ feature -- Status report
 			-- Is `position' information specified?
 		do
 			Result := position /= Void
+		end
+
+feature -- Setting
+
+	set_type (a_type: like type)
+			-- Set `type' with `a_type'.
+		do
+			type := a_type
+		ensure
+			type_set: type = a_type
 		end
 
 feature -- Process

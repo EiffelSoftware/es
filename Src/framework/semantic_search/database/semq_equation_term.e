@@ -23,18 +23,21 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_equation: like equation; a_queryable: like queryable)
-			-- Initialize `equation' with `a_equation' and `queryable' with `a_queryable'.
+	make (a_expression: like expression; a_value: like value)
+			-- Initialize `expression' with `a_expression' and `value' with `a_value'.
 		do
-			equation := a_equation
-			queryable := a_queryable
-			hash_code := equation.hash_code
+			expression := a_expression
+			value := a_value
+			hash_code := text_from_ast (expression).hash_code
 		end
 
 feature -- Access
 
-	equation: EPA_EQUATION
-			-- Equation inside Current term
+	expression: EXPR_AS
+			-- expression of the equation (the left hand side of the equation)
+
+	value: EXPR_AS
+			-- Value of the equation (the right hand side of the equation)
 
 	entity: EXPR_AS
 			-- Entity inside Current term
@@ -42,13 +45,13 @@ feature -- Access
 			-- the expression must evaluates to boolean type); or an expression describing
 			-- the information to return.
 		do
-			Result := equation.expression.ast
+			Result := expression
 		end
 
 	type: TYPE_A
 			-- Type of `entity'
+			-- Not used for the moment.
 		do
-			Result := equation.expression.type
 		end
 
 	hash_code: INTEGER
@@ -65,7 +68,9 @@ feature -- Access
 			elseif is_property then
 				Result.append (once "Property: ")
 			end
-			Result.append (equation.text)
+			Result.append (text_from_ast (expression))
+			Result.append (once " = ")
+			Result.append (text_from_ast (value))
 			Result.append_character (',')
 			Result.append_character (' ')
 			if is_searched then

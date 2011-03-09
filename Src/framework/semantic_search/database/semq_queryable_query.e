@@ -165,7 +165,4 @@ feature{NONE} -- SQL processing only
 			end
 		end
 
-invariant
-	same_queryable: across terms as l_terms all l_terms.item.queryable = queryable end
-
 end

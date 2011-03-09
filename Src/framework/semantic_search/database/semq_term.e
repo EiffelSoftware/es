@@ -22,9 +22,6 @@ inherit
 
 feature -- Access
 
-	queryable: SEM_QUERYABLE
-			-- Queryable whose property Current term is describing
-
 	entity: EXPR_AS
 			-- Entity inside Current term
 			-- This can be an expression described a searched criterion (in this case,
@@ -204,8 +201,5 @@ feature -- Process
 			-- Visit Current using `a_visitor'.
 		deferred
 		end
-
-invariant
-	queryable_attached: queryable /= Void
-
+		
 end

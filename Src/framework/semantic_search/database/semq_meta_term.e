@@ -21,21 +21,18 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_entity: like entity; a_type: like type; a_queryable: like queryable)
-			-- Initialize `entity' with `a_entity', `type' with `a_type' and
-			-- `queryable' with `a_queryable'.
+	make (a_entity: like entity; a_type: like type)
+			-- Initialize `entity' with `a_entity', `type' with `a_type'.
 		do
 			entity := a_entity
 			type := a_type
-			queryable := a_queryable
 			hash_code := text_from_ast (a_entity).hash_code
 		end
 
-	make_with_string (a_entity: STRING; a_type: like type; a_queryable: like queryable)
-			-- Initialize `entity' with `a_entity', `type' with `a_type' and
-			-- `queryable' with `a_queryable'.
+	make_with_string (a_entity: STRING; a_type: like type)
+			-- Initialize `entity' with `a_entity', `type' with `a_type'.
 		do
-			make (ast_from_expression_text (a_entity), a_type, a_queryable)
+			make (ast_from_expression_text (a_entity), a_type)
 		end
 
 feature -- Access

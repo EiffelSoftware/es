@@ -14,6 +14,8 @@ inherit
 
 	IR_TERM_OCCURRENCE
 
+	EPA_UTILITY
+
 feature -- Access
 
 	last_terms: LINKED_LIST [SEMQ_TERM]
@@ -55,9 +57,9 @@ feature{NONE} -- Process
 				l_vars.after
 			loop
 				if a_call.interface_variable_positions.has (l_vars.item) then
-					create l_variable_term.make_with_position (l_vars.item, a_call.interface_variable_positions.item (l_vars.item), a_call)
+					create l_variable_term.make_with_position (l_vars.item.ast, a_call.interface_variable_positions.item (l_vars.item))
 				else
-					create l_variable_term.make (l_vars.item, a_call)
+					create l_variable_term.make (l_vars.item.ast)
 				end
 				l_terms.extend (l_variable_term)
 				l_vars.forth
@@ -70,7 +72,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (l_contracts.item, a_call)
+				create l_contract_term.make (l_contracts.item.expression.ast, ast_from_expression_text (l_contracts.item.value.text))
 				l_contract_term.set_is_precondition (True)
 				l_contract_term.set_is_postcondition (False)
 				l_terms.extend (l_contract_term)
@@ -84,7 +86,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (l_contracts.item, a_call)
+				create l_contract_term.make (l_contracts.item.expression.ast, ast_from_expression_text (l_contracts.item.value.text))
 				l_contract_term.set_is_precondition (True)
 				l_contract_term.set_is_human_written (True)
 				l_terms.extend (l_contract_term)
@@ -98,7 +100,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (l_contracts.item, a_call)
+				create l_contract_term.make (l_contracts.item.expression.ast, ast_from_expression_text (l_contracts.item.value.text))
 				l_contract_term.set_is_postcondition (True)
 				l_terms.extend (l_contract_term)
 				l_contracts.forth
@@ -111,7 +113,7 @@ feature{NONE} -- Process
 			until
 				l_contracts.after
 			loop
-				create l_contract_term.make (l_contracts.item, a_call)
+				create l_contract_term.make (l_contracts.item.expression.ast, ast_from_expression_text (l_contracts.item.value.text))
 				l_contract_term.set_is_postcondition (True)
 				l_contract_term.set_is_human_written (True)
 				l_terms.extend (l_contract_term)
@@ -136,7 +138,7 @@ feature{NONE} -- Process
 			until
 				l_vars.after
 			loop
-				create l_variable_term.make (l_vars.item, a_objects)
+				create l_variable_term.make (l_vars.item.ast)
 				l_terms.extend (l_variable_term)
 				l_vars.forth
 			end
@@ -148,7 +150,7 @@ feature{NONE} -- Process
 			until
 				l_properties.after
 			loop
-				create l_property_term.make (l_properties.item, a_objects)
+				create l_property_term.make (l_properties.item.expression.ast, ast_from_expression_text (l_properties.item.value.text))
 				l_terms.extend (l_property_term)
 				l_properties.forth
 			end

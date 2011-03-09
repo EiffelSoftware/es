@@ -43,9 +43,9 @@ feature -- Basic operations
 				end
 			end
 			if a_config.queryable.is_transition then
-				create l_type_term.make_with_string (document_type_field + " = " + transition_field_value, boolean_type, a_config.queryable)
+				create l_type_term.make_with_string (document_type_field + " = " + transition_field_value, boolean_type)
 			else
-				create l_type_term.make_with_string (document_type_field + " = " + object_field_value, boolean_type, a_config.queryable)
+				create l_type_term.make_with_string (document_type_field + " = " + object_field_value, boolean_type)
 			end
 			l_terms.extend (l_type_term)
 		end
