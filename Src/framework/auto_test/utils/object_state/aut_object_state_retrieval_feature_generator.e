@@ -27,17 +27,6 @@ feature -- Access
 	config: detachable AUT_OBJECT_STATE_CONFIG
 			-- Configuration for object state retrieval
 
-feature -- Status report
-
-	is_for_feature: BOOLEAN
-			-- Is `feature_text' for acquiring states for operands in a feature?
-
-	is_for_objects: BOOLEAN
-			-- Is `feature_text' for acquiring states for arbitrary objects?
-		do
-			Result := not is_for_feature
-		end
-
 feature -- Setting
 
 	set_config (a_config: like config)
@@ -62,7 +51,6 @@ feature -- Basic operations
 			l_finder: AUT_OBJECT_STATE_EXPRESSION_FINDER
 			l_operands: like operands_of_feature
 		do
-			is_for_feature := True
 				-- Search for expressions that are included in state model.
 			create l_finder.make
 			l_finder.search_for_feature (a_context_class, a_feature, a_prestate, a_is_creation, interpreter_root_class, a_target_type)
@@ -91,7 +79,6 @@ feature -- Basic operations
 			l_cursor: CURSOR
 			l_operand_map: like operand_map
 		do
-			is_for_feature := False
 			create l_variables.make (a_objects.count)
 			l_variables.compare_objects
 			l_cursor := a_objects.cursor
@@ -129,6 +116,29 @@ feature -- Basic operations
 			end
 
 				-- Generate body for the state retrieval feature.
+			generate_feature_text
+		end
+
+	generate_for_expressions (a_expressions: LINKED_LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I; a_prestate: BOOLEAN; a_is_creation: BOOLEAN; a_target_type: TYPE_A)
+			-- Generate feature to evaluate variable values and values of single-rooted expressions from `a_expressions'
+			-- in the context of `a_feature' from `a_context_class'. Make result available in `feature_text'.
+			-- `a_prestate' indicates whether the found expressions are to be evaluated before
+			-- the execution of the test case. This is important because expressions such as "Result"
+			-- does not make sense to be evaluated before the test case execution.
+			-- `a_is_creation' indicates if `a_feature' is used as a creation procedure.
+			-- `a_target_type' indicates the type of the target of `a_feature'.
+		local
+			l_finder: AUT_OBJECT_STATE_EXPRESSION_FINDER
+		do
+				-- Collect expressions to evalute.
+			create l_finder.make
+			l_finder.search_for_expressions (a_context_class, a_feature, a_is_creation, a_expressions, interpreter_root_class, a_target_type)
+			variables := l_finder.variables
+			attributes_by_target := l_finder.attributes_by_target
+			functions_by_target := l_finder.functions_by_target
+			operand_map := l_finder.operand_map
+
+				-- Generate body for the expression evaluation feature.
 			generate_feature_text
 		end
 
@@ -199,6 +209,7 @@ feature{NONE} -- Implementation
 			l_feat_name: STRING
 			l_target_type: TYPE_A
 			l_argument_type: TYPE_A
+			l_feat: FEATURE_I
 		do
 			l_text := feature_text
 			l_variables := variables
@@ -295,25 +306,29 @@ feature{NONE} -- Implementation
 								l_feat_name.left_adjust
 								l_feat_name.right_adjust
 								l_target_type := l_variables.item (l_var_name)
-								l_argument_type := l_target_type.associated_class.feature_named (l_feat_name).arguments.first.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+								l_feat := l_target_type.associated_class.feature_named (l_feat_name)
+									-- We ignore features with more than one argument.
+								if l_feat /= Void and then l_feat.argument_count = 1 then
+									l_argument_type := l_feat.arguments.first.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
 
-									-- Generate different query recordings depending on the type of the argument.
-									-- This is needed (at least for the moment) because otherwise, the agent evaluation
-									-- will fail due to `valid_operands'. 21.5.2010 Jasonw
-								if l_argument_type.is_integer then
-									l_text.append (once "record_integer_function_value (%"")
-								elseif l_argument_type.is_boolean then
-									l_text.append (once "record_boolean_function_value (%"")
-								else
-									l_text.append (once "record_argumented_function_value (%"")
+										-- Generate different query recordings depending on the type of the argument.
+										-- This is needed (at least for the moment) because otherwise, the agent evaluation
+										-- will fail due to `valid_operands'. 21.5.2010 Jasonw
+									if l_argument_type.is_integer then
+										l_text.append (once "record_integer_function_value (%"")
+									elseif l_argument_type.is_boolean then
+										l_text.append (once "record_boolean_function_value (%"")
+									else
+										l_text.append (once "record_argumented_function_value (%"")
+									end
+									l_rparan_index := l_func_text.index_of (')', l_lparan_index + 1)
+									l_text.append (l_expr_text)
+									l_text.append (once "%", agent ")
+									l_text.append (l_func_text.substring (1, l_lparan_index - 1))
+									l_text.append (once ", ")
+									l_text.append (l_func_text.substring (l_lparan_index + 1, l_rparan_index - 1))
+									l_text.append (once ")%N")
 								end
-								l_rparan_index := l_func_text.index_of (')', l_lparan_index + 1)
-								l_text.append (l_expr_text)
-								l_text.append (once "%", agent ")
-								l_text.append (l_func_text.substring (1, l_lparan_index - 1))
-								l_text.append (once ", ")
-								l_text.append (l_func_text.substring (l_lparan_index + 1, l_rparan_index - 1))
-								l_text.append (once ")%N")
 							else
 									-- This is an argument-less query.
 								l_text.append (once "record_function_value (%"")
@@ -452,7 +467,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

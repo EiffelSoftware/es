@@ -294,6 +294,8 @@ feature{NONE} -- Invariant-violating invariants checking
 			l_log_manager: ELOG_LOG_MANAGER
 			l_log_file_name: FILE_NAME
 			l_result_log: ELOG_LOG_MANAGER
+			l_gen: AUT_OBJECT_STATE_RETRIEVAL_FEATURE_GENERATOR
+			l_inv: AUT_STATE_INVARIANT
 		do
 			create l_log_file_name.make_from_string (configuration.output_dirname)
 			l_log_file_name.set_file_name ("queries.txt")
@@ -317,7 +319,17 @@ feature{NONE} -- Invariant-violating invariants checking
 			create l_retriever
 			l_retriever.set_log_manager (l_log_manager)
 			across a_invariants as l_invs loop
+				l_inv := l_invs.item
 				if not l_processed.has (l_invs.item.id) then
+					create l_gen
+					l_gen.generate_for_expressions (
+						invariant_by_feature (l_inv.context_class, l_inv.feature_),
+						l_inv.context_class,
+						l_inv.feature_,
+						True,
+						False,
+						l_inv.context_class.constraint_actual_type)
+					l_log_manager.put_line ("%N%N" + l_gen.feature_text + "%N%N")
 					l_processed.force_last (l_invs.item.id)
 						-- We first check if the invariant is a tautology.
 					l_tautologies := tautology_predicates (
@@ -343,6 +355,28 @@ feature{NONE} -- Invariant-violating invariants checking
 							l_result_log.put_line ("%T[Objects]")
 						end
 					end
+				end
+			end
+		end
+
+	invariant_by_feature (a_class: CLASS_C; a_feature: FEATURE_I): LINKED_LIST [EPA_EXPRESSION]
+			-- Invariants by `a_feature' in `a_class', the data
+			-- comes from `prestate_invariants_by_feature'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_STATE_INVARIANT]
+			l_feature: STRING
+		do
+			create Result.make
+			l_feature := class_name_dot_feature_name (a_class, a_feature)
+			if prestate_invariants_by_feature.has (l_feature) then
+				from
+					l_cursor := prestate_invariants_by_feature.item (l_feature).new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					Result.extend (l_cursor.item.expression)
+					l_cursor.forth
 				end
 			end
 		end

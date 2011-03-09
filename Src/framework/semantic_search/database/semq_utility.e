@@ -89,4 +89,64 @@ feature -- Basic operations
 			create Result.make (l_context, l_variables)
 		end
 
+	classes_from_database (a_object: BOOLEAN; a_connection: MYSQL_CLIENT): LINKED_LIST [STRING]
+			-- Names of classes appearing in queryables inside the semantic search database `a_connection'
+			-- if `a_object' is True, search for queryables of object type, otherwise search
+			-- for transition type.
+		local
+			l_select: STRING
+			l_result: MYSQL_RESULT
+		do
+			create Result.make
+			create l_select.make (56)
+			if a_object then
+				l_select.append ("SELECT class FROM Queryables WHERE qry_kind = 1 AND class IS NOT NULL GROUP BY class")
+			else
+				l_select.append ("SELECT class FROM Queryables WHERE qry_kind = 2 AND class IS NOT NULL GROUP BY class")
+			end
+			a_connection.execute_query (l_select)
+			if a_connection.last_error_number = 0 then
+				l_result := a_connection.last_result
+				from
+					l_result.start
+				until
+					l_result.after
+				loop
+					Result.extend (l_result.at (1))
+					l_result.forth
+				end
+				l_result.dispose
+			end
+		end
+
+	features_from_database (a_class: CLASS_C; a_object: BOOLEAN; a_connection: MYSQL_CLIENT): LINKED_LIST [STRING]
+			-- Names of the features from `a_class' in the semantic search database through `a_connection'.
+			-- if `a_object' is True, search for queryables of object type, otherwise search
+			-- for transition type.
+		local
+			l_select: STRING
+			l_result: MYSQL_RESULT
+		do
+			create Result.make
+			create l_select.make (64)
+			if a_object then
+				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 1 AND feature IS NOT NULL AND class '" + a_class.name_in_upper + "' GROUP BY class")
+			else
+				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 2 AND feature IS NOT NULL AND class '" + a_class.name_in_upper + "' GROUP BY class")
+			end
+			a_connection.execute_query (l_select)
+			if a_connection.last_error_number = 0 then
+				l_result := a_connection.last_result
+				from
+					l_result.start
+				until
+					l_result.after
+				loop
+					Result.extend (l_result.at (1))
+					l_result.forth
+				end
+				l_result.dispose
+			end
+		end
+
 end

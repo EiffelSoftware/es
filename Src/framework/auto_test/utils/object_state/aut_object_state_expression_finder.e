@@ -12,6 +12,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_STRING_UTILITY
+
 create
 	make
 
@@ -87,6 +89,78 @@ feature -- Basic operations
 
 				-- Analyze result from search.
 			analyze_result (l_finder)
+		end
+
+	search_for_expressions (a_context_class: CLASS_C; a_feature: FEATURE_I; a_creation: BOOLEAN; a_expressions: LINKED_LIST [EPA_EXPRESSION]; a_root_class: CLASS_C; a_target_type: TYPE_A)
+			-- Search for single rooted expression from `a_expressions' in the context of `a_context_class' and `a_feature'.
+			-- Make result available in `variable_expressions', `functions_by_target' and `attributes_by_target'.
+			-- `a_expressions' are in the form of "Current.has (v)".
+			-- `a_creation' indicates if `a_feature' is tested as a creation procedure.
+			-- `a_root_class' should be the root class of the interpreter.
+			-- `a_target_type' indicates the type of the target of `a_feature'.
+		local
+			l_operands: like variables_from_feature_signature
+			l_mentioned_opds: HASH_TABLE [EPA_EXPRESSION, STRING] -- Keys are operand names, values are operend expressions
+			l_curly_expr: STRING
+			l_opd_map: DS_HASH_TABLE [STRING, INTEGER]
+			l_opd_expr: EPA_AST_EXPRESSION
+			l_single_rooted_exprs: like single_rooted_expressions
+			l_cursor: DS_HASH_TABLE_CURSOR [TUPLE [variable_indexes: DS_HASH_SET [INTEGER_32]; canonical_form: STRING_8], EPA_EXPRESSION]
+			l_opd_indexes: DS_HASH_SET [INTEGER]
+			l_subexpr: EPA_EXPRESSION
+			l_types: HASH_TABLE [TYPE_A, STRING_8]
+			l_opd_name: STRING
+			l_opd_index: INTEGER
+			l_opd_type: TYPE_A
+		do
+			l_opd_map := operands_with_feature (a_feature)
+			create variable_expressions.make (10)
+			variable_expressions.set_equality_tester (expression_equality_tester)
+			create functions_by_target.make (10)
+			functions_by_target.compare_objects
+			create attributes_by_target.make (10)
+			attributes_by_target.compare_objects
+			create variables.make (10)
+			variables.compare_objects
+			create operand_map.make (10)
+
+
+			l_operands := variables_from_feature_signature (a_context_class, a_feature, a_root_class, True, a_creation, a_target_type)
+			l_types := l_operands.variable_types
+			create l_mentioned_opds.make (l_operands.count)
+			l_operands.compare_objects
+
+				-- Iterate through all expressions in `a_expressions' and
+				-- collect mentioned operands and single-rooted expressions.
+			across a_expressions as l_exprs loop
+				l_curly_expr := expression_with_curly_braced_operands (a_context_class, a_feature, l_exprs.item)
+				across curly_braced_variables_from_expression (l_curly_expr) as l_curly_opds loop
+						-- Collect mentioned operand.
+					l_opd_name := l_opd_map.item (l_curly_opds.item)
+					l_opd_index := l_curly_opds.item
+					l_opd_type := l_types.item (l_operands.operand_map.item (l_opd_index))
+					create l_opd_expr.make_with_type (a_context_class, a_feature, ast_from_expression_text (l_opd_name), a_context_class, l_opd_type)
+					l_mentioned_opds.force (l_opd_expr, l_curly_opds.key)
+					variable_expressions.force_last (l_opd_expr)
+					variables.force (l_opd_type, l_operands.operand_map.item (l_opd_index))
+					operand_map.force (l_operands.operand_map.item (l_opd_index), l_opd_index)
+				end
+
+					-- Collect single-rooted expressions, used for
+					-- calculating `functions_by_target' and `attributes_by_target'.				
+				from
+					l_single_rooted_exprs := single_rooted_expressions (l_curly_expr, a_context_class, a_feature)
+					l_cursor := l_single_rooted_exprs.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_opd_indexes := l_cursor.item.variable_indexes
+					l_subexpr := l_cursor.key
+					analyze_expression (l_subexpr, a_context_class, a_feature, l_types)
+					l_cursor.forth
+				end
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -233,8 +307,59 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	analyze_expression (a_expression: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_operand_types: HASH_TABLE [TYPE_A, STRING])
+			-- Analyze `a_expression' in the context of `a_feature' from `a_context_class'.
+			-- If `a_expression' is an attribute access, put it into `attributes_by_target'.
+			-- If `a_epxression' is an function access, put it into `functions_by_target'.
+			-- `a_operand_types' is a hash-table, keys are opernad names such as "Current", "v", values
+			-- are their resolved types.
+		local
+			l_text: STRING
+			l_index1: INTEGER
+			l_target_name: STRING
+			l_feat_name: STRING
+			l_target_type: TYPE_A
+			l_feat: FEATURE_I
+			l_set: DS_HASH_SET [EPA_EXPRESSION]
+			l_container: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], STRING]
+		do
+
+			l_text := a_expression.text.twin
+			l_index1 := l_text.index_of ('.', 1)
+			if l_index1 > 0 then
+				l_target_name := l_text.substring (1, l_index1 - 1)
+				if l_text.has ('(') then
+					l_feat_name := l_text.substring (l_index1 + 1, l_text.index_of ('(', l_index1 + 1) - 1)
+					l_feat_name.left_adjust
+					l_feat_name.right_adjust
+				else
+					l_feat_name := l_text.substring (l_index1 + 1, l_text.count)
+				end
+				l_target_type := a_operand_types.item (l_target_name)
+				if attached {CLASS_C} l_target_type.associated_class as l_class then
+					l_feat := l_class.feature_named (l_feat_name)
+					if l_feat /= Void and then l_feat.has_return_value then
+						if l_feat.is_attribute or l_feat.is_constant then
+							l_container := attributes_by_target
+						else
+							l_container := functions_by_target
+						end
+						l_container.search (l_target_name)
+						if l_container.found then
+							l_set := l_container.found_item
+						else
+							create l_set.make (10)
+							l_set.set_equality_tester (expression_equality_tester)
+							l_container.force (l_set, l_target_name)
+						end
+						l_set.force_last (a_expression)
+					end
+				end
+			end
+		end
+
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

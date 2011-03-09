@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	SEM_EXPRESSION_EVALUATOR
+	EPA_EXPRESSION_EVALUATOR
 
 inherit
 	AST_ITERATOR

@@ -9,9 +9,6 @@ class
 
 inherit
 	AUT_OBJECT_STATE_REQUEST
-		redefine
-			is_for_feature
-		end
 
 create
 	make_with_request
@@ -123,30 +120,8 @@ feature -- Access
 			end
 
 				-- Create operand index to varaible index map.
-			l_operand_map := operand_map
-			create l_map.make (l_operand_map.count)
-			l_map.compare_objects
-			from
-				l_operand_map.start
-			until
-				l_operand_map.after
-			loop
-				l_obj_index := l_operand_map.item_for_iteration.out
-				l_map.put (l_obj_index, anonymous_variable_name (l_operand_map.key_for_iteration))
-				l_map.put (once "v_" + l_obj_index, double_square_surrounded_integer (l_operand_map.key_for_iteration))
-				l_operand_map.forth
-			end
-
-				-- Change `l_text' to mention real object ids.
-			from
-				l_map.start
-			until
-				l_map.after
-			loop
-				l_pre_text.replace_substring_all (l_map.key_for_iteration, l_map.item_for_iteration)
-				l_post_text.replace_substring_all (l_map.key_for_iteration, l_map.item_for_iteration)
-				l_map.forth
-			end
+			l_pre_text := text_with_actual_objects (l_pre_text, operand_map)
+			l_post_text := text_with_actual_objects (l_post_text, operand_map)
 
 				-- Compile text into byte code.
 			l_class ?= interpreter_root_class
@@ -157,9 +132,6 @@ feature -- Access
 
 feature -- Status report
 
-	is_for_feature: BOOLEAN = True
-			-- Is the state to be retrieved for operands of a feature?
-
 	is_creation: BOOLEAN
 			-- Is `feature_' used as a creation procedure?
 
@@ -167,7 +139,7 @@ feature -- Status report
 			-- Is the state to be retrieved before the test case execution?
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

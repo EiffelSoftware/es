@@ -32,7 +32,6 @@ feature -- Access
 			l_empty_set: EPA_HASH_SET [EPA_EXPRESSION]
 		do
 			find_relevant_expressions (a_context)
-
 			if
 				a_should_merge
 			then

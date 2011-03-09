@@ -1083,7 +1083,7 @@ feature{NONE} -- Implementation
 			create {EPA_AST_EXPRESSION} Result.make_with_text (a_call.context.class_, a_call.context.feature_, l_text, a_call.context.class_)
 		end
 
-	expression_evaluator: SEM_EXPRESSION_EVALUATOR
+	expression_evaluator: EPA_EXPRESSION_EVALUATOR
 			-- Expression evaluator
 
 	extra_expressions: DS_HASH_SET [EPA_EXPRESSION]

@@ -1,2 +1,2 @@
-This diectory contains some example qureies we wrote for the semantic search system.
+This directory contains some example queries we wrote for the semantic search system.
 

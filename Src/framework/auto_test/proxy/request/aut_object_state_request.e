@@ -40,21 +40,6 @@ feature -- Access
 	config: detachable AUT_OBJECT_STATE_CONFIG
 			-- Configuration for object state retrieval
 
-feature -- Status report
-
-	is_for_feature: BOOLEAN
-			-- Is the state to be retrieved for operands of a feature?
-		do
-		end
-
-	is_for_objects: BOOLEAN
-			-- Is the state to be retrieved for an arbitrary set of objects?
-		do
-			Result := not is_for_feature
-		ensure
-			good_result: Result = not is_for_feature
-		end
-
 feature -- Processing
 
 	process (a_processor: AUT_REQUEST_PROCESSOR)
@@ -63,8 +48,37 @@ feature -- Processing
 			a_processor.process_object_state_request (Current)
 		end
 
+feature{NONE} -- Implementation
+
+	text_with_actual_objects (a_text: STRING; a_operand_map: HASH_TABLE [INTEGER, INTEGER]): STRING
+			-- A piece of text from `a_text' where all place holders are replaced with actual
+			-- variables in the object pool, as defined by `a_operand_mape'.
+			-- `a_operand_map' is a mapping from opreand index to object index in the object pool.
+			-- Key is 0-based operand index.
+			-- Value is object id (used in the object pool) for that operand.
+		local
+			l_map: HASH_TABLE [STRING, STRING]
+			l_obj_index: STRING
+		do
+			create Result.make_from_string (a_text)
+
+				-- Create operand index to varaible index map.
+			create l_map.make (a_operand_map.count)
+			l_map.compare_objects
+			across a_operand_map as l_operand_map loop
+				l_obj_index := l_operand_map.item.out
+				l_map.put (l_obj_index, anonymous_variable_name (l_operand_map.key))
+				l_map.put ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_obj_index, double_square_surrounded_integer (l_operand_map.key))
+			end
+
+				-- Change `l_text' to mention real object ids.
+			across l_map as l_maps loop
+				Result.replace_substring_all (l_maps.key, l_maps.item)
+			end
+		end
+
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
