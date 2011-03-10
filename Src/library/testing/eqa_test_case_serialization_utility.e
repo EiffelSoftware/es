@@ -48,11 +48,12 @@ feature -- Access
 --	        serialize_not_void: Result /= Void
 --	    end
 
-	deserialized_object (a_string: STRING): detachable ANY is
+	deserialized_object (a_string: STRING): detachable ANY
 			-- Object deserialized from `a_string'
 			-- Fixme: The STREAM class is used because for the moment,
 			-- the SED related classes do not support expanded types.
 			-- Once this is fixed, use the following commented `deserialize' feature. Jasonw 2009.10.12
+			-- Note: `a_string' should only contain data.
 		local
 			l_stream: STREAM
 			l_mptr: MANAGED_POINTER
@@ -76,7 +77,37 @@ feature -- Access
 			l_stream.close
 		end
 
-	deserialized_object_through_file (a_file_name: STRING): detachable ANY is
+	deserialized_object_from_array (a_array: ARRAY [NATURAL_8]): detachable ANY
+			-- Object deserialized from `a_array'
+		local
+			l_stream: STREAM
+			l_mptr: MANAGED_POINTER
+			l_count: INTEGER
+			i: INTEGER
+			j: INTEGER
+			l_upper: INTEGER
+		do
+			l_count := a_array.count
+			create l_stream.make_with_size (l_count)
+			create l_mptr.share_from_pointer (l_stream.item, l_count)
+
+			from
+				j := 0
+				i := a_array.lower
+				l_upper := a_array.upper
+			until
+				i > l_upper
+			loop
+				l_mptr.put_natural_8 (a_array.item (i), j)
+				i := i + 1
+				j := j + 1
+			end
+
+			Result := l_stream.retrieved
+			l_stream.close
+		end
+
+	deserialized_object_through_file (a_file_name: STRING): detachable ANY
 			-- Object deserialized from `a_string'
 			-- FIXME: This is a walkaround for the problem that the serialization through
 			-- FIXME: STREAM does not work. 31.5.2010 Jasonw			
@@ -131,7 +162,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	string_from_pointer (a_pointer: POINTER; a_size: INTEGER): STRING is
+	string_from_pointer (a_pointer: POINTER; a_size: INTEGER): STRING
 			-- String containing data stored in `a_pointer' with `a_size' bytes
 		local
 			l_cstring: C_STRING
