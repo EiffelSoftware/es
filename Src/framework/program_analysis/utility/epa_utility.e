@@ -31,20 +31,33 @@ inherit
 
 feature -- AST
 
-	text_from_ast (a_ast: AST_EIFFEL): STRING
-			-- Text from `a_ast'
+	text_from_ast (a_ast: AST_EIFFEL): like text_from_ast_with_printer
+			-- Text from `a_ast', printed via the default `ast_printer' that is configured with `ast_printer_output'.
 		require
 			a_ast_attached: a_ast /= Void
 		do
-			ast_printer_output.reset
-			ast_printer.print_ast_to_output (a_ast)
-			Result := ast_printer_output.string_representation
+			Result := text_from_ast_with_printer (a_ast, ast_printer)
+		end
+
+	text_from_ast_with_printer (a_ast: AST_EIFFEL; a_ast_printer: ETR_AST_STRUCTURE_PRINTER): STRING
+			-- Text from `a_ast', printed via `a_ast_printer' that has to be configured with a {ETR_AST_STRING_OUTPUT}.
+		require
+			a_ast_attached: a_ast /= Void
+			a_ast_printer_attached: a_ast_printer /= Void
+			a_ast_printer_has_string_output_attached: attached {ETR_AST_STRING_OUTPUT} a_ast_printer.output
+		do
+			a_ast_printer.output.reset
+			a_ast_printer.print_ast_to_output (a_ast)
+
+			if attached {ETR_AST_STRING_OUTPUT} a_ast_printer.output as l_ast_printer_output then
+				Result := l_ast_printer_output.string_representation
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 	ast_printer: ETR_AST_STRUCTURE_PRINTER
-			-- AST printer
-		local
-			l_output: ETR_AST_STRING_OUTPUT
+			-- Default AST printer
 		once
 			create Result.make_with_output (ast_printer_output)
 		end
