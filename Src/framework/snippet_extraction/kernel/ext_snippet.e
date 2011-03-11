@@ -1,5 +1,5 @@
 note
-	description: "Class that represents an extracted snippet"
+	description: "Class that represents an extracted snippet."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -45,7 +45,7 @@ feature -- Access
 			-- Keys are variable names (in lower case), values are types of those
 			-- variables.
 
-	holes: DS_HASH_TABLE [EXT_HOLE, STRING]
+	holes: DS_HASH_TABLE [EXT_ANN_HOLE, STRING]
 			-- Set of holes in current snippet
 			-- Keys are names of holes, values are the holes.
 

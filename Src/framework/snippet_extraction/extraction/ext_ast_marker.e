@@ -8,26 +8,40 @@ class
 
 inherit
 	AST_ITERATOR
-		redefine
-			process_access_feat_as,
-			process_access_id_as,
-			process_address_result_as,
-			process_create_creation_as,
-			process_result_as
-		end
+
+	REFACTORING_HELPER
 
 create
-	make_from_variable
+	make_from_variable_information
 
 feature {NONE} -- Initialization
 
-	make_from_variable (a_variable_type: TYPE_A; a_variable_name: STRING)
-			-- Initialization with variable type and name relevant for block search.
+	make_from_variable_information (a_variable_type: TYPE_A; a_variable_name: STRING; a_interface_variables: HASH_TABLE [TYPE_A, STRING])
+			-- Initialization with variable type and name.
+		require
+			attached a_variable_type
+			attached a_variable_name
+			attached a_interface_variables
+			target_variable_is_not_an_interface_variable: not a_interface_variables.has (a_variable_name)
 		do
-			create marked_ast_paths.make (20)
+			variable_type := a_variable_type
+			variable_name := a_variable_name
+			interface_variables := a_interface_variables
+
+			create annotations.make (20)
+			annotations.compare_objects
+		ensure
+			attached variable_type
+			attached variable_name
+			attached interface_variables
+			attached annotations
+			annotations_comparing_objects: annotations.object_comparison
 		end
 
 feature -- Access
+
+	annotations: HASH_TABLE [LINKED_LIST [EXT_ANNOTATION], AST_PATH]
+		-- Annotations associated to ast path nodes.
 
 feature {NONE} -- Implementation
 
@@ -37,53 +51,55 @@ feature {NONE} -- Implementation
 	variable_name: STRING
 		-- Name of the variable at which we are looking at.
 
-	marked_ast_paths: HASH_TABLE[AST_EIFFEL, AST_PATH]
-		-- Data structure mentioning all AST path strings that must not be removed.
+	interface_variables: HASH_TABLE [TYPE_A, STRING]
+		-- Interface variables are mentioned in control flow statements solely witout a feature call.
 
-	print_ast_path_prefix (l_as: AST_EIFFEL)
+	annotation_factory: EXT_ANNOTATION_FACTORY
+		once
+			create Result
+		end
+
+feature {NONE} -- Annotation
+
+	is_target_variable (a_variable_name: like variable_name): BOOLEAN
+			-- Query if `variable_name' is equal to the target variable.
+		require
+			a_variable_name_attached: a_variable_name /= Void
 		do
-			if attached l_as.path as l_path then
-				io.put_string ("[" + l_path.as_string + "]        ")
+			Result := variable_name = a_variable_name
+		end
+
+	is_interface_variable (a_variable_name: like variable_name): BOOLEAN
+			-- Query if `variable_name' is one of the interface variables.
+		require
+			a_variable_name_attached: a_variable_name /= Void
+		do
+			Result := interface_variables.has (a_variable_name)
+		end
+
+	is_variable_of_interest (a_variable_name: like variable_name): BOOLEAN
+			-- Query if `variable_name' is either the target or one of the interface variables.
+		require
+			a_variable_name_attached: a_variable_name /= Void
+		do
+			-- Result := variable_name = a_variable_name or interface_variables.has (a_variable_name)
+			Result := is_target_variable (a_variable_name) or is_interface_variable (a_variable_name)
+		end
+
+	add_annotation (location: AST_PATH; annotation: EXT_ANNOTATION)
+			-- Add an AST annotation for the given path `location'.
+		local
+			l_location_marks: LINKED_LIST [EXT_ANNOTATION]
+		do
+			if not annotations.has (location) then
+				create l_location_marks.make
+				annotations.force (l_location_marks, location)
 			else
-				io.put_string ("[UNKNOWN_AST_PATH]        ")
+				l_location_marks := annotations.at (location)
 			end
-		end
 
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			print_ast_path_prefix (l_as)
-			io.put_string ("process_access_feat_as: " + l_as.access_name_8 + "%N")
-			Precursor (l_as)
-		end
-
-	process_address_result_as (l_as: ADDRESS_RESULT_AS)
-		do
-			print_ast_path_prefix (l_as)
-			io.put_string ("process_address_result_as: " + "%N")
-			Precursor (l_as)
-		end
-
-	process_create_creation_as (l_as: CREATE_CREATION_AS)
-		do
-			print_ast_path_prefix (l_as)
-			io.put_string ("process_create_creation_as: " + l_as.target.access_name_8 + "." + l_as.call.access_name_8 + "%N")
-
-			marked_ast_paths.force (l_as, l_as.path)
-			Precursor (l_as)
-		end
-
-	process_access_id_as (l_as: ACCESS_ID_AS)
-		do
-			print_ast_path_prefix (l_as)
-			io.put_string ("process_access_id_as: " + l_as.access_name_8 + "%N")
-			Precursor (l_as)
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		do
-			print_ast_path_prefix (l_as)
-			io.put_string ("process_result_as: " + l_as.access_name_8 + "%N")
-			Precursor (l_as)
+			check annotations.has (location) and attached l_location_marks and annotations.at (location) = l_location_marks end
+			l_location_marks.force (annotation)
 		end
 
 end
