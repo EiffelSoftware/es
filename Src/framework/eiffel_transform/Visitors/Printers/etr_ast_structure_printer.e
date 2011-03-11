@@ -138,7 +138,19 @@ feature {NONE} -- Creation
 	make_with_output (a_output: like output)
 			-- Make with `a_output'
 		do
+			set_output (a_output)
+		end
+
+feature -- Configuration
+
+	set_output (a_output: like output)
+			-- Configure with `a_output'.
+		require
+			a_output_attached: a_output /= Void
+		do
 			output := a_output
+		ensure
+			a_output_attached: output /= Void
 		end
 
 feature {NONE} -- Implementation (Attributes)
