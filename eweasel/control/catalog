@@ -1815,6 +1815,7 @@ test	across-with-constrained-generic-crash	term196 tcf fail termination
 test	shared-library-with-generic-root	term197 tcf fail termination
 test	iteration-over-inline-agent		term198 tcf fail termination
 test	expanded-constrained-generic-root-crash	term199 tcf fail termination expanded generic
+test	check-instruction-invalid-code		term200 tcf pass termination check instruction validity
 
 -- Config
 
@@ -2505,6 +2506,7 @@ test	empty-attribute-body-bogus-vevi			attach079 tcf pass attached_types validit
 test	bogus-object-test						attach080 tcf pass attached_types object_test execution
 test	nonconforming-inheritance-bogus-vevi		attach081 tcf fail attached_types non-conforming
 test	repeated-inheritance-bogus-vevi			attach082 tcf fail attached_types
+test	self-initializing-attribute-gc			attach083 tcf pass attached_types void_safe attribute self_init execution
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2588,8 +2590,13 @@ test	qat-invalid-vffd-2			anchor058 tcf fail anchored_type
 test	qat-using-generic-feature-finalized	anchor059 tcf fail anchored_type
 
 -- SCOOP
-test	scoop-access-smoke			scoop001 tcf pass scoop execution
-test	scoop-argument-validity			scoop002 tcf pass scoop validity
+test	scoop-access-smoke					scoop001 tcf pass scoop execution
+test	scoop-argument-validity				scoop002 tcf pass scoop validity expanded
+test	scoop-hanging-1						scoop003 tcf pass scoop execution
+test	scoop-basic-argument-formal-nested	scoop004 tcf pass scoop execution
+test	scoop-separate-like-current			scoop005 tcf pass scoop execution
+test	scoop-result-validity				scoop006 tcf pass scoop validity expanded
+test	scoop-external-call				scoop007 tcf pass scoop execution
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

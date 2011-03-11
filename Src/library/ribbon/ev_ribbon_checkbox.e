@@ -11,6 +11,10 @@ inherit
 
 	EV_COMMAND_HANDLER_OBSERVER
 
+	EV_RIBBON_TEXTABLE
+
+	EV_RIBBON_TOOLTIPABLE
+
 feature {NONE} -- Initialization
 
 	make_with_command_list (a_list: ARRAY [NATURAL_32])
@@ -87,7 +91,20 @@ feature {EV_RIBBON} -- Command
 
 	update_property (a_command_id: NATURAL_32; a_property_key: POINTER; a_property_current_value: POINTER; a_property_new_value: POINTER): NATURAL_32
 			-- <Precursor>
+		local
+			l_key: EV_PROPERTY_KEY
 		do
+			if command_list.has (a_command_id) then
+
+				create l_key.share_from_pointer (a_property_key)
+				if l_key.is_label then
+					Result := update_property_for_text (a_command_id, a_property_key, a_property_current_value, a_property_new_value)
+				elseif l_key.is_tooltip_description or l_key.is_tooltip_title then
+					Result := update_property_for_tooltip (a_command_id, a_property_key, a_property_current_value, a_property_new_value)
+				else
+				end
+
+			end
 		end
 
 feature {NONE} -- Implementation

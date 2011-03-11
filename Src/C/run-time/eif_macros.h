@@ -1428,13 +1428,13 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTS_CF(s,f,n,t,a,r) \
 	{                                                       \
 		((call_data*)(a)) -> result = &(r);             \
-		((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+		((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
 		eif_log_call (s, f, RTS_PID(Current), a);       \
 	}
 #define RTS_CFP(s,f,n,t,a,r) \
 	{                                                       \
 		((call_data*)(a)) -> result = &(r);             \
-		((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+		((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
 		eif_log_callp (s, f, RTS_PID(Current), a);      \
 	}
 #define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), a);
@@ -1455,7 +1455,8 @@ RT_LNK void eif_exit_eiffel_code(void);
 		((call_data*)(a)) -> target = eif_protect (t);                           \
 		((call_data*)(a)) -> count = (n);                                        \
 		((call_data*)(a)) -> result = (EIF_TYPED_VALUE *) 0;                     \
-		((call_data*)(a)) -> is_synchronous = EIF_FALSE;                         \
+		((call_data*)(a)) -> sync_pid = (EIF_SCP_PID) -1;                         \
+		((call_data*)(a)) -> is_lock_passing = EIF_FALSE;						 \
 	}
 #ifdef WORKBENCH
 #	define RTS_AA(v,f,t,n,a) ((call_data*)(a)) -> argument [(n) - 1] = (v);
@@ -1463,16 +1464,22 @@ RT_LNK void eif_exit_eiffel_code(void);
 		{	\
 			((call_data*)(a)) -> argument [(n) - 1] = (v);	\
 			((call_data*)(a)) -> argument [(n) - 1].it_r = (EIF_REFERENCE) eif_protect ((v).it_r); \
-			if ( ( ((call_data*)(a)) -> is_synchronous == EIF_FALSE ) && ( !RTS_OU(Current, eif_access ( ((call_data*)(a)) -> argument [(n) - 1].it_r ) ) ) )\
-				((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+			if ( !RTS_OU(Current, eif_access ( ((call_data*)(a)) -> argument [(n) - 1].it_r ) ) )	\
+			{	\
+				((call_data*)(a)) -> is_lock_passing = EIF_TRUE; \
+				((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
+			}	\
 		}
 #else
 #	define RTS_AA(v,f,t,n,a) ((call_data*)(a)) -> argument [(n) - 1].f = (v);
 #	define RTS_AS(v,f,t,n,a) \
 		{	\
 			((call_data*)(a)) -> argument [(n) - 1].it_r = (EIF_REFERENCE) eif_protect (v); \
-			if ( ( ((call_data*)(a)) -> is_synchronous == EIF_FALSE ) && ( !RTS_OU(Current, eif_access ( ((call_data*)(a)) -> argument [(n) - 1].it_r ) ) ) )\
-				((call_data*)(a)) -> is_synchronous = EIF_TRUE; \
+			if ( !RTS_OU(Current, eif_access ( ((call_data*)(a)) -> argument [(n) - 1].it_r ) ) )	\
+			{	\
+				((call_data*)(a)) -> is_lock_passing = EIF_TRUE; \
+				((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
+			}	\
 		}
 #endif /* WORKBENCH */
 
