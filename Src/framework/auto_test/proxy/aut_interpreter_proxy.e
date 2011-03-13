@@ -77,6 +77,11 @@ inherit
 
 	AUT_SHARED_ONLINE_STATISTICS
 
+	EPA_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -701,6 +706,49 @@ feature -- Execution
 					-- generate them automatically.
 				retrieve_type_of_variable (a_receiver)
 			end
+		ensure
+			last_request_not_void: last_request /= Void
+		end
+
+	batch_assign_variables (a_object_types: DS_ARRAYED_LIST [TUPLE [var_with_uuid: SEM_VARIABLE_WITH_UUID; var: ITP_VARIABLE; type: TYPE_A]]; a_serialized_objects: DS_HASH_TABLE[STRING,STRING])
+			-- Assign multiple objects to variables.
+			-- A `var' will receive object `a_serialized_objects'[`index'] of type `type'
+		require
+			is_launched: is_launched
+			is_ready: is_ready
+			object_types_not_empty: a_object_types /= VOid and then not a_object_types.is_empty
+			serialized_objects_not_empty: a_serialized_objects /= Void and then not a_serialized_objects.is_empty
+		local
+			l_variable_type_list: DS_ARRAYED_LIST [TUPLE [var: ITP_VARIABLE; type: TYPE_A]]
+			l_variable: ITP_VARIABLE
+			l_variable_type: TYPE_A
+			l_target_variable, l_result_variable: ITP_VARIABLE
+			l_target_type, l_result_type: TYPE_A
+			l_nbr_variables: INTEGER
+
+			l_starting_index, l_ending_index: INTEGER
+			l_argument_variables: DS_ARRAYED_LIST [ITP_VARIABLE]
+		do
+			create {AUT_BATCH_ASSIGNMENT_REQUEST} last_request.make (system, a_object_types, a_serialized_objects)
+
+			last_request.process (socket_data_printer)
+			flush_process
+			parse_invoke_response
+			last_request.set_response (last_response)
+			proxy_log_printers.report_request (Current, last_request)
+
+			if last_response.is_bad or last_response.is_error then
+				is_ready := False
+			else
+					-- Define variables in the variable table.
+				from a_object_types.start
+				until a_object_types.after
+				loop
+					variable_table.define_variable (a_object_types.item_for_iteration.var, a_object_types.item_for_iteration.type)
+					a_object_types.forth
+				end
+			end
+			stop_process_on_problems (last_response)
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -1986,6 +2034,9 @@ feature{NONE} -- Logging
 
 	precondition_satisfaction_message_type: STRING = "precondition_satisfaction"
 			-- Message type for precondition satisfaction
+
+	precondition_reduction_message_type: STRING = "precondition_reduction"
+			-- Message type for precondition reduction.
 
 feature -- Objec state retrieval
 

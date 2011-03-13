@@ -486,6 +486,12 @@ feature {AUT_REQUEST} -- Processing
 			output_stream.put_new_line
 		end
 
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 	process_type_request (a_request: AUT_TYPE_REQUEST)
 		do
 			-- Do nothing.

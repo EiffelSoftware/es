@@ -98,6 +98,12 @@ feature {AUT_REQUEST} -- Visitors
 			fixme("Not implemented")
 		end
 
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement("Implement")
+		end
+
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 			-- <Precursor>
 		do
@@ -185,7 +191,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

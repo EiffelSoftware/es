@@ -13,6 +13,9 @@ class AUT_REQUEST_PRINTER
 inherit
 
 	AUT_REQUEST_PROCESSOR
+		redefine
+			process_batch_assignment_request
+		end
 
 	KL_SHARED_STREAMS
 		export {NONE} all end
@@ -262,6 +265,12 @@ feature {AUT_REQUEST} -- Processing
 
 				-- Print request into `output_stream'.
 			print_execute_request (l_compound, execute_request_flag, Void, Void)
+		end
+
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+		local
+		do
+			last_request := [execute_batch_assignment_flag, [a_request.receivers, a_request.serialized_objects]]
 		end
 
 	process_type_request (a_request: AUT_TYPE_REQUEST)

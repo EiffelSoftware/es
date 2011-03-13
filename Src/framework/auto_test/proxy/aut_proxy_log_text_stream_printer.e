@@ -445,6 +445,12 @@ feature{AUT_REQUEST} -- Processing requests
 			process_call_based_request (a_request)
 		end
 
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement("Implement")
+		end
+
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
 			-- Process `a_request'.
 		do

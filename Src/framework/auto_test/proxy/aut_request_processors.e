@@ -57,6 +57,12 @@ feature {AUT_REQUEST} -- Processing
 			do_all (agent a_request.process (?))
 		end
 
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- <Precursor>
+		do
+			do_all (agent a_request.process (?))
+		end
+
 	process_type_request (a_request: AUT_TYPE_REQUEST)
 			-- Process `a_request'.
 		do

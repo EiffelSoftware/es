@@ -32,6 +32,8 @@ inherit
 
 	EQA_EXTERNALS
 
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
 create
 	execute
 
@@ -185,7 +187,14 @@ feature -- Status report
 				a_type = type_request_flag or else
 				a_type = precondition_evaluation_request_flag or else
 				a_type = predicate_evaluation_request_flag or else
-				a_type = execute_agent_creation_flag
+				a_type = execute_agent_creation_flag or else
+				a_type = execute_batch_assignment_flag
+		end
+
+	is_last_request_batch_assignment: BOOLEAN
+			-- Is last request batch assignment?
+		do
+			Result := last_request_type = execute_batch_assignment_flag
 		end
 
 	should_generate_log: BOOLEAN
@@ -214,6 +223,86 @@ feature -- Access
 			-- Directory to store file interpreter_log.txt
 
 feature {NONE} -- Handlers
+
+	report_batch_assignment
+		require
+			last_request_attached: last_request /= Void
+			last_request_is_batch_assignment: is_last_request_batch_assignment
+		local
+			l_receivers: SPECIAL [TUPLE [var_with_uuid: STRING; var: ITP_VARIABLE]]
+			l_serialized_objects: SPECIAL[STRING]
+			l_objects_seri: STRING
+			l_uuid_objects_mapping: HASH_TABLE [HASH_TABLE[ANY, INTEGER], STRING]
+			i, l_index, l_count: INTEGER
+			l_var_with_uuid: STRING
+			l_var_name, l_uuid: STRING
+			l_var_index, l_at_sign: INTEGER
+			l_variable: ITP_VARIABLE
+			l_object: ANY
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				if attached {TUPLE [receivers: SPECIAL [TUPLE [var_with_uuid: STRING; var: ITP_VARIABLE]]; serialized_objects: SPECIAL[STRING]]} last_request as lv_operands then
+					log_message (once "report batch assignment start%N")
+
+						-- Deserialize objects.
+					l_serialized_objects := lv_operands.serialized_objects
+					check even_count: l_serialized_objects.count \\ 2 = 0 end
+					from
+						create l_uuid_objects_mapping.make (l_serialized_objects.count)
+						l_uuid_objects_mapping.compare_objects
+						l_index := 0
+					until
+						l_index >= l_serialized_objects.count
+					loop
+						l_uuid := l_serialized_objects.at (l_index)
+						l_objects_seri := l_serialized_objects.at (l_index + 1)
+
+						check attached {HASH_TABLE [ANY, INTEGER_32]} deserialized_variable_table (ascii_string_as_array (l_objects_seri)) as lv_mapping then
+							l_uuid_objects_mapping.put (lv_mapping, l_uuid)
+						end
+						l_index := l_index + 2
+					end
+
+						-- Store objects into variables.
+					from
+						l_receivers := lv_operands.receivers
+						l_index := 0
+					until
+						l_index >= l_receivers.count
+					loop
+						l_variable := l_receivers.at (l_index).var
+						l_var_with_uuid := l_receivers.at (l_index).var_with_uuid
+
+						l_at_sign := l_var_with_uuid.index_of ('@', 1)
+						check found_at: l_at_sign > 0 end
+						l_var_name := l_var_with_uuid.substring (1, l_at_sign - 1)
+						l_uuid := l_var_with_uuid.substring (l_at_sign + 1, l_var_with_uuid.count)
+						l_var_index := l_var_name.substring (3, l_var_name.count.to_integer).to_integer
+						check var_with_uuid_exists: l_uuid_objects_mapping.has (l_uuid) and then l_uuid_objects_mapping.item (l_uuid).has (l_var_index) end
+						l_object := l_uuid_objects_mapping.item (l_uuid).item (l_var_index)
+
+						store_variable_at_index (l_object, l_variable.index)
+
+						l_index := l_index + 1
+					end
+					log_message (once "report batch assignment end%N")
+				else
+					report_error (batch_assignment_error + "[receiving request argument objects failed]%N")
+				end
+			else
+				report_error (batch_assignment_error + "[exception happend]%N")
+			end
+
+				-- Send response to the proxy.
+			refresh_last_response_flag
+			last_response := [0, Void, output_buffer, error_buffer]
+			send_response_to_socket
+		rescue
+			l_retried := True
+			retry
+		end
+
 
 	report_type_request
 		require
@@ -315,7 +404,9 @@ feature {NONE} -- Handlers
 						l_bcode.count)
 
 						-- Test case serialization: retrieve pre-TC state.
-					if is_test_case_serialization_enabled and then not is_test_case_agent_creation then
+					if is_test_case_serialization_enabled
+							and then not is_test_case_agent_creation
+					then
 						retrieve_test_case_prestate (l_last_request.l_data)
 					end
 
@@ -346,7 +437,9 @@ feature {NONE} -- Handlers
 					end
 
 						-- Test case serialization.
-					if is_test_case_serialization_enabled and then not is_test_case_agent_creation then
+					if is_test_case_serialization_enabled
+							and then not is_test_case_agent_creation
+					then
 						retrieve_post_test_case_state
 						log_test_case_serialization
 					end
@@ -617,6 +710,10 @@ feature {NONE} -- Parsing
 					when execute_agent_creation_flag then
 						is_test_case_agent_creation := True
 						report_execute_request
+
+					when execute_batch_assignment_flag then
+						report_batch_assignment
+
 					when type_request_flag then
 						report_type_request
 
@@ -732,6 +829,8 @@ feature{NONE} -- Error message
 	byte_code_length_error: STRING = "Length of retrieved byte-code is not the same as specified in request."
 
 	invalid_request_type_error: STRING = "Request type is invalid."
+
+	batch_assignment_error: STRING = "Batch assignment data invalid "
 
 feature{ITP_TEST_CASE_SERIALIZER} -- Invariant checking
 
@@ -1514,6 +1613,11 @@ feature -- Test case serialization
 
 	is_test_case_agent_creation: BOOLEAN
 			-- Is the test case to-be-executed an agent creation?
+
+feature -- Semantic search
+
+	is_batch_assignment: BOOLEAN
+			-- Is last request a batch-assignment?
 
 invariant
 	log_file_open_write: log_file.is_open_write

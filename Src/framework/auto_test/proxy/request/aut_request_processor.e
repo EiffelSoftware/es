@@ -73,6 +73,14 @@ feature{AUT_REQUEST} -- Processing
 		deferred
 		end
 
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- Process `a_request'.
+		require
+			request_attached: a_request /= Void
+			request_valid: is_request_valid (a_request)
+		deferred
+		end
+
 	process_type_request (a_request: AUT_TYPE_REQUEST)
 			-- Process `a_request'.
 		require
@@ -106,7 +114,7 @@ feature{AUT_REQUEST} -- Processing
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

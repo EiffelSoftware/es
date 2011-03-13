@@ -212,7 +212,11 @@ feature {AUT_REQUEST} -- Processing
 			to_implement ("Implement")
 		end
 
-
+	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement("Implement")
+		end
 
 feature {NONE} -- Implementation
 
@@ -227,7 +231,7 @@ invariant
 	request_list_cursor_valid: request_list_cursor.container = request_list
 	interpreter_in_replay_mode: interpreter.is_replaying
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -36,7 +36,10 @@ feature -- AutoTest socket request flags
 			-- Flag for "predicate" request		
 
 	execute_agent_creation_flag: NATURAL_8 = 8
-			-- Flag for "agent creation" request	
+			-- Flag for "agent creation" request
+
+	execute_batch_assignment_flag: NATURAL_8 = 9
+			-- Flag for "batch_assignment' request	
 
 feature -- AutoTest socket reponse flags
 
@@ -84,7 +87,7 @@ feature -- Strings
 			-- Prefix for variables
 
 ;note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

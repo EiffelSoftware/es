@@ -325,7 +325,7 @@ feature -- Access
 			until
 				l_feat_opds.after
 			loop
-				l_opd_type := a_feature.arguments.i_th (l_feat_opds.key_for_iteration)
+				l_opd_type := a_feature.arguments.i_th (l_feat_opds.key_for_iteration).actual_type
 				l_opd_type := actual_type_from_formal_type (l_opd_type, a_context_class)
 				l_opd_type := l_opd_type.instantiation_in (a_context_class.actual_type, a_context_class.class_id)
 				l_unconstrained_operands.force (l_opd_type, l_feat_opds.item_for_iteration)

@@ -51,7 +51,9 @@ create
 feature {NONE} -- Initialization
 
 	make (a_interpreter: like interpreter; a_system: like system; an_error_handler: like error_handler)
-			-- Create new strategy.
+			-- Create new strategy.		
+		local
+			l_log_file_name: FILE_NAME
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
 			create prestate_invariants.make
@@ -76,8 +78,22 @@ feature {NONE} -- Initialization
 					-- do not perform testing.
 				check_invariant_violating_objects (prestate_invariants)
 				prestate_invariants.wipe_out
+			else
+				create l_log_file_name.make_from_string (configuration.output_dirname)
+				l_log_file_name.set_file_name ("queries.txt")
+				create log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_log_file_name)>>)
+				log_manager.set_start_time_as_now
+				log_manager.set_duration_time_mode
+				create object_retriever
+				object_retriever.set_log_manager (log_manager)
 			end
 		end
+
+	log_manager: ELOG_LOG_MANAGER
+			-- Manger to print information
+
+	object_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+			-- Retriever to get objects from semantic database
 
 feature -- Status report
 
@@ -95,39 +111,71 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 			Precursor
 			interpreter.set_is_in_replay_mode (False)
 			assign_void
---			if queue.highest_dynamic_priority > 0 then
---				select_new_sub_task
---			end
 		end
 
 	cancel
 		do
+			prestate_invariants.wipe_out
+			if sub_task /= Void and then sub_task.has_next_step then
+				sub_task.cancel
+			end
 			sub_task := Void
 			interpreter.stop
 		end
 
 	step
+		local
+			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+			l_objects: LINKED_LIST [SEMQ_RESULT]
+			l_breaker: AUT_FEATURE_PRECONDITION_BREAKER
 		do
---			if interpreter.is_running and interpreter.is_ready then
---				sub_task.step
---			end
---			if interpreter.is_running and not interpreter.is_ready then
---				interpreter.stop
---			end
---			if not interpreter.is_running then
---				if sub_task /= Void and then sub_task.has_next_step then
---					sub_task.cancel
---				end
---				interpreter.start
---				assign_void
---			end
---			if not sub_task.has_next_step then
---				if queue.highest_dynamic_priority > 0 then
---					select_new_sub_task
---				else
---					sub_task := Void
---				end
---			end
+				-- Get, and remove, one invariant to process each step.
+			current_invariant := prestate_invariants.first
+			prestate_invariants.start
+			prestate_invariants.remove
+
+			object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection)
+			l_objects := object_retriever.last_objects
+			if l_objects /= Void and then not l_objects.is_empty then
+				create {AUT_FEATURE_PRECONDITION_BREAKER} sub_task.make (system, interpreter, error_handler, current_invariant, l_objects)
+				from sub_task.start
+				until not sub_task.has_next_step
+				loop
+					if interpreter.is_running and not interpreter.is_ready then
+						interpreter.stop
+					end
+					if not interpreter.is_running then
+						interpreter.start
+						assign_void
+					end
+					if interpreter.is_running and interpreter.is_ready then
+						sub_task.step
+					else
+						sub_task.cancel
+					end
+
+--					if interpreter.is_running and interpreter.is_ready then
+--						sub_task.step
+--					end
+--					if interpreter.is_running and not interpreter.is_ready then
+--						interpreter.stop
+--					end
+--					if not interpreter.is_running then
+--						if sub_task /= Void and then sub_task.has_next_step then
+--							sub_task.cancel
+--						end
+--						interpreter.start
+--						assign_void
+--					end
+--					if not sub_task.has_next_step then
+--						if queue.highest_dynamic_priority > 0 then
+--							select_new_sub_task
+--						else
+--							sub_task := Void
+--						end
+--					end
+				end
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -143,6 +191,9 @@ feature{NONE} -- Implementation
 
 	connection: MYSQL_CLIENT
 			-- Database connection
+
+	current_invariant: AUT_STATE_INVARIANT
+			-- Invariant that we are currently trying to break.
 
 	prestate_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
 			-- List of pre-state invariants that are to be considered
