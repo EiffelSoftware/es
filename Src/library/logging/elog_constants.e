@@ -9,19 +9,19 @@ frozen class
 
 feature -- Logging Level Constants
 
-	Fatal_level: INTEGER = 100
+	Fatal_level: INTEGER = 20
 		-- Level for the most severe error situations, typically leading to aborting the application.
 
-	Error_level: INTEGER = 80
+	Error_level: INTEGER = 40
 		-- Level for standard errors.
 
 	Warning_level: INTEGER = 60
 		-- Level for potential errors. Further investigation is suggested.
 
-	Info_level: INTEGER = 40
+	Info_level: INTEGER = 80
 		-- Level for informational messages, useful to track important operations.
 
-	Debug_level: INTEGER = 20
+	Debug_level: INTEGER = 100
 		-- Level providing the most fine-grained information, useful when debugging.
 
 feature -- Time Mode Constants

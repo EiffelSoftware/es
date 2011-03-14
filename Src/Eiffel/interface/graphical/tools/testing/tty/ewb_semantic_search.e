@@ -59,6 +59,7 @@ feature -- Properties
 			l_generate_arff_cmd: SEM_GENERATE_ARFF_CMD
 			l_generate_inv_cmd: SEM_GENERATE_DAIKON_INVARIANT_CMD
 			l_generate_decision_tree_cmd: SEM_GENERATE_DECISION_TREE_CMD
+			l_check_bp_cmd: SEM_CHECK_UNVISITED_BREAKPOINTS_CMD
 		do
 			create l_parser.make_with_arguments (semantic_search_arguments, system)
 			l_parser.parse
@@ -78,6 +79,9 @@ feature -- Properties
 			elseif l_config.should_generate_decision_tree then
 				create l_generate_decision_tree_cmd.make (l_config)
 				l_generate_decision_tree_cmd.execute
+			elseif l_config.should_check_unvisited_breakpoint then
+				create l_check_bp_cmd.make (l_config)
+				l_check_bp_cmd.execute
 			end
 		end
 
