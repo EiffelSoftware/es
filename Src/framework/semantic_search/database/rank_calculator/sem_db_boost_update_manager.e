@@ -16,10 +16,12 @@ feature
 	secondary_database_connection_client: MYSQL_CLIENT
 
 		--Startup
-	make (host_address: STRING_8; username: STRING_8; password: STRING_8; database_name: STRING_8)
+	make (host_address: STRING_8; username: STRING_8; password: STRING_8; database_name: STRING_8; a_port: INTEGER)
 		do
-			create primary_database_connection_client.make (host_address, username, password, database_name)
-			create secondary_database_connection_client.make (host_address, username, password, database_name)
+			create primary_database_connection_client.make_with_database (host_address, username, password, database_name, a_port)
+			create secondary_database_connection_client.make_with_database (host_address, username, password, database_name, a_port)
+			primary_database_connection_client.connect
+			secondary_database_connection_client.connect
 			print ("Manager Created%N%N")
 		end
 
@@ -98,7 +100,7 @@ feature -- Main helper methods
 		do
 				--Create a new client used for the updates, as the old one will not be able to do a new query without
 				--destroying the data in the SQL_RESULT from the properties query
-			create secondary_database_connection_client.make ("127.0.0.1", "root", "root", "semantic_search")
+--			create secondary_database_connection_client.make_with_database ("127.0.0.1", "root", "root", "semantic_search")
 			if primary_database_connection_client.has_result then
 				current_result := primary_database_connection_client.last_result
 				from

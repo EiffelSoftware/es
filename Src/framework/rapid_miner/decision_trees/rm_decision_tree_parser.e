@@ -269,7 +269,7 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 					l_model_file.read_line
 					l_model_file.read_line
 				until
-					l_in_tree_body
+					l_in_tree_body or else l_model_file.after
 				loop
 					l_model_file.read_line
 					l_line := l_model_file.last_string.twin
@@ -285,7 +285,7 @@ feature{RM_DECISION_TREE_PARSER} -- Parsing helper functions
 					-- Load all lines for the decision tree in Result.
 				from
 				until
-					l_model_file.end_of_file or else not l_in_tree_body
+					l_model_file.end_of_file or else not l_in_tree_body or else l_model_file.after
 				loop
 					l_line := l_model_file.last_string.twin
 					l_line.left_adjust

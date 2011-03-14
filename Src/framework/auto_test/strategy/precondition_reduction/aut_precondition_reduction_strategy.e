@@ -45,6 +45,8 @@ inherit
 
 	ITP_SHARED_CONSTANTS
 
+	EQA_TEST_CASE_SERIALIZATION_UTILITY
+
 create
 	make
 
@@ -153,27 +155,6 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 					else
 						sub_task.cancel
 					end
-
---					if interpreter.is_running and interpreter.is_ready then
---						sub_task.step
---					end
---					if interpreter.is_running and not interpreter.is_ready then
---						interpreter.stop
---					end
---					if not interpreter.is_running then
---						if sub_task /= Void and then sub_task.has_next_step then
---							sub_task.cancel
---						end
---						interpreter.start
---						assign_void
---					end
---					if not sub_task.has_next_step then
---						if queue.highest_dynamic_priority > 0 then
---							select_new_sub_task
---						else
---							sub_task := Void
---						end
---					end
 				end
 			end
 		end

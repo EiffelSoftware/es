@@ -152,10 +152,10 @@ feature{RM_BUILDER} -- Implementation
 			l_bushon: STRING
 		do
 			create l_rapid_execute_string.make (128)
-			l_rapid_execute_string.append (rm_environment.rapidminer_command)
+--			l_rapid_execute_string.append (rm_environment.rapidminer_command)
+			l_rapid_execute_string.append ("/home/jasonw/rapidminer/scripts/rapidminer -f ")
 			--
 			l_rapid_execute_string.append (rm_environment.rapidminer_xml_file_path)
-			l_rapid_execute_string.append ("%"")
 
 			create l_executor
 			l_bushon := l_executor.output_from_program (l_rapid_execute_string, rm_environment.rapidminer_working_directory)

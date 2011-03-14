@@ -130,9 +130,9 @@ feature -- Basic operations
 			create Result.make
 			create l_select.make (64)
 			if a_object then
-				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 1 AND feature IS NOT NULL AND class '" + a_class.name_in_upper + "' GROUP BY class")
+				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 1 AND feature IS NOT NULL AND class ='" + a_class.name_in_upper + "' GROUP BY class, feature")
 			else
-				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 2 AND feature IS NOT NULL AND class '" + a_class.name_in_upper + "' GROUP BY class")
+				l_select.append ("SELECT feature FROM Queryables WHERE qry_kind = 2 AND feature IS NOT NULL AND class ='" + a_class.name_in_upper + "' GROUP BY class, feature")
 			end
 			a_connection.execute_query (l_select)
 			if a_connection.last_error_number = 0 then

@@ -63,7 +63,13 @@ feature{NONE} -- Implementation
 			l_test_name: STRING
 			l_feature_specified: BOOLEAN
 			l_matcher: RX_PCRE_REGULAR_EXPRESSION
+			l_tc_count: INTEGER
+			l_done: BOOLEAN
+			l_max_tc_count: INTEGER
 		do
+			if config.max_test_case_for_building_project > 0 then
+				l_max_tc_count := config.max_test_case_for_building_project
+			end
 			create l_matcher.make
 			l_matcher.compile ("(.+)__[0-9]+$")
 			l_feature_specified := attached config.feature_name_for_test_cases
@@ -74,7 +80,7 @@ feature{NONE} -- Implementation
 			from
 				l_class_dir.readentry
 			until
-				l_class_dir.lastentry = Void
+				l_class_dir.lastentry = Void or else l_done
 			loop
 				l_subdir_name := l_class_dir.lastentry.twin
 				if not (l_subdir_name ~ once "." or l_subdir_name ~ once "..") then
@@ -101,12 +107,21 @@ feature{NONE} -- Implementation
 								from
 									l_subdir.readentry
 								until
-									l_subdir.lastentry = Void
+									l_subdir.lastentry = Void or else l_done
 								loop
 									l_test_name := l_subdir.lastentry.twin
 									if l_test_name.starts_with (once "TC__") and then l_test_name.ends_with (once ".e") then
-											-- Found a test case.
-										l_tests.extend (l_test_name)
+										if
+											(l_test_name.has_substring ("__S__") and then config.should_include_passing_test_cases_for_building_project) or
+											(l_test_name.has_substring ("__F__") and then config.should_include_failing_test_cases_for_building_project)
+										then
+												-- Found a test case.
+											l_tests.extend (l_test_name)
+											l_tc_count := l_tc_count + 1
+											if l_max_tc_count > 0 and then l_tc_count >= l_max_tc_count then
+												l_done := True
+											end
+										end
 									end
 									l_subdir.readentry
 								end
@@ -266,7 +281,10 @@ feature{NONE} -- Initialization
 
 	make
 			-- Initialize Current.
+		local
+			l_referencer: CLASS_REFERENCER
 		do
+			create l_referencer
 			create memory
 			create test_cases.make (100)
 			test_cases.compare_objects

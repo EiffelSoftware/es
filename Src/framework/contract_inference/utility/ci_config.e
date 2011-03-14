@@ -23,6 +23,7 @@ feature{NONE} -- Initialization
 			l_relation: EPA_EXPRESSION_RELATION
 		do
 			eiffel_system := a_system
+			set_should_include_passing_test_cases_for_building_project (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -118,14 +119,6 @@ feature -- Access
 
 	ssql_directory: STRING
 			-- Directory for sql documents
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (contract_output_directory)
-			l_path.extend ("ssql")
-			Result := l_path
-			safe_recursive_create_directory (l_path)
-		end
 
 	contract_output_directory: STRING
 			-- Directory for output
@@ -329,6 +322,36 @@ feature -- Access
 
 	output_location: STRING
 			-- THe path of output file, or a directory for output files
+
+	max_test_case_for_building_project: INTEGER
+			-- The maximum number of test cases selected during the project
+			-- building phase. If 0, the maximum is disabled
+
+	should_include_passing_test_cases_for_building_project: BOOLEAN
+			-- Should passing test cases be included when building project
+			-- for contract inference?
+			-- Default: True
+
+	should_include_failing_test_cases_for_building_project: BOOLEAN
+			-- Should failing test cases be included when building project
+			-- for contract inference?	
+			-- Default: False
+
+	set_should_include_passing_test_cases_for_building_project (b: BOOLEAN)
+			-- Set `should_include_passing_test_cases_for_building_project' with `b'.
+		do
+			should_include_passing_test_cases_for_building_project := b
+		ensure
+			should_include_passing_test_cases_for_building_project_set: should_include_passing_test_cases_for_building_project = b
+		end
+
+	set_should_include_failing_test_cases_for_building_project (b: BOOLEAN)
+			-- Set `should_include_failing_test_cases_for_building_project' with `b'.
+		do
+			should_include_failing_test_cases_for_building_project := b
+		ensure
+			should_include_failing_test_cases_for_building_project_set: should_include_failing_test_cases_for_building_project = b
+		end
 
 feature -- Status report
 
@@ -691,6 +714,20 @@ feature -- Setting
 			-- Set `output_location' with `a_location'.
 		do
 			output_location := a_location
+		end
+
+	set_ssql_directory (a_dir: STRING)
+			-- Set `ssql_directory' with `a_dir'.
+		do
+			ssql_directory := a_dir.twin
+		end
+
+	set_max_test_case_for_building_project (a_max: INTEGER)
+			-- Set `max_test_case_for_building_project' with `a_max'
+		do
+			max_test_case_for_building_project := a_max
+		ensure
+			max_test_case_for_building_project_set: max_test_case_for_building_project = a_max
 		end
 
 feature{NONE} -- Implementation

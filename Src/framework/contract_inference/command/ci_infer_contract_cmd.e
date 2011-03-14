@@ -41,7 +41,10 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		local
 			l_file_name: FILE_NAME
+			l_context: SHARED_AST_CONTEXT
 		do
+			create l_context
+			l_context.context.set_is_ignoring_export (True)
 			config := a_config
 			class_ := first_class_starts_with_name (config.class_name)
 			feature_ := class_.feature_named (config.feature_name_for_test_cases.first)

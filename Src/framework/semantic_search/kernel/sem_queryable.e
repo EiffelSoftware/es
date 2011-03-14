@@ -509,6 +509,15 @@ feature -- Setting
 			end
 		end
 
+	clean_all_caches
+			-- Clean all caches.
+		do
+			anonymous_expression_internal := Void
+			anonymous_variables_table_cache := Void
+			anonymous_variables_string_table_cache := Void
+			variable_name_type_table_cache := Void
+		end
+
 feature -- Visitor
 
 	process (a_visitor: SEM_QUERYABLE_VISITOR)
@@ -716,15 +725,6 @@ feature{NONE} -- Implementation
 
 	anonymous_expression_internal: detachable like anonymous_expression_cache
 			-- Cache for `anonymous_expression_cache'
-
-	clean_all_caches
-			-- Clean all caches.
-		do
-			anonymous_expression_internal := Void
-			anonymous_variables_table_cache := Void
-			anonymous_variables_string_table_cache := Void
-			variable_name_type_table_cache := Void
-		end
 
 	anonymous_variables_table_cache: detachable like anonymous_variables_table
 			-- Cache for `anonymous_variables_table'

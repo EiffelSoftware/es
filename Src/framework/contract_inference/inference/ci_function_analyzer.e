@@ -196,8 +196,16 @@ feature{NONE} -- Implementation
 			end
 			l_feature_name.left_adjust
 			l_feature_name.right_adjust
+			if l_argument_variable /= Void then
+				if l_argument_variable.has (' ') or l_argument_variable.has ('.') or l_argument_variable.has ('(') then
+					Result := Void
+				else
+					Result := [l_target_variable, l_feature_name, l_argument_variable]
+				end
+			else
+				Result := [l_target_variable, l_feature_name, l_argument_variable]
+			end
 
-			Result := [l_target_variable, l_feature_name, l_argument_variable]
 		end
 
 	function_maps_from_equation (a_equation: EPA_EQUATION): LINKED_LIST [EPA_FUNCTION_VALUATIONS]
@@ -238,132 +246,137 @@ feature{NONE} -- Implementation
 			create Result.make
 				-- Analyze the structure of the expression.
 			l_expr := a_equation.expression
-			l_value := a_equation.value
-			l_info := info_in_expression (l_expr)
-			l_target_variable := l_info.target_name
-			l_feature_name := l_info.feature_name
-			l_argument_variable := l_info.argument_name
-			l_has_argument := l_argument_variable /= Void
 
-				-- Get the feature based on the dynamic type of the target variable.
-			l_dyna_feat := context.variables.item (l_target_variable).associated_class.feature_named (l_feature_name.as_lower)
-			if l_dyna_feat = Void then
-				l_has_argument := False
-			else
-				l_feature_name := l_dyna_feat.feature_name
-			end
+			if attached {ID_AS} l_expr.ast or else attached {EXPR_CALL_AS} l_expr.ast or else attached {NESTED_AS} l_expr.ast then
+				l_value := a_equation.value
+				l_info := info_in_expression (l_expr)
+				if l_info /= Void then
+					l_target_variable := l_info.target_name
+					l_feature_name := l_info.feature_name
+					l_argument_variable := l_info.argument_name
+					l_has_argument := l_argument_variable /= Void
 
-				-- Decide the type information of the expression feature
-			l_actual_operands := actual_operands
-			create l_function_types.make
-			if l_actual_operands.has (l_target_variable) then
-					-- The target of the expression feature is an actual operand for `feature_', we use the static type(s) of that
-					-- operand for the to-be-extracted function(s).
-					-- An operand can have different static types because the same operand can be used as multiple operands.
-				l_operands := l_actual_operands.item (l_target_variable)
-				l_operand_types := operand_types_with_feature (feature_, class_)
-				from
-					l_operands.start
-				until
-					l_operands.after
-				loop
-					l_target_type := l_operand_types.item (l_operands.item_for_iteration).actual_type
-					l_target_type := actual_type_from_formal_type (l_target_type, context_type.associated_class)
-					l_target_type := l_target_type.instantiation_in (context_type, context_type.associated_class.class_id)
-					if l_dyna_feat /= Void then
-						l_feat := l_target_type.associated_class.feature_of_rout_id_set (l_dyna_feat.rout_id_set)
-						if l_feat /= Void then
-							l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-							if l_feat.argument_count > 0 then
-								l_argument_type := l_feat.arguments.first
-		--						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-							else
-								l_argument_type := Void
-							end
-							l_function_types.extend ([l_target_type, l_argument_type, l_feat.feature_name, l_result_type])
-						end
-					end
-					l_operands.forth
-				end
-			else
-					-- The target of the expression is not an actual operand for `feature_', we can only use dynamic type of that target.
-				l_target_type := context.variables.item (l_target_variable)
-				if l_has_argument then
-					l_argument_type := l_dyna_feat.arguments.first
-					l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-				else
-					l_argument_type := Void
-				end
-				l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
-				l_function_types.extend ([l_target_type, l_argument_type, l_feature_name, l_result_type])
-			end
-
-				-- Construct function maps.
-			from
-				l_function_types.start
-			until
-				l_function_types.after
-			loop
-				l_target_type := l_function_types.item_for_iteration.target_type
-				l_argument_type := l_function_types.item_for_iteration.argument_type
-				l_feature_name := l_function_types.item_for_iteration.feature_name
-				l_result_type := l_function_types.item_for_iteration.result_type
-
-					-- Create function.
-				l_body := function_body (l_feature_name, l_has_argument)
-
-				create l_actual_args.make (2)
-				l_actual_args.set_equality_tester (function_equality_tester)
-					-- Create function argument for target.
-				l_actual_args.force_last (
-					create {EPA_FUNCTION}.make_from_expression (
-						create {EPA_AST_EXPRESSION}.make_with_text_and_type (
-							context.class_,
-							context.feature_,
-							l_target_variable,
-							context.class_,
-							context.variables.item (l_target_variable))))
-
-				if l_has_argument then
-					create l_argument_types.make (1, 2)
-					l_argument_types.put (l_target_type, 1)
-					l_argument_types.put (l_argument_type, 2)
-					create l_argument_domains.make (1, 2)
-					l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
-					l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 2)
-
-						-- Create function argument for argument.
-					if l_argument_variable.is_integer then
-						l_arg_type := integer_type
+						-- Get the feature based on the dynamic type of the target variable.
+					l_dyna_feat := context.variables.item (l_target_variable).associated_class.feature_named (l_feature_name.as_lower)
+					if l_dyna_feat = Void then
+						l_has_argument := False
 					else
-						l_arg_type := context.variable_type (l_argument_variable)
+						l_feature_name := l_dyna_feat.feature_name
 					end
-					l_actual_args.force_last (
-						create {EPA_FUNCTION}.make_from_expression (
-							create {EPA_AST_EXPRESSION}.make_with_text_and_type (
-								context.class_,
-								context.feature_,
-								l_argument_variable,
-								context.feature_.written_class, l_arg_type)))
-				else
-					create l_argument_types.make (1, 1)
-					l_argument_types.put (l_target_type, 1)
-					create l_argument_domains.make (1, 1)
-					l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
+
+						-- Decide the type information of the expression feature
+					l_actual_operands := actual_operands
+					create l_function_types.make
+					if l_actual_operands.has (l_target_variable) then
+							-- The target of the expression feature is an actual operand for `feature_', we use the static type(s) of that
+							-- operand for the to-be-extracted function(s).
+							-- An operand can have different static types because the same operand can be used as multiple operands.
+						l_operands := l_actual_operands.item (l_target_variable)
+						l_operand_types := operand_types_with_feature (feature_, class_)
+						from
+							l_operands.start
+						until
+							l_operands.after
+						loop
+							l_target_type := l_operand_types.item (l_operands.item_for_iteration).actual_type
+							l_target_type := actual_type_from_formal_type (l_target_type, context_type.associated_class)
+							l_target_type := l_target_type.instantiation_in (context_type, context_type.associated_class.class_id)
+							if l_dyna_feat /= Void then
+								l_feat := l_target_type.associated_class.feature_of_rout_id_set (l_dyna_feat.rout_id_set)
+								if l_feat /= Void then
+									l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+									if l_feat.argument_count > 0 then
+										l_argument_type := l_feat.arguments.first
+				--						l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+									else
+										l_argument_type := Void
+									end
+									l_function_types.extend ([l_target_type, l_argument_type, l_feat.feature_name, l_result_type])
+								end
+							end
+							l_operands.forth
+						end
+					else
+							-- The target of the expression is not an actual operand for `feature_', we can only use dynamic type of that target.
+						l_target_type := context.variables.item (l_target_variable)
+						if l_has_argument then
+							l_argument_type := l_dyna_feat.arguments.first
+							l_argument_type := l_argument_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+						else
+							l_argument_type := Void
+						end
+						l_result_type := l_feat.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+						l_function_types.extend ([l_target_type, l_argument_type, l_feature_name, l_result_type])
+					end
+
+						-- Construct function maps.
+					from
+						l_function_types.start
+					until
+						l_function_types.after
+					loop
+						l_target_type := l_function_types.item_for_iteration.target_type
+						l_argument_type := l_function_types.item_for_iteration.argument_type
+						l_feature_name := l_function_types.item_for_iteration.feature_name
+						l_result_type := l_function_types.item_for_iteration.result_type
+
+							-- Create function.
+						l_body := function_body (l_feature_name, l_has_argument)
+
+						create l_actual_args.make (2)
+						l_actual_args.set_equality_tester (function_equality_tester)
+							-- Create function argument for target.
+						l_actual_args.force_last (
+							create {EPA_FUNCTION}.make_from_expression (
+								create {EPA_AST_EXPRESSION}.make_with_text_and_type (
+									context.class_,
+									context.feature_,
+									l_target_variable,
+									context.class_,
+									context.variables.item (l_target_variable))))
+
+						if l_has_argument then
+							create l_argument_types.make (1, 2)
+							l_argument_types.put (l_target_type, 1)
+							l_argument_types.put (l_argument_type, 2)
+							create l_argument_domains.make (1, 2)
+							l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
+							l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 2)
+
+								-- Create function argument for argument.
+							if l_argument_variable.is_integer then
+								l_arg_type := integer_type
+							else
+								l_arg_type := context.variable_type (l_argument_variable)
+							end
+							l_actual_args.force_last (
+								create {EPA_FUNCTION}.make_from_expression (
+									create {EPA_AST_EXPRESSION}.make_with_text_and_type (
+										context.class_,
+										context.feature_,
+										l_argument_variable,
+										context.feature_.written_class, l_arg_type)))
+						else
+							create l_argument_types.make (1, 1)
+							l_argument_types.put (l_target_type, 1)
+							create l_argument_domains.make (1, 1)
+							l_argument_domains.put (create {EPA_UNSPECIFIED_DOMAIN}, 1)
+						end
+						create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
+
+							-- Create value map for function.
+						create l_actual_result.make_from_expression_value (l_value)
+						create l_map.make (l_function)
+
+						create l_maped_values.make (2)
+						l_maped_values.set_equality_tester (function_argument_value_map_equality_tester)
+						l_maped_values.force_last (create {EPA_FUNCTION_ARGUMENT_VALUE_MAP}.make (l_actual_args, l_actual_result, l_function))
+						l_map.set_map (l_maped_values)
+
+						Result.extend (l_map)
+						l_function_types.forth
+					end
 				end
-				create l_function.make (l_argument_types, l_argument_domains, l_result_type, l_body)
-
-					-- Create value map for function.
-				create l_actual_result.make_from_expression_value (l_value)
-				create l_map.make (l_function)
-
-				create l_maped_values.make (2)
-				l_maped_values.set_equality_tester (function_argument_value_map_equality_tester)
-				l_maped_values.force_last (create {EPA_FUNCTION_ARGUMENT_VALUE_MAP}.make (l_actual_args, l_actual_result, l_function))
-				l_map.set_map (l_maped_values)
-
-				Result.extend (l_map)
-				l_function_types.forth
 			end
 		end
 

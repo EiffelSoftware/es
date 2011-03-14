@@ -60,6 +60,7 @@ feature -- Basic operations
 			l_rapidminer_process: AP_STRING_OPTION
 			l_dot_path: AP_STRING_OPTION
 			l_arff_force: AP_FLAG
+			l_breakpoint_check_flag: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -171,6 +172,10 @@ feature -- Basic operations
 			l_arff_force.set_description ("Should generation of files be forced? Meaning that regenerate files even if they exist. Default: False")
 			l_parser.options.force_last (l_arff_force)
 
+			create l_breakpoint_check_flag.make_with_long_form ("check-unvisited-breakpoint")
+			l_breakpoint_check_flag.set_description ("Check which breakpoints are not visited by all test cases availabel for a feature. Format: --check-unvisited-breakpoint --class CLASS_NAME [--feature feature_name]")
+			l_parser.options.force_last (l_breakpoint_check_flag)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -257,6 +262,10 @@ feature -- Basic operations
 
 			if l_arff_force.was_found then
 				config.set_is_arff_generation_forced (True)
+			end
+
+			if l_breakpoint_check_flag.was_found then
+				config.set_should_check_unvisited_breakpoint (True)
 			end
 		end
 

@@ -10,6 +10,8 @@ class
 inherit
 	RM_ENVIRONMENT
 
+	PROCESS_HELPER
+
 feature
 
 	model_file_path: STRING
@@ -43,8 +45,14 @@ feature
 		end
 
 	rapidminer_command: STRING
+		local
+			l_path: STRING
 		do
-			Result := ". rapidminer -f"
+			l_path := output_from_program ("which rapidminer", Void)
+			if l_path.item (l_path.count) = '%N' then
+				l_path.remove_tail (1)
+			end
+			Result := l_path + " -f "
 		end
 
 	temp_directory: STRING

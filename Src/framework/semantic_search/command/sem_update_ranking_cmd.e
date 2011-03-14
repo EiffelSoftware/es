@@ -45,6 +45,7 @@ feature -- Basic operations
 			l_feat: FEATURE_I
 			l_log_manager: ELOG_LOG_MANAGER
 			i: INTEGER
+			l_calculator: SEM_DB_BOOST_UPDATE_MANAGER
 		do
 			create l_log_manager.make_with_logger_array (<<create {ELOG_CONSOLE_LOGGER}>>)
 			create l_connection.make_with_database (config.mysql_host, config.mysql_user, config.mysql_password, config.mysql_schema, config.mysql_port)
@@ -65,7 +66,7 @@ feature -- Basic operations
 				across features_from_database (l_class, False, l_connection) as l_feat_names loop
 					l_feat := l_class.feature_named (l_feat_names.item)
 						-- We only calculate rankings for commands.
-					if l_feat /= Void and then l_feat.has_return_value then
+					if l_feat /= Void and then not l_feat.has_return_value then
 						l_feats.extend (l_feat)
 					end
 				end

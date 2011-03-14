@@ -101,7 +101,7 @@ feature{NONE} -- Initialization
 				end
 				operand_variable_indexes.append_integer (l_indexes.item)
 				operand_variable_indexes.append_character (',')
-				l_var_name := a_transition.reversed_variable_position.item (l_indexes.item).text
+				l_var_name := a_transition.reversed_variable_position.item (l_indexes.item).text.twin
 				l_var_name.remove_head (l_prefix_count)
 				operand_variable_indexes.append_integer (l_var_name.to_integer)
 			end

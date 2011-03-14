@@ -105,6 +105,9 @@ feature -- Status report
 	should_generate_decision_tree: BOOLEAN
 			-- Should decision tree be generated from an ARFF file?
 
+	should_check_unvisited_breakpoint: BOOLEAN
+			-- Should we check unvisited breakpoint?
+
 	is_arff_generation_forced: BOOLEAN
 			-- Should we generate ARFF files even if they exist?
 			-- Default: False
@@ -265,6 +268,14 @@ feature -- Setting
 			is_arff_generation_forced := b
 		ensure
 			is_arff_generation_forced_set: is_arff_generation_forced = b
+		end
+
+	set_should_check_unvisited_breakpoint (b: BOOLEAN)
+			-- Set `should_check_unvisited_breakpoint' with `b'.
+		do
+			should_check_unvisited_breakpoint := b
+		ensure
+			should_check_unvisited_breakpoint_set: should_check_unvisited_breakpoint = b
 		end
 
 end

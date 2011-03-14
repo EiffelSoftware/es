@@ -63,8 +63,11 @@ feature{RM_BUILDER} -- Implementation
 		do
 			l_model_parser := parsers[algorithm_name]
 			l_model_parser.parse
-
-			create last_tree.make (l_model_parser.last_node, label_name)
+			if l_model_parser.last_node /= Void then
+				create last_tree.make (l_model_parser.last_node, label_name)
+			else
+				last_tree := Void
+			end
 		end
 
 	parse_performance

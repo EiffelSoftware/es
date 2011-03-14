@@ -68,12 +68,14 @@ feature -- Basic operations
 			l_breakpoint_monitoring_flag: AP_FLAG
 			l_sql_option: AP_STRING_OPTION
 			l_test_case_range: AP_STRING_OPTION
-			l_use_ssql_option: AP_FLAG
+			l_use_ssql_option: AP_STRING_OPTION
 			l_timeout: AP_INTEGER_OPTION
 			l_generate_arff_option: AP_STRING_OPTION
 			l_arff_type_option: AP_STRING_OPTION
 			l_input_option: AP_STRING_OPTION
 			l_output_option: AP_STRING_OPTION
+			l_max_build_tc_option: AP_INTEGER_OPTION
+			l_tc_inclusion_option: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -233,7 +235,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_test_case_range)
 
 			create l_use_ssql_option.make_with_long_form ("use-ssql")
-			l_use_ssql_option.set_description ("Enable using ssql information. Default: False")
+			l_use_ssql_option.set_description ("Enable using ssql information. Format: --user-ssql directory. directory specifies the location of those ssql files.")
 			l_parser.options.force_last (l_use_ssql_option)
 
 			create l_timeout.make_with_long_form ("time-out")
@@ -255,6 +257,14 @@ feature -- Basic operations
 			create l_output_option.make_with_long_form ("output")
 			l_output_option.set_description ("Specify the path of output files. Format: --output path. Depending on different analysis to perform, different output files are needed.")
 			l_parser.options.force_last (l_output_option)
+
+			create l_max_build_tc_option.make_with_long_form ("max-build-test-case")
+			l_max_build_tc_option.set_description ("Specify the maximum number of test cases to be (randomly) selected during project building process. Format: --max-build-test-case number. If number is 0, no bound is set. Default: 0")
+			l_parser.options.force_last (l_max_build_tc_option)
+
+			create l_tc_inclusion_option.make_with_long_form ("include-test-case")
+			l_tc_inclusion_option.set_description ("Specify which kinds of test cases to be included during project building. Format: --include-test-case type[,type]. type can be either %"passing%" or %"failing%". Default: passing.")
+			l_parser.options.force_last (l_tc_inclusion_option)
 
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
@@ -394,6 +404,9 @@ feature -- Basic operations
 
 			config.set_should_use_mocking (l_use_mock_option.was_found)
 			config.set_should_use_ssql (l_use_ssql_option.was_found)
+			if l_use_ssql_option.was_found then
+				config.set_ssql_directory (l_use_ssql_option.parameter)
+			end
 			config.set_should_generate_mocking (l_generate_mock_option.was_found)
 
 			config.set_should_freeze (l_freeze_option.was_found)
@@ -433,10 +446,38 @@ feature -- Basic operations
 				config.set_output_location (Void)
 			end
 
+			if l_max_build_tc_option.was_found then
+				config.set_max_test_case_for_building_project (l_max_build_tc_option.parameter)
+			end
+
+			if l_tc_inclusion_option.was_found then
+				setup_test_case_types (config, l_tc_inclusion_option.parameter)
+			end
+
 			config.set_should_generate_arff (l_generate_arff_option.was_found)
 		end
 
 feature{NONE} -- Implementation
+
+	setup_test_case_types (a_config: CI_CONFIG; a_value: STRING)
+			-- Setup test case types.
+		local
+			l_str: STRING
+		do
+			l_str := a_value
+			l_str.left_adjust
+			l_str.right_adjust
+			l_str.to_lower
+			a_config.set_should_include_passing_test_cases_for_building_project (False)
+			a_config.set_should_include_failing_test_cases_for_building_project (False)
+			across l_str.split (',') as l_parts loop
+				if l_parts.item ~ "passing" then
+					a_config.set_should_include_passing_test_cases_for_building_project (True)
+				elseif l_parts.item ~ "failing" then
+					a_config.set_should_include_failing_test_cases_for_building_project (True)
+				end
+			end
+		end
 
 	setup_test_case_range (a_config: CI_CONFIG; a_value: STRING)
 			-- Setup test case range.

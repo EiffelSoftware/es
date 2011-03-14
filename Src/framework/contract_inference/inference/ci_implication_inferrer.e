@@ -33,9 +33,6 @@ feature -- Basic operations
 				-- Initialize.
 			data := a_data
 			setup_data_structures
---			create l_loader.make ("D:\jasonw\projects\inferrer\EIFGENs\project\Contract_inference\data\LINKED_LIST__append.arff2")
---			l_loader.parse_relation
---			arff_relation := l_loader.last_relation
 			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
@@ -139,7 +136,9 @@ feature{NONE} -- Implementation
 							create l_tree_builder.make_with_relation (l_relation, l_attrs.item, l_cursor.item)
 							l_tree_builder.build
 							l_tree := l_tree_builder.last_tree
-							l_done := l_tree.is_accurate
+							if l_tree /= Void then
+								l_done := l_tree.is_accurate
+							end
 						end
 						if l_done then
 							generate_implications (l_tree)

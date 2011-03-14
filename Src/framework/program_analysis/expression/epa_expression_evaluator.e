@@ -724,16 +724,53 @@ feature{NONE} -- Implementation
 		end
 
 	process_bin_tilde_as (l_as: BIN_TILDE_AS)
+		local
+			l_equation: EPA_EQUATION
+			l_ast: BIN_TILDE_AS
+			l_left: EXPR_AS
+			l_right: EXPR_AS
+			l_left_value: EPA_REFERENCE_VALUE
+			l_right_value: EPA_REFERENCE_VALUE
+			l_set: BOOLEAN
 		do
 			if not has_error then
-				process_expression (l_as)
+				l_left := l_as.left
+				l_right := l_as.right
+				safe_process (l_left)
+				if not has_error then
+					if attached {EPA_REFERENCE_VALUE} last_value as l_lvalue then
+						l_left_value := l_lvalue
+						safe_process (l_right)
+						if not has_error then
+							if attached {EPA_REFERENCE_VALUE} last_value as l_rvalue then
+								l_right_value := l_rvalue
+								create {EPA_BOOLEAN_VALUE} last_value.make (l_left_value.object_equivalent_class_id = l_right_value.object_equivalent_class_id)
+								l_set := True
+							end
+						end
+					end
+				end
+
+				if not has_error and then not l_set then
+					create {EPA_BOOLEAN_VALUE} last_value.make (False)
+				end
 			end
 		end
 
 	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS)
+		local
+			l_ast: BIN_TILDE_AS
+			l_operator: SYMBOL_STUB_AS
 		do
 			if not has_error then
-				process_expression (l_as)
+				create l_operator.make ({EIFFEL_TOKENS}.te_tilde, 0, 0, 0, 0)
+				create l_ast.initialize (l_as.left, l_as.right, l_operator)
+				process_bin_tilde_as (l_ast)
+				if attached {EPA_BOOLEAN_VALUE} last_value as l_last_value then
+					create {EPA_BOOLEAN_VALUE} last_value.make (not l_last_value.item)
+				else
+					set_has_error (True, "Wrong object equality evaluation")
+				end
 			end
 		end
 
