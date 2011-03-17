@@ -39,6 +39,12 @@ feature -- Access
 			-- Key is the variale name, value is the set of expressions of the same target.
 			-- Each expression must be a qualified call, for example "v_1.count".
 
+	object_equality_comparisons: LINKED_LIST [TUPLE [a_variable1: EPA_EXPRESSION; a_variable2: EPA_EXPRESSION]]
+			-- List of variable pairs which needs object comparison
+
+	reference_equality_comparisons: LINKED_LIST [TUPLE [a_variable1: EPA_EXPRESSION; a_variable2: EPA_EXPRESSION]]
+			-- List of variable pairs which needs reference comparison
+
 	variables: HASH_TABLE [TYPE_A, STRING]
 			-- Table of variables found by last `search_for_feature'
 			-- Key is variable name, value is the resolved type of that variable
@@ -62,6 +68,8 @@ feature -- Basic operations
 			l_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_data: like variables_from_feature_signature
 		do
+			create object_equality_comparisons.make
+			create reference_equality_comparisons.make
 			l_data := variables_from_feature_signature (a_context_class, a_feature, a_context_class, a_prestate, a_is_creation, a_target_type)
 			variables := l_data.variable_types
 			operand_map := l_data.operand_map
@@ -81,6 +89,8 @@ feature -- Basic operations
 			l_finder: EPA_TYPE_BASED_FUNCTION_FINDER
 			l_context: EPA_CONTEXT
 		do
+			create object_equality_comparisons.make
+			create reference_equality_comparisons.make
 			variables := a_variables
 			create operand_map.make (0)
 			create l_finder.make_for_variables (a_variables, Void)
@@ -112,6 +122,7 @@ feature -- Basic operations
 			l_opd_name: STRING
 			l_opd_index: INTEGER
 			l_opd_type: TYPE_A
+			l_obj_comp: TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]
 		do
 			l_opd_map := operands_with_feature (a_feature)
 			create variable_expressions.make (10)
@@ -123,7 +134,8 @@ feature -- Basic operations
 			create variables.make (10)
 			variables.compare_objects
 			create operand_map.make (10)
-
+			create object_equality_comparisons.make
+			create reference_equality_comparisons.make
 
 			l_operands := variables_from_feature_signature (a_context_class, a_feature, a_root_class, True, a_creation, a_target_type)
 			l_types := l_operands.variable_types
@@ -159,6 +171,36 @@ feature -- Basic operations
 					l_subexpr := l_cursor.key
 					analyze_expression (l_subexpr, a_context_class, a_feature, l_types)
 					l_cursor.forth
+				end
+
+					-- Collect object comparison expression, and setup
+					-- object_comparisons.
+				across expression_comparison_info (l_exprs.item, True) as l_comparisons loop
+					l_obj_comp := l_comparisons.item
+					if
+						not l_obj_comp.expression1.is_constant and then
+						not l_obj_comp.expression2.is_constant and then
+						not l_obj_comp.expression1.text.has ('(') and then
+						not l_obj_comp.expression2.text.has ('(') and then
+						not l_obj_comp.expression1.text.has ('.') and then
+						not l_obj_comp.expression2.text.has ('.')
+					then
+						reference_equality_comparisons.extend ([l_obj_comp.expression1, l_obj_comp.expression2])
+					end
+				end
+
+				across expression_comparison_info (l_exprs.item, False) as l_comparisons loop
+					l_obj_comp := l_comparisons.item
+					if
+						not l_obj_comp.expression1.is_constant and then
+						not l_obj_comp.expression2.is_constant and then
+						not l_obj_comp.expression1.text.has ('(') and then
+						not l_obj_comp.expression2.text.has ('(') and then
+						not l_obj_comp.expression1.text.has ('.') and then
+						not l_obj_comp.expression2.text.has ('.')
+					then
+						object_equality_comparisons.extend ([l_obj_comp.expression1, l_obj_comp.expression2])
+					end
 				end
 			end
 		end
@@ -356,6 +398,40 @@ feature{NONE} -- Implementation
 					end
 				end
 			end
+		end
+
+	expression_comparison_info (a_expr: EPA_EXPRESSION; a_for_reference: BOOLEAN): LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+			-- Information if `a_expr' is an object (in)equality comparision between two expressions
+			-- `expression1' and `expression2' are the two expressions involved in the comparison.
+		local
+			l_equal_ast: BIN_TILDE_AS
+			l_inequal_ast: BIN_NOT_TILDE_AS
+			l_left, l_right: detachable EXPR_AS
+			l_is_equal: BOOLEAN
+			l_left_expr, l_right_expr: EPA_AST_EXPRESSION
+			l_finder: EPA_OPERAND_COMPARISON_FINDER
+		do
+			create l_finder
+			if a_for_reference then
+				l_finder.find_reference_comparisons (a_expr, a_expr.class_, a_expr.feature_)
+			else
+				l_finder.find_object_comparisons (a_expr, a_expr.class_, a_expr.feature_)
+			end
+			Result := l_finder.last_comparisons
+--			if attached {BIN_TILDE_AS} a_expr.ast as l_equal then
+--				l_is_equal := True
+--				l_left := l_equal.left
+--				l_right := l_equal.right
+--			elseif attached {BIN_NOT_TILDE_AS} a_expr.ast as l_inequal then
+--				l_is_equal := False
+--				l_left := l_inequal.left
+--				l_right := l_inequal.right
+--			end
+--			if l_left /= Void and then l_right /= Void then
+--				create l_left_expr.make_with_feature (a_expr.class_, a_expr.feature_, l_left, a_expr.written_class)
+--				create l_right_expr.make_with_feature (a_expr.class_, a_expr.feature_, l_right, a_expr.written_class)
+--				Result := [l_left_expr, l_right_expr, l_is_equal]
+--			end
 		end
 
 note

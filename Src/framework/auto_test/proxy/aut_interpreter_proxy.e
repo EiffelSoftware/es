@@ -209,6 +209,13 @@ feature -- Status
 	is_test_case_index_logging_enabled: BOOLEAN
 			-- Should `test_case_index' be logged?
 
+	is_last_test_case_executed: BOOLEAN
+			-- Is last test case executed?
+			-- True if either:
+			-- 1. the test case executed with no exception
+			-- 2. the test case executed with some exception
+			-- False if there is a precondition violation or class invariant violation in pre-state.
+
 feature -- Access
 
 	timeout: INTEGER
@@ -289,6 +296,14 @@ feature -- Settings
 			is_test_case_index_logging_enabled := b
 		ensure
 			is_test_case_index_logging_enabled_set: is_test_case_index_logging_enabled = b
+		end
+
+	set_is_last_test_case_executed (b: BOOLEAN)
+			-- Set `is_last_test_case_executed' with `b'.
+		do
+			is_last_test_case_executed := b
+		ensure
+			is_last_test_case_executed_set: is_last_test_case_executed = b
 		end
 
 feature -- Execution
@@ -566,6 +581,7 @@ feature -- Execution
 			l_object_state: AUT_OBJECT_STATE
 			l_normal_response: AUT_NORMAL_RESPONSE
 		do
+			is_last_test_case_executed := False
 			l_target_type := variable_table.variable_type (a_target)
 			l_feature := l_target_type.associated_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
@@ -599,6 +615,7 @@ feature -- Execution
 			else
 				is_ready := False
 			end
+			set_is_last_test_case_executed (is_last_test_case_executed_internal (last_request))
 			stop_process_on_problems (last_response)
 			log_speed
 
@@ -627,6 +644,7 @@ feature -- Execution
 			normal_response: AUT_NORMAL_RESPONSE
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 		do
+			is_last_test_case_executed := False
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			if a_feature /= Void then
 				l_invoke_request.set_feature_id (a_feature.id)
@@ -660,6 +678,7 @@ feature -- Execution
 			else
 				is_ready := False
 			end
+			set_is_last_test_case_executed (is_last_test_case_executed_internal (last_request))
 			stop_process_on_problems (last_response)
 			if is_ready and normal_response /= Void and then normal_response.exception = Void then
 				if not is_replaying then
@@ -2203,6 +2222,27 @@ feature -- Objec state retrieval
 			end
 			if last_response.is_bad then
 				is_ready  := False
+			end
+		end
+
+	is_last_test_case_executed_internal (a_request: AUT_REQUEST): BOOLEAN
+			-- Is last test case executed?
+		local
+			l_exception: AUT_EXCEPTION
+		do
+			if attached {AUT_CALL_BASED_REQUEST} a_request as l_request then
+				if l_request.response.is_normal then
+					if l_request.response.is_exception then
+						if attached {AUT_NORMAL_RESPONSE} l_request.response as l_normal_response and then l_normal_response.exception /= Void and then not l_normal_response.is_precondition_violation then
+							l_exception := l_normal_response.exception
+							if not l_exception.is_invariant_violation_on_feature_entry then
+								Result := True
+							end
+						end
+					else
+						Result := True
+					end
+				end
 			end
 		end
 

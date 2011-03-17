@@ -27,6 +27,12 @@ feature -- Access
 	config: detachable AUT_OBJECT_STATE_CONFIG
 			-- Configuration for object state retrieval
 
+	feature_: FEATURE_I
+			-- Feature under consideration
+
+	class_: CLASS_C
+			-- Class where `feature_' is from
+
 feature -- Setting
 
 	set_config (a_config: like config)
@@ -51,6 +57,8 @@ feature -- Basic operations
 			l_finder: AUT_OBJECT_STATE_EXPRESSION_FINDER
 			l_operands: like operands_of_feature
 		do
+			should_return_reference_operand_address := False
+
 				-- Search for expressions that are included in state model.
 			create l_finder.make
 			l_finder.search_for_feature (a_context_class, a_feature, a_prestate, a_is_creation, interpreter_root_class, a_target_type)
@@ -79,6 +87,7 @@ feature -- Basic operations
 			l_cursor: CURSOR
 			l_operand_map: like operand_map
 		do
+			should_return_reference_operand_address := False
 			create l_variables.make (a_objects.count)
 			l_variables.compare_objects
 			l_cursor := a_objects.cursor
@@ -130,12 +139,18 @@ feature -- Basic operations
 		local
 			l_finder: AUT_OBJECT_STATE_EXPRESSION_FINDER
 		do
+			should_return_reference_operand_address := True
+			feature_ := a_feature
+			class_ := a_context_class
+
 				-- Collect expressions to evalute.
 			create l_finder.make
 			l_finder.search_for_expressions (a_context_class, a_feature, a_is_creation, a_expressions, interpreter_root_class, a_target_type)
 			variables := l_finder.variables
 			attributes_by_target := l_finder.attributes_by_target
 			functions_by_target := l_finder.functions_by_target
+			object_equality_comparisons := l_finder.object_equality_comparisons
+			reference_equality_comparisons := l_finder.reference_equality_comparisons
 			operand_map := l_finder.operand_map
 
 				-- Generate body for the expression evaluation feature.
@@ -143,6 +158,9 @@ feature -- Basic operations
 		end
 
 feature{NONE} -- Implementation
+
+	should_return_reference_operand_address: BOOLEAN
+			-- Should address of operands of reference types be returned?
 
 	generate_feature_text
 			-- Generate `feature_text'.
@@ -162,6 +180,8 @@ feature{NONE} -- Implementation
 			feature_text.append ("create vtbl.make (5)%N")
 			generate_variable_lookup
 			generate_state_retrieval
+			generate_object_comparison (True)
+			generate_object_comparison (False)
 		end
 
 	generate_variable_lookup
@@ -266,6 +286,15 @@ feature{NONE} -- Implementation
 					l_text.append (once "is_last_invariant_violated := False%N")
 					l_text.append ("else%N")
 
+					if should_return_reference_operand_address then
+						l_text.append (once "record_evaluated_value (%"")
+						l_text.append (double_square_surrounded_integer (l_map_cursor.key))
+						l_text.append (once "%", ")
+						l_text.append (l_var_name)
+						l_text.append_character (')')
+						l_text.append_character ('%N')
+					end
+					
 						-- Generate attribute queries.
 					l_attrs_by_target.search (l_var_name)
 					if l_attrs_by_target.found then
@@ -352,6 +381,51 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	generate_object_comparison (a_for_reference: BOOLEAN)
+			-- Generate code to do object comparison.
+		local
+			l_text: like feature_text
+			l_opd_map: like operands_of_feature
+			l_opd_index1, l_opd_index2: INTEGER
+			l_pairs: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+		do
+			if a_for_reference then
+				l_pairs := reference_equality_comparisons
+			else
+				l_pairs := object_equality_comparisons
+			end
+			l_opd_map := operands_of_feature (feature_)
+			l_text := feature_text
+			across l_pairs as l_comparisons loop
+				if l_opd_map.has (l_comparisons.item.expression1.text) and then l_opd_map.has (l_comparisons.item.expression2.text) then
+					l_opd_index1 := l_opd_map.item (l_comparisons.item.expression1.text)
+					l_opd_index2 := l_opd_map.item (l_comparisons.item.expression2.text)
+					if a_for_reference then
+						l_text.append (once "record_reference_equality_comparison_value (%"")
+					else
+						l_text.append (once "record_object_equality_comparison_value (%"")
+					end
+					l_text.append (double_square_surrounded_integer (l_opd_index1))
+					if a_for_reference then
+						l_text.append (once " = ")
+					else
+						l_text.append (once " ~ ")
+					end
+
+					l_text.append (double_square_surrounded_integer (l_opd_index2))
+					l_text.append_character ('%"')
+					l_text.append_character (',')
+					l_text.append_character (' ')
+					l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index1.out)
+					l_text.append_character (',')
+					l_text.append_character (' ')
+					l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index2.out)
+					l_text.append_character (')')
+					l_text.append_character ('%N')
+				end
+			end
+		end
+
 	generate_locals
 			-- Generate local definitions for `feature_text'.
 		local
@@ -392,6 +466,12 @@ feature{NONE} -- Implementation
 			-- Key is the variale name, value is the set of expressions of the same target.
 			-- Each expression must be a qualified call, for example "v_1.count".
 
+	object_equality_comparisons: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+			-- Object equality comparision pairs
+
+	reference_equality_comparisons: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+			-- Reference equality comparision pairs
+
 	variables: HASH_TABLE [TYPE_A, STRING]
 			-- Table of variables found by last `search_for_feature'
 			-- Key is variable name, value is the resolved type of that variable
@@ -404,7 +484,7 @@ feature{NONE} -- Implementation
 			-- Name of variable with `a_index'.
 		do
 			create Result.make (5)
-			Result.append (once "v_")
+			Result.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix)
 			Result.append (a_index.out)
 		end
 

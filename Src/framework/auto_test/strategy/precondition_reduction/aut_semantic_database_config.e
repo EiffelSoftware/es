@@ -50,7 +50,6 @@ feature -- Access
 			Result.set_password (password)
 			Result.set_database (schema)
 			Result.set_port (port)
-			Result.connect
 		end
 
 feature -- Setting

@@ -395,6 +395,30 @@ feature -- Class/feature related
 			end
 		end
 
+	operand_expressions_with_feature (a_class: CLASS_C; a_feature: FEATURE_I): HASH_TABLE [EPA_EXPRESSION, INTEGER]
+			-- Operands and their positions of `a_feature', including target and possible
+			-- returned Result. Operand positions are 0-based, with 0 indicates the target.
+			-- Key is an operand position, value is the operand name.
+			-- The result is inversed `operands_of_feature'.
+		local
+			l_operands: like operands_of_feature
+			l_cursor: like operands_of_feature.new_cursor
+			l_expr: EPA_AST_EXPRESSION
+		do
+			l_operands := operands_of_feature (a_feature)
+			create Result.make (l_operands.count)
+			from
+				l_cursor := l_operands.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				create l_expr.make_with_text (a_class, a_feature, l_cursor.key, a_feature.written_class)
+				Result.force (l_expr, l_cursor.item)
+				l_cursor.forth
+			end
+		end
+
 	operand_types_with_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): DS_HASH_TABLE [TYPE_A, INTEGER]
 			-- Types of operands of `a_feature' in the context of `a_context_class'.
 			-- Result is a table, key is the 0-based operand index, 0 indicates the target,

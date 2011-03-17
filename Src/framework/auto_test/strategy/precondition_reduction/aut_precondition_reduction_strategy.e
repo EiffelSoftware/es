@@ -47,6 +47,11 @@ inherit
 
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
+	EPA_STRING_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -54,8 +59,6 @@ feature {NONE} -- Initialization
 
 	make (a_interpreter: like interpreter; a_system: like system; an_error_handler: like error_handler)
 			-- Create new strategy.		
-		local
-			l_log_file_name: FILE_NAME
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
 			create prestate_invariants.make
@@ -73,6 +76,7 @@ feature {NONE} -- Initialization
 			tautologies_by_feature.compare_objects
 
 			connection := interpreter.configuration.semantic_database_config.connection
+			connection.connect
 			load_prestate_invariants
 
 			if configuration.should_check_invariant_violating_objects then
@@ -81,23 +85,18 @@ feature {NONE} -- Initialization
 				check_invariant_violating_objects (prestate_invariants)
 				prestate_invariants.wipe_out
 			else
-				create l_log_file_name.make_from_string (configuration.output_dirname)
-				l_log_file_name.set_file_name ("queries.txt")
-				create log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_log_file_name)>>)
-				log_manager.set_start_time_as_now
-				log_manager.set_duration_time_mode
+				setup_query_log_manager
+				setup_progress_log_manager
+
+					-- Setup object retriever which can get objects
+					-- from semantic search database.
 				create object_retriever
-				object_retriever.set_log_manager (log_manager)
+				object_retriever.set_log_manager (query_log_manager)
 			end
 		end
 
-	log_manager: ELOG_LOG_MANAGER
-			-- Manger to print information
-
-	object_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
-			-- Retriever to get objects from semantic database
-
 feature -- Status report
+
 
 	has_next_step: BOOLEAN
 			-- <Precursor>
@@ -130,31 +129,73 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
 			l_objects: LINKED_LIST [SEMQ_RESULT]
 			l_breaker: AUT_FEATURE_PRECONDITION_BREAKER
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_tautologies: like tautology_predicates
 		do
 				-- Get, and remove, one invariant to process each step.
 			current_invariant := prestate_invariants.first
+			l_class := current_invariant.context_class
+			l_feature := current_invariant.feature_
+
+			progress_log_manager.put_string_with_time ("Try to break: " + class_name_dot_feature_name (current_invariant.context_class, current_invariant.feature_) + " : " + current_invariant.text)
 			prestate_invariants.start
 			prestate_invariants.remove
 
-			object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection)
-			l_objects := object_retriever.last_objects
-			if l_objects /= Void and then not l_objects.is_empty then
-				create {AUT_FEATURE_PRECONDITION_BREAKER} sub_task.make (system, interpreter, error_handler, current_invariant, l_objects)
-				from sub_task.start
-				until not sub_task.has_next_step
-				loop
-					if interpreter.is_running and not interpreter.is_ready then
-						interpreter.stop
-					end
-					if not interpreter.is_running then
-						interpreter.start
-						assign_void
-					end
-					if interpreter.is_running and interpreter.is_ready then
-						sub_task.step
+				-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.
+				-- If so, we don't need to do anything, because by definition, that pre-state invariant cannot be violated.
+			l_tautologies := tautology_predicates (l_class, l_feature, invariants_as_expressions (prestate_invariants_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
+			if l_tautologies.has (current_invariant.expression) then
+				progress_log_manager.put_line (" [Tautology]")
+			else
+					-- We try to search in the semantic database to see if there are some object combination
+					-- which violates the pre-state invariant. If so, we use those objects as our new test inputs.
+				object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection)
+				if connection.last_error_number /= 0 then
+					connection.close
+					connection.dispose
+					connection := interpreter.configuration.semantic_database_config.connection
+					connection.connect
+					progress_log_manager.put_line (" [Database problem]")
+				else
+					l_objects := object_retriever.last_objects
+					if l_objects /= Void and then not l_objects.is_empty then
+						create l_breaker.make (system, interpreter, error_handler, current_invariant, l_objects)
+						sub_task := l_breaker
+						execute_task (sub_task)
+
+						if l_breaker.is_last_test_case_executed and then (l_breaker.value_of_current_invariant_before_test = False) then
+							progress_log_manager.put_line (" [Violated]")
+						else
+							progress_log_manager.put_line (" [Not violated]")
+						end
 					else
-						sub_task.cancel
+						progress_log_manager.put_line (" [No object]")
 					end
+				end
+			end
+		end
+
+	execute_task (a_task: AUT_TASK)
+			-- Execute `a_task' until it is finished.
+		do
+			from
+				a_task.start
+			until
+				not a_task.has_next_step
+			loop
+				if interpreter.is_running and not interpreter.is_ready then
+					interpreter.stop
+				end
+				if not interpreter.is_running then
+					a_task.cancel
+					interpreter.start
+					assign_void
+				end
+				if interpreter.is_running and interpreter.is_ready then
+					a_task.step
+				else
+					a_task.cancel
 				end
 			end
 		end
@@ -263,6 +304,9 @@ feature{NONE} -- Implementation/precondition reduction
 				l_cursor.forth
 			end
 		end
+
+	object_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+			-- Retriever to get objects from semantic database
 
 feature{NONE} -- Invariant-violating invariants checking
 
@@ -413,71 +457,39 @@ feature{NONE} -- Invariant-violating invariants checking
 					l_cursor.forth
 				end
 			end
+			Result.extend (create {EPA_AST_EXPRESSION}.make_with_text (a_class, a_feature, "Current ~ v", a_class))
 		end
 
-	expression_evaluations_in_feature_context (a_class: CLASS_C; a_feature: FEATURE_I; a_source: HASH_TABLE [STRING, STRING]; a_operand_map: HASH_TABLE [INTEGER, INTEGER]; a_target: LINKED_LIST [EPA_EXPRESSION]): EPA_STATE
-			-- Evaluations of expressions in `a_target' based on expressions in `a_source' in the context of `a_feature' from `a_class'
-			-- Expressions in `a_source' mentions objects in the object pool, so the expressions will be
-			-- something like "v_10.has (v_2)". `a_operand_map' is a mapping from operand indexs to object ids in the object pool.
-			-- Keys are 0-based operand indexes from `a_feature', values are the IDs of objects in the object pool.
-			-- The result is a state (expression-value pairs), the expressions in the result is in operand-format, for example,
-			-- "Current.has (v)".
+feature{NONE} -- Logging
+
+	query_log_manager: ELOG_LOG_MANAGER
+			-- Manger to print executed SQL statement information
+
+	progress_log_manager: ELOG_LOG_MANAGER
+			-- Manager to log progress of precondition reduction
+
+	setup_query_log_manager
+			-- Setup `query_log_manager'.
 		local
-			l_replacements: HASH_TABLE [STRING, STRING]
-			l_opd_names: like operands_with_feature
-			l_opd_name: STRING
-			l_obj_id: STRING
-			l_source_expr: EXPR_AS
-			l_target_expr: EPA_AST_EXPRESSION
-			l_target_expr_text: STRING
-			l_value_text: STRING
-			l_value: EPA_EXPRESSION_VALUE
-			l_expr_value_pair: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
-			l_source_state: EPA_STATE
-			l_evaluator: EPA_EXPRESSION_EVALUATOR
+			l_log_file_name: FILE_NAME
 		do
-				-- Setup the name mapping from object ids in object pool to
-				-- operand names. For example v_10 -> Current, v_2 -> v.
-			create l_replacements.make (a_operand_map.count)
-			l_replacements.compare_objects
-			l_opd_names := operands_with_feature (a_feature)
-			across a_operand_map as l_map loop
-				l_opd_name := l_opd_names.item (l_map.key)
-				l_obj_id := variable_name_prefix + l_map.item.out
-				l_replacements.force (l_opd_name, l_obj_id)
-			end
+			create l_log_file_name.make_from_string (configuration.log_dirname)
+			l_log_file_name.set_file_name ("precondition_reduction_queries.txt")
+			create query_log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_log_file_name)>>)
+			query_log_manager.set_start_time_as_now
+			query_log_manager.set_duration_time_mode
+		end
 
-				-- Translate all expressions in `a_source', which mention object ids into
-				-- operand-name format, which only mention operand names in the context of `a_feature'.
-			create l_expr_value_pair.make (a_source.count)
-			l_expr_value_pair.set_key_equality_tester (expression_equality_tester)
-			across a_source as l_sources loop
-				l_source_expr := ast_from_expression_text (l_sources.item)
-				l_target_expr_text := expression_rewriter.ast_text (l_source_expr, l_replacements)
-				create l_target_expr.make_with_text (a_class, a_feature, l_target_expr_text, a_class)
-				if l_target_expr.type /= Void then
-					l_value_text := l_sources.item
-					l_value := expression_value_from_string (l_value_text)
-					if l_value /= Void then
-						l_expr_value_pair.force_last (l_value, l_target_expr)
-					end
-				end
-			end
-			create l_source_state.make_from_expression_value_pairs (l_expr_value_pair, a_class, a_feature)
-
-				-- Evaluate expressions from `a_target' based on `l_source_state'.
-			create l_evaluator
-			l_evaluator.set_context (l_source_state, l_source_state, a_class)
-			create l_expr_value_pair.make (a_target.count)
-			l_expr_value_pair.set_key_equality_tester (expression_equality_tester)
-			across a_target as l_targets loop
-				l_evaluator.evaluate (l_targets.item.ast)
-				l_value := l_evaluator.last_value
-				if l_value /= Void then
-					l_expr_value_pair.force_last (l_value, l_targets.item)
-				end
-			end
-			create Result.make_from_expression_value_pairs (l_expr_value_pair, a_class, a_feature)
+	setup_progress_log_manager
+			-- Setup `progress_log_manager'.
+		local
+			l_log_file_name: FILE_NAME
+		do
+			create l_log_file_name.make_from_string (configuration.log_dirname)
+			l_log_file_name.set_file_name ("precondition_reduction_progress.txt")
+			create progress_log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_log_file_name), create {ELOG_CONSOLE_LOGGER}>>)
+			progress_log_manager.set_start_time_as_now
+			progress_log_manager.set_duration_time_mode
 		end
 
 note
@@ -512,3 +524,4 @@ note
 			Customer support http://support.eiffel.com
 		]"
 end
+

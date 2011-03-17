@@ -985,15 +985,7 @@ feature -- Object state checking
 				query_values.put (void_value, a_query_name)
 			else
 				l_internal := internal
-				l_type := l_internal.dynamic_type (a_value)
-				if
-					l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.real_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.double_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.character_type)
-				then
+				if special_type_mapping.has (l_internal.dynamic_type (a_value)) then
 					l_value := a_value.out
 					query_values.put (l_value, a_query_name)
 					query_value_hash_list.extend (l_value.hash_code)
@@ -1079,9 +1071,6 @@ feature -- Object state checking
 		local
 			l_retried: BOOLEAN
 			l_result: detachable ANY
-			l_internal: like internal
-			l_type: INTEGER
-			l_value: STRING
 		do
 			if not l_retried then
 				l_result := a_query.item (Void)
@@ -1093,6 +1082,64 @@ feature -- Object state checking
 			log_query_evaluation_failure (a_query_name, Void, exception_trace)
 			l_retried := True
 			retry
+		end
+
+	record_object_equality_comparison_value (a_query_name: STRING; a_obj1: detachable ANY; a_obj2: detachable ANY)
+			-- Record the value of the object equality comparison between `a_obj1' and `a_obj2',
+			-- and store result in `query_values'.
+		require
+			a_query_attached: a_query_name /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: BOOLEAN
+			l_agent: FUNCTION [ANY, TUPLE [detachable ANY, detachable ANY], BOOLEAN]
+		do
+			if not l_retried then
+				l_agent := agent is_object_equal
+				l_result := l_agent.item ([a_obj1, a_obj2])
+				record_evaluated_value (a_query_name, l_result)
+			end
+		rescue
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_query_evaluation_failure (a_query_name, Void, exception_trace)
+			l_retried := True
+			retry
+		end
+
+	record_reference_equality_comparison_value (a_query_name: STRING; a_obj1: detachable ANY; a_obj2: detachable ANY)
+			-- Record the value of the reference equality comparison between `a_obj1' and `a_obj2',
+			-- and store result in `query_values'.
+		require
+			a_query_attached: a_query_name /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: BOOLEAN
+			l_agent: FUNCTION [ANY, TUPLE [detachable ANY, detachable ANY], BOOLEAN]
+		do
+			if not l_retried then
+				l_agent := agent is_reference_equal
+				l_result := l_agent.item ([a_obj1, a_obj2])
+				record_evaluated_value (a_query_name, l_result)
+			end
+		rescue
+			query_values.put (nonsensical_value, a_query_name)
+			query_value_hash_list.extend (nonsensical_value.hash_code)
+			log_query_evaluation_failure (a_query_name, Void, exception_trace)
+			l_retried := True
+			retry
+		end
+
+	is_object_equal (a_obj1: detachable ANY; a_obj2: detachable ANY): BOOLEAN
+			-- Is `a_obj1' object equal to `a_obj2'?
+		do
+			Result := a_obj1 ~ a_obj2
+		end
+
+	is_reference_equal (a_obj1: detachable ANY; a_obj2: detachable ANY): BOOLEAN
+			-- Is `a_obj1' reference equal to `a_obj2'?
+		do
+			Result := a_obj1 = a_obj2
 		end
 
 	log_query_evaluation_failure (a_query_name: STRING; a_argument: detachable ANY; a_trace: STRING)
@@ -1140,27 +1187,19 @@ feature -- Object state checking
 			l_retried: BOOLEAN
 			l_result: detachable ANY
 			l_internal: like internal
-			l_type: INTEGER
 			l_value: STRING
 		do
 			if a_value = Void then
 				query_values.put (void_value, a_query_name)
 			else
 				l_internal := internal
-				l_type := l_internal.dynamic_type (a_value)
-				if
-					l_internal.type_conforms_to (l_type, l_internal.integer_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.boolean_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.real_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.double_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.pointer_type) or else
-					l_internal.type_conforms_to (l_type, l_internal.character_type)
-				then
+				if special_type_mapping.has (l_internal.dynamic_type (a_value)) then
 					l_value := a_value.out
 					query_values.put (l_value, a_query_name)
 					query_value_hash_list.extend (l_value.hash_code)
 				else
 					l_value := ($a_value).out
+
 					query_values.put (l_value, a_query_name)
 					query_value_hash_list.extend (reference_value.hash_code)
 				end
@@ -1618,6 +1657,36 @@ feature -- Semantic search
 
 	is_batch_assignment: BOOLEAN
 			-- Is last request a batch-assignment?
+
+	special_type_mapping: HASH_TABLE [INTEGER, INTEGER]
+			-- Mapping betwwen dynamic type of SPECIAL instances
+			-- to abstract element types.
+		local
+			l_int: INTERNAL
+		once
+			create l_int
+			create Result.make (10)
+			Result.put ({INTERNAL}.boolean_type, ({BOOLEAN}).type_id)
+			Result.put ({INTERNAL}.character_8_type, ({CHARACTER_8}).type_id)
+			Result.put ({INTERNAL}.character_32_type, ({CHARACTER_32}).type_id)
+
+			Result.put ({INTERNAL}.natural_8_type, ({NATURAL_8}).type_id)
+			Result.put ({INTERNAL}.natural_16_type, ({NATURAL_16}).type_id)
+			Result.put ({INTERNAL}.natural_32_type, ({NATURAL_32}).type_id)
+			Result.put ({INTERNAL}.natural_64_type, ({NATURAL_64}).type_id)
+
+			Result.put ({INTERNAL}.integer_8_type, ({INTEGER_8}).type_id)
+			Result.put ({INTERNAL}.integer_16_type, ({INTEGER_16}).type_id)
+			Result.put ({INTERNAL}.integer_32_type, ({INTEGER_32}).type_id)
+			Result.put ({INTERNAL}.integer_64_type, ({INTEGER_64}).type_id)
+
+			Result.put ({INTERNAL}.real_32_type, ({REAL_32}).type_id)
+			Result.put ({INTERNAL}.real_64_type, ({REAL_64}).type_id)
+
+			Result.put ({INTERNAL}.pointer_type, ({POINTER}).type_id)
+		ensure
+			special_type_mapping_not_void: Result /= Void
+		end
 
 invariant
 	log_file_open_write: log_file.is_open_write

@@ -35,7 +35,8 @@ inherit
 			process_bin_not_tilde_as,
 			process_tuple_as,
 			process_un_free_as,
-			process_bin_free_as
+			process_bin_free_as,
+			process_current_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -335,6 +336,11 @@ feature{NONE} -- Implementation
 --		end
 
 feature{NONE} -- Implementation
+
+	process_current_as (l_as: CURRENT_AS)
+		do
+			process_expression (l_as)
+		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do

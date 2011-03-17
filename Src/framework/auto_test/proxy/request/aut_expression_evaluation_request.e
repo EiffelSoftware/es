@@ -21,6 +21,7 @@ feature{NONE} -- Initialization
 			context_class := a_class
 			feature_ := a_feature
 			expressions := a_expressions
+			operand_map := a_operand_map
 		end
 
 feature -- Access
@@ -52,10 +53,12 @@ feature -- Access
 			-- `post_state_byte_code' is to be executed after the test case execution.
 		local
 			l_gen: AUT_OBJECT_STATE_RETRIEVAL_FEATURE_GENERATOR
+			l_text: STRING
 		do
 			create l_gen
 			l_gen.generate_for_expressions (expressions, context_class, feature_, False, False, context_class.constraint_actual_type)
-			Result := [feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_gen.feature_text, True).byte_code, Void]
+			l_text := text_with_actual_objects (l_gen.feature_text, operand_map)
+			Result := [feature_byte_code_with_text (interpreter_root_class, feature_for_byte_code_injection, once "feature " + l_text, True).byte_code, Void]
 		end
 
 note
