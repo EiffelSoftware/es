@@ -87,6 +87,7 @@ feature {NONE} -- Implementation
 				l_observer.after or l_result /= 0
 			loop
 				l_ribbon := l_observer.item.ribbon
+				check should_not_void: l_ribbon /= Void end
 				if l_ribbon /= Void and then l_ribbon.command_handler = a_command_handler then
 					l_result := l_observer.item.update_property (a_command_id, a_property_key, a_property_current_value, a_property_new_value)
 				end

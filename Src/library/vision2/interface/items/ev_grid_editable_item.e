@@ -65,12 +65,10 @@ feature -- Action
 				if not user_cancelled_activation and then (validation_agent = Void or else (attached validation_agent as l_validation_agent and then l_validation_agent.item ([l_text_field.text]))) then
 					set_text (l_text_field.text)
 				end
-			end
-			if attached text_field as l_text_field then
 				l_text_field.destroy
 				text_field := Void
+				Precursor {EV_GRID_LABEL_ITEM}
 			end
-			Precursor {EV_GRID_LABEL_ITEM}
 		end
 
 feature {NONE} -- Implementation
@@ -87,14 +85,15 @@ feature {NONE} -- Implementation
 			l_parent: like parent
 		do
 			a_widget := a_popup.item
+
+			l_parent := parent
+			check l_parent /= Void end
+
 				-- Account for position of text relative to pixmap.
 			l_x_offset := left_border
 			if attached pixmap as l_pixmap then
 				l_x_offset := l_x_offset + l_pixmap.width + spacing
 			end
-
-			l_parent := parent
-			check l_parent /= Void end
 
 			l_x_coord := (virtual_x_position + l_x_offset) - l_parent.virtual_x_position
 			l_x_coord := l_x_coord.max (0).min (l_x_offset)
@@ -134,13 +133,14 @@ feature {NONE} -- Implementation
 			create l_text_field
 			text_field := l_text_field
 
-				-- Hide the border of the text field.
-			l_text_field.implementation.hide_border
 			if attached font as l_font then
 				l_text_field.set_font (l_font)
 			end
-
 			l_text_field.set_text (text)
+
+				-- Hide the border of the text field.
+				-- This may trigger a minimum size calculation so it is performed after the contents have been updated.
+			l_text_field.implementation.hide_border
 
 			l_bg_color := implementation.displayed_background_color
 			l_text_field.set_background_color (l_bg_color)
@@ -154,17 +154,6 @@ feature {NONE} -- Implementation
 			popup_window.show_actions.extend (agent initialize_actions)
 		end
 
-	deactivate_from_focus_loss
-			-- Called when the activation window has lost focus
-		local
-			l_parent: EV_GRID
-		do
-			l_parent := parent
-			if l_parent = Void or else not l_parent.has_focus then
-				deactivate
-			end
-		end
-
 	initialize_actions
 			-- Setup the action sequences when the item is shown.
 		local
@@ -173,7 +162,7 @@ feature {NONE} -- Implementation
 			l_text_field := text_field
 			check l_text_field /= Void end
 			l_text_field.return_actions.extend (agent deactivate)
-			l_text_field.focus_out_actions.extend (agent deactivate_from_focus_loss)
+			l_text_field.focus_out_actions.extend (agent deactivate)
 			l_text_field.set_focus
 			l_text_field.set_caret_position (l_text_field.text.count + 1)
 			user_cancelled_activation := False

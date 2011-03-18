@@ -181,7 +181,8 @@ feature {NONE} -- Implementation
 		do
 			-- Add application menu to first
 			-- FIXME: what about application menu for other windows?
-			if attached shared.layout_constructor_list.first.widget.i_th (2) as l_application_menu then
+			if shared.layout_constructor_list.first.widget.valid_index (2) and then
+				attached shared.layout_constructor_list.first.widget.i_th (2) as l_application_menu then
 				if attached l_application_menu.parent as l_parent then
 					l_parent.prune_all (l_application_menu)
 				end
@@ -197,8 +198,30 @@ feature {NONE} -- Implementation
 		do
 			if attached a_application_menu as l_application_menu then
 				l_layout_constructor := shared.layout_constructor_list.first
+				remove_application_menu_node (a_application_menu)
 				l_layout_constructor.widget.extend (l_application_menu)
 				l_layout_constructor.expand_tree
+			end
+		end
+
+	remove_application_menu_node (a_application_menu: EV_TREE_NODE)
+			-- Remove ApplicationMenu node, move its items to upper level Ribbon.ApplicationMenu
+		require
+			not_void: a_application_menu /= Void
+			valid: a_application_menu.text.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu)
+		do
+			check a_application_menu.count = 1 end
+			if attached a_application_menu.i_th (1) as l_ribbon_menu then
+				a_application_menu.wipe_out
+				from
+					l_ribbon_menu.start
+				until
+					l_ribbon_menu.after
+				loop
+					a_application_menu.extend (l_ribbon_menu.item)
+
+					l_ribbon_menu.forth
+				end
 			end
 		end
 end

@@ -93,10 +93,10 @@ feature -- Command
 		do
 			item_source := a_item_source
 
-			l_command_id := command_list.item (command_list.lower)
-			check command_id_valid: l_command_id /= 0 end
-
 			if attached ribbon as l_ribbon then
+				l_command_id := command_list.item (command_list.lower)
+				check command_id_valid: l_command_id /= 0 end
+
 				create l_key.make_items_source
 				create l_enum
 				l_ribbon.invalidate (l_command_id, l_enum.ui_invalidations_property, l_key)

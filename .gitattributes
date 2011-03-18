@@ -2380,18 +2380,26 @@ Src/examples/obsolete/vision2/test_all_widgets/pixmaps/vision_tower.xpm -text sv
 Src/examples/preferences/display.png -text
 Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
-Src/examples/ribbon/simple/res/AddTableL.bmp -text
-Src/examples/ribbon/simple/res/AddTableS.bmp -text
-Src/examples/ribbon/simple/res/Button_Image.bmp -text
-Src/examples/ribbon/simple/res/Copy.bmp -text
-Src/examples/ribbon/simple/res/Cut.bmp -text
-Src/examples/ribbon/simple/res/DeleteTableL.bmp -text
-Src/examples/ribbon/simple/res/DeleteTableS.bmp -text
-Src/examples/ribbon/simple/res/ExitL.bmp -text
-Src/examples/ribbon/simple/res/Paste.bmp -text
-Src/examples/ribbon/simple/res/PrintRelationshipsL.bmp -text
-Src/examples/ribbon/simple/res/PrintRelationshipsS.bmp -text
-Src/examples/ribbon/simple/ribbon.bml -text
+Src/examples/ribbon/all_widgets_basic/res/AddTableL.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/res/ExitL.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/res/Paste.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/res/PrintRelationshipsS.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/ribbon.bml -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/ribbon_project.er svneol=native#unset
+Src/examples/ribbon/all_widgets_complex/eiffelribbon.rc -text
+Src/examples/ribbon/all_widgets_complex/res/AddTableL.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/AddTableS.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/Button_Image.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/Copy.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/Cut.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/DeleteTableL.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/DeleteTableS.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/ExitL.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/Paste.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/PrintRelationshipsL.bmp -text
+Src/examples/ribbon/all_widgets_complex/res/PrintRelationshipsS.bmp -text
+Src/examples/ribbon/all_widgets_complex/ribbon.bml -text
+Src/examples/ribbon/all_widgets_complex/ribbon_project.er -text
 Src/examples/store/extended_select/data.sql.mysql -text
 Src/examples/store/select/data.sql.mysql -text
 Src/examples/thread/fancy/fancy.ico svneol=native#unset
