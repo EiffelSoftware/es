@@ -20,6 +20,22 @@ feature -- Access
 			-- Expressions that define the result of the feature
 			-- which was applied to `find' for the last time.
 
+feature -- Status report
+
+	is_non_equation_allowed: BOOLEAN
+			-- Should result defining postconditions other than "=" and "~" be allowed?
+			-- Default: False
+
+feature -- Setting
+
+	set_is_non_equation_allowed (b: BOOLEAN)
+			-- Set `is_non_equation_allowed' with `b'.
+		do
+			is_non_equation_allowed := b
+		ensure
+			is_non_equation_allowed_set: is_non_equation_allowed = b
+		end
+
 feature -- Basic operations
 
 	find (a_context_class: CLASS_C; a_feature: FEATURE_I; a_postconditions: LINKED_LIST [EPA_EXPRESSION])
@@ -61,6 +77,10 @@ feature{NONE} -- Implementation
 					if text_from_ast (l_equal_as.left).is_case_insensitive_equal (ti_result) then
 						create {EPA_AST_EXPRESSION} Result.make_with_text (a_assertion.class_, a_assertion.feature_, text_from_ast (l_equal_as.right), a_assertion.written_class)
 					end
+				end
+			elseif is_non_equation_allowed and then attached {BINARY_AS} l_ast as l_bin then
+				if text_from_ast (l_bin.left).is_case_insensitive_equal (ti_result) then
+					create {EPA_AST_EXPRESSION} Result.make_with_feature (a_assertion.class_, a_assertion.feature_, l_ast, a_assertion.written_class)
 				end
 
 --			elseif attached {BIN_IMPLIES_AS} l_ast as l_implies_as then

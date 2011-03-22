@@ -22,8 +22,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			expression := a_expr.twin
-		ensure
-			expression_set: expression ~ a_expr
+			expression.replace_substring_all (once "Current.Current", once "Current")
 		end
 
 feature -- Status report

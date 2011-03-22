@@ -37,8 +37,7 @@ create
 
 feature{NONE} -- Implementation
 
-	make (a_system: like system; a_interpreter: like interpreter; a_error_handler: like error_handler;
-				a_invariant: like current_invariant; a_combinations: LINKED_LIST [SEMQ_RESULT])
+	make (a_system: like system; a_interpreter: like interpreter; a_error_handler: like error_handler; a_invariant: like current_invariant; a_combinations: LINKED_LIST [SEMQ_RESULT])
 			-- Initialization.
 		require
 			invariant_attached: a_invariant /= Void
@@ -112,6 +111,8 @@ feature -- Execute
 			l_exprs: LINKED_LIST [EPA_EXPRESSION]
 			l_opds: like operand_expressions_with_feature
 			l_opd_expr: EPA_AST_EXPRESSION
+			l_types: like resolved_operand_types_with_feature
+			l_should_test: BOOLEAN
 		do
 			current_combination := object_combinations.first
 			object_combinations.remove_first
@@ -133,15 +134,22 @@ feature -- Execute
 				if interpreter.is_executing and then interpreter.is_ready and then not has_error then
 						-- Evaluate pre-state invariants to see if they are indeed broken.
 					create l_exprs.make
+					l_types := resolved_operand_types_with_feature (feature_, class_, class_.constraint_actual_type)
 					l_exprs.extend (current_invariant.expression)
 					l_opds := operand_expressions_with_feature (class_, feature_)
-					across operand_for_invocation as l_operands loop
-						l_exprs.extend (l_opds.item (l_operands.key))
+					l_should_test := True
+					across operand_for_invocation as l_operands until not l_should_test loop
+						l_should_test := l_operands.item.type.conform_to (class_, l_types.item (l_operands.key))
+						if l_should_test then
+							l_exprs.extend (l_opds.item (l_operands.key))
+						end
 					end
-					interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated)
+					if l_should_test then
+						interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated)
+					end
 				end
 
-				if interpreter.is_executing and then interpreter.is_ready and then not has_error then
+				if l_should_test and then interpreter.is_executing and then interpreter.is_ready and then not has_error then
 					is_last_test_case_executed := False
 					invoke_feature_with_operands
 					is_last_test_case_executed := interpreter.is_last_test_case_executed

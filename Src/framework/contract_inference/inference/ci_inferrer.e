@@ -542,8 +542,9 @@ feature{NONE} -- Candidate validation
 			end
 		end
 
-	candidate_property (a_clauses: DS_HASH_SET [STRING]; a_operand_string_table: HASH_TABLE [STRING, INTEGER]): TUPLE [function: EPA_FUNCTION; operand_map: HASH_TABLE [INTEGER, INTEGER]]
+	candidate_property (a_clauses: DS_HASH_SET [STRING]; a_connector: STRING; a_operand_string_table: HASH_TABLE [STRING, INTEGER]): TUPLE [function: EPA_FUNCTION; operand_map: HASH_TABLE [INTEGER, INTEGER]]
 			-- Candidate property cosisting all clauses in `a_clauses'
+			-- `a_connector' is the operator to connect different `a_clauses', can be either "or" or "and".
 			-- `a_operand_string_table' is a table from 0-based operand index to curly brace surrounded indexes, for example 0 -> {0}.
 			-- `function' is the function representation for the returned candidate property.
 			-- `operand_map' is 1-based argument index in the function to 0-based operand index in the feature call.
@@ -582,7 +583,9 @@ feature{NONE} -- Candidate validation
 					l_func_text.append (l_cursor.item)
 				end
 				if i < l_count then
-					l_func_text.append (once " or ")
+					l_func_text.append_character (' ')
+					l_func_text.append (a_connector)
+					l_func_text.append_character (' ')
 				end
 				l_cursor.forth
 				i := i + 1

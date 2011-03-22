@@ -203,6 +203,8 @@ feature -- Basic operations
 			l_expr: EPA_AST_EXPRESSION
 			l_exp: EPA_EXPRESSION
 			l_str: STRING
+			l_extra: LINKED_LIST [EPA_EXPRESSION]
+			l_text: STRING
 		do
 				-- Collect all features under consideration.
 			create l_feat_selector
@@ -217,6 +219,7 @@ feature -- Basic operations
 				--    check if the query implementation is a single assignment to "Result".
 			create l_extractor
 			create l_finder
+			l_finder.set_is_non_equation_allowed (True)
 			create l_post_gen
 			l_post_gen.set_should_generate_for_features_with_argument (True)
 			l_post_gen.set_should_generate_for_features_with_precondition (True)
@@ -226,31 +229,45 @@ feature -- Basic operations
 				l_posts := l_extractor.postcondition_of_feature (l_feat, a_class)
 				l_finder.find (a_class, l_feat, l_posts)
 				l_result_defining_posts.append (l_finder.last_expressions)
-				if l_result_defining_posts.is_empty then
+--				if l_result_defining_posts.is_empty then
 					l_post_gen.generate (a_class, l_feat)
 					l_finder.find (a_class, l_feat, l_post_gen.last_postconditions)
 					l_result_defining_posts.append (l_finder.last_expressions)
---					across l_finder.last_expressions as l_exprs loop
---						create l_expr.make_with_text (a_class, l_feat, ti_result + " = (" + l_exprs.item.text + ")", a_class)
---						if l_expr.type /= Void then
---							l_result_defining_posts.extend (l_expr)
---						end
---					end
-				end
+--				end
+				create l_extra.make
 				from
 					l_result_defining_posts.start
 				until
 					l_result_defining_posts.after
 				loop
-					create l_expr.make_with_text (a_class, l_feat, ti_result + " = (" + l_result_defining_posts.item.text + ")", a_class)
+					if l_result_defining_posts.item.text.has_substring (ti_result) then
+						create l_expr.make_with_text (a_class, l_feat, l_result_defining_posts.item.text, a_class)
+					else
+						if not l_result_defining_posts.item.text.has (' ')  then
+							create l_expr.make_with_text (a_class, l_feat, ti_result + " = " + l_result_defining_posts.item.text, a_class)
+						end
+						create l_expr.make_with_text (a_class, l_feat, ti_result + " = (" + l_result_defining_posts.item.text + ")", a_class)
+					end
 					if l_expr.type /= Void then
 						l_result_defining_posts.replace (l_expr)
 						l_result_defining_posts.forth
+						if
+							l_expr.text ~ once "Result = Current" or else
+							l_expr.text ~ once "Result ~ Current" or else
+							l_expr.text ~ once "Result ~ (Current)" or else
+							l_expr.text ~ once "Result = (Current)" or else
+							l_expr.text ~ once "Result = ((Current))" or else
+							l_expr.text ~ once "Result ~ ((Current))"
+						then
+							create l_expr.make_with_text (a_class, l_feat, "Result /= Void", a_class)
+							l_extra.extend (l_expr)
+						end
 					else
 						l_result_defining_posts.remove
 					end
 
 				end
+				l_result_defining_posts.append (l_extra)
 				if not l_result_defining_posts.is_empty then
 					across l_result_defining_posts as l_exprs loop
 						create l_axiom.make (128)

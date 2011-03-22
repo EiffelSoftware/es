@@ -214,7 +214,7 @@ feature{NONE} -- Implementation
 				create l_clauses.make (1)
 				l_clauses.set_equality_tester (string_equality_tester)
 				l_clauses.force_last (l_expr_cur.item)
-				l_property := candidate_property (l_clauses, operand_string_table)
+				l_property := candidate_property (l_clauses, "or", operand_string_table)
 				candidate_properties.force_last (l_property.function)
 				operand_map_table.force_last (l_property.operand_map, l_property.function)
 				l_expr_cur.forth

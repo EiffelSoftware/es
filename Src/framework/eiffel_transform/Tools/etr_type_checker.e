@@ -553,6 +553,8 @@ feature -- Type checking
 	check_expression_type (a_expr: EXPR_AS; a_feature: FEATURE_I; a_context_class: CLASS_C)
 			-- Check the type of `a_expr' written in `a_feature', viewd from `a_context_class'.
 			-- Make result available in `last_type'.
+		local
+			l_export: BOOLEAN
 		do
 			error_handler.wipe_out
 			if not a_feature.is_invariant and then a_feature.feature_id >= 0 then
@@ -561,9 +563,11 @@ feature -- Type checking
 			context.initialize (a_context_class, a_context_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)
+			l_export := context.is_ignoring_export
+			context.set_is_ignoring_export (True)
 
 			expression_type_check_and_code (a_feature, a_expr)
-
+			context.set_is_ignoring_export (l_export)
 			if error_handler.has_error then
 				last_type := Void
 			end

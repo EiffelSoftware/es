@@ -58,7 +58,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_interpreter: like interpreter; a_system: like system; an_error_handler: like error_handler)
-			-- Create new strategy.		
+			-- Create new strategy.	
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
 			create prestate_invariants.make
@@ -132,11 +132,14 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_tautologies: like tautology_predicates
+			l_used_qry_ids: DS_HASH_SET [INTEGER]
+			l_done: BOOLEAN
 		do
 				-- Get, and remove, one invariant to process each step.
 			current_invariant := prestate_invariants.first
 			l_class := current_invariant.context_class
 			l_feature := current_invariant.feature_
+			create l_used_qry_ids.make (50)
 
 			progress_log_manager.put_string_with_time ("Try to break: " + class_name_dot_feature_name (current_invariant.context_class, current_invariant.feature_) + " : " + current_invariant.text)
 			prestate_invariants.start
@@ -150,27 +153,49 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 			else
 					-- We try to search in the semantic database to see if there are some object combination
 					-- which violates the pre-state invariant. If so, we use those objects as our new test inputs.
-				object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection)
-				if connection.last_error_number /= 0 then
-					connection.close
-					connection.dispose
-					connection := interpreter.configuration.semantic_database_config.connection
-					connection.connect
-					progress_log_manager.put_line (" [Database problem]")
-				else
-					l_objects := object_retriever.last_objects
-					if l_objects /= Void and then not l_objects.is_empty then
-						create l_breaker.make (system, interpreter, error_handler, current_invariant, l_objects)
-						sub_task := l_breaker
-						execute_task (sub_task)
+				from
 
-						if l_breaker.is_last_test_case_executed and then (l_breaker.value_of_current_invariant_before_test = False) then
-							progress_log_manager.put_line (" [Violated]")
-						else
-							progress_log_manager.put_line (" [Not violated]")
-						end
+				until
+					l_done
+				loop
+					object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection, l_used_qry_ids)
+					if connection.last_error_number /= 0 then
+						connection.close
+						connection.dispose
+						connection := interpreter.configuration.semantic_database_config.connection
+						connection.connect
+						progress_log_manager.put_line (" [Database problem]")
 					else
-						progress_log_manager.put_line (" [No object]")
+						l_objects := object_retriever.last_objects
+						if l_objects /= Void and then not l_objects.is_empty then
+							across l_objects as l_objs loop
+								across l_objs.item.meta as l_metas loop
+									l_metas.item.search (once "qry_id")
+									if l_metas.item.found then
+										io.put_string (l_metas.item.found_item + "%N")
+										l_used_qry_ids.force_last (l_metas.item.found_item.to_integer)
+									end
+								end
+							end
+							create l_breaker.make (system, interpreter, error_handler, current_invariant, l_objects)
+							sub_task := l_breaker
+							execute_task (sub_task)
+
+							if l_breaker.is_last_test_case_executed and then (l_breaker.value_of_current_invariant_before_test = False) then
+								progress_log_manager.put_line (" [Violated]")
+								l_done := True
+							else
+								if l_used_qry_ids.count > 20 then
+									progress_log_manager.put_line (" [Not violated]")
+									l_done := True
+								else
+									progress_log_manager.put_line ("I'll read more data.")
+								end
+							end
+						else
+							progress_log_manager.put_line (" [No object]")
+							l_done := True
+						end
 					end
 				end
 			end
@@ -407,7 +432,6 @@ feature{NONE} -- Invariant-violating invariants checking
 						True,
 						False,
 						l_inv.context_class.constraint_actual_type)
-					l_log_manager.put_line ("%N%N" + l_gen.feature_text + "%N%N")
 					l_processed.force_last (l_invs.item.id)
 						-- We first check if the invariant is a tautology.
 					l_tautologies := tautology_predicates (
@@ -426,7 +450,7 @@ feature{NONE} -- Invariant-violating invariants checking
 							l_invs.item.feature_,
 							False,
 							False,
-							connection)
+							connection, Void)
 						if l_retriever.last_objects.is_empty then
 							l_result_log.put_line ("%T[No]")
 						else

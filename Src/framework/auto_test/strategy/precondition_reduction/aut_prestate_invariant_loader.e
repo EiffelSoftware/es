@@ -20,6 +20,11 @@ inherit
 
 	EPA_SHARED_EXPR_TYPE_CHECKER
 
+	AST_ITERATOR
+		redefine
+			process_nested_as
+		end
+
 feature -- Access
 
 	last_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
@@ -68,6 +73,14 @@ feature -- Basic operations
 				l_parts := string_slices (file_system.basename (l_inv_files.item), "__")
 				last_class := first_class_starts_with_name (l_parts.i_th (1).out)
 				last_feature := last_class.feature_named (l_parts.i_th (2).out)
+				create last_class_creators.make (10)
+				last_class_creators.compare_objects
+				across last_class.creators as l_creators loop
+					last_class_creators.force (True, l_creators.key)
+				end
+
+				operands := operands_of_feature (last_feature)
+				operand_types := resolved_operand_types_with_feature (last_feature, last_class, last_class.constraint_actual_type)
 
 				if last_feature /= Void and then not last_feature.has_return_value then
 						-- We only consider commands for the moment.
@@ -212,22 +225,170 @@ feature{NONE} -- Implementation
 							last_invariants.extend (create {AUT_STATE_INVARIANT}.make_as_one_of (l_ori_expr, l_values, last_class, last_feature))
 						end
 					else
-						l_status := context.is_ignoring_export
-						l_pre_status := expression_type_checker.is_checking_precondition
-						context.set_is_ignoring_export (False)
-						expression_type_checker.set_is_checking_precondition (True)
-						create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
-						if l_expr.type /= Void then
-							last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+							-- NOTE: We ignore these cases because they will cause Boogie theory
+							-- generation to fail and they are not interesting invariants, which
+							-- means that even if we take care of them, it is very easy to violate
+							-- them. But since this is a bug in our algorithm, we need to fix the
+							-- Boogie generation problem in the future. 18.03.2011 Jasonw.
+						fixme ("Take care of this case in the future. 18.03.2011 Jasonw")
+						if
+							l_text.has_substring (once "v = i") or else
+							l_text.has_substring (once "v ~ i") or else
+							l_text.has_substring (once "i = v") or else
+							l_text.has_substring (once "i ~ v")
+						then
+							-- Ingore
+						else
+							l_status := context.is_ignoring_export
+							l_pre_status := expression_type_checker.is_checking_precondition
+							context.set_is_ignoring_export (False)
+							expression_type_checker.set_is_checking_precondition (True)
+							create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
+							if
+								l_expr.type /= Void and then
+								is_expression_exported (l_expr) and then
+								not is_non_conformant_comparison (l_expr) and then
+								not is_current_mentioned_in_creator (l_expr)
+							then
+								last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+							end
+							context.set_is_ignoring_export (l_status)
+							expression_type_checker.set_is_checking_precondition (l_pre_status)
 						end
-						context.set_is_ignoring_export (l_status)
-						expression_type_checker.set_is_checking_precondition (l_pre_status)
 					end
 				end
 			end
 		end
 
-note
+	is_expression_exported (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Are all components of `a_expression' exported to {ANY}?
+		do
+			is_expression_exported_internal := True
+			safe_process (a_expression.ast)
+			Result := is_expression_exported_internal
+		end
+
+	is_non_conformant_comparison (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Is `a_expression' a object/reference equality comparison between two non-conformant expression?
+		local
+			l_left, l_right: EXPR_AS
+			l_is_comp: BOOLEAN
+			l_left_expr, l_right_expr: EPA_AST_EXPRESSION
+			l_left_type: TYPE_A
+			l_right_type: TYPE_A
+			l_ast: EXPR_AS
+		do
+			l_ast := a_expression.ast
+			if attached {BIN_EQ_AS} l_ast as l_eq then
+				if attached {BOOL_AS} l_eq.right then
+					l_ast := l_eq.left
+				end
+			elseif attached {BIN_NE_AS} l_ast as l_eq then
+				if attached {BOOL_AS} l_eq.right then
+					l_ast := l_eq.left
+				end
+			end
+
+			if attached {PARAN_AS} l_ast as l_paran then
+				l_ast := l_paran.expr
+			end
+			if attached {PARAN_AS} l_ast as l_paran then
+				l_ast := l_paran.expr
+			end
+			if attached {PARAN_AS} l_ast as l_paran then
+				l_ast := l_paran.expr
+			end
+
+			if attached {BIN_EQ_AS} l_ast as l_eq then
+				l_is_comp := True
+				l_left := l_eq.left
+				l_right := l_eq.right
+			elseif attached {BIN_NE_AS} l_ast as l_ne then
+				l_is_comp := True
+				l_left := l_ne.left
+				l_right := l_ne.right
+			elseif attached {BIN_TILDE_AS} l_ast as l_tilde then
+				l_is_comp := True
+				l_left := l_tilde.left
+				l_right := l_tilde.right
+			elseif attached {BIN_NOT_TILDE_AS} l_ast as l_not_tilde then
+				l_is_comp := True
+				l_left := l_not_tilde.left
+				l_right := l_not_tilde.right
+			end
+			if l_is_comp then
+				create l_left_expr.make_with_feature (last_class, last_feature, l_left, last_class)
+				create l_right_expr.make_with_feature (last_class, last_feature, l_right, last_class)
+				if l_left_expr.type /= Void and then l_right_expr.type /= Void then
+					l_left_type := l_left_expr.type.actual_type
+					l_left_type := actual_type_from_formal_type (l_left_type, last_class)
+					l_left_Type := l_left_type.actual_type.instantiation_in (last_class.constraint_actual_type, last_class.class_id)
+
+					l_right_type := l_right_expr.type.actual_type
+					l_right_type := actual_type_from_formal_type (l_right_type, last_class)
+					l_right_Type := l_right_type.actual_type.instantiation_in (last_class.constraint_actual_type, last_class.class_id)
+					if
+						not l_left_type.conform_to (last_class, l_right_type) and then
+						not l_right_type.conform_to (last_class, l_left_type)
+					then
+						Result := True
+					end
+				end
+			end
+		end
+
+	is_expression_exported_internal: BOOLEAN
+			-- Cache for `is_expression_exported'
+
+	is_current_mentioned_in_creator (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Is "Current" mentioned in `a_expression' and `last_feature' happen to be a creator?
+		do
+			if a_expression.text.has_substring (ti_current) and then last_class_creators.has (last_feature.feature_name.as_lower) then
+				Result := True
+			end
+		end
+
+	process_nested_as (l_as: NESTED_AS)
+		local
+			l_target: STRING
+			l_call: STRING
+			l_target_type: TYPE_A
+			l_target_class: CLASS_C
+			l_feat: FEATURE_I
+		do
+			if is_expression_exported_internal then
+				l_target := text_from_ast (l_as.target)
+				l_call := text_from_ast (l_as.message)
+				if operands.has (l_target) then
+					if l_call.has ('(') then
+						l_call.keep_head (l_call.index_of ('(', 1) - 1)
+					end
+					l_call.left_adjust
+					l_call.right_adjust
+					l_target_type := operand_types.item (operands.item (l_target))
+					l_target_class := l_target_type.associated_class
+					if l_target_class /= Void then
+						l_feat := l_target_class.feature_named (l_call)
+						if l_feat /= Void then
+							is_expression_exported_internal := l_feat.is_exported_for (workbench.system.any_class.compiled_representation)
+						end
+					end
+				end
+				if is_expression_exported_internal then
+					Precursor (l_as)
+				end
+			end
+		end
+
+	operand_types: like resolved_operand_types_with_feature
+
+	operands: like operands_of_feature
+
+	last_class_creators: HASH_TABLE [BOOLEAN, STRING]
+			-- Names of the creation procedures of `last_class'
+			-- Keys are creator names, values are dummy values
+
+;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

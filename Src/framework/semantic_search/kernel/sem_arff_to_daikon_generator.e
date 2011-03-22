@@ -29,6 +29,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			next_boolean_comparability := 5
+			next_integer_comparability := 10000
 		end
 
 feature -- Access
@@ -207,6 +208,8 @@ feature{NONE} -- Implementation
 				l_raw_value := a_instance.item (l_attr)
 				if l_raw_value = Void or else l_raw_value ~ {WEKA_ARFF_ATTRIBUTE}.missing_value then
 					create l_value.make (l_var, daikon_nonsensical_value, modified_flag_2)
+				elseif l_raw_value ~ {ITP_SHARED_CONSTANTS}.void_value then
+					create l_value.make (l_var, daikon_void_value, modified_flag_1)
 				else
 					create l_value.make (l_var, l_raw_value, modified_flag_1)
 				end
@@ -266,7 +269,9 @@ feature{NONE} -- Implementation
 			l_prefix := l_prefixes.i_th (1) + "::" + l_prefixes.i_th (2) + "::"
 			if l_prefixes.i_th (2) ~ once "i" then
 				l_rep_type := integer_rep_type
-				l_comparability := integer_comparability
+--				l_comparability := integer_comparability				
+				l_comparability := next_integer_comparability
+				next_integer_comparability := next_integer_comparability + 1
 			elseif l_prefixes.i_th (2) ~ once "b" then
 				l_rep_type := boolean_rep_type
 --				l_comparability := boolean_comparability
@@ -320,5 +325,8 @@ feature{NONE} -- Implementation
 
 	next_boolean_comparability: INTEGER
 			-- Next boolean_comparability to use
+
+	next_integer_comparability: INTEGER
+			-- Next integer comparability to use
 
 end

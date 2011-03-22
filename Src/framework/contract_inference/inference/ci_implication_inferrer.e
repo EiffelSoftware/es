@@ -29,6 +29,9 @@ feature -- Basic operations
 			-- executed test cases.
 		local
 			l_loader: WEKA_ARFF_RELATION_LOADER
+			l_log_manager: ELOG_LOG_MANAGER
+			l_path: FILE_NAME
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 		do
 				-- Initialize.
 			data := a_data
@@ -50,6 +53,22 @@ feature -- Basic operations
 			build_decision_trees
 
 			log_inferred_contracts ("Found the following implications:", last_postconditions)
+
+			if not last_postconditions.is_empty then
+				create l_path.make_from_string (config.data_directory)
+				l_path.set_file_name (last_postconditions.first.class_.name_in_upper + "__" + last_postconditions.first.feature_.feature_name.as_lower + "__" + "implications.txt")
+				create l_log_manager.make_with_logger_array (<<create {ELOG_FILE_LOGGER}.make_with_path (l_path.out)>>)
+				from
+					l_cursor := last_postconditions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_log_manager.put_line (class_name_dot_feature_name (l_cursor.item.class_, l_cursor.item.feature_) + ": " + l_cursor.item.text)
+					l_cursor.forth
+				end
+			end
+
 			setup_last_contracts
 		end
 

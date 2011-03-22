@@ -42,7 +42,7 @@ feature -- Setting
 
 feature -- Basic operations
 
-	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT)
+	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER])
 			-- Retrieve objects that satisfying `a_predicate' if `a_satisfying' is True;
 			-- otherwise, retrieve objects that violating `a_predicate'.
 			-- Make result available in `last_objects'.
@@ -50,6 +50,7 @@ feature -- Basic operations
 			-- `a_retrieve_unconstrained_operands' indicates if operands that are not constrained by `a_predicate'
 			-- are retrieved or not.
 			-- `a_connection' includes the config used to connect to the semantic database.
+			-- `a_ignore_qry_ids' (if attached) includes the qry_ids that should be avoided.
 		local
 			l_sql_gen: SEM_SIMPLE_QUERY_GENERATOR
 			l_select: STRING
@@ -83,141 +84,152 @@ feature -- Basic operations
 			l_var_id: INTEGER
 			l_queryable_map: HASH_TABLE [SEM_QUERYABLE, STRING]
 			l_queryable: SEM_QUERYABLE
+			l_retried: BOOLEAN
 		do
-			create l_queryable_map.make (10)
-			l_queryable_map.compare_objects
-			l_should_retrieve_unconstrained_variables := a_retrieve_unconstrained_operands
-			create last_objects.make
+			if not l_retried then
+				create l_queryable_map.make (10)
+				l_queryable_map.compare_objects
+				l_should_retrieve_unconstrained_variables := a_retrieve_unconstrained_operands
+				create last_objects.make
 
-				-- Check if there is objects satisfying `a_predicate' or violating `a_predicate',
-				-- depending on the value `a_satisfying'.
-			l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
-			create l_sql_gen
-			l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5)
-			l_select := l_main_sql.sql
-			unconstrained_vars := l_main_sql.unconstrained_vars
+					-- Check if there is objects satisfying `a_predicate' or violating `a_predicate',
+					-- depending on the value `a_satisfying'.
+				l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
+				create l_sql_gen
+				l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5, False, 1, 1, a_ignore_qry_ids)
+	--			l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, a_satisfying, 5, True, 2, 2)
+				l_select := l_main_sql.sql
+				unconstrained_vars := l_main_sql.unconstrained_vars
 
-			if log_manager /= Void then
-				log_manager.put_line_with_time ("Start query: " + a_predicate.text + " from " + a_context_class.name_in_upper + "." + a_feature.feature_name)
-				l_msg := l_select.twin
-				l_msg.replace_substring_all ("%N", " ")
-				log_manager.put_line ("%T" + l_msg)
-				l_time := time_now
-			end
-
-			a_connection.execute_query (l_select)
-			if log_manager /= Void then
-				create l_msg.make (50)
-				l_msg.append ("%TDuration: ")
-				l_msg.append_integer (duration_from_time (l_time))
-				l_msg.append_string (once "ms")
-				log_manager.put_line (l_msg)
-			end
-			if a_connection.last_error_number /= 0 then
-				if log_manager /= Void and then a_connection.last_error /= Void then
-					log_manager.put_line ("Error: " + a_connection.last_error)
+				if log_manager /= Void then
+					log_manager.put_line_with_time ("Start query: " + a_predicate.text + " from " + a_context_class.name_in_upper + "." + a_feature.feature_name)
+					l_msg := l_select.twin
+					l_msg.replace_substring_all ("%N", " ")
+					log_manager.put_line ("%T" + l_msg)
+					l_time := time_now
 				end
-			end
-			if a_connection.last_error_number = 0 and then a_connection.has_result then
-				l_sql_result := a_connection.last_result
-				l_column_names := l_sql_result.column_names
-				l_var_count := l_sql_result.column_count - 1
-				l_operand_mapping := operands_from_curly_braced_operands (a_feature, a_context_class)
 
-				from
-					l_sql_result.start
-				until
-					l_sql_result.after
-				loop
-					create l_mapping.make (l_var_count)
-					l_mapping.compare_objects
-					l_data_row := l_sql_result.data_as_table
-					l_uuid := l_data_row.item (queryables_uuid)
-					l_qry_id := l_data_row.item (queryables_qry_id).to_integer
-					across l_operand_mapping as l_map loop
-						l_data_row.search (l_map.key)
-						if l_data_row.found then
-							create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_data_row.found_item.out, l_uuid)
-							l_mapping.force (l_var_with_uuid, l_operand_mapping.item (l_map.key))
+				a_connection.execute_query (l_select)
+				if log_manager /= Void then
+					create l_msg.make (50)
+					l_msg.append ("%TDuration: ")
+					l_msg.append_integer (duration_from_time (l_time))
+					l_msg.append_string (once "ms")
+					log_manager.put_line (l_msg)
+				end
+				if a_connection.last_error_number /= 0 then
+					if log_manager /= Void and then a_connection.last_error /= Void then
+						log_manager.put_line ("Error: " + a_connection.last_error)
+					end
+				end
+				if a_connection.last_error_number = 0 and then a_connection.has_result then
+					l_sql_result := a_connection.last_result
+					l_column_names := l_sql_result.column_names
+					l_var_count := l_sql_result.column_count - 1
+					l_operand_mapping := operands_from_curly_braced_operands (a_feature, a_context_class)
+
+					from
+						l_sql_result.start
+					until
+						l_sql_result.after
+					loop
+						create l_mapping.make (l_var_count)
+						l_mapping.compare_objects
+						l_data_row := l_sql_result.data_as_table
+						l_uuid := l_data_row.item (queryables_uuid)
+						l_qry_id := l_data_row.item (queryables_qry_id).to_integer
+						across l_operand_mapping as l_map loop
+							l_data_row.search (l_map.key)
+							if l_data_row.found then
+								create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_data_row.found_item.out, l_uuid)
+								l_mapping.force (l_var_with_uuid, l_operand_mapping.item (l_map.key))
+							end
 						end
+						create l_result_item.make
+						across l_mapping as l_map loop
+							l_result_item.variable_mapping.force (l_map.item, l_map.key)
+						end
+						last_objects.extend (l_result_item)
+						l_sql_result.forth
 					end
-					create l_result_item.make
-					across l_mapping as l_map loop
-						l_result_item.variable_mapping.force (l_map.item, l_map.key)
-					end
-					last_objects.extend (l_result_item)
-					l_sql_result.forth
-				end
 
-					-- Retrieve actual objects.
-				create l_uuids.make (5)
-				l_uuids.set_key_equality_tester (string_equality_tester)
-				from
-					last_objects.start
-				until
-					last_objects.after
-				loop
-					across last_objects.item_for_iteration.variable_mapping as l_map loop
-						l_uuid := l_map.item.uuid
-						if l_uuids.has (l_map.item.uuid) then
-							l_tmp_result := l_uuids.item (l_map.item.uuid)
-						else
-							l_tmp_result := queryable_with_uuid (l_uuid, a_connection, log_manager)
-							if l_tmp_result /= Void then
-								l_uuids.force_last (l_tmp_result, l_uuid)
-								across l_tmp_result.queryables as l_qrys loop
-									l_queryable_map.force (l_qrys.item, l_qrys.item.uuid)
+	--				if False then
+							-- Retrieve actual objects.
+						create l_uuids.make (5)
+						l_uuids.set_key_equality_tester (string_equality_tester)
+						from
+							last_objects.start
+						until
+							last_objects.after
+						loop
+							across last_objects.item_for_iteration.variable_mapping as l_map loop
+								l_tmp_result := Void
+								l_uuid := l_map.item.uuid
+								if l_uuids.has (l_map.item.uuid) then
+									l_tmp_result := l_uuids.item (l_map.item.uuid)
+								else
+									l_tmp_result := queryable_with_uuid (l_uuid, a_connection, log_manager)
+									if l_tmp_result /= Void then
+										l_uuids.force_last (l_tmp_result, l_uuid)
+										across l_tmp_result.queryables as l_qrys loop
+											l_queryable_map.force (l_qrys.item, l_qrys.item.uuid)
+										end
+									end
 								end
 								last_objects.item_for_iteration.queryables.append (l_tmp_result.queryables)
-								across last_objects.item_for_iteration.meta  as l_meta loop
+								across l_tmp_result.meta as l_meta loop
 									last_objects.item_for_iteration.meta.force (l_meta.item, l_meta.key)
 								end
 							end
+							last_objects.forth
 						end
-					end
-					last_objects.forth
-				end
 
-					-- Retrieve unconstrained operands.
-				if l_should_retrieve_unconstrained_variables and then not unconstrained_vars.is_empty then
-					across unconstrained_vars as l_mis_vars loop
-						l_opd_name := l_mis_vars.key
-						l_opd_type := l_mis_vars.item
-						l_select := l_sql_gen.sql_to_select_object (Void, Void, l_opd_type, 1)
-						if log_manager /= Void then
-							log_manager.put_line ("%T" + l_select)
-						end
-						a_connection.execute_query (l_select)
-						if a_connection.last_error_number = 0 and then a_connection.has_result then
-							l_sql_result := a_connection.last_result
-							if l_sql_result.row_count > 0 then
-								l_sql_result.start
-								l_uuid := l_sql_result.at (1) -- The queryable ID containing the variable
-								l_var_id := l_sql_result.at (2).to_integer -- The variable ID
-								l_sql_result.dispose
-								l_queryable := Void
-								if l_queryable_map.has (l_uuid) then
-									l_queryable := l_queryable_map.item (l_uuid)
-								else
-									l_queryable := queryable_with_uuid (l_uuid, a_connection, log_manager).queryables.first
-									if l_queryable /= Void then
-										l_queryable_map.force (l_queryable, l_uuid)
+							-- Retrieve unconstrained operands.
+						if l_should_retrieve_unconstrained_variables and then not unconstrained_vars.is_empty then
+							across unconstrained_vars as l_mis_vars loop
+								l_opd_name := l_mis_vars.key
+								l_opd_type := l_mis_vars.item
+								l_select := l_sql_gen.sql_to_select_object (Void, Void, l_opd_type, 1)
+								if log_manager /= Void then
+									log_manager.put_line ("%T" + l_select)
+								end
+								a_connection.execute_query (l_select)
+								if a_connection.last_error_number = 0 and then a_connection.has_result then
+									l_sql_result := a_connection.last_result
+									if l_sql_result.row_count > 0 then
+										l_sql_result.start
+										l_uuid := l_sql_result.at (1) -- The queryable ID containing the variable
+										l_var_id := l_sql_result.at (2).to_integer -- The variable ID
+										l_sql_result.dispose
+										l_queryable := Void
+										if l_queryable_map.has (l_uuid) then
+											l_queryable := l_queryable_map.item (l_uuid)
+										else
+											l_queryable := queryable_with_uuid (l_uuid, a_connection, log_manager).queryables.first
+											if l_queryable /= Void then
+												l_queryable_map.force (l_queryable, l_uuid)
+											end
+										end
+										if l_queryable /= Void then
+											across last_objects as l_objs loop
+												l_objs.item.queryables.extend (l_queryable)
+												create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_var_id.out, l_uuid)
+												l_objs.item.variable_mapping.force (l_var_with_uuid, l_opd_name)
+											end
+										end
+									else
+										l_sql_result.dispose
 									end
 								end
-								if l_queryable /= Void then
-									across last_objects as l_objs loop
-										l_objs.item.queryables.extend (l_queryable)
-										create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_var_id.out, l_uuid)
-										l_objs.item.variable_mapping.force (l_var_with_uuid, l_opd_name)
-									end
-								end
-							else
-								l_sql_result.dispose
 							end
 						end
 					end
-				end
+	--			end				
 			end
+		rescue
+			l_retried := True
+			create last_objects.make
+			retry
 		end
 
 	queryable_with_uuid (a_uuid: STRING; a_connection: MYSQL_CLIENT; a_log_manager: detachable ELOG_LOG_MANAGER): detachable SEMQ_RESULT

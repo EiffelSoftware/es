@@ -18,7 +18,7 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 
-	DKN_UTILITY
+	SEM_UTILITY
 
 create
 	make
@@ -193,21 +193,6 @@ feature{NONE} -- Implementation
 				end
 				l_file.close
 			end
-		end
-
-	invariants_from_arff_relation (a_relation: WEKA_ARFF_RELATION): DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
-			-- Invariants generalized from data in `a_relation'
-		local
-			l_daikon_gen: SEM_ARFF_TO_DAIKON_GENERATOR
-			l_daikon_command: STRING
-			l_decls_file: STRING
-			l_trace_file: STRING
-		do
-			l_daikon_command := "/usr/bin/java daikon.Daikon"
-			create l_daikon_gen.make
-			l_daikon_gen.set_is_missing_value_included (True)
-			l_daikon_gen.generate (a_relation)
-			Result := invariants_from_daikon (l_daikon_command, l_daikon_gen.last_declaration, l_daikon_gen.last_trace)
 		end
 
 	is_feature_considered (a_class: CLASS_C; a_feature_name: STRING): BOOLEAN

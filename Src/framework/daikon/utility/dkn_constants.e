@@ -98,6 +98,9 @@ feature -- Nonsensical
 	daikon_nonsensical_value: STRING = "nonsensical"
 			-- "nonsensical" string used by Daikon
 
+	daikon_void_value: STRING = "null"
+			-- "null" value for Void
+
 feature -- Modification flag
 
 	modified_flag_0: INTEGER = 0

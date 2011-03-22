@@ -144,7 +144,7 @@ feature{NONE} -- Implementation
 				l_property_body.append (" = ")
 				l_property_body.append (l_value.text)
 				l_clauses.force_last (l_property_body)
-				l_property := candidate_property (l_clauses, operand_string_table)
+				l_property := candidate_property (l_clauses, "or", operand_string_table)
 				candidate_properties.force_last (l_property.function)
 				operand_map_table.force_last (l_property.operand_map, l_property.function)
 			end

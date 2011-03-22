@@ -337,21 +337,14 @@ feature -- Access
 			-- for contract inference?	
 			-- Default: False
 
-	set_should_include_passing_test_cases_for_building_project (b: BOOLEAN)
-			-- Set `should_include_passing_test_cases_for_building_project' with `b'.
-		do
-			should_include_passing_test_cases_for_building_project := b
-		ensure
-			should_include_passing_test_cases_for_building_project_set: should_include_passing_test_cases_for_building_project = b
-		end
-
-	set_should_include_failing_test_cases_for_building_project (b: BOOLEAN)
-			-- Set `should_include_failing_test_cases_for_building_project' with `b'.
-		do
-			should_include_failing_test_cases_for_building_project := b
-		ensure
-			should_include_failing_test_cases_for_building_project_set: should_include_failing_test_cases_for_building_project = b
-		end
+	should_simplify_implications: BOOLEAN
+			-- Should implication simplification be performed?
+			-- The location of the implication is from the `input_location' option.
+			-- `input_location' can be either a file name of a directory.
+			-- If it is a file name, the implications in that file will be simplified.
+			-- If it is a directory, all the files containing implications in that directory (recursively)
+			-- will be simplified.
+			-- The results will be stored in `output_location'.
 
 feature -- Status report
 
@@ -728,6 +721,30 @@ feature -- Setting
 			max_test_case_for_building_project := a_max
 		ensure
 			max_test_case_for_building_project_set: max_test_case_for_building_project = a_max
+		end
+
+	set_should_include_passing_test_cases_for_building_project (b: BOOLEAN)
+			-- Set `should_include_passing_test_cases_for_building_project' with `b'.
+		do
+			should_include_passing_test_cases_for_building_project := b
+		ensure
+			should_include_passing_test_cases_for_building_project_set: should_include_passing_test_cases_for_building_project = b
+		end
+
+	set_should_include_failing_test_cases_for_building_project (b: BOOLEAN)
+			-- Set `should_include_failing_test_cases_for_building_project' with `b'.
+		do
+			should_include_failing_test_cases_for_building_project := b
+		ensure
+			should_include_failing_test_cases_for_building_project_set: should_include_failing_test_cases_for_building_project = b
+		end
+
+	set_should_simplify_implications (b: BOOLEAN)
+			-- Set `should_simplify_implications' with `b'.
+		do
+			should_simplify_implications := b
+		ensure
+			should_simplify_implications_set: should_simplify_implications = b
 		end
 
 feature{NONE} -- Implementation

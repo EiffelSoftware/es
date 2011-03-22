@@ -155,7 +155,7 @@ feature{NONE} -- Implementation
 							create l_file.make (l_location)
 							if l_file.is_directory then
 								if l_is_dir_matched then
-									match_location (l_location, l_entry)
+									match_location (l_location.out, l_entry.out)
 								end
 								if is_search_recursive then
 									search_files (l_location)
@@ -168,7 +168,7 @@ feature{NONE} -- Implementation
 					end
 				else
 					l_parts := a_start_location.split (directory_separator)
-					match_location (a_start_location, l_parts.last)
+					match_location (a_start_location.out, l_parts.last.out)
 				end
 			end
 		end

@@ -28,6 +28,8 @@ inherit
 
 	SEM_UTILITY
 
+	EPA_STRING_UTILITY
+
 create
 	make_for_feature_transition,
 	make_for_objects,
@@ -830,6 +832,12 @@ feature{NONE} -- Implementation
 			l_expr: EPA_EXPRESSION
 			l_text: STRING
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_path: EPA_EXPRESSION
+			l_path_text: STRING
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_feat_id: STRING
+			l_paths: LINKED_LIST [STRING]
 		do
 			create Result.make (10)
 			Result.set_equality_tester (expression_equality_tester)
@@ -846,6 +854,66 @@ feature{NONE} -- Implementation
 						Result.force_last (l_expr)
 					end
 					l_cursor.forth
+				end
+			end
+
+				-- NOTE: The following adds unvisited path conditions of classes as attributes
+				-- in ARFF files, remove the hard-coded path conditions when the path condition
+				-- calculator finishes.				
+			fixme ("Remove this hack. 22.03.2011 Jasonw")
+			l_class := a_call.class_
+			l_feature := a_call.feature_
+			l_feat_id := class_name_dot_feature_name (l_class, l_feature)
+			create l_paths.make
+			if l_feat_id ~ "ARRAYED_SET.symdif" then
+				l_paths.extend ("not other.is_empty and Current.is_empty")
+			elseif l_feat_id ~ "BOUNDED_QUEUE.extend" then
+				l_paths.extend ("Current.count >= Current.capacity")
+			elseif l_feat_id ~ "BOUNDED_QUEUE.force" then
+				l_paths.extend ("Current.count >= Current.capacity")
+			elseif l_feat_id ~ "BOUNDED_QUEUE.put" then
+				l_paths.extend ("Current.count >= Current.capacity")
+			elseif l_feat_id ~ "DS_HASH_SET.extend" then
+				l_paths.extend ("other /= Current")
+			elseif l_feat_id ~ "DS_HASH_SET.extend_last" then
+				l_paths.extend ("other /= Current")
+			elseif l_feat_id ~ "DS_HASH_SET.intersect" then
+				l_paths.extend ("other /= Current and other.is_empty")
+				l_paths.extend ("other /= Current and not other.is_empty")
+			elseif l_feat_id ~ "DS_HASH_SET.merge" then
+				l_paths.extend ("other /= Current")
+			elseif l_feat_id ~ "DS_HASH_SET.subtract" then
+				l_paths.extend ("not other.is_empty and other /= Current")
+			elseif l_feat_id ~ "DS_HASH_SET.symdif" then
+				l_paths.extend ("not other.is_empty and other /= Current")
+				l_paths.extend ("not other.is_empty and other /= Current and not Current.is_empty")
+			elseif l_feat_id ~ "DS_LINKED_LIST.append_right_cursor" then
+				l_paths.extend ("not other.is_empty and not Current.is_empty and not a_cursor.before and a_cursor.is_last")
+			elseif l_feat_id ~ "DS_LINKED_LIST.prune_left_cursor" then
+				l_paths.extend ("not a_cursor.after and (n /= 0)")
+			elseif l_feat_id ~ "DS_LINKED_LIST.prune_right_cursor" then
+				l_paths.extend ("not a_cursor.before and (n /= 0)")
+			elseif l_feat_id ~ "DS_LINKED_LIST.put_right_cursor" then
+				l_paths.extend ("not a_cursor.before and not a_cursor.is_last")
+			elseif l_feat_id ~ "DS_LINKED_QUEUE.append" then
+				l_paths.extend ("not other.is_empty")
+			elseif l_feat_id ~ "DS_LINKED_QUEUE.extend" then
+				l_paths.extend ("not other.is_empty")
+			elseif l_feat_id ~ "LINKED_SET.symdif" then
+				l_paths.extend ("not other.is_empty and Current.is_empty")
+			elseif l_feat_id ~ "TWO_WAY_SORTED_SET.merge_left" then
+				l_paths.extend ("not other.is_empty and Current.is_empty and Current.before")
+			elseif l_feat_id ~ "TWO_WAY_SORTED_SET.symdif" then
+				l_paths.extend ("not other.is_empty and Current.is_empty")
+			end
+
+			across l_paths as l_path_conditions loop
+				create {EPA_AST_EXPRESSION} l_path.make_with_text (l_class, l_feature, l_path_conditions.item, l_class)
+				if l_path.type /= Void then
+					l_path := expression_in_test_context (a_call, l_path)
+					if l_path.type /= Void then
+						Result.force_last (l_path)
+					end
 				end
 			end
 		end

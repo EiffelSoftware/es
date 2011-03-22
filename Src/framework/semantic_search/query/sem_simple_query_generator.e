@@ -59,7 +59,7 @@ feature -- Access
 			end
 		end
 
-	sql_clauses_for_variable (a_name: STRING; a_predicates: HASH_TABLE [STRING, STRING]; a_type: detachable STRING): TUPLE [table: STRING; where_clause: STRING]
+	sql_clauses_for_variable (a_name: STRING; a_predicates: HASH_TABLE [STRING, STRING]; a_type: detachable STRING; a_position: INTEGER): TUPLE [table: STRING; where_clause: STRING]
 			-- SQL clauses for selecting a variable named `a_name' with
 			-- properties `a_predicates', keys are predicate names, values are predicate values.
 			-- `a_type' is an optional predicate to specify the type of the variable.
@@ -91,12 +91,19 @@ feature -- Access
 				else
 					l_where_clause.append (l_preds.item)
 				end
+				if a_position >= 0 then
+					l_where_clause.append ("%NAND " + a_name + ".position = " + a_position.out)
+				end
 			end
 
 			if a_type /= Void then
 				l_where_clause.append (once " AND%N")
 				l_where_clause.append (a_name)
-				l_where_clause.append (once ".type1 = (SELECT type_id FROM Types WHERE type_name =%"" + a_type + "%")")
+				if a_position = 0 then
+					l_where_clause.append (once ".type1 = (SELECT type_id FROM Types WHERE type_name =%"" + a_type + "%")")
+				else
+					l_where_clause.append (".type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type) + "')")
+				end
 			end
 
 			l_where_clause.append_character ('%N')
@@ -186,7 +193,7 @@ feature -- Access
 			Result.append ("LIMIT " + a_count.out)
 		end
 
-	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
+	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
 			-- `a_expression' must have boolean type.
@@ -194,6 +201,7 @@ feature -- Access
 			-- `a_limit' indicates the maximal number of row to retrieve from database. 0 means unlimited rows.
 			-- In result, `sql' is the select statement to retrieve queryables, `unconstrained_operands' is a
 			-- hash table, keys are names of operands (u, v, etc.) that are not mentioned in `a_expression', values are their types.
+			-- `a_ignore_qry_ids' (if attached) includes the qry_ids that should be avoided.
 		local
 			l_operands: like curly_braced_variables_from_expression
 			l_subexprs: like single_rooted_expressions
@@ -229,6 +237,9 @@ feature -- Access
 			l_opd_type: TYPE_A
 			l_opd_index: INTEGER
 			l_opd_name: STRING
+			l_opd_types: like resolved_operand_types_with_feature
+			l_pre_text: STRING
+			l_qry_id_cursor: DS_HASH_SET_CURSOR [INTEGER]
 		do
 			create l_contract_extractor
 			l_pres := l_contract_extractor.precondition_of_feature (a_feature, a_context_class).twin
@@ -265,23 +276,32 @@ feature -- Access
 				end
 				l_text.append_character ('(')
 				l_text.append (a_expression)
-				l_text.append (once ") and (")
+				l_text.append (once ") ")
+
+				create l_pre_text.make (128)
 				from
 					l_pre_set.start
 				until
 					l_pre_set.after
 				loop
-					l_text.append_character ('(')
-					l_rep := curly_braced_operands_from_operands (a_feature, a_context_class)
-					l_qualifier.process_expression (l_pre_set.item_for_iteration, l_rep1)
-					l_text.append (expression_rewriter.ast_text (ast_from_expression_text (l_qualifier.last_expression), l_rep))
-					l_text.append_character (')')
-					if not l_pre_set.is_last then
-						l_text.append (" and ")
+					if not l_pre_set.item_for_iteration.text.has_substring (once " (1)") then
+						if not l_pre_text.is_empty then
+							l_pre_text.append (" and ")
+						end
+						l_pre_text.append_character ('(')
+						l_rep := curly_braced_operands_from_operands (a_feature, a_context_class)
+						l_qualifier.process_expression (l_pre_set.item_for_iteration, l_rep1)
+						l_pre_text.append (expression_rewriter.ast_text (ast_from_expression_text (l_qualifier.last_expression), l_rep))
+						l_pre_text.append_character (')')
 					end
 					l_pre_set.forth
 				end
-				l_text.append_character (')')
+
+				if not l_pre_text.is_empty then
+					l_text.append (" and (")
+					l_text.append (l_pre_text)
+					l_text.append (")")
+				end
 				l_final_expr := l_text
 			else
 				if a_negated then
@@ -334,17 +354,37 @@ feature -- Access
 
 			create l_var_preds.make (2)
 			l_var_preds.compare_objects
-			l_var_preds.force ("1", "prop_kind")
+			l_var_preds.force (a_prop_kind.out, "prop_kind")
 			l_var_preds.force ("q.qry_id", "qry_id")
 
 			l_from.append ("FROM Queryables q")
 			l_select.append ("SELECT q.uuid as %"uuid%", q.qry_id as %"qry_id%"")
 			l_where.append ("WHERE%N")
-			l_where.append ("q.qry_kind=1 AND%N")
+			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
+				l_where.append ("q.qry_id NOT IN (")
+				from
+					l_qry_id_cursor := a_ignore_qry_ids.new_cursor
+					l_qry_id_cursor.start
+				until
+					l_qry_id_cursor.after
+				loop
+					l_where.append (l_qry_id_cursor.item.out)
+					if not l_qry_id_cursor.is_last then
+						l_where.append_character (',')
+					end
+					l_qry_id_cursor.forth
+				end
+				l_where.append (") AND %N")
+			end
+			l_where.append ("q.qry_kind=" + a_query_kind.out + " AND%N")
 			l_where.append ("q.class=%"" + a_context_class.name_in_upper + "%"")
+			if a_feature_included then
+				l_where.append ("%NAND q.feature=%"" + a_feature.feature_name.as_lower + "%"")
+			end
 			l_where.append_character ('%N')
 
 				-- Setup variables.
+			l_opd_types := resolved_operand_types_with_feature (a_feature, a_context_class, a_context_class.constraint_actual_type)
 			across l_operands as l_opds loop
 				l_var_name := "v_" + l_opds.item.out
 				l_select.append (", ")
@@ -357,9 +397,14 @@ feature -- Access
 				if l_opds.item = 0 then
 					l_var_type := output_type_name (a_context_class.constraint_actual_type.name)
 				else
-					l_var_type := Void
+					l_var_type := output_type_name (l_opd_types.item (l_opds.item).name)
 				end
-				l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type)
+				if a_feature_included then
+					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, l_opds.item)
+				else
+					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, -1)
+				end
+
 				l_from.append (", ")
 				l_from.append (l_var_sql.table)
 				l_where.append ("%NAND%N")
@@ -402,6 +447,10 @@ feature -- Access
 			l_sql.append ("%NAND%N")
 			l_sql.append (l_gen.last_output)
 			l_sql.append_character ('%N')
+
+			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
+				l_sql.append ("GROUP BY q.qry_id%N")
+			end
 
 			if a_limit > 0 then
 				l_sql.append ("LIMIT " + a_limit.out + "%N")
