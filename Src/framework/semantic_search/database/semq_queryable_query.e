@@ -11,7 +11,8 @@ inherit
 	SEMQ_QUERY
 
 create
-	make
+	make,
+	make_with_terms
 
 feature{NONE} -- Initialization
 
@@ -20,6 +21,16 @@ feature{NONE} -- Initialization
 		do
 			set_queryable (a_queryable)
 			create terms.make
+		end
+
+	make_with_terms (a_terms: like terms)
+			-- Initialize Current.
+		require
+			terms_not_void: a_terms /= Void
+		do
+			terms := a_terms
+		ensure
+			terms_set: terms = a_terms
 		end
 
 feature -- Access

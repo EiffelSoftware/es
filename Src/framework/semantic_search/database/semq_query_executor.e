@@ -46,8 +46,11 @@ feature{NONE} -- Process
 
 	process_queryable_query (a_query: SEMQ_QUERYABLE_QUERY)
 			-- Process `a_query'.
+		local
+			l_executor: SEMQ_QUERYABLE_QUERY_EXECUTOR
 		do
-			to_implement ("Introduce a separate class to handle this type of query. 8.11.2010 Jasonw")
+			create l_executor.make (connection)
+			l_executor.execute (a_query)
 		end
 
 	process_whole_document_query (a_query: SEMQ_WHOLE_QUERYABLE_QUERY)

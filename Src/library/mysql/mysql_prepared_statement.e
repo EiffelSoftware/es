@@ -258,7 +258,6 @@ feature -- Commands
 				c_stmt_close ($p_stmt)
 			end
 			is_open := False
-			string_parameters.wipe_out
 		end
 
 	set_null (a_pos: INTEGER)

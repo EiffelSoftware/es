@@ -17,7 +17,8 @@ inherit
 
 create
 	make,
-	make_with_string
+	make_with_string,
+	make_without_type
 
 feature{NONE} -- Initialization
 
@@ -33,6 +34,12 @@ feature{NONE} -- Initialization
 			-- Initialize `entity' with `a_entity', `type' with `a_type'.
 		do
 			make (ast_from_expression_text (a_entity), a_type)
+		end
+
+	make_without_type (a_entity: like entity)
+			-- Initialize `entity' with `a_entity'
+		do
+			entity := a_entity
 		end
 
 feature -- Access

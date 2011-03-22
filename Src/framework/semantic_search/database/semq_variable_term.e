@@ -10,6 +10,9 @@ class
 inherit
 	SEMQ_TERM
 		redefine
+			is_precondition,
+			is_postcondition,
+			is_property,
 			is_variable
 		end
 
@@ -153,6 +156,15 @@ feature -- Access
 
 feature -- Status report
 
+	is_precondition: BOOLEAN
+			-- Is current a precondition term?
+
+	is_postcondition: BOOLEAN
+			-- Is current a postcondition term?
+
+	is_property: BOOLEAN
+			-- Is current a property term (for objects)?
+
 	is_variable: BOOLEAN = True
 			-- Is current a variable term?
 
@@ -163,6 +175,33 @@ feature -- Status report
 		end
 
 feature -- Setting
+
+	set_is_precondition (b: BOOLEAN)
+			-- Set `is_precondition' with `b'.
+			-- Note: specify consistent values according to `is_postcondition', `is_property'.
+		do
+			is_precondition := b
+		ensure
+			is_precondition_set: is_precondition = b
+		end
+
+	set_is_postcondition (b: BOOLEAN)
+			-- Set `is_postcondition' with `b'.
+			-- Note: specify consistent values according to `is_pretcondition', `is_property'.
+		do
+			is_postcondition := b
+		ensure
+			is_postcondition_set: is_postcondition = b
+		end
+
+	set_is_property (b: BOOLEAN)
+			-- Set `is_property' with `b'.
+			-- Note: specify consistent values according to `is_precondition', `is_postcondition'.
+		do
+			is_property := b
+		ensure
+			is_property_set: is_property = b
+		end
 
 	set_type (a_type: like type)
 			-- Set `type' with `a_type'.
