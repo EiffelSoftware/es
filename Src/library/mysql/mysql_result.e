@@ -155,6 +155,23 @@ feature -- Access
 			end
 		end
 
+	all_data: ARRAY [ARRAY [STRING]]
+			-- All data in all rows
+			-- The outer array represents rows, the inner array represents a single row.
+		require
+			mysql_client_is_connected: mysql_client.is_connected
+			is_open: is_open
+		local
+			l_row: INTEGER
+		do
+			create Result.make_filled (create{ARRAY [STRING]}.make_empty, 1, row_count)
+			l_row := 1
+			across Current as l_rows loop
+				Result.put (l_rows.item, l_row)
+				l_row := l_row + 1
+			end
+		end
+
 feature -- Commands
 
 	go_i_th (a_pos: INTEGER)
