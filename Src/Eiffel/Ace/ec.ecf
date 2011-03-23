@@ -62,6 +62,7 @@
 		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
+		<library name="javascript_compiler" location="$EIFFEL_SRC\framework\javascript_compiler\javascript_compiler.ecf" readonly="false"/>
 		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
 			<condition>
 				<platform value="windows"/>

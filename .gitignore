@@ -333,6 +333,7 @@ Src/dotnet/codedom_provider_2.0/configuration/*.rc
 Src/dotnet/consumer/*.wb
 Src/dotnet/consumer/EIFGENs
 Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
+Src/examples/Eiffel2JavaScript/circles/EIFGENs
 Src/examples/docking/simple/EIFGENs
 Src/examples/proofs/account/EIFGENs
 Src/examples/proofs/demo/EIFGENs
