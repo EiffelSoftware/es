@@ -22,36 +22,42 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_entity: like entity; a_type: like type)
-			-- Initialize `entity' with `a_entity', `type' with `a_type'.
+	make (a_expression: like expression; a_value: like value; a_type: like type)
+			-- Initialize `expression' with `a_expression', `value' with `a_value', `type' with `a_type'.
 		do
-			entity := a_entity
+			expression := a_expression
+			value := a_value
 			type := a_type
-			hash_code := text_from_ast (a_entity).hash_code
+			hash_code := text_from_ast (a_expression).hash_code
 		end
 
-	make_with_string (a_entity: STRING; a_type: like type)
-			-- Initialize `entity' with `a_entity', `type' with `a_type'.
+	make_with_string (a_expression: STRING; a_value: STRING; a_type: like type)
+			-- Initialize `expression' with `a_expression', `value' with `a_value', `type' with `a_type'.
 		do
-			make (ast_from_expression_text (a_entity), a_type)
+			make (ast_from_expression_text (a_expression), ast_from_expression_text (a_value), a_type)
 		end
 
-	make_without_type (a_entity: like entity)
-			-- Initialize `entity' with `a_entity'
+	make_without_type (a_expression: like expression; a_value: like value)
+			-- Initialize `expression' with `a_expression', `value' with `a_value'
 		do
-			entity := a_entity
+			expression := a_expression
+			value := a_value
 		end
 
 feature -- Access
 
-	entity: EXPR_AS
-			-- Entity inside Current term
-			-- This can be an expression described a searched criterion (in this case,
-			-- the expression must evaluates to boolean type); or an expression describing
-			-- the information to return.
+	expression: EXPR_AS
+			-- Expression inside Current term:
+			-- This can be an expression describing a search criterion;
+			-- or an expression describing the information to return.
+
+	value: EXPR_AS
+			-- Value inside Current term:
+			-- This can be Void (to simply specify information to return from
+			-- `expression' or a boolean value to compare `expression' to.
 
 	type: TYPE_A
-			-- Type of `entity'
+			-- Type of `expression'
 
 	hash_code: INTEGER
 			-- Hash code value
@@ -61,7 +67,7 @@ feature -- Access
 		do
 			create Result.make (128)
 			Result.append (once "Meta: ")
-			Result.append (text_from_ast (entity))
+			Result.append (text_from_ast (expression))
 			Result.append_character (',')
 		end
 

@@ -9,6 +9,8 @@ class
 
 inherit
 	SEMQ_TERM
+		rename
+			expression as variable
 		redefine
 			is_precondition,
 			is_postcondition,
@@ -79,19 +81,15 @@ feature -- Access
 	variable: EXPR_AS
 			-- Variable wrapped in Current term
 
+	value: EXPR_AS
+		do
+			Result := Void
+		end
+
 	position: detachable SEM_TRANSITION_VARIABLE_POSITION
 			-- Position requirement of `variable'
 			-- Only have effect in a transition.
 			-- If Void, there is no constrain over the position of `variable'
-
-	entity: EXPR_AS
-			-- Entity inside Current term
-			-- This can be an expression described a searched criterion (in this case,
-			-- the expression must evaluates to boolean type); or an expression describing
-			-- the information to return.
-		do
-			Result := variable
-		end
 
 	type: detachable TYPE_A
 			-- Type of `variable'

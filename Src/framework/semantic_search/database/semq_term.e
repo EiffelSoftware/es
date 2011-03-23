@@ -22,11 +22,17 @@ inherit
 
 feature -- Access
 
-	entity: EXPR_AS
-			-- Entity inside Current term
-			-- This can be an expression described a searched criterion (in this case,
-			-- the expression must evaluates to boolean type); or an expression describing
-			-- the information to return.
+	expression: EXPR_AS
+			-- Expression inside Current term:
+			-- This can be an expression describing a search criterion;
+			-- or an expression describing the information to return.
+		deferred
+		end
+
+	value: EXPR_AS
+			-- Value inside Current term:
+			-- This can be Void (to simply specify information to return from
+			-- `expression' or a boolean value to compare `expression' to.
 		deferred
 		end
 
@@ -201,5 +207,5 @@ feature -- Process
 			-- Visit Current using `a_visitor'.
 		deferred
 		end
-		
+
 end

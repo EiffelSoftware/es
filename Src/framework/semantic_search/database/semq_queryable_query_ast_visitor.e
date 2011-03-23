@@ -29,6 +29,7 @@ feature{NONE} -- Initialization
 			-- Initialize data structures and state
 		do
 			create variable_mapping_table.make (10)
+			create feature_call_table.make (10)
 			create sql_where_clauses.make
 			create sql_join_statements.make
 			create sql_select_clauses.make
@@ -49,8 +50,14 @@ feature -- Data structures
 	sql_where_temp_clause: STRING
 		-- The clause that is currently built
 
+	sql_select_temp_clause: STRING
+		-- The SELECT clause that is currently built
+
 	variable_mapping_table: HASH_TABLE [TUPLE [join_number, parameter_position: INTEGER], STRING]
 		-- Keeps track of variables and at which parameter position they appeared first
+
+	feature_call_table: HASH_TABLE [INTEGER, STRING]
+		-- Keeps track of feature calls appeared, to avoid duplicate joins
 
 	number_of_joins: INTEGER
 		-- Keep track of number of joins
@@ -72,6 +79,9 @@ feature -- State
 	feature_call_replaced: STRING
 		-- Feature call with all parameters replaced by '$'
 
+	feature_call: STRING
+		-- Feature call with actual parameters
+
 	parameter_count: INTEGER
 		-- Mumber of parameters of last visited feature call
 
@@ -90,65 +100,50 @@ feature -- State
 	is_qry_feature: BOOLEAN
 		-- Current feature call on target 'qry'?
 
-	is_expression_in_select: BOOLEAN
-		-- Put current clause into SELECT instead of WHERE?
+	is_operator_expression: BOOLEAN
+		-- Current expression contains an operator?
 
-feature -- Prepare and Finish Equation Term
+feature -- Prepare and Finish Term
 
-	set_expression_in_select (a_value: BOOLEAN)
+	prepare_term (a_prop_kind: INTEGER)
+				-- Reset datastructres and state for next term
 		do
-			is_expression_in_select := a_value
-		end
-
-	prepare_equation_term (a_prop_kind: INTEGER)
-		do
+			is_operator_expression := False
 			number_of_variables := 0
 			current_term_property_kind := a_prop_kind
 			create sql_where_temp_clause.make_empty
 			sql_where_temp_clause.append_character ('(')
 			sql_where_temp_clause.append_character ('(')
+			sql_select_temp_clause := Void
 		end
 
 	add_equality
+				-- If TERM.value is given, add equation in SQL expression
+				-- duplicate TERM.expression for SELECT clause
 		do
+			create sql_select_temp_clause.make_from_string (sql_where_temp_clause)
+			sql_select_temp_clause.append_character (')')
+			sql_select_temp_clause.append_character (')')
 			sql_where_temp_clause.append_string (once ") = (")
 		end
 
-	finish_equation_term
+	finish_term
 		do
+				-- Finish current term, if TERM.value
+				-- is given, add to WHERE
 			sql_where_temp_clause.append_character (')')
 			sql_where_temp_clause.append_character (')')
-			if not is_expression_in_select then
+			if sql_select_temp_clause = Void then
+				sql_select_temp_clause := sql_where_temp_clause
+			else
 				sql_where_clauses.extend (sql_where_temp_clause)
 			end
 		end
 
-feature -- Prepare and Finish Meta Term
-
-	prepare_meta_term
-		do
-			number_of_variables := 0
-			create sql_where_temp_clause.make_empty
-			sql_where_temp_clause.append_character ('(')
-		end
-
-	finish_meta_term
-		do
-			sql_where_temp_clause.append_character (')')
-			sql_select_clauses.extend (sql_where_temp_clause)
-		end
-
-feature -- Prepare and Finish Variable Term
-
-	prepare_variable_term (a_prop_kind: INTEGER)
-		do
-			number_of_variables := 0
-			current_term_property_kind := a_prop_kind
-			create sql_where_temp_clause.make_empty
-			sql_where_temp_clause.append_character ('(')
-		end
+feature -- Variable Term Helpers
 
 	add_position_clause (a_position: INTEGER)
+				-- VARIABLE_TERM.position
 		local
 			l_clause: STRING
 		do
@@ -159,6 +154,7 @@ feature -- Prepare and Finish Variable Term
 		end
 
 	add_type_clause (a_type: STRING)
+				-- VARIABLE_TERM.type
 		local
 			l_clause: STRING
 		do
@@ -170,15 +166,31 @@ feature -- Prepare and Finish Variable Term
 			sql_where_clauses.extend (l_clause)
 		end
 
-	finish_variable_term
-		do
-			sql_where_temp_clause.append_character (')')
---			sql_select_clauses.extend (sql_where_temp_clause)
-		end
-
 feature -- Selects
 
-	add_select_clauses_for_variable_term
+	add_clauses_equation
+			-- Adds required SELECT clauses for EQUATION_TERM
+		local
+			l_clause: STRING
+		do
+			sql_select_clauses.extend (once "qry.uuid")
+			if number_of_variables /= 1 or is_operator_expression then
+				sql_select_clauses.extend (sql_select_temp_clause)
+				sql_select_clauses.extend (once "NULL")
+				sql_select_clauses.extend (once "NULL")
+				sql_select_clauses.extend (once "NULL")
+			else
+				create l_clause.make_from_string (last_appeared_variable)
+				l_clause.append_character ('.')
+				sql_select_clauses.extend (l_clause + once "value")
+				sql_select_clauses.extend (l_clause + once "equal_value")
+				sql_select_clauses.extend (l_clause + once "prop_kind")
+				sql_select_clauses.extend (l_clause + once "boost")
+			end
+		end
+
+	add_clauses_variable
+			-- Adds required SELECT clauses for VARIABLE_TERM
 		local
 			l_clause: STRING
 		do
@@ -192,32 +204,10 @@ feature -- Selects
 			sql_select_clauses.extend (l_clause + once "position")
 		end
 
-	add_select_clauses_for_equation_term
-		local
-			l_clause: STRING
+	add_clauses_meta
+			-- Adds required SELECT clauses for META_TERM
 		do
-			sql_select_clauses.extend (once "qry.uuid")
-			if number_of_variables = 0 or number_of_variables > 1 then
-				if is_expression_in_select then
-					sql_select_clauses.extend (sql_where_temp_clause)
-				else
-					sql_select_clauses.extend (once "NULL")
-				end
-				sql_select_clauses.extend (once "NULL")
-				sql_select_clauses.extend (once "NULL")
-				sql_select_clauses.extend (once "NULL")
-			else
-				create l_clause.make_from_string (last_appeared_variable)
-				l_clause.append_character ('.')
-				if is_expression_in_select then
-					sql_select_clauses.extend (sql_where_temp_clause)
-				else
-					sql_select_clauses.extend (l_clause + once "value")
-				end
-				sql_select_clauses.extend (l_clause + once "equal_value")
-				sql_select_clauses.extend (l_clause + once "prop_kind")
-				sql_select_clauses.extend (l_clause + once "boost")
-			end
+			sql_select_clauses.extend (sql_select_temp_clause)
 		end
 
 feature
@@ -236,7 +226,7 @@ feature
 			end
 		end
 
-	 process_integer_as (l_as: INTEGER_AS)
+	process_integer_as (l_as: INTEGER_AS)
 		do
 			sql_where_temp_clause.append_integer (l_as.integer_32_value)
 		end
@@ -248,6 +238,7 @@ feature
 
 	process_binary_as (l_as: BINARY_AS)
 		do
+			is_operator_expression := True
 			if l_as.op_name.string_value_32.ends_with (once "~") then
 				is_comparing_objects := True
 			end
@@ -271,6 +262,7 @@ feature
 		do
 			if not is_gathering_feature_info and not is_collecting_parameters then
 				is_gathering_feature_info := True
+				create feature_call.make_empty
 				create feature_call_replaced.make_empty
 				parameter_count := 1
 				parameter_position := 1
@@ -282,37 +274,48 @@ feature
 					Precursor (l_as)
 					is_qry_feature := False
 				else
+					-- Need to ensure we still make a new join if feature call is for different property kind
+					feature_call.append_character ('#')
+					feature_call.append_integer (current_term_property_kind)
 					sql_where_temp_clause.append (once "Prop")
-					sql_where_temp_clause.append_integer (number_of_joins)
+					if feature_call_table.has (feature_call) then
+						sql_where_temp_clause.append_integer (feature_call_table.at (feature_call))
+					else
+						sql_where_temp_clause.append_integer (number_of_joins)
+					end
 					if is_comparing_objects then
 						sql_where_temp_clause.append (once ".equal_value")
 					else
 						sql_where_temp_clause.append (once ".value")
 					end
-					-- Joins
-					create l_s.make_empty
-					l_s.append (once "LEFT JOIN PropertyBindings")
-					l_s.append_integer (parameter_count)
-					l_s.append (once " AS Prop")
-					l_s.append_integer (number_of_joins)
-					l_s.append (once " ON (qry.qry_id = Prop")
-					l_s.append_integer (number_of_joins)
-					l_s.append (once ".qry_id AND Prop")
-					l_s.append_integer (number_of_joins)
-					l_s.append (once ".prop_id = (SELECT prop_id FROM Properties WHERE text = %"")
-					l_s.append (feature_call_replaced)
-					l_s.append (once "%") AND Prop")
-					l_s.append_integer (number_of_joins)
-					l_s.append (once ".prop_kind = ")
-					l_s.append_integer (current_term_property_kind)
-					l_s.append (once ")")
-					sql_join_statements.extend (l_s)
-					is_gathering_feature_info := False
-					is_collecting_parameters := True
-					parameter_position := 1
-					Precursor (l_as)
-					number_of_joins := number_of_joins + 1
+					if not feature_call_table.has (feature_call) then
+						-- Joins
+						create l_s.make_empty
+						l_s.append (once "LEFT JOIN PropertyBindings")
+						l_s.append_integer (parameter_count)
+						l_s.append (once " AS Prop")
+						l_s.append_integer (number_of_joins)
+						l_s.append (once " ON (qry.qry_id = Prop")
+						l_s.append_integer (number_of_joins)
+						l_s.append (once ".qry_id AND Prop")
+						l_s.append_integer (number_of_joins)
+						l_s.append (once ".prop_id = (SELECT prop_id FROM Properties WHERE text = %"")
+						l_s.append (feature_call_replaced)
+						l_s.append (once "%") AND Prop")
+						l_s.append_integer (number_of_joins)
+						l_s.append (once ".prop_kind = ")
+						l_s.append_integer (current_term_property_kind)
+						l_s.append (once ")")
+						sql_join_statements.extend (l_s)
+						feature_call_table.put (number_of_joins, feature_call)
+						is_gathering_feature_info := False
+						is_collecting_parameters := True
+						parameter_position := 1
+						Precursor (l_as)
+						number_of_joins := number_of_joins + 1
+					end
 				end
+				is_gathering_feature_info := False
 				is_collecting_parameters := False
 			else
 				Precursor (l_as)
@@ -331,26 +334,33 @@ feature
 				-- Call gives us parameter count
 				elseif l_as.is_qualified then
 					parameter_count := l_as.parameter_count + 1
+					feature_call.append_character ('.')
+					feature_call.append (l_as.access_name)
 					feature_call_replaced.append_character ('.')
 					feature_call_replaced.append (l_as.access_name)
 				-- Others are features
 				else
 					if parameter_position = 2 then
+						feature_call.append_character (' ')
+						feature_call.append_character ('(')
 						feature_call_replaced.append_character (' ')
 						feature_call_replaced.append_character ('(')
 					end
 					if parameter_position > 2 then
+						feature_call.append_character (',')
+						feature_call.append_character (' ')
 						feature_call_replaced.append_character (',')
 						feature_call_replaced.append_character (' ')
 					end
+					feature_call.append (l_as.access_name)
 					feature_call_replaced.append_character ('$')
 					if parameter_count > 1 and parameter_position = parameter_count then
+						feature_call.append_character (')')
 						feature_call_replaced.append_character (')')
 					end
 					parameter_position := parameter_position + 1
 				end
 			end
-
 			-- Second phase creates variable mappings
 			if is_collecting_parameters then
 				-- Check for 'qry'

@@ -34,19 +34,10 @@ feature{NONE} -- Initialization
 feature -- Access
 
 	expression: EXPR_AS
-			-- expression of the equation (the left hand side of the equation)
+			-- Expression of the equation (the left hand side of the equation)
 
 	value: EXPR_AS
 			-- Value of the equation (the right hand side of the equation)
-
-	entity: EXPR_AS
-			-- Entity inside Current term
-			-- This can be an expression described a searched criterion (in this case,
-			-- the expression must evaluates to boolean type); or an expression describing
-			-- the information to return.
-		do
-			Result := expression
-		end
 
 	type: TYPE_A
 			-- Type of `entity'
