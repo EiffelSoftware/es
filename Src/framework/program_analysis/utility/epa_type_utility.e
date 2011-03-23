@@ -105,6 +105,23 @@ feature -- Access
 			Result.replace_substring_all (once "separate ", once "")
 		end
 
+	is_type_conformant (a_type1: TYPE_A; a_type2: TYPE_A; a_context_type: TYPE_A): BOOLEAN
+			-- Is `a_type1' conformant to `a_type2' in the context of `a_context_type'?
+		require
+			a_context_type_has_class: a_context_type.has_associated_class
+		local
+			l_type1, l_type2: TYPE_A
+		do
+			l_type1 := a_type1.actual_type
+			l_type1 := actual_type_from_formal_type (l_type1, a_context_type.associated_class)
+			l_type1 := l_type1.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
+
+			l_type2 := a_type2.actual_type
+			l_type2 := actual_type_from_formal_type (l_type2, a_context_type.associated_class)
+			l_type2 := l_type2.actual_type.instantiation_in (a_context_type, a_context_type.associated_class.class_id)
+			Result := l_type1.conform_to (a_context_type.associated_class, l_type2)
+		end
+
 feature{NONE} -- Implementation
 
 	cleaned_type_name (a_type_name: STRING): STRING

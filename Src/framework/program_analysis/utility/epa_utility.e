@@ -938,4 +938,12 @@ feature -- Context
 			end
 		end
 
+feature -- Typing
+
+	is_type_conformant_in_application_context (a_type1: TYPE_A; a_type2: TYPE_A): BOOLEAN
+			-- Is `a_type1' conformant to `a_type2' in the context of `root_class_of_system'
+		do
+			Result := is_type_conformant (a_type1, a_type2, root_class_of_system.actual_type)
+		end
+
 end
