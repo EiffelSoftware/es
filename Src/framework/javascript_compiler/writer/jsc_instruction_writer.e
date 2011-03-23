@@ -1,0 +1,322 @@
+note
+	description : "Translate an instruction to JavaScript."
+	author      : "Alexandru Dima <alex.dima@gmail.com>"
+	copyright   : "Copyright (C) 2011, Alexandru Dima"
+	date        : "$Date$"
+	revision    : "$Revision$"
+
+class
+	JSC_INSTRUCTION_WRITER
+
+inherit
+	JSC_VISITOR
+		redefine
+			process_assign_b,
+			process_check_b,
+			process_debug_b,
+			process_if_b,
+			process_inspect_b,
+			process_instr_call_b,
+			process_loop_b,
+			process_retry_b,
+			process_reverse_b
+		end
+
+	SHARED_JSC_ENVIRONMENT
+		export {NONE} all end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export {NONE} all end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+			-- Initialize object.
+		do
+			create output.make
+			create expression_writer.make
+			reset ("")
+		end
+
+feature -- Access
+
+	output: attached JSC_SMART_WRITER
+			-- Generated JavaScript code
+
+	dependencies1: attached SET[INTEGER]
+			-- Level 1 dependencies
+
+	dependencies2: attached SET[INTEGER]
+			-- Level 2 dependencies
+
+	this_used_in_closure: BOOLEAN
+			-- Has an inline closure been defined, does it reference Current ?
+
+feature -- Basic Operation
+
+	reset (a_indentation: attached STRING)
+			-- Reset translation state.
+		do
+			output.reset (a_indentation)
+			this_used_in_closure := false
+			create {LINKED_SET[INTEGER]}dependencies1.make
+			create {LINKED_SET[INTEGER]}dependencies2.make
+		end
+
+	process_assertion (expr: attached BYTE_NODE; assertion_name: attached STRING; assertion_tag: detachable STRING)
+			-- Write `expr' as an assertion in JavaScript.
+		local
+			l_expr: JSC_WRITER_DATA
+		do
+			l_expr := invoke_expression_writer (expr)
+
+			output.put_indentation
+			output.put ("if(!(")
+			output.put_data (l_expr)
+			output.put (")) throw %"")
+			output.put (assertion_name)
+			output.put (" ")
+			if attached assertion_tag as tag then
+				output.put (tag)
+				output.put (" ")
+			end
+			output.put ("at ")
+			output.put (jsc_context.current_class_name)
+			output.put (".")
+			output.put (jsc_context.current_feature_name)
+			output.put (" does not hold.%"")
+			output.put_new_line
+		end
+
+feature -- Processing
+
+	process_assign_b (a_node: ASSIGN_B)
+			-- Process `a_node'.
+		local
+			l_system: SYSTEM_I
+			l_class: CLASS_C
+			l_local: LOCAL_B
+			l_attribute: ATTRIBUTE_B
+			l_feature: FEATURE_I
+			l_source: attached JSC_WRITER_DATA
+		do
+			l_system := system
+			check l_system /= Void end
+
+			l_source := invoke_expression_writer (a_node.source)
+
+			output.put_indentation
+
+			if attached a_node.target as safe_target then
+				if safe_target.is_local then
+					l_local ?= safe_target
+					check l_local /= Void end
+					output.put (jsc_context.name_mapper.local_name(l_local.position) )
+
+				elseif safe_target.is_result then
+					output.put (jsc_context.name_mapper.result_name)
+
+				elseif safe_target.is_attribute then
+					l_attribute ?= safe_target
+					check l_attribute /= Void end
+
+					l_class := l_system.class_of_id (l_attribute.written_in)
+					check l_class /= Void end
+
+					l_feature ?= l_class.feature_of_name_id (l_attribute.attribute_name_id)
+					check l_feature /= Void end
+
+					output.put ("this.")
+					output.put (jsc_context.name_mapper.feature_name (l_feature, false))
+					--output.put (l_feature.feature_name)
+				else
+					check should_not_be_here: false end
+				end
+			end
+
+			output.put (" = ")
+			output.put_data (l_source)
+			output.put (";")
+			output.put_new_line
+		end
+
+	process_check_b (a_node: CHECK_B)
+			-- Process `a_node'.
+		local
+			l_check: BYTE_NODE
+		do
+			if attached a_node.check_list as safe_check_list then
+				from
+					safe_check_list.start
+				until
+					safe_check_list.after
+				loop
+					l_check := safe_check_list.item
+					check l_check /= Void end
+
+					process_assertion (l_check, "Assertion", Void)
+					safe_check_list.forth
+				end
+			end
+		end
+
+	process_debug_b (a_node: DEBUG_B)
+			-- Process `a_node'.
+		local
+		do
+			io.put_string("JSC_INSTRUCTION_WRITER: debug_b instruction not supported%N")
+		end
+
+	process_if_b (a_node: IF_B)
+			-- Process `a_node'.
+		local
+			l_condition: JSC_WRITER_DATA
+			l_elseif: ELSIF_B
+		do
+			l_condition := invoke_expression_writer (a_node.condition)
+
+				-- If branch
+			output.put_indentation
+			output.put ("if (")
+			output.put_data (l_condition)
+			output.put (") {")
+			output.put_new_line
+
+			output.indent
+			if attached a_node.compound as safe_compound then
+				safe_compound.process (Current)
+			end
+			output.unindent
+
+				-- Else if parts
+			if attached a_node.elsif_list as elsif_list then
+				from
+					elsif_list.start
+				until
+					elsif_list.after
+				loop
+
+					l_elseif ?= elsif_list.item
+					check l_elseif /= Void end
+
+					l_condition := invoke_expression_writer (l_elseif.expr)
+
+					output.put_indentation
+					output.put ("} else if (")
+					output.put_data (l_condition)
+					output.put (") {")
+					output.put_new_line
+
+					output.indent
+						if attached l_elseif.compound as safe_compound then
+							safe_compound.process (Current)
+						end
+					output.unindent
+
+					elsif_list.forth
+				end
+			end
+
+				-- Else part
+			if attached a_node.else_part as else_part then
+				output.put_line ("} else {")
+				output.indent
+					else_part.process (Current)
+				output.unindent
+			end
+			output.put_line ("}")
+		end
+
+	process_inspect_b (a_node: INSPECT_B)
+			-- Process `a_node'.
+		local
+		do
+			io.put_string("JSC_INSTRUCTION_WRITER: inspect_b%N")
+		end
+
+	process_instr_call_b (a_node: INSTR_CALL_B)
+			-- Process `a_node'.
+		local
+			l_call: attached JSC_WRITER_DATA
+		do
+			l_call := invoke_expression_writer (a_node.call)
+
+			output.put_indentation
+			output.put_data (l_call)
+			output.put (";")
+			output.put_new_line
+		end
+
+	process_loop_b (a_node: LOOP_B)
+			-- Process `a_node'.
+		local
+			l_until_expression: attached JSC_WRITER_DATA
+		do
+				-- From
+			safe_process (a_node.from_part)
+
+				-- Until
+			l_until_expression := invoke_expression_writer (a_node.stop)
+
+			output.put_indentation
+			output.put ("while (!(")
+			output.put_data (l_until_expression)
+			output.put (")) {")
+			output.put_new_line
+			output.indent
+				safe_process (a_node.compound)
+			output.unindent
+			output.put_line ("}")
+		end
+
+	process_retry_b (a_node: RETRY_B)
+			-- Process `a_node'.
+		local
+		do
+			io.put_string("JSC_INSTRUCTION_WRITER: retry_b%N")
+		end
+
+	process_reverse_b (a_node: REVERSE_B)
+			-- Process `a_node'.
+		local
+			l_target: JSC_WRITER_DATA
+			l_source: JSC_WRITER_DATA
+		do
+			-- TODO: This should be written as expression_write.object_test
+
+			-- BIG TODO !!!!!!!!
+			l_target := invoke_expression_writer (a_node.target)
+			l_source := invoke_expression_writer (a_node.source)
+
+			output.put_indentation
+			output.put_data (l_target)
+			output.put (" = ")
+			output.put_data (l_source)
+			output.put (";")
+			output.put_new_line
+		end
+
+feature {NONE} -- Implementation
+
+	invoke_expression_writer (a_expr_node: BYTE_NODE): attached JSC_WRITER_DATA
+			-- Invoke `expression_writer' over a certain expression and collect results.
+		do
+			if attached a_expr_node as safe_expr_node then
+				expression_writer.reset (output.indentation)
+				a_expr_node.process (expression_writer)
+				Result := expression_writer.output.data
+
+				dependencies1.fill (expression_writer.dependencies1)
+				dependencies2.fill (expression_writer.dependencies2)
+				this_used_in_closure := this_used_in_closure or expression_writer.this_used_in_closure
+			else
+				create Result.make_from_string ("")
+			end
+		end
+
+	expression_writer: attached JSC_EXPRESSION_WRITER
+
+end

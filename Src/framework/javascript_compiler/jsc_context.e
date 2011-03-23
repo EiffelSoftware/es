@@ -1,0 +1,234 @@
+note
+	description : "Context of translation. Available to children of SHARED_JSC_ENVIRONMENT."
+	author      : "Alexandru Dima <alex.dima@gmail.com>"
+	copyright   : "Copyright (C) 2011, Alexandru Dima."
+	date        : "$Date$"
+	revision    : "$Revision$"
+
+class
+	JSC_CONTEXT
+
+inherit
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export {NONE} all end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+			-- Initialize object.
+		do
+			create name_mapper.make
+			create informer.make
+			create {LINKED_STACK[attached FEATURE_I]}current_features.make
+			create {LINKED_STACK[attached LIST[attached JSC_WRITER_DATA]]}old_locals.make
+			create {LINKED_STACK[INTEGER]}object_test_locals.make
+		end
+
+feature -- Access
+
+	name_mapper: attached JSC_NAME_MAPPER
+		-- Names provider
+
+	informer: attached JSC_CLASS_INFORMER
+		-- Class info provider
+
+feature -- Class Context
+
+	current_class: attached CLASS_C assign set_current_class
+		local
+			l_current_class: CLASS_C
+		do
+			l_current_class := unsafe_current_class
+			check l_current_class /= Void end
+
+			Result := l_current_class
+		end
+
+	set_current_class (a_current_class: attached CLASS_C)
+		do
+			unsafe_current_class := a_current_class
+		end
+
+	current_class_name: attached STRING
+		local
+			l_name: STRING
+		do
+			l_name := current_class.name_in_upper
+			check l_name /= Void end
+			Result := l_name
+		end
+
+feature -- Feature Context
+
+	current_feature: attached FEATURE_I
+		do
+			Result := current_features.item
+		end
+
+	current_feature_name: attached STRING
+		local
+			l_name: STRING
+		do
+			l_name := current_feature.feature_name
+			check l_name /= Void end
+
+			Result := l_name
+		end
+
+	push_feature (a_feature: attached FEATURE_I)
+		local
+			l_list: LINKED_LIST[attached JSC_WRITER_DATA]
+		do
+			current_features.put (a_feature)
+
+			create l_list.make
+			old_locals.put (l_list)
+
+			object_test_locals.put (0)
+		end
+
+	pop_feature
+		do
+			current_features.remove
+			old_locals.remove
+			object_test_locals.remove
+		end
+
+feature -- old() expressions
+
+	current_old_locals: attached LIST[attached JSC_WRITER_DATA]
+		do
+			Result := old_locals.item
+		end
+
+	add_old_local (a_data: attached JSC_WRITER_DATA)
+		do
+			current_old_locals.extend (a_data)
+		end
+
+	old_local_name (i: INTEGER): attached STRING
+		do
+			Result := "$old" + i.out
+		end
+
+	last_old_local: attached STRING
+		do
+			Result := old_local_name (current_old_locals.count)
+		end
+
+feature -- Object Test Locals
+
+	current_object_test_locals: INTEGER
+		do
+			Result := object_test_locals.item
+		end
+
+	add_object_test_local: attached STRING
+		local
+			current_cnt: INTEGER
+		do
+			current_cnt := current_object_test_locals
+			object_test_locals.remove
+			object_test_locals.extend (current_cnt + 1)
+			Result := object_test_local_name (current_cnt + 1)
+		end
+
+	object_test_local_name (a_index: INTEGER): attached STRING
+		do
+			Result := "$obj_test" + a_index.out
+		end
+
+feature -- Helpers
+
+	print_error (a_error_code, a_summary, a_explanation: attached STRING; a_line_number: INTEGER)
+		do
+			io.error.put_string ("-------------------------------------------------------------------------------")
+			io.error.put_new_line
+			io.error.put_new_line
+			io.error.put_string ("Error code: ")
+			io.error.put_string (a_error_code)
+			io.error.put_new_line
+			io.error.put_new_line
+			io.error.put_string (a_summary)
+			io.error.put_new_line
+			io.error.put_string (a_explanation)
+			io.error.put_new_line
+			io.error.put_new_line
+			io.error.put_string ("Class: ")
+			io.error.put_string (current_class_name)
+			io.error.put_new_line
+			if current_features.count > 0 then
+				io.error.put_string ("Feature: ")
+				io.error.put_string (current_feature_name)
+				io.error.put_new_line
+			end
+			if a_line_number > 0 then
+				io.error.put_string ("Line: ")
+				io.error.put_integer (a_line_number)
+				io.error.put_new_line
+			end
+			io.error.put_new_line
+		end
+
+feature -- Reserved JavaScript words
+
+	is_reserved_javascript_word (a_str: attached STRING): BOOLEAN
+		do
+			Result := reserved_javascript_words.has (a_str);
+		end
+
+feature {NONE} -- Implementation
+
+	current_features : attached STACK[attached FEATURE_I]
+		-- Stack of features
+
+	old_locals : attached STACK[attached LIST[attached JSC_WRITER_DATA]]
+		-- Stack of locals resulted from the usage of old()
+
+	object_test_locals : attached STACK[INTEGER]
+		-- Stack of locals resulted from object tests
+
+	unsafe_current_class: CLASS_C
+		-- Current class
+
+feature {NONE} -- Implementation
+
+	reserved_javascript_words: attached SET[attached STRING]
+			-- See: https://developer.mozilla.org/en/JavaScript/Reference/Reserved_Words
+		local
+			l_reserved: ARRAY[attached STRING]
+			i: INTEGER
+		once
+			create {LINKED_SET[attached STRING]}Result.make
+			Result.compare_objects
+
+				-- The following are reserved words and may not be used as variables, functions, methods, or object identifiers.
+			l_reserved := <<
+				-- The following are reserved as existing keywords by the ECMAScript specification:
+			"break", "case", "catch", "continue", "default", "delete", "do", "else",
+			"finally", "for", "function", "if", "in", "instanceof", "new", "return",
+			"switch", "this", "throw", "try", "typeof", "var", "void", "while", "with",
+				-- The following are reserved as future keywords by the ECMAScript specification:
+			"abstract", "boolean", "byte", "char", "class", "const", "debugger", "double",
+			"enum", "export", "extends", "final", "float", "goto", "implements", "import",
+			"int", "interface", "long", "native", "package", "private", "protected",
+			"public", "short", "static", "super", "synchronized", "throws", "transient",
+			"volatile",
+				-- Additionally, null is reserved as null literals by the ECMAScript specification, and
+				-- true and false are reserved as boolean literals by the ECMAScript specification.
+			"null", "true", "false" >>
+
+			from
+				i := l_reserved.lower
+			until
+				i > l_reserved.upper
+			loop
+				Result.extend (l_reserved[i])
+				i := i + 1
+			end
+		end
+
+end

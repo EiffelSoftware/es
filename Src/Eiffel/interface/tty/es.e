@@ -1293,6 +1293,8 @@ feature -- Update
 				create {EWB_SEMANTIC_SEARCH} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-boogie") then
 				create {EWB_BOOGIE_VERIFICATION} command
+			elseif option.is_equal ("-js_compile") then
+				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
 				workbench.set_planned_class_and_feature_name (argument (current_option + 1),
 				                                              argument (current_option + 2))

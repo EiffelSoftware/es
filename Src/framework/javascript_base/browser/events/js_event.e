@@ -1,0 +1,114 @@
+-- This is a generated file, please do not edit directly
+note
+	copyright: "[
+		This file has been generated from IDL Definitions available at
+		http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html.
+		Copyright © 2010 W3C® (MIT, ERCIM, Keio), All Rights Reserved. W3C
+		liability, trademark and document use rules apply.
+	]"
+	javascript: "NativeStub:Event"
+class
+	JS_EVENT
+
+feature -- Introduced in DOM Level 2:
+
+feature -- PhaseType
+
+	CAPTURING_PHASE: INTEGER
+			-- The current event phase is the capture phase.
+		external "C" alias "1" end
+
+	AT_TARGET: INTEGER
+			-- The current event is in the target phase, i.e., it is being evaluated at the
+			-- proximal event target.
+		external "C" alias "2" end
+
+	BUBBLING_PHASE: INTEGER
+			-- The current event phase is the bubbling phase.
+		external "C" alias "3" end
+
+	type: STRING
+			-- The name of the event type. The name must be a DOMString. Specifications
+			-- that define events, content authors, and authoring tools must use
+			-- case-sensitive event type names that do not contain whitespace characters.
+		external "C" alias "type" end
+
+	target: JS_EVENT_TARGET
+			-- Used to indicate the event target. This attribute contains the proximal
+			-- event target when used with the Event dispatch and DOM event flow.
+		external "C" alias "target" end
+
+	current_target: JS_EVENT_TARGET
+			-- Used to indicate the EventTarget whose EventListeners are currently being
+			-- processed. This is particularly useful during the capture and bubbling
+			-- phases. When used with the Event dispatch and DOM event flow, this attribute
+			-- contains the proximal event target or a target ancestor.
+		external "C" alias "currentTarget" end
+
+	event_phase: INTEGER
+			-- Used to indicate which phase of event flow is currently being accomplished.
+		external "C" alias "eventPhase" end
+
+	bubbles: BOOLEAN
+			-- Used to indicate whether or not an event is a bubbling event. If the event
+			-- can bubble the value shall be true, otherwise the value shall be false.
+		external "C" alias "bubbles" end
+
+	cancelable: BOOLEAN
+			-- Used to indicate whether or not an event can have its default action
+			-- prevented (see also Default actions and cancelable events). If the default
+			-- action can be prevented the value shall be true, otherwise the value shall
+			-- be false.
+		external "C" alias "cancelable" end
+
+	time_stamp: INTEGER
+			-- Used to specify the time at which the event was created in milliseconds
+			-- relative to 1970-01-01T00:00:00Z. Due to the fact that some systems may not
+			-- provide this information the value of timeStamp may be not available for all
+			-- events. When not available, the value shall be 0.
+		external "C" alias "timeStamp" end
+
+	stop_propagation
+			-- Prevents other event listeners from being triggered but its effect shall be
+			-- deferred until all event listeners attached on the Event.currentTarget have
+			-- been triggered. Once it has been called, further calls to this method have
+			-- no additional effect.
+		external "C" alias "stopPropagation()" end
+
+	prevent_default
+			-- When this method is evoked, the event must be canceled, meaning any default
+			-- actions normally taken by the implementation as a result of the event must
+			-- not occur (see also Default actions and cancelable events). Calling this
+			-- method for a non-cancelable event shall have no effect. If an event has more
+			-- than one default action, each cancelable default action must be canceled.
+		external "C" alias "preventDefault()" end
+
+	init_event (a_event_type_arg: STRING; a_can_bubble_arg: BOOLEAN; a_cancelable_arg: BOOLEAN)
+			-- Initializes attributes of an Event created through the
+			-- DocumentEvent.createEvent method. This method may only be called before the
+			-- Event has been dispatched via the EventTarget.dispatchEvent() method. If the
+			-- method is called several times before invoking EventTarget.dispatchEvent,
+			-- only the final invocation takes precedence. This method has no effect if
+			-- called after the event has been dispatched. If called from a subclass of the
+			-- Event interface only the values specified in this method are modified, all
+			-- other attributes are left unchanged.
+		external "C" alias "initEvent($a_event_type_arg, $a_can_bubble_arg, $a_cancelable_arg)" end
+
+feature -- Introduced in DOM Level 3:
+
+	stop_immediate_propagation
+			-- Prevents other event listeners from being triggered and, unlike
+			-- Event.stopPropagation() its effect shall be immediate . Once it has been
+			-- called, further calls to this method have no additional effect.
+		external "C" alias "stopImmediatePropagation()" end
+
+	default_prevented: BOOLEAN
+			-- Used to indicate whether Event.preventDefault() has been called for this
+			-- event.
+		external "C" alias "defaultPrevented" end
+
+	is_trusted: BOOLEAN
+			-- Used to indicate whether this event was generated by the user agent
+			-- (trusted) or by script (untrusted). See trusted events for more details.
+		external "C" alias "isTrusted" end
+end
