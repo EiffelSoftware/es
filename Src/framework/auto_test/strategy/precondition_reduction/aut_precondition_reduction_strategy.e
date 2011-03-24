@@ -134,6 +134,8 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 			l_tautologies: like tautology_predicates
 			l_used_qry_ids: DS_HASH_SET [INTEGER]
 			l_done: BOOLEAN
+			l_db_problem_count: INTEGER
+			l_tries: INTEGER
 		do
 				-- Get, and remove, one invariant to process each step.
 			current_invariant := prestate_invariants.first
@@ -158,13 +160,18 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 				until
 					l_done
 				loop
-					object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection, l_used_qry_ids)
+					object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, False, True, connection, l_used_qry_ids, l_tries = 0, l_tries)
+					l_tries := l_tries + 1
 					if connection.last_error_number /= 0 then
 						connection.close
 						connection.dispose
 						connection := interpreter.configuration.semantic_database_config.connection
 						connection.connect
-						progress_log_manager.put_line (" [Database problem]")
+						progress_log_manager.put_string (" [Database problem]")
+						l_db_problem_count := l_db_problem_count + 1
+						if l_db_problem_count > 10 then
+							l_done := True
+						end
 					else
 						l_objects := object_retriever.last_objects
 						if l_objects /= Void and then not l_objects.is_empty then
@@ -172,7 +179,6 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 								across l_objs.item.meta as l_metas loop
 									l_metas.item.search (once "qry_id")
 									if l_metas.item.found then
-										io.put_string (l_metas.item.found_item + "%N")
 										l_used_qry_ids.force_last (l_metas.item.found_item.to_integer)
 									end
 								end
@@ -182,23 +188,28 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 							execute_task (sub_task)
 
 							if l_breaker.is_last_test_case_executed and then (l_breaker.value_of_current_invariant_before_test = False) then
-								progress_log_manager.put_line (" [Violated]")
+								progress_log_manager.put_string (" [Violated]")
 								l_done := True
 							else
 								if l_used_qry_ids.count > 20 then
-									progress_log_manager.put_line (" [Not violated]")
+									progress_log_manager.put_string (" [Not violated]")
 									l_done := True
 								else
-									progress_log_manager.put_line ("I'll read more data.")
+									io.put_string ("I'll read more data.%N")
 								end
 							end
 						else
-							progress_log_manager.put_line (" [No object]")
-							l_done := True
+							if l_tries > 5 then
+								l_done := True
+								progress_log_manager.put_string (" [No object]")
+							else
+								io.put_string ("I cannot find any objects, I'll relax the contraint and try again.%N")
+							end
 						end
 					end
 				end
 			end
+			progress_log_manager.put_line ("")
 		end
 
 	execute_task (a_task: AUT_TASK)
@@ -450,7 +461,7 @@ feature{NONE} -- Invariant-violating invariants checking
 							l_invs.item.feature_,
 							False,
 							False,
-							connection, Void)
+							connection, Void, True, 0)
 						if l_retriever.last_objects.is_empty then
 							l_result_log.put_line ("%T[No]")
 						else

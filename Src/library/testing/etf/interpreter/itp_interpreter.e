@@ -247,7 +247,7 @@ feature {NONE} -- Handlers
 
 						-- Deserialize objects.
 					l_serialized_objects := lv_operands.serialized_objects
-					check even_count: l_serialized_objects.count \\ 2 = 0 end
+--					check even_count: l_serialized_objects.count \\ 2 = 0 end
 					from
 						create l_uuid_objects_mapping.make (l_serialized_objects.count)
 						l_uuid_objects_mapping.compare_objects
@@ -275,11 +275,11 @@ feature {NONE} -- Handlers
 						l_var_with_uuid := l_receivers.at (l_index).var_with_uuid
 
 						l_at_sign := l_var_with_uuid.index_of ('@', 1)
-						check found_at: l_at_sign > 0 end
+--						check found_at: l_at_sign > 0 end
 						l_var_name := l_var_with_uuid.substring (1, l_at_sign - 1)
 						l_uuid := l_var_with_uuid.substring (l_at_sign + 1, l_var_with_uuid.count)
 						l_var_index := l_var_name.substring (3, l_var_name.count.to_integer).to_integer
-						check var_with_uuid_exists: l_uuid_objects_mapping.has (l_uuid) and then l_uuid_objects_mapping.item (l_uuid).has (l_var_index) end
+--						check var_with_uuid_exists: l_uuid_objects_mapping.has (l_uuid) and then l_uuid_objects_mapping.item (l_uuid).has (l_var_index) end
 						l_object := l_uuid_objects_mapping.item (l_uuid).item (l_var_index)
 
 						store_variable_at_index (l_object, l_variable.index)
@@ -299,6 +299,7 @@ feature {NONE} -- Handlers
 			last_response := [0, Void, output_buffer, error_buffer]
 			send_response_to_socket
 		rescue
+			log_message (exception_trace + "%N")
 			l_retried := True
 			retry
 		end

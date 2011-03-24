@@ -155,6 +155,24 @@ feature -- Access
 			Result := expression_rewriter.expression_text (a_expression, l_replacements)
 		end
 
+	expression_from_curly_braced_operands (a_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING): EPA_EXPRESSION
+			-- Expression from `a_expression'
+			-- `a_expression' is in curly-integer form, and result is in normal Eiffel expression form.
+			-- For example, if `a_expression' is "{0}.has ({1})" in LINKED_LIST.extend, the result
+			-- is "Current.has (v)".
+		local
+			l_opds: DS_HASH_TABLE_CURSOR [INTEGER, STRING]
+			l_text: STRING
+			l_expr: EPA_AST_EXPRESSION
+		do
+			l_text := a_expression.twin
+			across operands_from_curly_braced_operands (a_feature, a_class) as l_replacements loop
+				l_text.replace_substring_all (l_replacements.key, l_replacements.item)
+			end
+			create l_expr.make_with_text (a_class, a_feature, l_text, a_class)
+			Result := l_expr
+		end
+
 	single_rooted_expressions (a_expression: STRING; a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_TABLE [TUPLE [variable_indexes: DS_HASH_SET [INTEGER]; canonical_form: STRING], EPA_EXPRESSION]
 			-- Subexpressions from `a_expression'. Those subexpressions must mention at least one
 			-- variable in `a_expression'. `a_context_class' and `a_feature' define the place where `a_expression'

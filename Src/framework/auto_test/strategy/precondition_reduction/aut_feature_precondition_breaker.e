@@ -139,6 +139,10 @@ feature -- Execute
 					l_opds := operand_expressions_with_feature (class_, feature_)
 					l_should_test := True
 					across operand_for_invocation as l_operands until not l_should_test loop
+							-- Note: Check if the the loaded objects conform to the static type
+							-- of the operands from the feature under test.
+							-- This is needed because the semantic database contains some error data,
+							-- meaning that sometimes the deserialized objects have a different type.
 						l_should_test := l_operands.item.type.conform_to (class_, l_types.item (l_operands.key))
 						if l_should_test then
 							l_exprs.extend (l_opds.item (l_operands.key))
@@ -442,6 +446,7 @@ feature{NONE} -- Implementation
 			l_ref_equ_id: INTEGER
 			l_expr1, l_expr2: EPA_EXPRESSION
 			l_equation1, l_equation2: EPA_EQUATION
+			l_expr_equ_tbl: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION] -- Keys are expressions, values are their object equivalent class id
 		do
 				-- Setup the name mapping from object ids in object pool to
 				-- operand names. For example v_10 -> Current, v_2 -> v.
@@ -460,6 +465,8 @@ feature{NONE} -- Implementation
 			l_ref_equ_id := 1
 			create l_obj_equ_tbl.make (10)
 			create l_ref_equ_tbl.make (10)
+			create l_expr_equ_tbl.make (50)
+			l_expr_equ_tbl.set_key_equality_tester (expression_equality_tester)
 			create l_expr_value_pair.make (a_source.count)
 			l_expr_value_pair.set_key_equality_tester (expression_equality_tester)
 			across a_source as l_sources loop
@@ -473,8 +480,10 @@ feature{NONE} -- Implementation
 						l_expr_value_pair.force_last (l_value, l_target_expr)
 					end
 					if attached object_equality_comparison_result (l_target_expr, l_value) as l_obj_equ_result then
-						l_obj_equ_tbl.force ([l_obj_equ_result.expression1, l_obj_equ_result.expression2], l_obj_equ_id)
-						l_obj_equ_id := l_obj_equ_id + 1
+						if l_obj_equ_result.is_obj_equal then
+							l_obj_equ_tbl.force ([l_obj_equ_result.expression1, l_obj_equ_result.expression2], l_obj_equ_id)
+							l_obj_equ_id := l_obj_equ_id + 1
+						end
 					end
 				end
 			end
@@ -512,7 +521,7 @@ feature{NONE} -- Implementation
 			create Result.make_from_expression_value_pairs (l_expr_value_pair, a_class, a_feature)
 		end
 
-	object_equality_comparison_result (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE): detachable TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]
+	object_equality_comparison_result (a_expr: EPA_EXPRESSION; a_value: EPA_EXPRESSION_VALUE): detachable TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION; is_obj_equal: BOOLEAN]
 			-- If `a_expr' represents an object comparison between two expressions and `a_value' makes these
 			-- two expression object-equal to each other, put those two involved expressions into
 			-- `expression1' and `expression2', otherwise return Void.
@@ -536,7 +545,17 @@ feature{NONE} -- Implementation
 				if (l_is_equal and then l_bool.item) or (not l_is_equal and then not l_bool.item) then
 					create l_left_expr.make_with_feature (a_expr.class_, a_expr.feature_, l_left, a_expr.written_class)
 					create l_right_expr.make_with_feature (a_expr.class_, a_expr.feature_, l_right, a_expr.written_class)
-					Result := [l_left_expr, l_right_expr]
+
+					if l_is_equal and l_bool.item then
+						Result := [l_left_expr, l_right_expr, True]
+					elseif l_is_equal and not l_bool.item then
+						Result := [l_left_expr, l_right_expr, False]
+					elseif not l_is_equal and l_bool.item then
+						Result := [l_left_expr, l_right_expr, False]
+					else
+						Result := [l_left_expr, l_right_expr, True]
+					end
+
 				end
 			end
 		end

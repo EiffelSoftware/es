@@ -128,6 +128,10 @@ feature -- Status report
 			-- Should statistics of object pool and predicate evaluation pool be logged?
 			-- Default: False
 
+	is_batch_assign_logged: BOOLEAN
+			-- Should batch assign request be logged?
+			-- Default: True
+
 feature -- Setting
 
 	set_is_passing_test_case_logged (b: BOOLEAN)
@@ -218,6 +222,14 @@ feature -- Setting
 			is_pool_satistics_logged_set: is_pool_satistics_logged = b
 		end
 
+	set_is_batch_assign_logged (b: BOOLEAN)
+			-- Set `is_batch_assign_logged' with `b'.
+		do
+			is_batch_assign_logged := b
+		ensure
+			is_batch_assign_logged_set: is_batch_assign_logged = b
+		end
+
 	set_start_time (a_time: INTEGER)
 			-- Set `start_time' with `a_time'.
 		do
@@ -254,6 +266,7 @@ feature -- Setting
 			set_is_type_request_logged (a_config.has ("type"))
 			set_is_precondition_satisfaction_logged (a_config.has ("precondition"))
 			set_is_pool_satistics_logged (a_config.has ("statistics"))
+			set_is_batch_assign_logged (a_config.has ("batch-assign"))
 		end
 
 feature -- Basic operations
@@ -447,8 +460,16 @@ feature{AUT_REQUEST} -- Processing requests
 
 	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
 			-- Process `a_request'.
+		local
+			l_stream: like output_stream
+			l_receivers: SPECIAL [TUPLE [value: STRING; var: ITP_VARIABLE]]
+			l_types: HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			l_count: INTEGER
+			l_string: STRING
 		do
-			to_implement("Implement")
+			if is_batch_assign_logged then
+				safe_process_request (a_request)
+			end
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)

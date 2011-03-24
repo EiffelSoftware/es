@@ -178,8 +178,30 @@ feature {AUT_REQUEST} -- Processing
 
 	process_batch_assignment_request (a_request: AUT_BATCH_ASSIGNMENT_REQUEST)
 			-- Process `a_request'.
+		local
+			l_stream: like output_stream
+			l_receivers: SPECIAL [TUPLE [value: STRING; var: ITP_VARIABLE]]
+			l_types: HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			l_count: INTEGER
+			l_string: STRING
 		do
-			to_implement("Implement")
+			l_stream := output_stream
+
+			l_receivers := a_request.receivers
+			l_types := a_request.receiver_types
+			l_count := l_receivers.count - 1
+			create l_string.make (256)
+			across 0 |..| l_count as l_indexes loop
+				l_string.append (l_receivers.item (l_indexes.item).var.name ({ITP_SHARED_CONSTANTS}.variable_name_prefix))
+				l_string.append (once " := ")
+				l_string.append (l_receivers.item (l_indexes.item).value)
+				if l_indexes.item < l_count then
+					l_string.append_character (';')
+					l_string.append_character (' ')
+				end
+			end
+			l_stream.put_string (once ":batch-assign ")
+			l_stream.put_line (l_string)
 		end
 
 	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)

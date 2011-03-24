@@ -42,7 +42,7 @@ feature -- Setting
 
 feature -- Basic operations
 
-	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER])
+	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN; a_tried: INTEGER)
 			-- Retrieve objects that satisfying `a_predicate' if `a_satisfying' is True;
 			-- otherwise, retrieve objects that violating `a_predicate'.
 			-- Make result available in `last_objects'.
@@ -85,6 +85,7 @@ feature -- Basic operations
 			l_queryable_map: HASH_TABLE [SEM_QUERYABLE, STRING]
 			l_queryable: SEM_QUERYABLE
 			l_retried: BOOLEAN
+			l_obj_count: INTEGER
 		do
 			if not l_retried then
 				create l_queryable_map.make (10)
@@ -96,7 +97,12 @@ feature -- Basic operations
 					-- depending on the value `a_satisfying'.
 				l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
 				create l_sql_gen
-				l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, 5, False, 1, 1, a_ignore_qry_ids)
+				if a_tried > 1 then
+					l_obj_count := 20
+				else
+					l_obj_count := 5
+				end
+				l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, l_obj_count, False, 1, 1, a_ignore_qry_ids, a_all_in_one_queryable)
 	--			l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, a_satisfying, 5, True, 2, 2)
 				l_select := l_main_sql.sql
 				unconstrained_vars := l_main_sql.unconstrained_vars
@@ -125,7 +131,7 @@ feature -- Basic operations
 				if a_connection.last_error_number = 0 and then a_connection.has_result then
 					l_sql_result := a_connection.last_result
 					l_column_names := l_sql_result.column_names
-					l_var_count := l_sql_result.column_count - 1
+					l_var_count := l_sql_result.column_count // 3
 					l_operand_mapping := operands_from_curly_braced_operands (a_feature, a_context_class)
 
 					from
@@ -136,12 +142,19 @@ feature -- Basic operations
 						create l_mapping.make (l_var_count)
 						l_mapping.compare_objects
 						l_data_row := l_sql_result.data_as_table
-						l_uuid := l_data_row.item (queryables_uuid)
-						l_qry_id := l_data_row.item (queryables_qry_id).to_integer
+--						l_uuid := l_data_row.item (queryables_uuid)
+--						l_qry_id := l_data_row.item (queryables_qry_id).to_integer
 						across l_operand_mapping as l_map loop
 							l_data_row.search (l_map.key)
 							if l_data_row.found then
-								create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_data_row.found_item.out, l_uuid)
+								l_opd_name := l_data_row.found_item
+								l_data_row.search (l_map.key + ".uuid")
+								l_uuid := l_data_row.found_item
+
+								l_data_row.search (l_map.key + ".qry_id")
+								l_qry_id := l_data_row.found_item.to_integer
+
+								create l_var_with_uuid.make ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_name, l_uuid)
 								l_mapping.force (l_var_with_uuid, l_operand_mapping.item (l_map.key))
 							end
 						end

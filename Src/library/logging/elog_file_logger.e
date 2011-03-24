@@ -10,8 +10,6 @@ class
 inherit
 	ELOG_LOGGER
 
-	DISPOSABLE
-
 create
 	make,
 	make_with_path
@@ -49,17 +47,6 @@ feature -- Basic Operations.
 			file.put_string (a_string)
 			file.flush
 		end
-
-feature -- Disposal
-
-	dispose
-			-- <Precursor>
-		do
-			if not file.is_closed then
-				file.close
-			end
-		end
-
 
 --	put_string_with_level (a_string: STRING; a_level: INTEGER)
 			-- Log `a_string' with `a_level'.

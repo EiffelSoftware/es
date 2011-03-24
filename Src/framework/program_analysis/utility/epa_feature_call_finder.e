@@ -29,6 +29,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_CONTRACT_EXTRACTOR
+
 feature -- Access
 
 	last_calls: LINKED_LIST [TUPLE [feature_name: STRING; operands: HASH_TABLE [STRING, INTEGER]]]
@@ -63,6 +65,17 @@ feature -- Basic operations
 
 					-- Process the feature body AST.
 				l_do.process (Current)
+
+					-- Process contracts
+				across precondition_of_feature (a_feature, a_class) as l_preconditions loop
+					l_preconditions.item.ast.process (Current)
+				end
+
+				across postcondition_of_feature (a_feature, a_class) as l_postconditions loop
+					l_postconditions.item.ast.process (Current)
+				end
+
+					-- Cleanup results.
 				prune_calls
 			end
 		end
@@ -107,6 +120,10 @@ feature{NONE} -- Implementation
 
 				if l_should_keep then
 					l_should_keep := is_relevant_nested_call (l_as)
+				end
+
+				if l_should_keep then
+					l_should_keep := not text_from_ast (l_as).has_substring ("old ")
 				end
 
 				if l_should_keep then

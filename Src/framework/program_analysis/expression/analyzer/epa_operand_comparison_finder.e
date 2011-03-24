@@ -64,7 +64,11 @@ feature{NONE} -- Implementation
 			operands := operands_of_feature (a_feature)
 			expression := a_expression
 			is_for_reference_comparison := a_for_reference
-			a_expression.ast.process (Current)
+--			if attached {BIN_EQ_AS} a_expression.ast as l_equation and then attached {BOOL_AS} l_equation.right then
+--				l_equation.left.process (Current)
+--			else
+				a_expression.ast.process (Current)
+--			end
 		end
 
 	comparison_from_left_and_right (a_left: EXPR_AS; a_right: EXPR_AS): detachable TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]
@@ -73,12 +77,15 @@ feature{NONE} -- Implementation
 		local
 			l_left, l_right: STRING
 			l_left_expr, l_right_expr: EPA_AST_EXPRESSION
+			l_left_ast, l_right_ast: EXPR_AS
 		do
-			l_left := text_from_ast (a_left)
-			l_right := text_from_ast (a_right)
+			l_left_ast := ast_without_surrounding_paranthesis (a_left)
+			l_right_ast := ast_without_surrounding_paranthesis (a_right)
+			l_left := text_from_ast (l_left_ast)
+			l_right := text_from_ast (l_left_ast)
 			if operands.has (l_left) and operands.has (l_right) then
-				create l_left_expr.make_with_feature (class_, feature_, a_left, class_)
-				create l_right_expr.make_with_feature (class_, feature_, a_right, class_)
+				create l_left_expr.make_with_feature (class_, feature_, l_left_ast, class_)
+				create l_right_expr.make_with_feature (class_, feature_, l_right_ast, class_)
 				Result := [l_left_expr, l_right_expr]
 			end
 		end

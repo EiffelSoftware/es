@@ -300,6 +300,25 @@ feature -- AST
 			Result.remove (ti_current)
 		end
 
+	ast_without_surrounding_paranthesis (a_expr_as: EXPR_AS): EXPR_AS
+			-- Expression AST from `a_expr_as' where all surrounding paranthesis
+			-- are removed
+		local
+			l_ast: EXPR_AS
+		do
+			from
+				l_ast := a_expr_as
+			until
+				Result /= Void
+			loop
+				if attached {PARAN_AS} l_ast as l_paran then
+					l_ast := l_paran.expr
+				else
+					Result := l_ast
+				end
+			end
+		end
+
 feature -- Contract extractor
 
 	contract_extractor: EPA_CONTRACT_EXTRACTOR

@@ -750,7 +750,10 @@ feature{NONE} -- Implementation
 						if not has_error then
 							if attached {EPA_REFERENCE_VALUE} last_value as l_rvalue then
 								l_right_value := l_rvalue
-								create {EPA_BOOLEAN_VALUE} last_value.make (l_left_value.object_equivalent_class_id = l_right_value.object_equivalent_class_id)
+								create {EPA_BOOLEAN_VALUE} last_value.make (
+									(l_left_value.object_equivalent_class_id = l_right_value.object_equivalent_class_id) and
+									l_left_value.object_equivalent_class_id > 0 and
+									l_right_value.object_equivalent_class_id > 0)
 								l_set := True
 							end
 						end

@@ -140,6 +140,11 @@ feature{NONE} -- Implementation
 				l_done := True
 			end
 
+				-- Ignore invariants related to type mismatch.
+			if l_text.has_substring ("mismatch") then
+				l_done := True
+			end
+
 				-- Ingore expressions which contain more than 1 nested level, for example, a.b.c,
 				-- because the theory generator cannot support such expressions.
 			if not l_done then

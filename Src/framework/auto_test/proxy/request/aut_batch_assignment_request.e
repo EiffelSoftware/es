@@ -32,19 +32,24 @@ feature {NONE} -- Initialization
 			l_count, l_index: INTEGER
 			l_var_with_uuid: SEM_VARIABLE_WITH_UUID
 			l_objects_seri: STRING
+			l_cursor: DS_ARRAYED_LIST_CURSOR [TUPLE [var_with_uuid: SEM_VARIABLE_WITH_UUID; var: ITP_VARIABLE; type: TYPE_A]]
 		do
 			make_request (a_system)
 
 				-- List of itp_variables and the references to the serialized objects.
 			create receivers.make_empty (a_receivers.count)
+			create receiver_types.make (a_receivers.count)
+			receiver_types.compare_objects
 			from
-				a_receivers.start
+				l_cursor := a_receivers.new_cursor
+				l_cursor.start
 			until
-				a_receivers.after
+				l_cursor.after
 			loop
-				l_var_with_uuid := a_receivers.item_for_iteration.var_with_uuid
-				receivers.extend ([l_var_with_uuid.variable + "@" + l_var_with_uuid.uuid, a_receivers.item_for_iteration.var])
-				a_receivers.forth
+				l_var_with_uuid := l_cursor.item.var_with_uuid
+				receivers.extend ([l_var_with_uuid.variable + "@" + l_var_with_uuid.uuid, l_cursor.item.var])
+				receiver_types.force (l_cursor.item.type, l_cursor.item.var)
+				l_cursor.forth
 			end
 
 				-- List of serialized objects.
@@ -56,7 +61,6 @@ feature {NONE} -- Initialization
 			loop
 				serialized_objects.extend (a_serialization.key_for_iteration)
 				serialized_objects.extend (a_serialization.item_for_iteration)
-
 				a_serialization.forth
 			end
 
@@ -88,19 +92,14 @@ feature -- Access
 			-- Each receiver, specified by ITP_VARIABLE, will get the object referenced by STRING.
 			-- For example, [3@uuid1, v_5] will cause the execution of v_5 := serialized_objects[uuid][3]
 
+	receiver_types: HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			-- Type of receiver variables
+			-- Keys are variables, values are types of those variables.
+
 	serialized_objects: SPECIAL[STRING]
 			-- Serialization data for all the objects to be used in the assignment.
 			-- All the objects come in several object groups:
 			-- [uuid_0, object_group_0, uuid_1, object_group_1, ..., uuid_n, object_group_n]
-			-- And each object_group is the serialization of [index_0, object_0, index_1, object_1, ..., index_n, object_n].
-
-feature -- Execution
-
-	byte_code: STRING
-			-- Byte code to be injected into the interpreter which fulfils the request.
-		do
-
-		end
 
 feature -- Processing
 
@@ -111,7 +110,6 @@ feature -- Processing
 		end
 
 invariant
-
 	receivers_not_empty: receivers /= Void and then receivers.count > 0
 	serialized_objects_not_empty: serialized_objects /= Void and then serialized_objects.count > 0
 

@@ -102,18 +102,20 @@ feature -- Generation
 
 			if not l_done then
 				if attached {DO_AS} body_ast_from_feature (a_feature) as l_do then
-					if l_do.compound.count = 1 then
-						if attached {ASSIGN_AS} l_do.compound.first as l_assign then
-							if attached {RESULT_AS} l_assign.target as l_result then
-								if not text_from_ast (l_assign.source).has (',') then
-									is_suitable := True
-									l_assign.source.process (Current)
-									if is_suitable then
-										l_text := l_assign.source.original_text (match_list_server.item (a_feature.written_class.class_id))
-										l_text.prepend ("Result = (")
-										l_text.append (once ")")
-										create l_expr.make_with_text (a_class, a_feature, l_text, a_class)
-										last_postconditions.extend (l_expr)
+					if attached l_do.compound then
+						if l_do.compound.count = 1 then
+							if attached {ASSIGN_AS} l_do.compound.first as l_assign then
+								if attached {RESULT_AS} l_assign.target as l_result then
+									if not text_from_ast (l_assign.source).has (',') then
+										is_suitable := True
+										l_assign.source.process (Current)
+										if is_suitable then
+											l_text := l_assign.source.original_text (match_list_server.item (a_feature.written_class.class_id))
+											l_text.prepend ("Result = (")
+											l_text.append (once ")")
+											create l_expr.make_with_text (a_class, a_feature, l_text, a_class)
+											last_postconditions.extend (l_expr)
+										end
 									end
 								end
 							end

@@ -50,6 +50,9 @@ feature -- Basic operations
 					-- Find expressions that are relevant to operands of `feature_'.				
 				relevant_expressions (context_class, feature_).do_all_with_key (agent last_relevant_expressions.force_last)
 
+					-- Find relevant expression from anchored type definitions in arguments.
+				find_relevant_expressions_in_argument_types
+
 					-- Find path conditions from `feature_'
 				last_path_conditions.merge (path_conditions (context_class, feature_))
 
@@ -362,6 +365,66 @@ feature{NONE} -- Implementation
 					create l_expr.make_with_text (a_class, a_feature, l_qualifier.last_expression, l_written_class)
 					if l_expr.type /= Void then
 						Result.force_last (l_expr)
+					end
+				end
+				l_cursor.forth
+			end
+		end
+
+	find_relevant_expressions_in_argument_types
+			-- Find relevant expressions in type definitions of arguments in `feature_'.
+		local
+			l_operand_types: like operand_types_with_feature
+			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
+			l_opd_index: INTEGER
+			l_opd_type: TYPE_A
+			l_operand_exprs: like operand_expressions_with_feature
+			l_opd_expr: EPA_EXPRESSION
+			l_expr: EPA_AST_EXPRESSION
+			l_cur: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
+			l_set: DS_HASH_SET [EPA_EXPRESSION]
+		do
+			l_operand_types := operand_types_with_feature (feature_, context_class)
+			l_operand_exprs := operand_expressions_with_feature (context_class, feature_)
+			from
+				l_cursor := l_operand_types.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_opd_index := l_cursor.key
+				l_opd_type := l_cursor.item
+				l_opd_expr := l_operand_exprs.item (l_opd_index)
+				if attached {LIKE_FEATURE} l_opd_type as l_like_feat_type then
+					if attached {FEATURE_I} context_class.feature_named (l_like_feat_type.feature_name) as l_feat then
+						l_expr := Void
+						if l_feat.argument_count = 0 then
+							create l_expr.make_with_text (context_class, feature_, ti_current + "." + l_feat.feature_name.as_lower, context_class)
+						elseif l_feat.argument_count = 1 and then l_feat.arguments.i_th (1).is_integer then
+							from
+								l_cur := l_operand_types.new_cursor
+								l_cur.start
+							until
+								l_cur.after or else l_expr /= Void
+							loop
+								if l_cur.key /= l_opd_index and then l_cur.item.is_integer then
+									create l_expr.make_with_text (context_class, feature_, ti_current + "." + l_feat.feature_name.as_lower + "(" + l_operand_exprs.item (l_cur.key).text + ")", context_class)
+								end
+								l_cur.forth
+							end
+						end
+						if l_expr /= Void and then l_expr.type /= Void then
+							last_relevant_expressions.search (l_opd_expr)
+							if last_relevant_expressions.found then
+								l_set := last_relevant_expressions.found_item
+							else
+								create l_set.make (5)
+								l_set.set_equality_tester (expression_equality_tester)
+								l_set.force_last (l_expr)
+								last_relevant_expressions.force_last (l_set, l_opd_expr)
+							end
+							l_set.force_last (l_expr)
+						end
 					end
 				end
 				l_cursor.forth

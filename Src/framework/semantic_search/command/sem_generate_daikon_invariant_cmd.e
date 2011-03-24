@@ -142,7 +142,7 @@ feature{NONE} -- Implementation
 				l_relation_loader.load_relation (l_path)
 
 					-- Generate invariants using Daikon.
-				l_invariants := invariants_from_arff_relation (l_relation_loader.last_relation)
+				l_invariants := invariants_from_arff_relation (l_relation_loader.last_relation, a_class, a_feature)
 
 					-- Store generated invariants in file.
 				create l_directory.make_from_string (config.output)

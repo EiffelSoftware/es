@@ -59,9 +59,10 @@ feature -- Access
 			end
 		end
 
-	sql_clauses_for_variable (a_name: STRING; a_predicates: HASH_TABLE [STRING, STRING]; a_type: detachable STRING; a_position: INTEGER): TUPLE [table: STRING; where_clause: STRING]
+	sql_clauses_for_variable (a_name: STRING; a_predicates: HASH_TABLE [STRING, STRING]; a_type: detachable STRING; a_position: INTEGER; a_queryable_partition_id: INTEGER): TUPLE [table: STRING; where_clause: STRING]
 			-- SQL clauses for selecting a variable named `a_name' with
 			-- properties `a_predicates', keys are predicate names, values are predicate values.
+			-- `a_queryable_partition_id' is the queryable partition id.
 			-- `a_type' is an optional predicate to specify the type of the variable.
 			-- `table' is the table clause for that variable. For example: "PropertyBindings1 v_1".
 			-- `where_clause' are the predicates in WHERE section of the sql statement. For example:
@@ -108,13 +109,17 @@ feature -- Access
 
 			l_where_clause.append_character ('%N')
 
+				-- Setup queryable partition id.
+			l_where_clause.append ("%NAND " + a_name + ".qry_id=q_" + a_queryable_partition_id.out + ".qry_id%N")
+
 			Result := [l_table, l_where_clause]
 		end
 
-	sql_clauses_for_property (a_property_name: STRING; a_text: STRING; a_predicates: HASH_TABLE [STRING, STRING]): TUPLE [table: STRING; where_clause: STRING]
+	sql_clauses_for_property (a_property_name: STRING; a_text: STRING; a_predicates: HASH_TABLE [STRING, STRING]; a_queryable_partition_id: INTEGER): TUPLE [table: STRING; where_clause: STRING]
 			-- SQL clauses for selecting a property named `a_text'.
 			-- `a_property_name' is the name to be mentioned in the SQL statements (Table name alias).
 			-- `a_text' is the property expression, for example v_1.has (v_2).
+			-- `a_queryable_partition_id' is the queryable partition id associated with this property.
 			-- properties `a_predicates', keys are predicate names, values are predicate values.
 			-- `table' is the table clause for that variable. For example: "PropertyBindings1 v_1".
 			-- `where_clause' are the predicates in WHERE section of the sql statement.
@@ -165,6 +170,9 @@ feature -- Access
 				l_where_clause.append (once ".var1")
 			end
 
+				-- Setup queryable partition id.
+			l_where_clause.append ("%NAND " + a_property_name + ".qry_id=q_" + a_queryable_partition_id.out + ".qry_id%N")
+
 			Result := [l_table, l_where_clause]
 		end
 
@@ -193,7 +201,7 @@ feature -- Access
 			Result.append ("LIMIT " + a_count.out)
 		end
 
-	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
+	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
 			-- `a_expression' must have boolean type.
@@ -240,6 +248,11 @@ feature -- Access
 			l_opd_types: like resolved_operand_types_with_feature
 			l_pre_text: STRING
 			l_qry_id_cursor: DS_HASH_SET_CURSOR [INTEGER]
+			l_qry_partitions: like queryable_partitions
+			i: INTEGER
+			l_queryable_clauses: like clauses_for_queryables
+			l_type_of_replacements: HASH_TABLE [TYPE_A, STRING]
+			l_type: TYPE_A
 		do
 			create l_contract_extractor
 			l_pres := l_contract_extractor.precondition_of_feature (a_feature, a_context_class).twin
@@ -314,6 +327,8 @@ feature -- Access
 
 			create l_replacements.make (5)
 			l_replacements.compare_objects
+			create l_type_of_replacements.make (5)
+			l_type_of_replacements.compare_objects
 
 			l_context_type := root_class_of_system.actual_type
 			create l_select.make (128)
@@ -324,6 +339,9 @@ feature -- Access
 			l_operands.force (0, curly_brace_surrounded_integer (0)) -- Make sure that target is always included.
 			l_subexprs := single_rooted_expressions (l_final_expr, a_context_class, a_feature)
 			l_feat_opds := operands_with_feature (a_feature).cloned_object
+
+				-- Get the set of queryable partition ids.
+			l_qry_partitions := queryable_partitions (l_operands, l_subexprs, a_all_in_one_queryable)
 
 				-- Remove "Result", if any.
 			if a_feature.has_return_value then
@@ -355,13 +373,17 @@ feature -- Access
 			create l_var_preds.make (2)
 			l_var_preds.compare_objects
 			l_var_preds.force (a_prop_kind.out, "prop_kind")
-			l_var_preds.force ("q.qry_id", "qry_id")
+--			l_var_preds.force ("q.qry_id", "qry_id")
 
-			l_from.append ("FROM Queryables q")
-			l_select.append ("SELECT q.uuid as %"uuid%", q.qry_id as %"qry_id%"")
+			l_queryable_clauses := clauses_for_queryables (l_qry_partitions, a_context_class, Void, a_query_kind)
+			l_from.append ("FROM ")
+			l_select.append ("SELECT ")
 			l_where.append ("WHERE%N")
+			l_from.append (l_queryable_clauses.from_clause)
+			l_where.append (l_queryable_clauses.where_clause)
+
 			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
-				l_where.append ("q.qry_id NOT IN (")
+				l_where.append ("AND q_0.qry_id NOT IN (")
 				from
 					l_qry_id_cursor := a_ignore_qry_ids.new_cursor
 					l_qry_id_cursor.start
@@ -374,35 +396,55 @@ feature -- Access
 					end
 					l_qry_id_cursor.forth
 				end
-				l_where.append (") AND %N")
+				l_where.append (") %N")
 			end
-			l_where.append ("q.qry_kind=" + a_query_kind.out + " AND%N")
-			l_where.append ("q.class=%"" + a_context_class.name_in_upper + "%"")
-			if a_feature_included then
-				l_where.append ("%NAND q.feature=%"" + a_feature.feature_name.as_lower + "%"")
-			end
+
+
+--			l_where.append ("q.qry_kind=" + a_query_kind.out + " AND%N")
+--			l_where.append ("q.class=%"" + a_context_class.name_in_upper + "%"")
+--			if a_feature_included then
+--				l_where.append ("%NAND q.feature=%"" + a_feature.feature_name.as_lower + "%"")
+--			end
 			l_where.append_character ('%N')
 
 				-- Setup variables.
 			l_opd_types := resolved_operand_types_with_feature (a_feature, a_context_class, a_context_class.constraint_actual_type)
+			i := 0
 			across l_operands as l_opds loop
 				l_var_name := "v_" + l_opds.item.out
-				l_select.append (", ")
+				if i > 0 then
+					l_select.append (", ")
+				end
 				l_select.append (l_var_name)
 				l_select.append (".var1 as ")
 				l_select.append_character ('%"')
 				l_select.append (l_opds.key)
 				l_select.append_character ('%"')
 
+				l_select.append_character (',')
+				l_select.append ("q_" + l_qry_partitions.variables.item (l_opds.item).out)
+				l_select.append (".uuid as %"")
+				l_select.append (l_opds.key)
+				l_select.append (".uuid")
+				l_select.append ("%"")
+				l_select.append_character (',')
+				l_select.append ("q_" + l_qry_partitions.variables.item (l_opds.item).out)
+				l_select.append (".qry_id as %"")
+				l_select.append (l_opds.key)
+				l_select.append (".qry_id")
+				l_select.append ("%"")
+
+				i := i + 1
 				if l_opds.item = 0 then
-					l_var_type := output_type_name (a_context_class.constraint_actual_type.name)
+					l_type := a_context_class.constraint_actual_type
 				else
-					l_var_type := output_type_name (l_opd_types.item (l_opds.item).name)
+					l_type := l_opd_types.item (l_opds.item)
 				end
+				l_var_type := output_type_name (l_type.name)
 				if a_feature_included then
-					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, l_opds.item)
+					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, l_opds.item, l_qry_partitions.variables.item (l_opds.item))
 				else
-					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, -1)
+					l_var_sql := sql_clauses_for_variable (l_var_name, l_var_preds, l_var_type, -1, l_qry_partitions.variables.item (l_opds.item))
 				end
 
 				l_from.append (", ")
@@ -410,6 +452,7 @@ feature -- Access
 				l_where.append ("%NAND%N")
 				l_where.append (l_var_sql.where_clause)
 				l_replacements.force (l_var_name, l_var_name)
+				l_type_of_replacements.force (l_type, l_var_name)
 			end
 
 				-- Setup properties.				
@@ -422,12 +465,13 @@ feature -- Access
 			loop
 				if l_expr_cursor.item.canonical_form /~ once "$" then
 					l_prop_name := "p_" + l_prop_id.out
-					l_prop_sql := sql_clauses_for_property (l_prop_name, l_expr_cursor.key.text, l_var_preds)
+					l_prop_sql := sql_clauses_for_property (l_prop_name, l_expr_cursor.key.text, l_var_preds, l_qry_partitions.properties.item (l_expr_cursor.key))
 					l_from.append (", ")
 					l_from.append (l_prop_sql.table)
 					l_where.append ("%N%NAND%N")
 					l_where.append (l_prop_sql.where_clause)
 					l_replacements.force (l_prop_name, l_expr_cursor.key.text)
+					l_type_of_replacements.force (l_expr_cursor.key.type, l_expr_cursor.key.text)
 					l_prop_id := l_prop_id + 1
 				end
 				l_expr_cursor.forth
@@ -443,19 +487,152 @@ feature -- Access
 
 			create l_gen.make
 			l_expr := variabled_expression (l_final_expr)
-			l_gen.process_property (ast_from_expression_text (l_expr), l_replacements)
+			l_gen.process_property (ast_from_expression_text (l_expr), l_replacements, l_type_of_replacements, l_qry_partitions, a_context_class, a_feature)
 			l_sql.append ("%NAND%N")
 			l_sql.append (l_gen.last_output)
 			l_sql.append_character ('%N')
 
-			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
-				l_sql.append ("GROUP BY q.qry_id%N")
-			end
+--			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
+--				l_sql.append ("GROUP BY q.qry_id%N")
+--			end
 
 			if a_limit > 0 then
 				l_sql.append ("LIMIT " + a_limit.out + "%N")
 			end
 			Result := [l_sql, l_unconstrained_operands]
+		end
+
+	queryable_partitions (a_operands: HASH_TABLE [INTEGER_32, STRING_8]; a_subexprs: like single_rooted_expressions; a_all_in_one: BOOLEAN): TUPLE [variables: HASH_TABLE [INTEGER, INTEGER]; properties: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]]
+			-- Queryable partitions from `a_operands' and `a_subexprs'
+			-- `a_operands' are a hash-table from curly-integer operand indexes to operand indexes, for example {0} -> 0; {1} -> 1.
+			-- `a_subexprs' are single-rooted expression mentioning `a_operands'.
+			-- If `a_all_in_one' is True, all variables and properties are constrained to come from the same queryable.
+			-- Result:
+			-- `variables' is a hash-table, keys are 0-based operand indexes, values are 0-based queryable partition id.
+			-- A queryable partition with id 0 means the queryable for the target operand.
+			-- `properties' is a hash-table, keys are property expressions, and values are the queryable partition ids
+			-- where those properties should come from.
+		local
+			l_var_parts: HASH_TABLE [INTEGER, INTEGER]
+			l_prop_parts: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]
+			l_cursor: DS_HASH_TABLE_CURSOR [TUPLE [variable_indexes: DS_HASH_SET [INTEGER_32]; canonical_form: STRING_8], EPA_EXPRESSION]
+			l_mentioned_opds: DS_HASH_SET [INTEGER_32]
+			l_qry_partition_id: INTEGER
+			l_vcur: DS_HASH_SET_CURSOR [INTEGER]
+		do
+			create l_var_parts.make (a_operands.count)
+			create l_prop_parts.make (a_subexprs.count)
+			l_prop_parts.set_key_equality_tester (expression_equality_tester)
+
+			if a_all_in_one then
+					-- If everything should come from the same queryable, we require
+					-- they come from the same queryable as the target operand, which is partition 0.
+				across a_operands as l_opds loop
+					l_var_parts.force (0, l_opds.item)
+				end
+				from
+					l_cursor := a_subexprs.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_prop_parts.force_last (0, l_cursor.key)
+					l_cursor.forth
+				end
+				Result := [l_var_parts, l_prop_parts]
+			else
+					-- First, we assume that every operand is in a different partition.
+				across a_operands as l_opds loop
+					l_var_parts.force (l_opds.item, l_opds.item)
+				end
+
+					-- Then, we merge partitions of different operands into one partition
+					-- if those operands are mentioned in the same expression.
+				from
+					l_cursor := a_subexprs.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_mentioned_opds := l_cursor.item.variable_indexes
+					l_qry_partition_id := minimal_partition_id (l_var_parts, l_mentioned_opds)
+					l_prop_parts.force_last (l_qry_partition_id, l_cursor.key)
+					from
+						l_vcur := l_mentioned_opds.new_cursor
+						l_vcur.start
+					until
+						l_vcur.after
+					loop
+						l_var_parts.force (l_qry_partition_id, l_vcur.item)
+						l_vcur.forth
+					end
+					l_cursor.forth
+				end
+				Result := [l_var_parts, l_prop_parts]
+			end
+		end
+
+	minimal_partition_id (a_operand_partitions: HASH_TABLE [INTEGER, INTEGER]; a_operands_in_same_partition: DS_HASH_SET [INTEGER]): INTEGER
+			-- The minimal partition id from `a_operand_partition's.
+			-- `a_operands_in_same_partition' is a set of operand 0-based indexes.
+			-- `a_operand_partitions' are a hash-table, keys are 0-based operand indexes,
+			-- values are queryable partition ids.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [INTEGER]
+			l_result_set: BOOLEAN
+		do
+			from
+				l_cursor := a_operands_in_same_partition.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_result_set then
+					if a_operand_partitions.item (l_cursor.item) < Result then
+						Result := a_operand_partitions.item (l_cursor.item)
+					end
+				else
+					l_result_set := True
+					Result := a_operand_partitions.item (l_cursor.item)
+				end
+				l_cursor.forth
+			end
+		end
+
+	clauses_for_queryables (a_partitions: like queryable_partitions; a_class: CLASS_C; a_feature: detachable FEATURE_I; a_query_kind: INTEGER): TUPLE [from_clause: STRING; where_clause: STRING]
+			-- Text for queryable selection SQL clauses
+		local
+			l_processed: DS_HASH_SET [INTEGER]
+			l_from: STRING
+			l_where: STRING
+		do
+			create l_from.make (256)
+			create l_where.make (256)
+			create l_processed.make (5)
+			across a_partitions.variables as l_var_partitions loop
+				if not l_processed.has (l_var_partitions.item) then
+					l_processed.force_last (l_var_partitions.item)
+					if not l_from.is_empty then
+						l_from.append_character (',')
+						l_from.append_character (' ')
+					end
+					l_from.append ("Queryables q_" + l_var_partitions.item.out)
+					if not l_where.is_empty then
+						l_where.append (" AND ")
+					end
+					if l_var_partitions.item = 0 then
+						l_where.append ("%Nq_" + l_var_partitions.item.out + ".class='")
+						l_where.append (a_class.name_in_upper)
+						l_where.append_character ('%'')
+						l_where.append (" AND q_" + l_var_partitions.item.out + ".qry_kind=" + a_query_kind.out + "%N")
+					else
+						l_where.append ("%Nq_" + l_var_partitions.item.out + ".qry_kind=" + a_query_kind.out + "%N")
+					end
+				end
+			end
+			l_from.append_character ('%N')
+			l_where.append_character ('%N')
+			Result := [l_from, l_where]
 		end
 
 end

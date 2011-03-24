@@ -272,7 +272,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_interpreter_log_enabled)
 
 			create l_proxy_log_option.make_with_long_form ("proxy-log")
-			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, operand-type, state, precondition, pool-statistics, basic, all. Basic is equal to passing, failing, invalid, bad, error, type, expr-assign. Default: basic")
+			l_proxy_log_option.set_description ("Proxy-log options. Options consist of comma separated keywords. Valid keywords are: off, passing, failing, invalid, bad, error, type, expr-assign, batch-assign, operand-type, state, precondition, pool-statistics, basic, all. Basic is equal to passing, failing, invalid, bad, error, type, expr-assign, batch-assign. Default: basic")
 			parser.options.force_last (l_proxy_log_option)
 
 			create l_console_log_option.make_with_long_form ("console-log")
@@ -729,6 +729,8 @@ feature{NONE} -- Initialization
 							log_types.put (True, "precondition")
 						elseif l_word.is_case_insensitive_equal ("statistics") then
 							log_types.put (True, "statistics")
+						elseif l_word.is_case_insensitive_equal ("batch-assign") then
+							log_types.put (True, "batch-assign")
 						elseif l_word.is_case_insensitive_equal ("basic") then
 							l_log_has_basic := True
 						elseif l_word.is_case_insensitive_equal ("all") then
@@ -743,6 +745,7 @@ feature{NONE} -- Initialization
 							log_types.put (True, "type")
 							log_types.put (True, "precondition")
 							log_types.put (True, "statistics")
+							log_types.put (True, "batch-assign")
 						end
 						l_strs.forth
 					end
@@ -754,6 +757,7 @@ feature{NONE} -- Initialization
 					log_types.put (True, "bad")
 					log_types.put (True, "error")
 					log_types.put (True, "expr-assign")
+					log_types.put (True, "batch-assign")
 					log_types.put (True, "type")
 				end
 			end

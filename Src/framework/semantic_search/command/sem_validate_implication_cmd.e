@@ -108,7 +108,7 @@ feature -- Basic operations
 				l_expr_attr_map.forth
 			end
 
-			l_invariants := invariants_from_arff_relation (l_arff_relation)
+			l_invariants := invariants_from_arff_relation (l_arff_relation, Void, Void)
 			from
 				l_invariants.start
 			until

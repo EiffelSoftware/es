@@ -414,7 +414,7 @@ feature -- Access
 
 feature -- Invariants
 
-	invariants_from_arff_relation (a_relation: WEKA_ARFF_RELATION): DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
+	invariants_from_arff_relation (a_relation: WEKA_ARFF_RELATION; a_class: detachable CLASS_C; a_feature: detachable FEATURE_I): DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
 			-- Invariants generalized from data in `a_relation'
 		local
 			l_daikon_gen: SEM_ARFF_TO_DAIKON_GENERATOR
@@ -425,6 +425,8 @@ feature -- Invariants
 			l_daikon_command := "/usr/bin/java daikon.Daikon"
 			create l_daikon_gen.make
 			l_daikon_gen.set_is_missing_value_included (True)
+			l_daikon_gen.set_context_class (a_class)
+			l_daikon_gen.set_feature (a_feature)
 			l_daikon_gen.generate (a_relation)
 			Result := invariants_from_daikon (l_daikon_command, l_daikon_gen.last_declaration, l_daikon_gen.last_trace)
 		end
