@@ -7,9 +7,10 @@ class
 	EXT_IV_FINDER
 
 inherit
-	AST_ITERATOR
+	EXT_VARIABLE_USAGE_CALLBACK_SERVICE
 		redefine
-			process_expr_call_as,
+			process_case_as,
+			process_elseif_as,
 			process_if_as,
 			process_inspect_as,
 			process_loop_as
@@ -18,151 +19,370 @@ inherit
 	REFACTORING_HELPER
 
 create
-	make_from_candidates
+	make
 
 feature {NONE} -- Initialization
 
-	make_from_candidates (a_candidate_interface_variables: HASH_TABLE [TYPE_A, STRING])
+	make
+		do
+				-- Reset variable usage tracking state.
+			reset
+
+				-- Set up callbacks to track regular variable usage, except in control flow statement expressions.
+			set_on_access_identifier (agent callback_use_pure)
+			set_on_access_identifier_with_feature_call (agent callback_use_feat)
+
+				-- Set up callback iterator to track variable usage in control flow statement expressions.
+			create expr_variable_usage_finder
+			expr_variable_usage_finder.set_on_access_identifier (agent callback_use_pure_in_cf_stmt)
+			expr_variable_usage_finder.set_on_access_identifier_with_feature_call (agent callback_use_feat_in_cf_stmt)
+		ensure
+			attached nesting_stack
+			attached partial_use_order
+			attached expr_variable_usage_finder
+		end
+
+feature -- Configuration
+
+	reset
+			-- Reset variable usage tracking state from last run.
+		do
+				-- Create nesting stack and inital scope.
+			create {LINKED_STACK [TUPLE [use_pure, use_feat, c_use_pure, c_use_feat: like act_use_pure]]} nesting_stack.make
+			open_scope
+
+				-- Create global book-keeping data structures.
+			create partial_use_order.make (10)
+			total_variable_usage := new_variable_usage_tuple
+		end
+
+	set_target_variable (a_target_variable_type: like target_variable_type; a_target_variable_name: like target_variable_name)
+			-- Configures the iterator with the target variable. If this variable is set, the interface
+			-- variable analysis will consider that information as well and can rule out false-positives.
+		require
+			attached a_target_variable_type
+			attached a_target_variable_name
+		do
+			target_variable_type := a_target_variable_type
+			target_variable_name := a_target_variable_name
+		ensure
+			attached target_variable_type
+			attached target_variable_name
+		end
+
+	set_candidate_interface_variables (a_candidate_interface_variables: like candidate_interface_variables)
+			-- Configures the iterator with a set of candidate interface variables that have to be
+			-- checked if the are real interface variables.
 		require
 			a_candidate_iv_not_void: a_candidate_interface_variables /= Void
 		do
 			candidate_interface_variables := a_candidate_interface_variables
-			create iv_pos_set.make
-			create iv_neg_set.make
-			recording := False
 		ensure
 			candidate_iv_not_void: candidate_interface_variables /= Void
-			recording_is_false: recording = False
 		end
 
 feature -- Access
 
-	iv_neg_set: LINKED_SET [STRING]
+	is_mode_restricted_to_use_pure: BOOLEAN = False
+		-- Record pure variable usage only and don't consider feature calls?
 
-	iv_pos_set: like iv_neg_set
+	is_mode_restricted_to_c_use_pure: BOOLEAN = True
+		-- Record pure variable usage in control flow statement expressions only and don't consider feature calls?
+
+	has_target_variables: BOOLEAN
+			-- Are the target variables configured?
+		do
+			Result := target_variable_type /= Void and target_variable_name /= Void
+		end
+
+	has_candidate_interface_variables: BOOLEAN
+			-- Are the candidate interface variables configured?
+		do
+			Result := candidate_interface_variables /= Void
+		end
 
 	last_interface_variables: HASH_TABLE [TYPE_A, STRING]
 			-- Set of interface variables found according to AST iteration and that
-			-- are mentioned in `candidate_interface_variables'.
+			-- are valid mentioned in `candidate_interface_variables'.
 		local
-			l_iv_set: like iv_neg_set
-			l_iv_type: TYPE_A
+			l_interface_variable_type: TYPE_A
 		do
-				-- Calculating set difference: `iv_pos_set' minus `iv_neg_set'.
-			create l_iv_set.make
-			l_iv_set.merge (iv_pos_set)
-			l_iv_set.subtract (iv_neg_set)
+				-- Only the entrance scope has to be left.
+			check nesting_stack.count = 1 end
 
-				-- Include all variables are mentioned in `candidate_interface_variables'.
-			create Result.make (l_iv_set.count)
-			across l_iv_set as l_iv
-			loop
-				l_iv_type := candidate_interface_variables.at (l_iv.item)
-				if attached l_iv_type then Result.force (l_iv_type, l_iv.item) end
+			create Result.make (5)
+			Result.compare_objects
+
+				-- Selection criteria configured?
+			if has_target_variables and has_candidate_interface_variables then
+
+					-- Filter variables that are either not valid or not in the candidate list.
+				across partial_use_order as l_order loop
+					if last_c_use.has (l_order.key) and candidate_interface_variables.has (l_order.key) then
+						l_interface_variable_type := candidate_interface_variables.at (l_order.key)
+
+							-- Check if interface and target variable are in partial use relation.
+						if l_order.item.has (target_variable_name) then
+							Result.force (l_interface_variable_type, l_order.key)
+						end
+					end
+				end -- across
+			end -- if
+		end
+
+	last_use: like act_use_pure
+			-- List of all recorded 'use' information through last AST iteration.	
+		do
+			Result := calculate_effective_use (total_variable_usage.use_pure, total_variable_usage.use_feat)
+		end
+
+	last_c_use: like act_c_use_pure
+			-- List of all recorded 'c-use' information through AST last iteration.	
+		do
+			Result := calculate_effective_c_use (total_variable_usage.c_use_pure, total_variable_usage.c_use_feat)
+		end
+
+feature {NONE} -- Helpers
+
+	frozen safe_process_in_new_scope (l_as: AST_EIFFEL)
+			-- Open new nesting level for variable tracking and process `l_as'. Nothing if `l_as' is Void.
+		do
+			if l_as /= Void then
+				open_scope
+				l_as.process (Current)
+				close_scope
 			end
 		end
 
-feature {NONE} -- Recording
-
-	recording: BOOLEAN
-
-	is_recording: BOOLEAN
-		require
-			recording /= Void
+	new_variable_usage_tuple: TUPLE [use_pure, use_feat, c_use_pure, c_use_feat: like act_use_pure]
+			-- Create a tuple initialized with empty lists for variable usage tracking.
+		local
+			l_use_pure, l_use_feat, l_c_use_pure, l_c_use_feat: like act_use_pure
 		do
-			Result := recording
+			create l_use_pure.make
+			l_use_pure.compare_objects
+
+			create l_use_feat.make
+			l_use_feat.compare_objects
+
+			create l_c_use_pure.make
+			l_c_use_pure.compare_objects
+
+			create l_c_use_feat.make
+			l_c_use_feat.compare_objects
+
+			Result := [l_use_pure, l_use_feat, l_c_use_pure, l_c_use_feat]
 		end
 
-	enable_recording
-		require
-			recording = False
+	calculate_effective_use (a_use_pure, a_use_feat: like act_use_pure): like act_use_pure
+			-- Calculate effective use set depending on `is_mode_restricted_to_use_pure'.
 		do
-			recording := True
+			create Result.make
+
+			Result.compare_objects
+			Result.merge (a_use_pure)
+
+			if is_mode_restricted_to_use_pure then
+				Result.subtract (a_use_feat)
+			else
+				Result.merge (a_use_feat)
+			end
 		end
 
-	disable_recording
-		require
-			recording = True
+	calculate_effective_c_use (a_c_use_pure, a_c_use_feat: like act_c_use_pure): like act_c_use_pure
+			-- Calculate effective use set depending on `is_mode_restricted_to_c_use_pure'.
 		do
-			recording := False
+			create Result.make
+
+			Result.compare_objects
+			Result.merge (a_c_use_pure)
+
+			if is_mode_restricted_to_c_use_pure then
+				Result.subtract (a_c_use_feat)
+			else
+				Result.merge (a_c_use_feat)
+			end
+		end
+
+	open_scope
+			-- Open new scope for local analysis due to nesting.
+		do
+				-- Push new scope on top of stack.
+			nesting_stack.force (new_variable_usage_tuple)
+		end
+
+	close_scope
+			-- Close actual scope, evaluate and propagate results.	
+		local
+			l_closing_scope: like nesting_stack.item
+			l_closing_scope_use: like act_use_pure
+			l_actual_scope_c_use: like act_use_pure
+		do
+				-- Pop scope from top of stack.
+			l_closing_scope := nesting_stack.item
+			nesting_stack.remove
+
+				-- Calculate effective c-use set depending on `is_mode_restricted_to_c_use_pure'.
+			l_actual_scope_c_use := calculate_effective_c_use (act_c_use_pure, act_c_use_feat)
+
+				-- Calculate effective use set depending on `is_mode_restricted_to_use_pure'.
+			l_closing_scope_use := calculate_effective_use (l_closing_scope.use_pure, l_closing_scope.use_feat)
+
+				-- Update partial use order by relating `l_actual_scope_c_use' to `l_closing_scope_use':
+				-- Each c-use in the actual scope might is followed at least once in a deeper nesting
+				-- level by a use of the same variabe.
+			across l_actual_scope_c_use as l_c_use loop
+				if partial_use_order.has (l_c_use.item) then
+					partial_use_order.item (l_c_use.item).merge (l_closing_scope_use)
+				else
+					partial_use_order.extend (l_closing_scope_use, l_c_use.item)
+				end
+			end
 		end
 
 feature {NONE} -- Implementation
+
+	target_variable_type: TYPE_A
+		-- Type of the target variable at which we are looking at.
+
+	target_variable_name: STRING
+		-- Name of the target variable at which we are looking at.
 
 	candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
 			-- Set of variables that could potentially be interface variables. This set normally consists the local variables
 			-- and formal arguments of a feature.
 
-	process_expr_call_as (l_as: EXPR_CALL_AS)
-			-- Book keeping if a variable is accessed a with and without a feature call. That information will be used
-			-- to calcuate the `last_interface_variables'.
-		do
-			if is_recording then
-					-- Record varible access without feature call in the positive set for interface variable determination.
-				if attached {ACCESS_AS} l_as.call as l_iv_as then
-					iv_pos_set.force (l_iv_as.access_name_8)
-					fixme ("Debug code to remove")
---					io.put_string ("*[pos]* ")
---					io.put_string (l_iv_as.access_name_8)
---					io.put_new_line
-				end
+	nesting_stack: STACK [TUPLE [use_pure, use_feat, c_use_pure, c_use_feat: like act_use_pure]]
+		-- Stack used for evaluation in different scopes that keeps track of variable usage.
 
-					-- Record variable access with feature call in the negative set for interface variable determination.
-				if attached {NESTED_AS} l_as.call as l_nested_as and then attached l_nested_as.target as l_iv_as then
-					iv_neg_set.force (l_iv_as.access_name_8)
-					fixme ("Debug code to remove")
---					io.put_string ("*[neg]* ")
---					io.put_string (l_iv_as.access_name_8)
---					io.put_new_line
-				end
-			else
-					-- Continue AST iteration otherwise.
-				l_as.call.process (Current)
-			end
+	partial_use_order: HASH_TABLE [LINKED_SET [STRING], STRING]
+		-- Partial order indicating that a variable is used it least once before another.
+
+	total_variable_usage: like new_variable_usage_tuple
+		-- List of all recorded usage information through AST iteration.
+		-- This information is important to rule out false-positives at the end of processing.
+
+	act_use_pure: LINKED_SET [STRING]
+			-- Actual used identifiers without feature calls at current nesting level.
+			-- Control flow statement expressions are excluded.
+		do
+			Result := nesting_stack.item.use_pure
 		end
 
-	process_if_as (l_as: IF_AS)
-			-- Enable interface variable tracking for `l_as.condition' expression of if control flow statement.
-			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR}.
+	act_use_feat: LINKED_SET [STRING]
+			-- Actual used identifiers with feature calls at current nesting level.
+			-- Control flow statement expressions are excluded.			
 		do
-				-- Enable interface variable tracking.
-			enable_recording
-			l_as.condition.process (Current)
-			disable_recording
+			Result := nesting_stack.item.use_feat
+		end
 
-			safe_process (l_as.compound)
+	act_c_use_pure: LINKED_SET [STRING]
+			-- Actual used identifiers without feature calls at current nesting level
+			-- inside control flow statement expressions.
+		do
+			Result := nesting_stack.item.c_use_pure
+		end
+
+	act_c_use_feat: LINKED_SET [STRING]
+			-- Actual used identifiers with feature calls at current nesting level
+			-- inside control flow statement expressions.
+		do
+			Result := nesting_stack.item.c_use_feat
+		end
+
+feature {NONE} -- Callbacks
+
+	callback_use_pure (a_as: ACCESS_AS)
+			-- Callback triggered when an identifier is accessed outside control flow statement expressions.
+		do
+			act_use_pure.force (a_as.access_name_8)
+			total_variable_usage.use_pure.force (a_as.access_name_8)
+		end
+
+	callback_use_feat (a_as: NESTED_AS)
+			-- Callback triggered when an identifier with a feature call is accessed outside control flow statement expressions.		
+		do
+			act_use_feat.force (a_as.target.access_name_8)
+			total_variable_usage.use_feat.force (a_as.target.access_name_8)
+		end
+
+	callback_use_pure_in_cf_stmt (a_as: ACCESS_AS)
+			-- Callback triggered when an identifier is accessed in control flow statement expressions.	
+			-- See `expr_variable_usage_finder'.
+		do
+			act_c_use_pure.force (a_as.access_name_8)
+			total_variable_usage.c_use_pure.force (a_as.access_name_8)
+		end
+
+	callback_use_feat_in_cf_stmt (a_as: NESTED_AS)
+			-- Callback triggered when an identifier with a feature call is accessed in control flow statement expressions.
+			-- See `expr_variable_usage_finder'.
+		do
+			act_c_use_feat.force (a_as.target.access_name_8)
+			total_variable_usage.c_use_feat.force (a_as.target.access_name_8)
+		end
+
+feature {NONE} -- Control Flow Structures
+
+	expr_variable_usage_finder: EXT_VARIABLE_USAGE_CALLBACK_SERVICE
+		-- Callback iterator to track variable usage in control flow statement expressions.	
+
+	process_if_as (l_as: IF_AS)
+			-- Enable interface dedicated variable tracking for `l_as.condition' expression of if control flow statement.
+			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR} but might open a new scope
+			-- for tracking due to nesting level of statements.
+		do
+			l_as.condition.process (expr_variable_usage_finder)
+
+			safe_process_in_new_scope (l_as.compound)
 			safe_process (l_as.elsif_list)
-			safe_process (l_as.else_part)
+			safe_process_in_new_scope (l_as.else_part)
+		end
+
+	process_elseif_as (l_as: ELSIF_AS)
+			-- Enable interface dedicated variable tracking for `l_as.expr' of elseif control flow statement.
+			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR} but might open a new scope
+			-- for tracking due to nesting level of statements.
+		do
+			l_as.expr.process (expr_variable_usage_finder)
+
+			safe_process_in_new_scope (l_as.compound)
 		end
 
 	process_loop_as (l_as: LOOP_AS)
-			-- Enable interface variable tracking for `l_as.stop' expression of loop control flow statement.
-			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR}.
+			-- Enable interface dedicated variable tracking for `l_as.stop' expression of loop control flow statement.
+			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR} but might open a new scope
+			-- for tracking due to nesting level of statements.
 		do
 			safe_process (l_as.iteration)
 			safe_process (l_as.from_part)
 			safe_process (l_as.invariant_part)
 
-				-- Enable interface variable tracking.
-			enable_recording
-			safe_process (l_as.stop)
-			disable_recording
+			if attached l_as.stop then
+				l_as.stop.process (expr_variable_usage_finder)
+			end
 
-			safe_process (l_as.compound)
+			safe_process_in_new_scope (l_as.compound)
 			safe_process (l_as.variant_part)
 		end
 
 	process_inspect_as (l_as: INSPECT_AS)
-			-- Enable interface variable tracking for `l_as.switch' expression of inspect control flow statement.
-			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR}.
+			-- Enable interface dedicated variable tracking for `l_as.switch' expression of inspect control flow statement.
+			-- Beside that evaluations, the iteration conforms to the {AST_ITERATOR} but might open a new scope
+			-- for tracking due to nesting level of statements.
 		do
-				-- Enable interface variable tracking.			
-			enable_recording
-			l_as.switch.process (Current)
-			disable_recording
+			l_as.switch.process (expr_variable_usage_finder)
 
 			safe_process (l_as.case_list)
-			safe_process (l_as.else_part)
+			safe_process_in_new_scope (l_as.else_part)
+		end
+
+	process_case_as (l_as: CASE_AS)
+			-- Iteration conforms to the {AST_ITERATOR} but opens a new scope for tracking due to nesting level of statements.
+		do
+			l_as.interval.process (Current)
+
+			safe_process_in_new_scope (l_as.compound)
 		end
 
 end
