@@ -81,8 +81,8 @@ feature -- AST
 			l_text: STRING
 		do
 			l_text := "feature dummy__feature do%N" + a_text + "%Nend"
+			entity_feature_parser.set_syntax_version (entity_feature_parser.provisional_syntax)
 			entity_feature_parser.parse_from_utf8_string (l_text, Void)
-
 			if attached {DO_AS} entity_feature_parser.feature_node.body.as_routine.routine_body as l_do then
 				if attached l_do.compound then
 					Result := l_do.compound
@@ -99,6 +99,7 @@ feature -- AST
 			l_text: STRING
 		do
 			l_text := "feature dummy__feature do " + a_text + "%Nend"
+			entity_feature_parser.set_syntax_version (entity_feature_parser.provisional_syntax)
 			entity_feature_parser.parse_from_utf8_string (l_text, Void)
 
 			if attached {ROUTINE_AS} entity_feature_parser.feature_node.body.as_routine as l_routine then
@@ -120,6 +121,7 @@ feature -- AST
 			elseif a_text.starts_with (ti_there_exists_keyword) then
 				Result := parsed_quantification (a_text)
 			else
+				expression_parser.set_syntax_version (expression_parser.provisional_syntax)
 				expression_parser.parse_from_utf8_string (once "check " + a_text, Void)
 				Result := expression_parser.expression_node
 			end
@@ -162,7 +164,7 @@ feature -- AST
 				l_var_text.append_character ('%N')
 				l_var_text.append (l_vars)
 				l_parser := entity_declaration_parser
-				l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+				l_parser.set_syntax_version (l_parser.provisional_syntax)
 				l_parser.parse_from_ascii_string (l_var_text, Void)
 				l_vars_def := l_parser.entity_declaration_node
 
@@ -509,6 +511,9 @@ feature -- Class/feature related
 			-- Result is a table, key is operand name, such as "Current", "Result", and arguments.
 			-- Value is the type of that operand.
 			-- Note: Types in the result is not resolved.
+		require
+			a_feature_not_void: a_feature /= Void
+			a_context_class_not_void: a_context_class /= Void
 		local
 			l_operand_count: INTEGER
 			l_args: FEAT_ARG

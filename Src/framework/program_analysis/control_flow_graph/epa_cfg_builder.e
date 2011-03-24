@@ -137,20 +137,20 @@ feature -- Basic operations
 
 feature -- Status report
 
-	is_single_instruction_block: BOOLEAN
+	is_single_instruction_block: BOOLEAN assign set_is_single_instruction_block
 			-- Should a basic block be created for every
 			-- single instruction?
 			-- If False, all instruction in the same basic block will
 			-- be in a basic block.
 			-- Default: False
 
-	is_renaming_resolved: BOOLEAN
+	is_renaming_resolved: BOOLEAN assign set_is_renaming_resolved
 			-- Should feature renaming be resolved?
 			-- If True, the AST nodes included in the generated CFG
 			-- include only final feature names.
 			-- Default: False
 
-	is_auxilary_nodes_created: BOOLEAN
+	is_auxilary_nodes_created: BOOLEAN assign set_is_auxilary_nodes_created
 			-- Should auxilary nodes be inserted into the CFG?
 			-- Auxilary nodes are dummy nodes which do not represent any AST,
 			-- instead they usually inserted to make sure that every branching
@@ -486,7 +486,7 @@ feature{NONE} -- Implementation/Visit
 				Result := [l_block, l_block]
 			else
 					-- Store instructions into sections: every branching instruction in its own section,
-					-- depending on `is_single_instruciton_block', several sequential instructions are in
+					-- depending on `is_single_instruction_block', several sequential instructions are in
 					-- one section or every sequential instruction in its own section.
 				l_is_single_instruction_block := is_single_instruction_block
 				create l_instr_sections.make (2)
