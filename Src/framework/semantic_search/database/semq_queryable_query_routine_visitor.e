@@ -1,0 +1,119 @@
+note
+	description: "Queryable query helper AST visitor to turn routine call AST into a string"
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	SEMQ_QUERYABLE_QUERY_ROUTINE_VISITOR
+
+inherit
+	AST_ITERATOR
+		redefine
+			process_access_feat_as
+		end
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make
+			-- Initialization
+		do
+			argument_count := 0
+			create arguments.make
+			create target.make_empty
+			create feature_name.make_empty
+		end
+
+
+feature -- Access
+
+	argument_count: INTEGER
+		-- Number of arguments
+
+	arguments: LINKED_LIST [STRING]
+		-- Arguments
+
+	target: STRING
+		-- Target of routine call
+
+	feature_name: STRING
+		-- Name of routine called
+
+	call_as_string: STRING
+			-- The routine call as a string
+		do
+			Result := call_as_string_implementation (False)
+		end
+
+	call_as_string_anonymous: STRING
+			-- The routine call with all features replaced by '$'
+		do
+			Result := call_as_string_implementation (True)
+		end
+
+feature{NONE} -- Implementation
+
+	call_as_string_implementation (is_anonymous: BOOLEAN): STRING
+			-- Implementation of routine call as a string
+		do
+			if is_anonymous then
+				create Result.make_from_string (once "$")
+			else
+				create Result.make_from_string (target)
+			end
+			if feature_name.count > 0 then
+				Result.append_character ('.')
+				Result.append (feature_name)
+			end
+			if arguments.count > 0 then
+				Result.append_character (' ')
+				Result.append_character ('(')
+				from
+					arguments.start
+				until
+					arguments.after
+				loop
+					if is_anonymous then
+						Result.append_character ('$')
+					else
+						Result.append (arguments.item)
+					end
+					arguments.forth
+					if not arguments.after then
+						Result.append_character (',')
+						Result.append_character (' ')
+					end
+				end
+				Result.append_character (')')
+			end
+		end
+
+feature -- Roundtrip
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
+			-- Target
+			if argument_count = 0 then
+				target := l_as.access_name_8
+
+			-- Feature Name
+			elseif argument_count = 1 then
+				feature_name := l_as.access_name_8
+				argument_count := argument_count - 1 -- Fix
+
+			-- Arguments
+			else
+				arguments.extend (l_as.access_name_8)
+			end
+
+			-- Counting
+			argument_count := argument_count + 1
+
+			-- Recurse
+			Precursor (l_as)
+		end
+
+end
