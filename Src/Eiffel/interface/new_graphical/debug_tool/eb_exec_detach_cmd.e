@@ -13,8 +13,7 @@ class
 inherit
 	ES_DBG_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
-			tooltext,
-			enable_sensitive
+			tooltext
 		end
 
 	EB_SHARED_PREFERENCES
@@ -36,17 +35,6 @@ feature -- Formatting
 		do
 			if attached debugger_manager as dbg and then dbg.application_is_executing then
 				ask_and_detach
-			end
-		end
-
-feature -- Element change
-
-	enable_sensitive
-		do
-			if attached debugger_manager as dbg then
-				if dbg.is_classic_project then
-					Precursor
-				end
 			end
 		end
 

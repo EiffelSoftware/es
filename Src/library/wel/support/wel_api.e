@@ -71,6 +71,30 @@ feature -- Windows
 			"return EIF_TEST(SetWindowPos((HWND) $hwnd, (HWND) $hwnd_after, (int) $a_x, (int) $a_y, (int) $a_w, (int) $a_h, (UINT) $flags));"
 		end
 
+	begin_defer_window_pos (n: INTEGER): POINTER
+			-- SDK BeginDeferWindowPos
+		external
+			"C inline use <windows.h>"
+		alias
+			"return BeginDeferWindowPos((int) $n);"
+		end
+
+	defer_window_pos (hdwp, hwnd, hwnd_after: POINTER; a_x, a_y, a_w, a_h, flags: INTEGER): POINTER
+			-- SDK DeferWindowPos
+		external
+			"C inline use <windows.h>"
+		alias
+			"return DeferWindowPos((HDWP) $hdwp, (HWND) $hwnd, (HWND) $hwnd_after, (int) $a_x, (int) $a_y, (int) $a_w, (int) $a_h, (UINT) $flags);"
+		end
+
+	end_defer_window_pos (hdwp: POINTER): BOOLEAN
+			-- SDK EndDeferWindowPos
+		external
+			"C inline use <windows.h>"
+		alias
+			"return EIF_TEST(EndDeferWindowPos((HDWP) $hdwp));"
+		end
+
 	get_focus: POINTER
 			-- SDK GetFocus
 		external
@@ -93,6 +117,16 @@ feature -- Windows
 			"C inline use <windows.h>"
 		alias
 			"return EIF_TEST(DestroyWindow((HWND) $hwnd));"
+		end
+
+feature -- Drawings
+
+	exclude_clip_rect (hdc: POINTER; left, top, right, bottom: INTEGER): INTEGER
+			-- SDK ExcludeClipRect
+		external
+			"C inline use <windows.h>"
+		alias
+			"return (EIF_INTEGER) ExcludeClipRect((HDC) $hdc, (int) $left, (int) $top, (int) $right, (int) $bottom);"
 		end
 
 feature -- Dialogs
@@ -418,7 +452,7 @@ feature -- API
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

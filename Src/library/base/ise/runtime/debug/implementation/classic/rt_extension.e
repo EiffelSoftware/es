@@ -105,7 +105,7 @@ feature -- Notification
 
 	cached_arguments: ARRAY [detachable TUPLE]
 			-- Cached argument to use less temporary objects
-		once
+		once ("THREAD")
 				--| Make sure, the id are contigus, and in this range !
 			create Result.make_filled (Void, Op_enter_feature, Op_rt_assign_local)
 		ensure
@@ -267,8 +267,8 @@ feature {NONE} -- Execution replay
 			Result := execution_recorder_cell.item
 		end
 
-	execution_recorder_parameters: RT_DBG_EXECUTION_PARAMETERS
-			-- Once per thread record parameters.
+	execution_recorder_parameters: separate RT_DBG_EXECUTION_PARAMETERS
+			-- Once per process record parameters.
 		once ("PROCESS")
 			create Result.make
 		ensure
@@ -283,20 +283,31 @@ feature {NONE} -- Execution replay
 			p: like execution_recorder_parameters
 		do
 			p := execution_recorder_parameters
-			p.set_maximum_record_count (a_maximum_record_count)
-			p.set_flatten_when_closing (a_flatten_when_closing)
-			p.set_keep_calls_records (a_keep_calls_record)
-			p.set_recording_values (a_recording_values)
+			set_execution_recorder_parameters_to (
+				a_maximum_record_count,
+				a_flatten_when_closing,
+				a_keep_calls_record,
+				a_recording_values,
+				p
+			)
 			if attached execution_recorder as r then
 				r.update_parameters (p)
 			end
 		end
 
+	set_execution_recorder_parameters_to (a_maximum_record_count: INTEGER; a_flatten_when_closing: BOOLEAN;
+				a_keep_calls_record: BOOLEAN; a_recording_values: BOOLEAN; p: like execution_recorder_parameters)
+			-- Set execution recorder parameters to `p'.
+		do
+			p.set_maximum_record_count (a_maximum_record_count)
+			p.set_flatten_when_closing (a_flatten_when_closing)
+			p.set_keep_calls_records (a_keep_calls_record)
+			p.set_recording_values (a_recording_values)
+		end
+
 	execution_recorder_cell: CELL [detachable RT_DBG_EXECUTION_RECORDER]
 			-- Cell containing the once per thread recorder, if activated.
-		note
-			description: "Once per thread"
-		once
+		once ("THREAD")
 			create Result.put (Void)
 		ensure
 			result_attached: Result /= Void

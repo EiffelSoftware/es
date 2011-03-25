@@ -38,7 +38,9 @@ inherit
 		undefine
 			on_wm_dropfiles
 		redefine
-			top_level_window_imp
+			top_level_window_imp,
+			on_erase_background,
+			default_style
 		end
 
 	EV_SYSTEM_PEN_IMP
@@ -292,6 +294,42 @@ feature {NONE} -- Implementation
 					disable_default_processing
 				end
 			end
+		end
+
+	on_erase_background (paint_dc: WEL_PAINT_DC; invalid_rect: WEL_RECT)
+			-- <Precursor>
+		local
+			l_first_visible, l_second_visible: BOOLEAN
+		do
+			l_first_visible := attached first_imp as l_first and then l_first.is_show_requested
+			l_second_visible := attached second_imp as l_second and then l_second.is_show_requested
+			if l_first_visible xor l_second_visible then
+					-- Only one children is visible, therefore there is nothing to clear.
+				disable_default_processing
+				set_message_return_value (to_lresult (1))
+			else
+				if l_first_visible and l_second_visible then
+						-- Both children are visible, we just need to erase background where
+						-- the splitter is. The children will take care of redrawing their background.
+						-- We simply do that by shrinking `invalid_rect'.
+					if attached {EV_HORIZONTAL_SPLIT_AREA_IMP} Current then
+						invalid_rect.set_rect (internal_split_position, -1, internal_split_position + splitter_width, height)
+					else
+						invalid_rect.set_rect (-1, internal_split_position, width, internal_split_position + splitter_width)
+					end
+				end
+					-- If the above code is not executed, the whole content will be cleared
+					-- as there is no items in the split area.
+				Precursor (paint_dc, invalid_rect)
+			end
+		end
+
+	default_style: INTEGER
+			-- <Precursor>
+		do
+				-- We do not use `Ws_clipchildren' and `Ws_clipsiblings' because
+				-- we can do the job ourself.
+			Result := Ws_child | Ws_visible
 		end
 
 	invert_rectangle

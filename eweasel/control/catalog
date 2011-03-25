@@ -1256,6 +1256,7 @@ test	synchronization-objects				thread013	tcf pass multithreaded
 test	launching-n-threads-on-same-object	thread014	tcf pass multithreaded
 test	join-with-timeout-failure			thread015	tcf pass multithreaded
 test	multithreaded-bogus-catcall			thread016	tcf pass multithreaded
+test	main-thread-terminates-before-child	thread017	tcf pass multithreaded
 
 -- Execution
 
@@ -2132,6 +2133,8 @@ test	validity-vffd6-basic		vffd601	 tcf pass validity vffd
 test	validity-vffd7-once-generic	vffd701	 tcf pass validity vffd
 test	validity-vffd7-once-anchored	vffd702	 tcf pass validity vffd
 
+test	validity-vffd8-once-scoop	vffd801  tcf pass validity vffd vffd8 once scoop
+
 test	validity-vhpr1-self		vhpr101	 tcf pass validity vhpr
 test	validity-vhpr1-other		vhpr102	 tcf pass validity vhpr
 test	validity-vhpr1-long-cycle	vhpr103	 tcf pass validity vhpr
@@ -2506,7 +2509,8 @@ test	empty-attribute-body-bogus-vevi			attach079 tcf pass attached_types validit
 test	bogus-object-test						attach080 tcf pass attached_types object_test execution
 test	nonconforming-inheritance-bogus-vevi		attach081 tcf fail attached_types non-conforming
 test	repeated-inheritance-bogus-vevi			attach082 tcf fail attached_types
-test	self-initializing-attribute-gc			attach083 tcf pass attached_types void_safe attribute self_init execution
+test	self-initializing-attribute-gc	attach083 tcf pass attached_types void_safe attribute self_init execution
+test	manifest-string-type			attach084 tcf pass attached_types void_safe execution
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2597,6 +2601,7 @@ test	scoop-basic-argument-formal-nested	scoop004 tcf pass scoop execution
 test	scoop-separate-like-current			scoop005 tcf pass scoop execution
 test	scoop-result-validity				scoop006 tcf pass scoop validity expanded
 test	scoop-external-call				scoop007 tcf pass scoop execution
+test	scoop-freeze-condition				scoop008 tcf pass scoop execution incrementality
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing
