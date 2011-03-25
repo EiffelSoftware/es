@@ -159,7 +159,7 @@ feature{NONE} -- Implementation
 			operands: like operand_name_types_with_feature
 			locals: like locals_from_feature_as
 			l_candidates: HASH_TABLE [TYPE_A, STRING]
-			l_iv_finder: EXT_IV_FINDER
+			l_iv_finder: EXT_INTERFACE_VARIABLE_FINDER
 		do
 			create Result.make (10)
 			Result.compare_objects
@@ -209,11 +209,13 @@ feature{NONE} -- Implementation
 				io.put_string ("[interface_variable] " + l_iv.key + ": " + l_iv.item.name + "%N")
 			end
 
-			create l_ast_marker.make_from_variable_information (a_variable_type, a_variable_name, l_interface_variables)
-			a_compound_as.process (l_ast_marker)
+--			create l_ast_marker.make_from_variable_information (a_variable_type, a_variable_name, l_interface_variables)
+--			a_compound_as.process (l_ast_marker)
 
 				-- Rewrite AST by removing obsolete statments and performing snippet tranformations.
-			create l_ast_pruner.make_with_output (ast_printer_output)
+--			create l_ast_pruner.make_with_output (ast_printer_output)
+--			l_ast_pruner.set_annotations (l_ast_marker.annotations)
+
 --			io.put_new_line
 --			io.put_string (text_from_ast_with_printer (a_compound_as, l_ast_pruner))
 		end

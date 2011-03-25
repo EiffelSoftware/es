@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_IV_FINDER
+	EXT_INTERFACE_VARIABLE_FINDER
 
 inherit
 	EXT_VARIABLE_USAGE_CALLBACK_SERVICE
@@ -56,18 +56,30 @@ feature -- Configuration
 			total_variable_usage := new_variable_usage_tuple
 		end
 
-	set_target_variable (a_target_variable_type: like target_variable_type; a_target_variable_name: like target_variable_name)
-			-- Configures the iterator with the target variable. If this variable is set, the interface
-			-- variable analysis will consider that information as well and can rule out false-positives.
+	set_target_variable (a_target_variable_type: like target_variables.item_for_iteration; a_target_variable_name: like target_variables.key_for_iteration)
+			-- Configures the iterator with a single target variable.
 		require
 			attached a_target_variable_type
 			attached a_target_variable_name
+		local
+			l_target_variables: like target_variables
 		do
-			target_variable_type := a_target_variable_type
-			target_variable_name := a_target_variable_name
+			create l_target_variables.make (1)
+			l_target_variables.force (a_target_variable_type, a_target_variable_name)
+
+			set_target_variables (l_target_variables)
 		ensure
-			attached target_variable_type
-			attached target_variable_name
+			target_variables_not_void: target_variables /= Void
+		end
+
+	set_target_variables (a_target_variables: like target_variables)
+			-- Configures the iterator with a set of target variables.
+		require
+			a_target_variables_not_void: a_target_variables /= Void
+		do
+			target_variables := a_target_variables
+		ensure
+			target_variables_not_void: target_variables /= Void
 		end
 
 	set_candidate_interface_variables (a_candidate_interface_variables: like candidate_interface_variables)
@@ -92,13 +104,13 @@ feature -- Access
 	has_target_variables: BOOLEAN
 			-- Are the target variables configured?
 		do
-			Result := target_variable_type /= Void and target_variable_name /= Void
+			Result := target_variables /= Void and then not target_variables.is_empty
 		end
 
 	has_candidate_interface_variables: BOOLEAN
 			-- Are the candidate interface variables configured?
 		do
-			Result := candidate_interface_variables /= Void
+			Result := candidate_interface_variables /= Void and then not candidate_interface_variables.is_empty
 		end
 
 	last_interface_variables: HASH_TABLE [TYPE_A, STRING]
@@ -122,7 +134,7 @@ feature -- Access
 						l_interface_variable_type := candidate_interface_variables.at (l_order.key)
 
 							-- Check if interface and target variable are in partial use relation.
-						if l_order.item.has (target_variable_name) then
+						if across target_variables as l_target some l_order.item.has (l_target.key) end then
 							Result.force (l_interface_variable_type, l_order.key)
 						end
 					end
@@ -242,15 +254,12 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- Implementation
 
-	target_variable_type: TYPE_A
-		-- Type of the target variable at which we are looking at.
-
-	target_variable_name: STRING
-		-- Name of the target variable at which we are looking at.
+	target_variables: HASH_TABLE [TYPE_A, STRING]
+		-- Set of target variables at which we are looking at.
 
 	candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
-			-- Set of variables that could potentially be interface variables. This set normally consists the local variables
-			-- and formal arguments of a feature.
+		-- Set of variables that could potentially be interface variables. This set normally consists the local variables
+		-- and formal arguments of a feature.
 
 	nesting_stack: STACK [TUPLE [use_pure, use_feat, c_use_pure, c_use_feat: like act_use_pure]]
 		-- Stack used for evaluation in different scopes that keeps track of variable usage.
