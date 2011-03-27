@@ -14,6 +14,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	ITP_SHARED_CONSTANTS
+
 feature -- Access
 
 	curly_brace_surrounded_integer (i: INTEGER): STRING
@@ -173,6 +175,31 @@ feature -- Access
 			Result := l_expr
 		end
 
+	context_for_feature_operands (a_context_class: CLASS_C; a_feature: FEATURE_I): EPA_CONTEXT
+			-- Context for operands of `a_feature' viewed in `a_context_class'
+			-- The variables in the resulting context have names such as "v_0" and "v_1", where
+			-- 0 and 1 indicates 0-based operand indexes.
+		local
+			l_operand_types: like operand_types_with_feature
+			l_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
+			l_variables: HASH_TABLE [TYPE_A, STRING]
+		do
+			l_operand_types := resolved_operand_types_with_feature (a_feature, a_context_class, a_context_class.constraint_actual_type)
+			create l_variables.make (l_operand_types.count)
+			l_variables.compare_objects
+			from
+				l_cursor := l_operand_types.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_variables.force (l_cursor.item, variable_name_for_id (l_cursor.key))
+				l_cursor.forth
+			end
+
+			create Result.make_with_class (system.root_type.associated_class, l_variables)
+		end
+
 	single_rooted_expressions (a_expression: STRING; a_context_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_TABLE [TUPLE [variable_indexes: DS_HASH_SET [INTEGER]; canonical_form: STRING], EPA_EXPRESSION]
 			-- Subexpressions from `a_expression'. Those subexpressions must mention at least one
 			-- variable in `a_expression'. `a_context_class' and `a_feature' define the place where `a_expression'
@@ -190,7 +217,13 @@ feature -- Access
 			l_has_var: BOOLEAN
 			l_indexes: DS_HASH_SET [INTEGER]
 			l_var_curly: STRING
+			l_context: like context_for_feature_operands
+			l_class: CLASS_C
+			l_feature: FEATURE_I
 		do
+			l_context := context_for_feature_operands (a_context_class, a_feature)
+			l_class := l_context.class_
+			l_feature := l_context.feature_
 			l_vars := curly_braced_variables_from_expression (a_expression)
 			create l_var_names.make (l_vars.count)
 			l_var_names.compare_objects
@@ -205,14 +238,14 @@ feature -- Access
 			end
 
 				-- Collect subexpressions.
-			create {EPA_AST_EXPRESSION} l_expr.make_with_text (a_context_class, a_feature, l_expr_text, a_context_class)
+			create {EPA_AST_EXPRESSION} l_expr.make_with_text (l_class, l_feature, l_expr_text, l_class)
 			create Result.make (10)
 			Result.set_key_equality_tester (expression_equality_tester)
 
 			create l_repo.make (10)
 			l_repo.set_equality_tester (expression_equality_tester)
-			create l_expr_finder.make (a_context_class)
-			l_expr_finder.search_in_ast (l_repo, l_expr.ast, a_feature)
+			create l_expr_finder.make (l_class)
+			l_expr_finder.search_in_ast (l_repo, l_expr.ast, l_feature)
 			l_repo := l_expr_finder.last_found_expressions
 
 			from

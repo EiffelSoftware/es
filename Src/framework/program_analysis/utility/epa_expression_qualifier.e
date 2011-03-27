@@ -123,7 +123,7 @@ feature{NONE} -- Processing
 				else
 						-- This is a feature access
 					if last_was_unqualified then
-						if written_class.feature_named (a_name) /= Void then
+						if written_class.feature_named (a_name) /= Void or else context_class.feature_named (a_name) /= Void then
 							if last_was_unqualified then
 								last_replacements.search (once "")
 								if last_replacements.found then

@@ -144,6 +144,7 @@ feature{NONE} -- Process
 			l_left_type, l_right_type: TYPE_A
 			l_left_text, l_right_text: STRING
 		do
+			output.append_string ("(")
 			l_operator := l_as.op_name.name
 
 			if l_operator ~ "=" or l_operator ~ "/=" or l_operator ~ "~" or l_operator ~ "/~" then
@@ -164,6 +165,11 @@ feature{NONE} -- Process
 						output.append_string (once ".qry_id = ")
 						output.append_string (replacements.item (l_right_text))
 						output.append_string (once ".qry_id AND ")
+
+						output.append_string (replacements.item (l_left_text))
+						output.append_string (once ".value_type_kind = 0 AND ")
+						output.append_string (replacements.item (l_right_text))
+						output.append_string (once ".value_type_kind = 0 AND ")
 					end
 				end
 			end
@@ -181,10 +187,15 @@ feature{NONE} -- Process
 				l_operator := once "="
 			elseif l_operator ~ once "/~" then
 				l_operator := once "!="
+			elseif l_operator ~ once "//" then
+				l_operator := once "/"
+			elseif l_operator ~ once "\\" then
+				l_operator := once "%%"
 			end
 			output.append_string (l_operator)
 			output.append_string (ti_Space)
 			process_child (l_as.right, l_as, 3)
+			output.append_string (")")
 		end
 
 	is_binary_condition_needed (l_as: BINARY_AS): BOOLEAN

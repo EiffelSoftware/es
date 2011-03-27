@@ -36,7 +36,11 @@ inherit
 			process_tuple_as,
 			process_un_free_as,
 			process_bin_free_as,
-			process_current_as
+			process_current_as,
+			process_bin_star_as,
+			process_bin_slash_as,
+			process_bin_div_as,
+			process_bin_mod_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -569,10 +573,16 @@ feature{NONE} -- Implementation
 
 				if not has_error then
 						-- Evaluate expression
-					if a_operator_name ~ "+" then
+					if a_operator_name ~ once "+" then
 						l_value := l_left_value.item + l_right_value.item
-					elseif a_operator_name ~ "-" then
+					elseif a_operator_name ~ once "-" then
 						l_value := l_left_value.item - l_right_value.item
+					elseif a_operator_name ~ once "*" then
+						l_value := l_left_value.item * l_right_value.item
+					elseif a_operator_name ~ once "//" then
+						l_value := l_left_value.item // l_right_value.item
+					elseif a_operator_name ~ once "\\" then
+						l_value := l_left_value.item \\ l_right_value.item
 					end
 					create {EPA_INTEGER_VALUE} last_value.make (l_value)
 				end
@@ -808,6 +818,27 @@ feature{NONE} -- Implementation
 				set_has_error (True, msg_free_binary_operator_not_supported (l_operator))
 			end
 		end
+
+	process_bin_slash_as (l_as: BIN_SLASH_AS)
+		do
+			process_binary_integer_operator_as (l_as.left, l_as.right, once "//")
+		end
+
+	process_bin_star_as (l_as: BIN_STAR_AS)
+		do
+			process_binary_integer_operator_as (l_as.left, l_as.right, once "*")
+		end
+
+	process_bin_div_as (l_as: BIN_DIV_AS)
+		do
+			process_binary_integer_operator_as (l_as.left, l_as.right, once "//")
+		end
+
+	process_bin_mod_as (l_as: BIN_MOD_AS)
+		do
+			process_binary_integer_operator_as (l_as.left, l_as.right, once "\\")
+		end
+
 feature -- Error messages
 
 	msg_missing_expression (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): STRING

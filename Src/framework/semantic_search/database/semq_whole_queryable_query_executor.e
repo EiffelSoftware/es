@@ -68,6 +68,7 @@ feature -- Basic operations
 			l_result: SEMQ_RESULT
 			l_object_data: like objects_from_queryable_data
 		do
+			query := a_query
 			create last_results.make
 			l_is_object := a_query.queryable_type ~ {SEM_CONSTANTS}.object_field_value
 			if l_is_object then
@@ -93,7 +94,7 @@ feature -- Basic operations
 			l_result: MYSQL_RESULT
 		do
 			create l_state.make (100, a_objects.context.class_, a_objects.context.feature_)
-			across 1 |..| 9 as l_vars loop
+			across 1 |..| query.maximal_variables_in_properties as l_vars loop
 				l_select := select_statement_for_properties (l_vars.item, a_qry_id)
 				if log_manager /= Void then
 					log_manager.put_line ("%T" + l_select)
@@ -353,5 +354,8 @@ feature{NONE} -- Implementation
 			end
 			create Result.make (l_variables)
 		end
+
+	query: SEMQ_WHOLE_QUERYABLE_QUERY
+			-- The query under execution
 
 end

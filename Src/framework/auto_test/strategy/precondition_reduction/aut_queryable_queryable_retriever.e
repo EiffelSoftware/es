@@ -98,7 +98,7 @@ feature -- Basic operations
 				l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
 				create l_sql_gen
 				if a_tried > 1 then
-					l_obj_count := 20
+					l_obj_count := 10
 				else
 					l_obj_count := 5
 				end
@@ -254,6 +254,7 @@ feature -- Basic operations
 			l_query_executor: SEMQ_WHOLE_QUERYABLE_QUERY_EXECUTOR
 		do
 			create l_query.make (a_uuid, {SEM_CONSTANTS}.object_field_value)
+			l_query.set_maximal_variables_in_properties (2)
 			create l_query_executor.make (a_connection)
 			l_query_executor.set_log_manager (a_log_manager)
 			l_query_executor.execute (l_query)

@@ -42,10 +42,10 @@ feature {NONE} -- Initialization
 			an_exception_trace_not_void: an_exception_trace /= Void
 		do
 			code := an_exception_code
-			recipient_name := an_exception_recipient_name
-			class_name := an_exception_class_name
-			tag_name := an_exception_tag_name
-			trace := an_exception_trace
+			recipient_name := an_exception_recipient_name.twin
+			class_name := an_exception_class_name.twin
+			tag_name := an_exception_tag_name.twin
+			trace := an_exception_trace.twin
 			set_is_invariant_violation_on_feature_entry (an_inv_violation_on_entry_flag)
 			parse_trace (trace, Void, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
 			is_test_invalid := is_test_invalid or else is_invariant_violation_on_feature_entry

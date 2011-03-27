@@ -114,7 +114,9 @@ feature -- Generation
 											l_text.prepend ("Result = (")
 											l_text.append (once ")")
 											create l_expr.make_with_text (a_class, a_feature, l_text, a_class)
-											last_postconditions.extend (l_expr)
+											if l_expr.type /= Void then
+												last_postconditions.extend (l_expr)
+											end
 										end
 									end
 								end

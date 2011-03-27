@@ -14,6 +14,7 @@ inherit
 
 	EPA_STRING_UTILITY
 
+	DEBUG_OUTPUT
 
 create
 	make,
@@ -51,13 +52,14 @@ feature{NONE} -- Initialization
 			set_is_one_of_invariant (True)
 			i := 1
 			across a_values as l_values loop
+				l_str.append (once "not ")
 				l_str.append_character ('(')
 				l_str.append (a_expression.text)
 				l_str.append (once " = ")
 				l_str.append (l_values.item.text)
 				l_str.append_character (')')
 				if i < a_values.count then
-					l_str.append (once " or ")
+					l_str.append (once " and ")
 				end
 				i := i + 1
 			end
@@ -99,6 +101,12 @@ feature -- Access
 
 	original_expression: EPA_EXPRESSION
 			-- Original expression in "one of" invariant
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := expression.text
+		end
 
 feature -- Status report
 

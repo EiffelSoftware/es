@@ -25,6 +25,7 @@ feature{NONE} -- Initialization
 		do
 			uuid := a_uuid.twin
 			queryable_type := a_queryable_type
+			set_maximal_variables_in_properties (9)
 		end
 
 	make_with_variable_mappings (a_uuid: STRING; a_mappings: like variable_mappings; a_queryable_type: STRING)
@@ -51,6 +52,11 @@ feature -- Access
 			-- Is Current attribute is attached, the retrieved queryable will have its original
 			-- variable names replaced by the names specified in the keys of this table.
 
+	maximal_variables_in_properties: INTEGER
+			-- The maximal number of variables in properties to be retrieved.
+			-- Default is 9, which means all properties will be retrieved.
+			-- Set this to a smaller number can speed up the queryable loading
+
 feature -- Setting
 
 	set_variable_mappings (a_mappings: like variable_mappings)
@@ -60,6 +66,16 @@ feature -- Setting
 			ensure
 				variable_mappings_set: variable_mappings = a_mappings
 			end
+
+	set_maximal_variables_in_properties (i: INTEGER)
+			-- Set `maximal_variables_in_properties' with `i'.
+		require
+			i_valid: i >= 1 and i <= 9
+		do
+			maximal_variables_in_properties := i
+		ensure
+			maximal_variables_in_properties_set: maximal_variables_in_properties = i
+		end
 
 feature -- Process
 

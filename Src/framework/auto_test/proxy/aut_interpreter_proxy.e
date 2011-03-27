@@ -2246,6 +2246,20 @@ feature -- Objec state retrieval
 			end
 		end
 
+	log_precondition_reduction (a_string: STRING)
+			-- Log precondition-reduction message `a_string'.
+		local
+			l_text: STRING
+		do
+			if configuration.is_precondition_reduction_enabled then
+				create l_text.make (128)
+				l_text.append ("-- Precondition_reduction: ")
+				l_text.append (a_string)
+				log_line (l_text)
+			end
+		end
+
+
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)
 	request_printer_not_void: socket_data_printer /= Void

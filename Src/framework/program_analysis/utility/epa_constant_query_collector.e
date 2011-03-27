@@ -16,7 +16,7 @@ feature -- Access
 
 	quries (a_class: CLASS_C): HASH_TABLE [STRING, STRING]
 			-- Queries in `a_class' that return a constant value
-			-- Keys are feature names, values are the constant that those features return
+			-- Keys are feature names, values are the constants that those features return
 		local
 			l_feat_tbl: FEATURE_TABLE
 			l_features: LINKED_LIST [FEATURE_I]

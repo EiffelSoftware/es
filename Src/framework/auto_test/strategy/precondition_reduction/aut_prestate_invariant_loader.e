@@ -22,7 +22,8 @@ inherit
 
 	AST_ITERATOR
 		redefine
-			process_nested_as
+			process_nested_as,
+			process_binary_as
 		end
 
 feature -- Access
@@ -48,8 +49,10 @@ feature -- Basic operations
 			l_file: PLAIN_TEXT_FILE
 			l_file_searcher: EPA_FILE_SEARCHER
 			l_files: LINKED_LIST [STRING]
+			l_line: STRING
 		do
 			fixme ("This splitting does not work if some features ends with underscore.")
+
 				-- Collect all invariant files specified by `a_path'.
 			create l_files.make
 			create l_file.make (a_path)
@@ -90,7 +93,12 @@ feature -- Basic operations
 					until
 						l_file.after
 					loop
-						parse_invariant_from_string (l_file.last_string.twin)
+						l_line := l_file.last_string.twin
+						l_line.left_adjust
+						l_line.right_adjust
+						if not l_line.is_empty then
+							parse_invariant_from_string (l_line)
+						end
 						l_file.read_line
 					end
 					l_file.close
@@ -120,9 +128,13 @@ feature{NONE} -- Implementation
 			l_values: LINKED_LIST [EPA_EXPRESSION]
 			l_value: EPA_AST_EXPRESSION
 			l_str: STRING
+			l_inv: AUT_STATE_INVARIANT
 		do
 				-- Replace Daikon style "==" with Eiffel style "=".			
 			l_text := a_text.twin
+			l_text.replace_substring_all ("or else", "or")
+			l_text.replace_substring_all ("and then", "and")
+
 			l_index := l_text.substring_index (" == ", 1)
 
 			if l_index > 0 then
@@ -137,6 +149,28 @@ feature{NONE} -- Implementation
 				-- Ignore invariant stating that "Current /= Void", because
 				-- it is a tautology.
 			if l_text ~ once "{0} /= Void" then
+				l_done := True
+			end
+
+				-- Ignore this invariant because it is tautology and
+				-- it appears many many times.
+			if l_text.has_substring ("same_equality_tester") then
+				l_done := True
+			end
+
+				-- Ignore invariants mentioning implication operator.
+			if l_text.has_substring ("implies") then
+				l_done := True
+			end
+
+				-- Ignore invariants mentioning "Void" because they are usually
+				-- not very interesting.
+			if l_text.has_substring ("Void")  then
+				l_done := True
+			end
+
+
+			if l_text.has_substring ("{0}.item_for_iteration ~ {1}") then
 				l_done := True
 			end
 
@@ -227,7 +261,10 @@ feature{NONE} -- Implementation
 								create l_value.make_with_text (last_class, last_feature, l_str, last_class)
 								l_values.extend (l_value)
 							end
-							last_invariants.extend (create {AUT_STATE_INVARIANT}.make_as_one_of (l_ori_expr, l_values, last_class, last_feature))
+							create l_inv.make_as_one_of (l_ori_expr, l_values, last_class, last_feature)
+							if is_expression_exported (l_inv.expression) then
+								last_invariants.extend (l_inv)
+							end
 						end
 					else
 							-- NOTE: We ignore these cases because they will cause Boogie theory
@@ -248,12 +285,14 @@ feature{NONE} -- Implementation
 							l_pre_status := expression_type_checker.is_checking_precondition
 							context.set_is_ignoring_export (False)
 							expression_type_checker.set_is_checking_precondition (True)
-							create l_expr.make_with_text (last_class, last_feature, l_text, last_class)
+
+							create l_expr.make_with_feature (last_class, last_feature, final_invariant_ast (l_text), last_class)
 							if
 								l_expr.type /= Void and then
 								is_expression_exported (l_expr) and then
 								not is_non_conformant_comparison (l_expr) and then
-								not is_current_mentioned_in_creator (l_expr)
+								not is_current_mentioned_in_creator (l_expr) and then
+								not has_qualified_object_comparison (l_expr)
 							then
 								last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
 							end
@@ -265,6 +304,68 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	final_invariant_ast (a_text: STRING): EXPR_AS
+			-- Final AST for `a_text'
+			-- Translate `a_text' in form of "expr = False"
+		local
+			l_str: STRING
+			l_text: STRING
+		do
+			l_str := a_text.twin
+			check attached {EXPR_AS} ast_from_expression_text (l_str) as l_ast then
+				if attached {BINARY_AS} l_ast as l_bin then
+					l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin.left))
+					if attached {BOOL_AS} l_bin.right as l_right then
+						if a_text.has_substring (" and ") then
+							if l_right.value then
+								create l_text.make (256)
+								across string_slices (l_str, " and ") as l_parts loop
+									if not l_text.is_empty then
+										l_text.append (" or ")
+									end
+									l_parts.item.left_adjust
+									l_parts.item.right_adjust
+									l_text.append ("not (")
+									l_text.append (l_parts.item)
+									l_text.append (")")
+								end
+								Result := ast_from_expression_text (l_str)
+							else
+								Result := ast_from_expression_text (l_str)
+							end
+						elseif a_text.has_substring (" or ") then
+							if l_right.value then
+								Result := ast_from_expression_text (l_str)
+							else
+								create l_text.make (256)
+								across string_slices (l_str, " or ") as l_parts loop
+									if not l_text.is_empty then
+										l_text.append (" and ")
+									end
+									l_parts.item.left_adjust
+									l_parts.item.right_adjust
+									l_text.append ("not (")
+									l_text.append (l_parts.item)
+									l_text.append (")")
+								end
+								Result := ast_from_expression_text (l_str)
+							end
+						else
+							if l_right.value then
+								Result := ast_from_expression_text ("not (" + l_str + ")")
+							else
+								Result := ast_from_expression_text (l_str)
+							end
+						end
+					else
+						Result := ast_from_expression_text ("not (" + l_str + ")")
+					end
+				else
+					Result := ast_from_expression_text ("not (" + l_str + ")")
+				end
+			end
+		end
+
 	is_expression_exported (a_expression: EPA_EXPRESSION): BOOLEAN
 			-- Are all components of `a_expression' exported to {ANY}?
 		do
@@ -272,6 +373,24 @@ feature{NONE} -- Implementation
 			safe_process (a_expression.ast)
 			Result := is_expression_exported_internal
 		end
+
+	has_qualified_object_comparison (a_expression: EPA_EXPRESSION): BOOLEAN
+			-- Is there any object/reference comparison between qualified expression?
+		do
+			has_qualified_object_comparison_internal := False
+			last_expression := a_expression
+			is_checking_has_qualified_object_comparison := True
+			safe_process (a_expression.ast)
+			is_checking_has_qualified_object_comparison := False
+			Result := has_qualified_object_comparison_internal
+		end
+
+	last_expression: EPA_EXPRESSION
+
+	is_checking_has_qualified_object_comparison: BOOLEAN
+
+	has_qualified_object_comparison_internal: BOOLEAN
+			-- Cache of `has_qualified_object_comparison'
 
 	is_non_conformant_comparison (a_expression: EPA_EXPRESSION): BOOLEAN
 			-- Is `a_expression' a object/reference equality comparison between two non-conformant expression?
@@ -381,6 +500,36 @@ feature{NONE} -- Implementation
 				end
 				if is_expression_exported_internal then
 					Precursor (l_as)
+				end
+			end
+		end
+
+	process_binary_as (l_as: BINARY_AS)
+			-- (export status {NONE})
+		local
+			l_operator: STRING
+			l_left_expr: EPA_AST_EXPRESSION
+			l_right_expr: EPA_AST_EXPRESSION
+		do
+			Precursor (l_as)
+
+			if is_checking_has_qualified_object_comparison then
+				l_operator := l_as.op_name.name
+				if l_operator ~ "=" or l_operator ~ "/=" or l_operator ~ "~" or l_operator ~ "/~" then
+					create l_left_expr.make_with_feature (last_expression.class_, last_expression.feature_, l_as.left, last_expression.written_class)
+					if l_left_expr.type /= Void and then not (l_left_expr.type.is_boolean or l_left_expr.type.is_integer) then
+						create l_right_expr.make_with_feature (last_expression.class_, last_expression.feature_, l_as.right, last_expression.written_class)
+						if l_right_expr.type /= Void and then not (l_right_expr.type.is_boolean or l_right_expr.type.is_integer) then
+							if has_qualified_object_comparison_internal = False then
+								has_qualified_object_comparison_internal :=
+									text_from_ast (l_as.left).has ('.') or else
+									text_from_ast (l_as.right).has ('.')
+							end
+						end
+					end
+
+					l_as.left.process (Current)
+					l_as.right.process (Current)
 				end
 			end
 		end

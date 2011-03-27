@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_FEATURE_PRECONDITION_BREAKER}."
+	description: "Pre-state input invariant breaker by calling some features"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_FEATURE_PRECONDITION_BREAKER
+	AUT_STATE_CHANGING_FEATURE_PRECONDITION_BREAKER
 
 inherit
 
@@ -37,18 +37,18 @@ create
 
 feature{NONE} -- Implementation
 
-	make (a_system: like system; a_interpreter: like interpreter; a_error_handler: like error_handler; a_invariant: like current_invariant; a_combinations: LINKED_LIST [SEMQ_RESULT])
-			-- Initialization.
+	make (a_system: like system; a_interpreter: like interpreter; a_error_handler: like error_handler; a_invariant: like current_invariant; a_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER)
+			-- Initialization.			
 		require
 			invariant_attached: a_invariant /= Void
-			combination_not_empty: a_combinations /= Void and then not a_combinations.is_empty
 		do
 			system := a_system
 			interpreter := a_interpreter
 			error_handler := a_error_handler
 			current_invariant := a_invariant
 			create object_combinations.make
-			a_combinations.do_all (agent object_combinations.force_last)
+			queryable_retriever := a_retriever
+--			a_combinations.do_all (agent object_combinations.force_last)
 		end
 
 feature -- Access
@@ -63,10 +63,14 @@ feature -- Access
 			-- Error handler.
 
 	current_invariant: AUT_STATE_INVARIANT
-			-- State invariant to break.
+			-- Pre-state invariant that we would like to SATISFY
+			-- Assume that this invariant is already in CNF form.
 
 	object_combinations: DS_LINKED_LIST [SEMQ_RESULT]
 			-- Objects combinations that might break the state invariant.
+
+	queryable_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
+			-- Queryable retriever
 
 	class_: CLASS_C
 			-- Class of `current_invariant'.
@@ -85,7 +89,7 @@ feature -- Status
 	has_next_step: BOOLEAN
 			-- Is there a next step to execute?
 		do
-			Result := not should_quit and then not object_combinations.is_empty and then (value_of_current_invariant_before_test = False)
+			Result := not should_quit and then not object_combinations.is_empty and then (value_of_current_invariant_before_test = True)
 		end
 
 	value_of_current_invariant_before_test: BOOLEAN
@@ -98,7 +102,7 @@ feature -- Execute
 
 	start
 		do
-			value_of_current_invariant_before_test := False
+			value_of_current_invariant_before_test := True
 			should_quit := false
 		end
 
@@ -114,25 +118,24 @@ feature -- Execute
 			l_types: like resolved_operand_types_with_feature
 			l_should_test: BOOLEAN
 		do
-			set_should_skip_current_step (False)
 			current_combination := object_combinations.first
 			object_combinations.remove_first
 
 			if not should_quit and then attached current_combination as lv_combination and then not lv_combination.queryables.is_empty then
-				set_has_error (False)
+				has_error := False
 				collect_provided_operands
 
-				if interpreter.is_executing and then interpreter.is_ready and then not has_error and then not should_skip_current_step then
+				if interpreter.is_executing and then interpreter.is_ready and then not has_error then
 					batch_assign_provided_operands_to_variables
 				end
 
-				if not should_skip_current_step and then interpreter.is_executing and then interpreter.is_ready and then not has_error
+				if interpreter.is_executing and then interpreter.is_ready and then not has_error
 						and then is_missing_operand
 				then
 					prepare_missing_operand_objects
 				end
 
-				if not should_skip_current_step and then interpreter.is_executing and then interpreter.is_ready and then not has_error then
+				if interpreter.is_executing and then interpreter.is_ready and then not has_error then
 						-- Evaluate pre-state invariants to see if they are indeed broken.
 					create l_exprs.make
 					l_types := resolved_operand_types_with_feature (feature_, class_, class_.constraint_actual_type)
@@ -154,21 +157,11 @@ feature -- Execute
 					end
 				end
 
-				if not should_skip_current_step and then l_should_test and then interpreter.is_executing and then interpreter.is_ready and then not has_error then
+				if l_should_test and then interpreter.is_executing and then interpreter.is_ready and then not has_error then
 					is_last_test_case_executed := False
 					invoke_feature_with_operands
-					if interpreter.is_executing and then interpreter.is_ready then
-						is_last_test_case_executed := interpreter.is_last_test_case_executed
-						should_quit := is_last_test_case_executed and (value_of_current_invariant_before_test = True)
-					else
-						is_last_test_case_executed := False
-						value_of_current_invariant_before_test := False
-					end
-				end
-
-				if not interpreter.is_executing or else not interpreter.is_ready then
-					interpreter.start
-					assign_void
+					is_last_test_case_executed := interpreter.is_last_test_case_executed
+					should_quit := is_last_test_case_executed and (value_of_current_invariant_before_test = False)
 				end
 			end
 		end
@@ -227,34 +220,7 @@ feature{NONE} -- Access
 			end
 		end
 
-	should_skip_current_step: BOOLEAN
-			-- Should current step be skipped?
-			-- Usually due to the detection of some data inconsistance,
-			-- for example, the data retrieved from database is not correct.
-
 feature{NONE} -- Implementation
-
-	assign_void
-			-- Assign void to the next free variable.
-			-- Note: Copied from {AUT_RANDOM_STRATEGY}
-			-- This causes code duplication, but avoid merge
-			-- problem when synchronizing with trunk.
-		local
-			void_constant: ITP_CONSTANT
-		do
-			if interpreter.is_running and interpreter.is_ready then
-				create void_constant.make (Void)
-				interpreter.assign_expression (interpreter.variable_table.new_variable, void_constant)
-			end
-		end
-
-	set_has_error (b: BOOLEAN)
-			-- Set `has_error' with `b'.
-		do
-			has_error := b
-		ensure
-			has_error_set: has_error = b
-		end
 
 	is_missing_operand: BOOLEAN
 			-- Is `operand_for_invocation' not enough for invokation?
@@ -316,7 +282,7 @@ feature{NONE} -- Implementation
 			l_operand_count := l_operand_position_name_mapping.count
 			create operand_for_invocation.make (l_operand_count)
 			from l_operand_position := 0
-			until l_operand_position >= l_operand_count or should_quit
+			until l_operand_position >= l_operand_count
 			loop
 				l_operand_name := l_operand_position_name_mapping.item (l_operand_position)
 				if l_operand_name_var_mapping.has (l_operand_name) then
@@ -326,11 +292,7 @@ feature{NONE} -- Implementation
 					l_var_name := l_var_with_uuid.variable
 					l_interpreter_var := interpreter.variable_table.new_variable
 					l_var_type := l_uuid_object_types_mapping.item (l_uuid).item (l_var_name)
-					if l_var_type = Void then
-						set_should_skip_current_step (True)
-					else
-						operand_for_invocation.force ([l_var_with_uuid, l_interpreter_var, l_var_type], l_operand_position)
-					end
+					operand_for_invocation.force ([l_var_with_uuid, l_interpreter_var, l_var_type], l_operand_position)
 				end
 
 				l_operand_position := l_operand_position + 1
@@ -404,7 +366,7 @@ feature{NONE} -- Implementation
 
 				-- Get created objects for operands.
 			if l_input_creator.receivers.count /= l_operands_to_create.count then
-				set_has_error (True)
+				has_error := True
 			else
 				l_receivers := l_input_creator.receivers
 				from
@@ -629,14 +591,6 @@ feature{NONE} -- Implementation
 					Result := [l_left_expr, l_right_expr]
 				end
 			end
-		end
-
-	set_should_skip_current_step (b: BOOLEAN)
-			-- Set `should_skip_current_step' with `b'.
-		do
-			should_skip_current_step := b
-		ensure
-			should_skip_current_step_set: should_skip_current_step = b
 		end
 
 note

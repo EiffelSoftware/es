@@ -24,6 +24,9 @@ feature -- Access
 			-- Operand comparisons found by either `find_reference_comparisons' or `find_object_comparison'
 			-- `operand1' and `operand2' are the too operands that are involved in the comparison
 
+	last_feature_value_comparisons: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+			-- Expression comparisons where at least one expression from `expression1' and `expression2' is not an operand
+
 	find_reference_comparisons (a_expression: EPA_EXPRESSION; a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Find reference comparisons (in `a_expression') between operands of `a_feature' from `a_class',
 			-- make result available in `last_comparisons'.
@@ -59,6 +62,7 @@ feature{NONE} -- Implementation
 			-- Find operand comparisons
 		do
 			create last_comparisons.make
+			create last_feature_value_comparisons.make
 			class_ := a_class
 			feature_ := a_feature
 			operands := operands_of_feature (a_feature)
@@ -71,7 +75,7 @@ feature{NONE} -- Implementation
 --			end
 		end
 
-	comparison_from_left_and_right (a_left: EXPR_AS; a_right: EXPR_AS): detachable TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]
+	comparison_from_left_and_right (a_left: EXPR_AS; a_right: EXPR_AS): detachable TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION; is_pure_operand: BOOLEAN]
 			-- Comaprison from `a_left' and `a_right' if they are inside `operands',
 			-- otherwise, return Void.
 		local
@@ -83,10 +87,18 @@ feature{NONE} -- Implementation
 			l_right_ast := ast_without_surrounding_paranthesis (a_right)
 			l_left := text_from_ast (l_left_ast)
 			l_right := text_from_ast (l_left_ast)
+			create l_left_expr.make_with_feature (class_, feature_, l_left_ast, class_)
+			create l_right_expr.make_with_feature (class_, feature_, l_right_ast, class_)
+
 			if operands.has (l_left) and operands.has (l_right) then
-				create l_left_expr.make_with_feature (class_, feature_, l_left_ast, class_)
-				create l_right_expr.make_with_feature (class_, feature_, l_right_ast, class_)
-				Result := [l_left_expr, l_right_expr]
+				Result := [l_left_expr, l_right_expr, True]
+			else
+				if
+					(operands.has (l_left) or attached {EXPR_CALL_AS} l_left) and
+					(operands.has (l_right) or attached {EXPR_CALL_AS} l_right)
+				then
+					Result := [l_left_expr, l_right_expr, False]
+				end
 			end
 		end
 
@@ -101,7 +113,11 @@ feature{NONE} -- Implementation/Process
 				l_comp := comparison_from_left_and_right (l_as.left, l_as.right)
 				if l_comp /= Void then
 					l_done := True
-					last_comparisons.extend (l_comp)
+					if l_comp.is_pure_operand then
+						last_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					else
+						last_feature_value_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					end
 				end
 			end
 			if not l_done then
@@ -118,7 +134,11 @@ feature{NONE} -- Implementation/Process
 				l_comp := comparison_from_left_and_right (l_as.left, l_as.right)
 				if l_comp /= Void then
 					l_done := True
-					last_comparisons.extend (l_comp)
+					if l_comp.is_pure_operand then
+						last_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					else
+						last_feature_value_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					end
 				end
 			end
 			if not l_done then
@@ -135,7 +155,11 @@ feature{NONE} -- Implementation/Process
 				l_comp := comparison_from_left_and_right (l_as.left, l_as.right)
 				if l_comp /= Void then
 					l_done := True
-					last_comparisons.extend (l_comp)
+					if l_comp.is_pure_operand then
+						last_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					else
+						last_feature_value_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					end
 				end
 			end
 			if not l_done then
@@ -152,7 +176,11 @@ feature{NONE} -- Implementation/Process
 				l_comp := comparison_from_left_and_right (l_as.left, l_as.right)
 				if l_comp /= Void then
 					l_done := True
-					last_comparisons.extend (l_comp)
+					if l_comp.is_pure_operand then
+						last_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					else
+						last_feature_value_comparisons.extend ([l_comp.expression1, l_comp.expression2])
+					end
 				end
 			end
 			if not l_done then

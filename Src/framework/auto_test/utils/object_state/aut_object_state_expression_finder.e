@@ -123,6 +123,7 @@ feature -- Basic operations
 			l_opd_index: INTEGER
 			l_opd_type: TYPE_A
 			l_obj_comp: TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]
+			l_comp_info: like expression_comparison_info
 		do
 			l_opd_map := operands_with_feature (a_feature)
 			create variable_expressions.make (10)
@@ -175,7 +176,8 @@ feature -- Basic operations
 
 					-- Collect object comparison expression, and setup
 					-- object_comparisons.
-				across expression_comparison_info (l_exprs.item, True) as l_comparisons loop
+				l_comp_info := expression_comparison_info (l_exprs.item, True)
+				across l_comp_info.operands as l_comparisons loop
 					l_obj_comp := l_comparisons.item
 					if
 						not l_obj_comp.expression1.is_constant and then
@@ -189,7 +191,8 @@ feature -- Basic operations
 					end
 				end
 
-				across expression_comparison_info (l_exprs.item, False) as l_comparisons loop
+				l_comp_info := expression_comparison_info (l_exprs.item, False)
+				across l_comp_info.operands as l_comparisons loop
 					l_obj_comp := l_comparisons.item
 					if
 						not l_obj_comp.expression1.is_constant and then
@@ -400,7 +403,9 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	expression_comparison_info (a_expr: EPA_EXPRESSION; a_for_reference: BOOLEAN): LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
+	expression_comparison_info (a_expr: EPA_EXPRESSION; a_for_reference: BOOLEAN):
+		TUPLE [operands: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]];
+		       expressions: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]]
 			-- Information if `a_expr' is an object (in)equality comparision between two expressions
 			-- `expression1' and `expression2' are the two expressions involved in the comparison.
 		local
@@ -417,7 +422,7 @@ feature{NONE} -- Implementation
 			else
 				l_finder.find_object_comparisons (a_expr, a_expr.class_, a_expr.feature_)
 			end
-			Result := l_finder.last_comparisons
+			Result := [l_finder.last_comparisons, l_finder.last_feature_value_comparisons]
 --			if attached {BIN_TILDE_AS} a_expr.ast as l_equal then
 --				l_is_equal := True
 --				l_left := l_equal.left

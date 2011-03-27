@@ -98,12 +98,17 @@ feature -- Access
 			end
 
 			if a_type /= Void then
-				l_where_clause.append (once " AND%N")
-				l_where_clause.append (a_name)
 				if a_position = 0 then
+					l_where_clause.append (once " AND%N")
+					l_where_clause.append (a_name)
 					l_where_clause.append (once ".type1 = (SELECT type_id FROM Types WHERE type_name =%"" + a_type + "%")")
 				else
-					l_where_clause.append (".type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type) + "')")
+					if output_type_name (a_type) /~ "ANY" then
+						l_where_clause.append (once " AND%N")
+						l_where_clause.append (a_name)
+						l_where_clause.append (".type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type) + "')")
+					end
+
 				end
 			end
 
@@ -197,8 +202,10 @@ feature -- Access
 				Result.append ("AND q.feature = '" + a_feature.feature_name.as_lower + "'%N")
 			end
 			Result.append ("AND v.qry_id = q.qry_id AND v.prop_id = (SELECT prop_id FROM Properties WHERE text = '$') %N")
-			Result.append ("AND v.type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type.name) + "') %N")
-			Result.append ("LIMIT " + a_count.out)
+			if a_type.name /~ "ANY" then
+				Result.append ("AND v.type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type.name) + "') %N")
+			end
+			Result.append ("%NLIMIT " + a_count.out)
 		end
 
 	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
@@ -253,11 +260,15 @@ feature -- Access
 			l_queryable_clauses: like clauses_for_queryables
 			l_type_of_replacements: HASH_TABLE [TYPE_A, STRING]
 			l_type: TYPE_A
+			l_constant_collector: EPA_CONSTANT_QUERY_COLLECTOR
+			l_constant_queries: HASH_TABLE [STRING, STRING]
 		do
 			create l_contract_extractor
 			l_pres := l_contract_extractor.precondition_of_feature (a_feature, a_context_class).twin
 			create l_pre_set.make (l_pres.count)
 			l_pre_set.set_equality_tester (expression_equality_tester)
+			create l_constant_collector
+			l_constant_queries := l_constant_collector.quries (a_context_class)
 			from
 				l_pres.start
 			until
@@ -265,10 +276,12 @@ feature -- Access
 			loop
 				if
 					not l_pres.item.text.has ('{') and then
-					not l_pres.item.text.has ('.') and then
+--					not l_pres.item.text.has ('.') and then
 --					not l_pres.item.text.has ('(') and then
 					not l_pres.item.text.has_substring (once "attached") and then
-					l_pres.item.type /= Void
+					not l_pres.item.text.has_substring ("same_type (") and then
+					l_pres.item.type /= Void and then
+					not l_constant_queries.has (l_pres.item.text)
 				then
 					l_pre_set.force_last (l_pres.item)
 				end

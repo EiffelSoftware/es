@@ -86,6 +86,14 @@ feature -- Strings
 	variable_name_prefix: STRING = "v_"
 			-- Prefix for variables
 
+	variable_name_for_id (a_id: INTEGER): STRING
+			-- Variable name with `a_id'
+		require
+			a_id_non_negative: a_id >= 0
+		do
+			Result := variable_name_prefix + a_id.out
+		end
+
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
