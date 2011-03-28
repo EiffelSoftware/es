@@ -41,6 +41,20 @@ feature -- Access
 
 	dom_node: attached JS_HTML_DIV_ELEMENT
 
+	position: attached VECTOR assign set_position
+	set_position (a_position: attached VECTOR)
+		do
+			position := a_position
+		end
+
+	velocity: attached VECTOR assign set_velocity
+	set_velocity (a_velocity: attached VECTOR)
+		do
+			velocity := a_velocity
+		end
+
+	radius, mass: DOUBLE
+
 feature -- Basic Operation
 
 	render
@@ -51,8 +65,6 @@ feature -- Basic Operation
 
 feature {NONE} -- Implementation
 
-	position, velocity: attached VECTOR
-	radius, mass: DOUBLE
 
 feature {NONE} -- External
 

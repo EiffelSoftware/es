@@ -158,6 +158,7 @@ feature -- Basic Operations
 
 					-- Initialize context
 				set_proper_context (a_feature)
+				instruction_writer.reset (output.indentation)
 
 					-- Process the actual body and store it in `body'
 				if attached l_byte_code.compound as safe_compound

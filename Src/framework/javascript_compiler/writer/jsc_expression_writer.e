@@ -723,11 +723,12 @@ feature {BYTE_NODE} -- Visitors
 	do_routine_arguments (	l_feature: attached FEATURE_I;
 							omap: ARRAYED_LIST[INTEGER];
 							arguments: attached TUPLE_CONST_B
-							l_inner_arguments, l_outer_arguments: attached LIST[attached JSC_WRITER_DATA])
+							l_inner_arguments, l_outer_arguments, l_closed_evaled_arguments: attached LIST[attached STRING];
+							l_closed_arguments: attached LIST[attached JSC_WRITER_DATA]
+							)
 		local
 			l_arguments_expressions: BYTE_LIST [BYTE_NODE]
 			l_expression: BYTE_NODE
-			l_data: JSC_WRITER_DATA
 			l_open_argument_count, l_closed_argument_count: INTEGER
 			i, j, k: INTEGER
 			old_is_inside_agent: BOOLEAN
@@ -761,23 +762,25 @@ feature {BYTE_NODE} -- Visitors
 							-- Next is an open argument
 						check j <= safe_omap.count end
 						if i /= 1 then
-							create l_data.make_from_string ("arg" + j.out)
-							l_outer_arguments.extend (l_data)
-							l_inner_arguments.extend (l_data)
+							l_outer_arguments.extend ("arg" + j.out)
+							l_inner_arguments.extend ("arg" + j.out)
 						end
 						j := j + 1
 					else
 							-- Next is a closed argument
 						check k <= l_arguments_expressions.count end
-						output.push("")
-							if i /= 1 then
+						if i /= 1 then
+							output.push("")
 								l_expression := l_arguments_expressions.i_th (k)
 								check l_expression /= Void end
 
 								l_expression.process (Current)
-								l_inner_arguments.extend (output.data)
-							end
-						output.pop
+								l_closed_arguments.extend (output.data)
+							output.pop
+
+							l_inner_arguments.extend ("$closed" + jsc_context.feature_nesting_level.out + "_" + k.out)
+							l_closed_evaled_arguments.extend ("$closed" + jsc_context.feature_nesting_level.out + "_" + k.out)
+						end
 						k := k + 1
 					end
 					i := i + 1
@@ -793,7 +796,11 @@ feature {BYTE_NODE} -- Visitors
 			l_system: SYSTEM_I
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_outer_arguments, l_inner_arguments: attached LIST[attached JSC_WRITER_DATA]
+			l_outer_arguments, l_inner_arguments: attached LIST[attached STRING]
+			l_closed_evaled_arguments: attached LIST[attached STRING]
+			l_closed_arguments: attached LIST[attached JSC_WRITER_DATA]
+
+			--l_evaled_inner_arguments
 			l_arguments: TUPLE_CONST_B
 			l_expressions: BYTE_LIST [BYTE_NODE]
 			l_desired_target: attached STRING
@@ -814,60 +821,76 @@ feature {BYTE_NODE} -- Visitors
 
 			this_used_in_closure := true
 
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}l_outer_arguments.make
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}l_inner_arguments.make
+			create {LINKED_LIST[attached STRING]}l_outer_arguments.make
+			create {LINKED_LIST[attached STRING]}l_inner_arguments.make
+			create {LINKED_LIST[attached STRING]}l_closed_evaled_arguments.make
+			create {LINKED_LIST[attached JSC_WRITER_DATA]}l_closed_arguments.make
 
 			l_arguments := a_node.arguments
 			check l_arguments /= Void end
 
-			do_routine_arguments (l_feature, a_node.omap, l_arguments, l_inner_arguments, l_outer_arguments)
+			do_routine_arguments (l_feature, a_node.omap, l_arguments, l_inner_arguments, l_outer_arguments, l_closed_evaled_arguments, l_closed_arguments)
 
-			if a_node.is_inline_agent then
-				output.put ("function (")
-				output.put_data_list (l_outer_arguments, ", ")
-				output.put (") {")
-				output.put_new_line
+			output.put ("(function (")
+			output.put_list (l_closed_evaled_arguments, ", ")
+			output.put (") {")
+			output.put_new_line
+			output.indent
+				output.put_indentation
+				output.put ("return ")
 
-				output.indent
-					output.put_indentation
-					output.put ("return (")
-					old_is_inside_agent := jsc_context.name_mapper.is_inside_agent
-					jsc_context.name_mapper.is_inside_agent := true
-					jsc_context.name_mapper.push_target_current
-						write_inline_feature (l_feature)
-					jsc_context.name_mapper.pop_target
-					jsc_context.name_mapper.is_inside_agent := old_is_inside_agent
+				if a_node.is_inline_agent then
+					output.put ("function (")
+					output.put_list (l_outer_arguments, ", ")
+					output.put (") {")
+					output.put_new_line
 
+					output.indent
+						output.put_indentation
+						output.put ("return (")
+						old_is_inside_agent := jsc_context.name_mapper.is_inside_agent
+						jsc_context.name_mapper.is_inside_agent := true
+						jsc_context.name_mapper.push_target_current
+							write_inline_feature (l_feature)
+						jsc_context.name_mapper.pop_target
+						jsc_context.name_mapper.is_inside_agent := old_is_inside_agent
+
+						output.put ("(")
+						output.put_list (l_inner_arguments, ", ")
+						output.put (")")
+					output.unindent
+
+					output.put ("); }")
+				else
+					output.put ("function (")
+					output.put_list (l_outer_arguments, ", ")
+					output.put (") { return ")
+
+					output.push ("")
+						l_expressions := l_arguments.expressions
+						check l_expressions /= Void end
+
+						safe_process (l_expressions[1])
+						l_desired_target := output.force_string
+					output.pop
+
+					if l_desired_target.starts_with ("this") then
+						l_desired_target := "$" + l_desired_target
+					end
+
+					output.put (l_desired_target)
+					output.put (".")
+					output.put (jsc_context.name_mapper.feature_name (l_feature, false))
 					output.put ("(")
-					output.put_data_list (l_inner_arguments, ", ")
-					output.put (")")
-				output.unindent
-
-				output.put ("); }")
-			else
-				output.put ("function (")
-				output.put_data_list (l_outer_arguments, ", ")
-				output.put (") { return ")
-
-				output.push ("")
-					l_expressions := l_arguments.expressions
-					check l_expressions /= Void end
-
-					safe_process (l_expressions[1])
-					l_desired_target := output.force_string
-				output.pop
-
-				if l_desired_target.starts_with ("this") then
-					l_desired_target := "$" + l_desired_target
+					output.put_list (l_inner_arguments, ", ")
+					output.put ("); }")
 				end
 
-				output.put (l_desired_target)
-				output.put (".")
-				output.put (jsc_context.name_mapper.feature_name (l_feature, false))
-				output.put ("(")
-				output.put_data_list (l_inner_arguments, ", ")
-				output.put ("); }")
-			end
+			output.unindent
+
+			output.put ("}(")
+			output.put_data_list (l_closed_arguments, ", ")
+			output.put ("))")
 		end
 
 	process_string_b (a_node: STRING_B)

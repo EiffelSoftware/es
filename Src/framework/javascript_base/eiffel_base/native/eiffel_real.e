@@ -13,11 +13,20 @@ inherit
 
 feature -- Basic Operation
 
+	abs: REAL
+		external "C" alias "Math.abs($TARGET)" end
+
 	ceiling: INTEGER
 		external "C" alias "Math.ceil($TARGET)" end
 
 	floor: INTEGER
 		external "C" alias "Math.floor($TARGET)" end
+
+	max (other: REAL): REAL
+		external "C" alias "Math.max($TARGET,$other)" end
+
+	min (other: REAL): REAL
+		external "C" alias "Math.min($TARGET,$other)" end
 
 	out: attached STRING
 		external "C" alias "($TARGET).toString()" end

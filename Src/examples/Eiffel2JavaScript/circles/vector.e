@@ -34,14 +34,34 @@ feature -- Basic Operation
 			create Result.make (x + a_other.x, y + a_other.y)
 		end
 
+	subtract alias "-" (a_other: attached VECTOR): attached VECTOR
+		do
+			create Result.make (x - a_other.x, y - a_other.y)
+		end
+
 	multiply alias "*" (a_scalar: DOUBLE): attached VECTOR
 		do
 			create Result.make (x * a_scalar, y * a_scalar)
 		end
 
+	divide alias "/" (a_scalar: DOUBLE): attached VECTOR
+		do
+			create Result.make (x / a_scalar, y / a_scalar)
+		end
+
 	magnitude: DOUBLE
 		do
 			Result := sqrt (x * x + y * y)
+		end
+
+	as_normalized: attached VECTOR
+		do
+			Result := Current / magnitude
+		end
+
+	dot (a_other: attached VECTOR): DOUBLE
+		do
+			Result := x * a_other.x + y * a_other.y
 		end
 
 end

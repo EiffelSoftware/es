@@ -69,6 +69,11 @@ feature -- Class Context
 
 feature -- Feature Context
 
+	feature_nesting_level: INTEGER
+		do
+			Result := current_features.count
+		end
+
 	current_feature: attached FEATURE_I
 		do
 			Result := current_features.item
