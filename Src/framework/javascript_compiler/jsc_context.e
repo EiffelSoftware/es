@@ -12,6 +12,9 @@ inherit
 	INTERNAL_COMPILER_STRING_EXPORTER
 		export {NONE} all end
 
+	SHARED_JSC_ENVIRONMENT
+		export {NONE} all end
+
 create
 	make
 
@@ -25,6 +28,9 @@ feature {NONE} -- Initialization
 			create {LINKED_STACK[attached FEATURE_I]}current_features.make
 			create {LINKED_STACK[attached LIST[attached JSC_WRITER_DATA]]}old_locals.make
 			create {LINKED_STACK[INTEGER]}object_test_locals.make
+			create {LINKED_STACK[INTEGER]}line_numbers.make
+
+			push_line_number(0)
 		end
 
 feature -- Access
@@ -97,6 +103,23 @@ feature -- Feature Context
 			object_test_locals.remove
 		end
 
+feature -- Line number context
+
+	current_line_number: INTEGER
+		do
+			Result := line_numbers.item
+		end
+
+	push_line_number (a_line_number: INTEGER)
+		do
+			line_numbers.put (a_line_number)
+		end
+
+	pop_line_number
+		do
+			line_numbers.remove
+		end
+
 feature -- old() expressions
 
 	current_old_locals: attached LIST[attached JSC_WRITER_DATA]
@@ -143,34 +166,20 @@ feature -- Object Test Locals
 
 feature -- Helpers
 
-	print_error (a_error_code, a_summary, a_explanation: attached STRING; a_line_number: INTEGER)
+	create_error (a_message, a_description: attached STRING): JSC_ERROR
 		do
-			io.error.put_string ("-------------------------------------------------------------------------------")
-			io.error.put_new_line
-			io.error.put_new_line
-			io.error.put_string ("Error code: ")
-			io.error.put_string (a_error_code)
-			io.error.put_new_line
-			io.error.put_new_line
-			io.error.put_string (a_summary)
-			io.error.put_new_line
-			io.error.put_string (a_explanation)
-			io.error.put_new_line
-			io.error.put_new_line
-			io.error.put_string ("Class: ")
-			io.error.put_string (current_class_name)
-			io.error.put_new_line
-			if current_features.count > 0 then
-				io.error.put_string ("Feature: ")
-				io.error.put_string (current_feature_name)
-				io.error.put_new_line
-			end
-			if a_line_number > 0 then
-				io.error.put_string ("Line: ")
-				io.error.put_integer (a_line_number)
-				io.error.put_new_line
-			end
-			io.error.put_new_line
+			create Result.make (a_message, a_description)
+			Result.use_data_from_context
+		end
+
+	add_error (a_message, a_description: attached STRING)
+		do
+			errors.extend (create_error (a_message, a_description))
+		end
+
+	add_warning (a_message, a_description: attached STRING)
+		do
+			warnings.extend (create_error (a_message, a_description))
 		end
 
 feature -- Reserved JavaScript words
@@ -193,6 +202,9 @@ feature {NONE} -- Implementation
 
 	unsafe_current_class: CLASS_C
 		-- Current class
+
+	line_numbers : attached STACK[INTEGER]
+		-- Stack of line numbers
 
 feature {NONE} -- Implementation
 

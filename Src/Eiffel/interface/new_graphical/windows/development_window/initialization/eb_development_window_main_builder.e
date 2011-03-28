@@ -173,6 +173,7 @@ feature -- Command
 			l_edit_contracts_command: ES_EDIT_CONTRACTS_COMMAND
 			l_find_class_or_cluster_command: ES_FIND_CLASS_OR_CLUSTER_CMD
 			l_eve_proofs_command: EB_EVE_PROOFS_COMMAND
+			l_javascript_compile_command: EB_JAVASCRIPT_COMPILE_COMMAND
 
 			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
@@ -434,6 +435,10 @@ feature -- Command
 				-- EVE Proofs command
 			create l_eve_proofs_command.make
 			l_dev_commands.set_eve_proofs_command (l_eve_proofs_command)
+
+				-- JavaScript compile command
+			create l_javascript_compile_command.make
+			l_dev_commands.set_javascript_compile_command (l_javascript_compile_command)
 
 				-- Add history commands to toolbarable_commands.
 				-- Setup its accelerators.

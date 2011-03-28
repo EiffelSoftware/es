@@ -9,7 +9,7 @@ class
 	JSC_BODY_WRITER
 
 inherit
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	SHARED_SERVER

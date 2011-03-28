@@ -69,7 +69,7 @@ inherit
 	SHARED_BYTE_CONTEXT
 		export {NONE} all end
 
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 create
@@ -495,8 +495,8 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		local
 			l_feature: attached FEATURE_I
-			l_feature_ext: EXTERNAL_EXT_I
-			l_feature_external_name: STRING
+			--l_feature_ext: EXTERNAL_EXT_I
+			--l_feature_external_name: STRING
 		do
 			l_feature := get_feature (a_node)
 

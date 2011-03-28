@@ -194,6 +194,9 @@ feature -- Query
 	eve_proofs_command: attached EB_EVE_PROOFS_COMMAND
 			-- EVE Proofs command
 
+	javascript_compile_command: attached EB_JAVASCRIPT_COMPILE_COMMAND
+			-- JavaScript compile command
+
 feature -- Commands
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
@@ -715,6 +718,14 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			eve_proofs_command := a_command
 		ensure
 			eve_proofs_command_set: eve_proofs_command = a_command
+		end
+
+	set_javascript_compile_command (a_command: like javascript_compile_command)
+			-- Sets `javascript_compile_command' with `a_command'
+		do
+			javascript_compile_command := a_command
+		ensure
+			javascript_compile_command_set: javascript_compile_command = a_command
 		end
 
 feature -- Recycle

@@ -9,7 +9,7 @@ class
 	JSC_NAME_MAPPER
 
 inherit
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -105,8 +105,7 @@ feature -- Names
 			end
 
 			if jsc_context.is_reserved_javascript_word (Result) then
-				jsc_context.print_error ("JSRW", "Translation error: JavaScript reserved word",
-					"What to do: Rename local " + Result + ".", 0)
+				jsc_context.add_error ("JavaScript reserved word", "What to do: Rename local " + Result + ".")
 			end
 		end
 
@@ -136,8 +135,7 @@ feature -- Names
 
 			Result := l_arg_name
 			if jsc_context.is_reserved_javascript_word (Result) then
-				jsc_context.print_error ("JSRW", "Translation error: JavaScript reserved word",
-					"What to do: Rename argument " + Result + ".", a_node.line_number)
+				jsc_context.add_error ("JavaScript reserved word: " + Result, "What to do: Rename argument " + Result + ".")
 			end
 		end
 

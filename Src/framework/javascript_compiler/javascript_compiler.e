@@ -15,6 +15,9 @@ inherit
 	SHARED_JSC_ENVIRONMENT
 		export {NONE} all end
 
+	SHARED_JSC_CONTEXT
+		export {NONE} all end
+
 	INTERNAL_COMPILER_STRING_EXPORTER
 		export {NONE} all end
 
@@ -63,22 +66,37 @@ feature -- Operations
 			extended: classes_to_compile.count = old (classes_to_compile.count) + 1
 		end
 
+	register_message_callbacks (a_output, a_window: PROCEDURE [ANY, TUPLE [STRING]])
+			-- Register callback functions to receive messages.
+		do
+			output_callback := a_output
+			window_callback := a_window
+		end
+
 	execute_compilation
 			-- Compile all the classes to JavaScript
 		local
+			i: INTEGER
 			l_system: SYSTEM_I
 			l_class: CLASS_C
 			l_current_class: CLASS_C
+			l_current_class_name: STRING
 			compiled_classes: HASH_TABLE[attached JSC_WRITER_DATA, INTEGER]
 			dependencies_count: HASH_TABLE[INTEGER, INTEGER]
 			inverse_dependencies: HASH_TABLE[attached SET[INTEGER], INTEGER]
 			linear: LINEAR[INTEGER]
 			l_set: SET[INTEGER]
 		do
+			errors.wipe_out
+			warnings.wipe_out
+
 			l_system := system
 			check l_system /= Void end
 
+			put_output_message ("Generating JavaScript")
+
 				-- Iterate over all classes and find "special" Eiffel classes (a.k.a Stubs)
+			put_window_message ("Finding JavaScript Stubs")
 			find_javascript_stubs
 
 				-- Iterate over the ancesters of Eiffel Base classes which will
@@ -93,10 +111,16 @@ feature -- Operations
 				create inverse_dependencies.make (classes_to_compile.count)
 				create dependencies_count.make (classes_to_compile.count)
 				classes_to_compile.start
+				i := 1
 			until
 				classes_to_compile.after
 			loop
 				l_current_class := classes_to_compile.item
+
+				l_current_class_name := l_current_class.name_in_upper
+				check l_current_class_name /= Void end
+
+				put_window_message ("Compiling class " + i.out + "/" + classes_to_compile.count.out + ": " + l_current_class_name)
 
 					-- Process class
 				class_writer.process_class (l_current_class)
@@ -157,10 +181,15 @@ feature -- Operations
 				end
 
 				classes_to_compile.forth
+				i := i + 1
 			end
 
+			put_window_message ("Writing all to single file")
 				-- Write all the compiled classes to a single file
 			write_all (compiled_classes, dependencies_count, inverse_dependencies)
+
+			put_output_message ("JavaScript compilation finished.")
+			put_window_message ("JavaScript compilation finished.")
 		end
 
 feature {NONE} -- Implementation
@@ -179,6 +208,8 @@ feature {NONE} -- Implementation
 			l_javascript_native_name: STRING
 			l_eiffel_base_classes: STRING
 		do
+			jsc_context.informer.reset
+
 			l_system := system
 			check l_system /= Void end
 
@@ -367,6 +398,31 @@ feature {NONE} -- Native classes parents
 				end
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	output_callback: PROCEDURE [ANY, TUPLE [STRING]]
+			-- Callback function for output panel
+
+	window_callback: PROCEDURE [ANY, TUPLE [STRING]]
+			-- Callback function for status bar
+
+	put_output_message (a_string: STRING)
+			-- Put `a_string' to output.
+		do
+			if attached output_callback as safe_output_callback then
+				safe_output_callback.call ([a_string])
+			end
+		end
+
+	put_window_message (a_string: STRING)
+			-- Put `a_string' to status bar.
+		do
+			if attached window_callback as safe_window_callback then
+				safe_window_callback.call ([a_string])
+			end
+		end
+
 
 feature {NONE} -- Write to HDD
 

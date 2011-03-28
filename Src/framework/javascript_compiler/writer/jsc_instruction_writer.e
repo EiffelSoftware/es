@@ -22,7 +22,7 @@ inherit
 			process_reverse_b
 		end
 
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -103,6 +103,7 @@ feature -- Processing
 			l_feature: FEATURE_I
 			l_source: attached JSC_WRITER_DATA
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			l_system := system
 			check l_system /= Void end
 
@@ -141,6 +142,8 @@ feature -- Processing
 			output.put_data (l_source)
 			output.put (";")
 			output.put_new_line
+
+			jsc_context.pop_line_number
 		end
 
 	process_check_b (a_node: CHECK_B)
@@ -148,6 +151,7 @@ feature -- Processing
 		local
 			l_check: BYTE_NODE
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			if attached a_node.check_list as safe_check_list then
 				from
 					safe_check_list.start
@@ -161,13 +165,16 @@ feature -- Processing
 					safe_check_list.forth
 				end
 			end
+			jsc_context.pop_line_number
 		end
 
 	process_debug_b (a_node: DEBUG_B)
 			-- Process `a_node'.
 		local
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			io.put_string("JSC_INSTRUCTION_WRITER: debug_b instruction not supported%N")
+			jsc_context.pop_line_number
 		end
 
 	process_if_b (a_node: IF_B)
@@ -176,6 +183,7 @@ feature -- Processing
 			l_condition: JSC_WRITER_DATA
 			l_elseif: ELSIF_B
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			l_condition := invoke_expression_writer (a_node.condition)
 
 				-- If branch
@@ -228,13 +236,16 @@ feature -- Processing
 				output.unindent
 			end
 			output.put_line ("}")
+			jsc_context.pop_line_number
 		end
 
 	process_inspect_b (a_node: INSPECT_B)
 			-- Process `a_node'.
 		local
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			io.put_string("JSC_INSTRUCTION_WRITER: inspect_b%N")
+			jsc_context.pop_line_number
 		end
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
@@ -242,12 +253,14 @@ feature -- Processing
 		local
 			l_call: attached JSC_WRITER_DATA
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			l_call := invoke_expression_writer (a_node.call)
 
 			output.put_indentation
 			output.put_data (l_call)
 			output.put (";")
 			output.put_new_line
+			jsc_context.pop_line_number
 		end
 
 	process_loop_b (a_node: LOOP_B)
@@ -255,6 +268,7 @@ feature -- Processing
 		local
 			l_until_expression: attached JSC_WRITER_DATA
 		do
+			jsc_context.push_line_number (a_node.line_number)
 				-- From
 			safe_process (a_node.from_part)
 
@@ -270,13 +284,16 @@ feature -- Processing
 				safe_process (a_node.compound)
 			output.unindent
 			output.put_line ("}")
+			jsc_context.pop_line_number
 		end
 
 	process_retry_b (a_node: RETRY_B)
 			-- Process `a_node'.
 		local
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			io.put_string("JSC_INSTRUCTION_WRITER: retry_b%N")
+			jsc_context.pop_line_number
 		end
 
 	process_reverse_b (a_node: REVERSE_B)
@@ -285,6 +302,7 @@ feature -- Processing
 			l_target: JSC_WRITER_DATA
 			l_source: JSC_WRITER_DATA
 		do
+			jsc_context.push_line_number (a_node.line_number)
 			-- TODO: This should be written as expression_write.object_test
 
 			-- BIG TODO !!!!!!!!
@@ -297,6 +315,7 @@ feature -- Processing
 			output.put_data (l_source)
 			output.put (";")
 			output.put_new_line
+			jsc_context.pop_line_number
 		end
 
 feature {NONE} -- Implementation

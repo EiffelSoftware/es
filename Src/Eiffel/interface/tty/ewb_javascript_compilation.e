@@ -12,6 +12,17 @@ inherit
 	EWB_CMD
 
 	SHARED_EIFFEL_PROJECT
+		export {NONE} all end
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export {NONE} all end
+
+	SHARED_JSC_ENVIRONMENT
+		rename
+			warnings as real_warnings,
+			errors as real_errors
+		export {NONE} all
+		end
 
 feature -- Properties
 
@@ -39,6 +50,7 @@ feature -- Execution
 			l_cluster: CLUSTER_I
 		do
 			javascript_compiler.reset
+			javascript_compiler.register_message_callbacks (agent (s: STRING) do output_window.put_string (s) output_window.put_new_line end, agent (s: STRING) do end)
 
 				-- Blindingly regenerate all JavaScript.
 			from
@@ -56,9 +68,59 @@ feature -- Execution
 			end
 
 			javascript_compiler.execute_compilation
+
+			from
+				real_errors.start
+			until
+				real_errors.after
+			loop
+				print_error (real_errors.item, "Error")
+				real_errors.forth
+			end
+
+			from
+				real_warnings.start
+			until
+				real_warnings.after
+			loop
+				print_error (real_warnings.item, "Warning")
+				real_warnings.forth
+			end
 		end
 
 feature {NONE} -- Implementation
+
+	print_error (a_error: attached JSC_ERROR; a_type: attached STRING)
+		do
+			io.error.put_string ("-------------------------------------------------------------------------------")
+			io.error.put_new_line
+			io.error.put_new_line
+			io.error.put_string (a_type + ": ")
+			io.error.put_string (a_error.code)
+			io.error.put_new_line
+			io.error.put_new_line
+			io.error.put_string (a_error.message)
+			io.error.put_new_line
+			io.error.put_string (a_error.description)
+			io.error.put_new_line
+			io.error.put_new_line
+			if attached a_error.class_c as safe_class_c then
+				io.error.put_string ("Class: ")
+				io.error.put_string (safe_class_c.name_in_upper)
+				io.error.put_new_line
+			end
+			if attached a_error.e_feature as safe_e_feature then
+				io.error.put_string ("Feature: ")
+				io.error.put_string (safe_e_feature.name)
+				io.error.put_new_line
+			end
+			if a_error.line > 0 then
+				io.error.put_string ("Line: ")
+				io.error.put_integer (a_error.line)
+				io.error.put_new_line
+			end
+			io.error.put_new_line
+		end
 
 	javascript_compiler: JAVASCRIPT_COMPILER
 		once

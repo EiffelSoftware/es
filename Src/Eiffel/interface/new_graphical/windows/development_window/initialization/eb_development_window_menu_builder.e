@@ -1232,6 +1232,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			end
 			insert_show_tool_menu_item (Result, {ES_JSTAR_PROOFS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_EVE_PROOFS_TOOL})
+			insert_show_tool_menu_item (Result, {ES_JAVASCRIPT_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
 
@@ -1659,7 +1660,7 @@ feature -- Docking library menu items
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

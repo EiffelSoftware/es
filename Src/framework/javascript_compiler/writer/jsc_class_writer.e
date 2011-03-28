@@ -12,7 +12,7 @@ inherit
 	SHARED_WORKBENCH
 		export {NONE} all end
 
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -426,9 +426,8 @@ feature {NONE} -- Feature Processing
 			l_test_result.replace_substring_all ("$TARGET", "TARGET")
 
 			if l_test_result.index_of ('$', 1) /= 0 then
-				jsc_context.print_error ("JSME", "JavaScript External: Malformed",
-					"What to do: Make sure the external `" + l_external_name + "'%N" +
-					"  is correct", 0)
+				jsc_context.add_warning ("Possible malformed external", "What to do: Make sure the external `" + l_external_name + "'%N" +
+					"  is correct")
 			end
 		end
 

@@ -14,34 +14,30 @@ create
 
 feature {NONE} -- Initialization
 
-	make_from_buffer (a_buffer: attached LIST[attached STRING])
+	make_from_buffer (a_buffer: attached KL_STRING_OUTPUT_STREAM)
 		do
 			buffer := a_buffer
 		end
 
 	make_from_string (a_string: attached STRING)
 		do
-			create {LINKED_LIST[attached STRING]}buffer.make
-			buffer.extend (a_string)
+			create buffer.make (a_string)
 		end
 
 feature -- Access
 
 	force_string: attached STRING
+		local
+			l_string: STRING
 		do
-			Result := ""
-			from
-				buffer.start
-			until
-				buffer.after
-			loop
-				Result.append (buffer.item)
-				buffer.forth
-			end
+			l_string := buffer.string
+			check l_string /= Void end
+
+			Result := l_string
 		end
 
 feature {JSC_WRITER} -- Access
 
-	buffer: attached LIST[attached STRING]
+	buffer: attached KL_STRING_OUTPUT_STREAM
 
 end

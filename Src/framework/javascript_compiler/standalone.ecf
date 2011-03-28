@@ -1,27 +1,3 @@
-<!--
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="javascript_compiler" uuid="6aa9f41f-cce1-21fe-44c1-d656700e4ea6" library_target="javascript_compiler">
-	<target name="javascript_compiler">
-		<file_rule>
-			<exclude>/.svn$</exclude>
-		</file_rule>
-
-		<option warning="true" full_class_checking="true" void_safety="all" namespace="EiffelSoftware.Library">
-		</option>
-		
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
-		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
-		
-		<cluster name="javascript_compiler" location=".\" recursive="true">
-			<option namespace="JavascriptCompiler">
-			</option>
-		</cluster>
-	</target>
-</system>
--->
-
-
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="javascript_compiler" uuid="6aa9f41f-cce1-21fe-44c1-d656700e4ea6">
 	<target name="javascript_compiler">
@@ -33,6 +9,7 @@
 		
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		
 		<cluster name="javascript_compiler" location=".\" recursive="true">

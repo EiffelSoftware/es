@@ -10,7 +10,7 @@ class
 
 inherit
 
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	SHARED_SERVER
@@ -27,6 +27,13 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize object
 		do
+			reset
+		end
+
+feature -- Status Report
+
+	reset
+		do
 			create native_stubs.make (100)
 			native_stubs.compare_objects
 
@@ -39,8 +46,6 @@ feature {NONE} -- Initialization
 
 			create find_class_named_cache.make(10)
 		end
-
-feature -- Status Report
 
 	is_native_stub (a_class_id: INTEGER): BOOLEAN
 			-- A native stub with a qualified name of the native JavaScript class
@@ -216,10 +221,9 @@ feature -- Basic Operation
 				if attached find_class_named (l_class_name) as safe_class then
 					Result := safe_class
 				else
-					jsc_context.print_error ("JSBE", "EiffelBase Dependency: Missing EiffelBase class equivalent",
-						"What to do: Make sure you have a class named " + l_class_name + "%N" +
-						"  in your universe or remove dependency to " + l_original_class_name, a_line_number)
-
+					jsc_context.add_error ("Missing EiffelBase class equivalent: " + l_class_name, "What to do: Make sure you have a class named " + l_class_name + "%N" +
+						"  in your universe or remove dependency to " + l_original_class_name)
+						
 					Result := a_class
 				end
 			else
@@ -246,9 +250,8 @@ feature -- Basic Operation
 					l_redirect_class_name := l_redirect_class.name_in_upper
 					check l_redirect_class_name /= Void end
 
-					jsc_context.print_error ("JSBF", "EiffelBase Dependency: Missing EiffelBase feature equivalent",
-						"What to do: Make sure you have a feature named `" + l_feature_name + "'%N" +
-						"  in class " + l_redirect_class_name, a_line_number)
+					jsc_context.add_error ("Missing EiffelBase feature equivalent: " + l_feature_name, "What to do: Make sure you have a feature named `" +
+						l_feature_name + "'%N" + " in class " + l_redirect_class_name)
 
 					Result := a_feature
 				end

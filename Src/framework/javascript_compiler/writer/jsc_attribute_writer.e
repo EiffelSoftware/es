@@ -9,7 +9,7 @@ class
 	JSC_ATTRIBUTE_WRITER
 
 inherit
-	SHARED_JSC_ENVIRONMENT
+	SHARED_JSC_CONTEXT
 		export {NONE} all end
 
 	INTERNAL_COMPILER_STRING_EXPORTER
@@ -58,8 +58,7 @@ feature -- Basic operations
 			check l_attr_type /= Void end
 
 			if jsc_context.is_reserved_javascript_word (l_feature_name) then
-				jsc_context.print_error ("JSRW", "Translation error: JavaScript reserved word",
-					"What to do: Rename attribute " + l_feature_name + ".", 0)
+				jsc_context.add_warning ("JavaScript reserved word", "What to do: Rename attribute " + l_feature_name + ".")
 			end
 
 			create default_value_writer.make

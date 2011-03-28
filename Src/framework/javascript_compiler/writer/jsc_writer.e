@@ -15,37 +15,20 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create buffer.make
 			reset ("")
-		end
-
-feature {NONE} -- Implementation
-
-	computed_string: attached STRING
-	computed_to: INTEGER
-
-	update_computed_string
-		local
-			i: INTEGER
-		do
-			from
-				i := computed_to + 1
-			until
-				i > buffer.count
-			loop
-				computed_string.append_string (buffer[i])
-				i := i + 1
-			end
-			computed_to := buffer.count
 		end
 
 feature -- Access
 
 	force_string: attached STRING
 			-- Output string
+		local
+			l_string: STRING
 		do
-			update_computed_string
-			Result := computed_string
+			l_string := buffer.string
+			check l_string /= Void end
+			
+			Result := l_string
 		end
 
 	data: attached JSC_WRITER_DATA
@@ -61,22 +44,20 @@ feature -- Operations
 	reset (a_indentation: attached STRING)
 			-- Reset state
 		do
-			computed_string := ""
-			computed_to := 0
-			create buffer.make
+			create buffer.make_empty
 			create indentation.make_from_string (a_indentation)
 		end
 
 	put (a_string: attached STRING)
 			-- Put `a_string' to output buffer
 		do
-			buffer.extend (a_string)
+			buffer.put_string (a_string)
 		end
 
 	put_data (a_data: attached JSC_WRITER_DATA)
 			-- Put `a_data' to output buffer
 		do
-			buffer.fill (a_data.buffer)
+			buffer.put_string (a_data.buffer.string)
 		end
 
 	put_line (a_line: attached STRING)
@@ -101,7 +82,7 @@ feature -- Operations
 	put_new_line
 			-- Put a new line to output buffer
 		do
-			buffer.extend ("%N")
+			put ("%N")
 		end
 
 	put_indentation
@@ -167,7 +148,7 @@ feature -- Operations
 
 feature {NONE} -- Implementation
 
-	buffer: attached LINKED_LIST[attached STRING]
+	buffer: attached KL_STRING_OUTPUT_STREAM --LINKED_LIST[attached STRING]
 			-- Buffer that stores output
 
 end
