@@ -14,6 +14,7 @@ inherit
 			process_bool_as,
 			process_integer_as,
 			process_string_as,
+			process_unary_as,
 			process_binary_as,
 			process_expr_call_as
 		end
@@ -211,23 +212,64 @@ feature -- Roundtrip
 			sql_where_temp_clause.append (l_as.string_value)
 		end
 
+	process_unary_as (l_as: UNARY_AS)
+		do
+			is_operator_expression := True
+			sql_where_temp_clause.append (l_as.operator_name)
+			sql_where_temp_clause.append_character (' ')
+			sql_where_temp_clause.append_character ('(')
+			l_as.expr.process (Current)
+			sql_where_temp_clause.append_character (')')
+		end
+
 	process_binary_as (l_as: BINARY_AS)
 		do
+			-- Check for object comparison
 			is_operator_expression := True
 			if l_as.op_name.string_value_32.ends_with (once "~") then
 				is_comparing_objects := True
 			end
+
+			-- Left side
+			sql_where_temp_clause.append_character ('(')
+			if l_as.op_name.string_value_32.same_string (once "implies") then
+				sql_where_temp_clause.append (once " NOT (")
+			end
 			l_as.left.process (Current)
+			if l_as.op_name.string_value_32.same_string (once "implies") then
+				sql_where_temp_clause.append_character (')')
+			end
+			sql_where_temp_clause.append_character (')')
 			sql_where_temp_clause.append_character (' ')
+
+			-- Operator
 			if l_as.op_name.string_value_32.same_string (once "/=") then
 				sql_where_temp_clause.append (once "<>")
 			elseif l_as.op_name.string_value_32.same_string (once "/~") then
 				sql_where_temp_clause.append (once "<>")
+			elseif l_as.op_name.string_value_32.same_string (once "^") then
+				sql_where_temp_clause.append (once "XOR")
+			elseif l_as.op_name.string_value_32.same_string (once "//") then
+				sql_where_temp_clause.append (once "MOD")
+			elseif l_as.op_name.string_value_32.same_string (once "\\") then
+				sql_where_temp_clause.append (once "MOD")
+			elseif l_as.op_name.string_value_32.same_string (once "and then") then
+				sql_where_temp_clause.append (once "AND")
+			elseif l_as.op_name.string_value_32.same_string (once "or else") then
+				sql_where_temp_clause.append (once "OR")
+			elseif l_as.op_name.string_value_32.same_string (once "implies") then
+				sql_where_temp_clause.append (once "OR")
 			else
 				sql_where_temp_clause.append (l_as.op_name.string_value_32)
 			end
+
+			-- Right side
 			sql_where_temp_clause.append_character (' ')
+			sql_where_temp_clause.append_character ('(')
 			l_as.right.process (Current)
+			sql_where_temp_clause.append_character (')')
+
+			-- Finish
 			is_comparing_objects := False
 		end
 
