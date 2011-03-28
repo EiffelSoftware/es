@@ -111,6 +111,43 @@ feature -- Basic Operation
 			create {LINKED_SET[INTEGER]}dependencies2.make
 		end
 
+	process_object_test (l_source: attached EXPR_B; l_target_type, l_source_type: attached TYPE_A): attached STRING
+		local
+			l_expression: JSC_WRITER_DATA
+			local_name: STRING
+		do
+			output.push ("")
+				safe_process (l_source)
+				l_expression := output.data
+			output.pop
+
+			local_name := jsc_context.add_object_test_local
+			output.put ("(")
+			output.put (local_name)
+			output.put ("=")
+			output.put_data (l_expression)
+			output.put (")");
+
+			if not types_are_equal(l_target_type, l_source_type, false) then
+				if attached l_target_type.associated_class as safe_class
+				and then jsc_context.informer.is_native_stub (safe_class.class_id) then
+					output.put (" && (")
+					output.put (local_name)
+					output.put (" instanceof ")
+					output.put (jsc_context.informer.get_native_stub (safe_class.class_id))
+					output.put (")")
+				else
+					output.put (" && runtime.inherits(")
+					output.put (local_name)
+					output.put (",")
+					output.put_data (process_type (l_target_type))
+					output.put (")")
+				end
+			end
+
+			Result := local_name
+		end
+
 feature {BYTE_NODE} -- Visitors
 
 	process_agent_call_b (a_node: AGENT_CALL_B)
@@ -587,7 +624,6 @@ feature {BYTE_NODE} -- Visitors
 			l_node_target: OBJECT_TEST_LOCAL_B
 			l_node_expression: EXPR_B
 			l_target_type, l_source_type: TYPE_A
-			l_expression: JSC_WRITER_DATA
 			local_name: STRING
 		do
 			l_context := context
@@ -605,34 +641,7 @@ feature {BYTE_NODE} -- Visitors
 			l_source_type := l_context.real_type (l_node_expression.type)
 			check l_source_type /= Void end
 
-			output.push ("")
-				safe_process (a_node.expression)
-				l_expression := output.data
-			output.pop
-
-			local_name := jsc_context.add_object_test_local
-			output.put ("(")
-			output.put (local_name)
-			output.put ("=")
-			output.put_data (l_expression)
-			output.put (")");
-
-			if not types_are_equal(l_target_type, l_source_type, false) then
-				if attached l_target_type.associated_class as safe_class
-				and then jsc_context.informer.is_native_stub (safe_class.class_id) then
-					output.put (" && (")
-					output.put (local_name)
-					output.put (" instanceof ")
-					output.put (jsc_context.informer.get_native_stub (safe_class.class_id))
-					output.put (")")
-				else
-					output.put (" && runtime.inherits(")
-					output.put (local_name)
-					output.put (",")
-					output.put_data (process_type (l_target_type))
-					output.put (")")
-				end
-			end
+			local_name := process_object_test (l_node_expression, l_target_type, l_source_type)
 
 		end
 

@@ -218,7 +218,7 @@ var runtime = {
 				return false;
 			}
 			for (i = 0; i < type1.generics.length; i ++) {
-				if ( !this.type_inherits(type1.generics[i], type2.generics[i])) {
+				if ( !this._type_inherits(type1.generics[i], type2.generics[i])) {
 					return false;
 				}
 			}
