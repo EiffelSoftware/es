@@ -99,6 +99,9 @@ feature -- Access
 	dependencies2: attached SET[INTEGER]
 			-- Level 2 dependencies
 
+	invariant_checks: attached LIST[attached JSC_WRITER_DATA]
+			-- Generated invariant checks related to the expression
+
 feature -- Basic Operation
 
 	reset (a_indentation: attached STRING)
@@ -109,6 +112,7 @@ feature -- Basic Operation
 			show_tuple_brackets := true
 			create {LINKED_SET[INTEGER]}dependencies1.make
 			create {LINKED_SET[INTEGER]}dependencies2.make
+			create {LINKED_LIST[attached JSC_WRITER_DATA]}invariant_checks.make
 		end
 
 	process_object_test (l_source: attached EXPR_B; l_target_type, l_source_type: attached TYPE_A): attached STRING
@@ -531,25 +535,8 @@ feature {BYTE_NODE} -- Visitors
 	process_external_b (a_node: EXTERNAL_B)
 			-- Process `a_node'.
 		local
-			l_feature: attached FEATURE_I
-			--l_feature_ext: EXTERNAL_EXT_I
-			--l_feature_external_name: STRING
 		do
-			l_feature := get_feature (a_node)
-
-			static_dispatch_feature_call (l_feature, a_node.parameters, a_node.line_number)
-
---			l_feature_ext := l_feature.extension
---			check l_feature_ext /= Void end
-
---			if l_feature_ext.is_built_in then
---				static_dispatch_feature_call (l_feature, a_node.parameters, a_node.line_number)
---			else
---				l_feature_external_name := a_node.external_name
---				check l_feature_external_name /= Void end
-
---				process_external_procedure_call (a_node.is_static_call, l_feature_external_name, l_feature.arguments, a_node.parameters)
---			end
+			static_dispatch_feature_call (get_feature (a_node), a_node.parameters, a_node.line_number)
 		end
 
 	process_feature_b (a_node: FEATURE_B)
@@ -600,6 +587,7 @@ feature {BYTE_NODE} -- Visitors
 			l_node_target: ACCESS_B
 			l_node_target_type: TYPE_A
 			l_target_name: attached JSC_WRITER_DATA
+			l_class: CLASS_C
 		do
 			output.push ("")
 				safe_process (a_node.target)
@@ -611,6 +599,22 @@ feature {BYTE_NODE} -- Visitors
 
 			l_node_target_type := l_node_target.type
 			check l_node_target_type /= Void end
+
+			if not l_node_target_type.is_formal then
+					-- TODO: shouldn't invariants be checked on formals as well?
+				if l_node_target_type.is_like_current then
+					l_class := jsc_context.current_class
+				else
+					l_class := l_node_target_type.associated_class
+				end
+				check l_class /= Void end
+
+				l_class := jsc_context.informer.redirect_class (l_class, 0)
+
+				if not jsc_context.informer.is_fictive_stub (l_class.class_id) then
+					invariant_checks.extend (l_target_name)
+				end
+			end
 
 			jsc_context.name_mapper.push_target (l_node_target_type, l_target_name)
 				safe_process (a_node.message)

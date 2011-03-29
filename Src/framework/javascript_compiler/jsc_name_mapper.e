@@ -62,7 +62,7 @@ feature -- Target
 		do
 			create l_data.make_from_string (current_class_target)
 
-			l_written_class := jsc_context.current_feature.written_class
+			l_written_class := jsc_context.current_class
 			check l_written_class /= Void end
 
 			l_type := l_written_class.actual_type
@@ -87,13 +87,17 @@ feature -- Target
 
 	is_inside_agent: BOOLEAN assign set_is_inside_agent
 			-- Is translating an agent definition inside a feature
-
 	set_is_inside_agent (a_is_inside_agent: BOOLEAN)
 		do
 			is_inside_agent := a_is_inside_agent
 		end
 
 feature -- Names
+
+	invariant_name (a_class_id: INTEGER): attached STRING
+		do
+			Result := "$invariant_" + a_class_id.out
+		end
 
 	local_name (a_index: INTEGER): attached STRING
 			-- Name of local (in generated JavaScript code)

@@ -276,4 +276,32 @@ feature {NONE} -- Implementation
 			Result := done_time + step_time
 		end
 
+	circles_inside: BOOLEAN
+		do
+			from
+				Result := true
+				circles.start
+			until
+				circles.after or Result = false
+			loop
+				if circles.item.position.y > bottom - circles.item.radius then
+					Result := false
+				end
+				if circles.item.position.y < top + circles.item.radius then
+					Result := false
+				end
+				if circles.item.position.x < left + circles.item.radius then
+					Result := false
+				end
+				if circles.item.position.x > right - circles.item.radius then
+					Result := false
+				end
+
+				circles.forth
+			end
+		end
+
+invariant
+	circles_inside: circles_inside
+
 end

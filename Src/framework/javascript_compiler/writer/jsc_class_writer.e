@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			create signature_writer.make
 			create body_writer.make
 			create constant_writer.make
+			create instruction_writer.make
 			reset ("")
 		end
 
@@ -304,6 +305,76 @@ feature {NONE} -- Class Processing
 			output.put_new_line
 		end
 
+	generate_invariant (a_class: attached CLASS_C): attached JSC_WRITER_DATA
+			-- Generate the class invariant associated with `a_class'.
+		local
+			l_invariant_b: INVARIANT_B
+			l_list : BYTE_LIST[BYTE_NODE]
+			l_assert: ASSERT_B
+			l_parent: CL_TYPE_A
+			l_class: CLASS_C
+		do
+			output.push (output.indentation)
+				output.put_indentation
+				output.put (jsc_context.name_mapper.invariant_name (a_class.class_id))
+				output.put (" : function () {")
+				output.put_new_line
+				output.indent
+
+					if a_class.inv_byte_server.has (a_class.class_id) then
+						l_invariant_b := a_class.inv_byte_server.item (a_class.class_id)
+						check l_invariant_b /= Void end
+
+						l_list := l_invariant_b.byte_list
+						check l_list /= Void end
+
+						from
+							l_list.start
+						until
+							l_list.after
+						loop
+							l_assert ?= l_list.item
+							check l_assert /= Void end
+
+							jsc_context.name_mapper.push_target_current
+								instruction_writer.reset (output.indentation)
+								instruction_writer.process_assertion (l_assert.expr, "Invariant", l_assert.tag)
+								output.put_data (instruction_writer.output.data)
+							jsc_context.name_mapper.pop_target
+
+							l_list.forth
+						end
+					end
+
+					if attached a_class.parents as safe_parents then
+						from
+							safe_parents.start
+						until
+							safe_parents.after
+						loop
+							l_parent := safe_parents.item
+							check l_parent /= Void end
+
+							l_class := l_parent.associated_class
+							check l_class /= Void end
+
+							l_class := jsc_context.informer.redirect_class (l_class, 0)
+
+							if not jsc_context.informer.is_stub (l_class.class_id) and not l_class.is_class_any then
+								output.put_line ("this." + jsc_context.name_mapper.invariant_name (l_class.class_id) + "();")
+							end
+
+							safe_parents.forth
+						end
+					end
+
+				output.unindent
+				output.put_indentation
+				output.put ("}")
+				Result := output.data
+			output.pop
+		end
+
 	generate_deferred (a_class: attached CLASS_C): attached JSC_WRITER_DATA
 			-- Generate the array with the deferred features in this `a_class'.
 		local
@@ -390,6 +461,7 @@ feature {NONE} -- Class Processing
 
 			if not is_stub then
 				l_generated_features.extend (generate_deferred (a_class))
+				l_generated_features.extend (generate_invariant (a_class))
 				output.put_data_list (l_generated_features, ",%N%N")
 				output.put_new_line
 			end
@@ -510,6 +582,7 @@ feature {NONE} -- Implementation
 	signature_writer: attached JSC_SIGNATURE_WRITER
 	body_writer: attached JSC_BODY_WRITER
 	constant_writer: attached JSC_CONSTANT_WRITER
+	instruction_writer: attached JSC_INSTRUCTION_WRITER
 
 	is_stub: BOOLEAN
 			-- Is current class being translated a stub

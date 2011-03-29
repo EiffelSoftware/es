@@ -76,7 +76,8 @@ var runtime = {
 	
 	declare : function (class_name, parent_classes, class_decl) {
 		var parent_decl, class_prototype, redefining_map, renaming_map, parent_deferred_map, 
-			regex_matches, feature, found_feature, feature_name, i, j, inherits_map, parent_inherits_map;
+			regex_matches, feature, found_feature, feature_name, i, j, inherits_map, parent_inherits_map,
+			own_invariant;
 		
 		// Start off with an empty object
 		class_prototype = {};
@@ -87,6 +88,8 @@ var runtime = {
 				class_prototype[feature] = class_decl[feature];
 			}
 		}
+		own_invariant = this._find_feature_starting_with(class_decl, '$invariant', true);
+		class_prototype['$invariant'] = class_prototype[own_invariant];
 		
 		inherits_map = {};
 		inherits_map['EIFFEL_ANY'] = true;
@@ -119,7 +122,7 @@ var runtime = {
 			
 			// Copy parent's properties
 			for (feature in parent_decl) {
-				if (parent_decl.hasOwnProperty(feature) && feature[0] !== '$' && feature !== '__class_name') {
+				if (parent_decl.hasOwnProperty(feature) && (feature[0] !== '$' || feature.indexOf("$invariant") === 0) && feature !== '$invariant') {
 					// Remove the feature id at the end to get the feature name
 					regex_matches= this._remove_ending_regexp.exec(feature);
 					if (regex_matches && regex_matches.length == 2) {

@@ -67,6 +67,7 @@ feature -- Basic Operation
 			this_used_in_closure := false
 			create {LINKED_SET[INTEGER]}dependencies1.make
 			create {LINKED_SET[INTEGER]}dependencies2.make
+			create invariant_checks.make
 		end
 
 	process_assertion (expr: attached BYTE_NODE; assertion_name: attached STRING; assertion_tag: detachable STRING)
@@ -88,9 +89,13 @@ feature -- Basic Operation
 			end
 			output.put ("at ")
 			output.put (jsc_context.current_class_name)
-			output.put (".")
-			output.put (jsc_context.current_feature_name)
-			output.put (" does not hold.%"")
+
+			if jsc_context.has_current_feature then
+				output.put (".")
+				output.put (jsc_context.current_feature_name)
+			end
+
+			output.put (" does not hold.%";")
 			output.put_new_line
 		end
 
@@ -101,7 +106,12 @@ feature -- Processing
 		local
 			l_source: attached JSC_WRITER_DATA
 			l_target: ACCESS_B
+
+			l_call_access: CALL_ACCESS_B
+			l_class: CLASS_C
+			l_type: CL_TYPE_A
 		do
+			create invariant_checks.make
 			jsc_context.push_line_number (a_node.line_number)
 
 			l_target := a_node.target
@@ -109,12 +119,37 @@ feature -- Processing
 
 			l_source := invoke_expression_writer (a_node.source)
 
+			pre_invariant_checks
+
 			output.put_indentation
 			process_assign_target (l_target)
 			output.put (" = ")
 			output.put_data (l_source)
 			output.put (";")
 			output.put_new_line
+
+			if attached {CREATION_EXPR_B} a_node.source as safe_src then
+
+				l_type ?= safe_src.type
+				check l_type /= Void end
+
+				l_call_access := safe_src.call
+				check l_call_access /= Void end
+
+				l_class := l_type.associated_class
+				check l_class /= Void end
+
+				l_class := jsc_context.informer.redirect_class (l_class, a_node.line_number)
+
+				if not jsc_context.informer.is_fictive_stub (l_class.class_id) then
+					output.push ("")
+						process_assign_target (l_target)
+						invariant_checks.extend (output.data)
+					output.pop
+				end
+			end
+
+			post_invariant_checks
 
 			jsc_context.pop_line_number
 		end
@@ -226,13 +261,19 @@ feature -- Processing
 		local
 			l_call: attached JSC_WRITER_DATA
 		do
+			create invariant_checks.make
 			jsc_context.push_line_number (a_node.line_number)
 			l_call := invoke_expression_writer (a_node.call)
+
+			pre_invariant_checks
 
 			output.put_indentation
 			output.put_data (l_call)
 			output.put (";")
 			output.put_new_line
+
+			post_invariant_checks
+
 			jsc_context.pop_line_number
 		end
 
@@ -280,6 +321,7 @@ feature -- Processing
 			l_test: JSC_WRITER_DATA
 			local_name: STRING
 		do
+			create invariant_checks.make
 			jsc_context.push_line_number (a_node.line_number)
 
 			l_context := context
@@ -305,6 +347,8 @@ feature -- Processing
 			dependencies2.fill (expression_writer.dependencies2)
 			this_used_in_closure := this_used_in_closure or expression_writer.this_used_in_closure
 
+			pre_invariant_checks
+
 				-- Emit code
 			output.put_indentation
 			process_assign_target (l_target)
@@ -315,10 +359,48 @@ feature -- Processing
 			output.put (" : null;")
 			output.put_new_line
 
+			post_invariant_checks
+
 			jsc_context.pop_line_number
 		end
 
 feature {NONE} -- Implementation
+
+	invariant_checks: attached LINKED_LIST[attached JSC_WRITER_DATA]
+
+	pre_invariant_checks
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > invariant_checks.count
+			loop
+				output.put_indentation
+				output.put_data (invariant_checks[i])
+				output.put (".$invariant();")
+				output.put_new_line
+				i := i + 1
+			end
+		end
+
+	post_invariant_checks
+		local
+			i: INTEGER
+		do
+			from
+				i := invariant_checks.count
+			until
+				i < 1
+			loop
+				output.put_indentation
+				output.put_data (invariant_checks[i])
+				output.put (".$invariant();")
+				output.put_new_line
+				i := i - 1
+			end
+		end
 
 	process_assign_target (a_target: attached ACCESS_B)
 		local
@@ -368,6 +450,7 @@ feature {NONE} -- Implementation
 				dependencies1.fill (expression_writer.dependencies1)
 				dependencies2.fill (expression_writer.dependencies2)
 				this_used_in_closure := this_used_in_closure or expression_writer.this_used_in_closure
+				invariant_checks.append (expression_writer.invariant_checks)
 			else
 				create Result.make_from_string ("")
 			end
