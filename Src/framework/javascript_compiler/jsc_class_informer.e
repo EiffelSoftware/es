@@ -217,13 +217,13 @@ feature -- Basic Operation
 			check l_original_class_name /= Void end
 
 			if is_eiffel_base_class (a_class) then
-				l_class_name := jsc_context.informer.eiffel_base_redirect_to (l_original_class_name)
+				l_class_name := eiffel_base_redirect_to (l_original_class_name)
 				if attached find_class_named (l_class_name) as safe_class then
 					Result := safe_class
 				else
 					jsc_context.add_error ("Missing EiffelBase class equivalent: " + l_class_name, "What to do: Make sure you have a class named " + l_class_name + "%N" +
 						"  in your universe or remove dependency to " + l_original_class_name)
-						
+
 					Result := a_class
 				end
 			else

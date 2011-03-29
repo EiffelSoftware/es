@@ -63,8 +63,12 @@ feature -- Element change
 	use_data_from_context
 			-- Use data from `ev_context' to set `class_c', `e_feature', `line', and `column'.
 		do
-			set_class (jsc_context.current_class)
-			set_feature (jsc_context.current_feature)
+			if jsc_context.has_current_class then
+				set_class (jsc_context.current_class)
+			end
+			if jsc_context.has_current_feature then
+				set_feature (jsc_context.current_feature)
+			end
 			set_position (jsc_context.current_line_number, 0)
 		ensure
 			class_set: class_c = jsc_context.current_class

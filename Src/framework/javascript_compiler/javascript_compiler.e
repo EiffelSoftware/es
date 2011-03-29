@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			create {LINKED_LIST[attached CLASS_C]} classes_to_compile.make
 			create {LINKED_SET[INTEGER]}classes_to_compile_set.make
 			create class_writer.make
+			create runtime_dispatch_writer.make
 		ensure
 			empty: classes_to_compile.is_empty
 		end
@@ -104,6 +105,9 @@ feature -- Operations
 			mark_native_class_parents (<< "CHARACTER_8", "CHARACTER_32", "INTEGER_8",
 				"INTEGER_16", "INTEGER_32", "INTEGER_64", "REAL_32", "REAL_64",
 				"STRING_8", "STRING_32", "ARRAY", "TUPLE" >>)
+
+			runtime_dispatch_writer.generate_runtime_dispatch
+			write_runtime_dispatch
 
 				-- Compile all & keep track of dependencies
 			from
@@ -196,6 +200,9 @@ feature {NONE} -- Implementation
 
 	class_writer: attached JSC_CLASS_WRITER
 			-- Compiles one class at a time to JavaScript
+
+	runtime_dispatch_writer: attached JSC_RUNTIME_DISPATCH_WRITER
+			-- Generates the runtime dispatch
 
 	find_javascript_stubs
 			-- Iterate over all classes & populate the `jsc_context' with the "special" ones
@@ -426,6 +433,21 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Write to HDD
 
+	write_runtime_dispatch
+		local
+			l_dir: DIRECTORY
+			l_output_file: PLAIN_TEXT_FILE
+		do
+			create l_dir.make (output_folder)
+			if not l_dir.exists then
+				l_dir.create_dir
+			end
+
+			create l_output_file.make_open_write (runtime_dispatch_file_name)
+			l_output_file.put_string (runtime_dispatch_writer.output.force_string)
+			l_output_file.close
+		end
+
 	write_one_class (a_class: attached CLASS_C)
 			-- Write `a_class' to file, using `class_writer'.
 		local
@@ -462,6 +484,8 @@ feature {NONE} -- Write to HDD
 			end
 
 			create l_output_file.make_open_write (all_file_name)
+
+			l_output_file.put_string (runtime_dispatch_writer.output.force_string)
 
 				-- Generate one humongous js file, containing all the compiled classes, in proper order
 			from
@@ -544,6 +568,17 @@ feature {NONE} -- Write to HDD
 			create l_output_path.make_from_string (project_target_path)
 			l_output_path.extend ("JavaScript")
 			l_output_path.extend (l_class_name + ".js")
+			Result := l_output_path
+		end
+
+	runtime_dispatch_file_name: attached STRING
+			-- Path name to the file for the runtime dispatch.
+		local
+			l_output_path: FILE_NAME
+		do
+			create l_output_path.make_from_string (project_target_path)
+			l_output_path.extend ("JavaScript")
+			l_output_path.extend ("runtime_dispatch.js")
 			Result := l_output_path
 		end
 

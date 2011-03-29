@@ -43,7 +43,14 @@ feature -- Access
 
 feature -- Class Context
 
+	has_current_class: BOOLEAN
+		do
+			Result := unsafe_current_class /= Void
+		end
+
 	current_class: attached CLASS_C assign set_current_class
+		require
+			has_current_class: has_current_class
 		local
 			l_current_class: CLASS_C
 		do
@@ -74,12 +81,21 @@ feature -- Feature Context
 			Result := current_features.count
 		end
 
+	has_current_feature: BOOLEAN
+		do
+			Result := current_features.count > 0
+		end
+
 	current_feature: attached FEATURE_I
+		require
+			has_current_feature: has_current_feature
 		do
 			Result := current_features.item
 		end
 
 	current_feature_name: attached STRING
+		require
+			has_current_feature: has_current_feature
 		local
 			l_name: STRING
 		do

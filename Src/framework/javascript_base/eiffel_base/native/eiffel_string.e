@@ -9,7 +9,7 @@ class
 	EIFFEL_STRING
 inherit
 	ANY
-		redefine is_equal end
+		redefine is_equal, out end
 
 create
 	make_empty,
@@ -18,10 +18,10 @@ create
 feature {NONE} -- Initialization
 
 	make_from_string (other: attached STRING)
-		external "C" alias "$other" end
+		external "C" alias "#$other" end
 
 	make_empty
-		external "C" alias "%"%"" end
+		external "C" alias "#%"%"" end
 
 feature -- Basic Operation
 
@@ -51,6 +51,9 @@ feature -- Basic Operation
 
 	left_adjust
 		external "C" alias "$TARGET = $TARGET.replace(/^\s+/,%"%")" end
+
+	out: attached STRING
+		external "C" alias "$TARGET" end
 
 	plus alias "+" (other: attached STRING) : attached STRING
 		external "C" alias "$TARGET + $other" end

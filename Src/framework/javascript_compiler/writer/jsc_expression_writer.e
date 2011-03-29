@@ -1087,9 +1087,9 @@ feature {NONE} -- External calls
 					-- Fill in the argument names
 				from
 					create {LINKED_LIST[attached STRING]}l_feature_arguments.make
-					i := 1
+					i := a_feature_arguments.lower
 				until
-					i > a_feature_arguments.count
+					i > a_feature_arguments.upper
 				loop
 					l_argument := a_feature_arguments.item_name (i)
 					check l_argument /= Void end

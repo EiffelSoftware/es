@@ -307,7 +307,7 @@ feature -- Processing
 
 				-- Emit code
 			output.put_indentation
-			process_assign_target (a_node.target)
+			process_assign_target (l_target)
 			output.put (" = ")
 			output.put_data (l_test)
 			output.put (" ? ")
