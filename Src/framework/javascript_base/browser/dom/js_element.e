@@ -16,9 +16,17 @@ inherit
 feature -- Added by http://www.w3.org/TR/cssom-view
 
 	get_client_rects: attached JS_CLIENT_RECT_LIST
+			-- The getClientRects() and getBoundingClientRect methods provide information
+			-- about the position of the border box edges of an element relative to the
+			-- viewport. The objects these methods return must be static. That is, changes
+			-- to the underlying document are not reflected in the objects.
 		external "C" alias "getClientRects()" end
 
 	get_bounding_client_rect: attached JS_CLIENT_RECT
+			-- The getClientRects() and getBoundingClientRect methods provide information
+			-- about the position of the border box edges of an element relative to the
+			-- viewport. The objects these methods return must be static. That is, changes
+			-- to the underlying document are not reflected in the objects.
 		external "C" alias "getBoundingClientRect()" end
 
 	scroll_top: INTEGER assign set_scroll_top

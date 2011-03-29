@@ -67,9 +67,11 @@ feature -- Basic Operation
 		external "C" alias "type=$a_type" end
 
 	text: STRING assign set_text
+			-- Same as textContent.
 		external "C" alias "text" end
 
 	set_text (a_text: STRING)
+			-- See text
 		external "C" alias "text=$a_text" end
 
 feature -- URL decomposition IDL attributes

@@ -25,6 +25,7 @@ feature -- resource metadata management
 		external "C" alias "location" end
 
 	url: STRING
+			-- Returns the document's address.
 		external "C" alias "URL" end
 
 	domain: STRING assign set_domain
@@ -34,33 +35,65 @@ feature -- resource metadata management
 		external "C" alias "domain=$a_domain" end
 
 	referrer: STRING
+			-- Returns the address of the Document from which the user navigated to this
+			-- one, unless it was blocked or there was no such document, in which case it
+			-- returns the empty string. The noreferrer link type can be used to block the
+			-- referrer.
 		external "C" alias "referrer" end
 
 	cookie: STRING assign set_cookie
+			-- Returns the HTTP cookies that apply to the Document. If there are no cookies
+			-- or cookies can't be applied to this resource, the empty string will be
+			-- returned. Can be set, to add a new cookie to the element's set of HTTP
+			-- cookies. If the contents are sandboxed into a unique origin (in an iframe
+			-- with the sandbox attribute) or the resource was labeled as
+			-- text/html-sandboxed, a SECURITY_ERR exception will be thrown on getting and
+			-- setting.
 		external "C" alias "cookie" end
 
 	set_cookie (a_cookie: STRING)
+			-- See cookie
 		external "C" alias "cookie=$a_cookie" end
 
 	last_modified: STRING
+			-- Returns the date of the last modification to the document, as reported by
+			-- the server, in the form "MM/DD/YYYY hh:mm:ss", in the user's local time
+			-- zone. If the last modification date is not known, the current time is
+			-- returned instead.
 		external "C" alias "lastModified" end
 
 	compat_mode: STRING
+			-- In a conforming document, returns the string "CSS1Compat". (In quirks mode
+			-- documents, returns the string "BackCompat", but a conforming document can
+			-- never trigger quirks mode.)
 		external "C" alias "compatMode" end
 
 	charset: STRING assign set_charset
+			-- Returns the document's character encoding. Can be set, to dynamically change
+			-- the document's character encoding. New values that are not IANA-registered
+			-- aliases supported by the user agent are ignored.
 		external "C" alias "charset" end
 
 	set_charset (a_charset: STRING)
+			-- See charset
 		external "C" alias "charset=$a_charset" end
 
 	character_set: STRING
+			-- Returns the document's character encoding.
 		external "C" alias "characterSet" end
 
 	default_charset: STRING
+			-- Returns what might be the user agent's default character encoding. (The user
+			-- agent might return another character encoding altogether, e.g. to protect
+			-- the user's privacy, or if the user agent doesn't use a single default
+			-- encoding.)
 		external "C" alias "defaultCharset" end
 
 	ready_state: STRING
+			-- Returns "loading" while the Document is loading, "interactive" once it is
+			-- finished parsing but still loading sub-resources, and "complete" once it has
+			-- loaded. The readystatechange event fires on the Document object when this
+			-- value changes.
 		external "C" alias "readyState" end
 
 feature -- DOM tree accessors
@@ -68,9 +101,14 @@ feature -- DOM tree accessors
 feature -- getter any (in DOMString name);
 
 	title: STRING assign set_title
+			-- Returns the document's title, as given by the title element. Can be set, to
+			-- update the document's title. If there is no head element, the new value is
+			-- ignored. In SVG documents, the SVGDocument interface's title attribute takes
+			-- precedence.
 		external "C" alias "title" end
 
 	set_title (a_title: STRING)
+			-- See title
 		external "C" alias "title=$a_title" end
 
 	dir: STRING assign set_dir
@@ -80,36 +118,54 @@ feature -- getter any (in DOMString name);
 		external "C" alias "dir=$a_dir" end
 
 	body: JS_HTML_ELEMENT assign set_body
+			-- Returns the body element. Can be set, to replace the body element. If the
+			-- new value is not a body or frameset element, this will throw a
+			-- HIERARCHY_REQUEST_ERR exception.
 		external "C" alias "body" end
 
 	set_body (a_body: JS_HTML_ELEMENT)
+			-- See body
 		external "C" alias "body=$a_body" end
 
 	head: JS_HTML_HEAD_ELEMENT
+			-- Returns the head element.
 		external "C" alias "head" end
 
 	images: JS_HTML_COLLECTION
+			-- Returns an HTMLCollection of the img elements in the Document.
 		external "C" alias "images" end
 
 	embeds: JS_HTML_COLLECTION
+			-- Return an HTMLCollection of the embed elements in the Document.
 		external "C" alias "embeds" end
 
 	plugins: JS_HTML_COLLECTION
+			-- Return an HTMLCollection of the embed elements in the Document.
 		external "C" alias "plugins" end
 
 	links: JS_HTML_COLLECTION
+			-- Returns an HTMLCollection of the a and area elements in the Document that
+			-- have href attributes.
 		external "C" alias "links" end
 
 	forms: JS_HTML_COLLECTION
+			-- Return an HTMLCollection of the form elements in the Document.
 		external "C" alias "forms" end
 
 	scripts: JS_HTML_COLLECTION
+			-- Return an HTMLCollection of the script elements in the Document.
 		external "C" alias "scripts" end
 
 	get_elements_by_name (a_element_name: STRING): JS_NODE_LIST
+			-- Returns a NodeList of elements in the Document that have a name attribute
+			-- with the value name.
 		external "C" alias "getElementsByName($a_element_name)" end
 
 	get_elements_by_class_name (a_class_names: STRING): JS_NODE_LIST
+			-- Returns a NodeList of the elements in the object on which the method was
+			-- invoked (a Document or an Element) that have all the classes given by
+			-- classes. The classes argument is interpreted as a space-separated list of
+			-- classes.
 		external "C" alias "getElementsByClassName($a_class_names)" end
 
 feature -- dynamic markup insertion

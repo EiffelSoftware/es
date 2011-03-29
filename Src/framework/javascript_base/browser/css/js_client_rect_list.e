@@ -12,8 +12,14 @@ class
 feature -- Basic Operation
 
 	length: INTEGER
+			-- The length attribute must return the total number of ClientRect objects
+			-- associated with the object.
 		external "C" alias "length" end
 
 	item alias "[]" (a_index: INTEGER): JS_CLIENT_RECT
+			-- The item(index) method, when invoked, must raise an INDEX_SIZE_ERR exception
+			-- when index is negative or greater than the number of ClientRect objects
+			-- associated with the object. Otherwise, the ClientRect object at index must
+			-- be returned.
 		external "C" alias "item($a_index)" end
 end

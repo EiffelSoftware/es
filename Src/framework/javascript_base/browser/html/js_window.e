@@ -15,18 +15,23 @@ inherit
 feature -- the current browsing context
 
 	window: JS_WINDOW
+			-- These attributes all return window.
 		external "C" alias "window" end
 
 	self: JS_WINDOW
+			-- These attributes all return window.
 		external "C" alias "self" end
 
 	document: attached JS_HTML_DOCUMENT
+			-- Returns the active document.
 		external "C" alias "document" end
 
 	name: STRING assign set_name
+			-- Returns the name of the window. Can be set, to change the name.
 		external "C" alias "name" end
 
 	set_name (a_name: STRING)
+			-- See name
 		external "C" alias "name=$a_name" end
 
 	location: attached JS_LOCATION
@@ -36,27 +41,45 @@ feature -- the current browsing context
 		external "C" alias "history" end
 
 	locationbar: JS_BAR_PROP
+			-- Represents the user interface element that contains a control that displays
+			-- the URL of the active document, or some similar interface concept.
 		external "C" alias "locationbar" end
 
 	menubar: JS_BAR_PROP
+			-- Represents the user interface element that contains a list of commands in
+			-- menu form, or some similar interface concept.
 		external "C" alias "menubar" end
 
 	personalbar: JS_BAR_PROP
+			-- Represents the user interface element that contains links to the user's
+			-- favorite pages, or some similar interface concept.
 		external "C" alias "personalbar" end
 
 	scrollbars: JS_BAR_PROP
+			-- Represents the user interface element that contains a scrolling mechanism,
+			-- or some similar interface concept.
 		external "C" alias "scrollbars" end
 
 	statusbar: JS_BAR_PROP
+			-- Represents a user interface element found immediately below or after the
+			-- document, as appropriate for the user's media. If the user agent has no such
+			-- user interface element, then the object may act as if the corresponding user
+			-- interface element was absent (i.e. its visible attribute may return false).
 		external "C" alias "statusbar" end
 
 	toolbar: JS_BAR_PROP
+			-- Represents the user interface element found immediately above or before the
+			-- document, as appropriate for the user's media. If the user agent has no such
+			-- user interface element, then the object may act as if the corresponding user
+			-- interface element was absent (i.e. its visible attribute may return false).
 		external "C" alias "toolbar" end
 
 	close
+			-- Closes the window.
 		external "C" alias "close()" end
 
 	stop
+			-- Cancels the document load.
 		external "C" alias "stop()" end
 
 	focus
@@ -68,9 +91,11 @@ feature -- the current browsing context
 feature -- other browsing contexts
 
 	frames: JS_WINDOW
+			-- These attributes all return window.
 		external "C" alias "frames" end
 
 	length: INTEGER
+			-- Returns the number of child browsing contexts.
 		external "C" alias "length" end
 
 	top: JS_WINDOW
