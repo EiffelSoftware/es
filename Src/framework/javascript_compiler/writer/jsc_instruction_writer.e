@@ -265,7 +265,7 @@ feature -- Processing
 		local
 		do
 			jsc_context.push_line_number (a_node.line_number)
-			io.put_string("JSC_INSTRUCTION_WRITER: retry_b%N")
+			output.put_line ("$retry = true;")
 			jsc_context.pop_line_number
 		end
 

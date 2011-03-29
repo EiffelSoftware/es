@@ -147,7 +147,7 @@ feature -- Basic Operations
 			l_byte_server: BYTE_SERVER
 			l_byte_code: BYTE_CODE
 
-			body, postcondition: JSC_WRITER_DATA
+			body, postcondition, rescue_code: JSC_WRITER_DATA
 		do
 			l_byte_server := byte_server
 			check l_byte_server /= Void end
@@ -160,9 +160,29 @@ feature -- Basic Operations
 				set_proper_context (a_feature)
 				instruction_writer.reset (output.indentation)
 
+					-- Process rescue clause
+				if attached l_byte_code.rescue_clause as safe_rescue_clause
+					and then not safe_rescue_clause.is_empty then
+					output.indent
+					output.indent
+						instruction_writer.reset (output.indentation)
+						safe_rescue_clause.process (instruction_writer)
+						rescue_code := instruction_writer.output.data
+						dependencies1.fill (instruction_writer.dependencies1)
+						dependencies2.fill (instruction_writer.dependencies2)
+						this_used_in_closure := this_used_in_closure or instruction_writer.this_used_in_closure
+					output.unindent
+					output.unindent
+				end
+
 					-- Process the actual body and store it in `body'
 				if attached l_byte_code.compound as safe_compound
 					and then not safe_compound.is_empty then
+
+					if rescue_code /= Void then
+						output.indent
+						output.indent
+					end
 
 					instruction_writer.reset (output.indentation)
 					safe_compound.process (instruction_writer)
@@ -170,6 +190,11 @@ feature -- Basic Operations
 					dependencies1.fill (instruction_writer.dependencies1)
 					dependencies2.fill (instruction_writer.dependencies2)
 					this_used_in_closure := this_used_in_closure or instruction_writer.this_used_in_closure
+
+					if rescue_code /= Void then
+						output.unindent
+						output.unindent
+					end
 				end
 
 					-- Process the preconditions and write them to output
@@ -182,14 +207,30 @@ feature -- Basic Operations
 				output.pop
 
 				if a_feature.has_return_value or l_byte_code.local_count > 0 or instruction_writer.this_used_in_closure
-					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0 then
+					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0
+					or rescue_code /= Void then
 						-- The feature has locals
-					write_locals (l_byte_code, a_feature, instruction_writer.this_used_in_closure)
+					write_locals (l_byte_code, a_feature, instruction_writer.this_used_in_closure, rescue_code /= Void)
+				end
+
+				if attached rescue_code as safe_rescue_code then
+					output.put_line ("while ($retry) {")
+					output.indent
+					output.put_line ("$retry = false;")
+					output.put_line ("try {")
 				end
 
 				if attached body as safe_body then
 						-- The feature has a body
 					output.put_data (safe_body)
+				end
+
+				if attached rescue_code as safe_rescue_code then
+					output.put_line ("} catch ($err) {")
+					output.put_data (safe_rescue_code)
+					output.put_line ("}")
+					output.unindent
+					output.put_line ("}")
 				end
 
 				if a_feature.is_once then
@@ -279,7 +320,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	write_locals (a_byte_code: attached BYTE_CODE; a_feature: attached FEATURE_I; a_this_used_in_closure: BOOLEAN)
+	write_locals (a_byte_code: attached BYTE_CODE; a_feature: attached FEATURE_I; a_this_used_in_closure: BOOLEAN; a_has_rescue_code: BOOLEAN)
 			-- Write local declaration
 		local
 			l_result_type: TYPE_A
@@ -308,6 +349,14 @@ feature {NONE} -- Implementation
 					-- Write the closure self reference
 				output.push ("")
 					output.put ("$this = this")
+					locals.extend (output.data)
+				output.pop
+			end
+
+			if a_has_rescue_code then
+					-- Write the rescue "retry" variable
+				output.push ("")
+					output.put ("$retry = true")
 					locals.extend (output.data)
 				output.pop
 			end
