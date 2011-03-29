@@ -32,6 +32,7 @@ feature -- Access
 			l_empty_set: EPA_HASH_SET [EPA_EXPRESSION]
 		do
 			find_relevant_expressions (a_context)
+
 			if
 				a_should_merge
 			then
@@ -121,7 +122,6 @@ feature -- Status report
 			a_context_not_void: a_context /= Void
 		local
 			i: INTEGER
-			l_is_expression_relevant: BOOLEAN
 		do
 			find_relevant_expressions (a_context)
 
@@ -135,16 +135,15 @@ feature -- Status report
 			from
 				i := 1
 			until
-				i > relevant_expression_sets.count or l_is_expression_relevant
+				i > relevant_expression_sets.count or Result
 			loop
 				if
 					relevant_expression_sets.i_th (i) /= Void and then relevant_expression_sets.i_th (i).has (a_expr) and then relevant_expression_sets.i_th (i).has (b_expr)
 				then
-					l_is_expression_relevant := True
+					Result := True
 				end
 				i := i + 1
 			end
-			Result := l_is_expression_relevant
 		end
 
 	is_expression_relevant_with_merge (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
@@ -232,28 +231,17 @@ feature {NONE} -- Implementation
 			a_context_not_void: a_context /= Void
 		local
 			l_relevancy_finder: EPA_RELEVANT_EXPRESSION_FINDER
-			l_feat_tbl: FEATURE_TABLE
-			l_cursor: CURSOR
 			l_feature: FEATURE_I
-			l_features: LINKED_LIST[FEATURE_I]
+			l_features: LINKED_LIST [FEATURE_I]
+			l_selector: EPA_FEATURE_SELECTOR
 		do
 			create l_relevancy_finder.make (a_context)
 
 			if attached {ETR_CLASS_CONTEXT} a_context as l_class_ctxt then
 				l_relevancy_finder.set_context_class (l_class_ctxt.context_class)
 				l_relevancy_finder.set_written_class (l_class_ctxt.written_class)
-				create l_features.make
-				l_feat_tbl := l_class_ctxt.written_class.feature_table
-				l_cursor := l_feat_tbl.cursor
-				from
-					l_feat_tbl.start
-				until
-					l_feat_tbl.after
-				loop
-					l_features.extend (l_feat_tbl.item_for_iteration)
-					l_feat_tbl.forth
-				end
-				l_feat_tbl.go_to (l_cursor)
+				create l_selector.default_create
+				l_features := l_selector.features_from_class (l_class_ctxt.written_class)
 
 				-- Process all features of `a_context'
 				from
@@ -262,6 +250,7 @@ feature {NONE} -- Implementation
 					l_features.after
 				loop
 					l_feature := l_features.item_for_iteration
+
 					l_relevancy_finder.set_context_feature (l_feature)
 					l_relevancy_finder.set_written_class (l_feature.written_class)
 

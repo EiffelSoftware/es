@@ -14,7 +14,6 @@ inherit
 			process_require_else_as,
 			process_ensure_as,
 			process_ensure_then_as,
-			process_body_as,
 			process_binary_as
 		end
 
@@ -103,14 +102,6 @@ feature -- Basic operation
 		end
 
 feature {NONE} -- Visit operations
-
-	process_body_as (l_as: BODY_AS)
-		do
-			safe_process (l_as.arguments)
-			safe_process (l_as.type)
-			safe_process (l_as.assigner)
-			safe_process (l_as.content)
-		end
 
 	process_require_as (l_as: REQUIRE_AS)
 		do
