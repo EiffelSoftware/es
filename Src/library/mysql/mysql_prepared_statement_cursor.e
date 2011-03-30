@@ -35,12 +35,10 @@ feature -- Access
 			end
 		end
 
-
-
 	after: BOOLEAN
 			-- Is there no valid cursor position to the right of cursor?
 		do
-			Result := target.row_count <= cursor_index
+			Result := target.row_count + 1 <= cursor_index
 		end
 
 feature {NONE} -- Implementation
