@@ -428,7 +428,7 @@ feature{NONE} -- Logging
 				a_file.put_string (l_cursor.item.recipient_name)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</recipient>%N")
-				a_file.put_string ("<failt_signature>%N")
+				a_file.put_string ("<fault_signature>%N")
 				a_file.put_string (l_cursor.item.class_name + "." + l_cursor.item.recipient_name + "." + "c" + l_cursor.item.code.out + "." + "b" + l_cursor.item.break_point_slot.out)
 				a_file.put_character ('%N')
 				a_file.put_string ("</failt_signature>%N")

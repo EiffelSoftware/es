@@ -208,6 +208,29 @@ feature -- Access
 			Result.append ("%NLIMIT " + a_count.out)
 		end
 
+	rewritten_precondition (a_expression: EPA_EXPRESSION): EPA_EXPRESSION
+			-- Precondition assertion rewritten from `a_expression'		
+		local
+			l_expr: EPA_AST_EXPRESSION
+		do
+			fixme ("Here are some hard-coeded rewritten preconditions because we don't have time to do this automatically. Without the hard-coding, we will generated ill-formed SQL select statements. This hard-coding won't affect the effectiveness of the precondition-reduction strategy. 28.03.2011 Jasonw")
+			if a_expression.class_.name_in_upper ~ "DS_ARRAYED_LIST" and then a_expression.text ~ "extendible (other.count)" then
+				create l_expr.make_with_text (a_expression.class_, a_expression.feature_, "capacity >= count + other.count", a_expression.written_class)
+				Result := l_expr
+			elseif a_expression.class_.name_in_upper ~ "DS_HASH_SET" and then a_expression.text ~ "extendible (other.count)" then
+				create l_expr.make_with_text (a_expression.class_, a_expression.feature_, "capacity >= count + other.count", a_expression.written_class)
+				Result := l_expr
+			elseif a_expression.class_.name_in_upper ~ "DS_LINKED_QUEUE" and then a_expression.text ~ "extendible (other.count)" then
+				Result := Void
+			elseif a_expression.class_.name_in_upper ~ "DS_LINKED_LIST" and then a_expression.text ~ "extendible (other.count)" then
+				Result := Void
+			elseif a_expression.class_.name_in_upper ~ "DS_LINKED_STACK" and then a_expression.text ~ "extendible (other.count)" then
+				Result := Void
+			else
+				Result := a_expression
+			end
+		end
+
 	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
@@ -274,7 +297,9 @@ feature -- Access
 			until
 				l_pres.after
 			loop
+				l_pres.replace (rewritten_precondition (l_pres.item))
 				if
+					l_pres.item /= Void and then
 					not l_pres.item.text.has ('{') and then
 --					not l_pres.item.text.has ('.') and then
 --					not l_pres.item.text.has ('(') and then
@@ -288,7 +313,7 @@ feature -- Access
 				l_pres.forth
 			end
 
-			if l_pre_set.count > 0 and l_pre_set.count <= 4 then
+			if l_pre_set.count > 0 and l_pre_set.count <= 6 then
 					-- We don't allow too many precondition predicates,
 					-- because otherwise, the query will take a long long time.
 				create l_qualifier

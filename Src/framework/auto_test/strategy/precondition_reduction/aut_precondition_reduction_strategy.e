@@ -61,16 +61,16 @@ feature {NONE} -- Initialization
 			-- Create new strategy.	
 		do
 			Precursor (a_interpreter, a_system, an_error_handler)
-			create prestate_invariants.make
+			create prestate_predicates.make
 
-			create violated_prestate_invariants.make (50)
-			violated_prestate_invariants.set_equality_tester (aut_state_invariant_equality_tester)
+			create satisfied_prestate_predicates.make (50)
+			satisfied_prestate_predicates.set_equality_tester (aut_state_invariant_equality_tester)
 
-			create failed_prestate_invariants.make (50)
-			failed_prestate_invariants.set_equality_tester (aut_state_invariant_equality_tester)
+			create unfinished_prestate_predicates.make (50)
+			unfinished_prestate_predicates.set_equality_tester (aut_state_invariant_equality_tester)
 
-			create prestate_invariants_by_feature.make (100)
-			prestate_invariants_by_feature.compare_objects
+			create prestate_predicates_by_feature.make (100)
+			prestate_predicates_by_feature.compare_objects
 
 			create tautologies_by_feature.make (100)
 			tautologies_by_feature.compare_objects
@@ -80,21 +80,16 @@ feature {NONE} -- Initialization
 
 			connection := interpreter.configuration.semantic_database_config.connection
 			connection.connect
-			load_prestate_invariants
+			load_prestate_predicates
 
 			if configuration.should_check_invariant_violating_objects then
 					-- Check invariant-violating objects only,
 					-- do not perform testing.
-				check_invariant_violating_objects (prestate_invariants)
-				prestate_invariants.wipe_out
+				check_invariant_violating_objects (prestate_predicates)
+				prestate_predicates.wipe_out
 			else
 				setup_query_log_manager
 				setup_progress_log_manager
-
-					-- Setup object retriever which can get objects
-					-- from semantic search database.
-				create object_retriever
-				object_retriever.set_log_manager (query_log_manager)
 			end
 		end
 
@@ -104,7 +99,7 @@ feature -- Status report
 	has_next_step: BOOLEAN
 			-- <Precursor>
 		do
-			Result := not prestate_invariants.is_empty
+			Result := not prestate_predicates.is_empty
 		end
 
 feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
@@ -119,7 +114,7 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 
 	cancel
 		do
-			prestate_invariants.wipe_out
+			prestate_predicates.wipe_out
 			if sub_task /= Void and then sub_task.has_next_step then
 				sub_task.cancel
 			end
@@ -129,114 +124,80 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 
 	step
 		local
-			l_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
-			l_objects: LINKED_LIST [SEMQ_RESULT]
-			l_breaker: AUT_FEATURE_PRECONDITION_BREAKER
-			l_state_changing_breaker: AUT_STATE_CHANGING_FEATURE_PRECONDITION_BREAKER
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_invalids: like invalid_predicates
-			l_used_qry_ids: DS_HASH_SET [INTEGER]
-			l_done: BOOLEAN
-			l_tries: INTEGER
 			l_inv_message: STRING
+			l_object_selector_reductor: AUT_OBJECT_SELECTION_PRECONDITION_REDUCTOR
+			l_state_changing_reductor: AUT_STATE_CHANGING_PRECONDITION_REDUCTOR
 		do
 				-- Get, and remove, one invariant to process each step.
-			current_invariant := prestate_invariants.first
-			l_class := current_invariant.context_class
-			l_feature := current_invariant.feature_
-			create l_used_qry_ids.make (50)
-			l_inv_message := class_name_dot_feature_name (current_invariant.context_class, current_invariant.feature_) + " : " + current_invariant.text
+			select_current_predicate
+			l_class := current_predicate.context_class
+			l_feature := current_predicate.feature_
+			l_inv_message := class_name_dot_feature_name (current_predicate.context_class, current_predicate.feature_) + " : " + current_predicate.text
 			interpreter.log_precondition_reduction ("Try to satisfy: " + l_inv_message)
 			progress_log_manager.put_string_with_time ("Try to satisfy: " + l_inv_message + " ")
-			prestate_invariants.start
-			prestate_invariants.remove
 
 				-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.
 				-- If so, we don't need to do anything, because by definition, that pre-state invariant cannot be violated.
-			l_invalids := invalid_predicates (l_class, l_feature, invariants_as_expressions (prestate_invariants_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
-			if l_invalids.has (current_invariant.expression) then
+			l_invalids := invalid_predicates (l_class, l_feature, predicates_as_expressions (prestate_predicates_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
+			if l_invalids.has (current_predicate.expression) then
 				progress_log_manager.put_string (" [Invalid]")
 				interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Invalid]")
 			else
 					-- We try to search in the semantic database to see if there are some object combination
-					-- which violates the pre-state invariant. If so, we use those objects as our new test inputs.
-				from
+					-- which satisfies `current_predicate'. If so, we use those objects as our new test inputs.
+				l_object_selector_reductor := object_selection_reductor
+				execute_task (l_object_selector_reductor)
 
-				until
-					l_done
-				loop
-					object_retriever.retrieve_objects (current_invariant.expression, current_invariant.context_class, current_invariant.feature_, True, True, connection, l_used_qry_ids, l_tries < 2, l_tries)
-					l_tries := l_tries + 1
-					if connection.last_error_number /= 0 then
-						connection.close
-						connection.dispose
-						connection := interpreter.configuration.semantic_database_config.connection
-						connection.connect
-						progress_log_manager.put_string (" [Database problem]")
-						interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Database problem]")
-							-- We force the precondition-reduction process to quit soon
-							-- for invariants which cause database problems (usually due
-							-- to long lasting queries).
-						l_tries := l_tries + 5
-						if l_tries > 5 then
-							l_done := True
-						end
+				if l_object_selector_reductor.is_reduction_successful then
+					progress_log_manager.put_string (" [Satisfied]")
+					interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
+				else
+						-- We try to use feature calls to change objects into states
+						-- that satisfy `current_predicate'.
+					l_state_changing_reductor := state_changing_reductor
+					execute_task (l_state_changing_reductor)
+					if l_state_changing_reductor.is_reduction_successful then
+						progress_log_manager.put_string (" [Transition Satisfied]")
+						interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
 					else
-						l_objects := object_retriever.last_objects
-						if l_objects /= Void and then not l_objects.is_empty then
-							across l_objects as l_objs loop
-								across l_objs.item.meta as l_metas loop
-									l_metas.item.search (once "qry_id")
-									if l_metas.item.found then
-										l_used_qry_ids.force_last (l_metas.item.found_item.to_integer)
-									end
-								end
-							end
-							create l_breaker.make (system, interpreter, error_handler, current_invariant, l_objects)
-							sub_task := l_breaker
-							execute_task (sub_task)
-
-							if l_breaker.is_last_test_case_executed and then (l_breaker.value_of_current_invariant_before_test = True) then
-								progress_log_manager.put_string (" [Satisfied]")
-								interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
-								l_done := True
-							else
-								if l_used_qry_ids.count > 20 then
-									progress_log_manager.put_string (" [Not satisfied]")
-									interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Not satisfied]")
-									l_done := True
-								else
-									io.put_string ("I'll read more data.%N")
-								end
-							end
-						else
-							if l_tries > 5 then
---									-- There is no objects as-is breaking `current_invariant', we'll try
---									-- to call some features on a similar state to break the invariant.
---								create l_state_changing_breaker.make (system, interpreter, error_handler, current_invariant, object_retriever)
---								sub_task := l_breaker
---								execute_task (sub_task)
---								if
---									l_state_changing_breaker.is_last_test_case_executed and then
---									(l_state_changing_breaker.value_of_current_invariant_before_test = False)
---								then
---									progress_log_manager.put_string (" [Violated]")
---									l_done := True
---								else
-									l_done := True
-									progress_log_manager.put_string (" [No object]")
-									interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " No object]")
---								end
-							else
-								io.put_string ("I cannot find any objects, I'll relax the contraint and try again.%N")
-							end
-						end
+						progress_log_manager.put_string (" [Not satisfied]")
+						interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message)
 					end
 				end
 			end
 			progress_log_manager.put_line ("")
 		end
+
+	select_current_predicate
+			-- Select next predicate from `prestae_predicates' as `current_predicate'
+		do
+			current_predicate := prestate_predicates.first
+			prestate_predicates.start
+			prestate_predicates.remove
+		end
+
+	object_selection_reductor : AUT_OBJECT_SELECTION_PRECONDITION_REDUCTOR
+			-- Reductor which only selects existing objects from semantic database, which
+			-- satisfy `current_predicate'
+		do
+			create Result.make (system, interpreter, error_handler, current_predicate, connection)
+			Result.set_progress_log_manager (progress_log_manager)
+			Result.set_query_log_manager (query_log_manager)
+		end
+
+	state_changing_reductor : AUT_STATE_CHANGING_PRECONDITION_REDUCTOR
+			-- Reductor which can call features to change object states to
+			-- satisfy `current_predicate'
+		do
+			create Result.make (system, interpreter, error_handler, current_predicate, connection)
+			Result.set_progress_log_manager (progress_log_manager)
+			Result.set_query_log_manager (query_log_manager)
+		end
+
+feature{NONE} -- Implementation
 
 	execute_task (a_task: AUT_TASK)
 			-- Execute `a_task' until it is finished.
@@ -276,24 +237,23 @@ feature{NONE} -- Implementation
 	connection: MYSQL_CLIENT
 			-- Database connection
 
-	current_invariant: AUT_STATE_INVARIANT
-			-- Invariant that we are currently trying to SATISFY.
+	current_predicate: AUT_STATE_INVARIANT
+			-- Predicate that we are currently trying to SATISFY.
 
-	prestate_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
-			-- List of pre-state invariants that are to be considered
+	prestate_predicates: LINKED_LIST [AUT_STATE_INVARIANT]
+			-- List of pre-state predicates that are to be satisfied
 
-	prestate_invariants_by_feature: HASH_TABLE [DS_HASH_SET [AUT_STATE_INVARIANT], STRING]
-			-- List of pre-state invariants, organized by features
+	prestate_predicates_by_feature: HASH_TABLE [DS_HASH_SET [AUT_STATE_INVARIANT], STRING]
+			-- List of pre-state predicates, organized by features
 			-- Keys are feature identifier, in form of "CLASS_NAME.feature_name",
-			-- values are pre-state invariants associated with those features
+			-- values are pre-state predicates associated with those features
 
-	violated_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
+	satisfied_prestate_predicates: DS_HASH_SET [AUT_STATE_INVARIANT]
+			-- Set of pre-state predicates that are already satisfied
 
-			-- Set of pre-state invariants that are already violated
-
-	failed_prestate_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]
-			-- Set of pre-state invariants that we fail to violate
-			-- (after a maximum steps of tries)
+	unfinished_prestate_predicates: DS_HASH_SET [AUT_STATE_INVARIANT]
+			-- Set of pre-state predicates that we fail to satisfy
+			-- after a maximum steps of tries
 
 	tautologies_by_feature: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], STRING]
 			-- Tautology expressions in pre-state of features
@@ -321,15 +281,15 @@ feature{NONE} -- Implementation/precondition reduction
 			end
 		end
 
-	load_prestate_invariants
-			-- Load pre-state invariants into `prestate_invariants'.
+	load_prestate_predicates
+			-- Load pre-state invariants into `prestate_predicates'.
 		local
 			l_loader: AUT_PRESTATE_INVARIANT_LOADER
 		do
 			create l_loader
 			l_loader.load (configuration.prestate_invariant_path)
-			prestate_invariants.append (l_loader.last_invariants)
-			put_invariants_in_prestate_invariants_by_feature (l_loader.last_invariants)
+			prestate_predicates.append (l_loader.last_invariants)
+			put_predicates_in_prestate_predicates_by_feature (l_loader.last_invariants)
 		end
 
 	tautology_predicates (a_class: CLASS_C; a_feature: FEATURE_I; a_candidates: DS_HASH_SET [EPA_EXPRESSION]): DS_HASH_SET [EPA_EXPRESSION]
@@ -405,15 +365,15 @@ feature{NONE} -- Implementation/precondition reduction
 		end
 
 
-	invariants_as_expressions (a_invariants: DS_HASH_SET [AUT_STATE_INVARIANT]): DS_HASH_SET [EPA_EXPRESSION]
-			-- List of expressions from `a_invariants'
+	predicates_as_expressions (a_predicates: DS_HASH_SET [AUT_STATE_INVARIANT]): DS_HASH_SET [EPA_EXPRESSION]
+			-- List of expressions from `a_predicates'
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_STATE_INVARIANT]
 		do
-			create Result.make (a_invariants.count)
+			create Result.make (a_predicates.count)
 			Result.set_equality_tester (expression_equality_tester)
 			from
-				l_cursor := a_invariants.new_cursor
+				l_cursor := a_predicates.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
@@ -423,20 +383,17 @@ feature{NONE} -- Implementation/precondition reduction
 			end
 		end
 
-	object_retriever: AUT_QUERYABLE_QUERYABLE_RETRIEVER
-			-- Retriever to get objects from semantic database
-
 feature{NONE} -- Invariant-violating invariants checking
 
-	put_invariants_in_prestate_invariants_by_feature (a_invariants: LINKED_LIST [AUT_STATE_INVARIANT])
-			-- Put `a_invariants' into `prestate_invariants_by_feature'.
+	put_predicates_in_prestate_predicates_by_feature (a_predicates: LINKED_LIST [AUT_STATE_INVARIANT])
+			-- Put `a_predicates' into `prestate_predicates_by_feature'.
 		local
 			l_feat_id: STRING
 			l_set: DS_HASH_SET [AUT_STATE_INVARIANT]
-			l_inv_by_feat: like prestate_invariants_by_feature
+			l_inv_by_feat: like prestate_predicates_by_feature
 		do
-			l_inv_by_feat := prestate_invariants_by_feature
-			across a_invariants as l_invs loop
+			l_inv_by_feat := prestate_predicates_by_feature
+			across a_predicates as l_invs loop
 				l_feat_id := l_invs.item.feature_id
 				l_inv_by_feat.search (l_feat_id)
 				if l_inv_by_feat.found then
@@ -450,9 +407,9 @@ feature{NONE} -- Invariant-violating invariants checking
 			end
 		end
 
-	processed_invariants (a_path: STRING): DS_HASH_SET [STRING]
-			-- List of invariants that are already processed, given
-			-- the file name storing all the processed invariants in `a_path'.
+	processed_predicates (a_path: STRING): DS_HASH_SET [STRING]
+			-- List of predicates that are already processed, given
+			-- the file name storing all the processed predicates in `a_path'.
 		local
 			l_parts: LIST [STRING]
 			l_file: PLAIN_TEXT_FILE
@@ -501,7 +458,7 @@ feature{NONE} -- Invariant-violating invariants checking
 
 				-- Check which invariants are already processed in
 				-- `configuration'.`data_output'.
-			l_processed := processed_invariants (configuration.data_output)
+			l_processed := processed_predicates (configuration.data_output)
 
 			create l_result_log.make_with_logger_array (
 				<<create {ELOG_FILE_LOGGER}.make_with_path (configuration.data_output),
@@ -519,7 +476,7 @@ feature{NONE} -- Invariant-violating invariants checking
 				if not l_processed.has (l_invs.item.id) then
 					create l_gen
 					l_gen.generate_for_expressions (
-						invariant_by_feature (l_inv.context_class, l_inv.feature_),
+						predicates_by_feature (l_inv.context_class, l_inv.feature_),
 						l_inv.context_class,
 						l_inv.feature_,
 						True,
@@ -530,7 +487,7 @@ feature{NONE} -- Invariant-violating invariants checking
 					l_tautologies := tautology_predicates (
 						l_invs.item.context_class,
 						l_invs.item.feature_,
-						invariants_as_expressions (prestate_invariants_by_feature.item (l_invs.item.feature_id)))
+						predicates_as_expressions (prestate_predicates_by_feature.item (l_invs.item.feature_id)))
 
 						-- We only check invariants which are not tautologies.
 					l_result_log.put_string_with_time (l_invs.item.context_class.name_in_upper + "%T" + l_invs.item.feature_.feature_name + "%T" + l_invs.item.expression.text)
@@ -554,18 +511,18 @@ feature{NONE} -- Invariant-violating invariants checking
 			end
 		end
 
-	invariant_by_feature (a_class: CLASS_C; a_feature: FEATURE_I): LINKED_LIST [EPA_EXPRESSION]
-			-- Invariants by `a_feature' in `a_class', the data
-			-- comes from `prestate_invariants_by_feature'.
+	predicates_by_feature (a_class: CLASS_C; a_feature: FEATURE_I): LINKED_LIST [EPA_EXPRESSION]
+			-- Predicates by `a_feature' in `a_class', data
+			-- comes from `prestate_predicates_by_feature'.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_STATE_INVARIANT]
 			l_feature: STRING
 		do
 			create Result.make
 			l_feature := class_name_dot_feature_name (a_class, a_feature)
-			if prestate_invariants_by_feature.has (l_feature) then
+			if prestate_predicates_by_feature.has (l_feature) then
 				from
-					l_cursor := prestate_invariants_by_feature.item (l_feature).new_cursor
+					l_cursor := prestate_predicates_by_feature.item (l_feature).new_cursor
 					l_cursor.start
 				until
 					l_cursor.after
