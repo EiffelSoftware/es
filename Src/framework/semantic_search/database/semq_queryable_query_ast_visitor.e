@@ -31,6 +31,7 @@ feature{NONE} -- Initialization
 			create variable_mapping_table.make (10)
 			create feature_call_table.make (10)
 			create sql_where_clauses.make
+			create sql_from_clauses.make
 			create sql_join_statements.make
 			create sql_select_clauses.make
 			number_of_joins := 1
@@ -40,6 +41,9 @@ feature -- Data structures
 
 	sql_select_clauses: LINKED_LIST [STRING]
 		-- Clauses appearing in the SELECT statement
+
+	sql_from_clauses: LINKED_LIST [STRING]
+		-- Table names in FROM statement
 
 	sql_join_statements: LINKED_LIST [STRING]
 		-- Join statements for the current SQL query
@@ -124,7 +128,7 @@ feature -- Variable Term Helpers
 			l_clause: STRING
 		do
 			create l_clause.make_from_string (last_appeared_variable)
-			l_clause.append (once ".position = ")
+			l_clause.append (once ".`position` = ")
 			l_clause.append_integer (a_position)
 			sql_where_clauses.extend (l_clause)
 		end
@@ -136,9 +140,9 @@ feature -- Variable Term Helpers
 		do
 			create l_clause.make_from_string (last_appeared_variable)
 			l_clause.append_character ('.')
-			l_clause.append (once ".type1 = (SELECT prop_id FROM Properties WHERE `text` = %"")
+			l_clause.append (once ".type1 IN (SELECT `type_id` FROM Conformances WHERE `conf_type_id` IN (SELECT `type_id` FROM Types WHERE `type_name` = %"")
 			l_clause.append (a_type)
-			l_clause.append (once "%")")
+			l_clause.append (once "%"))")
 			sql_where_clauses.extend (l_clause)
 		end
 
@@ -149,7 +153,7 @@ feature -- Selects
 		local
 			l_clause: STRING
 		do
-			sql_select_clauses.extend (once "qry.uuid")
+			sql_select_clauses.extend (once "qry.`uuid`")
 			if number_of_variables /= 1 or is_operator_expression then
 				sql_select_clauses.extend (sql_select_temp_clause)
 				sql_select_clauses.extend (once "NULL")
@@ -158,10 +162,10 @@ feature -- Selects
 			else
 				create l_clause.make_from_string (last_appeared_variable)
 				l_clause.append_character ('.')
-				sql_select_clauses.extend (l_clause + once "value")
-				sql_select_clauses.extend (l_clause + once "equal_value")
-				sql_select_clauses.extend (l_clause + once "prop_kind")
-				sql_select_clauses.extend (l_clause + once "boost")
+				sql_select_clauses.extend (l_clause + once "`value`")
+				sql_select_clauses.extend (l_clause + once "`equal_value`")
+				sql_select_clauses.extend (l_clause + once "`prop_kind`")
+				sql_select_clauses.extend (l_clause + once "`boost`")
 			end
 		end
 
@@ -172,12 +176,12 @@ feature -- Selects
 		do
 			create l_clause.make_from_string (last_appeared_variable)
 			l_clause.append_character ('.')
-			sql_select_clauses.extend (once "qry.uuid")
-			sql_select_clauses.extend (l_clause + once "var1")
-			sql_select_clauses.extend (l_clause + once "value")
-			sql_select_clauses.extend (l_clause + once "equal_value")
-			sql_select_clauses.extend (l_clause + once "type1")
-			sql_select_clauses.extend (l_clause + once "position")
+			sql_select_clauses.extend (once "qry.`uuid`")
+			sql_select_clauses.extend (l_clause + once "`var1`")
+			sql_select_clauses.extend (l_clause + once "`value`")
+			sql_select_clauses.extend (l_clause + once "`equal_value`")
+			sql_select_clauses.extend (l_clause + once "`type1`")
+			sql_select_clauses.extend (l_clause + once "`position`")
 		end
 
 	add_clauses_meta
@@ -250,7 +254,7 @@ feature -- Roundtrip
 			elseif l_as.op_name.string_value_32.same_string (once "^") then
 				sql_where_temp_clause.append (once "XOR")
 			elseif l_as.op_name.string_value_32.same_string (once "//") then
-				sql_where_temp_clause.append (once "MOD")
+				sql_where_temp_clause.append (once "/")
 			elseif l_as.op_name.string_value_32.same_string (once "\\") then
 				sql_where_temp_clause.append (once "MOD")
 			elseif l_as.op_name.string_value_32.same_string (once "and then") then
@@ -276,12 +280,15 @@ feature -- Roundtrip
 	process_expr_call_as (l_as: EXPR_CALL_AS)
 		local
 			l_join: STRING
+			l_from: STRING
+			l_where: STRING
 			l_clause: STRING
 			l_call: STRING
 			l_call_anonymous: STRING
 			l_call_with_prop_id: STRING
 			l_parameter_position: INTEGER
 			l_routine_visitor: SEMQ_QUERYABLE_QUERY_ROUTINE_VISITOR
+			l_target_and_arguments: LINKED_LIST [STRING]
 		do
 			-- Routine call
 			create l_routine_visitor.make
@@ -300,11 +307,10 @@ feature -- Roundtrip
 
 			-- Regular routine call
 			else
-				number_of_variables := number_of_variables + 1
 				sql_where_temp_clause.append (once "Prop")
 
 				-- Check if this routine call has already appared, save a join
-				if feature_call_table.has (l_call) then
+				if feature_call_table.has (l_call_with_prop_id) then
 					sql_where_temp_clause.append_integer (feature_call_table.at (l_call))
 				-- New routine call, add join
 				else
@@ -313,63 +319,86 @@ feature -- Roundtrip
 
 				-- Comparing objects
 				if is_comparing_objects then
-					sql_where_temp_clause.append (once ".equal_value")
+					sql_where_temp_clause.append (once ".`equal_value`")
 				-- Comparing booleans/integers/strings
 				else
-					sql_where_temp_clause.append (once ".value")
+					sql_where_temp_clause.append (once ".`value`")
 				end
 
 				-- Join
 				if not feature_call_table.has (l_call) then
 					last_appeared_variable := once "Prop" + number_of_joins.out
+
+					create l_from.make_empty
+					l_from.append (once "PropertyBindings")
+					l_from.append_integer (l_routine_visitor.argument_count)
+					l_from.append (once " AS Prop")
+					l_from.append_integer (number_of_joins)
+					sql_from_clauses.extend (l_from)
+
+					create l_where.make_empty
+					l_where.append (once "(qry.`qry_id` = Prop")
+					l_where.append_integer (number_of_joins)
+					l_where.append (once ".`qry_id` AND Prop")
+					l_where.append_integer (number_of_joins)
+					l_where.append (once ".`prop_id` = (SELECT `prop_id` FROM Properties WHERE `text` = %"")
+					l_where.append (l_call_anonymous)
+					l_where.append (once "%") AND Prop")
+					l_where.append_integer (number_of_joins)
+					l_where.append (once ".`prop_kind` = ")
+					l_where.append_integer (current_term_property_kind)
+					l_where.append (once ")")
+					sql_where_clauses.extend (l_where)
+
 					create l_join.make_empty
 					l_join.append (once "LEFT JOIN PropertyBindings")
 					l_join.append_integer (l_routine_visitor.argument_count)
 					l_join.append (once " AS Prop")
 					l_join.append_integer (number_of_joins)
-					l_join.append (once " ON (qry.qry_id = Prop")
+					l_join.append (once " ON (qry.`qry_id` = Prop")
 					l_join.append_integer (number_of_joins)
-					l_join.append (once ".qry_id AND Prop")
+					l_join.append (once ".`qry_id` AND Prop")
 					l_join.append_integer (number_of_joins)
-					l_join.append (once ".prop_id = (SELECT prop_id FROM Properties WHERE text = %"")
+					l_join.append (once ".`prop_id` = (SELECT `prop_id` FROM Properties WHERE `text` = %"")
 					l_join.append (l_call_anonymous)
 					l_join.append (once "%") AND Prop")
 					l_join.append_integer (number_of_joins)
-					l_join.append (once ".prop_kind = ")
+					l_join.append (once ".`prop_kind` = ")
 					l_join.append_integer (current_term_property_kind)
 					l_join.append (once ")")
 					sql_join_statements.extend (l_join)
-					feature_call_table.put (number_of_joins, l_call)
+					feature_call_table.put (number_of_joins, l_call_with_prop_id)
 					number_of_joins := number_of_joins + 1
 				end
 
-				-- Arguments
+				-- Target and Arguments
+				l_target_and_arguments := l_routine_visitor.target_and_arguments
 				from
-					l_parameter_position := 0
-					l_routine_visitor.arguments.start
+					l_parameter_position := 1
+					l_target_and_arguments.start
 				until
-					l_routine_visitor.arguments.after
+					l_target_and_arguments.after
 				loop
 					-- Already seen variable
-					if variable_mapping_table.has (l_routine_visitor.arguments.item) then
+					if variable_mapping_table.has (l_target_and_arguments.item) then
 						create l_clause.make_empty
 						l_clause.append (once "(Prop")
-						l_clause.append_integer (number_of_joins)
-						l_clause.append (once ".var")
+						l_clause.append_integer (number_of_joins - 1)
+						l_clause.append (once ".`var")
 						l_clause.append_integer (l_parameter_position)
-						l_clause.append (once " = Prop")
-						l_clause.append_integer (variable_mapping_table.at (l_routine_visitor.arguments.item).join_number)
-						l_clause.append (once ".var")
-						l_clause.append_integer (variable_mapping_table.at (l_routine_visitor.arguments.item).parameter_position)
-						l_clause.append (once ")")
+						l_clause.append (once "` = Prop")
+						l_clause.append_integer (variable_mapping_table.at (l_target_and_arguments.item).join_number)
+						l_clause.append (once ".`var")
+						l_clause.append_integer (variable_mapping_table.at (l_target_and_arguments.item).parameter_position)
+						l_clause.append (once "`)")
 						sql_where_clauses.extend (l_clause)
 					-- New variable
 					else
-						variable_mapping_table.put ([number_of_joins, l_parameter_position], l_routine_visitor.arguments.item)
+						variable_mapping_table.put ([number_of_joins - 1, l_parameter_position], l_target_and_arguments.item)
 					end
 					l_parameter_position := l_parameter_position + 1
 					number_of_variables := number_of_variables + 1
-					l_routine_visitor.arguments.forth
+					l_target_and_arguments.forth
 				end
 			end
 		end

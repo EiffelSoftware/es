@@ -39,6 +39,14 @@ feature -- Access
 	target: STRING
 		-- Target of routine call
 
+	target_and_arguments: LINKED_LIST [STRING]
+			-- Target and arguments of routine call
+		do
+			create Result.make
+			Result.extend (target)
+			Result.append (arguments)
+		end
+
 	feature_name: STRING
 		-- Name of routine called
 

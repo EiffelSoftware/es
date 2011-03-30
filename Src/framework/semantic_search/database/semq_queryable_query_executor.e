@@ -70,20 +70,32 @@ feature -- Basic operations
 				l_query_string.append_character ('%N')
 			end
 
-			-- JOIN
-			l_query_string.append (once "FROM Queryables AS qry %N")
+			-- FROM
+			l_query_string.append (once "FROM Queryables AS qry")
 			from
-				l_ast_visitor.sql_join_statements.start
+				l_ast_visitor.sql_from_clauses.start
 			until
-				l_ast_visitor.sql_join_statements.after
+				l_ast_visitor.sql_from_clauses.after
 			loop
-				l_query_string.append (l_ast_visitor.sql_join_statements.item)
-				l_query_string.append_character ('%N')
-				l_ast_visitor.sql_join_statements.forth
+				l_query_string.append_character (',')
+				l_query_string.append_character (' ')
+				l_query_string.append (l_ast_visitor.sql_from_clauses.item)
+				l_ast_visitor.sql_from_clauses.forth
 			end
 
+			-- JOIN
+--			from
+--				l_ast_visitor.sql_join_statements.start
+--			until
+--				l_ast_visitor.sql_join_statements.after
+--			loop
+--				l_query_string.append (l_ast_visitor.sql_join_statements.item)
+--				l_query_string.append_character ('%N')
+--				l_ast_visitor.sql_join_statements.forth
+--			end
+
 			-- WHERE
-			l_query_string.append (once "WHERE %N")
+			l_query_string.append (once "%NWHERE %N")
 			from
 				l_ast_visitor.sql_where_clauses.start
 			until
