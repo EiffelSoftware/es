@@ -78,7 +78,7 @@ feature -- Helpers
 			elseif a_term.is_relative_change then
 				l_property_kind := property_types.at (once "by")
 			else
-				l_property_kind := 1
+				l_property_kind := 2 -- For variable terms
 			end
 
 			ast_visitor.prepare_term (l_property_kind)
