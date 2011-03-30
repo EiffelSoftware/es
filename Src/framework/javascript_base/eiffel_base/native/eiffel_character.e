@@ -14,10 +14,22 @@ inherit
 
 feature -- Basic Operation
 
+	as_lower: attached STRING
+		external "C" alias "toLowerCase()" end
+
+	as_upper: attached STRING
+		external "C" alias "toUpperCase()" end
+
 	code: INTEGER
 		external "C" alias "charCodeAt(0)" end
 
+	lower: attached STRING
+		external "C" alias "toLowerCase()" end
+
 	out: attached STRING
 		external "C" alias "$TARGET" end
+
+	upper: attached STRING
+		external "C" alias "toUpperCase()" end
 
 end

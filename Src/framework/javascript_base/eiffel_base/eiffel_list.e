@@ -17,20 +17,35 @@ feature {NONE} -- Initialization
 	make
 		do
 			create inner_array.make
-			index := 0
+			inner_index := 0
 		end
 
 	make_from_array (a_array: attached JS_ARRAY[G])
 		do
 			inner_array := a_array
-			index := 0
+			inner_index := 0
 		end
 
 feature -- Operations
 
 	after: BOOLEAN
 		do
-			Result := index >= inner_array.length
+			Result := inner_index >= inner_array.length
+		end
+
+	at alias "@" (a_index: INTEGER): G
+		do
+			Result := inner_array[a_index]
+		end
+
+	back
+		do
+			inner_index := inner_index - 1
+		end
+
+	before: BOOLEAN
+		do
+			Result := inner_index < 0
 		end
 
 	count: INTEGER
@@ -38,9 +53,44 @@ feature -- Operations
 			Result := inner_array.length
 		end
 
+	do_all (action: attached PROCEDURE [ANY, TUPLE [G]])
+		local
+			i: INTEGER
+		do
+			from
+				i := 0
+			until
+				i >= inner_array.length
+			loop
+				action.call([inner_array.item (i)])
+				i := i + 1
+			end
+		end
+
+	do_if (action: attached PROCEDURE [ANY, TUPLE [G]]; test: attached FUNCTION [ANY, TUPLE [G], BOOLEAN])
+		local
+			i: INTEGER
+		do
+			from
+				i := 0
+			until
+				i >= inner_array.length
+			loop
+				if test.item([inner_array.item (i)]) then
+					action.call([inner_array.item (i)])
+				end
+				i := i + 1
+			end
+		end
+
 	extend (a_item: G)
 		do
 			inner_array.push (a_item)
+		end
+
+	finish
+		do
+			inner_index := inner_array.length - 1
 		end
 
 	first: G
@@ -48,19 +98,56 @@ feature -- Operations
 			Result := inner_array[0]
 		end
 
+	for_all (test: attached FUNCTION [ANY, TUPLE [G], BOOLEAN]): BOOLEAN
+		local
+			i: INTEGER
+		do
+			from
+				i := 0
+				Result := true
+			until
+				i >= inner_array.length or Result = false
+			loop
+				if not test.item([inner_array.item (i)]) then
+					Result := false
+				end
+				i := i + 1
+			end
+		end
+
+	force (a_item: G)
+		do
+			inner_array.push (a_item)
+		end
+
 	forth
 		do
-			index := index + 1
+			inner_index := inner_index + 1
 		end
 
 	go_i_th (a_index: INTEGER)
 		do
-			index := a_index-1
+			inner_index := a_index-1
+		end
+
+	has (v: G): BOOLEAN
+		do
+			Result := inner_array.index_of (v) >= 0
 		end
 
 	i_th (a_index: INTEGER): G
 		do
 			Result := inner_array[a_index-1]
+		end
+
+	index : INTEGER
+		do
+			Result := inner_index + 1
+		end
+
+	index_of (v: G; i: INTEGER): INTEGER
+		do
+			Result := inner_array.index_of2 (v, i - 1) + 1
 		end
 
 	is_empty: BOOLEAN
@@ -70,7 +157,22 @@ feature -- Operations
 
 	item: G
 		do
-			Result := inner_array[index]
+			Result := inner_array[inner_index]
+		end
+
+	item_for_iteration: G
+		do
+			Result := item
+		end
+
+	last: G
+		do
+			Result := inner_array[inner_array.length-1]
+		end
+
+	put (a_item: G)
+		do
+			inner_array.set_item (a_item, inner_index)
 		end
 
 	put_front (a_item: G)
@@ -85,17 +187,39 @@ feature -- Operations
 
 	put_right (a_item: G)
 		do
-			inner_array.splice1 (index+1, 0, a_item)
+			inner_array.splice1 (inner_index+1, 0, a_item)
 		end
 
 	remove
 		do
-			inner_array.splice0 (index, 1)
+			inner_array.splice0 (inner_index, 1)
+		end
+
+	replace (a_item: G)
+		do
+			inner_array.set_item (a_item, inner_index)
 		end
 
 	start
 		do
-			index := 0
+			inner_index := 0
+		end
+
+	there_exists (test: attached FUNCTION [ANY, TUPLE [G], BOOLEAN]): BOOLEAN
+		local
+			i: INTEGER
+		do
+			from
+				i := 0
+				Result := false
+			until
+				i >= inner_array.length or Result = true
+			loop
+				if test.item([inner_array.item (i)]) then
+					Result := true
+				end
+				i := i + 1
+			end
 		end
 
 	wipe_out
@@ -106,6 +230,6 @@ feature -- Operations
 feature {NONE} -- Implementation
 
 	inner_array: attached JS_ARRAY[G]
-	index: INTEGER
+	inner_index: INTEGER
 
 end

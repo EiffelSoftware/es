@@ -32,6 +32,7 @@ feature {NONE} -- Force compilation
 	base_boolean: EIFFEL_BOOLEAN
 	base_character: EIFFEL_CHARACTER
 	base_double_math: EIFFEL_DOUBLE_MATH
+	base_function: EIFFEL_FUNCTION[ANY, attached TUPLE[ANY], BOOLEAN]
 	base_hash_table: EIFFEL_HASH_TABLE[STRING, attached STRING]
 	base_integer: EIFFEL_INTEGER
 	base_list: EIFFEL_LIST[STRING]

@@ -473,9 +473,10 @@ feature {NONE} -- Feature Processing
 			-- Validate an external feature (a stub)
 		local
 			l_external_name: STRING
-			l_arg_name: STRING
+			l_arg_name, l_arg_name2: STRING
+			len: INTEGER
 			l_test_result: STRING
-			i: INTEGER
+			i, j: INTEGER
 		do
 			l_external_name := a_feature.external_name
 			check l_external_name /= Void end
@@ -490,6 +491,11 @@ feature {NONE} -- Feature Processing
 					l_arg_name := safe_args.item_name (i)
 					check l_arg_name /= Void end
 
+					if not l_test_result.has_substring ("$" + l_arg_name) then
+						jsc_context.add_warning ("Possible malformed external",
+							"Reason: The argument `" + l_arg_name + "' doesn't appear in external or another argument is a prefix of it.")
+					end
+
 					l_test_result.replace_substring_all ("$" + l_arg_name, i.out)
 					i := i + 1
 				end
@@ -500,6 +506,36 @@ feature {NONE} -- Feature Processing
 			if l_test_result.index_of ('$', 1) /= 0 then
 				jsc_context.add_warning ("Possible malformed external", "What to do: Make sure the external `" + l_external_name + "'%N" +
 					"  is correct")
+			end
+
+				-- Arguments should not be prefixes of other arguments
+			if attached a_feature.arguments as safe_args then
+				from
+					i := safe_args.lower
+				until
+					i > safe_args.upper
+				loop
+					l_arg_name := safe_args.item_name (i)
+					check l_arg_name /= Void end
+					len := l_arg_name.count
+
+					from
+						j := i + 1
+					until
+						j > safe_args.upper
+					loop
+						l_arg_name2 := safe_args.item_name (j)
+						check l_arg_name2 /= Void end
+
+						if l_arg_name.substring (1, l_arg_name2.count) ~ l_arg_name2 or l_arg_name2.substring (1, len) ~ l_arg_name then
+							jsc_context.add_warning ("Bad parameter names for external feature",
+								"What to do: Rename `"+l_arg_name+"' or `"+l_arg_name2+"'; one is not allowed to be a prefix of the other.")
+						end
+
+						j := j + 1
+					end
+					i := i + 1
+				end
 			end
 		end
 

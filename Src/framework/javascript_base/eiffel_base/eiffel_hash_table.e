@@ -37,9 +37,23 @@ feature -- Basic Operation
 			Result := keys_index >= keys.length
 		end
 
+	at alias "@" (key: K): G
+		do
+			Result := inner_array.get_item_by_name (key.out)
+			if Result = undefined then
+				Result := null
+			end
+		end
+
 	count: INTEGER
 		do
 			Result := keys.length
+		end
+
+	current_keys: attached ARRAY [attached STRING]
+			-- Do note that this returns the keys as strings
+		do
+			Result := keys.as_eiffel_array
 		end
 
 	force (element: G; key: STRING)
@@ -58,6 +72,16 @@ feature -- Basic Operation
 			Result := inner_array.has_item_by_name (key.out)
 		end
 
+	has_key (key: K): BOOLEAN
+		do
+			Result := inner_array.has_item_by_name (key.out)
+		end
+
+	is_empty: BOOLEAN
+		do
+			Result := count = 0
+		end
+
 	item (key: K): G
 		do
 			Result := inner_array.get_item_by_name (key.out)
@@ -71,6 +95,26 @@ feature -- Basic Operation
 			Result := inner_array.get_item_by_name (keys.item (keys_index))
 		end
 
+	key_for_iteration: STRING
+		do
+			Result := keys.item (keys_index)
+		end
+
+	linear_representation: ARRAYED_LIST [G]
+		local
+			i: INTEGER
+		do
+			from
+				create Result.make (count)
+				i := 0
+			until
+				i >= keys.length
+			loop
+				Result.extend (inner_array.get_item_by_name (keys.item (i)))
+				i := i + 1
+			end
+		end
+
 	put (element: G; key: K)
 		do
 			inner_array.set_item_by_name (key.out, element)
@@ -80,6 +124,12 @@ feature -- Basic Operation
 	remove (key: K)
 		do
 			inner_array.remove_item_by_name (key.out)
+			cached_keys_busted := true
+		end
+
+	replace (element: G; key: K)
+		do
+			inner_array.set_item_by_name (key.out, element)
 			cached_keys_busted := true
 		end
 

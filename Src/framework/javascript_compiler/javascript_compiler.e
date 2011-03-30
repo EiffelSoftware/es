@@ -56,8 +56,16 @@ feature -- Operations
 			empty: classes_to_compile.is_empty
 		end
 
+	is_added (a_class: attached CLASS_C): BOOLEAN
+			-- Is `a_class' already added to be compiled?
+		do
+			Result := classes_to_compile_set.has (a_class.class_id)
+		end
+
 	add_class_to_compile (a_class: attached CLASS_C)
 			-- Add `a_class' as a class to be compiled
+		require
+			not_added_alreay: not is_added (a_class)
 		do
 			if not classes_to_compile_set.has (a_class.class_id) then
 				classes_to_compile.extend (a_class)
@@ -281,6 +289,13 @@ feature {NONE} -- Implementation
 							l_eiffel_base_classes := safe_javascript_note.substring (12, safe_javascript_note.count)
 							jsc_context.informer.add_eiffel_base_redirect (l_class_name, l_eiffel_base_classes.split (','))
 
+						end
+
+							-- Add all fictive stubs to be compiled (actually for their externals to be verified)
+						if jsc_context.informer.is_fictive_stub (safe_class.class_id) then
+							if not is_added (safe_class) then
+								add_class_to_compile (safe_class)
+							end
 						end
 					end
 				end
