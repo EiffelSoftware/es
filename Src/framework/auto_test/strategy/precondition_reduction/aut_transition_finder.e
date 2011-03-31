@@ -134,7 +134,7 @@ feature -- Basic operations
 
 			-- Class
 			if class_name /= Void then
-				create l_meta_term.make_without_type (ast_from_expression_text ("qry.class_name"), ast_from_expression_text("%""+class_name+"%""))
+				create l_meta_term.make_without_type (ast_from_expression_text ("qry.class_name"), ast_from_expression_text("%"" + class_name + "%""))
 				l_terms.extend (l_meta_term)
 			end
 

@@ -118,7 +118,7 @@ feature -- Basic operations
 				loop
 					l_query_string.append_string (once ", Prop")
 					l_query_string.append_integer (l_ast_visitor.variable_mapping_table.item_for_iteration.join_number)
-					l_query_string.append_string (once ".position")
+					l_query_string.append_string (once ".`position`")
 					l_ast_visitor.variable_mapping_table.forth
 				end
 			end
