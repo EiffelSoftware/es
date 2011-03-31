@@ -68,7 +68,7 @@ feature -- Access
 			equality_tester_set: Result.equality_tester = expression_equality_tester
 		end
 
-	relevant_expressions_with_merge (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
+	relevant_expressions_with_merging (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
 			-- Returns a set of expressions which are relevant to `a_expr' in `a_context'.
 			-- If no expressions are relevant to `a_expr' then an empty set is returned.
 			-- In this feature the algorithm merges found sets by default.
@@ -84,7 +84,7 @@ feature -- Access
 			equality_tester_set: Result.equality_tester = expression_equality_tester
 		end
 
-	relevant_expressions_without_merge (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
+	relevant_expressions_without_merging (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): DS_HASH_SET [EPA_EXPRESSION]
 			-- Returns a set of expressions which are relevant to `a_expr' in `a_context'.
 			-- If no expressions are relevant to `a_expr' then an empty set is returned.
 			-- In this feature the algorithm doesn't merge found sets by default.
@@ -166,7 +166,7 @@ feature -- Status report
 			end
 		end
 
-	is_expression_relevant_with_merge (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
+	is_expression_relevant_with_merging (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
 			-- Returns a boolean specifying if `a_expr' and `b_expr' are relevant.
 			-- In this feature the algorithm merges found sets by default.
 			-- `a_expr' specifies the first expression which should be used for comparison.
@@ -180,7 +180,7 @@ feature -- Status report
 			Result := is_expression_relevant (a_expr, b_expr, a_context, True)
 		end
 
-	is_expression_relevant_without_merge (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
+	is_expression_relevant_without_merging (a_expr: EPA_EXPRESSION; b_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT): BOOLEAN
 			-- Returns a boolean specifying if `a_expr' and `b_expr' are relevant.
 			-- In this feature the algorithm doesn't merge found sets by default.
 			-- `a_expr' specifies the first expression which should be used for comparison.
