@@ -19,6 +19,7 @@ inherit
 			process_expr_call_as
 		end
 	SEM_CONSTANTS
+	SEM_FIELD_NAMES
 
 create
 	make
@@ -298,7 +299,10 @@ feature -- Roundtrip
 			l_parameter_position: INTEGER
 			l_routine_visitor: SEMQ_QUERYABLE_QUERY_ROUTINE_VISITOR
 			l_target_and_arguments: LINKED_LIST [STRING]
+			l_property_kind: INTEGER
 		do
+			l_property_kind := current_term_property_kind
+
 			-- Routine call
 			create l_routine_visitor.make
 			l_as.process (l_routine_visitor)
@@ -307,15 +311,16 @@ feature -- Roundtrip
 
 			-- Prefix 'old'?
 			if is_next_routine_prefixed_with_old then
-				l_call.prepend (once "old ")
-				l_call_anonymous.prepend (once "old ")
+--				l_call.prepend (once "old ")
+--				l_call_anonymous.prepend (once "old ")
+				l_property_kind := property_types.at (once "pre")
 				is_next_routine_prefixed_with_old := False
 			end
 
 			-- Routine call as a string with prop_id suffix
 			create l_call_with_prop_id.make_from_string (l_call)
 			l_call_with_prop_id.append_character ('#')
-			l_call_with_prop_id.append_integer (current_term_property_kind)
+			l_call_with_prop_id.append_integer (l_property_kind)
 
 			-- Is routine call on "qry"?
 			if l_routine_visitor.target.same_string (once "qry") then
@@ -362,7 +367,7 @@ feature -- Roundtrip
 					l_where.append (once "%") AND Prop")
 					l_where.append_integer (number_of_joins)
 					l_where.append (once ".`prop_kind` = ")
-					l_where.append_integer (current_term_property_kind)
+					l_where.append_integer (l_property_kind)
 					l_where.append (once ")")
 					sql_where_clauses.extend (l_where)
 
@@ -380,7 +385,7 @@ feature -- Roundtrip
 					l_join.append (once "%") AND Prop")
 					l_join.append_integer (number_of_joins)
 					l_join.append (once ".`prop_kind` = ")
-					l_join.append_integer (current_term_property_kind)
+					l_join.append_integer (l_property_kind)
 					l_join.append (once ")")
 					sql_join_statements.extend (l_join)
 					feature_call_table.put (number_of_joins, l_call_with_prop_id)

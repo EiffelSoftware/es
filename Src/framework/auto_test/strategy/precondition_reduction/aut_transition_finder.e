@@ -257,7 +257,7 @@ feature -- Some test cases
 			create l_preconditions.make
 			create l_postconditions.make
 
-			l_preconditions.extend ("l.count > old l.count")
+			l_postconditions.extend ("l.count > old l.count")
 
 			make (l_operand_map, l_preconditions, l_postconditions, connection)
 			set_class_name ("LINKED_LIST")
