@@ -379,7 +379,7 @@ feature -- Access
 			l_feat_opds := operands_with_feature (a_feature).cloned_object
 
 				-- Get the set of queryable partition ids.
-			l_qry_partitions := queryable_partitions (l_operands, l_subexprs, a_all_in_one_queryable)
+			l_qry_partitions := queryable_partitions (a_feature, a_context_class, l_operands, l_subexprs, a_all_in_one_queryable)
 
 				-- Remove "Result", if any.
 			if a_feature.has_return_value then
@@ -540,7 +540,7 @@ feature -- Access
 			Result := [l_sql, l_unconstrained_operands]
 		end
 
-	queryable_partitions (a_operands: HASH_TABLE [INTEGER_32, STRING_8]; a_subexprs: like single_rooted_expressions; a_all_in_one: BOOLEAN): TUPLE [variables: HASH_TABLE [INTEGER, INTEGER]; properties: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]]
+	queryable_partitions (a_feature: FEATURE_I; a_class: CLASS_C; a_operands: HASH_TABLE [INTEGER_32, STRING_8]; a_subexprs: like single_rooted_expressions; a_all_in_one: BOOLEAN): TUPLE [variables: HASH_TABLE [INTEGER, INTEGER]; properties: DS_HASH_TABLE [INTEGER, EPA_EXPRESSION]]
 			-- Queryable partitions from `a_operands' and `a_subexprs'
 			-- `a_operands' are a hash-table from curly-integer operand indexes to operand indexes, for example {0} -> 0; {1} -> 1.
 			-- `a_subexprs' are single-rooted expression mentioning `a_operands'.
@@ -557,6 +557,7 @@ feature -- Access
 			l_mentioned_opds: DS_HASH_SET [INTEGER_32]
 			l_qry_partition_id: INTEGER
 			l_vcur: DS_HASH_SET_CURSOR [INTEGER]
+			l_type_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, INTEGER]
 		do
 			create l_var_parts.make (a_operands.count)
 			create l_prop_parts.make (a_subexprs.count)
@@ -586,13 +587,27 @@ feature -- Access
 
 					-- Then, we merge partitions of different operands into one partition
 					-- if those operands are mentioned in the same expression.
+				l_type_cursor := resolved_operand_types_with_feature (a_feature, a_class, a_class.constraint_actual_type).new_cursor
 				from
 					l_cursor := a_subexprs.new_cursor
 					l_cursor.start
 				until
 					l_cursor.after
 				loop
-					l_mentioned_opds := l_cursor.item.variable_indexes
+						-- An operand of type integer or boolean can be in any queryable.
+						-- So those operands are always in their own queryable partition.
+					l_mentioned_opds := l_cursor.item.variable_indexes.cloned_object
+					from
+						l_type_cursor.start
+					until
+						l_type_cursor.after
+					loop
+						if l_type_cursor.item.is_integer or else l_type_cursor.item.is_boolean then
+							l_mentioned_opds.remove (l_type_cursor.key)
+						end
+						l_type_cursor.forth
+					end
+
 					l_qry_partition_id := minimal_partition_id (l_var_parts, l_mentioned_opds)
 					l_prop_parts.force_last (l_qry_partition_id, l_cursor.key)
 					from

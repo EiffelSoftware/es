@@ -56,7 +56,11 @@ feature -- Basic operations
 				create l_feature.make (l_request.feature_to_call, l_request.target_type)
 				if l_request.response.is_normal then
 					if l_request.response.is_exception then
-						if attached {AUT_NORMAL_RESPONSE} l_request.response as l_normal_response and then l_normal_response.exception /= Void and then not l_normal_response.is_precondition_violation then
+						if
+							attached {AUT_NORMAL_RESPONSE} l_request.response as l_normal_response and then
+							l_normal_response.exception /= Void and then
+							not l_normal_response.exception.is_test_invalid
+						then
 							l_exception := l_normal_response.exception
 							if not l_exception.is_invariant_violation_on_feature_entry then
 								l_class := workbench.universe.classes_with_name (l_exception.class_name).first.compiled_representation
@@ -86,7 +90,7 @@ feature -- Basic operations
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

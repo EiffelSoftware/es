@@ -38,27 +38,32 @@ feature -- Execution
 			l_partial_state: EPA_EXPRESSION
 			l_unsatisfied_state: EPA_EXPRESSION
 			l_trans: LINKED_LIST [TUPLE [feature_name: STRING_8; operand_map: DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]]]
+			l_transition_candidates: LINKED_LIST [TUPLE [feature_name: STRING_8; operand_map: DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]]]
 		do
 				-- Retrieve objects that satisfy partial state predicate.
 			select_current_partial_predicate
 			l_partial_state := current_partial_predicate.partial
 			l_unsatisfied_state := current_partial_predicate.dropped
-			retrieve_object_combinations
-			set_should_quit (object_combinations.is_empty)
+			l_transition_candidates := transitions_to_satisfy_predicate (l_unsatisfied_state)
+			set_should_quit (l_transition_candidates.is_empty)
 			if not should_quit then
-					-- Search for transitions that can satisfy the unsatisfied part of the state `l_unsatisfied_state'.
-				across transitions_to_satisfy_predicate (l_unsatisfied_state) as l_transitions until should_quit loop
-						-- Try to call the selected feature once.
-					create l_trans.make
-					l_trans.extend (l_transitions.item)
-					try_to_satisfy_current_property_by_calling_features (l_trans)
-
-						-- Try to call the selected feature twice.
-					if not is_reduction_successful then
+				retrieve_object_combinations
+				set_should_quit (object_combinations.is_empty)
+				if not should_quit then
+						-- Search for transitions that can satisfy the unsatisfied part of the state `l_unsatisfied_state'.
+					across l_transition_candidates as l_transitions until should_quit loop
+							-- Try to call the selected feature once.
 						create l_trans.make
 						l_trans.extend (l_transitions.item)
-						l_trans.extend (l_transitions.item)
 						try_to_satisfy_current_property_by_calling_features (l_trans)
+
+							-- Try to call the selected feature twice.
+						if not is_reduction_successful then
+							create l_trans.make
+							l_trans.extend (l_transitions.item)
+							l_trans.extend (l_transitions.item)
+							try_to_satisfy_current_property_by_calling_features (l_trans)
+						end
 					end
 				end
 			end
@@ -109,6 +114,13 @@ feature{NONE} -- Implementation
 
 			create Result.make
 			Result.extend (["back", l_operand_map])
+			create Result.make
+		end
+
+	transitions (a_preconditions: LINKED_LIST [STRING]; a_postconditions: LINKED_LIST [STRING]; a_variables: HASH_TABLE [TYPE_A, STRING]): LINKED_LIST [TUPLE [feature_name: STRING; operand_map: HASH_TABLE [INTEGER, STRING]]]
+			--
+		do
+
 		end
 
 	object_combinations: LINKED_LIST [SEMQ_RESULT]

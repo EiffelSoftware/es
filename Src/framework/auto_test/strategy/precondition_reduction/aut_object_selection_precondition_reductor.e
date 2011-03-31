@@ -68,7 +68,6 @@ feature -- Execution
 					execute_task (l_satisfier)
 
 					if l_satisfier.is_current_predicate_satisfied then
-						progress_log_manager.put_string (" [Satisfied]")
 						set_should_quit (True)
 						set_is_reduction_successful (True)
 					else

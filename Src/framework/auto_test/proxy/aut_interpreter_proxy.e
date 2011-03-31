@@ -2233,7 +2233,11 @@ feature -- Objec state retrieval
 			if attached {AUT_CALL_BASED_REQUEST} a_request as l_request then
 				if l_request.response.is_normal then
 					if l_request.response.is_exception then
-						if attached {AUT_NORMAL_RESPONSE} l_request.response as l_normal_response and then l_normal_response.exception /= Void and then not l_normal_response.is_precondition_violation then
+						if
+							attached {AUT_NORMAL_RESPONSE} l_request.response as l_normal_response and then
+							l_normal_response.exception /= Void and then
+							not l_normal_response.exception.is_test_invalid
+						then
 							l_exception := l_normal_response.exception
 							if not l_exception.is_invariant_violation_on_feature_entry then
 								Result := True
