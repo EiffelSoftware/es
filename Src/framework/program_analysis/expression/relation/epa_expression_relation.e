@@ -12,8 +12,6 @@ inherit
 
 	EPA_UTILITY
 
-	EPA_CONTRACT_EXTRACTOR
-
 feature -- Access
 
 	relevant_expressions (a_expr: EPA_EXPRESSION; a_context: ETR_CONTEXT; a_should_merge: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -28,15 +26,22 @@ feature -- Access
 			a_exp_not_void: a_expr /= Void
 			a_context_not_void: a_context /= Void
 		local
-			i: INTEGER
-			l_empty_set: EPA_HASH_SET [EPA_EXPRESSION]
+			i, l_count: INTEGER
+			l_empty_set, l_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_relevant_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
+			l_finder: EPA_RELEVANT_EXPRESSION_FINDER
+			l_merger: EPA_RELEVANT_EXPRESSION_MERGER
 		do
-			find_relevant_expressions (a_context)
+			create l_finder.make (a_context)
+			l_finder.find
+			l_relevant_expression_sets := l_finder.relevant_expression_sets
 
 			if
 				a_should_merge
 			then
-				merge_not_disjoint_sets
+				create l_merger.make (l_relevant_expression_sets)
+				l_merger.merge_not_disjoint_sets
+				l_relevant_expression_sets := l_merger.relevant_expression_sets
 			end
 
 			-- Set Result
@@ -45,13 +50,16 @@ feature -- Access
 			Result.set_equality_tester (expression_equality_tester)
 			from
 				i := 1
+				l_count := l_relevant_expression_sets.count
 			until
-				i > relevant_expression_sets.count
+				i > l_count
 			loop
+				l_set := l_relevant_expression_sets.i_th (i)
 				if
-					relevant_expression_sets.i_th (i) /= Void and then relevant_expression_sets.i_th (i).has (a_expr)
+					l_set /= Void and then
+					l_set.has (a_expr)
 				then
-					Result.merge (relevant_expression_sets.i_th (i))
+					Result.merge (l_set)
 				end
 				i := i + 1
 			end
@@ -121,24 +129,36 @@ feature -- Status report
 			b_expr_not_void: b_expr /= Void
 			a_context_not_void: a_context /= Void
 		local
-			i: INTEGER
+			i, l_count: INTEGER
+			l_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_relevant_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
+			l_finder: EPA_RELEVANT_EXPRESSION_FINDER
+			l_merger: EPA_RELEVANT_EXPRESSION_MERGER
 		do
-			find_relevant_expressions (a_context)
+			create l_finder.make (a_context)
+			l_finder.find
+			l_relevant_expression_sets := l_finder.relevant_expression_sets
 
 			if
 				a_should_merge
 			then
-				merge_not_disjoint_sets
+				create l_merger.make (l_relevant_expression_sets)
+				l_merger.merge_not_disjoint_sets
+				l_relevant_expression_sets := l_merger.relevant_expression_sets
 			end
 
 			-- Set Result
 			from
 				i := 1
+				l_count := l_relevant_expression_sets.count
 			until
-				i > relevant_expression_sets.count or Result
+				i > l_count or Result
 			loop
+				l_set := l_relevant_expression_sets.i_th (i)
 				if
-					relevant_expression_sets.i_th (i) /= Void and then relevant_expression_sets.i_th (i).has (a_expr) and then relevant_expression_sets.i_th (i).has (b_expr)
+					l_set /= Void and then
+					l_set.has (a_expr) and then
+					l_set.has (b_expr)
 				then
 					Result := True
 				end
@@ -218,170 +238,6 @@ feature -- Helper features
 				end
 				l_cursor.forth
 			end
-		end
-
-feature {NONE} -- Implementation
-
-	relevant_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
-			-- Data structure containing sets of relevant expressions.
-
-	find_relevant_expressions (a_context: ETR_CONTEXT)
-			-- Finds all relevant expression in `a_context'.
-		require
-			a_context_not_void: a_context /= Void
-		local
-			l_relevancy_finder: EPA_RELEVANT_EXPRESSION_FINDER
-			l_feature: FEATURE_I
-			l_features: LINKED_LIST [FEATURE_I]
-			l_selector: EPA_FEATURE_SELECTOR
-		do
-			create l_relevancy_finder.make (a_context)
-
-			if attached {ETR_CLASS_CONTEXT} a_context as l_class_ctxt then
-				l_relevancy_finder.set_context_class (l_class_ctxt.context_class)
-				l_relevancy_finder.set_written_class (l_class_ctxt.written_class)
-				create l_selector.default_create
-				l_features := l_selector.features_from_class (l_class_ctxt.written_class)
-
-				-- Process all features of `a_context'
-				from
-					l_features.start
-				until
-					l_features.after
-				loop
-					l_feature := l_features.item_for_iteration
-
-					l_relevancy_finder.set_context_feature (l_feature)
-					l_relevancy_finder.set_written_class (l_feature.written_class)
-
-					-- Process feature
-					l_relevancy_finder.find (l_feature.e_feature.ast)
-
-					-- Process preconditions
-					across precondition_of_feature (l_feature, l_class_ctxt.context_class) as l_preconditions loop
-						l_relevancy_finder.find (l_preconditions.item.ast)
-					end
-
-					-- Process postconditions
-					across postcondition_of_feature (l_feature, l_class_ctxt.context_class) as l_postconditions loop
-						l_relevancy_finder.find (l_postconditions.item.ast)
-					end
-					l_features.forth
-				end
-
-				-- Process invariants
-				across invariant_of_class (l_class_ctxt.context_class) as l_invariants loop
-					l_relevancy_finder.find (l_invariants.item.ast)
-				end
-			elseif attached {ETR_FEATURE_CONTEXT} a_context as l_feat_ctxt then
-				l_feature := l_feat_ctxt.written_feature
-				l_relevancy_finder.set_context_feature (l_feat_ctxt.written_feature)
-				l_relevancy_finder.set_written_class (l_feat_ctxt.written_feature.written_class)
-				l_relevancy_finder.set_context_class (l_feat_ctxt.context_class)
-
-				-- Process feature
-				l_relevancy_finder.find (l_feature.e_feature.ast)
-
-				-- Process preconditions
-				across precondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_preconditions loop
-					l_relevancy_finder.find (l_preconditions.item.ast)
-				end
-
-				-- Process postconditions
-				across postcondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_postconditions loop
-					l_relevancy_finder.find (l_postconditions.item.ast)
-				end
-			end
-			relevant_expression_sets := l_relevancy_finder.relevant_expression_sets
-		ensure
-			relevant_expression_sets_not_void: relevant_expression_sets /= Void
-		end
-
-	merge_not_disjoint_sets
-			-- Merges the sets of relevant expressions (`relevant_expression_sets') if two different sets are not disjoint.
-		require
-			relevant_expression_sets_not_void: relevant_expression_sets /= Void
-		local
-			m,n: INTEGER
-			l_count: INTEGER
-			l_sets, l_edited_sets: like relevant_expression_sets
-		do
-			l_sets := relevant_expression_sets
-			create l_edited_sets.make (relevant_expression_sets.count)
-			across relevant_expression_sets as l_revs loop
-				l_edited_sets.extend (l_revs.item.cloned_object)
-			end
-			remove_unnecessary_expressions (l_edited_sets)
-			l_count := l_edited_sets.count
-
-			from
-				m := 1
-			until
-				m > l_count
-			loop
-				from
-					n := m + 1
-				until
-					n > l_count
-				loop
-
-					-- Merge sets
-					if
-						m /= n and then
-						l_edited_sets.i_th (m) /= Void and then
-						l_edited_sets.i_th (n) /= Void and then
-						not l_edited_sets.i_th (m).is_disjoint (l_edited_sets.i_th (n))
-					then
-						l_sets.i_th (m).merge (l_sets.i_th (n))
-						l_sets.put_i_th (Void, n)
-						l_edited_sets.i_th (m).merge (l_edited_sets.i_th (n))
-						l_edited_sets.put_i_th (Void, n)
-						n := m + 1
-					else
-						n := n + 1
-					end
-				end
-
-				-- Find the next set which may be merged with another set.
-				from
-					m := m + 1
-				until
-				   m > l_count or else l_edited_sets.i_th (m) /= Void
-				loop
-					m := m + 1
-				end
-			end
-		end
-
-	remove_unnecessary_expressions (a_expression_sets: ARRAYED_LIST [EPA_HASH_SET [EPA_EXPRESSION]])
-			-- Removes the unnecessary expressions from `a_sets' namely
-			-- constants and the expression "Void".
-		require
-			a_expression_sets_not_void: a_expression_sets /= Void
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				i > a_expression_sets.count
-			loop
-				a_expression_sets.put_i_th (set_without_unnecessary_expressions (a_expression_sets.i_th (i)), i)
-				i := i + 1
-			end
-		end
-
-	set_without_unnecessary_expressions (a_expression_set: EPA_HASH_SET [EPA_EXPRESSION]): EPA_HASH_SET [EPA_EXPRESSION]
-			-- A set whose elements are non-constant and non-void expressions from `a_set'.
-		require
-			a_expression_set_not_void: a_expression_set /= Void
-		do
-			create Result.make (a_expression_set.count)
-			Result.set_equality_tester (expression_equality_tester)
-			a_expression_set.do_if (agent Result.force_last, agent (a_expr: EPA_EXPRESSION): BOOLEAN do Result := not a_expr.is_constant and not a_expr.is_void and not a_expr.is_result end)
-		ensure
-			Result_not_void: Result /= Void
-			equality_tester_set: Result.equality_tester = expression_equality_tester
 		end
 
 end

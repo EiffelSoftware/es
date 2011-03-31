@@ -21,6 +21,8 @@ inherit
 
 	EPA_SHARED_EQUALITY_TESTERS
 
+	EPA_CONTRACT_EXTRACTOR
+
 create
 	make
 
@@ -89,15 +91,76 @@ feature -- Element Change
 
 feature -- Basic operation
 
-	find (a_ast: AST_EIFFEL)
-			-- Find relavent rexpressions from `a_ast', make
-			-- result available in `revelant_expression_sets'.
+	find
+			-- Find relevant expressions from `context', make
+			-- result available in `relevant_expression_sets'.
 		local
-			l_text: STRING
+			l_feature: FEATURE_I
+			l_features: LINKED_LIST [FEATURE_I]
+			l_selector: EPA_FEATURE_SELECTOR
+			l_ast: AST_EIFFEL
 		do
-			l_text := text_from_ast (a_ast)
-			if not l_text.has_substring (once "attached") then
-				a_ast.process (Current)
+			if attached {ETR_CLASS_CONTEXT} context as l_class_ctxt then
+				set_context_class (l_class_ctxt.context_class)
+				set_written_class (l_class_ctxt.written_class)
+				create l_selector.default_create
+				l_features := l_selector.features_from_class (l_class_ctxt.written_class)
+
+				-- Process all features of `a_context'
+				from
+					l_features.start
+				until
+					l_features.after
+				loop
+					l_feature := l_features.item_for_iteration
+
+					set_context_feature (l_feature)
+					set_written_class (l_feature.written_class)
+
+					-- Process feature
+					l_ast := l_feature.e_feature.ast
+					l_ast.process (Current)
+
+					-- Process preconditions
+					across precondition_of_feature (l_feature, l_class_ctxt.context_class) as l_preconditions loop
+						l_ast := l_preconditions.item.ast
+						l_ast.process (Current)
+					end
+
+					-- Process postconditions
+					across postcondition_of_feature (l_feature, l_class_ctxt.context_class) as l_postconditions loop
+						l_ast := l_postconditions.item.ast
+						l_ast.process (Current)
+					end
+					l_features.forth
+				end
+
+				-- Process invariants
+				across invariant_of_class (l_class_ctxt.context_class) as l_invariants loop
+					l_ast := l_invariants.item.ast
+					l_ast.process (Current)
+				end
+			elseif attached {ETR_FEATURE_CONTEXT} context as l_feat_ctxt then
+				l_feature := l_feat_ctxt.written_feature
+				set_context_feature (l_feat_ctxt.written_feature)
+				set_written_class (l_feat_ctxt.written_feature.written_class)
+				set_context_class (l_feat_ctxt.context_class)
+
+				-- Process feature
+				l_ast := l_feature.e_feature.ast
+				l_ast.process (Current)
+
+				-- Process preconditions
+				across precondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_preconditions loop
+					l_ast := l_preconditions.item.ast
+					l_ast.process (Current)
+				end
+
+				-- Process postconditions
+				across postcondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_postconditions loop
+					l_ast := l_postconditions.item.ast
+					l_ast.process (Current)
+				end
 			end
 		end
 
@@ -198,7 +261,7 @@ feature {NONE} -- Implementation
 	written_class: CLASS_C
 			-- Written class for the visited AST.
 
-	context_feature: detachable FEATURE_I
+	context_feature: FEATURE_I
 			-- Context feature for the visited AST.
 
 	context: ETR_CONTEXT
