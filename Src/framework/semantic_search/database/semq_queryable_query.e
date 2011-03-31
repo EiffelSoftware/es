@@ -59,6 +59,18 @@ feature -- Access
 			create Result.make (next_term_return_position)
 		end
 
+	is_group_by_feature_and_positions: BOOLEAN
+			-- If True, results will only contain one combination
+			-- of each feature name and variable positions
+
+feature -- Parameters
+
+	set_group_by_feature_and_positions (a_bool: BOOLEAN)
+			-- Set `is_group_by_feature_and_positions'
+		do
+			is_group_by_feature_and_positions := a_bool
+		end
+
 feature{NONE} -- Setting
 
 	set_queryable (a_queryable: like queryable)

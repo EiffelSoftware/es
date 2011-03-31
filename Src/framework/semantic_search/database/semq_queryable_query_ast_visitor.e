@@ -83,6 +83,9 @@ feature -- State
 	is_operator_expression: BOOLEAN
 		-- Current expression contains an operator?
 
+	is_next_routine_prefixed_with_old: BOOLEAN
+		-- Was there just a 'old' unary operator?
+
 feature -- Prepare and Finish Term
 
 	prepare_term (a_prop_kind: INTEGER)
@@ -139,7 +142,6 @@ feature -- Variable Term Helpers
 			l_clause: STRING
 		do
 			create l_clause.make_from_string (last_appeared_variable)
-			l_clause.append_character ('.')
 			l_clause.append (once ".type1 IN (SELECT `type_id` FROM Conformances WHERE `conf_type_id` IN (SELECT `type_id` FROM Types WHERE `type_name` = %"")
 			l_clause.append (a_type)
 			l_clause.append (once "%"))")
@@ -219,11 +221,18 @@ feature -- Roundtrip
 	process_unary_as (l_as: UNARY_AS)
 		do
 			is_operator_expression := True
-			sql_where_temp_clause.append (l_as.operator_name)
-			sql_where_temp_clause.append_character (' ')
-			sql_where_temp_clause.append_character ('(')
-			l_as.expr.process (Current)
-			sql_where_temp_clause.append_character (')')
+			if l_as.operator_name.is_equal (once "old") then
+				is_next_routine_prefixed_with_old := True
+				sql_where_temp_clause.append_character ('(')
+				l_as.expr.process (Current)
+				sql_where_temp_clause.append_character (')')
+			else
+				sql_where_temp_clause.append (l_as.operator_name)
+				sql_where_temp_clause.append_character (' ')
+				sql_where_temp_clause.append_character ('(')
+				l_as.expr.process (Current)
+				sql_where_temp_clause.append_character (')')
+			end
 		end
 
 	process_binary_as (l_as: BINARY_AS)
@@ -296,6 +305,13 @@ feature -- Roundtrip
 			l_call := l_routine_visitor.call_as_string
 			l_call_anonymous := l_routine_visitor.call_as_string_anonymous
 
+			-- Prefix 'old'?
+			if is_next_routine_prefixed_with_old then
+				l_call.prepend (once "old ")
+				l_call_anonymous.prepend (once "old ")
+				is_next_routine_prefixed_with_old := False
+			end
+
 			-- Routine call as a string with prop_id suffix
 			create l_call_with_prop_id.make_from_string (l_call)
 			l_call_with_prop_id.append_character ('#')
@@ -311,7 +327,7 @@ feature -- Roundtrip
 
 				-- Check if this routine call has already appared, save a join
 				if feature_call_table.has (l_call_with_prop_id) then
-					sql_where_temp_clause.append_integer (feature_call_table.at (l_call))
+					sql_where_temp_clause.append_integer (feature_call_table.at (l_call_with_prop_id))
 				-- New routine call, add join
 				else
 					sql_where_temp_clause.append_integer (number_of_joins)

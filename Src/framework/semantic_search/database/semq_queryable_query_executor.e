@@ -108,6 +108,21 @@ feature -- Basic operations
 				end
 			end
 
+			-- GROUP BY
+			if a_query.is_group_by_feature_and_positions then
+				l_query_string.append (once "%NGROUP BY qry.feature_name")
+				from
+					l_ast_visitor.variable_mapping_table.start
+				until
+					l_ast_visitor.variable_mapping_table.after
+				loop
+					l_query_string.append_string (once ", Prop")
+					l_query_string.append_integer (l_ast_visitor.variable_mapping_table.item_for_iteration.join_number)
+					l_query_string.append_string (once ".position")
+					l_ast_visitor.variable_mapping_table.forth
+				end
+			end
+
 			-- Debug
 			io.put_string (l_query_string)
 			io.put_character ('%N')
@@ -115,24 +130,24 @@ feature -- Basic operations
 
 			-- Execute query and store results
 			create last_results.make
---			connection.execute_query (l_query_string)
---			from
---				connection.last_result.start
---			until
---				connection.last_result.after
---			loop
---				create l_result_array.make_filled (Void, 1, connection.last_result.column_count)
---				from
---					l_column_ith := 1
---				until
---					l_column_ith > connection.last_result.column_count
---				loop
---					l_result_array.put (connection.last_result.at (l_column_ith), l_column_ith)
---					l_column_ith := l_column_ith + 1
---				end
---				last_results.extend (l_result_array)
---				connection.last_result.forth
---			end
+			connection.execute_query (l_query_string)
+			from
+				connection.last_result.start
+			until
+				connection.last_result.after
+			loop
+				create l_result_array.make_filled (Void, 1, connection.last_result.column_count)
+				from
+					l_column_ith := 1
+				until
+					l_column_ith > connection.last_result.column_count
+				loop
+					l_result_array.put (connection.last_result.at (l_column_ith), l_column_ith)
+					l_column_ith := l_column_ith + 1
+				end
+				last_results.extend (l_result_array)
+				connection.last_result.forth
+			end
 		end
 
 end

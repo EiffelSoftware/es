@@ -77,9 +77,99 @@ feature -- Basic operations
 	find
 			-- Find transitions through `connection' and
 			-- make results available in `last_transitions'.
+		local
+			l_executor: SEMQ_QUERYABLE_QUERY_EXECUTOR
+			l_query: SEMQ_QUERYABLE_QUERY
+			l_terms: LINKED_LIST [SEMQ_TERM]
+			l_equation_term: SEMQ_EQUATION_TERM
+			l_meta_term: SEMQ_META_TERM
+			l_variable_term: SEMQ_VARIABLE_TERM
+			l_transition_tuple: TUPLE [feature_name: STRING; operand_map: HASH_TABLE [INTEGER, STRING]]
+			l_operand_map: HASH_TABLE [INTEGER, STRING]
+			l_i: INTEGER
 		do
 			create last_transitions.make
-			-- To implement.
+			create l_executor.make (connection)
+			create l_terms.make
+
+			-- Feature
+			create l_meta_term.make_without_type (ast_from_expression_text ("qry.feature_name"), Void)
+			l_terms.extend (l_meta_term)
+
+			-- Variables
+			from
+				variables.start
+			until
+				variables.after
+			loop
+				create l_variable_term.make (ast_from_expression_text (variables.key_for_iteration))
+				l_variable_term.set_type (variables.item_for_iteration)
+				l_terms.extend (l_variable_term)
+				variables.forth
+			end
+
+			-- Preconditions
+			from
+				preconditions.start
+			until
+				preconditions.after
+			loop
+				create l_equation_term.make (ast_from_expression_text (preconditions.item), ast_from_expression_text ("True"))
+				l_equation_term.set_is_precondition (True)
+				l_terms.extend (l_equation_term)
+				preconditions.forth
+			end
+
+			-- Postconditions
+			from
+				postconditions.start
+			until
+				postconditions.after
+			loop
+				create l_equation_term.make (ast_from_expression_text (postconditions.item), ast_from_expression_text ("True"))
+				l_equation_term.set_is_postcondition (True)
+				l_terms.extend (l_equation_term)
+				postconditions.forth
+			end
+
+			-- Class
+			if class_name /= Void then
+				create l_meta_term.make_without_type (ast_from_expression_text ("qry.class_name"), ast_from_expression_text("%""+class_name+"%""))
+				l_terms.extend (l_meta_term)
+			end
+
+			-- Execute
+			create l_query.make_with_terms (l_terms)
+			l_query.set_group_by_feature_and_positions (True)
+			l_executor.execute (l_query)
+
+			-- Fetch results
+			from
+				l_executor.last_results.start
+			until
+				l_executor.last_results.after
+			loop
+				create l_transition_tuple.make
+				create l_operand_map.make (variables.count)
+				l_transition_tuple.operand_map := l_operand_map
+				-- Feature name is in the first column
+				l_transition_tuple.feature_name := l_executor.last_results.item.at (1)
+				io.put_string ("Feature: " + l_transition_tuple.feature_name + "%N")
+				-- Position of i-th variable is in the '1 + i*6'-th column
+				from
+					l_i := 1
+					variables.start
+				until
+					variables.after
+				loop
+					l_transition_tuple.operand_map.put (l_executor.last_results.item.at (1 + l_i*6).to_integer, variables.key_for_iteration)
+					io.put_string ("%TVariable: " + variables.key_for_iteration + " -> " + l_executor.last_results.item.at (1 + l_i*6) + "%N")
+					l_i := l_i + 1
+					variables.forth
+				end
+				last_transitions.extend (l_transition_tuple)
+				l_executor.last_results.forth
+			end
 		end
 
 feature -- Setting
@@ -116,7 +206,10 @@ feature -- Some test cases
 			create l_postconditions.make
 
 			l_preconditions.extend ("not l.has (v)")
-			l_preconditions.extend ("l.has (v)")
+			l_postconditions.extend ("l.has (v)")
+
+			make (l_operand_map, l_preconditions, l_postconditions, connection)
+			set_class_name ("LINKED_LIST")
 		end
 
 	test_2
@@ -139,7 +232,10 @@ feature -- Some test cases
 			create l_postconditions.make
 
 			l_preconditions.extend ("l.has (v)")
-			l_preconditions.extend ("not l.has (v)")
+			l_postconditions.extend ("not l.has (v)")
+
+			make (l_operand_map, l_preconditions, l_postconditions, connection)
+			set_class_name ("LINKED_LIST")
 		end
 
 	test_3
@@ -162,6 +258,9 @@ feature -- Some test cases
 			create l_postconditions.make
 
 			l_preconditions.extend ("l.count > old l.count")
+
+			make (l_operand_map, l_preconditions, l_postconditions, connection)
+			set_class_name ("LINKED_LIST")
 		end
 
 ;note

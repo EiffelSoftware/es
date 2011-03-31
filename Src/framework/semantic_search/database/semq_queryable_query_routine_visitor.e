@@ -108,7 +108,7 @@ feature -- Roundtrip
 				target := l_as.access_name_8
 
 			-- Feature Name
-			elseif argument_count = 1 then
+			elseif feature_name.is_empty then
 				feature_name := l_as.access_name_8
 				argument_count := argument_count - 1 -- Fix
 
