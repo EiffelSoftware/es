@@ -611,7 +611,8 @@ feature {BYTE_NODE} -- Visitors
 
 				l_class := jsc_context.informer.redirect_class (l_class, 0)
 
-				if not jsc_context.informer.is_fictive_stub (l_class.class_id) then
+				if not jsc_context.informer.is_fictive_stub (l_class.class_id)
+					and l_class.assertion_level.is_invariant then
 					invariant_checks.extend (l_target_name)
 				end
 			end
@@ -864,7 +865,9 @@ feature {BYTE_NODE} -- Visitors
 						output.put (")")
 					output.unindent
 
-					output.put ("); }")
+					output.put (");")
+					output.put_new_line
+					output.put_line ("};")
 				else
 					output.put ("function (")
 					output.put_list (l_outer_arguments, ", ")
@@ -887,11 +890,13 @@ feature {BYTE_NODE} -- Visitors
 					output.put (jsc_context.name_mapper.feature_name (l_feature, false))
 					output.put ("(")
 					output.put_list (l_inner_arguments, ", ")
-					output.put ("); }")
+					output.put (");")
+					output.put_new_line
+					output.put_line ("};")
 				end
-
 			output.unindent
 
+			output.put_indentation
 			output.put ("}(")
 			output.put_data_list (l_closed_arguments, ", ")
 			output.put ("))")

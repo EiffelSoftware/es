@@ -80,7 +80,7 @@ feature -- Basic Operation
 			output.put_indentation
 			output.put ("if(!(")
 			output.put_data (l_expr)
-			output.put (")) throw %"")
+			output.put (")) { throw %"")
 			output.put (assertion_name)
 			output.put (" ")
 			if attached assertion_tag as tag then
@@ -95,7 +95,7 @@ feature -- Basic Operation
 				output.put (jsc_context.current_feature_name)
 			end
 
-			output.put (" does not hold.%";")
+			output.put (" does not hold.%"; }")
 			output.put_new_line
 		end
 
@@ -141,7 +141,8 @@ feature -- Processing
 
 				l_class := jsc_context.informer.redirect_class (l_class, a_node.line_number)
 
-				if not jsc_context.informer.is_fictive_stub (l_class.class_id) then
+				if not jsc_context.informer.is_fictive_stub (l_class.class_id)
+					and l_class.assertion_level.is_invariant then
 					output.push ("")
 						process_assign_target (l_target)
 						invariant_checks.extend (output.data)
@@ -161,16 +162,18 @@ feature -- Processing
 		do
 			jsc_context.push_line_number (a_node.line_number)
 			if attached a_node.check_list as safe_check_list then
-				from
-					safe_check_list.start
-				until
-					safe_check_list.after
-				loop
-					l_check := safe_check_list.item
-					check l_check /= Void end
+				if jsc_context.current_class.assertion_level.is_check then
+					from
+						safe_check_list.start
+					until
+						safe_check_list.after
+					loop
+						l_check := safe_check_list.item
+						check l_check /= Void end
 
-					process_assertion (l_check, "Assertion", Void)
-					safe_check_list.forth
+						process_assertion (l_check, "Assertion", Void)
+						safe_check_list.forth
+					end
 				end
 			end
 			jsc_context.pop_line_number

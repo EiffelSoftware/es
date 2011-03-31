@@ -146,7 +146,6 @@ feature -- Basic Operations
 		local
 			l_byte_server: BYTE_SERVER
 			l_byte_code: BYTE_CODE
-
 			body, postcondition, rescue_code: JSC_WRITER_DATA
 		do
 			l_byte_server := byte_server
@@ -197,14 +196,20 @@ feature -- Basic Operations
 					end
 				end
 
-					-- Process the preconditions and write them to output
-				write_preconditions (l_byte_code)
+				if attached a_feature.written_class as safe_feature_class then
+					if safe_feature_class.assertion_level.is_precondition then
+							-- Process the preconditions and write them to output
+						write_preconditions (l_byte_code)
+					end
 
-					-- Process the postconditions and save them in `postcondition'
-				output.push (output.indentation)
-					write_postconditions (l_byte_code)
-					postcondition := output.data
-				output.pop
+					if safe_feature_class.assertion_level.is_postcondition then
+						-- Process the postconditions and save them in `postcondition'
+						output.push (output.indentation)
+							write_postconditions (l_byte_code)
+							postcondition := output.data
+						output.pop
+					end
+				end
 
 				if a_feature.has_return_value or l_byte_code.local_count > 0 or instruction_writer.this_used_in_closure
 					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0
