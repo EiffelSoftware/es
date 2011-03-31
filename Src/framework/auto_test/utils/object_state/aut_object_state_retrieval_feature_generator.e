@@ -294,7 +294,7 @@ feature{NONE} -- Implementation
 						l_text.append_character (')')
 						l_text.append_character ('%N')
 					end
-					
+
 						-- Generate attribute queries.
 					l_attrs_by_target.search (l_var_name)
 					if l_attrs_by_target.found then
@@ -389,39 +389,41 @@ feature{NONE} -- Implementation
 			l_opd_index1, l_opd_index2: INTEGER
 			l_pairs: LINKED_LIST [TUPLE [expression1: EPA_EXPRESSION; expression2: EPA_EXPRESSION]]
 		do
-			if a_for_reference then
-				l_pairs := reference_equality_comparisons
-			else
-				l_pairs := object_equality_comparisons
-			end
-			l_opd_map := operands_of_feature (feature_)
-			l_text := feature_text
-			across l_pairs as l_comparisons loop
-				if l_opd_map.has (l_comparisons.item.expression1.text) and then l_opd_map.has (l_comparisons.item.expression2.text) then
-					l_opd_index1 := l_opd_map.item (l_comparisons.item.expression1.text)
-					l_opd_index2 := l_opd_map.item (l_comparisons.item.expression2.text)
-					if a_for_reference then
-						l_text.append (once "record_reference_equality_comparison_value (%"")
-					else
-						l_text.append (once "record_object_equality_comparison_value (%"")
-					end
-					l_text.append (double_square_surrounded_integer (l_opd_index1))
-					if a_for_reference then
-						l_text.append (once " = ")
-					else
-						l_text.append (once " ~ ")
-					end
+			if class_ /= Void and then feature_ /= Void then
+				if a_for_reference then
+					l_pairs := reference_equality_comparisons
+				else
+					l_pairs := object_equality_comparisons
+				end
+				l_opd_map := operands_of_feature (feature_)
+				l_text := feature_text
+				across l_pairs as l_comparisons loop
+					if l_opd_map.has (l_comparisons.item.expression1.text) and then l_opd_map.has (l_comparisons.item.expression2.text) then
+						l_opd_index1 := l_opd_map.item (l_comparisons.item.expression1.text)
+						l_opd_index2 := l_opd_map.item (l_comparisons.item.expression2.text)
+						if a_for_reference then
+							l_text.append (once "record_reference_equality_comparison_value (%"")
+						else
+							l_text.append (once "record_object_equality_comparison_value (%"")
+						end
+						l_text.append (double_square_surrounded_integer (l_opd_index1))
+						if a_for_reference then
+							l_text.append (once " = ")
+						else
+							l_text.append (once " ~ ")
+						end
 
-					l_text.append (double_square_surrounded_integer (l_opd_index2))
-					l_text.append_character ('%"')
-					l_text.append_character (',')
-					l_text.append_character (' ')
-					l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index1.out)
-					l_text.append_character (',')
-					l_text.append_character (' ')
-					l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index2.out)
-					l_text.append_character (')')
-					l_text.append_character ('%N')
+						l_text.append (double_square_surrounded_integer (l_opd_index2))
+						l_text.append_character ('%"')
+						l_text.append_character (',')
+						l_text.append_character (' ')
+						l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index1.out)
+						l_text.append_character (',')
+						l_text.append_character (' ')
+						l_text.append ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_opd_index2.out)
+						l_text.append_character (')')
+						l_text.append_character ('%N')
+					end
 				end
 			end
 		end

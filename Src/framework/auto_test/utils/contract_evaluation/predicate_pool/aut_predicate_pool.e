@@ -343,6 +343,8 @@ feature -- Basic operations
 			l_tried_linear_context: DS_HASH_SET [STRING]
 			l_fixed_vars: like fixed_operand_indexes
 			l_solution_cur: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
+			l_tries: INTEGER
+			l_forced_quit: BOOLEAN
 		do
 			create last_candidates.make
 			l_last_candidates := last_candidates
@@ -411,6 +413,7 @@ feature -- Basic operations
 
 								if l_cursors.is_last then
 										-- We found one candidate.
+									l_tries := l_tries + 1
 									l_last_candidate := l_candidate.twin
 									l_fixed_vars := fixed_operand_indexes (l_candidate)
 									fix_free_variables (l_last_candidate, a_initial_candidate)
@@ -456,11 +459,21 @@ feature -- Basic operations
 									l_cursor.start
 								end
 							end
+								-- I introduced this try counts because I encountered a non-terminating problem
+								-- in this back-tracking algorithm. I don't have enough time to look into this
+								-- problem right now. This try count is just to make sure AutoTest won't hang here,
+								-- with the risk that we may fail to satisfy some preconditions because we jump out
+								-- of the loop too early.
+							fixme ("Fixe me later. 31.03.2011 Jasonw")
+							if l_tries > 300 then
+								l_done := True
+								l_forced_quit := True
+							end
 						end
 					end
 				end
 
-				if l_count = 0 and then l_is_partial_satisfaction_enabled then
+				if l_count = 0 and then l_is_partial_satisfaction_enabled and then not l_forced_quit then
 					last_partial_candidate := l_partial_candidate
 				else
 					last_partial_candidate := Void
