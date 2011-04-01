@@ -27,7 +27,7 @@ feature -- Creation procedure
 
 feature -- Basic operation
 
-	merge_not_disjoint_sets
+	merge
 			-- Merges the sets of relevant expressions (`relevant_expression_sets'),
 			-- if two different sets are not disjoint.
 		require

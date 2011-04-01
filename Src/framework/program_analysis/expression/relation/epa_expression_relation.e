@@ -40,7 +40,7 @@ feature -- Access
 				a_should_merge
 			then
 				create l_merger.make (l_relevant_expression_sets)
-				l_merger.merge_not_disjoint_sets
+				l_merger.merge
 				l_relevant_expression_sets := l_merger.relevant_expression_sets
 			end
 
@@ -143,7 +143,7 @@ feature -- Status report
 				a_should_merge
 			then
 				create l_merger.make (l_relevant_expression_sets)
-				l_merger.merge_not_disjoint_sets
+				l_merger.merge
 				l_relevant_expression_sets := l_merger.relevant_expression_sets
 			end
 
