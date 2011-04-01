@@ -1,8 +1,8 @@
 CREATE TABLE  `semantic_search`.`Queryables` (
   `qry_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `qry_kind` tinyint(3) unsigned NOT NULL,
-  `class` varchar(128) DEFAULT NULL,
-  `feature` varchar(128) DEFAULT NULL,
+  `class_name` varchar(128) DEFAULT NULL,
+  `feature_name` varchar(128) DEFAULT NULL,
   `library` varchar(128) DEFAULT NULL,
   `transition_status` tinyint(3) unsigned DEFAULT NULL,
   `hit_breakpoints` varchar(2048),
