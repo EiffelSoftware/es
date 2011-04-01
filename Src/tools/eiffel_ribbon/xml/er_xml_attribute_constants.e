@@ -28,4 +28,16 @@ feature -- Dropdown gallery
 
 	gripper: STRING = "Gripper"
 
+feature -- In ribbon gallery
+
+	max_rows: STRING = "MaxRows"
+
+	max_columns: STRING = "MaxColumns"
+
+feature -- Recent items
+
+	enable_pinning: STRING = "EnablePinning"
+
+	max_count: STRING = "MaxCount"
+
 end

@@ -22,6 +22,10 @@ feature -- Query, the value of string is what should be written to XML
 
 	application_menu: STRING = "ApplicationMenu"
 
+	application_menu_recent_items: STRING = "ApplicationMenu.RecentItems"
+
+	recent_items: STRING = "RecentItems"
+
 	menu_group: STRING = "MenuGroup"
 
 	ribbon_contextual_tabs: STRING = "Ribbon.ContextualTabs"
@@ -59,6 +63,8 @@ feature -- ALl types under group
 	split_button: STRING = "SplitButton"
 
 	drop_down_gallery: STRING = "DropDownGallery"
+
+	in_ribbon_gallery: STRING = "InRibbonGallery"
 
 	drop_down_gallery_menu_layout: STRING = "DropDownGallery.MenuLayout"
 
@@ -114,7 +120,10 @@ feature -- Contract support
 					l_string.same_string (split_button) or else
 					l_string.same_string (drop_down_gallery) or else
 					l_string.same_string (drop_down_gallery_menu_layout) or else
-					l_string.same_string (flow_menu_layout)
+					l_string.same_string (flow_menu_layout) or else
+					l_string.same_string (application_menu_recent_items) or else
+					l_string.same_string (recent_items) or else
+					l_string.same_string (in_ribbon_gallery)
 			end
 		end
 
@@ -128,7 +137,8 @@ feature -- Contract support
 					l_string.same_string (toggle_button) or else
 					l_string.same_string (spinner) or else
 					l_string.same_string (split_button) or else
-					l_string.same_string (drop_down_gallery)
+					l_string.same_string (drop_down_gallery) or else
+					l_string.same_string (in_ribbon_gallery)
 			end
 		end
 end

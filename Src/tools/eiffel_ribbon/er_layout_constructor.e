@@ -240,7 +240,8 @@ feature {NONE} -- Action handing
 						l_stone_child.same_string (constants.toggle_button) or else
 						l_stone_child.same_string (constants.spinner) or else
 						l_stone_child.same_string (constants.split_button) or else
-						l_stone_child.same_string (constants.drop_down_gallery)
+						l_stone_child.same_string (constants.drop_down_gallery) or else
+						l_stone_child.same_string (constants.in_ribbon_gallery)
 				elseif a_parent_type.same_string (constants.split_button) then
 					Result := l_stone_child.same_string (constants.button)
 				elseif a_parent_type.same_string (constants.ribbon_application_menu) then
@@ -325,6 +326,7 @@ feature -- Persistance
 			l_command_updater: ER_UPDATE_COMMAND_VISITOR
 			l_separate_tab_visitor: ER_SEPARATE_WINDOW_TAB_VISITOR
 			l_drop_down_gallery_visitor: ER_DROP_DOWN_GALLERY_INFO_VISITOR
+			l_update_application_menu: ER_UPDATE_APPLICATION_MENU_INFO_VISITOR
 		do
 			l_manager := shared_singleton.xml_tree_manager.item
 			l_manager.load_tree
@@ -338,6 +340,8 @@ feature -- Persistance
 				l_root.accept (l_separate_tab_visitor)
 				create l_drop_down_gallery_visitor
 				l_root.accept (l_drop_down_gallery_visitor)
+				create l_update_application_menu
+				l_root.accept (l_update_application_menu)
 			else
 				check False end
 			end

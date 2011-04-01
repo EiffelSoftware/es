@@ -39,14 +39,11 @@ feature -- C callback function
 			when wait_for_supplier_processor_locks_task_id then
 				wait_for_request_chain_supplier_processor_locks (client_processor_id)
 			when wait_for_processor_redundancy_task_id then
-				set_root_processor_has_exited
+				root_processor_creation_routine_exited
 			when assign_processor_task_id then
 				set_integer_32_return_value (a_callback_data, assign_free_processor_id)
 			when free_processor_task_id then
 				free_processor_id (client_processor_id)
-			when start_processor_loop_task_id then
-					-- Reinstantate during optimization phase.
---				start_processor_application_loop (client_processor_id)
 			when add_processor_reference_task_id then
 				add_processor_reference (supplier_processor_id)
 			when remove_processor_reference_task_id then
@@ -106,7 +103,7 @@ feature -- C callback function
 
 	frozen assign_processor_task_id: NATURAL_8 = 1
 	frozen free_processor_task_id: NATURAL_8 = 2
-	frozen start_processor_loop_task_id: NATURAL_8 = 3
+--	frozen start_processor_loop_task_id: NATURAL_8 = 3
 	frozen signify_start_of_new_chain_task_id: NATURAL_8 = 4
 	frozen signify_end_of_new_chain_task_id: NATURAL_8 = 5
 	frozen add_supplier_to_request_chain_task_id: NATURAL_8 = 6
@@ -170,26 +167,18 @@ feature -- Processor Initialization
 			create_and_initialize_scoop_processor (Current, $scoop_processor_loop, default_processor_attributes.item, a_processor_id)
 		end
 
-	set_root_processor_has_exited
-			-- Root processor has exited so wait until child processors have also exited.
+	root_processor_creation_routine_exited
+			-- Root processor's creation routine has exited.
 		local
 			l_temp: INTEGER_32
 			l_wait_counter: NATURAL_32
 		do
-			--| FIXME Run through SCOOP Loop for root processor.
+				-- End request chain of root processor creation routine.
+			signify_end_of_request_chain (root_processor_id)
 
-			l_temp := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($processor_count)
-			from
-				l_wait_counter := 0
-			until
-				processor_count = 0
-			loop
-				if waiting_processor_count > 0 and then (waiting_processor_count = processor_count) then
-					(create {EXCEPTIONS}).raise ("SCOOP Deadlock Detected%N")
-				end
-				processor_yield (root_processor_id, l_wait_counter)
-				l_wait_counter := l_wait_counter + 1
-			end
+				-- Run processor loop for root processor for any pending logged calls.
+			scoop_processor_loop (root_processor_id)
+
 				-- Wait for all processors to have completely exited before exiting.
 			root_processor_wait_for_redundancy
 		end
@@ -243,11 +232,6 @@ feature -- Request Chain Handling
 			l_request_chain_meta_data := request_chain_meta_data [a_client_processor_id]
 			check l_request_chain_meta_data_entry_attached: attached l_request_chain_meta_data end
 
-			--| Testing Code for synchronizing all processors when fully exiting a chain.
---			if l_request_chain_meta_data [request_chain_client_pid_index] = a_client_processor_id and then l_request_chain_meta_data [request_chain_status_index] = request_chain_status_application then
---					-- If we are the owner of the chain and the chain is currently being applied we sync up with the supplier processors.
---				synchronize_processors_upon_application (a_client_processor_id)
---			end
 				-- Get current request chain depth
 			l_request_chain_id_depth := (processor_meta_data [a_client_processor_id])[current_request_chain_id_depth_index]
 
@@ -586,12 +570,12 @@ feature -- Command/Query Handling
 	log_call_on_processor (a_client_processor_id, a_supplier_processor_id: like processor_id_type; a_routine: like routine_type; a_call_data: like call_data)
 			-- Log call on `a_suppler_processor_id' for `a_client_processor_id'
 		local
-			l_request_chain_meta_data, l_client_request_chain_meta_data, l_creation_request_chain_meta_data: detachable like new_request_chain_meta_data_entry
+			l_client_request_chain_meta_data, l_supplier_request_chain_meta_data, l_creation_request_chain_meta_data: detachable like new_request_chain_meta_data_entry
 			l_request_chain_node_id: like invalid_request_chain_node_id
 			l_request_chain_node_queue: detachable like new_request_chain_node_queue
 			l_client_request_chain_node_queue_entry, l_request_chain_node_queue_entry: detachable like new_request_chain_node_queue_entry
 			l_request_chain_node_meta_data_queue: detachable like new_request_chain_node_meta_data_queue
-			l_unique_pid_count, i, l_last_pid_index, l_logged_calls_count: INTEGER_32
+			l_unique_pid_count, i, l_last_pid_index, l_logged_calls_original_count, l_logged_calls_current_count: INTEGER_32
 			l_is_synchronous, l_is_lock_passing, l_client_is_sibling, l_client_sync_needed, l_exit_loop: BOOLEAN
 			l_call_ptr, l_default_ptr: POINTER
 		do
@@ -648,8 +632,8 @@ feature -- Command/Query Handling
 				l_request_chain_node_queue [l_request_chain_node_id] := l_request_chain_node_queue_entry
 			end
 
-			l_logged_calls_count := l_request_chain_node_queue_entry.count
-			if l_logged_calls_count = l_request_chain_node_queue_entry.capacity then
+			l_logged_calls_original_count := l_request_chain_node_queue_entry.count
+			if l_logged_calls_original_count = l_request_chain_node_queue_entry.capacity then
 					-- Resize node structure if there is not enough room for the new entry
 					--| FIXME IEK: Resizing 3 extra items may not be optimal in all cases
 				if l_client_request_chain_meta_data /= Void and then
@@ -664,7 +648,8 @@ feature -- Command/Query Handling
 					-- Readd in case we have a new structure.
 			end
 
-			if l_request_chain_node_id = 0 then
+			if (processor_meta_data [a_supplier_processor_id]) [processor_status_index] = processor_status_uninitialized then
+					-- We have an uninitialized processor so we must be logging the creation routine.
 
 				l_creation_request_chain_meta_data := new_request_chain_meta_data_entry
 					-- Set request chain meta data for creation routine.
@@ -684,6 +669,9 @@ feature -- Command/Query Handling
 					-- Increase request chain and request chain node id to simulate normal logging procedure
 				(processor_meta_data [a_supplier_processor_id]) [current_request_chain_id_index] := 1
 				(processor_meta_data [a_supplier_processor_id]) [current_request_chain_node_id_index] := 1
+
+					-- Flag new processor as initialized.
+				(processor_meta_data [a_supplier_processor_id]) [processor_status_index] := processor_status_initialized
 			end
 
 			if l_is_lock_passing then
@@ -702,12 +690,12 @@ feature -- Command/Query Handling
 					wait_for_request_chain_to_begin (a_client_processor_id, a_supplier_processor_id, l_client_request_chain_meta_data)
 						-- We make a copy of the current request chain meta data and pass to the supplier for controlled argument processing.
 
-						-- Pass the locks of the current processor.
-					l_request_chain_meta_data := l_client_request_chain_meta_data
-					request_chain_meta_data [a_supplier_processor_id] := l_request_chain_meta_data;
+						-- Temporarily pass the locks of the client processor to the supplier processor.
+					l_supplier_request_chain_meta_data := request_chain_meta_data [a_supplier_processor_id]
+					request_chain_meta_data [a_supplier_processor_id] := l_client_request_chain_meta_data;
 
 						-- Store current logged call count to see if any feature application requests are made by the call.
-					l_logged_calls_count := l_client_request_chain_node_queue_entry.count;
+					l_logged_calls_original_count := l_client_request_chain_node_queue_entry.count;
 
 					l_request_chain_node_queue_entry.extend (a_call_data)
 
@@ -717,6 +705,7 @@ feature -- Command/Query Handling
 						wait_for_request_chain_to_begin (a_client_processor_id, a_supplier_processor_id, l_creation_request_chain_meta_data)
 					end
 						-- Wait for client processor to be signalled to continue.
+						-- Note: asynchronous logged calls do not need signalling.
 					processor_semaphore_wait (a_client_processor_id)
 
 				until
@@ -725,26 +714,46 @@ feature -- Command/Query Handling
 						-- We need to set the queue entry each time in case it has resized.
 					l_client_request_chain_node_queue_entry := l_request_chain_node_queue [(processor_meta_data [a_client_processor_id])[current_request_node_id_execution_index]]
 					check l_client_request_chain_node_queue_entry_attached: l_client_request_chain_node_queue_entry /= Void end
+					l_logged_calls_current_count := l_client_request_chain_node_queue_entry.count
 					if
-						l_client_request_chain_node_queue_entry.count > l_logged_calls_count
+						l_logged_calls_current_count > l_logged_calls_original_count
 					then
-							-- The supplier processor has logged a call on the client processor so we must service it.
-						l_call_ptr := l_client_request_chain_node_queue_entry [l_logged_calls_count]
+							-- The supplier processor has logged back calls on the client processor after signalling.
+							-- The supplier processor has either finished logging or is waiting on a client sync from a synchronous call.
 
-							-- Reset call ptr from list before call in case list resizes
-						l_client_request_chain_node_queue_entry [l_logged_calls_count] := l_default_ptr
-						l_client_request_chain_node_queue_entry.keep_head (l_logged_calls_count)
-							-- We must service all requests until the routine has closed its chain.
+							-- Find the next applicable call_data pointer.						
+						from
+							i := l_logged_calls_original_count
+						until
+							l_call_ptr /= l_default_ptr
+						loop
+							l_call_ptr := l_client_request_chain_node_queue_entry [i]
+							if l_call_ptr /= l_default_ptr then
+								l_client_request_chain_node_queue_entry [i] := l_default_ptr
+							end
+							i := i + 1
+						end
+
+						if i = l_logged_calls_current_count then
+								-- We are at the last logged item so we can reduce the structure back to the original size.
+							l_client_request_chain_node_queue_entry.keep_head (l_logged_calls_original_count)
+						end
 
 						l_is_synchronous := call_data_sync_pid (l_call_ptr) /= null_processor_id
 						scoop_command_call (l_call_ptr)
 						if l_is_synchronous then
+								-- Signal processor to continue
 							processor_semaphore_signal (a_supplier_processor_id)
+
+								-- Make client processor wait until either another synchronous call has been logged or the initial logged call has completed.
+							processor_semaphore_wait (a_client_processor_id)
 						end
-						processor_semaphore_wait (a_client_processor_id)
 						scoop_command_call_cleanup (l_call_ptr)
-						l_call_ptr := default_pointer
+						l_call_ptr := l_default_ptr
 					else
+							-- Reset supplier processors request chain meta data to previous state.						
+						request_chain_meta_data [a_supplier_processor_id] := l_supplier_request_chain_meta_data
+
 						if l_creation_request_chain_meta_data /= Void then
 								-- Here we wait for the creation routine to finish.
 							l_creation_request_chain_meta_data [request_chain_status_index] := request_chain_status_waiting
@@ -762,15 +771,10 @@ feature -- Command/Query Handling
 					processor_semaphore_signal (a_supplier_processor_id)
 					processor_semaphore_wait (a_client_processor_id)
 				elseif l_is_synchronous then
-					if a_supplier_processor_id = root_processor_id then
-						scoop_command_call (a_call_data)
-						scoop_command_call_cleanup (a_call_data)
-					else
-						l_request_chain_node_queue_entry.extend (a_call_data)
-						i := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($waiting_processor_count)
-						processor_semaphore_wait (a_client_processor_id)
-						i := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($waiting_processor_count)
-					end
+					l_request_chain_node_queue_entry.extend (a_call_data)
+					i := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($waiting_processor_count)
+					processor_semaphore_wait (a_client_processor_id)
+					i := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($waiting_processor_count)
 				else
 						-- Asynchronous logging
 					l_request_chain_node_queue_entry.extend (a_call_data)
@@ -877,12 +881,16 @@ feature {NONE} -- Resource Initialization
 
 				-- Set up root processor and initial chain meta data.
 			root_processor_id := assign_free_processor_id
+
 			signify_start_of_request_chain (root_processor_id)
 			assign_supplier_processor_to_request_chain (root_processor_id, root_processor_id)
 			wait_for_request_chain_supplier_processor_locks (root_processor_id)
 			l_request_chain_meta_data := request_chain_meta_data [root_processor_id]
 			check l_request_chain_meta_data_attached: attached l_request_chain_meta_data end
 			l_request_chain_meta_data [request_chain_status_index] := request_chain_status_application
+
+				-- Make root processor as initialized.
+			processor_meta_data [root_processor_id].put (processor_status_initialized, processor_status_index)
 		end
 
 	initialize_default_processor_meta_data (a_processor_id: like processor_id_type)
@@ -919,9 +927,6 @@ feature {NONE} -- Resource Initialization
 
 				-- Reset execution index to `0'
 			(processor_meta_data [a_processor_id]).put (0, current_request_node_id_execution_index)
-
-				-- Mark processor as initialized.
-			(processor_meta_data [a_processor_id]).put (processor_status_initialized, processor_status_index)
 		end
 
 	scoop_processor_loop (a_logical_processor_id: like processor_id_type)
@@ -1140,7 +1145,7 @@ feature {NONE} -- Resource Initialization
 									else
 										l_temp_count := 0
 									end
-									if l_temp_count > 10000 then
+									if l_temp_count > deadlock_detection_limit then
 										(create {EXCEPTIONS}).raise ("Potential SCOOP Deadlock detected")
 									end
 									processor_is_idle (a_logical_processor_id, l_wait_counter)
@@ -1158,6 +1163,9 @@ feature {NONE} -- Resource Initialization
 			end
 		end
 
+	deadlock_detection_limit: NATURAL_16 = 10000
+		-- Number of iterations an idle processor
+
 	processor_is_idle (a_client_processor_id: like processor_id_type; a_wait_counter: NATURAL_32)
 			-- Processor `a_client_processor_id' is idle.
 		do
@@ -1172,9 +1180,7 @@ feature {NONE} -- Resource Initialization
 			"C inline use <eif_scoop.h>"
 		alias
 			"[
-			#ifdef WORKBENCH
 				eif_try_call ($data);
-			#endif
 			]"
 		end
 
@@ -1186,9 +1192,7 @@ feature {NONE} -- Resource Initialization
 			"C inline use <eif_scoop.h>"
 		alias
 			"[
-			#ifdef WORKBENCH
 				eif_free_call ($data);
-			#endif
 			]"
 		end
 

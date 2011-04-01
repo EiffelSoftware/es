@@ -209,33 +209,47 @@ feature {NONE} -- Implementation
 		require
 			not_void: a_application_menu /= Void
 			valid: a_application_menu.text.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu)
+		local
+			l_iterator: INDEXABLE_ITERATION_CURSOR [EV_TREE_NODE]
+			l_item: EV_TREE_NODE
+			l_items: ARRAYED_LIST [EV_TREE_NODE]
 		do
 			check a_application_menu.count = 1 end
 			if attached a_application_menu.i_th (1) as l_ribbon_menu then
 				a_application_menu.wipe_out
 
 				from
-					l_ribbon_menu.start
+					create l_items.make (l_ribbon_menu.count)
+					l_iterator := l_ribbon_menu.new_cursor
+					l_iterator.start
 				until
-					l_ribbon_menu.after
+					l_iterator.after
 				loop
-					if attached l_ribbon_menu.item.parent as l_parent then
-						l_parent.prune_all (l_ribbon_menu.item)
-					end
-					if not l_ribbon_menu.after then
-						l_ribbon_menu.forth
-					end
+					l_items.extend (l_iterator.item)
+
+					l_iterator.forth
 				end
 
 				from
-					l_ribbon_menu.start
+					l_items.start
 				until
-					l_ribbon_menu.after
+					l_items.after
 				loop
-					a_application_menu.extend (l_ribbon_menu.item)
+					l_item := l_items.item
+					if attached l_item.parent as l_parent then
+						l_parent.prune_all (l_item)
+					end
 
-					l_ribbon_menu.forth
+					if l_item.text.same_string ({ER_XML_CONSTANTS}.application_menu_recent_items) then
+						-- Remove recent items node
+					else
+						a_application_menu.extend (l_item)
+					end
+
+					l_items.forth
 				end
+
 			end
 		end
+
 end

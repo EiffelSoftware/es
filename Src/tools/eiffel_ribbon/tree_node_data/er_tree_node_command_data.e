@@ -13,18 +13,19 @@ inherit
 			on_content
 		end
 
-feature -- Command
+create
+	make
 
-	update_for_xml_attribute (a_name, a_value: STRING)
+feature {NONE} -- Initialization
+
+	make
 			-- <Precursor>
-		local
-			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
 		do
-			create l_constants
-			check a_name.is_equal (l_constants.name) end
-			command_name := a_value
+			command_name_prefix := "command_"
+			xml_constants := {ER_XML_CONSTANTS}.command
+			new_unique_command_name
 		end
-
+		
 feature -- XML callbacks
 
 	on_start_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)

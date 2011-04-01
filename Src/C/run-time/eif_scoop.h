@@ -41,23 +41,35 @@
 extern "C" {
 #endif
 
-typedef struct {
-	EIF_OBJECT        target;         /* Target of a call */
-	BODY_INDEX        body_index;     /* Routine to be called */
-	EIF_NATURAL_32    count;          /* Number of arguments excluding target object */
-	EIF_TYPED_VALUE * result;         /* Address of a result for queries */
-	EIF_SCP_PID       sync_pid; /* Indicator of a synchronous call */
-	EIF_BOOLEAN	      is_lock_passing; /* Indicator of a lock passing call */
-	EIF_TYPED_VALUE   argument [1];   /* Arguments excluding target object */
+typedef struct call_data {
+	EIF_OBJECT        target;          /* Target of a call */
+#ifdef WORKBENCH
+	BODY_INDEX        body_index;      /* Routine to be called */
+	EIF_TYPED_VALUE * result;          /* Address of a result for queries */
+#else
+	union {
+		fnptr             address;         /* Routine to be called */
+		size_t            offset;          /* Offset of an attribute */
+	} feature;
+	void *            result;          /* Address of a result for queries, the result type depends on the called feature */
+	void           (* pattern) (struct call_data *); /* Stub that is used to perform a call */
+#endif /* WORKBENCH */
+	EIF_NATURAL_32    count;           /* Number of arguments excluding target object */
+	EIF_SCP_PID       sync_pid;        /* Indicator of a synchronous call */
+	EIF_BOOLEAN       is_lock_passing; /* Indicator of a lock passing call */
+	EIF_TYPED_VALUE   argument [1];    /* Arguments excluding target object */
 } call_data;
 
 #ifdef WORKBENCH
 rt_public void eif_log_call (int static_type_id, int feature_id, EIF_SCP_PID current_pid, call_data * data);
 rt_public void eif_log_callp (int origin, int offset, EIF_SCP_PID current_pid, call_data * data);
+#else
+rt_public void eif_log_call (EIF_SCP_PID p, call_data * a);
+#endif
+
 rt_public void eif_try_call (call_data * a);
 rt_public void eif_free_call (call_data * a);
 rt_public EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s);
-#endif
 
 rt_public 
 

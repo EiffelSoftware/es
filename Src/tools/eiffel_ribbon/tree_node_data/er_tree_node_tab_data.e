@@ -9,22 +9,17 @@ class
 inherit
 	ER_TREE_NODE_DATA
 
-feature -- Command
+create
+	make
 
-	update_for_xml_attribute (a_name, a_value: STRING)
+feature {NONE} -- Initialization
+
+	make
 			-- <Precursor>
-		local
-			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
 		do
-			create l_constants
-
-			if a_name.same_string (l_constants.command_name) then
-				command_name := a_value
-			elseif a_name.same_string (l_constants.application_mode) then
-				application_mode := a_value.to_integer
-			else
-				-- Maybe ApplicationModes, or....
-				check not_implemented: False end
-			end
+			command_name_prefix := "tab_"
+			xml_constants := {ER_XML_CONSTANTS}.tab
+			new_unique_command_name
 		end
+
 end

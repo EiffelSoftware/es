@@ -31,10 +31,10 @@ DBGOBJECTS = \
 all:: ecdbgd.exe
 
 $mingwecdbgd.exe: $(LIBS) $(DBGOBJECTS)
-	$(CC) -mwindows -o $@ $(DBGOBJECTS) $(LIBS) -lgdi32 -ladvapi32 -luser32
+	$(CC) -mwindows -o $@ $(DBGOBJECTS) $(LIBS) -lgdi32 -ladvapi32 -luser32 -lws2_32
 
 $microsoftecdbgd.exe: $(LIBS) $(DBGOBJECTS)
-	link $(LDFLAGS) $(LIBS) -SUBSYSTEM:WINDOWS -OUT:$@ $(DBGOBJECTS) GDI32.lib ADVAPI32.lib USER32.lib
+	link $(LDFLAGS) $(LIBS) -SUBSYSTEM:WINDOWS -OUT:$@ $(DBGOBJECTS) GDI32.lib ADVAPI32.lib USER32.lib WS2_32.lib
 
 $borlandecdbgd.exe: $(LIBS)  $(DBGOBJECTS)
 	"$compiler_path$(DIR)bin$(DIR)ilink32" -L"$compiler_path$(DIR)lib"  "$compiler_path$(DIR)lib$(DIR)c0w32.$obj" $(DBGOBJECTS), \

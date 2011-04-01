@@ -135,6 +135,11 @@ feature {NONE} -- Tree saving
 				if a_vision_tree.count >= 2 then
 					if attached {EV_TREE_ITEM} a_vision_tree.i_th (2) as l_tree_item_menu then
 						check l_tree_item_menu.text.same_string (xml_constants.ribbon_application_menu) end
+
+						-- Add recent items xml node
+						add_xml_recent_items_node (l_tree_item_menu)
+
+						-- Add menu group xml node
 						from
 							l_tree_item_menu.start
 						until
@@ -149,6 +154,40 @@ feature {NONE} -- Tree saving
 							l_tree_item_menu.forth
 						end
 					end
+				end
+			end
+		end
+
+	add_xml_recent_items_node (a_tree_item: EV_TREE_ITEM)
+			--
+		require
+			not_void: a_tree_item /= Void
+			valid: a_tree_item.text.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu)
+		local
+			l_application_menu_recent_items, l_recent_items: XML_ELEMENT
+		do
+			if attached xml_node_by_name (xml_constants.application_menu) as l_ribbon_application_menu_node then
+				create l_application_menu_recent_items.make (l_ribbon_application_menu_node, xml_constants.application_menu_recent_items, name_space)
+				l_ribbon_application_menu_node.put_last (l_application_menu_recent_items)
+
+				create l_recent_items.make (l_application_menu_recent_items, xml_constants.recent_items, name_space)
+				l_application_menu_recent_items.put_last (l_recent_items)
+
+				if attached {ER_TREE_NODE_APPLICATION_MENU_DATA} a_tree_item.data as l_data then
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						-- FIXME: Use application menu name for recent items command name?
+						l_recent_items.add_attribute ({ER_XML_ATTRIBUTE_CONSTANTS}.command_name, name_space, l_command_name)
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+					end
+					if l_data.enable_pinning then
+						l_recent_items.add_attribute ({ER_XML_ATTRIBUTE_CONSTANTS}.enable_pinning, name_space, "true")
+					else
+						l_recent_items.add_attribute ({ER_XML_ATTRIBUTE_CONSTANTS}.enable_pinning, name_space, "false")
+					end
+
+					l_recent_items.add_attribute ({ER_XML_ATTRIBUTE_CONSTANTS}.max_count, name_space, l_data.max_count.out)
 				end
 			end
 		end
@@ -286,6 +325,8 @@ feature {NONE} -- Tree saving
 						add_xml_split_button_node (l_group_node, a_group_tree_node.item)
 					elseif a_group_tree_node.item.text.same_string (l_xml_constants.drop_down_gallery) then
 						add_xml_drop_down_gallery_node (l_group_node, a_group_tree_node.item)
+					elseif a_group_tree_node.item.text.same_string (l_xml_constants.in_ribbon_gallery) then
+						add_xml_in_ribbon_gallery_node (l_group_node, a_group_tree_node.item)
 					else
 						check not_implemented: False end
 					end
@@ -410,6 +451,54 @@ feature {NONE} -- Tree saving
 					end
 				end
 			end
+		end
+
+	add_xml_in_ribbon_gallery_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
+			--
+		require
+			not_void: a_group_node /= Void
+			valid: a_group_node.name.same_string (xml_constants.group)
+		local
+			l_button_node: XML_ELEMENT
+			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			if attached {EV_TREE_ITEM} a_button_tree_node as l_item then
+				check l_item.text.same_string (xml_constants.in_ribbon_gallery) end
+
+				create l_button_node.make (a_group_node, xml_constants.in_ribbon_gallery, name_space)
+				a_group_node.put_last (l_button_node)
+
+				if attached {ER_TREE_NODE_IN_RIBBON_GALLERY_DATA} a_button_tree_node.data as l_data then
+					create l_constants
+
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_button_node.add_attribute (l_constants.command_name, name_space, l_command_name)
+
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+					end
+
+					l_button_node.add_attribute (l_constants.type, name_space, "Items")
+
+					-- Add menu layout
+					add_xml_menu_layout_for_in_ribbon_gallery (l_button_node, l_data)
+				end
+			end
+		end
+
+	add_xml_menu_layout_for_in_ribbon_gallery (a_gallery_node: XML_ELEMENT; a_data: ER_TREE_NODE_IN_RIBBON_GALLERY_DATA)
+			--
+		require
+			not_void: a_gallery_node /= Void
+			valid: a_gallery_node.name.same_string (xml_constants.in_ribbon_gallery)
+			not_void: a_data /= Void
+		local
+			l_attribute: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			create l_attribute
+			a_gallery_node.add_attribute (l_attribute.max_rows, name_space, a_data.max_rows.out)
+			a_gallery_node.add_attribute (l_attribute.max_columns, name_space, a_data.max_columns.out)
 		end
 
 	add_xml_drop_down_gallery_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
