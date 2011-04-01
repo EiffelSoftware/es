@@ -99,6 +99,7 @@ feature -- Basic operation
 			l_features: LINKED_LIST [FEATURE_I]
 			l_selector: EPA_FEATURE_SELECTOR
 			l_ast: AST_EIFFEL
+			l_text: STRING
 		do
 			if attached {ETR_CLASS_CONTEXT} context as l_class_ctxt then
 				set_context_class (l_class_ctxt.context_class)
@@ -119,18 +120,33 @@ feature -- Basic operation
 
 					-- Process feature
 					l_ast := l_feature.e_feature.ast
-					l_ast.process (Current)
+					l_text := text_from_ast (l_ast)
+					if
+						not l_text.has_substring (once "attached")
+					then
+						l_ast.process (Current)
+					end
 
 					-- Process preconditions
 					across precondition_of_feature (l_feature, l_class_ctxt.context_class) as l_preconditions loop
 						l_ast := l_preconditions.item.ast
-						l_ast.process (Current)
+						l_text := text_from_ast (l_ast)
+						if
+							not l_text.has_substring (once "attached")
+						then
+							l_ast.process (Current)
+						end
 					end
 
 					-- Process postconditions
 					across postcondition_of_feature (l_feature, l_class_ctxt.context_class) as l_postconditions loop
 						l_ast := l_postconditions.item.ast
-						l_ast.process (Current)
+						l_text := text_from_ast (l_ast)
+						if
+							not l_text.has_substring (once "attached")
+						then
+							l_ast.process (Current)
+						end
 					end
 					l_features.forth
 				end
@@ -138,7 +154,12 @@ feature -- Basic operation
 				-- Process invariants
 				across invariant_of_class (l_class_ctxt.context_class) as l_invariants loop
 					l_ast := l_invariants.item.ast
-					l_ast.process (Current)
+					l_text := text_from_ast (l_ast)
+					if
+						not l_text.has_substring (once "attached")
+					then
+						l_ast.process (Current)
+					end
 				end
 			elseif attached {ETR_FEATURE_CONTEXT} context as l_feat_ctxt then
 				l_feature := l_feat_ctxt.written_feature
@@ -148,18 +169,33 @@ feature -- Basic operation
 
 				-- Process feature
 				l_ast := l_feature.e_feature.ast
-				l_ast.process (Current)
+				l_text := text_from_ast (l_ast)
+				if
+					not l_text.has_substring (once "attached")
+				then
+					l_ast.process (Current)
+				end
 
 				-- Process preconditions
 				across precondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_preconditions loop
 					l_ast := l_preconditions.item.ast
-					l_ast.process (Current)
+					l_text := text_from_ast (l_ast)
+					if
+						not l_text.has_substring (once "attached")
+					then
+						l_ast.process (Current)
+					end
 				end
 
 				-- Process postconditions
 				across postcondition_of_feature (l_feature, l_feat_ctxt.context_class) as l_postconditions loop
 					l_ast := l_postconditions.item.ast
-					l_ast.process (Current)
+					l_text := text_from_ast (l_ast)
+					if
+						not l_text.has_substring (once "attached")
+					then
+						l_ast.process (Current)
+					end
 				end
 			end
 		end
