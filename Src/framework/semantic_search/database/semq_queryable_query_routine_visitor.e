@@ -10,7 +10,8 @@ class
 inherit
 	AST_ITERATOR
 		redefine
-			process_access_feat_as
+			process_access_feat_as,
+			process_current_as
 		end
 
 create
@@ -99,28 +100,37 @@ feature{NONE} -- Implementation
 			end
 		end
 
-feature -- Roundtrip
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+	process_access_name (a_name: STRING)
 		do
 			-- Target
-			if argument_count = 0 then
-				target := l_as.access_name_8
+			if target.is_empty then
+				target := a_name
 
 			-- Feature Name
 			elseif feature_name.is_empty then
-				feature_name := l_as.access_name_8
+				feature_name := a_name
 				argument_count := argument_count - 1 -- Fix
 
 			-- Arguments
 			else
-				arguments.extend (l_as.access_name_8)
+				arguments.extend (a_name)
 			end
 
 			-- Counting
 			argument_count := argument_count + 1
+		end
 
-			-- Recurse
+feature -- Roundtrip
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
+			process_access_name (l_as.access_name_8)
+			Precursor (l_as)
+		end
+
+	process_current_as (l_as: CURRENT_AS)
+		do
+			process_access_name (l_as.access_name_8)
 			Precursor (l_as)
 		end
 

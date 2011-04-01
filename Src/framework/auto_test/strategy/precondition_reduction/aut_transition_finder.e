@@ -263,6 +263,33 @@ feature -- Some test cases
 			set_class_name ("LINKED_LIST")
 		end
 
+	test_4
+			-- Variables: l: LINKED_LIST [ANY]
+			-- Preconditions: True
+			-- Postconditions: l.count > old l.count
+			-- Note: `append' and `extend' should be in the result, and pay attention, that both features
+			-- needs 2 operands, but we only have one, so in the result, only one variable has its binding.
+		local
+			l_preconditions: LINKED_LIST [STRING]
+			l_postconditions: LINKED_LIST [STRING]
+			l_operand_map: HASH_TABLE [TYPE_A, STRING]
+		do
+
+
+			create l_operand_map.make (1)
+			l_operand_map.compare_objects
+			l_operand_map.force (type_a_from_string_in_application_context ("TWO_WAY_TREE [ANY]"), "Current")
+			l_operand_map.force (type_a_from_string_in_application_context ("ANY"), "v")
+
+			create l_preconditions.make
+			create l_postconditions.make
+			l_preconditions.extend ("not Current.is_inserted (v)")
+			l_postconditions.extend ("Current.is_inserted (v)")
+
+			make (l_operand_map, l_preconditions, l_postconditions, connection)
+			set_class_name ("TWO_WAY_TREE")
+		end
+
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
