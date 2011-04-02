@@ -55,7 +55,7 @@ feature -- Execution
 				connection,
 				used_queryable_ids,
 				try_count < 2,
-				l_object_count)
+				l_object_count, True)
 
 			if connection.last_error_number /= 0 then
 				progress_log_manager.put_string (" [Database problem]")

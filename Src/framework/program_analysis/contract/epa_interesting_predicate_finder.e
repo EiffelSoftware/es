@@ -311,7 +311,7 @@ feature{NONE} -- Implementation
 					until
 						l_candidates.after
 					loop
-						l_qualifier.process_expression (l_candidates.item_for_iteration, l_replacements)
+						l_qualifier.qualify (l_candidates.item_for_iteration, l_replacements)
 						create l_expr.make_with_text (context_class, feature_, l_qualifier.last_expression, written_class)
 						if l_expr.type /= Void then
 							Result.force_last (l_expr)

@@ -230,11 +230,9 @@ feature{NONE} -- Implementation
 					create l_right.make_with_feature (last_class, last_feature, l_eq.right, last_class)
 					if l_left.type /= Void and then l_right.type /= Void then
 						if
-							(l_left.type.is_integer and l_right.type.is_integer) or else
-							(l_left.type.is_boolean and l_right.type.is_boolean) or else
-							(l_left.type.is_reference and l_right.type.is_reference)
+							(l_left.type.is_integer xor l_right.type.is_integer) or
+							(l_left.type.is_boolean xor l_right.type.is_boolean)
 						then
-						else
 							l_done := True
 						end
 					end

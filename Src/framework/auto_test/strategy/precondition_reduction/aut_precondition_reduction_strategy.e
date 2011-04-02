@@ -500,7 +500,7 @@ feature{NONE} -- Invariant-violating invariants checking
 							l_invs.item.feature_,
 							False,
 							False,
-							connection, Void, True, 0)
+							connection, Void, True, 0, True)
 						if l_retriever.last_objects.is_empty then
 							l_result_log.put_line ("%T[No]")
 						else

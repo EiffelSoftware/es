@@ -42,7 +42,7 @@ feature -- Setting
 
 feature -- Basic operations
 
-	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN; a_object_count: INTEGER)
+	retrieve_objects (a_predicate: EPA_EXPRESSION; a_context_class: CLASS_C; a_feature: FEATURE_I; a_satisfying: BOOLEAN;  a_retrieve_unconstrained_operands: BOOLEAN; a_connection: MYSQL_CLIENT; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN; a_object_count: INTEGER; a_consider_precondition: BOOLEAN)
 			-- Retrieve objects that satisfying `a_predicate' if `a_satisfying' is True;
 			-- otherwise, retrieve objects that violating `a_predicate'.
 			-- Make result available in `last_objects'.
@@ -52,6 +52,7 @@ feature -- Basic operations
 			-- `a_connection' includes the config used to connect to the semantic database.
 			-- `a_ignore_qry_ids' (if attached) includes the qry_ids that should be avoided.
 			-- `a_object_count' is the maximal number of results to return.
+			-- `a_consider_precondition' indicates if preconditions of `a_feature' should be considered to be satisfied.
 		local
 			l_sql_gen: SEM_SIMPLE_QUERY_GENERATOR
 			l_select: STRING
@@ -97,7 +98,7 @@ feature -- Basic operations
 					-- depending on the value `a_satisfying'.
 				l_curly_expr := curly_braced_integer_form (a_predicate, a_context_class, a_feature)
 				create l_sql_gen
-				l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, a_object_count, False, 1, 1, a_ignore_qry_ids, a_all_in_one_queryable)
+				l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, not a_satisfying, a_object_count, False, 1, 1, a_ignore_qry_ids, a_all_in_one_queryable, a_consider_precondition)
 	--			l_main_sql := l_sql_gen.sql_to_select_objects (a_context_class, a_feature, l_curly_expr, a_satisfying, 5, True, 2, 2)
 				l_select := l_main_sql.sql
 				unconstrained_vars := l_main_sql.unconstrained_vars

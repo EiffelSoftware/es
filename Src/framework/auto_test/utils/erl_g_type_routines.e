@@ -28,6 +28,11 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	EPA_TYPE_UTILITY
+		undefine
+			system
+		end
+
 --	SHARED_STATELESS_VISITOR
 --		rename
 --			type_output_strategy as ast_type_output_strategy
@@ -252,16 +257,24 @@ feature{NONE} -- Implementation
 		local
 			i: INTEGER
 			count: INTEGER
+			l_type: TYPE_A
+			l_class: CLASS_C
+			l_class_id: INTEGER
 		do
 			create {LINKED_LIST [TYPE_A]} Result.make
 			if a_feature.arguments /= Void then
+				l_class := a_context.associated_class
+				l_class_id := l_class.class_id
 				from
 					i := 1
 					count := a_feature.arguments.count
 				until
 					i > count
 				loop
-					Result.extend (a_feature.arguments.i_th (i).actual_type.instantiation_in (a_context, a_context.associated_class.class_id).deep_actual_type)
+					l_type := a_feature.arguments.i_th (i).actual_type
+					l_type := actual_type_from_formal_type (l_type, l_class)
+					l_type := l_type.actual_type.instantiation_in (a_context, l_class_id)
+					Result.extend (l_type)
 					i := i + 1
 				end
 			end

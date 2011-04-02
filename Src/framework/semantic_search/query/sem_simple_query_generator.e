@@ -196,10 +196,10 @@ feature -- Access
 			create Result.make (256)
 			Result.append ("SELECT DISTINCT q.uuid, v.var1 FROM Queryables q, PropertyBindings1 v WHERE q.qry_kind = 1 %N")
 			if a_context_class /= Void then
-				Result.append ("AND q.class = '" + a_context_class.name_in_upper + "'%N")
+				Result.append ("AND q.class_name = '" + a_context_class.name_in_upper + "'%N")
 			end
 			if a_feature /= Void then
-				Result.append ("AND q.feature = '" + a_feature.feature_name.as_lower + "'%N")
+				Result.append ("AND q.feature_name = '" + a_feature.feature_name.as_lower + "'%N")
 			end
 			Result.append ("AND v.qry_id = q.qry_id AND v.prop_id = (SELECT prop_id FROM Properties WHERE text = '$') %N")
 			if a_type.name /~ "ANY" then
@@ -231,7 +231,7 @@ feature -- Access
 			end
 		end
 
-	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
+	sql_to_select_objects (a_context_class: CLASS_C; a_feature: FEATURE_I; a_expression: STRING; a_negated: BOOLEAN; a_limit: INTEGER; a_feature_included: BOOLEAN; a_prop_kind: INTEGER; a_query_kind: INTEGER; a_ignore_qry_ids: detachable DS_HASH_SET [INTEGER]; a_all_in_one_queryable: BOOLEAN; a_consider_precondition: BOOLEAN): TUPLE [sql: STRING; unconstained_operands: HASH_TABLE [TYPE_A, STRING]]
 			-- SQL statement to select objects satisfying `a_expression'.
 			-- `a_negated' indicates if the semantics of `a_expression' should be negated.
 			-- `a_expression' must have boolean type.
@@ -240,6 +240,7 @@ feature -- Access
 			-- In result, `sql' is the select statement to retrieve queryables, `unconstrained_operands' is a
 			-- hash table, keys are names of operands (u, v, etc.) that are not mentioned in `a_expression', values are their types.
 			-- `a_ignore_qry_ids' (if attached) includes the qry_ids that should be avoided.
+			-- `a_consider_precondition' indicates if precoditions of `a_feature' should be considered as satisfied.
 		local
 			l_operands: like curly_braced_variables_from_expression
 			l_subexprs: like single_rooted_expressions
@@ -313,7 +314,7 @@ feature -- Access
 				l_pres.forth
 			end
 
-			if l_pre_set.count > 0 and l_pre_set.count <= 6 then
+			if a_consider_precondition and then (l_pre_set.count > 0 and l_pre_set.count <= 6) then
 					-- We don't allow too many precondition predicates,
 					-- because otherwise, the query will take a long long time.
 				create l_qualifier
@@ -341,7 +342,7 @@ feature -- Access
 						end
 						l_pre_text.append_character ('(')
 						l_rep := curly_braced_operands_from_operands (a_feature, a_context_class)
-						l_qualifier.process_expression (l_pre_set.item_for_iteration, l_rep1)
+						l_qualifier.qualify (l_pre_set.item_for_iteration, l_rep1)
 						l_pre_text.append (expression_rewriter.ast_text (ast_from_expression_text (l_qualifier.last_expression), l_rep))
 						l_pre_text.append_character (')')
 					end
@@ -533,7 +534,6 @@ feature -- Access
 --			if a_ignore_qry_ids /= Void and then not a_ignore_qry_ids.is_empty then
 --				l_sql.append ("GROUP BY q.qry_id%N")
 --			end
-
 			if a_limit > 0 then
 				l_sql.append ("LIMIT " + a_limit.out + "%N")
 			end
@@ -674,7 +674,7 @@ feature -- Access
 						l_where.append (" AND ")
 					end
 					if l_var_partitions.item = 0 then
-						l_where.append ("%Nq_" + l_var_partitions.item.out + ".class='")
+						l_where.append ("%Nq_" + l_var_partitions.item.out + ".class_name='")
 						l_where.append (a_class.name_in_upper)
 						l_where.append_character ('%'')
 						l_where.append (" AND q_" + l_var_partitions.item.out + ".qry_kind=" + a_query_kind.out + "%N")

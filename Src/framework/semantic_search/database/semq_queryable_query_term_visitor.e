@@ -46,7 +46,7 @@ feature -- Process
 			process_term (a_term)
 			ast_visitor.add_clauses_variable
 			if a_term.type /= Void then
-				ast_visitor.add_type_clause (a_term.type.name)
+				ast_visitor.add_type_clause (a_term.type_name)
 			end
 			if a_term.position /= Void then
 				ast_visitor.add_position_clause (a_term.position.position)

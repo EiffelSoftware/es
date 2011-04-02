@@ -124,9 +124,9 @@ feature -- Basic operations
 			end
 
 			-- Debug
-			io.put_string (l_query_string)
-			io.put_character ('%N')
-			io.put_character ('%N')
+--			io.put_string (l_query_string)
+--			io.put_character ('%N')
+--			io.put_character ('%N')
 
 			-- Execute query and store results
 			create last_results.make

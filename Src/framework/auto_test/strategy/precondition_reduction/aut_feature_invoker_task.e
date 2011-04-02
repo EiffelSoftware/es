@@ -39,7 +39,7 @@ feature{NONE} -- Initialization
 				operand_map.extend (l_maps.item, l_maps.key)
 			end
 			should_invoke_feature := a_should_invoke_feature
-			operand_types := resolved_operand_types_with_feature (feature_, class_, root_class_of_system.actual_type)
+			operand_types := resolved_operand_types_with_feature (feature_, class_, class_.constraint_actual_type)
 		end
 
 feature -- Access

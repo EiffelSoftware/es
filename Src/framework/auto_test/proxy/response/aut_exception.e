@@ -21,6 +21,10 @@ inherit
 			make as make_old
 		end
 
+	AUT_SHARED_INTERPRETER_INFO
+
+	SHARED_WORKBENCH
+
 create
 
 	make
@@ -47,7 +51,7 @@ feature {NONE} -- Initialization
 			tag_name := an_exception_tag_name.twin
 			trace := an_exception_trace.twin
 			set_is_invariant_violation_on_feature_entry (an_inv_violation_on_entry_flag)
-			parse_trace (trace, Void, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
+			parse_trace (trace, interpreter_root_class.name_in_upper, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
 			is_test_invalid := is_test_invalid or else is_invariant_violation_on_feature_entry
 
 			create signature.make (64)

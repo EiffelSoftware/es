@@ -223,7 +223,7 @@ feature -- Basic operations
 			l_select: STRING
 		do
 			create l_select.make (200)
-			l_select.append ("SELECT qry_id, qry_kind, class, feature, library, transition_status, hit_breakpoints, timestamp, uuid, is_creation, is_query, argument_count, pre_serialization, pre_serialization_info, post_serialization, post_serialization_info, exception_recipient, exception_class, exception_breakpoint, exception_code, exception_meaning, exception_tag, exception_trace, fault_signature, feature_kind, operand_count, content, test_case_name, breakpoint_number, first_body_breakpoint, pre_bounded_functions, post_bounded_functions FROM Queryables WHERE uuid = ")
+			l_select.append ("SELECT qry_id, qry_kind, class_name, feature_name, library, transition_status, hit_breakpoints, timestamp, uuid, is_creation, is_query, argument_count, pre_serialization, pre_serialization_info, post_serialization, post_serialization_info, exception_recipient, exception_class, exception_breakpoint, exception_code, exception_meaning, exception_tag, exception_trace, fault_signature, feature_kind, operand_count, content, test_case_name, breakpoint_number, first_body_breakpoint, pre_bounded_functions, post_bounded_functions FROM Queryables WHERE uuid = ")
 			l_select.append_character ('%'')
 			l_select.append (a_uuid)
 			l_select.append_character ('%'')

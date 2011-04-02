@@ -339,6 +339,7 @@ feature{NONE} -- Implementation
 									-- We ignore features with more than one argument.
 								if l_feat /= Void and then l_feat.argument_count = 1 then
 									l_argument_type := l_feat.arguments.first.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+									l_argument_type := actual_type_from_formal_type (l_argument_type, l_target_type.associated_class)
 
 										-- Generate different query recordings depending on the type of the argument.
 										-- This is needed (at least for the moment) because otherwise, the agent evaluation

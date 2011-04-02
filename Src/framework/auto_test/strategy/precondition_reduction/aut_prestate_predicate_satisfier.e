@@ -154,6 +154,10 @@ feature -- Execute
 					assign_void
 				end
 			end
+			set_try_count (try_count + 1)
+			if try_count > 10 then
+				set_should_quit (True)
+			end
 		end
 
 	cancel
@@ -250,6 +254,9 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	try_count: INTEGER
+			-- Try count
+
 feature{NONE} -- Implementation
 
 	on_expressions_evaluated (a_values: HASH_TABLE [STRING, STRING])
@@ -298,6 +305,14 @@ feature{NONE} -- Implementation
 			value_of_current_predicate_before_test := b
 		ensure
 			value_of_current_predicate_before_test_set: value_of_current_predicate_before_test = b
+		end
+
+	set_try_count (i: INTEGER)
+			-- Set `try_count' with `i'.
+		do
+			try_count := i
+		ensure
+			try_count_set: try_count = i
 		end
 
 	collect_provided_operands
