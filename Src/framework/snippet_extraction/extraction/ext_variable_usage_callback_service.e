@@ -19,11 +19,21 @@ inherit
 
 feature -- Access
 
-	is_mode_disjoint: BOOLEAN = True
+	is_mode_disjoint: BOOLEAN
+		assign set_is_mode_disjoint
 		-- Setting how callbacks behave for feature calls on a specific variable.
 		-- If set to True: When  feature call is encountered, first a callback for that event is triggered
 		-- and AST iteration won't continue. Hence, no additional callback for accessing the indentifier
 		-- will be triggered. Otherwise AST iteration will continue and trigger the second callback as well.
+
+	set_is_mode_disjoint (a_disjoint: BOOLEAN)
+			-- Assigner for `is_mode_disjoint'.
+		require
+			a_disjoint_not_void: attached a_disjoint
+		do
+			is_mode_disjoint := a_disjoint
+		end
+
 
 	on_access_identifier: ROUTINE [ANY, TUPLE [a_as: ACCESS_AS]]
 		assign set_on_access_identifier

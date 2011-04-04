@@ -1,5 +1,5 @@
 note
-	description: "Calls that represents an annotation indicating that an AST subtree can be removed."
+	description: "Class that represents an annotation indicating that an AST subtree can be removed."
 	date: "$Date$"
 	revision: "$Revision$"
 

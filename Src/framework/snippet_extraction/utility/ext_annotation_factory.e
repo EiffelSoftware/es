@@ -19,4 +19,14 @@ feature -- Access
 			create {EXT_ANN_HOLE} Result
 		end
 
+	new_ann_flatten_retain_if: EXT_ANNOTATION
+		do
+			create {EXT_ANN_FLATTEN} Result.make_with_mode ({EXT_ANN_FLATTEN}.retain_if)
+		end
+
+	new_ann_flatten_retain_else: EXT_ANNOTATION
+		do
+			create {EXT_ANN_FLATTEN} Result.make_with_mode ({EXT_ANN_FLATTEN}.retain_else)
+		end
+
 end

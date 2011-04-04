@@ -8,98 +8,226 @@ class
 
 inherit
 	AST_ITERATOR
+		redefine
+			process_assign_as,
+			process_creation_as,
+			process_if_as,
+			process_instr_call_as,
+			process_loop_as
+		end
+
+	EXT_SHARED_ANNOTATIONS
+		export {NONE} all end
+
+	EXT_SHARED_VARIABLE_CONTEXT
+		export {NONE} all end
 
 	REFACTORING_HELPER
 
 create
-	make_from_variable_information
+	make
 
 feature {NONE} -- Initialization
 
-	make_from_variable_information (a_variable_type: TYPE_A; a_variable_name: STRING; a_interface_variables: HASH_TABLE [TYPE_A, STRING])
-			-- Initialization with variable type and name.
-		require
-			attached a_variable_type
-			attached a_variable_name
-			attached a_interface_variables
-			target_variable_is_not_an_interface_variable: not a_interface_variables.has (a_variable_name)
+	make
+			-- Default initialization.
 		do
-			variable_type := a_variable_type
-			variable_name := a_variable_name
-			interface_variables := a_interface_variables
-
-			create annotations.make (20)
-			annotations.compare_objects
-		ensure
-			attached variable_type
-			attached variable_name
-			attached interface_variables
-			attached annotations
-			annotations_comparing_objects: annotations.object_comparison
 		end
-
-feature -- Access
-
-	annotations: HASH_TABLE [LINKED_LIST [EXT_ANNOTATION], AST_PATH]
-		-- Annotations associated to ast path nodes.
 
 feature {NONE} -- Implementation
 
-	variable_type: TYPE_A
-		-- Type of the variable at which we are looking at.
-
-	variable_name: STRING
-		-- Name of the variable at which we are looking at.
-
-	interface_variables: HASH_TABLE [TYPE_A, STRING]
-		-- Interface variables are mentioned in control flow statements solely witout a feature call.
-
-	annotation_factory: EXT_ANNOTATION_FACTORY
-		once
-			create Result
-		end
-
-feature {NONE} -- Annotation
-
-	is_target_variable (a_variable_name: like variable_name): BOOLEAN
-			-- Query if `variable_name' is equal to the target variable.
-		require
-			a_variable_name_attached: a_variable_name /= Void
-		do
-			Result := variable_name = a_variable_name
-		end
-
-	is_interface_variable (a_variable_name: like variable_name): BOOLEAN
-			-- Query if `variable_name' is one of the interface variables.
-		require
-			a_variable_name_attached: a_variable_name /= Void
-		do
-			Result := interface_variables.has (a_variable_name)
-		end
-
-	is_variable_of_interest (a_variable_name: like variable_name): BOOLEAN
-			-- Query if `variable_name' is either the target or one of the interface variables.
-		require
-			a_variable_name_attached: a_variable_name /= Void
-		do
-			-- Result := variable_name = a_variable_name or interface_variables.has (a_variable_name)
-			Result := is_target_variable (a_variable_name) or is_interface_variable (a_variable_name)
-		end
-
-	add_annotation (location: AST_PATH; annotation: EXT_ANNOTATION)
-			-- Add an AST annotation for the given path `location'.
+	process_assign_as (l_as: ASSIGN_AS)
+		require else
+			l_as_path_not_void: attached l_as.path
 		local
-			l_location_marks: LINKED_LIST [EXT_ANNOTATION]
+			l_variable_usage: LINKED_SET [STRING]
+			l_variable_usage_finder: EXT_VARIABLE_USAGE_CALLBACK_SERVICE
 		do
-			if not annotations.has (location) then
-				create l_location_marks.make
-				annotations.force (l_location_marks, location)
+				-- Set up callback to track variable usage in arguments.
+			create l_variable_usage.make
+			l_variable_usage_finder := create_basic_variable_usage_finder (l_variable_usage)
+
+				-- Process
+			l_as.target.process (l_variable_usage_finder)
+			l_as.source.process (l_variable_usage_finder)
+
+			if l_variable_usage.is_empty then
+					-- prune it: no variables of interest used in call
+				add_annotation (l_as.path, annotation_factory.new_ann_prune)
+			end
+		end
+
+	process_creation_as (l_as: CREATION_AS)
+		require else
+			l_as_path_not_void: attached l_as.path
+		do
+			if is_variable_of_interest (l_as.target.access_name_8) then
+				if attached l_as.call as l_call_as then
+					fixme ("Check call arguments.")
+					fixme ("Do replace 'other' identifiers?")
+				end
 			else
-				l_location_marks := annotations.at (location)
+				if attached l_as.call as l_call_as then
+						-- check call arguments
+					if not is_using_variable_of_interest (l_call_as) then
+							-- prune it: no variables of interest used in call
+						add_annotation (l_as.path, annotation_factory.new_ann_prune)
+					else
+							-- make hole: variables of interest used in call
+						fixme ("Hole It!")
+					end
+				else
+						-- prune it: no call attached
+					add_annotation (l_as.path, annotation_factory.new_ann_prune)
+				end
+			end
+		end
+
+	process_if_as (l_as: IF_AS)
+		local
+			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
+		do
+				-- Process
+			l_use_cond := is_using_variable_of_interest (l_as.condition)
+
+				-- Scan and annotate true branch
+			if attached l_as.compound then
+				l_use_branch_true := is_using_variable_of_interest (l_as.compound)
+
+				if not l_use_branch_true then
+						-- prune it: no variables of interest used
+					add_annotation (l_as.compound.path, annotation_factory.new_ann_prune)
+				end
 			end
 
-			check annotations.has (location) and attached l_location_marks and annotations.at (location) = l_location_marks end
-			l_location_marks.force (annotation)
+				-- Scan and annotate elseif list
+			if attached l_as.elsif_list then
+					-- process all individual `{ELSIF_AS}' from list
+				across l_as.elsif_list as l_elsif_list loop
+					if is_using_variable_of_interest (l_elsif_list.item) then
+							-- mark that at least one elseif has to be retained
+						l_use_elsif_list := True
+					else
+							-- prune it: no variables of interest used
+						add_annotation (l_elsif_list.item.path, annotation_factory.new_ann_prune)
+					end
+				end
+
+					-- process `{ELSIF_AS}' list
+				if not l_use_elsif_list then
+						-- prune it: no variables of interest used
+					add_annotation (l_as.elsif_list.path, annotation_factory.new_ann_prune)
+				end
+			end
+
+				-- Scan and annotate false branch
+			if attached l_as.else_part then
+				l_use_branch_false := is_using_variable_of_interest (l_as.else_part)
+
+				if not l_use_branch_false then
+						-- prune it: no variables of interest used
+					add_annotation (l_as.else_part.path, annotation_factory.new_ann_prune)
+				end
+			end
+
+				-- Based on structural information w.r.t. the subtrees, annotate `{IF_AS}'.
+			if not (l_use_cond or l_use_branch_true or l_use_elsif_list or l_use_branch_false) then
+					-- prune it: no variables of interest used at all in if statement
+				add_annotation (l_as.path, annotation_factory.new_ann_prune)
+
+			elseif not l_use_cond and l_use_branch_true and not l_use_elsif_list and not l_use_branch_false then
+				add_annotation (l_as.path, annotation_factory.new_ann_flatten_retain_if)
+
+			elseif not l_use_cond and not l_use_branch_true and not l_use_elsif_list and l_use_branch_false then
+				add_annotation (l_as.path, annotation_factory.new_ann_flatten_retain_else)
+
+			end
+
+			fixme ("Handle 'elsif' simplification?!")
+			fixme ("When retaining else and if statement -> neg expression?!")
+
+			Precursor (l_as)
+		end
+
+	process_instr_call_as (l_as: INSTR_CALL_AS)
+		do
+			if attached {NESTED_AS} l_as.call as l_call_as then
+				processing_instr_call_nested_as (l_call_as)
+			else
+				Precursor (l_as)
+			end
+		end
+
+	process_loop_as (l_as: LOOP_AS)
+		do
+			Precursor (l_as)
+		end
+
+feature {NONE} -- Implementation (Helper)
+
+	processing_instr_call_nested_as (l_as: NESTED_AS)
+		require else
+			l_as_path_not_void: attached l_as.path
+		do
+			if is_variable_of_interest (l_as.target.access_name_8) then
+				if attached l_as.message as l_call_as then
+					fixme ("Check call arguments.")
+					fixme ("Do replace 'other' identifiers?")
+				end
+			else
+				if attached l_as.message as l_call_as then
+						-- check call arguments
+					if not is_using_variable_of_interest (l_call_as) then
+							-- prune it: no variables of interest used in call
+						add_annotation (l_as.path, annotation_factory.new_ann_prune)
+					else
+							-- make hole: variables of interest used in call
+						fixme ("Hole It!")
+					end
+				else
+						-- prune it: no call attached
+					add_annotation (l_as.path, annotation_factory.new_ann_prune)
+				end
+			end
+		end
+
+feature {NONE} -- Helper
+
+	create_basic_variable_usage_finder (a_variable_usage: LINKED_SET [STRING]): EXT_VARIABLE_USAGE_CALLBACK_SERVICE
+			-- Variable finder that stores all used variable of interest indentifiers in `a_variable_usage'.
+		require
+			a_variable_usage_not_void: attached a_variable_usage
+		do
+				-- Set up callback to track variable usage in arguments.
+			create Result
+			Result.set_is_mode_disjoint (False)
+			Result.set_on_access_identifier (
+				agent add_if_variable_of_interest(?, a_variable_usage)
+			)
+		end
+
+	add_if_variable_of_interest (a_as: ACCESS_AS; a_variable_usage: LINKED_SET [STRING])
+			-- Agent that adds an indentifier name to a given set `a_variable_usage_set'
+			-- if it's contained in the list of variables of interest.
+		do
+			if is_variable_of_interest (a_as.access_name_8) then
+				a_variable_usage.force (a_as.access_name_8)
+			end
+		end
+
+	is_using_variable_of_interest (a_as: AST_EIFFEL): BOOLEAN
+			-- AST terator processing `a_as' answering if a varialbe of interest is used in that AST.
+		local
+			l_variable_usage: LINKED_SET [STRING]
+			l_variable_usage_finder: EXT_VARIABLE_USAGE_CALLBACK_SERVICE
+		do
+				-- Set up callback to track variable usage in arguments.
+			create l_variable_usage.make
+			l_variable_usage_finder := create_basic_variable_usage_finder (l_variable_usage)
+
+			a_as.process (l_variable_usage_finder)
+
+			Result := not l_variable_usage.is_empty
 		end
 
 end

@@ -7,6 +7,9 @@ class
 	EXT_INTERFACE_VARIABLE_FINDER
 
 inherit
+	EXT_SHARED_VARIABLE_CONTEXT
+		export {NONE} all end
+
 	EXT_VARIABLE_USAGE_CALLBACK_SERVICE
 		redefine
 			process_case_as,
@@ -25,15 +28,20 @@ feature {NONE} -- Initialization
 
 	make
 		do
+			create candidate_interface_variables.make (10)
+			candidate_interface_variables.compare_objects
+
 				-- Reset variable usage tracking state.
 			reset
 
 				-- Set up callbacks to track regular variable usage, except in control flow statement expressions.
+			set_is_mode_disjoint (True)
 			set_on_access_identifier (agent callback_use_pure)
 			set_on_access_identifier_with_feature_call (agent callback_use_feat)
 
 				-- Set up callback iterator to track variable usage in control flow statement expressions.
 			create expr_variable_usage_finder
+			expr_variable_usage_finder.set_is_mode_disjoint (True)
 			expr_variable_usage_finder.set_on_access_identifier (agent callback_use_pure_in_cf_stmt)
 			expr_variable_usage_finder.set_on_access_identifier_with_feature_call (agent callback_use_feat_in_cf_stmt)
 		ensure
@@ -56,42 +64,17 @@ feature -- Configuration
 			total_variable_usage := new_variable_usage_tuple
 		end
 
-	set_target_variable (a_target_variable_type: like target_variables.item_for_iteration; a_target_variable_name: like target_variables.key_for_iteration)
-			-- Configures the iterator with a single target variable.
-		require
-			attached a_target_variable_type
-			attached a_target_variable_name
-		local
-			l_target_variables: like target_variables
-		do
-			create l_target_variables.make (1)
-			l_target_variables.force (a_target_variable_type, a_target_variable_name)
-
-			set_target_variables (l_target_variables)
-		ensure
-			target_variables_not_void: target_variables /= Void
-		end
-
-	set_target_variables (a_target_variables: like target_variables)
-			-- Configures the iterator with a set of target variables.
-		require
-			a_target_variables_not_void: a_target_variables /= Void
-		do
-			target_variables := a_target_variables
-		ensure
-			target_variables_not_void: target_variables /= Void
-		end
-
 	set_candidate_interface_variables (a_candidate_interface_variables: like candidate_interface_variables)
-			-- Configures the iterator with a set of candidate interface variables that have to be
-			-- checked if the are real interface variables.
+			-- Configures this class with a set of candidate interface variables.
 		require
-			a_candidate_iv_not_void: a_candidate_interface_variables /= Void
+			a_candidate_interface_variables_not_void: a_candidate_interface_variables /= Void
 		do
-			candidate_interface_variables := a_candidate_interface_variables
+			candidate_interface_variables.wipe_out
+			candidate_interface_variables.merge (a_candidate_interface_variables)
 		ensure
-			candidate_iv_not_void: candidate_interface_variables /= Void
+--			candidate_interface_variables_filled_with_input: candidate_interface_variables ~ a_candidate_interface_variables
 		end
+
 
 feature -- Access
 
@@ -100,18 +83,6 @@ feature -- Access
 
 	is_mode_restricted_to_c_use_pure: BOOLEAN = True
 		-- Record pure variable usage in control flow statement expressions only and don't consider feature calls?
-
-	has_target_variables: BOOLEAN
-			-- Are the target variables configured?
-		do
-			Result := target_variables /= Void and then not target_variables.is_empty
-		end
-
-	has_candidate_interface_variables: BOOLEAN
-			-- Are the candidate interface variables configured?
-		do
-			Result := candidate_interface_variables /= Void and then not candidate_interface_variables.is_empty
-		end
 
 	last_interface_variables: HASH_TABLE [TYPE_A, STRING]
 			-- Set of interface variables found according to AST iteration and that
@@ -126,7 +97,7 @@ feature -- Access
 			Result.compare_objects
 
 				-- Selection criteria configured?
-			if has_target_variables and has_candidate_interface_variables then
+			if not target_variables.is_empty and not candidate_interface_variables.is_empty then
 
 					-- Filter variables that are either not valid or not in the candidate list.
 				across partial_use_order as l_order loop
@@ -254,12 +225,8 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- Implementation
 
-	target_variables: HASH_TABLE [TYPE_A, STRING]
-		-- Set of target variables at which we are looking at.
-
-	candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
-		-- Set of variables that could potentially be interface variables. This set normally consists the local variables
-		-- and formal arguments of a feature.
+	candidate_interface_variables: like interface_variables
+		-- Set of candidate interface variables.
 
 	nesting_stack: STACK [TUPLE [use_pure, use_feat, c_use_pure, c_use_feat: like act_use_pure]]
 		-- Stack used for evaluation in different scopes that keeps track of variable usage.

@@ -19,6 +19,10 @@ inherit
 
 	EPA_CFG_UTILITY
 
+	EXT_SHARED_ANNOTATIONS
+
+	EXT_SHARED_LOGGER
+
 feature -- Access
 
 	last_snippets: LINKED_LIST [EXT_SNIPPET]
@@ -40,14 +44,6 @@ feature -- Basic operations
 			l_cfg_builder: EPA_CFG_BUILDER
 			l_ast_printer: EXT_AST_PRINTER
 		do
-				-- Debug
-				-- TODO: to_be_removed
-			io.new_line
-			io.new_line
-			io.new_line
-			io.new_line
-			io.new_line
-
 			relevant_target_type := a_type
 			feature_ := a_feature
 			context_class := a_context_class
@@ -57,18 +53,16 @@ feature -- Basic operations
 				-- Collect relevant variables from `a_feature'.
 			collect_relevant_variables
 
-				-- Debug output collected relevant variables.
-				-- TODO: to_be_removed
-			io.put_string ("-----%N")
+				-- Log debug information.
+			log.put_string ("%N-----%N")
 			from
 				relevant_variables.start
 			until
 				relevant_variables.after
 			loop
-				io.put_string ("[relevant_variable] " + relevant_variables.key_for_iteration + ": " + relevant_variables.item_for_iteration.name + "%N")
+				log.put_string ("[relevant_variable] " + relevant_variables.key_for_iteration + ": " + relevant_variables.item_for_iteration.name + "%N")
 				relevant_variables.forth
 			end
-			io.put_new_line
 
 				-- Process the feature body to extract snippets for each relevant variable.
 			l_compound_as := body_compound_ast_from_feature (a_feature)
@@ -79,7 +73,7 @@ feature -- Basic operations
 					l_path_initializer.process_from_root (l_compound)
 
 						-- Print AST.
-					io.put_new_line
+					log.put_string ("%N")
 					create l_ast_printer
 					l_compound.process (l_ast_printer)
 
@@ -160,6 +154,7 @@ feature{NONE} -- Implementation
 			locals: like locals_from_feature_as
 			l_candidates: HASH_TABLE [TYPE_A, STRING]
 			l_iv_finder: EXT_INTERFACE_VARIABLE_FINDER
+			l_shared_variable_context: EXT_SHARED_VARIABLE_CONTEXT
 		do
 			create Result.make (10)
 			Result.compare_objects
@@ -176,9 +171,12 @@ feature{NONE} -- Implementation
 				-- Remove the target variable from the list of candidate variables, if present.
 			l_candidates.remove (a_variable_name)
 
+				-- Set shared variable context used within AST processing.
+			create l_shared_variable_context
+			l_shared_variable_context.set_target_variable (a_variable_type, a_variable_name)
+
 				-- Check type conformance against defintion.
 			create l_iv_finder.make
-			l_iv_finder.set_target_variable (a_variable_type, a_variable_name)
 			l_iv_finder.set_candidate_interface_variables (l_candidates)
 
 			a_compound_as.process (l_iv_finder)
@@ -195,29 +193,37 @@ feature{NONE} -- Implementation
 			l_ast_marker: EXT_AST_MARKER
 			l_ast_pruner: EXT_AST_PRUNER
 			l_interface_variables: HASH_TABLE [TYPE_A, STRING]
+			l_shared_variable_context: EXT_SHARED_VARIABLE_CONTEXT
 		do
 				-- Debug
-			io.put_string ("%N== process_feature_with_relevant_variable (" + a_variable_name + ": " + a_variable_type.name + ") ==%N")
+			log.put_string ("%N== process_feature_with_relevant_variable (" + a_variable_name + ": " + a_variable_type.name + ") ==%N")
+
+				-- Reset shared annotation data structures.
+			reset_annotations
 
 				-- Collect interface variables from `a_compound_as'.
 			l_interface_variables := collect_interface_variables (a_compound_as, a_variable_type, a_variable_name)
 
 				-- Debug output collected interface.
-				-- TODO: to_be_removed
-			io.put_string ("-----%N")
+			log.put_string ("%N-----%N")
 			across l_interface_variables as l_iv loop
-				io.put_string ("[interface_variable] " + l_iv.key + ": " + l_iv.item.name + "%N")
+				log.put_string ("[interface_variable] " + l_iv.key + ": " + l_iv.item.name + "%N")
 			end
 
---			create l_ast_marker.make_from_variable_information (a_variable_type, a_variable_name, l_interface_variables)
---			a_compound_as.process (l_ast_marker)
+				-- Set shared variable context used within AST processing.
+			create l_shared_variable_context
+			l_shared_variable_context.set_target_variable (a_variable_type, a_variable_name)
+			l_shared_variable_context.set_interface_variables (l_interface_variables)
+
+				-- Annotate AST.
+			create l_ast_marker.make
+			a_compound_as.process (l_ast_marker)
 
 				-- Rewrite AST by removing obsolete statments and performing snippet tranformations.
---			create l_ast_pruner.make_with_output (ast_printer_output)
---			l_ast_pruner.set_annotations (l_ast_marker.annotations)
+			create l_ast_pruner.make_with_output (ast_printer_output)
 
---			io.put_new_line
---			io.put_string (text_from_ast_with_printer (a_compound_as, l_ast_pruner))
+			log.put_string ("%N")
+			log.put_string (text_from_ast_with_printer (a_compound_as, l_ast_pruner))
 		end
 
 end
