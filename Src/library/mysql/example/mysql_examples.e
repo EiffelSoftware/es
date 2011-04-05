@@ -50,15 +50,15 @@ feature
 				client.last_result.forth
 			end
 
-			client.last_result.dispose
-			print("%N")
-
 			-- Using across syntax
 			across
 				client.last_result as c
 			loop
 				print ("%Tlast_result.at: "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
 			end
+
+			client.last_result.dispose
+			print("%N")
 
 			-- Prepared Statement (INSERT)
 			-- It is imperative that the stmt be closed (or it will leak memory)
