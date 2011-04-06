@@ -24,7 +24,7 @@ feature -- Initialization
 			has_prepared_statement := False
 			mysql_stmt := Void
 			-- Defaults
-			host := once "localhost"
+			host := once "127.0.0.1"
 			username := once "root"
 			password := once ""
 			database := once "test"

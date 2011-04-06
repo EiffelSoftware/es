@@ -31,15 +31,25 @@ REQUIREMENTS:
 
 INSTALLATION UNIX/LINUX/MAC OS X:
 
-  * Ensure that you have the MySQL header files in
-    /usr/include/mysql and the library in /usr/lib
+  * Ensure that you have
+    the MySQL header files in /usr/include/mysql
+    and the MySQL library files in /usr/lib
 
-  * In %EIFFEL_SRC%/library/mysql/Clib_Full, run "finish_freezing -library"
+  * Ensure that this library's folder is in
+    %ISE_LIBRARY%/library
+
+  * In %EIFFEL_SRC%/library/mysql/Clib_Full,
+    run "finish_freezing -library"
+
+  * You might need to use "sudo finish_freezing -library"
 
 INSTALLATION WINDOWS:
 
   * Ensure that "MySQL Connector" is installed in
     %EIFFEL_SRC%\library\mysql\Clib_Full\connector-win
+
+  * Ensure that this library's folder is in
+    %ISE_LIBRARY%/library
 
   * In %EIFFEL_SRC%\library\mysql\Clib_Full, run "compile_library.bat"
 
@@ -51,5 +61,5 @@ NOTES:
 
 USAGE:
 
-  * Please look at example/mysql_example.e
+  * Please look at example/mysql_examples.e
 

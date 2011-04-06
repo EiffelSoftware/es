@@ -15,38 +15,45 @@ feature
 			stmt, stmt_insert: MYSQL_PREPARED_STATEMENT
 		do
 			-- Initialization
-			create client.make -- uses default values: host "localhost", user "root", empty password, port 3306
+			print ("-- Connecting to server...%N")
+			create client.make -- uses default values: host "127.0.0.1", user "root", empty password, port 3306
 			client.connect
-			print("is_connected: "+client.is_connected.out+"%N%N")
+			print ("is_connected: "+client.is_connected.out+"%N%N")
 
-			if client.is_connected then
-				-- Simple queries
+			-- Simple queries
+			print ("-- Executing 'DROP TABLE eiffelmysql IF EXISTS'...%N")
 			client.execute_query ("DROP TABLE eiffelmysql IF EXISTS")
+			print ("-- Executing 'CREATE TABLE eiffelmysql (i INT AUTO_INCREMENT, t TEXT, j DOUBLE, PRIMARY KEY (i))'...%N")
 			client.execute_query ("CREATE TABLE eiffelmysql (i INT AUTO_INCREMENT, t TEXT, j DOUBLE, PRIMARY KEY (i))")
+			print ("-- Executing 'INSERT INTO eiffelmysql VALUES (1, 'foo', 11.1)'...%N")
 			client.execute_query ("INSERT INTO eiffelmysql VALUES (1, 'foo', 11.1)")
+			print ("-- Executing 'INSERT INTO eiffelmysql VALUES (NULL, 'bar', 22.2)'...%N")
 			client.execute_query ("INSERT INTO eiffelmysql VALUES (NULL, 'bar', 22.2)")
 			print ("last_insert_id: "+client.last_insert_id.out+"%N")
+			print ("-- Executing 'UPDATE eiffelmysql SET j = j * j'...%N")
 			client.execute_query ("UPDATE eiffelmysql SET j = j * j")
-			print ("last_affected_rows: "+client.last_affected_rows.out+"%N")
+			print ("last_affected_rows: "+client.last_affected_rows.out+"%N%N")
 
-			-- Error
-			client.execute_query ("SELECT")
-			print ("last_error: "+client.last_error+" ("+client.last_error_number.out+"%N%N")
+			-- Sample Error
+			print ("-- Forcing an error by executing 'SELECT * FROM a_table_that_does_not_exist'...%N")
+			client.execute_query ("SELECT * FROM a_table_that_does_not_exist")
+			print ("last_error: "+client.last_error+" (Error Number: "+client.last_error_number.out+")%N%N")
+
 
 			-- Simple result
-			-- It is imperative that the last_result be freed for queries that have a result set (or it will leak memory)
+			print ("-- Executing 'SELECT * FROM eiffelmysql'...%N")
 			client.execute_query ("SELECT * FROM eiffelmysql")
-			print ("last_result.row_count: "+client.last_result.row_count.out+"%N")
-			print ("last_result.field_count: "+client.last_result.column_count.out+"%N")
-			print ("%TField 1: "+client.last_result.column_name_at (1)+"%N")
-			print ("%TField 2: "+client.last_result.column_name_at (2)+"%N")
-			print ("%TField 3: "+client.last_result.column_name_at (3)+"%N")
+			print ("Number of rows: "+client.last_result.row_count.out+"%N")
+			print ("Number of columns: "+client.last_result.column_count.out+"%N")
+			print ("Column 1: "+client.last_result.column_name_at (1)+"%N")
+			print ("Column 2: "+client.last_result.column_name_at (2)+"%N")
+			print ("Column 3: "+client.last_result.column_name_at (3)+"%N")
 			from
 				client.last_result.start
 			until
 				client.last_result.off
 			loop
-				print ("%Tlast_result.at: "+client.last_result.at (1)+", '"+client.last_result.at (2)+"', "+client.last_result.at (3)+"%N")
+				print ("Row (Using Loop): "+client.last_result.at (1)+", '"+client.last_result.at (2)+"', "+client.last_result.at (3)+"%N")
 				client.last_result.forth
 			end
 
@@ -54,14 +61,15 @@ feature
 			across
 				client.last_result as c
 			loop
-				print ("%Tlast_result.at: "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
+				print ("Row (Using Across): "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
 			end
 
+			-- Close and dispose of the result
 			client.last_result.dispose
 			print("%N")
 
 			-- Prepared Statement (INSERT)
-			-- It is imperative that the stmt be closed (or it will leak memory)
+			print ("-- Preparing and executing 'INSERT INTO eiffelmysql VALUES (?, ?, ?)'...%N")
 			client.prepare_statement ("INSERT INTO eiffelmysql VALUES (?, ?, ?)")
 			stmt_insert := client.last_prepared_statement
 			stmt_insert.set_integer    (1, 3)
@@ -74,21 +82,21 @@ feature
 			stmt_insert.execute
 
 			-- Prepared Statement (SELECT)
-			-- It is imperative that the stmt be closed (or it will leak memory)
+			print ("-- Preparing and executing 'SELECT * FROM eiffelmysql WHERE t = ?'...%N")
 			client.prepare_statement("SELECT * FROM eiffelmysql WHERE t = ?")
 			stmt := client.last_prepared_statement
 			stmt.set_string(1, "foo")
 			stmt.execute
-			print ("stmt.num_rows: "+stmt.row_count.out+"%N")
-			print ("%TField 1: "+stmt.column_name_at (1)+"%N")
-			print ("%TField 2: "+stmt.column_name_at (2)+"%N")
-			print ("%TField 3: "+stmt.column_name_at (3)+"%N")
+			print ("Number of rows: "+stmt.row_count.out+"%N")
+			print ("Column 1: "+stmt.column_name_at (1)+"%N")
+			print ("Column 2: "+stmt.column_name_at (2)+"%N")
+			print ("Column 3: "+stmt.column_name_at (3)+"%N")
 			from
 				stmt.start
 			until
 				stmt.off
 			loop
-				print ("%Tstmt.at: "+stmt.integer_at (1).out+", '"+stmt.string_at (2)+"', "+stmt.double_at (3).out+"%N")
+				print ("Row (Using Loop): "+stmt.integer_at (1).out+", '"+stmt.string_at (2)+"', "+stmt.double_at (3).out+"%N")
 				stmt.forth
 			end
 			print("%N")
@@ -101,30 +109,33 @@ feature
 			stmt_insert.dispose
 
 			-- Run same query again (SELECT)
+			print ("-- Executing 'SELECT * FROM eiffelmysql WHERE t = ?' again...%N")
 			stmt.set_string (1, "baz")
 			stmt.execute
-			print ("stmt.num_rows: "+stmt.row_count.out+"%N")
+			print ("Rows: "+stmt.row_count.out+"%N")
 			from
 				stmt.start
 			until
 				stmt.off
 			loop
-				print ("%Tstmt.at: "+stmt.integer_at (1).out+", '"+stmt.string_at (2).out+"', "+stmt.is_null_at (3).out+"%N")
+				print ("Row (Using Loop): "+stmt.integer_at (1).out+", '"+stmt.string_at (2).out+"', "+stmt.is_null_at (3).out+"%N")
 				stmt.forth
 			end
 
 			-- Using across syntax
---			across
---				stmt as c
---			loop
---				print ("%Tstmt.at: "+c.item.int_at (1).out+", '"+c.item.string_at (2).out+"', "+c.item.null_at (3).out+"%N")
---			end
+			across
+				stmt as c
+			loop
+				print ("Row (Using Across): "+c.item.at (1)+", '"+c.item.at (2)+"', "+c.item.at (3)+"%N")
+			end
 
-			-- Cleanup
+			-- Close and dispose of the result and client
 			stmt.dispose
+			print ("%N")
+			print ("-- Executing 'DROP TABLE eiffelmysql'...%N")
 			client.execute_query ("DROP TABLE eiffelmysql")
 			client.dispose
-			end
+			print ("Done!%N%N%N")
 		end
 
 end

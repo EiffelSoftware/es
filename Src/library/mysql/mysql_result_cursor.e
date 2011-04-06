@@ -20,6 +20,26 @@ feature -- Access
 
 	item: ARRAY [STRING]
 			-- Item at current cursor position
+		do
+			Result := item_internal
+		end
+
+	after: BOOLEAN
+			-- Is there no valid cursor position to the right of cursor?
+		do
+			Result := target.row_count + 1 <= cursor_index
+		end
+
+feature {NONE} -- Implementation
+
+	target: MYSQL_RESULT
+			-- <Precursor>
+
+	item_internal: ARRAY [STRING]
+			-- Item at current cursor position
+		require
+			mysql_client_is_connected: target.mysql_client.is_connected
+			is_open: target.is_open
 		local
 			i: INTEGER
 			l_count: INTEGER
@@ -33,16 +53,5 @@ feature -- Access
 				Result.put (l_target.at (i), i)
 			end
 		end
-
-	after: BOOLEAN
-			-- Is there no valid cursor position to the right of cursor?
-		do
-			Result := target.row_count + 1 <= cursor_index
-		end
-
-feature {NONE} -- Implementation
-
-	target: MYSQL_RESULT
-			-- <Precursor>
 
 end

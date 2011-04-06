@@ -26,13 +26,7 @@ feature -- Access
 			i: INTEGER
 			l_target: like target
 		do
-			l_target := target
-			l_target.go_i_th (cursor_index)
-			create Result.make_filled (Void, 1, l_target.column_count)
-			across 1 |..| l_target.column_count as l_indexes loop
-				i := l_indexes.item
-				Result.put (l_target.at (i), i)
-			end
+			Result := item_internal
 		end
 
 	after: BOOLEAN
@@ -45,5 +39,23 @@ feature {NONE} -- Implementation
 
 	target: MYSQL_PREPARED_STATEMENT
 			-- <Precursor>
+
+	item_internal: ARRAY [STRING]
+			-- Item at current cursor position
+		require
+			is_open: target.is_open
+				is_executed: target.is_executed
+		local
+			i: INTEGER
+			l_target: like target
+		do
+			l_target := target
+			l_target.go_i_th (cursor_index)
+			create Result.make_filled (Void, 1, l_target.column_count)
+			across 1 |..| l_target.column_count as l_indexes loop
+				i := l_indexes.item
+				Result.put (l_target.at (i), i)
+			end
+		end
 
 end
