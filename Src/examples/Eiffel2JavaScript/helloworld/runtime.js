@@ -52,8 +52,8 @@ if (!Array.prototype.indexOf) {
 }
 
 // This algorithm is exactly the one specified in ECMA-262, 5th edition
-if (!Array.prototype.forEach) {
-	Array.prototype.forEach = function(fun /*, thisp */) {
+if (!Array.prototype.eiffelForEach) {
+	Array.prototype.eiffelForEach = function(fun /*, thisp */) {
 		"use strict";
 
 		if (this === void 0 || this === null) {
@@ -67,17 +67,17 @@ if (!Array.prototype.forEach) {
 		}
 
 		var thisp = arguments[1];
-		for (var i = 0; i < len; i++) {
+		for (var i = 1; i < len; i++) {
 			if (i in t) {
-				fun.call(thisp, t[i], i, t);
+				fun.call(thisp, t[i], i + t[0] - 1, t);
 			}
 		}
 	};
 }
 
 // This algorithm is exactly the one specified in ECMA-262, 5th edition
-if (!Array.prototype.some) {
-	Array.prototype.some = function(fun /*, thisp */) {
+if (!Array.prototype.eiffelSome) {
+	Array.prototype.eiffelSome = function(fun /*, thisp */) {
 		"use strict";
 
 		if (this === void 0 || this === null) {
@@ -91,8 +91,8 @@ if (!Array.prototype.some) {
 		}
 
 		var thisp = arguments[1];
-		for (var i = 0; i < len; i++) {
-			if (i in t && fun.call(thisp, t[i], i, t)) {
+		for (var i = 1; i < len; i++) {
+			if (i in t && fun.call(thisp, t[i], i + t[0] - 1, t)) {
 				return true;
 			}
 		}

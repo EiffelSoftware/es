@@ -6,24 +6,24 @@ class
 feature -- Access
 
 	window : attached JS_WINDOW
-		external
-			"C"
-		alias "#window"
-		end
+		external "C" alias "#window" end
 
 	console : attached JS_CONSOLE
-		external
-			"C"
-		alias "#console"
-		end
+		external "C" alias "#console" end
+
+	doc : attached JS_HTML_DOCUMENT
+		external "C" alias "#window.document" end
+
+	body: attached JS_HTML_BODY_ELEMENT
+		external "C" alias "#window.document.body" end
 
 feature -- Basic Operation
 
 	toJSON: attached STRING
-		external
-			"C"
-		alias "#JSON.stringify($TARGET)"
-		end
+		external "C" alias "#JSON.stringify($TARGET)" end
+
+	class_name: attached STRING
+		external "C" alias "$class_name" end
 
 feature {NONE} -- Force compilation
 

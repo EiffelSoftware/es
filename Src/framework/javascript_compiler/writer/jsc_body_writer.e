@@ -353,7 +353,7 @@ feature {NONE} -- Implementation
 				output.pop
 			end
 
-			if a_this_used_in_closure then
+			if a_this_used_in_closure and not jsc_context.name_mapper.is_inside_agent then
 					-- Write the closure self reference
 				output.push ("")
 					output.put ("$this = this")

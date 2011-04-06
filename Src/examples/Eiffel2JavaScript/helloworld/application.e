@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			-- Add a div with some text in it
 			create l_div.make
 			l_foo := l_div.append_child (window.document.create_text_node ("Hello World!"))
-			l_foo := window.document.body.append_child (l_div)
+			l_foo := body.append_child (l_div)
 		end
 
 end

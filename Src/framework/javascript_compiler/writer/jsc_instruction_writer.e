@@ -434,7 +434,8 @@ feature {NONE} -- Implementation
 				l_feature ?= l_class.feature_of_name_id (l_attribute.attribute_name_id)
 				check l_feature /= Void end
 
-				output.put ("this.")
+				output.put (jsc_context.name_mapper.current_class_target)
+				output.put (".")
 				output.put (jsc_context.name_mapper.feature_name (l_feature, false))
 			else
 				check should_not_be_here: false end
