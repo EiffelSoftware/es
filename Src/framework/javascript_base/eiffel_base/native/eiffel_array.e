@@ -86,6 +86,6 @@ feature -- Basic Operation
 		external "C" alias "some($test)" end
 
 	upper: INTEGER
-		external "C" alias "($TARGET.length-1+$TARGET[0])" end
+		external "C" alias "($TARGET.length+$TARGET[0]-2)" end
 
 end

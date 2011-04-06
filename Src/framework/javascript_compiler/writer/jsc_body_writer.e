@@ -233,6 +233,9 @@ feature -- Basic Operations
 				if attached rescue_code as safe_rescue_code then
 					output.put_line ("} catch ($err) {")
 					output.put_data (safe_rescue_code)
+					output.indent
+					output.put_line ("if (!$retry) { throw $err; }")
+					output.unindent
 					output.put_line ("}")
 					output.unindent
 					output.put_line ("}")
