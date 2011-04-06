@@ -67,6 +67,9 @@ feature -- Basic Operation
 	count : INTEGER
 		external "C" alias "length" end
 
+	ends_with (other: attached STRING) : BOOLEAN
+		external "C" alias "($TARGET.indexOf($other) + ($other).length === $TARGET.length)" end
+
 	extend (c: CHARACTER)
 		external "C" alias "$TARGET += $c" end
 

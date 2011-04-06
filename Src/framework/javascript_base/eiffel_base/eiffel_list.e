@@ -35,7 +35,7 @@ feature -- Operations
 
 	at alias "@" (a_index: INTEGER): G
 		do
-			Result := inner_array[a_index]
+			Result := inner_array[a_index-1]
 		end
 
 	back
@@ -185,6 +185,11 @@ feature -- Operations
 			inner_array.set_item (a_item, a_index-1)
 		end
 
+	put_left (a_item: G)
+		do
+			inner_array.splice1 (inner_index, 0, a_item)
+		end
+
 	put_right (a_item: G)
 		do
 			inner_array.splice1 (inner_index+1, 0, a_item)
@@ -193,6 +198,16 @@ feature -- Operations
 	remove
 		do
 			inner_array.splice0 (inner_index, 1)
+		end
+
+	remove_left
+		do
+			inner_array.splice0 (inner_index-1, 1)
+		end
+
+	remove_right
+		do
+			inner_array.splice0 (inner_index+1, 1)
 		end
 
 	replace (a_item: G)

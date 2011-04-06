@@ -73,6 +73,9 @@ feature -- Basic Operation
 	to_double: DOUBLE
 		external "C" alias "$TARGET" end
 
+	truncated_to_real: REAL
+		external "C" alias "$TARGET" end
+
 	zero: INTEGER
 		external "C" alias "#0" end
 

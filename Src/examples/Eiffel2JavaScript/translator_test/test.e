@@ -45,9 +45,9 @@ feature {NONE} -- Implementation
 			if expects_exception and has_exception then
 				assertions := assertions + 1
 			end
-			if not expects_exception and not has_exception then
-				assertions := assertions + 1
-			end
+--			if not expects_exception and not has_exception then
+--				assertions := assertions + 1
+--			end
 			if not current_test_failed then
 				succeed
 			end

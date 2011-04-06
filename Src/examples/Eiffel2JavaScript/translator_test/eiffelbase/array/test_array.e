@@ -128,7 +128,6 @@ feature {NONE} -- Initialization
 			invoke_test ("do_all", agent
 				local
 					l_array: ARRAY[INTEGER]
-					l_result: BOOLEAN
 				do
 					l_array := << 3, 8, 9, 1, -10, 10, -138>>
 					acc := 0
@@ -139,7 +138,6 @@ feature {NONE} -- Initialization
 			invoke_test ("do_if", agent
 				local
 					l_array: ARRAY[INTEGER]
-					l_result: BOOLEAN
 				do
 					l_array := << 3, 8, 9, 1, -10, 10, -138>>
 					acc := 0
@@ -150,7 +148,6 @@ feature {NONE} -- Initialization
 			invoke_test ("do_all_with_index", agent
 				local
 					l_array: ARRAY[INTEGER]
-					l_result: BOOLEAN
 				do
 					l_array := << 3, 8, 9, 1, -10, 10, -138>>
 					acc := 0
@@ -161,7 +158,6 @@ feature {NONE} -- Initialization
 			invoke_test ("do_if_with_index", agent
 				local
 					l_array: ARRAY[INTEGER]
-					l_result: BOOLEAN
 				do
 					l_array := << 3, 8, 9, 1, -10, 10, -138>>
 					acc := 0

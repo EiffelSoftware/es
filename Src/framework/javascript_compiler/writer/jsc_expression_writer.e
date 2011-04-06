@@ -1180,6 +1180,11 @@ feature {NONE} -- Implementation
 			check written_class /= Void end
 
 			l_feature := written_class.feature_of_rout_id (a_node.routine_id)
+
+			if l_feature = Void then
+				-- Still not sure why this happens
+				l_feature := written_class.feature_of_feature_id (a_node.feature_id)
+			end
 			check l_feature /= Void end
 
 			Result := l_feature

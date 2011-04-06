@@ -16,24 +16,24 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create inner_array.make_as_obj
+			create hash_set.make (1)
 		end
 
 feature -- Basic Operation
 
 	count: INTEGER
 		do
-			Result := inner_array.length
+			Result := hash_set.count
 		end
 
 	has (v: G): BOOLEAN
 		do
-			Result := inner_array.has_item_by_name (v.out)
+			Result := hash_set.has (v.out)
 		end
 
 	extend (v : G)
 		do
-			inner_array.set_item_by_name (v.out, true)
+			hash_set.put (true, v.out)
 		end
 
 	is_empty: BOOLEAN
@@ -43,17 +43,17 @@ feature -- Basic Operation
 
 	prune (v : G)
 		do
-			inner_array.remove_item_by_name (v.out)
+			hash_set.remove (v.out)
 		end
 
 	prune_all (v : G)
 		do
-			inner_array.remove_item_by_name (v.out)
+			hash_set.remove (v.out)
 		end
 
 	put (v : G)
 		do
-			inner_array.set_item_by_name (v.out, true)
+			hash_set.put (true, v.out)
 		end
 
 	wipe_out
@@ -63,6 +63,5 @@ feature -- Basic Operation
 
 feature {NONE} -- Implementation
 
-	inner_array: attached JS_ARRAY[BOOLEAN]
-
+	hash_set: attached HASH_TABLE[BOOLEAN, attached STRING]
 end
