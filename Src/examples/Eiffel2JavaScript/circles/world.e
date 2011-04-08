@@ -9,7 +9,6 @@ class
 	WORLD
 
 inherit
-	JS_OBJECT
 	DOUBLE_MATH
 
 create
@@ -18,26 +17,13 @@ create
 feature {NONE} -- Initialization
 
 	make (a_top, a_left, a_bottom, a_right: INTEGER; l_circles: attached LIST[attached CIRCLE])
-		local
-			foo: JS_NODE
 		do
-			create dom_node.make
-			dom_node.style.top := a_top.out + "px"
-			dom_node.style.left := a_left.out + "px"
-			dom_node.style.height := (a_bottom - a_top).out + "px"
-			dom_node.style.width := (a_right - a_left).out + "px"
-			dom_node.style.border := "1px solid #000"
-			dom_node.style.position := "absolute"
-
 			circles := l_circles
-			from
-				circles.start
-			until
-				circles.after
-			loop
-				foo := dom_node.append_child (circles.item.dom_node)
-				circles.forth
-			end
+
+			abs_bottom := a_bottom
+			abs_top := a_top
+			abs_left := a_left
+			abs_right := a_right
 
 			top := 0
 			bottom := a_bottom - a_top
@@ -47,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	dom_node: attached JS_HTML_DIV_ELEMENT
+	abs_bottom, abs_top, abs_left, abs_right: INTEGER
 
 	circles: attached LIST[attached CIRCLE]
 
@@ -64,20 +50,6 @@ feature -- Basic Operation
 			loop
 				l_done_time := step (l_done_time, a_delta_time)
 			end
-
-			render
-		end
-
-	render
-		do
-			from
-				circles.start
-			until
-				circles.after
-			loop
-				circles.item.render
-				circles.forth
-			end
 		end
 
 	wall_friction: DOUBLE assign set_wall_friction
@@ -87,8 +59,6 @@ feature -- Basic Operation
 		end
 
 feature {NONE} -- Implementation
-
-
 
 	bottom, top, left, right: INTEGER
 
@@ -265,6 +235,13 @@ feature {NONE} -- Implementation
 				circles.after
 			loop
 				l_new_position := circles.item.position + circles.item.velocity * (step_time/delta_time)
+
+					-- Account for rounding errors
+				l_new_position.y := l_new_position.y.min (bottom - circles.item.radius)
+				l_new_position.y := l_new_position.y.max (top + circles.item.radius)
+				l_new_position.x := l_new_position.x.max (left + circles.item.radius)
+				l_new_position.x := l_new_position.x.min (right - circles.item.radius)
+
 				circles.item.position := l_new_position
 				circles.forth
 			end
@@ -277,27 +254,32 @@ feature {NONE} -- Implementation
 		end
 
 	circles_inside: BOOLEAN
+		local
+			i: INTEGER
+			c: CIRCLE
 		do
 			from
 				Result := true
-				circles.start
+				i := 1
 			until
-				circles.after or Result = false
+				i > circles.count or Result = false
 			loop
-				if circles.item.position.y > bottom - circles.item.radius then
+				c := circles[i]
+
+				if c.position.y > bottom - c.radius then
 					Result := false
 				end
-				if circles.item.position.y < top + circles.item.radius then
+				if c.position.y < top + c.radius then
 					Result := false
 				end
-				if circles.item.position.x < left + circles.item.radius then
+				if c.position.x < left + c.radius then
 					Result := false
 				end
-				if circles.item.position.x > right - circles.item.radius then
+				if c.position.x > right - c.radius then
 					Result := false
 				end
 
-				circles.forth
+				i := i + 1
 			end
 		end
 

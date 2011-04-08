@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="circles_vision2" uuid="27E733DA-D858-49ED-8B3E-73D21A863DAF">
+	<target name="circles_vision2">
+		<root cluster="root_cluster" feature="make_and_launch" class="APPLICATION"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="multithreaded" value="true"/>
+		<!--<precompile name="vision2_pre" location="$ISE_PRECOMP/vision2.ecf"/>-->
+		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<library name="vision2" location="$ISE_LIBRARY/library/vision2/vision2.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY/library/gobo/gobo_kernel.ecf"/>
+		<library name="gobo_time" location="$ISE_LIBRARY/library/gobo/gobo_time.ecf"/>
+		<library name="circles" location="..\circles\circles.ecf" readonly="false"/>
+		<cluster name="root_cluster" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+	<target name="circles_vision2_dotnet" extends="circles_vision2">
+		<setting name="msil_generation" value="true"/>
+		<setting name="dotnet_naming_convention" value="True"/>
+	</target>
+</system>

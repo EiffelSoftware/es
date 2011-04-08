@@ -24,8 +24,17 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	x: DOUBLE
-	y: DOUBLE
+	x: DOUBLE assign set_x
+	set_x (a_x: DOUBLE)
+		do
+			x := a_x
+		end
+
+	y: DOUBLE assign set_y
+	set_y (a_y: DOUBLE)
+		do
+			y := a_y
+		end
 
 feature -- Basic Operation
 

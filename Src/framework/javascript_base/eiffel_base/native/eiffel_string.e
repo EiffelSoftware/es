@@ -55,6 +55,12 @@ feature -- Basic Operation
 	as_lower: attached STRING
 		external "C" alias "toLowerCase()" end
 
+	as_string_8: attached STRING
+		external "C" alias "$TARGET" end
+
+	as_string_32: attached STRING
+		external "C" alias "$TARGET" end
+	
 	as_upper: attached STRING
 		external "C" alias "toUpperCase()" end
 
