@@ -48,6 +48,18 @@ feature -- Query, the value of string is what should be written to XML
 
 	context_popup: STRING = "ContextPopup"
 
+	context_popup_mini_toolbars: STRING = "ContextPopup.MiniToolbars"
+
+	mini_toolbar: STRING = "MiniToolbar"
+
+	context_popup_context_menus: STRING = "ContextPopup.ContextMenus"
+
+	context_popup_context_maps: STRING = "ContextPopup.ContextMaps"
+
+	context_menu: STRING = "ContextMenu"
+
+	context_map: STRING = "ContextMap"
+
 feature -- ALl types under group
 
 	button: STRING = "Button"
@@ -66,7 +78,11 @@ feature -- ALl types under group
 
 	in_ribbon_gallery: STRING = "InRibbonGallery"
 
+	split_button_gallery: STRING = "SplitButtonGallery"
+
 	drop_down_gallery_menu_layout: STRING = "DropDownGallery.MenuLayout"
+
+	split_button_gallery_menu_layout: STRING = "SplitButtonGallery.MenuLayout"
 
 	flow_menu_layout: STRING = "FlowMenuLayout"
 
@@ -123,7 +139,14 @@ feature -- Contract support
 					l_string.same_string (flow_menu_layout) or else
 					l_string.same_string (application_menu_recent_items) or else
 					l_string.same_string (recent_items) or else
-					l_string.same_string (in_ribbon_gallery)
+					l_string.same_string (in_ribbon_gallery) or else
+					l_string.same_string (split_button_gallery) or else
+					l_string.same_string (split_button_gallery_menu_layout) or else
+					l_string.same_string (context_popup) or else
+					l_string.same_string (context_popup_context_menus) or else
+					l_string.same_string (context_popup_mini_toolbars) or else
+					l_string.same_string (mini_toolbar) or else
+					l_string.same_string (context_menu)
 			end
 		end
 
@@ -138,7 +161,8 @@ feature -- Contract support
 					l_string.same_string (spinner) or else
 					l_string.same_string (split_button) or else
 					l_string.same_string (drop_down_gallery) or else
-					l_string.same_string (in_ribbon_gallery)
+					l_string.same_string (in_ribbon_gallery) or else
+					l_string.same_string (split_button_gallery)
 			end
 		end
 end

@@ -58,9 +58,9 @@ feature --
 			end
 		end
 
-feature {NONE} -- Implementation
+feature {ER_UPDATE_CONTEXT_POPUP_VISITOR} -- Implementation
 
-	create_vision_tree_recursive (a_parent: EV_TREE_ITEM; a_ribbon_tab_item: XML_NODE)
+	create_vision_tree_recursive (a_parent: EV_TREE_NODE_LIST; a_ribbon_tab_item: XML_NODE)
 			--
 		local
 			l_new_node: EV_TREE_ITEM
@@ -94,7 +94,7 @@ feature {NONE} -- Implementation
 							elseif l_attribute.name.same_string ({ER_XML_ATTRIBUTE_CONSTANTS}.max_columns) then
 								if attached {ER_TREE_NODE_IN_RIBBON_GALLERY_DATA} l_new_node.data as l_data then
 									l_data.set_max_columns (l_attribute.value.to_integer)
-								end	
+								end
 							end
 						elseif attached {ER_XML_TREE_ELEMENT} l_tab_item.item_for_iteration as l_child then
 							create_vision_tree_recursive (l_new_node, l_child)

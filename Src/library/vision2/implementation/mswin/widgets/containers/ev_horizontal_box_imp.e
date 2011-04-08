@@ -62,8 +62,8 @@ feature {NONE} -- Basic operation
 
 	on_size (size_type, a_width, a_height: INTEGER)
 		do
-			Precursor {EV_BOX_IMP} (size_type, a_width, a_height)
 			set_children_width (client_width + 2 * border_width, True)
+			Precursor {EV_BOX_IMP} (size_type, a_width, a_height)
 		end
 
 	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
@@ -102,6 +102,9 @@ feature {NONE} -- Basic operation
 					if l_agents = Void then
 						create l_agents.make (lchild.count)
 						reversed_sizing_agents := l_agents
+					elseif not l_agents.is_empty then
+							-- We are in a recursive call, so we create a temporary agent list
+						create l_agents.make (lchild.count)
 					end
 				end
 

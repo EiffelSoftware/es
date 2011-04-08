@@ -22,6 +22,7 @@ feature -- Command
 				set_object_and_function_address
 				item := create_ribbon_com_framework (l_imp.wel_item)
 				ui_application := get_ui_application
+				associated_window := l_imp
 			end
 		end
 
@@ -90,6 +91,15 @@ feature -- Command
 		do
 			create l_key.make_global_text_color
 			c_set_ribbon_color (item, l_key.item, a_color.value)
+		end
+
+	show_contextual_ui (a_point: EV_COORDINATE; a_command_id: NATURAL_32)
+			-- Show context menu or minitoolbar at
+		local
+			l_result: NATURAL_32
+		do
+			l_result := c_show_contextual_ui (a_point.x, a_point.y, item, a_command_id)
+			check success: l_result = {EV_RIBBON_HRESULT}.s_ok end
 		end
 
 	destroy
@@ -164,6 +174,11 @@ feature -- Status Report
 	command_handler: POINTER
 			-- Command handler C object
 
+feature {NONE} -- Access
+
+	associated_window: detachable EV_WINDOW_IMP
+			-- Window associated with Current ribbon.
+
 feature {EV_RIBBON_TITLED_WINDOW_IMP} -- Externals
 
 	com_initialize
@@ -220,6 +235,30 @@ feature {EV_RIBBON_TITLED_WINDOW_IMP} -- Externals
 					pRibbon->Release();
 				}
 				return (EIF_INTEGER) val;
+			}"
+		end
+
+	c_show_contextual_ui (a_x, a_y: INTEGER_32; a_framework: POINTER; a_command_id: NATURAL_32): NATURAL_32
+			--
+		require
+			a_framework_exists: a_framework /= default_pointer
+		external
+			"C++ inline use <ribbon.h>"
+		alias
+			"{
+					HRESULT hr = E_FAIL;
+
+					IUIContextualUI* pContextualUI = NULL;
+
+					if (SUCCEEDED(((IUIFramework *)$a_framework)->GetView(
+												(UINT32)$a_command_id,
+												IID_PPV_ARGS(&pContextualUI))))
+					{
+					hr = pContextualUI->ShowAtLocation((INT32)$a_x, (INT32)$a_y);
+					pContextualUI->Release();
+					}
+
+				return hr;
 			}"
 		end
 
@@ -359,6 +398,29 @@ feature {EV_RIBBON} -- Externals callbacks
 			Result := {EV_RIBBON_HRESULT}.s_ok;--HRESULT S_OK, must return S_OK, otherwise IUICommandHandler.updateProperty and execute will not be called
 		end
 
+	on_view_changed (a_iui_application: POINTER; a_view_id: NATURAL_32; a_type_id: INTEGER; a_view: POINTER; a_verb, a_reason_code: INTEGER): NATURAL_32
+			--
+		do
+			Result := {EV_RIBBON_HRESULT}.e_notimpl
+			if a_type_id = {EV_VIEW_TYPE}.ribbon then
+				inspect a_verb
+				when {EV_VIEW_VERB}.create_ then
+				when {EV_VIEW_VERB}.size then
+						-- We trigger a resizing of the window content associated manually.
+					if attached {EV_RIBBON_TITLED_WINDOW_IMP} associated_window as l_window and then not l_window.exists then
+						l_window.on_size (0, l_window.width, l_window.height)
+					end
+
+				when {EV_VIEW_VERB}.destroy then
+
+				else
+
+				end
+
+				Result := {EV_RIBBON_HRESULT}.s_ok
+			end
+		end
+
 	c_set_command_handler (a_iui_command_handler: POINTER; a_pointer_pointer: POINTER)
 			-- Call COM queryInterface to initialize `a_pointer_pointer'
 		external
@@ -380,6 +442,7 @@ feature {EV_RIBBON} -- Externals callbacks
 		do
 			c_set_ribbon_object ($Current)
 			c_set_on_create_ui_command_address ($on_create_ui_command)
+			c_set_on_view_changed_address ($on_view_changed)
 		end
 
 	c_set_ribbon_object (a_object: POINTER)
@@ -395,6 +458,12 @@ feature {EV_RIBBON} -- Externals callbacks
 		end
 
 	c_set_on_create_ui_command_address (a_address: POINTER)
+			-- Set on_create_ui_command function address
+		external
+			"C use %"eiffel_ribbon.h%""
+		end
+
+	c_set_on_view_changed_address (a_address: POINTER)
 			-- Set on_create_ui_command function address
 		external
 			"C use %"eiffel_ribbon.h%""

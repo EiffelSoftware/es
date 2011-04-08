@@ -29,7 +29,9 @@ feature {NONE} -- Initialization
 		do
 				-- Initialize types defined in current class
 			large_image.set_browse_for_open_file ("")
-			extend (large_image)
+
+			go_i_th (7) -- Go to "large image" EV_LABEL
+			put_right (large_image)
 			disable_item_expand (large_image)
 			if attached large_image.field as l_field then
 				l_field.change_actions.extend (agent on_large_image_change)

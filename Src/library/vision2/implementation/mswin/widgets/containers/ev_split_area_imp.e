@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 			-- widgets accordingly.
 		do
 			internal_split_position := a_position
-			layout_widgets (True)
+			layout_widgets (width, height, True)
 		end
 
 	disable_item_expand (v: EV_WIDGET)
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 	is_maximum_split_position_computed: BOOLEAN
 			-- To prevent recursion when computing the maximum position of the splitter.
 
-	layout_widgets (originator: BOOLEAN)
+	layout_widgets (a_width, a_height: INTEGER; originator: BOOLEAN)
 		deferred
 		end
 
@@ -327,9 +327,8 @@ feature {NONE} -- Implementation
 	default_style: INTEGER
 			-- <Precursor>
 		do
-				-- We do not use `Ws_clipchildren' and `Ws_clipsiblings' because
-				-- we can do the job ourself.
-			Result := Ws_child | Ws_visible
+				-- We do not use `Ws_clipchildren' because we can do the job ourself.
+			Result := Ws_child | Ws_visible | ws_clipsiblings
 		end
 
 	invert_rectangle
@@ -341,18 +340,17 @@ feature {NONE} -- Implementation
 			a_dc_not_void: a_dc /= Void
 		local
 			old_rop2: INTEGER
-			l_splitter_brush: like splitter_brush
 		do
-			a_dc.get
-			old_rop2 := a_dc.rop2
-			a_dc.set_rop2 (R2_xorpen)
-			l_splitter_brush := splitter_brush
-			check l_splitter_brush /= Void end
-			a_dc.select_brush (l_splitter_brush)
-			a_dc.rectangle (a_left, a_top, a_right, a_bottom)
-			a_dc.set_rop2 (old_rop2)
-			a_dc.unselect_brush
-			a_dc.release
+			if attached splitter_brush as l_splitter_brush then
+				a_dc.get
+				old_rop2 := a_dc.rop2
+				a_dc.set_rop2 (R2_xorpen)
+				a_dc.select_brush (l_splitter_brush)
+				a_dc.rectangle (a_left, a_top, a_right, a_bottom)
+				a_dc.set_rop2 (old_rop2)
+				a_dc.unselect_brush
+				a_dc.release
+			end
 		end
 
 	top_level_window_imp: detachable EV_WINDOW_IMP
@@ -481,7 +479,11 @@ feature {NONE} -- Implementation
 			-- Will `Current' use realtime splitter positioning
 			-- Default is False until sizing optimizations can be found for containers with many descendents.
 		do
---			Result := wel_system_parameters_info.has_drag_full_windows
+			if application_imp.ctrl_pressed then
+				Result := True
+			else
+--				Result := wel_system_parameters_info.has_drag_full_windows
+			end
 		end
 
 	splitter_string_bitmap: STRING

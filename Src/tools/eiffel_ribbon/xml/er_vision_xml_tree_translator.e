@@ -133,27 +133,185 @@ feature {NONE} -- Tree saving
 
 				-- Saving applicaition menu node
 				if a_vision_tree.count >= 2 then
-					if attached {EV_TREE_ITEM} a_vision_tree.i_th (2) as l_tree_item_menu then
-						check l_tree_item_menu.text.same_string (xml_constants.ribbon_application_menu) end
+					from
+						a_vision_tree.go_i_th (2)
+					until
+						a_vision_tree.after
+					loop
+						save_application_menu_node (a_vision_tree.item)
+						save_context_popup_node (a_vision_tree.item)
 
-						-- Add recent items xml node
-						add_xml_recent_items_node (l_tree_item_menu)
-
-						-- Add menu group xml node
-						from
-							l_tree_item_menu.start
-						until
-							l_tree_item_menu.after
-						loop
-							if attached {EV_TREE_ITEM} l_tree_item_menu.item as l_tree_menu_group_item then
-								check l_tree_menu_group_item.text.same_string (xml_constants.menu_group) end
-								add_xml_menu_group_node (l_tree_menu_group_item)
-
-							end
-
-							l_tree_item_menu.forth
-						end
+						a_vision_tree.forth
 					end
+
+				end
+			end
+		end
+
+	save_context_popup_node (a_tree_node: EV_TREE_NODE)
+			-- Save context popup node if possible
+		require
+			not_void: a_tree_node /= Void
+		local
+			l_xml_item, l_last_parent, l_last_parent_2: XML_ELEMENT
+			l_data_list: ARRAYED_LIST [ER_TREE_NODE_DATA]
+		do
+			if attached {EV_TREE_ITEM} a_tree_node as l_tree_item_menu and then
+					l_tree_item_menu.text.same_string (xml_constants.context_popup) then
+
+				-- Add context popup xml node
+				if attached xml_node_by_name (xml_constants.application_views) as l_ribbon_application_views then
+					create l_xml_item.make (l_ribbon_application_views, xml_constants.context_popup, name_space)
+					l_ribbon_application_views.put_last (l_xml_item)
+					l_last_parent := l_xml_item
+					from
+						create l_data_list.make (10)
+						a_tree_node.start
+					until
+						a_tree_node.after
+					loop
+						if attached {EV_TREE_ITEM} a_tree_node.item as l_item then
+							check l_item.text.same_string (xml_constants.context_popup_context_menus) or else
+								l_item.text.same_string (xml_constants.context_popup_mini_toolbars) end
+
+							create l_xml_item.make (l_last_parent, l_item.text, name_space)
+							l_last_parent.put_last (l_xml_item)
+							l_last_parent_2 := l_xml_item
+
+							from
+								l_item.start
+							until
+								l_item.after
+							loop
+								save_context_menu_or_mini_toolbar_node (l_item.item, l_last_parent_2, l_data_list)
+
+								l_item.forth
+							end
+						end
+						a_tree_node.forth
+					end
+
+					save_context_maps (l_last_parent, l_data_list)
+				else
+					check not_possible: False end
+				end
+			end
+		end
+
+	save_context_maps (a_parent: XML_ELEMENT; a_data_list: ARRAYED_LIST [ER_TREE_NODE_DATA])
+			--
+		require
+			not_void: a_parent /= Void
+			not_void: a_data_list /= Void
+		local
+			l_xml_item, l_child: XML_ELEMENT
+			l_attribute: XML_ATTRIBUTE
+		do
+			create l_xml_item.make (a_parent, {ER_XML_CONSTANTS}.context_popup_context_maps, name_space)
+			a_parent.put_last (l_xml_item)
+
+			from
+				a_data_list.start
+			until
+				a_data_list.after
+			loop
+				create l_child.make (l_xml_item, {ER_XML_CONSTANTS}.context_map, name_space)
+				l_xml_item.put_last (l_child)
+
+				if attached a_data_list.item.command_name as l_command_name then
+					create l_attribute.make ({ER_XML_ATTRIBUTE_CONSTANTS}.command_name, name_space, l_command_name, l_child)
+					l_child.put_last (l_attribute)
+
+					add_xml_command_node (a_data_list.item)
+
+					if attached {ER_TREE_NODE_MINI_TOOLBAR_DATA} a_data_list.item as l_mini_toolbar_data then
+						create l_attribute.make ({ER_XML_ATTRIBUTE_CONSTANTS}.mini_toolbar, name_space, l_command_name, l_child)
+						l_child.put_last (l_attribute)
+					elseif attached {ER_TREE_NODE_CONTEXT_MENU_DATA} a_data_list.item as l_context_menu_data then
+						create l_attribute.make ({ER_XML_ATTRIBUTE_CONSTANTS}.context_menu, name_space, l_command_name, l_child)
+						l_child.put_last (l_attribute)
+					else
+						check False end
+					end
+				else
+					check False end
+				end
+				a_data_list.forth
+			end
+		end
+
+	save_context_menu_or_mini_toolbar_node (a_context_menu_or_mini_toolbar: EV_TREE_NODE; a_parent: XML_ELEMENT; a_data_list: ARRAYED_LIST [ER_TREE_NODE_DATA])
+			--
+		require
+			not_void: a_context_menu_or_mini_toolbar /= Void
+			valid: a_context_menu_or_mini_toolbar.text.same_string (xml_constants.context_menu) or else
+				a_context_menu_or_mini_toolbar.text.same_string (xml_constants.mini_toolbar)
+		local
+			l_xml_item: XML_ELEMENT
+			l_name: XML_ATTRIBUTE
+		do
+			create l_xml_item.make (a_parent, a_context_menu_or_mini_toolbar.text, name_space)
+			a_parent.put_last (l_xml_item)
+
+			-- Add mini toolbar/context menu name
+			if attached {ER_TREE_NODE_DATA} a_context_menu_or_mini_toolbar.data as l_data then
+				a_data_list.extend (l_data)
+				-- FIXME: use command name for mini tool bar name?
+				if attached l_data.command_name as l_command_name then
+					create l_name.make ({ER_XML_ATTRIBUTE_CONSTANTS}.name, name_space, l_command_name, l_xml_item)
+					l_xml_item.put_last (l_name)
+
+				else
+					check not_possible: False end
+				end
+
+			else
+				check not_possible: False end
+			end
+
+
+			from
+				a_context_menu_or_mini_toolbar.start
+			until
+				a_context_menu_or_mini_toolbar.after
+			loop
+				check a_context_menu_or_mini_toolbar.item.text.same_string (xml_constants.menu_group) end
+				-- Add menu group now
+				if attached {EV_TREE_ITEM} a_context_menu_or_mini_toolbar.item as l_menu_group then
+					add_xml_menu_group_node (l_menu_group, l_xml_item)
+				else
+					check not_possible: False end
+				end
+
+				a_context_menu_or_mini_toolbar.forth
+			end
+
+		end
+
+	save_application_menu_node (a_tree_node: EV_TREE_NODE)
+			-- Save application menu node if possible
+		require
+			not_void: a_tree_node /= Void
+		do
+			if attached {EV_TREE_ITEM} a_tree_node as l_tree_item_menu and then
+					l_tree_item_menu.text.same_string (xml_constants.ribbon_application_menu) then
+
+				-- Add recent items xml node
+				add_xml_recent_items_node (l_tree_item_menu)
+
+				-- Add menu group xml node
+				from
+					l_tree_item_menu.start
+				until
+					l_tree_item_menu.after
+				loop
+					if attached {EV_TREE_ITEM} l_tree_item_menu.item as l_tree_menu_group_item then
+						check l_tree_menu_group_item.text.same_string (xml_constants.menu_group) end
+						add_xml_menu_group_node (l_tree_menu_group_item, xml_node_by_name (xml_constants.application_menu))
+
+					end
+
+					l_tree_item_menu.forth
 				end
 			end
 		end
@@ -192,7 +350,7 @@ feature {NONE} -- Tree saving
 			end
 		end
 
-	add_xml_menu_group_node (a_tree_item: EV_TREE_ITEM)
+	add_xml_menu_group_node (a_tree_item: EV_TREE_ITEM; a_parent_xml: detachable XML_ELEMENT)
 			--
 		require
 			not_void: a_tree_item /= Void
@@ -201,7 +359,7 @@ feature {NONE} -- Tree saving
 			l_menu_group_node: XML_ELEMENT
 			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
 		do
-			if attached xml_node_by_name (xml_constants.application_menu) as l_ribbon_application_menu_node then
+			if attached a_parent_xml as l_ribbon_application_menu_node then
 				create l_menu_group_node.make (l_ribbon_application_menu_node, xml_constants.menu_group, name_space)
 				l_ribbon_application_menu_node.put_last (l_menu_group_node)
 
@@ -223,7 +381,13 @@ feature {NONE} -- Tree saving
 				until
 					a_tree_item.after
 				loop
-					add_xml_button_node (l_menu_group_node, a_tree_item.item)
+					if a_tree_item.item.text.same_string ({ER_XML_CONSTANTS}.button) then
+						add_xml_button_node (l_menu_group_node, a_tree_item.item)
+					elseif a_tree_item.item.text.same_string ({ER_XML_CONSTANTS}.split_button) then
+						add_xml_split_button_node (l_menu_group_node, a_tree_item.item)
+					else
+						check not_possible: False end
+					end
 
 					a_tree_item.forth
 				end
@@ -327,6 +491,8 @@ feature {NONE} -- Tree saving
 						add_xml_drop_down_gallery_node (l_group_node, a_group_tree_node.item)
 					elseif a_group_tree_node.item.text.same_string (l_xml_constants.in_ribbon_gallery) then
 						add_xml_in_ribbon_gallery_node (l_group_node, a_group_tree_node.item)
+					elseif a_group_tree_node.item.text.same_string (l_xml_constants.split_button_gallery) then
+						add_xml_split_button_gallery_node (l_group_node, a_group_tree_node.item)
 					else
 						check not_implemented: False end
 					end
@@ -501,6 +667,63 @@ feature {NONE} -- Tree saving
 			a_gallery_node.add_attribute (l_attribute.max_columns, name_space, a_data.max_columns.out)
 		end
 
+	add_xml_split_button_gallery_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
+			--
+		require
+			not_void: a_group_node /= Void
+			valid: a_group_node.name.same_string (xml_constants.group)
+		local
+			l_button_node: XML_ELEMENT
+			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			if attached {EV_TREE_ITEM} a_button_tree_node as l_item then
+				check l_item.text.same_string (xml_constants.split_button_gallery) end
+
+				create l_button_node.make (a_group_node, xml_constants.split_button_gallery, name_space)
+				a_group_node.put_last (l_button_node)
+
+				if attached {ER_TREE_NODE_SPLIT_BUTTON_GALLERY_DATA} a_button_tree_node.data as l_data then
+					create l_constants
+
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_button_node.add_attribute (l_constants.command_name, name_space, l_command_name)
+
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+					end
+
+					l_button_node.add_attribute (l_constants.type, name_space, "Items")
+
+					-- Add menu layout
+					add_xml_menu_layout_for_split_button_gallery (l_button_node, l_data)
+				end
+			end
+		end
+
+	add_xml_menu_layout_for_split_button_gallery (a_gallery_node: XML_ELEMENT; a_data: ER_TREE_NODE_SPLIT_BUTTON_GALLERY_DATA)
+			--
+		require
+			not_void: a_gallery_node /= Void
+			valid: a_gallery_node.name.same_string (xml_constants.split_button_gallery)
+			not_void: a_data /= Void
+		local
+			l_xml_node: XML_ELEMENT
+			l_flow_menu_layout: XML_ELEMENT
+			l_attribute: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			create l_xml_node.make (a_gallery_node, xml_constants.split_button_gallery_menu_layout, name_space)
+			a_gallery_node.put_last (l_xml_node)
+
+			create l_flow_menu_layout.make (l_xml_node, xml_constants.flow_menu_layout, name_space)
+			l_xml_node.put_last (l_flow_menu_layout)
+
+			create l_attribute
+			l_flow_menu_layout.add_attribute (l_attribute.rows, name_space, a_data.rows.out)
+			l_flow_menu_layout.add_attribute (l_attribute.columns, name_space, a_data.columns.out)
+			l_flow_menu_layout.add_attribute (l_attribute.gripper, name_space, "None") -- FIXME: NONE for test
+		end
+
 	add_xml_drop_down_gallery_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
 			--
 		require
@@ -562,7 +785,7 @@ feature {NONE} -- Tree saving
 			--
 		require
 			not_void: a_group_node /= Void
-			valid: a_group_node.name.same_string (xml_constants.group)
+			valid: a_group_node.name.same_string (xml_constants.group) or else a_group_node.name.same_string (xml_constants.menu_group)
 		local
 			l_button_node: XML_ELEMENT
 			l_constants: ER_XML_ATTRIBUTE_CONSTANTS

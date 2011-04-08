@@ -340,6 +340,7 @@ Src/examples/docking/simple/EIFGENs
 Src/examples/proofs/account/EIFGENs
 Src/examples/proofs/demo/EIFGENs
 Src/examples/scoop/baboon_crossing/EIFGENs
+Src/examples/scoop/barbershop/*.rc
 Src/examples/scoop/barbershop/EIFGENs
 Src/examples/scoop/counter/EIFGENs
 Src/examples/scoop/dining_philosophers/EIFGENs

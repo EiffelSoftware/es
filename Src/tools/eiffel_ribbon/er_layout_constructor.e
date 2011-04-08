@@ -241,13 +241,26 @@ feature {NONE} -- Action handing
 						l_stone_child.same_string (constants.spinner) or else
 						l_stone_child.same_string (constants.split_button) or else
 						l_stone_child.same_string (constants.drop_down_gallery) or else
-						l_stone_child.same_string (constants.in_ribbon_gallery)
+						l_stone_child.same_string (constants.in_ribbon_gallery) or else
+						l_stone_child.same_string (constants.split_button_gallery)
 				elseif a_parent_type.same_string (constants.split_button) then
 					Result := l_stone_child.same_string (constants.button)
 				elseif a_parent_type.same_string (constants.ribbon_application_menu) then
 					Result := l_stone_child.same_string (constants.menu_group)
 				elseif a_parent_type.same_string (constants.menu_group) then
-					Result := l_stone_child.same_string (constants.button)
+					Result := l_stone_child.same_string (constants.button) or else
+						l_stone_child.same_string (constants.split_button)
+				elseif a_parent_type.same_string (constants.context_popup) then
+					Result := l_stone_child.same_string (constants.context_popup_context_menus) or else
+						l_stone_child.same_string (constants.context_popup_mini_toolbars)
+				elseif a_parent_type.same_string (constants.context_popup_context_menus) then
+					Result := l_stone_child.same_string (constants.context_menu)
+				elseif a_parent_type.same_string (constants.context_popup_mini_toolbars) then
+					Result := l_stone_child.same_string (constants.mini_toolbar)
+				elseif a_parent_type.same_string (constants.mini_toolbar) then
+					Result := l_stone_child.same_string (constants.menu_group)
+				elseif a_parent_type.same_string (constants.context_menu) then
+					Result := l_stone_child.same_string (constants.menu_group)
 				end
 			end
 		end
@@ -280,7 +293,8 @@ feature {NONE} -- Action handing
 			l_tree_item: EV_TREE_ITEM
 		do
 			if attached {STRING} a_pebble as l_item then
-				check l_item.same_string (constants.ribbon_application_menu) end
+				check l_item.same_string (constants.ribbon_application_menu) or else
+					l_item.same_string (constants.context_popup) end
 				l_tree_item := tree_item_factory_method (l_item)
 				widget.extend (l_tree_item)
 			end
@@ -291,6 +305,8 @@ feature {NONE} -- Action handing
 		do
 			if attached {STRING} a_pebble as l_item then
 				if l_item.same_string (constants.ribbon_application_menu) then
+					Result := True
+				elseif l_item.same_string (constants.context_popup) then
 					Result := True
 				end
 			end
@@ -327,6 +343,8 @@ feature -- Persistance
 			l_separate_tab_visitor: ER_SEPARATE_WINDOW_TAB_VISITOR
 			l_drop_down_gallery_visitor: ER_DROP_DOWN_GALLERY_INFO_VISITOR
 			l_update_application_menu: ER_UPDATE_APPLICATION_MENU_INFO_VISITOR
+			l_split_button_gallery_visitor: ER_SPLIT_BUTTON_GALLERY_INFO_VISITOR
+			l_update_context_popups_visitor: ER_UPDATE_CONTEXT_POPUP_VISITOR
 		do
 			l_manager := shared_singleton.xml_tree_manager.item
 			l_manager.load_tree
@@ -334,14 +352,21 @@ feature -- Persistance
 			if attached l_manager.xml_root as l_root then
 				create l_vision2_visitor
 				l_root.accept (l_vision2_visitor)
-				create l_command_updater
-				l_root.accept (l_command_updater)
+
 				create l_separate_tab_visitor.make
 				l_root.accept (l_separate_tab_visitor)
 				create l_drop_down_gallery_visitor
 				l_root.accept (l_drop_down_gallery_visitor)
+				create l_split_button_gallery_visitor
+				l_root.accept (l_split_button_gallery_visitor)
 				create l_update_application_menu
 				l_root.accept (l_update_application_menu)
+
+				create l_update_context_popups_visitor
+				l_root.accept (l_update_context_popups_visitor)
+
+				create l_command_updater
+				l_root.accept (l_command_updater)
 			else
 				check False end
 			end

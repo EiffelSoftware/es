@@ -169,9 +169,6 @@ feature -- Processor Initialization
 
 	root_processor_creation_routine_exited
 			-- Root processor's creation routine has exited.
-		local
-			l_temp: INTEGER_32
-			l_wait_counter: NATURAL_32
 		do
 				-- End request chain of root processor creation routine.
 			signify_end_of_request_chain (root_processor_id)
@@ -1035,6 +1032,10 @@ feature {NONE} -- Resource Initialization
 								end
 							else
 									-- We are a tail node, we wait for head node to set pid count to negative value. (as we are a tail node then there must be at least two processors involved)
+
+										-- Increment waiting processor count.
+								l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($waiting_processor_count)
+
 								from
 									l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.add_integer_32 (l_executing_request_chain_node_meta_data.item_address (request_chain_sync_counter_index), 0)
 									l_wait_counter := 0
@@ -1056,6 +1057,10 @@ feature {NONE} -- Resource Initialization
 									l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.add_integer_32 (l_executing_request_chain_node_meta_data.item_address (request_chain_sync_counter_index), 0)
 									l_wait_counter := l_wait_counter + 1
 								end
+
+										-- Decrement waiting processor count.
+								l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($waiting_processor_count)
+
 								l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 (l_executing_request_chain_node_meta_data.item_address (request_chain_sync_counter_index))
 							end
 
@@ -1121,37 +1126,35 @@ feature {NONE} -- Resource Initialization
 					else
 							-- There are no request chains to be applied so processor is idle until more are added.
 						from
-							l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($idle_processor_count)
 							l_wait_counter := 0
 							l_idle_exit := False
-							l_temp_count := 0
+							l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($idle_processor_count)
 						until
 							l_idle_exit
 						loop
-							if idle_processor_count = processor_count then
-									--| FIXME Improve exiting code when we have proper GC support.
-									-- Processor now has to exit so we decrease the number of available SCOOP processors.
-								l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($idle_processor_count)
-								l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($processor_count)
-								l_processor_exit := True
-								l_idle_exit := True
-							else
-								if l_request_chain_node_meta_data_queue [l_processor_meta_data [Current_request_node_id_execution_index]] /= Void then
-									l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($idle_processor_count)
-									l_idle_exit := True
+							l_idle_exit := l_request_chain_node_meta_data_queue [l_processor_meta_data [Current_request_node_id_execution_index]] /= Void
+							if not l_idle_exit then
+								if idle_processor_count /= processor_count then
+									l_processor_exit := False
 								else
-									if waiting_processor_count > 0 and then (waiting_processor_count + idle_processor_count = processor_count) then
-										l_temp_count := l_temp_count + 1
-									else
-										l_temp_count := 0
+									if not l_processor_exit then
+										l_wait_counter := 0
+										l_processor_exit := True
 									end
-									if l_temp_count > deadlock_detection_limit then
-										(create {EXCEPTIONS}).raise ("Potential SCOOP Deadlock detected")
+										--| FIXME Update exiting code when GC support is available.
+									if l_wait_counter > Processor_spin_lock_limit then
+										l_idle_exit := True
 									end
-									processor_is_idle (a_logical_processor_id, l_wait_counter)
-									l_wait_counter := l_wait_counter + 1
 								end
+								processor_is_idle (a_logical_processor_id, l_wait_counter)
+								l_wait_counter := l_wait_counter + 1
+							else
+								l_processor_exit := False
 							end
+						end
+						l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($idle_processor_count)
+						if l_processor_exit then
+							l_temp_count := {ATOMIC_MEMORY_OPERATIONS}.decrement_integer_32 ($processor_count)
 						end
 					end
 				elseif l_processor_meta_data [processor_status_index] = processor_status_uninitialized then
@@ -1163,14 +1166,20 @@ feature {NONE} -- Resource Initialization
 			end
 		end
 
-	deadlock_detection_limit: NATURAL_16 = 10000
-		-- Number of iterations an idle processor
-
 	processor_is_idle (a_client_processor_id: like processor_id_type; a_wait_counter: NATURAL_32)
 			-- Processor `a_client_processor_id' is idle.
 		do
 			processor_yield (a_client_processor_id, a_wait_counter)
 		end
+
+	deadlock_counter: NATURAL_16
+		-- Counter for deadlock detection.
+
+	previous_waiting_processor_count: like waiting_processor_count
+		-- Previous number of waiting processors, used for deadlock detection.
+
+	deadlock_detection_limit: NATURAL_16 = 1000
+		-- Number of iterations an idle processor
 
 	scoop_command_call (data: like call_data)
 			-- Make scoop call from call data `data'.
@@ -1570,6 +1579,20 @@ feature {NONE} -- Externals
 			elseif a_iteration_number <= max_yield_counter then
 				processor_cpu_yield
 			else
+					-- Check for any potential deadlock.
+				if
+					waiting_processor_count > 0 and then
+					waiting_processor_count = previous_waiting_processor_count and then
+					(waiting_processor_count + idle_processor_count = processor_count)
+				then
+					deadlock_counter := deadlock_counter + 1
+				else
+					deadlock_counter := 0
+				end
+				previous_waiting_processor_count := waiting_processor_count
+				if deadlock_counter > deadlock_detection_limit then
+					(create {EXCEPTIONS}).raise ("SCOOP Processor Deadlock detected")
+				end
 				processor_sleep (processor_sleep_quantum)
 			end
 		end
