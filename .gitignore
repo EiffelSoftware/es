@@ -334,6 +334,8 @@ Src/dotnet/consumer/*.wb
 Src/dotnet/consumer/EIFGENs
 Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
 Src/examples/Eiffel2JavaScript/circles/EIFGENs
+Src/examples/Eiffel2JavaScript/circles_javascript/EIFGENs
+Src/examples/Eiffel2JavaScript/circles_vision2/EIFGENs
 Src/examples/Eiffel2JavaScript/helloworld/EIFGENs
 Src/examples/Eiffel2JavaScript/translator_test/EIFGENs
 Src/examples/docking/simple/EIFGENs
