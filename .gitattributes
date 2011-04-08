@@ -2319,9 +2319,6 @@ Src/dotnet/eac_browser/ressources/eac_ico/icon_value_type_class.ico -text
 Src/dotnet/helpers/isekey.snk -text
 Src/examples/Eiffel2Java/README -text
 Src/examples/Eiffel2Java/test.class -text
-Src/examples/Eiffel2JavaScript/circles/readme.txt -text
-Src/examples/Eiffel2JavaScript/circles/run.htm -text
-Src/examples/Eiffel2JavaScript/circles/runtime.js -text
 Src/examples/Eiffel2JavaScript/circles_javascript/run.htm -text
 Src/examples/Eiffel2JavaScript/circles_javascript/runtime.js -text
 Src/examples/Eiffel2JavaScript/circles_vision2/circles_vision2.rc -text
