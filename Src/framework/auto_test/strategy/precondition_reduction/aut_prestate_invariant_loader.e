@@ -26,6 +26,8 @@ inherit
 			process_binary_as
 		end
 
+	AUT_SHARED_EQUALITY_TESTER
+
 feature -- Access
 
 	last_invariants: LINKED_LIST [AUT_STATE_INVARIANT]
@@ -73,43 +75,137 @@ feature -- Basic operations
 				-- Collect all invariants from files.
 			create last_invariants.make
 			across l_files as l_inv_files loop
-				l_parts := string_slices (file_system.basename (l_inv_files.item), "__")
-				last_class := first_class_starts_with_name (l_parts.i_th (1).out)
-				last_feature := last_class.feature_named (l_parts.i_th (2).out)
-				create last_class_creators.make (10)
-				last_class_creators.compare_objects
-				across last_class.creators as l_creators loop
-					last_class_creators.force (True, l_creators.key)
-				end
-
-				operands := operands_of_feature (last_feature)
-				operand_types := resolved_operand_types_with_feature (last_feature, last_class, last_class.constraint_actual_type)
-
-				if last_feature /= Void and then not last_feature.has_return_value then
-						-- We only consider commands for the moment.
+				if l_inv_files.item.has_substring ("implication") then
+						-- Inferred implication validation
 					create l_file.make_open_read (l_inv_files.item)
-					from
-						l_file.read_line
-					until
-						l_file.after
-					loop
-						l_line := l_file.last_string.twin
+					load_implications (l_file)
+					l_file.close
+				else
+					l_parts := string_slices (file_system.basename (l_inv_files.item), "__")
+					last_class := first_class_starts_with_name (l_parts.i_th (1).out)
+					last_feature := last_class.feature_named (l_parts.i_th (2).out)
+					create last_class_creators.make (10)
+					last_class_creators.compare_objects
+					across last_class.creators as l_creators loop
+						last_class_creators.force (True, l_creators.key)
+					end
+
+					operands := operands_of_feature (last_feature)
+					operand_types := resolved_operand_types_with_feature (last_feature, last_class, last_class.constraint_actual_type)
+
+					if last_feature /= Void and then not last_feature.has_return_value then
+							-- We only consider commands for the moment.
+						create l_file.make_open_read (l_inv_files.item)
+						from
+							l_file.read_line
+						until
+							l_file.after
+						loop
+							l_line := l_file.last_string.twin
+							l_line.left_adjust
+							l_line.right_adjust
+							if not l_line.is_empty then
+								if attached invariant_from_string (l_line, Void, Void) as l_inv then
+									last_invariants.extend (l_inv)
+								end
+							end
+							l_file.read_line
+						end
+						l_file.close
+					end
+				end
+			end
+		end
+
+	load_implications (a_file: PLAIN_TEXT_FILE)
+			-- Load implications from `a_file'.
+		local
+			l_line: STRING
+			l_inv_tbl: HASH_TABLE [LINKED_LIST [AUT_STATE_INVARIANT], STRING]
+			l_last_inv: AUT_STATE_INVARIANT
+			l_last_key: STRING
+			l_premises_expr: EPA_AST_EXPRESSION
+			l_consequent_expr: EPA_AST_EXPRESSION
+			l_structure_analyzer: AUT_EXPRESSION_STRUCTURE_ANALYZER
+			l_premise_str: STRING
+			l_consequent_str: STRING
+			l_parts: LIST [STRING]
+			l_premise: EPA_AST_EXPRESSION
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_tmp_str: STRING
+			l_inv: AUT_STATE_INVARIANT
+			l_qualifier: EPA_EXPRESSION_QUALIFIER
+		do
+			create l_qualifier
+			create l_inv_tbl.make (50)
+			l_inv_tbl.compare_objects
+			from
+				a_file.read_line
+			until
+				a_file.after
+			loop
+				l_line := a_file.last_string.twin
+				if not l_line.is_empty then
+					if l_line.starts_with (once "%T") then
 						l_line.left_adjust
 						l_line.right_adjust
-						if not l_line.is_empty then
-							parse_invariant_from_string (l_line)
+						l_inv := invariant_from_string (l_line, l_premises_expr, l_consequent_expr)
+						if l_inv /= Void then
+							l_inv.set_is_implication (True)
+							l_inv_tbl.item (l_last_key).extend (l_inv)
+							last_invariants.extend (l_inv)
 						end
-						l_file.read_line
+					else
+						l_last_key := l_line.twin
+						if not l_inv_tbl.has (l_last_key) then
+							l_inv_tbl.force (create {LINKED_LIST [AUT_STATE_INVARIANT]}.make, l_last_key)
+							l_parts := l_last_key.split (':')
+							l_tmp_str := l_parts.first
+							l_tmp_str.left_adjust
+							l_tmp_str.right_adjust
+							l_parts := l_tmp_str.split ('.')
+							l_class := first_class_starts_with_name (l_parts.first)
+							l_feature := l_class.feature_named (l_parts.last)
+							last_class := l_class
+							last_feature := l_feature
+							create last_class_creators.make (10)
+							last_class_creators.compare_objects
+							across last_class.creators as l_creators loop
+								last_class_creators.force (True, l_creators.key)
+							end
+
+							operands := operands_of_feature (last_feature)
+							operand_types := resolved_operand_types_with_feature (last_feature, last_class, last_class.constraint_actual_type)
+
+							l_tmp_str := l_last_key.substring (l_last_key.index_of (':', 1) + 1, l_last_key.count)
+							l_tmp_str.left_adjust
+							l_tmp_str.right_adjust
+							l_parts := string_slices (l_tmp_str, "implies")
+							l_premise_str := l_parts.first
+							l_premise_str.left_adjust
+							l_premise_str.right_adjust
+							l_premise_str := text_from_ast (ast_without_old_expression (ast_from_expression_text (l_premise_str)))
+							l_consequent_str := l_parts.last
+							l_consequent_str.left_adjust
+							l_consequent_str.right_adjust
+							create l_premises_expr.make_with_text (l_class, l_feature, l_premise_str, l_class)
+							l_qualifier.qualify_only_current (l_premises_expr)
+							create l_premises_expr.make_with_text (l_class, l_feature, l_qualifier.last_expression, l_class)
+							create l_consequent_expr.make_with_text (l_class, l_feature, l_consequent_str, l_class)
+							l_qualifier.qualify_only_current (l_consequent_expr)
+							create l_consequent_expr.make_with_text (l_class, l_feature, l_qualifier.last_expression, l_class)
+						end
 					end
-					l_file.close
 				end
+				a_file.read_line
 			end
 		end
 
 feature{NONE} -- Implementation
 
-	parse_invariant_from_string (a_text: STRING)
-			-- Parse invariant in `a_text', in form of curly-braced integers.
+	invariant_from_string (a_text: STRING; a_pre_inv: detachable EPA_EXPRESSION; a_post_inv: detachable EPA_EXPRESSION): detachable AUT_STATE_INVARIANT
+			-- Invariant in `a_text', in form of curly-braced integers.
 			-- For example, "{0}.has ({1}).
 			-- If `a_text' is a supported invariant, put it in `last_invariants'.
 		local
@@ -158,7 +254,7 @@ feature{NONE} -- Implementation
 				l_done := True
 			end
 
-				-- Ignore invariants mentioning implication operator.
+				-- Ignore invariants mentioning implication operator.			
 			if l_text.has_substring ("implies") then
 				l_done := True
 			end
@@ -166,7 +262,23 @@ feature{NONE} -- Implementation
 				-- Ignore invariants mentioning "Void" because they are usually
 				-- not very interesting.
 			if l_text.has_substring ("Void")  then
-				l_done := True
+				if
+					l_text ~ "{1} = Void" or else
+					l_text ~ "{1} /= Void" or else
+					l_text ~ "{2} = Void" or else
+					l_text ~ "{2} /= Void" or else
+					l_text ~ "{3} = Void" or else
+					l_text ~ "{3} /= Void" or else
+					l_text ~ "{4} = Void" or else
+					l_text ~ "{4} /= Void" or else
+					l_text ~ "{5} = Void" or else
+					l_text ~ "{5} /= Void" or else
+					l_text ~ "{6} = Void" or else
+					l_text ~ "{6} /= Void"
+				then
+				else
+					l_done := True
+				end
 			end
 
 
@@ -259,9 +371,9 @@ feature{NONE} -- Implementation
 								create l_value.make_with_text (last_class, last_feature, l_str, last_class)
 								l_values.extend (l_value)
 							end
-							create l_inv.make_as_one_of (l_ori_expr, l_values, last_class, last_feature)
+							create l_inv.make_as_one_of (l_ori_expr, l_values, last_class, last_feature, a_pre_inv, a_post_inv)
 							if is_expression_exported (l_inv.expression) then
-								last_invariants.extend (l_inv)
+								Result := l_inv
 							end
 						end
 					else
@@ -292,12 +404,23 @@ feature{NONE} -- Implementation
 								not is_current_mentioned_in_creator (l_expr) and then
 								not has_qualified_object_comparison (l_expr)
 							then
-								last_invariants.extend (create {AUT_STATE_INVARIANT}.make (l_expr, last_class, last_feature))
+								if a_pre_inv /= Void then
+									create l_expr.make_with_text (last_class, last_feature, a_pre_inv.text + " and (" + l_expr.text + ")", last_class)
+								end
+								create Result.make (l_expr, last_class, last_feature)
 							end
 							context.set_is_ignoring_export (l_status)
 							expression_type_checker.set_is_checking_precondition (l_pre_status)
 						end
 					end
+				end
+			end
+			if Result /= Void then
+				if a_pre_inv /= Void then
+					Result.set_pre_state_context_expression (a_pre_inv)
+				end
+				if a_post_inv /= Void then
+					Result.set_post_state_context_expression (a_post_inv)
 				end
 			end
 		end
@@ -312,8 +435,12 @@ feature{NONE} -- Implementation
 			l_str := a_text.twin
 			check attached {EXPR_AS} ast_from_expression_text (l_str) as l_ast then
 				if attached {BINARY_AS} l_ast as l_bin then
-					l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin.left))
-					if attached {BOOL_AS} l_bin.right as l_right then
+					if attached {VOID_AS} l_bin.right and then l_bin.op_name.name ~ "/=" then
+						Result := ast_from_expression_text (text_from_ast (ast_without_surrounding_paranthesis (l_bin.left)) + " = Void")
+					elseif attached {VOID_AS} l_bin.right and then l_bin.op_name.name ~ "=" then
+						Result := ast_from_expression_text (text_from_ast (ast_without_surrounding_paranthesis (l_bin.left)) + " /= Void")
+					elseif attached {BOOL_AS} l_bin.right as l_right then
+						l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin.left))
 						if a_text.has_substring (" and ") then
 							if l_right.value then
 								create l_text.make (256)
@@ -356,6 +483,7 @@ feature{NONE} -- Implementation
 							end
 						end
 					else
+						l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin))
 						Result := ast_from_expression_text ("not (" + l_str + ")")
 					end
 				else

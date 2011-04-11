@@ -216,6 +216,9 @@ feature -- Status
 			-- 2. the test case executed with some exception
 			-- False if there is a precondition violation or class invariant violation in pre-state.
 
+	is_last_test_case_passing: BOOLEAN
+			-- Is last test case passing?
+
 feature -- Access
 
 	timeout: INTEGER
@@ -304,6 +307,13 @@ feature -- Settings
 			is_last_test_case_executed := b
 		ensure
 			is_last_test_case_executed_set: is_last_test_case_executed = b
+		end
+
+	analyze_last_test_case_status (a_last_request: like last_request)
+			-- Analyze the status of last test case
+		do
+			set_is_last_test_case_executed (is_last_test_case_executed_internal (a_last_request))
+			set_is_last_test_case_passing (is_last_test_case_passing_internal (a_last_request))
 		end
 
 feature -- Execution
@@ -554,6 +564,7 @@ feature -- Execution
 			else
 				is_ready := False
 			end
+			analyze_last_test_case_status (last_request)
 			stop_process_on_problems (last_response)
 			log_speed
 		ensure
@@ -615,7 +626,7 @@ feature -- Execution
 			else
 				is_ready := False
 			end
-			set_is_last_test_case_executed (is_last_test_case_executed_internal (last_request))
+			analyze_last_test_case_status (last_request)
 			stop_process_on_problems (last_response)
 			log_speed
 
@@ -678,7 +689,7 @@ feature -- Execution
 			else
 				is_ready := False
 			end
-			set_is_last_test_case_executed (is_last_test_case_executed_internal (last_request))
+			analyze_last_test_case_status (last_request)
 			stop_process_on_problems (last_response)
 			if is_ready and normal_response /= Void and then normal_response.exception = Void then
 				if not is_replaying then
@@ -2248,6 +2259,30 @@ feature -- Objec state retrieval
 					end
 				end
 			end
+		end
+
+	is_last_test_case_passing_internal (a_request: AUT_REQUEST): BOOLEAN
+			-- Is last test passing?
+		local
+			l_exception: AUT_EXCEPTION
+		do
+			if attached {AUT_CALL_BASED_REQUEST} a_request as l_request then
+				if l_request.response.is_normal then
+					if l_request.response.is_exception then
+						Result := False
+					else
+						Result := True
+					end
+				end
+			end
+		end
+
+	set_is_last_test_case_passing (b: BOOLEAN)
+			-- Set `is_test_case_passing' with `b'.
+		do
+			is_last_test_case_passing := b
+		ensure
+			is_last_test_case_passing_set: is_last_test_case_passing = b
 		end
 
 	log_precondition_reduction (a_string: STRING)

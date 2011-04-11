@@ -61,6 +61,8 @@ feature -- Basic operations
 			l_dot_path: AP_STRING_OPTION
 			l_arff_force: AP_FLAG
 			l_breakpoint_check_flag: AP_FLAG
+			l_arff_directory: AP_STRING_OPTION
+			l_analyze_implication_option: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -176,6 +178,14 @@ feature -- Basic operations
 			l_breakpoint_check_flag.set_description ("Check which breakpoints are not visited by all test cases availabel for a feature. Format: --check-unvisited-breakpoint --class CLASS_NAME [--feature feature_name]")
 			l_parser.options.force_last (l_breakpoint_check_flag)
 
+			create l_arff_directory.make_with_long_form ("arff-directory")
+			l_arff_directory.set_description ("Specify the directory for ARFF files, which are needed by implication-analysis. Format: --arff-directory <directory>. <directory> should be a top-level directory where sub-directories for individual classes are inside.")
+			l_parser.options.force_last (l_arff_directory)
+
+			create l_analyze_implication_option.make_with_long_form ("analyze-implication")
+			l_analyze_implication_option.set_description ("Enable the analysis of implications. Format: --analyze-implication --input <input> --output <output> --arff-directoy <arff>. <input> is a file consisting inferred implications. <output> is a directory to store analysis report. <arff> is the directory storing ARFF files from which the implications are inferred.")
+			l_parser.options.force_last (l_analyze_implication_option)
+
 			l_parser.parse_list (l_args)
 
 			if l_add_doc_flag.was_found then
@@ -266,6 +276,14 @@ feature -- Basic operations
 
 			if l_breakpoint_check_flag.was_found then
 				config.set_should_check_unvisited_breakpoint (True)
+			end
+
+			if l_analyze_implication_option.was_found then
+				config.set_should_analyze_implications (True)
+			end
+
+			if l_arff_directory.was_found then
+				config.set_arff_directory (l_arff_directory.parameter)
 			end
 		end
 

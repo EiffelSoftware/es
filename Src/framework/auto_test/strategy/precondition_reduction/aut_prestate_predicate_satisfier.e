@@ -138,15 +138,30 @@ feature -- Execute
 							invoke_transitions
 						end
 
-						interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated)
-						set_should_skip_current_step (not value_of_current_predicate_before_test)
+						interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated_in_pre_state)
+						if not should_skip_current_step then
+							set_should_skip_current_step (not value_of_current_predicate_before_test)
+						end
 					end
 				end
 
 				if not should_skip_current_step and then l_should_test and then interpreter.is_executing and then interpreter.is_ready and then not has_error then
 					invoke_feature_with_operands
 					set_is_last_test_case_executed (interpreter.is_executing and then interpreter.is_ready and then interpreter.is_last_test_case_executed)
-					set_should_quit (is_last_test_case_executed and (value_of_current_predicate_before_test = True))
+					if current_predicate.post_state_context_expression = Void then
+						set_should_quit (is_last_test_case_executed and (value_of_current_predicate_before_test = True))
+					else
+						if is_last_test_case_executed then
+							create l_exprs.make
+							l_exprs.extend (current_predicate.post_state_context_expression)
+							interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated_in_post_state)
+							if should_skip_current_step then
+								set_is_last_test_case_executed (False)
+							else
+								set_should_quit (is_last_test_case_executed and (value_of_current_predicate_before_test = True))
+							end
+						end
+					end
 				end
 
 				if not interpreter.is_executing or else not interpreter.is_ready then
@@ -259,21 +274,63 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	on_expressions_evaluated (a_values: HASH_TABLE [STRING, STRING])
-			-- Agent to call when expressions are evaluated
+	on_expressions_evaluated_in_pre_state (a_values: HASH_TABLE [STRING, STRING])
+			-- Agent to call when expressions are evaluated in pre-state
 			-- `a_values' is a hash-table, keys are evaluated expressions,
 			-- values are the values of those evaluations.
 		local
 			l_evaluations: like expression_evaluations_in_feature_context
 			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_should_skip: BOOLEAN
 		do
 			create l_exprs.make
 			l_exprs.extend (current_predicate.expression)
+--			if current_predicate.pre_state_context_expression /= Void then
+--				l_exprs.extend (current_predicate.pre_state_context_expression)
+--			end
 			l_evaluations := expression_evaluations_in_feature_context (class_, feature_, a_values, operand_map, l_exprs)
+--			if current_predicate.pre_state_context_expression /= Void then
+--				l_should_skip := True
+--			 	if attached {EPA_EQUATION} l_evaluations.item_with_expression (current_predicate.pre_state_context_expression) as l_equation then
+--					if attached {EPA_BOOLEAN_VALUE} l_equation.value as l_bool then
+--						if l_bool.item then
+--							l_should_skip := False
+--						end
+--					end
+--			 	end
+--			else
+--			 	l_should_skip := False
+--			end
+--			set_should_skip_current_step (l_should_skip)
 			if attached {EPA_EQUATION} l_evaluations.item_with_expression (current_predicate.expression) as l_equation then
 				if attached {EPA_BOOLEAN_VALUE} l_equation.value as l_bool then
 					set_value_of_current_predicate_before_test (l_bool.item)
 				end
+			end
+		end
+
+	on_expressions_evaluated_in_post_state (a_values: HASH_TABLE [STRING, STRING])
+			-- Agent to call when expressions are evaluated in post-state
+			-- `a_values' is a hash-table, keys are evaluated expressions,
+			-- values are the values of those evaluations.
+		local
+			l_evaluations: like expression_evaluations_in_feature_context
+			l_exprs: LINKED_LIST [EPA_EXPRESSION]
+			l_should_skip: BOOLEAN
+		do
+			create l_exprs.make
+			check attached {EPA_EXPRESSION} current_predicate.post_state_context_expression as l_post_expr then
+				l_exprs.extend (l_post_expr)
+				l_evaluations := expression_evaluations_in_feature_context (class_, feature_, a_values, operand_map, l_exprs)
+				l_should_skip := True
+			 	if attached {EPA_EQUATION} l_evaluations.item_with_expression (l_post_expr) as l_equation then
+					if attached {EPA_BOOLEAN_VALUE} l_equation.value as l_bool then
+						if not l_bool.item then
+							l_should_skip := False
+						end
+					end
+			 	end
+			 	set_should_skip_current_step (l_should_skip)
 			end
 		end
 

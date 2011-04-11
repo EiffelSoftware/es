@@ -80,6 +80,11 @@ feature -- Access
 	rapidminer_process_path: detachable STRING
 			-- Path to the process file to be executed by RapidMiner
 
+	arff_directory: detachable STRING
+			-- Directory to store ARFF files, neede by implication
+			-- analysis. The directory should be a top-level directory,
+			-- which sub-directories for individual classes inside.
+
 feature -- Constants
 
 	all_feature_kind: STRING = "all"
@@ -111,6 +116,9 @@ feature -- Status report
 	is_arff_generation_forced: BOOLEAN
 			-- Should we generate ARFF files even if they exist?
 			-- Default: False
+
+	should_analyze_implications: BOOLEAN
+			-- Should we perform an implication analysis?
 
 feature -- Setting
 
@@ -276,6 +284,20 @@ feature -- Setting
 			should_check_unvisited_breakpoint := b
 		ensure
 			should_check_unvisited_breakpoint_set: should_check_unvisited_breakpoint = b
+		end
+
+	set_should_analyze_implications (b: BOOLEAN)
+			-- Set `should_analyze_implications' with `b'.
+		do
+			should_analyze_implications := b
+		ensure
+			should_analyze_implications_set: should_analyze_implications = b
+		end
+
+	set_arff_directory (a_arff_directory: like arff_directory)
+			-- Set `arff_directory' with `a_arff_directory'.
+		do
+			arff_directory := a_arff_directory
 		end
 
 end

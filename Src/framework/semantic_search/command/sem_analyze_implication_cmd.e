@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	SEM_VALIDATE_IMPLICATION_CMD
+	SEM_ANALYZE_IMPLICATION_CMD
 
 inherit
 	SHARED_WORKBENCH
@@ -40,19 +40,24 @@ feature -- Basic operations
 
 	execute
 			-- Execute current command
+		local
+			l_output_file: PLAIN_TEXT_FILE
 		do
+			create l_output_file.make_create_read_write (config.output)
 			create implications.make (100)
 			implications.compare_objects
-			load_implications ("/home/jasonw/tmp/wrong_implications.txt")
+			load_implications (config.input)
 			across implications as l_imps loop
 				across l_imps.item as l_list loop
 					io.put_string (l_imps.key + " : " + l_list.item.text + "%N")
-					process_implication (l_list.item)
+					l_output_file.put_string (l_imps.key + " : " + l_list.item.text + "%N")
+					process_implication (l_list.item, l_output_file)
 				end
 			end
+			l_output_file.close
 		end
 
-	process_implication (a_implication: EPA_EXPRESSION)
+	process_implication (a_implication: EPA_EXPRESSION; a_output: PLAIN_TEXT_FILE)
 			-- Process `a_implication'.
 		local
 			l_structure: like implication_structure
@@ -68,12 +73,18 @@ feature -- Basic operations
 			l_invariants: like invariants_from_arff_relation
 			l_invs: DS_ARRAYED_LIST [STRING]
 			l_sorter: DS_QUICK_SORTER [STRING]
+			l_arff_path: FILE_NAME
 		do
 			l_class := a_implication.class_
 			l_feature := a_implication.feature_
 			l_structure := implication_structure (a_implication)
+
 			create l_arff_loader
-			l_arff_loader.load_relation ("/home/jasonw/tmp/arff2/" + l_class.name_in_upper + "/" + l_feature.feature_name.as_lower + "/" + l_class.name_in_upper + "__" + l_feature.feature_name.as_lower + "__all__noname.arff")
+			create l_arff_path.make_from_string (config.arff_directory)
+			l_arff_path.extend (l_class.name_in_upper)
+			l_arff_path.extend (l_feature.feature_name.as_lower)
+			l_arff_path.set_file_name (l_class.name_in_upper + "__" + l_feature.feature_name.as_lower + "__all__noname.arff")
+			l_arff_loader.load_relation (l_arff_path.out)
 			l_arff_relation := l_arff_loader.last_relation
 				-- Find ARFF relation attributes corresponding to implication premises.
 			create l_expr_attr_map.make (5)
@@ -90,7 +101,7 @@ feature -- Basic operations
 				l_expr_attr_map.force_last (l_attr, l_premises.item)
 			end
 
-				-- Project ARFF relation based on implication premises.
+				-- Process ARFF relation based on implication premises.
 			from
 				l_expr_attr_map.start
 			until
@@ -107,6 +118,7 @@ feature -- Basic operations
 						end (?, l_expr_attr_map.item_for_iteration))
 				l_expr_attr_map.forth
 			end
+
 
 			l_invariants := invariants_from_arff_relation (l_arff_relation, Void, Void)
 			from
@@ -138,6 +150,8 @@ feature -- Basic operations
 					loop
 						io.put_string ("%T" + l_invs.item_for_iteration)
 						io.put_character ('%N')
+						a_output.put_string ("%T" + l_invs.item_for_iteration)
+						a_output.put_character ('%N')
 						l_invs.forth
 					end
 				end

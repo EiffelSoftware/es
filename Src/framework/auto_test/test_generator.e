@@ -1010,6 +1010,14 @@ feature -- Status setting
 			prestate_invariant_path_set: prestate_invariant_path = a_path
 		end
 
+	set_arff_directory (a_directory: STRING)
+			-- Set `arff_directory' with `a_directory'.
+		do
+			arff_directory := a_directory
+		ensure
+			arff_directory_set: arff_directory = a_directory
+		end
+
 feature -- Basic operations
 
 	step
@@ -1489,6 +1497,11 @@ feature -- Option caches
 			-- Should we check if there are some invariant-violating
 			-- objects available in the semantic database, instead of
 			-- performing precondition-reduction or testing?
+
+	arff_directory: STRING
+			-- Directory storing ARFF files, needed by the
+			-- precondition-reduction strategy to invalidate
+			-- inferred implications.
 
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

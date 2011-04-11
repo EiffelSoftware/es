@@ -33,7 +33,7 @@ feature -- Access
 			else
 				Result := a_type
 			end
-			if Result.has_generics then
+			if Result.is_loose and then Result.has_generics then
 				Result := Result.associated_class.constraint_actual_type
 			end
 		ensure

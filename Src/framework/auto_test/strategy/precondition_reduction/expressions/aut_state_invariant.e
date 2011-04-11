@@ -40,7 +40,7 @@ feature{NONE} -- Initialization
 			create one_of_components.make
 		end
 
-	make_as_one_of (a_expression: EPA_EXPRESSION; a_values: LINKED_LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+	make_as_one_of (a_expression: EPA_EXPRESSION; a_values: LINKED_LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I; a_pre_context: detachable EPA_EXPRESSION; a_post_context: detachable EPA_EXPRESSION)
 			-- Initialize Current as an one of invariant.
 		local
 			l_expr: EPA_AST_EXPRESSION
@@ -62,6 +62,9 @@ feature{NONE} -- Initialization
 					l_str.append (once " and ")
 				end
 				i := i + 1
+			end
+			if a_pre_context /= Void then
+				l_str := l_str + " and (" + a_pre_context.text + ")"
 			end
 			create l_expr.make_with_text (a_context_class, a_feature, l_str, a_context_class)
 			make (l_expr, a_context_class, a_feature)
@@ -108,10 +111,34 @@ feature -- Access
 			Result := expression.text
 		end
 
+	pre_state_context_expression: EPA_EXPRESSION
+			-- The expression (if attached) which must be evaluated to True in pre-state
+
+	post_state_context_expression: EPA_EXPRESSION
+			-- The expression (if attached) which must be evaluated to True in post-state
+
+	invariant_id: STRING
+			-- Id for current invariant
+		do
+			create Result.make (256)
+			Result.append (context_class.name_in_upper)
+			Result.append_character ('.')
+			Result.append (feature_.feature_name.as_lower)
+			Result.append_character ('.')
+			if is_implication then
+				Result.append ("old (" + pre_state_context_expression.text + ") implies " + post_state_context_expression.text)
+			else
+				Result.append (expression.text)
+			end
+		end
+
 feature -- Status report
 
 	is_one_of_invariant: BOOLEAN
 			-- Is Current invariant a "one of" invariant?
+
+	is_implication: BOOLEAN
+			-- Is Current invariant an implication?
 
 feature -- Setting
 
@@ -121,6 +148,30 @@ feature -- Setting
 			is_one_of_invariant := b
 		ensure
 			is_one_of_invariant_set: is_one_of_invariant = b
+		end
+
+	set_is_implication (b: BOOLEAN)
+			-- Set `is_implication' with `b'.
+		do
+			is_implication := b
+		ensure
+			is_implication_set: is_implication = b
+		end
+
+	set_pre_state_context_expression (a_expression: like pre_state_context_expression)
+			-- Set `pre_state_context_expression' with `a_expression'.
+		do
+			pre_state_context_expression := a_expression
+		ensure
+			pre_state_context_expression_set: pre_state_context_expression = a_expression
+		end
+
+	set_post_state_context_expression (a_expression: like post_state_context_expression)
+			-- Set `post_state_context_expression' with `a_expression'.
+		do
+			post_state_context_expression := a_expression
+		ensure
+			post_state_context_expression_set: post_state_context_expression = a_expression
 		end
 
 note

@@ -78,6 +78,9 @@ feature {NONE} -- Initialization
 			create invalid_predicates_by_feature.make (100)
 			invalid_predicates_by_feature.compare_objects
 
+			create ids_of_processed_invariants.make (50)
+			ids_of_processed_invariants.set_equality_tester (string_equality_tester)
+
 			connection := interpreter.configuration.semantic_database_config.connection
 			connection.connect
 			load_prestate_predicates
@@ -133,42 +136,60 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 		do
 				-- Get, and remove, one invariant to process each step.
 			select_current_predicate
-			l_class := current_predicate.context_class
-			l_feature := current_predicate.feature_
-			l_inv_message := class_name_dot_feature_name (current_predicate.context_class, current_predicate.feature_) + " : " + current_predicate.text
-			interpreter.log_precondition_reduction ("Try to satisfy: " + l_inv_message)
-			progress_log_manager.put_string_with_time ("Try to satisfy: " + l_inv_message + " ")
+			if not ids_of_processed_invariants.has (current_predicate.invariant_id) then
+				if not current_predicate.is_implication then
+					ids_of_processed_invariants.force_last (current_predicate.invariant_id)
+				end
+				l_class := current_predicate.context_class
+				l_feature := current_predicate.feature_
+				l_inv_message := class_name_dot_feature_name (current_predicate.context_class, current_predicate.feature_) + " : " + current_predicate.text
+				if current_predicate.is_implication then
+					l_inv_message := l_inv_message + ", for invalidating " + " old (" + current_predicate.pre_state_context_expression.text + ") implies " + current_predicate.post_state_context_expression.text
+				end
 
-				-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.
-				-- If so, we don't need to do anything, because by definition, that pre-state invariant cannot be violated.
-			l_invalids := invalid_predicates (l_class, l_feature, predicates_as_expressions (prestate_predicates_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
-			if l_invalids.has (current_predicate.expression) then
-				progress_log_manager.put_string (" [Invalid]")
-				interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Invalid]")
-			else
-					-- We try to search in the semantic database to see if there are some object combination
-					-- which satisfies `current_predicate'. If so, we use those objects as our new test inputs.
-				l_object_selector_reductor := object_selection_reductor
-				execute_task (l_object_selector_reductor)
+				progress_log_manager.put_string_with_time ("Try to satisfy: " + l_inv_message + " ")
+				interpreter.log_precondition_reduction ("Try to satisfy: " + l_inv_message)
 
-				if l_object_selector_reductor.is_reduction_successful then
-					progress_log_manager.put_string (" [Satisfied]")
-					interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
+					-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.
+					-- If so, we don't need to do anything, because by definition, that pre-state invariant cannot be violated.
+				l_invalids := invalid_predicates (l_class, l_feature, predicates_as_expressions (prestate_predicates_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
+				if l_invalids.has (current_predicate.expression) then
+					progress_log_manager.put_string (" [Invalid]")
+					interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Invalid]")
 				else
-						-- We try to use feature calls to change objects into states
-						-- that satisfy `current_predicate'.
-					l_state_changing_reductor := state_changing_reductor
-					execute_task (l_state_changing_reductor)
-					if l_state_changing_reductor.is_reduction_successful then
-						progress_log_manager.put_string (" [Transition Satisfied]")
+						-- We try to search in the semantic database to see if there are some object combination
+						-- which satisfies `current_predicate'. If so, we use those objects as our new test inputs.
+					l_object_selector_reductor := object_selection_reductor
+					execute_task (l_object_selector_reductor)
+
+					if l_object_selector_reductor.is_reduction_successful then
+						progress_log_manager.put_string (" [Satisfied]")
 						interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
+						if current_predicate.is_implication then
+							progress_log_manager.put_string (" [Implication invalidated] ")
+							ids_of_processed_invariants.force_last (current_predicate.invariant_id)
+						end
 					else
-						progress_log_manager.put_string (" [Not satisfied]")
-						interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message)
+						if current_predicate.is_implication then
+							progress_log_manager.put_string (" [Implication not invalidated] ")
+							interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message)
+						else
+								-- We try to use feature calls to change objects into states
+								-- that satisfy `current_predicate'.
+							l_state_changing_reductor := state_changing_reductor
+							execute_task (l_state_changing_reductor)
+							if l_state_changing_reductor.is_reduction_successful then
+								progress_log_manager.put_string (" [Transition Satisfied]")
+								interpreter.log_precondition_reduction ("Succeeded in satisfying: " + l_inv_message)
+							else
+								progress_log_manager.put_string (" [Not satisfied]")
+								interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message)
+							end
+						end
 					end
 				end
+				progress_log_manager.put_line ("")
 			end
-			progress_log_manager.put_line ("")
 		end
 
 	select_current_predicate
@@ -346,8 +367,10 @@ feature{NONE} -- Implementation/precondition reduction
 				loop
 					l_expr := l_cursor.item
 					create l_negated_expr.make_with_text (l_expr.class_, l_expr.feature_, "not (" + l_expr.text + ")", l_expr.written_class)
-					l_negations.force_last (l_negated_expr)
-					l_negation_map.force_last (l_expr, l_negated_expr)
+					if l_negated_expr.type /= Void then
+						l_negations.force_last (l_negated_expr)
+						l_negation_map.force_last (l_expr, l_negated_expr)
+					end
 					l_cursor.forth
 				end
 				create Result.make (a_candidates.count)
@@ -382,6 +405,9 @@ feature{NONE} -- Implementation/precondition reduction
 				l_cursor.forth
 			end
 		end
+
+	ids_of_processed_invariants: DS_HASH_SET [STRING]
+			-- Set of processed invariants, in form of "CLASS_NAME.feature_name.invariant_text"			
 
 feature{NONE} -- Invariant-violating invariants checking
 

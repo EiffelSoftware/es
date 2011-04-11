@@ -217,6 +217,13 @@ feature -- Access
 			-- Object in `store' at position `a_index'.
 		do
 			Result := store.variable_value (a_index)
+
+				-- Uncomment for debugging		
+			if Result /= Void then
+				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + Result.generating_type.name + "%N")
+			else
+				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
+			end
 		end
 
 	interpreter_log_directory: STRING
@@ -283,6 +290,13 @@ feature {NONE} -- Handlers
 						l_object := l_uuid_objects_mapping.item (l_uuid).item (l_var_index)
 
 						store_variable_at_index (l_object, l_variable.index)
+
+							-- Uncomment for debugging
+						if l_object /= Void then
+							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": " + l_object.generating_type.name + "%N")
+						else
+							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": Void%N")
+						end
 
 						l_index := l_index + 1
 					end
@@ -412,6 +426,9 @@ feature {NONE} -- Handlers
 					end
 
 						-- Run the feature with newly injected byte-code.
+--					if variable_at_index (3) = Void then
+--						log_message ("Error, Error: v_3 is Void.%N")
+--					end
 					execute_protected
 					log_message (once "report_execute_request end%N")
 
@@ -850,7 +867,7 @@ feature{NONE} -- Invariant checking
 	invariant_violating_object_index: INTEGER
 			-- Index of the object which violates it class invariant
 
-	check_invariant (a_index: INTEGER; o: detachable ANY) is
+	check_invariant (a_index: INTEGER; o: detachable ANY)
 			-- Check if the class invariant `o' with index `a_index' is satisfied.
 			-- If not satisfied, set `is_last_invariant_violated' to True
 			-- and raise the exception.
@@ -859,6 +876,11 @@ feature{NONE} -- Invariant checking
 		require
 			a_index_positive: a_index > 0
 		do
+			if o /= Void then
+				log_message ("Check invariant: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + o.generating_type.name + "%N")
+			else
+				log_message ("Check invariant: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
+			end
 			if attached {ANY} o as l_obj then
 				l_obj.do_nothing
 			end
@@ -922,6 +944,9 @@ feature -- Object state checking
 						last_response_flag := normal_response_flag
 						execute_protected
 						log_message (once "report_object_state_request end%N")
+						if variable_at_index (3) = Void then
+							log_message ("Error: Error: v_3 is Void.%N")
+						end
 					end
 					last_response := [query_values, output_buffer, error_buffer]
 					refresh_last_response_flag

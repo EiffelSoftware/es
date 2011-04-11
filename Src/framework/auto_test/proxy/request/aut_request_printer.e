@@ -175,7 +175,11 @@ feature {AUT_REQUEST} -- Processing
 			l_receiver_index: INTEGER
 			l_extra_local_count: INTEGER
 			l_receiver_var: detachable ITP_VARIABLE
+			l_context_class: CLASS_C
+			l_context_type: TYPE_A
 		do
+			l_context_class := a_request.class_of_target_type
+			l_context_type := l_context_class.constraint_actual_type
 				-- If the to be called feature is a query, we need one more instruction
 				-- at the end to store the result in object pool
 			if a_request.is_feature_query then
@@ -208,8 +212,13 @@ feature {AUT_REQUEST} -- Processing
 				l_locals.append (l_arguments)
 			end
 
-			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).deep_actual_type
---			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
+--			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).deep_actual_type
+			l_receiver_type := l_feature.type.actual_type
+			if not l_receiver_type.is_void then
+				l_receiver_type := actual_type_from_formal_type (l_receiver_type, l_context_class)
+				l_receiver_type := l_receiver_type.instantiation_in (l_context_type, l_context_class.class_id)
+
+			end
 			if a_request.is_feature_query then
 				l_locals.extend (l_receiver_type)
 			end

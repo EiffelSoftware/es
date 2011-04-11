@@ -274,6 +274,8 @@ feature{NONE} -- Implementation
 					l_type := a_feature.arguments.i_th (i).actual_type
 					l_type := actual_type_from_formal_type (l_type, l_class)
 					l_type := l_type.actual_type.instantiation_in (a_context, l_class_id)
+					fixme ("The following code is used to avoid a problem which a type cannot be correctly resolved. For example, the first argument of LINKED_LIST.append. 10.04.2011. Jasonw")
+					l_type := type_a_from_string (output_type_name (l_type.name), interpreter_root_class)
 					Result.extend (l_type)
 					i := i + 1
 				end

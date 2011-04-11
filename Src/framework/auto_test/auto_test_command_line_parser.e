@@ -98,6 +98,7 @@ feature{NONE} -- Initialization
 			l_sem_port_option: AP_INTEGER_OPTION
 			l_precondition_reduction_file_option: AP_STRING_OPTION
 			l_pr_check_objects: AP_FLAG
+			l_arff_directory_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -364,6 +365,10 @@ feature{NONE} -- Initialization
 			create l_pr_check_objects.make_with_long_form ("check-invariant-violating-objects")
 			l_pr_check_objects.set_description ("Only check if there are some objects available which violate those given invariants. Do not perform any testing or precondition reductions. Format: --check-invariant-violating-objects --data-output <file>. All invariants with no violating objects are output to <file>.")
 			parser.options.force_last (l_pr_check_objects)
+
+			create l_arff_directory_option.make_with_long_form ("arff")
+			l_arff_directory_option.set_description ("Specify the location of ARFF files, used by the precondition-reduction strategy to invalidate implications. Format: --arff directory. Directory is the top level directory which stores ARFF files, containing subclasses for particular classes.")
+			parser.options.force_last (l_arff_directory_option)
 
 			parser.parse_list (a_arguments)
 
@@ -879,6 +884,10 @@ feature{NONE} -- Initialization
 				should_check_invariant_violating_objects := True
 			end
 
+			if l_arff_directory_option.was_found then
+				arff_directory := l_arff_directory_option.parameter.twin
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1199,6 +1208,11 @@ feature -- Status report
 	should_check_invariant_violating_objects: BOOLEAN
 			-- Should we check invariant-violating objects,
 			-- instead of performing precondition reduction?
+
+	arff_directory: detachable STRING
+			-- The directory storing ARFF files, needed
+			-- by the precnodition-reduction strategy to
+			-- invalidcate inferred implications.
 
 feature {NONE} -- Constants
 

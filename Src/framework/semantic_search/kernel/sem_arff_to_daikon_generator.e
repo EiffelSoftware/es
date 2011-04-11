@@ -252,7 +252,18 @@ feature{NONE} -- Implementation
 				elseif l_raw_value ~ {ITP_SHARED_CONSTANTS}.void_value then
 					create l_value.make (l_var, daikon_void_value, modified_flag_1)
 				else
-					create l_value.make (l_var, l_raw_value, modified_flag_1)
+						-- This is to make sure that Daikon can correctly analyze non-Void values.						
+					if l_var.rep_type ~ {DKN_CONSTANTS}.hashcode_rep_type and then not l_raw_value.starts_with (once "0x") then
+						if l_raw_value.is_boolean then
+							create l_value.make (l_var, once "0x" + (l_raw_value.to_boolean.to_integer + 1).out, modified_flag_1)
+						elseif l_raw_value.is_integer then
+							create l_value.make (l_var, once "0x" + (l_raw_value.to_integer.abs + 1).out, modified_flag_1)
+						else
+							create l_value.make (l_var, once "0x123", modified_flag_1)
+						end
+					else
+						create l_value.make (l_var, l_raw_value, modified_flag_1)
+					end
 				end
 				Result.values.force_last (l_value, l_var)
 				l_var_cursor.forth
