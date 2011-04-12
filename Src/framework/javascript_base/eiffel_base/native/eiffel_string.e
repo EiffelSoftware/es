@@ -60,7 +60,7 @@ feature -- Basic Operation
 
 	as_string_32: attached STRING
 		external "C" alias "$TARGET" end
-	
+
 	as_upper: attached STRING
 		external "C" alias "toUpperCase()" end
 
@@ -199,8 +199,14 @@ feature -- Basic Operation
 	replace_substring (str: STRING; start_index, end_index: INTEGER)
 		external "C" alias "$TARGET = $TARGET.substring(0,$start_index-1) + $str + $TARGET.substring($end_index-1)" end
 
+	replace_substring_all (original, new: STRING)
+		external "C" alias "replace($original, $new)" end
+
 	right_adjust
 		external "C" alias "$TARGET = $TARGET.replace(/\s+$/,%"%")" end
+
+	same_string (other: STRING): BOOLEAN
+		external "C" alias "($TARGET === $other)" end
 
 	set (t: STRING; n1, n2: INTEGER)
 		external "C" alias "$TARGET = $t.substring($n1-1, $n2)" end

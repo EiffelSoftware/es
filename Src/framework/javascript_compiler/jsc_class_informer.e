@@ -250,7 +250,7 @@ feature -- Basic Operation
 					l_redirect_class_name := l_redirect_class.name_in_upper
 					check l_redirect_class_name /= Void end
 
-					jsc_context.add_error ("Missing EiffelBase feature equivalent: " + l_feature_name, "What to do: Make sure you have a feature named `" +
+					jsc_context.add_error ("Missing EiffelBase feature equivalent: " + l_redirect_class_name + "." + l_feature_name, "What to do: Make sure you have a feature named `" +
 						l_feature_name + "'%N" + " in class " + l_redirect_class_name)
 
 					Result := a_feature

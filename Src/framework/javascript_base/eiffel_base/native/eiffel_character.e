@@ -29,6 +29,9 @@ feature -- Basic Operation
 	out: attached STRING
 		external "C" alias "$TARGET" end
 
+	to_character_32: CHARACTER_32
+		external "C" alias "$TARGET" end
+
 	upper: attached STRING
 		external "C" alias "toUpperCase()" end
 

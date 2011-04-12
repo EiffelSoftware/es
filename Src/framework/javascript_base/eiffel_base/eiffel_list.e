@@ -53,6 +53,11 @@ feature -- Operations
 			Result := inner_array.length
 		end
 
+	cursor: attached EIFFEL_LIST_CURSOR
+		do
+			create Result.make (inner_index)
+		end
+
 	do_all (action: attached PROCEDURE [ANY, TUPLE [G]])
 		local
 			i: INTEGER
@@ -128,6 +133,11 @@ feature -- Operations
 	go_i_th (a_index: INTEGER)
 		do
 			inner_index := a_index-1
+		end
+
+	go_to (p: attached EIFFEL_LIST_CURSOR)
+		do
+			inner_index := p.inner_index
 		end
 
 	has (v: G): BOOLEAN
@@ -235,6 +245,11 @@ feature -- Operations
 				end
 				i := i + 1
 			end
+		end
+
+	valid_cursor (p: attached EIFFEL_LIST_CURSOR): BOOLEAN
+		do
+			Result := p.inner_index >= 0 and p.inner_index < inner_array.length
 		end
 
 	wipe_out

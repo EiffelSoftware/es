@@ -109,6 +109,10 @@ if (typeof console === "undefined") {
 	}
 }
 
+if (typeof eiffel_arguments === "undefined") {
+	var eiffel_arguments = [];
+}
+
 var runtime = {
 	_class_repository : [],
 	_inherits_map: {},

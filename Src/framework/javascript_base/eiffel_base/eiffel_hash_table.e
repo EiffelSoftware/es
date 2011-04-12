@@ -56,9 +56,15 @@ feature -- Basic Operation
 			Result := keys.as_eiffel_array
 		end
 
-	force (element: G; key: STRING)
+	extend (element: G; key: K)
 		do
-			inner_array.set_item_by_name (key, element)
+			inner_array.set_item_by_name (key.out, element)
+			cached_keys_busted := true
+		end
+
+	force (element: G; key: K)
+		do
+			inner_array.set_item_by_name (key.out, element)
 			cached_keys_busted := true
 		end
 
@@ -67,9 +73,32 @@ feature -- Basic Operation
 			keys_index := keys_index + 1
 		end
 
+	go_to (p: attached EIFFEL_HASH_TABLE_CURSOR)
+			-- To future implementors of `cursor': create a cursor with index + 1
+		do
+			keys_index := p.inner_index - 1
+		end
+
 	has (key: K): BOOLEAN
 		do
 			Result := inner_array.has_item_by_name (key.out)
+		end
+
+	has_item (v: G): BOOLEAN
+		local
+			i: INTEGER
+		do
+			from
+				Result := false
+				i := 0
+			until
+				i >= keys.length or Result = true
+			loop
+				if inner_array.get_item_by_name (keys.item (i)) = v then
+					Result := true
+				end
+				i := i + 1
+			end
 		end
 
 	has_key (key: K): BOOLEAN
@@ -136,6 +165,11 @@ feature -- Basic Operation
 	start
 		do
 			keys_index := 0
+		end
+
+	wipe_out
+		do
+			make (0)
 		end
 
 feature {NONE} -- Implementation

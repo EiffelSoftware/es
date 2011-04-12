@@ -344,7 +344,7 @@ feature -- Processing
 
 				-- Invoke expression writer and get inheritance condition
 			expression_writer.reset (output.indentation)
-			local_name := expression_writer.process_object_test (l_source, l_target_type, l_source_type)
+			local_name := expression_writer.process_object_test (l_source, l_target_type, l_source_type, true)
 			l_test := expression_writer.output.data
 			dependencies1.fill (expression_writer.dependencies1)
 			dependencies2.fill (expression_writer.dependencies2)

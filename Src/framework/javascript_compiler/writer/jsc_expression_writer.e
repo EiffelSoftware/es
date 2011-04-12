@@ -115,7 +115,7 @@ feature -- Basic Operation
 			create {LINKED_LIST[attached JSC_WRITER_DATA]}invariant_checks.make
 		end
 
-	process_object_test (l_source: attached EXPR_B; l_target_type, l_source_type: attached TYPE_A): attached STRING
+	process_object_test (l_source: attached EXPR_B; l_target_type, l_source_type: attached TYPE_A; use_reverse: BOOLEAN): attached STRING
 		local
 			l_expression: JSC_WRITER_DATA
 			local_name: STRING
@@ -125,7 +125,12 @@ feature -- Basic Operation
 				l_expression := output.data
 			output.pop
 
-			local_name := jsc_context.add_object_test_local
+			if use_reverse then
+				local_name := jsc_context.add_reverse_local
+			else
+				local_name := jsc_context.add_object_test_local
+			end
+
 			output.put ("(")
 			output.put (local_name)
 			output.put ("=")
@@ -466,10 +471,13 @@ feature {BYTE_NODE} -- Visitors
 			l_class_name: STRING
 			l_feature: attached FEATURE_I
 			l_feature_external_name: STRING
-			l_type: CL_TYPE_A
+			l_type: TYPE_A
 			l_type_name: attached STRING
 		do
 			l_type ?= a_node.type
+			check l_type /= Void end
+
+			l_type := l_type.actual_type
 			check l_type /= Void end
 
 			l_call_access := a_node.call
@@ -646,7 +654,7 @@ feature {BYTE_NODE} -- Visitors
 			l_source_type := l_context.real_type (l_node_expression.type)
 			check l_source_type /= Void end
 
-			local_name := process_object_test (l_node_expression, l_target_type, l_source_type)
+			local_name := process_object_test (l_node_expression, l_target_type, l_source_type, false)
 
 		end
 
@@ -1185,6 +1193,10 @@ feature {NONE} -- Implementation
 				-- Still not sure why this happens
 				l_feature := written_class.feature_of_feature_id (a_node.feature_id)
 			end
+			if l_feature = Void then
+				-- Still not sure why this happens
+				l_feature := written_class.feature_of_name_id (a_node.feature_name_id)
+			end
 			check l_feature /= Void end
 
 			Result := l_feature
@@ -1247,9 +1259,13 @@ feature -- Processing helpers
 		local
 			l_class: CLASS_C
 			l_class_name: STRING
+			l_type: TYPE_A
 		do
+			l_type := a_type.actual_type
+			check l_type /= void end
+
 			output.push ("")
-				if attached{FORMAL_A}a_type as formal_type then
+				if attached{FORMAL_A}l_type as formal_type then
 					output.put (jsc_context.name_mapper.current_class_target)
 					output.put (".$generics[")
 					output.put ((formal_type.position-1).out)
@@ -1263,7 +1279,7 @@ feature -- Processing helpers
 					end
 					output.put (", name:%"")
 
-					l_class := a_type.associated_class
+					l_class := l_type.associated_class
 					check l_class /= Void end
 
 					l_class_name := jsc_context.informer.redirect_class (l_class, 0).name_in_upper

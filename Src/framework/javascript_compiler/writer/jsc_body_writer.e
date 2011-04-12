@@ -212,7 +212,7 @@ feature -- Basic Operations
 				end
 
 				if a_feature.has_return_value or l_byte_code.local_count > 0 or instruction_writer.this_used_in_closure
-					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0
+					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0 or jsc_context.current_reverse_locals > 0
 					or rescue_code /= Void then
 						-- The feature has locals
 					write_locals (l_byte_code, a_feature, instruction_writer.this_used_in_closure, rescue_code /= Void)
@@ -415,6 +415,21 @@ feature {NONE} -- Implementation
 			loop
 				output.push ("")
 					output.put (jsc_context.object_test_local_name (i))
+					output.put (" = null")
+					locals.extend (output.data)
+				output.pop
+				i := i + 1
+			end
+
+
+				-- Write locals generated from reverse
+			from
+				i := 1
+			until
+				i > jsc_context.current_reverse_locals
+			loop
+				output.push ("")
+					output.put (jsc_context.reverse_local_name (i))
 					output.put (" = null")
 					locals.extend (output.data)
 				output.pop

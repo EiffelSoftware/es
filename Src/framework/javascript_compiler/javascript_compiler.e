@@ -151,24 +151,29 @@ feature -- Operations
 					until
 						linear.after
 					loop
+						l_class := l_system.class_of_id (linear.item)
+						check l_class /= Void end
 
-						if not classes_to_compile_set.has (linear.item) then
-							l_class := l_system.class_of_id (linear.item)
-							check l_class /= Void end
+						if jsc_context.informer.is_eiffel_base_class (l_class) then
+							dependencies_count[l_current_class.class_id] := dependencies_count[l_current_class.class_id] - 1
+						else
+							if not classes_to_compile_set.has (linear.item) then
+								classes_to_compile.extend (l_class)
+								classes_to_compile_set.extend (l_class.class_id)
+							end
 
-							classes_to_compile.extend (l_class)
-							classes_to_compile_set.extend (l_class.class_id)
+							if not inverse_dependencies.has (linear.item) then
+								create {LINKED_SET[INTEGER]}l_set.make
+								inverse_dependencies[linear.item] := l_set
+							end
+
+							l_set := inverse_dependencies[linear.item]
+							check l_set /= Void end
+
+							l_set.extend (l_current_class.class_id)
 						end
 
-						if not inverse_dependencies.has (linear.item) then
-							create {LINKED_SET[INTEGER]}l_set.make
-							inverse_dependencies[linear.item] := l_set
-						end
 
-						l_set := inverse_dependencies[linear.item]
-						check l_set /= Void end
-
-						l_set.extend (l_current_class.class_id)
 
 						linear.forth
 					end
@@ -179,13 +184,17 @@ feature -- Operations
 					until
 						linear.after
 					loop
+						l_class := l_system.class_of_id (linear.item)
+						check l_class /= Void end
 
-						if not classes_to_compile_set.has (linear.item) then
-							l_class := l_system.class_of_id (linear.item)
-							check l_class /= Void end
+						if not jsc_context.informer.is_eiffel_base_class (l_class) then
+							if not classes_to_compile_set.has (linear.item) then
+								l_class := l_system.class_of_id (linear.item)
+								check l_class /= Void end
 
-							classes_to_compile.extend (l_class)
-							classes_to_compile_set.extend (l_class.class_id)
+								classes_to_compile.extend (l_class)
+								classes_to_compile_set.extend (l_class.class_id)
+							end
 						end
 
 						linear.forth
