@@ -8,4 +8,13 @@ note
 class
 	EIFFEL_ANY
 
+inherit
+	ANY
+		redefine out end
+
+feature -- Basic Operation
+
+	out: attached STRING
+		external "C" alias "toString()" end
+
 end

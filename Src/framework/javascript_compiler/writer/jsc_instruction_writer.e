@@ -139,7 +139,7 @@ feature -- Processing
 				l_class := l_type.associated_class
 				check l_class /= Void end
 
-				l_class := jsc_context.informer.redirect_class (l_class, a_node.line_number)
+				l_class := jsc_context.informer.redirect_class (l_class)
 
 				if not jsc_context.informer.is_fictive_stub (l_class.class_id)
 					and l_class.assertion_level.is_invariant then

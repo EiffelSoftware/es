@@ -207,7 +207,7 @@ feature -- Basic Operation
 			Result := l_namespace.starts_with ("EiffelSoftware.Library.Base")
 		end
 
-	redirect_class (a_class: attached CLASS_C; a_line_number: INTEGER): attached CLASS_C
+	redirect_class (a_class: attached CLASS_C): attached CLASS_C
 			-- Redirect `a_class' to equivalent JavaScript class if `a_class' belongs to EiffelBase
 		local
 			l_original_class_name: STRING
@@ -231,17 +231,27 @@ feature -- Basic Operation
 			end
 		end
 
-	redirect_feature (a_class: attached CLASS_C; a_feature: attached FEATURE_I; a_line_number: INTEGER) : attached FEATURE_I
+	redirect_feature (a_class: attached CLASS_C; a_feature: attached FEATURE_I) : attached FEATURE_I
 			-- Redirect `a_class'.`a_feature' to equivalent JavaScript class.feature if `a_class' belongs to EiffelBase.
 		local
 			l_redirect_class: attached CLASS_C
 			l_redirect_class_name: STRING
 			l_feature_name: STRING
 		do
-			l_redirect_class := redirect_class (a_class, a_line_number)
+			l_redirect_class := redirect_class (a_class)
 
 			if l_redirect_class.class_id /= a_class.class_id then
 				if attached l_redirect_class.feature_named (a_feature.feature_name) as safe_feature then
+					if attached safe_feature.written_class as safe_written_class and then safe_written_class.is_class_any then
+						l_feature_name := a_feature.feature_name
+						check l_feature_name /= Void end
+
+						l_redirect_class_name := l_redirect_class.name_in_upper
+						check l_redirect_class_name /= Void end
+
+						jsc_context.add_error ("Missing EiffelBase feature equivalent: " + l_redirect_class_name + "." + l_feature_name, "What to do: Make sure you have a feature named `" +
+							l_feature_name + "'%N" + " in class " + l_redirect_class_name)
+					end
 					Result := safe_feature
 				else
 					l_feature_name := a_feature.feature_name

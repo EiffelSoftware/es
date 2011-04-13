@@ -151,7 +151,7 @@ feature {NONE} -- Class Processing
 			l_class := jsc_context.informer.find_class_named (l_parent_name.as_upper)
 			check l_class /= Void end
 
-			l_class := jsc_context.informer.redirect_class (l_class, 0)
+			l_class := jsc_context.informer.redirect_class (l_class)
 
 			l_class_name := l_class.name_in_upper
 			check l_class_name /= Void end
@@ -265,7 +265,7 @@ feature {NONE} -- Class Processing
 					l_class := l_parent.associated_class
 					check l_class /= Void end
 
-					l_class := jsc_context.informer.redirect_class (l_class, 0)
+					l_class := jsc_context.informer.redirect_class (l_class)
 
 					if not jsc_context.informer.is_fictive_stub (l_class.class_id) and not l_class.is_class_any then
 						dependencies1.put (l_class.class_id)
@@ -358,7 +358,7 @@ feature {NONE} -- Class Processing
 							l_class := l_parent.associated_class
 							check l_class /= Void end
 
-							l_class := jsc_context.informer.redirect_class (l_class, 0)
+							l_class := jsc_context.informer.redirect_class (l_class)
 
 							if not jsc_context.informer.is_stub (l_class.class_id) and not l_class.is_class_any then
 								output.put_line ("this." + jsc_context.name_mapper.invariant_name (l_class.class_id) + "();")
@@ -445,10 +445,7 @@ feature {NONE} -- Class Processing
 						check_external_feature (l_feature)
 					else
 						if not is_stub then
-							output.push (output.indentation)
-								process_feature (l_feature)
-								l_generated_features.extend (output.data)
-							output.pop
+							l_generated_features.extend (process_feature (l_feature))
 						end
 					end
 
@@ -539,77 +536,80 @@ feature {NONE} -- Feature Processing
 			end
 		end
 
-	process_feature (a_feature: attached FEATURE_I)
+	process_feature (a_feature: attached FEATURE_I): attached JSC_WRITER_DATA
 			-- Generate code for `a_feature'
 		local
 			l_feature_name: STRING
 			l_constant: CONSTANT_I
 			l_value: VALUE_I
 		do
-			if a_feature.is_attribute then
-				attribute_writer.reset (output.indentation)
-				attribute_writer.write_attribute (a_feature)
-				output.put_data (attribute_writer.output.data)
+			output.push (output.indentation)
+				if a_feature.is_attribute then
+					attribute_writer.reset (output.indentation)
+					attribute_writer.write_attribute (a_feature)
+					output.put_data (attribute_writer.output.data)
 
-			elseif a_feature.is_constant then
-				l_feature_name := a_feature.feature_name
-				check l_feature_name /= Void end
+				elseif a_feature.is_constant then
+					l_feature_name := a_feature.feature_name
+					check l_feature_name /= Void end
 
-				output.put_indentation
-				output.put (l_feature_name)
-				output.put (": ")
+					output.put_indentation
+					output.put (l_feature_name)
+					output.put (": ")
 
-				l_constant ?= a_feature
-				check l_constant /= Void end
+					l_constant ?= a_feature
+					check l_constant /= Void end
 
-				l_value := l_constant.value
-				check l_value /= Void end
+					l_value := l_constant.value
+					check l_value /= Void end
 
-				output.put (constant_writer.process (l_value))
+					output.put (constant_writer.process (l_value))
 
-			else
-				signature_writer.reset (output.indentation)
-				signature_writer.write_feature_declaration (a_feature)
-				output.put_data (signature_writer.output.data)
-
-				output.put (" {")
-				output.put_new_line
-				output.indent
-
-				if a_feature.is_once then
-					output.indent
-					output.put_line ("if (!$executed) {")
-					output.indent
-				end
-
-				body_writer.reset (output.indentation)
-				body_writer.write_feature_body (a_feature)
-
-				if a_feature.is_once then
-					output.put_line ("$executed = true;")
-
-					output.put_data (body_writer.output.data)
-
-					output.unindent
-					output.put_line ("}")
-					output.put_line ("return $cached;")
-					output.unindent
-					output.put_line ("};")
 				else
-					output.put_data (body_writer.output.data)
+					signature_writer.reset (output.indentation)
+					signature_writer.write_feature_declaration (a_feature)
+					output.put_data (signature_writer.output.data)
+
+					output.put (" {")
+					output.put_new_line
+					output.indent
+
+					if a_feature.is_once then
+						output.indent
+						output.put_line ("if (!$executed) {")
+						output.indent
+					end
+
+					body_writer.reset (output.indentation)
+					body_writer.write_feature_body (a_feature)
+
+					if a_feature.is_once then
+						output.put_line ("$executed = true;")
+
+						output.put_data (body_writer.output.data)
+
+						output.unindent
+						output.put_line ("}")
+						output.put_line ("return $cached;")
+						output.unindent
+						output.put_line ("};")
+					else
+						output.put_data (body_writer.output.data)
+					end
+
+					dependencies1.fill (body_writer.dependencies1)
+					dependencies2.fill (body_writer.dependencies2)
+
+					output.unindent
+					output.put_indentation
+					output.put ("}")
+
+					if a_feature.is_once then
+						output.put ("())")
+					end
 				end
-
-				dependencies1.fill (body_writer.dependencies1)
-				dependencies2.fill (body_writer.dependencies2)
-
-				output.unindent
-				output.put_indentation
-				output.put ("}")
-
-				if a_feature.is_once then
-					output.put ("())")
-				end
-			end
+				Result := output.data
+			output.pop
 		end
 
 feature {NONE} -- Implementation

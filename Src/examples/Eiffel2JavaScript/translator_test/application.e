@@ -33,6 +33,8 @@ feature {NONE} -- Implementation
 			create {TEST_RESCUE}l_test.make
 			create {TEST_INVARIANT}l_test.make
 			create {TEST_OLD}l_test.make
+			create {TEST_PRECURSOR}l_test.make
+			create {TEST_RENAME}l_test.make
 			create {TEST_EIFFELBASE}l_test.make
 		end
 

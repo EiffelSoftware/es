@@ -179,6 +179,9 @@ var runtime = {
 		for (feature in class_decl) {
 			if (class_decl.hasOwnProperty(feature)) {
 				class_prototype[feature] = class_decl[feature];
+				if (typeof class_decl[feature] === "function" && ! ("$"+feature in class_decl)) {
+					class_prototype["$"+feature] = class_decl[feature];
+				}
 			}
 		}
 		own_invariant = this._find_feature_starting_with(class_decl, '$invariant', true);
@@ -215,7 +218,7 @@ var runtime = {
 			
 			// Copy parent's properties
 			for (feature in parent_decl) {
-				if (parent_decl.hasOwnProperty(feature) && (feature[0] !== '$' || feature.indexOf("$invariant") === 0) && feature !== '$invariant') {
+				if (parent_decl.hasOwnProperty(feature) && feature !== '$deferred') {
 					// Remove the feature id at the end to get the feature name
 					regex_matches= this._remove_ending_regexp.exec(feature);
 					if (regex_matches && regex_matches.length == 2) {
