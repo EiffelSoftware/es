@@ -1,4 +1,6 @@
 * text=auto !eol
+.git-svn/readme.txt -text
+.git-svn/users.txt -text
 Delivery/codedom_provider/files/ecdp.ico -text
 Delivery/codedom_provider/files/ecdpman.ico -text
 Delivery/codedom_provider/files/eiffel_for_asp_net_left.bmp -text
