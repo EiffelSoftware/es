@@ -125,7 +125,7 @@ feature -- Basic opearation
 
 feature {NONE} -- Class Processing
 
-	pre_process_parent_inheritance (a_parent: attached PARENT_AS): JSC_WRITER_DATA
+	pre_process_parent_inheritance (a_parent: attached PARENT_AS; a_parent_type: attached CL_TYPE_A): JSC_WRITER_DATA
 			-- Process a single parent inheritance clause: `a_parent'
 		local
 			l_class_type: CLASS_TYPE_AS
@@ -148,7 +148,8 @@ feature {NONE} -- Class Processing
 			l_parent_name := l_class_name_id.name
 			check l_parent_name /= Void end
 
-			l_class := jsc_context.informer.find_class_named (l_parent_name.as_upper)
+			l_class := a_parent_type.associated_class
+			--l_class := jsc_context.informer.find_class_named (l_parent_name.as_upper)
 			check l_class /= Void end
 
 			l_class := jsc_context.informer.redirect_class (l_class)
@@ -279,20 +280,23 @@ feature {NONE} -- Class Processing
 			check l_class_ast /= Void end
 
 				-- Generate inheritance code
-			if attached l_class_ast.parents as safe_parents then
+			if attached l_class_ast.parents as safe_parents and then
+				attached a_class.parents as safe_parents2 then
 				from
 					create l_parents.make
 					safe_parents.start
+					safe_parents2.start
 				until
 					safe_parents.after
 				loop
 					l_parent2 := safe_parents.item
 					check l_parent2 /= Void end
 
-					if attached pre_process_parent_inheritance (l_parent2) as safe_parent then
+					if attached pre_process_parent_inheritance (l_parent2, safe_parents2.item) as safe_parent then
 						l_parents.extend (safe_parent)
 					end
 					safe_parents.forth
+					safe_parents2.forth
 				end
 				output.put_data_list (l_parents, ", ")
 			end
@@ -314,6 +318,7 @@ feature {NONE} -- Class Processing
 			l_parent: CL_TYPE_A
 			l_class: CLASS_C
 		do
+			jsc_context.push_locals
 			output.push (output.indentation)
 				output.put_indentation
 				output.put (jsc_context.name_mapper.invariant_name (a_class.class_id))
@@ -373,6 +378,7 @@ feature {NONE} -- Class Processing
 				output.put ("}")
 				Result := output.data
 			output.pop
+			jsc_context.pop_locals
 		end
 
 	generate_deferred (a_class: attached CLASS_C): attached JSC_WRITER_DATA

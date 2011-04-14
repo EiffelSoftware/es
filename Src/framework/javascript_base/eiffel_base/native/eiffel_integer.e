@@ -47,6 +47,9 @@ feature -- Basic Operation
 	to_double: DOUBLE
 		external "C" alias "$TARGET" end
 
+	to_natural_32: DOUBLE
+		external "C" alias "$TARGET" end
+
 	to_real: REAL
 		external "C" alias "$TARGET" end
 

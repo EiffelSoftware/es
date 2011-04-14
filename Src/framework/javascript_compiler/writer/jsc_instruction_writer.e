@@ -109,7 +109,7 @@ feature -- Processing
 
 			l_call_access: CALL_ACCESS_B
 			l_class: CLASS_C
-			l_type: CL_TYPE_A
+			l_type: TYPE_A
 		do
 			create invariant_checks.make
 			jsc_context.push_line_number (a_node.line_number)
@@ -130,7 +130,10 @@ feature -- Processing
 
 			if attached {CREATION_EXPR_B} a_node.source as safe_src then
 
-				l_type ?= safe_src.type
+				l_type := safe_src.type
+				check l_type /= Void end
+
+				l_type := l_type.actual_type
 				check l_type /= Void end
 
 				l_call_access := safe_src.call

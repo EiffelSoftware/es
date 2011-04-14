@@ -107,11 +107,15 @@ feature -- Feature Context
 		end
 
 	push_feature (a_feature: attached FEATURE_I)
+		do
+			current_features.put (a_feature)
+			push_locals
+		end
+
+	push_locals
 		local
 			l_list: LINKED_LIST[attached JSC_WRITER_DATA]
 		do
-			current_features.put (a_feature)
-
 			create l_list.make
 			old_locals.put (l_list)
 
@@ -122,6 +126,11 @@ feature -- Feature Context
 	pop_feature
 		do
 			current_features.remove
+			pop_locals
+		end
+
+	pop_locals
+		do
 			old_locals.remove
 			object_test_locals.remove
 			reverse_locals.remove

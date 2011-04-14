@@ -4,9 +4,12 @@ note
 	copyright   : "Copyright (C) 2011, Alexandru Dima"
 	date        : "$Date$"
 	revision    : "$Revision$"
-	javascript  : "EiffelBase: LIST, LINKED_LIST, ARRAYED_LIST"
+	javascript  : "EiffelBase: LIST, LINKED_LIST, ARRAYED_LIST, TWO_WAY_LIST"
 class
 	EIFFEL_LIST [G]
+
+inherit
+	EIFFEL_SEQUENCE [G]
 
 create
 	make,
@@ -31,6 +34,18 @@ feature -- Operations
 	after: BOOLEAN
 		do
 			Result := inner_index >= inner_array.length
+		end
+
+	append (other: attached EIFFEL_SEQUENCE[G])
+		do
+			from
+				other.start
+			until
+				other.after
+			loop
+				extend (other.item)
+				other.forth
+			end
 		end
 
 	at alias "@" (a_index: INTEGER): G
@@ -178,6 +193,17 @@ feature -- Operations
 	last: G
 		do
 			Result := inner_array[inner_array.length-1]
+		end
+
+	prune (a_item: G)
+		local
+			p: INTEGER
+		do
+			p := index_of (a_item, 1)
+			if p /= 0 then
+				go_i_th(p)
+				remove
+			end
 		end
 
 	put (a_item: G)
