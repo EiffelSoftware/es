@@ -1,5 +1,6 @@
 * text=auto !eol
 .git-svn/readme.txt -text
+.git-svn/scm -text
 .git-svn/users.txt -text
 Delivery/codedom_provider/files/ecdp.ico -text
 Delivery/codedom_provider/files/ecdpman.ico -text
