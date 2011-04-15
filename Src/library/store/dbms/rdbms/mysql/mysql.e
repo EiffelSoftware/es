@@ -34,9 +34,9 @@ feature {NONE} -- Initialization
 	default_create
 			-- Initialize Current
 		do
-			create descriptors.make (1, 20)
-			create result_pointers.make (1, 20)
-			create row_pointers.make (1, 20)
+			create descriptors.make_filled (Void, 1, 20)
+			create result_pointers.make_filled (default_pointer, 1, 20)
+			create row_pointers.make_filled (default_pointer, 1, 20)
 			create last_date_data.make (0)
 			last_descriptor := 0
 		end
@@ -137,8 +137,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 			Result := False
 		end
 
-	parse (descriptor: INTEGER; uht: DB_STRING_HASH_TABLE [ANY]
-		ht_order: ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
+	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [ANY]; ht_order: detachable ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- ???
 		do
 		end
@@ -162,7 +161,7 @@ feature -- DATABASE_STRING
 	sql_name_string: STRING
 			-- The name of the MySQL type that represents a string
 		do
-			Result := "VARCHAR"
+			Result := "VARCHAR (255)"
 		end
 
 	map_var_name_32 (a_para: READABLE_STRING_GENERAL): STRING_32
@@ -275,7 +274,7 @@ feature -- For DATABASE_PROC
 
 	support_stored_proc: BOOLEAN = True
 
-	sql_as: STRING = " AS BEGIN "
+	sql_as: STRING = " BEGIN "
 
 	sql_end: STRING = "; END;"
 

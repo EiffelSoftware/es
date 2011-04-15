@@ -66,6 +66,10 @@ feature -- Command
 			l_application_menu_widget: ER_RIBBON_APPLICATION_MENU_NODE_WIDGET
 			l_mini_tool_bar_widget: ER_MINI_TOOLBAR_NODE_WIDGET
 			l_context_menu_widget: ER_CONTEXT_MENU_NODE_WIDGET
+			l_drop_down_button_widget: ER_DROP_DOWN_BUTTON_NODE_WIDGET
+			l_help_button_widget: ER_HELP_BUTTON_NODE_WIDGET
+			l_drop_down_color_picker_widget: ER_DROP_DOWN_COLOR_PICKER_NODE_WIDGET
+			l_font_control_widget: ER_FONT_CONTROL_NODE_WIDGET
 		do
 			widget.wipe_out
 			if attached a_node.text as l_text then
@@ -166,6 +170,30 @@ feature -- Command
 						l_context_menu_widget.set_tree_node_data (l_data)
 					end
 					widget.extend (l_context_menu_widget)
+				elseif l_text.same_string (constants.drop_down_button) then
+					create l_drop_down_button_widget
+					if attached {ER_TREE_NODE_DROP_DOWN_BUTTON_DATA} a_node.data as l_data then
+						l_drop_down_button_widget.set_tree_node_data (l_data)
+					end
+					widget.extend (l_drop_down_button_widget)
+				elseif l_text.same_string (constants.ribbon_helpbutton) then
+					create l_help_button_widget
+					if attached {ER_TREE_NODE_HELP_BUTTON_DATA} a_node.data as l_data then
+						l_help_button_widget.set_tree_node_data (l_data)
+					end
+					widget.extend (l_help_button_widget)
+				elseif l_text.same_string (constants.drop_down_color_picker) then
+					create l_drop_down_color_picker_widget
+					if attached {ER_TREE_NODE_DROP_DOWN_COLOR_PICKER_DATA} a_node.data as l_data then
+						l_drop_down_color_picker_widget.set_tree_node_data (l_data)
+					end
+					widget.extend (l_drop_down_color_picker_widget)
+				elseif l_text.same_string (constants.font_control) then
+					create l_font_control_widget
+					if attached {ER_TREE_NODE_FONT_CONTROL_DATA} a_node.data as l_data then
+						l_font_control_widget.set_tree_node_data (l_data)
+					end
+					widget.extend (l_font_control_widget)
 				end
 			end
 

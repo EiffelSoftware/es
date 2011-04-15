@@ -632,7 +632,7 @@ feature -- Basic operations
 			v_y: INTEGER
 			locked_column: detachable EV_GRID_LOCKED_COLUMN_I
 			locked_row: detachable EV_GRID_LOCKED_ROW_I
-			l_visible_index, l_next_visible_index, l_subrow_index: INTEGER
+			l_subrow_index: INTEGER
 			l_parent_row: EV_GRID_ROW
 			g: like grid
 		do
@@ -675,7 +675,6 @@ feature -- Basic operations
 					total_tree_node_width := g.total_tree_node_width
 					first_tree_node_indent := g.first_tree_node_indent
 
-
 					physical_column_indexes := g.physical_column_indexes
 
 					if locked = Void then
@@ -703,7 +702,6 @@ feature -- Basic operations
 					is_tree_enabled := g.is_tree_enabled
 					is_content_partially_dynamic := g.is_content_partially_dynamic
 					row_height := g.row_height
-
 
 					if row_count > 0 and g.column_count > 0 then
 						column_offsets := g.column_offsets
@@ -936,7 +934,7 @@ feature -- Basic operations
 												-- the row list is resized, which produces a new object.
 											current_row_list := grid_rows_data_list @ (current_row_index)
 										end
-											-- Resize the bufer if required. The buffer is only every increased and never decreased
+											-- Resize the buffer if required. The buffer is only every increased and never decreased
 											-- as this prevents us from having to continuously change its size, which is an
 											-- unecessary overhead.
 										if item_buffer_pixmap.width < current_column_width or item_buffer_pixmap.height < current_row_height then
@@ -961,8 +959,6 @@ feature -- Basic operations
 										else
 											item_buffer_pixmap.set_foreground_color (g.displayed_background_color (current_column_index, current_row_index))
 										end
-											-- Now draw the complete background area for the cell in the grid that is currently being drawn.
-											fixme (Once "For drawable grid items, there is no need to do this, preventing overdraw.")
 										item_buffer_pixmap.fill_rectangle (0, 0, current_column_width, current_row_height)
 
 											-- Fire the `pre_draw_overlay_actions' which enable a user to draw on top of the background
@@ -976,9 +972,7 @@ feature -- Basic operations
 										end
 
 										if is_tree_enabled then
-
 											if current_column_index = node_index then
-
 												current_tree_adjusted_item_x_position := current_tree_adjusted_item_x_position + current_subrow_indent
 												current_tree_adjusted_column_width := current_tree_adjusted_column_width - current_subrow_indent
 													-- We adjust the horizontal position and width of the current item by the space required
@@ -1006,9 +1000,8 @@ feature -- Basic operations
 													end
 												end
 													-- We must now draw the lines for the tree structure.
-
-												if current_subrow_indent > 0 and are_tree_node_connectors_shown then
-													if current_column_index > 1 or drawing_subrow then
+												if are_tree_node_connectors_shown then
+													if drawing_parentrow or drawing_subrow then
 														l_x_start := current_subrow_indent
 														if current_row.is_expandable then
 															l_x_end := horizontal_node_pixmap_left_offset + node_pixmap_width
@@ -1028,7 +1021,7 @@ feature -- Basic operations
 																-- Draw a horizontal line from the left edge of the item to the either the node horizontal offset or the edge of the actual item position
 															 	-- if the node to which we are connected is within a different column.
 
-															 if parent_node_index /= node_index and current_row.is_expandable then
+															 if parent_node_index > 0 and then parent_node_index /= node_index and current_row.is_expandable then
 															 		-- Draw the horizontal line from the left edge of the expand icon to the start of
 															 		-- the grid cell as the horizontal line spans into other grid cells.
 															 	item_buffer_pixmap.draw_segment (0, row_vertical_center, horizontal_node_pixmap_left_offset, row_vertical_center)
@@ -1038,53 +1031,29 @@ feature -- Basic operations
 															item_buffer_pixmap.draw_segment (l_x_end.min (current_column_width), row_vertical_center, current_column_width, row_vertical_center)
 														end
 													end
-
 													if drawing_subrow and then parent_node_index = current_column_index then
-
 														current_horizontal_pos := node_pixmap_vertical_center
 														if are_tree_node_connectors_shown then
 															item_buffer_pixmap.set_foreground_color (tree_node_connector_color)
 															if current_horizontal_pos < column_offsets @ (node_index + 1) then
 																	-- Draw the vertical line at the node, connecting the top and bottom
 																	-- of the tree row.
-																if attached g.row_indexes_to_visible_indexes as l_row_indexes_to_visible_indexes  then
-																	l_visible_index := l_row_indexes_to_visible_indexes.i_th (current_row.index) + 1
-																end
-
-
-																if l_visible_index < g.visible_row_count and then attached g.visible_indexes_to_row_indexes as l_visible_indexes_to_row_indexes then
-																	l_next_visible_index := l_visible_indexes_to_row_indexes.i_th (l_visible_index + 1)
-																else
-																	-- In this case `l_visible_index' was the final row currently visible.
-																	-- We cannot retrieve `l_next_visible_index' from `g.visible_indexes_to_row_indexes' in this case
-																	-- as it is possible that the index there is corrupt as we do not clear the unused slots for speed.
-																	l_next_visible_index := 0
-																end
-
-																if (l_next_visible_index > 0) and then (parent_row_i = g.row_internal (l_next_visible_index).parent_row_i) then
-																		-- In this case we are not the final row in the parents structure, so we must draw from the top of
-																		-- the row to the bottom.
+																if parent_row_i /= Void and then parent_row_i.subrow (parent_row_i.subrow_count) = current_row.interface then
+																		-- We are the last row in our parents structure.
 																	if current_row.is_expandable then
-																			-- The row displays an expand or collapse pixmap, so draw the lines above and below. Subtract one as we
-																			-- do not want to overwrite the first line of the pixmap.
+																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, vertical_node_pixmap_top_offset - 1, node_pixmap_vertical_center, 0)
+																	else
+																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, row_vertical_center, node_pixmap_vertical_center, 0)
+																	end
+																else
+																	if current_row.is_expandable then
 																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, vertical_node_pixmap_top_offset - 1, node_pixmap_vertical_center, 0)
 																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, vertical_node_pixmap_bottom_offset, node_pixmap_vertical_center, row_vertical_bottom)
 																	else
-																			-- Draw a single line from top to bottom.
 																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, 0, node_pixmap_vertical_center, row_vertical_bottom)
-																	end
-																else
-																		-- We are the final row in the parents structure, so we draw from the center of the row to the top.
-																	if current_row.is_expandable then
-																			-- Draw from the top of the node. Subtract one as we do not want to overwrite the first line of the pixmap.
-																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, vertical_node_pixmap_top_offset - 1, node_pixmap_vertical_center, 0)
-																	else
-																			-- Draw from the center of the row as no node pixmap is displayed.
-																		item_buffer_pixmap.draw_segment (node_pixmap_vertical_center, row_vertical_center, node_pixmap_vertical_center, 0)
 																	end
 																end
 															end
-
 																-- Now we draw all of the horizontal lines required to fill in the lines of parents at any level.
 																-- We iterate backwards from the current position and for each subsequent parent node, determine
 																-- if a line must be drawn.
@@ -1127,6 +1096,39 @@ feature -- Basic operations
 															end
 														end
 													end
+												end
+											elseif drawing_subrow and then current_column_index < node_index then
+													-- We may have to draw grandparent connection nodes.
+												from
+													check parent_row_i /= Void end
+													loop_parent_row := parent_row_i.parent_row_i
+													Item_buffer_pixmap.set_foreground_color (tree_node_connector_color)
+												until
+													loop_parent_row = Void
+												loop
+													l_parent_row := loop_parent_row.attached_interface
+													l_subrow_index := l_parent_row.subrow_count
+													if l_subrow_index > 0 and then l_parent_row.index_of_first_item = current_column_index then
+														loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
+														if not loop_parent_row_last_displayed_subrow.is_show_requested then
+																-- The final subrow of the parent row is not displayed, so we must iterate until we find the last that is.
+															from
+															until
+																loop_parent_row_last_displayed_subrow.is_show_requested
+															loop
+																l_subrow_index := l_subrow_index - 1
+																loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
+															end
+														end
+														if loop_parent_row_last_displayed_subrow.index > current_row.index then
+																-- If the last displayed subrow is below us then we can drawn the connecting line.
+															l_x_start := subrow_indent (loop_parent_row) + ((node_pixmap_width) // 2)
+															item_buffer_pixmap.draw_segment (l_x_start, row_vertical_bottom, l_x_start, 0)
+																-- Draw the vertical line from the bottom of the item to the top.
+														end
+													end
+														-- Move one position upwards within the parenting node structure
+													loop_parent_row := loop_parent_row.parent_row_i
 												end
 											end
 										end
@@ -1402,7 +1404,6 @@ feature {NONE} -- Implementation
 		once
 			Result := (create {EV_STOCK_COLORS}).gray
 		end
-
 
 	horizontal_border_width: INTEGER = 3
 		-- Border from edge of text to edge of grid items.

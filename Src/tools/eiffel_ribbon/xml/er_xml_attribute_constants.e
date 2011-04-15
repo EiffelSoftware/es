@@ -28,6 +28,14 @@ feature -- Dropdown gallery
 
 	gripper: STRING = "Gripper"
 
+feature -- Dropdown color picker
+
+	color_template: STRING = "ColorTemplate"
+
+feature -- Font control
+
+	font_type: STRING = "FontType"
+
 feature -- In ribbon gallery
 
 	max_rows: STRING = "MaxRows"
@@ -45,5 +53,5 @@ feature -- Context maps
 	context_menu: STRING = "ContextMenu"
 
 	mini_toolbar: STRING = "MiniToolbar"
-	
+
 end

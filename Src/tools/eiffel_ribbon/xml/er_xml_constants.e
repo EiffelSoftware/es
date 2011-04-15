@@ -32,6 +32,8 @@ feature -- Query, the value of string is what should be written to XML
 
 	ribbon_helpbutton: STRING = "Ribbon.HelpButton"
 
+	helpbutton: STRING = "HelpButton"
+
 	ribbon_quick_access_toolbar: STRING = "Ribbon.QuickAccessToolbar"
 
 	ribbon_size_definitions: STRING = "Ribbon.SizeDefinitions"
@@ -75,6 +77,12 @@ feature -- ALl types under group
 	split_button: STRING = "SplitButton"
 
 	drop_down_gallery: STRING = "DropDownGallery"
+
+	drop_down_button: STRING = "DropDownButton"
+
+	drop_down_color_picker: STRING = "DropDownColorPicker"
+
+	font_control: STRING = "FontControl"
 
 	in_ribbon_gallery: STRING = "InRibbonGallery"
 
@@ -146,7 +154,10 @@ feature -- Contract support
 					l_string.same_string (context_popup_context_menus) or else
 					l_string.same_string (context_popup_mini_toolbars) or else
 					l_string.same_string (mini_toolbar) or else
-					l_string.same_string (context_menu)
+					l_string.same_string (context_menu) or else
+					l_string.same_string (drop_down_button) or else
+					l_string.same_string (drop_down_color_picker) or else
+					l_string.same_string (font_control)
 			end
 		end
 
@@ -162,7 +173,10 @@ feature -- Contract support
 					l_string.same_string (split_button) or else
 					l_string.same_string (drop_down_gallery) or else
 					l_string.same_string (in_ribbon_gallery) or else
-					l_string.same_string (split_button_gallery)
+					l_string.same_string (split_button_gallery) or else
+					l_string.same_string (drop_down_button) or else
+					l_string.same_string (drop_down_color_picker) or else
+					l_string.same_string (font_control)
 			end
 		end
 end

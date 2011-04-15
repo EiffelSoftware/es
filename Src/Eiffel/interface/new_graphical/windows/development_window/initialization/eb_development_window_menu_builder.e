@@ -1346,7 +1346,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			if l_cmd = Void then
 				create l_cmd.make (l_tool)
 				develop_window.auto_recycle (l_cmd)
-				develop_window.commands.show_shell_tool_commands.extend (l_cmd, l_tool)
+				develop_window.commands.show_shell_tool_commands.force (l_cmd, l_tool)
 			end
 
 			l_menu_item := l_cmd.new_menu_item

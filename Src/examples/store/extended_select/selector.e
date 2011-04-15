@@ -75,7 +75,7 @@ feature
 					-- A 'repository' is used to store objects, and to access
 					-- them as Eiffel objects, or DB tuples.
 					-- The table used to store Eiffel book objects will be called
-					-- "DB_BOOK".
+					-- "DB_BOOK_EXTENDED".
 				create l_repository.make (Table_name)
 				repository := l_repository
 
@@ -146,7 +146,7 @@ feature {NONE}
 			l_string: STRING_32
 		do
 				-- Create the table for book-objects.
-				-- The name of this table has already been set to "DB_BOOK"
+				-- The name of this table has already been set to "DB_BOOK_EXTENDED"
 			l_repository := repository
 			check l_repository /= Void end -- implied by precondition `repostory_attached'
 			l_repository.allocate (book)
@@ -164,7 +164,7 @@ feature {NONE}
 					check l_laststring /= Void end -- implied by `readline' postcondition
 
 					if not l_laststring.is_empty then
-							-- Insert objects in the table "DB_BOOK"
+							-- Insert objects in the table "DB_BOOK_EXTENDED"
 						utf8.convert_to (utf16, l_laststring.twin)
 						l_string := utf8.last_converted_string_32
 						localized_print (l_string)

@@ -39,41 +39,12 @@ feature
 			not_void: s /= Void
 			meaning_full_statement: s.count > 0
 		local
-			parsed_s: STRING
-			parsed: BOOLEAN
-			ArgNum: INTEGER
-			l_sql_string: like sql_string
+			l_s: STRING_32
 		do
-			l_sql_string := sql_string
-			if l_sql_string = Void then
-				create l_sql_string.make (s.count)
-				sql_string := l_sql_string
-			else
-				l_sql_string.wipe_out
-			end
-			l_sql_string.append (s)
+			l_s := s.as_string_32
+			prepare_32 (l_s)
 			s.wipe_out
-			s.append (parse_32 (l_sql_string))
-			ArgNum := s.occurrences('?')
-
-			descriptor := db_spec.new_descriptor
-			if not db_spec.normal_parse then
-				parsed := db_spec.parse (descriptor, ht, ht_order, handle, s)
-			end
-			if not parsed then
-				parsed_s := s
-				if is_ok then
-					db_spec.init_order (descriptor, parsed_s)
-				end
-				if is_ok then
-					db_spec.pre_immediate (descriptor, ArgNum)
-				end
-			end
-			set_executed (FALSE)
-			set_prepared (TRUE)
-		ensure
-			prepared_statement: is_prepared
-			prepared_statement: not is_executed
+			s.append (l_s)
 		end
 
 	prepare_32 (s: STRING_32)
@@ -84,7 +55,7 @@ feature
 		local
 			parsed_s: STRING_32
 			parsed: BOOLEAN
-			ArgNum: INTEGER
+			arg_num: INTEGER
 			l_sql_string: like sql_string_32
 		do
 			l_sql_string := sql_string_32
@@ -97,7 +68,7 @@ feature
 			l_sql_string.append (s)
 			s.wipe_out
 			s.append (parse_32 (l_sql_string))
-			ArgNum := s.occurrences({CHARACTER_32}'?')
+			arg_num := s.occurrences ({CHARACTER_32} '?')
 
 			descriptor := db_spec.new_descriptor
 			if not db_spec.normal_parse then
@@ -109,7 +80,7 @@ feature
 					db_spec.init_order (descriptor, parsed_s)
 				end
 				if is_ok then
-					db_spec.pre_immediate (descriptor, ArgNum)
+					db_spec.pre_immediate (descriptor, arg_num)
 				end
 			end
 			set_executed (False)
@@ -149,9 +120,8 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	sql_string: detachable STRING
-
 	sql_string_32: detachable STRING_32
+			-- Buffer for storing SQL string in `prepare_32'.
 
 	descriptor: INTEGER;
 
@@ -166,9 +136,4 @@ note
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class DATABASE_DYN_CHANGE
-
-
+end

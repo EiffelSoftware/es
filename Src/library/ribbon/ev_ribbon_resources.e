@@ -244,6 +244,26 @@ feature -- Helper
 			end
 		end
 
+	ribbon_for_help_button (a_help_button: EV_RIBBON_HELP_BUTTON): detachable EV_RIBBON
+			--
+		local
+			l_res: EV_RIBBON_RESOURCES
+			l_list: ARRAYED_LIST [EV_RIBBON_TITLED_WINDOW]
+		do
+			from
+				create l_res
+				l_list := l_res.ribbon_window_list
+				l_list.start
+			until
+				l_list.after or Result /= Void
+			loop
+				if l_list.item.help_button = a_help_button then
+					Result := l_list.item.ribbon
+				end
+				l_list.forth
+			end
+		end
+
 	ribbon_for_application_menu_item (a_item: EV_RIBBON_ITEM): detachable EV_RIBBON
 			--
 		local
@@ -275,6 +295,11 @@ feature -- Helper
 							if l_menu_group.buttons.item = a_item then
 								Result := l_ribbon_window.ribbon
 							end
+
+							-- Find Dropdown button and splitbutton child items
+							if find_in_split_or_drop_button_child_items (l_menu_group.buttons.item, a_item) then
+								Result := l_ribbon_window.ribbon
+							end
 							l_menu_group.buttons.forth
 						end
 						l_menu.groups.forth
@@ -284,4 +309,32 @@ feature -- Helper
 			end
 		end
 
+	find_in_split_or_drop_button_child_items (a_split_or_drop_down_item: EV_RIBBON_ITEM; a_item_to_compare: EV_RIBBON_ITEM): BOOLEAN
+			--
+		require
+			not_void: a_split_or_drop_down_item /= Void
+			not_void: a_item_to_compare /= Void
+		local
+			l_children: ARRAYED_LIST [EV_RIBBON_ITEM]
+		do
+			if attached {EV_RIBBON_SPLIT_BUTTON} a_split_or_drop_down_item as l_split_button then
+				l_children := l_split_button.buttons
+			elseif attached {EV_RIBBON_DROP_DOWN_BUTTON} a_split_or_drop_down_item as l_drop_down_button then
+				l_children := l_drop_down_button.buttons
+			else
+				check not_possible: False end
+				create l_children.make (1)
+			end
+
+			from
+				l_children.start
+			until
+				l_children.after or Result
+			loop
+				if l_children.item = a_item_to_compare then
+					Result := True
+				end
+				l_children.forth
+			end
+		end
 end

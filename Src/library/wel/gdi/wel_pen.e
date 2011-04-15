@@ -21,6 +21,7 @@ create
 	make,
 	make_solid,
 	make_indirect,
+	make_from_brush,
 	make_by_pointer
 
 feature {NONE} -- Initialization
@@ -29,7 +30,7 @@ feature {NONE} -- Initialization
 			-- Make a pen using `a_style', `a_width' and `a_color'.
 			-- See class WEL_PS_CONSTANTS for `a_style' values.
 		require
-			valid_pen_style_constant: valid_pen_style_constant (a_style)
+			valid_pen_style: valid_pen_style_constant (a_style)
 			positive_width: a_width >= 0
 			color_not_void: a_color /= Void
 		local
@@ -70,6 +71,17 @@ feature {NONE} -- Initialization
 			a_log_pen_exists: a_log_pen.exists
 		do
 			item := cwin_create_pen_indirect (a_log_pen.item)
+			gdi_make
+		end
+
+	make_from_brush (a_style, a_width: INTEGER; a_log_brush: WEL_LOG_BRUSH)
+			-- Make a pen using `a_log_brush'.
+		require
+			a_log_brush_not_void: a_log_brush /= Void
+			a_log_brush_exists: a_log_brush.exists
+			valid_extended_pen_style: valid_extended_pen_style (a_style)
+		do
+			item := cwin_ext_create_pen (a_style, a_width, a_log_brush.item, 0 , default_pointer)
 			gdi_make
 		end
 
@@ -123,6 +135,14 @@ feature {NONE} -- Externals
 			"C [macro <windows.h>] (int, int, COLORREF): EIF_POINTER"
 		alias
 			"CreatePen"
+		end
+
+	cwin_ext_create_pen (a_style, a_width: INTEGER; a_log_brush: POINTER; a_style_count: INTEGER; a_style_array: POINTER): POINTER
+			-- SDK ExtCreatePen
+		external
+			"C [macro <windows.h>] (DWORD, DWORD, const LOGBRUSH*, DWORD, const DWORD*): EIF_POINTER"
+		alias
+			"ExtCreatePen"
 		end
 
 	cwin_create_pen_indirect (a_log_pen: POINTER): POINTER

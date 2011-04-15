@@ -140,10 +140,50 @@ feature {NONE} -- Tree saving
 					loop
 						save_application_menu_node (a_vision_tree.item)
 						save_context_popup_node (a_vision_tree.item)
+						save_help_button_node (a_vision_tree.item)
 
 						a_vision_tree.forth
 					end
 
+				end
+			end
+		end
+
+	save_help_button_node (a_tree_node: EV_TREE_NODE)
+			-- Save help button node if possible
+		require
+			not_void: a_tree_node /= Void
+		local
+			l_xml_item, l_last_parent: XML_ELEMENT
+			l_attribute: XML_ATTRIBUTE
+		do
+			if attached {EV_TREE_ITEM} a_tree_node as l_tree_item_menu and then
+					l_tree_item_menu.text.same_string (xml_constants.ribbon_helpbutton) then
+
+				-- Add context popup xml node
+				if attached xml_node_by_name (xml_constants.ribbon) as l_ribbon then
+					create l_xml_item.make (l_ribbon, xml_constants.ribbon_helpbutton, name_space)
+					l_ribbon.put_last (l_xml_item)
+					l_last_parent := l_xml_item
+
+					create l_xml_item.make (l_last_parent, xml_constants.helpbutton, name_space)
+					l_last_parent.put_last (l_xml_item)
+
+					if attached {ER_TREE_NODE_DATA} a_tree_node.data as l_tree_node_data then
+						add_xml_command_node (l_tree_node_data)
+
+						if attached l_tree_node_data.command_name as l_command_name then
+							create l_attribute.make ({ER_XML_ATTRIBUTE_CONSTANTS}.command_name, name_space, l_command_name, l_xml_item)
+							l_xml_item.put_last (l_attribute)
+						else
+							check not_possible: False end
+						end
+					else
+						check not_possible: False end
+					end
+
+				else
+					check not_possible: False end
 				end
 			end
 		end
@@ -385,6 +425,8 @@ feature {NONE} -- Tree saving
 						add_xml_button_node (l_menu_group_node, a_tree_item.item)
 					elseif a_tree_item.item.text.same_string ({ER_XML_CONSTANTS}.split_button) then
 						add_xml_split_button_node (l_menu_group_node, a_tree_item.item)
+					elseif a_tree_item.item.text.same_string ({ER_XML_CONSTANTS}.drop_down_button) then
+						add_xml_drop_down_button_node (l_menu_group_node, a_tree_item.item)
 					else
 						check not_possible: False end
 					end
@@ -393,6 +435,48 @@ feature {NONE} -- Tree saving
 				end
 			else
 				check False end
+			end
+		end
+
+	add_xml_drop_down_button_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
+			--
+		require
+			not_void: a_group_node /= Void
+			valid: a_group_node.name.same_string (xml_constants.menu_group)
+		local
+			l_button_node: XML_ELEMENT
+			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			if attached {EV_TREE_ITEM} a_button_tree_node as l_item then
+				check l_item.text.same_string (xml_constants.drop_down_button) end
+
+				create l_button_node.make (a_group_node, xml_constants.drop_down_button, name_space)
+				a_group_node.put_last (l_button_node)
+
+				if attached {ER_TREE_NODE_DROP_DOWN_BUTTON_DATA} a_button_tree_node.data as l_data then
+					create l_constants
+
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_button_node.add_attribute (l_constants.command_name, name_space, l_command_name)
+
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+
+						-- We can adding one more level <MenuGroup Class='MajorItems'> here--
+
+						--***  Add sub item nodes for split button ***
+						from
+							a_button_tree_node.start
+						until
+							a_button_tree_node.after
+						loop
+							add_xml_button_node (l_button_node, a_button_tree_node.item)
+
+							a_button_tree_node.forth
+						end
+					end
+				end
 			end
 		end
 
@@ -489,6 +573,10 @@ feature {NONE} -- Tree saving
 						add_xml_split_button_node (l_group_node, a_group_tree_node.item)
 					elseif a_group_tree_node.item.text.same_string (l_xml_constants.drop_down_gallery) then
 						add_xml_drop_down_gallery_node (l_group_node, a_group_tree_node.item)
+					elseif a_group_tree_node.item.text.same_string (l_xml_constants.drop_down_color_picker) then
+						add_xml_drop_down_color_picker_node (l_group_node, a_group_tree_node.item)
+					elseif a_group_tree_node.item.text.same_string (l_xml_constants.font_control) then
+						add_xml_font_control_node (l_group_node, a_group_tree_node.item)
 					elseif a_group_tree_node.item.text.same_string (l_xml_constants.in_ribbon_gallery) then
 						add_xml_in_ribbon_gallery_node (l_group_node, a_group_tree_node.item)
 					elseif a_group_tree_node.item.text.same_string (l_xml_constants.split_button_gallery) then
@@ -506,8 +594,11 @@ feature {NONE} -- Tree saving
 			--
 		require
 			not_void: a_group_node /= Void
-			valid: a_group_node.name.same_string (xml_constants.group) or else a_group_node.name.same_string (xml_constants.split_button)
-					or else a_group_node.name.same_string (xml_constants.menu_group)
+			valid: a_group_node.name.same_string (xml_constants.group) or else
+					a_group_node.name.same_string (xml_constants.split_button) or else
+					a_group_node.name.same_string (xml_constants.menu_group) or else
+					a_group_node.name.same_string (xml_constants.drop_down_button)
+
 		local
 			l_button_node: XML_ELEMENT
 			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
@@ -722,6 +813,70 @@ feature {NONE} -- Tree saving
 			l_flow_menu_layout.add_attribute (l_attribute.rows, name_space, a_data.rows.out)
 			l_flow_menu_layout.add_attribute (l_attribute.columns, name_space, a_data.columns.out)
 			l_flow_menu_layout.add_attribute (l_attribute.gripper, name_space, "None") -- FIXME: NONE for test
+		end
+
+	add_xml_font_control_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
+			--
+		require
+			not_void: a_group_node /= Void
+			valid: a_group_node.name.same_string (xml_constants.group)
+		local
+			l_button_node: XML_ELEMENT
+			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			if attached {EV_TREE_ITEM} a_button_tree_node as l_item then
+				check l_item.text.same_string (xml_constants.font_control) end
+
+				create l_button_node.make (a_group_node, xml_constants.font_control, name_space)
+				a_group_node.put_last (l_button_node)
+
+				if attached {ER_TREE_NODE_FONT_CONTROL_DATA} a_button_tree_node.data as l_data then
+					create l_constants
+
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_button_node.add_attribute (l_constants.command_name, name_space, l_command_name)
+
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+					end
+					if attached l_data.font_type as l_font_type and then not l_font_type.is_empty then
+						l_button_node.add_attribute (l_constants.font_type, name_space, l_font_type)
+					end
+				end
+			end
+		end
+
+	add_xml_drop_down_color_picker_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)
+			--
+		require
+			not_void: a_group_node /= Void
+			valid: a_group_node.name.same_string (xml_constants.group)
+		local
+			l_button_node: XML_ELEMENT
+			l_constants: ER_XML_ATTRIBUTE_CONSTANTS
+		do
+			if attached {EV_TREE_ITEM} a_button_tree_node as l_item then
+				check l_item.text.same_string (xml_constants.drop_down_color_picker) end
+
+				create l_button_node.make (a_group_node, xml_constants.drop_down_color_picker, name_space)
+				a_group_node.put_last (l_button_node)
+
+				if attached {ER_TREE_NODE_DROP_DOWN_COLOR_PICKER_DATA} a_button_tree_node.data as l_data then
+					create l_constants
+
+					-- Add xml attribute
+					if attached l_data.command_name as l_command_name and then not l_command_name.is_empty then
+						l_button_node.add_attribute (l_constants.command_name, name_space, l_command_name)
+
+						-- Add coresspond command xml node
+						add_xml_command_node (l_data)
+					end
+					if attached l_data.color_template as l_color_template and then not l_color_template.is_empty then
+						l_button_node.add_attribute (l_constants.color_template, name_space, l_color_template)
+					end
+				end
+			end
 		end
 
 	add_xml_drop_down_gallery_node (a_group_node: XML_ELEMENT; a_button_tree_node: EV_TREE_NODE)

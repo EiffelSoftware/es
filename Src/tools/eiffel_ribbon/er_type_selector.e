@@ -44,7 +44,6 @@ feature {NONE} -- Initialization
 			l_context_menu: EV_TREE_ITEM
 
 			l_ribbon_application_menu, l_ribbon_group: EV_TREE_ITEM
-			l_menu_group: EV_TREE_ITEM
 			l_ribbon_contextual_tabs: EV_TREE_ITEM
 			l_ribbon_help_button: EV_TREE_ITEM
 			l_ribbon_quick_access_toolbar: EV_TREE_ITEM
@@ -54,6 +53,7 @@ feature {NONE} -- Initialization
 			l_tab: EV_TREE_ITEM
 			l_group: EV_TREE_ITEM
 			l_tab_scaling_policy: EV_TREE_ITEM
+
 		do
 			create widget
 
@@ -73,8 +73,10 @@ feature {NONE} -- Initialization
 
 			create l_ribbon_contextual_tabs.make_with_text (constants.ribbon_contextual_tabs)
 --			l_ribbon_contextual_tabs.set_pebble (constants.ribbon_contextual_tabs)
+
 			create l_ribbon_help_button.make_with_text (constants.ribbon_helpbutton)
---			l_ribbon_help_button.set_pebble (constants.ribbon_helpbutton)
+			l_ribbon_help_button.set_pebble (constants.ribbon_helpbutton)
+
 			create l_ribbon_quick_access_toolbar.make_with_text (constants.ribbon_quick_access_toolbar)
 --			l_ribbon_quick_access_toolbar.set_pebble (constants.ribbon_quick_access_toolbar)
 
@@ -169,6 +171,9 @@ feature {NONE} -- Implementation
 			l_split_button: EV_TREE_ITEM
 			l_split_button_gallery: EV_TREE_ITEM
 --			l_toggle_button: EV_TREE_ITEM
+			l_drop_down_button: EV_TREE_ITEM
+			l_drop_down_color_picker: EV_TREE_ITEM
+			l_font_control: EV_TREE_ITEM
 		do
 			create l_button.make_with_text (constants.button)
 			l_button.set_pebble (constants.button)
@@ -210,6 +215,18 @@ feature {NONE} -- Implementation
 			create l_split_button_gallery.make_with_text (constants.split_button_gallery)
 			l_split_button_gallery.set_pebble (constants.split_button_gallery)
 			a_parent.extend (l_split_button_gallery)
+
+			create l_drop_down_button.make_with_text (constants.drop_down_button)
+			l_drop_down_button.set_pebble (constants.drop_down_button)
+			a_parent.extend (l_drop_down_button)
+
+			create l_drop_down_color_picker.make_with_text (constants.drop_down_color_picker)
+			l_drop_down_color_picker.set_pebble (constants.drop_down_color_picker)
+			a_parent.extend (l_drop_down_color_picker)
+
+			create l_font_control.make_with_text (constants.font_control)
+			l_font_control.set_pebble (constants.font_control)
+			a_parent.extend (l_font_control)
 		end
 
 	content: SD_CONTENT

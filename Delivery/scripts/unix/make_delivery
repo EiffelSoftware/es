@@ -234,9 +234,11 @@ if [ ! "$NO_COMPILE" ]; then
 
 	remtrace Update all libraries
 	cd $INIT_DIR
-	. ./update_libraries library $GTK_DIR
+	set -- library $GTK_DIR
+	. ./update_libraries
 	cd $INIT_DIR
-	. ./update_libraries compatible/library $GTK_DIR
+	set -- compatible/library $GTK_DIR
+	. ./update_libraries
 
 	remtrace Generate needed executables of the bin directory
 	cd $INIT_DIR
@@ -268,9 +270,11 @@ fi
 cd $INIT_DIR
 
 remtrace "Putting the Eiffel libraries in the delivery"
-. ./make_libraries $INSTALL_DIR library $GTK_DIR
+set -- $INSTALL_DIR library $GTK_DIR
+. ./make_libraries
 safe_md $INSTALL_DIR/compatible
-. ./make_libraries $INSTALL_DIR/compatible compatible/library $GTK_DIR
+set -- $INSTALL_DIR/compatible compatible/library $GTK_DIR
+. ./make_libraries
 cd $INIT_DIR
 
 if [ ! "$NO_INSTALL" ]; then
@@ -278,7 +282,7 @@ if [ ! "$NO_INSTALL" ]; then
 	if [ ! "$NO_COMPILE" ]; then
 		remtrace C directory
 		cd $EIFFEL_SRC
-		tar -cf c.tar C
+		pax -w -f c.tar C
 		bzip2 c.tar
 		move c.tar.bz2 $EXPORT_DIR
 
@@ -286,18 +290,18 @@ if [ ! "$NO_INSTALL" ]; then
 			# Removing parts that we do not need to put in the porterpackage
 		fullrd	C_library/curl
 		fullrd	C_library/openssl
-		tar -cf c_libs.tar C_library
+		pax -w -f c_libs.tar C_library
 		bzip2 c_libs.tar
 		move c_libs.tar.bz2 $EXPORT_DIR
 
 		remtrace Eiffel libraries
-		tar -cf libs.tar library
+		pax -w -f libs.tar library
 		bzip2 libs.tar
 		move libs.tar.bz2 $EXPORT_DIR
 	fi
 	remtrace The delivery itself
 	cd $INSTALL_DIR
-	tar -cf delivery.tar *
+	pax -w -f delivery.tar *
 	bzip2 delivery.tar
 	move delivery.tar.bz2 $EXPORT_DIR
 	
