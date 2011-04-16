@@ -408,10 +408,12 @@ feature{NONE} -- Logging
 			l_file.close
 		end
 
-	log_faults (faults: DS_HASH_SET [AUT_EXCEPTION]; a_file: PLAIN_TEXT_FILE)
+	log_faults (faults: DS_HASH_TABLE [detachable STRING, AUT_EXCEPTION]; a_file: PLAIN_TEXT_FILE)
 			-- Log `faults' into `a_file'.
+			-- `faults' is a hash-table. Keys are faults, values are meta data (if any)
+			-- associated with those faults.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AUT_EXCEPTION]
+			l_cursor: DS_HASH_TABLE_CURSOR [detachable STRING, AUT_EXCEPTION]
 		do
 			from
 				l_cursor := faults.new_cursor
@@ -421,31 +423,38 @@ feature{NONE} -- Logging
 			loop
 				a_file.put_string (once "<fault>%N")
 				a_file.put_string (once "<class>%N")
-				a_file.put_string (l_cursor.item.class_name)
+				a_file.put_string (l_cursor.key.class_name)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</class>%N")
 				a_file.put_string (once "<recipient>%N")
-				a_file.put_string (l_cursor.item.recipient_name)
+				a_file.put_string (l_cursor.key.recipient_name)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</recipient>%N")
 				a_file.put_string ("<fault_signature>%N")
-				a_file.put_string (l_cursor.item.class_name + "." + l_cursor.item.recipient_name + "." + "c" + l_cursor.item.code.out + "." + "b" + l_cursor.item.break_point_slot.out)
+				a_file.put_string (l_cursor.key.class_name + "." + l_cursor.key.recipient_name + "." + "c" + l_cursor.key.code.out + "." + "b" + l_cursor.key.break_point_slot.out)
 				a_file.put_character ('%N')
 				a_file.put_string ("</failt_signature>%N")
+				a_file.put_string ("<meta>%N")
+				if l_cursor.item = Void then
+					a_file.put_string ("None%N")
+				else
+					a_file.put_string (l_cursor.item + "%N")
+				end
+				a_file.put_string ("</meta>%N")
 				a_file.put_string (once "<code>%N")
-				a_file.put_string (l_cursor.item.code.out)
+				a_file.put_string (l_cursor.key.code.out)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</code>%N")
 				a_file.put_string (once "<break_point>%N")
-				a_file.put_string (l_cursor.item.break_point_slot.out)
+				a_file.put_string (l_cursor.key.break_point_slot.out)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</break_point>%N")
 				a_file.put_string (once "<tag>%N")
-				a_file.put_string (l_cursor.item.tag_name)
+				a_file.put_string (l_cursor.key.tag_name)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</tag>%N")
 				a_file.put_string (once "<trace>%N")
-				a_file.put_string (l_cursor.item.trace)
+				a_file.put_string (l_cursor.key.trace)
 				a_file.put_character ('%N')
 				a_file.put_string (once "</trace>%N")
 				a_file.put_string (once "</fault>%N")

@@ -100,10 +100,6 @@ feature -- Execution
 				set_is_feature_invoked (interpreter.is_last_test_case_executed)
 			end
 			set_should_quit (True)
-			if not interpreter.is_executing or else not interpreter.is_ready then
-				interpreter.start
-				assign_void
-			end
 		end
 
 	cancel

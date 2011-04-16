@@ -61,24 +61,20 @@ feature{NONE} -- Implementation
 
 	execute_task (a_task: AUT_TASK)
 			-- Execute `a_task' until it is finished.
+		local
+			l_should_quit: BOOLEAN
 		do
 			from
 				a_task.start
 			until
-				not a_task.has_next_step
+				not a_task.has_next_step or l_should_quit
 			loop
 				if interpreter.is_running and not interpreter.is_ready then
 					interpreter.stop
-				end
-				if not interpreter.is_running then
 					a_task.cancel
-					interpreter.start
-					assign_void
-				end
-				if interpreter.is_running and interpreter.is_ready then
-					a_task.step
+					l_should_quit := True
 				else
-					a_task.cancel
+					a_task.step
 				end
 			end
 		end

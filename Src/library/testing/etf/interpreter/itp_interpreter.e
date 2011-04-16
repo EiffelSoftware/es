@@ -215,15 +215,19 @@ feature -- Access
 
 	variable_at_index (a_index: INTEGER): detachable ANY
 			-- Object in `store' at position `a_index'.
+		local
+			b: BOOLEAN
 		do
 			Result := store.variable_value (a_index)
 
 				-- Uncomment for debugging		
-			if Result /= Void then
-				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + Result.generating_type.name + "%N")
-			else
-				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
-			end
+--			b := {ISE_RUNTIME}.check_assert (False)
+--			if Result /= Void then
+--				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + Result.generating_type.name + "%N")
+--			else
+--				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
+--			end
+--			b := {ISE_RUNTIME}.check_assert (b)
 		end
 
 	interpreter_log_directory: STRING
@@ -247,6 +251,7 @@ feature {NONE} -- Handlers
 			l_variable: ITP_VARIABLE
 			l_object: ANY
 			l_retried: BOOLEAN
+			b: BOOLEAN
 		do
 			if not l_retried then
 				if attached {TUPLE [receivers: SPECIAL [TUPLE [var_with_uuid: STRING; var: ITP_VARIABLE]]; serialized_objects: SPECIAL[STRING]]} last_request as lv_operands then
@@ -292,11 +297,13 @@ feature {NONE} -- Handlers
 						store_variable_at_index (l_object, l_variable.index)
 
 							-- Uncomment for debugging
-						if l_object /= Void then
-							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": " + l_object.generating_type.name + "%N")
-						else
-							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": Void%N")
-						end
+--						b := {ISE_RUNTIME}.check_assert (False)
+--						if l_object /= Void then
+--							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": " + l_object.generating_type.name + "%N")
+--						else
+--							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": Void%N")
+--						end
+--						b := {ISE_RUNTIME}.check_assert (b)
 
 						l_index := l_index + 1
 					end
@@ -877,9 +884,9 @@ feature{NONE} -- Invariant checking
 			a_index_positive: a_index > 0
 		do
 			if o /= Void then
-				log_message ("Check invariant: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + o.generating_type.name + "%N")
+				log_message ("Check invariant: " + variable_name (a_index) + ": " + o.generating_type.name + "%N")
 			else
-				log_message ("Check invariant: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
+				log_message ("Check invariant: " + variable_name (a_index) + ": Void%N")
 			end
 			if attached {ANY} o as l_obj then
 				l_obj.do_nothing
@@ -888,6 +895,13 @@ feature{NONE} -- Invariant checking
 		rescue
 			is_last_invariant_violated := True
 			invariant_violating_object_index := a_index
+			log_message ("Check invariant: " + variable_name (a_index) + " violates its class invariants.%N")
+		end
+
+	variable_name (a_index: INTEGER): STRING
+			-- Variable name with index `a_index'
+		do
+			Result := {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out
 		end
 
 feature -- Object state checking
@@ -944,9 +958,6 @@ feature -- Object state checking
 						last_response_flag := normal_response_flag
 						execute_protected
 						log_message (once "report_object_state_request end%N")
-						if variable_at_index (3) = Void then
-							log_message ("Error: Error: v_3 is Void.%N")
-						end
 					end
 					last_response := [query_values, output_buffer, error_buffer]
 					refresh_last_response_flag

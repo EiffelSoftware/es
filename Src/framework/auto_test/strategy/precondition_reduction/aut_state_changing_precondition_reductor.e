@@ -44,24 +44,31 @@ feature -- Execution
 			l_unsatisfied_state: EPA_EXPRESSION
 			l_trans: LINKED_LIST [TUPLE [feature_name: STRING_8; operand_map: DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]]]
 			l_transition_candidates: LINKED_LIST [TUPLE [feature_name: STRING_8; operand_map: DS_HASH_TABLE [INTEGER_32, EPA_EXPRESSION]]]
+			l_skip: BOOLEAN
 		do
 				-- Retrieve objects that satisfy partial state predicate.
 			select_current_partial_predicate
 			l_partial_state := current_partial_predicate.partial
 			l_unsatisfied_state := current_partial_predicate.dropped
 			l_transition_candidates := transitions_to_satisfy_predicate (l_unsatisfied_state)
-			set_should_quit (l_transition_candidates.is_empty)
-			if not should_quit then
+			if not should_quit and then not l_transition_candidates.is_empty then
 				retrieve_object_combinations
-				set_should_quit (object_combinations.is_empty)
-				if not should_quit then
+				if not should_quit and then not object_combinations.is_empty then
 						-- Search for transitions that can satisfy the unsatisfied part of the state `l_unsatisfied_state'.
 					across l_transition_candidates as l_transitions until should_quit loop
 							-- Try to call the selected feature once.
 						create l_trans.make
 						l_trans.extend (l_transitions.item)
-						try_to_satisfy_current_property_by_calling_features (l_trans)
-
+						if l_transitions.item.feature_name.is_empty then
+							l_skip := False
+							across 1 |..| 3 as l_times until l_skip or should_quit loop
+								try_to_satisfy_current_property_by_calling_features (l_trans)
+								restart_interpreter_when_necessary
+							end
+						else
+							try_to_satisfy_current_property_by_calling_features (l_trans)
+						end
+						restart_interpreter_when_necessary
 --							-- Try to call the selected feature twice.
 --						if not is_reduction_successful then
 --							create l_trans.make
@@ -72,6 +79,7 @@ feature -- Execution
 					end
 				end
 			end
+			restart_interpreter_when_necessary
 		end
 
 	cancel
@@ -136,91 +144,96 @@ feature{NONE} -- Implementation
 		do
 
 			create Result.make
-			l_class := a_predicate.class_
-			l_feature := a_predicate.feature_
-			l_written_class := a_predicate.written_class
+			if not a_predicate.text.has ('.') and then a_predicate.text.has ('~') and then a_predicate.text.has_substring (once "not") then
+				Result.extend (["", Void])
+			else
+				l_class := a_predicate.class_
+				l_feature := a_predicate.feature_
+				l_written_class := a_predicate.written_class
 
-			l_curly_expr := expression_with_curly_braced_operands (l_class, l_feature, a_predicate)
+				l_curly_expr := expression_with_curly_braced_operands (l_class, l_feature, a_predicate)
 
-				-- Find out the qualified call in `a_predicate'.
-			l_subexprs := single_rooted_expressions (l_curly_expr, l_class, l_feature)
-			from
-				l_subexpr_cursor := l_subexprs.new_cursor
-				l_subexpr_cursor.start
-			until
-				l_subexpr_cursor.after
-			loop
-				if l_subexpr_cursor.key.text.has ('.') then
-					l_qualified_calls := l_qualified_calls + 1
-					l_qualified_call :=l_subexpr_cursor.key
-				end
-				l_subexpr_cursor.forth
-			end
-
-				-- We only handle the case where there is a single qualified call in `a_predicate'.
-			if l_qualified_calls = 1 then
-				l_ast := ast_without_surrounding_paranthesis (a_predicate.ast)
-					-- Handle double negation in form of "not (not xxx))"
-				if attached {UN_NOT_AS} l_ast as l_not then
-					l_ast2 := ast_without_surrounding_paranthesis (l_not.expr)
-					if attached {UN_NOT_AS} l_ast2 as l_not2 then
-						l_ast := ast_without_surrounding_paranthesis (l_not2.expr)
+					-- Find out the qualified call in `a_predicate'.
+				l_subexprs := single_rooted_expressions (l_curly_expr, l_class, l_feature)
+				from
+					l_subexpr_cursor := l_subexprs.new_cursor
+					l_subexpr_cursor.start
+				until
+					l_subexpr_cursor.after
+				loop
+					if l_subexpr_cursor.key.text.has ('.') then
+						l_qualified_calls := l_qualified_calls + 1
+						l_qualified_call :=l_subexpr_cursor.key
 					end
+					l_subexpr_cursor.forth
 				end
 
-				l_operand_names := operands_with_feature (l_feature)
-				l_operand_types := resolved_operand_types_with_feature (l_feature, l_class, l_class.constraint_actual_type)
+					-- We only handle the case where there is a single qualified call in `a_predicate'.
+				if l_qualified_calls = 1 then
+					l_ast := ast_without_surrounding_paranthesis (a_predicate.ast)
+						-- Handle double negation in form of "not (not xxx))"
+					if attached {UN_NOT_AS} l_ast as l_not then
+						l_ast2 := ast_without_surrounding_paranthesis (l_not.expr)
+						if attached {UN_NOT_AS} l_ast2 as l_not2 then
+							l_ast := ast_without_surrounding_paranthesis (l_not2.expr)
+						end
+					end
 
-				if attached {UN_NOT_AS} l_ast as l_not then
-						-- Negation.
-					if attached {BIN_EQ_AS} l_not.expr as l_equation and then attached {INTEGER_AS} l_equation.right then
-							-- not (expr = int)
-						l_precondition_str := "True"
-						l_postcondition_str := l_qualified_call.text + " >= old " + l_qualified_call.text
+					l_operand_names := operands_with_feature (l_feature)
+					l_operand_types := resolved_operand_types_with_feature (l_feature, l_class, l_class.constraint_actual_type)
+
+					if attached {UN_NOT_AS} l_ast as l_not then
+							-- Negation.
+						if attached {BIN_EQ_AS} l_not.expr as l_equation and then attached {INTEGER_AS} l_equation.right then
+								-- not (expr = int)
+							l_precondition_str := "True"
+							l_postcondition_str := l_qualified_call.text + " >= old " + l_qualified_call.text
+						else
+								-- not (expr)
+							l_precondition_str := l_qualified_call.text.twin
+							l_postcondition_str := "not " + l_qualified_call.text
+						end
 					else
-							-- not (expr)
-						l_precondition_str := l_qualified_call.text.twin
-						l_postcondition_str := "not " + l_qualified_call.text
+						if attached {BIN_EQ_AS} l_ast as l_equation and then attached {INTEGER_AS} l_equation.right then
+								-- expr = int
+							l_precondition_str := "True"
+							l_postcondition_str := l_qualified_call.text + " >= old " + l_qualified_call.text
+						else
+								-- expr
+							l_precondition_str := "not " + l_qualified_call.text
+							l_postcondition_str := l_qualified_call.text.twin
+						end
 					end
-				else
-					if attached {BIN_EQ_AS} l_ast as l_equation and then attached {INTEGER_AS} l_equation.right then
-							-- expr = int
-						l_precondition_str := "True"
-						l_postcondition_str := l_qualified_call.text + " >= old " + l_qualified_call.text
-					else
-							-- expr
-						l_precondition_str := "not " + l_qualified_call.text
-						l_postcondition_str := l_qualified_call.text.twin
+					create l_variables.make (3)
+					l_variables.compare_objects
+					l_text := l_qualified_call.text.twin
+					across 0 |..| 9 as l_indexes loop
+						l_text.replace_substring_all ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_indexes.item.out, curly_brace_surrounded_integer (l_indexes.item))
 					end
-				end
-				create l_variables.make (3)
-				l_variables.compare_objects
-				l_text := l_qualified_call.text.twin
-				across 0 |..| 9 as l_indexes loop
-					l_text.replace_substring_all ({ITP_SHARED_CONSTANTS}.variable_name_prefix + l_indexes.item.out, curly_brace_surrounded_integer (l_indexes.item))
-				end
-				across curly_braced_variables_from_expression (l_text) as l_operands loop
-					l_opd_index := l_operands.item
-					l_opd_name := l_operand_names.item (l_opd_index)
-					l_opd_type := l_operand_types.item (l_opd_index)
-					l_variables.force (l_opd_type, l_opd_name)
-				end
+					across curly_braced_variables_from_expression (l_text) as l_operands loop
+						l_opd_index := l_operands.item
+						l_opd_name := l_operand_names.item (l_opd_index)
+						l_opd_type := l_operand_types.item (l_opd_index)
+						l_variables.force (l_opd_type, l_opd_name)
+					end
 
-				l_index := l_qualified_call.text.index_of ('.', 1)
-				l_target_name := l_qualified_call.text.substring (1, l_index - 1)
-				l_target_name.remove_head (2)
-				l_target_class := l_variables.item (l_operand_names.item (l_target_name.to_integer)).associated_class
-				l_class_name := output_type_name (l_target_class.name_in_upper)
+					l_index := l_qualified_call.text.index_of ('.', 1)
+					l_target_name := l_qualified_call.text.substring (1, l_index - 1)
+					l_target_name.remove_head (2)
+					l_target_class := l_variables.item (l_operand_names.item (l_target_name.to_integer)).associated_class
+					l_class_name := output_type_name (l_target_class.name_in_upper)
 
-				create l_preconditions.make
-				l_preconditions.extend (l_precondition_str)
-				create l_postconditions.make
-				l_postconditions.extend (l_postcondition_str)
+					create l_preconditions.make
+					l_preconditions.extend (l_precondition_str)
+					create l_postconditions.make
+					l_postconditions.extend (l_postcondition_str)
 
-				create l_transition_finder.make (l_variables, l_preconditions, l_postconditions, connection)
-				l_transition_finder.set_class_name (l_class_name)
-				l_transition_finder.find
-				Result := transitions (l_class, l_feature, l_target_class, l_transition_finder.last_transitions)
+					create l_transition_finder.make (l_variables, l_preconditions, l_postconditions, connection)
+					l_transition_finder.set_log_manager (query_log_manager)
+					l_transition_finder.set_class_name (l_class_name)
+					l_transition_finder.find
+					Result := transitions (l_class, l_feature, l_target_class, l_transition_finder.last_transitions)
+				end
 			end
 		end
 
@@ -355,7 +368,18 @@ feature{NONE} -- Implementation
 				-- Collect preconditions of `feature_' and `current_predicate' together,
 				-- and treat them equally. Because we may be able to first drop some precondition
 				-- assertion and then satisfy it by calling some feature later.
-			l_preconditions := qualified_preconditions (feature_, class_)
+			l_preconditions := qualified_preconditions (feature_, class_).twin
+			from
+				l_preconditions.start
+			until
+				l_preconditions.after
+			loop
+				if l_preconditions.item.text.has_substring (once "(1)") then
+					l_preconditions.remove
+				else
+					l_preconditions.forth
+				end
+			end
 			create l_assertions.make (1, l_preconditions.count + 1)
 			i := 1
 			across l_preconditions as l_pres loop

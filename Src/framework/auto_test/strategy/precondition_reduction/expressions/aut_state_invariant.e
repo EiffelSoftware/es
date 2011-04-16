@@ -132,6 +132,24 @@ feature -- Access
 			end
 		end
 
+	structure: STRING
+			-- Structure of the invariant to be violated
+			-- REC: Reference equality comparision
+			-- OEC: Object equality comparision
+			-- VOD: Void comparison
+			-- INT: Integer comparision
+			-- ABQ: Argumentless boolean query
+			-- BLQ: Boolean query with argument
+			-- CPX: Complex structure
+
+	structure_REC: STRING = "REC"
+	structure_OEC: STRING = "OEC"
+	structure_VOD: STRING = "VOD"
+	structure_INT: STRING = "INT"
+	structure_ABQ: STRING = "ABQ"
+	structure_BQY: STRING = "BQY"
+	structure_CPX: STRING = "CPX"
+
 feature -- Status report
 
 	is_one_of_invariant: BOOLEAN
@@ -172,6 +190,14 @@ feature -- Setting
 			post_state_context_expression := a_expression
 		ensure
 			post_state_context_expression_set: post_state_context_expression = a_expression
+		end
+
+	set_structure (a_structure: like structure)
+			-- Set `structure' with `a_structure'.
+		do
+			structure := a_structure.twin
+		ensure
+			structure_set: structure ~ a_structure
 		end
 
 note

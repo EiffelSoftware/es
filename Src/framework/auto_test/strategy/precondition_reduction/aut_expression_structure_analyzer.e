@@ -29,13 +29,17 @@ feature -- Basic operations
 			l_written_class := a_expression.written_class
 			l_feature := a_expression.feature_
 			l_text := a_expression.text
+			l_text.replace_substring_all (once "or else", once "or")
+			l_text.replace_substring_all (once "and then", once "and")
 			create Result.make (5)
 			Result.set_equality_tester (expression_equality_tester)
 			across string_slices (l_text, a_separator) as l_parts loop
 				l_parts.item.left_adjust
 				l_parts.item.right_adjust
 				create l_expr.make_with_text (l_class, l_feature, l_parts.item, l_written_class)
-				Result.force_last (l_expr)
+				if l_expr.type /= Void then
+					Result.force_last (l_expr)
+				end
 			end
 		end
 

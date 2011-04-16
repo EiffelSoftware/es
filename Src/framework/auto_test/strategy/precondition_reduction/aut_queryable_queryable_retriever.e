@@ -110,7 +110,9 @@ feature -- Basic operations
 					log_manager.put_line ("%T" + l_msg)
 					l_time := time_now
 				end
-
+				if not a_connection.is_connected then
+					a_connection.reinitialize
+				end
 				a_connection.execute_query (l_select)
 				if log_manager /= Void then
 					create l_msg.make (50)
@@ -201,6 +203,9 @@ feature -- Basic operations
 								l_select := l_sql_gen.sql_to_select_object (Void, Void, l_opd_type, 1)
 								if log_manager /= Void then
 									log_manager.put_line ("%T" + l_select)
+								end
+								if not a_connection.is_connected then
+									a_connection.reinitialize
 								end
 								a_connection.execute_query (l_select)
 								if a_connection.last_error_number = 0 and then a_connection.has_result then

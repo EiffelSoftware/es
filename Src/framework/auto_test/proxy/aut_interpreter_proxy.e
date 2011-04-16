@@ -841,12 +841,14 @@ feature -- Execution
 			l_socket: like socket
 			l_response_flag: NATURAL_32
 			l_response: AUT_OBJECT_STATE_RESPONSE
+			l_any: detachable ANY
 		do
 			if not l_retried then
 				l_socket := socket
 				l_socket.read_natural_32
 				l_response_flag := l_socket.last_natural_32
-				l_data ?= l_socket.retrieved
+				l_any ?= l_socket.retrieved
+				l_data ?= l_any
 				process.set_timeout (0)
 				if l_data /= Void and then attached {AUT_OBJECT_STATE_REQUEST} last_request as l_request then
 					create last_raw_response.make (l_data.output, l_data.error, l_response_flag)

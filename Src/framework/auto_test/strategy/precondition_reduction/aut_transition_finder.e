@@ -10,6 +10,8 @@ class
 inherit
 	EPA_UTILITY
 
+	EPA_TEMPORARY_DIRECTORY_UTILITY
+
 create
 	make,
 	make_empty
@@ -57,6 +59,19 @@ feature -- Access
 			-- Name of the class whose features are searched to satisfy `postcondition'
 			-- When not Void, use this class name to speed up the query execution.
 
+	log_manager: detachable ELOG_LOG_MANAGER
+			-- Log manager
+
+feature -- Setting
+
+	set_log_manager (a_manager: like log_manager)
+			-- Set `log_manager' with `a_manager'.
+		do
+			log_manager := a_manager
+		ensure
+			log_manager_set: log_manager = a_manager
+		end
+
 feature -- Access
 
 	last_transitions: LINKED_LIST [TUPLE [feature_name: STRING; operand_map: HASH_TABLE [INTEGER, STRING]]]
@@ -87,89 +102,116 @@ feature -- Basic operations
 			l_transition_tuple: TUPLE [feature_name: STRING; operand_map: HASH_TABLE [INTEGER, STRING]]
 			l_operand_map: HASH_TABLE [INTEGER, STRING]
 			l_i: INTEGER
+			l_stamp: PLAIN_TEXT_FILE
+			l_retried: BOOLEAN
+			l_stamp_file_name: STRING
 		do
-			create last_transitions.make
-			create l_executor.make (connection)
-			create l_terms.make
+			l_stamp_file_name := file_in_temporary_directory ("pr_transition.stamp")
+			if not l_retried then
+				create l_stamp.make_create_read_write (l_stamp_file_name)
+				l_stamp.close
+				create last_transitions.make
+				if not connection.is_connected then
+					connection.reinitialize
+				end
+				create l_executor.make (connection)
+				l_executor.set_log_manager (log_manager)
+				create l_terms.make
 
-			-- Feature
-			create l_meta_term.make_without_type (ast_from_expression_text ("qry.feature_name"), Void)
-			l_terms.extend (l_meta_term)
-
-			-- Variables
-			from
-				variables.start
-			until
-				variables.after
-			loop
-				create l_variable_term.make (ast_from_expression_text (variables.key_for_iteration))
-				l_variable_term.set_type (variables.item_for_iteration)
-				l_terms.extend (l_variable_term)
-				variables.forth
-			end
-
-			-- Preconditions
-			from
-				preconditions.start
-			until
-				preconditions.after
-			loop
-				create l_equation_term.make (ast_from_expression_text (preconditions.item), ast_from_expression_text ("True"))
-				l_equation_term.set_is_precondition (True)
-				l_terms.extend (l_equation_term)
-				preconditions.forth
-			end
-
-			-- Postconditions
-			from
-				postconditions.start
-			until
-				postconditions.after
-			loop
-				create l_equation_term.make (ast_from_expression_text (postconditions.item), ast_from_expression_text ("True"))
-				l_equation_term.set_is_postcondition (True)
-				l_terms.extend (l_equation_term)
-				postconditions.forth
-			end
-
-			-- Class
-			if class_name /= Void then
-				create l_meta_term.make_without_type (ast_from_expression_text ("qry.class_name"), ast_from_expression_text("%"" + class_name + "%""))
+				-- Feature
+				create l_meta_term.make_without_type (ast_from_expression_text ("qry.feature_name"), Void)
 				l_terms.extend (l_meta_term)
-			end
 
-			-- Execute
-			create l_query.make_with_terms (l_terms)
-			l_query.set_group_by_feature_and_positions (True)
-			l_executor.execute (l_query)
-
-			-- Fetch results
-			from
-				l_executor.last_results.start
-			until
-				l_executor.last_results.after
-			loop
-				create l_transition_tuple.make
-				create l_operand_map.make (variables.count)
-				l_transition_tuple.operand_map := l_operand_map
-				-- Feature name is in the first column
-				l_transition_tuple.feature_name := l_executor.last_results.item.at (1)
-				--io.put_string ("Feature: " + l_transition_tuple.feature_name + "%N")
-				-- Position of i-th variable is in the '1 + i*6'-th column
+				-- Variables
 				from
-					l_i := 1
 					variables.start
 				until
 					variables.after
 				loop
-					l_transition_tuple.operand_map.put (l_executor.last_results.item.at (1 + l_i*6).to_integer, variables.key_for_iteration)
-					--io.put_string ("%TVariable: " + variables.key_for_iteration + " -> " + l_executor.last_results.item.at (1 + l_i*6) + "%N")
-					l_i := l_i + 1
+					create l_variable_term.make (ast_from_expression_text (variables.key_for_iteration))
+					l_variable_term.set_type (variables.item_for_iteration)
+					l_terms.extend (l_variable_term)
 					variables.forth
 				end
-				last_transitions.extend (l_transition_tuple)
-				l_executor.last_results.forth
+
+				-- Preconditions
+				from
+					preconditions.start
+				until
+					preconditions.after
+				loop
+					create l_equation_term.make (ast_from_expression_text (preconditions.item), ast_from_expression_text ("True"))
+					l_equation_term.set_is_precondition (True)
+					l_terms.extend (l_equation_term)
+					preconditions.forth
+				end
+
+				-- Postconditions
+				from
+					postconditions.start
+				until
+					postconditions.after
+				loop
+					create l_equation_term.make (ast_from_expression_text (postconditions.item), ast_from_expression_text ("True"))
+					l_equation_term.set_is_postcondition (True)
+					l_terms.extend (l_equation_term)
+					postconditions.forth
+				end
+
+				-- Class
+				if class_name /= Void then
+					create l_meta_term.make_without_type (ast_from_expression_text ("qry.class_name"), ast_from_expression_text("%"" + class_name + "%""))
+					l_terms.extend (l_meta_term)
+				end
+
+				-- Execute
+				create l_query.make_with_terms (l_terms)
+				l_query.set_group_by_feature_and_positions (True)
+				if not connection.is_connected then
+					connection.reinitialize
+				end
+				l_executor.execute (l_query)
+
+				-- Fetch results
+				from
+					l_executor.last_results.start
+				until
+					l_executor.last_results.after
+				loop
+					create l_transition_tuple.make
+					create l_operand_map.make (variables.count)
+					l_transition_tuple.operand_map := l_operand_map
+					-- Feature name is in the first column
+					l_transition_tuple.feature_name := l_executor.last_results.item.at (1)
+					--io.put_string ("Feature: " + l_transition_tuple.feature_name + "%N")
+					-- Position of i-th variable is in the '1 + i*6'-th column
+					from
+						l_i := 1
+						variables.start
+					until
+						variables.after
+					loop
+						l_transition_tuple.operand_map.put (l_executor.last_results.item.at (1 + l_i*6).to_integer, variables.key_for_iteration)
+						--io.put_string ("%TVariable: " + variables.key_for_iteration + " -> " + l_executor.last_results.item.at (1 + l_i*6) + "%N")
+						l_i := l_i + 1
+						variables.forth
+					end
+					last_transitions.extend (l_transition_tuple)
+					l_executor.last_results.forth
+				end
+				create l_stamp.make (l_stamp_file_name)
+				if l_stamp.exists then
+					l_stamp.delete
+				end
 			end
+		rescue
+			create last_transitions.make
+			l_retried := True
+			create l_stamp.make (l_stamp_file_name)
+			if l_stamp.exists then
+				l_stamp.delete
+			end
+			retry
 		end
 
 feature -- Setting

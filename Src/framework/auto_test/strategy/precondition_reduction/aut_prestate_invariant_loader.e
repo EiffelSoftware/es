@@ -93,8 +93,7 @@ feature -- Basic operations
 					operands := operands_of_feature (last_feature)
 					operand_types := resolved_operand_types_with_feature (last_feature, last_class, last_class.constraint_actual_type)
 
-					if last_feature /= Void and then not last_feature.has_return_value then
-							-- We only consider commands for the moment.
+					if last_feature /= Void then
 						create l_file.make_open_read (l_inv_files.item)
 						from
 							l_file.read_line
@@ -225,6 +224,7 @@ feature{NONE} -- Implementation
 			l_value: EPA_AST_EXPRESSION
 			l_str: STRING
 			l_inv: AUT_STATE_INVARIANT
+			l_structure: STRING
 		do
 				-- Replace Daikon style "==" with Eiffel style "=".			
 			l_text := a_text.twin
@@ -333,6 +333,10 @@ feature{NONE} -- Implementation
 					l_opd_index := l_opd_index + 1
 				end
 
+				if l_text.has_substring (once "Result") then
+					l_done := True
+				end
+
 				if l_sub_text /= Void and then attached {BIN_EQ_AS} ast_from_expression_text (l_sub_text) as l_eq then
 						-- Remove expressions "exp1 = exp2" where exp1 and exp2 have different type categories.
 						-- For example, exp1 is of type ANY, and exp2 is of type INTEGER.
@@ -372,6 +376,8 @@ feature{NONE} -- Implementation
 								l_values.extend (l_value)
 							end
 							create l_inv.make_as_one_of (l_ori_expr, l_values, last_class, last_feature, a_pre_inv, a_post_inv)
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_INT)
+							l_inv.set_structure (last_expression_structure)
 							if is_expression_exported (l_inv.expression) then
 								Result := l_inv
 							end
@@ -408,6 +414,7 @@ feature{NONE} -- Implementation
 									create l_expr.make_with_text (last_class, last_feature, a_pre_inv.text + " and (" + l_expr.text + ")", last_class)
 								end
 								create Result.make (l_expr, last_class, last_feature)
+								Result.set_structure (last_expression_structure)
 							end
 							context.set_is_ignoring_export (l_status)
 							expression_type_checker.set_is_checking_precondition (l_pre_status)
@@ -437,11 +444,14 @@ feature{NONE} -- Implementation
 				if attached {BINARY_AS} l_ast as l_bin then
 					if attached {VOID_AS} l_bin.right and then l_bin.op_name.name ~ "/=" then
 						Result := ast_from_expression_text (text_from_ast (ast_without_surrounding_paranthesis (l_bin.left)) + " = Void")
+						set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_VOD)
 					elseif attached {VOID_AS} l_bin.right and then l_bin.op_name.name ~ "=" then
 						Result := ast_from_expression_text (text_from_ast (ast_without_surrounding_paranthesis (l_bin.left)) + " /= Void")
+						set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_VOD)
 					elseif attached {BOOL_AS} l_bin.right as l_right then
 						l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin.left))
 						if a_text.has_substring (" and ") then
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
 							if l_right.value then
 								create l_text.make (256)
 								across string_slices (l_str, " and ") as l_parts loop
@@ -454,7 +464,7 @@ feature{NONE} -- Implementation
 									l_text.append (l_parts.item)
 									l_text.append (")")
 								end
-								Result := ast_from_expression_text (l_str)
+								Result := ast_from_expression_text (l_text)
 							else
 								Result := ast_from_expression_text (l_str)
 							end
@@ -475,19 +485,57 @@ feature{NONE} -- Implementation
 								end
 								Result := ast_from_expression_text (l_str)
 							end
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
 						else
 							if l_right.value then
 								Result := ast_from_expression_text ("not (" + l_str + ")")
 							else
 								Result := ast_from_expression_text (l_str)
 							end
+							if attached {BINARY_AS} ast_from_expression_text (l_str) as l_bin2 then
+								if attached {INTEGER_AS} l_bin2.right as l_right2 then
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_INT)
+								elseif l_bin2.op_name.name.has ('=') then
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_REC)
+								elseif l_bin2.op_name.name.has ('~') then
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_OEC)
+								else
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
+								end
+							else
+								if l_str.has ('~') then
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_OEC)
+								elseif l_str.has ('=') then
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_REC)
+								elseif l_str.has ('.') then
+									if l_str.has ('(') then
+										set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_BQY)
+									else
+										set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_ABQ)
+									end
+								else
+									set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
+								end
+							end
 						end
 					else
 						l_str := text_from_ast (ast_without_surrounding_paranthesis (l_bin))
 						Result := ast_from_expression_text ("not (" + l_str + ")")
+						if l_str.has_substring (once " and ") or else l_str.has_substring (once " or ") then
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
+						elseif attached {INTEGER_AS} l_bin.right as l_int then
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_INT)
+						elseif l_bin.op_name.name ~ "=" or l_bin.op_name.name ~ "/=" then
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_REC)
+						elseif l_bin.op_name.name ~ "~" or l_bin.op_name.name ~ "/~"   then
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_OEC)
+						else
+							set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
+						end
 					end
 				else
 					Result := ast_from_expression_text ("not (" + l_str + ")")
+					set_last_expression_structure ({AUT_STATE_INVARIANT}.structure_CPX)
 				end
 			end
 		end
@@ -667,6 +715,17 @@ feature{NONE} -- Implementation
 	last_class_creators: HASH_TABLE [BOOLEAN, STRING]
 			-- Names of the creation procedures of `last_class'
 			-- Keys are creator names, values are dummy values
+
+	last_expression_structure: STRING
+			-- Structure of the last processed expression
+
+	set_last_expression_structure (a_structure: STRING)
+			-- Set `last_expression_structure' with `a_structure'.
+		do
+			last_expression_structure := a_structure.twin
+		ensure
+			last_expression_structure_set: last_expression_structure = a_structure
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

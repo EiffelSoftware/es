@@ -23,7 +23,7 @@ feature{NONE} -- Initialization
 			create failing_statistics.make (100)
 			failing_statistics.set_key_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 			create faults.make (64)
-			faults.set_equality_tester (create {AUT_EXCEPTION_EQUALITY_TESTER})
+			faults.set_key_equality_tester (create {AUT_EXCEPTION_EQUALITY_TESTER})
 		end
 
 feature -- Access
@@ -38,8 +38,25 @@ feature -- Access
 			-- Key is the feature under test, value is the number
 			-- of failing test cases of that feature
 
-	faults: DS_HASH_SET [AUT_EXCEPTION]
+	faults: DS_HASH_TABLE [detachable STRING, AUT_EXCEPTION]
 			-- Set of found faults
+			-- Keys are faults that are found, values are
+			-- meta data (if any) associated with that fault.
+
+	last_fault_meta: detachable STRING
+			-- Meta data which will be associated with each found fault			
+
+feature -- Setting
+
+	set_last_fault_meta (a_meta: like last_fault_meta)
+			-- Set `last_fault_meta' with `a_meta'.
+		do
+			if a_meta = Void then
+				last_fault_meta := Void
+			else
+				last_fault_meta := a_meta.twin
+			end
+		end
 
 feature -- Basic operations
 
@@ -66,7 +83,7 @@ feature -- Basic operations
 								l_class := workbench.universe.classes_with_name (l_exception.class_name).first.compiled_representation
 								l_feat := l_class.feature_named_32 (l_exception.recipient_name)
 								if l_feat /= Void then
-									faults.force_last (l_exception)
+									faults.force_last (last_fault_meta, l_exception)
 									create l_feature.make (l_feat, l_class.constraint_actual_type)
 									failing_statistics.search (l_feature)
 									if failing_statistics.found then

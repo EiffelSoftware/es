@@ -52,6 +52,8 @@ inherit
 			system
 		end
 
+	AUT_SHARED_ONLINE_STATISTICS
+
 create
 	make
 
@@ -136,6 +138,7 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 		do
 				-- Get, and remove, one invariant to process each step.
 			select_current_predicate
+			online_statistics.set_last_fault_meta (current_predicate.structure + ";" + current_predicate.expression.text)
 			if not ids_of_processed_invariants.has (current_predicate.invariant_id) then
 				if not current_predicate.is_implication then
 					ids_of_processed_invariants.force_last (current_predicate.invariant_id)
@@ -147,7 +150,7 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 					l_inv_message := l_inv_message + ", for invalidating " + " old (" + current_predicate.pre_state_context_expression.text + ") implies " + current_predicate.post_state_context_expression.text
 				end
 
-				progress_log_manager.put_string_with_time ("Try to satisfy: " + l_inv_message + " ")
+				progress_log_manager.put_string_with_time ("Try to satisfy: " + current_predicate.structure + " : " + l_inv_message + " ")
 				interpreter.log_precondition_reduction ("Try to satisfy: " + l_inv_message)
 
 					-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.

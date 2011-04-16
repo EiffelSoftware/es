@@ -46,6 +46,9 @@ feature -- Execution
 			else
 				l_object_count := 5
 			end
+			if not connection.is_connected then
+
+			end
 			object_retriever.retrieve_objects (
 				current_predicate.expression,
 				current_predicate.context_class,
@@ -78,7 +81,13 @@ feature -- Execution
 							io.put_string ("I'll read more data.%N")
 						end
 					end
-				else
+				end
+--				else
+				if not should_quit then
+					if current_predicate.is_implication then
+							-- We force implication invalidation to quit faster.
+						set_try_count (try_count + 5)
+					end
 					if try_count > 5 then
 							-- There is no objects as-is satisfying `current_predicate'
 						set_should_quit (True)
@@ -87,7 +96,9 @@ feature -- Execution
 						io.put_string ("I cannot find any objects, I'll relax the contraint and try again.%N")
 					end
 				end
+--				end				
 			end
+			restart_interpreter_when_necessary
 		end
 
 	cancel

@@ -137,10 +137,11 @@ feature -- Execute
 								-- Invoke features in `transitions'.
 							invoke_transitions
 						end
-
-						interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated_in_pre_state)
-						if not should_skip_current_step then
-							set_should_skip_current_step (not value_of_current_predicate_before_test)
+						if interpreter.is_running and then interpreter.is_ready then
+							interpreter.evaluate_expressions (class_, feature_, operand_map, l_exprs, agent on_expressions_evaluated_in_pre_state)
+							if not should_skip_current_step then
+								set_should_skip_current_step (not value_of_current_predicate_before_test)
+							end
 						end
 					end
 				end
@@ -164,10 +165,11 @@ feature -- Execute
 					end
 				end
 
-				if not interpreter.is_executing or else not interpreter.is_ready then
-					interpreter.start
-					assign_void
-				end
+--				if not interpreter.is_executing or else not interpreter.is_ready then
+--					interpreter.start
+--					assign_void
+--				end
+				set_should_quit (not interpreter.is_executing or else not interpreter.is_ready)
 			end
 			set_try_count (try_count + 1)
 			if try_count > 10 then
@@ -191,25 +193,33 @@ feature -- Execute
 			l_invoker: AUT_FEATURE_INVOKER_TASK
 			l_class: CLASS_C
 			l_feature: FEATURE_I
+			l_opd_types: like resolved_operand_types_with_feature
 		do
 			l_opd_names := operands_of_feature (feature_)
+			l_opd_types := resolved_operand_types_with_feature (feature_, class_, class_.constraint_actual_type)
 			across transitions as l_trans loop
 				l_feat_data := l_trans.item
-				create l_operand_map.make (l_opd_names.count)
-				from
-					l_cursor := l_feat_data.operand_map.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					l_opd_index := l_opd_names.item (l_cursor.key.text)
-					l_operand_map.force (operand_for_invocation.item (l_opd_index).var, l_cursor.item)
-					l_cursor.forth
+				if not l_feat_data.feature_name.is_empty then
+					create l_operand_map.make (l_opd_names.count)
+					l_class := class_
+					from
+						l_cursor := l_feat_data.operand_map.new_cursor
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						l_opd_index := l_opd_names.item (l_cursor.key.text)
+						l_operand_map.force (operand_for_invocation.item (l_opd_index).var, l_cursor.item)
+						if l_cursor.item = 0 then
+								-- Target object of the transition to call.
+							l_class := operand_for_invocation.item (l_opd_index).type.associated_class
+						end
+						l_cursor.forth
+					end
+					l_feature := l_class.feature_named (l_feat_data.feature_name)
+					create l_invoker.make (system, interpreter, error_handler, l_class, l_feature, l_operand_map, True)
+					execute_task (l_invoker)
 				end
-				l_class := class_
-				l_feature := l_class.feature_named (l_feat_data.feature_name)
-				create l_invoker.make (system, interpreter, error_handler, l_class, l_feature, l_operand_map, True)
-				execute_task (l_invoker)
 			end
 		end
 
