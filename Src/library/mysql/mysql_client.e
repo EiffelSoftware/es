@@ -92,6 +92,8 @@ feature -- Connect
 			port := a_port
 		end
 
+feature -- Connection
+
 	connect
 			-- Connects to a MySQL server at `host':`port' with
 			-- `username' and `password'. Selects `database'.
@@ -123,6 +125,13 @@ feature -- Connect
 				-- Create result
 				create mysql_result.make (Current, p_row)
 			end
+		end
+
+	reinitialize
+			-- Reinitialize Current connection
+		do
+			make_with_database(host, username, password, database, port)
+			connect
 		end
 
 feature -- Status report
