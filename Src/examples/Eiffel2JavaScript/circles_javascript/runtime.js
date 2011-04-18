@@ -167,6 +167,12 @@ var runtime = {
 		return Result;
 	},
 	
+	__createProxy : function (feature_name) {
+		return function() {
+			return this[feature_name].apply (this, arguments);
+		};
+	},
+	
 	declare : function (class_name, parent_classes, class_decl) {
 		var parent_decl, class_prototype, redefining_map, renaming_map, parent_deferred_map, 
 			regex_matches, feature, found_feature, feature_name, i, j, inherits_map, parent_inherits_map,
@@ -218,7 +224,7 @@ var runtime = {
 			
 			// Copy parent's properties
 			for (feature in parent_decl) {
-				if (parent_decl.hasOwnProperty(feature) && feature !== '$deferred') {
+				if (parent_decl.hasOwnProperty(feature) && feature !== '$deferred' && feature !== '$invariant' && feature !== '$class_name') {
 					// Remove the feature id at the end to get the feature name
 					regex_matches= this._remove_ending_regexp.exec(feature);
 					if (regex_matches && regex_matches.length == 2) {
@@ -228,9 +234,10 @@ var runtime = {
 					}
 					
 					if (feature in class_prototype) {
-						console.info ("Just so you know: Class " + class_name + " somehow gets feature " + feature + " a second time from " + parent_classes[i].class_name);
+						if (class_prototype[feature] !== parent_decl[feature]) {
+							console.info ("Just so you know: Class " + class_name + " has a name clash for feature " + feature + " - it comes a second time from " + parent_classes[i].class_name);
+						}
 						continue;
-						//console.info ("Why?");
 					}
 					
 					if (redefining_map.hasOwnProperty(feature_name)) {
@@ -242,7 +249,7 @@ var runtime = {
 						if (!found_feature) {
 							throw "Class " + class_name + " wants to redefine " + parent_classes[i].class_name + "." + feature_name + ", but doesn't actually do so !";
 						}
-						class_prototype[feature] = class_prototype[found_feature];
+						class_prototype[feature] = this.__createProxy (found_feature);
 					} else {
 						if (parent_deferred_map.hasOwnProperty(feature_name)) {
 							// Try to see if class_prototype actually implements this deferred feature
@@ -251,7 +258,7 @@ var runtime = {
 							}
 							found_feature = this._find_feature_starting_with(class_prototype, feature_name, true);
 							if (found_feature) {
-								class_prototype[feature] = class_prototype[found_feature];
+								class_prototype[feature] = this.__createProxy (found_feature);
 							} else {
 								class_prototype[feature] = parent_decl[feature];
 							}
@@ -360,13 +367,6 @@ var runtime = {
 		//}
 		
 		return false;
-	},
-	
-	assert: function (expr, class_name, feature_name, assertion_label) {
-		//var err_msg = null;
-		if (!expr) {
-			throw "Assertion " + (assertion_label ? assertion_label + " " : "") + " at " + class_name + " :: " + feature_name + " failed.";
-		}
 	},
 	
 	// Base types helper methods

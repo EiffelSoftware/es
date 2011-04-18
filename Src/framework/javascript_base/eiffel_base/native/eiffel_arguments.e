@@ -8,6 +8,9 @@ note
 class
 	EIFFEL_ARGUMENTS
 
+feature -- Basic Operation
 
+	argument (i: INTEGER)
+		external "C" alias "#eiffel_arguments[$i-1]" end
 
 end

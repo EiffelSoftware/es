@@ -83,6 +83,22 @@ feature {NONE} -- Initialization
 
 				end
 			)
+			invoke_test ("2", agent
+				local
+					a: TEST2_REN_A
+					b: TEST2_REN_B
+					c: TEST2_REN_C
+				do
+					create c
+					assert (c.foo.is_equal("C"))
+
+					b := c
+					assert (b.foo.is_equal("C"))
+
+					a := b
+					assert (a.bar.is_equal("C"))
+				end
+			)
 		end
 
 feature {NONE} -- Implementation

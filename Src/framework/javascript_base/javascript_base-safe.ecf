@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="javascript_base" uuid="6603ce95-c4a8-9d70-01df-8d47e32dcd26" library_target="javascript_base">
 	<target name="javascript_base">
+		
+		<root all_classes="true"/>
+		
 		<file_rule>
 			<exclude>/.svn$</exclude>
 		</file_rule>
