@@ -33,10 +33,10 @@ feature -- Access
 	upper_bound: INTEGER
 			-- upper bound of the abstract integer
 
-	size: INTEGER
+	size: INTEGER_64
 			-- how many elements in the bounds of the abstract integer?
 		do
-			Result := upper_bound - lower_bound + 1
+			Result := upper_bound.to_integer_64 - lower_bound.to_integer_64 + 1
 		ensure
 			result_positive: Result > 0
 			result_correct: Result = upper_bound - lower_bound + 1
@@ -63,7 +63,7 @@ feature -- Access
 					Result := upper_bound
 				else
 					random.forth
-					Result := lower_bound + (random.item \\ size)
+					Result := (lower_bound.to_integer_64 + (random.item.to_integer_64 \\ size)).to_integer
 				end
 			end
 		ensure

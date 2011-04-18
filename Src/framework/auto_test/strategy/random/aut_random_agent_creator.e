@@ -42,7 +42,7 @@ create
 
 feature {NONE} -- Initialization
 
-make (a_system: like system; an_interpreter: like interpreter; a_type: like receiver_type; a_feature_table: like feature_table; a_feature_target: like feature_target)
+	make (a_system: like system; an_interpreter: like interpreter; a_type: like receiver_type; a_feature_table: like feature_table; a_feature_target: like feature_target)
 			-- Create new agent creator.
 		require
 			a_system_not_void: a_system /= Void
@@ -239,7 +239,7 @@ feature {NONE} -- Steps
 				l_feature_arguments.after
 			loop
 				if i <= argument_types.count and then check_conform (argument_types[i], l_feature_arguments.item_for_iteration) then
-					i := i+1
+					i := i + 1
 				else
 					input_creator.add_type (l_feature_arguments.item_for_iteration)
 					closed_operands_positions.put_right (l_feature_arguments.index)
@@ -248,7 +248,7 @@ feature {NONE} -- Steps
 
 				l_feature_arguments.forth
 			end
-
+			input_creator.set_feature_target (feature_target)
 			input_creator.start
 		ensure
 			created: input_creator /= Void
@@ -385,7 +385,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

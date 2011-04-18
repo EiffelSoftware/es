@@ -147,7 +147,7 @@ feature -- Execution
 
 				l_type := types.item (receivers.count + 1)
 				if l_type.has_associated_class and then is_agent_type(l_type) then
-						create_agent_creator
+					create_agent_creator
 				else
 					random.forth
 					i := (random.item  \\ 5)
@@ -300,7 +300,7 @@ invariant
 	has_error_implies_over: has_error implies not has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

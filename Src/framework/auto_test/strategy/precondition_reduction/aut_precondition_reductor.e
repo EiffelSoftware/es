@@ -119,7 +119,11 @@ feature{NONE} -- Implementation
 			-- Restart `interpreter' when necessary.
 		do
 			if not interpreter.is_executing or else not interpreter.is_ready then
+				if interpreter.is_running then
+					interpreter.stop
+				end
 				interpreter.start
+				interpreter.stop
 				assign_void
 			end
 		end
