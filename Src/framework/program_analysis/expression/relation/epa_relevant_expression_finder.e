@@ -96,7 +96,6 @@ feature -- Basic operation
 			-- result available in `relevant_expression_sets'.
 		local
 			l_feature: FEATURE_I
-			l_features: LINKED_LIST [FEATURE_I]
 			l_selector: EPA_FEATURE_SELECTOR
 			l_ast: AST_EIFFEL
 			l_text: STRING
@@ -105,15 +104,11 @@ feature -- Basic operation
 				set_context_class (l_class_ctxt.context_class)
 				set_written_class (l_class_ctxt.written_class)
 				create l_selector.default_create
-				l_features := l_selector.features_from_class (l_class_ctxt.written_class)
+				l_selector.select_from_class (l_class_ctxt.written_class)
 
 				-- Process all features of `a_context'
-				from
-					l_features.start
-				until
-					l_features.after
-				loop
-					l_feature := l_features.item_for_iteration
+				across l_selector.last_features as l_features loop
+					l_feature := l_features.item
 
 					set_context_feature (l_feature)
 					set_written_class (l_feature.written_class)
@@ -148,10 +143,9 @@ feature -- Basic operation
 							l_ast.process (Current)
 						end
 					end
-					l_features.forth
 				end
 
-				-- Process invariants
+					-- Process invariants
 				across invariant_of_class (l_class_ctxt.context_class) as l_invariants loop
 					l_ast := l_invariants.item.ast
 					l_text := text_from_ast (l_ast)

@@ -223,7 +223,8 @@ feature -- Basic operations
 			create l_post_gen
 			l_post_gen.set_should_generate_for_features_with_argument (True)
 			l_post_gen.set_should_generate_for_features_with_precondition (True)
-			across l_feat_selector.features_from_class (a_class) as l_feats loop
+			l_feat_selector.select_from_class (a_class)
+			across l_feat_selector.last_features as l_feats loop
 				create l_result_defining_posts.make
 				l_feat := l_feats.item
 				l_posts := l_extractor.postcondition_of_feature (l_feat, a_class)
@@ -310,6 +311,7 @@ feature -- Basic operations
 			l_feats: LINKED_LIST [FEATURE_I]
 			i, j: INTEGER
 			l_feat1, l_feat2: FEATURE_I
+			l_selected_feats: LINKED_LIST [FEATURE_I]
 		do
 				-- Setup feature selectors to select queries that we consider.
 			create l_feature_selector
@@ -318,9 +320,11 @@ feature -- Basic operations
 			l_feature_selector.add_selector (l_feature_selector.not_from_any_feature_selector)
 			l_feature_selector.add_exported_feature_selector
 
-				-- Collect queries with the same signature and same body.
+				-- Collect queries with the same signature and same body.				
+			l_feature_selector.select_from_class (a_class)
 			create l_same_feature_collector
-			l_same_feature_collector.collect (l_feature_selector.features_from_class (a_class))
+			l_same_feature_collector.collect (l_feature_selector.last_features)
+
 
 				-- Iterate through features with same signature and same body and generate axioms.
 			across l_same_feature_collector.features as l_features loop

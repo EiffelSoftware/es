@@ -31,15 +31,19 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	features_from_class (a_class: CLASS_C): LINKED_LIST [FEATURE_I]
-			-- List of features from `a_class' satisfying
-			-- all the given criteria
+	last_features: LINKED_LIST [FEATURE_I]
+			-- Last selected features
+
+feature -- Selection
+
+	select_from_class (a_class: CLASS_C)
+			-- Select features from `a_class' satisfying all the given criteria.
+			-- Make results available in `last_features'.
 		local
 			l_feat_tbl: FEATURE_TABLE
 			l_cursor: CURSOR
 			l_feats: LINKED_LIST [FEATURE_I]
 		do
-			create l_feats.make
 			l_feat_tbl := a_class.feature_table
 			l_cursor := l_feat_tbl.cursor
 			from
@@ -47,25 +51,24 @@ feature -- Access
 			until
 				l_feat_tbl.after
 			loop
-				l_feats.extend (l_feat_tbl.item_for_iteration)
+				last_features.extend (l_feat_tbl.item_for_iteration)
 				l_feat_tbl.forth
 			end
 			l_feat_tbl.go_to (l_cursor)
-			Result := features (l_feats)
+			select_from_features (l_feats)
 		end
 
-	features (a_features: LINKED_LIST [FEATURE_I]): LINKED_LIST [FEATURE_I]
-			-- List of features from `a_features' which
-			-- satisfy all the given criteria
-			-- Always return a new list.
+	select_from_features (a_features: LINKED_LIST [FEATURE_I])
+			-- Select features from `a_features' which satisfy all the given criteria.
+			-- Make Result avaialbe in `last_features'.
 		do
-			create Result.make
+			create last_features.make
 			if criteria.is_empty then
-				a_features.do_all (agent Result.extend)
+				a_features.do_all (agent last_features.extend)
 			else
 				across a_features as l_feats loop
 					if across criteria as l_cris all l_cris.item.item ([l_feats.item]) end then
-						Result.extend (l_feats.item)
+						last_features.extend (l_feats.item)
 					end
 				end
 			end
