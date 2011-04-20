@@ -4081,6 +4081,7 @@ eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
 eweasel/tests/replication002/Ace -text
+eweasel/tests/scoop010/tcf -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
