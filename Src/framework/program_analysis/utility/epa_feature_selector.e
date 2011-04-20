@@ -46,12 +46,13 @@ feature -- Selection
 		do
 			l_feat_tbl := a_class.feature_table
 			l_cursor := l_feat_tbl.cursor
+			create l_feats.make
 			from
 				l_feat_tbl.start
 			until
 				l_feat_tbl.after
 			loop
-				last_features.extend (l_feat_tbl.item_for_iteration)
+				l_feats.extend (l_feat_tbl.item_for_iteration)
 				l_feat_tbl.forth
 			end
 			l_feat_tbl.go_to (l_cursor)
