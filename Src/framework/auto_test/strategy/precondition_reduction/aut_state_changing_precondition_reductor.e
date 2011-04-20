@@ -348,7 +348,7 @@ feature{NONE} -- Implementation
 				connection,
 				used_queryable_ids,
 				False,
-				20, False)
+				10, False) -- We only retrieve 10 object combinations because transitions are expensive, we don't want so many calls.
 			object_combinations := object_retriever.last_objects
 			update_queryable_id_set (used_queryable_ids, object_combinations)
 		end
