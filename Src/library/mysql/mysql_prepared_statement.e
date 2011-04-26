@@ -35,6 +35,7 @@ feature{MYSQL_CLIENT} -- Initialization
 			-- State
 			is_open := True
 			is_executed := False
+			has_result_set := False
 			-- List for string parameters (avoid Garbage Collection)
 			create string_parameters.make_filled (Void, 0, param_count - 1)
 		end
@@ -61,7 +62,7 @@ feature -- Access
 			-- The number of rows in this result set
 		require
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 		do
 			Result := c_stmt_num_rows ($p_stmt)
 		end
@@ -115,7 +116,7 @@ feature -- Access
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -128,7 +129,7 @@ feature -- Access
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -141,7 +142,7 @@ feature -- Access
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -162,7 +163,7 @@ feature -- Access
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -204,12 +205,15 @@ feature -- Status report
 	is_executed: BOOLEAN
 		-- Has the last call to `execute' succeeded?
 
+	has_result_set: BOOLEAN
+		-- Has the last call to `execute' returned a result set?
+
 	is_integer_at (a_pos: INTEGER): BOOLEAN
 			-- Is the value in the current row at column index `a_pos' an integer?
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -222,7 +226,7 @@ feature -- Status report
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -235,7 +239,7 @@ feature -- Status report
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -248,7 +252,7 @@ feature -- Status report
 		require
 			mysql_client_is_connected: mysql.is_connected
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 			not_off: not off
 			valid_position_lower: a_pos > 0
 			valid_position_upper: a_pos <= column_count
@@ -332,6 +336,7 @@ feature -- Commands
 			i: INTEGER
 		do
 			is_executed := False
+			has_result_set := False
 			from
 				i := 0
 			until
@@ -345,8 +350,9 @@ feature -- Commands
 			end
 
 			if c_stmt_execute ($p_stmt, $p_bind) = 0 then
+				is_executed := True
 				if c_stmt_bind_result ($p_stmt, $p_resbind, $p_resdata) = 0 then
-					is_executed := True
+					has_result_set := True
 				end
 			end
 		end
@@ -366,7 +372,7 @@ feature -- Commands
 			-- Seeks to the first row in this statement's result set
 		require
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 		do
 			go_i_th (1)
 		end
@@ -375,7 +381,7 @@ feature -- Commands
 			-- Fetch the next row from this statement's result set
 		require
 			is_open: is_open
-			is_executed: is_executed
+			has_result_set: has_result_set
 		do
 			off := True
 			if c_stmt_fetch ($p_stmt) = 0 then
