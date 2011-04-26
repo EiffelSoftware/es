@@ -155,7 +155,15 @@ feature {ROTA_S, ROTA_TASK_I, ROTA_TASK_COLLECTION_I} -- Status setting
 
 					-- We first check if the current pre-state invariant is a tautology w.r.t. current class invairants.
 					-- If so, we don't need to do anything, because by definition, that pre-state invariant cannot be violated.
-				l_invalids := invalid_predicates (l_class, l_feature, predicates_as_expressions (prestate_predicates_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
+				if current_predicate.text.has ('~') then
+						-- We cannot handle object equality in the BoogiePL generation yet,
+						-- so all predicates with object equalities are never ignored by the
+						-- precondition reduction algorithm.
+					create l_invalids.make (1)
+					l_invalids.set_equality_tester (expression_equality_tester)
+				else
+					l_invalids := invalid_predicates (l_class, l_feature, predicates_as_expressions (prestate_predicates_by_feature.item (class_name_dot_feature_name (l_class, l_feature))))
+				end
 				if l_invalids.has (current_predicate.expression) then
 					progress_log_manager.put_string (" [Invalid]")
 					interpreter.log_precondition_reduction ("Failed in satisfying: " + l_inv_message + " [Invalid]")

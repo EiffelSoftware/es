@@ -550,8 +550,9 @@ feature {NONE} -- Implementation
 
 feature -- Type checking
 
-	check_expression_type (a_expr: EXPR_AS; a_feature: FEATURE_I; a_context_class: CLASS_C)
+	check_expression_type (a_expr: EXPR_AS; a_feature: FEATURE_I; a_context_class: CLASS_C; a_written_class: detachable CLASS_C)
 			-- Check the type of `a_expr' written in `a_feature', viewd from `a_context_class'.
+			-- When attached `a_written_class' is used, otherwise, `a_feature'.`written_class' is used to setup AST context.
 			-- Make result available in `last_type'.
 		local
 			l_export: BOOLEAN
@@ -562,7 +563,11 @@ feature -- Type checking
 			end
 			context.initialize (a_context_class, a_context_class.actual_type)
 			context.set_current_feature (a_feature)
-			context.set_written_class (a_feature.written_class)
+			if a_written_class /= Void then
+				context.set_written_class (a_written_class)
+			else
+				context.set_written_class (a_feature.written_class)
+			end
 			l_export := context.is_ignoring_export
 			context.set_is_ignoring_export (True)
 

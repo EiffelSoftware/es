@@ -123,7 +123,6 @@ feature{NONE} -- Implementation
 					interpreter.stop
 				end
 				interpreter.start
-				interpreter.stop
 				assign_void
 			end
 		end

@@ -171,6 +171,10 @@ feature -- Basic operations
 				end
 			end
 		rescue
+			if connection.is_connected then
+				connection.close
+				connection.reinitialize
+			end
 			l_retried := True
 			create last_results.make
 			retry

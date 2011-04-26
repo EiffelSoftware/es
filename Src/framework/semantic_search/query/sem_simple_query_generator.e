@@ -108,7 +108,10 @@ feature -- Access
 						l_where_clause.append (a_name)
 						l_where_clause.append (".type1 IN (SELECT c.conf_type_id FROM Conformances c, Types tp WHERE tp.type_id = c.type_id AND tp.type_name = '" + output_type_name (a_type) + "')")
 					end
+				end
 
+				if a_type ~ "INTEGER_32" then
+					l_where_clause.append (once " AND " + a_name + ".position != -1%N")
 				end
 			end
 

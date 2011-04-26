@@ -67,8 +67,9 @@ feature -- Execution
 							end
 						else
 							try_to_satisfy_current_property_by_calling_features (l_trans)
+							restart_interpreter_when_necessary
 						end
-						restart_interpreter_when_necessary
+
 --							-- Try to call the selected feature twice.
 --						if not is_reduction_successful then
 --							create l_trans.make
@@ -228,6 +229,9 @@ feature{NONE} -- Implementation
 					create l_postconditions.make
 					l_postconditions.extend (l_postcondition_str)
 
+					if not connection.is_connected then
+						connection.reinitialize
+					end
 					create l_transition_finder.make (l_variables, l_preconditions, l_postconditions, connection)
 					l_transition_finder.set_log_manager (query_log_manager)
 					l_transition_finder.set_class_name (l_class_name)

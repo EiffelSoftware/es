@@ -109,8 +109,7 @@ feature -- Execute
 					batch_assign_provided_operands_to_variables
 				end
 
-				if not should_skip_current_step and then interpreter.is_executing and then interpreter.is_ready and then not has_error
-						and then is_missing_operand
+				if not should_skip_current_step and then interpreter.is_executing and then interpreter.is_ready and then not has_error and then is_missing_operand
 				then
 					prepare_missing_operand_objects
 				end
@@ -164,16 +163,23 @@ feature -- Execute
 						end
 					end
 				end
-
---				if not interpreter.is_executing or else not interpreter.is_ready then
---					interpreter.start
---					assign_void
---				end
-				set_should_quit (not interpreter.is_executing or else not interpreter.is_ready)
+				restart_interpreter_when_necessary
 			end
 			set_try_count (try_count + 1)
 			if try_count > 10 then
 				set_should_quit (True)
+			end
+		end
+
+	restart_interpreter_when_necessary
+			-- Restart `interpreter' when necessary.
+		do
+			if not interpreter.is_executing or else not interpreter.is_ready then
+				if interpreter.is_running then
+					interpreter.stop
+				end
+				interpreter.start
+				assign_void
 			end
 		end
 

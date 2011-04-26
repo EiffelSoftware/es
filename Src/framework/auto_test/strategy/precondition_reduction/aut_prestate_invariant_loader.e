@@ -149,11 +149,13 @@ feature -- Basic operations
 					if l_line.starts_with (once "%T") then
 						l_line.left_adjust
 						l_line.right_adjust
-						l_inv := invariant_from_string (l_line, l_premises_expr, l_consequent_expr)
-						if l_inv /= Void then
-							l_inv.set_is_implication (True)
-							l_inv_tbl.item (l_last_key).extend (l_inv)
-							last_invariants.extend (l_inv)
+						if l_premises_expr.type /= Void and then l_consequent_expr.type /= Void then
+							l_inv := invariant_from_string (l_line, l_premises_expr, l_consequent_expr)
+							if l_inv /= Void then
+								l_inv.set_is_implication (True)
+								l_inv_tbl.item (l_last_key).extend (l_inv)
+								last_invariants.extend (l_inv)
+							end
 						end
 					else
 						l_last_key := l_line.twin

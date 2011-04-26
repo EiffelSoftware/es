@@ -211,6 +211,9 @@ feature -- Basic operations
 			if l_stamp.exists then
 				l_stamp.delete
 			end
+			if not connection.is_connected then
+				connection.reinitialize
+			end
 			retry
 		end
 
