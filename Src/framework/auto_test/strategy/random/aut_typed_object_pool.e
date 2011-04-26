@@ -151,6 +151,9 @@ feature -- Access
 			result_set: Result = storage.item (a_variable)
 		end
 
+	variable_count: INTEGER
+			-- Number of variables
+
 feature -- Status report
 
 	is_variable_defined (a_variable: ITP_VARIABLE): BOOLEAN
@@ -185,6 +188,7 @@ feature -- Basic operations
 			l_cursor := sorted_types_cursor
 			l_var_tbl := variable_table
 			storage.force_last (a_type, a_variable)
+			set_variable_count (variable_count + 1)
 			if a_type.has_associated_class then
 				if is_agent_type (a_type) then
 					if not l_var_tbl.has (a_type) then
@@ -221,6 +225,7 @@ feature -- Basic operations
 				l_vtable.forth
 			end
 			storage.wipe_out
+			set_variable_count (0)
 		ensure
 			variable_table_wiped_out: variable_table.for_all (agent (a_vars: DS_ARRAYED_LIST [ITP_VARIABLE]): BOOLEAN do Result := a_vars.is_empty end)
 			storage_wiped_out: storage.is_empty
@@ -258,6 +263,14 @@ feature -- Basic operations
 				end
 			end
 			l_storage.remove (l_variable)
+		end
+
+	set_variable_count (a_count: INTEGER)
+			-- Set `variable_count' with `a_count'.
+		do
+			variable_count := a_count
+		ensure
+			variable_count_set: variable_count = a_count
 		end
 
 feature{NONE} -- Implementation

@@ -99,6 +99,7 @@ feature{NONE} -- Initialization
 			l_precondition_reduction_file_option: AP_STRING_OPTION
 			l_pr_check_objects: AP_FLAG
 			l_arff_directory_option: AP_STRING_OPTION
+			l_online_statistics_frequency: AP_INTEGER_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -369,6 +370,10 @@ feature{NONE} -- Initialization
 			create l_arff_directory_option.make_with_long_form ("arff")
 			l_arff_directory_option.set_description ("Specify the location of ARFF files, used by the precondition-reduction strategy to invalidate implications. Format: --arff directory. Directory is the top level directory which stores ARFF files, containing subclasses for particular classes.")
 			parser.options.force_last (l_arff_directory_option)
+
+			create l_online_statistics_frequency.make_with_long_form ("online-statistics-frequency")
+			l_online_statistics_frequency.set_description ("Specify the frequency of online-statistics output. Format: --online-statistics-frequency <seconds>. <seconds> is the number of seconds. If 0, no online-statistics will be outputed. Default: 0.")
+			parser.options.force_last (l_online_statistics_frequency)
 
 			parser.parse_list (a_arguments)
 
@@ -888,6 +893,12 @@ feature{NONE} -- Initialization
 				arff_directory := l_arff_directory_option.parameter.twin
 			end
 
+			if l_online_statistics_frequency.was_found then
+				online_statistics_frequency := l_online_statistics_frequency.parameter
+			else
+				online_statistics_frequency := 0
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1213,6 +1224,11 @@ feature -- Status report
 			-- The directory storing ARFF files, needed
 			-- by the precnodition-reduction strategy to
 			-- invalidcate inferred implications.
+
+	online_statistics_frequency: INTEGER
+			-- Number of seconds for the online-statistics to be outputed once.
+			-- If 0, no online-statistics is outputed.
+			-- Default: 0
 
 feature {NONE} -- Constants
 

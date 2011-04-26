@@ -193,6 +193,11 @@ feature -- Options: basic
 	should_freeze_before_testing: BOOLEAN
 			-- Should the target system be freezed before testing?
 
+	online_statistics_frequency: INTEGER
+			-- Number of seconds for the online-statistics to be outputed once.
+			-- If 0, no online-statistics is outputed.
+			-- Default: 0			
+
 feature -- Options: logging
 
 	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
@@ -1016,6 +1021,14 @@ feature -- Status setting
 			arff_directory := a_directory
 		ensure
 			arff_directory_set: arff_directory = a_directory
+		end
+
+	set_online_statistics_frequency (i: INTEGER)
+			-- Set `online_statistics_frequency' with `i'.
+		do
+			online_statistics_frequency := i
+		ensure
+			online_statistics_frequency_set: online_statistics_frequency = i
 		end
 
 feature -- Basic operations

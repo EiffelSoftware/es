@@ -156,6 +156,7 @@ feature {NONE} -- Initialization
 				create object_state_table.make
 			end
 			generate_typed_object_pool
+			setup_online_statistics
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -374,6 +375,7 @@ feature -- Execution
 							flush_process
 							log_line (proxy_has_started_and_connected_message)
 							log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
+							online_statistics.report_session_restart (test_duration)
 							parse_start_response
 							last_request.set_response (last_response)
 							proxy_log_printers.report_request (Current, last_request)
@@ -518,6 +520,7 @@ feature -- Execution
 			l_arg_list: DS_LINEAR [ITP_EXPRESSION]
 			l_request: AUT_CREATE_OBJECT_REQUEST
 			l_is_passing: BOOLEAN
+			l_test_duration: INTEGER
 		do
 			l_arg_list := an_argument_list
 			if l_arg_list = Void then
@@ -542,9 +545,10 @@ feature -- Execution
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
-			proxy_log_printers.set_end_time (test_duration)
+			l_test_duration := test_duration
+			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
-			online_statistics.add_test_case (last_request)
+			online_statistics.report_test_case (last_request, l_test_duration, variable_table.variable_count)
 			if not last_response.is_bad then
 --				is_ready := True
 				if not last_response.is_error then
@@ -591,6 +595,7 @@ feature -- Execution
 			l_objects: DS_LINEAR [ITP_EXPRESSION]
 			l_object_state: AUT_OBJECT_STATE
 			l_normal_response: AUT_NORMAL_RESPONSE
+			l_test_duration: INTEGER
 		do
 			is_last_test_case_executed := False
 			l_target_type := variable_table.variable_type (a_target)
@@ -614,13 +619,15 @@ feature -- Execution
 
 			last_request := l_invoke_request
 			last_request.process (socket_data_printer)
-			proxy_log_printers.set_start_time (test_duration)
+			l_test_duration := test_duration
+			proxy_log_printers.set_start_time (l_test_duration)
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
-			proxy_log_printers.set_end_time (test_duration)
+			l_test_duration := test_duration
+			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
-			online_statistics.add_test_case (last_request)
+			online_statistics.report_test_case (last_request, l_test_duration, variable_table.variable_count)
 			if not last_response.is_bad or last_response.is_error then
 --				is_ready := True
 			else
@@ -654,6 +661,7 @@ feature -- Execution
 		local
 			normal_response: AUT_NORMAL_RESPONSE
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
+			l_test_duration: INTEGER
 		do
 			is_last_test_case_executed := False
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
@@ -675,9 +683,10 @@ feature -- Execution
 			flush_process
 			parse_invoke_response
 			last_request.set_response (last_response)
-			proxy_log_printers.set_end_time (test_duration)
+			l_test_duration := test_duration
+			proxy_log_printers.set_end_time (l_test_duration)
 			proxy_log_printers.report_request (Current, last_request)
-			online_statistics.add_test_case (last_request)
+			online_statistics.report_test_case (last_request, l_test_duration, variable_table.variable_count)
 			if not last_response.is_bad then
 --				is_ready := True
 				if not last_response.is_error then
@@ -2300,6 +2309,17 @@ feature -- Objec state retrieval
 			end
 		end
 
+	setup_online_statistics
+			-- Setup `online_statistics'.
+		local
+			l_file: FILE_NAME
+		do
+			create l_file.make_from_string (configuration.output_dirname)
+			l_file.extend ("log")
+			l_file.set_file_name ("online_statistics.txt")
+			online_statistics.set_log_file_path (l_file.out)
+			online_statistics.set_output_frequency (configuration.online_statistics_frequency)
+		end
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

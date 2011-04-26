@@ -406,6 +406,7 @@ feature{NONE} -- Logging
 			log_test_cases (online_statistics.failing_statistics, "failing", l_file)
 			log_faults (online_statistics.faults, l_file)
 			l_file.close
+			online_statistics.finish
 		end
 
 	log_faults (faults: DS_HASH_TABLE [detachable STRING, AUT_EXCEPTION]; a_file: PLAIN_TEXT_FILE)

@@ -244,6 +244,7 @@ feature -- Execution
 				l_generator.set_prestate_invariant_path (l_ap.precondition_reduction_file)
 				l_generator.set_should_check_invariant_violating_objects (l_ap.should_check_invariant_violating_objects)
 				l_generator.set_arff_directory (l_ap.arff_directory)
+				l_generator.set_online_statistics_frequency (l_ap.online_statistics_frequency)
 
 				a_test_suite.launch_session (l_generator)
 			else

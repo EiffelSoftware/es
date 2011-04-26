@@ -207,6 +207,12 @@ feature -- Access
 			variable_not_defined: not is_variable_defined (Result)
 		end
 
+	variable_count: INTEGER
+			-- Number of variables
+		do
+			Result := variable_type_table.count
+		end
+
 feature -- Element change
 
 	define_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A)
