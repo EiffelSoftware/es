@@ -266,7 +266,7 @@ feature {NONE} -- Steps
 			end
 
 			-- Targets equal?
-			if is_target_open = False and then feature_target.is_equal (input_creator.receivers.first) then
+			if is_target_open = False and then feature_target /= Void and then feature_target.is_equal (input_creator.receivers.first) then
 				cancel
 			end
 
