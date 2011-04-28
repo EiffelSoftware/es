@@ -24,6 +24,8 @@ feature{NONE} -- Initialization
 			failing_statistics.set_key_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 			create faults.make (64)
 			faults.set_key_equality_tester (create {AUT_EXCEPTION_EQUALITY_TESTER})
+			create faults_with_detected_time.make (64)
+			faults_with_detected_time.set_key_equality_tester (create {AUT_EXCEPTION_EQUALITY_TESTER})
 		end
 
 feature -- Access
@@ -42,6 +44,11 @@ feature -- Access
 			-- Set of found faults
 			-- Keys are faults that are found, values are
 			-- meta data (if any) associated with that fault.
+
+	faults_with_detected_time: DS_HASH_TABLE [INTEGER, AUT_EXCEPTION]
+			-- Set of detected faults and the number of times that they are detected
+			-- Keys are the detected faults, and values are the number of times that
+			-- they are detected.
 
 	last_fault_meta: detachable STRING
 			-- Meta data which will be associated with each found fault			
@@ -117,9 +124,14 @@ feature -- Basic operations
 									l_class := workbench.universe.classes_with_name (l_exception.class_name).first.compiled_representation
 									l_feat := l_class.feature_named_32 (l_exception.recipient_name)
 									if l_feat /= Void then
-										if not faults.has (l_exception) then
+										if faults.has (l_exception) then
+												-- We already detected this fault before.
+											faults_with_detected_time.force_last (faults_with_detected_time.item (l_exception) + 1, l_exception)
+										else
+												-- We detected a new fault.
 											faults.force_last (last_fault_meta, l_exception)
 											last_minute_statistics.set_fault_count (last_minute_statistics.fault_count + 1)
+											faults_with_detected_time.force_last (1, l_exception)
 										end
 										create l_feature.make (l_feat, l_class.constraint_actual_type)
 										failing_statistics.search (l_feature)
@@ -200,16 +212,42 @@ feature{NONE} -- Implementation
 		do
 			if log_file = Void and then log_file_path /= Void then
 				create log_file.make_create_read_write (log_file_path)
-				log_file.put_string ("Second%TPassing test cases%TFailing test cases%TInvalid test cases%TObjects%TFaults%TProxy sessions%N")
+				log_file.put_string ("Second%TPassing test cases%TFailing test cases%TInvalid test cases%TObjects%TFaults%TProxy sessions%TFault details%N")
 			end
 			if log_file /= Void then
-				create l_message.make (256)
+				create l_message.make (1024)
 				l_message.append_integer (last_time_stamp // 1000 + 1)
 				l_message.append_character ('%T')
 				l_message.append (last_minute_statistics.out)
+
+				l_message.append_character ('%T')
+				l_message.append (fault_details)
 				l_message.append_character ('%N')
 				log_file.put_string (l_message)
 				log_file.flush
+			end
+		end
+
+	fault_details: STRING
+			-- String containing details of detected faults.			
+		local
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, AUT_EXCEPTION]
+		do
+			create Result.make (faults_with_detected_time.count * 64)
+			from
+				l_cursor := faults_with_detected_time.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if not Result.is_empty then
+					Result.append_character (',')
+				end
+				Result.append (l_cursor.key.signature)
+				Result.append_character ('(')
+				Result.append_integer (l_cursor.item)
+				Result.append_character (')')
+				l_cursor.forth
 			end
 		end
 

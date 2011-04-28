@@ -155,7 +155,10 @@ feature -- Basic operations
 				from
 					connection.last_result.start
 				until
-					connection.last_result.after
+						-- FIXME: The "last_results.count > 100" condition is used
+						-- to get out of an infinite loop, caused by some problems
+						-- when we iterating through `connection.last_result'.
+					connection.last_result.after or last_results.count > 100
 				loop
 					create l_result_array.make_filled (Void, 1, connection.last_result.column_count)
 					from
