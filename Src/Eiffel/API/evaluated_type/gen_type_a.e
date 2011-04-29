@@ -14,7 +14,8 @@ inherit
 		redefine
 			generics, valid_generic, parent_type, dump, ext_append_to, formal_instantiation_in,
 			has_like, has_like_argument, has_like_current, is_loose, duplicate, good_generics,
-			error_generics, check_constraints, has_formal_generic, instantiated_in,
+			error_generics, check_constraints, has_formal_generic, formal_instantiated_in,
+			instantiated_in,
 			has_expanded, internal_is_valid_for_class, expanded_deferred, valid_expanded_creation,
 			same_as, is_equivalent, description, description_with_detachable_type, instantiated_description, is_explicit,
 			deep_actual_type, context_free_type, instantiation_in, has_actual,
@@ -814,7 +815,7 @@ feature {TYPE_A} -- Helpers
 						l_formal ?= l_type.actual_type
 						l_type := current_type.generics.item (l_formal.position)
 					end
-					if current_type /= Void and then attached {LIKE_CURRENT} l_type as l_like_current then
+					if current_type /= Void and then attached {LIKE_CURRENT} l_type.actual_type as l_like_current then
 							-- If actual generic parameter is `like Current' and that we have a context type, then
 							-- its type is clearly the context type `current_type'.
 						l_type := current_type
@@ -1154,6 +1155,38 @@ feature -- Primitives
 			loop
 				l_old_generic := l_generics.item (i)
 				l_new_generic := l_old_generic.skeleton_adapted_in (a_class_type)
+				if l_old_generic /= l_new_generic then
+					if Result = Void then
+						Result := duplicate_for_instantiation
+						l_new_generics := Result.generics
+					end
+					l_new_generics.put (l_new_generic, i)
+				end
+				i := i + 1
+			end
+			if Result = Void then
+				Result := Current
+			end
+		end
+
+	formal_instantiated_in (class_type: TYPE_A): GEN_TYPE_A
+			-- Instantiation of Current in the context of `class_type'
+			-- assuming that Current is written in the associated class
+			-- of `class_type'.
+		local
+			i, nb: INTEGER
+			l_generics, l_new_generics: like generics
+			l_old_generic, l_new_generic: TYPE_A
+		do
+			from
+				l_generics := generics
+				i := 1
+				nb := l_generics.count
+			until
+				i > nb
+			loop
+				l_old_generic := l_generics.item (i)
+				l_new_generic := l_old_generic.formal_instantiated_in (class_type)
 				if l_old_generic /= l_new_generic then
 					if Result = Void then
 						Result := duplicate_for_instantiation
@@ -1903,7 +1936,7 @@ invariant
 	generics_not_void: generics /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

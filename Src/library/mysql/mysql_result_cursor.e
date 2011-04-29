@@ -10,11 +10,21 @@ class
 inherit
 	ITERATION_CURSOR [ARRAY [STRING]]
 		redefine
-			target
+			item,
+			after
 		end
 
 create
 	make
+
+feature{NONE} -- Initialization
+
+	make (a_target: like target)
+			-- Initialize Current cursor.
+		do
+			target := a_target
+			start
+		end
 
 feature -- Access
 
@@ -30,7 +40,24 @@ feature -- Access
 			Result := target.row_count + 1 <= cursor_index
 		end
 
+feature -- Cursor movement
+
+	start
+			-- Move to first position.
+		do
+			cursor_index := 1
+		end
+
+	forth
+			-- Move to next position.
+		do
+			cursor_index := cursor_index + 1
+		end
+
 feature {NONE} -- Implementation
+
+	cursor_index: INTEGER
+			-- Position of current cursor
 
 	target: MYSQL_RESULT
 			-- <Precursor>

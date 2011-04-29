@@ -58,7 +58,7 @@ feature --
 			end
 		end
 
-feature {ER_UPDATE_CONTEXT_POPUP_VISITOR} -- Implementation
+feature {ER_UPDATE_CONTEXT_POPUP_VISITOR, ER_LOAD_QUICK_ACCESS_TOOLBAR_VISITOR} -- Implementation
 
 	create_vision_tree_recursive (a_parent: EV_TREE_NODE_LIST; a_ribbon_tab_item: XML_NODE)
 			--
@@ -76,6 +76,14 @@ feature {ER_UPDATE_CONTEXT_POPUP_VISITOR} -- Implementation
 					loop
 						if attached {XML_ATTRIBUTE} l_tab_item.item_for_iteration as l_attribute then
 							if l_attribute.name.same_string ({ER_XML_ATTRIBUTE_CONSTANTS}.command_name) then
+								if attached {ER_TREE_NODE_DATA} l_new_node.data as l_data then
+									l_data.set_command_name (l_attribute.value)
+								end
+							elseif l_attribute.name.same_string ({ER_XML_ATTRIBUTE_CONSTANTS}.name) then
+								-- For context popup's command name
+								-- Context popup's command name in ContextMap is same as name attribute here
+								check l_tab_item.name.same_string ({ER_XML_CONSTANTS}.mini_toolbar) or else
+									 l_tab_item.name.same_string ({ER_XML_CONSTANTS}.context_menu) end
 								if attached {ER_TREE_NODE_DATA} l_new_node.data as l_data then
 									l_data.set_command_name (l_attribute.value)
 								end

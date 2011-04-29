@@ -37,9 +37,13 @@ feature -- Command
 					Result := l_resource.ribbon_for_group (l_group)
 				elseif attached {EV_RIBBON_ITEM} Current as l_item then
 					Result := l_resource.ribbon_for_item (l_item)
-					If Result = void then
+					if Result = void then
 						-- Maybe it's application menu's item
 						Result := l_resource.ribbon_for_application_menu_item (l_item)
+					end
+					if Result = void then
+						-- Maybe it's Quick Access Toolbar's item
+						Result := l_resource.ribbon_for_qat_item (l_item)
 					end
 				elseif attached {EV_RIBBON_APPLICATION_MENU} Current as l_item then
 					Result := l_resource.ribbon_for_application_menu (l_item)
@@ -47,6 +51,12 @@ feature -- Command
 					Result := l_resource.ribbon_for_application_menu_recent_items (l_item)
 				elseif attached {EV_RIBBON_HELP_BUTTON} Current as l_help_button then
 					Result := l_resource.ribbon_for_help_button (l_help_button)
+				elseif attached {EV_RIBBON_QUICK_ACCESS_TOOLBAR} Current as l_quick_access_toolbar then
+					Result := l_resource.ribbon_for_quick_access_toolbar (l_quick_access_toolbar)
+				elseif attached {EV_RIBBON_MINI_TOOLBAR} Current as l_mini_toolbar then
+					Result := l_resource.ribbon_for_mini_toolbar (l_mini_toolbar)
+				elseif attached {EV_RIBBON_CONTEXT_MENU} Current as l_context_menu then
+					Result := l_resource.ribbon_for_context_menu (l_context_menu)
 				else
 					check not_possible: False end
 				end

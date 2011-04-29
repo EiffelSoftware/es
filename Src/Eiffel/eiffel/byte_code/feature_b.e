@@ -379,10 +379,10 @@ feature -- Inlining
 	inlined_byte_code: ACCESS_B
 		local
 			inlined_feat_b: INLINED_FEAT_B
-			inline: BOOLEAN
+			inline, l_is_deferred_inlinable: BOOLEAN
 			inliner: INLINER
 			type_i: TYPE_A
-			cl_type, written_cl_type: CL_TYPE_A
+			cl_type, desc_cl_type, written_cl_type: CL_TYPE_A
 			bc: STD_BYTE_CODE
 			l_rout_table: ROUT_TABLE
 			l_body_index: INTEGER
@@ -390,6 +390,8 @@ feature -- Inlining
 			f: FEATURE_I
 			context_class_type, written_class_type: CLASS_TYPE
 		do
+				-- We have to disable inlining if target is a multi constraint. This fixes eweasel
+				-- test#final0978 and test#final094.
 			if not is_once then
 				type_i := context_type
 				if not type_i.is_basic then
@@ -403,7 +405,23 @@ feature -- Inlining
 							entry := l_rout_table.item
 							l_body_index := entry.body_index
 								-- We need to instantiate `type' in current context to fix eweasel test#final065.
-							inline := inliner.inline (type.instantiated_in (context.context_cl_type), l_body_index)
+							inline := inliner.inline (context.real_type (type), l_body_index)
+
+								-- Special handling of deferred routine with one implementation in more than one
+								-- descendants which do not conform to each other. To avoid the expensive cost of
+								-- the computation we check first that the context type is deferred. This fixes
+								-- eweasel test#final087.
+							if inline and type_i.associated_class.is_deferred then
+									-- The routine in the deferred class could be deferred and we need to
+									-- ensure that all implementations of Current are forming an inheritance
+									-- line, not a tree as if it is a tree, inlining has to be done from the top
+									-- of the tree not from the first implemented version we found.
+									-- Ideally we could figure it out, but it is more complicated, for the time
+									-- being we disallow inlining in those rare cases. See eweasel test#final087.
+								l_is_deferred_inlinable := l_rout_table.is_inlinable (type_i, context.context_class_type)
+							else
+								l_is_deferred_inlinable := True
+							end
 						end
 					end
 				end
@@ -428,7 +446,7 @@ feature -- Inlining
 				elseif f.is_external or else f.is_constant then
 						-- Create new byte node and process it instead of the current one
 					Result := byte_node (f, type_i).inlined_byte_code
-				else
+				elseif l_is_deferred_inlinable then
 						-- Adapt context type `cl_type' to the appropriate context.
 						-- For example, inlining SPECIAL [G#2] from HASH_TABLE [G#1, G#2] when
 						-- the class is generated for HASH_TABLE [G#1, INTEGER] should yield
@@ -451,9 +469,11 @@ feature -- Inlining
 						f.written_class.simple_conform_to (cl_type.associated_class)
 					then
 							-- Now try to find a proper descendant type for the candidate for inlining.
-						cl_type := cl_type.find_descendant_type (system.class_of_id (entry.class_id))
-
-						if cl_type = Void then
+						desc_cl_type := cl_type.find_descendant_type (system.class_of_id (entry.class_id))
+						if 
+							desc_cl_type = Void or else
+							not same_for_generics (desc_cl_type.associated_class, cl_type.associated_class)
+						then
 								-- No valid descendant was found, therefore we cancel inlining (see
 								-- eweasel test#final083).
 								-- Note: This case means that the descendant is adding some new formal
@@ -461,9 +481,12 @@ feature -- Inlining
 								-- If the routine being inlined had no reference to the new formals
 								-- then we could ideally allow it, but this is quite difficult at this
 								-- time to perform this check.
+								-- Another failures are test#final091 and test#final097 which we test
+								-- by checking' the precondition of `associated_class_type'.
 							inline := False
 						else
 								-- We could find a descendant type, thus we can try to inline.
+							cl_type := desc_cl_type
 
 								-- Get the CLASS_TYPE from `cl_type'.
 							context_class_type := cl_type.associated_class_type (context.context_cl_type)
@@ -523,13 +546,19 @@ feature -- Inlining
 							-- if then else.
 						check cl_type.class_id /= entry.class_id end
 							-- Using the example above, we get `C [G]'
-						cl_type := cl_type.find_descendant_type (system.class_of_id (entry.class_id))
-						if cl_type = Void then
+						desc_cl_type := cl_type.find_descendant_type (system.class_of_id (entry.class_id))
+						if 
+							desc_cl_type = Void or else
+							not same_for_generics (desc_cl_type.associated_class, cl_type.associated_class)
+						then
+								-- Another failures are test#final091 and test#final097 which we test
+								-- by checking' the precondition of `associated_class_type'.
 							inline := False
 						else
 								-- `f' cannot be implemented in the descendant version for which the first
 								-- implementation of `f' appears, otherwise we would go via the `then' part
 								-- of the current if then else.
+							cl_type := desc_cl_type
 							check cl_type.class_id /= f.written_in end
 								-- Get the CLASS_TYPE corresponding to `C [G#1]'.
 							context_class_type := cl_type.associated_class_type (context.context_cl_type)
@@ -580,6 +609,9 @@ feature -- Inlining
 
 						Result := inlined_feat_b
 					end
+				else
+						-- Case of an inline deferred routine that we cannot really inlined.
+					inline := False
 				end
 			end
 
@@ -637,7 +669,7 @@ feature {NONE} -- Normalization of types
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

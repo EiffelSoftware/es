@@ -14,7 +14,10 @@ inherit
 	EV_RIBBON_TITLED_WINDOW
 		redefine
 			create_interface_objects,
-			initialize
+			initialize,
+			application_menu,
+			help_button,
+			quick_access_toolbar
 		end
 
 	EV_SHARED_APPLICATION
@@ -56,6 +59,29 @@ feature {NONE}-- Initialization
 											l_app.destroy_actions.extend (agent ribbon.destroy)
 										end
 									end)
+			mini_toolbars.extend (mini_toolbar)
+			context_menus.extend (context_menu)
+
+			add_recent_items
+		end
+
+	add_recent_items
+			-- Add recent items to right pane of Application Menu
+		local
+			l_list: ARRAYED_LIST [EV_RIBBON_APPLICATION_MENU_RECENT_ITEM]
+			l_item: EV_RIBBON_APPLICATION_MENU_RECENT_ITEM
+		do
+			create l_list.make (2)
+
+			create l_item
+			l_item.set_label ("Recent item one")
+			l_list.extend (l_item)
+
+			create l_item
+			l_item.set_label ("Recent item two")
+			l_list.extend (l_item)
+
+			application_menu.recent_items.set_recent_items (l_list)
 		end
 
 	create_interface_objects
@@ -67,12 +93,28 @@ feature {NONE}-- Initialization
 				-- Proceed with vision2 objects creation.
 			Precursor
 			create ribbon.make
+			create application_menu.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}.application_menu>>)
+			create help_button.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}.help_button>>)
+			create quick_access_toolbar.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}.quick_access_toolbar>>)
+			create mini_toolbar.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}.mini_toolbar>>)
+			create context_menu.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}.context_menu>>)
+
 		end
 
 feature -- Access
 
 	ribbon: RIBBON
 			-- Ribbon attached to current
+	application_menu: APPLICATION_MENU
+			-- Application menu
+	help_button: HELP_BUTTON
+			-- Help button
+	quick_access_toolbar: QUICK_ACCESS_TOOLBAR
+			-- Quick access toolbar
+	mini_toolbar: MINI_TOOLBAR
+			-- Mini toolbar
+	context_menu: CONTEXT_MENU
+			-- Context popup
 
 end
 

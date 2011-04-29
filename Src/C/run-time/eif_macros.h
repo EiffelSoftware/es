@@ -1357,6 +1357,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define scoop_task_add_processor_reference 11
 #define scoop_task_remove_processor_reference 12
 #define scoop_task_check_uncontrolled 13
+#define scoop_task_flag_processor_dirty 14
 
 #ifdef WORKBENCH
 #define RTS_TCB(t,c,s,b,a,r) \
@@ -1418,6 +1419,55 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTS_RF(p) RTS_TCB(scoop_task_signify_end_of_new_chain,RTS_PID(p),-1,0,NULL,NULL)
 #define RTS_RS(p,s) RTS_TCB(scoop_task_add_supplier_to_request_chain,RTS_PID(p),RTS_PID(s),0,NULL,NULL)
 #define RTS_RW(p) RTS_TCB(scoop_task_wait_for_supplier_processor_locks,RTS_PID(p),0,0,NULL,NULL)
+
+
+/*
+ * Request chain stack:
+ * RTS_SD - declare variables that are used to track request chain stack without rescue clause.
+ * RTS_SDX - declare variables that are used to track request chain stack with rescue clause.
+ * RTS_SDR - declare variables that are used to restore request chain stack with rescue clause.
+ * RTS_SRC(p) - create request chain for the processor identified by object p when there is no rescue clase.
+ * RTS_SRCX(p) - create request chain for the processor identified by object p when there is a rescue clase.
+ * RTS_SRF(p) - release request chain for the processor identified by object p when wait condition fails.
+ * RTS_SRD(p) - release request chain for the processor identified by object p when routine exits normally.
+ * RTS_SRR - release request chains (if any) when entering a rescue clause because of an exception.
+ * RTS_FPD(p) - flag processor as dirty with respect to its current request chain due to an exception. 
+ */
+#define RTS_SD \
+	EIF_REFERENCE * q = sep_stack.st_top;
+#define RTS_SDX \
+	EIF_REFERENCE * volatile q = sep_stack.st_top; \
+	EIF_REFERENCE * volatile qt = q;
+#define RTS_SDR \
+	EIF_REFERENCE * qt = sep_stack.st_top;
+#define RTS_SRC(p) \
+	{                                                       \
+		RTS_RC(p);                                      \
+		if (q && q < sep_stack.st_end) {                \
+			*q = p;                                 \
+			sep_stack.st_top = q + 1;               \
+		}                                               \
+		else {                                          \
+			eif_request_chain_push (p, &sep_stack); \
+			q = (EIF_REFERENCE *) 0;                \
+		}                                               \
+	}
+#define RTS_SRCX(p) {RTS_SRC(p); qt = sep_stack.st_top;}
+#define RTS_SRP(p) \
+	if (q == (EIF_REFERENCE *) 0) {             \
+		eif_request_chain_pop (&sep_stack); \
+	}                                           \
+	else {                                      \
+		sep_stack.st_top = q;               \
+	}
+#define RTS_SRF(p) {RTS_SRP (p); RTS_RF (p);}
+#define RTS_SRD(p) {RTS_SRP (p); RTS_RD (p);}
+#define RTS_SRR \
+	if (sep_stack.st_top != qt) {                       \
+		eif_request_chain_restore (qt, &sep_stack); \
+	}
+
+#define RTS_FPD(p) RTS_TCB(scoop_task_flag_processor_dirty,RTS_PID(p),0,0,NULL,NULL)
 
 /*
  * Separate call (versions ending with P stand for calls to precompiled routines, the first two arguments to them have a different meaning):

@@ -2394,6 +2394,10 @@ Src/examples/ribbon/all_widgets_basic/res/AddTableL.bmp -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/res/ExitL.bmp -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/res/Paste.bmp -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/res/PrintRelationshipsS.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/res/basket_32x32.png -text
+Src/examples/ribbon/all_widgets_basic/res/cake_32x32.png -text
+Src/examples/ribbon/all_widgets_basic/res/campane_32x32.png -text
+Src/examples/ribbon/all_widgets_basic/res/rabbit_32x32.png -text
 Src/examples/ribbon/all_widgets_basic/ribbon.bml -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/ribbon_project.er svneol=native#unset
 Src/examples/ribbon/all_widgets_complex/eiffelribbon.rc -text
@@ -3843,6 +3847,7 @@ eweasel/tests/final029/notes -text
 eweasel/tests/final030/notes -text
 eweasel/tests/final032/notes -text
 eweasel/tests/final033/notes -text
+eweasel/tests/final099/Ace -text
 eweasel/tests/fixed001/notes -text
 eweasel/tests/fixed002/notes -text
 eweasel/tests/fixed003/notes -text
