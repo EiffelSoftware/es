@@ -2391,6 +2391,7 @@ Src/examples/preferences/display.png -text
 Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
 Src/examples/ribbon/all_widgets_basic/res/AddTableL.bmp -text svneol=unset#unset
+Src/examples/ribbon/all_widgets_basic/res/Copy.bmp -text
 Src/examples/ribbon/all_widgets_basic/res/ExitL.bmp -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/res/Paste.bmp -text svneol=unset#unset
 Src/examples/ribbon/all_widgets_basic/res/PrintRelationshipsS.bmp -text svneol=unset#unset

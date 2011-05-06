@@ -980,6 +980,8 @@ test 	type-to-create-crash			incr410 tcf fail incrementality attached_types
 test 	rout-entry-crash-3			incr411 tcf fail incrementality
 test 	create-qualified-explicit-crash		incr412 tcf fail incrementality anchored_types
 test 	adding-removing-transient			incr413 tcf fail incrementality transient
+test 	removing-descendant-crash	incr414 tcf fail incrementality
+test 	system-change-crash			incr415 tcf fail incrementality
 
 
 -- Melting
@@ -1199,22 +1201,22 @@ test	finalize-self-init-attribute	final072 tcf fail finalizing
 test	finalize-invariant-wrong-class-name	final073 tcf fail finalizing
 test	finalize-bogus-invariant-violation	final074 tcf fail finalizing
 test	finalize-external-creation-procedure	final075 tcf fail finalizing
-test	finalize-inline-attribute-body	final076 tcf fail finalizing
+test	finalize-inline-attribute-body	final076 tcf fail finalizing inlining
 test	finalize-creation-expression-corruption	final077 tcf pass finalizing
-test	finalize-inline-precursor-2	final078 tcf fail finalizing multiconstraint
+test	finalize-inline-precursor-2	final078 tcf fail finalizing multiconstraint inlining
 test	finalize-attribute-access-crash	final079 tcf pass finalizing
-test	finalize-inline-attribute-body-2	final080 tcf pass finalizing
-test	finalize-inline-external-redef-constant	final081 tcf pass finalizing
+test	finalize-inline-attribute-body-2	final080 tcf pass finalizing inlining
+test	finalize-inline-external-redef-constant	final081 tcf pass finalizing inlining
 test	finalize-inherited-agent-redef-routine	final082 tcf pass finalizing
-test	finalize-inline-with-generic	final083 tcf pass finalizing
+test	finalize-inline-with-generic	final083 tcf pass finalizing inlining
 test	finalize-wrong-type			final084 tcf pass finalizing
 test	finalize-min-used-crash		final085 tcf pass finalizing
 test	finalize-object-test-side-effects	final086 tcf pass finalizing
-test	finalize-inline-merged-routine	final087 tcf fail finalizing
-test	finalize-inline-check-void-target	final088 tcf fail finalizing
+test	finalize-inline-merged-routine	final087 tcf fail finalizing inlining
+test	finalize-inline-check-void-target	final088 tcf fail finalizing inlining
 test	finalize-qat-object-test		final089 tcf fail finalizing anchored_type
 test	finalize-attached-dcr-missing	final090 tcf pass finalizing
-test	finalize-inline-same-generic-derivation-crash	final091 tcf fail finalizing
+test	finalize-inline-same-generic-derivation-crash	final091 tcf fail finalizing inlining
 test	finalize-c-code-redeclared-identifier	final092 tcf fail finalizing
 test	finalize-create-expanded-generic	final093 tcf fail finalizing
 test	finalize-static-access-multicon-formal	final094 tcf fail finalizing multiconstraint
@@ -1222,9 +1224,14 @@ test	finalize-generic-once-per-object	final095 tcf fail finalizing once
 test	finalize-qat-object-test-2		final096 tcf fail finalizing anchored_type
 test	inline-deferred-with-one-implementation	final097 tcf fail finalizing inlining
 test	inline-with-generic-argument	final098 tcf fail finalizing inlining
-test	finalize-inline-merged-routine-2	final099 tcf fail finalizing
-test	inline-deferred-with-generic-descendant	final100 tcf fail finalizing
-test	inline-deferred-with-generic-descendant-2	final101 tcf fail finalizing
+test	finalize-inline-merged-routine-2	final099 tcf fail finalizing inlining
+test	inline-deferred-with-generic-descendant	final100 tcf fail finalizing inlining
+test	inline-deferred-with-generic-descendant-2	final101 tcf fail finalizing inlining
+test	inline-inherited-routine-with-less-generics	final102 tcf fail finalizing inlining
+test	inline-inherited-routine-with-less-generics-2	final103 tcf fail finalizing inlining
+test	finalize-wrong-generating-type		final104 tcf fail finalizing expanded
+test	inlining-parent-with-less-formals	final105 tcf fail finalizing inlining
+test	inlining-in-parent-with-child-with-less-formals final106 tcf fail finalizing inlining
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1412,7 +1419,7 @@ test	is-special-any-type-lies	exec143  tcf pass execution special
 test	indep-store-big-array		exec144  tcf pass execution storable
 test	recursive-once-create-result	exec145  tcf pass execution
 test	frozen-floor-ceiling		exec146  tcf pass execution
-test	special-of-expanded		exec147  tcf pass execution special
+test	special-of-expanded		exec147  tcf pass execution special finalization
 test	generic-conformance-two-params	exec148  tcf pass execution conformance
 test	real-const-with-underscores	exec149  tcf pass execution
 test	interior-null-in-debug-key	exec150  tcf fail execution
@@ -2428,6 +2435,7 @@ test	agent-calling-attribute-with-formal-type	agent010 tcf pass agents formal ge
 test	various-agent-creation-and-calls	agent011 tcf pass agents
 test	agent-basic-type-mismatch		agent012 tcf pass agents finalizing
 test	agent-descendant-final-crash	agent013 tcf pass agents finalizing
+test	agent-third-formal-finalization	agent014 tcf pass agents finalizing
 
 -- Tests for platform specific results
 test	print-large-pointer				platform001 tcf pass platform
@@ -2591,7 +2599,7 @@ test	qat-process-formal-as-crash		anchor049 tcf fail anchored_type formal generi
 test	qat-invalid-vffd			anchor050 tcf fail anchored_type
 test	qat-c-compile-failure			anchor051 tcf fail anchored_type generic
 test	qat-anchored-to-redefined-descendant	anchor052 tcf fail anchored_type
-test	qat-inlining-bug			anchor053 tcf fail anchored_type generic
+test	qat-inlining-bug			anchor053 tcf fail anchored_type generic inlining
 test	qat-instantiated-in-crash-3		anchor054 tcf fail anchored_type formal generic
 test	qat-static-type-id-crash-2		anchor055 tcf fail anchored_type formal generic multiconstraint
 test	qat-generic-constrained-by-self		anchor056 tcf fail anchored_type formal generic manual
