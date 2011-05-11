@@ -904,6 +904,9 @@ feature {BYTE_NODE} -- Visitors
 				end
 			output.unindent
 
+				-- Just make sure we don't forget it
+			this_used_in_closure := true
+
 			output.put_indentation
 			output.put ("}(")
 			output.put_data_list (l_closed_arguments, ", ")

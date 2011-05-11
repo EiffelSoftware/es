@@ -211,11 +211,11 @@ feature -- Basic Operations
 					end
 				end
 
-				if a_feature.has_return_value or l_byte_code.local_count > 0 or instruction_writer.this_used_in_closure
+				if a_feature.has_return_value or l_byte_code.local_count > 0 or this_used_in_closure
 					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0 or jsc_context.current_reverse_locals > 0
 					or rescue_code /= Void then
 						-- The feature has locals
-					write_locals (l_byte_code, a_feature, instruction_writer.this_used_in_closure, rescue_code /= Void)
+					write_locals (l_byte_code, a_feature, this_used_in_closure, rescue_code /= Void)
 				end
 
 				if attached rescue_code as safe_rescue_code then
