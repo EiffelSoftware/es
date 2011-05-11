@@ -13,4 +13,9 @@ feature -- Basic Operation
 	integer_item (i: INTEGER): INTEGER
 		external "C" alias "[$i-1]" end
 
+	item (i: INTEGER): ANY
+		external "C" alias "[$i-1]" end
+
+	--is_equal (
+
 end
