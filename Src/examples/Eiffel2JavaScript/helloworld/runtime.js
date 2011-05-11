@@ -173,6 +173,22 @@ var runtime = {
 		};
 	},
 	
+	exportAPI : function(obj) {
+		var regex_matches, feature, feature_name;
+		for (feature in obj) {
+			if (feature.charAt(0) !== '$') {
+				regex_matches = this._remove_ending_regexp.exec(feature);
+				if (regex_matches && regex_matches.length === 2) {
+					feature_name = regex_matches[1];
+					if (!(feature_name in obj)) {
+						obj[feature_name] = obj[feature];
+					}
+				}
+			}
+		}
+		return obj;
+	},
+	
 	declare : function (class_name, parent_classes, class_decl) {
 		var parent_decl, class_prototype, redefining_map, renaming_map, parent_deferred_map, 
 			regex_matches, feature, found_feature, feature_name, i, j, inherits_map, parent_inherits_map,
