@@ -293,6 +293,7 @@
 				<exclude>/ewb_contract_inference\.e$</exclude>
 				<exclude>/ewb_auto_test\.e$</exclude>
 				<exclude>/ewb_testing\.e$</exclude>
+				<exclude>/ewb_annotation\.e$</exclude>
 			</file_rule>
 		</cluster>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
