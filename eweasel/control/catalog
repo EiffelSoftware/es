@@ -85,6 +85,9 @@ test	iteration-cursor-two-generics	iteration002 tcf pass iteration formal generi
 test	net-out-of-descriptor	net001 tcf pass net
 test	net-connect-failure		net002 tcf pass net multithreaded
 
+-- EiffelStore test
+test	eiffelstore_various_functions eiffelstore001 tcf pass eiffelstore
+
 -- Exceptions
 test	old-expression-exception	except001 tcf pass exception
 test	invariant-violation-on-entry	except002 tcf pass exception
@@ -1836,6 +1839,7 @@ test	iteration-over-inline-agent		term198 tcf fail termination
 test	expanded-constrained-generic-root-crash	term199 tcf fail termination expanded generic
 test	check-instruction-invalid-code		term200 tcf pass termination check instruction validity
 test	inherit-generic-with-self-as-formal	term201 tcf pass termination 
+test	inherit-formal-as-second-formal		term202 tcf pass termination dotnet
 
 -- Config
 
@@ -2006,6 +2010,7 @@ test	store-retrieve-transient-attributes	store030 tcf pass storable transient
 test	store-retrieve-with-version	store031 tcf pass storable
 test	store-in-different-thread	store032 tcf pass storable multithreaded
 test	store-bounded-queues-stacks	store033 tcf pass storable
+test	old-hashtable-retrieval		store034 tcf pass storable table
 
 -- Flat, short, flatshort tests
 
@@ -2626,6 +2631,9 @@ test	scoop-freeze-condition				scoop008 tcf pass scoop execution incrementality
 test	scoop-wait-condition				scoop009 tcf pass scoop execution assertion
 test	scoop-request-chain-exception			scoop011 tcf pass scoop execution exception
 test	scoop-false-wait-condition			scoop012 tcf pass scoop execution assertion exception
+
+-- Prettity
+test	pretty-smoke-test			pretty001 tcf pass pretty
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

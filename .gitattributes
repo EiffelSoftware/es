@@ -4385,6 +4385,8 @@ eweasel/tests/store033/bounded_stack_2 -text
 eweasel/tests/store033/bounded_stack_3 -text
 eweasel/tests/store033/bounded_stack_4 -text
 eweasel/tests/store033/bounded_stack_5 -text
+eweasel/tests/store034/Ace -text
+eweasel/tests/store034/data -text
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
 eweasel/tests/syntax003/notes -text
