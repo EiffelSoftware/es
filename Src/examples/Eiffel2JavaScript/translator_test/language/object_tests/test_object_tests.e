@@ -16,45 +16,14 @@ feature {NONE} -- Initialization
 				do
 					create {LINKED_LIST[attached STRING]}a.make
 
-					if {safe_a:LINKED_LIST[STRING]}a then
-					else
-						assert (false)
-					end
-
-					if {safe_a:attached LINKED_LIST[STRING]}a then
-					else
-						assert (false)
-					end
-
-					if attached{LINKED_LIST[STRING]}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LINKED_LIST[attached STRING]}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[attached STRING]}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[attached ANY]}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[ANY]}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[INTEGER]}a as safe_a then
-						assert (false)
-					else
-					end
+					assert ({safe_a:LINKED_LIST[STRING]}a)
+					assert ({safe_a:attached LINKED_LIST[STRING]}a)
+					assert (attached{LINKED_LIST[STRING]}a)
+					assert (attached{LINKED_LIST[attached STRING]}a)
+					assert (attached{LIST[attached STRING]}a)
+					assert (attached{LIST[attached ANY]}a)
+					assert (attached{LIST[ANY]}a)
+					assert (not attached{LIST[INTEGER]}a)
 				end
 			)
 			invoke_test ("2", agent
@@ -63,35 +32,12 @@ feature {NONE} -- Initialization
 				do
 					create {LINKED_LIST[attached STRING]}b.make
 
-					if attached{LINKED_LIST[STRING]}b as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LINKED_LIST[attached STRING]}b as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[attached STRING]}b as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[attached ANY]}b as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[ANY]}b as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[INTEGER]}b as safe_a then
-						assert (false)
-					else
-					end
+					assert (attached{LINKED_LIST[STRING]}b)
+					assert (attached{LINKED_LIST[attached STRING]}b)
+					assert (attached{LIST[attached STRING]}b)
+					assert (attached{LIST[attached ANY]}b)
+					assert (attached{LIST[ANY]}b)
+					assert (not attached{LIST[INTEGER]}b)
 				end
 			)
 			invoke_test ("3", agent
@@ -100,35 +46,12 @@ feature {NONE} -- Initialization
 				do
 					create {LINKED_LIST[STRING]}c.make
 
-					if attached{LINKED_LIST[STRING]}c as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LINKED_LIST[attached STRING]}c as safe_a then
-						assert (false)
-					else
-					end
-
-					if attached{LIST[attached STRING]}c as safe_a then
-						assert (false)
-					else
-					end
-
-					if attached{LIST[attached ANY]}c as safe_a then
-						assert (false)
-					else
-					end
-
-					if attached{LIST[ANY]}c as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{LIST[INTEGER]}c as safe_a then
-						assert (false)
-					else
-					end
+					assert (attached{LINKED_LIST[STRING]}c)
+					assert (not attached{LINKED_LIST[attached STRING]}c)
+					assert (not attached{LIST[attached STRING]}c)
+					assert (not attached{LIST[attached ANY]}c)
+					assert (attached{LIST[ANY]}c)
+					assert (not attached{LIST[INTEGER]}c)
 				end
 			)
 			invoke_test ("4", agent
@@ -138,40 +61,19 @@ feature {NONE} -- Initialization
 					d2: HASH_TABLE[attached LINKED_LIST[attached STRING], INTEGER]
 				do
 					d := Void
-					if {safe_d:HASH_TABLE[LIST[ANY], HASHABLE]}d  then
-						assert (false)
-					else
-					end
-
+					assert (not {safe_d:HASH_TABLE[LIST[ANY], HASHABLE]}d)
 					d1 ?= d
-					if d1 /= Void then
-						assert (false)
-					else
-					end
+					assert (d1 = Void)
 
 					create {HASH_TABLE[attached LINKED_LIST[attached STRING], INTEGER]}d.make (2)
-
-					if attached{HASH_TABLE[attached LINKED_LIST[attached STRING], INTEGER]}d as safe_d then
-					else
-						assert (false)
-					end
+					assert (attached{HASH_TABLE[attached LINKED_LIST[attached STRING], INTEGER]}d)
 
 					d2 ?= d
-					if d2 /= Void then
-					else
-						assert (false)
-					end
+					assert (d2 /= Void)
 
-					if attached{HASH_TABLE[attached LIST[STRING], INTEGER]}d as safe_d then
-					else
-						assert (false)
-					end
-
+					assert (attached{HASH_TABLE[attached LIST[STRING], INTEGER]}d)
 						-- Known issue: this fails because INTEGER is not HASHABLE in JS world
---					if attached{HASH_TABLE[ANY, HASHABLE]}d as safe_d then
---					else
---						assert (false)
---					end
+--					assert (attached{HASH_TABLE[ANY, HASHABLE]}d)
 				end
 			)
 			invoke_test ("5", agent
@@ -179,26 +81,11 @@ feature {NONE} -- Initialization
 					a: ANY
 				do
 					a := 3
-					if attached{INTEGER}a as safe_a then
-					else
-						assert (false)
-					end
-
+					assert (attached{INTEGER}a)
 						-- Known issue: this fails because INTEGER is not HASHABLE in JS world
---					if attached{HASHABLE}a as safe_a then
---					else
---						assert (false)
---					end
-
-					if attached{ANY}a as safe_a then
-					else
-						assert (false)
-					end
-
-					if attached{STRING}a as safe_a then
-						assert (false)
-					else
-					end
+--					assert (attached{HASHABLE}a)
+					assert (attached{ANY}a)
+					assert (not attached{STRING}a)
 				end
 			)
 		end
