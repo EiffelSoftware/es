@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript code.
 
 feature -- Basic Operations

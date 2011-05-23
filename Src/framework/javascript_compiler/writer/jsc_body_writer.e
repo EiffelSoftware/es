@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript
 
 	dependencies1: attached SET[INTEGER]
@@ -146,7 +146,7 @@ feature -- Basic Operations
 		local
 			l_byte_server: BYTE_SERVER
 			l_byte_code: BYTE_CODE
-			body, postcondition, rescue_code: JSC_WRITER_DATA
+			body, postcondition, rescue_code: JSC_BUFFER_DATA
 		do
 			l_byte_server := byte_server
 			check l_byte_server /= Void end
@@ -334,7 +334,7 @@ feature {NONE} -- Implementation
 			l_result_type: TYPE_A
 			l_local_type: TYPE_A
 			i: INTEGER
-			locals: LINKED_LIST[attached JSC_WRITER_DATA]
+			locals: LINKED_LIST[attached JSC_BUFFER_DATA]
 			default_value_writer: JSC_DEFAULT_VALUE_WRITER
 		do
 			create locals.make

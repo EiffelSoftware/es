@@ -25,14 +25,14 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript
 
 feature -- Basic Operation
 
 	generate_runtime_dispatch
 		local
-			l_tests: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_tests: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
 			output.reset("")
 			output.put_line ("runtime.special_dispatch = function (obj, full_feature_name, feature_name) {")
@@ -58,7 +58,7 @@ feature -- Basic Operation
 
 feature {NONE} -- Implementation
 
-	write_class (a_class_name, a_obj_test: attached STRING): attached JSC_WRITER_DATA
+	write_class (a_class_name, a_obj_test: attached STRING): attached JSC_BUFFER_DATA
 		local
 			l_class_name: STRING
 			l_class: CLASS_C
@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 		local
 			l_feature_table: FEATURE_TABLE
 			l_feature: FEATURE_I
-			l_generated_features: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_generated_features: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
 			l_feature_table := a_class.feature_table
 			check l_feature_table /= Void end
@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	write_feature (a_feature: attached FEATURE_I): attached JSC_WRITER_DATA
+	write_feature (a_feature: attached FEATURE_I): attached JSC_BUFFER_DATA
 		local
 			l_template: attached STRING
 			l_feature_name: STRING_32

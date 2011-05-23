@@ -90,7 +90,7 @@ feature -- Operations
 			l_class: CLASS_C
 			l_current_class: CLASS_C
 			l_current_class_name: STRING
-			compiled_classes: HASH_TABLE[attached JSC_WRITER_DATA, INTEGER]
+			compiled_classes: HASH_TABLE[attached JSC_BUFFER_DATA, INTEGER]
 			dependencies_count: HASH_TABLE[INTEGER, INTEGER]
 			inverse_dependencies: HASH_TABLE[attached SET[INTEGER], INTEGER]
 			linear: LINEAR[INTEGER]
@@ -489,7 +489,7 @@ feature {NONE} -- Write to HDD
 			l_output_file.close
 		end
 
-	write_all (	compiled_classes: attached HASH_TABLE[attached JSC_WRITER_DATA, INTEGER];
+	write_all (	compiled_classes: attached HASH_TABLE[attached JSC_BUFFER_DATA, INTEGER];
 				dependencies_count: attached HASH_TABLE[INTEGER, INTEGER];
 				inverse_dependencies: attached HASH_TABLE[attached SET[INTEGER], INTEGER])
 			-- Write all classes to a file, sorting them by dependency.
@@ -498,7 +498,7 @@ feature {NONE} -- Write to HDD
 			l_output_file: PLAIN_TEXT_FILE
 			written: LINKED_SET[INTEGER]
 			i, class_to_write_id, class_id: INTEGER
-			class_to_write: JSC_WRITER_DATA
+			class_to_write: JSC_BUFFER_DATA
 			linear: LINEAR[INTEGER]
 			inverse_dependency: SET[INTEGER]
 		do

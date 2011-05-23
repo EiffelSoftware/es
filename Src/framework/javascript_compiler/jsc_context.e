@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 			create name_mapper.make
 			create informer.make
 			create {LINKED_STACK[attached FEATURE_I]}current_features.make
-			create {LINKED_STACK[attached LIST[attached JSC_WRITER_DATA]]}old_locals.make
+			create {LINKED_STACK[attached LIST[attached JSC_BUFFER_DATA]]}old_locals.make
 			create {LINKED_STACK[INTEGER]}object_test_locals.make
 			create {LINKED_STACK[INTEGER]}reverse_locals.make
 			create {LINKED_STACK[INTEGER]}line_numbers.make
@@ -114,7 +114,7 @@ feature -- Feature Context
 
 	push_locals
 		local
-			l_list: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_list: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
 			create l_list.make
 			old_locals.put (l_list)
@@ -155,12 +155,12 @@ feature -- Line number context
 
 feature -- old() expressions
 
-	current_old_locals: attached LIST[attached JSC_WRITER_DATA]
+	current_old_locals: attached LIST[attached JSC_BUFFER_DATA]
 		do
 			Result := old_locals.item
 		end
 
-	add_old_local (a_data: attached JSC_WRITER_DATA)
+	add_old_local (a_data: attached JSC_BUFFER_DATA)
 		do
 			current_old_locals.extend (a_data)
 		end
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 	current_features : attached STACK[attached FEATURE_I]
 		-- Stack of features
 
-	old_locals : attached STACK[attached LIST[attached JSC_WRITER_DATA]]
+	old_locals : attached STACK[attached LIST[attached JSC_BUFFER_DATA]]
 		-- Stack of locals resulted from the usage of old()
 
 	object_test_locals : attached STACK[INTEGER]
