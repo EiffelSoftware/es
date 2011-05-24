@@ -391,7 +391,7 @@ feature {NONE} -- Access
 		local
 			l_mark: SYMBOL_AS
 		do
-			l_mark := a_type.attachment_mark (match_list)
+			l_mark := a_type.attachment_symbol (match_list)
 			if l_mark /= Void then
 				if l_mark.code = {EIFFEL_TOKENS}.te_bang then
 					is_updated := True
