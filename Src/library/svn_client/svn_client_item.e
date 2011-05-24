@@ -6,7 +6,7 @@ note
 
 deferred class
 	SVN_CLIENT_ITEM
-q
+
 feature {NONE} -- Initialization
 
 	make_with_name (a_name: STRING_32)

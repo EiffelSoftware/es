@@ -9,19 +9,11 @@ deferred class
 
 feature {NONE} -- Initialization
 
-	make(a_process_factory: PROCESS_FACTORY; a_svn_executable_path: STRING_8; a_working_path: detachable STRING_8)
+	make(a_svn_client: SVN_CLIENT)
 		require
-			process_factory_not_void: a_process_factory /= Void
-			a_svn_executable_path_not_void: a_svn_executable_path /= Void
+			a_svn_client_not_void: a_svn_client /= Void
 		do
-			pf := a_process_factory
-			svn_executable_path := a_svn_executable_path
-
-			if attached a_working_path as a_wp then
-				working_path := a_working_path.twin
-			else
-				create working_path.make_from_string ("./")
-			end
+			svn_client := a_svn_client
 
 			create options.make (1)
 		end
@@ -32,18 +24,31 @@ feature -- Execute
 		local
 			l_args: LINKED_LIST[STRING_8]
 		do
+				-- Clear last result and internal last result
+			set_last_result (Void)
+			set_internal_last_result (Void)
+				-- Initialize internal last result
+			create internal_last_result.make
+
 			create l_args.make
 			l_args.extend (command_name)
+			l_args.extend (target)
 			l_args.append (options_to_args)
 
 			launch_process (l_args)
 		end
 
+feature -- Access
+
+	last_result: detachable LINKED_LIST[STRING_8]
+
+	last_error: detachable LINKED_LIST[STRING_8]
+
 feature -- Element change
 
-	set_working_path(a_working_path: detachable like working_path)
+	set_target(a_target: detachable like target)
 		do
-			working_path := a_working_path
+			target := a_target
 		end
 
 	set_data_received_handler(a_data_received_handler: detachable like on_data_received_handler)
@@ -74,6 +79,92 @@ feature -- Element change
 			end
 		end
 
+feature {NONE} -- Command agents
+
+	on_error_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
+		-- Agent to call when an error has occurred
+
+	on_data_received_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
+		-- Agent to call when partial data is received
+
+	on_did_finish_handler: PROCEDURE[ANY, TUPLE[]]
+		-- Agent to call when the command has been executed
+
+	command_error(a_command_error: STRING_8)
+		do
+			-- Parse error
+			if attached on_error_handler as error_handler then
+				error_handler.call ([a_command_error])
+			end
+		end
+
+	command_data_received(a_data_received: STRING_8)
+		local
+			l_data_list: LIST[STRING_8]
+		do
+			-- For debugging purposes
+			print (a_data_received)
+
+			l_data_list := parse_string_to_list (a_data_received)
+			internal_last_result.append(l_data_list)
+
+			-- Call handler
+			if attached on_data_received_handler as data_received_handler then
+				data_received_handler.call ([a_data_received])
+			end
+		end
+
+	command_did_finish
+		do
+			set_last_result (internal_last_result)
+			set_internal_last_result (Void)
+
+			if attached on_did_finish_handler as did_finish_handler then
+				did_finish_handler.call([])
+			end
+		end
+
+feature {NONE} -- Result and error handling
+
+	parse_string_to_list(a_data: STRING_8): LIST[STRING_8]
+			-- Return `a_data' split into lines
+		require
+			data_not_void: a_data /= Void
+		do
+			create {ARRAYED_LIST[STRING_8]}Result.make (1)
+			Result := a_data.split ('%N')
+				-- Remove last line, because it is always empty
+			Result.finish
+			Result.remove
+
+--			set_last_result (internal_last_result)
+--			set_internal_last_result (Void)
+		end
+
+	set_last_result (a_result: detachable like last_result)
+		do
+			last_result := a_result
+		end
+
+	set_internal_last_result (a_result: detachable like internal_last_result)
+		do
+			internal_last_result := a_result
+		end
+
+	internal_last_result: detachable LINKED_LIST[STRING_8]
+
+	set_last_error (a_error: detachable like last_error)
+		do
+			last_error := a_error
+		end
+
+	set_internal_last_error (a_error: detachable like internal_last_error)
+		do
+			internal_last_error := a_error
+		end
+
+	internal_last_error: detachable LINKED_LIST[STRING_8]
+
 feature {NONE} -- Implementation
 
 	command_name: STRING_8
@@ -81,16 +172,14 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	pf: PROCESS_FACTORY
-
 	launch_process (a_args: LINKED_LIST[STRING_8])
-			-- Execute `svn command_name a_args working_path'
+			-- Execute `cd working_path; svn command_name a_args target'
 		require
 			a_args_not_void: a_args /= Void
 		local
 			l_process: PROCESS
 		do
-			l_process := pf.process_launcher (svn_executable_path, a_args, working_path)
+			l_process := svn_client.pf.process_launcher (svn_client.svn_executable, a_args, svn_client.working_path)
 
 			l_process.redirect_error_to_agent (agent command_error)
 			l_process.redirect_output_to_agent (agent command_data_received)
@@ -113,62 +202,19 @@ feature {NONE} -- Implementation
 			all_options_included: options.count * 2 = Result.count
 		end
 
-	svn_executable_path: STRING_8
+	svn_client: SVN_CLIENT
 
-	working_path: STRING_8
-		-- Execute command at given `working_path' (folder or file)
+	process: PROCESS
+		-- The process that executes the svn command
+
+	target: STRING_8
+		-- Execute command for `target' (folder or file) at given `working_path'
 
 	options: HASH_TABLE[STRING_8, STRING_8]
 		-- Optional arguments used when executing `Current'
 
-	on_error_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
-		-- Agent to call when an error has occurred
-
-	on_data_received_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
-		-- Agent to call when partial data is received
-
-	on_did_finish_handler: PROCEDURE[ANY, TUPLE[]]
-		-- Agent to call when the command has been executed
-
-	command_error(a_command_error: STRING_8)
-		do
-			-- Parse error
-			if attached on_error_handler as error_handler then
-				error_handler.call ([a_command_error])
-			end
-		end
-
-	command_data_received(a_data_received: STRING_8)
-		do
-			print (a_data_received)
-			-- Parse data...
-			-- Call handler
-			if attached on_data_received_handler as data_received_handler then
-				data_received_handler.call ([a_data_received])
-			end
-		end
-
-	command_did_finish
-		do
-			if attached on_did_finish_handler as did_finish_handler then
-				did_finish_handler.call([])
-			end
-		end
-
-	parse_string_to_list(a_data: STRING_8): LIST[STRING_8]
-			-- Split `a_data' using the newline separator into a list of strings
-		require
-			data_not_void: a_data /= Void
-		do
-			create {ARRAYED_LIST[STRING_8]}Result.make (1)
-			Result := a_data.split ('%N')
-				-- Remove last line, because it is always empty
-			Result.finish
-			Result.remove
-		end
-
 invariant
 	command_name_set: command_name /= Void and then not command_name.is_empty
-	process_factory_set: pf /= Void
+	svn_client_set: svn_client /= Void
 
 end

@@ -18,19 +18,29 @@ feature {NONE} -- Initialization
 			create pf
 				-- TODO: get the svn path using the shared environment
 			svn_executable := "/usr/bin/svn"
-			create checkout.make (pf, svn_executable, Void)
-			create status.make (pf, svn_executable, Void)
-			create list.make (pf, svn_executable, Void)
+			initialize_commands
 		end
 
+feature -- Element change
+
+	set_working_path (a_working_path: detachable like working_path)
+		do
+			working_path := a_working_path
+		end
+
+feature -- Access
+
+	working_path: STRING
 
 feature -- SVN Client commands
 
+	add: SVN_CLIENT_ADD_COMMAND
+
 	checkout: SVN_CLIENT_CHECKOUT_COMMAND
 
-	status: SVN_CLIENT_STATUS_COMMAND
-
 	list: SVN_CLIENT_LIST_COMMAND
+
+	status: SVN_CLIENT_STATUS_COMMAND
 
 	update(a_path: STRING_8; a_output_handler: detachable PROCEDURE[ANY, TUPLE[STRING_8]])
 		local
@@ -53,16 +63,6 @@ feature -- SVN Client commands
 			l_args.extend (a_message)
 
 --			perform_task ("update", l_args, a_output_handler)
-		end
-
-	add(a_path: STRING_8; a_output_handler: detachable PROCEDURE [ANY, TUPLE [STRING_8]])
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-			create l_args.make
-			l_args.extend (a_path)
-
---			perform_task ("add", l_args, a_output_handler)
 		end
 
 	delete(a_path: STRING_8; a_output_handler: detachable PROCEDURE [ANY, TUPLE [STRING_8]])
@@ -99,17 +99,18 @@ feature -- SVN Client commands
 
 		end
 
-feature {NONE} -- Implementation
+feature {SVN_CLIENT_COMMAND} -- Implementation
 
 	svn_executable: STRING
-
-	working_path: STRING
 
 	pf: PROCESS_FACTORY
 
 	initialize_commands
 		do
-
+			create add.make (Current)
+			create checkout.make (Current)
+			create list.make (Current)
+			create status.make (Current)
 		end
 
 invariant

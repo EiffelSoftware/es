@@ -49,7 +49,6 @@ feature -- Element change
 			loop
 				l_item := a_items.item_for_iteration
 				l_split_item := l_item.split ('/')
---				l_split_item.do_if (agent l_split_item.prune, agent (s: STRING_8): BOOLEAN do Result := s.count = 0 end)
 				l_split_item.finish; l_split_item.remove -- Remove last item, because it is empty
 
 				if l_split_item.count >= 1 then
