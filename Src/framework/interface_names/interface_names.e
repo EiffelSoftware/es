@@ -154,6 +154,7 @@ feature -- Button texts
 	b_Create_new_precompile: STRING_32			do Result := locale.translation("Add Precompile")	end
 	b_Create_new_class: STRING_32				do Result := locale.translation("New Class")	end
 	b_Create_new_feature: STRING_32				do Result := locale.translation("New Feature")	end
+	b_Create_new_repository: STRING_32			do Result := locale.translation ("New Repository") end
 	b_Send_stone_to_context: STRING_32			do Result := locale.translation("Synchronize")	end
 	b_Display_error_help: STRING_32				do Result := locale.translation("Help Tool")	end
 	b_Project_settings: STRING_32				do Result := locale.translation("Project Settings")	end
@@ -448,6 +449,7 @@ feature -- Accelerator, focus label and menu name
 	f_Create_new_precompile: STRING_32 	do Result := locale.translation("Add a precompile")	end
 	f_Create_new_class: STRING_32		do Result := locale.translation("Add a new class")	end
 	f_Create_new_feature: STRING_32		do Result := locale.translation("Add a new feature")	end
+	f_Create_new_repository: STRING_32	do Result := locale.translation ("Add a new repository") end
 	f_create_new_watch: STRING_32		do Result := locale.translation ("Create New watch") end
 	f_clear_watch_tool_expressions: STRING_32	do Result := locale.translation ("Clear Expressions") end
 	f_collapse_all: STRING_32 			do Result := locale.translation ("Collapse all rows in grid") end
@@ -926,6 +928,7 @@ feature -- Menu mnenomics
 	m_Create_new_assembly: STRING_32		do Result := locale.translation("Add &Assembly...")	end
 	m_Create_new_class: STRING_32		do Result := locale.translation("&New Class...")	end
 	m_Create_new_feature: STRING_32		do Result := locale.translation("New Fea&ture...")	end
+	m_Create_new_repository: STRING_32	do Result := locale.translation ("New &Repository...") end
 	m_Debug: STRING_32					do Result := locale.translation("E&xecution")	end
 	m_Disable_this_bkpt: STRING_32		do Result := locale.translation("&Disable This Breakpoint")	end
 	m_Display_error_help: STRING_32		do Result := locale.translation("Compilation Error &Wizard...")	end
@@ -2222,6 +2225,7 @@ feature -- Title part
 	t_New_cluster: STRING_32						do Result := locale.translation("Add Cluster")	end
 	t_New_expression: STRING_32					do Result := locale.translation("New Expression")	end
 	t_New_manual_test_case: STRING_32			do Result := locale.translation("Add a new test case")	end
+	t_New_repository: STRING_32					do Result := locale.translation ("Add a new repository") end
 	t_Not_run_yet: STRING_32						do Result := locale.translation("Not run yet") end
 	t_Not_updated: STRING_32						do Result := locale.translation("Not updated") end
 	t_Edit_expression: STRING_32					do Result := locale.translation("Edit Expression")	end

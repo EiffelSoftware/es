@@ -1005,6 +1005,47 @@ feature -- Access: session data
 			retry
 		end
 
+	load_repositories
+			-- Try to initialize the repositories with the session data.
+		local
+			retried: BOOLEAN
+			l_data: STRING_32
+		do
+			if not retried then
+				if repositories_storage = Void then
+					create repositories_storage
+				end
+				l_data := repositories_storage.data_from_storage
+				if l_data /= Void then
+					repositories.make_with_string (l_data)
+					if repositories.loading_error then
+						repositories_storage.store_data (Void)
+					end
+				end
+			else
+				-- Do nothing. Something is wrong
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+	save_repositories
+			-- Try to save the repositories' state with the session data.
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				if repositories_storage = Void then
+					create repositories_storage
+				end
+				repositories_storage.store_data (repositories.string_representation)
+			end
+		rescue
+			retried := True
+			retry
+		end
+
 	load_session
 			-- Try to recreate previous project session, if any.
 		local
@@ -1122,6 +1163,9 @@ feature {NONE} -- Implementation: session data
 
 	favorites_storage: FAVORITES_STORAGE
 			-- Favorites' storage
+
+	repositories_storage: REPOSITORIES_STORAGE
+			-- Repositories' storage
 
 feature -- Events
 
@@ -1252,6 +1296,7 @@ feature -- Events
 				-- Recreate window configuration from last session of project if any.
 			load_session
 			load_favorites
+			load_repositories
 
 			Manager.on_project_loaded
 			for_all (agent load_project_action)
@@ -1262,6 +1307,7 @@ feature -- Events
 		do
 			Manager.on_project_unloaded
 			save_favorites
+			save_repositories
 				-- Make development window session data persistent for future reloading.
 			if eiffel_project.system_defined then
 				save_session

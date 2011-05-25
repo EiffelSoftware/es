@@ -836,6 +836,7 @@ feature -- Command
 			l_stb: EV_STATUS_BAR
 
 			l_favorites_manager: EB_FAVORITES_MANAGER
+			l_repositories_manager: EB_REPOSITORIES_MANAGER
 			l_cluster_manager: EB_CLUSTER_MANAGER
 			l_container: EV_VERTICAL_BOX
 			l_panel: EV_CELL
@@ -848,6 +849,10 @@ feature -- Command
 			develop_window.set_favorites_manager (l_favorites_manager)
 				-- The favorites manager is already collected by the favorites tool.
 			auto_recycle (l_favorites_manager)
+
+			create l_repositories_manager.make (develop_window)
+			develop_window.set_repositories_manager (l_repositories_manager)
+			auto_recycle (l_repositories_manager)
 
 			create l_cluster_manager.make (develop_window)
 			develop_window.set_cluster_manager (l_cluster_manager)

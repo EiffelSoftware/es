@@ -71,6 +71,13 @@ feature -- Status report
 			create Result
 		end
 
+	repositories: EB_REPOSITORIES
+			-- Singleton Objects, this ensure that all windows use the
+			-- same Repositories.
+		once
+			create Result
+		end
+
 	customized_formatter_manager: EB_CUSTOMIZED_FORMATTER_MANAGER
 			-- Customized formatter manager
 		once
@@ -122,7 +129,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
