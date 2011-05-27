@@ -1840,6 +1840,7 @@ test	expanded-constrained-generic-root-crash	term199 tcf fail termination expand
 test	check-instruction-invalid-code		term200 tcf pass termination check instruction validity
 test	inherit-generic-with-self-as-formal	term201 tcf pass termination 
 test	inherit-formal-as-second-formal		term202 tcf pass termination dotnet
+test	 inherit-generic-of-expanded		term203 tcf pass termination dotnet
 
 -- Config
 
@@ -2634,6 +2635,10 @@ test	scoop-false-wait-condition			scoop012 tcf pass scoop execution assertion ex
 
 -- Prettity
 test	pretty-smoke-test			pretty001 tcf pass pretty
+test	pretty-explicit-creation-space		pretty002 tcf pass pretty
+test	pretty-argument-list-separators		pretty003 tcf pass pretty
+test	pretty-class-note-indentation		pretty004 tcf pass pretty
+test	pretty-constant-attribute-space		pretty005 tcf pass pretty
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

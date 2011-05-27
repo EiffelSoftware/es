@@ -90,11 +90,12 @@ feature -- Basic operation
 				if Result = Void and then ft /= Void then
 					inspect
 						feature_part_at (token, line)
-					when instruction_part then
-						feat := described_feature (token, line, ft)
-					when assertion_part then
-						feat := described_feature (token, line, ft)
-					when local_part then
+					when
+						instruction_part,
+						assertion_part,
+						local_part,
+						signature_part
+					then
 						feat := described_feature (token, line, ft)
 					else
 					end
@@ -245,7 +246,7 @@ feature -- Implementation
 	current_feature_id: INTEGER;
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

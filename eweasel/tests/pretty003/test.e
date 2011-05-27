@@ -1,0 +1,31 @@
+class
+	TEST 
+
+create
+	make
+
+feature
+
+	make
+		do
+		end
+
+	try1 (a: INTEGER b: STRING)
+		do
+		end
+	
+	try2 (a,b,c:INTEGER d,e,f:STRING g,h,i:BOOLEAN)
+		do
+		end
+	
+	try3 (a: INTEGER; b: STRING)
+		do
+		end
+
+	try4 (a,b:INTEGER c,d:STRING ;e,f:BOOLEAN g,h: ANY ; i,k:   INTEGER)
+		do
+		end
+
+	x: TUPLE [a,b:INTEGER c,d:STRING ;e,f:BOOLEAN g,h: ANY ; i,k:   INTEGER]
+
+end

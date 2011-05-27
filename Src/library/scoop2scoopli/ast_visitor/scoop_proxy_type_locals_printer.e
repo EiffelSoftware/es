@@ -77,7 +77,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.lcurly_symbol (match_list))
 
 			-- process attachment mark
-			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_symbol (match_list))
 
 			-- process like keyword
 			safe_process (l_as.like_keyword (match_list))
@@ -107,7 +107,7 @@ feature {NONE} -- Roundtrip: process nodes
 			safe_process (l_as.lcurly_symbol (match_list))
 
 			-- process attachment mark
-			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_mark (match_list))
+			process_attachment_mark (l_as.has_detachable_mark, l_as.attachment_mark_index, l_as.attachment_symbol (match_list))
 
 			-- skip expanded_keyword
 			if l_as.is_expanded then
