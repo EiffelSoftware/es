@@ -8,11 +8,13 @@ class
 	TEST_RED_B
 inherit
 	TEST_RED_A
-		redefine f end
+		redefine f, g end
+create
+	make
 feature
 	f: attached STRING
 		do
 			Result := "B.f"
 		end
-
+	g: INTEGER
 end

@@ -17,12 +17,15 @@ feature {NONE} -- Initialization
 					a: TEST_RED_A
 					r: STRING
 				do
-					create b
+					create b.make
 					a := b
 					r := b.f
 					r := r + "," + a.f
 
 					assert (r.is_equal("B.f,B.f"))
+
+					assert (a.g = 2)
+					assert (b.g = 2)
 				end
 			)
 		end
