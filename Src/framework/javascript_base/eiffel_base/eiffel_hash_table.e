@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Keys access implementation
 
 	get_keys: attached JS_ARRAY[attached STRING]
-		external "C" alias "#runtime.getProperties($TARGET.$inner_array, true)" end
+		external "C" alias "#runtime.getProperties($TARGET.inner_array, true)" end
 	cached_keys: attached JS_ARRAY[attached STRING]
 	cached_keys_busted: BOOLEAN
 	keys: attached JS_ARRAY[attached STRING]
