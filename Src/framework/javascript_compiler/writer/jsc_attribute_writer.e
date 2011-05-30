@@ -67,13 +67,5 @@ feature -- Basic operations
 			output.put (jsc_context.name_mapper.feature_name (a_feature, false))
 			output.put (": ")
 			output.put (default_value_writer.default_value (l_attr_type))
-			output.put (",")
-			output.put_new_line
-
-			output.put_indentation
-			output.put (jsc_context.name_mapper.feature_name (a_feature, true))
-			output.put (" : function () { return this.")
-			output.put (jsc_context.name_mapper.feature_name (a_feature, false))
-			output.put ("; }")
 		end
 end

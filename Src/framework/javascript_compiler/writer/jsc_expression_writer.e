@@ -1135,9 +1135,11 @@ feature {NONE} -- Normal calls
 				output.put ("$")
 			end
 			output.put (jsc_context.name_mapper.feature_name (a_feature, true))
-			output.put ("(")
-			output.put_data_list (process_parameters(a_parameters), ", ")
-			output.put (")")
+			if not a_feature.is_attribute then
+				output.put ("(")
+				output.put_data_list (process_parameters(a_parameters), ", ")
+				output.put (")")
+			end
 		end
 
 feature {NONE} -- Dynamic dispatch

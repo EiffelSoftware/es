@@ -151,8 +151,8 @@ feature -- Names
 			l_feature_name := a_feature.feature_name
 			check l_feature_name /= Void end
 
-			if not force_long_form and a_feature.is_attribute then
-				Result := "$" + l_feature_name
+			if a_feature.is_attribute then
+				Result := l_feature_name
 			else
 				Result := l_feature_name + "_" + a_feature.written_in.out
 			end
