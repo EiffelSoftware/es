@@ -4,13 +4,14 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_VARIABLE_USAGE_CALLBACK_SERVICE
+	EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
 
 inherit
 	AST_ITERATOR
 		redefine
 			process_access_id_as,
 			process_current_as,
+--			process_id_as,
 			process_nested_as,
 			process_result_as
 		end
@@ -59,6 +60,18 @@ feature -- Access
 			on_access_identifier_with_feature_call := a_action
 		end
 
+--	on_id: ROUTINE [ANY, TUPLE [a_as: ID_AS]]
+--		assign set_on_id
+--			-- Callback agent triggered when an `{ID_AS}' node is accessed.
+
+--	set_on_id (a_action: like on_id)
+--			-- Assigner for `on_id'.
+--		require
+--			a_action_not_void: attached a_action
+--		do
+--			on_id := a_action
+--		end
+
 feature {NONE} -- Access Recording
 
 	process_nested_as (l_as: NESTED_AS)
@@ -85,6 +98,7 @@ feature {NONE} -- Access Recording
 			if attached on_access_identifier then
 				on_access_identifier.call ([l_as])
 			end
+			Precursor (l_as)
 		end
 
 	process_result_as (l_as: RESULT_AS)
@@ -95,6 +109,7 @@ feature {NONE} -- Access Recording
 			if attached on_access_identifier then
 				on_access_identifier.call ([l_as])
 			end
+			Precursor (l_as)
 		end
 
 	process_current_as (l_as: CURRENT_AS)
@@ -105,6 +120,17 @@ feature {NONE} -- Access Recording
 			if attached on_access_identifier then
 				on_access_identifier.call ([l_as])
 			end
+			Precursor (l_as)
 		end
+
+--	process_id_as (l_as: ID_AS)
+--			-- Recording access to `{ID_AS}' identifier.
+--		do
+--				-- Invoke callback agent if configured.
+--			if attached on_id then
+--				on_id.call ([l_as])
+--			end
+--			Precursor (l_as)
+--		end
 
 end

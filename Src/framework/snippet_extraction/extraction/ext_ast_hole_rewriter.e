@@ -4,13 +4,12 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_AST_PRUNER
+	EXT_AST_HOLE_REWRITER
 
 inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
 			make_with_output,
-			processing_needed,
 
 			process_access_assert_as,
 			process_access_feat_as,
@@ -176,9 +175,6 @@ inherit
 			process_void_as
 		end
 
-	EXT_SHARED_ANNOTATIONS
-		export {NONE} all end
-
 	REFACTORING_HELPER
 
 create
@@ -192,14 +188,18 @@ feature {NONE} -- Creation
 			Precursor (a_output)
 		end
 
-feature {NONE} -- Implementation (Processing)
+feature -- Access
 
-	processing_needed (an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
-			-- should `an_ast' be processed
-		require else
-			an_ast_path_not_void: attached an_ast.path
+	annotation_context: EXT_ANNOTATION_CONTEXT
+		assign set_annotation_context
+			-- Contextual information about relevant variables.
+
+	set_annotation_context (a_context: EXT_ANNOTATION_CONTEXT)
+			-- Sets `annotation_context' to `a_context'	
+		require
+			attached a_context
 		do
-			Result := attached an_ast and not has_annotation_prune (an_ast.path)
+			annotation_context := a_context
 		end
 
 feature -- Roundtrip
@@ -208,7 +208,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -217,7 +219,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -226,7 +230,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -235,7 +241,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -244,7 +252,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -253,7 +263,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -262,7 +274,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -271,7 +285,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -282,7 +298,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -291,7 +309,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -300,7 +320,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -309,7 +331,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -318,7 +342,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -327,7 +353,9 @@ feature -- Roundtrip
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -342,7 +370,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -351,7 +381,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -360,7 +392,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -369,7 +403,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -378,7 +414,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -387,7 +425,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -396,7 +436,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -405,7 +447,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -414,7 +458,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -423,7 +469,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -432,7 +480,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -441,7 +491,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -450,7 +502,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -459,7 +513,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -468,7 +524,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -477,7 +535,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -486,7 +546,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -495,7 +557,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -504,7 +568,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -513,7 +579,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -522,7 +590,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -531,7 +601,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -540,7 +612,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -549,7 +623,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -558,7 +634,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -567,7 +645,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -576,7 +656,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -585,7 +667,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -594,7 +678,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -603,7 +689,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -612,7 +700,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -621,7 +711,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -630,7 +722,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -639,7 +733,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -648,7 +744,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -657,7 +755,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -666,7 +766,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -675,7 +777,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -684,7 +788,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -693,7 +799,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -702,7 +810,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -711,7 +821,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -720,7 +832,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -729,7 +843,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -738,7 +854,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -747,7 +865,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -756,7 +876,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -765,7 +887,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -774,7 +898,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -783,7 +909,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -792,7 +920,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -801,7 +931,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -810,7 +942,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -819,7 +953,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -828,7 +964,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -837,7 +975,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -846,7 +986,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -855,7 +997,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -864,7 +1008,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -873,7 +1019,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -882,7 +1030,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -891,7 +1041,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -900,7 +1052,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -909,7 +1063,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -918,7 +1074,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -927,7 +1085,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -936,7 +1096,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -945,7 +1107,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -954,7 +1118,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -963,7 +1129,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -972,7 +1140,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -981,7 +1151,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -990,7 +1162,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -999,7 +1173,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1008,7 +1184,9 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1019,7 +1197,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1028,7 +1208,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1037,7 +1219,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1046,7 +1230,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1055,7 +1241,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1064,7 +1252,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1073,7 +1263,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1082,7 +1274,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1091,7 +1285,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1100,7 +1296,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1109,7 +1307,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1118,7 +1318,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1127,7 +1329,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1136,7 +1340,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1145,7 +1351,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1154,7 +1362,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1163,7 +1373,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1172,7 +1384,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1181,7 +1395,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1190,7 +1406,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1199,7 +1417,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1208,7 +1428,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1217,7 +1439,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1226,7 +1450,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1235,7 +1461,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1244,7 +1472,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1253,7 +1483,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1262,7 +1494,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1271,7 +1505,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1280,7 +1516,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1289,7 +1527,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1298,7 +1538,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1307,7 +1549,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1316,7 +1560,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1325,7 +1571,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1334,7 +1582,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1343,7 +1593,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1352,7 +1604,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1361,7 +1615,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1370,7 +1626,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1379,7 +1637,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1388,7 +1648,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1397,7 +1659,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1406,7 +1670,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1415,7 +1681,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1424,7 +1692,9 @@ feature {AST_EIFFEL} -- Expressions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1435,7 +1705,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1444,7 +1716,10 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+				output.append_string (Ti_new_line)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1453,7 +1728,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1462,7 +1739,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1471,7 +1750,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1480,7 +1761,12 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_prune (l_as.path) then
+				-- Nothing to be done, no further processing.
+			elseif annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+				output.append_string (Ti_new_line)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1489,7 +1775,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1498,7 +1786,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1507,16 +1797,10 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
-					-- Flatten if statement in annotated.
-				if has_annotation_flatten (l_as.path, {EXT_ANN_FLATTEN}.retain_if) then
-					process_list_with_separator (l_as.compound, Void, Void, 2)
-				elseif has_annotation_flatten (l_as.path, {EXT_ANN_FLATTEN}.retain_else) then
-					process_list_with_separator (l_as.else_part, Void, Void, 4)
-				else
-					-- Proceed if no annotation is given.
-					Precursor (l_as)
-				end
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
+				Precursor (l_as)
 			end
 		end
 
@@ -1524,7 +1808,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1533,16 +1819,21 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
+				process_child (l_as.call, l_as, 1)
 			end
+			output.append_string (Ti_new_line)
 		end
 
 	process_interval_as (l_as: INTERVAL_AS)
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1551,7 +1842,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1560,7 +1853,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1569,7 +1864,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1580,7 +1877,9 @@ feature {AST_EIFFEL} -- External visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1589,7 +1888,9 @@ feature {AST_EIFFEL} -- External visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1600,7 +1901,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1609,7 +1912,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1618,7 +1923,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1627,7 +1934,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1636,7 +1945,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1645,7 +1956,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1654,7 +1967,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1663,7 +1978,9 @@ feature {AST_EIFFEL} -- Clickable visitor
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1674,7 +1991,9 @@ feature -- Quantification
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end
@@ -1683,7 +2002,9 @@ feature -- Quantification
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if not has_annotation_prune (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
+				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+			else
 				Precursor (l_as)
 			end
 		end

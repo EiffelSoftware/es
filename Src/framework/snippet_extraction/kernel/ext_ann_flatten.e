@@ -32,7 +32,7 @@ feature -- Access
 
 	set_mode (a_mode: STRING)
 		require
-			a_mode = retain_if or a_mode = retain_else
+			a_mode ~ retain_if or a_mode ~ retain_else
 		do
 			mode := a_mode
 		end

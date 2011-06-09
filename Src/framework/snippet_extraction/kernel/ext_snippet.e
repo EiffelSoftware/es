@@ -1,6 +1,5 @@
 note
 	description: "Class that represents an extracted snippet."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 

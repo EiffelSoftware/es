@@ -1,28 +1,25 @@
 note
-	description: "Summary description for {EXT_SHARED_ANNOTATIONS}."
+	description: "Maintaining annotation variable information."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EXT_SHARED_ANNOTATIONS
+	EXT_ANNOTATION_CONTEXT
 
 inherit
 	REFACTORING_HELPER
 
-feature -- Access	
+create
+	make
 
-	reset_annotations
-			-- Reset shared annotation data structures.	
+feature {NONE} -- Initialization
+
+	make
+			-- Default initialization.
 		do
-			annotations.wipe_out
 		end
 
-	annotation_factory: EXT_ANNOTATION_FACTORY
-			-- Annotation factory to create new typed annotation instances.
-		once
-			create Result
-		end
-
+feature -- Access
 
 	add_annotation (location: AST_PATH; annotation: EXT_ANNOTATION)
 			-- Add an AST annotation for the given path `location'.
@@ -47,6 +44,32 @@ feature -- Access
 						across annotations.item (location) as l_annotations some attached {EXT_ANN_PRUNE} l_annotations.item end
 		end
 
+	has_annotation_hole (location: AST_PATH): BOOLEAN
+		do
+			Result := annotations.has (location) and then
+						across annotations.item (location) as l_annotations some attached {EXT_ANN_HOLE} l_annotations.item end
+		end
+
+	get_first_annotation_hole (location: AST_PATH): EXT_ANN_HOLE
+			-- Returns the first annotation of type `{EXT_ANN_HOLE}'.
+		require
+			annotation_exists: has_annotation_hole (location)
+		do
+			if attached annotations.item (location) as l_annotations then
+				from
+					l_annotations.start
+				until
+					l_annotations.after or Result /= Void
+				loop
+					if attached {EXT_ANN_HOLE} l_annotations.item_for_iteration as l_hole_annotation then
+						Result := l_hole_annotation
+					end
+				end
+			end
+		ensure
+			annotation_result_set: attached Result
+		end
+
 	has_annotation_flatten (location: AST_PATH; mode: STRING): BOOLEAN
 		do
 			Result := annotations.has (location) and then
@@ -55,13 +78,20 @@ feature -- Access
 						end
 		end
 
+	set_annotations (a_annotations: like annotations)
+			-- Configures this class with a set of annotations.
+		require
+			a_annotations_attached: a_annotations /= Void
+		do
+			annotations := a_annotations
+		ensure
+			annotations_attached: annotations /= Void
+		end
+
 feature -- Implementation
 
 	annotations: HASH_TABLE [LINKED_LIST [EXT_ANNOTATION], AST_PATH]
+		assign set_annotations
 			-- Annotations associated to ast path nodes.
-		once
-			create Result.make (10)
-			Result.compare_objects
-		end
 
 end
