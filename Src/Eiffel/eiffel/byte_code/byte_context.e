@@ -1324,6 +1324,12 @@ feature -- Access
 		do
 			if type.is_like_current then
 				Result := a_context_type
+					-- Promote separateness status.
+				if type.is_separate then
+					check attached {LIKE_CURRENT} type as t then
+						Result := Result.to_other_separateness (t)
+					end
+				end
 			elseif type.is_like then
 				Result := real_type_in (type.actual_type, a_context_type)
 			else
@@ -1944,7 +1950,7 @@ feature -- Access
 		do
 			if inlined_dftype_current > 1 then
 				buffer.put_string ({C_CONST}.inlined_dftype_name)
-			elseif dftype_current > 1 then
+			elseif dftype_current > 1 and then not in_inlined_code then
 				buffer.put_string ({C_CONST}.dftype_name)
 			else
 				buffer.put_string ({C_CONST}.dftype)

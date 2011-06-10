@@ -176,10 +176,10 @@ feature -- Status setting
 		local
 			l_decor: INTEGER
 			l_x, l_y: INTEGER
-			l_temp: INTEGER
 		do
 				-- We are disabling the border so we need to reset the position in the exact place
-			l_temp := {EV_GTK_EXTERNALS}.gdk_window_get_origin ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), $l_x, $l_y)
+			l_x := x_position
+			l_y := y_position
 			l_decor := default_wm_decorations.bit_and ({EV_GTK_EXTERNALS}.gdk_decor_border_enum.bit_not)
 			{EV_GTK_EXTERNALS}.gdk_window_set_decorations ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), l_decor)
 			set_position (l_x, l_y)
@@ -473,7 +473,8 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP} -- Implementation
 		local
 			l_x_pos, l_y_pos: INTEGER
 		do
-			{EV_GTK_EXTERNALS}.gtk_window_get_position (c_object, $l_x_pos, $l_y_pos)
+			l_x_pos := x_position
+			l_y_pos := y_position
 			Precursor {EV_GTK_WINDOW_IMP} (l_x_pos, l_y_pos, a_width, a_height)
 			Precursor {EV_CELL_IMP} (l_x_pos, l_y_pos, a_width, a_height)
 			if l_x_pos  /= previous_x_position or else l_y_pos /= previous_y_position then

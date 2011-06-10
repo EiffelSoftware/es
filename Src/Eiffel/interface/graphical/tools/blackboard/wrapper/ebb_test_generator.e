@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 	make (a_instance: like instance; a_test_suite: like test_suite; a_etest_suite: like etest_suite)
 			-- Initialize generator for instance `a_instance'.
 		do
-			make_generator (a_test_suite, a_etest_suite)
+			make_generator (a_test_suite, a_etest_suite, False)
 			instance := a_instance
 			number_of_tests_needed := 100
 		end

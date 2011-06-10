@@ -240,6 +240,10 @@ test	across-loop-syntax		syntax059 tcf pass syntax loop variant invariant across
 test	object-test-expression	syntax060 tcf pass syntax object_test
 test	constrained-generic-without-type	syntax061 tcf fail syntax formal generic
 test	loop-instruction-as-expression	syntax062 tcf pass syntax loop instruction expression across iteration
+test	non-conforming-inheritance-empty-select	syntax063 tcf fail syntax non-conforming
+test	multiple-semicolons-after-feature	syntax064 tcf fail syntax
+test	non-decimal-percent-char-codes		syntax065 tcf fail syntax
+test	number-end-without-break	syntax066 tcf fail syntax
 
 
 -- Validity tests
@@ -515,6 +519,7 @@ test	crash-on-veen2a					valid268 tcf pass validity
 test	bogus-vsrp3-with-require-else-false	valid269 tcf pass validity
 test	spurious-vuot-in-assertion		valid270 tcf pass validity object_test
 test	spurious-vweq-warning			valid271 tcf pass validity
+test	non-conforming-missing-vmss3		valid272 tcf fail validity non-conforming
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1237,6 +1242,7 @@ test	inlining-parent-with-less-formals	final105 tcf fail finalizing inlining
 test	inlining-in-parent-with-child-with-less-formals final106 tcf fail finalizing inlining
 test	finalize-argument-anchors-formal	final107 tcf fail finalizing anchored_type
 test	finalize-external-invariant-skipped	final108 tcf fail finalizing assertions external
+test	inline-manifest-type			final109 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1840,7 +1846,8 @@ test	expanded-constrained-generic-root-crash	term199 tcf fail termination expand
 test	check-instruction-invalid-code		term200 tcf pass termination check instruction validity
 test	inherit-generic-with-self-as-formal	term201 tcf pass termination 
 test	inherit-formal-as-second-formal		term202 tcf pass termination dotnet
-test	 inherit-generic-of-expanded		term203 tcf pass termination dotnet
+test	inherit-generic-of-expanded		term203 tcf pass termination dotnet
+test	ise-ec-flags-missing-final-quote	term204 tcf fail termination
 
 -- Config
 
@@ -2060,6 +2067,7 @@ test	file-read-write-access		lib033	 tcf fail library file
 test	file-flush			lib034	 tcf pass library file
 test	file-position-bad-file-pointer	lib035	 tcf fail library file
 test	format-double-crash				lib036	 tcf fail library ieee
+test	ptf-file-read-to-string		lib037	 tcf pass library file
 
 
 -- TUPLE tests
@@ -2639,6 +2647,15 @@ test	pretty-explicit-creation-space		pretty002 tcf pass pretty
 test	pretty-argument-list-separators		pretty003 tcf pass pretty
 test	pretty-class-note-indentation		pretty004 tcf pass pretty
 test	pretty-constant-attribute-space		pretty005 tcf pass pretty
+test	pretty-obsolete-and-external		pretty006 tcf pass pretty
+test	pretty-loop-variant			pretty007 tcf pass pretty
+test	pretty-retry-instruction		pretty008 tcf pass pretty
+test	pretty-integer-constant			pretty009 tcf pass pretty
+test	pretty-inspect-cases			pretty010 tcf pass pretty
+test	pretty-note-on-attribute		pretty011 tcf pass pretty
+test	pretty-convert-clause			pretty012 tcf pass pretty
+test	pretty-multiconstrained-generics	pretty013 tcf pass pretty
+test	pretty-formal-renaming			pretty014 tcf pass pretty
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing

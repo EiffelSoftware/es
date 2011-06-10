@@ -64,6 +64,7 @@ inherit
 
 			-- Converters
 			process_convert_feat_list_as,
+			process_convert_feat_as,
 
 			-- Features
 			process_feature_clause_as,
@@ -202,17 +203,12 @@ feature {NONE} -- Implementation
 			print_string ("%T")
 		end
 
-	safe_process_and_print (l_as: AST_EIFFEL; pre, post: STRING; add_new_line: BOOLEAN)
+	safe_process_and_print (l_as: AST_EIFFEL; pre, post: STRING)
 			-- Process `l_as' safely while printing `pre' before and `post' after processing.
 		do
 			if l_as /= Void then
 				if l_as.first_token (match_list) /= Void then
 					process_leading_leaves (l_as.first_token (match_list).index)
-				end
-
-					-- Only print a new line if it is not already done.
-				if add_new_line and last_printed /= '%N' then
-					print_new_line
 				end
 
 				if pre /= Void then
@@ -225,6 +221,52 @@ feature {NONE} -- Implementation
 					print_string (post)
 				end
 			end
+		end
+
+	print_on_new_line (a: AST_EIFFEL)
+			-- Output `a' (if present) on a new line with proper indent.
+		do
+			if attached a then
+				if attached a.first_token (match_list) as t then
+					process_leading_leaves (t.index)
+				end
+				if last_printed /= '%N' then
+					print_new_line
+				end
+				print_string (indent)
+				a.process (Current)
+			end
+		end
+
+	print_on_new_line_indented (a: AST_EIFFEL)
+			-- Same as `print_on_new_line', but adds one indentation level.
+		do
+			increase_indent
+			print_on_new_line (a)
+			decrease_indent
+		end
+
+	print_on_new_line_separated (a: AST_EIFFEL)
+			-- Same as `print_on_new_line', but adds one blank line in front of `a' output.
+		do
+			if attached a then
+				if attached a.first_token (match_list) as t then
+					process_leading_leaves (t.index)
+				end
+				if last_printed /= '%N' then
+					print_new_line
+				end
+				print_new_line
+				a.process (Current)
+			end
+		end
+
+	print_list_indented (l: EIFFEL_LIST [AST_EIFFEL])
+			-- Output `l' with items starting of new lines with indent increased by one level.
+		do
+			increase_indent
+			process_and_print_eiffel_list (l, indent, "", False, True)
+			decrease_indent
 		end
 
 	process_and_print_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL]; pre, post: STRING; exclude_last, add_new_line: BOOLEAN)
@@ -372,7 +414,7 @@ feature {NONE} -- Implementation
 						if attached {BREAK_AS}l_as as break_as then
 							safe_process (break_as)
 						else
-							safe_process_and_print (l_as, "", "", False)
+							safe_process_and_print (l_as, "", "")
 						end
 						i := i + 1
 					end
@@ -527,9 +569,9 @@ feature {CLASS_AS} -- Process leafs
 			-- Process `l_as'.
 		do
 			if l_as.is_once_string then
-				safe_process_and_print (l_as.once_string_keyword (match_list), "", " ", False)
+				safe_process_and_print (l_as.once_string_keyword (match_list), "", " ")
 			end
-			safe_process_and_print (l_as.type, "", " ", False)
+			safe_process_and_print (l_as.type, "", " ")
 			process_leading_leaves (l_as.index)
 			last_index := l_as.index
 			print_string (l_as.string_value_32)
@@ -542,9 +584,9 @@ feature {CLASS_AS} -- Process leafs
 			i, j, n: INTEGER
 		do
 			if l_as.is_once_string then
-				safe_process_and_print (l_as.once_string_keyword (match_list), "", " ", False)
+				safe_process_and_print (l_as.once_string_keyword (match_list), "", " ")
 			end
-			safe_process_and_print (l_as.type, "", " ", False)
+			safe_process_and_print (l_as.type, "", " ")
 			process_leading_leaves (l_as.index)
 			last_index := l_as.index
 			print_string ("%"")
@@ -553,7 +595,7 @@ feature {CLASS_AS} -- Process leafs
 			if l_as.is_indentable then
 				print_string ("[")
 				print_new_line
-				indent.append_character ('%T')
+				increase_indent
 				from
 					i := 1
 					n := s.count
@@ -569,7 +611,7 @@ feature {CLASS_AS} -- Process leafs
 					print_new_line
 					i := j + 1
 				end
-				indent.remove_tail (1)
+				decrease_indent
 				print_string (indent)
 				print_string ("]")
 			else
@@ -593,9 +635,11 @@ feature {CLASS_AS} -- Process leafs
 	process_integer_as (l_as: INTEGER_AS)
 			-- Process `l_as'.
 		do
-		--	process_leading_leaves (l_as.index)
+			safe_process_and_print (l_as.constant_type, "", " ")
+			safe_process (l_as.sign_symbol (match_list))
+			process_leading_leaves (l_as.index)
 			last_index := l_as.index
-			print_string (l_as.text_32 (match_list))
+			print_string (l_as.number_text (match_list))
 		end
 
 	process_real_as (l_as: REAL_AS)
@@ -622,55 +666,55 @@ feature {CLASS_AS} -- Class Declarations
 		do
 			-- Indexing
 			indent := ""
-			safe_process_and_print (l_as.internal_top_indexes, "", "%N%N", False)
+			safe_process_and_print (l_as.internal_top_indexes, "", "%N%N")
 
 			-- Keywords
-			safe_process_and_print (l_as.frozen_keyword (match_list), "", " ", False)
-			safe_process_and_print (l_as.deferred_keyword (match_list), "", " ", False)
-			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ", False)
-			safe_process_and_print (l_as.separate_keyword (match_list), "", " ", False)
-			safe_process_and_print (l_as.external_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.frozen_keyword (match_list), "", " ")
+			safe_process_and_print (l_as.deferred_keyword (match_list), "", " ")
+			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ")
+			safe_process_and_print (l_as.separate_keyword (match_list), "", " ")
+			safe_process_and_print (l_as.external_keyword (match_list), "", " ")
 
-			safe_process_and_print (l_as.class_keyword (match_list), "", "", False)
+			safe_process_and_print (l_as.class_keyword (match_list), "", "")
 
 			-- Class name
-			safe_process_and_print (l_as.class_name, "%T", "", True)
+			print_on_new_line_indented (l_as.class_name)
 
 			-- Generics
-			safe_process_and_print (l_as.internal_generics, " ", "", False)
+			safe_process_and_print (l_as.internal_generics, " ", "")
 
 			-- External
-			safe_process_and_print (l_as.alias_keyword (match_list), "%T%T", "", True)
-			safe_process_and_print (l_as.external_class_name, " ", "", False)
+			print_on_new_line_indented (l_as.alias_keyword (match_list))
+			safe_process_and_print (l_as.external_class_name, " ", "")
 
 			-- Obsolete
-			safe_process_and_print (l_as.obsolete_keyword (match_list), "%T%T", "", True)
-			safe_process_and_print (l_as.obsolete_message, " ", "", False)
+			print_on_new_line_separated (l_as.obsolete_keyword (match_list))
+			print_on_new_line_indented (l_as.obsolete_message)
 
 			-- Conforming inheritance
-			safe_process_and_print (l_as.internal_conforming_parents, "%N", "", True)
+			print_on_new_line_separated (l_as.internal_conforming_parents)
 
 			-- Non-conforming inheritance
-			safe_process_and_print (l_as.internal_non_conforming_parents, "%N", "", True)
+			print_on_new_line_separated (l_as.internal_non_conforming_parents)
 
 			-- Creators
 			process_and_print_eiffel_list (l_as.creators, "%N", "", False, True)
 
 			-- Convertors
-			safe_process_and_print (l_as.convertors, "%N", "", True)
+			print_on_new_line_separated (l_as.convertors)
 
 			-- Features
 			process_and_print_eiffel_list (l_as.features, "%N", "", False, True)
 
 			-- Invariant
-			safe_process_and_print (l_as.internal_invariant, "%N", "", True)
+			indent := ""
+			print_on_new_line_separated (l_as.internal_invariant)
 
 			-- Indexes
-			indent := ""
-			safe_process_and_print (l_as.internal_bottom_indexes, "%N", "", True)
+			print_on_new_line_separated (l_as.internal_bottom_indexes)
 
 			-- End keyword
-			safe_process_and_print (l_as.end_keyword, "%N", "", True)
+			print_on_new_line_separated (l_as.end_keyword)
 
 			-- Ending comments
 			if l_as.end_keyword.index < match_list.count then
@@ -685,8 +729,8 @@ feature {CLASS_AS} -- Class Declarations
 	process_invariant_as (l_as: INVARIANT_AS)
 			-- Process invariant clause `l_as'.
 		do
-			safe_process_and_print (l_as.invariant_keyword (match_list), "", "", True)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T", "", False, True)
+			print_on_new_line (l_as.invariant_keyword (match_list))
+			print_list_indented (l_as.full_assertion_list)
 		end
 
 feature {CLASS_AS} -- Indexing
@@ -695,9 +739,7 @@ feature {CLASS_AS} -- Indexing
 			-- Process indexing clause `l_as'
 		do
 			safe_process (l_as.indexing_keyword (match_list))
-			indent.append_character ('%T')
-			process_and_print_eiffel_list (l_as, indent, "", False, True)
-			indent.remove_tail (1)
+			print_list_indented (l_as)
 			safe_process (l_as.end_keyword (match_list))
 		end
 
@@ -706,7 +748,7 @@ feature {CLASS_AS} -- Indexing
 		do
 			safe_process (l_as.tag)
 			safe_process (l_as.colon_symbol (match_list))
-			process_and_print_eiffel_list (l_as.index_list, " ", "", False, False)
+			process_and_print_eiffel_list (l_as.index_list, " ", "", True, False)
 		end
 
 feature {CLASS_AS} -- Inheritance
@@ -715,7 +757,7 @@ feature {CLASS_AS} -- Inheritance
 			-- Process parent list `l_as'.
 		do
 			safe_process (l_as.inherit_keyword (match_list))
-			safe_process_and_print (l_as.lcurly_symbol (match_list), " ", "", False)
+			safe_process_and_print (l_as.lcurly_symbol (match_list), " ", "")
 			safe_process (l_as.none_id_as (match_list))
 			safe_process (l_as.rcurly_symbol (match_list))
 			process_and_print_eiffel_list (l_as, "%N%T", "", False, True)
@@ -725,12 +767,12 @@ feature {CLASS_AS} -- Inheritance
 			-- Process parent `l_as'.
 		do
 			safe_process (l_as.type)
-			safe_process_and_print (l_as.internal_renaming, "%T%T", "", True)
-			safe_process_and_print (l_as.internal_exports, "%T%T", "", True)
-			safe_process_and_print (l_as.internal_undefining, "%T%T", "", True)
-			safe_process_and_print (l_as.internal_redefining, "%T%T", "", True)
-			safe_process_and_print (l_as.internal_selecting, "%T%T", "", True)
-			safe_process_and_print (l_as.end_keyword (match_list), "%T%T", "", True)
+			print_on_new_line_indented (l_as.internal_renaming)
+			print_on_new_line_indented (l_as.internal_exports)
+			print_on_new_line_indented (l_as.internal_undefining)
+			print_on_new_line_indented (l_as.internal_redefining)
+			print_on_new_line_indented (l_as.internal_selecting)
+			print_on_new_line_indented (l_as.end_keyword (match_list))
 		end
 
 	process_inherit_clause_as (l_as: INHERIT_CLAUSE_AS [EIFFEL_LIST [AST_EIFFEL]])
@@ -749,7 +791,7 @@ feature {CLASS_AS} -- Inheritance
 	process_rename_as (l_as: RENAME_AS)
 		do
 			safe_process (l_as.old_name)
-			safe_process_and_print (l_as.as_keyword (match_list), " ", " ", False)
+			safe_process_and_print (l_as.as_keyword (match_list), " ", " ")
 			safe_process (l_as.new_name)
 		end
 
@@ -762,7 +804,7 @@ feature {CLASS_AS} -- Inheritance
 	process_export_item_as (l_as: EXPORT_ITEM_AS)
 		do
 			safe_process (l_as.clients)
-			safe_process_and_print (l_as.features, " ", "", False)
+			safe_process_and_print (l_as.features, " ", "")
 		end
 
 	process_class_list_as (l_as: CLASS_LIST_AS)
@@ -798,26 +840,26 @@ feature {CLASS_AS} -- Inheritance
 
 	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
 		do
-			safe_process_and_print (l_as.frozen_keyword, "", " ", False)
-			safe_process_and_print (l_as.infix_prefix_keyword, "", " ", False)
+			safe_process_and_print (l_as.frozen_keyword, "", " ")
+			safe_process_and_print (l_as.infix_prefix_keyword, "", " ")
 			safe_process (l_as.alias_name)
 		end
 
 	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS)
 		do
-			safe_process_and_print (l_as.frozen_keyword, "", " ", False)
+			safe_process_and_print (l_as.frozen_keyword, "", " ")
 			safe_process (l_as.feature_name)
 		end
 
 	process_feature_name_alias_as (l_as: FEATURE_NAME_ALIAS_AS)
 		do
-			safe_process_and_print (l_as.frozen_keyword, "", " ", False)
+			safe_process_and_print (l_as.frozen_keyword, "", " ")
 			safe_process (l_as.feature_name)
 			if l_as.alias_name /= Void then
-				safe_process_and_print (l_as.alias_keyword (match_list), " ", " ", False)
+				safe_process_and_print (l_as.alias_keyword (match_list), " ", " ")
 				safe_process (l_as.alias_name)
 				if l_as.has_convert_mark then
-					safe_process_and_print (l_as.convert_keyword (match_list), " ", "", False)
+					safe_process_and_print (l_as.convert_keyword (match_list), " ", "")
 				end
 			end
 		end
@@ -836,11 +878,11 @@ feature {CLASS_AS} -- Generics
 			-- Process formal declaration `l_as'.
 		do
 			safe_process (l_as.formal)
-			safe_process_and_print (l_as.constrain_symbol (match_list), " ", " ", False)
-			safe_process (l_as.constraints)
-			safe_process_and_print (l_as.create_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.creation_feature_list, " ", "", False)
-			safe_process_and_print (l_as.end_keyword (match_list), " ", "", False)
+			safe_process_and_print (l_as.constrain_symbol (match_list), " ", " ")
+			process_and_print_eiffel_list (l_as.constraints, "", " ", True, False)
+			safe_process_and_print (l_as.create_keyword (match_list), " ", "")
+			process_and_print_eiffel_list (l_as.creation_feature_list, " ", "", True, False)
+			safe_process_and_print (l_as.end_keyword (match_list), " ", "")
 		end
 
 feature {CLASS_AS} -- Creators
@@ -849,7 +891,7 @@ feature {CLASS_AS} -- Creators
 			-- Process creator list `l_as'.
 		do
 			safe_process (l_as.create_creation_keyword (match_list))
-			safe_process_and_print (l_as.clients, " ", "", False)
+			safe_process_and_print (l_as.clients, " ", "")
 
 			if l_as.feature_list /= Void and then l_as.feature_list.first_token (match_list) /= Void then
 				process_leading_leaves (l_as.feature_list.first_token (match_list).index)
@@ -874,8 +916,19 @@ feature {CLASS_AS} -- Convertors
 				print_new_line
 			end
 
-			print_indent
-			process_and_print_eiffel_list (l_as, "", " ", True, False)
+			print_list_indented (l_as)
+		end
+
+	process_convert_feat_as (l_as: CONVERT_FEAT_AS)
+		do
+			safe_process (l_as.feature_name)
+			safe_process (l_as.colon_symbol (match_list))
+			print_string (" ")
+			safe_process (l_as.lparan_symbol (match_list))
+			safe_process (l_as.lcurly_symbol (match_list))
+			safe_process (l_as.conversion_types)
+			safe_process (l_as.rcurly_symbol (match_list))
+			safe_process (l_as.rparan_symbol (match_list))
 		end
 
 feature {CLASS_AS} -- Features
@@ -884,7 +937,7 @@ feature {CLASS_AS} -- Features
 			-- Process feature clause `l_as'.
 		do
 			safe_process (l_as.feature_keyword)
-			safe_process_and_print (l_as.clients, " ", "", False)
+			safe_process_and_print (l_as.clients, " ", "")
 			process_and_print_eiffel_list (l_as.features, "%N%T", "", False, True)
 		end
 
@@ -900,11 +953,11 @@ feature {CLASS_AS} -- Features
 	process_body_as (l_as: BODY_AS)
 			-- Process feature body `l_as'.
 		do
-			safe_process_and_print (l_as.internal_arguments, " ", "", False)
-			safe_process_and_print (l_as.colon_symbol (match_list), "", " ", False)
+			safe_process_and_print (l_as.internal_arguments, " ", "")
+			safe_process_and_print (l_as.colon_symbol (match_list), "", " ")
 			safe_process (l_as.type)
-			safe_process_and_print (l_as.assign_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.assigner, " ", "", False)
+			safe_process_and_print (l_as.assign_keyword (match_list), " ", "")
+			safe_process_and_print (l_as.assigner, " ", "")
 
 			-- Ignore the 'is' keyword
 			-- safe_process (l_as.is_keyword (match_list))
@@ -918,7 +971,7 @@ feature {CLASS_AS} -- Features
 				safe_process (c_as)
 				safe_process (l_as.indexing_clause)
 			else
-				safe_process (l_as.indexing_clause)
+				print_on_new_line (l_as.indexing_clause)
 				safe_process (l_as.content)
 			end
 		end
@@ -951,49 +1004,49 @@ feature {CLASS_AS} -- Routine
 	process_routine_as (l_as: ROUTINE_AS)
 			-- Process routine feature `l_as'.
 		do
-			safe_process_and_print (l_as.obsolete_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.obsolete_message, " ", "", False)
+			print_on_new_line (l_as.obsolete_keyword (match_list))
+			print_on_new_line_indented (l_as.obsolete_message)
 			safe_process (l_as.precondition)
 			safe_process (l_as.internal_locals)
 			safe_process (l_as.routine_body)
 			safe_process (l_as.postcondition)
 
-			safe_process_and_print (l_as.rescue_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.rescue_keyword (match_list))
+			increase_indent
 			safe_process (l_as.rescue_clause)
-			indent.remove_tail (1)
+			decrease_indent
 
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_require_as (l_as: REQUIRE_AS)
 			-- Process precondition clause `l_as'.
 		do
-			safe_process_and_print (l_as.require_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.require_keyword (match_list))
+			print_list_indented (l_as.full_assertion_list)
 		end
 
 	process_require_else_as (l_as: REQUIRE_ELSE_AS)
 			-- Process precondition clause `l_as'.
 		do
-			safe_process_and_print (l_as.require_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.else_keyword (match_list), " ", "", False)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.require_keyword (match_list))
+			safe_process_and_print (l_as.else_keyword (match_list), " ", "")
+			print_list_indented (l_as.full_assertion_list)
 		end
 
 	process_tagged_as (l_as: TAGGED_AS)
 			-- Process tagged `l_as'.
 		do
 			safe_process (l_as.tag)
-			safe_process_and_print (l_as.colon_symbol (match_list), "", " ", False)
+			safe_process_and_print (l_as.colon_symbol (match_list), "", " ")
 			safe_process (l_as.expr)
 		end
 
 	process_local_dec_list_as (l_as: LOCAL_DEC_LIST_AS)
 			-- Process local declaration list `l_as'.
 		do
-			safe_process_and_print (l_as.local_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.locals, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.local_keyword (match_list))
+			print_list_indented (l_as.locals)
 		end
 
 	process_deferred_as (l_as: DEFERRED_AS)
@@ -1011,38 +1064,38 @@ feature {CLASS_AS} -- Routine
 	process_external_as (l_as: EXTERNAL_AS)
 			-- Process external routine `l_as'.
 		do
-			safe_process_and_print (l_as.external_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.language_name, " ", "", False)
-			safe_process_and_print (l_as.alias_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.alias_name_literal, " ", "", False)
+			print_on_new_line (l_as.external_keyword (match_list))
+			print_on_new_line_indented (l_as.language_name)
+			print_on_new_line (l_as.alias_keyword (match_list))
+			print_on_new_line_indented (l_as.alias_name_literal)
 		end
 
 	process_attribute_as (l_as: ATTRIBUTE_AS)
 			-- Process attribute routine `l_as'
 		do
-			safe_process_and_print (l_as.attribute_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.attribute_keyword (match_list))
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 		end
 
 	process_do_as (l_as: DO_AS)
 			-- Process do routine `l_as'.
 		do
-			safe_process_and_print (l_as.do_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.do_keyword (match_list))
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 		end
 
 	process_once_as (l_as: ONCE_AS)
 			-- Process once routine `l_as'.
 		do
-			safe_process_and_print (l_as.once_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.internal_keys, " ", "", False)
-			indent.append ("%T")
+			print_on_new_line (l_as.once_keyword (match_list))
+			safe_process_and_print (l_as.internal_keys, " ", "")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 		end
 
 	process_key_list_as (l_as: KEY_LIST_AS)
@@ -1056,16 +1109,16 @@ feature {CLASS_AS} -- Routine
 	process_ensure_as (l_as: ENSURE_AS)
 			-- Process postcondition `l_as'.
 		do
-			safe_process_and_print (l_as.ensure_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.ensure_keyword (match_list))
+			print_list_indented (l_as.full_assertion_list)
 		end
 
 	process_ensure_then_as (l_as: ENSURE_THEN_AS)
 			-- Process postcondition `l_as'.
 		do
-			safe_process_and_print (l_as.ensure_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.then_keyword (match_list), " ", "", False)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.ensure_keyword (match_list))
+			safe_process_and_print (l_as.then_keyword (match_list), " ", "")
+			print_list_indented (l_as.full_assertion_list)
 		end
 
 feature {CLASS_AS} -- Instructions
@@ -1073,16 +1126,16 @@ feature {CLASS_AS} -- Instructions
 	process_assign_as (l_as: ASSIGN_AS)
 			-- Process assign instruction `l_as'.
 		do
-			safe_process_and_print (l_as.target, indent, "", True)
-			safe_process_and_print (l_as.assignment_symbol (match_list), " ", " ", False)
+			print_on_new_line (l_as.target)
+			safe_process_and_print (l_as.assignment_symbol (match_list), " ", " ")
 			safe_process (l_as.source)
 		end
 
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
 			-- Process assigner call instruction `l_as'.
 		do
-			safe_process_and_print (l_as.target, indent, "", True)
-			safe_process_and_print (l_as.assignment_symbol, " ", " ", False)
+			print_on_new_line (l_as.target)
+			safe_process_and_print (l_as.assignment_symbol, " ", " ")
 			safe_process (l_as.source)
 		end
 
@@ -1095,15 +1148,15 @@ feature {CLASS_AS} -- Instructions
 	process_check_as (l_as: CHECK_AS)
 			-- Process check instruction `l_as'.
 		do
-			safe_process_and_print (l_as.check_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			print_on_new_line (l_as.check_keyword (match_list))
+			print_list_indented (l_as.full_assertion_list)
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_bang_creation_as (l_as: BANG_CREATION_AS)
 			-- Process bang creation instruction `l_as'.
 		do
-			safe_process_and_print (l_as.lbang_symbol, indent, "", True)
+			print_on_new_line (l_as.lbang_symbol)
 			safe_process (l_as.type)
 			safe_process (l_as.rbang_symbol)
 			safe_process (l_as.target)
@@ -1113,8 +1166,9 @@ feature {CLASS_AS} -- Instructions
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
 			-- Process create creation instruction `l_as'.
 		do
-			safe_process_and_print (l_as.create_keyword (match_list), indent, " ", True)
-			safe_process_and_print (l_as.type, "", " ", False)
+			print_on_new_line (l_as.create_keyword (match_list))
+			print_string (" ")
+			safe_process_and_print (l_as.type, "", " ")
 			safe_process (l_as.target)
 			safe_process (l_as.call)
 		end
@@ -1122,92 +1176,92 @@ feature {CLASS_AS} -- Instructions
 	process_debug_as (l_as: DEBUG_AS)
 			-- Process debug instruction `l_as'.
 		do
-			safe_process_and_print (l_as.debug_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.internal_keys, " ", "", False)
-			indent.append ("%T")
+			print_on_new_line (l_as.debug_keyword (match_list))
+			safe_process_and_print (l_as.internal_keys, " ", "")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			decrease_indent
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_guard_as (l_as: GUARD_AS)
 			-- Process guard instruction `l_as'.
 		do
-			safe_process_and_print (l_as.check_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.full_assertion_list, "%T" + indent, "", False, True)
-			safe_process_and_print (l_as.then_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.check_keyword (match_list))
+			print_list_indented (l_as.full_assertion_list)
+			print_on_new_line (l_as.then_keyword (match_list))
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			decrease_indent
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_if_as (l_as: IF_AS)
 			-- Process if instruction `l_as'.
 		do
-			safe_process_and_print (l_as.if_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.condition, " ", "", False)
-			safe_process_and_print (l_as.then_keyword (match_list), " ", "", False)
+			print_on_new_line (l_as.if_keyword (match_list))
+			safe_process_and_print (l_as.condition, " ", "")
+			safe_process_and_print (l_as.then_keyword (match_list), " ", "")
 
-			indent.append ("%T")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 
 			safe_process (l_as.elsif_list)
 
-			safe_process_and_print (l_as.else_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.else_keyword (match_list))
+			increase_indent
 			safe_process (l_as.else_part)
-			indent.remove_tail (1)
+			decrease_indent
 
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_elseif_as (l_as: ELSIF_AS)
 			-- Process elseif-clause `l_as'.
 		do
-			safe_process_and_print (l_as.elseif_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.expr, " ", "", False)
-			safe_process_and_print (l_as.then_keyword (match_list), " ", "", False)
+			print_on_new_line (l_as.elseif_keyword (match_list))
+			safe_process_and_print (l_as.expr, " ", "")
+			safe_process_and_print (l_as.then_keyword (match_list), " ", "")
 
-			indent.append ("%T")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 		end
 
 	process_inspect_as (l_as: INSPECT_AS)
 			-- Process inspect instruction `l_as'.
 		do
-			safe_process_and_print (l_as.inspect_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.switch, " ", "", False)
+			print_on_new_line (l_as.inspect_keyword (match_list))
+			safe_process_and_print (l_as.switch, " ", "")
 
 			safe_process (l_as.case_list)
 
-			safe_process_and_print (l_as.else_keyword (match_list), indent, "", True)
+			print_on_new_line (l_as.else_keyword (match_list))
 
-			indent.append ("%T")
+			increase_indent
 			safe_process (l_as.else_part)
-			indent.remove_tail (1)
+			decrease_indent
 
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_case_as (l_as: CASE_AS)
 			-- Process inspect case `l_as'
 		do
-			safe_process_and_print (l_as.when_keyword (match_list), indent, "", True)
-			safe_process_and_print (l_as.interval, " ", "", False)
-			safe_process_and_print (l_as.then_keyword (match_list), " ", "", False)
+			print_on_new_line (l_as.when_keyword (match_list))
+			process_and_print_eiffel_list (l_as.interval, " ", "", True, False)
+			safe_process_and_print (l_as.then_keyword (match_list), " ", "")
 
-			indent.append ("%T")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
 			-- Process instr call instruction `l_as'.
 		do
-			safe_process_and_print (l_as.call, indent, "", True)
+			print_on_new_line (l_as.call)
 		end
 
 	process_loop_as (l_as: LOOP_AS)
@@ -1217,15 +1271,15 @@ feature {CLASS_AS} -- Instructions
 			l_variant_processing_after: BOOLEAN
 		do
 			is_expr_iteration := False
-			safe_process_and_print (l_as.iteration, indent, "", True)
+			print_on_new_line (l_as.iteration)
 
-			safe_process_and_print (l_as.from_keyword (match_list), indent, "", True)
-			indent.append ("%T")
+			print_on_new_line (l_as.from_keyword (match_list))
+			increase_indent
 			safe_process (l_as.from_part)
-			indent.remove_tail (1)
+			decrease_indent
 
-			safe_process_and_print (l_as.invariant_keyword (match_list), indent, "", True)
-			process_and_print_eiffel_list (l_as.full_invariant_list, "%T" + indent, "", False, True)
+			print_on_new_line (l_as.invariant_keyword (match_list))
+			print_list_indented (l_as.full_invariant_list)
 
 				-- Special code to handle the old or new ordering of the `variant'
 				-- clause in a loop.
@@ -1234,26 +1288,26 @@ feature {CLASS_AS} -- Instructions
 				if l_as.variant_part.start_position > l_until.start_position then
 					l_variant_processing_after := True
 				else
-					safe_process_and_print (l_as.variant_part, indent, "", True)
+					print_on_new_line (l_as.variant_part)
 				end
 			else
-				safe_process_and_print (l_as.variant_part, indent, "", True)
+				print_on_new_line (l_as.variant_part)
 			end
 
-			safe_process_and_print (l_until, indent, "", True)
-			safe_process_and_print (l_as.stop, "%T" + indent, "", True)
+			print_on_new_line (l_until)
+			print_on_new_line_indented (l_as.stop)
 
-			safe_process_and_print (l_as.loop_keyword (match_list), indent, "", True)
+			print_on_new_line (l_as.loop_keyword (match_list))
 
-			indent.append ("%T")
+			increase_indent
 			safe_process (l_as.compound)
-			indent.remove_tail (1)
+			decrease_indent
 
 			if l_variant_processing_after then
-				safe_process_and_print (l_as.variant_part, indent, "", True)
+				print_on_new_line (l_as.variant_part)
 			end
 
-			safe_process_and_print (l_as.end_keyword, indent, "", True)
+			print_on_new_line (l_as.end_keyword)
 		end
 
 	process_iteration_as (l_as: ITERATION_AS)
@@ -1263,30 +1317,41 @@ feature {CLASS_AS} -- Instructions
 				-- If used in a loop statement, we want the expression on a new line.
 				-- If used in an expression, it should appear on the same line.
 			if is_expr_iteration then
-				safe_process_and_print (l_as.expression, " ", "", False)
+				safe_process_and_print (l_as.expression, " ", "")
 			else
-				safe_process_and_print (l_as.expression, "%T" + indent, "", True)
+				print_on_new_line_indented (l_as.expression)
 			end
 
-			safe_process_and_print (l_as.as_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.identifier, " ", "", False)
+			safe_process_and_print (l_as.as_keyword (match_list), " ", "")
+			safe_process_and_print (l_as.identifier, " ", "")
 		end
 
 	process_variant_as (l_as: VARIANT_AS)
 			-- Process variant `l_as'.
 		do
-			safe_process_and_print (l_as.variant_keyword (match_list), "", " ", False)
-			if l_as.expr /= Void then
-				safe_process_and_print (l_as.tag, "%T" + indent, "", True)
-				safe_process_and_print (l_as.colon_symbol (match_list), "", " ", False)
+			process_keyword_as (l_as.variant_keyword (match_list))
+			if attached l_as.tag as t then
+				print_on_new_line_indented (t)
+				safe_process_and_print (l_as.colon_symbol (match_list), "", " ")
 				safe_process (l_as.expr)
+			elseif attached l_as.expr as e then
+				print_on_new_line_indented (e)
 			end
 		end
 
-	process_retry_as (l_as: RETRY_AS)
+	process_retry_as (a: RETRY_AS)
 			-- Process retry instruction `l_as'.
 		do
-			process_keyword_as (l_as)
+			if attached a then
+				if attached a.first_token (match_list) as t then
+					process_leading_leaves (t.index)
+				end
+				if last_printed /= '%N' then
+					print_new_line
+				end
+				print_string (indent)
+				process_keyword_as (a)
+			end
 		end
 
 feature {CLASS_AS} -- Expressions
@@ -1302,15 +1367,15 @@ feature {CLASS_AS} -- Expressions
 			-- Process custom attribute expression `l_as'.
 		do
 			safe_process (l_as.creation_expr)
-			safe_process_and_print (l_as.tuple, " ", "", False)
-			safe_process_and_print (l_as.end_keyword (match_list), " ", "", False)
+			safe_process_and_print (l_as.tuple, " ", "")
+			safe_process_and_print (l_as.end_keyword (match_list), " ", "")
 		end
 
 	process_binary_as (l_as: BINARY_AS)
 			-- Process binary expression `l_as'.
 		do
 			safe_process (l_as.left)
-			safe_process_and_print (l_as.operator (match_list), " ", " ", False)
+			safe_process_and_print (l_as.operator (match_list), " ", " ")
 			safe_process (l_as.right)
 		end
 
@@ -1318,8 +1383,8 @@ feature {CLASS_AS} -- Expressions
 			-- Process 'and then' expression `l_as'.
 		do
 			safe_process (l_as.left)
-			safe_process_and_print (l_as.and_keyword (match_list), " ", " ", False)
-			safe_process_and_print (l_as.then_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.and_keyword (match_list), " ", " ")
+			safe_process_and_print (l_as.then_keyword (match_list), "", " ")
 			safe_process (l_as.right)
 		end
 
@@ -1327,8 +1392,8 @@ feature {CLASS_AS} -- Expressions
 			-- Process 'or else' expression `l_as'.
 		do
 			safe_process (l_as.left)
-			safe_process_and_print (l_as.or_keyword (match_list), " ", " ", False)
-			safe_process_and_print (l_as.else_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.or_keyword (match_list), " ", " ")
+			safe_process_and_print (l_as.else_keyword (match_list), "", " ")
 			safe_process (l_as.right)
 		end
 
@@ -1336,7 +1401,7 @@ feature {CLASS_AS} -- Expressions
 			-- Process bracket expression `l_as'.
 		do
 			safe_process (l_as.target)
-			safe_process_and_print (l_as.lbracket_symbol, " ", "", False)
+			safe_process_and_print (l_as.lbracket_symbol, " ", "")
 			safe_process (l_as.operands)
 			safe_process (l_as.rbracket_symbol)
 		end
@@ -1344,7 +1409,7 @@ feature {CLASS_AS} -- Expressions
 	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
 			-- Process agent expression `l_as'.
 		do
-			safe_process_and_print (l_as.agent_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.agent_keyword (match_list), "", " ")
 			if l_as.target /= Void then
 				safe_process (l_as.lparan_symbol (match_list))
 				l_as.target.process (Current)
@@ -1358,11 +1423,11 @@ feature {CLASS_AS} -- Expressions
 	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
 			-- Process inline agent expression `l_as'.
 		do
-			safe_process_and_print (l_as.agent_keyword (match_list), "", " ", False)
-			indent.append ("%T")
+			safe_process_and_print (l_as.agent_keyword (match_list), "", " ")
+			increase_indent
 			safe_process (l_as.body)
-			indent.remove_tail (1)
-			safe_process_and_print (l_as.internal_operands, " ", "", False)
+			decrease_indent
+			safe_process_and_print (l_as.internal_operands, " ", "")
 		end
 
 	process_delayed_actual_list_as (l_as: DELAYED_ACTUAL_LIST_AS)
@@ -1384,21 +1449,21 @@ feature {CLASS_AS} -- Expressions
 	process_unary_as (l_as: UNARY_AS)
 			-- Process unary expression `l_as'.
 		do
-			safe_process_and_print (l_as.operator (match_list), "", " ", False)
+			safe_process_and_print (l_as.operator (match_list), "", " ")
 			safe_process (l_as.expr)
 		end
 
 	process_un_free_as (l_as: UN_FREE_AS)
 			-- Process free unary expression `l_as'.
 		do
-			safe_process_and_print (l_as.op_name, "", " ", False)
+			safe_process_and_print (l_as.op_name, "", " ")
 			safe_process (l_as.expr)
 		end
 
 	process_un_strip_as (l_as: UN_STRIP_AS)
 			-- Process unary strip expression `l_as'.
 		do
-			safe_process_and_print (l_as.strip_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.strip_keyword (match_list), "", " ")
 			safe_process (l_as.lparan_symbol (match_list))
 			process_and_print_identifier_list (l_as.id_list, "", " ", True, False)
 			safe_process (l_as.rparan_symbol (match_list))
@@ -1409,14 +1474,14 @@ feature {CLASS_AS} -- Expressions
 		do
 			is_expr_iteration := True
 			safe_process (l_as.iteration)
-			safe_process_and_print (l_as.invariant_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.full_invariant_list, " ", "", False)
-			safe_process_and_print (l_as.until_keyword (match_list), " ", "", False)
-			safe_process_and_print (l_as.exit_condition, " ", "", False)
-			safe_process_and_print (l_as.qualifier_keyword (match_list), " ", " ", False)
+			safe_process_and_print (l_as.invariant_keyword (match_list), " ", "")
+			safe_process_and_print (l_as.full_invariant_list, " ", "")
+			safe_process_and_print (l_as.until_keyword (match_list), " ", "")
+			safe_process_and_print (l_as.exit_condition, " ", "")
+			safe_process_and_print (l_as.qualifier_keyword (match_list), " ", " ")
 			safe_process (l_as.expression)
-			safe_process_and_print (l_as.variant_part, " ", "", False)
-			safe_process_and_print (l_as.end_keyword, " ", "", False)
+			safe_process_and_print (l_as.variant_part, " ", "")
+			safe_process_and_print (l_as.end_keyword, " ", "")
 		end
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
@@ -1424,15 +1489,15 @@ feature {CLASS_AS} -- Expressions
 		do
 			if l_as.is_attached_keyword then
 				safe_process (l_as.attached_keyword (match_list))
-				safe_process_and_print (l_as.type, " ", "", False)
-				safe_process_and_print (l_as.expression, " ", "", False)
-				safe_process_and_print (l_as.as_keyword (match_list), " ", "", False)
-				safe_process_and_print (l_as.name, " ", "", False)
+				safe_process_and_print (l_as.type, " ", "")
+				safe_process_and_print (l_as.expression, " ", "")
+				safe_process_and_print (l_as.as_keyword (match_list), " ", "")
+				safe_process_and_print (l_as.name, " ", "")
 			else
 				safe_process (l_as.lcurly_symbol (match_list))
 				safe_process (l_as.name)
-				safe_process_and_print (l_as.type, " ", "", False)
-				safe_process_and_print (l_as.expression, " ", "", False)
+				safe_process_and_print (l_as.type, " ", "")
+				safe_process_and_print (l_as.expression, " ", "")
 			end
 		end
 
@@ -1450,7 +1515,7 @@ feature {CLASS_AS} -- Calls
 			-- Process feature access `l_as'.
 		do
 			safe_process (l_as.feature_name)
-			safe_process_and_print (l_as.internal_parameters, " ", "", False)
+			safe_process_and_print (l_as.internal_parameters, " ", "")
 		end
 
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
@@ -1470,38 +1535,38 @@ feature {CLASS_AS} -- Calls
 		do
 			safe_process (l_as.dot_symbol (match_list))
 			safe_process (l_as.feature_name)
-			safe_process_and_print (l_as.internal_parameters, " ", "", False)
+			safe_process_and_print (l_as.internal_parameters, " ", "")
 		end
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
 			-- Process a (local, argument or feature) access `l_as'.
 		do
 			safe_process (l_as.feature_name)
-			safe_process_and_print (l_as.internal_parameters, " ", "", False)
+			safe_process_and_print (l_as.internal_parameters, " ", "")
 		end
 
 	process_static_access_as (l_as: STATIC_ACCESS_AS)
 			-- Process a static precursor access `l_as'.
 		do
-			safe_process_and_print (l_as.feature_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.feature_keyword (match_list), "", " ")
 			safe_process (l_as.class_type)
 			safe_process (l_as.dot_symbol (match_list))
 			safe_process (l_as.feature_name)
-			safe_process_and_print (l_as.internal_parameters, " ", "", False)
+			safe_process_and_print (l_as.internal_parameters, " ", "")
 		end
 
 	process_precursor_as (l_as: PRECURSOR_AS)
 			-- Process precursor access `l_as'.
 		do
 			safe_process (l_as.precursor_keyword)
-			safe_process_and_print (l_as.parent_base_class, " ", "", False)
-			safe_process_and_print (l_as.internal_parameters, " ", "", False)
+			safe_process_and_print (l_as.parent_base_class, " ", "")
+			safe_process_and_print (l_as.internal_parameters, " ", "")
 		end
 
 	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
 			-- Process create creation expression `l_as'.
 		do
-			safe_process_and_print (l_as.create_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.create_keyword (match_list), "", " ")
 			safe_process (l_as.type)
 			safe_process (l_as.call)
 		end
@@ -1513,7 +1578,7 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			safe_process (l_as.bit_keyword (match_list))
-			safe_process_and_print (l_as.bits_value, " ", "", False)
+			safe_process_and_print (l_as.bits_value, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1522,7 +1587,7 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			safe_process (l_as.bit_keyword (match_list))
-			safe_process_and_print (l_as.bits_symbol, " ", "", False)
+			safe_process_and_print (l_as.bits_symbol, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1531,7 +1596,7 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
-			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ")
 			safe_process (l_as.class_name)
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
@@ -1541,9 +1606,9 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
-			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ")
 			safe_process (l_as.class_name)
-			safe_process_and_print (l_as.internal_generics, " ", "", False)
+			safe_process_and_print (l_as.internal_generics, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1552,7 +1617,7 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
-			safe_process_and_print (l_as.reference_or_expanded_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.reference_or_expanded_keyword (match_list), "", " ")
 			safe_process (l_as.name)
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
@@ -1563,7 +1628,7 @@ feature {CLASS_AS} -- Types
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
 			safe_process (l_as.like_keyword (match_list))
-			safe_process_and_print (l_as.current_keyword, " ", "", False)
+			safe_process_and_print (l_as.current_keyword, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1573,7 +1638,7 @@ feature {CLASS_AS} -- Types
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
 			safe_process (l_as.like_keyword (match_list))
-			safe_process_and_print (l_as.anchor, " ", "", False)
+			safe_process_and_print (l_as.anchor, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1583,7 +1648,7 @@ feature {CLASS_AS} -- Types
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
 			safe_process (l_as.class_name)
-			safe_process_and_print (l_as.parameters, " ", "", False)
+			safe_process_and_print (l_as.parameters, " ", "")
 			safe_process (l_as.rcurly_symbol (match_list))
 		end
 
@@ -1592,7 +1657,7 @@ feature {CLASS_AS} -- Types
 		do
 			safe_process (l_as.lcurly_symbol (match_list))
 			process_type_marks (l_as)
-			safe_process_and_print (l_as.like_keyword (match_list), "", " ", False)
+			safe_process_and_print (l_as.like_keyword (match_list), "", " ")
 			safe_process (l_as.qualifier)
 			safe_process (l_as.chain)
 			safe_process (l_as.rcurly_symbol (match_list))
@@ -1602,8 +1667,11 @@ feature {CLASS_AS} -- Types
 			-- Process constraining type `l_as'.
 		do
 			l_as.type.process (Current)
-			safe_process_and_print (l_as.renaming, "", " ", False)
-			safe_process (l_as.end_keyword (match_list))
+			if attached l_as.renaming as r then
+				safe_process_and_print (r.rename_keyword (match_list), " ", " ")
+				process_and_print_eiffel_list (r.content, "", " ", True, False)
+			end
+			safe_process_and_print (l_as.end_keyword (match_list), " ", "")
 		end
 
 	process_type_list_as (l_as: TYPE_LIST_AS)
@@ -1619,12 +1687,27 @@ feature {NONE} -- Visitor: type
 	process_type_marks (a: TYPE_AS)
 			-- Process types attachment and separateness marks (if any) associated with type `a'.
 		do
-			safe_process_and_print (a.attachment_mark (match_list), "", " ", False)
-			safe_process_and_print (a.separate_keyword (match_list), "", " ", False)
+			safe_process_and_print (a.attachment_mark (match_list), "", " ")
+			safe_process_and_print (a.separate_keyword (match_list), "", " ")
+		end
+
+feature {NONE} -- Modification
+
+	increase_indent
+			-- Add one space element to `indent'.
+		do
+			indent.append_character ('%T')
+		end
+
+	decrease_indent
+			-- Remove one space element from `indent'.
+		do
+			indent.remove_tail (1)
 		end
 
 invariant
 	out_stream_attached: out_stream /= Void
+	indent_attached: attached indent
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
