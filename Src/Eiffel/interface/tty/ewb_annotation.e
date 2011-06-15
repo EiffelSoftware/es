@@ -10,8 +10,6 @@ class
 inherit
 	EWB_CMD
 
-	CI_SHARED_SESSION
-
 create
 	make_with_arguments
 

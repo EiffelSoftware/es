@@ -51,7 +51,17 @@ feature -- Properties
 	execute
 			-- Action performed when invoked from the
 			-- command line.
+		local
+			l_parser: EXT_COMMAND_LINE_PARSER
+			l_config: EXT_CONFIG
+			l_parse_code_cmd: EXT_PROCESS_CLASSES_CMD
 		do
+			create l_parser.make_with_arguments (snippet_extraction_arguments, system)
+			l_parser.parse
+			l_config := l_parser.config
+
+			create l_parse_code_cmd.make (l_config)
+			l_parse_code_cmd.execute
 		end
 
 note

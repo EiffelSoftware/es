@@ -294,6 +294,7 @@
 				<exclude>/ewb_auto_test\.e$</exclude>
 				<exclude>/ewb_testing\.e$</exclude>
 				<exclude>/ewb_annotation\.e$</exclude>
+				<exclude>/ewb_snippet_extraction\.e$</exclude>
 			</file_rule>
 		</cluster>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
