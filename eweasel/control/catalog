@@ -1243,6 +1243,7 @@ test	inlining-in-parent-with-child-with-less-formals final106 tcf fail finalizin
 test	finalize-argument-anchors-formal	final107 tcf fail finalizing anchored_type
 test	finalize-external-invariant-skipped	final108 tcf fail finalizing assertions external
 test	inline-manifest-type			final109 tcf fail finalizing
+test	profile-once-per-process-function	final110 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1626,6 +1627,7 @@ test	standard-twin-correctness		exec339 tcf pass execution
 test	plus-with-mixed-types			exec340 tcf pass execution
 test	static-assigner					exec341 tcf pass execution
 test	generating-type-on-typed-pointer	exec342 tcf pass execution expanded generic
+test	deep-twin-control-c				exec343 tcf pass execution manual
 
 -- Once specific
 
@@ -1821,7 +1823,7 @@ test	create-generic-constrained-by-none	term174	tcf fail termination
 test	create-constrained-generic-crash	term175	tcf fail termination
 test	remove-syntax-error-crash		term176	tcf pass termination
 test	argument-anchors-formal-crash	term177	tcf pass termination
-test	small-eif-stack-chunk		term178	tcf pass termination skip
+test	small-eif-stack-chunk		term178	tcf pass termination
 test	inherit-inline-agent-with-formal	term179	tcf pass termination
 test	infix-prefix-alias-compatibility-crash	term180 tcf pass termination
 test	create-constrained-generic-crash-2	term181	tcf fail termination
@@ -2656,6 +2658,20 @@ test	pretty-note-on-attribute		pretty011 tcf pass pretty
 test	pretty-convert-clause			pretty012 tcf pass pretty
 test	pretty-multiconstrained-generics	pretty013 tcf pass pretty
 test	pretty-formal-renaming			pretty014 tcf pass pretty
+test	pretty-comment-indentation		pretty015 tcf pass pretty
+test	pretty-check-instruction		pretty016 tcf pass pretty
+test	pretty-nested-comment			pretty017 tcf pass pretty
+test	pretty-assertion-clause			pretty018 tcf pass pretty
+test	pretty-feature-adaptation		pretty019 tcf pass pretty
+test	pretty-bracket-expression		pretty020 tcf pass pretty
+test	pretty-attribute-comment		pretty021 tcf pass pretty
+test	pretty-expression-comment		pretty022 tcf pass pretty
+test	pretty-typed-character			pretty023 tcf pass pretty
+test	pretty-multiple-feature-clauses		pretty024 tcf pass pretty
+test	pretty-routine-comment-indentation	pretty025 tcf pass pretty
+test	pretty-constant-attribute-comment	pretty026 tcf pass pretty
+test	pretty-feature-call-comment		pretty027 tcf pass pretty
+test	pretty-comments-between-features	pretty028 tcf pass pretty
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing
