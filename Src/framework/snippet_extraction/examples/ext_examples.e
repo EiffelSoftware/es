@@ -18,20 +18,18 @@ feature {NONE} -- Initialization
 
 feature -- Loop Iteration Samples
 
-	loop_iteratation_simple_001 (a_sample_list: LINKED_LIST [STRING])
+	loop_iteratation_simple_001 (a_sample_list: LINKED_LIST [STRING]): STRING
 		require
 			a_sample_list_attached: attached a_sample_list
-		local
-			l_string: STRING
 		do
 			from
-				create l_string.make_empty
+				create Result.make_empty
 				a_sample_list.start
 			until
 				a_sample_list.after
 			loop
-				l_string.append (a_sample_list.item)
-				l_string.append (";")
+				Result.append (a_sample_list.item)
+				Result.append (";")
 
 				a_sample_list.forth
 			end
@@ -44,19 +42,17 @@ feature -- Loop Iteration Samples
 			Result.append (";")
 		end
 
-	loop_iteratation_simple_002 (a_sample_list: LINKED_LIST [STRING])
+	loop_iteratation_simple_002 (a_sample_list: LINKED_LIST [STRING]): STRING
 		require
 			a_sample_list_attached: attached a_sample_list
-		local
-			l_string: STRING
 		do
 			from
-				create l_string.make_empty
+				create Result.make_empty
 				a_sample_list.start
 			until
 				a_sample_list.after
 			loop
-				l_string.append (process_loop_iteration_simple_002 (a_sample_list.item))
+				Result.append (process_loop_iteration_simple_002 (a_sample_list.item))
 				a_sample_list.forth
 			end
 		end
@@ -122,26 +118,44 @@ feature -- Loop Iteration Samples
 			end
 		end
 
+	loop_iteration_stop_variable_002 (a_sample_list: LINKED_LIST [STRING])
+			-- Example: loop with stop variable from type {BOOLEAN}
+			-- Interface variables: l_done
+		local
+			l_done: BOOLEAN
+		do
+			from
+				l_done := False
+				a_sample_list.start
+			until
+				a_sample_list.after or l_done
+			loop
+				if process_loop_iteration_stop (a_sample_list.item) then
+					l_done := True
+				end
+				a_sample_list.forth
+			end
+		end
+
 	process_loop_iteration_stop (a_item: STRING): BOOLEAN
 			-- Dummy feature that takes any argument and does nothing.
 		do
 		end
 
-	loop_iteration_stop_variable_003
-			-- Interface variable example: loop with stop variable from type {BOOLEAN}
+	loop_iteration_stop_variable_003 (a_sample_list: LINKED_LIST [STRING])
+			-- Example: loop with stop variable from type {BOOLEAN}
 			-- Interface variables: l_done
 		local
-			l_sample_list: LINKED_LIST [STRING]
 			l_done: BOOLEAN
 		do
 			from
 				l_done := False
-				l_sample_list.start
+				a_sample_list.start
 			until
-				l_sample_list.after or l_done
+				a_sample_list.after or l_done
 			loop
-				l_done := process_loop_iteration_stop (l_sample_list.item)
-				l_sample_list.forth
+				l_done := process_loop_iteration_stop (a_sample_list.item)
+				a_sample_list.forth
 			end
 		end
 
@@ -151,7 +165,6 @@ feature -- Loop Iteration Samples
 		local
 			l_sample_list: LINKED_LIST [STRING]
 			l_done: BOOLEAN
-			l_string: STRING
 		do
 			from
 				l_done := False
@@ -281,6 +294,94 @@ feature -- Inspect Examples
 			end
 		end
 
+	inspect_without_variable_of_interest
+			-- Inspect statement without mentioning a target variable.
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_option: INTEGER
+		do
+			create l_sample_list.make
+			l_sample_list.wipe_out
+
+			l_option := 1
+
+			inspect
+				l_option
+			when 1 then
+				io.put_integer (1)
+			when 2 then
+				io.put_integer (2)
+			else
+				io.put_character ('?')
+			end
+		end
+
+	inspect_with_target_in_when_branch
+			-- Inspect statement mentioning a target variable in only one 'when' path.
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_option: INTEGER
+		do
+			create l_sample_list.make
+			l_sample_list.wipe_out
+
+			l_option := 1
+
+			inspect
+				l_option
+			when 1 then
+				l_sample_list.force ("1")
+			when 2 then
+				io.put_integer (2)
+			else
+				io.put_character ('?')
+			end
+		end
+
+	inspect_with_target_in_else_branch
+			-- Inspect statement mentioning a target variable in only the 'else' path.
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_option: INTEGER
+		do
+			create l_sample_list.make
+			l_sample_list.wipe_out
+
+			l_option := 1
+
+			inspect
+				l_option
+			when 1 then
+				io.put_integer (1)
+			when 2 then
+				io.put_integer (2)
+			else
+				l_sample_list.force ("?")
+			end
+		end
+
+	inspect_with_target_in_condition
+			-- Inspect statement mentioning a target variable in only the 'else' path.
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_option: INTEGER
+		do
+			create l_sample_list.make
+			l_sample_list.wipe_out
+
+			l_option := 1
+
+			inspect
+				l_sample_list.count
+			when 1 then
+				io.put_integer (1)
+			when 2 then
+				io.put_integer (2)
+			else
+				io.put_character('?')
+			end
+		end
+
 feature -- Object Test Examples
 
 	object_test_as_different_as1 (a_sample_list1, a_sample_list2: LINKED_LIST [ANY])
@@ -354,5 +455,32 @@ feature -- Object Test Examples
 
 			Result := attached a_sample_list as l_sample_list
 		end
-		
+
+feature {NONE} -- Feature Chaining
+
+	feature_chaining_target_item (a_sample_list: LINKED_LIST [STRING]): BOOLEAN
+		do
+			a_sample_list.item.append ("one")
+			a_sample_list.item.append ("two")
+		end
+
+	feature_chaining_class_feature: LINKED_SET [STRING]
+
+	feature_chaining_class_feature_item (a_sample_list: LINKED_LIST [STRING]): BOOLEAN
+		do
+			feature_chaining_class_feature.item.append (a_sample_list.item)
+			feature_chaining_class_feature.item.append (a_sample_list.item)
+		end
+
+feature {NONE} -- Data Types
+
+	different_data_types (a_sample_list1: LINKED_LIST [STRING]; a_sample_list2: LINKED_LIST [INTEGER]): BOOLEAN
+		do
+			a_sample_list1.force ("one")
+			a_sample_list1.force ("two")
+
+			a_sample_list2.force (1)
+			a_sample_list2.force (2)
+		end
+
 end

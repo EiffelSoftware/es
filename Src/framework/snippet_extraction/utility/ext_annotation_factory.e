@@ -25,13 +25,14 @@ feature -- Access
 			create {EXT_ANN_PRUNE} Result
 		end
 
-	new_ann_hole: EXT_ANNOTATION
+	new_ann_hole (a_mentions_set: LINKED_SET [STRING]): EXT_ANNOTATION
 		local
 			l_hole_annotation: EXT_ANN_HOLE
 		do
 				-- Create and setup `{EXT_ANN_HOLE}' typed annotation.
 			create l_hole_annotation
 			l_hole_annotation.set_hole_id (next_hole_id)
+			l_hole_annotation.set_mentions_set (a_mentions_set)
 
 				-- Set result of general type `{EXT_ANNOTATION}'.
 			Result := l_hole_annotation

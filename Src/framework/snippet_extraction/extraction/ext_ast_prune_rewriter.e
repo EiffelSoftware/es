@@ -210,7 +210,7 @@ feature {NONE} -- Implementation (Processing)
 		require else
 			an_ast_path_not_void: attached an_ast.path
 		do
-			Result := attached an_ast and not annotation_context.has_annotation_prune (an_ast.path)
+			Result := attached an_ast and then not annotation_context.has_annotation_prune (an_ast.path)
 		end
 
 feature -- Roundtrip

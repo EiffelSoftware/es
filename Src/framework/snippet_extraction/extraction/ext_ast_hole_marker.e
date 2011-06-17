@@ -74,8 +74,7 @@ feature {NONE} -- Implementation
 				processing_expr (l_as.source)
 			elseif is_ast_eiffel_using_variable_of_interest (l_as.source, variable_context) then
 					-- make hole: only source expression uses variable of interest
-				fixme ("Hole It!")
-				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+				annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 			end
 		end
 
@@ -140,7 +139,11 @@ feature {NONE} -- Implementation
 			-- add NESTED_EXPR_AS
 			-- add CREATION_EXPR_AS
 			if attached {NESTED_AS} l_as.call as l_call_as then
-				processing_call (l_as, l_call_as.target, l_call_as.message)
+				if is_not_chaining_nested_as (l_call_as) then
+					processing_call (l_as, l_call_as.target, l_call_as.message)
+				else
+					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+				end
 			elseif attached {ACCESS_AS} l_as.call as l_call_as then
 				processing_call (l_as, l_call_as, Void)
 			else
@@ -171,12 +174,10 @@ feature {NONE} -- Implementation
 
 				if not is_ast_eiffel_using_variable_of_interest (l_as.expression, variable_context) then
 						-- make hole: object test not refering to target variable.
-					fixme ("Collect meta information for hole.")
-					annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 				elseif not is_expr_as_clean (l_as.expression, variable_context) then
 						-- make hole: expression to complex
-					fixme ("Collect meta information for hole.")
-					annotation_context.add_annotation (l_as.expression.path, annotation_factory.new_ann_hole)
+					annotation_context.add_annotation (l_as.expression.path, create_annotation_hole (l_as.expression))
 				end
 			end
 		end
@@ -200,8 +201,6 @@ feature {NONE} -- Implementation (Helper)
 				-- Check because PRECURSOR_AS does not have an access name.
 			if attached l_target_as.access_name_8 and then variable_context.is_variable_of_interest (l_target_as.access_name_8) then
 				if attached l_call_as then
-					fixme ("Check call arguments.")
-					fixme ("Do replace 'other' identifiers?")
 					l_call_as.process (Current)
 				end
 			else
@@ -209,16 +208,14 @@ feature {NONE} -- Implementation (Helper)
 						-- check call arguments
 					if is_ast_eiffel_using_variable_of_interest (l_call_as, variable_context) then
 							-- make hole: variables of interest used in call
-						fixme ("Collect meta information for hole.")
-						annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+						annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 					end
 
 					-- class feature call
 				elseif attached {ACCESS_FEAT_AS} l_target_as as l_access_feat_as then
 					if attached l_access_feat_as.internal_parameters as l_internal_parameter then
 							-- make hole: variables of interest used in call
-						fixme ("Collect meta information for hole.")
-						annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+						annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 					end
 				end
 			end
@@ -233,9 +230,8 @@ feature {NONE} -- Implementation (Helper)
 				l_target_as.process (Current)
 			else
 					-- make hole: variables of interest used in call
-				fixme ("Collect meta information for hole.")
 				fixme ("Processing argument list.")
-				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+				annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 			end
 		end
 
@@ -249,20 +245,68 @@ feature {NONE} -- Implementation (Helper)
 			else
 				if not is_expr_as_clean (l_as, variable_context) then
 						-- make hole: expression to complex to keep unchanged.
-					fixme ("Collect meta information for hole.")
-					annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
+					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
 				end
 			end
+		end
 
---			if attached {EXPR_CALL_AS} l_as as l_expr_call_as then
---				processing_expr_call (l_as, l_expr_call_as)
---			elseif attached {BOOL_AS} l_as as l_bool_as then
---				-- Nothing to do. Keep it.
---			else
---					-- make hole: expression to complex to keep unchanged.
---				fixme ("Collect meta information for hole.")
---				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_hole)
---			end
+feature {NONE} -- Annotation Handling
+
+	create_annotation_hole (a_ast: AST_EIFFEL): EXT_ANNOTATION
+			-- Create a new `{EXT_ANN_HOLE}' with metadata.
+		do
+			Result := annotation_factory.new_ann_hole (collect_mentions_set (a_ast))
+		end
+
+	collect_mentions_set (a_ast: AST_EIFFEL): LINKED_SET [STRING]
+			-- Collect 'identifier' and 'identifier.feature_call' string representation of variables of interest used in `a_ast'.
+		local
+			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+		do
+			create Result.make
+			Result.compare_objects
+
+			create l_identifier_usage_finder
+			l_identifier_usage_finder.set_is_mode_disjoint (True)
+			l_identifier_usage_finder.set_on_access_identifier (
+				agent (l_as: ACCESS_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_variable_usage: LINKED_SET [STRING])
+					do
+						if a_variable_context.is_variable_of_interest (l_as.access_name_8) then
+							a_variable_usage.force (l_as.access_name_8)
+						end
+					end (?, variable_context, Result)
+				)
+			l_identifier_usage_finder.set_on_access_identifier_with_feature_call (
+				agent (l_as: NESTED_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_variable_usage: LINKED_SET [STRING])
+					do
+						if a_variable_context.is_variable_of_interest (l_as.target.access_name_8) then
+							if attached get_call_name (l_as.message) as l_call_name then
+								a_variable_usage.force (l_as.target.access_name_8 + once "." + l_call_name)
+							else
+								a_variable_usage.force (l_as.target.access_name_8)
+							end
+						end
+					end (?, variable_context, Result)
+				)
+
+			a_ast.process (l_identifier_usage_finder)
+		end
+
+	get_call_name (a_as: CALL_AS): STRING
+			-- Returns the feature name of a call.
+		do
+			fixme ("Re-check if all cases are handled.")
+			-- CALL_AS
+			----ACCESS_AS
+			----CREATION_EXPR_AS
+			----NESTED_AS
+			----NESTED_EXPR_AS
+
+			if attached {ACCESS_AS} a_as as l_as then
+				Result := l_as.access_name_8
+			elseif attached {NESTED_AS} a_as as l_as then
+				Result := l_as.target.access_name_8
+			end
 		end
 
 end

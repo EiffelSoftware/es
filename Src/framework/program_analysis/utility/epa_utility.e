@@ -86,6 +86,7 @@ feature -- AST
 			entity_feature_parser.reset_nodes
 			entity_feature_parser.set_syntax_version (entity_feature_parser.provisional_syntax)
 			entity_feature_parser.parse_from_utf8_string (l_text, Void)
+			check entity_feature_parser.error_count = 0 end
 
 			if attached {DO_AS} entity_feature_parser.feature_node.body.as_routine.routine_body as l_do then
 				if attached l_do.compound then

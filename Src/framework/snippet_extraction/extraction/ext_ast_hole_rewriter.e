@@ -254,6 +254,7 @@ feature -- Roundtrip
 		do
 			if annotation_context.has_annotation_hole (l_as.path) then
 				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+				output.append_string (Ti_new_line)
 			else
 				Precursor (l_as)
 			end
@@ -265,6 +266,7 @@ feature -- Roundtrip
 		do
 			if annotation_context.has_annotation_hole (l_as.path) then
 				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
+				output.append_string (Ti_new_line)
 			else
 				Precursor (l_as)
 			end

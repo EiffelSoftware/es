@@ -11,6 +11,7 @@ inherit
 		redefine
 			process_assigner_call_as,
 			process_assign_as,
+			process_case_as,
 			process_check_as,
 			process_creation_as,
 			process_debug_as,
@@ -220,10 +221,10 @@ feature {NONE} -- Conditional Pruning (w.r.t. Structural Evaluation)
 				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_prune)
 			end
 
-			fixme ("HOLE if just expression mentions VOI")
+			fixme ("Create a hole if only the expression but not the body mentions a variable of interest.")
 		end
 
-	process_inspect_as (l_as: INSPECT_AS)
+	process_case_as (l_as: CASE_AS)
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
@@ -234,11 +235,35 @@ feature {NONE} -- Conditional Pruning (w.r.t. Structural Evaluation)
 			end
 		end
 
-	process_loop_as (l_as: LOOP_AS)
+	process_inspect_as (l_as: INSPECT_AS)
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
 			if is_ast_eiffel_using_variable_of_interest (l_as) then
+				l_as.switch.process (Current)
+				safe_process (l_as.case_list)
+					-- Check if else part is using variables of interest. If not, it will be removed.
+				if attached l_as.else_part as l_else_part and then not is_ast_eiffel_using_variable_of_interest (l_else_part) then
+					annotation_context.add_annotation (l_else_part.path, annotation_factory.new_ann_prune)
+				end
+			else
+				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_prune)
+			end
+		end
+
+	process_loop_as (l_as: LOOP_AS)
+		require else
+			l_as_path_not_void: attached l_as.path
+		local
+			l_use_compound: BOOLEAN
+		do
+				-- Check if loop body is using variables of interest. If not, the whole
+				-- loop is removed.
+			if attached l_as.compound as l_compound_as then
+				l_use_compound := is_ast_eiffel_using_variable_of_interest (l_compound_as)
+			end
+
+			if l_use_compound then
 				Precursor (l_as)
 			else
 				annotation_context.add_annotation (l_as.path, annotation_factory.new_ann_prune)
