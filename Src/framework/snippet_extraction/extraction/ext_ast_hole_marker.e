@@ -95,43 +95,11 @@ feature {NONE} -- Implementation
 		end
 
 	process_if_as (l_as: IF_AS)
-		local
-			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
 		do
-				-- Scan expression for variable usage.
-			l_use_cond := is_ast_eiffel_using_variable_of_interest (l_as.condition, variable_context)
-				-- Scan and annotate expression.
 			processing_expr (l_as.condition)
-
-				-- Scan and annotate true branch
-			if attached l_as.compound then
-				l_use_branch_true := is_ast_eiffel_using_variable_of_interest (l_as.compound, variable_context)
-
-				if l_use_branch_true then
-					l_as.compound.process (Current)
-				end
-			end
-
-				-- Scan and annotate elseif list
-			if attached l_as.elsif_list then
-					-- process all individual `{ELSIF_AS}' from list
-				across l_as.elsif_list as l_elsif_list loop
-					if is_ast_eiffel_using_variable_of_interest (l_elsif_list.item, variable_context) then
-							-- mark that at least one elseif has to be retained
-						l_use_elsif_list := True
-						l_elsif_list.item.process (Current)
-					end
-				end
-			end
-
-				-- Scan and annotate false branch
-			if attached l_as.else_part then
-				l_use_branch_false := is_ast_eiffel_using_variable_of_interest (l_as.else_part, variable_context)
-
-				if l_use_branch_false then
-					l_as.else_part.process (Current)
-				end
-			end
+			safe_process (l_as.compound)
+			safe_process (l_as.elsif_list)
+			safe_process (l_as.else_part)
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
@@ -160,7 +128,6 @@ feature {NONE} -- Implementation
 			if attached l_as.stop then
 				processing_expr (l_as.stop)
 			end
---			safe_process (l_as.stop)
 
 			safe_process (l_as.compound)
 			safe_process (l_as.variant_part)

@@ -48,6 +48,7 @@ feature {NONE} -- Helper
 			l_ast_node_checker.allow_all
 			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_string_as)
 			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_integer_as)
+			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_creation_expr_as)
 
 			a_as.process (l_ast_node_checker)
 

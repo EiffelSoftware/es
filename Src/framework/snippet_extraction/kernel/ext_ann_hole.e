@@ -38,8 +38,8 @@ feature -- Access
 			-- Printable representation of annotation.
 		do
 			Result := once "hole__" + hole_id.out
-			Result.append ("(")
-			if attached mentions_set then
+			if attached mentions_set and then not mentions_set.is_empty then
+				Result.append ("(")
 				from
 					mentions_set.start
 				until
@@ -51,8 +51,10 @@ feature -- Access
 					end
 					mentions_set.forth
 				end
+				Result.append (")")
+			else
+				Result.append (once "__empty")
 			end
-			Result.append (")")
 		end
 
 end

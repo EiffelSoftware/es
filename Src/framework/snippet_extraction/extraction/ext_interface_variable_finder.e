@@ -35,7 +35,6 @@ feature {NONE} -- Initialization
 			set_on_access_identifier_with_feature_call (agent callback_use_feat)
 
 				-- Set up callback iterator to track variable usage in control flow statement expressions.
-				-- Takes read-only `{ID_AS}' into account that are used in e.g. `{OBJECT_TEST_AS}'
 			create expr_variable_usage_finder
 			expr_variable_usage_finder.set_is_mode_disjoint (True)
 			expr_variable_usage_finder.set_on_access_identifier (agent callback_use_pure_in_cf_stmt)

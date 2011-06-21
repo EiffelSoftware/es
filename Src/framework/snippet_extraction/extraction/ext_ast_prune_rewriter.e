@@ -184,7 +184,7 @@ create
 feature {NONE} -- Creation
 
 	make_with_output (a_output: like output)
-			-- Make with `a_output' and initialize empty `annotations'.
+			-- Make with `a_output'..
 		do
 			Precursor (a_output)
 		end

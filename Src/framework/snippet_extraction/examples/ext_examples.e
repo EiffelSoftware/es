@@ -270,6 +270,132 @@ feature -- Conditional Examples
 			end
 		end
 
+	conditional_empty_false_branch
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_string: STRING
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+				l_sample_list.extend ("was empty")
+			else
+				create l_string.make_from_string ("was not emtpy")
+				io.put_string (l_string)
+			end
+		end
+
+	conditional_empty_true_branch
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_string: STRING
+		do
+			create l_sample_list.make
+
+			if not l_sample_list.is_empty then
+				create l_string.make_from_string ("was not emtpy")
+				io.put_string (l_string)
+			else
+				l_sample_list.extend ("was empty")
+			end
+		end
+
+	conditional_elseif_branch_001
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+			elseif l_bool1 then
+				l_sample_list.extend ("was empty")
+			elseif l_bool2 then
+			elseif l_bool3 then
+			else
+			end
+		end
+
+	conditional_elseif_branch_002
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+			elseif l_bool1 then
+			elseif l_bool2 then
+				l_sample_list.extend ("was empty")
+			elseif l_bool3 then
+			else
+			end
+		end
+
+	conditional_elseif_branch_003
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+			elseif l_bool1 then
+			elseif l_bool2 then
+			elseif l_bool3 then
+				l_sample_list.extend ("was empty")
+			else
+			end
+		end
+
+	conditional_elseif_branch_004
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3, l_bool4: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+			elseif l_bool1 then
+			elseif l_bool2 then
+			elseif (l_bool3 or l_bool4) then
+				l_sample_list.extend ("was empty")
+			else
+			end
+		end
+
+	conditional_elseif_branch_005
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3, l_bool4: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty then
+			elseif l_bool1 or l_bool2 then
+			elseif l_bool3 or l_bool4 then
+				l_sample_list.extend ("was empty")
+			else
+			end
+		end
+
+	conditional_expression_equivalence
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2, l_bool3, l_bool4: BOOLEAN
+		do
+			create l_sample_list.make
+
+			if l_sample_list.is_empty and l_bool1 and l_bool2 and l_bool3 then
+				l_sample_list.extend ("was empty")
+			end
+
+			if (l_sample_list.is_empty) and ((l_bool1) and ((l_bool2) and ((l_bool3)))) then
+				l_sample_list.extend ("was empty")
+			end
+		end
+
+
 feature -- Inspect Examples
 
 	inspect_single_interface_variable_001

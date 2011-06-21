@@ -278,10 +278,14 @@ feature {NONE} -- Implementation
 			l_compound_as := a_compound_as
 			l_compound_as := perform_ast_prune_step (l_compound_as)
 
-			log.put_string ("%N")
-			log_ast_structure (l_compound_as)
+--			log.put_string ("%N")
+--			log_ast_structure (l_compound_as)
 
+			l_compound_as := perform_ast_rewrite_if_as (l_compound_as)
 			l_compound_as := perform_ast_hole_step (l_compound_as)
+
+--			log.put_string ("%N")
+--			log_ast_structure (l_compound_as)
 
 			if decide_on_instruction_list (l_compound_as) then
 				log.put_string ("%N")
@@ -365,6 +369,25 @@ feature {NONE} -- Implementation
 				-- Remove statements with `EXT_ANN_HOLE' tags.
 			create l_ast_rewriter.make_with_output (ast_printer_output)
 			l_ast_rewriter.set_annotation_context (l_annotation_context)
+
+			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_compound_as, l_ast_rewriter)) as l_rewritten_compound_as then
+				Result := l_rewritten_compound_as
+
+					-- Assign path IDs to nodes, print AST and continue processing.
+				create l_path_initializer
+				l_path_initializer.process_from_root (Result)
+			else
+				check false end
+			end
+		end
+
+	perform_ast_rewrite_if_as (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): EIFFEL_LIST [INSTRUCTION_AS]
+		local
+			l_ast_rewriter: EXT_AST_IF_AS_REWRITER
+			l_path_initializer: ETR_AST_PATH_INITIALIZER
+		do
+			create l_ast_rewriter.make_with_output (ast_printer_output)
+			l_ast_rewriter.set_variable_context (variable_context)
 
 			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_compound_as, l_ast_rewriter)) as l_rewritten_compound_as then
 				Result := l_rewritten_compound_as
