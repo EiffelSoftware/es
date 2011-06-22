@@ -7,65 +7,88 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	ANN_ANNOTATION
 
 inherit
 	EPA_SHARED_EQUALITY_TESTERS
 
-	HASHABLE
+--	HASHABLE
+
+--	DEBUG_OUTPUT
 
 feature -- Access
 
-	breakpoint_slot: INTEGER
-			-- Breakpoint slot to which current annotation is associated
-
-	pre_state: EPA_HASH_SET [EPA_EQUATION]
-			-- Annotations in pre-state
+	breakpoints: DS_HASH_SET [INTEGER]
+			-- Set of program locations (breakpoint slots)
+			-- on which current annotation covers.
+			-- All the breakpoints must be included, not only the
+			-- first and the last breakpoints covering certain
+			-- code block. For example, for an if-statement, you
+			-- can specify only breakpoints in one branch to mean that
+			-- current annotation only covers that branch. Or you can
+			-- specify breakpoints from both branches to mean that
+			-- current annotation covers both.
+			-- The breakpoint numbers inside this set are absolute breakpoints.
+			-- That means if there is inheried preconditions, there breakpoints
+			-- should count (so the first line in the feature is not 1 anymore).
 		do
-			if pre_state_internal = Void then
-				create pre_state_internal.make (20)
-				pre_state_internal.set_equality_tester (equation_equality_tester)
+			if locations_breakpoints = Void then
+				create locations_breakpoints.make (5)
 			end
-			Result := pre_state_internal
-		end
-
-	post_state: EPA_HASH_SET [EPA_EQUATION]
-			-- Annotations in post-state
-		do
-			if post_state_internal = Void then
-				create post_state_internal.make (20)
-				post_state_internal.set_equality_tester (equation_equality_tester)
-			end
-			Result := post_state_internal
-		end
-
-	hash_code: INTEGER
-			-- Hash code value
-		do
-			Result := breakpoint_slot
-		ensure then
-			good_result: Result = breakpoint_slot
-		end
-
-feature -- Setting
-
-	set_breakpoint_slot (b: INTEGER)
-			-- Set `breakpoint_slot' with `b'.
-		require
-			b_non_negative: b >= 0
-		do
-			breakpoint_slot := b
+			Result := locations_breakpoints
 		ensure
-			breakpoint_slot_set: breakpoint_slot = b
+			good_result: Result = locations_breakpoints
 		end
 
-feature{NONE} -- Implimentation
+	first_breakpoint: INTEGER
+			-- First breakpoint in `breakpoints'
+		require
+			breakpoint_exists: not breakpoints.is_empty
+		local
+			l_cursor: like breakpoints.new_cursor
+			l_has_result: BOOLEAN
+		do
+			from
+				l_cursor := breakpoints.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_has_result then
+					if l_cursor.item < Result then
+						Result := l_cursor.item
+					end
+				else
+					Result := l_cursor.item
+				end
+				l_cursor.forth
+			end
+		end
 
-	pre_state_internal: like pre_state
-			-- Cache for `pre_state'
+	last_breakpoint: INTEGER
+			-- Last breakpoint in `breakpoints'
+		require
+			breakpoint_exists: not breakpoints.is_empty
+		local
+			l_cursor: like breakpoints.new_cursor
+		do
+			from
+				l_cursor := breakpoints.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_cursor.item > Result then
+					Result := l_cursor.item
+				end
+				l_cursor.forth
+			end
+		end
 
-	post_state_internal: like post_state
-			-- Cache for `post_state'
+feature{NONE} -- Implementation
+
+	locations_breakpoints: like breakpoints
+			-- Cache for `breakpoints'
 
 end

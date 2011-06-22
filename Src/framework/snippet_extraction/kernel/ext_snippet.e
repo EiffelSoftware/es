@@ -24,6 +24,8 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		require
 			not_a_content_is_empty: not a_content.is_empty
+		local
+			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			create operands.make (a_operands.count)
 			operands.set_key_equality_tester (string_equality_tester)
@@ -35,6 +37,13 @@ feature{NONE} -- Initialization
 
 			build_debug_output
 			hash_code := debug_output.hash_code
+
+			create annotations.make
+
+				-- Initialize break point slots.
+			create l_bp_initializer
+			l_bp_initializer.set_current_breakpoint_slot (1)
+			l_bp_initializer.init_from (ast)
 		end
 
 feature -- Access
@@ -79,6 +88,9 @@ feature -- Access
 
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
+
+	annotations: LINKED_LIST [ANN_ANNOTATION]
+		-- List of annotations associated with current snippet	
 
 feature{NONE} -- Implementation
 

@@ -264,6 +264,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature -- Setting
+
 	set_current_breakpoint_slot (a_slot: INTEGER)
 			-- Set `current_breakpoint_slot' with `a_slot'.
 		do
@@ -273,7 +275,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
