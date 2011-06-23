@@ -52,7 +52,7 @@ feature -- Basic operations
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_target_type.make_with_long_form ("target_type")
+			create l_target_type.make_with_long_form ("target-type")
 			l_target_type.set_description ("Specify type name of the target class that usag is going to be mined.")
 			l_target_type.enable_mandatory
 			l_parser.options.force_last (l_target_type)

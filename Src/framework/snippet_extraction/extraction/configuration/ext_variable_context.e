@@ -6,6 +6,9 @@ note
 class
 	EXT_VARIABLE_CONTEXT
 
+inherit
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -102,5 +105,42 @@ feature -- Configuration
 		do
 			result := is_target_variable (a_variable_name) or is_interface_variable (a_variable_name)
 		end
-		
+
+feature -- Status report
+
+	debug_output: STRING
+		do
+			create Result.make_empty
+			if attached target_variables then
+				Result.append (debug_variable_table_as_string (target_variables, "target_variable"))
+			end
+			if attached interface_variables then
+				Result.append (debug_variable_table_as_string (interface_variables, "interface_variables"))
+			end
+		end
+
+feature {NONE} -- Debug
+
+	debug_variable_table_as_string (a_variables: HASH_TABLE [TYPE_A, STRING]; a_description: STRING): STRING
+			-- Logs the textual representation of `a_relevant_variables'.
+		do
+			create Result.make_empty
+
+			from
+				a_variables.start
+			until
+				a_variables.after
+			loop
+				Result.append ("[")
+				Result.append (a_description)
+				Result.append ("] ")
+				Result.append (a_variables.key_for_iteration)
+				Result.append (": ")
+				Result.append (a_variables.item_for_iteration.name)
+				Result.append ("%N")
+
+				a_variables.forth
+			end
+		end
+
 end

@@ -609,4 +609,32 @@ feature {NONE} -- Data Types
 			a_sample_list2.force (2)
 		end
 
+feature {NONE} -- Entry Point
+
+	entry_point_remove_two_encapsulating_if
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2: BOOLEAN
+		do
+			if l_bool1 then
+				if l_bool2 then
+					create l_sample_list.make
+					l_sample_list.extend ("was empty")
+				end
+			end
+		end
+
+	entry_point_remove_one_encapsulating_if
+		local
+			l_sample_list: LINKED_LIST [STRING]
+			l_bool1, l_bool2: BOOLEAN
+		do
+			if l_bool1 then
+				create l_sample_list.make
+				if l_bool2 then
+					l_sample_list.extend ("was empty")
+				end
+			end
+		end
+
 end

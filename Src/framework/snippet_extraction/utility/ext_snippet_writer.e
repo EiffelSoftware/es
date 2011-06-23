@@ -19,10 +19,20 @@ feature -- Basic operations
 				if attached {EXT_SNIPPET} l_snippet_cursor.item as l_snippet then
 					a_medium.put_string (l_snippet.source)
 					a_medium.put_new_line
-					a_medium.put_string ("---")
-					a_medium.put_new_line
+					a_medium.put_string (l_snippet.variable_context.debug_output)
 
+					a_medium.put_string ("---%N---")
+					a_medium.put_new_line
 					a_medium.put_string (l_snippet.content)
+
+					if attached l_snippet.content_original then
+						a_medium.put_string ("---%N---")
+						a_medium.put_new_line
+						a_medium.put_string (l_snippet.content_original)
+					end
+
+					a_medium.put_new_line
+					a_medium.put_new_line
 					a_medium.put_new_line
 				end
 			end

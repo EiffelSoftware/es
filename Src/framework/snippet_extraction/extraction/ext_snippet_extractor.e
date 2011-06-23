@@ -166,6 +166,7 @@ feature {NONE} -- Implementation
 		end
 
 	collect_candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
+			-- Collect all variables that might potentially become an interface variable.		
 		require
 			target_variables_configured: attached variable_context.target_variables
 		do
@@ -230,6 +231,7 @@ feature {NONE} -- Implementation
 		end
 
 	setup_variable_context (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: TYPE_A; a_variable_name: STRING)
+			-- Initialization of variable context on which the extraction relies.
 		local
 			l_target_variable_table: HASH_TABLE [TYPE_A, STRING]
 			l_object_test_as_alias_finder: EXT_OBJECT_TEST_AS_ALIAS_FINDER
@@ -272,16 +274,17 @@ feature {NONE} -- Implementation
 			log.put_string ("%N")
 			log_ast_processing_header (a_variable_name, a_variable_type.name)
 
-			setup_variable_context (a_compound_as, a_variable_type, a_variable_name)
+				-- Find the entry point for the extraction, that is either the
+				-- `a_compound_as' or smaller compound contained inside.
+			l_compound_as := find_entry_point (a_compound_as, a_variable_type, a_variable_name)
+
+				-- Setup `variable_context'.
+			setup_variable_context (l_compound_as, a_variable_type, a_variable_name)
 
 				-- AST modification steps.
-			l_compound_as := a_compound_as
 			l_compound_as := perform_ast_prune_step (l_compound_as)
-
---			log.put_string ("%N")
---			log_ast_structure (l_compound_as)
-
 			l_compound_as := perform_ast_rewrite_if_as (l_compound_as)
+			l_compound_as := perform_ast_rewrite_loop_as (l_compound_as)
 			l_compound_as := perform_ast_hole_step (l_compound_as)
 
 --			log.put_string ("%N")
@@ -291,18 +294,50 @@ feature {NONE} -- Implementation
 				log.put_string ("%N")
 				log_ast_text (l_compound_as)
 
+				fixme ("Clean-up snippet object creation.")
 				create l_snippet_operands.make (5)
 				create l_snippet_holes.make (5)
 				create l_snippet.make (l_snippet_operands,
 										text_from_ast (l_compound_as),
 										l_snippet_holes,
 										"[Start processing AST w.r.t target variable (" + a_variable_name + ": " + a_variable_type.name + ")]")
+				l_snippet.set_variable_context (variable_context)
+				l_snippet.set_content_original (text_from_ast (a_compound_as))
 				last_snippets.force (l_snippet)
 			else
 				log.put_string ("> Dropping feature; empty AST body after processing%N")
 			end
 
 			log_ast_processing_footer
+		end
+
+	find_entry_point (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: TYPE_A; a_variable_name: STRING): EIFFEL_LIST [INSTRUCTION_AS]
+		local
+			l_target_variable_table: HASH_TABLE [TYPE_A, STRING]
+			l_variable_context: EXT_VARIABLE_CONTEXT
+			l_entry_point_finder: EXT_ENTRY_POINT_FINDER
+		do
+				-- Create temporary variable context.
+			create l_target_variable_table.make (1)
+			l_target_variable_table.compare_objects
+			l_target_variable_table.force (a_variable_type, a_variable_name)
+			create l_variable_context.make
+			l_variable_context.set_target_variables (l_target_variable_table)
+
+			create l_entry_point_finder.make
+			l_entry_point_finder.set_variable_context (l_variable_context)
+			a_compound_as.process (l_entry_point_finder)
+
+			if attached l_entry_point_finder.last_entry_point as l_entry_point then
+					-- Set entry point that is a sub part of `a_compound_as'
+				Result := l_entry_point
+			else
+					-- Fallback to original AST if no dedicated entry point was found.
+				Result := a_compound_as
+			end
+
+		ensure
+			attached Result
 		end
 
 	perform_ast_prune_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): EIFFEL_LIST [INSTRUCTION_AS]
@@ -384,6 +419,25 @@ feature {NONE} -- Implementation
 	perform_ast_rewrite_if_as (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): EIFFEL_LIST [INSTRUCTION_AS]
 		local
 			l_ast_rewriter: EXT_AST_IF_AS_REWRITER
+			l_path_initializer: ETR_AST_PATH_INITIALIZER
+		do
+			create l_ast_rewriter.make_with_output (ast_printer_output)
+			l_ast_rewriter.set_variable_context (variable_context)
+
+			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_compound_as, l_ast_rewriter)) as l_rewritten_compound_as then
+				Result := l_rewritten_compound_as
+
+					-- Assign path IDs to nodes, print AST and continue processing.
+				create l_path_initializer
+				l_path_initializer.process_from_root (Result)
+			else
+				check false end
+			end
+		end
+
+	perform_ast_rewrite_loop_as (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): EIFFEL_LIST [INSTRUCTION_AS]
+		local
+			l_ast_rewriter: EXT_AST_LOOP_AS_REWRITER
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
 		do
 			create l_ast_rewriter.make_with_output (ast_printer_output)

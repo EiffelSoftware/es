@@ -46,6 +46,27 @@ feature{NONE} -- Initialization
 			l_bp_initializer.init_from (ast)
 		end
 
+feature -- Configuration
+
+	variable_context: EXT_VARIABLE_CONTEXT
+		assign set_variable_context
+			-- Contextual information about relevant variables.
+
+	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
+			-- Sets `variable_context' to `a_context'	
+		require
+			attached a_context
+		do
+			variable_context := a_context
+		end
+
+	set_content_original (a_content: STRING)
+		require
+			attached a_content
+		do
+			content_original := a_content
+		end
+
 feature -- Access
 
 	operands: DS_HASH_TABLE [TYPE_A, STRING]
@@ -59,6 +80,10 @@ feature -- Access
 
 	content: STRING
 			-- Textual representation of current snippet.
+			-- The content should be a parse-able string.
+
+	content_original: STRING
+			-- Textual representation of originating AST.
 			-- The content should be a parse-able string.
 
 	source: STRING
