@@ -1,0 +1,109 @@
+note
+	description: "Command line parser for snippet extraction functionalities."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	EXT_COMMAND_LINE_PARSER
+
+inherit
+	EXT_SHARED_LOGGER
+
+create
+	make_with_arguments
+
+feature {NONE} -- Initialization
+
+	make_with_arguments (a_args: LINKED_LIST [STRING]; a_system: SYSTEM_I)
+			-- Initialize Current with arguments `a_args'.
+		do
+			create config.make (a_system)
+			arguments := a_args
+		ensure
+			arguments_set: arguments = a_args
+			options_set: config.eiffel_system = a_system
+		end
+
+feature -- Access
+
+	config: EXT_CONFIG
+			-- Snippet extraction command line options
+
+	arguments: LINKED_LIST [STRING]
+			-- Command line options
+
+feature -- Basic operations
+
+	parse
+			-- Parse `arguments' and store result in `config'.
+		local
+			l_parser: AP_PARSER
+			l_args: DS_LINKED_LIST [STRING]
+
+			l_target_type: AP_STRING_OPTION
+			l_group: AP_STRING_OPTION
+			l_class: AP_STRING_OPTION
+			l_feature: AP_STRING_OPTION
+			l_output: AP_STRING_OPTION
+			l_log_file: AP_STRING_OPTION
+		do
+				-- Setup command line argument parser.
+			create l_parser.make
+			create l_args.make
+			arguments.do_all (agent l_args.force_last)
+
+			create l_target_type.make_with_long_form ("target-type")
+			l_target_type.set_description ("Specify type name of the target class that usag is going to be mined.")
+			l_target_type.enable_mandatory
+			l_parser.options.force_last (l_target_type)
+
+			create l_group.make_with_long_form ("group")
+			l_group.set_description ("Specify name of a cluster or library to restrict analysis to group contained classes.")
+			l_parser.options.force_last (l_group)
+
+			create l_class.make_with_long_form ("class")
+			l_class.set_description ("Specify name of the class to analyze.")
+			l_parser.options.force_last (l_class)
+
+			create l_feature.make_with_long_form ("feature")
+			l_feature.set_description ("Specify name of the feature to analyze.")
+			l_parser.options.force_last (l_feature)
+
+			create l_output.make_with_long_form ("output-path")
+			l_output.set_description ("Specify a folder to output files.")
+			l_parser.options.force_last (l_output)
+
+			create l_log_file.make_with_long_form ("log-file")
+			l_log_file.set_description ("File to write logging information to, additional to standard output.")
+			l_parser.options.force_last (l_log_file)
+
+			l_parser.parse_list (l_args)
+
+			if l_target_type.was_found then
+				config.set_target_type (l_target_type.parameter)
+			end
+
+			if l_class.was_found then
+				config.set_class_name (l_class.parameter)
+			end
+
+			if l_feature.was_found then
+				config.set_feature_name (l_feature.parameter)
+			end
+
+			if l_group.was_found then
+				config.set_group_name (l_group.parameter)
+			end
+
+			if l_output.was_found then
+				config.set_output (l_output.parameter)
+			end
+
+			if l_log_file.was_found then
+				config.set_log_file_name (l_log_file.parameter)
+					-- Add a logging file to the logging setup.
+				log.loggers.force (create {ELOG_FILE_LOGGER}.make_with_path (config.log_file_name))
+			end
+		end
+
+end

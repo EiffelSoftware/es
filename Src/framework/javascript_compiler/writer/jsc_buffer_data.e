@@ -6,7 +6,7 @@ note
 	revision    : "$Revision$"
 
 class
-	JSC_WRITER_DATA
+	JSC_BUFFER_DATA
 
 create
 	make_from_buffer,
@@ -36,7 +36,7 @@ feature -- Access
 			Result := l_string
 		end
 
-feature {JSC_WRITER} -- Access
+feature {JSC_BUFFER} -- Access
 
 	buffer: attached KL_STRING_OUTPUT_STREAM
 

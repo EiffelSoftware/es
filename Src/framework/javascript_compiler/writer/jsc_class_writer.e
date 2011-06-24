@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript
 
 	dependencies1: attached SET[INTEGER]
@@ -46,7 +46,7 @@ feature -- Access
 	dependencies2: attached SET[INTEGER]
 			-- Level 2 dependencies
 
-	processed_dependencies: attached JSC_WRITER_DATA
+	processed_dependencies: attached JSC_BUFFER_DATA
 			-- Dependencies as JavaScript
 		local
 			l_system: SYSTEM_I
@@ -125,7 +125,7 @@ feature -- Basic opearation
 
 feature {NONE} -- Class Processing
 
-	pre_process_parent_inheritance (a_parent: attached PARENT_AS; a_parent_type: attached CL_TYPE_A): JSC_WRITER_DATA
+	pre_process_parent_inheritance (a_parent: attached PARENT_AS; a_parent_type: attached CL_TYPE_A): JSC_BUFFER_DATA
 			-- Process a single parent inheritance clause: `a_parent'
 		local
 			l_class_type: CLASS_TYPE_AS
@@ -232,7 +232,7 @@ feature {NONE} -- Class Processing
 			l_parent: CL_TYPE_A
 			l_class_ast: CLASS_AS
 			l_class_name: STRING
-			l_parents: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_parents: LINKED_LIST[attached JSC_BUFFER_DATA]
 			l_parent2: PARENT_AS
 			l_class: CLASS_C
 		do
@@ -309,7 +309,7 @@ feature {NONE} -- Class Processing
 			output.put_new_line
 		end
 
-	generate_invariant (a_class: attached CLASS_C): attached JSC_WRITER_DATA
+	generate_invariant (a_class: attached CLASS_C): attached JSC_BUFFER_DATA
 			-- Generate the class invariant associated with `a_class'.
 		local
 			l_invariant_b: INVARIANT_B
@@ -381,7 +381,7 @@ feature {NONE} -- Class Processing
 			jsc_context.pop_locals
 		end
 
-	generate_deferred (a_class: attached CLASS_C): attached JSC_WRITER_DATA
+	generate_deferred (a_class: attached CLASS_C): attached JSC_BUFFER_DATA
 			-- Generate the array with the deferred features in this `a_class'.
 		local
 			l_feature_table: FEATURE_TABLE
@@ -427,7 +427,7 @@ feature {NONE} -- Class Processing
 		local
 			l_feature_table: FEATURE_TABLE
 			l_feature: FEATURE_I
-			l_generated_features: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_generated_features: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
 			l_feature_table := a_class.feature_table
 			check l_feature_table /= Void end
@@ -542,7 +542,7 @@ feature {NONE} -- Feature Processing
 			end
 		end
 
-	process_feature (a_feature: attached FEATURE_I): attached JSC_WRITER_DATA
+	process_feature (a_feature: attached FEATURE_I): attached JSC_BUFFER_DATA
 			-- Generate code for `a_feature'
 		local
 			l_feature_name: STRING

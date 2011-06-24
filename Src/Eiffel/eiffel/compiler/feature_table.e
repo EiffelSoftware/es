@@ -1003,7 +1003,7 @@ end
 			opo_info_table, old_opo_info_table: detachable OBJECT_RELATIVE_ONCE_INFO_TABLE
 			l_ancestors_once_infos: detachable OBJECT_RELATIVE_ONCE_INFO_TABLE
 			l_ancestor_once_info: detachable OBJECT_RELATIVE_ONCE_INFO
-			l_infos_cursor: ITERATION_CURSOR [detachable OBJECT_RELATIVE_ONCE_INFO]
+			l_infos_cursor: INDEXABLE_ITERATION_CURSOR [detachable OBJECT_RELATIVE_ONCE_INFO]
 			n: INTEGER
 			opo_info: OBJECT_RELATIVE_ONCE_INFO
 			opo_reused: BOOLEAN
@@ -1170,9 +1170,8 @@ end
 				debug ("once_per_object")
 					print ("FEATURE_TABLE.skeleton <" + l_associated_class.name_in_upper + ">: ancestors o.p.o count = " + l_ancestors_once_infos.count.out + "%N")
 				end
-				l_infos_cursor := l_ancestors_once_infos.new_cursor
 				from
-					l_infos_cursor.start
+					l_infos_cursor := l_ancestors_once_infos.new_cursor
 				until
 					l_infos_cursor.after
 				loop
@@ -1216,9 +1215,8 @@ end
 				end
 			end
 			if old_opo_info_table /= Void and then old_opo_info_table.count > 0 then
-				l_infos_cursor := old_opo_info_table.new_cursor
 				from
-					l_infos_cursor.start
+					l_infos_cursor := old_opo_info_table.new_cursor
 				until
 					l_infos_cursor.after
 				loop
@@ -1660,7 +1658,7 @@ invariant
 	related_select_table: is_computed implies select_table.feature_table = Current
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

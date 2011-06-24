@@ -24,6 +24,9 @@ inherit
 create
 	make_with_content
 
+create {SD_NOTIFY_ACTION_SEQUENCE}
+	make_filled
+
 feature {NONE} -- Initialization
 
 	make_with_content (a_content: SD_CONTENT)
@@ -38,17 +41,17 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
-	call (event_data: TUPLE)
+	call (event_data: detachable TUPLE)
 			-- <Precursor>
 		do
-			if not content.are_actions_ignored then
+			if attached content as l_content and then not l_content.are_actions_ignored then
 				Precursor (event_data)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	content: SD_CONTENT
+	content: detachable SD_CONTENT
 			-- Associate content
 
 ;note

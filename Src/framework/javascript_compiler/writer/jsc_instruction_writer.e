@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript code
 
 	dependencies1: attached SET[INTEGER]
@@ -73,7 +73,7 @@ feature -- Basic Operation
 	process_assertion (expr: attached BYTE_NODE; assertion_name: attached STRING; assertion_tag: detachable STRING)
 			-- Write `expr' as an assertion in JavaScript.
 		local
-			l_expr: JSC_WRITER_DATA
+			l_expr: JSC_BUFFER_DATA
 		do
 			l_expr := invoke_expression_writer (expr)
 
@@ -104,7 +104,7 @@ feature -- Processing
 	process_assign_b (a_node: ASSIGN_B)
 			-- Process `a_node'.
 		local
-			l_source: attached JSC_WRITER_DATA
+			l_source: attached JSC_BUFFER_DATA
 			l_target: ACCESS_B
 
 			l_call_access: CALL_ACCESS_B
@@ -194,7 +194,7 @@ feature -- Processing
 	process_if_b (a_node: IF_B)
 			-- Process `a_node'.
 		local
-			l_condition: JSC_WRITER_DATA
+			l_condition: JSC_BUFFER_DATA
 			l_elseif: ELSIF_B
 		do
 			jsc_context.push_line_number (a_node.line_number)
@@ -265,7 +265,7 @@ feature -- Processing
 	process_instr_call_b (a_node: INSTR_CALL_B)
 			-- Process `a_node'.
 		local
-			l_call: attached JSC_WRITER_DATA
+			l_call: attached JSC_BUFFER_DATA
 		do
 			create invariant_checks.make
 			jsc_context.push_line_number (a_node.line_number)
@@ -286,7 +286,7 @@ feature -- Processing
 	process_loop_b (a_node: LOOP_B)
 			-- Process `a_node'.
 		local
-			l_until_expression: attached JSC_WRITER_DATA
+			l_until_expression: attached JSC_BUFFER_DATA
 		do
 			jsc_context.push_line_number (a_node.line_number)
 				-- From
@@ -324,7 +324,7 @@ feature -- Processing
 			l_source: EXPR_B
 			l_target_type, l_source_type: TYPE_A
 
-			l_test: JSC_WRITER_DATA
+			l_test: JSC_BUFFER_DATA
 			local_name: STRING
 		do
 			create invariant_checks.make
@@ -372,7 +372,7 @@ feature -- Processing
 
 feature {NONE} -- Implementation
 
-	invariant_checks: attached LINKED_LIST[attached JSC_WRITER_DATA]
+	invariant_checks: attached LINKED_LIST[attached JSC_BUFFER_DATA]
 
 	pre_invariant_checks
 		local
@@ -446,7 +446,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	invoke_expression_writer (a_expr_node: BYTE_NODE): attached JSC_WRITER_DATA
+	invoke_expression_writer (a_expr_node: BYTE_NODE): attached JSC_BUFFER_DATA
 			-- Invoke `expression_writer' over a certain expression and collect results.
 		do
 			if attached a_expr_node as safe_expr_node then

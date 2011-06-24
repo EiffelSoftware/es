@@ -50,7 +50,10 @@ create
 	make_font_properties_size,
 	make_font_properties_strikethrough,
 	make_font_properties_underline,
-	make_font_properties_vertical_positioning
+	make_font_properties_vertical_positioning,
+	make_command_id,
+	make_quick_access_toolbar_dock,
+	make_enabled
 
 feature {NONE}  -- Initialization
 
@@ -180,6 +183,23 @@ feature {NONE}  -- Initialization
 			share_from_pointer (c_ui_pkey_color)
 		end
 
+	make_command_id
+			-- Make a command id key
+		do
+			share_from_pointer (c_ui_pkey_command_id)
+		end
+
+	make_quick_access_toolbar_dock
+			-- Make a quick access toolbar dock key
+		do
+			share_from_pointer (c_ui_pkey_quick_access_toolbar_dock)
+		end
+
+	make_enabled
+			-- Make a enabled key
+		do
+			share_from_pointer (c_ui_pkey_enabled)
+		end
 feature {NONE} -- Font properties creation methods
 
 	make_font_properties
@@ -429,6 +449,33 @@ feature -- Status Report
 			l_tmp: EV_PROPERTY_KEY
 		do
 			create l_tmp.make_color
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_command_id: BOOLEAN
+			-- Is current command id key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_command_id
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_quick_access_toolbar_dock: BOOLEAN
+			-- Is current quick access toolbar dock key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_quick_access_toolbar_dock
+			Result := l_tmp.guid.is_equal (guid)
+		end
+
+	is_enabled: BOOLEAN
+			-- Is current enabled key?
+		local
+			l_tmp: EV_PROPERTY_KEY
+		do
+			create l_tmp.make_enabled
 			Result := l_tmp.guid.is_equal (guid)
 		end
 
@@ -1000,4 +1047,39 @@ feature {NONE} -- Font control properties
 			]"
 		end
 
+	c_ui_pkey_command_id: POINTER
+			--
+		external
+			"C inline use  %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_CommandId;
+			}
+			]"
+		end
+
+	c_ui_pkey_quick_access_toolbar_dock: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_QuickAccessToolbarDock;
+			}
+			]"
+		end
+
+	c_ui_pkey_enabled: POINTER
+			--
+		external
+			"C inline use %"UIRibbon.h%""
+		alias
+			"[
+			{
+				return &UI_PKEY_Enabled;
+			}
+			]"
+		end
 end

@@ -81,7 +81,7 @@ feature {NONE} -- Initialization
 			-- Initialize object.
 		do
 			create output.make
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}output_parameters.make
+			create {LINKED_LIST[attached JSC_BUFFER_DATA]}output_parameters.make
 			reset ("")
 		end
 
@@ -90,7 +90,7 @@ feature -- Access
 	this_used_in_closure: BOOLEAN
 			-- Has an inline closure been defined and Current referred from it?
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript
 
 	dependencies1: attached SET[INTEGER]
@@ -99,7 +99,7 @@ feature -- Access
 	dependencies2: attached SET[INTEGER]
 			-- Level 2 dependencies
 
-	invariant_checks: attached LIST[attached JSC_WRITER_DATA]
+	invariant_checks: attached LIST[attached JSC_BUFFER_DATA]
 			-- Generated invariant checks related to the expression
 
 feature -- Basic Operation
@@ -112,12 +112,12 @@ feature -- Basic Operation
 			show_tuple_brackets := true
 			create {LINKED_SET[INTEGER]}dependencies1.make
 			create {LINKED_SET[INTEGER]}dependencies2.make
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}invariant_checks.make
+			create {LINKED_LIST[attached JSC_BUFFER_DATA]}invariant_checks.make
 		end
 
 	process_object_test (l_source: attached EXPR_B; l_target_type, l_source_type: attached TYPE_A; use_reverse: BOOLEAN): attached STRING
 		local
-			l_expression: JSC_WRITER_DATA
+			l_expression: JSC_BUFFER_DATA
 			local_name: STRING
 		do
 			output.push ("")
@@ -163,7 +163,7 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		local
 			l_old_show_tuple_brackets: BOOLEAN
-			l_params: attached LIST[attached JSC_WRITER_DATA]
+			l_params: attached LIST[attached JSC_BUFFER_DATA]
 		do
 				-- Hide tuple brackets
 			l_old_show_tuple_brackets := show_tuple_brackets
@@ -187,7 +187,7 @@ feature {BYTE_NODE} -- Visitors
 	process_array_const_b (a_node: ARRAY_CONST_B)
 			-- Process `a_node'.
 		local
-			l_expr: LINKED_LIST[attached JSC_WRITER_DATA]
+			l_expr: LINKED_LIST[attached JSC_BUFFER_DATA]
 			expressions: BYTE_LIST [BYTE_NODE]
 		do
 			expressions := a_node.expressions
@@ -594,7 +594,7 @@ feature {BYTE_NODE} -- Visitors
 		local
 			l_node_target: ACCESS_B
 			l_node_target_type: TYPE_A
-			l_target_name: attached JSC_WRITER_DATA
+			l_target_name: attached JSC_BUFFER_DATA
 			l_class: CLASS_C
 		do
 			output.push ("")
@@ -737,7 +737,7 @@ feature {BYTE_NODE} -- Visitors
 							omap: ARRAYED_LIST[INTEGER];
 							arguments: attached TUPLE_CONST_B
 							l_inner_arguments, l_outer_arguments, l_closed_evaled_arguments: attached LIST[attached STRING];
-							l_closed_arguments: attached LIST[attached JSC_WRITER_DATA]
+							l_closed_arguments: attached LIST[attached JSC_BUFFER_DATA]
 							)
 		local
 			l_arguments_expressions: BYTE_LIST [BYTE_NODE]
@@ -811,7 +811,7 @@ feature {BYTE_NODE} -- Visitors
 			l_feature: FEATURE_I
 			l_outer_arguments, l_inner_arguments: attached LIST[attached STRING]
 			l_closed_evaled_arguments: attached LIST[attached STRING]
-			l_closed_arguments: attached LIST[attached JSC_WRITER_DATA]
+			l_closed_arguments: attached LIST[attached JSC_BUFFER_DATA]
 
 			--l_evaled_inner_arguments
 			l_arguments: TUPLE_CONST_B
@@ -837,7 +837,7 @@ feature {BYTE_NODE} -- Visitors
 			create {LINKED_LIST[attached STRING]}l_outer_arguments.make
 			create {LINKED_LIST[attached STRING]}l_inner_arguments.make
 			create {LINKED_LIST[attached STRING]}l_closed_evaled_arguments.make
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}l_closed_arguments.make
+			create {LINKED_LIST[attached JSC_BUFFER_DATA]}l_closed_arguments.make
 
 			l_arguments := a_node.arguments
 			check l_arguments /= Void end
@@ -904,6 +904,9 @@ feature {BYTE_NODE} -- Visitors
 				end
 			output.unindent
 
+				-- Just make sure we don't forget it
+			this_used_in_closure := true
+
 			output.put_indentation
 			output.put ("}(")
 			output.put_data_list (l_closed_arguments, ", ")
@@ -926,7 +929,7 @@ feature {BYTE_NODE} -- Visitors
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
 			-- Process `a_node'.
 		local
-			l_expr: attached LINKED_LIST[attached JSC_WRITER_DATA]
+			l_expr: attached LINKED_LIST[attached JSC_BUFFER_DATA]
 			expressions: BYTE_LIST [BYTE_NODE]
 		do
 			expressions := a_node.expressions
@@ -982,7 +985,7 @@ feature {BYTE_NODE} -- Visitors
 	process_un_old_b (a_node: UN_OLD_B)
 			-- Process `a_node'.
 		local
-			l_expr_data: attached JSC_WRITER_DATA
+			l_expr_data: attached JSC_BUFFER_DATA
 		do
 			output.push ("")
 				safe_process(a_node.expr)
@@ -1048,7 +1051,7 @@ feature {NONE} -- Static dispatch
 
 feature {NONE} -- External calls
 
-	process_template_replace (a_template: attached STRING; a_keys: attached LIST[attached STRING]; a_values: attached LIST[attached JSC_WRITER_DATA])
+	process_template_replace (a_template: attached STRING; a_keys: attached LIST[attached STRING]; a_values: attached LIST[attached JSC_BUFFER_DATA])
 			-- Replace `a_keys' with `a_values' in `a_template'.
 		local
 			l_result: attached STRING
@@ -1132,9 +1135,11 @@ feature {NONE} -- Normal calls
 				output.put ("$")
 			end
 			output.put (jsc_context.name_mapper.feature_name (a_feature, true))
-			output.put ("(")
-			output.put_data_list (process_parameters(a_parameters), ", ")
-			output.put (")")
+			if not a_feature.is_attribute then
+				output.put ("(")
+				output.put_data_list (process_parameters(a_parameters), ", ")
+				output.put (")")
+			end
 		end
 
 feature {NONE} -- Dynamic dispatch
@@ -1173,7 +1178,7 @@ feature {NONE} -- Implementation
 	show_tuple_brackets: BOOLEAN
 			-- Should translate tuples to arrays or not
 
-	output_parameters: attached LIST[attached JSC_WRITER_DATA]
+	output_parameters: attached LIST[attached JSC_BUFFER_DATA]
 			-- The current list of parameters (from calls)
 
 	get_feature (a_node: attached CALL_ACCESS_B) : attached FEATURE_I
@@ -1256,7 +1261,7 @@ feature -- Processing helpers
 			end
 		end
 
-	process_type (a_type: attached TYPE_A): attached JSC_WRITER_DATA
+	process_type (a_type: attached TYPE_A): attached JSC_BUFFER_DATA
 			-- Generate the JavaScript object for a type (attached?, name, generics).
 		local
 			l_class: CLASS_C
@@ -1297,12 +1302,12 @@ feature -- Processing helpers
 			output.pop
 		end
 
-	process_generics (a_type: attached TYPE_A): attached JSC_WRITER_DATA
+	process_generics (a_type: attached TYPE_A): attached JSC_BUFFER_DATA
 			-- Generate the JavaScript object for a type's generics -- It is a list of types.
 		local
 			l_generics: ARRAY [TYPE_A]
 			l_generic: TYPE_A
-			generics: LINKED_LIST[attached JSC_WRITER_DATA]
+			generics: LINKED_LIST[attached JSC_BUFFER_DATA]
 			i: INTEGER
 		do
 			create generics.make
@@ -1331,13 +1336,13 @@ feature -- Processing helpers
 			output.pop
 		end
 
-	process_parameters (a_parameters: BYTE_LIST [PARAMETER_B]): attached LIST[attached JSC_WRITER_DATA]
+	process_parameters (a_parameters: BYTE_LIST [PARAMETER_B]): attached LIST[attached JSC_BUFFER_DATA]
 			-- Process `a_parameters' and return them as a nice list.
 		local
-			l_current_output_parameters: LIST[attached JSC_WRITER_DATA]
+			l_current_output_parameters: LIST[attached JSC_BUFFER_DATA]
 		do
 			l_current_output_parameters := output_parameters
-			create {LINKED_LIST[attached JSC_WRITER_DATA]}output_parameters.make
+			create {LINKED_LIST[attached JSC_BUFFER_DATA]}output_parameters.make
 				jsc_context.name_mapper.push_target_current
 					safe_process (a_parameters)
 				jsc_context.name_mapper.pop_target
@@ -1352,7 +1357,7 @@ feature -- Processing helpers
 			l_parameters: attached BYTE_LIST [attached PARAMETER_B]
 			l_parameter: attached PARAMETER_B
 			l_feature: attached FEATURE_I
-			l_target_name: attached JSC_WRITER_DATA
+			l_target_name: attached JSC_BUFFER_DATA
 			l_left: EXPR_B
 			l_left_type: TYPE_A
 		do

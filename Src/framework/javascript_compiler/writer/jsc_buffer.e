@@ -6,7 +6,7 @@ note
 	revision    : "$Revision$"
 
 class
-	JSC_WRITER
+	JSC_BUFFER
 
 create
 	make
@@ -31,7 +31,7 @@ feature -- Access
 			Result := l_string
 		end
 
-	data: attached JSC_WRITER_DATA
+	data: attached JSC_BUFFER_DATA
 		do
 			create Result.make_from_buffer (buffer)
 		end
@@ -54,7 +54,7 @@ feature -- Operations
 			buffer.put_string (a_string)
 		end
 
-	put_data (a_data: attached JSC_WRITER_DATA)
+	put_data (a_data: attached JSC_BUFFER_DATA)
 			-- Put `a_data' to output buffer
 		do
 			buffer.put_string (a_data.buffer.string)
@@ -111,7 +111,7 @@ feature -- Operations
 			end
 		end
 
-	put_data_list (a_data_list: attached LIST[attached JSC_WRITER_DATA]; a_glue: attached STRING)
+	put_data_list (a_data_list: attached LIST[attached JSC_BUFFER_DATA]; a_glue: attached STRING)
 		local
 			l_is_first_parameter: BOOLEAN
 		do

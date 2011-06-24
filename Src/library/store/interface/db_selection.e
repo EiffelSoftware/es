@@ -11,9 +11,6 @@ class DB_SELECTION
 
 inherit
 	DB_STATUS_USE
-		export
-			{ANY} is_ok, is_connected
-		end
 
 	DB_EXEC_USE
 
@@ -157,12 +154,8 @@ feature -- Status setting
 			-- Use this before `load_result' for performance.
 		require
 			reference_exists: ref /= Void
-		local
-			l_object: like object
 		do
-			l_object := object
-			if l_object = Void or else
-					dynamic_type (ref) /= dynamic_type (l_object) then
+			if not attached object as l_object or else dynamic_type (ref) /= dynamic_type (l_object) then
 				update_map_table := True
 			end
 			object := ref

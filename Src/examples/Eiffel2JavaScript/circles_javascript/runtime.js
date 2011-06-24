@@ -173,6 +173,22 @@ var runtime = {
 		};
 	},
 	
+	exportAPI : function(obj) {
+		var regex_matches, feature, feature_name;
+		for (feature in obj) {
+			if (feature.charAt(0) !== '$') {
+				regex_matches = this._remove_ending_regexp.exec(feature);
+				if (regex_matches && regex_matches.length === 2) {
+					feature_name = regex_matches[1];
+					if (!(feature_name in obj)) {
+						obj[feature_name] = obj[feature];
+					}
+				}
+			}
+		}
+		return obj;
+	},
+	
 	declare : function (class_name, parent_classes, class_decl) {
 		var parent_decl, class_prototype, redefining_map, renaming_map, parent_deferred_map, 
 			regex_matches, feature, found_feature, feature_name, i, j, inherits_map, parent_inherits_map,
@@ -185,7 +201,7 @@ var runtime = {
 		for (feature in class_decl) {
 			if (class_decl.hasOwnProperty(feature)) {
 				class_prototype[feature] = class_decl[feature];
-				if (typeof class_decl[feature] === "function" && ! ("$"+feature in class_decl)) {
+				if (typeof class_decl[feature] === "function" && feature.charAt(0) != '$' && ! ("$"+feature in class_decl)) {
 					class_prototype["$"+feature] = class_decl[feature];
 				}
 			}
@@ -214,6 +230,7 @@ var runtime = {
 			inherits_map[parent_classes[i].class_name] = true;
 			
 			// Build a map out of the list with features being redefined
+			parent_classes[i].redefining = parent_classes[i].redefining || [];
 			redefining_map = this._array_2_map(parent_classes[i].redefining);
 
 			// Reference the map of features being renamed
@@ -327,6 +344,17 @@ var runtime = {
 		if (obj === null) {
 			return false;
 		}
+		
+		if (typeof type === "string") {
+			type = {
+				name : type
+			};
+		}
+		
+		if (typeof type.attached === 'undefined') {
+			type.attached = false;
+		}
+		type.generics = type.generics || [];
 		
 		if (type.name === "EIFFEL_ANY") {
 			return true;

@@ -6,7 +6,7 @@ note
 	revision    : "$Revision$"
 
 class
-	JSC_SMART_WRITER
+	JSC_SMART_BUFFER
 
 create
 	make
@@ -16,7 +16,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize object
 		do
-			create {LINKED_STACK[attached JSC_WRITER]}writers.make
+			create {LINKED_STACK[attached JSC_BUFFER]}writers.make
 			push ("")
 		end
 
@@ -28,7 +28,7 @@ feature -- Access
 			Result := writer.force_string
 		end
 
-	data: attached JSC_WRITER_DATA
+	data: attached JSC_BUFFER_DATA
 		do
 			Result := writer.data
 		end
@@ -53,7 +53,7 @@ feature -- Operations
 			writer.put (a_string)
 		end
 
-	put_data (a_data: attached JSC_WRITER_DATA)
+	put_data (a_data: attached JSC_BUFFER_DATA)
 			-- Put `a_data' to output buffer
 		do
 			writer.put_data (a_data)
@@ -90,7 +90,7 @@ feature -- Operations
 			writer.put_list (a_list, a_glue)
 		end
 
-	put_data_list (a_data_list: attached LIST[attached JSC_WRITER_DATA]; a_glue: attached STRING)
+	put_data_list (a_data_list: attached LIST[attached JSC_BUFFER_DATA]; a_glue: attached STRING)
 		do
 			writer.put_data_list (a_data_list, a_glue)
 		end
@@ -110,7 +110,7 @@ feature -- Operations
 	push (a_indentation: attached STRING)
 			-- Push writer
 		local
-			temp_writer: attached JSC_WRITER
+			temp_writer: attached JSC_BUFFER
 		do
 			create temp_writer.make
 			temp_writer.reset (a_indentation)
@@ -125,11 +125,11 @@ feature -- Operations
 
 feature {NONE} -- Implementation
 
-	writer: attached JSC_WRITER
+	writer: attached JSC_BUFFER
 		do
 			Result := writers.item
 		end
 
-	writers : attached STACK[attached JSC_WRITER]
+	writers : attached STACK[attached JSC_BUFFER]
 
 end

@@ -36,7 +36,6 @@ feature -- Command
 		do
 			from
 				l_new_cursor := a_modes.new_cursor
-				l_new_cursor.start
 			until
 				l_new_cursor.after
 			loop
@@ -112,7 +111,7 @@ feature -- Command
 			com_uninitialize
 		end
 
-feature {EV_RIBBON_ITEM, EV_RIBBON_TEXTABLE, EV_RIBBON_TOOLTIPABLE, EV_RIBBON_APPLICATION_MENU_RECENT_ITEMS} -- Commands
+feature {EV_RIBBON_ITEM, EV_RIBBON_TEXTABLE, EV_RIBBON_TOOLTIPABLE, EV_RIBBON_APPLICATION_MENU_RECENT_ITEMS, EV_RIBBON_QUICK_ACCESS_TOOLBAR} -- Commands
 
 	get_command_property (a_command_id: NATURAL_32; a_key: EV_PROPERTY_KEY; a_variant: EV_PROPERTY_VARIANT)
 		require

@@ -38,7 +38,6 @@ feature -- Command
 			generate_readonly_classes
 
 			generate_eiffel_class_for_header_file
-
 		end
 
 feature -- Query
@@ -476,6 +475,11 @@ feature {NONE} -- Implementation
 			l_file, l_dest_file: RAW_FILE
 			l_singleton: ER_SHARED_SINGLETON
 			l_file_name: FILE_NAME
+
+			l_shared: ER_SHARED_SINGLETON
+			l_error: EV_ERROR_DIALOG
+			l_interface_names: ER_INTERFACE_NAMES
+			l_misc_constants: ER_MISC_CONSTANTS
 		do
 			-- Copy template ecf
 			create l_file.make (ecf_template_file_path)
@@ -507,10 +511,22 @@ feature {NONE} -- Implementation
 				end
 
 			else
-				check corrupted_installation: False end
-			end
+				create l_shared
+				create l_interface_names
+				create l_misc_constants
+				if attached l_misc_constants.ise_eiffel as l_ise_eiffel then
+					create l_error.make_with_text (l_interface_names.cannot_find_templates (l_ise_eiffel))
+				else
+					create l_error.make_with_text (l_interface_names.ise_eiffel_not_defined)
+				end
 
-			--
+				l_error.set_buttons (<<l_interface_names.ok>>)
+				if attached l_shared.main_window_cell.item as l_win then
+					l_error.show_modal_to_window (l_win)
+				else
+					l_error.show
+				end
+			end
 		end
 
 	copy_predefine_classes
@@ -593,12 +609,84 @@ feature {NONE} -- Implementation
 	generate_readonly_classes
 			--
 		do
+			generate_application_class
 			generate_window_classes
 			generate_readonly_classes_imp
 			generate_application_menu_classes
 			generate_help_button_class
 			generate_quick_access_toolbar_class
 			generate_context_popup_class
+		end
+
+	generate_application_class
+			-- Generate RIBBON_APPLICATION class
+		local
+			l_singleton: ER_SHARED_SINGLETON
+			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
+			l_window_file, l_sub_dir, l_last_string: STRING
+			l_constants: ER_MISC_CONSTANTS
+			l_file_name, l_dest_file_name: FILE_NAME
+			l_file, l_dest_file: RAW_FILE
+			l_show_window_string, l_create_window_string, l_register_window_string: STRING
+		do
+			l_window_file := "ribbon_application"
+			l_sub_dir := "code_generated_everytime"
+
+			create l_singleton
+			l_list := l_singleton.layout_constructor_list
+			create l_show_window_string.make_empty
+			create l_create_window_string.make_empty
+			create l_register_window_string.make_empty
+
+			if l_list.count > 1 then
+				from
+
+					l_list.go_i_th (2)
+				until
+					l_list.after
+				loop
+					l_show_window_string.append ("%N%T%T%Tmain_window_" + l_list.index.out + ".show")
+					l_create_window_string.append ("%N%T%T%Tcreate main_window_" + l_list.index.out)
+					l_register_window_string.append ("%N%Tmain_window_" + l_list.index.out + ": MAIN_WINDOW_" + l_list.index.out + "%N%T%T%T-- Ribbon window " + l_list.index.out + ".%N")
+
+					l_list.forth
+				end
+			end
+
+			if attached l_singleton.project_info_cell.item as l_project_info then
+				if attached l_project_info.project_location as l_project_location then
+					create l_constants
+
+					-- Generate tool bar class
+					create l_file_name.make_from_string (l_constants.template)
+					l_file_name.set_subdirectory (l_sub_dir)
+					l_file_name.set_file_name (l_window_file + ".e")
+					create l_file.make (l_file_name)
+					if l_file.exists and then l_file.is_readable then
+						create l_dest_file_name.make_from_string (l_project_location)
+						l_dest_file_name.set_file_name (l_window_file + ".e")
+						create l_dest_file.make_create_read_write (l_dest_file_name)
+						from
+							l_file.open_read
+							l_file.start
+						until
+							l_file.after
+						loop
+							l_file.read_line
+							l_last_string := l_file.last_string
+
+							l_last_string.replace_substring_all ("$SHOW_OTHER_WINDOWS", l_show_window_string)
+							l_last_string.replace_substring_all ("$CREATE_OTHER_WINDOWS", l_create_window_string)
+							l_last_string.replace_substring_all ("$REGISTER_OTHER_WINDOWS", l_register_window_string)
+
+							l_dest_file.put_string (l_last_string + "%N")
+						end
+
+						l_file.close
+						l_dest_file.close
+					end
+				end
+			end
 		end
 
 	generate_window_classes
@@ -617,7 +705,7 @@ feature {NONE} -- Implementation
 
 			from
 				create l_singleton
-				l_list := l_singleton.layout_constructor_list
+				l_list := l_singleton.layout_constructor_list.twin
 				l_list.start
 			until
 				l_list.after
@@ -698,17 +786,19 @@ feature {NONE} -- Implementation
 			not_void: a_last_string /= Void
 		local
 			l_application_menu_comment: STRING
+			l_first_application_menu_identifer_name: detachable STRING
 		do
 			if a_tree.valid_index (2) then
 				l_application_menu_comment := "%N%T%T%T-- Application menu"
+				l_first_application_menu_identifer_name := first_application_menu_identifer_name
 				check is_application_menu: a_tree.i_th (2).text.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu) end
 				if attached {ER_TREE_NODE_DATA} a_tree.i_th (2).data as l_data
 					and then attached l_data.command_name as l_identifer_name
 					and then not l_identifer_name.is_empty then
-
+					check l_first_application_menu_identifer_name /= void end
 					a_last_string.replace_substring_all ("$APPLICATION_MENU_NAME", "%Tapplication_menu: " + l_identifer_name.as_upper + l_application_menu_comment)
 
-					a_last_string.replace_substring_all ("$APPLICATION_MENU_CREATION", "%T%T%Tcreate application_menu.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}." + l_identifer_name + ">>)")
+					a_last_string.replace_substring_all ("$APPLICATION_MENU_CREATION", "%T%T%Tcreate application_menu.make_with_command_list (<<{COMMAND_NAME_CONSTANTS}." + l_first_application_menu_identifer_name + ">>)")
 				else
 					if a_list_index = 1 then
 						a_last_string.replace_substring_all ("$APPLICATION_MENU_NAME", "%Tapplication_menu: APPLICATION_MENU" + l_application_menu_comment)
@@ -725,6 +815,26 @@ feature {NONE} -- Implementation
 				a_last_string.replace_substring_all ("$APPLICATION_MENU_CREATION", "")
 				a_last_string.replace_substring_all ("$APPLICATION_MENU_REDEFINE", "")
 			end
+		end
+
+	first_application_menu_identifer_name: detachable STRING
+			--
+		local
+			l_shared: ER_SHARED_SINGLETON
+			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
+			l_items: ARRAYED_LIST [EV_TREE_NODE]
+		do
+			create l_shared
+			l_list := l_shared.layout_constructor_list
+			if not l_list.is_empty then
+				l_items := l_list.first.all_items_in_all_constructors ({ER_XML_CONSTANTS}.ribbon_application_menu)
+				if not l_items.is_empty then
+					if attached {ER_TREE_NODE_APPLICATION_MENU_DATA} l_items.last.data as l_data then
+						Result := l_data.command_name
+					end
+				end
+			end
+
 		end
 
 	window_class_quick_access_toolbar (a_tree: EV_TREE; a_list_index: INTEGER; a_last_string: STRING)

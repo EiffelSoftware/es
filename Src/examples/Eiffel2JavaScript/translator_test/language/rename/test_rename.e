@@ -99,6 +99,21 @@ feature {NONE} -- Initialization
 					assert (a.bar.is_equal("C"))
 				end
 			)
+			invoke_test ("3", agent
+				local
+					a: TEST3_REN_A
+					b: TEST3_REN_B
+					r: STRING
+				do
+					create b
+					a := b
+					r := b.f
+					r := r + "," + b.af
+					r := r + "," + a.f
+
+					assert (r.is_equal("B.f,A.f,A.f"))
+				end
+			)
 		end
 
 feature {NONE} -- Implementation

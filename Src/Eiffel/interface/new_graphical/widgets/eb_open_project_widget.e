@@ -790,7 +790,6 @@ feature {NONE} -- Implementation
 				end
 				l_list.forth
 			end
-
 			a_item.set_item_strings (l_array)
 			if not l_has_target and not l_list.is_empty then
 				a_item.set_text (l_array.first)
@@ -1307,6 +1306,8 @@ invariant
 	post_project_selected_actions_not_void: post_project_selected_actions /= Void
 
 note
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

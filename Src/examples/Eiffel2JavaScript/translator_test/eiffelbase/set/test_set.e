@@ -26,6 +26,8 @@ feature {NONE} -- Initialization
 
 					l_set.prune ("foo")
 					assert (l_set.is_empty)
+					assert (not l_set.has ("foo"))
+					assert (l_set.count = 0)
 				end
 			)
 		end

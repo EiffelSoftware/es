@@ -114,7 +114,13 @@ feature {NONE} -- Implementation
 		do
 			l_choice_list := choice_list
 			check l_choice_list /= Void end
-			l_choice_list.wipe_out
+
+				-- Reset choice list to a 1x1 grid with no item
+				-- We do not use wipeout as this has the side effect of resizing any previously set column widths.
+			l_choice_list.set_row_count_to (1)
+			l_choice_list.set_column_count_to (1)
+			l_choice_list.set_item (1, 1, Void)
+
 			l_font := font
 			if attached item_strings as l_item_strings then
 				from
@@ -159,6 +165,7 @@ feature {NONE} -- Implementation
 				end
 				l_choice_list.set_item (1, 1, l_item)
 			end
+
 		end
 
 	has_user_selected_item: BOOLEAN
@@ -170,7 +177,7 @@ feature {NONE} -- Implementation
 			l_width, l_height: INTEGER
 			l_screen: detachable EV_SCREEN_IMP
 			l_choice_list: EV_GRID
-			l_x_coord, l_y_coord: INTEGER
+			l_x_coord, l_y_coord, l_x_offset, l_y_offset, l_ideal_width, l_ideal_height: INTEGER
 			l_parent: like parent
 			l_vbox: EV_VERTICAL_BOX
 			l_box_border, l_left_border, l_top_border, l_right_border: INTEGER
@@ -183,6 +190,9 @@ feature {NONE} -- Implementation
 
 			create l_choice_list
 			choice_list := l_choice_list
+
+			l_choice_list.hide_header
+			l_choice_list.hide_horizontal_scroll_bar
 
 			create l_vbox
 
@@ -207,19 +217,40 @@ feature {NONE} -- Implementation
 				-- Compute location and size of `popup_window' and `choice_list' so that we can see most
 				-- of the items at once.
 
-			l_x_coord := a_popup.x_position + l_left_border
-			l_y_coord := a_popup.y_position + l_top_border
+			l_x_coord := (a_popup.x_position + l_left_border)
+			l_x_offset := (l_screen.virtual_x - l_x_coord).max (0)
+			l_x_coord := l_x_coord + l_x_offset
 
-			l_width := a_popup.width - l_left_border - l_right_border
-			l_height := a_popup.height - l_top_border
+			l_y_coord := (a_popup.y_position + l_top_border)
+			l_y_offset := (l_screen.virtual_y - l_y_coord).max (0)
+			l_y_coord := l_y_coord + l_y_offset
+
+			l_width := a_popup.width - l_left_border - l_right_border - l_x_offset
+			l_height := a_popup.height - l_top_border - l_y_offset
 
 			if l_choice_list.column_count > 0 and then l_choice_list.row_count > 0 then
-				l_width := l_width.max (l_choice_list.column (1).required_width_of_item_span (1, l_choice_list.row_count) + 4 + (2 * l_box_border))
-				l_width := (l_screen.virtual_height - l_x_coord).max (0).min (l_width)
 
-				l_height := (l_screen.virtual_height - l_y_coord).max (0).min (l_choice_list.virtual_height)
+				l_ideal_width := l_choice_list.column (1).required_width_of_item_span (1, l_choice_list.row_count) + 4 + (2 * l_box_border)
+				l_ideal_height := l_choice_list.virtual_height
+
+				l_width := l_width.max (l_ideal_width)
+				l_height := l_height.max (l_ideal_height)
+
+					-- Constrain width and height within virtual dimensions of screen.
+				l_width := (l_screen.virtual_width - (l_x_coord - l_screen.virtual_x)).min (l_width)
+				l_height := (l_screen.virtual_height - (l_y_coord - l_screen.virtual_y)).min (l_height)
+
+				if (l_x_coord + l_ideal_width) > (l_screen.virtual_x + l_screen.virtual_width) then
+					l_x_coord := (l_screen.virtual_x + l_screen.virtual_width) - l_ideal_width
+					l_width := l_ideal_width
+				end
+
+				if (l_y_coord + l_ideal_height) > (l_screen.virtual_y + l_screen.virtual_height) then
+					l_y_coord := (l_screen.virtual_y + l_screen.virtual_height) - l_ideal_height
+					l_height := l_ideal_height
+				end
+
 				l_choice_list.set_minimum_height (l_height)
-
 				l_choice_list.column (1).set_width (l_width - (2 * l_box_border))
 				l_choice_list.set_minimum_width (l_height - (2 * l_box_border))
 			end
@@ -229,8 +260,6 @@ feature {NONE} -- Implementation
 			a_popup.set_height (l_height)
 			a_popup.set_width (l_width)
 
-
-			l_choice_list.hide_header
 			l_choice_list.enable_single_row_selection
 			l_choice_list.enable_selection_key_handling
 			l_choice_list.set_background_color (implementation.displayed_background_color)
@@ -253,13 +282,14 @@ feature {NONE} -- Implementation
 
 			if attached choice_list as l_choice_list and then not l_choice_list.is_destroyed then
 					-- Initialize actions.
-				l_choice_list.set_focus
+				if l_choice_list.is_displayed and then l_choice_list.is_sensitive then
+					l_choice_list.set_focus
+				end
 				l_choice_list.focus_out_actions.extend (agent deactivate)
 				l_choice_list.pointer_button_press_item_actions.extend (agent on_mouse_click)
 				l_choice_list.pointer_double_press_item_actions.extend (agent on_mouse_click)
 				l_choice_list.pointer_motion_actions.force_extend (agent on_mouse_move)
 				l_choice_list.key_press_actions.extend (agent on_key)
-				l_choice_list.hide_horizontal_scroll_bar
 			else
 					-- Something wrong occurred, we should deactivate if possible.
 				if not is_destroyed and is_parented then

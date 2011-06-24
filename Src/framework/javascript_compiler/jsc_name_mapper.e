@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 		do
 			create {LINKED_LIST[attached STRING]}locals_names.make
 			create {LINKED_STACK[attached TYPE_A]}target_types.make
-			create {LINKED_STACK[attached JSC_WRITER_DATA]}target_names.make
+			create {LINKED_STACK[attached JSC_BUFFER_DATA]}target_names.make
 			is_inside_agent := false
 		end
 
@@ -37,7 +37,7 @@ feature -- Target
 			Result := target_types.item
 		end
 
-	target_name : attached JSC_WRITER_DATA
+	target_name : attached JSC_BUFFER_DATA
 			-- Current target name
 		do
 			Result := target_names.item
@@ -58,7 +58,7 @@ feature -- Target
 		local
 			l_written_class: CLASS_C
 			l_type: CL_TYPE_A
-			l_data: JSC_WRITER_DATA
+			l_data: JSC_BUFFER_DATA
 		do
 			create l_data.make_from_string (current_class_target)
 
@@ -71,7 +71,7 @@ feature -- Target
 			push_target (l_type, l_data)
 		end
 
-	push_target (a_target_type: attached TYPE_A; a_target_name: attached JSC_WRITER_DATA)
+	push_target (a_target_type: attached TYPE_A; a_target_name: attached JSC_BUFFER_DATA)
 			-- Push target
 		do
 			target_types.put (a_target_type)
@@ -151,8 +151,8 @@ feature -- Names
 			l_feature_name := a_feature.feature_name
 			check l_feature_name /= Void end
 
-			if not force_long_form and a_feature.is_attribute then
-				Result := "$" + l_feature_name
+			if a_feature.is_attribute then
+				Result := l_feature_name
 			else
 				Result := l_feature_name + "_" + a_feature.written_in.out
 			end
@@ -162,7 +162,7 @@ feature {NONE} -- Implementation
 
 	target_types : attached STACK[attached TYPE_A]
 
-	target_names : attached STACK[attached JSC_WRITER_DATA]
+	target_names : attached STACK[attached JSC_BUFFER_DATA]
 
 	locals_names: attached LIST[attached STRING]
 

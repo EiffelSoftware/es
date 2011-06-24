@@ -7,7 +7,6 @@
 		</option>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="logging" location="$ISE_LIBRARY\library\logging\logging.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
@@ -26,6 +25,7 @@
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="graphx" location="$EIFFEL_SRC\framework\graphx\graphx.ecf" readonly="false"/>
 		<library name="information_retrieval" location="$EIFFEL_SRC\framework\information_retrieval\information_retrieval.ecf"/>
+		<library name="logging" location="$ISE_LIBRARY\library\logging\logging.ecf"/>
 		<library name="mysql" location="$ISE_LIBRARY\library\mysql\mysql.ecf" readonly="false"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
@@ -59,6 +59,9 @@
 			</file_rule>
 			<file_rule>
 				<exclude>^/test$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/annotation$</exclude>
 			</file_rule>
 		</cluster>
 	</target>

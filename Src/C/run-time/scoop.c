@@ -95,7 +95,7 @@ rt_public void eif_try_call (call_data * a)
 	for (n = a -> count, i = 0; i < n; i++) {
 		v = iget ();
 		* v = a -> argument [i];
-		if (v -> type == SK_REF) {
+		if ((v -> type & SK_HEAD) == SK_REF) {
 			v -> it_r = eif_access (v -> it_r);
 		}
 	}
@@ -130,11 +130,6 @@ rt_public void eif_log_call (EIF_SCP_PID p, call_data * a)
 	CHECK("Target attached", t);
 	RTS_TCB(scoop_task_add_call,p,RTS_PID(t),0,a,NULL);
 }
- 
-rt_public void eif_try_call (call_data * a)
-{
-	a -> pattern (a);
-}
 
 #endif /* WORKBENCH */
 
@@ -146,7 +141,7 @@ rt_public void eif_free_call (call_data * a)
 		/* Unprotect arguments from being garbage-collected. */
 	for (i = a -> count; i > 0;) {
 		v = &(a -> argument [--i]);
-		if (v -> type == SK_REF) {
+		if ((v -> type & SK_HEAD) == SK_REF) {
 			eif_wean ((EIF_OBJECT) v -> it_r);
 		}
 	}
@@ -199,6 +194,9 @@ rt_public void eif_request_chain_pop (struct stack * stk)
 rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk)
 {
 	EIF_REFERENCE * top = stk->st_top;
+	if (!t) {
+		t = stk->st_hd->sk_arena; /* Use the beginning of the stack in case stack was empty. */
+	}
 	while (top != t) {
 		eif_request_chain_pop (stk); /* Pop one element. */
 		top = stk->st_top;

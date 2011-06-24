@@ -77,15 +77,22 @@ feature -- AST
 	ast_from_compound_text (a_text: STRING): AST_EIFFEL
 			-- AST node from `a_text'
 			-- `a_text' must be the textual representation of a compound AS.
+			-- If `a_text' is empty (or just contains whitespaces, an empty `{EIFFEL_LIST [INSTRUCTION_AS]}' will be returned.
 		local
 			l_text: STRING
 		do
 			l_text := "feature dummy__feature do%N" + a_text + "%Nend"
+
+			entity_feature_parser.reset_nodes
 			entity_feature_parser.set_syntax_version (entity_feature_parser.provisional_syntax)
 			entity_feature_parser.parse_from_utf8_string (l_text, Void)
+			check entity_feature_parser.error_count = 0 end
+
 			if attached {DO_AS} entity_feature_parser.feature_node.body.as_routine.routine_body as l_do then
 				if attached l_do.compound then
 					Result := l_do.compound
+				else
+					create {EIFFEL_LIST [INSTRUCTION_AS]} Result.make(0)
 				end
 			end
 
@@ -99,6 +106,8 @@ feature -- AST
 			l_text: STRING
 		do
 			l_text := "feature dummy__feature do " + a_text + "%Nend"
+
+			entity_feature_parser.reset_nodes
 			entity_feature_parser.set_syntax_version (entity_feature_parser.provisional_syntax)
 			entity_feature_parser.parse_from_utf8_string (l_text, Void)
 
@@ -264,30 +273,6 @@ feature -- AST
 				Result := l_class_ctxt
 			else
 				create {ETR_FEATURE_CONTEXT} Result.make (a_feature, l_class_ctxt)
-			end
-		end
-
-	locals_from_feature_as (a_feature: FEATURE_AS; a_context_class: CLASS_C): HASH_TABLE [TYPE_A, STRING]
-			-- Locals from `a_feature'
-			-- The returned TYPE_As are not guaranteed to be explicit.
-		local
-			l_type: TYPE_AS
-			l_type_a: TYPE_A
-			l_names_heap: like names_heap
-		do
-			create Result.make (10)
-			Result.compare_objects
-			if attached {BODY_AS} a_feature.body as l_body and then attached {ROUTINE_AS} l_body.as_routine as l_routine then
-				if attached {EIFFEL_LIST [TYPE_DEC_AS]} l_routine.locals as l_lcls then
-					l_names_heap := names_heap
-					across l_lcls as l_locals loop
-						l_type := l_locals.item.type
-						l_type_a := type_a_from_string (text_from_ast (l_type), a_context_class)
-						across l_locals.item.id_list as l_vars loop
-							Result.put (l_type_a, l_names_heap.item (l_vars.item))
-						end
-					end
-				end
 			end
 		end
 

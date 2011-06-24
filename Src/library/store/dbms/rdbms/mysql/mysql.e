@@ -14,7 +14,8 @@ inherit
 			default_create,
 			normal_parse,
 			parse,
-			convert_string_type
+			convert_string_type,
+			no_args
 		end
 
 	STRING_HANDLER
@@ -139,7 +140,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 			Result := False
 		end
 
-	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [STRING]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
+	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_32]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- ???
 		do
 		end
@@ -291,6 +292,8 @@ feature -- For DATABASE_PROC
 	name_proc_lower: BOOLEAN = True
 
 	map_var_between : STRING = ""
+
+	no_args: STRING = " () "
 
 	Select_text_32 (proc_name: READABLE_STRING_GENERAL): STRING_32
 		do
@@ -540,6 +543,7 @@ feature -- External features
 				l_count <= max_len
 			end
 			create l_str.make (l_count)
+			l_str.set_count (l_count)
 			from
 				i := 1
 			until
@@ -548,7 +552,6 @@ feature -- External features
 				l_str.put (l_area.read_integer_8 (i - 1).to_character_8, i)
 				i := i + 1
 			end
-			l_str.set_count (l_count)
 			l_str32 := utf8_to_utf32 (l_str)
 			ar.wipe_out
 			ar.append (l_str32)

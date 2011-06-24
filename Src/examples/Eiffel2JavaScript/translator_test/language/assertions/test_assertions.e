@@ -22,6 +22,16 @@ feature {NONE} -- Initialization
 					assert (buggy_square_root (9)=3)
 				end
 			)
+			invoke_test ("3", agent
+				local
+					b: ASSERTIONS_B
+					r: INTEGER
+				do
+					create b
+					r := b.foo (1)
+					r := b.foo (0)
+				end
+			)
 		end
 
 feature {NONE} -- Implementation

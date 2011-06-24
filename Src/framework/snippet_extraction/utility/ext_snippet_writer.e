@@ -1,6 +1,5 @@
 note
-	description: "Class to write snippets into a medium"
-	author: ""
+	description: "Class to write snippets into a medium."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,6 +15,27 @@ feature -- Basic operations
 			-- Write `a_snippets' into `a_medium'.
 		do
 			to_implement ("To implement.")
+			across a_snippets as l_snippet_cursor loop
+				if attached {EXT_SNIPPET} l_snippet_cursor.item as l_snippet then
+					a_medium.put_string (l_snippet.source)
+					a_medium.put_new_line
+					a_medium.put_string (l_snippet.variable_context.debug_output)
+
+					a_medium.put_string ("---%N---")
+					a_medium.put_new_line
+					a_medium.put_string (l_snippet.content)
+
+					if attached l_snippet.content_original then
+						a_medium.put_string ("---%N---")
+						a_medium.put_new_line
+						a_medium.put_string (l_snippet.content_original)
+					end
+
+					a_medium.put_new_line
+					a_medium.put_new_line
+					a_medium.put_new_line
+				end
+			end
 		end
 
 	write_to_file (a_snippets: LINKED_LIST [EXT_SNIPPET]; a_path: STRING)

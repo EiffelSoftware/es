@@ -260,8 +260,8 @@ rt_private void create_expanded_locals (struct stochunk * scur, EIF_TYPED_VALUE 
 /* Operational stack handling routines */
 rt_public EIF_TYPED_VALUE *opush(register EIF_TYPED_VALUE *val);	/* Push one value on op stack */
 rt_public EIF_TYPED_VALUE *opop(void);							/* Pop last item */
-rt_private EIF_TYPED_VALUE *stack_allocate(register int size);	/* Allocates first chunk */
-rt_private int stack_extend(register int size);				/* Extend stack's size */
+rt_private EIF_TYPED_VALUE *stack_allocate(register size_t size);	/* Allocates first chunk */
+rt_private int stack_extend(register size_t size);				/* Extend stack's size */
 rt_private void npop(rt_uint_ptr nb);				/* Pop 'nb' items */
 rt_public EIF_TYPED_VALUE *otop(void);							/* Pointer to value at the top */
 rt_private EIF_TYPED_VALUE *oitem(uint32 n);					/* Pointer to value at position `n' down the stack */
@@ -532,10 +532,9 @@ rt_public void xinitint(void)
 
 #ifdef EIF_THREADS
 /*
- * Create request chain with the specified number of uncontrolled arguments
- * and wait when they are ready.
+ * Create request chain wait until they are ready.
  */
-rt_private void initialize_request_chain (uint32 uarg, EIF_NATURAL_64 usep, EIF_REFERENCE * volatile * qq, EIF_REFERENCE * volatile * qqt)
+rt_private void initialize_request_chain (EIF_REFERENCE * volatile * qq, EIF_REFERENCE * volatile * qqt)
 {
 	/* Define indirect variable that is used to keep track of request chain stack. */
 #define q (*qq)
@@ -549,7 +548,7 @@ rt_private void initialize_request_chain (uint32 uarg, EIF_NATURAL_64 usep, EIF_
 		/* Register reference arguments. */
 	for (n = argnum; n > 0; n--) {
 		EIF_TYPED_VALUE *last = arg(n);
-		if (last -> type == SK_REF && EIF_IS_DIFFERENT_PROCESSOR(icurrent -> it_ref, last -> it_ref)) {
+		if ((last -> type & SK_HEAD) == SK_REF && EIF_IS_DIFFERENT_PROCESSOR(icurrent -> it_ref, last -> it_ref)) {
 			RTS_RS(icurrent -> it_ref, last -> it_ref);
 		}
 	}
@@ -883,7 +882,7 @@ rt_private void interpret(int flag, int where)
 		if ((*IC != BC_PRECOND) && (*IC != BC_START_CATCALL)) {
 #ifdef EIF_THREADS
 				/* Initialize request chain if required. */
-			if (uarg) initialize_request_chain (uarg, usep, &q, &qt);
+			if (uarg) initialize_request_chain (&q, &qt);
 #endif
 			goto enter_body; /* Start execution of a routine body. */
 		}
@@ -1037,7 +1036,7 @@ rt_private void interpret(int flag, int where)
 #endif
 #ifdef EIF_THREADS
 			/* Initialize request chain if required. */
-		if (uarg) initialize_request_chain (uarg, usep, &q, &qt);
+		if (uarg) initialize_request_chain (&q, &qt);
 			/* Record offset of a precondition block to repeat the check
 			   for failing wait conditions. */
 		pre_start = IC - 1;
@@ -1104,7 +1103,7 @@ rt_private void interpret(int flag, int where)
 		if (*IC != BC_PRECOND) {
 #ifdef EIF_THREADS
 				/* Initialize request chain if required. */
-			if (uarg) initialize_request_chain (uarg, usep, &q, &qt);
+			if (uarg) initialize_request_chain (&q, &qt);
 #endif
 			goto enter_body; /* Start execution of a routine body. */
 		}
@@ -2559,7 +2558,7 @@ rt_private void interpret(int flag, int where)
 				opop ();                /* Remove target of a call. */
 				while (n > 0) {         /* Record arguments of a call. */
 					EIF_TYPED_VALUE * p = opop ();
-					if (p -> type == SK_REF) {
+					if ((p -> type & SK_HEAD) == SK_REF) {
 						RTS_AS(*p, "", p -> type, n, a); /* Record a possibly separate argument. */
 					}
 					else {
@@ -3010,16 +3009,26 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_ARG\n");
 #endif
-		code = get_int16(&IC);				/* Get number (from 1 0x0000000001ee0528to argnum) */
+		code = get_int16(&IC);				/* Get number (from 1 to argnum) */
 		last = iget();
 		memcpy (last, arg(code), ITEM_SZ);
+		break;
+
 #ifdef EIF_THREADS
+	/*
+	 * Argument that may trigger a wait condition.
+	 */
+	case BC_WAIT_ARG:
+#ifdef DEBUG
+		dprintf(2)("BC_WAIT_ARG\n");
+#endif
+		code = get_int16(&IC);				/* Get number (from 1 to argnum) */
 			/* Record if an uncontrolled argument is used. */
 		if (pre_start && (usep & ((EIF_NATURAL_64) 1) << (code - 1))) {
 			has_uncontrolled_argument = '\1';
 		}
-#endif /* EIF_THREADS */
 		break;
+#endif /* EIF_THREADS */
 
 	/*
 	 * And then operator (left value).
@@ -6594,7 +6603,7 @@ rt_private void create_expanded_locals (
  * Operational stack handling.
  */
 
-rt_private EIF_TYPED_VALUE *stack_allocate(register int size)
+rt_private EIF_TYPED_VALUE *stack_allocate(register size_t size)
 				   					/* Initial size */
 {
 	/* The operational stack is created, with size 'size'.
@@ -6679,7 +6688,7 @@ rt_public EIF_TYPED_VALUE *opush(register EIF_TYPED_VALUE *val)
 	return top;				/* Address of allocated item */
 }
 
-rt_private int stack_extend(register int size)
+rt_private int stack_extend(register size_t size)
 				   					/* Size of new chunk to be added */
 {
 	/* The operational stack is extended and the stack structure is updated.

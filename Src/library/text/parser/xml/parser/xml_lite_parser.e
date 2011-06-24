@@ -284,7 +284,7 @@ feature {NONE} -- Implementation: parse
 	parse_start_tag
 			-- Parse for start tag.
 		local
-			t: STRING
+			t: like next_tag
 			c: CHARACTER
 			att: like next_attribute_data
 			done: BOOLEAN
@@ -292,7 +292,7 @@ feature {NONE} -- Implementation: parse
 		do
 			t := next_tag
 			l_callbacks := callbacks
-			l_callbacks.on_start_tag (Void, Void, t)
+			l_callbacks.on_start_tag (Void, t.prefix_part, t.local_part)
 			c := current_character
 			if c.is_space then
 				c := next_non_space_character
@@ -306,7 +306,7 @@ feature {NONE} -- Implementation: parse
 --				c := next_non_space_character -- less strict?
 				if c = '>' then
 					l_callbacks.on_start_tag_finish
-					l_callbacks.on_end_tag (Void, Void, t)
+					l_callbacks.on_end_tag (Void, t.prefix_part, t.local_part)
 				else
 					report_error ("unexpected character '" + character_output (c) + "' after closing / in start tag")
 				end
@@ -332,7 +332,7 @@ feature {NONE} -- Implementation: parse
 							if c = '>' then
 								done := True
 								l_callbacks.on_start_tag_finish
-								l_callbacks.on_end_tag (Void, Void, t)
+								l_callbacks.on_end_tag (Void, t.prefix_part, t.local_part)
 							else
 								report_error ("unexpected character '" + character_output (c) + "' after closing / in start tag")
 							end
@@ -357,7 +357,7 @@ feature {NONE} -- Implementation: parse
 				c := next_non_space_character
 			end
 			if c = '>' then
-				callbacks.on_end_tag (Void, Void, t)
+				callbacks.on_end_tag (Void, t.prefix_part, t.local_part)
 			else
 				report_error ("unexpected character '" + character_output (c) + "' in end tag")
 			end
@@ -841,11 +841,12 @@ feature {NONE} -- Query
 			not_a_space: not Result.is_space
 		end
 
-	next_tag: STRING
+	next_tag: TUPLE [prefix_part: detachable STRING; local_part: STRING]
 			-- Return next tag value
 			-- move index
 		local
 			c: CHARACTER
+			p: detachable STRING
 			s: STRING
 		do
 			s := new_string_tag
@@ -855,10 +856,15 @@ feature {NONE} -- Query
 			until
 				not valid_tag_character (c)
 			loop
-				s.append_character (c)
+				if c = ':' and p = Void then
+					p := s.string
+					s.wipe_out
+				else
+					s.append_character (c)
+				end
 				c := next_character
 			end
-			Result := s.string
+			Result := [p, s.string]
 			s.wipe_out
 		ensure
 			new_string_tag_is_empty: new_string_tag.is_empty
@@ -1325,7 +1331,7 @@ feature {NONE} -- Factory: cache
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

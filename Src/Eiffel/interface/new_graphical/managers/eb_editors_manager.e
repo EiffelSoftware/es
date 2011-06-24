@@ -166,15 +166,15 @@ feature -- Access
 			end
 		end
 
-	editor_with_stone (a_stone: STONE) : like current_editor
+	editor_with_stone (a_stone: ANY) : like current_editor
 			-- Editor that has `a_stone', or editing the same path file.
 		local
 			l_fake_editor: EB_FAKE_SMART_EDITOR
 		do
-			if a_stone /= Void then
-				Result := editor_with_stone_internal (editors, a_stone)
+			if attached {STONE} a_stone as l_stone then
+				Result := editor_with_stone_internal (editors, l_stone)
 				if Result = Void and then fake_editors /= Void then
-					Result := editor_with_stone_internal (fake_editors, a_stone)
+					Result := editor_with_stone_internal (fake_editors, l_stone)
 					l_fake_editor ?= Result
 					if l_fake_editor /= Void then
 						init_editor
@@ -708,7 +708,7 @@ feature -- Element change
 			create_editor_beside_content (Void, exist_content, False)
 		end
 
-	create_editor_beside_content (a_stone: STONE; a_content: SD_CONTENT; a_force_right_side: BOOLEAN)
+	create_editor_beside_content (a_stone: ANY; a_content: SD_CONTENT; a_force_right_side: BOOLEAN)
 			-- Create an editor beside `a_content'. Meanwile set `a_stone' to the editor if `a_stone' is not void.
 			-- Set top if the a_content is void.
 		local
@@ -720,8 +720,8 @@ feature -- Element change
 				l_content := create_docking_content (editor_number_factory.new_editor_name, last_created_editor, a_content, a_force_right_side)
 				last_created_editor.set_docking_content (l_content)
 			end
-			if a_stone /= Void then
-				on_drop (a_stone, last_created_editor)
+			if attached {STONE} a_stone as l_stone then
+				on_drop (l_stone, last_created_editor)
 			end
 		end
 
@@ -1527,8 +1527,37 @@ feature {NONE} -- Implementation
 			if editors_internal.is_empty then
 				last_created_editor := Void
 			end
-			if last_focused_editor /= Void then
+			if last_focused_editor /= Void and then
+				editors_internal.has (last_focused_editor) then
 				select_editor (last_focused_editor, True)
+			else
+				if attached previous_clicked_editor as l_previous_clicked_editor then
+					select_editor (l_previous_clicked_editor, True)
+				end
+			end
+		end
+
+	previous_clicked_editor: like last_focused_editor
+			-- Find previous clicked editor base on docking library
+		local
+			l_list: ARRAYED_LIST [SD_CONTENT]
+			l_editor_content: detachable SD_CONTENT
+		do
+			l_list := docking_manager.property.contents_by_click_order
+			from
+				l_list.start
+			until
+				l_list.after or l_editor_content /= Void
+			loop
+				if l_list.item.type = {SD_ENUMERATION}.editor then
+					l_editor_content := l_list.item
+				end
+
+				l_list.forth
+			end
+
+			if l_editor_content /= Void then
+				Result := editor_with_content (l_editor_content)
 			end
 		end
 
@@ -1830,7 +1859,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

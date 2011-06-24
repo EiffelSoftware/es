@@ -1,6 +1,5 @@
 note
 	description: "Class that represents an extracted snippet."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,6 +24,8 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		require
 			not_a_content_is_empty: not a_content.is_empty
+		local
+			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			create operands.make (a_operands.count)
 			operands.set_key_equality_tester (string_equality_tester)
@@ -36,6 +37,34 @@ feature{NONE} -- Initialization
 
 			build_debug_output
 			hash_code := debug_output.hash_code
+
+			create annotations.make
+
+				-- Initialize break point slots.
+			create l_bp_initializer
+			l_bp_initializer.set_current_breakpoint_slot (1)
+			l_bp_initializer.init_from (ast)
+		end
+
+feature -- Configuration
+
+	variable_context: EXT_VARIABLE_CONTEXT
+		assign set_variable_context
+			-- Contextual information about relevant variables.
+
+	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
+			-- Sets `variable_context' to `a_context'	
+		require
+			attached a_context
+		do
+			variable_context := a_context
+		end
+
+	set_content_original (a_content: STRING)
+		require
+			attached a_content
+		do
+			content_original := a_content
 		end
 
 feature -- Access
@@ -51,6 +80,10 @@ feature -- Access
 
 	content: STRING
 			-- Textual representation of current snippet.
+			-- The content should be a parse-able string.
+
+	content_original: STRING
+			-- Textual representation of originating AST.
 			-- The content should be a parse-able string.
 
 	source: STRING
@@ -80,6 +113,9 @@ feature -- Access
 
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
+
+	annotations: LINKED_LIST [ANN_ANNOTATION]
+		-- List of annotations associated with current snippet	
 
 feature{NONE} -- Implementation
 

@@ -28,12 +28,13 @@ feature {NONE} -- Initialization
 		do
 			create output.make
 			create instruction_writer.make
+			create expression_writer.make
 			reset("")
 		end
 
 feature -- Access
 
-	output: attached JSC_SMART_WRITER
+	output: attached JSC_SMART_BUFFER
 			-- Generated JavaScript
 
 	dependencies1: attached SET[INTEGER]
@@ -79,6 +80,11 @@ feature -- Basic Operations
 			if l_byte_server.has (a_feature.body_index) then
 				l_byte_code := l_byte_server.item (a_feature.body_index)
 				check l_byte_code /= Void end
+
+				l_context.inherited_assertion.wipe_out
+				if a_feature.assert_id_set /= Void then
+					l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
+				end
 
 				create l_locals_names.make
 				if not a_feature.is_inline_agent then
@@ -146,7 +152,7 @@ feature -- Basic Operations
 		local
 			l_byte_server: BYTE_SERVER
 			l_byte_code: BYTE_CODE
-			body, postcondition, rescue_code: JSC_WRITER_DATA
+			body, postcondition, rescue_code: JSC_BUFFER_DATA
 		do
 			l_byte_server := byte_server
 			check l_byte_server /= Void end
@@ -199,7 +205,7 @@ feature -- Basic Operations
 				if attached a_feature.written_class as safe_feature_class then
 					if safe_feature_class.assertion_level.is_precondition then
 							-- Process the preconditions and write them to output
-						write_preconditions (l_byte_code)
+						write_preconditions (safe_feature_class.class_id, l_byte_code)
 					end
 
 					if safe_feature_class.assertion_level.is_postcondition then
@@ -211,11 +217,11 @@ feature -- Basic Operations
 					end
 				end
 
-				if a_feature.has_return_value or l_byte_code.local_count > 0 or instruction_writer.this_used_in_closure
+				if a_feature.has_return_value or l_byte_code.local_count > 0 or this_used_in_closure
 					or jsc_context.current_old_locals.count > 0 or jsc_context.current_object_test_locals > 0 or jsc_context.current_reverse_locals > 0
 					or rescue_code /= Void then
 						-- The feature has locals
-					write_locals (l_byte_code, a_feature, instruction_writer.this_used_in_closure, rescue_code /= Void)
+					write_locals (l_byte_code, a_feature, this_used_in_closure, rescue_code /= Void)
 				end
 
 				if attached rescue_code as safe_rescue_code then
@@ -268,13 +274,82 @@ feature -- Basic Operations
 
 feature {NONE} -- Implementation
 
-	write_preconditions (l_byte_code: attached BYTE_CODE)
+	process_assertion (a_expr: attached EXPR_B): attached JSC_BUFFER_DATA
+		do
+			expression_writer.reset ("")
+			a_expr.process (expression_writer)
+
+			dependencies1.fill (expression_writer.dependencies1)
+			dependencies2.fill (expression_writer.dependencies2)
+			this_used_in_closure := this_used_in_closure or expression_writer.this_used_in_closure
+			Result := expression_writer.output.data
+		end
+
+	write_preconditions (current_class_id: INTEGER; l_byte_code: attached BYTE_CODE)
 			-- Process the preconditions and write them to output
 		local
+			l_assertion_byte_code: ASSERTION_BYTE_CODE
 			l_assert: ASSERT_B
 			l_expr: EXPR_B
+			l_context: BYTE_CONTEXT
+			l_preconditions: HASH_TABLE[attached LINKED_LIST[attached JSC_BUFFER_DATA], INTEGER]
+			per_class: LINKED_LIST[attached JSC_BUFFER_DATA]
+			l_class_id: INTEGER
+			all_preconditions: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
+			l_context := context
+			check l_context /= Void end
+
+			create l_preconditions.make (1)
+
+				-- Add inherited preconditions (if any)
+			if attached l_context.inherited_assertion as safe_inherited_assertions then
+				from
+					safe_inherited_assertions.precondition_start
+				until
+					safe_inherited_assertions.precondition_after
+				loop
+					l_assertion_byte_code ?= safe_inherited_assertions.precondition_list.item_for_iteration
+					check l_assertion_byte_code /= Void end
+
+					l_class_id := safe_inherited_assertions.precondition_types.item_for_iteration.associated_class.class_id
+
+					if l_preconditions.has (l_class_id) then
+						per_class := l_preconditions[l_class_id]
+					else
+						create per_class.make
+						l_preconditions[l_class_id] := per_class
+					end
+
+					from
+						l_assertion_byte_code.start
+					until
+						l_assertion_byte_code.after
+					loop
+						l_assert := l_assertion_byte_code.item
+						check l_assert /= Void end
+
+						l_expr := l_assert.expr
+						check l_expr /= Void end
+
+						per_class.extend (process_assertion(l_expr))
+
+						l_assertion_byte_code.forth
+					end
+
+					safe_inherited_assertions.precondition_forth
+				end
+			end
+
+				-- Add preconditions from current feature (if any)
 			if attached l_byte_code.precondition as precondition_byte_code then
+				if l_preconditions.has (current_class_id) then
+					per_class := l_preconditions[current_class_id]
+				else
+					create per_class.make
+					l_preconditions[current_class_id] := per_class
+				end
+
 				from
 					precondition_byte_code.start
 				until
@@ -286,24 +361,101 @@ feature {NONE} -- Implementation
 					l_expr := l_assert.expr
 					check l_expr /= Void end
 
-					instruction_writer.reset (output.indentation)
-					instruction_writer.process_assertion (l_expr, "Precondition", l_assert.tag)
-					output.put_data (instruction_writer.output.data)
-					dependencies1.fill (instruction_writer.dependencies1)
-					dependencies2.fill (instruction_writer.dependencies2)
-					this_used_in_closure := this_used_in_closure or instruction_writer.this_used_in_closure
+					per_class.extend (process_assertion(l_expr))
 
 					precondition_byte_code.forth
 				end
+			end
+
+			from
+				create all_preconditions.make
+				l_preconditions.start
+			until
+				l_preconditions.after
+			loop
+				output.push ("")
+					output.put ("(")
+					output.put_data_list (l_preconditions.item_for_iteration, ") && (")
+					output.put (")")
+					all_preconditions.extend (output.data)
+				output.pop
+
+
+				l_preconditions.forth
+			end
+
+			if all_preconditions.count > 0 then
+				output.put_indentation
+				output.put ("if(!(")
+				output.put_data_list (all_preconditions, " || ")
+				output.put (")) {")
+				output.put_new_line
+
+				output.indent
+				output.put_indentation
+				output.put ("throw %"Precondition at ")
+				output.put (jsc_context.current_class_name)
+
+				if jsc_context.has_current_feature then
+					output.put (".")
+					output.put (jsc_context.current_feature_name)
+				end
+
+				output.put (" does not hold.%";")
+				output.put_new_line
+
+				output.unindent
+				output.put_indentation
+				output.put ("}")
+				output.put_new_line
 			end
 		end
 
 	write_postconditions (l_byte_code: attached BYTE_CODE)
 			-- Process the postconditionsand write them to output
 		local
+			l_assertion_byte_code: ASSERTION_BYTE_CODE
 			l_assert: ASSERT_B
 			l_expr: EXPR_B
+			l_context: BYTE_CONTEXT
+			all_postconditions: LINKED_LIST[attached JSC_BUFFER_DATA]
 		do
+			l_context := context
+			check l_context /= Void end
+
+			create all_postconditions.make
+
+				-- Add inherited postconditions (if any)
+			if attached l_context.inherited_assertion as safe_inherited_assertions then
+				from
+					safe_inherited_assertions.postcondition_start
+				until
+					safe_inherited_assertions.postcondition_after
+				loop
+					l_assertion_byte_code ?= safe_inherited_assertions.postcondition_list.item_for_iteration
+					check l_assertion_byte_code /= Void end
+
+					from
+						l_assertion_byte_code.start
+					until
+						l_assertion_byte_code.after
+					loop
+						l_assert := l_assertion_byte_code.item
+						check l_assert /= Void end
+
+						l_expr := l_assert.expr
+						check l_expr /= Void end
+
+						all_postconditions.extend (process_assertion(l_expr))
+
+						l_assertion_byte_code.forth
+					end
+
+					safe_inherited_assertions.postcondition_forth
+				end
+			end
+
+				-- Add postconditions from current feature (if any)
 			if attached l_byte_code.postcondition as postcondition_byte_code then
 				from
 					postcondition_byte_code.start
@@ -316,15 +468,36 @@ feature {NONE} -- Implementation
 					l_expr := l_assert.expr
 					check l_expr /= Void end
 
-					instruction_writer.reset (output.indentation)
-					instruction_writer.process_assertion (l_expr, "Postcondition", l_assert.tag)
-					output.put_data (instruction_writer.output.data)
-					dependencies1.fill (instruction_writer.dependencies1)
-					dependencies2.fill (instruction_writer.dependencies2)
-					this_used_in_closure := this_used_in_closure or instruction_writer.this_used_in_closure
+					all_postconditions.extend (process_assertion(l_expr))
 
 					postcondition_byte_code.forth
 				end
+			end
+
+			if all_postconditions.count > 0 then
+				output.put_indentation
+				output.put ("if(!((")
+				output.put_data_list (all_postconditions, ") && (")
+				output.put ("))) {")
+				output.put_new_line
+
+				output.indent
+				output.put_indentation
+				output.put ("throw %"Postcondition at ")
+				output.put (jsc_context.current_class_name)
+
+				if jsc_context.has_current_feature then
+					output.put (".")
+					output.put (jsc_context.current_feature_name)
+				end
+
+				output.put (" does not hold.%";")
+				output.put_new_line
+
+				output.unindent
+				output.put_indentation
+				output.put ("}")
+				output.put_new_line
 			end
 		end
 
@@ -334,7 +507,7 @@ feature {NONE} -- Implementation
 			l_result_type: TYPE_A
 			l_local_type: TYPE_A
 			i: INTEGER
-			locals: LINKED_LIST[attached JSC_WRITER_DATA]
+			locals: LINKED_LIST[attached JSC_BUFFER_DATA]
 			default_value_writer: JSC_DEFAULT_VALUE_WRITER
 		do
 			create locals.make
@@ -444,6 +617,8 @@ feature {NONE} -- Implementation
 		end
 
 	instruction_writer: attached JSC_INSTRUCTION_WRITER
+
+	expression_writer: attached JSC_EXPRESSION_WRITER
 
 	this_used_in_closure: BOOLEAN
 
