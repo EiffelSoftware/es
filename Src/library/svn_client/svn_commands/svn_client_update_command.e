@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {SVN_CLIENT_ADD_COMMAND}."
+	description: "Summary description for {SVN_CLIENT_UPDATE_COMMAND}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SVN_CLIENT_ADD_COMMAND
+	SVN_CLIENT_UPDATE_COMMAND
 
 inherit
 	SVN_CLIENT_COMMAND
@@ -17,13 +17,14 @@ feature {NONE} -- Result parsing
 
 	parse_result (a_svn_parser: SVN_PARSER)
 		do
+			
 		end
 
 feature {NONE} -- Implementation
 
 	command_name: STRING_8
 		do
-			Result := "add"
+			Result := "update"
 		end
 
 end

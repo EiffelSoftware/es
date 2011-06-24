@@ -15,6 +15,7 @@ feature {NONE} -- Initialization
 		do
 			svn_client := a_svn_client
 
+			create target.make_from_string (".")
 			create options.make (1)
 		end
 
@@ -27,8 +28,11 @@ feature -- Execute
 				-- Clear last result and internal last result
 			set_last_result (Void)
 			set_internal_last_result (Void)
+			set_last_error (Void)
+			set_internal_last_error (Void)
 				-- Initialize internal last result
-			create internal_last_result.make
+			create internal_last_result.make_empty
+			create internal_last_error.make_empty
 
 			create l_args.make
 			l_args.extend (command_name)
@@ -40,16 +44,36 @@ feature -- Execute
 
 feature -- Access
 
-	last_result: detachable LINKED_LIST[STRING_8]
+	target: STRING_8
+		-- Execute command for `target' (folder or file) at given `working_path'
 
-	last_error: detachable LINKED_LIST[STRING_8]
+	last_result: detachable STRING_8
+
+	last_error: detachable STRING_8
 
 feature -- Element change
 
-	set_target(a_target: detachable like target)
+	set_target(a_target: like target)
+		require
+			valid_target: a_target /= Void and then not a_target.is_empty
 		do
 			target := a_target
 		end
+
+	put_option (a_option_name, a_option_value: STRING_8)
+			-- Add or replace the option `a_option_name' with the value `a_option_value'
+		require
+			valid_option_name: a_option_name /= Void and then not a_option_name.is_empty
+			valid_option_value: a_option_value /= Void
+		do
+			if not options.has (a_option_name) then
+				options.put (a_option_value, a_option_name)
+			else
+				options.replace (a_option_value, a_option_name)
+			end
+		end
+
+feature -- Observer pattern
 
 	set_data_received_handler(a_data_received_handler: detachable like on_data_received_handler)
 		do
@@ -66,19 +90,6 @@ feature -- Element change
 			on_did_finish_handler := a_did_finish_handler
 		end
 
-	put_option (a_option_name, a_option_value: STRING_8)
-			-- Add or replace the option `a_option_name' with the value `a_option_value'
-		require
-			valid_option_name: a_option_name /= Void and then not a_option_name.is_empty
-			valid_option_value: a_option_value /= Void and then not a_option_value.is_empty
-		do
-			if not options.has (a_option_name) then
-				options.put (a_option_value, a_option_name)
-			else
-				options.replace (a_option_value, a_option_name)
-			end
-		end
-
 feature {NONE} -- Command agents
 
 	on_error_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
@@ -93,20 +104,18 @@ feature {NONE} -- Command agents
 	command_error(a_command_error: STRING_8)
 		do
 			-- Parse error
+			internal_last_error.append (a_command_error)
 			if attached on_error_handler as error_handler then
 				error_handler.call ([a_command_error])
 			end
 		end
 
 	command_data_received(a_data_received: STRING_8)
-		local
-			l_data_list: LIST[STRING_8]
 		do
 			-- For debugging purposes
 			print (a_data_received)
 
-			l_data_list := parse_string_to_list (a_data_received)
-			internal_last_result.append(l_data_list)
+			internal_last_result.append (a_data_received)
 
 			-- Call handler
 			if attached on_data_received_handler as data_received_handler then
@@ -119,27 +128,22 @@ feature {NONE} -- Command agents
 			set_last_result (internal_last_result)
 			set_internal_last_result (Void)
 
-			if attached on_did_finish_handler as did_finish_handler then
-				did_finish_handler.call([])
+			set_last_error (internal_last_error)
+			set_internal_last_error (Void)
+
+			if process.exit_code = 0 then
+					-- Command successfully executed
+				if attached on_did_finish_handler as did_finish_handler then
+					did_finish_handler.call([])
+				end
+			else
+				if attached on_error_handler as error_handler then
+					error_handler.call ([last_error])
+				end
 			end
 		end
 
 feature {NONE} -- Result and error handling
-
-	parse_string_to_list(a_data: STRING_8): LIST[STRING_8]
-			-- Return `a_data' split into lines
-		require
-			data_not_void: a_data /= Void
-		do
-			create {ARRAYED_LIST[STRING_8]}Result.make (1)
-			Result := a_data.split ('%N')
-				-- Remove last line, because it is always empty
-			Result.finish
-			Result.remove
-
---			set_last_result (internal_last_result)
---			set_internal_last_result (Void)
-		end
 
 	set_last_result (a_result: detachable like last_result)
 		do
@@ -151,7 +155,7 @@ feature {NONE} -- Result and error handling
 			internal_last_result := a_result
 		end
 
-	internal_last_result: detachable LINKED_LIST[STRING_8]
+	internal_last_result: detachable STRING_8
 
 	set_last_error (a_error: detachable like last_error)
 		do
@@ -163,7 +167,15 @@ feature {NONE} -- Result and error handling
 			internal_last_error := a_error
 		end
 
-	internal_last_error: detachable LINKED_LIST[STRING_8]
+	internal_last_error: detachable STRING_8
+
+feature {NONE} -- Result parsing
+
+	parse_result (a_svn_parser: SVN_PARSER)
+		require
+			svn_parser_not_void: a_svn_parser /= Void
+		deferred
+		end
 
 feature {NONE} -- Implementation
 
@@ -176,16 +188,14 @@ feature {NONE} -- Implementation
 			-- Execute `cd working_path; svn command_name a_args target'
 		require
 			a_args_not_void: a_args /= Void
-		local
-			l_process: PROCESS
 		do
-			l_process := svn_client.pf.process_launcher (svn_client.svn_executable, a_args, svn_client.working_path)
+			process := svn_client.pf.process_launcher (svn_client.svn_executable, a_args, svn_client.working_path)
 
-			l_process.redirect_error_to_agent (agent command_error)
-			l_process.redirect_output_to_agent (agent command_data_received)
-			l_process.set_on_exit_handler (agent command_did_finish)
+			process.redirect_error_to_agent (agent command_error)
+			process.redirect_output_to_agent (agent command_data_received)
+			process.set_on_exit_handler (agent command_did_finish)
 
-			l_process.launch
+			process.launch
 		end
 
 	options_to_args: LINKED_LIST[STRING_8]
@@ -206,9 +216,6 @@ feature {NONE} -- Implementation
 
 	process: PROCESS
 		-- The process that executes the svn command
-
-	target: STRING_8
-		-- Execute command for `target' (folder or file) at given `working_path'
 
 	options: HASH_TABLE[STRING_8, STRING_8]
 		-- Optional arguments used when executing `Current'

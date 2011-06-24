@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {SVN_CLIENT_ADD_COMMAND}."
+	description: "Summary description for {SVN_CLIENT_DELETE_COMMAND}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SVN_CLIENT_ADD_COMMAND
+	SVN_CLIENT_DELETE_COMMAND
 
 inherit
 	SVN_CLIENT_COMMAND
@@ -23,7 +23,7 @@ feature {NONE} -- Implementation
 
 	command_name: STRING_8
 		do
-			Result := "add"
+			Result := "delete"
 		end
 
 end

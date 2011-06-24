@@ -1,0 +1,176 @@
+note
+	description: "Summary description for {EB_GROUPS_GRID_ITEM}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+deferred class
+	EB_GROUPS_GRID_ITEM
+
+inherit
+	EB_GRID_EDITOR_TOKEN_ITEM
+
+	EB_CONSTANTS
+		undefine
+			default_create, is_equal, copy
+		end
+
+	SHARED_EIFFEL_PROJECT
+		undefine
+			default_create, is_equal, copy
+		end
+
+	EV_SHARED_APPLICATION
+		undefine
+			default_create, is_equal, copy
+		end
+
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+		undefine
+			default_create, copy, is_equal
+		end
+
+feature -- Access
+
+	-- call `attached_parent' instead of `parent_tree'
+
+	set_associated_textable (textable: EV_TEXT_COMPONENT)
+			-- Associate `Current' with `textable' and change event handling.
+		require
+			textable /= Void
+		do
+			associated_textable := textable
+			select_actions.wipe_out
+			select_actions.extend (agent print_name)
+		end
+
+	dummy_string: STRING = "DUMMY"
+			-- Dummy string used by `fake_load'
+
+feature -- Element change
+
+	extend_subrow (a_grid_item: EB_GROUPS_GRID_ITEM)
+			-- Add a new subrow that contains `a_grid_item' after the last subrow of the row `Current' belongs to
+		require
+			grid_item_not_void: a_grid_item /= Void
+		local
+			l_subrow_index: INTEGER
+		do
+			l_subrow_index := row_index + row.subrow_count_recursive + 1
+			attached_parent.insert_new_row_parented (l_subrow_index, row)
+			attached_parent.set_item (1, l_subrow_index, a_grid_item)
+		end
+
+	set_subversion_pixmap (a_pixmap: EV_PIXMAP)
+			-- Display `a_pixmap' on the right side of the current grid item. Replace existing pixmap, if any.
+		require
+			pixmap_not_void: a_pixmap /= Void
+		local
+			l_pixmap_component: ES_GRID_PIXMAP_COMPONENT
+		do
+			if component_count = 2 then
+				remove_component (2)
+			end
+			create l_pixmap_component.make (a_pixmap)
+			append_component (l_pixmap_component)
+		end
+
+	wipe_out
+		local
+			l_row_index: INTEGER
+		do
+			if row.subrow_count_recursive > 0 then
+				attached_parent.remove_rows (row_index + 1, row_index + row.subrow_count_recursive)
+			end
+		end
+
+feature -- Status report
+
+	is_empty: BOOLEAN
+			-- Has current grid item no subrows?
+		do
+			Result := row.subrow_count_recursive = 0
+		end
+
+feature -- Interactivity
+
+	associate_with_window (a_window: like associated_window)
+			-- Associate recursively with `a_window' so that we can call `set_stone' on `a_window'.
+		do
+			if pointer_press_action_agent = Void then
+				pointer_press_action_agent := agent pointer_press_action
+				pointer_button_press_actions.force_extend (pointer_press_action_agent)
+			end
+			associated_window := a_window
+		end
+
+feature {NONE} -- Implementation
+
+	associated_textable: EV_TEXT_COMPONENT
+			-- Text component in which `Current' writes its name when clicked on.
+
+	print_name
+			-- Print class name in textable, the associated text component.
+		do
+			if associated_textable /= Void then
+				associated_textable.set_data (Void)
+				associated_textable.set_text (text)
+			end
+		end
+
+	associated_window: EB_STONABLE;
+			-- Is `Current' already associated to a window?
+
+	pointer_press_action (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
+						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Send a stone corresponding to `Current' to `associated_window'.
+		local
+			l_stone: STONE
+		do
+			if a_button = 1 and then associated_window /= Void then
+				associated_window.set_stone (stone)
+			elseif a_button = {EV_POINTER_CONSTANTS}.right and then ev_application.ctrl_pressed then
+				l_stone := stone
+				if l_stone /= Void and then l_stone.is_valid then
+						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+				end
+			end
+		end
+
+	pointer_press_action_agent: PROCEDURE [ANY, TUPLE [x: INTEGER_32; y: INTEGER_32; button: INTEGER_32; x_tilt: REAL_64; y_tilt: REAL_64; pressure: REAL_64; screen_x: INTEGER_32; screen_y: INTEGER_32]];
+			-- `pointer_press_action' handler
+
+note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

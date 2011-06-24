@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {SVN_CLIENT_CHECKOUT_COMMAND}."
+	description: "Summary description for {SVN_CLIENT_COMMIT_COMMAND}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	SVN_CLIENT_CHECKOUT_COMMAND
+	SVN_CLIENT_COMMIT_COMMAND
 
 inherit
 	SVN_CLIENT_COMMAND
@@ -21,22 +21,21 @@ feature {NONE} -- Initialization
 	make(a_svn_client: SVN_CLIENT)
 		do
 			Precursor (a_svn_client)
-			put_option ("--non-interactive", "")
-			put_option ("--trust-server-cert", "")
+			put_option ("-m", "")
 		end
 
 feature {NONE} -- Result parsing
 
 	parse_result (a_svn_parser: SVN_PARSER)
 		do
-			a_svn_parser.parse_checkout (Current)
+			a_svn_parser.parse_commit (Current)
 		end
 
 feature {NONE} -- Implementation
 
 	command_name: STRING_8
 		do
-			Result := "checkout"
+			Result := "commit"
 		end
 
 end

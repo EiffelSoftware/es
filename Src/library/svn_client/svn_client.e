@@ -14,9 +14,16 @@ feature {NONE} -- Initialization
 
 	make
 			-- Initialization for `Current'.
+		local
+--			l_exec_env: EXECUTION_ENVIRONMENT
+			l_parser: SVN_TEXT_PARSER
 		do
 			create pf
 				-- TODO: get the svn path using the shared environment
+--			create l_exec_env
+--			svn_executable := l_exec_env.get ("PATH")
+			create l_parser
+			set_parser (l_parser)
 			svn_executable := "/usr/bin/svn"
 			initialize_commands
 		end
@@ -28,9 +35,16 @@ feature -- Element change
 			working_path := a_working_path
 		end
 
+	set_parser (a_svn_parser: like parser)
+		require
+			parser_not_void: a_svn_parser /= Void
+		do
+			parser := a_svn_parser
+		end
+
 feature -- Access
 
-	working_path: STRING
+	working_path: STRING_32
 
 feature -- SVN Client commands
 
@@ -38,66 +52,27 @@ feature -- SVN Client commands
 
 	checkout: SVN_CLIENT_CHECKOUT_COMMAND
 
+	commit: SVN_CLIENT_COMMIT_COMMAND
+
+	delete: SVN_CLIENT_DELETE_COMMAND
+
 	list: SVN_CLIENT_LIST_COMMAND
+
+	log: SVN_CLIENT_LOG_COMMAND
 
 	status: SVN_CLIENT_STATUS_COMMAND
 
-	update(a_path: STRING_8; a_output_handler: detachable PROCEDURE[ANY, TUPLE[STRING_8]])
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-			create l_args.make
-			l_args.extend (a_path)
---			perform_task ("update", l_args, a_output_handler)
-		end
+	update: SVN_CLIENT_UPDATE_COMMAND
 
-	commit(a_path, a_message: STRING_8; a_output_handler: detachable PROCEDURE [ANY, TUPLE [STRING_8]])
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-			create l_args.make
+--	branch: SVN_CLIENT_BRANCH_COMMAND
 
-			l_args.extend (a_path)
+--	merge: SVN_CLIENT_MERGE_COMMAND
 
-			l_args.extend ("--message")
-			l_args.extend (a_message)
+--	diff: SVN_CLIENT_DIFF_COMMAND
 
---			perform_task ("update", l_args, a_output_handler)
-		end
+--	resolve: SVN_CLIENT_RESOLVE_COMMAND
 
-	delete(a_path: STRING_8; a_output_handler: detachable PROCEDURE [ANY, TUPLE [STRING_8]])
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-			create l_args.make
-			l_args.extend (a_path)
-
---			perform_task ("delete", l_args, a_output_handler)
-		end
-
-	branch(a_source_path, a_dest_path, a_message: STRING_8; a_output_handler: detachable PROCEDURE [ANY, TUPLE [STRING_8]])
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-			create l_args.make
-
-			l_args.extend (a_source_path)
-			l_args.extend (a_dest_path)
-
-			l_args.extend ("--message")
-			l_args.extend (a_message)
-
---			perform_task ("copy", l_args, a_output_handler)
-		end
-
-	merge
-		do
-		end
-
-	diff
-		do
-
-		end
+--	revert: SVN_CLIENT_REVERT_COMMAND
 
 feature {SVN_CLIENT_COMMAND} -- Implementation
 
@@ -105,11 +80,16 @@ feature {SVN_CLIENT_COMMAND} -- Implementation
 
 	pf: PROCESS_FACTORY
 
+	parser: SVN_PARSER
+
 	initialize_commands
 		do
 			create add.make (Current)
 			create checkout.make (Current)
+			create commit.make (Current)
+			create delete.make (Current)
 			create list.make (Current)
+			create log.make (Current)
 			create status.make (Current)
 		end
 

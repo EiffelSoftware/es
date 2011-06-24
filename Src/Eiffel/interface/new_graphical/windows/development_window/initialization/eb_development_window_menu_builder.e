@@ -1236,6 +1236,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
 			Result.extend (create {EV_MENU_SEPARATOR})
+			insert_show_tool_menu_item (Result, {ES_SVN_GROUPS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_REPOSITORIES_TOOL})
 
 --			l_customized_tools := develop_window.tools.customized_tools

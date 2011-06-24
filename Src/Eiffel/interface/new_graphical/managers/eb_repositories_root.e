@@ -26,7 +26,8 @@ feature {NONE} -- Initialization
 			Precursor (a_name, a_parent)
 
 			create svn_client.make
-			svn_client.list.set_target_url (a_name)
+			svn_client.set_working_path (".")
+			svn_client.list.set_target (a_name)
 		end
 
 feature -- Status

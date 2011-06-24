@@ -13,6 +13,4 @@ inherit
 create
 	make_with_name
 
-feature {NONE} -- Initialization
-
 end

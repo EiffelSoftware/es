@@ -9,41 +9,31 @@ class
 
 inherit
 	SVN_CLIENT_COMMAND
-		rename
-			target as target_url,
-			set_target as set_target_url
 		redefine
-			execute,
 			command_did_finish
 		end
 
 create
 	make
 
-feature -- Execute
-
-	execute
-		local
-			l_args: LINKED_LIST[STRING_8]
-		do
-				-- Clear last result and internal last result
-			set_last_result (Void)
-			set_internal_last_result (Void)
-				-- Initialize internal last result
-			create internal_last_result.make
-
-			create l_args.make
-			l_args.extend (command_name)
-			l_args.extend (target_url)
-			l_args.append (options_to_args)
-
-			launch_process (l_args)
-		end
-
 feature -- Access
 
 	last_list: detachable SVN_CLIENT_FOLDER
 		-- Return last result for svn list command
+
+feature {NONE} -- Result parsing
+
+	parse_result (a_svn_parser: SVN_PARSER)
+		do
+			a_svn_parser.parse_list (Current)
+		end
+
+feature {SVN_PARSER}
+
+	set_last_list (a_list: detachable like last_list)
+		do
+			last_list := a_list
+		end
 
 feature {NONE} -- Implementation
 
@@ -55,8 +45,8 @@ feature {NONE} -- Implementation
 	command_did_finish
 			-- Build tree hierarchy of the repository only after the list command successfully completed
 		do
-			create last_list.make_with_name (target_url)
-			last_list.recursively_add_items (internal_last_result)
+			set_last_result (internal_last_result)
+			parse_result (svn_client.parser)
 
 			Precursor
 		end
