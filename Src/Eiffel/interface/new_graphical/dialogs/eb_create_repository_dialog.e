@@ -9,7 +9,7 @@ class
 
 inherit
 	EB_DIALOG
-		-- use extend_no_expand!!
+		-- TODO: use extend_no_expand!!
 	EB_VISION2_FACILITIES
 		export
 			{NONE} all
@@ -94,9 +94,6 @@ feature {NONE} -- Initialization
 			set_minimum_height (175)
 
 			extend(l_ev_vertical_box_1)
-
-			repository_url.set_text ("https://svn.vis.ethz.ch/svn/eiffelsvn")
-			username.set_text ("erudel")
 		end
 
 feature

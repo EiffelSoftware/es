@@ -141,7 +141,7 @@ feature {NONE} -- Action handlers
 			is_interface_usable: is_interface_usable
 			workbench_is_already_compiled: workbench.is_already_compiled
 		do
---			user_widget.on_project_loaded
+			user_widget.on_project_loaded
 			highlight_editor_stone
 		end
 
