@@ -16,16 +16,16 @@ feature -- PhaseType
 
 	CAPTURING_PHASE: INTEGER
 			-- The current event phase is the capture phase.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	AT_TARGET: INTEGER
 			-- The current event is in the target phase, i.e., it is being evaluated at the
 			-- proximal event target.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	BUBBLING_PHASE: INTEGER
 			-- The current event phase is the bubbling phase.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	type: STRING
 			-- The name of the event type. The name must be a DOMString. Specifications

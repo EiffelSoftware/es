@@ -14,51 +14,51 @@ feature -- NodeType
 
 	ELEMENT_NODE: INTEGER
 			-- The node is an Element.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	ATTRIBUTE_NODE: INTEGER
 			-- The node is an Attr.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	TEXT_NODE: INTEGER
 			-- The node is a Text node.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	CDATA_SECTION_NODE: INTEGER
 			-- The node is a CDATASection.
-		external "C" alias "4" end
+		external "C" alias "#4" end
 
 	ENTITY_REFERENCE_NODE: INTEGER
 			-- The node is an EntityReference.
-		external "C" alias "5" end
+		external "C" alias "#5" end
 
 	ENTITY_NODE: INTEGER
 			-- The node is an Entity.
-		external "C" alias "6" end
+		external "C" alias "#6" end
 
 	PROCESSING_INSTRUCTION_NODE: INTEGER
 			-- The node is a ProcessingInstruction.
-		external "C" alias "7" end
+		external "C" alias "#7" end
 
 	COMMENT_NODE: INTEGER
 			-- The node is a Comment.
-		external "C" alias "8" end
+		external "C" alias "#8" end
 
 	DOCUMENT_NODE: INTEGER
 			-- The node is a Document.
-		external "C" alias "9" end
+		external "C" alias "#9" end
 
 	DOCUMENT_TYPE_NODE: INTEGER
 			-- The node is a DocumentType.
-		external "C" alias "10" end
+		external "C" alias "#10" end
 
 	DOCUMENT_FRAGMENT_NODE: INTEGER
 			-- The node is a DocumentFragment.
-		external "C" alias "11" end
+		external "C" alias "#11" end
 
 	NOTATION_NODE: INTEGER
 			-- The node is a Notation.
-		external "C" alias "12" end
+		external "C" alias "#12" end
 
 	node_name: STRING
 			-- The name of this node, depending on its type; see the table above.
@@ -268,29 +268,29 @@ feature -- DocumentPosition
 	DOCUMENT_POSITION_DISCONNECTED: INTEGER
 			-- The two nodes are disconnected. Order between disconnected nodes is always
 			-- implementation-specific.
-		external "C" alias "0x01" end
+		external "C" alias "#0x01" end
 
 	DOCUMENT_POSITION_PRECEDING: INTEGER
 			-- The second node precedes the reference node.
-		external "C" alias "0x02" end
+		external "C" alias "#0x02" end
 
 	DOCUMENT_POSITION_FOLLOWING: INTEGER
 			-- The node follows the reference node.
-		external "C" alias "0x04" end
+		external "C" alias "#0x04" end
 
 	DOCUMENT_POSITION_CONTAINS: INTEGER
 			-- The node contains the reference node. A node which contains is always
 			-- preceding, too.
-		external "C" alias "0x08" end
+		external "C" alias "#0x08" end
 
 	DOCUMENT_POSITION_CONTAINED_BY: INTEGER
 			-- The node is contained by the reference node. A node which is contained is
 			-- always following, too.
-		external "C" alias "0x10" end
+		external "C" alias "#0x10" end
 
 	DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: INTEGER
 			-- The determination of preceding versus following is implementation-specific.
-		external "C" alias "0x20" end
+		external "C" alias "#0x20" end
 
 feature -- Introduced in DOM Level 3:
 

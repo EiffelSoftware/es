@@ -20,36 +20,36 @@ feature -- KeyLocationCode
 			-- of the key, and did not originate from the numeric keypad (or did not
 			-- originate with a virtual key corresponding to the numeric keypad). Example:
 			-- the 'Q' key on a PC 101 Key US keyboard.
-		external "C" alias "0x00" end
+		external "C" alias "#0x00" end
 
 	DOM_KEY_LOCATION_LEFT: INTEGER
 			-- The key activated shall be in the left key location (there is more than one
 			-- possible location for this key). Example: the left 'Control' key on a PC 101
 			-- Key US keyboard.
-		external "C" alias "0x01" end
+		external "C" alias "#0x01" end
 
 	DOM_KEY_LOCATION_RIGHT: INTEGER
 			-- The key activation shall be in the right key location (there is more than
 			-- one possible location for this key). Example: the right 'Shift' key on a PC
 			-- 101 Key US keyboard.
-		external "C" alias "0x02" end
+		external "C" alias "#0x02" end
 
 	DOM_KEY_LOCATION_NUMPAD: INTEGER
 			-- The key activation originated on the numeric keypad or with a virtual key
 			-- corresponding to the numeric keypad. Example: the '1' key on a PC 101 Key US
 			-- keyboard located on the numeric pad.
-		external "C" alias "0x03" end
+		external "C" alias "#0x03" end
 
 	DOM_KEY_LOCATION_MOBILE: INTEGER
 			-- The key activation originated on a mobile device, either on a physical
 			-- keypad or a virtual keyboard. Example: the '#' key or softkey on a mobile
 			-- device.
-		external "C" alias "0x04" end
+		external "C" alias "#0x04" end
 
 	DOM_KEY_LOCATION_JOYSTICK: INTEGER
 			-- The key activation originated on a game controller or a joystick on a mobile
 			-- device. Example: the 'DownLeft' key on a game controller.
-		external "C" alias "0x05" end
+		external "C" alias "#0x05" end
 
 	char: STRING
 			-- char holds the character value of the key pressed. The value must be a

@@ -77,22 +77,22 @@ feature -- CompareHow
 	START_TO_START: INTEGER
 			-- Compare start boundary-point of sourceRange to start boundary-point of Range
 			-- on which compareBoundaryPoints is invoked.
-		external "C" alias "0" end
+		external "C" alias "#0" end
 
 	START_TO_END: INTEGER
 			-- Compare start boundary-point of sourceRange to end boundary-point of Range
 			-- on which compareBoundaryPoints is invoked.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	END_TO_END: INTEGER
 			-- Compare end boundary-point of sourceRange to end boundary-point of Range on
 			-- which compareBoundaryPoints is invoked.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	END_TO_START: INTEGER
 			-- Compare end boundary-point of sourceRange to start boundary-point of Range
 			-- on which compareBoundaryPoints is invoked.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	compare_boundary_points (a_how: INTEGER; a_source_range: JS_RANGE): INTEGER
 			-- Compare the boundary-points of two Ranges in a document.

@@ -18,17 +18,17 @@ feature -- DeltaModeCode
 	DOM_DELTA_PIXEL: INTEGER
 			-- The units of measurement for the delta shall be pixels. This is the most
 			-- typical case in most operating system and implementation configurations.
-		external "C" alias "0x00" end
+		external "C" alias "#0x00" end
 
 	DOM_DELTA_LINE: INTEGER
 			-- The units of measurement for the delta shall be individual lines of text.
 			-- This is the case for many form controls.
-		external "C" alias "0x01" end
+		external "C" alias "#0x01" end
 
 	DOM_DELTA_PAGE: INTEGER
 			-- The units of measurement for the delta shall be pages, either defined as a
 			-- single screen or as a demarcated page.
-		external "C" alias "0x02" end
+		external "C" alias "#0x02" end
 
 	delta_x: INTEGER
 			-- The distance the wheel has rotated around the x-axis.

@@ -18,20 +18,20 @@ feature -- ErrorSeverity
 			-- The severity of the error described by the DOMError is warning. A
 			-- SEVERITY_WARNING will not cause the processing to stop, unless
 			-- DOMErrorHandler.handleError() returns false.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	SEVERITY_ERROR: INTEGER
 			-- The severity of the error described by the DOMError is error. A
 			-- SEVERITY_ERROR may not cause the processing to stop if the error can be
 			-- recovered, unless DOMErrorHandler.handleError() returns false.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	SEVERITY_FATAL_ERROR: INTEGER
 			-- The severity of the error described by the DOMError is fatal error. A
 			-- SEVERITY_FATAL_ERROR will cause the normal processing to stop. The return
 			-- value of DOMErrorHandler.handleError() is ignored unless the implementation
 			-- chooses to continue, in which case the behavior becomes undefined.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	severity: INTEGER
 			-- The severity of the error, either SEVERITY_WARNING, SEVERITY_ERROR, or

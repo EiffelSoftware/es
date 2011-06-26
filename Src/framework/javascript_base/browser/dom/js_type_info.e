@@ -34,7 +34,7 @@ feature -- DerivationMethods
 			-- type definition can be reached recursively following the {base type
 			-- definition} property from the reference type definition, and all the
 			-- derivation methods involved are restriction.
-		external "C" alias "0x00000001" end
+		external "C" alias "#0x00000001" end
 
 	DERIVATION_EXTENSION: INTEGER
 			-- If the document's schema is an XML Schema [XML Schema Part 1], this constant
@@ -43,7 +43,7 @@ feature -- DerivationMethods
 			-- definition can be reached recursively following the {base type definition}
 			-- property from the reference type definition, and at least one of the
 			-- derivation methods involved is an extension.
-		external "C" alias "0x00000002" end
+		external "C" alias "#0x00000002" end
 
 	DERIVATION_UNION: INTEGER
 			-- If the document's schema is an XML Schema [XML Schema Part 1], this constant
@@ -55,7 +55,7 @@ feature -- DerivationMethods
 			-- {variety} union, and one of the {member type definitions} is T2. Note that
 			-- T1 could be the same as the reference type definition, and T2 could be the
 			-- same as the other type definition.
-		external "C" alias "0x00000004" end
+		external "C" alias "#0x00000004" end
 
 	DERIVATION_LIST: INTEGER
 			-- If the document's schema is an XML Schema [XML Schema Part 1], this constant
@@ -66,7 +66,7 @@ feature -- DerivationMethods
 			-- type definition by DERIVATION_RESTRICTION, T1 has {variety} list, and T2 is
 			-- the {item type definition}. Note that T1 could be the same as the reference
 			-- type definition, and T2 could be the same as the other type definition.
-		external "C" alias "0x00000008" end
+		external "C" alias "#0x00000008" end
 
 	is_derived_from (a_type_namespace_arg: STRING; a_type_name_arg: STRING; a_derivation_method: INTEGER): BOOLEAN
 			-- This method returns if there is a derivation between the reference type

@@ -38,21 +38,21 @@ feature -- network state
 	NETWORK_EMPTY: INTEGER
 			-- The element has not yet been initialized. All attributes are in their
 			-- initial states.
-		external "C" alias "0" end
+		external "C" alias "#0" end
 
 	NETWORK_IDLE: INTEGER
 			-- The element's resource selection algorithm is active and has selected a
 			-- resource, but it is not actually using the network at this time.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	NETWORK_LOADING: INTEGER
 			-- The user agent is actively trying to download data.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	NETWORK_NO_SOURCE: INTEGER
 			-- The element's resource selection algorithm is active, but it has so not yet
 			-- found a resource to use.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	network_state: INTEGER
 			-- Returns the current state of network activity for the element, from the
@@ -96,14 +96,14 @@ feature -- ready state
 			-- No information regarding the media resource is available. No data for the
 			-- current playback position is available. Media elements whose networkState
 			-- attribute are set to NETWORK_EMPTY are always in the HAVE_NOTHING state.
-		external "C" alias "0" end
+		external "C" alias "#0" end
 
 	HAVE_METADATA: INTEGER
 			-- Enough of the resource has been obtained that the duration of the resource
 			-- is available. In the case of a video element, the dimensions of the video
 			-- are also available. The API will no longer raise an exception when seeking.
 			-- No media data is available for the immediate current playback position.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	HAVE_CURRENT_DATA: INTEGER
 			-- Data for the immediate current playback position is available, but either
@@ -113,7 +113,7 @@ feature -- ready state
 			-- to obtain in the direction of playback. For example, in video this
 			-- corresponds to the user agent having data from the current frame, but not
 			-- the next frame; and to when playback has ended.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	HAVE_FUTURE_DATA: INTEGER
 			-- Data for the immediate current playback position is available, as well as
@@ -123,7 +123,7 @@ feature -- ready state
 			-- agent having data for at least the current frame and the next frame. The
 			-- user agent cannot be in this state if playback has ended, as the current
 			-- playback position can never advance in this case.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	HAVE_ENOUGH_DATA: INTEGER
 			-- All the conditions described for the HAVE_FUTURE_DATA state are met, and, in
@@ -131,7 +131,7 @@ feature -- ready state
 			-- where the current playback position, if it were to advance at the rate given
 			-- by the defaultPlaybackRate attribute, would not overtake the available data
 			-- before playback reaches the end of the media resource.
-		external "C" alias "4" end
+		external "C" alias "#4" end
 
 	ready_state: INTEGER
 			-- Returns a value that expresses the current state of the element with respect

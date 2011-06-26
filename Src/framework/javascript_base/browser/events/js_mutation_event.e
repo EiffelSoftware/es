@@ -17,15 +17,15 @@ feature -- attrChangeType
 
 	MODIFICATION: INTEGER
 			-- The Attr was modified in place.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	ADDITION: INTEGER
 			-- The Attr was just added.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	REMOVAL: INTEGER
 			-- The Attr was just removed.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	related_node: JS_NODE
 			-- relatedNode shall be used to identify a secondary node related to a mutation

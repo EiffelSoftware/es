@@ -22,28 +22,28 @@ feature -- states
 
 	UNSENT: INTEGER
 			-- The object has been constructed.
-		external "C" alias "0" end
+		external "C" alias "#0" end
 
 	OPENED: INTEGER
 			-- The open() method has been successfully invoked. During this state request
 			-- headers can be set using setRequestHeader() and the request can be made
 			-- using the send() method.
-		external "C" alias "1" end
+		external "C" alias "#1" end
 
 	HEADERS_RECEIVED: INTEGER
 			-- All redirects (if any) have been followed and all HTTP headers of the final
 			-- response have been received. Several response members of the object are now
 			-- available.
-		external "C" alias "2" end
+		external "C" alias "#2" end
 
 	LOADING: INTEGER
 			-- The response entity body is being received.
-		external "C" alias "3" end
+		external "C" alias "#3" end
 
 	DONE: INTEGER
 			-- The data transfer has been completed or something went wrong during the
 			-- transfer (e.g. infinite redirects).
-		external "C" alias "4" end
+		external "C" alias "#4" end
 
 	ready_state: INTEGER
 		external "C" alias "readyState" end
