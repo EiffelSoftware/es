@@ -46,9 +46,11 @@ feature -- Access
 			from repositories_list.start
 			until repositories_list.after
 			loop
-				create repositories_root.make (repositories_list.item_for_iteration, Current)
-				repositories_root.load_repository
-				extend (repositories_root)
+				if not repositories_list.item_for_iteration.is_empty then
+					create repositories_root.make (repositories_list.item_for_iteration, Current)
+					repositories_root.load_repository
+					extend (repositories_root)
+				end
 				repositories_list.forth
 			end
 		end

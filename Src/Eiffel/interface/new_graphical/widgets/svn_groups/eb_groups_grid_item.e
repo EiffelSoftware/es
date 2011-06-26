@@ -46,9 +46,6 @@ feature -- Access
 			select_actions.extend (agent print_name)
 		end
 
-	dummy_string: STRING = "DUMMY"
-			-- Dummy string used by `fake_load'
-
 feature -- Element change
 
 	extend_subrow (a_grid_item: EB_GROUPS_GRID_ITEM)
@@ -70,8 +67,8 @@ feature -- Element change
 		local
 			l_pixmap_component: ES_GRID_PIXMAP_COMPONENT
 		do
-			if component_count = 2 then
-				remove_component (2)
+			if component_count = 1 then
+				remove_component (1)
 			end
 			create l_pixmap_component.make (a_pixmap)
 			append_component (l_pixmap_component)
@@ -87,6 +84,9 @@ feature -- Element change
 		end
 
 feature -- Status report
+
+	name: STRING
+			-- Name of the item
 
 	is_empty: BOOLEAN
 			-- Has current grid item no subrows?

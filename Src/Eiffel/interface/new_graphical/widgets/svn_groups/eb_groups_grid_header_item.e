@@ -24,9 +24,9 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			set_text (a_name)
+			name := a_name.as_string_8
 			set_tooltip (a_name)
 			set_pixmap (an_icon)
---			set_subversion_pixmap (pixmaps.icon_pixmaps.feature_ancestors_icon)
 		end
 
 feature -- Access
@@ -34,6 +34,14 @@ feature -- Access
 	stone: STONE
 			-- No stones for header
 		do
+		end
+
+feature -- Status report
+
+	is_clusters_group: BOOLEAN
+			-- Is `Current' the Clusters group?
+		do
+			Result := text.same_string ("Clusters")
 		end
 
 feature {NONE} -- Implementation

@@ -9,6 +9,8 @@ class
 
 inherit
 	EB_GROUPS_GRID_ITEM
+		rename
+			name as actual_name
 		redefine
 			data,
 			set_data,
@@ -35,6 +37,7 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			name := a_name
+			actual_name := a_class.base_name
 			set_data (a_class)
 		ensure
 			name_set: name = a_name
@@ -47,7 +50,7 @@ feature -- Status report
 			-- Class represented by `Current'.
 
 	name: STRING
-			-- Renamed name in the context of this item in the classes tree.
+			-- Renamed name in the context of this item in the groups grid.
 
 	stone: CLASSI_STONE
 			-- Class stone representing `Current', can be a classi_stone or a classc_stone.

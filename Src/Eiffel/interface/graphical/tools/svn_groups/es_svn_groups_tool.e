@@ -86,7 +86,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	t_tool_title: STRING = "SVN Groups"
+	t_tool_title: STRING = "Groups (SVN)"
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

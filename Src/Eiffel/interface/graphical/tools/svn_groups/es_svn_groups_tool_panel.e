@@ -105,7 +105,7 @@ feature {ES_GROUPS_COMMANDER_I} -- Basic operations
 						highlight_stone (l_stone)
 					elseif not is_in_stone_synchronization then
 							-- No need to show an error during a synchornization. This should never actually
-							-- happen because the tool {ES_GROUPS_TOOL} does not permit stone synchronization.
+							-- happen because the tool {ES_SVN_GROUPS_TOOL} does not permit stone synchronization.
 						create l_error.make_standard (locale_formatter.translation (e_invalid_editor))
 						l_error.show_on_active_window
 					end
@@ -123,16 +123,16 @@ feature {NONE} -- Action handlers
 		local
 			l_stone: like stone
 		do
---			l_stone := stone
---			if l_stone /= Void and then not user_widget.is_empty then
---				if attached {CLASSI_STONE} l_stone as l_class then
+			l_stone := stone
+			if l_stone /= Void and then not user_widget.is_empty then
+--				if attached {CLASSI_STONE}l_stone as l_class then
 --					user_widget.show_class (l_class.class_i)
 --				elseif attached {CLUSTER_STONE} l_stone as l_group then
 --					user_widget.show_subfolder (l_group.group, l_group.path)
 --				else
 --					user_widget.show_stone (l_stone)
 --				end
---			end
+			end
 		end
 
 	on_project_loaded

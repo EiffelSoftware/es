@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 			default_create
 			set_stone (create {TARGET_STONE}.make(a_target))
 			set_text (a_target.name)
+			name := a_target.name
 			set_tooltip (a_target.name)
 			set_pixmap (pixmaps.icon_pixmaps.folder_target_icon)
 		end

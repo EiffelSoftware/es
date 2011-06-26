@@ -107,6 +107,8 @@ feature {NONE} -- Initialization
 
 			set_configurable_target_menu_mode
 			set_configurable_target_menu_handler (agent on_menu_handler (?, ?, ?, ?))
+
+			row_expand_actions.extend (agent retrieve_status_for_row(?))
 		end
 
 	make_without_targets (a_context_menu_factory: EB_CONTEXT_MENU_FACTORY)
@@ -258,6 +260,40 @@ feature -- Activation
 			window := a_window
 		end
 
+	show_stone (a_stone: STONE)
+			-- Display node that represents `a_stone'.
+		require
+			a_stone_not_void: a_stone /= Void
+		local
+			l_grp: CONF_GROUP
+			l_path: STRING
+		do
+			if attached {CLASSI_STONE}a_stone as classi_stone then
+				l_grp := classi_stone.group
+				l_path := classi_stone.class_i.config_class.path
+			end
+			if l_grp = Void then
+				if attached {CLUSTER_STONE}a_stone as cluster_stone then
+					l_grp := cluster_stone.group
+					l_path := cluster_stone.path
+				end
+			end
+			if l_grp /= Void then
+				check
+					path_set: l_path /= Void
+				end
+--				show_subfolder (l_grp, l_path)
+			end
+		end
+
+feature -- Status report
+
+	is_empty: BOOLEAN
+			-- Does the current grid have no elements?
+		do
+			Result := row_count = 0
+		end
+
 feature {NONE} -- Status report
 
 	has_readonly_items: BOOLEAN
@@ -272,6 +308,7 @@ feature -- Observer pattern
 			-- Rebuild the tree.
 		do
 			build_tree
+				-- Retrieve svn status, apply pixmaps
 		end
 
 	on_class_added (a_class: EIFFEL_CLASS_I)
@@ -549,7 +586,7 @@ feature {NONE} -- Implementation
 			-- Build a tree for the targets of the current system, that make up the application target.
 		local
 			l_target: detachable CONF_TARGET
-			l_item, l_new_item: EB_CLASSES_TREE_TARGET_ITEM
+			l_item, l_new_item: EB_GROUPS_GRID_TARGET_ITEM
 			a_list: EV_DYNAMIC_LIST [EV_CONTAINABLE] -- To be removed
 		do
 			l_target := universe.target
@@ -561,7 +598,7 @@ feature {NONE} -- Implementation
 				loop
 					l_target := l_target.extends
 					create l_new_item.make (l_target)
-					l_new_item.extend (l_item)
+--					l_new_item.extend (l_item)
 					l_item := l_new_item
 				end
 				a_list.extend (l_item)
@@ -671,11 +708,94 @@ feature {NONE} -- Implementation
 	is_class_selection_only: BOOLEAN
 			-- Is tree only used for the purpose of selecting an existing class from the universe?
 
-	retrieve_item_from_pebble (a_pebble: ANY): SVN_CLIENT_ITEM
+	item_from_status (a_status: SVN_CLIENT_FOLDER; a_name: STRING_8): SVN_CLIENT_ITEM
+			-- Item in `a_status' that has the same name as `a_name', if any
 		require
-			pebble_not_void: a_pebble /= Void
+			status_not_void: a_status /= Void
+			name_not_void: a_name /= Void
 		do
+			from a_status.start
+			until a_status.after
+			loop
+				if a_status.item_for_iteration.name.same_string (a_name) then
+					Result := a_status.item_for_iteration
+				end
+				a_status.forth
+			end
+		end
 
+	retrieve_status_for_row (a_row: EV_GRID_ROW)
+		require
+			row_not_void: a_row /= Void
+		do
+				-- Perform status only if `a_row' is in the cluster group
+			if attached {EB_GROUPS_GRID_HEADER_ITEM}a_row.parent_row_root.item(1) as l_header and then l_header.is_clusters_group then
+				if attached {EB_GROUPS_GRID_FOLDER_ITEM}a_row.item (1) as f then
+					svn_client.set_working_path (f.full_path)
+					svn_client.status.put_option ("--depth", "immediates")
+					svn_client.status.set_did_finish_handler (agent finished (f))
+					svn_client.status.execute
+				elseif attached {EB_GROUPS_GRID_CLASS_ITEM}a_row.item (1) as c then
+					svn_client.status.set_target (c.name)
+				end
+			end
+		end
+
+	finished (a_folder_item: EB_GROUPS_GRID_FOLDER_ITEM)
+		require
+			folder_item_not_void: a_folder_item /= Void
+		local
+			l_status: SVN_CLIENT_FOLDER
+			l_item: SVN_CLIENT_ITEM
+			l_row_index: INTEGER
+		do
+			l_status := svn_client.status.last_status
+			from l_row_index := 1
+			until l_row_index > a_folder_item.row.subrow_count
+			loop
+				if attached {EB_GROUPS_GRID_ITEM}a_folder_item.row.subrow (l_row_index).item (1) as gi then
+					l_item := item_from_status (l_status, gi.name)
+					if l_item /= Void then
+							-- The pixmaps will change as soon as the actual images are added to the project
+						inspect l_item.properties.at (1)
+						when 'A' then
+								-- item has been added to the working copy
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.information_edit_auto_node_icon)
+						when 'C' then
+								-- item is in conflict
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.general_close_all_documents_icon)
+						when 'D' then
+								-- item has been deleted from the working copy
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.tool_error_icon)
+						when 'I' then
+								-- item is being ignored
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.testing_see_failure_trace_icon)
+						when 'M' then
+								-- item has been modified
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.view_editor_icon)
+						when 'R' then
+								-- item has been replaced
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.view_flat_icon)
+						when 'X' then
+								-- unversioned directory created by an externals definition
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.general_close_icon)
+						when '?' then
+								-- item is not under version control
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.debug_attach_icon)
+						when '!' then
+								-- item is missing or incomplete
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.tool_warning_icon)
+						when '~' then
+								-- item obstructed by some item of a different kind
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.breakpoints_delete_icon)
+						else
+								-- No modification occurred
+						end
+					end
+
+				end
+				l_row_index := l_row_index + 1
+			end
 		end
 
 feature -- Tree construction

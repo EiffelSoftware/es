@@ -50,8 +50,11 @@ feature -- Basic operations
 
 	remove_repository
 		do
-			if attached {EB_REPOSITORIES_ROOT}widget.selected_item.data as a_repository then
-				repositories.prune (a_repository)
+			if not (widget.count = 0) then
+					-- Only root items can be deleted
+				if attached {EB_REPOSITORIES_ROOT}widget.selected_item.data as a_repository then
+					repositories.prune (a_repository)
+				end
 			end
 		end
 

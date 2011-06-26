@@ -82,10 +82,13 @@ feature -- Status report
 			-- cluster represented by `Current'.
 
 	path: STRING
-			-- relativ path to cluster location (for recursive clusters).
+			-- relative path to cluster location (for recursive clusters).
 
-	name: STRING;
-			-- name of the item.
+	full_path: STRING
+			-- absolute path of `Current' folder
+		do
+			Result := data.actual_group.location.evaluated_path + path
+		end
 
 feature -- Status setting
 
