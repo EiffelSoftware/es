@@ -11,12 +11,8 @@ inherit
 	ES_GRID
 
 	EB_EDITOR_TOKEN_GRID_SUPPORT
-		rename
-			on_pick_start_from_grid_pickable_item as evs_on_pebble_function
 		undefine
 			default_create, is_equal, copy
-		redefine
-			evs_on_pebble_function
 		end
 
 	EB_CLUSTER_MANAGER_OBSERVER
@@ -206,50 +202,12 @@ feature {NONE} -- Initialization
 
 					-- targets
 				if has_targets then
---					build_target_tree
+					build_target_tree
 				end
 			end
 		end
 
 feature -- Activation
-
-	associate_textable_recursively (a_textable: EV_TEXT_COMPONENT; a_list: EV_DYNAMIC_LIST [EV_TREE_NODE])
-			-- Associate `a_textable' with all items in `a_list'
-		require
-			not_void: a_textable /= Void
-			not_void: a_list /= Void
-		local
-			l_item: EB_CLASSES_TREE_ITEM
-			l_actions: EV_TREE_NODE_ACTION_SEQUENCES
-		do
-			from
-				a_list.start
-			until
-				a_list.after
-			loop
-				l_item ?= a_list.item
-				if l_item /= Void then
-					if l_item.text.is_equal (l_item.dummy_string) then
-						-- Current `a_list' contain dummy node, we set `a_textable' with it in expand actions
-						l_actions ?= a_list
-						if l_actions /= Void then
-							l_actions.expand_actions.extend_kamikaze (agent associate_textable_recursively (a_textable, a_list))
-						end
-					end
-					if is_class_selection_only then
-						if attached {EB_CLASSES_TREE_CLASS_ITEM} l_item then
-								-- We only want class items to change the textable.
-							l_item.set_associated_textable (a_textable)
-						end
-					else
-						l_item.set_associated_textable (a_textable)
-					end
-				end
-
-				associate_textable_recursively (a_textable, a_list.item)
-				a_list.forth
-			end
-		end
 
 	associate_with_window (a_window: EB_DEVELOPMENT_WINDOW)
 			-- Set `window' to `a_window'.
@@ -258,32 +216,6 @@ feature -- Activation
 				key_press_actions.extend (agent on_key_pushed)
 			end
 			window := a_window
-		end
-
-	show_stone (a_stone: STONE)
-			-- Display node that represents `a_stone'.
-		require
-			a_stone_not_void: a_stone /= Void
-		local
-			l_grp: CONF_GROUP
-			l_path: STRING
-		do
-			if attached {CLASSI_STONE}a_stone as classi_stone then
-				l_grp := classi_stone.group
-				l_path := classi_stone.class_i.config_class.path
-			end
-			if l_grp = Void then
-				if attached {CLUSTER_STONE}a_stone as cluster_stone then
-					l_grp := cluster_stone.group
-					l_path := cluster_stone.path
-				end
-			end
-			if l_grp /= Void then
-				check
-					path_set: l_path /= Void
-				end
---				show_subfolder (l_grp, l_path)
-			end
 		end
 
 feature -- Status report
@@ -432,16 +364,6 @@ feature {NONE} -- Context menu handler and construction
 
 feature {NONE} -- Event handler
 
-	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_orignal_pointer_position: EV_COORDINATE; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT)
-		local
-			l_pebble: ANY
-		do
-			l_pebble := on_pebble_function (a_item)
-			if l_pebble = Void then
-				Precursor {EB_EDITOR_TOKEN_GRID_SUPPORT} (a_item, a_orignal_pointer_position, a_grid_support)
-			end
-		end
-
 	on_pebble_function (a_item: EV_GRID_ITEM): ANY
 			-- Pebble associated with `a_item'
 		local
@@ -574,7 +496,6 @@ feature {NONE} -- Implementation
 		local
 			l_target: detachable CONF_TARGET
 			l_item, l_new_item: EB_GROUPS_GRID_TARGET_ITEM
-			a_list: EV_DYNAMIC_LIST [EV_CONTAINABLE] -- To be removed
 		do
 			l_target := universe.target
 			if attached l_target then
@@ -584,11 +505,12 @@ feature {NONE} -- Implementation
 					l_target.extends = Void
 				loop
 					l_target := l_target.extends
+
 					create l_new_item.make (l_target)
---					l_new_item.extend (l_item)
+					l_new_item.extend_subrow (l_item)
 					l_item := l_new_item
 				end
-				a_list.extend (l_item)
+				extend (l_item)
 				l_item.associate_with_window (window)
 			end
 		end
