@@ -317,18 +317,14 @@ feature {NONE} -- Context menu handler and construction
 	on_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler for classes, clusters, libraries, targets and assemblies
 		do
-			if attached {CLASSC_STONE}a_pebble as a_class then
-				context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
-				extend_working_copy_menu (a_menu, a_class)
-			elseif attached {CLUSTER_I}a_pebble as a_cluster then
-				context_menu_factory.clusters_data_menu (a_menu, a_target_list, a_source, a_pebble)
-			end
---			l_factory.standard_compiler_item_menu (a_menu, a_target_list, a_source, a_pebble)
---			l_factory.uncompiled_feature_item_menu (a_menu, a_target_list, a_source, a_pebble, fst.feature_name)
---			l_factory.feature_clause_item_menu (a_menu, a_target_list, a_source, a_pebble, fc)
+			context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
+			extend_working_copy_menu (a_menu, a_pebble)
+--			context_menu_factory.clusters_data_menu (a_menu, a_target_list, a_source, a_pebble)
+--			context_menu_factory.libraries_data_menu (a_menu, a_target_list, a_source, a_pebble)
+--			context_menu_factory.assemblies_data_menu (a_menu, a_target_list, a_source, a_pebble)
 		end
 
-	extend_working_copy_menu (a_menu: EV_MENU; a_stone: STONE)
+	extend_working_copy_menu (a_menu: EV_MENU; a_pebble: ANY)
 		local
 			l_menu, l_menu2: EV_MENU
 			l_menu_item: EV_MENU_ITEM
@@ -336,7 +332,7 @@ feature {NONE} -- Context menu handler and construction
 			create l_menu.make_with_text ("Subversion")
 			a_menu.extend (l_menu)
 
-			create l_menu_item.make_with_text_and_action ("Add to working copy", agent svn_add (a_stone))
+			create l_menu_item.make_with_text_and_action ("Add to working copy", agent svn_add (a_pebble))
 			l_menu.extend (l_menu_item)
 
 --			if dev_window.tools.search_tool.veto_pebble_function (a_pebble) then
@@ -354,16 +350,16 @@ feature {NONE} -- Event handler
 		do
 			if not ev_application.ctrl_pressed then
 				d := data_from_item (a_item)
-				if attached {CLASS_I} d as ci then
+				if attached {CLASS_I}d as ci then
 					if ci.is_compiled then
-						create {CLASSC_STONE} Result.make (ci.compiled_class)
+						create {CLASSC_STONE}Result.make (ci.compiled_class)
 					else
-						create {CLASSI_STONE} Result.make (ci)
+						create {CLASSI_STONE}Result.make (ci)
 					end
-				elseif attached {CLASS_C} d as cl then
+				elseif attached {CLASS_C}d as cl then
 					create {CLASSC_STONE}Result.make (cl)
-				elseif attached {CONF_GROUP} d as cl then
-					create {CLUSTER_STONE}Result.make (cl)
+				elseif attached {EB_SORTED_CLUSTER}d as cl then
+					create {CLUSTER_STONE}Result.make (cl.actual_group)
 				end
 			end
 		end
@@ -619,8 +615,6 @@ feature {NONE} -- Implementation
 					svn_client.status.put_option ("--depth", "immediates")
 					svn_client.status.set_did_finish_handler (agent on_retrieved_status (f))
 					svn_client.status.execute
-				elseif attached {EB_GROUPS_GRID_CLASS_ITEM}a_row.item (1) as c then
-					svn_client.status.set_target (c.name)
 				end
 			end
 		end
@@ -705,11 +699,29 @@ feature -- Tree construction
 
 feature {NONE} -- Subversion context menu commands
 
-	svn_add (a_stone: STONE)
+	svn_add (a_pebble: ANY)
 		require
-			stone_not_void: a_stone /= Void
+			stone_not_void: a_pebble /= Void
+		local
+			l_path, l_item: STRING
 		do
-			print ("Add stone to working copy")
+			if attached {CLASSI_STONE}a_pebble as ci then
+				l_path := ci.group.location.evaluated_path
+				l_item := ci.file_name
+			elseif attached {CLUSTER_STONE}a_pebble as cl then
+				l_path := cl.group.location.evaluated_path
+				l_item := cl.folder_name
+			end
+			svn_client.set_working_path (l_path)
+			svn_client.add.set_target (l_item)
+			svn_client.add.set_error_handler (agent error)
+			svn_client.add.execute
+			print ("Path to add: " + l_path + "%N")
+		end
+
+	error (s: STRING)
+		do
+			print (s)
 		end
 
 feature {NONE} -- Factory
