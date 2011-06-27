@@ -254,14 +254,13 @@ feature {NONE} -- Implementation
 		do
 			fixme ("Simplified model not considering `across' loops.")
 
-			if attached a_as.from_part then
-					-- Record `a_as' if and only if either
-					-- the initialization or the condition mentions the target.			
-				if is_ast_eiffel_using_target_variable (a_as.from_part, variable_context) or
-					is_ast_eiffel_using_target_variable (a_as.stop, variable_context)
-				then
-					target_variable_usage_set.put (a_as.path)
-				end
+				-- Record `a_as' if and only if either
+				-- the initialization or the condition mentions the target.
+			if
+				attached a_as.from_part and is_ast_eiffel_using_target_variable (a_as.from_part, variable_context) or
+				attached a_as.stop      and is_ast_eiffel_using_target_variable (a_as.stop, variable_context)
+			then
+				target_variable_usage_set.put (a_as.path)
 			end
 			safe_process (a_as.compound)
 		end

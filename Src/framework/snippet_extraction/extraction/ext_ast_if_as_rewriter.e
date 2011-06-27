@@ -10,9 +10,12 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
 			make_with_output,
-			process_if_as,
-			process_elseif_as
+			process_if_as
 		end
+
+	EPA_UTILITY
+
+	EXT_ANN_UTILITY
 
 	EXT_AST_UTILITY
 
@@ -25,6 +28,7 @@ feature {NONE} -- Creation
 			-- Make with `a_output'.
 		do
 			Precursor (a_output)
+			create annotation_factory.make
 		end
 
 feature -- Configuration
@@ -41,12 +45,16 @@ feature -- Configuration
 			variable_context := a_context
 		end
 
+	annotation_factory: EXT_ANNOTATION_FACTORY
+			-- Annotation factory to create new typed annotation instances.		
+
 feature {NONE} -- Implementation
 
 	process_if_as (l_as: IF_AS)
 		local
 			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
 			l_used_elseifs: INTEGER
+			l_done: BOOLEAN
 		do
 				-- Scan expression.
 			l_use_cond := is_ast_eiffel_using_variable_of_interest (l_as.condition, variable_context)
@@ -76,17 +84,22 @@ feature {NONE} -- Implementation
 				-- Decide on processing.
 			if not l_use_elsif_list and then not l_use_branch_true and l_use_branch_false then
 				process_if_as_only_retaining_false_branch (l_as)
-			elseif l_use_elsif_list and then not l_use_branch_true and not l_use_branch_false then
+				l_done := True
+			end
+
+			if l_use_elsif_list and l_used_elseifs = 1 and then not l_use_branch_true and not l_use_branch_false then
 				process_if_as_only_retaining_one_elsif_branch (l_as)
-			else
+				l_done := True
+			end
+
+			if not l_use_elsif_list and not l_use_branch_true and not l_use_branch_false and l_use_cond then
+				process_if_as_only_condition_used (l_as)
+				l_done := True
+			end
+
+			if not l_done then
 				Precursor (l_as)
 			end
-		end
-
-	process_elseif_as (l_as: ELSIF_AS)
-		do
-			to_implement ("Implement pruning of not used list items.")
-			Precursor (l_as)
 		end
 
 feature {NONE} -- Helpers
@@ -95,7 +108,6 @@ feature {NONE} -- Helpers
 			-- Rewrites an 'if' statement that the 'else' branch becomes the 'true' branch.
 		require
 			attached l_as.condition
---			attached l_as.else_part
 		local
 			l_condition: EXPR_AS
 		do
@@ -117,7 +129,6 @@ feature {NONE} -- Helpers
 		require
 			attached l_as.condition
 			attached l_as.elsif_list and then not l_as.elsif_list.is_empty
---			attached l_as.elsif_list.last.compound
 		local
 			l_condition: EXPR_AS
 			l_and_expression_list: LINKED_LIST [EXPR_AS]
@@ -153,63 +164,19 @@ feature {NONE} -- Helpers
 			output.append_string (ti_End_keyword+ti_New_line)
 		end
 
-feature {NONE} -- Helpers (Expression)
-
-	negate_expression (l_as: EXPR_AS): EXPR_AS
-			-- Negates an expression.
-			-- If the root of the expression AST is of type `{UN_NOT_AS}' it will be removed.
-			-- If the root of the expression AST is not of type `{UN_NOT_AS}' it such node
-			-- including and inner `{PARAN_AS}' will be wrapped around.
-		require
-			attached l_as
+	process_if_as_only_condition_used (a_as: IF_AS)
+			-- Creates an `{EXT_ANN_HOLE}' instead of the empty 'if' statement.
 		do
-			if attached {UN_NOT_AS} l_as as l_un_not_as then
-				Result := l_un_not_as.expr
-			else
-				Result := create {UN_NOT_AS}.initialize (paran_expression (l_as), Void)
-			end
-		ensure
-			attached Result
+			output.append_string (create_annotation_hole (a_as).out)
+			output.append_string (ti_New_line)
 		end
 
-	and_expression_list (a_list: LIST [EXPR_AS]): EXPR_AS
-			-- Concatenates a list of expressions with binary 'and'.
-		require
-			not a_list.is_empty
-		local
-			l_current: EXPR_AS
-			l_new_list: like a_list
+feature {NONE} -- Annotation Handling
+
+	create_annotation_hole (a_ast: AST_EIFFEL): EXT_ANNOTATION
+			-- Create a new `{EXT_ANN_HOLE}' with metadata.
 		do
-			if a_list.count > 1 then
-				l_new_list := a_list.twin
-				l_current := l_new_list.last
-
-				l_new_list.start
-				l_new_list.prune (l_current)
-				check l_new_list.count < a_list.count end
-
-				Result := and_expression (and_expression_list (l_new_list), l_current)
-			else
-				Result := a_list.first
-			end
-		end
-
-	and_expression (a_left_as, a_right_as: EXPR_AS): EXPR_AS
-			-- Wraps parenthesis around both expressions and connects them with a binary 'and'.
-		local
-			l_bin_and_as: BIN_AND_AS
-		do
-			create l_bin_and_as.initialize (paran_expression (a_left_as), paran_expression (a_right_as), Void)
-			Result := l_bin_and_as
-		end
-
-	paran_expression (a_as: EXPR_AS): EXPR_AS
-			-- Creates a new expression of `a_as' with parenthesis wrapped around.
-		local
-			l_paran_as: PARAN_AS
-		do
-			create l_paran_as.initialize (a_as, Void, Void)
-			Result := l_paran_as
+			Result := annotation_factory.new_ann_hole (collect_mentions_set (a_ast, variable_context), Void)
 		end
 
 end

@@ -38,12 +38,6 @@ feature -- Access
 			l_location_marks.force (annotation)
 		end
 
-	has_annotation_prune (location: AST_PATH): BOOLEAN
-		do
-			Result := annotations.has (location) and then
-						across annotations.item (location) as l_annotations some attached {EXT_ANN_PRUNE} l_annotations.item end
-		end
-
 	has_annotation_hole (location: AST_PATH): BOOLEAN
 		do
 			Result := annotations.has (location) and then
@@ -68,14 +62,6 @@ feature -- Access
 			end
 		ensure
 			annotation_result_set: attached Result
-		end
-
-	has_annotation_flatten (location: AST_PATH; mode: STRING): BOOLEAN
-		do
-			Result := annotations.has (location) and then
-						across annotations.item (location) as l_annotations
-							some attached {EXT_ANN_FLATTEN} l_annotations.item as l_ann_flatten and then l_ann_flatten.mode = mode
-						end
 		end
 
 	set_annotations (a_annotations: like annotations)

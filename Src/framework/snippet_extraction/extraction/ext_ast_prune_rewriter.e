@@ -10,171 +10,24 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
 			make_with_output,
-			processing_needed,
-
-			process_access_assert_as,
-			process_access_feat_as,
-			process_access_id_as,
-			process_access_inv_as,
-			process_address_as,
-			process_address_current_as,
-			process_address_result_as,
-			process_agent_routine_creation_as,
-			process_all_as,
-			process_array_as,
-			process_assign_as,
+				-- List of instructions
 			process_assigner_call_as,
-			process_attribute_as,
-			process_bang_creation_as,
-			process_bang_creation_expr_as,
-			process_bin_and_as,
-			process_bin_and_then_as,
-			process_bin_div_as,
-			process_bin_eq_as,
-			process_bin_free_as,
-			process_bin_ge_as,
-			process_bin_gt_as,
-			process_bin_implies_as,
-			process_bin_le_as,
-			process_bin_lt_as,
-			process_bin_minus_as,
-			process_bin_mod_as,
-			process_bin_ne_as,
-			process_bin_not_tilde_as,
-			process_bin_or_as,
-			process_bin_or_else_as,
-			process_bin_plus_as,
-			process_bin_power_as,
-			process_bin_slash_as,
-			process_bin_star_as,
-			process_bin_tilde_as,
-			process_bin_xor_as,
-			process_binary_as,
-			process_bit_const_as,
-			process_bits_as,
-			process_bits_symbol_as,
-			process_body_as,
-			process_bool_as,
-			process_bracket_as,
-			process_break_as,
-			process_built_in_as,
-			process_case_as,
-			process_char_as,
+			process_assign_as,
 			process_check_as,
-			process_class_as,
-			process_class_list_as,
-			process_class_type_as,
-			process_client_as,
-			process_constant_as,
-			process_constraining_type_as,
-			process_convert_feat_as,
-			process_convert_feat_list_as,
-			process_converted_expr_as,
-			process_create_as,
-			process_create_creation_as,
-			process_create_creation_expr_as,
 			process_creation_as,
-			process_creation_expr_as,
-			process_current_as,
-			process_custom_attribute_as,
 			process_debug_as,
-			process_deferred_as,
-			process_delayed_actual_list_as,
-			process_do_as,
-			process_eiffel_list,
-			process_elseif_as,
-			process_ensure_as,
-			process_ensure_then_as,
-			process_export_clause_as,
-			process_export_item_as,
-			process_expr_address_as,
-			process_expr_call_as,
-			process_external_as,
-			process_external_lang_as,
-			process_feat_name_id_as,
-			process_feature_as,
-			process_feature_clause_as,
-			process_feature_list_as,
-			process_feature_name_alias_as,
-			process_for_all_as,
-			process_formal_argu_dec_list_as,
-			process_formal_as,
-			process_formal_dec_as,
-			process_formal_generic_list_as,
-			process_generic_class_type_as,
-			process_guard_as,
-			process_id_as,
+--			process_guard_as,
 			process_if_as,
-			process_index_as,
-			process_indexing_clause_as,
-			process_infix_prefix_as,
-			process_inline_agent_creation_as,
 			process_inspect_as,
 			process_instr_call_as,
-			process_integer_as,
-			process_interval_as,
-			process_invariant_as,
-			process_iteration_as,
-			process_key_list_as,
-			process_keyword_as,
-			process_keyword_stub_as,
-			process_leaf_stub_as,
-			process_like_cur_as,
-			process_like_id_as,
-			process_local_dec_list_as,
 			process_loop_as,
-			process_loop_expr_as,
-			process_named_tuple_type_as,
-			process_nested_as,
-			process_nested_expr_as,
-			process_none_id_as,
-			process_none_type_as,
-			process_object_test_as,
-			process_once_as,
-			process_operand_as,
-			process_parameter_list_as,
-			process_paran_as,
-			process_parent_as,
-			process_parent_list_as,
-			process_precursor_as,
-			process_qualified_anchored_type_as,
-			process_real_as,
-			process_redefine_clause_as,
-			process_rename_as,
-			process_rename_clause_as,
-			process_require_as,
-			process_require_else_as,
-			process_result_as,
-			process_retry_as,
+--			process_retry_as,
 			process_reverse_as,
-			process_routine_as,
-			process_routine_creation_as,
-			process_select_clause_as,
-			process_static_access_as,
-			process_string_as,
-			process_symbol_as,
-			process_symbol_stub_as,
-			process_tagged_as,
-			process_there_exists_as,
-			process_tuple_as,
-			process_type_dec_as,
-			process_type_dec_list_as,
-			process_type_expr_as,
-			process_type_list_as,
-			process_typed_char_as,
-			process_un_free_as,
-			process_un_minus_as,
-			process_un_not_as,
-			process_un_old_as,
-			process_un_plus_as,
-			process_un_strip_as,
-			process_unary_as,
-			process_undefine_clause_as,
-			process_unique_as,
-			process_variant_as,
-			process_verbatim_string_as,
-			process_void_as
+				-- Other AST nodes
+			process_case_as
 		end
+
+	EXT_AST_UTILITY
 
 	REFACTORING_HELPER
 
@@ -189,1505 +42,219 @@ feature {NONE} -- Creation
 			Precursor (a_output)
 		end
 
-feature -- Access
+feature -- Configuration
 
-	annotation_context: EXT_ANNOTATION_CONTEXT
-		assign set_annotation_context
+	variable_context: EXT_VARIABLE_CONTEXT
+		assign set_variable_context
 			-- Contextual information about relevant variables.
 
-	set_annotation_context (a_context: EXT_ANNOTATION_CONTEXT)
-			-- Sets `annotation_context' to `a_context'	
+	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
+			-- Sets `variable_context' to `a_context'	
 		require
 			attached a_context
 		do
-			annotation_context := a_context
+			variable_context := a_context
 		end
 
-feature {NONE} -- Implementation (Processing)
-
-	processing_needed (an_ast: detachable AST_EIFFEL; a_parent: AST_EIFFEL; a_branch: INTEGER): BOOLEAN
-			-- should `an_ast' be processed
-		require else
-			an_ast_path_not_void: attached an_ast.path
-		do
-			Result := attached an_ast and then not annotation_context.has_annotation_prune (an_ast.path)
-		end
-
-feature -- Roundtrip
-
-	process_none_id_as (l_as: NONE_ID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_typed_char_as (l_as: TYPED_CHAR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_agent_routine_creation_as (l_as: AGENT_ROUTINE_CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_inline_agent_creation_as (l_as: INLINE_AGENT_CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_create_creation_as (l_as: CREATE_CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bang_creation_as (l_as: BANG_CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_create_creation_expr_as (l_as: CREATE_CREATION_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bang_creation_expr_as (l_as: BANG_CREATION_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-feature -- Roundtrip
-
-	process_keyword_as (l_as: KEYWORD_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_symbol_as (l_as: SYMBOL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_break_as (l_as: BREAK_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_leaf_stub_as (l_as: LEAF_STUB_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_keyword_stub_as (l_as: KEYWORD_STUB_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-feature {AST_EIFFEL} -- Helpers
-
-
-
-feature {AST_EIFFEL} -- Skeleton Visitors
-
-	process_custom_attribute_as (l_as: CUSTOM_ATTRIBUTE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_id_as (l_as: ID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_integer_as (l_as: INTEGER_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_static_access_as (l_as: STATIC_ACCESS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_feature_clause_as (l_as: FEATURE_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_unique_as (l_as: UNIQUE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_tuple_as (l_as: TUPLE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_real_as (l_as: REAL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bool_as (l_as: BOOL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_array_as (l_as: ARRAY_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_char_as (l_as: CHAR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_string_as (l_as: STRING_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_body_as (l_as: BODY_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_built_in_as (l_as: BUILT_IN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_result_as (l_as: RESULT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_current_as (l_as: CURRENT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_access_inv_as (l_as: ACCESS_INV_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_access_id_as (l_as: ACCESS_ID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_access_assert_as (l_as: ACCESS_ASSERT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_precursor_as (l_as: PRECURSOR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_nested_expr_as (l_as: NESTED_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_nested_as (l_as: NESTED_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_creation_expr_as (l_as: CREATION_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_routine_as (l_as: ROUTINE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_constant_as (l_as: CONSTANT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL])
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_indexing_clause_as (l_as: INDEXING_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_infix_prefix_as (l_as: INFIX_PREFIX_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_feat_name_id_as (l_as: FEAT_NAME_ID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_feature_name_alias_as (l_as: FEATURE_NAME_ALIAS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_feature_list_as (l_as: FEATURE_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_all_as (l_as: ALL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_attribute_as (l_as: ATTRIBUTE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_deferred_as (l_as: DEFERRED_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_do_as (l_as: DO_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_once_as (l_as: ONCE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_type_dec_as (l_as: TYPE_DEC_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_parent_as (l_as: PARENT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_like_id_as (l_as: LIKE_ID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_like_cur_as (l_as: LIKE_CUR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_qualified_anchored_type_as (l_as: QUALIFIED_ANCHORED_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_formal_dec_as (l_as: FORMAL_DEC_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_constraining_type_as (l_as: CONSTRAINING_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_none_type_as (l_as: NONE_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bits_as (l_as: BITS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_rename_as (l_as: RENAME_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_invariant_as (l_as: INVARIANT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_index_as (l_as: INDEX_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_export_item_as (l_as: EXPORT_ITEM_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_create_as (l_as: CREATE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_client_as (l_as: CLIENT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_ensure_as (l_as: ENSURE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_ensure_then_as (l_as: ENSURE_THEN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_require_as (l_as: REQUIRE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_require_else_as (l_as: REQUIRE_ELSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_convert_feat_as (l_as: CONVERT_FEAT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_convert_feat_list_as (l_as: CONVERT_FEAT_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_class_list_as (l_as: CLASS_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_parent_list_as (l_as: PARENT_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_local_dec_list_as (l_as: LOCAL_DEC_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_formal_argu_dec_list_as (l_as: FORMAL_ARGU_DEC_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_key_list_as (l_as: KEY_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_delayed_actual_list_as (l_as: DELAYED_ACTUAL_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_export_clause_as (l_as: EXPORT_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_undefine_clause_as (l_as: UNDEFINE_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_redefine_clause_as (l_as: REDEFINE_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_select_clause_as (l_as: SELECT_CLAUSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_formal_generic_list_as (l_as: FORMAL_GENERIC_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_iteration_as (l_as: ITERATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-feature {AST_EIFFEL} -- Expressions visitors
-
-	process_tagged_as (l_as: TAGGED_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_variant_as (l_as: VARIANT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_strip_as (l_as: UN_STRIP_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_converted_expr_as (l_as: CONVERTED_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_paran_as (l_as: PARAN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_expr_call_as (l_as: EXPR_CALL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_expr_address_as (l_as: EXPR_ADDRESS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_address_result_as (l_as: ADDRESS_RESULT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_address_current_as (l_as: ADDRESS_CURRENT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_address_as (l_as: ADDRESS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_type_expr_as (l_as: TYPE_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_routine_creation_as (l_as: ROUTINE_CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_free_as (l_as: UN_FREE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_minus_as (l_as: UN_MINUS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_not_as (l_as: UN_NOT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_old_as (l_as: UN_OLD_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_un_plus_as (l_as: UN_PLUS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_and_then_as (l_as: BIN_AND_THEN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_free_as (l_as: BIN_FREE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_implies_as (l_as: BIN_IMPLIES_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_or_as (l_as: BIN_OR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_or_else_as (l_as: BIN_OR_ELSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_xor_as (l_as: BIN_XOR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_ge_as (l_as: BIN_GE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_gt_as (l_as: BIN_GT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_le_as (l_as: BIN_LE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_lt_as (l_as: BIN_LT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_div_as (l_as: BIN_DIV_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_minus_as (l_as: BIN_MINUS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_mod_as (l_as: BIN_MOD_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_plus_as (l_as: BIN_PLUS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_power_as (l_as: BIN_POWER_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_slash_as (l_as: BIN_SLASH_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_star_as (l_as: BIN_STAR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_and_as (l_as: BIN_AND_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_eq_as (l_as: BIN_EQ_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_ne_as (l_as: BIN_NE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_tilde_as (l_as: BIN_TILDE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_bracket_as (l_as: BRACKET_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_operand_as (l_as: OPERAND_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_object_test_as (l_as: OBJECT_TEST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_loop_expr_as (l_as: LOOP_EXPR_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_void_as (l_as: VOID_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_unary_as (l_as: UNARY_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_binary_as (l_as: BINARY_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-feature {AST_EIFFEL} -- Instructions visitors
-
-	process_elseif_as (l_as: ELSIF_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_assign_as (l_as: ASSIGN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_case_as (l_as: CASE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+feature {NONE} -- Unconditional Pruning
 
 	process_check_as (l_as: CHECK_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_creation_as (l_as: CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
+			-- do nothing
 		end
 
 	process_debug_as (l_as: DEBUG_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			-- do nothing
+		end
+
+feature {NONE} -- Conditional Pruning
+
+	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
+		do
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_guard_as (l_as: GUARD_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_assign_as (a_as: ASSIGN_AS)
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_if_as (l_as: IF_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_reverse_as (a_as: REVERSE_AS)
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			fixme ("Gather details about {REVERSE_AS} assignments.")
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_inspect_as (l_as: INSPECT_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_creation_as (a_as: CREATION_AS)
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_instr_call_as (l_as: INSTR_CALL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_case_as (a_as: CASE_AS)
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_interval_as (l_as: INTERVAL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_if_as (a_as: IF_AS)
+		local
+			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
+			l_elsif_list: EIFFEL_LIST [ELSIF_AS]
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+				-- Scan expression for variable usage.
+			l_use_cond := is_ast_eiffel_using_variable_of_interest (a_as.condition, variable_context)
+
+				-- Scan true branch
+			if attached a_as.compound then
+				l_use_branch_true := is_ast_eiffel_using_variable_of_interest (a_as.compound, variable_context)
+			end
+
+				-- Scan elseif list
+			if attached a_as.elsif_list then
+				create l_elsif_list.make (5)
+					-- process all individual `{ELSIF_AS}' from list in reversed order.
+					-- just remove the list item if no variables of interest were mentioned
+					-- yet; this is because the list of expressions used before is
+					-- necessary for simplifying the 'if' statement.
+				across a_as.elsif_list.new_cursor.reversed as l_cursor loop
+					if l_use_elsif_list or is_ast_eiffel_using_variable_of_interest (l_cursor.item, variable_context) then
+							-- mark that at least one elseif has to be retained
+						l_use_elsif_list := True
+						l_elsif_list.put_front (l_cursor.item)
+					end
+				end
+			end
+
+				-- Scan false branch
+			if attached a_as.else_part then
+				l_use_branch_false := is_ast_eiffel_using_variable_of_interest (a_as.else_part, variable_context)
+			end
+
+				-- Based on structural information w.r.t. the subtrees, annotate `{IF_AS}'.
+			if l_use_cond or l_use_branch_true or l_use_elsif_list or l_use_branch_false then
+				output.append_string (ti_if_keyword+ti_Space)
+				process_child (a_as.condition, a_as, 1)
+				output.append_string (ti_Space+ti_then_keyword+ti_New_line)
+
+				if l_use_branch_true then
+					process_child_block_list (a_as.compound, void, a_as, 2)
+				end
+
+				if l_use_elsif_list then
+					process_child (l_elsif_list, a_as, 3)
+				end
+
+				if l_use_branch_false then
+					output.append_string(ti_else_keyword+ti_New_line)
+					process_child_block_list(a_as.else_part, void, a_as, 4)
+				end
+				output.append_string (ti_End_keyword+ti_New_line)
 			end
 		end
 
-	process_loop_as (l_as: LOOP_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_inspect_as (a_as: INSPECT_AS)
+		local
+			l_use_else_part: BOOLEAN
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+
+				if attached a_as.else_part then
+					l_use_else_part := is_ast_eiffel_using_variable_of_interest (a_as.else_part, variable_context)
+				end
+
+				output.append_string (ti_inspect_keyword+ti_New_line)
+				process_child_block (a_as.switch, a_as, 1)
+				output.append_string (ti_New_line)
+
+				if processing_needed (a_as.case_list, a_as, 2) then
+					process_child (a_as.case_list, a_as, 2)
+				end
+
+				if l_use_else_part then
+					output.append_string (ti_else_keyword+ti_New_line)
+					process_child_block (a_as.else_part, a_as, 3)
+				end
+
+				output.append_string (ti_End_keyword+ti_New_line)
 			end
 		end
 
-	process_retry_as (l_as: RETRY_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_instr_call_as (a_as: INSTR_CALL_AS)
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+				Precursor (a_as)
 			end
 		end
 
-	process_reverse_as (l_as: REVERSE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
+	process_loop_as (a_as: LOOP_AS)
+		local
+			l_use_stop, l_use_from_part, l_use_compound: BOOLEAN
 		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if attached a_as.stop as l_stop_as then
+				l_use_stop := is_ast_eiffel_using_variable_of_interest (l_stop_as, variable_context)
 			end
-		end
 
-feature {AST_EIFFEL} -- External visitors
-
-	process_external_as (l_as: EXTERNAL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if attached a_as.from_part as l_from_part_as then
+				l_use_from_part := is_ast_eiffel_using_variable_of_interest (l_from_part_as, variable_context)
 			end
-		end
 
-	process_external_lang_as (l_as: EXTERNAL_LANG_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+			if attached a_as.compound as l_compound_as then
+				l_use_compound := is_ast_eiffel_using_variable_of_interest (l_compound_as, variable_context)
 			end
-		end
 
-feature {AST_EIFFEL} -- Clickable visitor
+			if l_use_stop or l_use_from_part or l_use_compound then
+					-- Remove iteration.
+--				if processing_needed (a_as.iteration, a_as, 6) then
+--					output.append_string(ti_across_keyword+ti_New_line)
+--					process_child_block(a_as.iteration, a_as, 6)
+--					output.append_string (ti_New_line)
+--				end
 
-	process_class_as (l_as: CLASS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+				if processing_needed (a_as.from_part, a_as, 1) or not processing_needed (a_as.iteration, a_as, 6) then
+					output.append_string(ti_from_keyword+ti_New_line)
+				end
 
-	process_class_type_as (l_as: CLASS_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+				if processing_needed (a_as.from_part, a_as, 1) then
+					process_child_block(a_as.from_part, a_as, 1)
+				end
 
-	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+					-- Remove invariant.
+--				if processing_needed (a_as.full_invariant_list, a_as, 2) then
+--					output.append_string (ti_invariant_keyword+ti_New_line)
+--					process_child_block_list(a_as.full_invariant_list, void, a_as, 2)
+--					output.append_string (ti_New_line)
+--				end
 
-	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+					-- Remove variant.
+--				if processing_needed (a_as.variant_part, a_as, 5) then
+--					output.append_string (ti_variant_keyword+ti_New_line)
+--					process_child_block(a_as.variant_part, a_as, 5)
+--					output.append_string (ti_New_line)
+--				end
 
-	process_feature_as (l_as: FEATURE_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+				if processing_needed (a_as.stop, a_as, 3) then
+					output.append_string (ti_until_keyword+ti_New_line)
+					process_child_block (a_as.stop, a_as, 3)
+					output.append_string (ti_New_line)
+				end
 
-	process_formal_as (l_as: FORMAL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+				output.append_string (ti_loop_keyword+ti_New_line)
 
-	process_type_list_as (l_as: TYPE_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
+				if processing_needed (a_as.compound, a_as, 4) then
+					process_child_block_list(a_as.compound, void, a_as, 4)
+				end
 
-	process_type_dec_list_as (l_as: TYPE_DEC_LIST_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-feature -- Quantification
-
-	process_there_exists_as (l_as: THERE_EXISTS_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
-			end
-		end
-
-	process_for_all_as (l_as: FOR_ALL_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
-		do
-			if not annotation_context.has_annotation_prune (l_as.path) then
-				Precursor (l_as)
+				output.append_string (ti_End_keyword+ti_New_line)
 			end
 		end
 

@@ -20,7 +20,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_operands: like operands; a_content: like content; a_holes: like holes; a_source: STRING)
+	make (a_content: like content; a_operands: like operands; a_holes: like holes; a_source: STRING)
 			-- Initialize Current.
 		require
 			not_a_content_is_empty: not a_content.is_empty
@@ -48,10 +48,6 @@ feature{NONE} -- Initialization
 
 feature -- Configuration
 
-	variable_context: EXT_VARIABLE_CONTEXT
-		assign set_variable_context
-			-- Contextual information about relevant variables.
-
 	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
 			-- Sets `variable_context' to `a_context'	
 		require
@@ -61,6 +57,7 @@ feature -- Configuration
 		end
 
 	set_content_original (a_content: STRING)
+			-- Sets `content_original' to `a_content'
 		require
 			attached a_content
 		do
@@ -78,11 +75,17 @@ feature -- Access
 			-- Set of holes in current snippet
 			-- Keys are names of holes, values are the holes.
 
+	variable_context: EXT_VARIABLE_CONTEXT
+		assign set_variable_context
+			-- Contextual information about relevant variables used
+			-- during the extraction process.	
+
 	content: STRING
 			-- Textual representation of current snippet.
 			-- The content should be a parse-able string.
 
 	content_original: STRING
+		assign set_content_original
 			-- Textual representation of originating AST.
 			-- The content should be a parse-able string.
 

@@ -175,6 +175,8 @@ inherit
 			process_void_as
 		end
 
+	EPA_UTILITY
+
 	REFACTORING_HELPER
 
 create
@@ -1763,9 +1765,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 		require else
 			l_as_path_not_void: attached l_as.path
 		do
-			if annotation_context.has_annotation_prune (l_as.path) then
-				-- Nothing to be done, no further processing.
-			elseif annotation_context.has_annotation_hole (l_as.path) then
+			if annotation_context.has_annotation_hole (l_as.path) then
 				output.append_string (annotation_context.get_first_annotation_hole (l_as.path).out)
 				output.append_string (Ti_new_line)
 			else

@@ -59,15 +59,18 @@ feature {NONE} -- Implementation
 	process_feature (a_target_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Starts processing snippet extraction with relevant `a_target_type' on `a_class' with `a_feature'.
 		local
+			l_origin: STRING
 			l_extractor: EXT_DEFERRED_SNIPPET_EXTRACTOR
 		do
+			l_origin := origin_as_string (a_target_type, a_class, a_feature)
+
 				-- Start extraction.
 			create {EXT_SNIPPET_EXTRACTOR} l_extractor.make
-			l_extractor.extract_from_feature (a_target_type, a_feature, a_class)
+			l_extractor.extract_from_feature (a_target_type, a_feature, a_class, l_origin)
 
 				-- Store snippets, if any where extracted.
 			if attached l_extractor.last_snippets as l_snippets and then not l_snippets.is_empty then
-				debug debug_write_snippets_to_file (l_snippets, a_target_type, a_class, a_feature) end
+				debug write_snippets_to_file (l_snippets, l_origin) end
 
 				to_implement ("Store snippets in Object/Transition/Snippet database.")
 				to_implement ("Store snippets in serialized XML format.")
@@ -166,27 +169,30 @@ feature {NONE} -- Class selector
 			Result := a_tested_class.feature_named (l_feature_name_in_lower) /= Void
 		end
 
-feature {NONE} -- Debug
+feature {NONE} -- Output
 
-	debug_write_snippets_to_file (a_snippets: LINKED_SET [EXT_SNIPPET]; a_target_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I)
+	origin_as_string (a_target_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I): STRING
+			-- Create a textual representation of the origin.
+		do
+			create Result.make_empty
+			Result.append (a_target_type.name)
+			Result.append ("@")
+			Result.append (a_class.name)
+			Result.append (".")
+			Result.append (a_feature.feature_name)
+		end
+
+	write_snippets_to_file (a_snippets: LINKED_SET [EXT_SNIPPET]; a_file_name: STRING)
 			-- Writes the snippets to a file if `{EXT_CONFIG}.output' path is configured.
+			-- `a_file_name' is considered as a filename without extension.
 		local
-			l_file_name: STRING
 			l_file_path: FILE_NAME
 			l_snippet_writer: EXT_SNIPPET_WRITER
 		do
 			if attached config.output as l_path_name then
-					-- Create file name without extension.
-				create l_file_name.make_empty
-				l_file_name.append (a_target_type.name)
-				l_file_name.append ("@")
-				l_file_name.append (a_class.name)
-				l_file_name.append (".")
-				l_file_name.append (a_feature.feature_name)
-
 					-- Create whole path name.
 				create l_file_path.make_from_string (l_path_name)
-				l_file_path.set_file_name (l_file_name)
+				l_file_path.set_file_name (a_file_name)
 				l_file_path.add_extension ("TXT")
 
 				create l_snippet_writer

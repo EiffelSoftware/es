@@ -86,6 +86,14 @@ feature {NONE} -- Access Recording
 				-- Process `l_as.message' as in `{AST_ITERATOR}' to parse actual arguments.
 			if not is_mode_disjoint then
 				l_as.target.process (Current)
+			else
+				if
+					not attached {ACCESS_ID_AS} l_as.target and
+					not attached {RESULT_AS} l_as.target and
+					not attached {CURRENT_AS} l_as.target
+				then
+					l_as.target.process (Current)
+				end
 			end
 			l_as.message.process (Current)
 		end

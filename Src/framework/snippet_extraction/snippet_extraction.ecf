@@ -3,11 +3,12 @@
 	<target name="snippet_extraction">
 		<root all_classes="true"/>
 		<option warning="false" is_attached_by_default="false" void_safety="none" syntax="provisional">
-			<assertions/>
+			<assertions precondition="true" postcondition="true" check="true" invariant="true"/>
 		</option>
+		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension-safe.ecf"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="configuration_parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
 		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
@@ -35,7 +36,6 @@
 		<library name="time" location="$EIFFEL_SRC\library\time\time.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="weka" location="$EIFFEL_SRC\framework\weka\weka.ecf" readonly="false"/>
-		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree.ecf"/>
 		<cluster name="snippet_extraction" location=".\" recursive="true">
 			<option debug="true" warning="true">
