@@ -343,23 +343,6 @@ feature {NONE} -- Context menu handler and construction
 --				l_menu.extend (new_menu_item (names.m_search_scope))
 --				l_menu.last.select_actions.extend (agent (dev_window.tools.search_tool).on_drop_add (a_pebble))
 --			end
-
---			if dev_window.tools.metric_tool.is_ready then
---			   create l_menu2.make_with_text (names.m_input_domain)
---			   l_menu.extend (l_menu2)
---			   l_menu2.extend (new_menu_item (metric_names.t_evaluation_tab))
---			   l_menu2.last.select_actions.extend (
---			    agent (a_stone: STONE) do
---			     dev_window.tools.metric_tool.metric_evaluation_panel.force_drop_stone (a_stone)
---			    end (a_pebble)
---			   )
---			   l_menu2.extend (new_menu_item (metric_names.t_archive_tab))
---			   l_menu2.last.select_actions.extend (
---			    agent (a_stone: STONE) do
---			     dev_window.tools.metric_tool.metric_archive_panel.force_drop_stone (a_stone)
---			    end (a_pebble)
---			   )
---			end
 		end
 
 feature {NONE} -- Event handler
@@ -370,7 +353,6 @@ feature {NONE} -- Event handler
 			d: like data_from_item
 		do
 			if not ev_application.ctrl_pressed then
---				if not attached {EB_GRID_EDITOR_TOKEN_ITEM} a_item as gf then
 				d := data_from_item (a_item)
 				if attached {CLASS_I} d as ci then
 					if ci.is_compiled then
@@ -383,8 +365,6 @@ feature {NONE} -- Event handler
 				elseif attached {CONF_GROUP} d as cl then
 					create {CLUSTER_STONE}Result.make (cl)
 				end
---				end
---				create {CALL_STACK_STONE}Result.make(1)
 			end
 		end
 
@@ -419,33 +399,29 @@ feature {NONE} -- Implementation
 	on_key_pushed (a_key: EV_KEY)
 			-- If `a_key' is enter, set a stone in the development window.
 		local
-			conv_class: EB_CLASSES_TREE_CLASS_ITEM
-			conv_cluster: EB_CLASSES_TREE_FOLDER_ITEM
-			titem: EV_TREE_NODE
+			l_item: EV_GRID_ITEM
 			testfile: RAW_FILE
 		do
---			titem := selected_item
---			if
---				a_key.code = Key_enter and then
---				window /= Void and then
---				titem /= Void
---			then
---				conv_class ?= titem
---				if conv_class /= Void then
---					create testfile.make (conv_class.data.file_name)
---					if testfile.exists and then testfile.is_readable then
---						window.set_stone (conv_class.stone)
---					else
---						prompts.show_warning_prompt ("Class file could not be read. Removing class from the system.", Void, Void)
---						manager.remove_class (conv_class.data)
---					end
---				else
---					conv_cluster ?=  titem
---					if conv_cluster /= Void then
---						window.set_stone (conv_cluster.stone)
---					end
---				end
---			end
+			if selected_rows.count > 0 then
+				l_item := selected_rows.i_th (1).item (1)
+			end
+			if
+				a_key.code = Key_enter and then
+				window /= Void and then
+				l_item /= Void
+			then
+				if attached {EB_GROUPS_GRID_CLASS_ITEM}l_item as conv_class then
+					create testfile.make (conv_class.data.file_name)
+					if testfile.exists and then testfile.is_readable then
+						window.set_stone (conv_class.stone)
+					else
+						prompts.show_warning_prompt ("Class file could not be read. Removing class from the system.", Void, Void)
+						manager.remove_class (conv_class.data)
+					end
+				elseif attached {EB_GROUPS_GRID_FOLDER_ITEM}l_item as conv_cluster then
+					window.set_stone (conv_cluster.stone)
+				end
+			end
 		end
 
 	window: EB_DEVELOPMENT_WINDOW
@@ -480,8 +456,7 @@ feature {NONE} -- Implementation
 
 					l_item.associate_with_window (window)
 					if textable /= Void then
---						TODO: implement this feature in grid folder item
---						l_item.associate_textable_with_classes (textable)
+						l_item.associate_textable_with_classes (textable)
 					end
 				end
 				a_grps.forth

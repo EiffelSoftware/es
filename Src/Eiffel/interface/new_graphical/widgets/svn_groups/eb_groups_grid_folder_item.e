@@ -10,8 +10,10 @@ class
 inherit
 	EB_GROUPS_GRID_ITEM
 		redefine
+			associate_with_window,
 			data,
-			set_data
+			set_data,
+			stone
 		end
 
 create
@@ -90,6 +92,21 @@ feature -- Status report
 			Result := data.actual_group.location.evaluated_path + path
 		end
 
+feature -- Access
+
+	stone: CLUSTER_STONE
+			-- Cluster stone representing `data'.
+		local
+			l_group: CONF_GROUP
+		do
+			l_group := data.actual_group
+			if l_group.is_cluster then
+				create Result.make_subfolder (data.actual_group, path, name)
+			else
+				create Result.make (data.actual_group)
+			end
+		end
+
 feature -- Status setting
 
 	set_data (a_cluster: EB_SORTED_CLUSTER)
@@ -123,6 +140,30 @@ feature -- Status setting
 		ensure then
 			data = a_cluster
 			name_set: name /= Void
+		end
+
+feature -- Interactivity
+
+	associate_with_window (a_window: EB_STONABLE)
+			-- Recursively associate `a_window' with sub-classes so they can call `set_stone' on `a_window'.
+		local
+			l_item: EV_GRID_ITEM
+			l_row_index: INTEGER
+		do
+			Precursor (a_window)
+			from
+				l_row_index := 1
+			until
+				l_row_index > row.subrow_count
+			loop
+				l_item := row.subrow (l_row_index).item (1)
+				if attached {EB_GROUPS_GRID_FOLDER_ITEM}l_item as conv_folder then
+					conv_folder.associate_with_window (a_window)
+				elseif attached{EB_GROUPS_GRID_CLASS_ITEM}l_item as conv_class then
+					conv_class.associate_with_window (a_window)
+				end
+				l_row_index := l_row_index + 1
+			end
 		end
 
 feature {EB_CLASSES_TREE_CLASS_ITEM} -- Interactivity
@@ -305,25 +346,26 @@ feature -- Interactivity
 	associate_textable_with_classes (textable: EV_TEXT_COMPONENT)
 			-- Recursively associate `textable' with sub-classes so they can write their names in `textable'.
 		local
-			conv_folder: EB_CLASSES_TREE_FOLDER_ITEM
-			conv_class: EB_CLASSES_TREE_CLASS_ITEM
+			conv_folder: EB_GROUPS_GRID_FOLDER_ITEM
+			conv_class: EB_GROUPS_GRID_CLASS_ITEM
+			l_row_index: INTEGER
 		do
 			associated_textable := textable
 
---			from
---				start
---			until
---				after
---			loop
---				conv_folder ?= item
---				if conv_folder /= Void then
---					conv_folder.associate_textable_with_classes (textable)
---				else
---					conv_class ?= item
---					conv_class.set_associated_textable (textable)
---				end
---				forth
---			end
+			from
+				l_row_index := 1
+			until
+				l_row_index > row.subrow_count
+			loop
+				conv_folder ?= row.subrow (l_row_index)
+				if conv_folder /= Void then
+					conv_folder.associate_textable_with_classes (textable)
+				else
+					conv_class ?= row.subrow (l_row_index)
+					conv_class.set_associated_textable (textable)
+				end
+				l_row_index := l_row_index + 1
+			end
 		end
 
 feature {NONE} -- Implementation
