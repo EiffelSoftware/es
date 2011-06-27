@@ -101,14 +101,14 @@ feature {NONE} -- Initialization
 			set_item_pebble_function (agent on_pebble_function)
 			set_item_accept_cursor_function (agent on_item_accept_cursor_function)
 			set_item_deny_cursor_function (agent on_item_deny_cursor_function)
-			pointer_button_release_item_actions.extend (agent on_item_right_clicked)
 
 			make_with_grid (Current)
+			enable_grid_item_pnd_support
 
 			set_configurable_target_menu_mode
 			set_configurable_target_menu_handler (agent on_menu_handler (?, ?, ?, ?))
 
-			row_expand_actions.extend (agent retrieve_status_for_row(?))
+			row_expand_actions.extend (agent retrieve_status_for_row)
 		end
 
 	make_without_targets (a_context_menu_factory: EB_CONTEXT_MENU_FACTORY)
@@ -384,8 +384,6 @@ feature {NONE} -- Context menu handler and construction
 
 	on_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler for classes, clusters, libraries, targets and assemblies
-		local
-			l_factory: EB_CONTEXT_MENU_FACTORY
 		do
 			if attached {CLASSC_STONE}a_pebble as a_class then
 				context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
@@ -398,12 +396,16 @@ feature {NONE} -- Context menu handler and construction
 --			l_factory.feature_clause_item_menu (a_menu, a_target_list, a_source, a_pebble, fc)
 		end
 
-	extend_working_copy_menu (a_menu: EV_MENU; a_pebble: STONE)
+	extend_working_copy_menu (a_menu: EV_MENU; a_stone: STONE)
 		local
 			l_menu, l_menu2: EV_MENU
+			l_menu_item: EV_MENU_ITEM
 		do
 			create l_menu.make_with_text ("Subversion")
 			a_menu.extend (l_menu)
+
+			create l_menu_item.make_with_text_and_action ("Add to working copy", agent svn_add (a_stone))
+			l_menu.extend (l_menu_item)
 
 --			if dev_window.tools.search_tool.veto_pebble_function (a_pebble) then
 --				l_menu.extend (new_menu_item (names.m_search_scope))
@@ -429,21 +431,6 @@ feature {NONE} -- Context menu handler and construction
 		end
 
 feature {NONE} -- Event handler
-
-	on_item_right_clicked (ax,ay, ab: INTEGER; a_item: EV_GRID_ITEM)
-			-- Action to process when Ctrl+Right click in raise
-		local
-			st: FEATURE_STONE
-		do
-			if ab = {EV_POINTER_CONSTANTS}.right and ev_application.ctrl_pressed then
-				if a_item /= Void and then attached {E_FEATURE} data_from_item (a_item) as fe then
-					create st.make (fe)
-					if st.is_valid then
-						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (st)
-					end
-				end
-			end
-		end
 
 	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_orignal_pointer_position: EV_COORDINATE; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT)
 		local
@@ -733,7 +720,7 @@ feature {NONE} -- Implementation
 				if attached {EB_GROUPS_GRID_FOLDER_ITEM}a_row.item (1) as f then
 					svn_client.set_working_path (f.full_path)
 					svn_client.status.put_option ("--depth", "immediates")
-					svn_client.status.set_did_finish_handler (agent finished (f))
+					svn_client.status.set_did_finish_handler (agent on_retrieved_status (f))
 					svn_client.status.execute
 				elseif attached {EB_GROUPS_GRID_CLASS_ITEM}a_row.item (1) as c then
 					svn_client.status.set_target (c.name)
@@ -741,7 +728,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	finished (a_folder_item: EB_GROUPS_GRID_FOLDER_ITEM)
+	on_retrieved_status (a_folder_item: EB_GROUPS_GRID_FOLDER_ITEM)
 		require
 			folder_item_not_void: a_folder_item /= Void
 		local
@@ -749,6 +736,16 @@ feature {NONE} -- Implementation
 			l_item: SVN_CLIENT_ITEM
 			l_row_index: INTEGER
 		do
+				-- Reset previous status
+			from l_row_index := 1
+			until l_row_index > a_folder_item.row.subrow_count
+			loop
+				if attached {EB_GROUPS_GRID_ITEM}a_folder_item.row.subrow (l_row_index).item (1) as gi then
+					gi.set_subversion_pixmap (pixmaps.icon_pixmaps.general_blank_icon)
+				end
+				l_row_index := l_row_index + 1
+			end
+
 			l_status := svn_client.status.last_status
 			from l_row_index := 1
 			until l_row_index > a_folder_item.row.subrow_count
@@ -790,6 +787,7 @@ feature {NONE} -- Implementation
 							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.breakpoints_delete_icon)
 						else
 								-- No modification occurred
+							gi.set_subversion_pixmap (pixmaps.icon_pixmaps.general_blank_icon)
 						end
 					end
 
@@ -806,6 +804,15 @@ feature -- Tree construction
 			grid_item_not_void: a_grid_item /= Void
 		do
 			extended_new_row.set_item (1, a_grid_item)
+		end
+
+feature {NONE} -- Subversion context menu commands
+
+	svn_add (a_stone: STONE)
+		require
+			stone_not_void: a_stone /= Void
+		do
+			print ("Add stone to working copy")
 		end
 
 feature {NONE} -- Factory
