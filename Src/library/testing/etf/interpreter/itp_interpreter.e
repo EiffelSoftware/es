@@ -50,6 +50,7 @@ feature {NONE} -- Initialization
 			l_server_url: STRING
 			l_port: INTEGER
 			l_tc_serialization_file_name: STRING
+			l_state_file_name: FILE_NAME
 		do
 			if argument_count < 6 then
 				check Wrong_number_of_arguments: False end
@@ -111,6 +112,15 @@ feature {NONE} -- Initialization
 				end
 			end
 
+				-- Create file to store test case states.
+			create l_state_file_name.make_from_string (interpreter_log_directory)
+			l_state_file_name.set_file_name ("states.txt")
+			create test_state_file.make_open_append (l_state_file_name.out)
+			if not test_state_file.is_open_write then
+				report_error ("could not open test state file '" + l_state_file_name.out + "'.")
+				die (1)
+			end
+
 				-- Initialize precondition table.
 
 				-- Initialize predicate related data structure.
@@ -127,8 +137,13 @@ feature {NONE} -- Initialization
 			log_file.close
 
 				-- Close test case serialization file.
-			if test_case_serialization_file /= Void then
+			if test_case_serialization_file /= Void and then not test_case_serialization_file.is_closed then
 				test_case_serialization_file.close
+			end
+
+				-- Close test states file.
+			if test_state_file /= Void and then not test_state_file.is_closed then
+				test_state_file.close
 			end
 		end
 
@@ -1628,10 +1643,13 @@ feature -- Test case serialization
 	test_case_serialization_file: detachable RAW_FILE
 			-- File to store serialized test cases.
 
+	test_state_file: PLAIN_TEXT_FILE
+			-- File to store test case states
+
 	test_case_serializer: ITP_TEST_CASE_SERIALIZER
 			-- Test case serializer
 
-	retrieve_test_case_prestate (a_data: detachable ANY) is
+	retrieve_test_case_prestate (a_data: detachable ANY)
 			-- Retrieve prestate of operands for the test case to be executed next.
 			-- Store serialized objects in `serialized_objects' and
 			-- object state information on `objects_summary'.
@@ -1650,7 +1668,7 @@ feature -- Test case serialization
 			end
 		end
 
-	retrieve_post_test_case_state is
+	retrieve_post_test_case_state
 			-- Retrieve post test case state.		
 		do
 			if test_case_serializer.is_test_case_setup then
@@ -1661,16 +1679,19 @@ feature -- Test case serialization
 	log_test_case_serialization is
 			-- Log serialization of the last test case into log file.
 		local
-			l_serialization: STRING
+			l_data: TUPLE [serialization:STRING; states: STRING]
 		do
 			if test_case_serializer.is_test_case_setup and then not is_invalid_test_case and then not is_last_invariant_violated then
 				if
 					(is_passing_test_case_serialized and (not is_failing_test_case)) or
 					(is_failing_test_case_serialized and is_failing_test_case)
 				then
-					l_serialization := test_case_serializer.string_representation
-					if not l_serialization.is_empty then
-						test_case_serialization_file.put_string (l_serialization)
+					l_data := test_case_serializer.string_representation
+					if not l_data.serialization.is_empty then
+						test_case_serialization_file.put_string (l_data.serialization)
+					end
+					if not l_data.states.is_empty then
+						test_state_file.put_string (l_data.states)
 					end
 				end
 			end

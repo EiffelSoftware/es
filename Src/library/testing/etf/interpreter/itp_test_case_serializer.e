@@ -35,6 +35,7 @@ feature{NONE} -- Initialization
 			interpreter := a_interpreter
 			create object_graph_traversor
 			create test_case_hashs.make (2048)
+			create state_counts.make (2048)
 			test_case_hashs.compare_objects
 			is_post_state_serialized := a_post_state_serialized
 		ensure
@@ -50,7 +51,12 @@ feature -- Access
 			-- Table of hash codes for test cases seen so far.
 			-- Key is hash code, value is the string representation of that hash code
 
-	string_representation: STRING is
+	state_counts: HASH_TABLE [INTEGER, INTEGER]
+			-- Table of counts for established pre-states for test cases
+			-- Keys are state hash codes, values are the number of times those states have been
+			-- seen.
+
+	string_representation: TUPLE [serialization:STRING; states: STRING]
 			-- String representation of the test case
 		local
 			i: INTEGER
@@ -63,51 +69,92 @@ feature -- Access
 			l_object: detachable ANY
 			l_should_serialize: BOOLEAN
 			l_hash: INTEGER
+			l_serialization: STRING
+			l_states: STRING
+			l_state_count: INTEGER
+			l_id: STRING
 		do
 			if is_test_case_setup then
 				l_hash := test_case_hash_code.hash_code
+
+					-- Update state counts.
+				state_counts.search (l_hash)
+				create l_states.make (1024)
+				if state_counts.found then
+					l_state_count := state_counts.found_item + 1
+					state_counts.replace (l_state_count, l_hash)
+				else
+					l_state_count := 1
+					state_counts.force (1, l_hash)
+				end
+				create l_id.make (128)
+				l_id.append (class_name)
+				l_id.append_character ('.')
+				l_id.append (feature_name)
+				l_id.append_character ('.')
+				l_id.append_integer (l_hash)
+
+				l_states.append (once "<state>")
+				l_states.append (l_id)
+				l_states.append (once " count=")
+				l_states.append_integer (state_counts.item (l_hash))
+				l_states.append (once "; fault=")
+				l_states.append_boolean (exception /= Void and then not exception.is_empty)
+				l_states.append (once "</state>%N")
+
+					-- This is a new state
+				if l_state_count = 1 then
+					l_states.append (once "<state_detail id=%"")
+					l_states.append (l_id)
+					l_states.append (once "%">%N")
+					append_object_state (pre_state_object_summary, l_states, True)
+					l_states.append (once "</state_detail>%N")
+				end
+
 				l_should_serialize :=
 					interpreter.is_duplicated_test_case_serialized or else
 					not test_case_hashs.has (l_hash)
 
 				if not l_should_serialize then
-					Result := ""
+					l_serialization := ""
 				else
 					if not interpreter.is_duplicated_test_case_serialized then
 						test_case_hashs.put (test_case_hash_code, l_hash)
 					end
 
 						-- Synthesize serialization part for a test case.
-					create Result.make (1024)
-					Result.append (once "<test_case>%N")
+					create l_serialization.make (1024)
+					l_serialization.append (once "<test_case>%N")
 
 						-- Synthesize time.
-					append_time (time, Result)
+					append_time (time, l_serialization)
 
 						-- Synthesize test case.
-					append_test_case (class_name, feature_name, argument_count, is_creation, is_query, operands, types, Result)
+					append_test_case (class_name, feature_name, argument_count, is_creation, is_query, operands, types, l_serialization)
 
 						-- Synthesize all AutoTest created variables in current test case.
-					append_all_variables (pre_state_objects, Result)
+					append_all_variables (pre_state_objects, l_serialization)
 
 						-- Synthesize trace.
-					append_exception_trace (exception, Result)
+					append_exception_trace (exception, l_serialization)
 
 						-- Synthesize hash.
-					append_test_case_hash_code (test_case_hash_code, Result)
+					append_test_case_hash_code (test_case_hash_code, l_serialization)
 
 						-- Synthesize pre-/post-state object summary.
-					append_object_state (pre_state_object_summary, Result, True)
-					append_object_state (post_state_object_summary, Result, False)
+					append_object_state (pre_state_object_summary, l_serialization, True)
+					append_object_state (post_state_object_summary, l_serialization, False)
 
 						-- Synthesize serialization
-					append_object_serialization (pre_state_serialization, Result)
+					append_object_serialization (pre_state_serialization, l_serialization)
 
-					Result.append (once "</test_case>%N")
+					l_serialization.append (once "</test_case>%N")
 				end
 			else
-				create Result.make_empty
+				create l_serialization.make_empty
+				create l_states.make_empty
 			end
+			Result := [l_serialization, l_states]
 		ensure
 			result_attached: Result /= Void
 		end
@@ -765,7 +812,7 @@ invariant
 	interpreter_attached: interpreter /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
