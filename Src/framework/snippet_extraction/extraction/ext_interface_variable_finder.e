@@ -86,6 +86,10 @@ feature -- Access
 				-- Create global book-keeping data structures.
 			create partial_use_order.make (10)
 			total_variable_usage := new_variable_usage_tuple
+		ensure
+			attached nesting_stack
+			attached partial_use_order
+			attached total_variable_usage
 		end
 
 	last_interface_variables: HASH_TABLE [TYPE_A, STRING]

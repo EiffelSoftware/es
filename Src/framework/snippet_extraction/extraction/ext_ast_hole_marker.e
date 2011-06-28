@@ -155,9 +155,9 @@ feature {NONE} -- Implementation
 
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 		do
-			if attached {EIFFEL_LIST [EXPR_AS]} l_as.parameters then
-				across l_as.parameters as l_list loop
-					processing_expr (l_list.item)
+			if attached {EIFFEL_LIST [EXPR_AS]} l_as.parameters as l_parameters then
+				across l_parameters as l_cursor loop
+					processing_expr (l_cursor.item)
 				end
 			end
 		end
