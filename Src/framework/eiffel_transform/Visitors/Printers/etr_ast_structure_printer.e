@@ -274,6 +274,14 @@ feature -- Output
 
 	output: ETR_AST_STRUCTURE_OUTPUT_I
 
+	output_as_string: STRING
+			--
+		do
+			if attached{ETR_AST_STRING_OUTPUT} output as o then
+				Result := o.string_representation
+			end
+		end
+
 	print_ast_to_output (a_ast: detachable AST_EIFFEL)
 			-- Prints `a_ast' to `output'.
 		do
@@ -1504,7 +1512,8 @@ feature {AST_EIFFEL} -- Roundtrip: Routine body
 			if processing_needed (l_as.compound, l_as, 1) then
 				process_child_block_list (l_as.compound, void, l_as, 1)
 			end
-			output.append_string (ti_end_keyword+ti_New_line)
+--			output.append_string (ti_New_line)
+--			output.append_string (ti_end_keyword+ti_New_line)
 		end
 
 	process_once_as (l_as: ONCE_AS)

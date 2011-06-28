@@ -15,6 +15,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	SHARED_EIFFEL_PARSER
+
 create
 	make
 
@@ -125,11 +127,11 @@ feature{NONE} -- Implementation
 	ast_internal: detachable like ast
 			-- Cache for `ast'
 
-	parser: EPA_EIFFEL_PARSER
+	parser: EIFFEL_PARSER
 			-- Parser used for parsing expressions
-		once
-			create Result.make_with_factory (create {EPA_EXPRESSION_AST_FACTORY})
-			Result.set_expression_parser
+		do
+			Result := expression_parser
+			Result.set_syntax_version (Result.provisional_syntax)
 		end
 
 	dummy_feature_for_content: STRING
