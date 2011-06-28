@@ -95,7 +95,7 @@ feature -- Access
 			-- The source where current snippet come from
 			-- Format: file@revision@line
 
-	ast: detachable AST_EIFFEL
+	ast: detachable EIFFEL_LIST [INSTRUCTION_AS]
 			-- AST representation of `content'
 		do
 			if ast_internal = Void then

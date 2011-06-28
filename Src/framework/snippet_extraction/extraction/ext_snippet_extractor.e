@@ -21,8 +21,6 @@ inherit
 
 	EXT_DEFERRED_SNIPPET_EXTRACTOR
 
-	EXT_SNIPPET_DECIDER
-
 	EXT_SHARED_LOGGER
 
 create
@@ -34,6 +32,7 @@ feature {NONE} -- Initialization
 			-- Default initialization.
 		do
 			set_logging_active (True)
+			create snippet_decider.make
 		end
 
 feature -- Access
@@ -136,6 +135,8 @@ feature {NONE} -- Implementation
 	variable_context: EXT_VARIABLE_CONTEXT
 			-- Container to store variable information necessary for extraction process.
 
+	snippet_decider: EXT_SNIPPET_DECIDER
+			-- Class to validate if a snippet should be kept or not.
 
 	collect_relevant_variables
 			-- Collect relevant variables with respect to `relevant_target_type' from
@@ -290,6 +291,10 @@ feature {NONE} -- Implementation
 			setup_variable_context (l_compound_as, a_variable_type, a_variable_name)
 
 				-- AST modification steps.
+				-- Currently the some steps are executed several times, to enhance
+				-- the snippet output. Generally it should be several times until
+				-- it the compound stabilizes and reaches its fixpoint.
+			l_compound_as := perform_ast_prune_step (l_compound_as)
 			l_compound_as := perform_ast_prune_step (l_compound_as)
 			l_compound_as := perform_ast_rewrite_if_as (l_compound_as)
 			l_compound_as := perform_ast_rewrite_if_as (l_compound_as)
@@ -298,10 +303,10 @@ feature {NONE} -- Implementation
 			l_hole_result := perform_ast_hole_step (l_compound_as)
 			l_compound_as := l_hole_result.compound_as
 
-			if decide_on_instruction_list (l_compound_as) then
-				log.put_string ("%N")
-				log_ast_text (l_compound_as)
+			log.put_string ("%N")
+			log_ast_text (l_compound_as)
 
+			if not l_compound_as.is_empty then
 				fixme ("Clean-up snippet object creation.")
 				create l_snippet_operands.make (5)
 				across variable_context.target_variables    as c loop l_snippet_operands.force (c.item, c.key) end
@@ -316,7 +321,12 @@ feature {NONE} -- Implementation
 				l_snippet.set_variable_context (variable_context)
 				l_snippet.set_content_original (text_from_ast (a_compound_as))
 
-				last_snippets.force (l_snippet)
+				snippet_decider.decide_on_snippet (l_snippet)
+				if snippet_decider.passed_check then
+					last_snippets.force (l_snippet)
+				else
+					log.put_string ("> Dropping feature; snippet decider declined result%N")
+				end
 			else
 				log.put_string ("> Dropping feature; empty AST body after processing%N")
 			end

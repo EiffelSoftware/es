@@ -7,43 +7,86 @@ class
 	EXT_SNIPPET_DECIDER
 
 inherit
+	EXT_CHECKER
+
 	REFACTORING_HELPER
 		export {NONE} all end
 
+create
+	make
+
+feature -- Initialization
+
+	make
+			-- Default initialization.
+		do
+			create criteria.make
+			criteria.force (agent check_empty_snippet_rule)
+			criteria.force (agent check_single_line_snippet_rule)
+			criteria.force (agent check_calls_on_target_snippet_rule)
+		end
+
 feature -- Access
 
-	decide_on_instruction_list (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
+	passed_check: BOOLEAN
+			-- The evaluation of the last iteration by this checker.
+
+	criteria: LINKED_SET [FUNCTION [EXT_SNIPPET_DECIDER, TUPLE [a_snippet: EXT_SNIPPET], BOOLEAN]]
+			-- List of criteria that are checked for in
+
+	decide_on_snippet (a_snippet: EXT_SNIPPET)
 			-- Decision function answering if a snippet should be kept or not.
 		do
-			Result := across criteria as criteria_cursor all criteria_cursor.item.item ([a_compound_as]) end
+			passed_check := across criteria as criteria_cursor all criteria_cursor.item.item ([a_snippet]) end
 		end
 
 feature {NONE} -- Implementation
 
-	criteria: LINKED_SET [FUNCTION [EXT_SNIPPET_DECIDER, TUPLE [a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]], BOOLEAN]]
-		once
-			create Result.make
-			Result.force (agent check_empty_snippet_rule)
-			Result.force (agent check_single_line_snippet_rule)
-		end
-
-	check_empty_snippet_rule (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
+	check_empty_snippet_rule (a_snippet: EXT_SNIPPET): BOOLEAN
 			-- Returns false in case `a_compound_as' is empty.
 		do
-			Result := not a_compound_as.is_empty
+			if attached a_snippet.ast as l_compound_as then
+				Result := not l_compound_as.is_empty
+			end
 		end
 
-	check_single_line_snippet_rule (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
+	check_single_line_snippet_rule (a_snippet: EXT_SNIPPET): BOOLEAN
 			-- Returns false for snippets with one instruction that is not of type `{IF_AS}', `{LOOP_AS}' or `{INSPECT_AS}'.
 		do
-			if a_compound_as.count = 1 then
-				if attached a_compound_as.i_th (1) as l_as then
-					if attached {IF_AS} l_as or attached {LOOP_AS} l_as or attached {INSPECT_AS} l_as then
-						Result := True
+			if attached a_snippet.ast as l_compound_as then
+				if l_compound_as.count = 1 then
+					if attached l_compound_as.i_th (1) as l_as then
+						if attached {IF_AS} l_as or attached {LOOP_AS} l_as or attached {INSPECT_AS} l_as then
+							Result := True
+						end
 					end
+				else
+					Result := True
 				end
-			else
-				Result := True
+			end
+		end
+
+	check_calls_on_target_snippet_rule (a_snippet: EXT_SNIPPET): BOOLEAN
+			-- Returns false for snippets with not calls on target variables.
+		local
+			l_call_on_target_counter: COUNTER
+			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+		do
+			if attached a_snippet.ast as l_compound_as then
+				create l_call_on_target_counter
+				create l_identifier_usage_finder
+				l_identifier_usage_finder.set_is_mode_disjoint (True)
+				l_identifier_usage_finder.set_on_access_identifier_with_feature_call (
+					agent (l_as: NESTED_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_counter: COUNTER)
+						do
+							if a_variable_context.is_target_variable (l_as.target.access_name_8) then
+								a_counter.set_value (a_counter.next)
+							end
+						end (?, a_snippet.variable_context, l_call_on_target_counter)
+					)
+
+				l_compound_as.process (l_identifier_usage_finder)
+				Result := l_call_on_target_counter.value > 0
 			end
 		end
 
