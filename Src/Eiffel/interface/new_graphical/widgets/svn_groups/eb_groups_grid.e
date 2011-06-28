@@ -317,8 +317,12 @@ feature {NONE} -- Context menu handler and construction
 	on_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler for classes, clusters, libraries, targets and assemblies
 		do
-			context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
-			extend_working_copy_menu (a_menu, a_pebble)
+			if a_pebble /= Void then
+				context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
+				extend_working_copy_menu (a_menu, a_pebble)
+			else
+				print ("Void pebble%N")
+			end
 --			context_menu_factory.clusters_data_menu (a_menu, a_target_list, a_source, a_pebble)
 --			context_menu_factory.libraries_data_menu (a_menu, a_target_list, a_source, a_pebble)
 --			context_menu_factory.assemblies_data_menu (a_menu, a_target_list, a_source, a_pebble)
@@ -335,10 +339,11 @@ feature {NONE} -- Context menu handler and construction
 			create l_menu_item.make_with_text_and_action ("Add to working copy", agent svn_add (a_pebble))
 			l_menu.extend (l_menu_item)
 
---			if dev_window.tools.search_tool.veto_pebble_function (a_pebble) then
---				l_menu.extend (new_menu_item (names.m_search_scope))
---				l_menu.last.select_actions.extend (agent (dev_window.tools.search_tool).on_drop_add (a_pebble))
---			end
+			create l_menu_item.make_with_text_and_action ("Commit...", agent show_commit_dialog (a_pebble))
+			l_menu.extend (l_menu_item)
+
+--			l_menu.extend (new_menu_item (names.m_search_scope))
+--			l_menu.last.select_actions.extend (agent (dev_window.tools.search_tool).on_drop_add (a_pebble))
 		end
 
 feature {NONE} -- Event handler
@@ -388,6 +393,27 @@ feature {NONE} -- Basic operations
 			if a_item /= Void then
 				Result := a_item.data
 			end
+		end
+
+	path_from_pebble (a_pebble: ANY): TUPLE [working_path, target: STRING_8]
+			-- Working path and file name of `a_pebble', which can be a cluster or a file
+		local
+			l_path_components: LIST[STRING_8]
+			l_item: EV_GRID_ITEM
+		do
+			create Result
+			if attached {CLASSI_STONE}a_pebble as ci then
+				Result.working_path := ci.file_name
+			elseif attached {CLUSTER_STONE}a_pebble as cl then
+					-- The selected row holds the full path of the cluster or folder
+					l_item := selected_rows.i_th (1).item (1)
+					if attached {EB_GROUPS_GRID_FOLDER_ITEM}l_item as f then
+						Result.working_path := f.full_path
+					end
+			end
+			l_path_components := Result.working_path.split ('/')
+			Result.target := l_path_components.last
+			Result.working_path := Result.working_path.substring (1, Result.working_path.count - Result.target.count)
 		end
 
 feature {NONE} -- Implementation
@@ -701,27 +727,49 @@ feature {NONE} -- Subversion context menu commands
 
 	svn_add (a_pebble: ANY)
 		require
-			stone_not_void: a_pebble /= Void
+			pebble_not_void: a_pebble /= Void
 		local
-			l_path, l_item: STRING
+			l_path: like path_from_pebble
 		do
-			if attached {CLASSI_STONE}a_pebble as ci then
-				l_path := ci.group.location.evaluated_path
-				l_item := ci.file_name
-			elseif attached {CLUSTER_STONE}a_pebble as cl then
-				l_path := cl.group.location.evaluated_path
-				l_item := cl.folder_name
-			end
-			svn_client.set_working_path (l_path)
-			svn_client.add.set_target (l_item)
+			l_path := path_from_pebble (a_pebble)
+			svn_client.set_working_path (l_path.working_path)
+			svn_client.add.set_target (l_path.target)
 			svn_client.add.set_error_handler (agent error)
 			svn_client.add.execute
-			print ("Path to add: " + l_path + "%N")
+		end
+
+	show_commit_dialog (a_pebble: ANY)
+		require
+			pebble_not_void: a_pebble /= Void
+		local
+			l_commit_dialog: EB_COMMIT_DIALOG
+			l_path: like path_from_pebble
+		do
+			l_path := path_from_pebble (a_pebble)
+			create l_commit_dialog.make_default (l_path.target)
+			l_commit_dialog.set_commit_action (agent svn_commit (l_path.working_path, l_path.target, ?))
+			l_commit_dialog.show
+		end
+
+	svn_commit (a_working_path, a_target, a_message: STRING_8)
+		require
+			working_path_not_void: a_working_path /= Void
+			target_not_void: a_target /= Void
+			message_not_void: a_message /= Void
+		do
+			svn_client.set_working_path (a_working_path)
+			svn_client.commit.set_target (a_target)
+			svn_client.commit.put_option ("-m", a_message)
+			svn_client.commit.execute
 		end
 
 	error (s: STRING)
+		local
+			l_error_dialog: EV_ERROR_DIALOG
 		do
-			print (s)
+--			print ("Error: " + s)
+			create l_error_dialog.make_with_text(s)
+			l_error_dialog.show
 		end
 
 feature {NONE} -- Factory

@@ -45,11 +45,13 @@ feature -- Execute
 feature -- Access
 
 	target: STRING_8
-		-- Execute command for `target' (folder or file) at given `working_path'
+		-- Path (folder or file) at given `working_path'. The command will be executed on `target'
 
 	last_result: detachable STRING_8
+		-- Result of the last successfully executed command
 
 	last_error: detachable STRING_8
+		-- Error occurred during the last executed command
 
 feature -- Element change
 
@@ -93,21 +95,17 @@ feature -- Observer pattern
 feature {NONE} -- Command agents
 
 	on_error_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
-		-- Agent to call when an error has occurred
+		-- Agent to call when the command did not complete successfully
 
 	on_data_received_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
-		-- Agent to call when partial data is received
+		-- Agent to call when partial data is received during the execution of the command
 
 	on_did_finish_handler: PROCEDURE[ANY, TUPLE[]]
-		-- Agent to call when the command has been executed
+		-- Agent to call when the command has been executed successfully
 
 	command_error(a_command_error: STRING_8)
 		do
-			-- Parse error
 			internal_last_error.append (a_command_error)
-			if attached on_error_handler as error_handler then
-				error_handler.call ([a_command_error])
-			end
 		end
 
 	command_data_received(a_data_received: STRING_8)
@@ -131,7 +129,7 @@ feature {NONE} -- Command agents
 			set_last_error (internal_last_error)
 			set_internal_last_error (Void)
 
-			if process.exit_code = 0 then
+			if last_error.is_empty then
 					-- Command successfully executed
 				if attached on_did_finish_handler as did_finish_handler then
 					did_finish_handler.call([])
@@ -150,24 +148,10 @@ feature {NONE} -- Result and error handling
 			last_result := a_result
 		end
 
-	set_internal_last_result (a_result: detachable like internal_last_result)
-		do
-			internal_last_result := a_result
-		end
-
-	internal_last_result: detachable STRING_8
-
 	set_last_error (a_error: detachable like last_error)
 		do
 			last_error := a_error
 		end
-
-	set_internal_last_error (a_error: detachable like internal_last_error)
-		do
-			internal_last_error := a_error
-		end
-
-	internal_last_error: detachable STRING_8
 
 feature {NONE} -- Result parsing
 
@@ -185,7 +169,7 @@ feature {NONE} -- Implementation
 		end
 
 	launch_process (a_args: LINKED_LIST[STRING_8])
-			-- Execute `cd working_path; svn command_name a_args target'
+			-- Execute `cd working_path' and `svn command_name a_args target'
 		require
 			a_args_not_void: a_args /= Void
 		do
@@ -212,10 +196,24 @@ feature {NONE} -- Implementation
 			all_options_included: options.count * 2 = Result.count
 		end
 
+	set_internal_last_result (a_result: detachable like internal_last_result)
+		do
+			internal_last_result := a_result
+		end
+
+	set_internal_last_error (a_error: detachable like internal_last_error)
+		do
+			internal_last_error := a_error
+		end
+
+	internal_last_result: detachable STRING_8
+
+	internal_last_error: detachable STRING_8
+
 	svn_client: SVN_CLIENT
 
 	process: PROCESS
-		-- The process that executes the svn command
+		-- Process that executes the svn command
 
 	options: HASH_TABLE[STRING_8, STRING_8]
 		-- Optional arguments used when executing `Current'

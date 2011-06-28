@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			l_parser: SVN_TEXT_PARSER
 		do
 			create pf
-				-- TODO: get the svn path using the shared environment
+				-- TODO: get the svn path using the environment variable
 --			create l_exec_env
 --			svn_executable := l_exec_env.get ("PATH")
 			create l_parser

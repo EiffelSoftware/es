@@ -99,16 +99,17 @@ feature {NONE} -- Parsing utilities
 				end
 				a_list.forth
 			end
+		ensure
+			count_less_or_equal: Result.count <= a_list.count
 		end
 
 	list_to_items (a_list: LIST[STRING_8]): LINKED_LIST[SVN_CLIENT_ITEM]
 		require
 			list_not_void: a_list /= Void
 		local
-			l_folder, l_item: STRING_8
+			l_folder: STRING_8
 			l_svn_folder: SVN_CLIENT_FOLDER
 			l_svn_file: SVN_CLIENT_FILE
-			l_split_item: LIST[STRING_8]
 			l_subfolder: LINKED_LIST[STRING_8]
 			l_same_subfolder: BOOLEAN
 		do
@@ -116,13 +117,9 @@ feature {NONE} -- Parsing utilities
 			from a_list.start
 			until a_list.after
 			loop
-				l_item := a_list.item_for_iteration
-				l_split_item := l_item.split ('/')
-				l_split_item.finish; l_split_item.remove -- Remove last path item, because it is empty
-
-				if l_split_item.count >= 1 then
+				if is_folder(a_list.item_for_iteration) then
 						-- We have a folder. Recursively create items
-					l_folder := l_split_item.i_th (1)
+					l_folder := path_component_at_index (a_list.item_for_iteration, 1)
 					create l_svn_folder.make_with_name (l_folder)
 
 					create l_subfolder.make
