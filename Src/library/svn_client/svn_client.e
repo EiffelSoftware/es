@@ -54,19 +54,21 @@ feature -- SVN Client commands
 
 	commit: SVN_CLIENT_COMMIT_COMMAND
 
+	cp: SVN_CLIENT_COPY_COMMAND
+
 	delete: SVN_CLIENT_DELETE_COMMAND
 
 	list: SVN_CLIENT_LIST_COMMAND
 
 	log: SVN_CLIENT_LOG_COMMAND
 
+	merge: SVN_CLIENT_MERGE_COMMAND
+
 	status: SVN_CLIENT_STATUS_COMMAND
 
 	update: SVN_CLIENT_UPDATE_COMMAND
 
 --	branch: SVN_CLIENT_BRANCH_COMMAND
-
---	merge: SVN_CLIENT_MERGE_COMMAND
 
 --	diff: SVN_CLIENT_DIFF_COMMAND
 
@@ -87,10 +89,13 @@ feature {SVN_CLIENT_COMMAND} -- Implementation
 			create add.make (Current)
 			create checkout.make (Current)
 			create commit.make (Current)
+			create cp.make (Current)
 			create delete.make (Current)
 			create list.make (Current)
 			create log.make (Current)
+			create merge.make (Current)
 			create status.make (Current)
+			create update.make (Current)
 		end
 
 invariant

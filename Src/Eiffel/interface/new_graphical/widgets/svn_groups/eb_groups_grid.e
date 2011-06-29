@@ -330,7 +330,7 @@ feature {NONE} -- Context menu handler and construction
 
 	extend_working_copy_menu (a_menu: EV_MENU; a_pebble: ANY)
 		local
-			l_menu, l_menu2: EV_MENU
+			l_menu: EV_MENU
 			l_menu_item: EV_MENU_ITEM
 		do
 			create l_menu.make_with_text ("Subversion")
@@ -342,8 +342,8 @@ feature {NONE} -- Context menu handler and construction
 			create l_menu_item.make_with_text_and_action ("Commit...", agent show_commit_dialog (a_pebble))
 			l_menu.extend (l_menu_item)
 
---			l_menu.extend (new_menu_item (names.m_search_scope))
---			l_menu.last.select_actions.extend (agent (dev_window.tools.search_tool).on_drop_add (a_pebble))
+			create l_menu_item.make_with_text_and_action ("Update", agent svn_update (a_pebble))
+			l_menu.extend (l_menu_item)
 		end
 
 feature {NONE} -- Event handler
@@ -725,19 +725,6 @@ feature -- Tree construction
 
 feature {NONE} -- Subversion context menu commands
 
-	svn_add (a_pebble: ANY)
-		require
-			pebble_not_void: a_pebble /= Void
-		local
-			l_path: like path_from_pebble
-		do
-			l_path := path_from_pebble (a_pebble)
-			svn_client.set_working_path (l_path.working_path)
-			svn_client.add.set_target (l_path.target)
-			svn_client.add.set_error_handler (agent error)
-			svn_client.add.execute
-		end
-
 	show_commit_dialog (a_pebble: ANY)
 		require
 			pebble_not_void: a_pebble /= Void
@@ -751,6 +738,19 @@ feature {NONE} -- Subversion context menu commands
 			l_commit_dialog.show
 		end
 
+	svn_add (a_pebble: ANY)
+		require
+			pebble_not_void: a_pebble /= Void
+		local
+			l_path: like path_from_pebble
+		do
+			l_path := path_from_pebble (a_pebble)
+			svn_client.set_working_path (l_path.working_path)
+			svn_client.add.set_target (l_path.target)
+			svn_client.add.set_error_handler (agent error)
+			svn_client.add.execute
+		end
+
 	svn_commit (a_working_path, a_target, a_message: STRING_8)
 		require
 			working_path_not_void: a_working_path /= Void
@@ -761,6 +761,18 @@ feature {NONE} -- Subversion context menu commands
 			svn_client.commit.set_target (a_target)
 			svn_client.commit.put_option ("-m", a_message)
 			svn_client.commit.execute
+		end
+
+	svn_update (a_pebble: ANY)
+		require
+			pebble_not_void: a_pebble /= Void
+		local
+			l_path: like path_from_pebble
+		do
+			l_path := path_from_pebble (a_pebble)
+			svn_client.set_working_path (l_path.working_path)
+			svn_client.update.set_target (l_path.target)
+			svn_client.update.execute
 		end
 
 	error (s: STRING)

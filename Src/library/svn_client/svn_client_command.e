@@ -9,7 +9,7 @@ deferred class
 
 feature {NONE} -- Initialization
 
-	make(a_svn_client: SVN_CLIENT)
+	make (a_svn_client: SVN_CLIENT)
 		require
 			a_svn_client_not_void: a_svn_client /= Void
 		do
