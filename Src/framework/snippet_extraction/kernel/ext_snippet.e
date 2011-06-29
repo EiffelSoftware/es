@@ -31,7 +31,7 @@ feature{NONE} -- Initialization
 		do
 			create operands.make (a_operands.count)
 			operands.set_key_equality_tester (string_equality_tester)
-			operands.set_equality_tester (type_name_equality_tester)
+			operands.set_equality_tester (string_equality_tester)
 			a_operands.do_all_with_key (agent operands.force_last)
 
 			content := a_content.twin
@@ -68,7 +68,7 @@ feature -- Configuration
 
 feature -- Access
 
-	operands: DS_HASH_TABLE [TYPE_A, STRING]
+	operands: DS_HASH_TABLE [STRING, STRING]
 			-- Operands appearing in current snippet
 			-- Keys are variable names (in lower case), values are types of those
 			-- variables.
@@ -163,7 +163,7 @@ feature{NONE} -- Implementation
 				l_output.append (l_cursor.key)
 				l_output.append_character (':')
 				l_output.append_character (' ')
-				l_output.append (output_type_name (l_cursor.item.name))
+				l_output.append (output_type_name (l_cursor.item))
 				l_output.append_character ('%N')
 				l_cursor.forth
 			end

@@ -40,7 +40,7 @@ feature -- Access
 			create attached_object_test_as_tuples.make
 		end
 
-	last_object_test_aliases: HASH_TABLE [TYPE_A, STRING]
+	last_object_test_aliases: like {EXT_VARIABLE_CONTEXT}.target_variables
 			-- The identifiers and evaluated types of last AST visit.
 		local
 			l_type_a: TYPE_A
@@ -64,7 +64,7 @@ feature -- Access
 --						l_type_a := type_a_generator.evaluate_type_if_possible (l_type, context_class)
 --					end
 
-					Result.force (l_type_a, l_iterator.item.name.name_8)
+					Result.force (l_type_a.name, l_iterator.item.name.name_8)
 				end
 			end
 		end
@@ -83,7 +83,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	target_variables: HASH_TABLE [TYPE_A, STRING]
+	target_variables: like {EXT_VARIABLE_CONTEXT}.target_variables
 			-- Variables that are subject of the analysis.
 
 	context_class: CLASS_C
@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 			create l_variable_usage_finder
 			l_variable_usage_finder.set_is_mode_disjoint (False)
 			l_variable_usage_finder.set_on_access_identifier (
-				agent (l_as: ACCESS_AS; a_target_variables: HASH_TABLE [TYPE_A, STRING]; a_variable_usage: LINKED_SET [STRING])
+				agent (l_as: ACCESS_AS; a_target_variables: like {EXT_VARIABLE_CONTEXT}.target_variables; a_variable_usage: LINKED_SET [STRING])
 					do
 						if a_target_variables.has (l_as.access_name_8) then
 							a_variable_usage.force (l_as.access_name_8)

@@ -92,11 +92,11 @@ feature -- Access
 			attached total_variable_usage
 		end
 
-	last_interface_variables: HASH_TABLE [TYPE_A, STRING]
+	last_interface_variables: like {EXT_VARIABLE_CONTEXT}.interface_variables
 			-- Set of interface variables found according to AST iteration and that
 			-- are valid mentioned in `candidate_interface_variables'.
 		local
-			l_interface_variable_type: TYPE_A
+			l_interface_variable_type: STRING
 		do
 			check attached nesting_stack end
 			check nesting_stack.is_empty end

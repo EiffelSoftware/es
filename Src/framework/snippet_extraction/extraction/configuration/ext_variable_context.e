@@ -21,15 +21,15 @@ feature -- Initialization
 
 feature -- Access
 
-	target_variables: HASH_TABLE [TYPE_A, STRING]
+	target_variables: HASH_TABLE [STRING, STRING]
 		assign set_target_variables
 			-- Set of target variables at which we are looking at.
 
-	interface_variables: HASH_TABLE [TYPE_A, STRING]
+	interface_variables: HASH_TABLE [STRING, STRING]
 		assign set_interface_variables
 			-- Set of interface variables.
 
-	candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
+	candidate_interface_variables: HASH_TABLE [STRING, STRING]
 		assign set_candidate_interface_variables
 			-- Set of candidate interface variables.
 
@@ -121,8 +121,8 @@ feature -- Status report
 
 feature {NONE} -- Debug
 
-	debug_variable_table_as_string (a_variables: HASH_TABLE [TYPE_A, STRING]; a_description: STRING): STRING
-			-- Logs the textual representation of `a_relevant_variables'.
+	debug_variable_table_as_string (a_variables: like target_variables; a_description: STRING): STRING
+			-- Logs the textual representation of `a_variables'.
 		do
 			create Result.make_empty
 
@@ -136,7 +136,7 @@ feature {NONE} -- Debug
 				Result.append ("] ")
 				Result.append (a_variables.key_for_iteration)
 				Result.append (": ")
-				Result.append (a_variables.item_for_iteration.name)
+				Result.append (a_variables.item_for_iteration)
 				Result.append ("%N")
 
 				a_variables.forth

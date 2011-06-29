@@ -174,7 +174,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	collect_candidate_interface_variables: HASH_TABLE [TYPE_A, STRING]
+	collect_candidate_interface_variables: like {EXT_VARIABLE_CONTEXT}.candidate_interface_variables
 			-- Collect all variables that might potentially become an interface variable.		
 		require
 			target_variables_configured: attached variable_context.target_variables
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 				-- Collect all possible candidate variables.
 --			operand_name_types_with_feature (feature_, context_class).do_all_with_key (agent Result.force)
 			across locals_from_feature_as (feature_.e_feature.ast, context_class) as l_locals loop
-				Result.force (l_locals.item, l_locals.key)
+				Result.force (l_locals.item.name, l_locals.key)
 			end
 --			Result.merge (collect_argumentless_features (context_class))
 
@@ -195,7 +195,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	collect_interface_variables (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: TYPE_A; a_variable_name: STRING): HASH_TABLE [TYPE_A, STRING]
+	collect_interface_variables (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: STRING; a_variable_name: STRING): like {EXT_VARIABLE_CONTEXT}.interface_variables
 			-- Collect interface variables.
 			-- Keys are variable names, values are their types.
 			-- Interface variables are of either of the following kinds: Current, feature argument, local variable, Result.
@@ -239,10 +239,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	setup_variable_context (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: TYPE_A; a_variable_name: STRING)
+	setup_variable_context (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: STRING; a_variable_name: STRING)
 			-- Initialization of variable context on which the extraction relies.
 		local
-			l_target_variable_table: HASH_TABLE [TYPE_A, STRING]
+			l_target_variable_table: HASH_TABLE [STRING, STRING]
 			l_object_test_as_alias_finder: EXT_OBJECT_TEST_AS_ALIAS_FINDER
 		do
 				-- Create variable context.
@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 			attached a_variable_name
 		local
 			l_snippet: EXT_SNIPPET
-			l_snippet_operands: DS_HASH_TABLE [TYPE_A, STRING]
+			l_snippet_operands: DS_HASH_TABLE [STRING, STRING]
 			l_compound_as: EIFFEL_LIST [INSTRUCTION_AS]
 			l_hole_result: like perform_ast_hole_step
 		do
@@ -285,10 +285,10 @@ feature {NONE} -- Implementation
 
 				-- Find the entry point for the extraction, that is either the
 				-- `a_compound_as' or smaller compound contained inside.
-			l_compound_as := find_entry_point (a_compound_as, a_variable_type, a_variable_name)
+			l_compound_as := find_entry_point (a_compound_as, a_variable_type.name, a_variable_name)
 
 				-- Setup `variable_context'.
-			setup_variable_context (l_compound_as, a_variable_type, a_variable_name)
+			setup_variable_context (l_compound_as, a_variable_type.name, a_variable_name)
 
 				-- AST modification steps.
 				-- Currently the some steps are executed several times, to enhance
@@ -334,9 +334,9 @@ feature {NONE} -- Implementation
 			log_ast_processing_footer
 		end
 
-	find_entry_point (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: TYPE_A; a_variable_name: STRING): EIFFEL_LIST [INSTRUCTION_AS]
+	find_entry_point (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_variable_type: STRING; a_variable_name: STRING): EIFFEL_LIST [INSTRUCTION_AS]
 		local
-			l_target_variable_table: HASH_TABLE [TYPE_A, STRING]
+			l_target_variable_table: HASH_TABLE [STRING, STRING]
 			l_variable_context: EXT_VARIABLE_CONTEXT
 			l_entry_point_finder: EXT_ENTRY_POINT_FINDER
 		do
@@ -585,7 +585,7 @@ feature {NONE} -- Debug
 				across a_interface_variables as l_iv loop
 					log.put_string ("[interface_variable] " + l_iv.key)
 					if attached l_iv.item then
-						log.put_string (": " + l_iv.item.name)
+						log.put_string (": " + l_iv.item)
 					end
 					log.put_string ("%N")
 				end
