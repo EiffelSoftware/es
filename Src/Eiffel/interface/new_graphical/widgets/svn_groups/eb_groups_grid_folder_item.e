@@ -166,7 +166,7 @@ feature -- Interactivity
 			end
 		end
 
-feature {EB_CLASSES_TREE_CLASS_ITEM} -- Interactivity
+feature {EB_GROUPS_GRID_CLASS_ITEM} -- Interactivity
 
 	 load
 			-- Load the classes and the sub_clusters of `data'.

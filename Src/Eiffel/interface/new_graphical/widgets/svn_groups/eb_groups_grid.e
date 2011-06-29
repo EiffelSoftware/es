@@ -182,7 +182,6 @@ feature {NONE} -- Initialization
 					-- sort clusters
 				create cluster_header.make (interface_names.l_class_tree_clusters, pixmaps.icon_pixmaps.top_level_folder_clusters_icon)
 				build_group_tree (manager.clusters, cluster_header)
---				cluster_header.set_pebble (create {DATA_STONE}.make (groups_from_sorted_clusters (manager.clusters, True), agent is_group_valid))
 				cluster_header.set_stone (create {DATA_STONE}.make (groups_from_sorted_clusters (manager.clusters, True), agent is_group_valid))
 
 					-- sort overrides
@@ -240,7 +239,6 @@ feature -- Observer pattern
 			-- Rebuild the tree.
 		do
 			build_tree
-				-- Retrieve svn status, apply pixmaps
 		end
 
 	on_class_added (a_class: EIFFEL_CLASS_I)
@@ -320,8 +318,6 @@ feature {NONE} -- Context menu handler and construction
 			if a_pebble /= Void then
 				context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
 				extend_working_copy_menu (a_menu, a_pebble)
-			else
-				print ("Void pebble%N")
 			end
 --			context_menu_factory.clusters_data_menu (a_menu, a_target_list, a_source, a_pebble)
 --			context_menu_factory.libraries_data_menu (a_menu, a_target_list, a_source, a_pebble)
@@ -361,8 +357,6 @@ feature {NONE} -- Event handler
 					else
 						create {CLASSI_STONE}Result.make (ci)
 					end
-				elseif attached {CLASS_C}d as cl then
-					create {CLASSC_STONE}Result.make (cl)
 				elseif attached {EB_SORTED_CLUSTER}d as cl then
 					create {CLUSTER_STONE}Result.make (cl.actual_group)
 				end

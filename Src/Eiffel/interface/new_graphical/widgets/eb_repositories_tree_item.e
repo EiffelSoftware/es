@@ -31,11 +31,57 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			data := a_item
+			set_configurable_target_menu_mode
+			set_configurable_target_menu_handler (agent context_menu_handler)
+		end
+
+feature -- Access
+
+	item_url: STRING_8
+		do
+			if attached {EB_REPOSITORIES_TREE_ITEM}parent as p then
+				Result := p.item_url + "/" + data.name
+			else
+				Result := data.name
+			end
 		end
 
 feature {NONE} -- Attributes
 
-	data: EB_REPOSITORIES_ITEM;
+	data: EB_REPOSITORIES_ITEM
+
+feature {NONE} -- Implementation
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+			-- Context menu handler
+		local
+			l_menu_item: EV_MENU_ITEM
+		do
+			-- Display checkout contextual menu
+			create l_menu_item.make_with_text_and_action ("Checkout...", agent show_checkout_dialog)
+			a_menu.extend (l_menu_item)
+		end
+
+	show_checkout_dialog
+		local
+			l_checkout_dialog: EB_CHECKOUT_DIALOG
+		do
+			create l_checkout_dialog.make_default
+			l_checkout_dialog.set_checkout_action (agent svn_checkout)
+			l_checkout_dialog.show
+		end
+
+	svn_checkout (a_path: STRING_8)
+		require
+			valid_path: a_path /= Void and then not a_path.is_empty
+		local
+			l_svn_client: SVN_CLIENT
+		do
+			create l_svn_client.make
+			l_svn_client.set_working_path (a_path)
+			l_svn_client.checkout.set_target (item_url)
+			l_svn_client.checkout.execute
+		end
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

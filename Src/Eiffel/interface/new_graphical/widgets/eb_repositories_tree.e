@@ -36,6 +36,7 @@ feature {NONE} -- Initialization
 			-- Initialization: build the widget and the tree.
 		do
 			default_create
+			context_menu_factory := a_context_menu_factory
 			repositories_manager := a_repositories_manager
 			repositories.add_observer (Current)
 
@@ -89,7 +90,6 @@ feature -- Observer pattern
 		do
 		end
 
-
 feature {NONE} -- Cleaning
 
 	internal_recycle
@@ -102,6 +102,9 @@ feature {NONE} -- Cleaning
 		end
 
 feature {NONE} -- Implementation
+
+	context_menu_factory: EB_CONTEXT_MENU_FACTORY
+			-- Context menu factory
 
 	repositories_manager: EB_REPOSITORIES_MANAGER;
 			-- Associated repositories manager
