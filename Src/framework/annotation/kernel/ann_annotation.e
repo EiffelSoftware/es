@@ -17,6 +17,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	OBJECT_IDENTIFIER_HELPER
+
 feature -- Access
 
 	breakpoints: DS_HASH_SET [INTEGER]

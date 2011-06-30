@@ -58,6 +58,7 @@ extern "C" {
 #define ovs_tid     ov_head.ovs_tid
 #endif
 #define ov_pid      ov_head.ovu.ovs.scp_pid
+#define ov_id       ov_head.ovs_id  /* Access to the object identifier */
 
 /*
  * Masks used on the ovs_size field.

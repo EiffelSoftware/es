@@ -329,6 +329,10 @@ union overhead {
 			} ovs;
 		} ovu;
 		rt_uint_ptr ovs_size;
+#if defined(WITH_OBJECT_IDENTIFIER)
+		rt_uint_ptr ovs_id;  /* Object id. */
+#endif
+		
 #if (MEM_ALIGNBYTES == 8) && !defined(EIF_64_BITS)
 			/* On 32-bit platform where alignment is 8,
 			 * we need to add an additional 4 bytes.*/

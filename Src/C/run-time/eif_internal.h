@@ -60,6 +60,7 @@ RT_LNK rt_uint_ptr ei_size(EIF_REFERENCE object);
 RT_LNK void *ei_oref(long, EIF_REFERENCE);
 RT_LNK void eif_set_dynamic_type (EIF_REFERENCE object, EIF_INTEGER dtype);
 RT_LNK EIF_BOOLEAN eif_is_special_type (EIF_INTEGER dftype);
+RT_LNK EIF_INTEGER eif_object_identifier (EIF_REFERENCE object);
 
 #define ei_special(obj)	(EIF_TEST((HEADER(obj)->ov_flags & (EO_SPEC | EO_TUPLE)) == EO_SPEC))
 #define ei_tuple(obj)	(EIF_TEST((HEADER(obj)->ov_flags & (EO_SPEC | EO_TUPLE)) == (EO_SPEC | EO_TUPLE)))

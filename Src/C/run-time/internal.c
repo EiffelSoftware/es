@@ -331,6 +331,16 @@ rt_public void * ei_oref(long i, EIF_REFERENCE object)
 	return o_ref;
 }
 
+rt_public EIF_INTEGER eif_object_identifier (EIF_REFERENCE object)
+{
+	union overhead *zone = HEADER(object);		/* Object's header */
+#ifdef WITH_OBJECT_IDENTIFIER)
+	return (EIF_INTEGER) zone->ov_id;
+#else
+	return (EIF_INTEGER) 0;
+#endif
+}
+
 /*
 doc:</file>
 */
