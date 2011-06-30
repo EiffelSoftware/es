@@ -182,22 +182,72 @@ feature {NONE} -- Output
 			Result.append (a_feature.feature_name)
 		end
 
-	write_snippets_to_file (a_snippets: LINKED_SET [EXT_SNIPPET]; a_file_name: STRING)
+	write_snippets_to_file (a_snippets: LINKED_SET [EXT_SNIPPET]; a_basic_file_name: STRING)
 			-- Writes the snippets to a file if `{EXT_CONFIG}.output' path is configured.
-			-- `a_file_name' is considered as a filename without extension.
+			-- `a_file_name' is considered as a basic filename that still gets expanded by
+			-- a postfix and a file extension.
 		local
+			l_file_name: STRING
 			l_file_path: FILE_NAME
 			l_snippet_writer: EXT_SNIPPET_WRITER
 		do
 			if attached config.output as l_path_name then
-					-- Create whole path name.
-				create l_file_path.make_from_string (l_path_name)
-				l_file_path.set_file_name (a_file_name)
-				l_file_path.add_extension ("TXT")
+				across
+					a_snippets as l_cursor
+				loop
+						-- Concatenate the file name.
+					create l_file_name.make_from_string (a_basic_file_name)
+					l_file_name.append (once "@targets")
+					l_file_name.append (target_variable_list_as_string (l_cursor.item))
 
-				create l_snippet_writer
-				l_snippet_writer.write_to_file (a_snippets, l_file_path)
+						-- Create whole path name.
+					create l_file_path.make_from_string (l_path_name)
+					l_file_path.set_file_name (l_file_name)
+
+					if attached l_file_path.twin as l_bin_file_path then
+						l_bin_file_path.add_extension ("BIN")
+
+						create {EXT_BINARY_SNIPPET_WRITER} l_snippet_writer
+						l_snippet_writer.write_to_file (l_cursor.item, l_bin_file_path)
+					end
+
+					if attached l_file_path.twin as l_txt_file_path then
+						l_txt_file_path.add_extension ("TXT")
+
+						create {EXT_TEXTUAL_SNIPPET_WRITER} l_snippet_writer
+						l_snippet_writer.write_to_file (l_cursor.item, l_txt_file_path)
+					end
+				end
 			end
+		end
+
+	target_variable_list_as_string (a_snippet: EXT_SNIPPET): STRING
+			-- Create a string representation of all target variable names.
+			-- `Result' looks like "[var_1_name,var_2_name,...,var_n_name]"
+		local
+			l_variable_list: LINKED_LIST [STRING]
+		do
+			create Result.make_empty
+			Result.append ("[")
+
+			if attached a_snippet.variable_context.target_variables as l_variable_table then
+				create l_variable_list.make
+				l_variable_list.fill (l_variable_table.current_keys)
+
+				from
+					l_variable_list.start
+				until
+					l_variable_list.after
+				loop
+					Result.append (l_variable_list.item)
+					if not l_variable_list.islast then
+						Result.append (",")
+					end
+					l_variable_list.forth
+				end
+			end
+
+			Result.append ("]")
 		end
 
 end

@@ -1,39 +1,31 @@
 note
-	description: "Class to read snippets from a medium"
-	author: ""
+	description: "Interface to read snippets from a medium."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EXT_SNIPPET_READER
-
-inherit
-	REFACTORING_HELPER
 
 feature -- Access
 
-	last_snippets: LINKED_LIST [EXT_SNIPPET]
+	last_snippet: EXT_SNIPPET
 			-- Snippet read by last `read'
+		deferred
+		end
 
 feature -- Basic operations
 
 	read (a_medium: IO_MEDIUM)
 			-- Read snippets from `a_medium', make results
 			-- available in `last_snippets'.
-		do
-			to_implement ("To implement.")
+		deferred
 		end
 
 	read_from_file (a_path: STRING)
-			-- Read snippets from file whose absolute path
-			-- is given by `a_path', make results
-			-- available in `last_snippets'.
-		local
-			l_file: PLAIN_TEXT_FILE
-		do
-			create l_file.make_open_read (a_path)
-			read (l_file)
-			l_file.close
+			-- Read snippet from file whose absolute path
+			-- is given by `a_path', make result
+			-- available in `last_snippet'.
+		deferred
 		end
 
 end

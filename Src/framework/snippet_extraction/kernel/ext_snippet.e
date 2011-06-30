@@ -17,6 +17,8 @@ inherit
 
 	SHARED_EIFFEL_PARSER
 
+	STORABLE
+
 create
 	make
 
