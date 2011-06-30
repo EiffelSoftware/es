@@ -23,7 +23,7 @@ feature -- Initialization
 			create criteria.make
 			criteria.force (agent check_empty_snippet_rule)
 			criteria.force (agent check_single_line_snippet_rule)
-			criteria.force (agent check_calls_on_target_snippet_rule)
+			criteria.force (agent check_calls_on_target_snippet_rule (?, 2))
 		end
 
 feature -- Access
@@ -66,8 +66,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_calls_on_target_snippet_rule (a_snippet: EXT_SNIPPET): BOOLEAN
-			-- Returns false for snippets with not calls on target variables.
+	check_calls_on_target_snippet_rule (a_snippet: EXT_SNIPPET; a_min_bound: NATURAL): BOOLEAN
+			-- Returns false for snippets with that have less than `a_min_bound' calls on target variables.
 		local
 			l_call_on_target_counter: COUNTER
 			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
@@ -86,7 +86,7 @@ feature {NONE} -- Implementation
 					)
 
 				l_compound_as.process (l_identifier_usage_finder)
-				Result := l_call_on_target_counter.value > 0
+				Result := l_call_on_target_counter.value >= a_min_bound.as_integer_32
 			end
 		end
 
