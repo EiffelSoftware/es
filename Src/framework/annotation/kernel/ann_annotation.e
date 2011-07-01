@@ -19,6 +19,8 @@ inherit
 
 	OBJECT_IDENTIFIER_HELPER
 
+	ANN_ANNOTATION_HELPER
+
 feature -- Access
 
 	breakpoints: DS_HASH_SET [INTEGER]
@@ -84,29 +86,6 @@ feature -- Access
 				if l_cursor.item > Result then
 					Result := l_cursor.item
 				end
-				l_cursor.forth
-			end
-		end
-
-feature{NON} -- Implementation
-
-	breakpoints_as_string: STRING
-			-- A comma-separated string representation for `breakpoints'
-		local
-			l_cursor: like breakpoints.new_cursor
-		do
-			create Result.make (32)
-			from
-				l_cursor := breakpoints.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if not Result.is_empty then
-					Result.append_character (',')
-					Result.append_character (' ')
-				end
-				Result.append_integer (l_cursor.item)
 				l_cursor.forth
 			end
 		end

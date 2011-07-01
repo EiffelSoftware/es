@@ -1,0 +1,18 @@
+note
+	description: "Shared equality testers for annotation related classes"
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	ANN_SHARED_EQUALITY_TESTERS
+
+feature -- Access
+
+	annotation_equality_tester: ANN_ANNOTATION_EQUALITY_TESTER
+			-- Equality tester for annotations
+		once
+			create Result
+		end
+
+end

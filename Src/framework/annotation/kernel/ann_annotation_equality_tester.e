@@ -24,7 +24,9 @@ feature -- Status report
 			elseif u = Void then
 				Result := False
 			else
-				Result := v.debug_output ~ v.debug_output
+				Result :=
+					v.generating_type ~ u.generating_type and then
+					v.debug_output ~ v.debug_output
 			end
 		end
 end
