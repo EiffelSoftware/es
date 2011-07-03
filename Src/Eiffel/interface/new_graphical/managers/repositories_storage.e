@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {REPOSITORIES_STORAGE}."
+	description: "Object that loads and stores the Subversion repositories."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

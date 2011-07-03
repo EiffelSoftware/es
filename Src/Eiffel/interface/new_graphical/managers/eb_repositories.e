@@ -69,6 +69,7 @@ feature -- Status report
 feature -- Element change
 
 	add_repository (a_repository_url: STRING_32; a_username, a_password: detachable STRING_32)
+			-- Add a new repository to `Current'
 		require
 			valid_repository_url: a_repository_url /= Void and then not a_repository_url.is_empty
 		local

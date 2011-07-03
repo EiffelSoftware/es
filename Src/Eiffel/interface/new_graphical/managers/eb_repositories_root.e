@@ -101,12 +101,9 @@ feature {NONE} -- SVN client response
 			until l_list.after
 			loop
 				if l_list.item_for_iteration.is_folder and then attached {SVN_CLIENT_FOLDER}l_list.item_for_iteration as a_folder then
---				if l_list.item_for_iteration.is_folder then
---					create l_folder.make (l_list.item_for_iteration.name, Current)
 					create l_folder.make(a_folder.name, Current)
 					extend (l_folder)
 					l_folder.recursively_add_items (a_folder)
---					l_folder.recursively_add_items (l_list.item_for_iteration)
 				else
 					create l_file.make(l_list.item_for_iteration.name, Current)
 					extend (l_file)
