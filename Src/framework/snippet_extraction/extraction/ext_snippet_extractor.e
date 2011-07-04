@@ -61,53 +61,59 @@ feature -- Basic operations
 		local
 			l_compound_as: EIFFEL_LIST [INSTRUCTION_AS]
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
+			l_retried: BOOLEAN
 		do
-			log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
+			if not l_retried then
+				log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
 
-			relevant_target_type := a_type
-			feature_ := a_feature
-			context_class := a_context_class
-			if attached a_source then
-				origin := a_source
-			else
-				origin := "unknown@unknown@unknown"
-			end
-
-			create last_snippets.make
-
-				-- Collect relevant variables from `a_feature'.
-			collect_relevant_variables
-
-			if relevant_variables.is_empty then
-				log.put_string ("> Dropping feature; no relevant variables for snippet extraction found%N")
-			else
-					-- Process the feature body to extract snippets for each relevant variable.
-				l_compound_as := body_compound_ast_from_feature (a_feature)
-
-					-- If features contains body compound, copy AST by roundtripping: AST -> TEXT -> AST
-				if l_compound_as /= Void and then
-					attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast (l_compound_as)) as l_compound then
-
-					log_relevant_variables (relevant_variables)
-
-						-- Assign path IDs to nodes, print AST and continue processing.
-					create l_path_initializer
-					l_path_initializer.process_from_root (l_compound)
-
-					log.put_string ("%N")
-					log_ast_structure (l_compound)
-					log.put_string ("%N")
---					log_ast_text (l_compound)
---					log.put_string ("%N")
-
-					relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
+				relevant_target_type := a_type
+				feature_ := a_feature
+				context_class := a_context_class
+				if attached a_source then
+					origin := a_source
 				else
-					log.put_string ("> Dropping feature; empty AST body%N")
+					origin := "unknown@unknown@unknown"
 				end
-			end
 
-			log.put_string ("[Finished extraction]")
-			log.put_string ("%N%N%N")
+				create last_snippets.make
+
+					-- Collect relevant variables from `a_feature'.
+				collect_relevant_variables
+
+				if relevant_variables.is_empty then
+					log.put_string ("> Dropping feature; no relevant variables for snippet extraction found%N")
+				else
+						-- Process the feature body to extract snippets for each relevant variable.
+					l_compound_as := body_compound_ast_from_feature (a_feature)
+
+						-- If features contains body compound, copy AST by roundtripping: AST -> TEXT -> AST
+					if l_compound_as /= Void and then
+						attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast (l_compound_as)) as l_compound then
+
+						log_relevant_variables (relevant_variables)
+
+							-- Assign path IDs to nodes, print AST and continue processing.
+						create l_path_initializer
+						l_path_initializer.process_from_root (l_compound)
+
+						log.put_string ("%N")
+						log_ast_structure (l_compound)
+						log.put_string ("%N")
+	--					log_ast_text (l_compound)
+	--					log.put_string ("%N")
+
+						relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
+					else
+						log.put_string ("> Dropping feature; empty AST body%N")
+					end
+				end
+
+				log.put_string ("[Finished extraction]")
+				log.put_string ("%N%N%N")
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 feature {NONE} -- Implementation
@@ -276,7 +282,7 @@ feature {NONE} -- Implementation
 			attached a_variable_name
 		local
 			l_snippet: EXT_SNIPPET
-			l_snippet_operands: DS_HASH_TABLE [STRING, STRING]
+			l_snippet_operands: HASH_TABLE [STRING, STRING]
 			l_compound_as: EIFFEL_LIST [INSTRUCTION_AS]
 			l_hole_result: like perform_ast_hole_step
 		do
@@ -309,6 +315,7 @@ feature {NONE} -- Implementation
 			if not l_compound_as.is_empty then
 				fixme ("Clean-up snippet object creation.")
 				create l_snippet_operands.make (5)
+				l_snippet_operands.compare_objects
 				across variable_context.target_variables    as c loop l_snippet_operands.force (c.item, c.key) end
 				across variable_context.interface_variables as c loop l_snippet_operands.force (c.item, c.key) end
 
@@ -363,7 +370,7 @@ feature {NONE} -- Implementation
 			attached Result
 		end
 
-	perform_ast_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): TUPLE [compound_as: EIFFEL_LIST [INSTRUCTION_AS]; annotations: DS_HASH_TABLE [EXT_ANN_HOLE, STRING]]
+	perform_ast_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): TUPLE [compound_as: EIFFEL_LIST [INSTRUCTION_AS]; annotations: HASH_TABLE [EXT_ANN_HOLE, STRING]]
 		local
 			l_annotation_context: EXT_ANNOTATION_CONTEXT
 			l_shared_annotations: like {EXT_ANNOTATION_CONTEXT}.annotations
@@ -372,7 +379,7 @@ feature {NONE} -- Implementation
 			l_ast_marker: EXT_AST_HOLE_MARKER
 			l_ast_rewriter: EXT_AST_HOLE_REWRITER
 
-			l_annotations: DS_HASH_TABLE [EXT_ANN_HOLE, STRING]
+			l_annotations: HASH_TABLE [EXT_ANN_HOLE, STRING]
 		do
 				-- Create shared annotation information passed from `{EXT_AST_HOLE_MARKER}' to `{EXT_AST_HOLE_REWRITER}'.
 			create l_shared_annotations.make (10)
@@ -397,7 +404,8 @@ feature {NONE} -- Implementation
 				create l_path_initializer
 				l_path_initializer.process_from_root (l_rewritten_compound_as)
 
-				create l_annotations.make_default
+				create l_annotations.make (5)
+				l_annotations.compare_objects
 				across
 					l_shared_annotations as l_cursor
 				loop

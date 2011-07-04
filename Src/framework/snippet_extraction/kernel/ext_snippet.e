@@ -32,9 +32,10 @@ feature{NONE} -- Initialization
 			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			create operands.make (a_operands.count)
-			operands.set_key_equality_tester (string_equality_tester)
-			operands.set_equality_tester (string_equality_tester)
-			a_operands.do_all_with_key (agent operands.force_last)
+			operands.compare_objects
+			across a_operands as l_opds loop
+				operands.force (l_opds.item, l_opds.key)
+			end
 
 			content := a_content.twin
 			source := a_source.twin
@@ -70,12 +71,12 @@ feature -- Configuration
 
 feature -- Access
 
-	operands: DS_HASH_TABLE [STRING, STRING]
+	operands: HASH_TABLE [STRING, STRING]
 			-- Operands appearing in current snippet
 			-- Keys are variable names (in lower case), values are types of those
 			-- variables.
 
-	holes: DS_HASH_TABLE [EXT_ANN_HOLE, STRING]
+	holes: HASH_TABLE [EXT_ANN_HOLE, STRING]
 			-- Set of holes in current snippet
 			-- Keys are names of holes, values are the holes.
 

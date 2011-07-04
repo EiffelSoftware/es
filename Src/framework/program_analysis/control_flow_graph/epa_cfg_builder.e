@@ -91,7 +91,9 @@ feature -- Basic operations
 
 			context_class := a_class
 			feature_ := a_feature
-			written_class := feature_.written_class
+			if a_feature /= Void then
+				written_class := feature_.written_class
+			end
 
 			process_feature_body (a_compound)
 			check node_stack.count <= 1 end

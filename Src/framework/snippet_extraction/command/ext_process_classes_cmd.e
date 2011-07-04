@@ -61,6 +61,7 @@ feature {NONE} -- Implementation
 		local
 			l_origin: STRING
 			l_extractor: EXT_DEFERRED_SNIPPET_EXTRACTOR
+			l_ann_extractor: EXT_PROBABILITY_ANNOTATION_EXTRACTOR
 		do
 			l_origin := origin_as_string (a_target_type, a_class, a_feature)
 
@@ -74,6 +75,9 @@ feature {NONE} -- Implementation
 
 				to_implement ("Store snippets in Object/Transition/Snippet database.")
 				to_implement ("Store snippets in serialized XML format.")
+
+				create l_ann_extractor
+				l_snippets.do_all (agent l_ann_extractor.extract)
 			end
 		end
 
