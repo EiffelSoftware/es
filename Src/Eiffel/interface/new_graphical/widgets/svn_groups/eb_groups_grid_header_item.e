@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EB_GROUPS_GRID_HEADER_ITEM}."
+	description: "Header item that is used to group clusters, assemblies, libraries, overrides."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

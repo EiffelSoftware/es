@@ -10,7 +10,6 @@ class
 inherit
 	ES_DOCKABLE_STONABLE_TOOL_PANEL [EB_REPOSITORIES_TREE]
 		redefine
-			on_after_initialized,
 			is_stone_sychronization_required,
 			create_mini_tool_bar_items
 		end
@@ -20,16 +19,8 @@ create
 
 feature {NONE} -- Initialization: User interface
 
-	build_tool_interface (a_widget: attached EB_REPOSITORIES_TREE)
-			-- <Precursor>
-		do
---			a_widget.associate_with_window (develop_window)
-		end
-
-	on_after_initialized
---			-- <Precursor>
---		local
---			l_project_manager: detachable EB_PROJECT_MANAGER
+    build_tool_interface (a_widget: attached EB_REPOSITORIES_TREE)
+            -- <Precursor>
 		do
 
 		end
@@ -61,19 +52,8 @@ feature {NONE} -- Action handlers
 
 	on_stone_changed (a_old_stone: detachable like stone)
 			-- <Precursor>
-		local
-			l_stone: like stone
 		do
---			l_stone := stone
---			if l_stone /= Void and then not user_widget.is_empty then
---				if attached {CLASSI_STONE} l_stone as l_class then
---					user_widget.show_class (l_class.class_i)
---				elseif attached {CLUSTER_STONE} l_stone as l_group then
---					user_widget.show_subfolder (l_group.group, l_group.path)
---				else
---					user_widget.show_stone (l_stone)
---				end
---			end
+			-- File at repository URL could be displayed
 		end
 
 	on_project_loaded
@@ -82,8 +62,6 @@ feature {NONE} -- Action handlers
 			is_interface_usable: is_interface_usable
 			workbench_is_already_compiled: workbench.is_already_compiled
 		do
---			user_widget.on_project_loaded
---			highlight_editor_stone
 		end
 
 feature {NONE} -- Factory
@@ -101,7 +79,7 @@ feature {NONE} -- Factory
 		do
 			create Result.make (2)
 
-				-- `new_repository_button'
+				-- Add button `new_repository_button' to the toolbar
 			create l_button.make
 			l_button.set_tooltip (Interface_names.t_new_repository)
 			l_button.select_actions.extend (agent repositories_manager.show_add_repository_dialog)
@@ -111,6 +89,7 @@ feature {NONE} -- Factory
 
 			Result.put_last (l_button)
 
+				-- Add button `delete_repository_button' to the toolbar
 			create l_button.make
 			l_button.set_tooltip ("Delete repository")
 			l_button.select_actions.extend (agent repositories_manager.remove_repository)

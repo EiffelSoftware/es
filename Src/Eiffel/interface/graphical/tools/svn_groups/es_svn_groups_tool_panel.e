@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ES_SVN_GROUPS_TOOL_PANEL}."
+	description: "The groups tool to view a project's group hierarchy and contained classes together with Subversion information."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,33 +37,11 @@ feature {NONE} -- Initialization: User interface
 			if not workbench.is_already_compiled then
 					-- The is an incomplete compiled project, set up the agents to handle
 					-- senitivity setting of project-sensitive widgets.
-				find_stone_button.disable_sensitive
 				register_action (l_project_manager.load_agents, agent on_project_loaded)
 			else
-				check find_stone_button_enabled: find_stone_button.is_sensitive end
 				on_project_loaded
 			end
 		end
-
-feature {NONE} -- Access: User interface elements
-
-	new_cluster_button: SD_TOOL_BAR_BUTTON
-			-- Button use to add a new cluster.
-
-	new_library_button: SD_TOOL_BAR_BUTTON
-			-- Button use to add a new library.
-
-	new_assembly_button: detachable SD_TOOL_BAR_BUTTON
-			-- Button use to add a new assembly.
-
-	new_class_button: SD_TOOL_BAR_BUTTON
-			-- Button use to add a new class.
-
-	delete_group_button: SD_TOOL_BAR_BUTTON
-			-- Button use to remove a group.
-
-	find_stone_button: SD_TOOL_BAR_BUTTON
-			-- Button used to locate a class or cluster
 
 feature -- Access: Help
 
@@ -111,8 +89,8 @@ feature {ES_GROUPS_COMMANDER_I} -- Basic operations
 					end
 				end
 			else
---				create l_error.make_standard (locale_formatter.translation (e_no_open_editor))
---				l_error.show_on_active_window
+				create l_error.make_standard (locale_formatter.translation (e_no_open_editor))
+				l_error.show_on_active_window
 			end
 		end
 
@@ -125,13 +103,13 @@ feature {NONE} -- Action handlers
 		do
 			l_stone := stone
 			if l_stone /= Void and then not user_widget.is_empty then
---				if attached {CLASSI_STONE}l_stone as l_class then
+				if attached {CLASSI_STONE}l_stone as l_class then
 --					user_widget.show_class (l_class.class_i)
---				elseif attached {CLUSTER_STONE} l_stone as l_group then
+				elseif attached {CLUSTER_STONE} l_stone as l_group then
 --					user_widget.show_subfolder (l_group.group, l_group.path)
---				else
+				else
 --					user_widget.show_stone (l_stone)
---				end
+				end
 			end
 		end
 
@@ -155,42 +133,8 @@ feature {NONE} -- Factory
 
     create_mini_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
-		local
-			l_button: SD_TOOL_BAR_BUTTON
-			l_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
 		do
-			create Result.make (7)
-
-			l_commands := develop_window.commands
-			l_button := l_commands.new_cluster_cmd.new_mini_sd_toolbar_item
-			Result.put_last (l_button)
-			new_cluster_button := l_button
-
-			l_button := l_commands.new_library_cmd.new_mini_sd_toolbar_item
-			Result.put_last (l_button)
-			new_library_button := l_button
-
-			if eiffel_layout.default_il_environment.is_dotnet_installed then
-				l_button := l_commands.new_assembly_cmd.new_mini_sd_toolbar_item
-				Result.put_last (l_button)
-				new_assembly_button := l_button
-			end
-
-			l_button := l_commands.new_class_cmd.new_mini_sd_toolbar_item
-			Result.put_last (l_button)
-			new_class_button := l_button
-
-			l_button := l_commands.delete_class_cluster_cmd.new_mini_sd_toolbar_item
-			Result.put_last (l_button)
-			delete_group_button := l_button
-
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
-
-				-- `find_stone_button'.
-			l_button := l_commands.find_class_or_cluster_command.new_mini_sd_toolbar_item
-			find_stone_button := l_button
-
-			Result.put_last (l_button)
+			create Result.make (1)
 		end
 
     create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]

@@ -625,10 +625,11 @@ feature {NONE} -- Implementation
 		end
 
 	retrieve_status_for_row (a_row: EV_GRID_ROW)
+			-- Perform a `svn status .' command at the path corresponding to the item in `a_row'.
 		require
 			row_not_void: a_row /= Void
 		do
-				-- Perform status only if `a_row' is in the cluster group
+				-- Status only applies to items in the cluster group
 			if attached {EB_GROUPS_GRID_HEADER_ITEM}a_row.parent_row_root.item(1) as l_header and then l_header.is_clusters_group then
 				if attached {EB_GROUPS_GRID_FOLDER_ITEM}a_row.item (1) as f then
 					svn_client.set_working_path (f.full_path)
@@ -720,6 +721,7 @@ feature -- Tree construction
 feature {NONE} -- Subversion context menu commands
 
 	show_commit_dialog (a_pebble: ANY)
+			-- Present a dialog that allows to commit the selected item with a message
 		require
 			pebble_not_void: a_pebble /= Void
 		local
@@ -733,6 +735,7 @@ feature {NONE} -- Subversion context menu commands
 		end
 
 	svn_add (a_pebble: ANY)
+			-- Add the selected item to the working copy
 		require
 			pebble_not_void: a_pebble /= Void
 		local
@@ -746,6 +749,7 @@ feature {NONE} -- Subversion context menu commands
 		end
 
 	svn_commit (a_working_path, a_target, a_message: STRING_8)
+			-- Commit the item `a_target' at path `working_path' with message `a_message'
 		require
 			working_path_not_void: a_working_path /= Void
 			target_not_void: a_target /= Void
@@ -758,6 +762,7 @@ feature {NONE} -- Subversion context menu commands
 		end
 
 	svn_update (a_pebble: ANY)
+			-- Update the item `a_pebble' in the working copy
 		require
 			pebble_not_void: a_pebble /= Void
 		local

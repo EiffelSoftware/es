@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EB_GROUPS_GRID_FOLDER_ITEM}."
+	description: "Representation of a cluster in the cluster tree."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

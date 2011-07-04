@@ -57,9 +57,11 @@ feature {NONE} -- Implementation
 		local
 			l_menu_item: EV_MENU_ITEM
 		do
-			-- Display checkout contextual menu
+			-- Display checkout contextual menu item
 			create l_menu_item.make_with_text_and_action ("Checkout...", agent show_checkout_dialog)
 			a_menu.extend (l_menu_item)
+
+			-- Add new menu item
 		end
 
 	show_checkout_dialog

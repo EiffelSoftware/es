@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ES_SVN_GROUPS_TOOL}."
+	description: "Tool descriptor for EiffelStudio's groups tree tool under version control."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
