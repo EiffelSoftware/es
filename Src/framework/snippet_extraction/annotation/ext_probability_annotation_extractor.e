@@ -1,6 +1,5 @@
 note
 	description: "Class to extract annotations based on static analysis of program control flow"
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -14,7 +13,7 @@ inherit
 
 feature -- Basic operations
 
-	extract (a_snippet: EXT_SNIPPET)
+	extract_from_snippet (a_snippet: EXT_SNIPPET)
 			-- Extract annotations from `a_snippet' and
 			-- make results available in `last_annotations'.
 		local

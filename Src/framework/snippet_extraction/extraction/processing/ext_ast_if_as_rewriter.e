@@ -13,11 +13,13 @@ inherit
 			process_if_as
 		end
 
-	EPA_UTILITY
+	EXT_AST_REWRITER [EIFFEL_LIST [INSTRUCTION_AS]]
 
-	EXT_ANN_UTILITY
+	EXT_VARIABLE_CONTEXT_AWARE
 
 	EXT_AST_UTILITY
+
+	EPA_UTILITY
 
 create
 	make_with_output
@@ -28,25 +30,24 @@ feature {NONE} -- Creation
 			-- Make with `a_output'.
 		do
 			Precursor (a_output)
-			create annotation_factory.make
 		end
 
-feature -- Configuration
+feature -- Basic Operations
 
-	variable_context: EXT_VARIABLE_CONTEXT
-		assign set_variable_context
-			-- Contextual information about relevant variables.
-
-	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
-			-- Sets `variable_context' to `a_context'	
-		require
-			attached a_context
+	rewrite (a_ast: EIFFEL_LIST [INSTRUCTION_AS])
+		local
+			l_path_initializer: ETR_AST_PATH_INITIALIZER
 		do
-			variable_context := a_context
-		end
+			last_ast := Void
 
-	annotation_factory: EXT_ANNOTATION_FACTORY
-			-- Annotation factory to create new typed annotation instances.		
+			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_ast, Current)) as l_rewritten_ast then
+					-- Assign path IDs to nodes.
+				create l_path_initializer
+				l_path_initializer.process_from_root (l_rewritten_ast)
+
+				last_ast := l_rewritten_ast
+			end
+		end
 
 feature {NONE} -- Implementation
 
@@ -89,11 +90,6 @@ feature {NONE} -- Implementation
 
 			if l_use_elsif_list and l_used_elseifs = 1 and then not l_use_branch_true and not l_use_branch_false then
 				process_if_as_only_retaining_one_elsif_branch (l_as)
-				l_done := True
-			end
-
-			if not l_use_elsif_list and not l_use_branch_true and not l_use_branch_false and l_use_cond then
-				process_if_as_only_condition_used (l_as)
 				l_done := True
 			end
 
@@ -162,21 +158,6 @@ feature {NONE} -- Helpers
 			end
 
 			output.append_string (ti_End_keyword+ti_New_line)
-		end
-
-	process_if_as_only_condition_used (a_as: IF_AS)
-			-- Creates an `{EXT_ANN_HOLE}' instead of the empty 'if' statement.
-		do
-			output.append_string (create_annotation_hole (a_as).out)
-			output.append_string (ti_New_line)
-		end
-
-feature {NONE} -- Annotation Handling
-
-	create_annotation_hole (a_ast: AST_EIFFEL): EXT_ANNOTATION
-			-- Create a new `{EXT_ANN_HOLE}' with metadata.
-		do
-			Result := annotation_factory.new_ann_hole (collect_mentions_set (a_ast, variable_context), Void)
 		end
 
 end

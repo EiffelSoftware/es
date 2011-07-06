@@ -1,17 +1,76 @@
 note
-	description: "Helper functions for creating annotationss."
+	description: "Class to extract annotations based the usage of interface variables."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EXT_ANN_UTILITY
+	EXT_MENTION_ANNOTATION_EXTRACTOR
 
 inherit
+	EXT_ANNOTATION_EXTRACTOR [EXT_MENTION_ANNOTATION]
+		redefine
+			extract_from_ast
+		end
+
 	REFACTORING_HELPER
 
-feature {NONE} -- Annotation Handling
+create
+	make_from_variable_context
 
-	collect_mentions_set (a_ast: AST_EIFFEL; a_context: EXT_VARIABLE_CONTEXT): LINKED_SET [STRING]
+feature {NONE} -- Initialization
+
+	make_from_variable_context (a_variable_context: EXT_VARIABLE_CONTEXT)
+			-- Initialize with `a_variable_context'.		
+		do
+			variable_context := a_variable_context
+		end
+
+feature -- Access
+
+	is_conditional: BOOLEAN
+		assign set_conditional
+			-- States if `last_annotations' occure conditionally or mandatory.	
+
+	set_conditional (a_conditional: BOOLEAN)
+			-- Sets `is_conditional'.
+		do
+			is_conditional := a_conditional
+		end
+
+feature -- Basic operations
+
+	extract_from_ast (a_ast: AST_EIFFEL)
+			-- Extract annotations from `a_snippet' and
+			-- make results available in `last_annotations'.
+		local
+			l_annotation: EXT_MENTION_ANNOTATION
+		do
+			create last_annotations.make
+			last_annotations.compare_objects
+
+			if attached collect_mention_expressions (a_ast) as l_mention_set then
+				across
+					l_mention_set as l_cursor
+				loop
+					create l_annotation.make_with_arguments (l_cursor.item, is_conditional)
+					last_annotations.force (l_annotation)
+				end
+			end
+		end
+
+	extract_from_snippet (a_snippet: EXT_SNIPPET)
+			-- Extract annotations from `a_snippet' and
+			-- make results available in `last_annotations'.
+		do
+			extract_from_ast (a_snippet.ast)
+		end
+
+feature {NONE} -- Implementation
+
+	variable_context: EXT_VARIABLE_CONTEXT
+			-- Contextual information about relevant variables.
+
+	collect_mention_expressions (a_ast: AST_EIFFEL): LINKED_SET [STRING]
 			-- Collect 'identifier' and 'identifier.feature_call' string representation of variables of interest used in `a_ast'.
 		local
 			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
@@ -27,7 +86,7 @@ feature {NONE} -- Annotation Handling
 						if a_variable_context.is_variable_of_interest (l_as.access_name_8) then
 							a_variable_usage.force (l_as.access_name_8)
 						end
-					end (?, a_context, Result)
+					end (?, variable_context, Result)
 				)
 			l_identifier_usage_finder.set_on_access_identifier_with_feature_call (
 				agent (l_as: NESTED_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_variable_usage: LINKED_SET [STRING])
@@ -39,7 +98,7 @@ feature {NONE} -- Annotation Handling
 								a_variable_usage.force (l_as.target.access_name_8)
 							end
 						end
-					end (?, a_context, Result)
+					end (?, variable_context, Result)
 				)
 
 			a_ast.process (l_identifier_usage_finder)

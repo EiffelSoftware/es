@@ -1,10 +1,10 @@
 note
-	description: "Iterator to mark information relevant AST nodes for further snippet extraction."
+	description: "Iterator to generally extract holes from an AST."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EXT_AST_HOLE_MARKER
+	EXT_AST_GENERAL_HOLE_EXTRACTOR
 
 inherit
 	AST_ITERATOR
@@ -19,53 +19,44 @@ inherit
 			process_parameter_list_as
 		end
 
-	EPA_UTILITY
+	EXT_HOLE_EXTRACTOR
 
-	EXT_ANN_UTILITY
+	EXT_HOLE_FACTORY_AWARE
+
+	EXT_VARIABLE_CONTEXT_AWARE
 
 	EXT_AST_UTILITY
+
+	EPA_UTILITY
 
 	REFACTORING_HELPER
 
 create
-	make
+	make_with_factory
 
 feature {NONE} -- Initialization
 
-	make
-			-- Default initialization.
-		do
-			create annotation_factory.make
-		end
-
-feature -- Configuration
-
-	variable_context: EXT_VARIABLE_CONTEXT
-		assign set_variable_context
-			-- Contextual information about relevant variables.
-
-	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
-			-- Sets `variable_context' to `a_context'	
+	make_with_factory (a_factory: EXT_HOLE_FACTORY)
+			-- Make with `a_factory'.
 		require
-			attached a_context
+			attached a_factory
 		do
-			variable_context := a_context
+			hole_factory := a_factory
 		end
 
-	annotation_context: EXT_ANNOTATION_CONTEXT
-		assign set_annotation_context
-			-- Contextual information about relevant variables.
+feature -- Basic operations
 
-	set_annotation_context (a_context: EXT_ANNOTATION_CONTEXT)
-			-- Sets `annotation_context' to `a_context'	
-		require
-			attached a_context
+	extract (a_ast: AST_EIFFEL)
+			-- Extract annotations from `a_ast' and
+			-- make results available in `last_holes' and
+			-- make transformed AST available in `last_ast'.
 		do
-			annotation_context := a_context
-		end
+				-- Freshly initialize variables holding the output of the run.
+			initialize_hole_context
 
-	annotation_factory: EXT_ANNOTATION_FACTORY
-			-- Annotation factory to create new typed annotation instances.
+				-- Process and rewrite AST to output while collecting holes.
+			a_ast.process (Current)
+		end
 
 feature {NONE} -- Implementation
 
@@ -78,7 +69,7 @@ feature {NONE} -- Implementation
 				processing_expr (l_as.source)
 			elseif is_ast_eiffel_using_variable_of_interest (l_as.source, variable_context) then
 					-- make hole: only source expression uses variable of interest
-				annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+				add_hole (create_hole (l_as), l_as.path)
 			end
 		end
 
@@ -114,7 +105,7 @@ feature {NONE} -- Implementation
 				if is_not_chaining_nested_as (l_call_as) then
 					processing_call (l_as, l_call_as.target, l_call_as.message)
 				else
-					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+					add_hole (create_hole (l_as), l_as.path)
 				end
 			elseif attached {ACCESS_AS} l_as.call as l_call_as then
 				processing_call (l_as, l_call_as, Void)
@@ -145,10 +136,10 @@ feature {NONE} -- Implementation
 
 				if not is_ast_eiffel_using_variable_of_interest (l_as.expression, variable_context) then
 						-- make hole: object test not refering to target variable.
-					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+					add_hole (create_hole (l_as), l_as.path)
 				elseif not is_expr_as_clean (l_as.expression, variable_context) then
 						-- make hole: expression to complex
-					annotation_context.add_annotation (l_as.expression.path, create_annotation_hole (l_as.expression))
+					add_hole (create_hole (l_as.expression), l_as.expression.path)
 				end
 			end
 		end
@@ -179,14 +170,14 @@ feature {NONE} -- Implementation (Helper)
 						-- check call arguments
 					if is_ast_eiffel_using_variable_of_interest (l_call_as, variable_context) then
 							-- make hole: variables of interest used in call
-						annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+						add_hole (create_hole (l_as), l_as.path)
 					end
 
 					-- class feature call
 				elseif attached {ACCESS_FEAT_AS} l_target_as as l_access_feat_as then
 					if attached l_access_feat_as.internal_parameters as l_internal_parameter then
 							-- make hole: variables of interest used in call
-						annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+						add_hole (create_hole (l_as), l_as.path)
 					end
 				end
 			end
@@ -202,7 +193,7 @@ feature {NONE} -- Implementation (Helper)
 			else
 					-- make hole: variables of interest used in call
 				fixme ("Processing argument list.")
-				annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+				add_hole (create_hole (l_as), l_as.path)
 			end
 		end
 
@@ -216,17 +207,26 @@ feature {NONE} -- Implementation (Helper)
 			else
 				if not is_expr_as_clean (l_as, variable_context) then
 						-- make hole: expression to complex to keep unchanged.
-					annotation_context.add_annotation (l_as.path, create_annotation_hole (l_as))
+					add_hole (create_hole (l_as), l_as.path)
 				end
 			end
 		end
 
-feature {NONE} -- Annotation Handling
+feature {NONE} -- Hole Handling
 
-	create_annotation_hole (a_ast: AST_EIFFEL): EXT_ANNOTATION
-			-- Create a new `{EXT_ANN_HOLE}' with metadata.
+	create_hole (a_ast: AST_EIFFEL): EXT_HOLE
+			-- Create a new `{EXT_HOLE}' with metadata.
+		local
+			l_annotation_set: LINKED_SET [EXT_MENTION_ANNOTATION]
+			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
-			Result := annotation_factory.new_ann_hole (collect_mentions_set (a_ast, variable_context), Void)
+			create l_annotation_extractor.make_from_variable_context (variable_context)
+			l_annotation_extractor.extract_from_ast (a_ast)
+
+			create l_annotation_set.make
+			l_annotation_extractor.last_annotations.do_all (agent l_annotation_set.force)
+
+			Result := hole_factory.new_hole (l_annotation_set)
 		end
 
 end

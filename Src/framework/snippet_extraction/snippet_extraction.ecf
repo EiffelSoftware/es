@@ -66,6 +66,9 @@
 			<file_rule>
 				<exclude>^/test$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/experimental/shared$</exclude>
+			</file_rule>
 		</cluster>
 	</target>
 </system>

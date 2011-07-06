@@ -8,7 +8,7 @@ deferred class
 
 feature -- Access
 
-	last_snippet: EXT_SNIPPET
+	last_snippet: detachable EXT_SNIPPET
 			-- Snippet read by last `read'
 		deferred
 		end

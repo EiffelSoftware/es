@@ -71,13 +71,11 @@ feature {NONE} -- Implementation
 
 				-- Store snippets, if any where extracted.
 			if attached l_extractor.last_snippets as l_snippets and then not l_snippets.is_empty then
-				debug write_snippets_to_file (l_snippets, l_origin) end
-
-				to_implement ("Store snippets in Object/Transition/Snippet database.")
+				write_snippets_to_file (l_snippets, l_origin)
 				to_implement ("Store snippets in serialized XML format.")
 
 				create l_ann_extractor
-				l_snippets.do_all (agent l_ann_extractor.extract)
+				l_snippets.do_all (agent l_ann_extractor.extract_from_snippet)
 			end
 		end
 
@@ -215,11 +213,13 @@ feature {NONE} -- Output
 						l_snippet_writer.write_to_file (l_cursor.item, l_bin_file_path)
 					end
 
-					if attached l_file_path.twin as l_txt_file_path then
-						l_txt_file_path.add_extension ("TXT")
+					debug
+						if attached l_file_path.twin as l_txt_file_path then
+							l_txt_file_path.add_extension ("TXT")
 
-						create {EXT_TEXTUAL_SNIPPET_WRITER} l_snippet_writer
-						l_snippet_writer.write_to_file (l_cursor.item, l_txt_file_path)
+							create {EXT_TEXTUAL_SNIPPET_WRITER} l_snippet_writer
+							l_snippet_writer.write_to_file (l_cursor.item, l_txt_file_path)
+						end
 					end
 				end
 			end

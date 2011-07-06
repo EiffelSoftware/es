@@ -76,7 +76,7 @@ feature -- Access
 			-- Keys are variable names (in lower case), values are types of those
 			-- variables.
 
-	holes: HASH_TABLE [EXT_ANN_HOLE, STRING]
+	holes: HASH_TABLE [EXT_HOLE, STRING]
 			-- Set of holes in current snippet
 			-- Keys are names of holes, values are the holes.
 

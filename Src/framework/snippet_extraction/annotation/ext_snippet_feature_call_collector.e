@@ -1,6 +1,5 @@
 note
 	description: "Class to collect feature calls from a snippet"
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
