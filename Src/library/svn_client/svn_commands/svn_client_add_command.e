@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_ADD_COMMAND}."
+	description: "Object that puts files and folders under version control."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

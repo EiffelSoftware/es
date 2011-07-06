@@ -1,5 +1,9 @@
 note
-	description: "Summary description for {SVN_CLIENT_MERGE_COMMAND}."
+	description: "[
+					Object that applies the differences between two sources to a working copy path.
+					The two sources are represented by `source' and `target' paths (or URLs), while
+					the working copy path is the path set in the SVN client object. 
+					]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +14,8 @@ class
 inherit
 	SVN_CLIENT_COMMAND
 		redefine
-			make
+			make,
+			execute
 		end
 
 create
@@ -22,6 +27,24 @@ feature {NONE} -- Initialization
 		do
 			Precursor (a_svn_client)
 			create source.make_from_string (".")
+		end
+
+feature -- Execute
+
+	execute
+		-- Perform command for target `target' and options `options'
+		local
+			l_args: LINKED_LIST[STRING_8]
+		do
+			initialize_last_result
+
+			create l_args.make
+			l_args.extend (command_name)
+			l_args.extend (source)
+			l_args.extend (target)
+			l_args.append (options_to_args)
+
+			launch_process (l_args)
 		end
 
 feature -- Element change

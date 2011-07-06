@@ -1,5 +1,16 @@
 note
-	description: "Summary description for {SVN_CLIENT_COMMAND}."
+	description: "[
+					Abstract object that defines a Subversion command.
+					
+					--- Execution ---
+					When you have set the target, passed all optional parameters via the `put_option' feature and possibly
+					set the callbacks for the data received, error and command completion events, you can perform the command
+					by calling the `execute' feature.
+					
+					--- Optional values ---
+					You can add options to a command by passing as argument a key-value pair to the `put_option'. The value is
+					replaced if the option had already been set before.
+					]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -22,17 +33,11 @@ feature {NONE} -- Initialization
 feature -- Execute
 
 	execute
+		-- Perform command for target `target' and options `options'
 		local
 			l_args: LINKED_LIST[STRING_8]
 		do
-				-- Clear last result and internal last result
-			set_last_result (Void)
-			set_internal_last_result (Void)
-			set_last_error (Void)
-			set_internal_last_error (Void)
-				-- Initialize internal last result
-			create internal_last_result.make_empty
-			create internal_last_error.make_empty
+			initialize_last_result
 
 			create l_args.make
 			l_args.extend (command_name)
@@ -194,6 +199,18 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			all_options_included: options.count * 2 = Result.count
+		end
+
+	initialize_last_result
+		do
+				-- Clear last result and internal last result
+			set_last_result (Void)
+			set_internal_last_result (Void)
+			set_last_error (Void)
+			set_internal_last_error (Void)
+				-- Initialize internal last result
+			create internal_last_result.make_empty
+			create internal_last_error.make_empty
 		end
 
 	set_internal_last_result (a_result: detachable like internal_last_result)

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_UPDATE_COMMAND}."
+	description: "Object that brings changes from the repository into the working copy."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,7 +17,7 @@ feature {NONE} -- Result parsing
 
 	parse_result (a_svn_parser: SVN_PARSER)
 		do
-			
+
 		end
 
 feature {NONE} -- Implementation

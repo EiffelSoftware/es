@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_DELETE_COMMAND}."
+	description: "Object that removes files and directories from version control."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

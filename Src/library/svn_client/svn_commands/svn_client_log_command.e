@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_LOG_COMMAND}."
+	description: "Object that shows the log messages for a set of revision(s) and/or file(s)."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

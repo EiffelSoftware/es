@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_STATUS_COMMAND}."
+	description: "Object that shows the status of working copy files and directories."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -28,7 +28,7 @@ feature -- Execute
 feature -- Access
 
 	last_status: detachable SVN_CLIENT_FOLDER
-		-- Last svn status for current `working_path'
+		-- Last svn status for target `target' at working path `working_path'
 
 feature {NONE} -- Result parsing
 

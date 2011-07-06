@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_CHECKOUT_COMMAND}."
+	description: "Object that checks out a working copy from a repository."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

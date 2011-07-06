@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_LIST_COMMAND}."
+	description: "Object that lists directory entries in the repository."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -19,7 +19,7 @@ create
 feature -- Access
 
 	last_list: detachable SVN_CLIENT_FOLDER
-		-- Return last result for svn list command
+		-- Return last result for svn list command in a tree hierarchy structure
 
 feature {NONE} -- Result parsing
 

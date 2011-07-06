@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SVN_CLIENT_COMMIT_COMMAND}."
+	description: "Object that sends changes from the working copy to the repository."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
