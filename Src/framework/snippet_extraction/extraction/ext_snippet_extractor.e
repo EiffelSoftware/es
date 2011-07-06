@@ -284,7 +284,6 @@ feature {NONE} -- Implementation
 			attached a_variable_name
 		local
 			l_snippet: EXT_SNIPPET
-			l_snippet_operands: HASH_TABLE [STRING, STRING]
 			l_compound_as: like a_compound_as
 			l_hole_factory: EXT_HOLE_FACTORY
 			l_holes: HASH_TABLE [EXT_HOLE, STRING]
@@ -320,19 +319,11 @@ feature {NONE} -- Implementation
 			log_ast_text (l_compound_as)
 
 			if not l_compound_as.is_empty then
-				fixme ("Clean-up snippet object creation.")
-				create l_snippet_operands.make (5)
-				l_snippet_operands.compare_objects
-				across variable_context.target_variables    as c loop l_snippet_operands.force (c.item, c.key) end
-				across variable_context.interface_variables as c loop l_snippet_operands.force (c.item, c.key) end
-
 				create l_snippet.make (
 					text_from_ast (l_compound_as),
-					l_snippet_operands,
+					variable_context,
 					l_holes,
 					origin)
-
-				l_snippet.set_variable_context (variable_context)
 				l_snippet.set_content_original (text_from_ast (a_compound_as))
 
 				snippet_decider.decide_on_snippet (l_snippet)
