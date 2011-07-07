@@ -9,7 +9,7 @@ class
 inherit
 	EXT_SHARED_LOGGER
 
-	EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+	EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		redefine
 			process_elseif_as,
 			process_if_as,
@@ -297,7 +297,7 @@ feature {NONE} -- Callbacks
 
 feature {NONE} -- Control Flow Structures
 
-	expr_variable_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+	expr_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		-- Callback iterator to track variable usage in control flow statement expressions.	
 
 	process_if_as (l_as: IF_AS)

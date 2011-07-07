@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+	EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 
 inherit
 	AST_ITERATOR
@@ -34,7 +34,6 @@ feature -- Access
 		do
 			is_mode_disjoint := a_disjoint
 		end
-
 
 	on_access_identifier: ROUTINE [ANY, TUPLE [a_as: ACCESS_AS]]
 		assign set_on_access_identifier
@@ -89,8 +88,8 @@ feature {NONE} -- Access Recording
 			else
 				if
 					not attached {ACCESS_ID_AS} l_as.target and
-					not attached {RESULT_AS} l_as.target and
-					not attached {CURRENT_AS} l_as.target
+					not attached {RESULT_AS} 	l_as.target and
+					not attached {CURRENT_AS} 	l_as.target
 				then
 					l_as.target.process (Current)
 				end

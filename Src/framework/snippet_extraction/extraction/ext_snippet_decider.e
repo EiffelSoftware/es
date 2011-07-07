@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 			-- Returns false for snippets with that have less than `a_min_bound' calls on target variables.
 		local
 			l_call_on_target_counter: COUNTER
-			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_identifier_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		do
 			if attached a_snippet.ast as l_compound_as then
 				create l_call_on_target_counter

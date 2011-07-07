@@ -15,7 +15,7 @@ feature {NONE} -- Helper
 			-- AST iterator processing `a_as' answering if a variable of interest is used in that AST.
 		local
 			l_variable_usage: LINKED_SET [STRING]
-			l_variable_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		do
 				-- Set up callback to track variable usage in arguments.
 			create l_variable_usage.make
@@ -40,7 +40,7 @@ feature {NONE} -- Helper
 			-- AST iterator processing `a_as' answering if a variable of interest is used in that AST.
 		local
 			l_variable_usage: LINKED_SET [STRING]
-			l_variable_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		do
 				-- Set up callback to track variable usage in arguments.
 			create l_variable_usage.make
@@ -65,7 +65,7 @@ feature {NONE} -- Helper
 			-- AST iterator processing `a_as' answering if that expression can stay as it is.
 		local
 			l_variable_usage: LINKED_SET [STRING]
-			l_variable_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 			l_ast_node_checker: EXT_AST_EIFFEL_NODE_CHECKER
 		do
 			fixme ("EXPERIMENTAL")

@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 	collect_mention_expressions (a_ast: AST_EIFFEL): LINKED_SET [STRING]
 			-- Collect 'identifier' and 'identifier.feature_call' string representation of variables of interest used in `a_ast'.
 		local
-			l_identifier_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_identifier_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		do
 			create Result.make
 			Result.compare_objects

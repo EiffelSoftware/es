@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 			-- Currently it is checking if the one of the target variables occur in the the AST. If yes, the expression is taken into account.
 		local
 			l_variable_usage: LINKED_SET [STRING]
-			l_variable_usage_finder: EXT_IDENTIFIER_USAGE_CALLBACK_SERVICE
+			l_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
 		do
 				-- Set up callback to track variable usage in arguments.
 			create l_variable_usage.make
