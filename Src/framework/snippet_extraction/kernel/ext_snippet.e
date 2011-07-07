@@ -74,6 +74,17 @@ feature -- Access
 			Result.merge (variable_context.interface_variables)
 		end
 
+	operand_names: ARRAYED_SET [STRING]
+			-- Set of operand names from `operands'
+			-- Note: create a new set every time.
+		do
+			create Result.make (operands.count)
+			Result.compare_objects
+			across operands as l_opds loop
+				Result.extend (l_opds.key)
+			end
+		end
+
 	holes: HASH_TABLE [EXT_HOLE, STRING]
 			-- Set of holes in current snippet
 			-- Keys are names of holes, values are the holes.
