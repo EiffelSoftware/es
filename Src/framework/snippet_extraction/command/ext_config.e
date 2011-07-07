@@ -20,6 +20,9 @@ feature {NONE} -- Initialization
 			a_system_not_void: attached a_system
 		do
 			eiffel_system := a_system
+
+			create {LINKED_LIST [STRING]} target_types.make
+			target_types.compare_objects
 		end
 
 feature -- Access
@@ -27,9 +30,9 @@ feature -- Access
 	eiffel_system: SYSTEM_I
 			-- Current system.
 
-	target_type: STRING
-		assign set_target_type
-			-- Target class type for extraction.
+	target_types: LIST [STRING]
+		assign set_target_types
+			-- Target class types for extraction.
 
 	class_name: detachable STRING
 		assign set_class_name
@@ -53,14 +56,12 @@ feature -- Access
 
 feature -- Setting
 
-	set_target_type (a_target_type: like target_type)
-			-- Set `target_type' with `a_target_type'.
+	set_target_types (a_target_types: like target_types)
+			-- Set `target_types' with `a_target_types'.
+		require
+			attached a_target_types
 		do
-			if a_target_type = Void then
-				target_type := Void
-			else
-				target_type := a_target_type.twin
-			end
+			target_types := a_target_types.twin
 		end
 
 	set_class_name (a_class_name: like class_name)

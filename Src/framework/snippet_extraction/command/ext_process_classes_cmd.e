@@ -42,14 +42,18 @@ feature -- Basic operations
 		local
             l_target_type: TYPE_A
 		do
-				-- Evaluate type information given in `config'.		
-			l_target_type := type_a_from_string (config.target_type, root_class_of_system)
-			check attached l_target_type end
+			across
+				config.target_types as l_type_name_cursor
+			loop
+					-- Evaluate type information given in `config'.		
+				l_target_type := type_a_from_string (l_type_name_cursor.item, root_class_of_system)
+				check attached l_target_type end
 
-				-- Calling snippet extraction for selected features of each selected class.
-			across select_classes_for_extraction as l_selected_classes loop
-				across select_features_for_extraction (l_selected_classes.item) as l_feature_set_cursor loop
-					process_feature (l_target_type, l_selected_classes.item, l_feature_set_cursor.item)
+					-- Calling snippet extraction for selected features of each selected class.
+				across select_classes_for_extraction as l_selected_classes loop
+					across select_features_for_extraction (l_selected_classes.item) as l_feature_set_cursor loop
+						process_feature (l_target_type, l_selected_classes.item, l_feature_set_cursor.item)
+					end
 				end
 			end
 		end

@@ -40,7 +40,7 @@ feature -- Basic operations
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 
-			l_target_type: AP_STRING_OPTION
+			l_target_types: AP_STRING_OPTION
 			l_group: AP_STRING_OPTION
 			l_class: AP_STRING_OPTION
 			l_feature: AP_STRING_OPTION
@@ -52,10 +52,10 @@ feature -- Basic operations
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_target_type.make_with_long_form ("target-type")
-			l_target_type.set_description ("Specify type name of the target class that usag is going to be mined.")
-			l_target_type.enable_mandatory
-			l_parser.options.force_last (l_target_type)
+			create l_target_types.make_with_long_form ("target-type")
+			l_target_types.set_description ("Specify a list of type names separated by ';' that are going to be mined.")
+			l_target_types.enable_mandatory
+			l_parser.options.force_last (l_target_types)
 
 			create l_group.make_with_long_form ("group")
 			l_group.set_description ("Specify name of a cluster or library to restrict analysis to group contained classes.")
@@ -79,8 +79,8 @@ feature -- Basic operations
 
 			l_parser.parse_list (l_args)
 
-			if l_target_type.was_found then
-				config.set_target_type (l_target_type.parameter)
+			if l_target_types.was_found then
+				config.set_target_types (l_target_types.parameter.split (';'))
 			end
 
 			if l_class.was_found then
