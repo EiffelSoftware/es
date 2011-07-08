@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	annotation_equality_tester: ANN_ANNOTATION_EQUALITY_TESTER
+	annotation_equality_tester: ANN_ANNOTATION_EQUALITY_TESTER [ANN_ANNOTATION]
 			-- Equality tester for annotations
 		once
 			create Result
