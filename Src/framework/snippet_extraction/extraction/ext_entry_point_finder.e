@@ -31,35 +31,33 @@ inherit
 	REFACTORING_HELPER
 
 create
-	make
+	make_from_arguments
 
 feature {NONE} -- Initialization
 
-	make
+	make_from_arguments (a_target_variables: HASH_TABLE [STRING, STRING])
 			-- Default initialization.
+		require
+			attached a_target_variables
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
 			create target_variable_usage_set.make
 			target_variable_usage_set.compare_objects
 
 			create ast_node_caching_table.make (10)
 			ast_node_caching_table.compare_objects
-		end
 
-feature -- Configuration
+			create l_variable_set.make_equal (10)
+			a_target_variables.current_keys.do_all (agent l_variable_set.put)
 
-	variable_context: EXT_VARIABLE_CONTEXT
-		assign set_variable_context
-			-- Contextual information about relevant variables.
-
-	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
-			-- Sets `variable_context' to `a_context'	
-		require
-			attached a_context
-		do
-			variable_context := a_context
+			create target_variable_usage_checker.make_from_variables (l_variable_set)
 		end
 
 feature -- Access
+
+	target_variable_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
 
 	last_entry_point: detachable EIFFEL_LIST [INSTRUCTION_AS]
 			-- Minimum sized compound covering all instructions that use the target variables.
@@ -193,21 +191,24 @@ feature {NONE} -- Implementation
 
 	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
 		do
-			if is_ast_eiffel_using_target_variable (a_as, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 		end
 
 	process_assign_as (a_as: ASSIGN_AS)
 		do
-			if is_ast_eiffel_using_target_variable (a_as, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 		end
 
 	process_creation_as (a_as: CREATION_AS)
 		do
-			if is_ast_eiffel_using_target_variable (a_as, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 		end
@@ -223,7 +224,8 @@ feature {NONE} -- Implementation
 	process_if_as (a_as: IF_AS)
 		do
 				-- Record `a_as' if and only if the condition mentions the target.
-			if is_ast_eiffel_using_target_variable (a_as.condition, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 			safe_process (a_as.compound)
@@ -234,7 +236,8 @@ feature {NONE} -- Implementation
 	process_inspect_as (a_as: INSPECT_AS)
 		do
 				-- Record `a_as' if and only if the switch mentions the target.			
-			if is_ast_eiffel_using_target_variable (a_as.switch, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 			safe_process (a_as.case_list)
@@ -244,22 +247,31 @@ feature {NONE} -- Implementation
 	process_instr_call_as (a_as: INSTR_CALL_AS)
 		do
 			fixme ("Consider calls on `Current'.")
-
-			if is_ast_eiffel_using_target_variable (a_as, variable_context) then
+			target_variable_usage_checker.check_ast (a_as)
+			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
 		end
 
 	process_loop_as (a_as: LOOP_AS)
+		local
+			l_record: BOOLEAN
 		do
 			fixme ("Simplified model not considering `across' loops.")
 
 				-- Record `a_as' if and only if either
 				-- the initialization or the condition mentions the target.
-			if
-				attached a_as.from_part and is_ast_eiffel_using_target_variable (a_as.from_part, variable_context) or
-				attached a_as.stop      and is_ast_eiffel_using_target_variable (a_as.stop, variable_context)
-			then
+			l_record := False
+			if attached a_as.from_part as l_as then
+				target_variable_usage_checker.check_ast (a_as.from_part)
+				l_record := l_record or target_variable_usage_checker.passed_check
+			end
+			if attached a_as.stop as l_as then
+				target_variable_usage_checker.check_ast (a_as.from_part)
+				l_record := l_record or target_variable_usage_checker.passed_check
+			end
+
+			if l_record then
 				target_variable_usage_set.put (a_as.path)
 			end
 			safe_process (a_as.compound)
@@ -268,5 +280,6 @@ feature {NONE} -- Implementation
 invariant
 	attached ast_node_caching_table
 	attached target_variable_usage_set
+	attached target_variable_usage_checker
 
 end

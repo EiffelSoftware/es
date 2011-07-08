@@ -12,6 +12,8 @@ inherit
 			extract_from_ast
 		end
 
+	EXT_SHARED_EQUALITY_TESTERS
+
 	REFACTORING_HELPER
 
 create
@@ -45,8 +47,8 @@ feature -- Basic operations
 		local
 			l_annotation: EXT_MENTION_ANNOTATION
 		do
-			create last_annotations.make
-			last_annotations.compare_objects
+			create last_annotations.make_equal (10)
+			last_annotations.set_equality_tester (mention_annotation_equality_tester)
 
 			if attached collect_mention_expressions (a_ast) as l_mention_set then
 				across

@@ -42,6 +42,7 @@ feature -- Basic operations
 
 			l_target_types: AP_STRING_OPTION
 			l_group: AP_STRING_OPTION
+			l_namespace: AP_STRING_OPTION
 			l_class: AP_STRING_OPTION
 			l_feature: AP_STRING_OPTION
 			l_output: AP_STRING_OPTION
@@ -60,6 +61,10 @@ feature -- Basic operations
 			create l_group.make_with_long_form ("group")
 			l_group.set_description ("Specify name of a cluster or library to restrict analysis to group contained classes.")
 			l_parser.options.force_last (l_group)
+
+			create l_namespace.make_with_long_form ("namespace")
+			l_namespace.set_description ("Identifier where the snippets come from, i.e. project name.")
+			l_parser.options.force_last (l_namespace)
 
 			create l_class.make_with_long_form ("class")
 			l_class.set_description ("Specify name of the class to analyze.")
@@ -81,6 +86,10 @@ feature -- Basic operations
 
 			if l_target_types.was_found then
 				config.set_target_types (l_target_types.parameter.split (';'))
+			end
+
+			if l_namespace.was_found then
+				config.set_namespace (l_namespace.parameter)
 			end
 
 			if l_class.was_found then

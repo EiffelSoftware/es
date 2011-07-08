@@ -9,7 +9,6 @@ class
 inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
-			make_with_output,
 			process_if_as
 		end
 
@@ -22,14 +21,22 @@ inherit
 	EPA_UTILITY
 
 create
-	make_with_output
+	make_with_arguments
 
 feature {NONE} -- Creation
 
-	make_with_output (a_output: like output)
-			-- Make with `a_output'.
+	make_with_arguments (a_output: like output; a_variable_context: like variable_context)
+			-- Initialize with essential arguments.
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
-			Precursor (a_output)
+			make_with_output (a_output)
+			variable_context := a_variable_context
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
 		end
 
 feature -- Basic Operations
@@ -51,6 +58,11 @@ feature -- Basic Operations
 
 feature {NONE} -- Implementation
 
+	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
+
+feature {NONE} -- Implementation
+
 	process_if_as (l_as: IF_AS)
 		local
 			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
@@ -58,18 +70,21 @@ feature {NONE} -- Implementation
 			l_done: BOOLEAN
 		do
 				-- Scan expression.
-			l_use_cond := is_ast_eiffel_using_variable_of_interest (l_as.condition, variable_context)
+			variable_of_interest_usage_checker.check_ast (l_as.condition)
+			l_use_cond := variable_of_interest_usage_checker.passed_check
 
 				-- Scan true branch
 			if attached l_as.compound then
-				l_use_branch_true := is_ast_eiffel_using_variable_of_interest (l_as.compound, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_as.compound)
+				l_use_branch_true := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Scan elseif list
 			if attached l_as.elsif_list then
 					-- process all individual `{ELSIF_AS}' from list
 				across l_as.elsif_list as l_elsif_list loop
-					if is_ast_eiffel_using_variable_of_interest (l_elsif_list.item, variable_context) then
+					variable_of_interest_usage_checker.check_ast (l_elsif_list.item)
+					if variable_of_interest_usage_checker.passed_check then
 							-- mark that at least one elseif has to be retained
 						l_use_elsif_list := True
 						l_used_elseifs := l_used_elseifs + 1
@@ -79,7 +94,8 @@ feature {NONE} -- Implementation
 
 				-- Scan false branch
 			if attached l_as.else_part then
-				l_use_branch_false := is_ast_eiffel_using_variable_of_interest (l_as.else_part, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_as.else_part)
+				l_use_branch_false := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Decide on processing.

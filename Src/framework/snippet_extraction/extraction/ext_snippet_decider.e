@@ -7,8 +7,6 @@ class
 	EXT_SNIPPET_DECIDER
 
 inherit
-	EXT_CHECKER
-
 	REFACTORING_HELPER
 		export {NONE} all end
 

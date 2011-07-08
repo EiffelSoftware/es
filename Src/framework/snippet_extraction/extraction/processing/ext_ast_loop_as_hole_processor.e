@@ -8,6 +8,8 @@ class
 
 inherit
 	ETR_AST_STRUCTURE_PRINTER
+		export
+			{NONE} all
 		redefine
 			process_loop_as
 		end
@@ -27,11 +29,19 @@ create
 
 feature {NONE} -- Creation
 
-	make_with_arguments (a_output: like output; a_factory: like hole_factory)
+	make_with_arguments (a_output: like output; a_variable_context: like variable_context; a_factory: like hole_factory)
 			-- Make with `a_output'.
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
 			make_with_output (a_output)
+			variable_context := a_variable_context
 			hole_factory := a_factory
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
 		end
 
 feature -- Basic operations
@@ -65,6 +75,9 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
+
 	process_loop_as (l_as: LOOP_AS)
 		local
 			l_done: BOOLEAN
@@ -73,11 +86,13 @@ feature {NONE} -- Implementation
 				-- l_as.iteration not handled.
 
 			if attached l_as.from_part as l_from_part_as then
-				l_use_from_part := is_ast_eiffel_using_variable_of_interest (l_from_part_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_from_part_as)
+				l_use_from_part := variable_of_interest_usage_checker.passed_check
 			end
 
 			if attached l_as.stop as l_stop_as then
-				l_use_stop := is_ast_eiffel_using_variable_of_interest (l_stop_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_stop_as)
+				l_use_stop := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- l_as.invariant not handled.
@@ -85,7 +100,8 @@ feature {NONE} -- Implementation
 				-- l_as.variant_part not handled.
 
 			if attached l_as.compound as l_compound_as then
-				l_use_compound := is_ast_eiffel_using_variable_of_interest (l_compound_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_compound_as)
+				l_use_compound := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Decide on processing.
@@ -162,17 +178,13 @@ feature {NONE} -- Annotation Handling
 	create_hole (a_ast: AST_EIFFEL; a_conditionally: BOOLEAN): EXT_HOLE
 			-- Create a new `{EXT_ANN_HOLE}' with metadata.
 		local
-			l_annotation_set: LINKED_SET [EXT_MENTION_ANNOTATION]
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.set_conditional (a_conditionally)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
-			create l_annotation_set.make
-			l_annotation_extractor.last_annotations.do_all (agent l_annotation_set.force)
-
-			Result := hole_factory.new_hole (l_annotation_set)
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
 		end
 
 end

@@ -113,9 +113,9 @@ feature -- Basic operations
 				log.put_string ("[Finished extraction]")
 				log.put_string ("%N%N%N")
 			end
-		rescue
-			l_retried := True
-			retry
+--		rescue
+--			l_retried := True
+--			retry
 		end
 
 feature {NONE} -- Implementation
@@ -191,7 +191,20 @@ feature {NONE} -- Implementation
 			Result.compare_objects
 
 				-- Collect all possible candidate variables.
---			operand_name_types_with_feature (feature_, context_class).do_all_with_key (agent Result.force)
+			if attached operand_name_types_with_feature (feature_, context_class) as l_operands then
+				if l_operands.has ("Result") and then attached l_operands.at ("Result").name as l_result_type_name then
+					Result.force (l_result_type_name, "Result")
+				end
+
+--				from
+--					l_operands.start
+--				until
+--					l_operands.after
+--				loop
+--					Result.force (l_operands.item_for_iteration.name, l_operands.key_for_iteration)
+--					l_operands.forth
+--				end
+			end
 			across locals_from_feature_as (feature_.e_feature.ast, context_class) as l_locals loop
 				Result.force (l_locals.item.name, l_locals.key)
 			end
@@ -313,6 +326,10 @@ feature {NONE} -- Implementation
 
 			l_compound_as := perform_ast_if_as_hole_step   (l_compound_as, l_holes, l_hole_factory)
 			l_compound_as := perform_ast_loop_as_hole_step (l_compound_as, l_holes, l_hole_factory)
+
+			log.put_string ("%N")
+			log_ast_text (l_compound_as)
+
 			l_compound_as := perform_ast_general_hole_step (l_compound_as, l_holes, l_hole_factory)
 
 			log.put_string ("%N")
@@ -345,15 +362,12 @@ feature {NONE} -- Implementation
 			l_variable_context: EXT_VARIABLE_CONTEXT
 			l_entry_point_finder: EXT_ENTRY_POINT_FINDER
 		do
-				-- Create temporary variable context.
+				-- Create temporary structures.
 			create l_target_variable_table.make (1)
 			l_target_variable_table.compare_objects
 			l_target_variable_table.force (a_variable_type, a_variable_name)
-			create l_variable_context.make
-			l_variable_context.set_target_variables (l_target_variable_table)
 
-			create l_entry_point_finder.make
-			l_entry_point_finder.set_variable_context (l_variable_context)
+			create l_entry_point_finder.make_from_arguments (l_target_variable_table)
 			a_compound_as.process (l_entry_point_finder)
 
 			if attached l_entry_point_finder.last_entry_point as l_entry_point then
@@ -374,8 +388,7 @@ feature {NONE} -- Implementation
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
 		do
 				-- Associate statements with holes.
-			create l_ast_hole_extractor.make_with_factory (a_factory)
-			l_ast_hole_extractor.set_variable_context (variable_context)
+			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
 			l_ast_hole_extractor.extract (a_compound_as)
 
 				-- Rewrite statements associated with holes.
@@ -393,8 +406,7 @@ feature {NONE} -- Implementation
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
 		do
 				-- Associate statements with holes.
-			create l_ast_hole_extractor.make_with_factory (a_factory)
-			l_ast_hole_extractor.set_variable_context (variable_context)
+			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
 			l_ast_hole_extractor.extract (a_compound_as)
 
 				-- Rewrite statements associated with holes.
@@ -410,8 +422,7 @@ feature {NONE} -- Implementation
 		local
 			l_ast_processor: EXT_AST_LOOP_AS_HOLE_PROCESSOR
 		do
-			create l_ast_processor.make_with_arguments (ast_printer_output, a_factory)
-			l_ast_processor.set_variable_context (variable_context)
+			create l_ast_processor.make_with_arguments (ast_printer_output, variable_context, a_factory)
 
 				-- Process AST.
 			l_ast_processor.extract (a_compound_as)
@@ -427,8 +438,7 @@ feature {NONE} -- Implementation
 			l_ast_rewriter: EXT_AST_PRUNE_REWRITER
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
 		do
-			create l_ast_rewriter.make_with_output (ast_printer_output)
-			l_ast_rewriter.set_variable_context (variable_context)
+			create l_ast_rewriter.make_with_arguments (ast_printer_output, variable_context)
 
 			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_compound_as, l_ast_rewriter)) as l_rewritten_compound_as then
 				Result := l_rewritten_compound_as
@@ -446,8 +456,7 @@ feature {NONE} -- Implementation
 			l_ast_rewriter: EXT_AST_IF_AS_REWRITER
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
 		do
-			create l_ast_rewriter.make_with_output (ast_printer_output)
-			l_ast_rewriter.set_variable_context (variable_context)
+			create l_ast_rewriter.make_with_arguments (ast_printer_output, variable_context)
 
 			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_compound_as, l_ast_rewriter)) as l_rewritten_compound_as then
 				Result := l_rewritten_compound_as

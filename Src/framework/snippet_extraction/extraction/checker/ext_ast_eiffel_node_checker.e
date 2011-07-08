@@ -196,6 +196,16 @@ feature {NONE} -- Initialization
 			passed_check := True
 		end
 
+feature -- Basic Operations
+
+	check_ast (a_ast: AST_EIFFEL)
+			-- Checks if `a_ast' conforms to the specified checks and
+			-- and makes the result of the check available in `passed_check'.
+		do
+			passed_check := True
+			a_ast.process (Current)
+		end
+
 feature -- Access
 
 	passed_check: BOOLEAN

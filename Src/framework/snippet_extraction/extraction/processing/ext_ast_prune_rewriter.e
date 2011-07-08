@@ -9,7 +9,6 @@ class
 inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
-			make_with_output,
 				-- List of instructions
 			process_assigner_call_as,
 			process_assign_as,
@@ -27,34 +26,33 @@ inherit
 			process_case_as
 		end
 
-	EXT_AST_UTILITY
+	EXT_VARIABLE_CONTEXT_AWARE
 
 	REFACTORING_HELPER
 
 create
-	make_with_output
+	make_with_arguments
 
 feature {NONE} -- Creation
 
-	make_with_output (a_output: like output)
-			-- Make with `a_output'..
+	make_with_arguments (a_output: like output; a_variable_context: like variable_context)
+			-- Initialize with essential arguments.
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
-			Precursor (a_output)
+			make_with_output (a_output)
+			variable_context := a_variable_context
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
 		end
 
-feature -- Configuration
+feature {NONE} -- Implementation
 
-	variable_context: EXT_VARIABLE_CONTEXT
-		assign set_variable_context
-			-- Contextual information about relevant variables.
-
-	set_variable_context (a_context: EXT_VARIABLE_CONTEXT)
-			-- Sets `variable_context' to `a_context'	
-		require
-			attached a_context
-		do
-			variable_context := a_context
-		end
+	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
 
 feature {NONE} -- Unconditional Pruning
 
@@ -72,14 +70,16 @@ feature {NONE} -- Conditional Pruning
 
 	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
 
 	process_assign_as (a_as: ASSIGN_AS)
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
@@ -87,21 +87,24 @@ feature {NONE} -- Conditional Pruning
 	process_reverse_as (a_as: REVERSE_AS)
 		do
 			fixme ("Gather details about {REVERSE_AS} assignments.")
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
 
 	process_creation_as (a_as: CREATION_AS)
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
 
 	process_case_as (a_as: CASE_AS)
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
@@ -112,11 +115,13 @@ feature {NONE} -- Conditional Pruning
 			l_elsif_list: EIFFEL_LIST [ELSIF_AS]
 		do
 				-- Scan expression for variable usage.
-			l_use_cond := is_ast_eiffel_using_variable_of_interest (a_as.condition, variable_context)
+			variable_of_interest_usage_checker.check_ast (a_as.condition)
+			l_use_cond := variable_of_interest_usage_checker.passed_check
 
 				-- Scan true branch
 			if attached a_as.compound then
-				l_use_branch_true := is_ast_eiffel_using_variable_of_interest (a_as.compound, variable_context)
+				variable_of_interest_usage_checker.check_ast (a_as.compound)
+				l_use_branch_true := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Scan elseif list
@@ -127,7 +132,8 @@ feature {NONE} -- Conditional Pruning
 					-- yet; this is because the list of expressions used before is
 					-- necessary for simplifying the 'if' statement.
 				across a_as.elsif_list.new_cursor.reversed as l_cursor loop
-					if l_use_elsif_list or is_ast_eiffel_using_variable_of_interest (l_cursor.item, variable_context) then
+					variable_of_interest_usage_checker.check_ast (l_cursor.item)
+					if l_use_elsif_list or variable_of_interest_usage_checker.passed_check then
 							-- mark that at least one elseif has to be retained
 						l_use_elsif_list := True
 						l_elsif_list.put_front (l_cursor.item)
@@ -137,7 +143,8 @@ feature {NONE} -- Conditional Pruning
 
 				-- Scan false branch
 			if attached a_as.else_part then
-				l_use_branch_false := is_ast_eiffel_using_variable_of_interest (a_as.else_part, variable_context)
+				variable_of_interest_usage_checker.check_ast (a_as.else_part)
+				l_use_branch_false := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Based on structural information w.r.t. the subtrees, annotate `{IF_AS}'.
@@ -166,10 +173,12 @@ feature {NONE} -- Conditional Pruning
 		local
 			l_use_else_part: BOOLEAN
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 
 				if attached a_as.else_part then
-					l_use_else_part := is_ast_eiffel_using_variable_of_interest (a_as.else_part, variable_context)
+					variable_of_interest_usage_checker.check_ast (a_as.else_part)
+					l_use_else_part := variable_of_interest_usage_checker.passed_check
 				end
 
 				output.append_string (ti_inspect_keyword+ti_New_line)
@@ -191,7 +200,8 @@ feature {NONE} -- Conditional Pruning
 
 	process_instr_call_as (a_as: INSTR_CALL_AS)
 		do
-			if is_ast_eiffel_using_variable_of_interest (a_as, variable_context) then
+			variable_of_interest_usage_checker.check_ast (a_as)
+			if variable_of_interest_usage_checker.passed_check then
 				Precursor (a_as)
 			end
 		end
@@ -201,15 +211,18 @@ feature {NONE} -- Conditional Pruning
 			l_use_stop, l_use_from_part, l_use_compound: BOOLEAN
 		do
 			if attached a_as.stop as l_stop_as then
-				l_use_stop := is_ast_eiffel_using_variable_of_interest (l_stop_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_stop_as)
+				l_use_stop := variable_of_interest_usage_checker.passed_check
 			end
 
 			if attached a_as.from_part as l_from_part_as then
-				l_use_from_part := is_ast_eiffel_using_variable_of_interest (l_from_part_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_from_part_as)
+				l_use_from_part := variable_of_interest_usage_checker.passed_check
 			end
 
 			if attached a_as.compound as l_compound_as then
-				l_use_compound := is_ast_eiffel_using_variable_of_interest (l_compound_as, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_compound_as)
+				l_use_compound := variable_of_interest_usage_checker.passed_check
 			end
 
 			if l_use_stop or l_use_from_part or l_use_compound then

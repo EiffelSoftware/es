@@ -8,7 +8,7 @@ deferred class
 
 feature -- Access
 
-	last_annotations: LINKED_LIST [G]
+	last_annotations: DS_HASH_SET [G]
 			-- Annotations extracted by last `extract'
 
 feature -- Basic operations

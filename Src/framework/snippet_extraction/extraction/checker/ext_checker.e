@@ -13,4 +13,12 @@ feature -- Access
 		deferred
 		end
 
+feature -- Basic Operations
+
+	check_ast (a_ast: AST_EIFFEL)
+			-- Checks if `a_ast' conforms to the specified checks and
+			-- and makes the result of the check available in `passed_check'.
+		deferred
+		end
+
 end

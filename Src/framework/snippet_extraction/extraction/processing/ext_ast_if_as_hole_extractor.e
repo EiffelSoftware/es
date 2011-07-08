@@ -23,16 +23,25 @@ inherit
 	EPA_UTILITY
 
 create
-	make_with_factory
+	make_with_arguments
 
 feature {NONE} -- Creation
 
-	make_with_factory (a_factory: EXT_HOLE_FACTORY)
+	make_with_arguments (a_variable_context: like variable_context; a_factory: like hole_factory)
 			-- Make with `a_factory'.
 		require
+			attached a_variable_context
 			attached a_factory
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
+			variable_context := a_variable_context
 			hole_factory := a_factory
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
 		end
 
 feature -- Basic operations
@@ -51,23 +60,29 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
+
 	process_if_as (l_as: IF_AS)
 		local
 			l_use_cond, l_use_branch_true, l_use_elsif_list, l_use_branch_false: BOOLEAN
 		do
 				-- Scan expression.
-			l_use_cond := is_ast_eiffel_using_variable_of_interest (l_as.condition, variable_context)
+			variable_of_interest_usage_checker.check_ast (l_as.condition)
+			l_use_cond := variable_of_interest_usage_checker.passed_check
 
 				-- Scan true branch
 			if attached l_as.compound then
-				l_use_branch_true := is_ast_eiffel_using_variable_of_interest (l_as.compound, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_as.compound)
+				l_use_branch_true := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Scan elseif list
 			if attached l_as.elsif_list then
 					-- process all individual `{ELSIF_AS}' from list
 				across l_as.elsif_list as l_elsif_list loop
-					if is_ast_eiffel_using_variable_of_interest (l_elsif_list.item, variable_context) then
+					variable_of_interest_usage_checker.check_ast (l_elsif_list.item)
+					if variable_of_interest_usage_checker.passed_check then
 							-- mark that at least one elseif has to be retained
 						l_use_elsif_list := True
 					end
@@ -76,7 +91,8 @@ feature {NONE} -- Implementation
 
 				-- Scan false branch
 			if attached l_as.else_part then
-				l_use_branch_false := is_ast_eiffel_using_variable_of_interest (l_as.else_part, variable_context)
+				variable_of_interest_usage_checker.check_ast (l_as.else_part)
+				l_use_branch_false := variable_of_interest_usage_checker.passed_check
 			end
 
 				-- Decide on processing.
@@ -92,16 +108,12 @@ feature {NONE} -- Annotation Handling
 	create_hole (a_ast: AST_EIFFEL): EXT_HOLE
 			-- Create a new `{EXT_ANN_HOLE}' with metadata.
 		local
-			l_annotation_set: LINKED_SET [EXT_MENTION_ANNOTATION]
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
-			create l_annotation_set.make
-			l_annotation_extractor.last_annotations.do_all (agent l_annotation_set.force)
-
-			Result := hole_factory.new_hole (l_annotation_set)
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
 		end
 
 end

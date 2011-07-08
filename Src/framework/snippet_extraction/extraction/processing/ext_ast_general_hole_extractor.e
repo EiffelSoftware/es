@@ -8,6 +8,8 @@ class
 
 inherit
 	AST_ITERATOR
+		export
+			{NONE} all
 		redefine
 			process_assign_as,
 			process_creation_as,
@@ -25,23 +27,32 @@ inherit
 
 	EXT_VARIABLE_CONTEXT_AWARE
 
-	EXT_AST_UTILITY
-
 	EPA_UTILITY
 
 	REFACTORING_HELPER
 
 create
-	make_with_factory
+	make_with_arguments
 
 feature {NONE} -- Initialization
 
-	make_with_factory (a_factory: EXT_HOLE_FACTORY)
-			-- Make with `a_factory'.
+	make_with_arguments (a_variable_context: like variable_context; a_factory: EXT_HOLE_FACTORY)
+			-- Default initialization.
 		require
+			attached a_variable_context
 			attached a_factory
+		local
+			l_variable_set: DS_HASH_SET [STRING]
 		do
+			variable_context := a_variable_context
 			hole_factory := a_factory
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
+
+			create feature_chaining_checker.make
 		end
 
 feature -- Basic operations
@@ -60,6 +71,12 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+			-- Checks if an AST is accessing any variable of interest.
+
+	feature_chaining_checker: EXT_AST_CHAINED_FEATURE_CALL_CHECKER
+			-- Checker if feature calls are chained together.
+
 	process_assign_as (l_as: ASSIGN_AS)
 		require else
 			l_as_path_not_void: attached l_as.path
@@ -67,9 +84,12 @@ feature {NONE} -- Implementation
 			if variable_context.is_variable_of_interest (l_as.target.access_name_8) then
 					-- Retain target, scan and annotate source expression.
 				processing_expr (l_as.source)
-			elseif is_ast_eiffel_using_variable_of_interest (l_as.source, variable_context) then
-					-- make hole: only source expression uses variable of interest
-				add_hole (create_hole (l_as), l_as.path)
+			else
+				variable_of_interest_usage_checker.check_ast (l_as.source)
+				if variable_of_interest_usage_checker.passed_check then
+						-- make hole: only source expression uses variable of interest
+					add_hole (create_hole (l_as), l_as.path)
+				end
 			end
 		end
 
@@ -102,7 +122,9 @@ feature {NONE} -- Implementation
 			-- add NESTED_EXPR_AS
 			-- add CREATION_EXPR_AS
 			if attached {NESTED_AS} l_as.call as l_call_as then
-				if is_not_chaining_nested_as (l_call_as) then
+					-- Check passes if feature calls are not chained.
+				feature_chaining_checker.check_ast (l_call_as)
+				if feature_chaining_checker.passed_check then
 					processing_call (l_as, l_call_as.target, l_call_as.message)
 				else
 					add_hole (create_hole (l_as), l_as.path)
@@ -133,11 +155,11 @@ feature {NONE} -- Implementation
 --			Precursor (l_as)
 			fixme ("Simple naive implementation of object test pruning.")
 			if attached l_as.expression then
-
-				if not is_ast_eiffel_using_variable_of_interest (l_as.expression, variable_context) then
+				variable_of_interest_usage_checker.check_ast (l_as.expression)
+				if not variable_of_interest_usage_checker.passed_check then
 						-- make hole: object test not refering to target variable.
 					add_hole (create_hole (l_as), l_as.path)
-				elseif not is_expr_as_clean (l_as.expression, variable_context) then
+				elseif not is_expr_as_clean (l_as.expression) then
 						-- make hole: expression to complex
 					add_hole (create_hole (l_as.expression), l_as.expression.path)
 				end
@@ -168,7 +190,8 @@ feature {NONE} -- Implementation (Helper)
 			else
 				if attached l_call_as then
 						-- check call arguments
-					if is_ast_eiffel_using_variable_of_interest (l_call_as, variable_context) then
+					variable_of_interest_usage_checker.check_ast (l_call_as)
+					if variable_of_interest_usage_checker.passed_check then
 							-- make hole: variables of interest used in call
 						add_hole (create_hole (l_as), l_as.path)
 					end
@@ -205,7 +228,7 @@ feature {NONE} -- Implementation (Helper)
 			if attached {OBJECT_TEST_AS} l_as as l_object_test_as then
 				process_object_test_as (l_object_test_as)
 			else
-				if not is_expr_as_clean (l_as, variable_context) then
+				if not is_expr_as_clean (l_as) then
 						-- make hole: expression to complex to keep unchanged.
 					add_hole (create_hole (l_as), l_as.path)
 				end
@@ -217,16 +240,42 @@ feature {NONE} -- Hole Handling
 	create_hole (a_ast: AST_EIFFEL): EXT_HOLE
 			-- Create a new `{EXT_HOLE}' with metadata.
 		local
-			l_annotation_set: LINKED_SET [EXT_MENTION_ANNOTATION]
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
-			create l_annotation_set.make
-			l_annotation_extractor.last_annotations.do_all (agent l_annotation_set.force)
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+		end
 
-			Result := hole_factory.new_hole (l_annotation_set)
+feature {NONE} -- Helper
+
+	is_expr_as_clean (a_as: EXPR_AS): BOOLEAN
+			-- AST iterator processing `a_as' answering if that expression can stay as it is.
+		local
+			l_variable_set: DS_HASH_SET [STRING]
+			l_ast_node_checker: EXT_AST_EIFFEL_NODE_CHECKER
+			l_no_unknown_variable_checker: EXT_AST_VARIABLE_USAGE_CHECKER
+		do
+			create l_ast_node_checker.make
+			l_ast_node_checker.allow_all
+			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_string_as)
+			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_integer_as)
+			l_ast_node_checker.deny_node ({EXT_AST_EIFFEL_NODE_CHECKER}.node_creation_expr_as)
+			l_ast_node_checker.check_ast (a_as)
+
+			create l_variable_set.make_equal (10)
+			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
+
+			create l_no_unknown_variable_checker.make_from_variables (l_variable_set)
+			l_no_unknown_variable_checker.set_check_function (agent l_no_unknown_variable_checker.check_is_ast_using_no_other_variables)
+			l_no_unknown_variable_checker.check_ast (a_as)
+
+			feature_chaining_checker.check_ast (a_as)
+
+			Result := l_ast_node_checker.passed_check and
+						then l_no_unknown_variable_checker.passed_check and
+						then feature_chaining_checker.passed_check
 		end
 
 end

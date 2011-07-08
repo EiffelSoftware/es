@@ -34,6 +34,10 @@ feature -- Access
 		assign set_target_types
 			-- Target class types for extraction.
 
+	namespace: detachable STRING
+		assign set_namespace
+			-- Identifying the snippet source, i.e. project name.
+
 	class_name: detachable STRING
 		assign set_class_name
 			-- Class context for mining where `feature_name' can be found.
@@ -62,6 +66,17 @@ feature -- Setting
 			attached a_target_types
 		do
 			target_types := a_target_types.twin
+		end
+
+	set_namespace (a_namespace: like namespace)
+			-- Set `namespace' with `a_namespace'.
+		do
+			if a_namespace = Void then
+				namespace := Void
+			else
+				namespace := a_namespace.twin
+				namespace.to_upper
+			end
 		end
 
 	set_class_name (a_class_name: like class_name)

@@ -29,6 +29,18 @@ feature -- Access
 		assign set_interface_variables
 			-- Set of interface variables.
 
+	variables_of_interest: HASH_TABLE [STRING, STRING]
+		do
+			create Result.make (10)
+
+			if attached target_variables as l_target_variables then
+				Result.merge (l_target_variables)
+			end
+			if attached interface_variables as l_interface_variables then
+				Result.merge (l_interface_variables)
+			end
+		end
+
 	candidate_interface_variables: HASH_TABLE [STRING, STRING]
 		assign set_candidate_interface_variables
 			-- Set of candidate interface variables.

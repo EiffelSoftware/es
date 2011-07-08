@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_AST_HOLE_RULE_CHECKER_NESTED_AS
+	EXT_AST_CHAINED_FEATURE_CALL_CHECKER
 
 inherit
 	AST_ITERATOR
@@ -25,13 +25,22 @@ feature {NONE} -- Initialization
 	make
 			-- Default initialization.
 		do
-			passed_check := True
 		end
 
 feature -- Access
 
 	passed_check: BOOLEAN
 			-- The evaluation of the last iteration by this checker.
+
+feature -- Basic Operations
+
+	check_ast (a_ast: AST_EIFFEL)
+			-- Checks if `a_ast' conforms to the specified checks and
+			-- and makes the result of the check available in `passed_check'.
+		do
+			passed_check := True
+			a_ast.process (Current)
+		end
 
 feature {NONE} -- Implementation
 
