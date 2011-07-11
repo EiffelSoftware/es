@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 				variable_of_interest_usage_checker.check_ast (l_as.source)
 				if variable_of_interest_usage_checker.passed_check then
 						-- make hole: only source expression uses variable of interest
-					add_hole (create_hole (l_as), l_as.path)
+					process_as_hole (l_as)
 				end
 			end
 		end
@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 				if feature_chaining_checker.passed_check then
 					processing_call (l_as, l_call_as.target, l_call_as.message)
 				else
-					add_hole (create_hole (l_as), l_as.path)
+					process_as_hole (l_as)
 				end
 			elseif attached {ACCESS_AS} l_as.call as l_call_as then
 				processing_call (l_as, l_call_as, Void)
@@ -158,10 +158,10 @@ feature {NONE} -- Implementation
 				variable_of_interest_usage_checker.check_ast (l_as.expression)
 				if not variable_of_interest_usage_checker.passed_check then
 						-- make hole: object test not refering to target variable.
-					add_hole (create_hole (l_as), l_as.path)
+					process_as_hole (l_as)
 				elseif not is_expr_as_clean (l_as.expression) then
 						-- make hole: expression to complex
-					add_hole (create_hole (l_as.expression), l_as.expression.path)
+					process_as_hole (l_as.expression)
 				end
 			end
 		end
@@ -193,14 +193,14 @@ feature {NONE} -- Implementation (Helper)
 					variable_of_interest_usage_checker.check_ast (l_call_as)
 					if variable_of_interest_usage_checker.passed_check then
 							-- make hole: variables of interest used in call
-						add_hole (create_hole (l_as), l_as.path)
+						process_as_hole (l_as)
 					end
 
 					-- class feature call
 				elseif attached {ACCESS_FEAT_AS} l_target_as as l_access_feat_as then
 					if attached l_access_feat_as.internal_parameters as l_internal_parameter then
 							-- make hole: variables of interest used in call
-						add_hole (create_hole (l_as), l_as.path)
+						process_as_hole (l_as)
 					end
 				end
 			end
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation (Helper)
 			else
 					-- make hole: variables of interest used in call
 				fixme ("Processing argument list.")
-				add_hole (create_hole (l_as), l_as.path)
+				process_as_hole (l_as)
 			end
 		end
 
@@ -230,7 +230,7 @@ feature {NONE} -- Implementation (Helper)
 			else
 				if not is_expr_as_clean (l_as) then
 						-- make hole: expression to complex to keep unchanged.
-					add_hole (create_hole (l_as), l_as.path)
+					process_as_hole (l_as)
 				end
 			end
 		end
@@ -246,6 +246,23 @@ feature {NONE} -- Hole Handling
 			l_annotation_extractor.extract_from_ast (a_ast)
 
 			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+		end
+
+	process_as_hole (a_ast: AST_EIFFEL)
+			-- Creates a hole if `a_ast' is not ready one.
+		local
+			l_hole: EXT_HOLE
+		do
+			if not is_hole (a_ast) then
+				l_hole := create_hole (a_ast)
+				add_hole (l_hole, a_ast.path)
+			end
+		end
+
+	is_hole (a_ast: AST_EIFFEL): BOOLEAN
+			-- Checks if `a_ast' is an AST repressentation of an `{EXT_HOLE}'.
+		do
+			Result := text_from_ast (a_ast).starts_with ({EXT_HOLE}.hole_name_prefix)
 		end
 
 feature {NONE} -- Helper

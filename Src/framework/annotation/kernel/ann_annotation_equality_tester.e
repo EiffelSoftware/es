@@ -26,7 +26,7 @@ feature -- Status report
 			else
 				Result :=
 					v.generating_type ~ u.generating_type and then
-					v.debug_output ~ v.debug_output
+					v.debug_output ~ u.debug_output
 			end
 		end
 end

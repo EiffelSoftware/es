@@ -224,7 +224,7 @@ feature {NONE} -- Implementation
 	process_if_as (a_as: IF_AS)
 		do
 				-- Record `a_as' if and only if the condition mentions the target.
-			target_variable_usage_checker.check_ast (a_as)
+			target_variable_usage_checker.check_ast (a_as.condition)
 			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 	process_inspect_as (a_as: INSPECT_AS)
 		do
 				-- Record `a_as' if and only if the switch mentions the target.			
-			target_variable_usage_checker.check_ast (a_as)
+			target_variable_usage_checker.check_ast (a_as.switch)
 			if target_variable_usage_checker.passed_check then
 				target_variable_usage_set.put (a_as.path)
 			end
@@ -263,11 +263,11 @@ feature {NONE} -- Implementation
 				-- the initialization or the condition mentions the target.
 			l_record := False
 			if attached a_as.from_part as l_as then
-				target_variable_usage_checker.check_ast (a_as.from_part)
+				target_variable_usage_checker.check_ast (l_as)
 				l_record := l_record or target_variable_usage_checker.passed_check
 			end
 			if attached a_as.stop as l_as then
-				target_variable_usage_checker.check_ast (a_as.from_part)
+				target_variable_usage_checker.check_ast (l_as)
 				l_record := l_record or target_variable_usage_checker.passed_check
 			end
 
