@@ -54,7 +54,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	extract_from_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_context_class: CLASS_C; a_source: detachable STRING)
+	extract_from_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_context_class: CLASS_C; a_source: detachable EXT_SNIPPET_ORIGIN)
 			-- Extract snippet for relevant target of type `a_type' from
 			-- `a_feature' viewed in `a_context_class'.
 			-- Make results available in `last_snippets'.
@@ -74,7 +74,7 @@ feature -- Basic operations
 				if attached a_source then
 					origin := a_source
 				else
-					origin := "unknown@unknown@unknown"
+					create origin.make ("unknown", "unknown", "unknown")
 				end
 
 				create last_snippets.make
@@ -129,7 +129,7 @@ feature {NONE} -- Implementation
 	context_class: CLASS_C
 			-- Class where `feature_' is viewed
 
-	origin: STRING
+	origin: EXT_SNIPPET_ORIGIN
 			-- Textual representation of the origin of a snippet.
 
 	relevant_variables: DS_HASH_TABLE [TYPE_A, STRING]

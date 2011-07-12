@@ -24,7 +24,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_content: like content; a_variable_context: like variable_context; a_holes: like holes; a_source: STRING)
+	make (a_content: like content; a_variable_context: like variable_context; a_holes: like holes; a_source: like source)
 			-- Initialize Current.
 		require
 			not_a_content_is_empty: not a_content.is_empty
@@ -102,9 +102,8 @@ feature -- Access
 			-- Textual representation of originating AST.
 			-- The content should be a parse-able string.
 
-	source: STRING
+	source: EXT_SNIPPET_ORIGIN
 			-- The source where current snippet come from
-			-- Format: file@revision@line
 
 	ast: detachable EIFFEL_LIST [INSTRUCTION_AS]
 			-- AST representation of `content'
@@ -186,7 +185,7 @@ feature{NONE} -- Implementation
 			l_output.append_character ('%N')
 
 				-- Build `source'.
-			l_output.append (source)
+			l_output.append (source.out)
 		end
 
 end

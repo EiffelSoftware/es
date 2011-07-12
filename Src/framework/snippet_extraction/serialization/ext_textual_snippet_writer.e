@@ -14,7 +14,7 @@ feature -- Basic operations
 	write (a_snippet: EXT_SNIPPET; a_medium: IO_MEDIUM)
 			-- Write `a_snippet' into `a_medium'.
 		do
-			a_medium.put_string (a_snippet.source)
+			a_medium.put_string (a_snippet.source.out)
 			a_medium.put_new_line
 			a_medium.put_string (a_snippet.variable_context.debug_output)
 
