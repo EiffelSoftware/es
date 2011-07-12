@@ -82,17 +82,17 @@ feature -- Element change
 
 feature -- Observer pattern
 
-	set_data_received_handler(a_data_received_handler: detachable like on_data_received_handler)
+	set_on_data_received(a_data_received_handler: detachable like on_data_received_handler)
 		do
 			on_data_received_handler := a_data_received_handler
 		end
 
-	set_error_handler(a_error_handler: detachable like on_error_handler)
+	set_on_error_occurred(a_error_handler: detachable like on_error_handler)
 		do
 			on_error_handler := a_error_handler
 		end
 
-	set_did_finish_handler(a_did_finish_handler: detachable like on_did_finish_handler)
+	set_on_finish_command(a_did_finish_handler: detachable like on_did_finish_handler)
 		do
 			on_did_finish_handler := a_did_finish_handler
 		end

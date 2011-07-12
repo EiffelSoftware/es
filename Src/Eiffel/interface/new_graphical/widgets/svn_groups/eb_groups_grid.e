@@ -634,7 +634,7 @@ feature {NONE} -- Implementation
 				if attached {EB_GROUPS_GRID_FOLDER_ITEM}a_row.item (1) as f then
 					svn_client.set_working_path (f.full_path)
 					svn_client.status.put_option ("--depth", "immediates")
-					svn_client.status.set_did_finish_handler (agent on_retrieved_status (f))
+					svn_client.status.set_on_finish_command (agent on_retrieved_status (f))
 					svn_client.status.execute
 				end
 			end
@@ -744,7 +744,7 @@ feature {NONE} -- Subversion context menu commands
 			l_path := path_from_pebble (a_pebble)
 			svn_client.set_working_path (l_path.working_path)
 			svn_client.add.set_target (l_path.target)
-			svn_client.add.set_error_handler (agent error)
+			svn_client.add.set_on_error_occurred (agent error)
 			svn_client.add.execute
 		end
 

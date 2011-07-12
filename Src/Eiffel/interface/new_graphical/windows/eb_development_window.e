@@ -1198,6 +1198,10 @@ feature -- Resource Update
 					-- Update features tool.
 				l_features_tool.synchronize
 			end
+			if attached {ES_SVN_GROUPS_TOOL} shell_tools.tool ({ES_SVN_GROUPS_TOOL}) as l_svn_groups_tool then
+					-- Update groups tool under version control.
+				
+			end
 			update_eis_system
 			refresh_cursor_position
 			refresh_context_info

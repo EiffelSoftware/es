@@ -64,7 +64,7 @@ feature -- Element change
 				svn_client.list.put_option ("--password", p)
 			end
 			svn_client.list.put_option ("--depth", "infinity")
-			svn_client.list.set_did_finish_handler (agent did_load_repository)
+			svn_client.list.set_on_finish_command (agent did_load_repository)
 			svn_client.list.execute
 		end
 
