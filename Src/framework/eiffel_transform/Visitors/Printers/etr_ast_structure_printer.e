@@ -510,11 +510,16 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 	process_debug_as (l_as: DEBUG_AS)
 		do
+			output.append_string(ti_debug_keyword+ti_Space)
+
 			if processing_needed (l_as.internal_keys, l_as, 1) then
+				output.append_string (ti_l_parenthesis)
 				process_child_list (l_as.internal_keys.keys, ", ", l_as, 1)
+				output.append_string (ti_r_parenthesis)
 			end
 
-			output.append_string(ti_debug_keyword+ti_New_line)
+			output.append_string(ti_New_line)
+
 			if processing_needed (l_as.compound, l_as, 2) then
 				process_child_block(l_as.compound, l_as, 2)
 			end

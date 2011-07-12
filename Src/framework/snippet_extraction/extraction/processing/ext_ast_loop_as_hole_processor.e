@@ -18,6 +18,8 @@ inherit
 
 	EXT_HOLE_EXTRACTOR
 
+	EXT_HOLE_FACTORY_AWARE
+
 	EXT_VARIABLE_CONTEXT_AWARE
 
 	EXT_AST_UTILITY
@@ -30,7 +32,7 @@ create
 feature {NONE} -- Creation
 
 	make_with_arguments (a_output: like output; a_variable_context: like variable_context; a_factory: like hole_factory)
-			-- Make with `a_output'.
+			-- Make with essential arguments.
 		local
 			l_variable_set: DS_HASH_SET [STRING]
 		do

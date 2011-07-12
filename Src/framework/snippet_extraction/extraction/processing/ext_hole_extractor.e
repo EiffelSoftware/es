@@ -1,6 +1,5 @@
 note
 	description: "Class to extract holes from ASTs."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 

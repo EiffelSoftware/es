@@ -101,8 +101,8 @@ feature -- Basic operations
 						log.put_string ("%N")
 						log_ast_structure (l_compound)
 						log.put_string ("%N")
-	--					log_ast_text (l_compound)
-	--					log.put_string ("%N")
+						log_ast_text (l_compound)
+						log.put_string ("%N")
 
 						relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
 					else
@@ -324,15 +324,20 @@ feature {NONE} -- Implementation
 			create l_holes.make (10)
 			l_holes.compare_objects
 
-			l_compound_as := perform_ast_if_as_hole_step   (l_compound_as, l_holes, l_hole_factory)
-			l_compound_as := perform_ast_loop_as_hole_step (l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_if_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_loop_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
 
-			log.put_string ("%N")
+			log.put_string ("%N---%N")
 			log_ast_text (l_compound_as)
 
-			l_compound_as := perform_ast_general_hole_step (l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_general_hole_step	(l_compound_as, l_holes, l_hole_factory)
 
-			log.put_string ("%N")
+			log.put_string ("%N---%N")
+			log_ast_text (l_compound_as)
+
+			l_compound_as := perform_ast_hole_merge			(l_compound_as, l_holes, l_hole_factory)
+
+			log.put_string ("%N---%N")
 			log_ast_text (l_compound_as)
 
 			if not l_compound_as.is_empty then
@@ -398,6 +403,22 @@ feature {NONE} -- Implementation
 				-- Add holes to collection and return rewritten AST.
 			a_holes.merge (l_ast_hole_extractor.last_holes)
 			Result := l_ast_rewriter.last_ast
+		end
+
+	perform_ast_hole_merge (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		local
+			l_ast_processor: EXT_AST_HOLE_MERGER
+		do
+			create l_ast_processor.make_with_arguments (ast_printer_output, a_holes, a_factory)
+
+				-- Process AST.
+			l_ast_processor.rewrite (a_compound_as)
+
+				-- Update hole table.
+			a_holes.merge (l_ast_processor.last_holes_added)
+			l_ast_processor.last_holes_removed.current_keys.do_all (agent a_holes.remove)
+
+			Result := l_ast_processor.last_ast
 		end
 
 	perform_ast_if_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as

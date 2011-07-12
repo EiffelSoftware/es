@@ -74,7 +74,7 @@ feature -- AST
 			create Result.make_with_indentation_string ("%T")
 		end
 
-	ast_from_compound_text (a_text: STRING): AST_EIFFEL
+	ast_from_compound_text (a_text: STRING): EIFFEL_LIST [INSTRUCTION_AS]
 			-- AST node from `a_text'
 			-- `a_text' must be the textual representation of a compound AS.
 			-- If `a_text' is empty (or just contains whitespaces, an empty `{EIFFEL_LIST [INSTRUCTION_AS]}' will be returned.
@@ -99,7 +99,7 @@ feature -- AST
 			check Result /= Void end
 		end
 
-	ast_from_statement_text (a_text: STRING): AST_EIFFEL
+	ast_from_statement_text (a_text: STRING): INSTRUCTION_AS
 			-- AST node from `a_text'
 			-- `a_text' must a statement AST and must be able to be parsed in to a single AST node.
 		local
