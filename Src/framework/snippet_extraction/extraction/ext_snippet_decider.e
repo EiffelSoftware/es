@@ -38,7 +38,7 @@ feature -- Access
 			passed_check := across criteria as criteria_cursor all criteria_cursor.item.item ([a_snippet]) end
 		end
 
-feature {NONE} -- Implementation
+feature -- Rules
 
 	check_empty_snippet_rule (a_snippet: EXT_SNIPPET): BOOLEAN
 			-- Returns false in case `a_compound_as' is empty.
@@ -85,6 +85,35 @@ feature {NONE} -- Implementation
 
 				l_compound_as.process (l_identifier_usage_finder)
 				Result := l_call_on_target_counter.value >= a_min_bound.as_integer_32
+			end
+		end
+
+	check_snippet_maximum_length_rule (a_snippet: EXT_SNIPPET; a_maximum_line: INTEGER): BOOLEAN
+			-- Returns False when text of `a_snippet' contains more than `a_maximum_line' number of lines
+		local
+			l_lines: INTEGER
+		do
+				-- Note: The line calculation is approximate, l_lines will be one line less
+				-- in case when the last line does not terminate with a new line character.
+			l_lines := a_snippet.content.split ('%N').count
+			Result := l_lines <= a_maximum_line
+		end
+
+	check_snippet_deep_code_structure_rule (a_snippet: EXT_SNIPPET; a_maximum_level: INTEGER): BOOLEAN
+			-- Returns False when structure of `a_snippet' is deeper than `a_maximum_level'.
+		local
+			l_collector: EXT_AST_PATH_COLLECTOR
+			l_path_initializer: ETR_AST_PATH_INITIALIZER
+			l_ast: AST_EIFFEL
+		do
+			create l_path_initializer
+			create l_collector
+			l_ast := a_snippet.ast
+			l_path_initializer.process_from_root (l_ast)
+			l_collector.collect (l_ast)
+			Result := True
+			across l_collector.last_paths as l_paths until not Result loop
+				Result := l_paths.key.as_string.occurrences (l_paths.key.separator) <= a_maximum_level
 			end
 		end
 

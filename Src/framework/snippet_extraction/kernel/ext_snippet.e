@@ -132,6 +132,36 @@ feature -- Access
 	annotations: LINKED_LIST [ANN_ANNOTATION]
 		-- List of annotations associated with current snippet	
 
+	as_string: STRING
+			-- String representation of current snippet containing operand definition and snippet content.
+		local
+			l_cursor: like operands.new_cursor
+			l_output: STRING
+		do
+			create Result.make (128)
+			l_output := Result
+
+				-- Build operands and their types.
+			from
+				l_cursor := operands.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_output.append (l_cursor.key)
+				l_output.append_character (':')
+				l_output.append_character (' ')
+				l_output.append (output_type_name (l_cursor.item))
+				l_output.append_character ('%N')
+				l_cursor.forth
+			end
+			l_output.append_character ('%N')
+
+				-- Build `content'.
+			l_output.append (content)
+			l_output.append_character ('%N')
+		end
+
 feature{NONE} -- Implementation
 
 	ast_internal: detachable like ast
@@ -162,29 +192,10 @@ feature{NONE} -- Implementation
 		do
 			create debug_output.make (128)
 			l_output := debug_output
-
-				-- Build operands and their types.
-			from
-				l_cursor := operands.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_output.append (l_cursor.key)
-				l_output.append_character (':')
-				l_output.append_character (' ')
-				l_output.append (output_type_name (l_cursor.item))
-				l_output.append_character ('%N')
-				l_cursor.forth
-			end
-			l_output.append_character ('%N')
-
-				-- Build `content'.
-			l_output.append (content)
-			l_output.append_character ('%N')
-			l_output.append_character ('%N')
+			l_output.append (as_string)
 
 				-- Build `source'.
+			l_output.append_character ('%N')
 			l_output.append (source.out)
 		end
 

@@ -42,6 +42,9 @@ feature -- Basic operations
 		local
             l_target_type: TYPE_A
 		do
+			if config.snippet_log_file /= Void then
+				create_snippet_file
+			end
 			across
 				config.target_types as l_type_name_cursor
 			loop
@@ -55,6 +58,9 @@ feature -- Basic operations
 						process_feature (l_target_type, l_selected_classes.item, l_feature_set_cursor.item)
 					end
 				end
+			end
+			if config.snippet_log_file /= Void then
+				close_snippet_file
 			end
 		end
 
@@ -77,7 +83,7 @@ feature {NONE} -- Implementation
 			l_basic_file_name := basic_file_name (a_target_type, l_origin)
 
 				-- Start extraction.
-			create {EXT_SNIPPET_EXTRACTOR} l_extractor.make
+			create {EXT_SNIPPET_EXTRACTOR} l_extractor.make (config)
 			l_extractor.extract_from_feature (a_target_type, a_feature, a_class, l_origin)
 
 				-- Store snippets, if any where extracted.
@@ -87,6 +93,10 @@ feature {NONE} -- Implementation
 
 				create l_ann_extractor
 				l_snippets.do_all (agent l_ann_extractor.extract_from_snippet)
+			end
+
+			if not l_extractor.last_snippets.is_empty and then config.snippet_log_file /= Void then
+				log_snippet_in_file (l_extractor.last_snippets)
 			end
 		end
 
@@ -268,6 +278,36 @@ feature {NONE} -- Output
 			end
 
 			Result.append ("]")
+		end
+
+feature{NONE} -- Implementation
+
+	snippet_file: PLAIN_TEXT_FILE
+			-- File used to log snippets
+
+	log_snippet_in_file (a_snippets: LINKED_LIST [EXT_SNIPPET])
+			-- Log `a_snippets' in specified file.
+		do
+			across a_snippets as l_snippet loop
+				snippet_file.put_string (l_snippet.item.as_string)
+				snippet_file.put_string ("---------------------------------------------------------------------------%N")
+			end
+		end
+
+	create_snippet_file
+			-- Create `snippet_file'.
+		do
+			if snippet_file = Void then
+				create snippet_file.make_create_read_write (config.snippet_log_file)
+			end
+		end
+
+	close_snippet_file
+			-- Close `snippet_file'.
+		do
+			if snippet_file /= Void and then snippet_file.is_open_write then
+				snippet_file.close
+			end
 		end
 
 end

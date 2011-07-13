@@ -47,6 +47,9 @@ feature -- Basic operations
 			l_feature: AP_STRING_OPTION
 			l_output: AP_STRING_OPTION
 			l_log_file: AP_STRING_OPTION
+			l_maximum_cfg_level: AP_INTEGER_OPTION
+			l_maximum_line: AP_INTEGER_OPTION
+			l_log_snippet_file: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -82,6 +85,18 @@ feature -- Basic operations
 			l_log_file.set_description ("File to write logging information to, additional to standard output.")
 			l_parser.options.force_last (l_log_file)
 
+			create l_maximum_cfg_level.make_with_long_form ("maximum-cfg-level")
+			l_maximum_cfg_level.set_description ("Specify the allowed maximum control flow level for a snippet to be reported. Format: --maximum-cfg-level <level> where <level> is an integer. 0 means no limit. Default: 0.")
+			l_parser.options.force_last (l_maximum_cfg_level)
+
+			create l_maximum_line.make_with_long_form ("maximum-line")
+			l_maximum_line.set_description ("Specify the allowed maximum number of lines for a snippet to be reported. Format: --maximum-lines <lines> where <lines> is an integer. 0 means no limit. Default: 0.")
+			l_parser.options.force_last (l_maximum_line)
+
+			create l_log_snippet_file.make_with_long_form ("snippet-log-file")
+			l_log_snippet_file.set_description ("Specify the absolute file path to log ONLY snippets. Format: --log-snippet-file <file>.")
+			l_parser.options.force_last (l_log_snippet_file)
+
 			l_parser.parse_list (l_args)
 
 			if l_target_types.was_found then
@@ -112,6 +127,18 @@ feature -- Basic operations
 				config.set_log_file_name (l_log_file.parameter)
 					-- Add a logging file to the logging setup.
 				log.loggers.force (create {ELOG_FILE_LOGGER}.make_with_path (config.log_file_name))
+			end
+
+			if l_maximum_cfg_level.was_found then
+				config.set_maximum_cfg_structure_level (l_maximum_cfg_level.parameter)
+			end
+
+			if l_maximum_line.was_found then
+				config.set_maximum_lines_of_code (l_maximum_line.parameter)
+			end
+
+			if l_log_snippet_file.was_found then
+				config.set_snippet_log_file (l_log_snippet_file.parameter)
 			end
 		end
 

@@ -28,11 +28,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_config: like config)
 			-- Default initialization.
 		do
 			set_logging_active (True)
-			create snippet_decider.make
+			config := a_config
+			setup_snippet_decider
 		end
 
 feature -- Access
@@ -44,6 +45,11 @@ feature -- Access
 		assign set_logging_active
 			 -- Should logging commands be executed?
 
+	config: EXT_CONFIG
+			-- Configuration for snippet extraction
+
+feature -- Basic operations
+
 	set_logging_active (a_active: BOOLEAN)
 			-- Set `is_logging_active' to `a_active'.
 		require
@@ -51,8 +57,6 @@ feature -- Access
 		do
 			is_logging_active := a_active
 		end
-
-feature -- Basic operations
 
 	extract_from_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_context_class: CLASS_C; a_source: detachable EXT_SNIPPET_ORIGIN)
 			-- Extract snippet for relevant target of type `a_type' from
@@ -638,6 +642,20 @@ feature {NONE} -- Debug
 				log.put_string (" usage information about type ")
 				log.put_string (a_type_name)
 				log.put_string ("]%N")
+			end
+		end
+
+feature{NONE} -- Implementation
+
+	setup_snippet_decider
+			-- Setup `snippet_decider'.
+		do
+			create snippet_decider.make
+			if config.maximum_cfg_structure_level> 0 then
+				snippet_decider.criteria.extend (agent snippet_decider.check_snippet_deep_code_structure_rule (?, config.maximum_cfg_structure_level))
+			end
+			if config.maximum_lines_of_code > 0 then
+				snippet_decider.criteria.extend (agent snippet_decider.check_snippet_maximum_length_rule (?, config.maximum_lines_of_code))
 			end
 		end
 

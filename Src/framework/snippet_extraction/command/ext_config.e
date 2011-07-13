@@ -58,6 +58,20 @@ feature -- Access
 		assign set_log_file_name
 			-- File name used to write logging information to.
 
+	maximum_lines_of_code: INTEGER
+			-- The allowed maximum lines of code for a snippet to be reported
+			-- 0 means no limit. Default: 0.
+			-- This option is used to ignore snippets which are too large.
+
+	maximum_cfg_structure_level: INTEGER
+			-- The allowed maximum structure levels for a snippet to be reported
+			-- 0 means no limit. Default: 0.
+			-- This option is used to ignore snippets which have too complicated control flow structures.
+
+	snippet_log_file: detachable STRING
+			-- If attached, the absolute path of the file used to log only snippets
+			-- Default: Void
+
 feature -- Setting
 
 	set_target_types (a_target_types: like target_types)
@@ -120,6 +134,24 @@ feature -- Setting
 			-- Set `log_file_name' with `a_log_file_name'.
 		do
 			log_file_name := a_log_file_name
+		end
+
+	set_maximum_lines_of_code (i: INTEGER)
+			-- Set `maximum_lines_of_code'with `i'.
+		do
+			maximum_lines_of_code := i
+		end
+
+	set_maximum_cfg_structure_level (i: INTEGER)
+			-- Set `maximum_cfg_structure_level' with `i'.
+		do
+			maximum_cfg_structure_level := i
+		end
+
+	set_snippet_log_file (a_path: STRING)
+			-- Set `snippet_log_file' with `a_path'.
+		do
+			snippet_log_file := a_path.twin
 		end
 
 end
