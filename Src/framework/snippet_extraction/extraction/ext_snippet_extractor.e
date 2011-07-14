@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 			-- Initialization of variable context on which the extraction relies.
 		local
 			l_target_variable_table: HASH_TABLE [STRING, STRING]
-			l_object_test_as_alias_finder: EXT_OBJECT_TEST_AS_ALIAS_FINDER
+			l_object_test_as_alias_finder: EXT_READ_ONLY_ALIAS_FINDER
 		do
 				-- Create variable context.
 			create l_target_variable_table.make (5)
@@ -280,7 +280,7 @@ feature {NONE} -- Implementation
 			create l_object_test_as_alias_finder.make (l_target_variable_table, context_class)
 			a_compound_as.process (l_object_test_as_alias_finder)
 
-			l_target_variable_table.merge (l_object_test_as_alias_finder.last_object_test_aliases)
+			l_target_variable_table.merge (l_object_test_as_alias_finder.last_aliases)
 
 				-- Create and configure class feature `variable_context'.
 			create variable_context.make

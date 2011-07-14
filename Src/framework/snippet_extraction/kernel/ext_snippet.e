@@ -29,6 +29,7 @@ feature{NONE} -- Initialization
 		require
 			not_a_content_is_empty: not a_content.is_empty
 		local
+			l_retried: BOOLEAN
 			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			variable_context := a_variable_context.deep_twin
@@ -42,10 +43,17 @@ feature{NONE} -- Initialization
 
 			create annotations.make
 
-				-- Initialize break point slots.
-			create l_bp_initializer
-			l_bp_initializer.set_current_breakpoint_slot (1)
-			l_bp_initializer.init_from (ast)
+			if not l_retried then
+				fixme ("Seems not to work with 'across' loops. msteindorfer:2011-07-14")
+
+					-- Initialize break point slots.
+				create l_bp_initializer
+				l_bp_initializer.set_current_breakpoint_slot (1)
+				l_bp_initializer.init_from (ast)
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 feature -- Configuration

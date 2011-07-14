@@ -83,9 +83,12 @@ feature {NONE} -- Implementation
 	process_loop_as (l_as: LOOP_AS)
 		local
 			l_done: BOOLEAN
-			l_use_from_part, l_use_stop, l_use_compound: BOOLEAN
+			l_use_iteration, l_use_from_part, l_use_stop, l_use_compound: BOOLEAN
 		do
-				-- l_as.iteration not handled.
+			if attached l_as.iteration as l_iteration_as then
+				variable_of_interest_usage_checker.check_ast (l_iteration_as)
+				l_use_iteration := variable_of_interest_usage_checker.passed_check
+			end
 
 			if attached l_as.from_part as l_from_part_as then
 				variable_of_interest_usage_checker.check_ast (l_from_part_as)
@@ -107,24 +110,26 @@ feature {NONE} -- Implementation
 			end
 
 				-- Decide on processing.
-			if l_use_from_part and not l_use_stop and not l_use_compound then
-				process_loop_as_only_from_part_used	(l_as)
-				l_done := True
-			end
+			if not l_use_iteration then
+				if l_use_from_part and not l_use_stop and not l_use_compound then
+					process_loop_as_only_from_part_used	(l_as)
+					l_done := True
+				end
 
-			if not l_use_from_part and l_use_stop and not l_use_compound then
-				process_loop_as_only_expression_used (l_as)
-				l_done := True
-			end
+				if not l_use_from_part and l_use_stop and not l_use_compound then
+					process_loop_as_only_expression_used (l_as)
+					l_done := True
+				end
 
-			if l_use_from_part and l_use_stop and not l_use_compound then
-				process_loop_as_only_from_part_and_expression_used (l_as)
-				l_done := True
-			end
+				if l_use_from_part and l_use_stop and not l_use_compound then
+					process_loop_as_only_from_part_and_expression_used (l_as)
+					l_done := True
+				end
 
-			if not l_use_from_part and not l_use_stop and l_use_compound then
-				process_loop_as_only_compound_used (l_as)
-				l_done := True
+				if not l_use_from_part and not l_use_stop and l_use_compound then
+					process_loop_as_only_compound_used (l_as)
+					l_done := True
+				end
 			end
 
 			if not l_done then

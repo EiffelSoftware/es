@@ -1,15 +1,16 @@
 note
-	description: "Summary description for {EXT_OBJECT_TEST_AS_ALIAS_FINDER}."
+	description: "Collects read-only alias names from type {ID_AS}, used in 'across' loops and 'object test local' statements."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EXT_OBJECT_TEST_AS_ALIAS_FINDER
+	EXT_READ_ONLY_ALIAS_FINDER
 
 inherit
 	AST_ITERATOR
 		redefine
-			process_object_test_as
+			process_object_test_as,
+			process_loop_as
 		end
 
 	EPA_UTILITY
@@ -40,7 +41,7 @@ feature -- Access
 			create attached_object_test_as_tuples.make
 		end
 
-	last_object_test_aliases: like {EXT_VARIABLE_CONTEXT}.target_variables
+	last_aliases: like {EXT_VARIABLE_CONTEXT}.target_variables
 			-- The identifiers and evaluated types of last AST visit.
 		local
 			l_type_a: TYPE_A
@@ -49,7 +50,7 @@ feature -- Access
 			Result.compare_objects
 
 			across attached_object_test_as_tuples as l_iterator loop
-				if object_test_as_alias_expr_decider (l_iterator.item.expression) then
+				if is_expression_dependant_on_targets (l_iterator.item.expression) then
 						-- Default type if real type cannot be resolved.
 					create {NONE_A} l_type_a
 
@@ -69,18 +70,6 @@ feature -- Access
 			end
 		end
 
---	on_object_test_as: ROUTINE [ANY, TUPLE [a_as: OBJECT_TEST_AS]]
---		assign set_on_object_test_as
---			-- Callback agent triggered when a `{OBJECT_TEST_AS}' node is encountered.
-
---	set_on_object_test_as (a_action: like on_object_test_as)
---			-- Assigner for `on_object_test_as'.
---		require
---			a_action_not_void: attached a_action
---		do
---			on_object_test_as := a_action
---		end
-
 feature {NONE} -- Implementation
 
 	target_variables: like {EXT_VARIABLE_CONTEXT}.target_variables
@@ -92,14 +81,7 @@ feature {NONE} -- Implementation
 	attached_object_test_as_tuples: LINKED_LIST [TUPLE [type: TYPE_AS; expression: EXPR_AS; name: ID_AS]]
 			-- Collect object test instances during AST visit.
 
---	process_object_test_as (l_as: OBJECT_TEST_AS)
---		do
---				-- Invoke callback agent if configured.
---			if attached on_object_test_as as l_agent then
---				l_agent.call ([l_as])
---			end
---			Precursor (l_as)
---		end
+feature {NONE} -- AST Iteration
 
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 			-- Collect all `{OBJECT_TEST_AS}' instances that use the attached keyword and set a read-only name.
@@ -110,30 +92,30 @@ feature {NONE} -- Implementation
 			Precursor (l_as)
 		end
 
-	object_test_as_alias_expr_decider (a_as: EXPR_AS): BOOLEAN
+	process_loop_as (l_as: LOOP_AS)
+		do
+			if attached l_as.iteration as l_iteration then
+				attached_object_test_as_tuples.force ([Void, l_iteration.expression, l_iteration.identifier])
+			end
+			Precursor (l_as)
+		end
+
+feature {NONE} -- Helper
+
+	is_expression_dependant_on_targets (a_as: EXPR_AS): BOOLEAN
 			-- AST iterator processing `a_as' answering if a variable of interest is used in that AST.
 			-- Currently it is checking if the one of the target variables occur in the the AST. If yes, the expression is taken into account.
 		local
-			l_variable_usage: LINKED_SET [STRING]
-			l_variable_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
+			l_variable_set: DS_HASH_SET [STRING]
+			l_variable_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
 		do
-				-- Set up callback to track variable usage in arguments.
-			create l_variable_usage.make
+			create l_variable_set.make_equal (10)
+			target_variables.current_keys.do_all (agent l_variable_set.put)
 
-			create l_variable_usage_finder
-			l_variable_usage_finder.set_is_mode_disjoint (False)
-			l_variable_usage_finder.set_on_access_identifier (
-				agent (l_as: ACCESS_AS; a_target_variables: like {EXT_VARIABLE_CONTEXT}.target_variables; a_variable_usage: LINKED_SET [STRING])
-					do
-						if a_target_variables.has (l_as.access_name_8) then
-							a_variable_usage.force (l_as.access_name_8)
-						end
-					end (?, target_variables, l_variable_usage)
-			)
+			create l_variable_usage_checker.make_from_variables (l_variable_set)
+			l_variable_usage_checker.check_ast (a_as)
 
-			a_as.process (l_variable_usage_finder)
-
-			Result := not l_variable_usage.is_empty
+			Result := l_variable_usage_checker.passed_check
 		end
 
 end

@@ -208,8 +208,13 @@ feature {NONE} -- Conditional Pruning
 
 	process_loop_as (a_as: LOOP_AS)
 		local
-			l_use_stop, l_use_from_part, l_use_compound: BOOLEAN
+			l_use_iteration, l_use_stop, l_use_from_part, l_use_compound: BOOLEAN
 		do
+			if attached a_as.iteration as l_iteration_as then
+				variable_of_interest_usage_checker.check_ast (l_iteration_as)
+				l_use_iteration := variable_of_interest_usage_checker.passed_check
+			end
+
 			if attached a_as.stop as l_stop_as then
 				variable_of_interest_usage_checker.check_ast (l_stop_as)
 				l_use_stop := variable_of_interest_usage_checker.passed_check
@@ -225,13 +230,12 @@ feature {NONE} -- Conditional Pruning
 				l_use_compound := variable_of_interest_usage_checker.passed_check
 			end
 
-			if l_use_stop or l_use_from_part or l_use_compound then
-					-- Remove iteration.
---				if processing_needed (a_as.iteration, a_as, 6) then
---					output.append_string(ti_across_keyword+ti_New_line)
---					process_child_block(a_as.iteration, a_as, 6)
---					output.append_string (ti_New_line)
---				end
+			if l_use_iteration or l_use_stop or l_use_from_part or l_use_compound then
+				if processing_needed (a_as.iteration, a_as, 6) then
+					output.append_string(ti_across_keyword+ti_New_line)
+					process_child_block(a_as.iteration, a_as, 6)
+					output.append_string (ti_New_line)
+				end
 
 				if processing_needed (a_as.from_part, a_as, 1) or not processing_needed (a_as.iteration, a_as, 6) then
 					output.append_string(ti_from_keyword+ti_New_line)
