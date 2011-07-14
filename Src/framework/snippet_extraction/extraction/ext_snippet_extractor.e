@@ -328,18 +328,19 @@ feature {NONE} -- Implementation
 			create l_holes.make (10)
 			l_holes.compare_objects
 
-			l_compound_as := perform_ast_if_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
-			l_compound_as := perform_ast_loop_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_if_as_hole_step		(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_inspect_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_loop_as_hole_step		(l_compound_as, l_holes, l_hole_factory)
 
-			log.put_string ("%N---%N")
-			log_ast_text (l_compound_as)
+--			log.put_string ("%N---%N")
+--			log_ast_text (l_compound_as)
 
-			l_compound_as := perform_ast_general_hole_step	(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_general_hole_step		(l_compound_as, l_holes, l_hole_factory)
 
-			log.put_string ("%N---%N")
-			log_ast_text (l_compound_as)
+--			log.put_string ("%N---%N")
+--			log_ast_text (l_compound_as)
 
-			l_compound_as := perform_ast_hole_merge			(l_compound_as, l_holes, l_hole_factory)
+			l_compound_as := perform_ast_hole_merge				(l_compound_as, l_holes, l_hole_factory)
 
 			log.put_string ("%N---%N")
 			log_ast_text (l_compound_as)
@@ -428,6 +429,24 @@ feature {NONE} -- Implementation
 	perform_ast_if_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
 		local
 			l_ast_hole_extractor: EXT_AST_IF_AS_HOLE_EXTRACTOR
+			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
+		do
+				-- Associate statements with holes.
+			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
+			l_ast_hole_extractor.extract (a_compound_as)
+
+				-- Rewrite statements associated with holes.
+			create {EXT_AST_HOLE_REWRITER} l_ast_rewriter.make_with_arguments (ast_printer_output, l_ast_hole_extractor.last_holes_by_location)
+			l_ast_rewriter.rewrite (a_compound_as)
+
+				-- Add holes to collection and return rewritten AST.
+			a_holes.merge (l_ast_hole_extractor.last_holes)
+			Result := l_ast_rewriter.last_ast
+		end
+
+	perform_ast_inspect_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		local
+			l_ast_hole_extractor: EXT_AST_INSPECT_AS_HOLE_EXTRACTOR
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
 		do
 				-- Associate statements with holes.

@@ -171,21 +171,27 @@ feature {NONE} -- Conditional Pruning
 
 	process_inspect_as (a_as: INSPECT_AS)
 		local
-			l_use_else_part: BOOLEAN
+			l_use_switch, l_use_case_list, l_use_else_part: BOOLEAN
 		do
-			variable_of_interest_usage_checker.check_ast (a_as)
-			if variable_of_interest_usage_checker.passed_check then
+			variable_of_interest_usage_checker.check_ast (a_as.switch)
+			l_use_switch := variable_of_interest_usage_checker.passed_check
 
-				if attached a_as.else_part then
-					variable_of_interest_usage_checker.check_ast (a_as.else_part)
-					l_use_else_part := variable_of_interest_usage_checker.passed_check
-				end
+			if attached a_as.case_list as l_as then
+				variable_of_interest_usage_checker.check_ast (l_as)
+				l_use_case_list := variable_of_interest_usage_checker.passed_check
+			end
 
+			if attached a_as.else_part as l_as then
+				variable_of_interest_usage_checker.check_ast (l_as)
+				l_use_else_part := variable_of_interest_usage_checker.passed_check
+			end
+
+			if l_use_switch or l_use_case_list or l_use_else_part then
 				output.append_string (ti_inspect_keyword+ti_New_line)
 				process_child_block (a_as.switch, a_as, 1)
 				output.append_string (ti_New_line)
 
-				if processing_needed (a_as.case_list, a_as, 2) then
+				if l_use_case_list then
 					process_child (a_as.case_list, a_as, 2)
 				end
 
