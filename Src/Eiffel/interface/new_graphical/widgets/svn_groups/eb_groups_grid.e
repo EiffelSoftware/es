@@ -314,14 +314,16 @@ feature {NONE} -- Context menu handler and construction
 
 	on_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- Context menu handler for classes, clusters, libraries, targets and assemblies
+		local
+			l_root_item: EV_GRID_ITEM
 		do
 			if a_pebble /= Void then
 				context_menu_factory.class_tree_menu (a_menu, a_target_list, a_source, a_pebble)
-				extend_working_copy_menu (a_menu, a_pebble)
+				l_root_item := selected_rows.i_th (1).parent_row_root.item (1)
+				if attached {EB_GROUPS_GRID_HEADER_ITEM}l_root_item as p and then p.is_clusters_group then
+					extend_working_copy_menu (a_menu, a_pebble)
+				end
 			end
---			context_menu_factory.clusters_data_menu (a_menu, a_target_list, a_source, a_pebble)
---			context_menu_factory.libraries_data_menu (a_menu, a_target_list, a_source, a_pebble)
---			context_menu_factory.assemblies_data_menu (a_menu, a_target_list, a_source, a_pebble)
 		end
 
 	extend_working_copy_menu (a_menu: EV_MENU; a_pebble: ANY)
@@ -744,7 +746,7 @@ feature {NONE} -- Subversion context menu commands
 			l_path := path_from_pebble (a_pebble)
 			svn_client.set_working_path (l_path.working_path)
 			svn_client.add.set_target (l_path.target)
-			svn_client.add.set_on_error_occurred (agent error)
+			svn_client.add.set_on_error_occurred (agent svn_add_error)
 			svn_client.add.execute
 		end
 
@@ -774,12 +776,11 @@ feature {NONE} -- Subversion context menu commands
 			svn_client.update.execute
 		end
 
-	error (s: STRING)
+	svn_add_error
 		local
 			l_error_dialog: EV_ERROR_DIALOG
 		do
---			print ("Error: " + s)
-			create l_error_dialog.make_with_text(s)
+			create l_error_dialog.make_with_text (svn_client.add.last_error)
 			l_error_dialog.show
 		end
 

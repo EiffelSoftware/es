@@ -99,7 +99,7 @@ feature -- Observer pattern
 
 feature {NONE} -- Command agents
 
-	on_error_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
+	on_error_handler: PROCEDURE[ANY, TUPLE[]]
 		-- Agent to call when the command did not complete successfully
 
 	on_data_received_handler: PROCEDURE[ANY, TUPLE[STRING_8]]
@@ -141,7 +141,7 @@ feature {NONE} -- Command agents
 				end
 			else
 				if attached on_error_handler as error_handler then
-					error_handler.call ([last_error])
+					error_handler.call ([])
 				end
 			end
 		end
