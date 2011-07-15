@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			-- Process `l_as' in the current breakpoint slot
 		do
 			is_in_breakpoint_slot := true
-			process_and_check (l_as)
+			safe_process_and_check (l_as)
 			is_in_breakpoint_slot := false
 		end
 
