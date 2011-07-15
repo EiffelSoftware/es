@@ -2233,7 +2233,7 @@ feature {NONE} -- Signature checking
 					Error_handler.insert_error (vffd7)
 				end
 
-				if is_once and then system.is_scoop and then is_process_relative and then not solved_type.is_separate and then not solved_type.is_expanded then
+				if is_once and then system.is_scoop and then is_process_relative and then not solved_type.is_void and then not solved_type.is_separate and then not solved_type.is_expanded then
 					Error_handler.insert_error (create {VFFD8}.make (Current))
 				end
 
@@ -3152,12 +3152,13 @@ feature -- Genericity
 
 feature -- Pattern
 
-	pattern: PATTERN
+	frozen pattern: PATTERN
 			-- Feature pattern
 		do
-			create Result.make (type.meta_type)
 			if argument_count > 0 then
-				Result.set_argument_types (arguments.pattern_types)
+				create Result.make_with_arguments (type.meta_type, arguments.pattern_types)
+			else
+				create Result.make (type.meta_type)
 			end
 		end
 
@@ -3177,7 +3178,7 @@ feature -- Pattern
 			p: PATTERN_TABLE
 		do
 			p := Pattern_table
-			p.insert (generation_class_id, pattern)
+			p.insert_pattern_from_feature_i (Current)
 			pattern_id := p.last_pattern_id
 		end
 

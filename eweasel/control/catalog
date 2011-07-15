@@ -2169,6 +2169,7 @@ test	validity-vffd7-once-generic	vffd701	 tcf pass validity vffd
 test	validity-vffd7-once-anchored	vffd702	 tcf pass validity vffd
 
 test	validity-vffd8-once-scoop	vffd801  tcf pass validity vffd vffd8 once scoop
+test	validity-vffd8-once-proc-scoop	vffd802  tcf fail validity vffd vffd8 once scoop
 
 test	validity-vhpr1-self		vhpr101	 tcf pass validity vhpr
 test	validity-vhpr1-other		vhpr102	 tcf pass validity vhpr
@@ -2643,8 +2644,13 @@ test	scoop-freeze-condition				scoop008 tcf pass scoop execution incrementality
 test	scoop-wait-condition				scoop009 tcf pass scoop execution assertion
 test	scoop-request-chain-exception			scoop011 tcf pass scoop execution exception
 test	scoop-false-wait-condition			scoop012 tcf pass scoop execution assertion exception
+test	scoop-inline-separate-call			scoop013 tcf fail scoop finalizing inlining
+test	scoop-separate-expanded				scoop014 tcf pass scoop expanded
+test	scoop-separate-patterns-crash			scoop015 tcf pass scoop finalizing
+test	scoop-finalize-c-failure			scoop016 tcf pass scoop finalizing c_compilation
+test	scoop-separate-call-to-constant			scoop017 tcf pass scoop execution
 
--- Prettity
+-- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty
 test	pretty-explicit-creation-space		pretty002 tcf pass pretty
 test	pretty-argument-list-separators		pretty003 tcf pass pretty

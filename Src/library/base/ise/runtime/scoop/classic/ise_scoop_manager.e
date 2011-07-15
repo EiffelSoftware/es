@@ -253,7 +253,7 @@ feature -- Request Chain Handling
 				-- Increment current request chain id depth
 			l_temp_value := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 (processor_meta_data [a_client_processor_id].item_address (current_request_chain_id_depth_index));
 			if l_temp_value = max_request_chain_depth then
-				raise_scoop_exception ("SCOOP request chain stack overflow")
+				raise_scoop_exception (scoop_request_chain_stack_overflow_message)
 			end
 
 				-- Increase request chain id.
@@ -326,6 +326,9 @@ feature -- Request Chain Handling
 			signify_end_of_request_chain (a_client_processor_id)
 				-- Set the wait counter to the incremented value as ending the request chain always resets it back to zero.
 			l_wait_condition_counter := {ATOMIC_MEMORY_OPERATIONS}.swap_integer_32 (processor_meta_data [a_client_processor_id].item_address (processor_wait_condition_counter_index), l_wait_condition_counter)
+
+				-- Yield processor temporarily (no spin locking as a failed wait condition is lower priority).
+			processor_yield (a_client_processor_id, Processor_spin_lock_limit + l_wait_condition_counter.as_natural_32)
 		end
 
 	assign_supplier_processor_to_request_chain (a_client_processor_id, a_supplier_processor_id: like processor_id_type)
@@ -414,13 +417,8 @@ feature -- Request Chain Handling
 
 				-- Retrieve wait condition counter for determining priority of processor request.
 			l_wait_condition_counter := (processor_meta_data [a_client_processor_id]) [processor_wait_condition_counter_index]
-			if l_wait_condition_counter > 0 then
-				if l_wait_condition_counter > max_wait_condition_retry_limit then
-					raise_scoop_exception ("SCOOP Wait Condition Retry Limit Reached")
-				elseif l_wait_condition_counter > 1 then
-						-- Yield processor if we are retrying a wait condition.
-					processor_cpu_yield
-				end
+			if l_wait_condition_counter > max_wait_condition_retry_limit then
+				raise_scoop_exception ("SCOOP Wait Condition Retry Limit Reached")
 			end
 
 				-- Retrieve request chain meta data structure.
@@ -609,7 +607,7 @@ feature -- Request Chain Handling
 				relinquish_processor_resource (
 					processor_meta_data [l_pid].item_address (current_request_chain_node_id_lock_index),
 					a_client_processor_id,
-					l_wait_condition_counter = 0  -- High Priority
+					l_wait_condition_counter = 0  -- Low priority if there is a wait condition failure.
 				)
 
 				i := i + 1
@@ -772,19 +770,21 @@ feature -- Command/Query Handling
 
 			l_logged_calls_original_count := l_request_chain_node_queue_entry.count
 			if l_logged_calls_original_count = l_request_chain_node_queue_entry.capacity then
-					-- Resize node structure if there is not enough room for the new entry
-					--| FIXME: Resizing 3 extra items may not be optimal in all cases
-				if l_client_request_chain_meta_data /= Void and then
+					-- Resize node structure if there is not enough room for the new entry.
+					--| FIXME Current resizing of 25% larger may not be optimal.
+				if
+					l_client_request_chain_meta_data /= Void and then
 					{ATOMIC_MEMORY_OPERATIONS}.add_integer_32 (l_client_request_chain_meta_data.item_address (request_chain_status_index), 0) = request_chain_status_open
 				then
 						-- We can reuse the data structure if the chain is still open.
-					l_request_chain_node_queue_entry := l_request_chain_node_queue_entry.aliased_resized_area (l_request_chain_node_queue_entry.count + 3)
+					l_request_chain_node_queue_entry := l_request_chain_node_queue_entry.aliased_resized_area ((l_logged_calls_original_count * 4) // 3)
 				else
-					l_request_chain_node_queue_entry := l_request_chain_node_queue_entry.resized_area (l_request_chain_node_queue_entry.count + 3)
+					l_request_chain_node_queue_entry := l_request_chain_node_queue_entry.resized_area ((l_logged_calls_original_count * 4) // 3)
 				end
 				l_request_chain_node_queue [l_request_chain_node_id] := l_request_chain_node_queue_entry
 					-- Readd in case we have a new structure.
 			end
+
 
 			if (processor_meta_data [a_supplier_processor_id]) [processor_status_index] = processor_status_uninitialized then
 					-- We have an uninitialized processor so we must be logging the creation routine.
@@ -901,29 +901,24 @@ feature -- Command/Query Handling
 					end
 				end
 			else
-				if l_client_sync_needed then
-						-- We must be a synchronous call so we need to sync up with the supplier processor.
-					l_request_chain_node_queue_entry.extend (a_call_data)
-					processor_wake_up (a_supplier_processor_id, a_client_processor_id)
-					processor_wait (a_client_processor_id, a_supplier_processor_id)
-				elseif l_is_synchronous then
-					l_request_chain_node_queue_entry.extend (a_call_data)
-					processor_wait (a_client_processor_id, a_supplier_processor_id)
-				else
-						-- Asynchronous logging
-					l_request_chain_node_queue_entry.extend (a_call_data)
-					if l_creation_request_chain_meta_data /= Void then
-							-- We are logging an asynchronous creation routine.
-						start_processor_application_loop (a_supplier_processor_id)
-						wait_for_request_chain_to_begin (a_client_processor_id, a_supplier_processor_id, l_creation_request_chain_meta_data)
-						l_creation_request_chain_meta_data [request_chain_status_index] := request_chain_status_waiting
-						processor_wait (a_client_processor_id, a_supplier_processor_id)
-							-- The new processor is waiting for us to close the chain so we do so and then signal it to continue.
-						signify_end_of_request_chain (a_supplier_processor_id)
-								-- Flag new processor as initialized as the creation routine has now executed.
-						(processor_meta_data [a_supplier_processor_id]) [processor_status_index] := processor_status_initialized
+					-- Add call to request chain node then wait/sync as needed.
+				l_request_chain_node_queue_entry.extend (a_call_data)
+				if l_is_synchronous then
+					if l_client_sync_needed then
 						processor_wake_up (a_supplier_processor_id, a_client_processor_id)
 					end
+					processor_wait (a_client_processor_id, a_supplier_processor_id)
+				elseif l_creation_request_chain_meta_data /= Void then
+						-- We are logging an asynchronous creation routine.
+					start_processor_application_loop (a_supplier_processor_id)
+					wait_for_request_chain_to_begin (a_client_processor_id, a_supplier_processor_id, l_creation_request_chain_meta_data)
+					l_creation_request_chain_meta_data [request_chain_status_index] := request_chain_status_waiting
+					processor_wait (a_client_processor_id, a_supplier_processor_id)
+						-- The new processor is waiting for us to close the chain so we do so and then signal it to continue.
+					signify_end_of_request_chain (a_supplier_processor_id)
+							-- Flag new processor as initialized as the creation routine has now executed.
+					(processor_meta_data [a_supplier_processor_id]) [processor_status_index] := processor_status_initialized
+					processor_wake_up (a_supplier_processor_id, a_client_processor_id)
 				end
 			end
 
@@ -947,7 +942,7 @@ feature -- Command/Query Handling
 			from
 				l_counter := 0
 			until
-				l_chain_status > request_chain_status_open or else l_counter = 100
+				l_chain_status > request_chain_status_open or else l_counter > Max_yield_counter
 			loop
 				processor_yield (a_client_processor_id, l_counter)
 				l_counter := l_counter + 1
@@ -1011,7 +1006,7 @@ feature {NONE} -- Resource Initialization
 			create exception_helper
 
 				-- Initialize the default attributes used to create each SCOOP processor.
-			create default_processor_attributes.make_with_stack_size (1_048_576)
+			create default_processor_attributes.make_with_stack_size (processor_default_stack_size)
 
 			default_request_chain_meta_data_entry := new_request_chain_meta_data_entry (null_processor_id)
 
@@ -1257,6 +1252,8 @@ feature {NONE} -- Resource Initialization
 											-- Check for a query if we are at the last index.
 										if call_data_sync_pid (l_call_ptr) /= null_processor_id then
 											processor_wake_up (call_data_sync_pid (l_call_ptr), a_logical_processor_id)
+												-- Reset yielding.
+											l_wait_counter := 0
 										end
 									end
 									l_executing_node_id_cursor := l_executing_node_id_cursor + 1
@@ -1275,8 +1272,11 @@ feature {NONE} -- Resource Initialization
 									-- Signal client processor to wake up and wait until signalled to continue.
 								processor_wake_up (l_executing_request_chain_node_meta_data [request_chain_client_pid_index], a_logical_processor_id)
 								processor_wait (a_logical_processor_id, l_executing_request_chain_node_meta_data [request_chain_client_pid_index])
+
+									-- Reset yielding.
+								l_wait_counter := 0
 							else
-									-- We are in an idle state, waiting for the request chain to close or to have more calls logged so we yield to another thread.
+									-- We are in an idle state, waiting for the request chain to close or to have more calls logged so we yield to another thread.								
 								processor_yield (a_logical_processor_id, l_wait_counter)
 								l_wait_counter := l_wait_counter + 1
 							end
@@ -1356,6 +1356,10 @@ feature {NONE} -- Resource Initialization
 			-- Processor `a_client_processor_id' is idle.
 		do
 			processor_yield (a_client_processor_id, a_wait_counter)
+			if a_wait_counter > max_yield_counter then
+					-- Fully relinquish processor.
+				processor_sleep (processor_sleep_quantum)
+			end
 		end
 
 	deadlock_counter: NATURAL_16
@@ -1412,11 +1416,20 @@ feature {NONE} -- Resource Initialization
 		do
 			from
 				l_processor_resource := processor_meta_data [a_resource_processor]
+				if not a_high_priority then
+						-- Make sure processors yield CPU if low priority
+					l_wait_counter := processor_spin_lock_limit
+				end
 			until
 				l_exit
 			loop
 					-- Use `a_resource_type' to determine what kind of resource of `a_requesting_processor' needs from `a_resource_processor'.
 					-- Be it exclusive access to request queue, or for access to processor locks for lock passing.
+				if not a_high_priority then
+						-- Yield before attempting request for low priority attempts.
+					processor_yield (a_requesting_processor, l_wait_counter)
+				end
+
 				l_original_value := {ATOMIC_MEMORY_OPERATIONS}.compare_and_swap_integer_32 (l_processor_resource.item_address (a_resource_index), a_requesting_processor, null_processor_id)
 				if l_original_value = null_processor_id then
 						-- The value has been correctly set so Return True and Exit
@@ -1431,16 +1444,13 @@ feature {NONE} -- Resource Initialization
 						Result := resource_lock_previously_attained
 						l_exit := True
 					elseif a_block_until_request_granted then
-							-- If high priority then we perform a spin lock.
 						processor_yield (a_requesting_processor, l_wait_counter)
 						l_wait_counter := l_wait_counter + 1
 					else
 						-- We don't have the lock and we do not block so we exit and return False.
 						Result := resource_lock_unattained
+						processor_yield (a_requesting_processor, l_wait_counter)
 						l_exit := True
-						if not a_high_priority then
-							processor_yield (a_requesting_processor, l_wait_counter)
-						end
 					end
 				end
 			end
@@ -1467,7 +1477,7 @@ feature {NONE} -- Resource Initialization
 			l_original_value := {ATOMIC_MEMORY_OPERATIONS}.compare_and_swap_integer_32 (a_resource_address, null_processor_id, a_requesting_processor)
 			check resource_relinquished: l_original_value = a_requesting_processor end
 			if not a_high_priority then
-				processor_yield (a_requesting_processor, 0)
+				processor_yield (a_requesting_processor, processor_spin_lock_limit)
 			end
 		end
 
@@ -1484,6 +1494,10 @@ feature {NONE} -- Resource Initialization
 
 	scoop_dirty_processor_exception_message: STRING = "SCOOP Processor Dirty Exception"
 		-- Exception message when a client processor has logged a call on a supplier processor that raises an exception.
+
+	scoop_processor_deadlock_detected_message: STRING = "SCOOP Processor Deadlock Detected"
+
+	scoop_request_chain_stack_overflow_message: STRING = "SCOOP Request Chain Stack Overflow"
 
 feature {NONE} -- Atomic Access
 
@@ -1512,7 +1526,10 @@ feature {NONE} -- Scoop Processor Meta Data
 	max_scoop_processors_instantiable: INTEGER_32 = 1536
 		-- Total Number of SCOOP Processors that may be instantiated by Pool including Root.
 
-	max_wait_condition_retry_limit: INTEGER_32 = 1000
+	processor_default_stack_size: INTEGER_32 = 1_048_576
+		-- Size in bytes of stack size of processor.
+
+	max_wait_condition_retry_limit: INTEGER_32 = 10000
 		-- Maximum number of retries a wait condition may have before raising an exception.
 
 	processor_meta_data: SPECIAL [like new_processor_meta_data_entry]
@@ -1538,7 +1555,7 @@ feature {NONE} -- Scoop Processor Meta Data
 			if a_supplier_processor_id /= a_client_processor_id then
 				l_waiting_semaphore_count := {ATOMIC_MEMORY_OPERATIONS}.increment_integer_32 ($waiting_semaphore_count)
 				if l_waiting_semaphore_count = processor_count then
-					raise_scoop_exception ("SCOOP Processor Deadlock detected")
+					raise_scoop_exception (scoop_processor_deadlock_detected_message)
 				end
 				semaphore_client_wait (processor_semaphore_list [a_client_processor_id])
 			end
@@ -1810,7 +1827,7 @@ feature {NONE} -- Externals
 			if a_iteration_number < processor_spin_lock_limit then
 					-- Spin lock
 				check_for_gc
-			elseif a_iteration_number <= max_yield_counter then
+			elseif a_iteration_number < max_yield_counter then
 				processor_cpu_yield
 			else
 					-- Check for any potential deadlock.
@@ -1825,16 +1842,17 @@ feature {NONE} -- Externals
 				end
 				previous_waiting_processor_count := waiting_processor_count
 				if deadlock_counter > deadlock_detection_limit then
-					raise_scoop_exception ("SCOOP Processor Deadlock detected")
+					raise_scoop_exception (scoop_processor_deadlock_detected_message)
+				else
+					processor_cpu_yield
 				end
-				processor_sleep (processor_sleep_quantum)
 			end
 		end
 
 	processor_spin_lock_limit: NATURAL_32 = 100
 		-- Number of iterations to spin lock until yielding.
 
-	max_yield_counter: NATURAL_32 = 4000
+	max_yield_counter: NATURAL_32 = 10_000
 		-- Maximum value of the yield counter.
 
 	processor_sleep_quantum: NATURAL_32 = 15_000_000
