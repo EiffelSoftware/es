@@ -39,10 +39,102 @@ feature -- Access
 			-- Signature information extracted from `a_call'.
 			-- In result, `feature_name' is the name of the feature appeared in `a_call'.
 			-- `operands' is a hash-table. Keys are 0-based operand indices, 0 represents the target,
-			-- 1 represents the first actual argument, and so on.			
+			-- 1 represents the first actual argument, and so on.
+		local
+			l_feature_name: STRING
+			l_operands: HASH_TABLE [STRING, INTEGER]
+			l_nested_signature: TUPLE [target_name: STRING; called_feature: ACCESS_AS]
+			l_called_feature: ACCESS_AS
 		do
-			-- TODO: To implement
+			if attached {NESTED_AS} a_call as l_nested_call then
+
+					-- Get target name and the called feature of this nested call
+				l_nested_signature := get_nested_signature (l_nested_call)
+
+					-- Get the name of the called feature
+				l_called_feature := l_nested_signature.called_feature
+				l_feature_name := text_from_ast (l_called_feature)
+
+					-- Get the arguments of the called feature, if any
+				if l_called_feature.parameters /= Void then
+					l_operands := get_arguments_of_a_call (l_called_feature)
+				else
+					create l_operands.make (1)
+				end
+					-- Add the target of the called feature
+				l_operands.put (l_nested_signature.target_name, 0)
+
+			elseif attached {ACCESS_FEAT_AS} a_call as l_feat_call then
+					-- Set the feature name
+				l_feature_name := text_from_ast (l_feat_call.feature_name)
+
+					-- Get the arguments of the called feature, if any
+				if l_feat_call.parameters /= Void then
+					l_operands := get_arguments_of_a_call (l_feat_call)
+				else
+					create l_operands.make (1)
+				end
+					-- Add target: since it's a unqualified call, target is set to Void
+				l_operands.put (Void, 0)
+
+			end
+
+				-- Add the feature name and the hash table containing the operands to the resulting tuple
+			Result := [l_feature_name, l_operands]
+
 		end
 
+feature {NONE} -- Implementation
+
+	get_nested_signature (a_as: CALL_AS): TUPLE [target_name: STRING; called_feature: ACCESS_AS]
+			-- Returns a tuple containing the target name of a NESTED_AS and the called feature
+		local
+			l_target_name: STRING
+			l_called_feature: ACCESS_AS
+			l_recursive_signature: TUPLE [target_name: STRING; called_feature: ACCESS_AS]
+			l_recursive_target: STRING
+		do
+			if attached {NESTED_AS} a_as as l_nested_as then
+					-- Recursively get signature of message of the nested call
+				l_recursive_signature := get_nested_signature (l_nested_as.message)
+
+					-- Target name is this_target.target_of_nested_message.....
+				l_target_name := text_from_ast (l_nested_as.target)
+				l_recursive_target := l_recursive_signature.target_name
+				if not l_recursive_target.is_empty then
+					l_target_name.append ("." + l_recursive_target)
+				end
+
+					-- Get the name of the called feature
+				l_called_feature := l_recursive_signature.called_feature
+
+					-- Return target name and name of the called feature
+				Result := [l_target_name, l_called_feature]
+
+			elseif attached {ACCESS_FEAT_AS} a_as as l_feat_call then
+				Result := ["", l_feat_call]
+			end
+		end
+
+	get_arguments_of_a_call (a_call: ACCESS_AS): HASH_TABLE [STRING, INTEGER]
+			-- Returns a hash table containing the arguments of an ACCESS_AS
+		local
+			l_parameter_number: INTEGER
+		do
+			if a_call.parameters /= Void then
+				create Result.make (a_call.parameters.count+1)
+				from
+					l_parameter_number := 1
+					a_call.parameters.start
+				until
+					a_call.parameters.after or l_parameter_number > a_call.parameters.count
+				loop
+						-- Iteratively add arguments of the call to the resulting hash table
+					Result.put (text_from_ast (a_call.parameters.item_for_iteration), l_parameter_number)
+					a_call.parameters.forth
+					l_parameter_number := l_parameter_number + 1
+				end
+			end
+		end
 
 end
