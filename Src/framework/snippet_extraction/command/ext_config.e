@@ -72,6 +72,10 @@ feature -- Access
 			-- If attached, the absolute path of the file used to log only snippets
 			-- Default: Void
 
+	should_extract_contract: BOOLEAN
+			-- Should extract contracts from callees of snippets?
+			-- Default: False
+
 feature -- Setting
 
 	set_target_types (a_target_types: like target_types)
@@ -152,6 +156,12 @@ feature -- Setting
 			-- Set `snippet_log_file' with `a_path'.
 		do
 			snippet_log_file := a_path.twin
+		end
+
+	set_should_extract_contract (b: BOOLEAN)
+			-- Set `should_extract_contract' with `b'.
+		do
+			should_extract_contract := b
 		end
 
 end

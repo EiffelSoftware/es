@@ -67,9 +67,9 @@ feature -- Basic operations
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
 			l_retried: BOOLEAN
 		do
-			if l_retried then
-					log.put_string ("> Dropping feature; exception raised during extraction%N")
-			else
+--			if l_retried then
+--					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
+--			else
 				log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
 
 				relevant_target_type := a_type
@@ -116,7 +116,7 @@ feature -- Basic operations
 
 				log.put_string ("[Finished extraction]")
 				log.put_string ("%N%N%N")
-			end
+--			end
 --		rescue
 --			l_retried := True
 --			retry
@@ -177,10 +177,9 @@ feature {NONE} -- Implementation
 				if attached l_variables.item and then attached l_variables.item.actual_type then
 
 					l_type := l_variables.item.actual_type.instantiation_in (l_context_type, l_context_type.associated_class.class_id)
---					l_type := explicit_type_in_context (l_type, l_context_type)
-
 					if l_type.conform_to (context_class, relevant_target_type) then
-						relevant_variables.force_last (l_variables.item, l_variables.key)
+						l_type := explicit_type_in_context (l_type, l_context_type)
+						relevant_variables.force_last (l_type, l_variables.key)
 					end
 				end
 			end
@@ -309,7 +308,7 @@ feature {NONE} -- Implementation
 			log_ast_processing_header (a_variable_name, a_variable_type.name)
 
 				-- Find the entry point for the extraction, that is either the
-				-- `a_compound_as' or smaller compound contained inside.
+				-- `a_compound_as' or smaller compound contained inside.				
 			l_compound_as := find_entry_point (a_compound_as, a_variable_type.name, a_variable_name)
 
 				-- Setup `variable_context'.

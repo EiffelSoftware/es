@@ -50,6 +50,7 @@ feature -- Basic operations
 			l_maximum_cfg_level: AP_INTEGER_OPTION
 			l_maximum_line: AP_INTEGER_OPTION
 			l_log_snippet_file: AP_STRING_OPTION
+			l_extract_contracts: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -97,6 +98,10 @@ feature -- Basic operations
 			l_log_snippet_file.set_description ("Specify the absolute file path to log ONLY snippets. Format: --log-snippet-file <file>.")
 			l_parser.options.force_last (l_log_snippet_file)
 
+			create l_extract_contracts.make_with_long_form ("extract-contract")
+			l_extract_contracts.set_description ("Extract contracts from callees in the snippet.")
+			l_parser.options.force_last (l_extract_contracts)
+
 			l_parser.parse_list (l_args)
 
 			if l_target_types.was_found then
@@ -139,6 +144,10 @@ feature -- Basic operations
 
 			if l_log_snippet_file.was_found then
 				config.set_snippet_log_file (l_log_snippet_file.parameter)
+			end
+
+			if l_extract_contracts.was_found then
+				config.set_should_extract_contract (True)
 			end
 		end
 

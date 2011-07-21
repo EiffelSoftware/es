@@ -66,6 +66,7 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+
 	process_feature (a_target_type: TYPE_A; a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Starts processing snippet extraction with relevant `a_target_type' on `a_class' with `a_feature'.
 		local
@@ -88,11 +89,11 @@ feature {NONE} -- Implementation
 
 				-- Store snippets, if any where extracted.
 			if attached l_extractor.last_snippets as l_snippets and then not l_snippets.is_empty then
+				if config.should_extract_contract then
+					extract_contracts (l_snippets)
+				end
 				write_snippets_to_file (l_snippets, l_basic_file_name, l_origin.out_separator)
 				to_implement ("Store snippets in serialized XML format.")
-
-				create l_ann_extractor
-				l_snippets.do_all (agent l_ann_extractor.extract_from_snippet)
 			end
 
 			if not l_extractor.last_snippets.is_empty and then config.snippet_log_file /= Void then
@@ -287,10 +288,28 @@ feature{NONE} -- Implementation
 
 	log_snippet_in_file (a_snippets: LINKED_LIST [EXT_SNIPPET])
 			-- Log `a_snippets' in specified file.
+		local
+			l_cursor: DS_HASH_TABLE [STRING, STRING]
+			l_output: STRING
+			l_printer: EXT_SNIPPET_ANNOTATION_PRINTER
 		do
+			create l_printer
+			create l_output.make (2048)
 			across a_snippets as l_snippet loop
-				snippet_file.put_string (l_snippet.item.as_string)
+				across l_snippet.item.operands as l_opds loop
+					l_output.append (l_opds.key)
+					l_output.append_character (':')
+					l_output.append_character (' ')
+					l_output.append (output_type_name (l_opds.item))
+					l_output.append_character ('%N')
+				end
+				l_output.append_character ('%N')
+				l_printer.print_snippet (a_snippets.item)
+				l_output.append (l_printer.last_output)
+				l_output.append_character ('%N')
+				snippet_file.put_string (l_output)
 				snippet_file.put_string ("---------------------------------------------------------------------------%N")
+				snippet_file.flush
 			end
 		end
 
@@ -307,6 +326,19 @@ feature{NONE} -- Implementation
 		do
 			if snippet_file /= Void and then snippet_file.is_open_write then
 				snippet_file.close
+			end
+		end
+
+	extract_contracts (a_snippets: LINKED_LIST [EXT_SNIPPET])
+			-- Extract contracts of callees in `a_snippets' as annotations,
+			-- and add those annotations into `a_snippets'.
+		local
+			l_contract_extractor: EXT_CONTRACT_ANNOTATION_EXTRACTOR
+		do
+			create l_contract_extractor
+			across a_snippets as l_snips loop
+				l_contract_extractor.extract_from_snippet (l_snips.item)
+				l_contract_extractor.last_annotations.do_all (agent (l_snips.item.annotations).extend)
 			end
 		end
 

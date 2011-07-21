@@ -19,7 +19,9 @@ inherit
 
 create
 	make,
-	make_with_single_breakpoint
+	make_with_single_breakpoint,
+	make_as_precondition,
+	make_as_postcondition
 
 feature{NONE} -- Initialization
 
@@ -46,6 +48,18 @@ feature{NONE} -- Initialization
 			property := a_property.twin
 			is_pre_state := a_is_pre_state
 			hash_code := debug_output.hash_code
+		end
+
+	make_as_precondition (a_breakpoint: INTEGER; a_property: STRING)
+			-- Initialize Current as a precondition annotation.
+		do
+			make_with_single_breakpoint (a_breakpoint, a_property, True, 1.0)
+		end
+
+	make_as_postcondition (a_breakpoint: INTEGER; a_property: STRING)
+			-- Initialize Current as a postcondition annotation.
+		do
+			make_with_single_breakpoint (a_breakpoint, a_property, False, 1.0)
 		end
 
 feature -- Status report
@@ -83,12 +97,14 @@ feature -- Access
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
 		do
-			create Result.make (1024)
+			create Result.make (256
+			)
 			Result.append (once "Breakpoints: ")
 			Result.append (breakpoints_as_string (breakpoints))
 			Result.append_character (':')
 			Result.append_character (' ')
 			Result.append (text_of_property)
+			Result.append_character ('%N')
 		end
 
 	confidence: DOUBLE

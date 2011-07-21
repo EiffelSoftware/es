@@ -30,7 +30,6 @@ feature{NONE} -- Initialization
 			not_a_content_is_empty: not a_content.is_empty
 		local
 			l_retried: BOOLEAN
-			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			variable_context := a_variable_context.deep_twin
 			holes := a_holes.deep_twin
@@ -38,18 +37,13 @@ feature{NONE} -- Initialization
 			content := a_content.twin
 			source := a_source.twin
 
-			build_debug_output
+--			build_debug_output
 			hash_code := debug_output.hash_code
 
 			create annotations.make
 
 			if not l_retried then
 				fixme ("Seems not to work with 'across' loops. msteindorfer:2011-07-14")
-
-					-- Initialize break point slots.
-				create l_bp_initializer
-				l_bp_initializer.set_current_breakpoint_slot (1)
-				l_bp_initializer.init_from (ast)
 			end
 		rescue
 			l_retried := True
@@ -115,6 +109,8 @@ feature -- Access
 
 	ast: detachable EIFFEL_LIST [INSTRUCTION_AS]
 			-- AST representation of `content'
+		local
+			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			if ast_internal = Void then
 				parser.parse_from_ascii_string (dummy_feature_for_content, Void)
@@ -123,6 +119,10 @@ feature -- Access
 						if attached {ROUTINE_AS} l_body.content as l_routine then
 							if attached {DO_AS} l_routine.routine_body as l_do then
 								ast_internal := l_do.compound
+									-- Initialize break point slots.
+								create l_bp_initializer
+								l_bp_initializer.set_current_breakpoint_slot (1)
+								l_bp_initializer.init_from (ast_internal)
 							end
 						end
 					end
@@ -136,6 +136,36 @@ feature -- Access
 
 	debug_output: STRING
 			-- String that should be displayed in debugger to represent `Current'.
+		local
+			l_cursor: like operands.new_cursor
+			l_output: STRING
+		do
+			create Result.make (256)
+			Result.append (as_string)
+
+				-- Build `source'.
+			Result.append_character ('%N')
+			Result.append (source.out)
+			Result.append_character ('%N')
+		end
+
+--feature -- Debug output
+
+--	build_debug_output
+--			-- Build `debug_output'.
+--		local
+--			l_cursor: like operands.new_cursor
+--			l_output: STRING
+--		do
+--			create debug_output.make (128)
+--			l_output := debug_output
+--			l_output.append (as_string)
+
+--				-- Build `source'.
+--			l_output.append_character ('%N')
+--			l_output.append (source.out)
+--		end
+
 
 	annotations: LINKED_LIST [ANN_ANNOTATION]
 		-- List of annotations associated with current snippet	
@@ -192,19 +222,13 @@ feature{NONE} -- Implementation
 			Result.append (once "end")
 		end
 
-	build_debug_output
-			-- Build `debug_output'.
-		local
-			l_cursor: like operands.new_cursor
-			l_output: STRING
-		do
-			create debug_output.make (128)
-			l_output := debug_output
-			l_output.append (as_string)
+feature{EXT_BINARY_SNIPPET_WRITER} -- Serialization related
 
-				-- Build `source'.
-			l_output.append_character ('%N')
-			l_output.append (source.out)
+	clear_internal
+			-- Clear internal data structure for serialization.
+		do
+			ast_internal := Void
 		end
+
 
 end

@@ -24,12 +24,19 @@ feature -- Access
 	target_variables: HASH_TABLE [STRING, STRING]
 		assign set_target_variables
 			-- Set of target variables at which we are looking at.
+			-- Keys are variable names and values are the names of the
+			-- types of those variables.
 
 	interface_variables: HASH_TABLE [STRING, STRING]
 		assign set_interface_variables
 			-- Set of interface variables.
+			-- Keys are variable names and values are the names of the
+			-- types of those variables.
 
 	variables_of_interest: HASH_TABLE [STRING, STRING]
+			-- Table of relevant/interesting varaibles
+			-- Keys are variable names and values are the names of the
+			-- types of those variables.
 		do
 			create Result.make (10)
 
