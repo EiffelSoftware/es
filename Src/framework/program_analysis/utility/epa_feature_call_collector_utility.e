@@ -53,7 +53,7 @@ feature -- Access
 
 					-- Get the name of the called feature
 				l_called_feature := l_nested_signature.called_feature
-				l_feature_name := text_from_ast (l_called_feature)
+				l_feature_name := l_called_feature.access_name
 
 					-- Get the arguments of the called feature, if any
 				if l_called_feature.parameters /= Void then
