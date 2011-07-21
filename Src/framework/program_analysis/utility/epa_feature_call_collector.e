@@ -12,9 +12,9 @@ inherit
 		redefine
 			-- CALL_AS
 			---- ACCESS_AS
---			process_current_as,
---			process_precursor_as,
---			process_result_as,
+			process_current_as,
+			process_precursor_as,
+			process_result_as,
 			process_access_feat_as,
 			------ ACCESS_FEAT_AS
 			-------- (ACCESS_INV_AS)
@@ -22,12 +22,16 @@ inherit
 			---------- (ACCESS_ID_AS)
 			-------- (STATIC_ACCESS_AS)
 			---- CREATION_EXPR_AS
---			process_bang_creation_expr_as,
---			process_create_creation_expr_as,
+			process_bang_creation_expr_as,
+			process_create_creation_expr_as,
 			---- NESTED_AS
-			process_nested_as--,
+			process_nested_as,
 			---- NESTED_EXPR_AS
---			process_nested_expr_as
+			process_nested_expr_as,
+
+			-- INSTRUCTION_AS
+			---- CREATION_AS
+			process_creation_as
 		end
 
 	EPA_UTILITY
@@ -116,23 +120,68 @@ feature{NONE} -- Implementation
 
 feature -- Visitor Routines
 
+	process_current_as (a_as: CURRENT_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
+	process_precursor_as (a_as: PRECURSOR_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
+	process_result_as (a_as: RESULT_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
+	process_access_feat_as (a_as: ACCESS_FEAT_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
+	process_bang_creation_expr_as (a_as: BANG_CREATION_EXPR_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
+	process_create_creation_expr_as (a_as: CREATE_CREATION_EXPR_AS)
+		do
+			add_call (a_as, a_as.breakpoint_slot)
+		end
+
 	process_nested_as (a_as: NESTED_AS)
 		do
 			if allowed_variables.has (a_as.target.access_name) then
 					-- Add a_as to last_calls if the target of the nested call is a variable that is allowed to access
 				add_call (a_as, a_as.breakpoint_slot)
---					-- TODO: finish implementation ?!
---				precursor (a_as)
 			end
 		end
 
-	process_access_feat_as (a_as: ACCESS_FEAT_AS)
-		local
-			l_name: STRING
+	process_nested_expr_as (a_as: NESTED_EXPR_AS)
 		do
+				-- TODO: only add if target is an allowed variable
 			add_call (a_as, a_as.breakpoint_slot)
---			-- TODO: finish implementation ?!
---			precursor(a_as)
+		end
+
+	process_creation_as (a_as: CREATION_AS)
+		local
+			l_nested_as: NESTED_AS
+			l_creation_expr: CREATE_CREATION_EXPR_AS
+			l_type: TYPE_AS
+		do
+			if a_as.call /= Void then
+
+				if allowed_variables.has (a_as.target.access_name) then
+						-- A creation instruction of the form "create target.creation_procedure" is added as a nested_as
+					create l_nested_as.initialize (a_as.target, a_as.call, Void)
+					add_call (l_nested_as, a_as.breakpoint_slot)
+				end
+
+			else
+					-- TODO: What to do with a creation instruction of the form "create target" ?
+
+			end
 		end
 
 end

@@ -47,7 +47,6 @@ feature -- Access
 			l_called_feature: ACCESS_AS
 		do
 			if attached {NESTED_AS} a_call as l_nested_call then
-
 					-- Get target name and the called feature of this nested call
 				l_nested_signature := get_nested_signature (l_nested_call)
 
@@ -77,7 +76,28 @@ feature -- Access
 					-- Add target: since it's a unqualified call, target is set to Void
 				l_operands.put (Void, 0)
 
+			elseif attached {CREATION_EXPR_AS} a_call as l_creation_expr then
+
+				if l_creation_expr.call /= Void then
+						-- Set the feature name if the creation expression contains a call of a cration procedure
+					l_feature_name := text_from_ast (l_creation_expr.call.feature_name)
+
+						-- Get the arguments of the called feature, if any
+					if l_creation_expr.call.parameters /= Void then
+						l_operands := get_arguments_of_a_call (l_creation_expr.call)
+					else
+						create l_operands.make (1)
+					end
+						-- Since there is no real target in a creation expression, add the type in curly parenthises
+					l_operands.put ("{" + text_from_ast (l_creation_expr.type) + "}",0)
+				else
+						-- TODO: If there's no call of a creation procedure, what shall the feature name look like: "" or "default_create" or what else?
+					l_feature_name := "default_create"
+				end
+
 			end
+
+				-- TODO: signatures of CURRENT_AS / PRECURSOR_AS / RESULT_AS / NESTED_EXPR_AS
 
 				-- Add the feature name and the hash table containing the operands to the resulting tuple
 			Result := [l_feature_name, l_operands]

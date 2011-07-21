@@ -128,6 +128,10 @@ feature {NONE} -- TODO: remove (debugging)
 							log.put_string ("ACCESS_FEAT_AS:%N")
 							log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
 
+						elseif attached {CREATION_EXPR_AS} l_list.item as l_creation_expr then
+							log.put_string ("CREATION_EXPR_AS:%N")
+							log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
+
 						else
 							log.put_string (l_list.item.breakpoint_slot.out + ": " + text_from_ast (l_list.item) + "%N")
 						end
