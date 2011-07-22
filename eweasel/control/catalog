@@ -1282,6 +1282,8 @@ test	launching-n-threads-on-same-object	thread014	tcf pass multithreaded
 test	join-with-timeout-failure			thread015	tcf pass multithreaded
 test	multithreaded-bogus-catcall			thread016	tcf pass multithreaded
 test	main-thread-terminates-before-child	thread017	tcf pass multithreaded
+test    shared-mutex-hang		thread018	tcf pass multithreaded manual
+test	thread-join-crash			thread019	tcf pass multithreaded
 
 -- Execution
 
@@ -2070,6 +2072,7 @@ test	file-flush			lib034	 tcf pass library file
 test	file-position-bad-file-pointer	lib035	 tcf fail library file
 test	format-double-crash				lib036	 tcf fail library ieee
 test	ptf-file-read-to-string		lib037	 tcf pass library file
+test	managed-pointer-invariant	lib038	 tcf pass library invariant
 
 
 -- TUPLE tests
@@ -2649,6 +2652,7 @@ test	scoop-separate-expanded				scoop014 tcf pass scoop expanded
 test	scoop-separate-patterns-crash			scoop015 tcf pass scoop finalizing
 test	scoop-finalize-c-failure			scoop016 tcf pass scoop finalizing c_compilation
 test	scoop-separate-call-to-constant			scoop017 tcf pass scoop execution
+test	scoop-once-per-object				scoop018 tcf pass scoop execution incrementality once
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

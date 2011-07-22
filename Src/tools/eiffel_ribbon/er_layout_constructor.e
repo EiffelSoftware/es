@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 			create constants
 			create shared_singleton
 			create tree_node_factory.make
-			create vision_xml_translator.make
+
 			create widget
 			create content.make_with_widget (widget, "ER_LAYOUT_CONSTRUCTOR")
 
@@ -29,6 +29,10 @@ feature {NONE} -- Initialization
 
 			widget.drop_actions.extend (agent on_root_tree_drop)
 			widget.drop_actions.set_veto_pebble_function (agent on_veto_root_tree_drop)
+
+			if attached shared_singleton.project_info_cell.item as l_project_info then
+				l_project_info.set_ribbon_window_count (shared_singleton.layout_constructor_list.count)
+			end
 		end
 
 	build_docking_content
@@ -146,7 +150,7 @@ feature -- Query
 			-- All tree items which data's command name equal `a_command_name'
 		do
 			create Result.make (5)
-			check widget.count >= 1 end
+--			check widget.count >= 1 end
 			from
 				widget.start
 			until
@@ -328,73 +332,22 @@ feature {NONE} -- Action handing
 feature -- Persistance
 
 	save_tree
-			-- save to Microsoft Ribbon makrup XML directly
+			-- Save to Microsoft Ribbon makrup XML directly
+			-- Save different Window's Ribbon to different xml markup files
 		local
-			l_printer: XML_NODE_PRINTER
-			l_output_stream: ER_XML_OUTPUT_STREAM
-			l_document: XML_DOCUMENT
+			l_factory: ER_CODE_GENERATOR_FACTORY
 		do
-			vision_xml_translator.save_xml_nodes_for_all_layout_constructors
-			l_document := vision_xml_translator.xml_document
-
-			create l_printer.make
-
-			create l_output_stream.make
-			l_printer.set_output (l_output_stream)
-
-			l_document.process (l_printer)
-
-			l_output_stream.close
+			create l_factory
+			l_factory.tree_manager.save_tree
 		end
 
-	load_tree
+	load_tree (a_ribbon_window_count: INTEGER)
 			--
 		local
-			l_manager: ER_XML_TREE_MANAGER
-			l_vision2_visitor: ER_LOAD_VISION_TREE_VISITOR
-			l_command_updater: ER_UPDATE_COMMAND_VISITOR
-			l_separate_tab_visitor: ER_SEPARATE_WINDOW_TAB_VISITOR
-			l_drop_down_gallery_visitor: ER_DROP_DOWN_GALLERY_INFO_VISITOR
-			l_update_application_menu: ER_UPDATE_APPLICATION_MENU_INFO_VISITOR
-			l_split_button_gallery_visitor: ER_SPLIT_BUTTON_GALLERY_INFO_VISITOR
-			l_update_context_popups_visitor: ER_UPDATE_CONTEXT_POPUP_VISITOR
-			l_load_help_button_visitor: ER_LOAD_HELP_BUTTON_VISITOR
-			l_load_quick_access_toolbar_visitor: ER_LOAD_QUICK_ACCESS_TOOLBAR_VISITOR
-			l_size_definition_visitor: ER_SIZE_DEFINITION_VISITOR
+			l_factory: ER_CODE_GENERATOR_FACTORY
 		do
-			l_manager := shared_singleton.xml_tree_manager.item
-			l_manager.load_tree
-
-			if attached l_manager.xml_root as l_root then
-				create l_vision2_visitor
-				l_root.accept (l_vision2_visitor)
-
-				create l_separate_tab_visitor.make
-				l_root.accept (l_separate_tab_visitor)
-				create l_drop_down_gallery_visitor
-				l_root.accept (l_drop_down_gallery_visitor)
-				create l_split_button_gallery_visitor
-				l_root.accept (l_split_button_gallery_visitor)
-				create l_update_application_menu
-				l_root.accept (l_update_application_menu)
-
-				create l_update_context_popups_visitor
-				l_root.accept (l_update_context_popups_visitor)
-
-				create l_load_help_button_visitor
-				l_root.accept (l_load_help_button_visitor)
-
-				create l_load_quick_access_toolbar_visitor
-				l_root.accept (l_load_quick_access_toolbar_visitor)
-
-				create l_command_updater
-				l_root.accept (l_command_updater)
-
-				create l_size_definition_visitor
-				l_root.accept (l_size_definition_visitor)
-			else
-				check False end
-			end
+			create l_factory
+			l_factory.tree_manager.load_tree (a_ribbon_window_count)
 		end
 
 feature {NONE} -- Implementation
@@ -458,6 +411,4 @@ feature {NONE} -- Implementation
 	tree_node_factory: ER_TREE_NODE_DATA_FACTORY
 			--
 
-	vision_xml_translator: ER_VISION_XML_TREE_TRANSLATOR
-			--
 end
