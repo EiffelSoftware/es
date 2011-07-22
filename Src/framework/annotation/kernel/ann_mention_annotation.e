@@ -4,7 +4,7 @@ note
 	revision: "$Revision$"
 
 class
-	EXT_MENTION_ANNOTATION
+	ANN_MENTION_ANNOTATION
 
 inherit
 	ANN_ANNOTATION
@@ -75,6 +75,14 @@ feature -- Output
 			Result.append (once "(")
 			Result.append (expression)
 			Result.append (once ")")
+		end
+
+feature -- Process
+
+	process (a_visitor: ANN_VISITOR)
+			-- Process current with `a_visitor'.
+		do
+			a_visitor.process_mention_annotation (Current)
 		end
 
 end

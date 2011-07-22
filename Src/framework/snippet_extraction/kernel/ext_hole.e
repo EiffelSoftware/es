@@ -7,7 +7,7 @@ class
 	EXT_HOLE
 
 inherit
-	ANN_SHARED_EQUALITY_TESTERS
+	EXT_SHARED_EQUALITY_TESTERS
 		redefine
 			out
 		end
@@ -29,7 +29,7 @@ feature -- Access
 			Result.append (hole_id.out)
 		end
 
-	annotations: DS_HASH_SET [EXT_MENTION_ANNOTATION]
+	annotations: DS_HASH_SET [ANN_MENTION_ANNOTATION]
 		assign set_annotations
 			-- Set of (conditionally) mentioned expressions in the hole.
 

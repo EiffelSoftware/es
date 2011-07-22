@@ -76,6 +76,10 @@ feature -- Access
 			-- Should extract contracts from callees of snippets?
 			-- Default: False
 
+	should_normalize_variable_name: BOOLEAN
+			-- Should normalize variable names in snippets?
+			-- Default: False
+
 feature -- Setting
 
 	set_target_types (a_target_types: like target_types)
@@ -162,6 +166,12 @@ feature -- Setting
 			-- Set `should_extract_contract' with `b'.
 		do
 			should_extract_contract := b
+		end
+
+	set_should_normalize_variable_name (b: BOOLEAN)
+			-- Set `should_normalize_variable_name' with `b'.
+		do
+			should_normalize_variable_name := b
 		end
 
 end

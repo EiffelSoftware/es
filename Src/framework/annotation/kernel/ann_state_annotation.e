@@ -110,6 +110,14 @@ feature -- Access
 	confidence: DOUBLE
 			-- Confidence of this annotation
 
+feature -- Process
+
+	process (a_visitor: ANN_VISITOR)
+			-- Process current with `a_visitor'.
+		do
+			a_visitor.process_state_annotation (Current)
+		end
+
 invariant
 	confidence_valid: confidence >= 0.0 and confidence <= 1.0
 

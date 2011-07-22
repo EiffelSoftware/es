@@ -7,14 +7,14 @@ class
 	EXT_MENTION_ANNOTATION_EXTRACTOR
 
 inherit
-	EXT_ANNOTATION_EXTRACTOR [EXT_MENTION_ANNOTATION]
+	EXT_ANNOTATION_EXTRACTOR [ANN_MENTION_ANNOTATION]
 		redefine
 			extract_from_ast
 		end
 
-	EXT_SHARED_EQUALITY_TESTERS
-
 	REFACTORING_HELPER
+
+	ANN_SHARED_EQUALITY_TESTERS
 
 create
 	make_from_variable_context
@@ -45,7 +45,7 @@ feature -- Basic operations
 			-- Extract annotations from `a_snippet' and
 			-- make results available in `last_annotations'.
 		local
-			l_annotation: EXT_MENTION_ANNOTATION
+			l_annotation: ANN_MENTION_ANNOTATION
 		do
 			create last_annotations.make_equal (10)
 			last_annotations.set_equality_tester (mention_annotation_equality_tester)

@@ -64,8 +64,10 @@ feature -- Basic operations
 									-- Collect precondition annotations.
 								across precondition_of_feature (l_feat.feat, l_feat.context_class) as l_pres loop
 									l_rewriter.rewrite (l_pres.item.ast, l_feature, l_feature.written_class, l_class, l_target_name, l_signature.operands)
-									create l_pre_annotation.make_as_precondition (l_bp_slot, l_rewriter.assertion)
-									last_annotations.force_last (l_pre_annotation)
+									if across l_rewriter.mentioned_actual_args as l_args all l_signature.operands.has (l_args.key) end then
+										create l_pre_annotation.make_as_precondition (l_bp_slot, l_rewriter.assertion)
+										last_annotations.force_last (l_pre_annotation)
+									end
 								end
 
 									-- Collect postcondition annotations.
@@ -73,8 +75,10 @@ feature -- Basic operations
 									fixme("For simplicity, we do not rewrite postconditions of queries. 21.07.2011")
 									across postcondition_of_feature (l_feat.feat, l_feat.context_class) as l_posts loop
 										l_rewriter.rewrite (l_posts.item.ast, l_feature, l_feature.written_class, l_class, l_target_name, l_signature.operands)
-										create l_post_annotation.make_as_postcondition (l_bp_slot, l_rewriter.assertion)
-										last_annotations.force_last (l_post_annotation)
+										if across l_rewriter.mentioned_actual_args as l_args all l_signature.operands.has (l_args.key) end then
+											create l_post_annotation.make_as_postcondition (l_bp_slot, l_rewriter.assertion)
+											last_annotations.force_last (l_post_annotation)
+										end
 									end
 								end
 							end

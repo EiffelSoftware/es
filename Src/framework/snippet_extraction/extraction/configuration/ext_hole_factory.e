@@ -19,7 +19,7 @@ feature -- Initialization
 
 feature -- Access
 
-	new_hole (a_annotations: DS_HASH_SET [EXT_MENTION_ANNOTATION]): EXT_HOLE
+	new_hole (a_annotations: DS_HASH_SET [ANN_MENTION_ANNOTATION]): EXT_HOLE
 		do
 				-- Create and setup `{EXT_HOLE}'.
 			create Result

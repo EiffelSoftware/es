@@ -67,9 +67,9 @@ feature -- Basic operations
 			l_path_initializer: ETR_AST_PATH_INITIALIZER
 			l_retried: BOOLEAN
 		do
---			if l_retried then
---					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
---			else
+			if l_retried then
+					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
+			else
 				log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
 
 				relevant_target_type := a_type
@@ -116,10 +116,10 @@ feature -- Basic operations
 
 				log.put_string ("[Finished extraction]")
 				log.put_string ("%N%N%N")
---			end
---		rescue
---			l_retried := True
---			retry
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 feature {NONE} -- Implementation

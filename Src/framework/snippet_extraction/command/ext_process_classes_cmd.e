@@ -74,7 +74,10 @@ feature {NONE} -- Implementation
 			l_origin: EXT_SNIPPET_ORIGIN
 			l_extractor: EXT_DEFERRED_SNIPPET_EXTRACTOR
 			l_ann_extractor: EXT_PROBABILITY_ANNOTATION_EXTRACTOR
+			l_normalizer: EXT_SNIPPET_VARIABLE_NAME_NORMALIZER
+			l_snips: LINKED_SET [EXT_SNIPPET]
 		do
+			create l_normalizer
 			if attached config.namespace as l_namespace then
 				create l_origin.make (l_namespace, a_class.name, a_feature.feature_name)
 			else
@@ -87,17 +90,29 @@ feature {NONE} -- Implementation
 			create {EXT_SNIPPET_EXTRACTOR} l_extractor.make (config)
 			l_extractor.extract_from_feature (a_target_type, a_feature, a_class, l_origin)
 
+			l_snips := l_extractor.last_snippets
+
 				-- Store snippets, if any where extracted.
 			if attached l_extractor.last_snippets as l_snippets and then not l_snippets.is_empty then
-				if config.should_extract_contract then
-					extract_contracts (l_snippets)
+				create l_snips.make
+				if config.should_normalize_variable_name then
+						-- Snippet variable name normalization, if configured.
+					across l_extractor.last_snippets as s loop
+						l_snips.extend (l_normalizer.normalized_snippet (s.item))
+					end
+				else
+					l_snips.append (l_extractor.last_snippets)
 				end
-				write_snippets_to_file (l_snippets, l_basic_file_name, l_origin.out_separator)
-				to_implement ("Store snippets in serialized XML format.")
-			end
 
-			if not l_extractor.last_snippets.is_empty and then config.snippet_log_file /= Void then
-				log_snippet_in_file (l_extractor.last_snippets)
+				if config.should_extract_contract then
+					extract_contracts (l_snips)
+				end
+				write_snippets_to_file (l_snips, l_basic_file_name, l_origin.out_separator)
+				to_implement ("Store snippets in serialized XML format.")
+
+				if config.snippet_log_file /= Void then
+					log_snippet_in_file (l_snips)
+				end
 			end
 		end
 

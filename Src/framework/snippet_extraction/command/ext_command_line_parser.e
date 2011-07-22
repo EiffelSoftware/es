@@ -51,6 +51,7 @@ feature -- Basic operations
 			l_maximum_line: AP_INTEGER_OPTION
 			l_log_snippet_file: AP_STRING_OPTION
 			l_extract_contracts: AP_FLAG
+			l_normalizer: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -102,6 +103,10 @@ feature -- Basic operations
 			l_extract_contracts.set_description ("Extract contracts from callees in the snippet.")
 			l_parser.options.force_last (l_extract_contracts)
 
+			create l_normalizer.make_with_long_form ("normalize-variable")
+			l_normalizer.set_description ("Should variable names in snippets be normalized?")
+			l_parser.options.force_last (l_normalizer)
+
 			l_parser.parse_list (l_args)
 
 			if l_target_types.was_found then
@@ -148,6 +153,10 @@ feature -- Basic operations
 
 			if l_extract_contracts.was_found then
 				config.set_should_extract_contract (True)
+			end
+
+			if l_normalizer.was_found then
+				config.set_should_normalize_variable_name (True)
 			end
 		end
 

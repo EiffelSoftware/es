@@ -90,6 +90,13 @@ feature -- Access
 			end
 		end
 
+feature -- Process
+
+	process (a_visitor: ANN_VISITOR)
+			-- Process current with `a_visitor'.
+		deferred
+		end
+
 feature{NONE} -- Implementation
 
 	locations_breakpoints: like breakpoints

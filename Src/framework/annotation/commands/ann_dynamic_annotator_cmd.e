@@ -44,12 +44,14 @@ feature -- Basic operations
 			remove_breakpoint (debugger_manager, config.root_class)
 
 				-- Setup the expressions to evaluate.
+			create l_expressions.make (2)
+			l_expressions.set_equality_tester (expression_equality_tester)
+
 			l_class := config.locations.first.context_class
 			l_feature := config.locations.first.feature_
 			create l_exp.make_with_text (l_class, l_feature, "i + 5", l_class)
-
-			create l_expressions.make (2)
-			l_expressions.set_equality_tester (expression_equality_tester)
+			l_expressions.force_last (l_exp)
+			create l_exp.make_with_text (l_class, l_feature, "i + 7", l_class)
 			l_expressions.force_last (l_exp)
 
 				-- Register expression evaluation to break points.
@@ -71,6 +73,7 @@ feature{NONE} -- Implementation
 			-- `a_state' is a set of expression evaluations.
 		do
 			io.put_string ("------------------------%N")
+			io.put_string ("Breakpoint: " + a_bp.location.breakable_line_number.out + "%N")
 			io.put_string (a_state.debug_output)
 			io.put_string ("%N"
 			)
