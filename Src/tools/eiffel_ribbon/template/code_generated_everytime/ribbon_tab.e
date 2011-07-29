@@ -12,6 +12,6 @@ inherit
 	$INDEX_2
 
 create
-	{EV_RIBBON} make_with_command_list
+	{EV_RIBBON, EV_RIBBON_TAB_GROUP} make_with_command_list
 	
 end
