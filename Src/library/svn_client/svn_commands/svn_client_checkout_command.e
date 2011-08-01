@@ -10,19 +10,19 @@ class
 inherit
 	SVN_CLIENT_COMMAND
 		redefine
-			make
+			execute
 		end
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Execute
 
-	make(a_svn_client: SVN_CLIENT)
+	execute
 		do
-			Precursor (a_svn_client)
-			put_option ("--non-interactive", "")
-			put_option ("--trust-server-cert", "")
+			put_option (svn_client.global_options.non_interactive, "")
+			put_option (svn_client.global_options.trust_server_certificates, "")
+			Precursor
 		end
 
 feature {NONE} -- Result parsing

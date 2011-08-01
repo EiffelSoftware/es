@@ -45,6 +45,7 @@ feature -- Execute
 			l_args.append (options_to_args)
 
 			launch_process (l_args)
+			options.wipe_out
 		end
 
 feature -- Access

@@ -29,6 +29,9 @@ note
 class
 	SVN_CLIENT
 
+inherit
+		SVN_OPTIONS
+
 create
 	make
 

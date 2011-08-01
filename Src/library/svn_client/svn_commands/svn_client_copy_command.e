@@ -38,9 +38,13 @@ feature -- Execute
 			l_args.extend (command_name)
 			l_args.extend (source)
 			l_args.extend (target)
+			if not options.has (svn_client.copy_options.message) then
+				put_option (svn_client.copy_options.message, "")
+			end
 			l_args.append (options_to_args)
 
 			launch_process (l_args)
+			options.wipe_out
 		end
 
 feature -- Element change

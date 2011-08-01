@@ -635,7 +635,7 @@ feature {NONE} -- Implementation
 			if attached {EB_GROUPS_GRID_HEADER_ITEM}a_row.parent_row_root.item(1) as l_header and then l_header.is_clusters_group then
 				if attached {EB_GROUPS_GRID_FOLDER_ITEM}a_row.item (1) as f then
 					svn_client.set_working_path (f.full_path)
-					svn_client.status.put_option ("--depth", "immediates")
+					svn_client.status.put_option (svn_client.status_options.depth, svn_client.status_options.depth_immediates)
 					svn_client.status.set_on_finish_command (agent on_retrieved_status (f))
 					svn_client.status.execute
 				end

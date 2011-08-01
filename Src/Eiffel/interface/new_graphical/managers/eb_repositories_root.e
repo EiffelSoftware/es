@@ -58,12 +58,12 @@ feature -- Element change
 			-- Receive the items in the repository and add them to the Current root item
 		do
 			if attached username as u then
-				svn_client.list.put_option ("--username", u)
+				svn_client.list.put_option (svn_client.global_options.username, u)
 			end
 			if attached password as p then
-				svn_client.list.put_option ("--password", p)
+				svn_client.list.put_option (svn_client.global_options.password, p)
 			end
-			svn_client.list.put_option ("--depth", "infinity")
+			svn_client.list.put_option (svn_client.list_options.depth, svn_client.list_options.depth_infinity)
 			svn_client.list.set_on_finish_command (agent did_load_repository)
 			svn_client.list.execute
 		end

@@ -2,7 +2,7 @@ note
 	description: "[
 					Object that applies the differences between two sources to a working copy path.
 					The two sources are represented by `source' and `target' paths (or URLs), while
-					the working copy path is the path set in the SVN client object. 
+					the working copy path is the path set in the SVN client object.
 					]"
 	author: ""
 	date: "$Date$"
@@ -45,6 +45,7 @@ feature -- Execute
 			l_args.append (options_to_args)
 
 			launch_process (l_args)
+			options.wipe_out
 		end
 
 feature -- Element change

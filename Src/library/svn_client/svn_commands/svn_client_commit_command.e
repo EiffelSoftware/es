@@ -10,18 +10,20 @@ class
 inherit
 	SVN_CLIENT_COMMAND
 		redefine
-			make
+			execute
 		end
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Execute
 
-	make(a_svn_client: SVN_CLIENT)
+	execute
 		do
-			Precursor (a_svn_client)
-			put_option ("-m", "")
+			if not options.has (svn_client.commit_options.message) then
+				put_option (svn_client.commit_options.message, "")
+			end
+			Precursor
 		end
 
 feature {NONE} -- Result parsing
