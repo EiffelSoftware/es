@@ -116,9 +116,6 @@ feature {NONE} -- Command agents
 
 	command_data_received(a_data_received: STRING_8)
 		do
-			-- For debugging purposes
-			print (a_data_received)
-
 			internal_last_result.append (a_data_received)
 
 			-- Call handler

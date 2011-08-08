@@ -52,10 +52,15 @@ feature -- Access
 	password: detachable STRING_32
 		-- Password for Current repository, if any
 
+	development_window: EB_DEVELOPMENT_WINDOW
+		-- The development window in which Current repository has been added
+
 feature -- Element change
 
 	load_repository
 			-- Receive the items in the repository and add them to the Current root item
+		local
+			l_tools: ES_SHELL_TOOLS
 		do
 			if attached username as u then
 				svn_client.list.put_option (svn_client.global_options.username, u)
@@ -65,6 +70,16 @@ feature -- Element change
 			end
 			svn_client.list.put_option (svn_client.list_options.depth, svn_client.list_options.depth_infinity)
 			svn_client.list.set_on_finish_command (agent did_load_repository)
+
+			-- If the SVN Output tool is open, print the result in that view
+			if development_window /= Void then
+				l_tools := development_window.shell_tools
+				if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+					svn_client.list.set_on_data_received (agent l_tool.append_output)
+					svn_client.list.set_on_error_occurred (agent did_fail_loading_repository)
+				end
+			end
+
 			svn_client.list.execute
 		end
 
@@ -86,6 +101,13 @@ feature -- Element change
 	set_password (a_password: detachable like password)
 		do
 			password := a_password
+		end
+
+	set_development_window (a_development_window: like development_window)
+		require
+			development_window_not_void: a_development_window /= Void
+		do
+			development_window := a_development_window
 		end
 
 feature {NONE} -- SVN client response
@@ -110,6 +132,18 @@ feature {NONE} -- SVN client response
 				end
 
 				l_list.forth
+			end
+		end
+
+	did_fail_loading_repository
+		local
+			l_tools: ES_SHELL_TOOLS
+		do
+			if development_window /= Void then
+				l_tools := development_window.shell_tools
+				if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+					l_tool.append_output (svn_client.list.last_error)
+				end
 			end
 		end
 

@@ -45,7 +45,7 @@ feature -- Basic operations
 
 	new_repository (a_repository_url: STRING_8; a_username, a_password: detachable STRING_8)
 		do
-			repositories.add_repository (a_repository_url, a_username, a_password)
+			repositories.add_repository (a_repository_url, a_username, a_password, development_window)
 		end
 
 	remove_repository

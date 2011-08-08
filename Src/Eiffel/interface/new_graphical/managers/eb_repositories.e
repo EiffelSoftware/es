@@ -68,16 +68,18 @@ feature -- Status report
 
 feature -- Element change
 
-	add_repository (a_repository_url: STRING_32; a_username, a_password: detachable STRING_32)
+	add_repository (a_repository_url: STRING_32; a_username, a_password: detachable STRING_32; a_development_window: EB_DEVELOPMENT_WINDOW)
 			-- Add a new repository to `Current'
 		require
 			valid_repository_url: a_repository_url /= Void and then not a_repository_url.is_empty
+			development_window_not_void: a_development_window /= Void
 		local
 			l_repositories_root: EB_REPOSITORIES_ROOT
 		do
 			create l_repositories_root.make (a_repository_url, Current)
 			l_repositories_root.set_username (a_username)
 			l_repositories_root.set_password (a_password)
+			l_repositories_root.set_development_window (a_development_window)
 
 			l_repositories_root.load_repository
 

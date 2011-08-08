@@ -630,6 +630,8 @@ feature {NONE} -- Implementation
 			-- Perform a `svn status .' command at the path corresponding to the item in `a_row'.
 		require
 			row_not_void: a_row /= Void
+		local
+			l_tools: ES_SHELL_TOOLS
 		do
 				-- Status only applies to items in the cluster group
 			if attached {EB_GROUPS_GRID_HEADER_ITEM}a_row.parent_row_root.item(1) as l_header and then l_header.is_clusters_group then
@@ -637,6 +639,10 @@ feature {NONE} -- Implementation
 					svn_client.set_working_path (f.full_path)
 					svn_client.status.put_option (svn_client.status_options.depth, svn_client.status_options.depth_immediates)
 					svn_client.status.set_on_finish_command (agent on_retrieved_status (f))
+					l_tools := window.shell_tools
+					if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+						svn_client.status.set_on_data_received (agent l_tool.append_output)
+					end
 					svn_client.status.execute
 				end
 			end
@@ -742,10 +748,15 @@ feature {NONE} -- Subversion context menu commands
 			pebble_not_void: a_pebble /= Void
 		local
 			l_path: like path_from_pebble
+			l_tools: ES_SHELL_TOOLS
 		do
 			l_path := path_from_pebble (a_pebble)
 			svn_client.set_working_path (l_path.working_path)
 			svn_client.add.set_target (l_path.target)
+			l_tools := window.shell_tools
+			if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+				svn_client.add.set_on_data_received (agent l_tool.append_output)
+			end
 			svn_client.add.set_on_error_occurred (agent svn_add_error)
 			svn_client.add.execute
 		end
@@ -756,10 +767,16 @@ feature {NONE} -- Subversion context menu commands
 			working_path_not_void: a_working_path /= Void
 			target_not_void: a_target /= Void
 			message_not_void: a_message /= Void
+		local
+			l_tools: ES_SHELL_TOOLS
 		do
 			svn_client.set_working_path (a_working_path)
 			svn_client.commit.set_target (a_target)
-			svn_client.commit.put_option ("-m", a_message)
+			svn_client.commit.put_option (svn_client.commit_options.message, a_message)
+			l_tools := window.shell_tools
+			if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+				svn_client.commit.set_on_data_received (agent l_tool.append_output)
+			end
 			svn_client.commit.execute
 		end
 
@@ -769,10 +786,15 @@ feature {NONE} -- Subversion context menu commands
 			pebble_not_void: a_pebble /= Void
 		local
 			l_path: like path_from_pebble
+			l_tools: ES_SHELL_TOOLS
 		do
 			l_path := path_from_pebble (a_pebble)
 			svn_client.set_working_path (l_path.working_path)
 			svn_client.update.set_target (l_path.target)
+			l_tools := window.shell_tools
+			if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+				svn_client.update.set_on_data_received (agent l_tool.append_output)
+			end
 			svn_client.update.execute
 		end
 
