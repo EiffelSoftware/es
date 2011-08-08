@@ -52,6 +52,7 @@ feature -- Basic operations
 			l_log_snippet_file: AP_STRING_OPTION
 			l_extract_contracts: AP_FLAG
 			l_normalizer: AP_FLAG
+			l_extract_fragments: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -107,6 +108,10 @@ feature -- Basic operations
 			l_normalizer.set_description ("Should variable names in snippets be normalized?")
 			l_parser.options.force_last (l_normalizer)
 
+			create l_extract_fragments.make_with_long_form ("extract-fragment")
+			l_extract_fragments.set_description ("Extract fragments of the snippets.")
+			l_parser.options.force_last (l_extract_fragments)
+
 			l_parser.parse_list (l_args)
 
 			if l_target_types.was_found then
@@ -157,6 +162,10 @@ feature -- Basic operations
 
 			if l_normalizer.was_found then
 				config.set_should_normalize_variable_name (True)
+			end
+
+			if l_extract_fragments.was_found then
+				config.set_should_extract_fragment (True)
 			end
 		end
 

@@ -13,7 +13,8 @@ inherit
 			process_current_as,
 --			process_id_as,
 			process_nested_as,
-			process_result_as
+			process_result_as,
+			process_creation_as
 		end
 
 	REFACTORING_HELPER
@@ -139,5 +140,13 @@ feature {NONE} -- Access Recording
 --			end
 --			Precursor (l_as)
 --		end
+
+	process_creation_as (l_as: CREATION_AS)
+		local
+			l_nested: NESTED_AS
+		do
+			create l_nested.initialize (l_as.target, l_as.call, Void)
+			l_nested.process (Current)
+		end
 
 end

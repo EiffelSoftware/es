@@ -80,6 +80,10 @@ feature -- Access
 			-- Should normalize variable names in snippets?
 			-- Default: False
 
+	should_extract_fragment: BOOLEAN
+			-- Should fragments of snippets be extracted?
+			-- Default: False
+
 feature -- Setting
 
 	set_target_types (a_target_types: like target_types)
@@ -172,6 +176,12 @@ feature -- Setting
 			-- Set `should_normalize_variable_name' with `b'.
 		do
 			should_normalize_variable_name := b
+		end
+
+	set_should_extract_fragment (b: BOOLEAN)
+			-- Set `should_extract_fragment' with `b'.
+		do
+			should_extract_fragment := b
 		end
 
 end

@@ -42,6 +42,8 @@ feature{NONE} -- Initialization
 
 			create annotations.make
 
+			create fragments.make
+
 			if not l_retried then
 				fixme ("Seems not to work with 'across' loops. msteindorfer:2011-07-14")
 			end
@@ -148,6 +150,9 @@ feature -- Access
 			Result.append (source.out)
 			Result.append_character ('%N')
 		end
+
+	fragments: LINKED_LIST [EXT_FRAGMENT]
+			-- Fragments of Current snippet
 
 --feature -- Debug output
 

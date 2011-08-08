@@ -68,54 +68,56 @@ feature -- Basic operations
 			l_retried: BOOLEAN
 		do
 			if l_retried then
-					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
+				log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
 			else
-				log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
+				if a_type.has_associated_class and then a_context_class.name_in_upper /~ a_type.associated_class.name_in_upper then
+					log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
 
-				relevant_target_type := a_type
-				feature_ := a_feature
-				context_class := a_context_class
-				if attached a_source then
-					origin := a_source
-				else
-					create origin.make ("unknown", "unknown", "unknown")
-				end
-
-				create last_snippets.make
-
-					-- Collect relevant variables from `a_feature'.
-				collect_relevant_variables
-
-				if relevant_variables.is_empty then
-					log.put_string ("> Dropping feature; no relevant variables for snippet extraction found%N")
-				else
-						-- Process the feature body to extract snippets for each relevant variable.
-					l_compound_as := body_compound_ast_from_feature (a_feature)
-
-						-- If features contains body compound, copy AST by roundtripping: AST -> TEXT -> AST
-					if l_compound_as /= Void and then
-						attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast (l_compound_as)) as l_compound then
-
-						log_relevant_variables (relevant_variables)
-
-							-- Assign path IDs to nodes, print AST and continue processing.
-						create l_path_initializer
-						l_path_initializer.process_from_root (l_compound)
-
-						log.put_string ("%N")
-						log_ast_structure (l_compound)
-						log.put_string ("%N")
-						log_ast_text (l_compound)
-						log.put_string ("%N")
-
-						relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
+					relevant_target_type := a_type
+					feature_ := a_feature
+					context_class := a_context_class
+					if attached a_source then
+						origin := a_source
 					else
-						log.put_string ("> Dropping feature; empty AST body%N")
+						create origin.make ("unknown", "unknown", "unknown")
 					end
-				end
 
-				log.put_string ("[Finished extraction]")
-				log.put_string ("%N%N%N")
+					create last_snippets.make
+
+						-- Collect relevant variables from `a_feature'.
+					collect_relevant_variables
+
+					if relevant_variables.is_empty then
+						log.put_string ("> Dropping feature; no relevant variables for snippet extraction found%N")
+					else
+							-- Process the feature body to extract snippets for each relevant variable.
+						l_compound_as := body_compound_ast_from_feature (a_feature)
+
+							-- If features contains body compound, copy AST by roundtripping: AST -> TEXT -> AST
+						if l_compound_as /= Void and then
+							attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast (l_compound_as)) as l_compound then
+
+							log_relevant_variables (relevant_variables)
+
+								-- Assign path IDs to nodes, print AST and continue processing.
+							create l_path_initializer
+							l_path_initializer.process_from_root (l_compound)
+
+							log.put_string ("%N")
+							log_ast_structure (l_compound)
+							log.put_string ("%N")
+							log_ast_text (l_compound)
+							log.put_string ("%N")
+
+							relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
+						else
+							log.put_string ("> Dropping feature; empty AST body%N")
+						end
+					end
+
+					log.put_string ("[Finished extraction]")
+					log.put_string ("%N%N%N")
+				end
 			end
 		rescue
 			l_retried := True
@@ -175,11 +177,15 @@ feature {NONE} -- Implementation
 			l_context_type := context_class.constraint_actual_type
 			across l_candidates as l_variables loop
 				if attached l_variables.item and then attached l_variables.item.actual_type then
-
 					l_type := l_variables.item.actual_type.instantiation_in (l_context_type, l_context_type.associated_class.class_id)
 					if l_type.conform_to (context_class, relevant_target_type) then
 						l_type := explicit_type_in_context (l_type, l_context_type)
-						relevant_variables.force_last (l_type, l_variables.key)
+						if l_type.has_associated_class and then relevant_target_type.has_associated_class then
+							if l_type.associated_class.name_in_upper ~ relevant_target_type.associated_class.name_in_upper then
+								relevant_variables.force_last (l_type, l_variables.key)
+							end
+						end
+
 					end
 				end
 			end

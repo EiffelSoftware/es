@@ -72,10 +72,11 @@ feature {NONE} -- Implementation
 		local
 			l_basic_file_name: STRING
 			l_origin: EXT_SNIPPET_ORIGIN
-			l_extractor: EXT_DEFERRED_SNIPPET_EXTRACTOR
+			l_extractor: EXT_SNIPPET_EXTRACTOR
 			l_ann_extractor: EXT_PROBABILITY_ANNOTATION_EXTRACTOR
 			l_normalizer: EXT_SNIPPET_VARIABLE_NAME_NORMALIZER
 			l_snips: LINKED_SET [EXT_SNIPPET]
+			l_fragment_extractor: EXT_FRAGMENT_EXTRACTOR
 		do
 			create l_normalizer
 			if attached config.namespace as l_namespace then
@@ -106,6 +107,10 @@ feature {NONE} -- Implementation
 
 				if config.should_extract_contract then
 					extract_contracts (l_snips)
+				end
+
+				if config.should_extract_fragment then
+					extract_fragments (l_snips, l_extractor)
 				end
 				write_snippets_to_file (l_snips, l_basic_file_name, l_origin.out_separator)
 				to_implement ("Store snippets in serialized XML format.")
@@ -243,6 +248,8 @@ feature {NONE} -- Output
 					l_file_name.append (a_separator)
 					l_file_name.append (once "targets")
 					l_file_name.append (target_variable_list_as_string (l_cursor.item))
+					snippet_id := snippet_id + 1
+					l_file_name.append ("_" + snippet_id.out)
 
 						-- Create whole path name.
 					create l_file_path.make_from_string (l_path_name)
@@ -307,10 +314,13 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_TABLE [STRING, STRING]
 			l_output: STRING
 			l_printer: EXT_SNIPPET_ANNOTATION_PRINTER
+			i: INTEGER
+			c: INTEGER
 		do
 			create l_printer
 			create l_output.make (2048)
 			across a_snippets as l_snippet loop
+				snippet_file.put_string ("%N---------------------------------------------------------------------------%N")
 				across l_snippet.item.operands as l_opds loop
 					l_output.append (l_opds.key)
 					l_output.append_character (':')
@@ -319,12 +329,24 @@ feature{NONE} -- Implementation
 					l_output.append_character ('%N')
 				end
 				l_output.append_character ('%N')
-				l_printer.print_snippet (a_snippets.item)
+				l_printer.print_snippet (l_snippet.item)
 				l_output.append (l_printer.last_output)
 				l_output.append_character ('%N')
+				c := l_snippet.item.fragments.count
+				if c > 0 then
+					i := 1
+					across l_snippet.item.fragments as l_frags loop
+						if i > 1 then
+							l_output.append_character (',')
+							l_output.append_character (' ')
+						end
+						l_output.append (l_frags.item.debug_output)
+						i := i + 1
+					end
+				end
 				snippet_file.put_string (l_output)
-				snippet_file.put_string ("---------------------------------------------------------------------------%N")
 				snippet_file.flush
+				l_output.wipe_out
 			end
 		end
 
@@ -356,5 +378,30 @@ feature{NONE} -- Implementation
 				l_contract_extractor.last_annotations.do_all (agent (l_snips.item.annotations).extend)
 			end
 		end
+
+	extract_fragments (a_snippets: LINKED_LIST [EXT_SNIPPET]; a_extractor: EXT_SNIPPET_EXTRACTOR)
+			-- Extract fragments in `a_snippets',
+			-- and add those fragments into `a_snippets'.
+		local
+			l_extractor: EXT_FRAGMENT_EXTRACTOR
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				create l_extractor
+				across a_snippets as l_snips loop
+					l_extractor.extract (l_snips.item)
+					l_snips.item.fragments.append (l_extractor.last_fragments)
+				end
+			end
+		rescue
+			if not a_snippets.is_empty then
+				log.put_string ("Fragment extraction crash: " + a_snippets.first.source.out + "%N")
+			end
+			l_retried := True
+			retry
+		end
+
+	snippet_id: INTEGER
+			-- Next snippet id
 
 end
