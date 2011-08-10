@@ -45,6 +45,7 @@ feature -- Access
 			l_operands: HASH_TABLE [STRING, INTEGER]
 			l_nested_signature: TUPLE [target_name: STRING; called_feature: ACCESS_AS]
 			l_called_feature: ACCESS_AS
+			l_message_signature: TUPLE [feature_name: STRING; operands: HASH_TABLE [STRING, INTEGER]]
 		do
 			if attached {NESTED_AS} a_call as l_nested_call then
 					-- Get target name and the called feature of this nested call
@@ -88,16 +89,74 @@ feature -- Access
 					else
 						create l_operands.make (1)
 					end
-						-- Since there is no real target in a creation expression, add the type in curly parenthises
+						-- Since there is no real target in a creation expression, add the type in curly parentheses
 					l_operands.put ("{" + text_from_ast (l_creation_expr.type) + "}",0)
 				else
-						-- TODO: If there's no call of a creation procedure, what shall the feature name look like: "" or "default_create" or what else?
+						-- If there's no call of a creation procedure, the feature name says "default_create"
 					l_feature_name := "default_create"
 				end
 
-			end
+			elseif attached {CURRENT_AS} a_call as l_current then
 
-				-- TODO: signatures of CURRENT_AS / PRECURSOR_AS / RESULT_AS / NESTED_EXPR_AS
+					-- For CURRENT_AS, there are no parameters, so only return the access name as the feature name
+				l_feature_name := l_current.access_name
+
+					-- Set the target to Void
+				create l_operands.make (1)
+				l_operands.put (Void, 0)
+
+			elseif attached {RESULT_AS} a_call as l_result then
+
+					-- For RESULT_AS, there are no parameters, so only return the access name as the feature name
+				l_feature_name := l_result.access_name
+
+					-- Set the target to Void
+				create l_operands.make (1)
+				l_operands.put (Void, 0)
+
+			elseif attached {PRECURSOR_AS} a_call as l_precursor then
+
+					-- Set the feature name to "Precursor"
+				l_feature_name := "Precursor"
+
+					-- Get the arguments of the call
+				if l_precursor.parameters /= Void then
+					l_operands := get_arguments_of_a_call (l_precursor)
+				else
+					create l_operands.make (1)
+				end
+					-- Set the target to Void
+				l_operands.put (Void, 0)
+
+			elseif attached {NESTED_EXPR_AS} a_call as l_nested_expr then
+
+				if attached {NESTED_AS} l_nested_expr.message then
+
+						-- For a nested message, get the feature name and the operands using the message only
+					l_message_signature := signature_of_call (l_nested_expr.message)
+					l_feature_name := l_message_signature.feature_name
+					l_operands := l_message_signature.operands
+
+						-- Prepend the original target (in parentheses) to the target of the message
+					l_operands.force ("("+text_from_ast (l_nested_expr.target)+")."+l_operands.item (0), 0)
+
+				elseif attached {ACCESS_FEAT_AS} l_nested_expr.message as l_feat_call then
+
+						-- Set the feature name
+					l_feature_name := text_from_ast (l_feat_call.feature_name)
+
+						-- Get the arguments of the called feature, if any
+					if l_feat_call.parameters /= Void then
+						l_operands := get_arguments_of_a_call (l_feat_call)
+					else
+						create l_operands.make (1)
+					end
+						-- Add the target (in parentheses)
+					l_operands.put ("("+text_from_ast (l_nested_expr.target)+")", 0)
+
+				end
+
+			end
 
 				-- Add the feature name and the hash table containing the operands to the resulting tuple
 			Result := [l_feature_name, l_operands]
@@ -145,13 +204,11 @@ feature {NONE} -- Implementation
 				create Result.make (a_call.parameters.count+1)
 				from
 					l_parameter_number := 1
-					a_call.parameters.start
 				until
-					a_call.parameters.after or l_parameter_number > a_call.parameters.count
+					l_parameter_number > a_call.parameters.count
 				loop
 						-- Iteratively add arguments of the call to the resulting hash table
-					Result.put (text_from_ast (a_call.parameters.item_for_iteration), l_parameter_number)
-					a_call.parameters.forth
+					Result.put (text_from_ast (a_call.parameters.i_th (l_parameter_number)), l_parameter_number)
 					l_parameter_number := l_parameter_number + 1
 				end
 			end

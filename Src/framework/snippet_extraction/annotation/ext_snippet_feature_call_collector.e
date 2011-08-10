@@ -39,10 +39,8 @@ feature -- Basic operations
 		local
 			l_collector: EPA_FEATURE_CALL_COLLECTOR
 			l_calls: like last_calls;
-			l_annotation_expression: EXPR_AS
-			l_list: LINKED_LIST [CALL_AS]
 		do
-			create l_collector
+			create l_collector.make
 			l_collector.collect_from_ast (a_snippet.ast, a_snippet.operand_names)
 			l_calls := l_collector.last_calls
 
@@ -50,47 +48,31 @@ feature -- Basic operations
 			--		 then merge both calls collected from normal statements and holes
 			--		 into `last_calls'.
 
-				-- Handle holes contained a_snippet
-			across l_calls as l_hash_table loop
-					-- Iterater through hash table containing lists of calls
-				across l_hash_table.item as l_call_list loop
-						-- Iterate through a list of calls contained in the hash table
+			if not a_snippet.holes.is_empty then
+					-- If the snippet contains holes, remove feature calls of the form hole__x (..) and mentions (...)
 
-					if attached {ACCESS_FEAT_AS} l_call_list.item as l_feat_call then
-							-- Holes are handled as calls of type ACCESS_FEAT_AS by class EPA_FEATURE_CALL_COLLECTOR
+				across l_calls as l_hash_table loop
+					-- Iterate through hash table containing lists of calls
 
-							-- Iterate through holes
-						from a_snippet.holes.start
-						until a_snippet.holes.after
-						loop
-								-- Check whether the call of type ACCESS_FEAT_AS is a hole of a_snippet
-							if l_feat_call.access_name.starts_with (a_snippet.holes.key_for_iteration) then
-
-									-- Remove the call that is actually a hole from the list of calls
-								l_hash_table.item.prune (l_feat_call)
-
-									-- Add calls that are mentioned by this hole --> iterate through mention annotations of this hole
-								from a_snippet.holes.item_for_iteration.annotations.start
-								until a_snippet.holes.item_for_iteration.annotations.after
-								loop
-										-- Create an object of type EXPR_AS out of the string representation of the expression stored in the mention annotation
-									l_annotation_expression := ast_from_expression_text (a_snippet.holes.item_for_iteration.annotations.item_for_iteration.expression)
-
-										-- Add the corresponding feature call of the expression to the list of calls, if the expression is of type EXPR_CALL_AS
-									if attached {EXPR_CALL_AS} l_annotation_expression as l_expr_call then
-										l_expr_call.call.breakpoint_slot := l_feat_call.breakpoint_slot
-										l_hash_table.item.extend (l_expr_call.call)
-									end
-
-									a_snippet.holes.item_for_iteration.annotations.forth
-								end
-
+						-- Iterate through the list of calls and remove holes
+					from l_hash_table.item.start
+					until l_hash_table.item.after
+					loop
+						if attached {ACCESS_FEAT_AS} l_hash_table.item.item as l_access_as then
+							if l_access_as.access_name.is_equal ("mentions")
+							 or l_access_as.access_name.is_equal ("mentions_conditionally")
+							  or a_snippet.holes.has (l_access_as.access_name) then
+									-- If the feature call is a hole, remove it
+								l_hash_table.item.prune (l_access_as)
+							else
+								l_hash_table.item.forth
 							end
-							a_snippet.holes.forth
+						else
+							l_hash_table.item.forth
 						end
-
 					end
 				end
+
 			end
 
 				-- Set last_calls attribute
@@ -120,46 +102,61 @@ feature {NONE} -- TODO: remove (debugging)
 					from l_list.start
 					until l_list.after
 					loop
+							-- Print type
 						if attached {NESTED_AS} l_list.item then
 							log.put_string ("NESTED_AS:%N")
-							log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
 
-						elseif attached {ACCESS_FEAT_AS} l_list.item as l_feat_call then
+						elseif attached {ACCESS_FEAT_AS} l_list.item as l_access_feat_as then
 							log.put_string ("ACCESS_FEAT_AS:%N")
-							log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
 
-						elseif attached {CREATION_EXPR_AS} l_list.item as l_creation_expr then
+						elseif attached {CREATION_EXPR_AS} l_list.item then
 							log.put_string ("CREATION_EXPR_AS:%N")
-							log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
 
-						else
-							log.put_string (l_list.item.breakpoint_slot.out + ": " + text_from_ast (l_list.item) + "%N")
+						elseif attached {CURRENT_AS} l_list.item then
+							log.put_string ("CURRENT_AS:%N")
+
+						elseif attached {RESULT_AS} l_list.item then
+							log.put_string ("RESULT_AS:%N")
+
+						elseif attached {PRECURSOR_AS} l_list.item then
+							log.put_string ("PRECURSOR_AS:%N")
+
+						elseif attached {NESTED_EXPR_AS} l_list.item then
+							log.put_string ("NESTED_EXPR_AS:%N")
+
 						end
 
+							-- Print breakpoint-slot
+						log.put_string ("...breakpoint slot: " + l_list.item.breakpoint_slot.out + "%N")
+
+							-- Print feature-name with arguments, and the target
 						l_signature := signature_of_call (l_list.item)
 
 						if l_signature /= Void then
 
 							log.put_string ("...feature name:     "+l_signature.feature_name+"%N")
 
-							from l_signature.operands.start
-							until l_signature.operands.after
-							loop
-								if l_signature.operands.item_for_iteration = Void then
-									l_operand := "VOID"
-								else
-									l_operand := l_signature.operands.item_for_iteration
+							if l_signature.operands /= Void then
+
+								from l_signature.operands.start
+								until l_signature.operands.after
+								loop
+									if l_signature.operands.item_for_iteration = Void then
+										l_operand := "VOID"
+									else
+										l_operand := l_signature.operands.item_for_iteration
+									end
+									if l_signature.operands.key_for_iteration = 0 then
+										log.put_string ("...target:           " + l_operand + "%N")
+									else
+										log.put_string ("...operand number " + l_signature.operands.key_for_iteration.out + ": " + l_operand + "%N")
+									end
+									l_signature.operands.forth
 								end
-								if l_signature.operands.key_for_iteration = 0 then
-									log.put_string ("...target:           " + l_operand + "%N")
-								else
-									log.put_string ("...operand number " + l_signature.operands.key_for_iteration.out + ": " + l_operand + "%N")
-								end
-								l_signature.operands.forth
+
 							end
 
 						end
-
 
 						l_list.forth
 					end
@@ -168,7 +165,7 @@ feature {NONE} -- TODO: remove (debugging)
 				last_calls.forth
 			end
 
-			log.put_string ("========================================================================%N")
+			log.put_string ("================================================%N")
 		end
 
 end
