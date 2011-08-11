@@ -21,7 +21,7 @@ inherit
 
 	EPA_UTILITY
 
-feature -- String
+feature -- Access
 
 	assertion: STRING
 			-- Assertion text rewritten by the last `rewrite'
@@ -30,12 +30,18 @@ feature -- String
 			-- Actual argument expressions that are mentioned in `assertion'
 			-- Key is argument index, value is the mentioned expression at that index.
 
+feature -- Status report
+
+	has_error: BOOLEAN
+			-- Does current processing have error?
+
 feature -- Basic operation
 
 	rewrite (a_assertion: AST_EIFFEL; a_feature: FEATURE_I; a_written_class: CLASS_C; a_context_class: CLASS_C; a_target_prefix: STRING; a_actual_argument_table: HASH_TABLE [STRING, INTEGER])
 			-- Rewrite `a_assertion' from `a_feature' in `a_written_class' in the context of `a_context_class'.
 			-- Store result in `assertion'.
 		do
+			set_has_error (False)
 			target_prefix := a_target_prefix.twin
 			if not target_prefix.is_empty and then not target_prefix.ends_with (".") then
 				target_prefix.append_character ('.')
@@ -47,7 +53,11 @@ feature -- Basic operation
 			create nested_prefix.make (32)
 			create {ROUNDTRIP_STRING_LIST_CONTEXT} context.make
 			a_assertion.process (Current)
-			assertion := context.string_representation.twin
+			if has_error then
+				assertion := ""
+			else
+				assertion := context.string_representation.twin
+			end
 		end
 
 feature{NONE} -- Process
@@ -58,24 +68,29 @@ feature{NONE} -- Process
 			l_final_name: STRING
 			l_previous_nested_level: INTEGER
 		do
-			nested_level := nested_level + 1
-			l_as.target.process (Current)
-			append_string (".")
-			if nested_level = 1 then
-					-- We finished with all the remote part in a nested expression.
-				fixme ("Does not support nested expression within another nested expressions, for example: a(b.c).foo. 13.12.2009 Jasonw")
-				l_parts := nested_prefix.split ('.')
-				l_final_name := final_id_name (l_parts.first)
-				nested_prefix.replace_substring (l_final_name, 1, l_parts.first.count)
-			end
-
-			is_processing_nested_message := True
-			l_as.message.process (Current)
-			is_processing_nested_message := False
-			nested_level := nested_level - 1
-			if nested_level = 0 then
-				append_string_in_context (nested_prefix)
-				create nested_prefix.make (32)
+			if not has_error then
+				nested_level := nested_level + 1
+				l_as.target.process (Current)
+				append_string (".")
+				if nested_level = 1 then
+						-- We finished with all the remote part in a nested expression.
+					fixme ("Does not support nested expression within another nested expressions, for example: a(b.c).foo. 13.12.2009 Jasonw")
+					l_parts := nested_prefix.split ('.')
+					l_final_name := final_id_name (l_parts.first)
+					if not has_error then
+						nested_prefix.replace_substring (l_final_name, 1, l_parts.first.count)
+					end
+				end
+				if not has_error then
+					is_processing_nested_message := True
+					l_as.message.process (Current)
+					is_processing_nested_message := False
+					nested_level := nested_level - 1
+					if nested_level = 0 then
+						append_string_in_context (nested_prefix)
+						create nested_prefix.make (32)
+					end
+				end
 			end
 		end
 
@@ -84,43 +99,49 @@ feature{NONE} -- Process
 
 	process_current_as (l_as: CURRENT_AS)
 		do
-			if is_using_nested_prefix_buffer then
-				append_string ("Current")
-			else
-				append_string (target_prefix)
+			if not has_error then
+				if is_using_nested_prefix_buffer then
+					append_string ("Current")
+				else
+					append_string (target_prefix)
+				end
 			end
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			l_cursor: INTEGER
+			l_id_name: STRING
 		do
-
-			if not is_using_nested_prefix_buffer then -- or else (nested_level = 1 and then is_processing_nested_message) then
-				append_string_in_context (final_id_name (l_as.access_name))
-			else
-				append_string (l_as.access_name)
-			end
-
-			if attached l_as.parameters as l_para then
-				append_string (" (")
-				from
-					l_cursor := l_para.index
-					l_para.start
-				until
-					l_para.after
-				loop
-					if attached l_para.item as l_item then
-						l_item.process (Current)
-					else
-						check
-							False
-						end
+			if not has_error then
+				if not is_using_nested_prefix_buffer then -- or else (nested_level = 1 and then is_processing_nested_message) then
+					l_id_name := final_id_name (l_as.access_name)
+					if not has_error then
+						append_string_in_context (l_id_name)
 					end
-					l_para.forth
+				else
+					append_string (l_as.access_name)
 				end
-				l_para.go_i_th (l_cursor)
-				append_string (")")
+				if not has_error and then attached l_as.parameters as l_para then
+					append_string (" (")
+					from
+						l_cursor := l_para.index
+						l_para.start
+					until
+						l_para.after
+					loop
+						if attached l_para.item as l_item then
+							l_item.process (Current)
+						else
+							check
+								False
+							end
+						end
+						l_para.forth
+					end
+					l_para.go_i_th (l_cursor)
+					append_string (")")
+				end
 			end
 		end
 
@@ -188,7 +209,10 @@ feature{NONE} -- Implementation
 				if l_arg_index > 0 then
 						-- `a_id' is an argument in `current_feature'.
 					Result := actual_argument_table.item (l_arg_index)
-					mentioned_actual_args.put (Result.twin, l_arg_index)
+					set_has_error (Result = Void)
+					if not has_error then
+						mentioned_actual_args.put (Result.twin, l_arg_index)
+					end
 				else
 						-- `a_id' is a feature call, we need to prepend it with `target_prefix'.
 					if target_prefix.is_empty then
@@ -243,6 +267,12 @@ feature{NONE} -- Implementation
 			-- Append `a_str' into `context'.
 		do
 			context.add_string (a_str)
+		end
+
+	set_has_error (b: BOOLEAN)
+			-- Set `has_error' with `b'.
+		do
+			has_error := b
 		end
 
 end
