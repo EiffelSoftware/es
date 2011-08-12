@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 		require
 			valid: a_pointer /= default_pointer
 		do
-			item := c_sh_create_mem_stream (a_pointer, a_size)
+			item := c_sh_create_mem_stream (shlwapi_handle, a_pointer, a_size)
 			check success: item /= default_pointer end
 		end
 
@@ -92,14 +92,16 @@ feature -- Command
 		local
 			l_bytes_count: NATURAL_64
 			l_com_result: NATURAL_32
+			l_acutal_read: NATURAL_32
 		do
 			l_bytes_count := stat.cb_size
 			check not_too_big: l_bytes_count <= {INTEGER_32}.max_value.as_natural_64 end
 			create Result.make (l_bytes_count.as_integer_32)
 
 			seek_from_beginning (0)
-			l_com_result := c_istream_read (item, Result.item, l_bytes_count.as_natural_32)
+			l_com_result := c_read (item, Result.item, l_bytes_count.as_natural_32, $l_acutal_read)
 			check l_com_result = {WEL_COM_HRESULT}.s_ok end
+			check l_acutal_read = l_bytes_count.as_natural_32 end
 		end
 
 	seek_from_beginning (a_position: INTEGER_64)
@@ -124,6 +126,25 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
+	shlwapi_handle: POINTER
+			--
+		local
+			l_dll: detachable WEL_DLL
+		do
+			l_dll := shlwapi_dll
+			if l_dll = Void then
+				create l_dll.make ("shlwapi.dll")
+				shlwapi_dll := l_dll
+			end
+
+			Result := l_dll.item
+		end
+
+	shlwapi_dll: detachable WEL_DLL
+			-- DLL helper for `shalwapi.dll'
+
+feature {NONE} -- Externals
+
 	c_sh_create_stream_on_file (a_wchar_file_name: POINTER; a_result_istream: TYPED_POINTER[POINTER]): NATURAL_32
 			-- Opens or creates a file and retrieves a stream to read or write to that file.
 		external
@@ -137,7 +158,7 @@ feature {NONE} -- Implementation
 			]"
 		end
 
-	c_sh_create_mem_stream (a_const_byte: POINTER; a_size: NATURAL_32): POINTER
+	c_sh_create_mem_stream (a_shlwpai_handle: POINTER; a_const_byte: POINTER; a_size: NATURAL_32): POINTER
 			-- Creates a memory stream using a similar process to CreateStreamOnHGlobal, but with less functionality.
 		external
 			"C++ inline use <windows.h>"
@@ -145,15 +166,17 @@ feature {NONE} -- Implementation
 			"[
 			{
 				typedef IStream* (__stdcall *tSHCreateMemStream)(const BYTE *, UINT);
-
-				HMODULE hShlWapi = LoadLibrary(L"shlwapi.dll");
+				static tSHCreateMemStream pSHCreateMemStream;
+				HMODULE hShlWapi = (HMODULE)$a_shlwpai_handle;
 
 				if (hShlWapi != NULL) {
-
-						tSHCreateMemStream pSHCreateMemStream = (tSHCreateMemStream) GetProcAddress(hShlWapi, "SHCreateMemStream");
-
+						
 						if (pSHCreateMemStream == NULL) {
-							tSHCreateMemStream pSHCreateMemStream = (tSHCreateMemStream) GetProcAddress(hShlWapi, (LPCSTR) 12);
+							pSHCreateMemStream = (tSHCreateMemStream) GetProcAddress(hShlWapi, "SHCreateMemStream");
+						}
+						
+						if (pSHCreateMemStream == NULL) {
+							pSHCreateMemStream = (tSHCreateMemStream) GetProcAddress(hShlWapi, (LPCSTR) 12);
 						}
 
 						if (pSHCreateMemStream != NULL) {
@@ -267,21 +290,24 @@ feature {NONE} -- Implementation
 			]"
 		end
 
-	c_istream_read (a_item: POINTER; a_pointer_to_write: POINTER; a_cb: NATURAL_32): NATURAL_32
-			-- Reads bytes from a specified stream and returns a value that indicates whether all bytes were successfully read.
-			-- `a_pointer_to_write' A pointer to a buffer to receive the stream data from pstm. This buffer must be at least cb bytes in size.
-			-- `a_cb' The number of bytes of data that the function should attempt to read from the input stream.
+	c_read (a_item: POINTER; a_pointer_to_write: POINTER; a_cb: NATURAL_32; a_actual_read: TYPED_POINTER [NATURAL_32]): NATURAL_32
+			-- The Read method reads a specified number of bytes from the stream
+			-- object into memory, starting at the current seek pointer.
 		external
 			"C++ inline use <Objidl.h>"
 		alias
 			"[
 			{
-				HRESULT l_result;
 				IStream *l_item = (IStream *)$a_item;
 				VOID *l_pointer_to_write = (VOID *)$a_pointer_to_write;
 				ULONG l_cb = (ULONG)$a_cb;
+				ULONG l_pcbRead;
+				HRESULT l_result;
 
-				return IStream_Read (l_item, l_pointer_to_write, l_cb);
+				l_result = l_item->Read (l_pointer_to_write, l_cb, &l_pcbRead);
+				*((EIF_NATURAL_32 *)$a_actual_read) = (EIF_NATURAL_32)l_pcbRead;
+
+				return l_result;
 			}
 			]"
 		end
