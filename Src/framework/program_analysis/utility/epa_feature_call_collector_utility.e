@@ -202,14 +202,10 @@ feature {NONE} -- Implementation
 		do
 			if a_call.parameters /= Void then
 				create Result.make (a_call.parameters.count+1)
-				from
-					l_parameter_number := 1
-				until
-					l_parameter_number > a_call.parameters.count
-				loop
-						-- Iteratively add arguments of the call to the resulting hash table
-					Result.put (text_from_ast (a_call.parameters.i_th (l_parameter_number)), l_parameter_number)
-					l_parameter_number := l_parameter_number + 1
+				l_parameter_number := 1
+				across a_call.parameters as l_parameters loop
+					Result.put (text_from_ast (l_parameters.item), l_parameter_number)
+				    l_parameter_number := l_parameter_number + 1
 				end
 			end
 		end
