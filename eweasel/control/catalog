@@ -574,6 +574,7 @@ test	catcall-generic-numeric		catcall005 tcf pass catcall
 test	catcall-at-runtime-detection	catcall006 tcf pass catcall
 test	wrong-catcall-reported-on-generic-expanded	catcall007 tcf pass catcall
 test	wrong-catcall-on-function-tuple	catcall008 tcf fail catcall
+test	catcall-on-tuple-insertion	catcall009 tcf fail catcall tuple
 
 -- Incrementality tests
 
@@ -1632,6 +1633,8 @@ test	plus-with-mixed-types			exec340 tcf pass execution
 test	static-assigner					exec341 tcf pass execution
 test	generating-type-on-typed-pointer	exec342 tcf pass execution expanded generic
 test	deep-twin-control-c				exec343 tcf pass execution manual
+test	wrong-argument-type-in-tuple	exec344 tcf pass execution
+test	wrong-attribute-type-in-tuple	exec345 tcf pass execution
 
 -- Once specific
 
@@ -2556,6 +2559,7 @@ test	self-initializing-attribute-gc	attach083 tcf pass attached_types void_safe 
 test	manifest-string-type			attach084 tcf pass attached_types void_safe execution
 test	initialized-after-unreachable		attach085 tcf pass attached_types void_safe unreachable_code
 test	self-initializing-attribute-gc-2	attach086 tcf pass attached_types void_safe attribute self_init execution
+test	like-current-default-attachment		attach087 tcf pass attached_types void_safe attribute validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance

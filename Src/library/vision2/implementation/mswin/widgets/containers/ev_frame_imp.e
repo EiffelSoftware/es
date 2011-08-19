@@ -138,13 +138,13 @@ feature -- Access
 	client_width: INTEGER
 			-- Width of the client area.
 		do
-			Result := (ev_width - client_x - total_border_width).max (0)
+			Result := (width - client_x - total_border_width).max (0)
 		end
 
 	client_height: INTEGER
 			-- Height of the client area.
 		do
-			Result := (height - client_y - frame_style_border_width - (2 * border_width)).max (0)
+			Result := (height - client_y - total_border_width).max (0)
 		end
 
 feature -- Element change
@@ -236,6 +236,7 @@ feature -- Status setting
 		do
 			border_width := value
 			notify_change (Nc_minsize, Current, False)
+			invalidate
 		end
 
 	align_text_center

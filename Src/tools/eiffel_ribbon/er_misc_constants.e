@@ -17,7 +17,12 @@ feature -- Query
 	xml_file_name (a_index: INTEGER): STRING
 			-- File name for saving ribbon makrup xml file
 		do
-			Result := "eiffel_ribbon_" + a_index.out + ".xml"
+			if a_index = 0 then
+				Result := "eiffel_ribbon.xml"
+			else
+				Result := "eiffel_ribbon_" + a_index.out + ".xml"
+			end
+
 		end
 
 	bml_file_name(a_index: INTEGER): STRING
@@ -68,41 +73,8 @@ feature -- Query
 
 	eiffel_ribbon: DIRECTORY_NAME
 			-- Eiffel ribbon tool folder
-		local
-			l_retried: BOOLEAN
-			l_shared: ER_SHARED_SINGLETON
-			l_error: EV_ERROR_DIALOG
-			l_interface_names: ER_INTERFACE_NAMES
 		do
-			if not l_retried then
-				if not is_valid_environment then
-					check_environment_variable
-				end
-				create Result.make_from_string (eiffel_install)
-				Result.set_subdirectory ("tools")
-				Result.set_subdirectory ("ribbon")
-			else
-				create Result.make
-			end
-		rescue
-			-- `check_environment_variable' may raise exception if environment variable not valid
-			 l_retried := True
-			create l_shared
-			create l_interface_names
-			if attached ise_eiffel as l_ise_eiffel then
-				create l_error.make_with_text (l_interface_names.cannot_find_ribbon_folders (l_ise_eiffel))
-			else
-				create l_error.make_with_text (l_interface_names.ise_eiffel_not_defined)
-			end
-
-			l_error.set_buttons (<<l_interface_names.ok>>)
-			if attached l_shared.main_window_cell.item as l_win then
-				l_error.show_modal_to_window (l_win)
-			else
-				l_error.show
-			end
-
-			retry
+			Result := eiffel_ribbon_imp.twin
 		end
 
 	ise_eiffel: detachable STRING
@@ -121,7 +93,7 @@ feature -- Query
 	xml_full_file_name (a_ribbon_index: INTEGER): detachable STRING_8
 			-- (export status {NONE})
 		require
-			valid: a_ribbon_index >= 1
+			valid: a_ribbon_index >= 0
 		local
 			l_singleton: ER_SHARED_SINGLETON
 			l_file_name: detachable FILE_NAME
@@ -170,13 +142,34 @@ feature -- Query
 			Result := l_file_name
 		end
 
+	docking_tools_layout_file_name: STRING = "docking_tools_layout"
+			--
+			
 feature -- Settings query
 
-	is_using_application_mode: CELL [BOOLEAN]
+	is_using_application_mode: BOOLEAN
 			-- If using application mode for multi windows support?
 			-- Otherwise it's using DLL
-		once
-			create Result.put (False)
+		local
+			l_shared_singleton: ER_SHARED_SINGLETON
+		do
+			create l_shared_singleton
+			if attached l_shared_singleton.tool_info_cell.item as l_tool_info then
+				Result := l_tool_info.is_using_application_modes
+			end
+		end
+
+feature -- Command
+
+	set_using_application_mode (a_bool: BOOLEAN)
+			-- Set `is_using_application_mode' with `a_bool'
+		local
+			l_shared_singleton: ER_SHARED_SINGLETON
+		do
+			create l_shared_singleton
+			if attached l_shared_singleton.tool_info_cell.item as l_tool_info then
+				l_tool_info.set_using_application_modes (a_bool)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -306,4 +299,44 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	eiffel_ribbon_imp: DIRECTORY_NAME
+			-- Eiffel ribbon tool folder
+		local
+			l_retried: BOOLEAN
+			l_shared: ER_SHARED_SINGLETON
+			l_error: EV_ERROR_DIALOG
+			l_interface_names: ER_INTERFACE_NAMES
+		once
+			if not l_retried then
+				if not is_valid_environment then
+					check_environment_variable
+				end
+				create Result.make_from_string (eiffel_install)
+				Result.set_subdirectory ("tools")
+				Result.set_subdirectory ("ribbon")
+			else
+				create Result.make
+			end
+		rescue
+			-- `check_environment_variable' may raise exception if environment variable not valid
+			 l_retried := True
+			create l_shared
+			create l_interface_names
+			if attached ise_eiffel as l_ise_eiffel then
+				create l_error.make_with_text (l_interface_names.cannot_find_ribbon_folders (l_ise_eiffel))
+			else
+				create l_error.make_with_text (l_interface_names.ise_eiffel_not_defined)
+			end
+
+			l_error.set_buttons (<<l_interface_names.ok>>)
+			if attached l_shared.main_window_cell.item as l_win then
+				l_error.show_modal_to_window (l_win)
+			else
+				l_error.show
+			end
+
+			retry
+		end
+
 end
