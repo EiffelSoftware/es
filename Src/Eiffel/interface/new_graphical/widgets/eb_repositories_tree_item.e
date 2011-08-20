@@ -78,10 +78,17 @@ feature {NONE} -- Implementation
 			valid_path: a_path /= Void and then not a_path.is_empty
 		local
 			l_svn_client: SVN_CLIENT
+			l_tools: ES_SHELL_TOOLS
 		do
 			create l_svn_client.make
 			l_svn_client.set_working_path (a_path)
 			l_svn_client.checkout.set_target (item_url)
+			if attached {EB_REPOSITORIES_TREE}parent_tree as l_tree and then l_tree.development_window /= Void then
+				l_tools := l_tree.development_window.shell_tools
+				if attached {ES_SVN_OUTPUT_TOOL} l_tools.tool ({ES_SVN_OUTPUT_TOOL}) as l_tool then
+					l_svn_client.checkout.set_on_data_received (agent l_tool.append_output)
+				end
+			end
 			l_svn_client.checkout.execute
 		end
 

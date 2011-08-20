@@ -101,6 +101,13 @@ feature {NONE} -- Cleaning
 			repositories_manager := Void
 		end
 
+feature {EB_REPOSITORIES_TREE_ITEM}
+
+	development_window: EB_DEVELOPMENT_WINDOW
+		do
+			Result := repositories_manager.development_window
+		end
+
 feature {NONE} -- Implementation
 
 	context_menu_factory: EB_CONTEXT_MENU_FACTORY

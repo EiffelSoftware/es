@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 
 	make_default (a_item: STRING_8)
 		require
-			valid_item: a_item /= Void and then not a_item.is_empty
+			valid_item: a_item /= Void
 		local
 			l_v_box: EV_VERTICAL_BOX
 			l_h_box, l_h_space: EV_HORIZONTAL_BOX
@@ -36,9 +36,9 @@ feature {NONE} -- Initialization
 			create l_v_box
 			create l_h_box
 			create l_h_space
-			create l_message_label.make_with_text ("Message")
+			create l_message_label.make_with_text ("Log message")
 			create message_text
-			create l_cancel_button.make_with_text_and_action ("Cancel", agent hide)
+			create l_cancel_button.make_with_text_and_action ("Cancel", agent hide_dialog)
 			create commit_button.make_with_text ("Commit")
 			commit_button.select_actions.extend (agent on_commit)
 
@@ -78,6 +78,12 @@ feature -- Access
 		end
 
 feature {NONE} -- Implementation
+
+	hide_dialog
+		do
+			hide
+			message_text.set_text ("")
+		end
 
 	on_commit
 		do

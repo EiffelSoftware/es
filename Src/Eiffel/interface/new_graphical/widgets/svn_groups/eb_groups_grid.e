@@ -726,20 +726,25 @@ feature -- Tree construction
 			extended_new_row.set_item (1, a_grid_item)
 		end
 
-feature {NONE} -- Subversion context menu commands
+feature {NONE} -- Subversion context menu commands and dialogs
+
+	commit_dialog: EB_COMMIT_DIALOG
+			-- Prompts user for the commit log message
+		once
+			create Result.make_default ("")
+		end
 
 	show_commit_dialog (a_pebble: ANY)
 			-- Present a dialog that allows to commit the selected item with a message
 		require
 			pebble_not_void: a_pebble /= Void
 		local
-			l_commit_dialog: EB_COMMIT_DIALOG
 			l_path: like path_from_pebble
 		do
 			l_path := path_from_pebble (a_pebble)
-			create l_commit_dialog.make_default (l_path.target)
-			l_commit_dialog.set_commit_action (agent svn_commit (l_path.working_path, l_path.target, ?))
-			l_commit_dialog.show
+			commit_dialog.set_title (l_path.target)
+			commit_dialog.set_commit_action (agent svn_commit (l_path.working_path, l_path.target, ?))
+			commit_dialog.show
 		end
 
 	svn_add (a_pebble: ANY)

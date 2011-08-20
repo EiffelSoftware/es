@@ -43,7 +43,7 @@ feature {NONE} -- Factory
 				-- Add button `clear' to the toolbar
 			create l_button.make
 			l_button.set_tooltip ("Clear SVN output")
-			l_button.select_actions.extend (agent do text_output.remove_text end)
+			l_button.select_actions.extend (agent clear_text)
 			l_button.set_pixel_buffer (stock_pixmaps.general_reset_icon_buffer)
 			l_button.set_pixmap (stock_pixmaps.general_reset_icon)
 			clear_text_button := l_button
@@ -62,6 +62,11 @@ feature {NONE} -- Access
 	text_output: EV_TEXT
 
 	clear_text_button: SD_TOOL_BAR_BUTTON
+
+	clear_text
+		do
+			text_output.remove_text
+		end
 
 feature {NONE} -- Internationalization
 
