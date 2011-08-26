@@ -81,6 +81,9 @@ feature -- Element change
 			g: INTEGER
 			ind, index: INTEGER
 			l_map_table: like map_table
+			l_buffer: like buffer
+			l_obj_dyn_type: INTEGER
+			l_field_list: SPECIAL [STRING_8]
 		do
 			g := field_count (object)
 			l_map_table := map_table
@@ -91,22 +94,40 @@ feature -- Element change
 				l_map_table.conservative_resize_with_default (0, 1, count)
 			end
 			from
+				from
+						-- Prepopulate object field list for faster lookup.
+					l_obj_dyn_type := dynamic_type (object)
+					create l_field_list.make_empty (g + 1)
+						-- Add empty string at zero index.
+					l_field_list.extend ("")
+					ind := 1
+				until
+					ind > g
+				loop
+					l_field_list.extend (field_name_of_type (ind, l_obj_dyn_type))
+					ind := ind + 1
+				end
+
+				l_buffer := buffer
 				ind := 1
 			until
 				ind > count
 			loop
-				buffer.wipe_out
-				buffer.append_string (column_name (ind))
-				buffer.to_lower
-				buffer.right_adjust
+				l_buffer.wipe_out
+				l_buffer.append_string (column_name (ind))
+				l_buffer.right_adjust
+				l_buffer.to_lower
 				from
 					index := 1
 				until
-					index > g or else field_name (index, object).is_equal (buffer)
+					index > g or else l_field_list [index].is_equal (l_buffer)
 				loop
 					index := index + 1
 				end
 				if index <= g then
+						-- Free field list entry memory.
+					l_field_list [index].wipe_out
+					l_field_list [index].adapt_size
 					l_map_table.put (index, ind)
 				else
 					db_spec.update_map_table_error (handle, l_map_table, ind)
@@ -139,6 +160,7 @@ feature -- Element change
 			l_value_type: like value_type
 			l_value: like value
 			l_select_name: like select_name
+			l_db_spec: like db_spec
 		do
 			l_database_string := database_string
 			if l_database_string = Void then
@@ -150,7 +172,10 @@ feature -- Element change
 				create l_database_string_32.make (selection_string_size)
 				database_string_32 := l_database_string_32
 			end
-			count := db_spec.get_count (no_descriptor)
+
+			l_db_spec := db_spec
+
+			count := l_db_spec.get_count (no_descriptor)
 			get_metadata := False  -- do not get metadata
 			l_value := value
 			if l_value = Void then
@@ -198,9 +223,9 @@ feature -- Element change
 				ind > count
 			loop
 				if get_metadata then --PGC
-					l_value_size.put (db_spec.get_data_len (no_descriptor, ind), ind)
-					l_value_max_size.put (db_spec.get_col_len (no_descriptor, ind), ind)
-					l_value_type.put (db_spec.get_col_type (no_descriptor, ind), ind)
+					l_value_size.put (l_db_spec.get_data_len (no_descriptor, ind), ind)
+					l_value_max_size.put (l_db_spec.get_col_len (no_descriptor, ind), ind)
+					l_value_type.put (l_db_spec.get_col_type (no_descriptor, ind), ind)
 
 					f_string := l_select_name.item (ind)
 					l_string := f_string
@@ -220,7 +245,7 @@ feature -- Element change
 
 				f_any := l_value.item (ind)
 
-				if not db_spec.is_null_data (no_descriptor, ind) then
+				if not l_db_spec.is_null_data (no_descriptor, ind) then
 
 					-- STRING TYPE
 					if l_value_type.item (ind) = String_type_database then
@@ -280,7 +305,7 @@ feature -- Element change
 						end
 						l_integer := f_integer
 						check l_integer /= Void end -- implied by previous if clause
-						l_integer.set_item (db_spec.get_integer_data (no_descriptor, ind))
+						l_integer.set_item (l_db_spec.get_integer_data (no_descriptor, ind))
 
 					-- INTEGER_16 type
 					elseif l_value_type.item (ind) = Integer_16_type_database then
@@ -297,7 +322,7 @@ feature -- Element change
 						end
 						l_integer_16 := f_integer_16
 						check l_integer_16 /= Void end -- implied by previous if clause
-						l_integer_16.set_item (db_spec.get_integer_16_data (no_descriptor, ind))
+						l_integer_16.set_item (l_db_spec.get_integer_16_data (no_descriptor, ind))
 
 						if not use_extended_types then
 							l_value.put (l_integer_16.item.as_integer_32.to_reference, ind)
@@ -318,7 +343,7 @@ feature -- Element change
 						end
 						l_integer_64 := f_integer_64
 						check l_integer_64 /= Void end -- implied by previous if clause
-						l_integer_64.set_item (db_spec.get_integer_64_data (no_descriptor, ind))
+						l_integer_64.set_item (l_db_spec.get_integer_64_data (no_descriptor, ind))
 
 						if not use_extended_types then
 							l_value.put (l_integer_64.item.as_integer_32.to_reference, ind)
@@ -342,7 +367,7 @@ feature -- Element change
 						end
 						l_double := f_double
 						check l_double /= Void end -- implied by previous if clause
-						l_double.set_item (db_spec.get_float_data (no_descriptor, ind))
+						l_double.set_item (l_db_spec.get_float_data (no_descriptor, ind))
 
 					-- DATE type
 					elseif l_value_type.item (ind) = Date_type_database then
@@ -357,9 +382,9 @@ feature -- Element change
 								l_value.put (f_date, ind)
 							end
 						end
-						if db_spec.get_date_data (no_descriptor, ind) = 1 then
-							create time.make (db_spec.get_hour (no_descriptor, ind), db_spec.get_min (no_descriptor, ind), db_spec.get_sec (no_descriptor, ind))
-							create date.make_month_day_year (db_spec.get_month (no_descriptor, ind), db_spec.get_day (no_descriptor, ind), db_spec.get_year (no_descriptor, ind))
+						if l_db_spec.get_date_data (no_descriptor, ind) = 1 then
+							create time.make (l_db_spec.get_hour (no_descriptor, ind), l_db_spec.get_min (no_descriptor, ind), l_db_spec.get_sec (no_descriptor, ind))
+							create date.make_month_day_year (l_db_spec.get_month (no_descriptor, ind), l_db_spec.get_day (no_descriptor, ind), l_db_spec.get_year (no_descriptor, ind))
 							l_date := f_date
 							check l_date /= Void end -- implied by previous if clause
 							l_date.set_time (time)
@@ -383,7 +408,7 @@ feature -- Element change
            				end
            				l_real := f_real
            				check l_real /= Void end -- implied by previous if clause
-						l_real.set_item (db_spec.get_real_data (no_descriptor, ind))
+						l_real.set_item (l_db_spec.get_real_data (no_descriptor, ind))
 
 					-- BOOLEAN type
 					else--if value_type.item (ind) = Boolean_type_database then
@@ -400,7 +425,7 @@ feature -- Element change
 						end
 						l_boolean := f_boolean
 						check l_boolean /= Void end -- implied by previsoue if clause
-						l_boolean.set_item (db_spec.get_boolean_data(no_descriptor, ind))
+						l_boolean.set_item (l_db_spec.get_boolean_data(no_descriptor, ind))
 					end
 				else
 					l_value.put (Void, ind)

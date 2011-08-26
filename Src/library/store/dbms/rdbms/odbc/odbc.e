@@ -131,13 +131,15 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_32]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 		local
 			tmp_str: STRING_32
-			c_temp, c_temp2: SQL_STRING
+			c_temp: SQL_STRING
+			l_ptr: POINTER
 			l_para: like para
 		do
 			create c_temp.make (sql)
-			create tmp_str.make (1)
-			create c_temp2.make_by_pointer (odbc_hide_qualifier (c_temp.item))
-			tmp_str := c_temp2.string
+				-- This routine manipulates buffer information but does not allocate memory.
+			l_ptr := odbc_hide_qualifier (c_temp.item)
+
+			tmp_str := c_temp.string
 			tmp_str.left_adjust
 			if tmp_str.count > 1 and then (tmp_str.item (1) = {CHARACTER_32} '{') then
 				if uht /= Void then
@@ -168,6 +170,11 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 			else
  				Result := False
 			end
+
+				-- Clean up memory
+			c_temp.set_count (0)
+			tmp_str.resize (0)
+			tmp_str.adapt_size
 		end
 
 	bind_parameter (table: ARRAY [ANY]; parameters: ARRAY [ANY]; descriptor: INTEGER; sql: STRING)
@@ -597,7 +604,8 @@ feature -- External
 			is_error_updated := False
 		end
 
-	put_col_name (no_descriptor: INTEGER; index: INTEGER; ar: STRING; max_len:INTEGER): INTEGER
+	put_col_name (no_descriptor: INTEGER; index: INTEGER; ar: STRING; max_len: INTEGER): INTEGER
+			-- <Precursor>
 		local
 			l_area: MANAGED_POINTER
 			l_str: SQL_STRING
@@ -605,7 +613,8 @@ feature -- External
 			create l_area.make (max_len)
 			Result := odbc_put_col_name (con_context_pointer, no_descriptor, index, l_area.item)
 
-			create l_str.make_shared_from_pointer_and_count (l_area.item, Result * {SQL_STRING}.character_size)
+			l_str := temporary_reusable_sql_string
+			l_str.set_shared_from_pointer_and_count (l_area.item, Result * {SQL_STRING}.character_size)
 
 			check
 				Result <= max_len
@@ -619,23 +628,28 @@ feature -- External
 			l_area.resize (0)
 		end
 
-	put_data (no_descriptor: INTEGER; index: INTEGER; ar: STRING; max_len:INTEGER): INTEGER
+	put_data (no_descriptor: INTEGER; index: INTEGER; ar: STRING; max_len: INTEGER): INTEGER
+			-- <Precursor>
 		local
 			l_area: MANAGED_POINTER
 			i: INTEGER
 			l_data, l_null: POINTER
+			l_str_area: SPECIAL [CHARACTER_8]
 		do
 			Result := odbc_put_data (con_context_pointer, no_descriptor, index, $l_data)
 			ar.grow (Result)
 			ar.set_count (Result)
 			if Result > 0 then
-				create l_area.share_from_pointer (l_data, Result)
+				l_area := temporary_reusable_managed_pointer
+				l_area.set_from_pointer (l_data, Result)
+
+				l_str_area := ar.area
 				from
-					i := 1
+					i := 0
 				until
-					i > Result
+					i = Result
 				loop
-					ar.put (l_area.read_integer_8 (i - 1).to_character_8, i)
+					l_str_area [i] := l_area.read_integer_8 (i).to_character_8
 					i := i + 1
 				end
 			end
@@ -645,7 +659,8 @@ feature -- External
 			end
 		end
 
-	put_data_32 (no_descriptor: INTEGER; index: INTEGER; ar: STRING_32; max_len:INTEGER): INTEGER
+	put_data_32 (no_descriptor: INTEGER; index: INTEGER; ar: STRING_32; max_len: INTEGER): INTEGER
+			-- <Precursor>
 		local
 			l_sql_string: SQL_STRING
 			l_data, l_null: POINTER
@@ -653,7 +668,10 @@ feature -- External
 			Result := odbc_put_data (con_context_pointer, no_descriptor, index, $l_data) // {SQL_STRING}.character_size
 			ar.grow (Result)
 			ar.set_count (Result)
-			create l_sql_string.make_shared_from_pointer_and_count (l_data, Result * {SQL_STRING}.character_size)
+
+			l_sql_string := temporary_reusable_sql_string
+			l_sql_string.set_shared_from_pointer_and_count (l_data, Result * {SQL_STRING}.character_size)
+
 			l_sql_string.read_substring_into (ar, 1, Result)
 			if l_data /= l_null then
 					-- `odbc_put_data' allocate some memory, we need to free it.
@@ -882,6 +900,19 @@ feature {NONE} -- Access
 	con_context_pointer: POINTER
 			-- Pointer to C structure of CON_CONTEXT
 
+feature {NONE} -- Implementation
+
+	temporary_reusable_sql_string: SQL_STRING
+			-- Reusable sql string for temporary data manipulation.
+		once
+			create Result.make_empty (0)
+		end
+
+	temporary_reusable_managed_pointer: MANAGED_POINTER
+		once
+			create Result.share_from_pointer (default_pointer, 0)
+		end
+
 feature {NONE} -- Disposal
 
 	dispose
@@ -924,7 +955,7 @@ feature {NONE} -- External features
 
 	odbc_start_order (a_con: POINTER; no_descriptor: INTEGER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		end
 
 	odbc_next_row (a_con: POINTER; no_descriptor: INTEGER): INTEGER
@@ -934,7 +965,7 @@ feature {NONE} -- External features
 
 	odbc_terminate_order (a_con: POINTER; no_descriptor: INTEGER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		end
 
 	odbc_close_cursor (a_con: POINTER; no_descriptor: INTEGER)
@@ -1144,17 +1175,17 @@ feature {NONE} -- External features
 
 	odbc_disconnect (a_con: POINTER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		end
 
 	odbc_commit (a_con: POINTER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		end
 
 	odbc_rollback (a_con: POINTER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		alias
 			"odbc_rollback"
 		end
@@ -1168,7 +1199,7 @@ feature {NONE} -- External features
 
 	odbc_begin (a_con: POINTER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		alias
 			"odbc_begin"
 		end
@@ -1180,7 +1211,7 @@ feature {NONE} -- External features
 
 	odbc_connect (a_con, user_name, user_passwd, dbName: POINTER)
 		external
-			"C use %"odbc.h%""
+			"C blocking use %"odbc.h%""
 		end
 
 	odbc_driver_name: POINTER
@@ -1210,7 +1241,7 @@ feature {NONE} -- External features
 
 	odbc_free_connection (a_con: POINTER)
 		external
-		    "C use %"odbc.h%""
+		    "C blocking use %"odbc.h%""
 		end
 
 	is_binary (s: READABLE_STRING_GENERAL): BOOLEAN
@@ -1369,13 +1400,11 @@ feature {NONE} -- External features
 			end
 		end
 
-
 	pointers: ARRAYED_LIST [POINTER]
 			--
 		do
 			create Result.make (10)
 		end
-
 
 feature {NONE} -- External features
 
@@ -1493,7 +1522,6 @@ feature {NONE} -- External features
 		external
 			"C use %"odbc.h%""
 		end
-
 
 	odbc_available_descriptor (a_con: POINTER) : INTEGER
 		external
