@@ -193,7 +193,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			safe_process_and_check (l_as.routine_body)
 
 			if not is_in_inline_agent and current_feature /= void then
-				set_current_breakpoint_slot (contract_tools.inherited_postcondition_count (current_feature))
+				set_current_breakpoint_slot (current_breakpoint_slot + contract_tools.inherited_postcondition_count (current_feature))
 			end
 
 			safe_process_and_check (l_as.postcondition)
