@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_CONTROL_FLOW_GRAPH}."
+	description: "Object that represents a CFG."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -120,6 +120,7 @@ feature -- Setting
 			a_node_in_graph: has_node (a_node)
 		do
 			start_node := a_node
+			a_node.set_is_start_node (True)
 		ensure
 			start_node_set: start_node = a_node
 		end
@@ -130,6 +131,7 @@ feature -- Setting
 			a_node_in_graph: has_node (a_node)
 		do
 			end_node := a_node
+			a_node.set_is_end_node (True)
 		ensure
 			end_node_set: end_node = a_node
 		end

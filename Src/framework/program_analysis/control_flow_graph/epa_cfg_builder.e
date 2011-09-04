@@ -57,6 +57,7 @@ feature -- Basic operations
 			l_context: ETR_FEATURE_CONTEXT
 			l_transformable: ETR_TRANSFORMABLE
 			l_ast: AST_EIFFEL
+			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
 		do
 			reset
 
@@ -66,6 +67,12 @@ feature -- Basic operations
 
 			l_ast := feature_.e_feature.ast
 			l_ast := ast_in_context_class (l_ast, written_class, feature_, context_class)
+
+			if is_bp_slot_init_activated then
+				create l_bp_initializer
+				l_bp_initializer.init_with_context (l_ast, context_class)
+			end
+
 			if attached {FEATURE_AS} l_ast as l_feature_as then
 				if attached {BODY_AS} l_feature_as.body as l_body then
 					if attached {ROUTINE_AS} l_body.content as l_routine then
@@ -159,6 +166,13 @@ feature -- Status report
 			-- instruction has a single exit point.
 			-- Default: False
 
+	is_bp_slot_init_activated: BOOLEAN assign set_is_bp_slot_init_activated
+			-- Should the breakpoint slots of the AST nodes be initialized
+			-- with their respective values?
+			-- If False, the breakpoint slots of the AST nodes are all zero.
+			-- Note: Works only with `build_from_feature'
+			-- Default: False
+
 feature -- Setting
 
 	set_is_single_instruction_block (b: BOOLEAN)
@@ -183,6 +197,14 @@ feature -- Setting
 			is_auxilary_nodes_created := b
 		ensure
 			is_auxilary_nodes_created_set: is_auxilary_nodes_created = b
+		end
+
+	set_is_bp_slot_init_activated (b: BOOLEAN)
+			-- Set `is_bp_slot_init_activated' with `b'
+		do
+			is_bp_slot_init_activated := b
+		ensure
+			is_bp_slot_init_activated_set: is_bp_slot_init_activated = b
 		end
 
 feature{NONE} -- Implementation/Visit
@@ -296,6 +318,7 @@ feature{NONE} -- Implementation/Visit
 				l_block := new_invariant_node (l_invariants)
 				last_control_flow_graph.extend_node (l_block)
 				create l_sequential_edge.make (l_final_enode, l_block)
+				add_predecessor_and_successor (l_final_enode, l_block)
 				last_control_flow_graph.extend_out_edge (l_final_enode, l_block, l_sequential_edge)
 				l_final_enode := l_block
 			end
@@ -304,12 +327,14 @@ feature{NONE} -- Implementation/Visit
 			l_branching_node := new_loop_branching_node (l_as.stop)
 			last_control_flow_graph.extend_node (l_branching_node)
 			create l_sequential_edge.make (l_final_enode, l_branching_node)
+			add_predecessor_and_successor (l_final_enode, l_branching_node)
 			last_control_flow_graph.extend_out_edge (l_final_enode, l_branching_node, l_sequential_edge)
 			l_final_enode := l_branching_node
 
 				-- Process loop body.
 			l_nodes := extended_instructions (l_as.compound)
 			create l_false_edge.make (l_branching_node, l_nodes.start_node)
+			add_predecessor_and_successor (l_branching_node, l_nodes.start_node)
 			last_control_flow_graph.extend_out_edge (l_branching_node, l_nodes.start_node, l_false_edge)
 			l_final_enode := l_nodes.end_node
 
@@ -318,17 +343,20 @@ feature{NONE} -- Implementation/Visit
 				l_variant_node := new_variant_node (l_variant)
 				last_control_flow_graph.extend_node (l_variant_node)
 				create l_sequential_edge.make (l_final_enode, l_variant_node)
+				add_predecessor_and_successor (l_final_enode, l_variant_node)
 				last_control_flow_graph.extend_out_edge (l_final_enode, l_variant_node, l_sequential_edge)
 				l_final_enode := l_variant_node
 			end
 
 			create l_sequential_edge.make (l_final_enode, l_branching_node)
+			add_predecessor_and_successor (l_final_enode, l_branching_node)
 			last_control_flow_graph.extend_out_edge (l_final_enode, l_branching_node, l_sequential_edge)
 
 				-- Added an auxilary
 			l_auxilary_node := new_auxilary_node
 			last_control_flow_graph.extend_node (l_auxilary_node)
 			create l_true_edge.make (l_branching_node, l_auxilary_node)
+			add_predecessor_and_successor (l_branching_node, l_auxilary_node)
 			last_control_flow_graph.extend_out_edge (l_branching_node, l_auxilary_node, l_true_edge)
 			l_final_enode := l_auxilary_node
 
@@ -410,6 +438,8 @@ feature{NONE} -- Implementation/Visit
 			Result.set_feature_ (feature_)
 			Result.set_class_ (context_class)
 			Result.set_written_class (written_class)
+			Result.set_block_number (next_block_number)
+			next_block_number := next_block_number + 1
 		end
 
 	new_invariant_node (a_invariants: EIFFEL_LIST [TAGGED_AS]): EPA_INSTRUCTION_BLOCK
@@ -449,16 +479,20 @@ feature{NONE} -- Implementation/Visit
 					-- Process true-branch.
 				l_nodes := extended_instructions (a_branches.first.instructions)
 				create l_true_edge.make (l_snode, l_nodes.start_block)
+				add_predecessor_and_successor (l_snode, l_nodes.start_block)
 				last_control_flow_graph.extend_out_edge (l_snode, l_nodes.start_block, l_true_edge)
 				create l_seq_edge.make (l_nodes.end_block, l_enode)
+				add_predecessor_and_successor (l_nodes.end_block, l_enode)
 				last_control_flow_graph.extend_out_edge (l_nodes.end_block, l_enode, l_seq_edge)
 
 					-- Recursively process false-branches.
 				a_branches.go_i_th (2)
 				l_nodes := extended_branches (a_branches.duplicate (a_branches.count - 1))
 				create l_false_edge.make (l_snode, l_nodes.start_block)
+				add_predecessor_and_successor (l_snode, l_nodes.start_block)
 				last_control_flow_graph.extend_out_edge (l_snode, l_nodes.start_block, l_false_edge)
 				create l_seq_edge.make (l_nodes.end_block, l_enode)
+				add_predecessor_and_successor (l_nodes.end_block, l_enode)
 				last_control_flow_graph.extend_out_edge (l_nodes.end_block, l_enode, l_seq_edge)
 			end
 			Result := [l_snode, l_enode]
@@ -546,6 +580,7 @@ feature{NONE} -- Implementation/Visit
 						l_last_node := l_enode
 					else
 						create l_edge.make (l_last_node, l_snode)
+						add_predecessor_and_successor (l_last_node, l_snode)
 						last_control_flow_graph.extend_out_edge (l_last_node, l_snode, l_edge)
 						l_last_node := l_enode
 					end
@@ -597,6 +632,16 @@ feature{NONE} -- Implementation/Visit
 				end
 				l_nodes.forth
 			end
+		end
+
+	add_predecessor_and_successor (a_predecessor: EPA_BASIC_BLOCK; a_successor: EPA_BASIC_BLOCK)
+			--
+		require
+			a_predecessor_not_void: a_predecessor /= Void
+			a_successor_not_void: a_successor /= Void
+		do
+			a_predecessor.successors.force_last (a_successor)
+			a_successor.predecessors.force_last (a_predecessor)
 		end
 
 end

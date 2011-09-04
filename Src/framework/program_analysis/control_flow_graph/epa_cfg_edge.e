@@ -18,7 +18,7 @@ inherit
 			out
 		end
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make (a_start_node: like start_node; a_end_node: like end_node)
 			-- Initialize Current.

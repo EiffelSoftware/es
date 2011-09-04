@@ -1,5 +1,5 @@
 note
-	description: "Objects that represents auxilary basic blocks, for example, blocks used for the start and end node in a CFG"
+	description: "Object that represents auxilary basic blocks, for example, blocks used for the start and end node in a CFG."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,8 @@ class
 inherit
 	EPA_INSTRUCTION_BLOCK
 		redefine
-			is_auxilary
+			is_auxilary,
+			process
 		end
 
 create
@@ -20,5 +21,13 @@ feature -- Status report
 
 	is_auxilary: BOOLEAN = True
 			-- Is current block auxilary?
+
+feature -- Visitor
+
+	process (a_visitor: EPA_CFG_BLOCK_VISITOR)
+			-- Visitor feature.
+		do
+			a_visitor.process_auxilary_block (Current)
+		end
 
 end

@@ -1,5 +1,5 @@
 ﻿note
-	description: "Summary description for {EPA_INSTRUCTION_BLOCK}."
+	description: "Object that represents a instruction block in a CFG."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,9 +9,6 @@ class
 
 inherit
 	EPA_BASIC_BLOCK
-		redefine
-			asts
-		end
 
 	EPA_CFG_UTILITY
 		undefine
@@ -24,13 +21,13 @@ create
 	make_with_ast,
 	make_with_ast_list
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make (a_id: INTEGER)
 			-- Initialize Current.
 		do
 			set_id (a_id)
-			create asts.make (initial_capacity)
+			initialize_data_structures
 		ensure
 			id_est: id = a_id
 		end
@@ -43,6 +40,7 @@ feature{NONE} -- Initialization
 			set_id (a_id)
 			create asts.make (1)
 			asts.extend (a_ast)
+			initialize_data_structures
 		end
 
 	make_with_ast_list (a_id: INTEGER; a_asts: LIST [AST_EIFFEL])
@@ -53,11 +51,15 @@ feature{NONE} -- Initialization
 			set_id (a_id)
 			create asts.make (a_asts.count)
 			asts.append (a_asts)
+			initialize_data_structures
 		end
 
-feature -- Access
+feature -- Visitor
 
-	asts: ARRAYED_LIST [AST_EIFFEL]
-			-- List of instructions in current basic block
+	process (a_visitor: EPA_CFG_BLOCK_VISITOR)
+			-- Visitor feature.
+		do
+			a_visitor.process_instruction_block (Current)
+		end
 
 end

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_LOOP_BRANCHING_BLOCK}."
+	description: "Object that represents a loop branching block in a CFG."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,14 +16,14 @@ inherit
 create
 	make
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make (a_id: INTEGER; a_condition: like condition)
 			-- Initialize Current.
 		do
 			set_id (a_id)
 			condition := a_condition
-			create asts.make (initial_capacity)
+			initialize_data_structures
 			asts.extend (condition)
 		end
 
@@ -31,5 +31,13 @@ feature -- Access
 
 	condition: EXPR_AS
 			-- Condition on which execution branches
+
+feature -- Visitor
+
+	process (a_visitor: EPA_CFG_BLOCK_VISITOR)
+			-- Visitor feature.
+		do
+			a_visitor.process_loop_branching_block (Current)
+		end
 
 end

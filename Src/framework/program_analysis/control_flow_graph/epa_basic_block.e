@@ -1,5 +1,5 @@
 ﻿note
-	description: "Summary description for {EPA_BASIC_BLOCK}."
+	description: "Object that represents a basic block in a CFG."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -54,8 +54,12 @@ feature -- Access
 	asts: ARRAYED_LIST [AST_EIFFEL]
 			-- List of ASTs inside current block
 			-- Note: Can be empty, for example, for a fake node added for ease of analysis.
-		deferred
-		end
+
+	predecessors: DS_HASH_SET [EPA_BASIC_BLOCK]
+			-- Set of predecessors of the current block.
+
+	successors: DS_HASH_SET [EPA_BASIC_BLOCK]
+			-- Set of successors of the current block.
 
 	out: STRING
 			-- String representation of Current
@@ -99,6 +103,12 @@ feature -- Status report
 		do
 		end
 
+	is_start_node: BOOLEAN
+			-- Is current block the start node of the CFG?
+
+	is_end_node: BOOLEAN
+			-- Is current block the end node of the CFG?
+
 feature -- Setting
 
 	set_id (a_id: INTEGER)
@@ -141,10 +151,48 @@ feature -- Setting
 			block_number_set: block_number = a_number
 		end
 
-feature{NONE} -- Implementation
+feature {EPA_CONTROL_FLOW_GRAPH} -- Setting
+
+	set_is_start_node (b: BOOLEAN)
+			-- Sets `is_start_node' to `b'.
+		do
+			is_start_node := b
+		ensure
+			is_start_node_set: is_start_node = b
+		end
+
+	set_is_end_node (b: BOOLEAN)
+			-- Sets `is_end_node' to `b'.
+		do
+			is_end_node := b
+		ensure
+			is_end_node_set: is_end_node = b
+		end
+
+feature -- Visitor
+
+	process (a_visitor: EPA_CFG_BLOCK_VISITOR)
+			-- Visitor feature.
+		require
+			a_visitor_not_void: a_visitor /= Void
+		deferred
+		end
+
+feature {NONE} -- Implementation
+
+	initialize_data_structures
+			-- Initializes `asts', `predecessors' and `successors' with `initial_capacity'
+		do
+			create asts.make (initial_capacity)
+			create predecessors.make (initial_capacity)
+			create successors.make (initial_capacity)
+		ensure
+			asts_not_void: asts /= Void
+			predecessors_not_void: predecessors /= Void
+			successors_not_void: successors /= Void
+		end
 
 	initial_capacity: INTEGER = 2
 			-- Initial capacity for `asts', `predecessors' and `successors'
-
 
 end
