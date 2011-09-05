@@ -23,8 +23,9 @@ feature {NONE} -- Initialization
 		do
 			set_id (a_id)
 			condition := a_condition
-			initialize_data_structures
+			create asts.make (initial_capacity)
 			asts.extend (condition)
+			initialize_predecessors_and_successors
 		end
 
 feature -- Access

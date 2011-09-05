@@ -27,7 +27,8 @@ feature {NONE} -- Initialization
 			-- Initialize Current.
 		do
 			set_id (a_id)
-			initialize_data_structures
+			create asts.make (initial_capacity)
+			initialize_predecessors_and_successors
 		ensure
 			id_est: id = a_id
 		end
@@ -40,7 +41,7 @@ feature {NONE} -- Initialization
 			set_id (a_id)
 			create asts.make (1)
 			asts.extend (a_ast)
-			initialize_data_structures
+			initialize_predecessors_and_successors
 		end
 
 	make_with_ast_list (a_id: INTEGER; a_asts: LIST [AST_EIFFEL])
@@ -51,7 +52,7 @@ feature {NONE} -- Initialization
 			set_id (a_id)
 			create asts.make (a_asts.count)
 			asts.append (a_asts)
-			initialize_data_structures
+			initialize_predecessors_and_successors
 		end
 
 feature -- Visitor

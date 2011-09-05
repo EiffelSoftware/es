@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			l_interval: INTERVAL_AS
 			l_count: INTEGER
 		do
-			initialize_data_structures
+			create asts.make (initial_capacity)
 
 			set_id (a_id)
 			switch := a_switch
@@ -58,6 +58,7 @@ feature {NONE} -- Initialization
 				check should_not_happen: False end
 			end
 			asts.extend (condition)
+			initialize_predecessors_and_successors
 		ensure
 			condition_attached: condition /= Void
 		end

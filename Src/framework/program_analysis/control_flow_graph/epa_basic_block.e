@@ -180,14 +180,12 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	initialize_data_structures
-			-- Initializes `asts', `predecessors' and `successors' with `initial_capacity'
+	initialize_predecessors_and_successors
+			-- Initializes `predecessors' and `successors' with `initial_capacity'
 		do
-			create asts.make (initial_capacity)
 			create predecessors.make (initial_capacity)
 			create successors.make (initial_capacity)
 		ensure
-			asts_not_void: asts /= Void
 			predecessors_not_void: predecessors /= Void
 			successors_not_void: successors /= Void
 		end
