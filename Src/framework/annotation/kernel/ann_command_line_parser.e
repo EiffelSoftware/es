@@ -13,7 +13,7 @@ inherit
 create
 	make_with_arguments
 
-feature{NONE} -- Initialization
+feature {NONE} -- Initialization
 
 	make_with_arguments (a_args: LINKED_LIST [STRING]; a_system: SYSTEM_I)
 			-- Initialize Current with arguments `a_args'.
@@ -40,7 +40,7 @@ feature -- Access
 			l_args: DS_LINKED_LIST [STRING]
 			l_dynamic_flag: AP_FLAG
 			l_static_flag: AP_FLAG
-			l_locations: AP_STRING_OPTION
+			l_locations, l_output_path: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -61,6 +61,10 @@ feature -- Access
 				%Format: --locations CLASS_NAME.feature_name[,CLASS_NAME.feature_name].")
 			l_parser.options.force_last (l_locations)
 
+			create l_output_path.make_with_long_form ("output-path")
+			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
+			l_parser.options.force_last (l_output_path)
+
 			l_parser.parse_list (l_args)
 
 			config.set_is_dynamic_annotation_enabled (l_dynamic_flag.was_found)
@@ -70,9 +74,12 @@ feature -- Access
 				setup_locations (l_locations.parameter)
 			end
 
+			if l_output_path.was_found then
+				config.set_output (l_output_path.parameter)
+			end
 		end
 
-feature{NONE} -- Implementation
+feature {NONE} -- Implementation
 
 	setup_locations (a_locations: STRING)
 			-- Setup locations in `config'.			

@@ -32,6 +32,9 @@ feature -- Access
 	locations: LINKED_LIST [TUPLE [context_class: CLASS_C; feature_: FEATURE_I]]
 			-- Locations where annotation collection should be performed
 
+	output_path: detachable STRING assign set_output
+			-- Output-path for storing the collected equations.
+
 	working_directory: STRING
 			-- Working directory of the project
 		do
@@ -68,6 +71,12 @@ feature -- Setting
 			is_static_annotation_enabled := b
 		ensure
 			is_static_annotation_enabled_set: is_static_annotation_enabled = b
+		end
+
+	set_output (a_output_path: like output_path)
+			-- Set `output' with `a_output'.
+		do
+			output_path := a_output_path
 		end
 
 end

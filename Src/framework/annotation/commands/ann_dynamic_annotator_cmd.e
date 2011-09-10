@@ -38,6 +38,16 @@ feature -- Access
 	annotations: LINKED_LIST [ANN_ANNOTATION]
 			-- Collected annotations
 
+	pre_states: DS_HASH_TABLE [DS_HASH_SET [EPA_EQUATION], INTEGER]
+			-- Collected pre-states.
+			-- Keys are breakpoint slots and values are expressions
+			-- and its associated values.
+
+	post_states: DS_HASH_TABLE [DS_HASH_SET [EPA_EQUATION], INTEGER]
+			-- Collected pre-states.
+			-- Keys are breakpoint slots and values are expressions
+			-- and its associated values.
+
 feature -- Basic operations
 
 	execute
@@ -101,6 +111,8 @@ feature -- Basic operations
 				l_expressions.force_last (l_exp)
 			end
 
+			create interesting_post_states.make_default
+
 			-- Remove breakpoints set by previous debugging sessions.
 			remove_breakpoint (debugger_manager, config.root_class)
 
@@ -113,8 +125,12 @@ feature -- Basic operations
 					create l_bp_mgr.make (l_class, l_feature)
 					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, l_expressions, agent on_expression_evalauted)
 					l_bp_mgr.toggle_breakpoints (True)
+					interesting_post_states.force_last (l_post_states.item)
 				end
 			end
+
+			create pre_states.make_default
+			create post_states.make_default
 
 			-- Start program execution in debugger.
 			start_debugger (debugger_manager, "", config.working_directory, {EXEC_MODES}.run, False)
@@ -128,16 +144,36 @@ feature {NONE} -- Implementation
 	on_expression_evalauted (a_bp: BREAKPOINT; a_state: EPA_STATE)
 			-- Action to be performed when expressions are evaluated at breakpoint `a_bp'.
 			-- `a_state' is a set of expression evaluations.
+		local
+			l_bp_slot: INTEGER
+			l_states: DS_HASH_SET [EPA_EQUATION]
 		do
-			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
-			io.put_string (a_state.debug_output +"%N")
-			io.put_string ("==>%N")
+--			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
+--			io.put_string (a_state.debug_output +"%N")
+--			io.put_string ("==>%N")
+			l_bp_slot := a_bp.breakable_line_number
+			create l_states.make_default
+
+			across a_state.to_array as l_equations loop
+				l_states.force_last (l_equations.item)
+			end
+
+			if interesting_pre_states.has (l_bp_slot) then
+				pre_states.force_last (l_states, l_bp_slot)
+			end
+
+			if interesting_post_states.has (l_bp_slot) then
+				post_states.force_last (l_states, l_bp_slot)
+			end
 		end
 
 feature {NONE} -- Implementation
 
 	interesting_pre_states: DS_HASH_SET [INTEGER]
 			-- Contains all interesting pre-states
+
+	interesting_post_states: DS_HASH_SET [INTEGER]
+			-- Contains all interesting post-states
 
 	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Contains the found post-states.
