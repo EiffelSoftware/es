@@ -17,7 +17,7 @@ feature {NONE} -- Initialization
 	make
 			-- Creation method
 		do
-			create ribbon_names.make (10)
+			reset_ribbon_names
 
 			-- Default value
 			ribbon_window_count := 1
@@ -26,7 +26,10 @@ feature {NONE} -- Initialization
 feature -- Query
 
 	project_location: detachable STRING
-			--
+			-- Project folder where ribbon files generated
+
+	is_using_application_mode: BOOLEAN
+			-- If current project using Application Mode or DLL mode for different ribbon windows?
 
 	ribbon_names: ARRAYED_LIST [detachable STRING]
 			-- Names for different ribbons
@@ -37,7 +40,7 @@ feature -- Query
 feature -- Command
 
 	set_project_location (a_location: like project_location)
-			--
+			-- Set `project_location' with `a_location'
 		do
 			project_location := a_location
 		ensure
@@ -50,8 +53,14 @@ feature -- Command
 			ribbon_window_count := a_count
 		end
 
+	set_using_applicaiton_mode (a_bool: BOOLEAN)
+			-- Set `is_using_application_mode' with `a_bool'
+		do
+			is_using_application_mode := a_bool
+		end
+
 	update_ribbon_names_from_ui
-			--
+			-- Update ribbon names from GUI
 		local
 			l_shared: ER_SHARED_SINGLETON
 			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
@@ -74,10 +83,11 @@ feature -- Command
 		end
 
 	update_ribbon_names_to_ui
-			--
+			-- Update ribbon names to GUI
 		local
 			l_shared: ER_SHARED_SINGLETON
 			l_list: ARRAYED_LIST [ER_LAYOUT_CONSTRUCTOR]
+			l_widget: EV_TREE
 		do
 			from
 				create l_shared
@@ -89,6 +99,10 @@ feature -- Command
 				if l_list.item.widget.valid_index (1) and then
 					 attached {EV_TREE_NODE} l_list.item.widget.i_th (1) as l_tree_node then
 					if attached {ER_TREE_NODE_RIBBON_DATA} l_tree_node.data as l_data then
+						-- SED fail will make ribbon_names.area_v2 void sometimes
+						if ribbon_names.area_v2 = void then
+							reset_ribbon_names
+						end
 						if ribbon_names.valid_index (l_list.index) then
 							l_data.set_command_name (ribbon_names.i_th (l_list.index))
 						end
@@ -98,4 +112,11 @@ feature -- Command
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	reset_ribbon_names
+			-- Reset ribbon names
+		do
+			create ribbon_names.make (10)
+		end
 end

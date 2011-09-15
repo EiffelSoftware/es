@@ -1,5 +1,7 @@
 note
-	description: "Summary description for {ER_CONSTANTS}."
+	description: "[
+					EiffelRibbon tool miscellaneous constants
+																								]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,28 +19,27 @@ feature -- Query
 	xml_file_name (a_index: INTEGER): STRING
 			-- File name for saving ribbon makrup xml file
 		do
-			if a_index = 0 then
+			if a_index <= 1 then
 				Result := "eiffel_ribbon.xml"
 			else
 				Result := "eiffel_ribbon_" + a_index.out + ".xml"
 			end
-
 		end
 
 	bml_file_name(a_index: INTEGER): STRING
-			--
+			-- Ribbon BML file name
 		do
 			Result := "ribbon_" + a_index.out + ".bml"
 		end
 
 	header_file_name(a_index: INTEGER): STRING
-			--
+			-- Header file name
 		do
 			Result := "ribbon_" + a_index.out + ".h"
 		end
 
 	rc_file_name (a_index: INTEGER): STRING
-			--
+			-- rc file name
 		do
 			if is_using_application_mode.item then
 				check a_index = 1 end
@@ -50,7 +51,7 @@ feature -- Query
 		end
 
 	res_file_name (a_index: INTEGER): STRING
-			--
+			-- res file name
 		do
 			Result := "eiffelribbon" + a_index.out + ".res"
 		end
@@ -59,10 +60,10 @@ feature -- Query
 			-- DLL file name prefix
 
 	project_configuration_file_name: STRING = "ribbon_project.er"
-			--
+			-- Project configuration file name
 
 	tool_info_file_name: STRING = "eiffel_ribbon_info.sed"
-			--
+			-- Tool info file name
 
 	images: DIRECTORY_NAME
 			-- Image folder
@@ -111,7 +112,7 @@ feature -- Query
 		end
 
 	project_full_file_name: detachable STRING
-			--
+			-- Project file name including full path
 		local
 			l_singleton: ER_SHARED_SINGLETON
 			l_file_name: detachable FILE_NAME
@@ -127,7 +128,7 @@ feature -- Query
 		end
 
 	header_full_file_name (a_index: INTEGER): detachable STRING
-			--
+			-- Header file name including full path
 		local
 			l_singleton: ER_SHARED_SINGLETON
 			l_file_name: detachable FILE_NAME
@@ -143,8 +144,8 @@ feature -- Query
 		end
 
 	docking_tools_layout_file_name: STRING = "docking_tools_layout"
-			--
-			
+			-- Docking layout file name
+
 feature -- Settings query
 
 	is_using_application_mode: BOOLEAN

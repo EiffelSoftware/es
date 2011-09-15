@@ -4578,7 +4578,7 @@ feature {DEGREE_SCOOP, DEGREE_5} -- Degree SCOOP
 			is_separate_client_set: is_separate_client = b
 		end
 
-feature {DEGREE_4, NAMED_TUPLE_TYPE_A} -- Degree 4
+feature {DEGREE_4, NAMED_TUPLE_TYPE_A, TYPE_A_CHECKER} -- Degree 4
 
 	add_to_degree_4
 			-- Add current class to Degree 4.

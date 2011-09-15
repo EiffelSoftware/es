@@ -19,7 +19,7 @@ inherit
 			meta_type, set_actual_type, evaluated_type_in_descendant, is_tuple,
 			set_attached_mark, set_detachable_mark, set_is_implicitly_attached,
 			unset_is_implicitly_attached, description, description_with_detachable_type,
-			c_type, is_explicit, formal_instantiation_in,
+			c_type, is_explicit, formal_instantiation_in, is_implicitly_attached, is_attached,
 			generated_id, generate_cid, generate_cid_array, generate_cid_init,
 			make_type_byte_code, generate_gen_type_il, internal_is_valid_for_class,
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
@@ -145,6 +145,26 @@ feature -- Properties
 			end
 		end
 
+	is_attached: BOOLEAN
+			-- Is type attached?
+		do
+			if is_directly_attached then
+				Result := True
+			elseif not has_detachable_mark and then attached conformance_type as t then
+				Result := t.is_attached
+			end
+		end
+
+	is_implicitly_attached: BOOLEAN
+			-- <Precursor>
+		do
+			if is_directly_implicitly_attached then
+				Result := True
+			elseif not has_detachable_mark and then attached conformance_type as t then
+				Result := t.is_implicitly_attached
+			end
+		end
+
 	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		local
@@ -216,7 +236,10 @@ feature -- Comparison
 	is_equivalent (other: like Current): BOOLEAN
 			-- Is `other' equivalent to the current object ?
 		do
-			Result := same_as (other)
+				-- Do not compare `has_attached_mark' because "like Current" is attached by default.
+			Result :=
+				other.has_detachable_mark = has_detachable_mark and then
+				other.has_separate_mark = has_separate_mark
 		end
 
 feature -- Output
@@ -387,6 +410,11 @@ feature {COMPILER_EXPORTER} -- Modification
 	set_actual_type (a: TYPE_A)
 			-- Assign `a' to `conformance_type'.
 		do
+				-- Remove any previously recorded actual type first
+				-- since it can be used to compute attachment properties
+				-- and give wrong results.
+			conformance_type := Void
+			actual_type := Void
 				-- Promote separateness status if present.
 			if has_separate_mark then
 				conformance_type := a.to_other_immediate_attachment (Current).to_other_separateness (Current)
@@ -412,23 +440,27 @@ feature {COMPILER_EXPORTER} -- Modification
 
 	set_is_implicitly_attached
 		local
-			a: like conformance_type
+			t: TYPE_A
 		do
+				-- Make sure `conformance_type' does not affect attachment status.
+			t := conformance_type
+			conformance_type := Void
 			Precursor
-			a := conformance_type
-			if a /= Void then
-				conformance_type := a.to_other_immediate_attachment (Current)
+			if attached t then
+				conformance_type := t.to_other_immediate_attachment (Current)
 			end
 		end
 
 	unset_is_implicitly_attached
 		local
-			a: like conformance_type
+			t: TYPE_A
 		do
+				-- Make sure `conformance_type' does not affect attachment status.
+			t := conformance_type
+			conformance_type := Void
 			Precursor
-			a := conformance_type
-			if a /= Void then
-				conformance_type := a.to_other_immediate_attachment (Current)
+			if attached t then
+				conformance_type := t.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -579,7 +611,11 @@ feature {COMPILER_EXPORTER} -- Primitives
 	conform_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
 			-- Does `Current' conform to `other'?
 		do
-			Result := other.is_like_current or else conformance_type.conform_to (a_context_class, other.conformance_type)
+			Result :=
+				(attached {LIKE_CURRENT} other as a and then
+					(a_context_class.lace_class.is_void_safe_conformance implies is_attachable_to (a)) and then
+					is_processor_attachable_to (a)) or else
+				conformance_type.conform_to (a_context_class, other.conformance_type)
 		end
 
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN

@@ -29,7 +29,7 @@ feature {NONE}  -- Initialization
 		end
 
 	make_empty
-			--
+			-- Create an empty property variant
 		do
 			create managed_pointer.make (size)
 		end
@@ -46,9 +46,9 @@ feature -- Access
 			-- The property variant structure.
 
 	size: INTEGER
-			--
+			-- Size of struct PROPVARIANT
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -126,7 +126,7 @@ feature -- Command
 feature -- Query
 
 	var_type: NATURAL_16
-			--
+			-- Value type tag.
 		do
 			Result := c_var_type (item)
 		end
@@ -169,9 +169,9 @@ feature -- Query
 feature {NONE} -- Externals
 
 	c_var_type (a_property_variant: POINTER): NATURAL_16
-			--
+			-- Value type tag.
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -183,9 +183,10 @@ feature {NONE} -- Externals
 		end
 
 	c_read_boolean (a_item: POINTER; a_result: TYPED_POINTER [BOOLEAN])
-			--
+			-- Read boolean value from `a_item'
+			-- The result is available in `a_result'
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -203,9 +204,10 @@ feature {NONE} -- Externals
 		end
 
 	c_read_string (a_item: POINTER; a_pwstr: TYPED_POINTER [POINTER])
-			--
+			-- Read string value from `a_item'
+			-- The result is available in `a_pwstr'			
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -217,9 +219,9 @@ feature {NONE} -- Externals
 		end
 
 	c_read_decimal (a_item: POINTER): REAL_64
-			--
+			-- Read decimal value from `a_item'
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"{
 				DOUBLE val;
@@ -229,9 +231,9 @@ feature {NONE} -- Externals
 		end
 
 	c_read_uint32 (a_item: POINTER): NATURAL_32
-			--
+			-- Read uint32 value from `a_item'
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"{
 				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
@@ -240,9 +242,9 @@ feature {NONE} -- Externals
 		end
 
 	c_read_iunknown (a_item: POINTER): POINTER
-			--
+			-- Read iunknown from `a_item'
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"{
 				PROPVARIANT *ppropvar = (PROPVARIANT *) $a_item;
@@ -259,9 +261,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_boolean (a_item: POINTER; a_value: BOOLEAN)
-			--
+			-- Initializes a given PROPVARIANT structure as a VT_BOOL using a specified Boolean value.
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -274,9 +276,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_string (a_item: POINTER; a_string: POINTER)
-			--
+			-- Initializes a PROPVARIANT structure based on a specified string.
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -293,9 +295,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_decimal (a_item: POINTER; a_value: REAL_64)
-			--
+			-- Initializes a PROPVARIANT structure based on a decimal value
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -307,9 +309,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_uint32 (a_item: POINTER; a_value: NATURAL_32)
-			--
+			-- Initializes a PROPVARIANT structure based on a 32-bit unsigned integer value.
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -322,9 +324,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_iunknown (a_item: POINTER; a_iunknown: POINTER)
-			--
+			-- Initializes a PROPVARIANT structure based on `a_iunknown'
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -336,9 +338,9 @@ feature {NONE} -- Externals
 		end
 
 	c_init_prop_variant_from_iunknown_array (a_item: POINTER; a_psa: POINTER)
-			--
+			-- Initializes a PROPVARIANT structure based on iunknow array
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -350,9 +352,9 @@ feature {NONE} -- Externals
 		end
 
 	c_prop_variant_clear (a_item: POINTER)
-			--
+			-- Clears a PROPVARIANT structure.
 		external
-			"C inline use <ribbon.h>"
+			"C inline use <common.h>"
 		alias
 			"[
 			{
@@ -362,9 +364,9 @@ feature {NONE} -- Externals
 		end
 
 	c_create_iui_image (a_hbitmap: POINTER; a_result_iui_image: TYPED_POINTER [POINTER])
-			--
+			-- Create a IUIImage from a HBITMAP
 		external
-			"C inline use %"ribbon.h%""
+			"C inline use %"common.h%""
 		alias
 			"[
 			{

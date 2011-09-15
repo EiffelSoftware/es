@@ -1289,6 +1289,7 @@ test	main-thread-terminates-before-child	thread017	tcf pass multithreaded
 test    shared-mutex-hang		thread018	tcf pass multithreaded manual
 test	thread-join-crash			thread019	tcf pass multithreaded
 test	thread-profiling-crash		thread020	tcf pass multithreaded profile
+test	thread-crashes-on-die		thread021	tcf pass multithreaded
 
 -- Execution
 
@@ -2562,6 +2563,12 @@ test	manifest-string-type			attach084 tcf pass attached_types void_safe executio
 test	initialized-after-unreachable		attach085 tcf pass attached_types void_safe unreachable_code
 test	self-initializing-attribute-gc-2	attach086 tcf pass attached_types void_safe attribute self_init execution
 test	like-current-default-attachment		attach087 tcf pass attached_types void_safe attribute validity
+test	none-attachment-mark			attach088 tcf pass attached_types void_safe validity
+test	none-to-reference-formal		attach089 tcf pass attached_types void_safe formal generic conformance validity
+test	like-current-attachment-redeclaration	attach090 tcf pass attached_types void_safe conformance validity
+test	stable-attribute-assigner		attach091 tcf pass attached_types void_safe conformance stable attribute validity
+test	mutual-self-init-attribute		attach092 tcf pass attached_types void_safe self_init attribute validity
+test	indirect-self-init-attribute		attach093 tcf pass attached_types void_safe self_init attribute validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2645,6 +2652,7 @@ test	qat-invalid-vffd-2			anchor058 tcf fail anchored_type
 test	qat-using-generic-feature-finalized	anchor059 tcf fail anchored_type
 test	qat-in-creation-procedure	anchor060 tcf fail anchored_type finalizing
 test	qat-generic-with-rename		anchor061 tcf fail anchored_type
+test	qat-generic-inheritance		anchor062 tcf fail anchored_type
 
 -- SCOOP
 test	scoop-access-smoke					scoop001 tcf pass scoop execution
@@ -2665,6 +2673,7 @@ test	scoop-finalize-c-failure			scoop016 tcf pass scoop finalizing c_compilation
 test	scoop-separate-call-to-constant			scoop017 tcf pass scoop execution
 test	scoop-once-per-object				scoop018 tcf pass scoop execution incrementality once
 test	scoop-top-exception				scoop019 tcf pass scoop
+test	scoop-separate-formal				scoop020 tcf pass scoop formal generic conformance validity
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

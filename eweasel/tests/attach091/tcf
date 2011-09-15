@@ -1,0 +1,50 @@
+test_name 	 stable-attribute-assigner
+test_description Assigner of stable attributes has special treatment for attachment status.
+
+copy_raw	test.e $CLUSTER test.e
+
+define STABLE "option: stable"
+copy_sub	a.e $CLUSTER a.e
+copy_sub	b.e $CLUSTER b.e
+copy_sub	c.e $CLUSTER c.e
+
+define ATTACHED_BY_DEFAULT "false"
+define VOID_SAFETY "none"
+copy_sub	Ace $TEST Ace
+
+compile_melted
+compile_result	ok
+
+define VOID_SAFETY "all"
+copy_sub	Ace $TEST Ace
+
+compile_melted
+compile_result	validity_error TEST VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3)
+
+define ATTACHED_BY_DEFAULT "true"
+copy_sub	Ace $TEST Ace
+
+resume_compile
+compile_result	validity_error TEST VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(1) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3) VBAC(3)
+
+define STABLE ""
+copy_sub	a.e $CLUSTER a.e
+copy_sub	b.e $CLUSTER b.e
+copy_sub	c.e $CLUSTER c.e
+
+resume_compile
+compile_result	validity_error A VFAC(3) VFAC(3) VFAC(3) VFAC(3) VFAC(3) VFAC(3); B VFAC(3) VFAC(3) VFAC(3) VFAC(3); C VFAC(3) VFAC(3) VFAC(3) VFAC(3)
+
+define ATTACHED_BY_DEFAULT "false"
+copy_sub	Ace $TEST Ace
+
+resume_compile
+compile_result	validity_error A VFAC(3) VFAC(3) VFAC(3) VFAC(3) VFAC(3) VFAC(3); B VFAC(3) VFAC(3) VFAC(3) VFAC(3); C VFAC(3) VFAC(3) VFAC(3) VFAC(3)
+
+define VOID_SAFETY "none"
+copy_sub	Ace $TEST Ace
+
+resume_compile
+compile_result	ok
+
+test_end
