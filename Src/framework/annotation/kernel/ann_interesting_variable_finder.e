@@ -28,7 +28,7 @@ create
 
 feature -- Creation Procedures
 
-	make_with (a_ast: AST_EIFFEL)
+	make_with (a_ast: like ast)
 			-- Sets `ast' to `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void
@@ -115,10 +115,11 @@ feature -- Access
 
 	interesting_variables: DS_HASH_SET [STRING]
 			-- Contains all found interesting variables
+			-- with respect to data flow.
 
 feature -- Setting
 
-	set_ast (a_ast: AST_EIFFEL)
+	set_ast (a_ast: like ast)
 			-- Sets `ast' to `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void

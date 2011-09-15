@@ -353,6 +353,14 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
+	is_start_node_auxilary_node: BOOLEAN
+			-- Is the start node of `cfg' an auxilary node?
+		do
+			Result := cfg.start_node.is_auxilary
+		end
+
+feature {NONE} -- Implementation
+
 	add_post_state (a_pre_state_slot: INTEGER; a_post_state_slot: INTEGER)
 			-- Adds a new post-state for a given pre-state to the post-state map.
 		local
@@ -391,14 +399,6 @@ feature {NONE} -- Implementation
 			if i > maximal_breakpoint_slot then
 				maximal_breakpoint_slot := i
 			end
-		end
-
-feature {NONE} -- Implementation
-
-	is_start_node_auxilary_node: BOOLEAN
-			-- Is the start node of `cfg' an auxilary node?
-		do
-			Result := cfg.start_node.is_auxilary
 		end
 
 end
