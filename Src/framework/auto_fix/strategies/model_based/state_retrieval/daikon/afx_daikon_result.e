@@ -14,18 +14,23 @@ create
 	make_from_string
 
 feature
-	make_from_string (daikon_output :STRING; a_tc_info : EPA_TEST_CASE_INFO) is
+	make_from_string (daikon_output :STRING; a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS) is
 			--Create a Daikon result from a Daikon output and a test case information
 		do
 			create daikon_table.make (1000)
-			test_case_info := a_tc_info
+			context_feature := a_feature_with_context
 			build_table(daikon_output)
 		end
 
 feature -- Access
-	test_case_info: EPA_TEST_CASE_INFO
+
+	context_feature: EPA_FEATURE_WITH_CONTEXT_CLASS
+			-- Context feature of the result.
 
 	daikon_table: HASH_TABLE[EPA_STATE , INTEGER]
+			-- Invariants table.
+			-- Key: breakpoint in `context_feature'.
+			-- Val: table of expressions and their values.
 
 feature {NONE} -- Implementation
 
@@ -52,17 +57,18 @@ feature {NONE} -- Implementation
 				end
 
 				if l_line.has_substring (" == ") and then not l_line.has_substring ("orig(") then
-					states.force_last (build_equation (list_tokens.item_for_iteration))
+					equation := build_equation (list_tokens.item_for_iteration)
+					if equation /= Void then
+						states.force_last (equation)
+					end
 				end
 
 				if list_tokens.item_for_iteration.has_substring ("========") then
-					if states = void then -- First state
-						create states.make (100, test_case_info.recipient_class_, test_case_info.recipient_)
-					else
-						-- Save old state and create a new one
-					   daikon_table.put (states.cloned_object,current_key)
-					   create states.make (100, test_case_info.recipient_class_, test_case_info.recipient_)
+					if states /= void then
+							-- Save old state.
+						daikon_table.put (states.cloned_object,current_key)
 					end
+					create states.make (100, context_feature.context_class, context_feature.feature_)
 				end
 
 				list_tokens.forth
@@ -85,49 +91,43 @@ feature {NONE} -- Implementation
 			equation : EPA_EQUATION
 			l_expr: STRING
      	do
---     		if not str.has_substring ("orig(") then
-	     		l_index := str.substring_index ("==", 1)
-	     		check only_separator: str.substring_index ("==", l_index) = 0 end
+     		l_index := str.substring_index ("==", 1)
+     		check only_separator: str.substring_index ("==", l_index + 1) = 0 end
 
-	     		l_expression_str := str.substring (1, l_index - 1)
---	      		if l_expression_str.has_substring ("orig(") then
---	     			l_expression_str.replace_substring_all ("orig(", "old(")
---	     		end
-	     		create expression.make_with_text (test_case_info.recipient_class_, test_case_info.recipient_,  (l_expression_str), test_case_info.recipient_class_)
+     		l_expression_str := str.substring (1, l_index - 1)
+     		create expression.make_with_text (context_feature.context_class, context_feature.feature_, (l_expression_str), context_feature.written_class)
 
-	     		l_value_str := str.substring (l_index + 2, str.count)
-				l_value_str.left_adjust
-				l_value_str.right_adjust
-	     		if (l_value_str.is_boolean) then
-	     			create expression_boolean_value.make (l_value_str.to_boolean)
-	     			create equation.make (expression,expression_boolean_value)
-
-	     		else
+     		l_value_str := str.substring (l_index + 2, str.count)
+			l_value_str.left_adjust
+			l_value_str.right_adjust
+			if expression.type /= Void then
+				if expression.type.is_integer then
 	     			create expression_integer_value.make (l_value_str.to_integer)
 	     			create equation.make (expression,expression_integer_value)
-
-	     		end
-
-				result := equation
---     		end
+				elseif expression.type.is_boolean then
+	     			create expression_boolean_value.make (l_value_str.to_boolean)
+	     			create equation.make (expression,expression_boolean_value)
+				end
+			end
+			result := equation
      	end
 
 
      	state_name ( str :STRING ) :INTEGER is
-     		-- Filter the state name ENTER and EXIT1
-     		-- are considered special states.
-		local
-			tokens :LIST[STRING]
-     	do
-     		tokens := str.split (':')
-     		if tokens.i_th (4).is_equal ("ENTER") then
-     			result := -1
-     		elseif tokens.i_th (4).is_equal ("EXIT1")  then
-     			result := -2
-     		else
-     			result := tokens.i_th (4).to_integer
-     		end
-     	end
+	     		-- Filter the state name ENTER and EXIT1
+	     		-- are considered special states.
+			local
+				tokens :LIST[STRING]
+	     	do
+	     		tokens := str.split (':')
+	     		if tokens.i_th (4).is_equal ("ENTER") then
+	     			result := -1
+	     		elseif tokens.i_th (4).is_equal ("EXIT1")  then
+	     			result := -2
+	     		else
+	     			result := tokens.i_th (4).to_integer
+	     		end
+	     	end
 
 
 end

@@ -281,8 +281,12 @@ feature {NONE} -- Steps
 					todo: False -- TODO: custom expanded types not yet implemented
 				end
 			end
-			receiver := interpreter.variable_table.new_variable
-			interpreter.assign_expression (receiver, last_constant)
+
+			if last_constant /= Void then
+					-- Bypass the assignment in case of unsupported expanded types. 2011.08.30.Max
+				receiver := interpreter.variable_table.new_variable
+				interpreter.assign_expression (receiver, last_constant)
+			end
 		end
 
 	last_constant: ITP_CONSTANT

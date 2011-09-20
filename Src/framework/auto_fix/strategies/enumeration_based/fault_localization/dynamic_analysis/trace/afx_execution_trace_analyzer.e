@@ -82,8 +82,8 @@ feature -- Basic operation
 				trace_repository.forth
 			end
 
-			remove_statistics_out_of_valid_breakpoint_index_range (l_statistics_from_passing)
-			remove_statistics_out_of_valid_breakpoint_index_range (l_statistics_from_failing)
+			remove_statistics_out_of_range (l_statistics_from_passing)
+			remove_statistics_out_of_range (l_statistics_from_failing)
 
 			set_statistics_from_passing (l_statistics_from_passing)
 			set_statistics_from_failing (l_statistics_from_failing)
@@ -110,7 +110,7 @@ feature -- Status set
 
 feature{NONE} -- Implementation
 
-	remove_statistics_out_of_valid_breakpoint_index_range (a_statistics: AFX_EXECUTION_TRACE_STATISTICS)
+	remove_statistics_out_of_range (a_statistics: AFX_EXECUTION_TRACE_STATISTICS)
 			-- Remove statistics about breakpoint indexes out of the valid range.
 			-- `a_statistics': the statistics to change.
 		require
@@ -138,33 +138,5 @@ feature{NONE} -- Implementation
 				l_set.do_all (agent a_statistics.remove)
 			end
 		end
-
---feature{NONE} -- Access
-
---	statistics_from_passing: AFX_EXECUTION_TRACE_STATISTICS
---			-- Number of hits of an expression at a breakpoint slot from all passing test cases.
---		do
---			if statistics_from_passing_cache = VOid then
---				create statistics_from_passing_cache.make_trace_unspecific (10)
---			end
---			Result := statistics_from_passing_cache
---		end
-
---	statistics_from_failing: AFX_EXECUTION_TRACE_STATISTICS
---			-- Number of hits of an expression at a breakpoint slot from all failing test cases.
---		do
---			if statistics_from_failing_cache = VOid then
---				create statistics_from_failing_cache.make_trace_unspecific (10)
---			end
---			Result := statistics_from_failing_cache
---		end
-
---feature{NONE} -- Cache
-
---	statistics_from_passing_cache: like statistics_from_passing
---			-- Cache for `number_of_hits_from_passing'.
-
---	statistics_from_failing_cache: like statistics_from_failing
---			-- Cache for `number_of_hits_from_failing'.
 
 end

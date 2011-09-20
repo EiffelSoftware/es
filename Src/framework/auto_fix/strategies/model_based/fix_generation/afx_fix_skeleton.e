@@ -10,6 +10,8 @@ deferred class
 inherit
 	SHARED_SERVER
 
+	AFX_SHARED_SESSION
+
 	AFX_SHARED_STATE_SERVER
 
 	AFX_STATE_PARTITIONER
@@ -18,6 +20,8 @@ inherit
 
 	AFX_SHARED_BEHAVIOR_CONSTRUCTOR
 
+	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+
 	SHARED_EIFFEL_PARSER
 
 	AFX_FIX_ID_SERVER
@@ -25,9 +29,6 @@ inherit
 	EPA_SOLVER_FACTORY
 
 feature -- Access
-
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Exception related information
 
 	precondition: EPA_STATE
 			-- Fix precondition
@@ -49,7 +50,7 @@ feature -- Access
 			-- Relevant AST nodes, that may be modified by current fix.
 			-- The order of the nodes in the list is important.
 			-- If the list is empty, the fix is to be generated at the end of the recipient.			
-			-- Note: all the nodes in the list should also exist in `exception_spot'.`recipient_ast_structure'.
+			-- Note: all the nodes in the list should also exist in `exception_recipient_feature'.`ast_structure'.
 
 	fixes: DS_LINKED_LIST [AFX_FIX]
 			-- List of possible fixes all of which conforms to current skeleton
@@ -60,14 +61,6 @@ feature -- Access
 			-- Those break points will be used to infer state invariants.
 		deferred
 		end
-
-	config: AFX_CONFIG
-			-- Config for current AutoFix session
-
-	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
-			-- Table of test case execution status
-			-- Key is the UUID of a test case, value is the execution status
-			-- assoicated with that test case
 
 feature -- Access
 
@@ -175,6 +168,7 @@ feature -- Basic operations
 			l_fix: AFX_FIX
 		do
 			create fixes.make
+			Model_loader.set_model_repository_directory (create {DIRECTORY_NAME}.make_from_string (config.model_directory))
 
 				-- Decide precondition and postcondition for the fix.
 			l_contracts := actual_fix_contracts
@@ -184,7 +178,7 @@ feature -- Basic operations
 
 					-- Postcondition are too large, we need to shrink it.
 				if l_postcondition.count > config.max_fix_postcondition_assertion then
-					l_postcondition := state_shrinker.shrinked_state (l_postcondition, config.max_fix_postcondition_assertion, exception_spot)
+					l_postcondition := state_shrinker.shrinked_state (l_postcondition, config.max_fix_postcondition_assertion)
 				end
 
 					-- We only proceed if the postcondition is small enough.
@@ -233,7 +227,7 @@ feature{NONE} -- Implementation
 					l_precondition := l_pre
 				end
 			else
-				create l_precondition.make (10, exception_spot.recipient_class_, exception_spot.recipient_)
+				create l_precondition.make (10, exception_recipient_feature.context_class, exception_recipient_feature.feature_)
 			end
 
 				-- Calculate actual postcondition for current fix:
@@ -258,9 +252,10 @@ feature{NONE} -- Implementation
 				l_postcondition := Void
 				l_failing_state := failing_state (l_bpslots.failing_bpslot)
 				if l_failing_state /= Void then
-					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count, exception_spot)
+					l_failing_state := state_shrinker.shrinked_state (l_failing_state, l_failing_state.count)
 						-- Find out the set of ABQS which implies the negation of the failing assertion.
-					l_necessary_conditions := solver_launcher.valid_premises (skeleton_with_value (l_failing_state), not exception_spot.failing_assertion, skeleton_from_state (l_failing_state).theory)
+						---- TODO_MAX: check if we need to negate the failing condition.
+					l_necessary_conditions := solver_launcher.valid_premises (skeleton_with_value (l_failing_state), not exception_signature.exception_condition_in_recipient, skeleton_from_state (l_failing_state).theory)
 					if l_necessary_conditions.count > 1 then
 						l_culprits := strongest_predicates (l_necessary_conditions, skeleton_from_state (l_failing_state).theory)
 						if l_culprits.count >= 1 then
@@ -366,25 +361,6 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	feature_body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
-			-- AST node for body of `exception_spot'.`recipient_'
-			-- It is the compound part of a DO_AS.
-		do
-			if attached {BODY_AS} exception_spot.recipient_.body.body as l_body then
-				if attached {ROUTINE_AS} l_body.content as l_routine then
-					if attached {DO_AS} l_routine.routine_body as l_do then
-						Result := l_do.compound
-					end
-				end
-			end
-		end
-
-	feature_as_ast: FEATURE_AS
-			-- AST for feature `exception_spot'.`recipient_'
-		do
-			Result := exception_spot.recipient_.e_feature.ast
-		end
-
 	generate_fixes_from_snippet (a_snippets: LINKED_LIST [TUPLE [snippet: STRING_8; ranking: INTEGER_32]]; a_precondition: EPA_STATE; a_postcondition: EPA_STATE; a_ignore_state_change: BOOLEAN)
 			-- Generate fixes from `a_snippets' and store result in `fixes'.
 			-- `a_precondition' and `a_postcondition' are not directly used for fix generation,
@@ -444,11 +420,7 @@ feature{NONE} -- Implementation
 			l_passing_state: EPA_STATE
 			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
 		do
-			l_state := state_server.state_for_fault (exception_spot.test_case_info)
-			l_passing_state := l_state.passing.daikon_table.item (a_passing_bpslot)
-			if l_passing_state = Void then
-				l_passing_state := l_state.passing.daikon_table.item (exception_spot.recipient_.number_of_breakpoint_slots)
-			end
+			l_passing_state := invariants_at (exception_recipient_feature, a_passing_bpslot, Invariant_passing_all)
 			if l_passing_state /= Void then
 				Result := l_passing_state.only_predicates
 			end
@@ -461,32 +433,9 @@ feature{NONE} -- Implementation
 			l_failing_state: EPA_STATE
 			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
 		do
-			l_state := state_server.state_for_fault (exception_spot.test_case_info)
-			l_failing_state := l_state.failing.daikon_table.item (a_failing_bpslot)
+			l_failing_state := invariants_at (exception_recipient_feature, a_failing_bpslot, Invariant_failing_all)
 			if l_failing_state /= Void then
 				Result := l_failing_state.only_predicates
-			end
-		end
-
-	state_invariant_difference (a_passing_bpslot: INTEGER; a_failing_bpslot: INTEGER): detachable EPA_STATE
-			-- State invariant difference between break point `a_passing_bpslot' in passing runs and
-			-- break point `a_failing_bpslot' in failing runs.
-			-- If no data is associated with either break point, return Void.
-		local
-			l_snippets: LINKED_LIST [ETR_TRANSFORMABLE]
-			l_tran: ETR_TRANSFORMABLE
-			l_passing_state: EPA_STATE
-			l_failing_state: EPA_STATE
-			l_state: TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT]
-			l_state_diff: EPA_STATE
-		do
-			l_state := state_server.state_for_fault (exception_spot.test_case_info)
-			l_passing_state := l_state.passing.daikon_table.item (a_passing_bpslot)
-			l_failing_state := l_state.failing.daikon_table.item (a_failing_bpslot)
-			if l_passing_state /= Void and then l_failing_state /= Void then
-				l_passing_state := l_passing_state.only_predicates
-				l_failing_state := l_failing_state.only_predicates
-				Result := l_passing_state.subtraction (l_failing_state)
 			end
 		end
 
@@ -526,7 +475,7 @@ feature{NONE} -- Implementation
 						end
 					end (?, ?, l_source_state))
 
-			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_spot.recipient_written_class,
+			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_recipient_feature.written_class,
 					Void, Void, False)
 			create Result.make
 			l_fixes.do_all (
@@ -700,7 +649,7 @@ feature{NONE} -- Implementation
 		do
 			create Result.make
 			l_sequences := call_sequences (a_source_state, a_target_state)
-			create l_premise_skeleton.make_basic (exception_spot.recipient_class_, exception_spot.recipient_, 0)
+			create l_premise_skeleton.make_basic (exception_recipient_feature.context_class, exception_recipient_feature.feature_, 0)
 			l_sequences.current_keys.do_all (agent l_premise_skeleton.force_last)
 
 			from

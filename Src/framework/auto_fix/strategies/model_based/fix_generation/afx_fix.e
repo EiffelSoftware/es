@@ -8,6 +8,11 @@ class
 	AFX_FIX
 
 inherit
+	AFX_SHARED_SESSION
+		redefine
+			is_equal
+		end
+
 	DEBUG_OUTPUT
 		undefine
 			is_equal
@@ -30,12 +35,9 @@ feature{NONE} -- Initialization
 
 	xx: LINKED_CURSOR_TREE [STRING]
 
-	make (a_spot: like exception_spot; a_id: INTEGER)
+	make (a_id: INTEGER)
 			-- Initialize.
-		require
-			a_spot_attached: a_spot /= Void
 		do
-			exception_spot := a_spot
 			text := ""
 			feature_text := ""
 			id := a_id
@@ -43,14 +45,14 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Exception related information
+--	exception_spot: AFX_EXCEPTION_SPOT
+--			-- Exception related information
 
 	text: STRING
 			-- Text of the feature body containing current fix
 
 	feature_text: STRING
-			-- Text of the whole feature `exception_spot'.`recipient'
+			-- Text of the whole feature `exception_recipient_feature'.
 
 	ranking: AFX_FIX_RANKING
 			-- Ranking for current fix
@@ -61,30 +63,32 @@ feature -- Access
 	postcondition: detachable EPA_STATE
 			-- Postcondition of the snippet part of current fix
 
+	fixing_target: detachable AFX_FIXING_TARGET
+			-- Fixing target of the current fix.
+
 	recipient_: FEATURE_I
 			-- Recipient of current fault
 		do
-			Result := exception_spot.recipient_
+			Result := exception_signature.recipient_feature
 		end
 
 	recipient_class: CLASS_C
 			-- Class of `recipient_'
 		do
-			Result := exception_spot.recipient_class_
-		end
-
-	origin_recipient: FEATURE_I
-			-- Origin recipient
-		do
-			Result := exception_spot.origin_recipient
+			Result := exception_signature.recipient_class
 		end
 
 	recipient_written_class: CLASS_C
 			-- Written class of `recipient'
 		do
-			Result := exception_spot.recipient_written_class
+			Result := exception_signature.recipient_written_class
 		end
 
+	origin_recipient: FEATURE_I
+			-- Origin recipient
+		do
+			Result := exception_signature.origin_recipient_feature
+		end
 
 	id: INTEGER
 			-- ID of current fix
@@ -97,12 +101,12 @@ feature -- Access
 			good_result: Result = id
 		end
 
-	pre_fix_execution_status: detachable HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
+	pre_fix_execution_status: detachable HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]
 			-- Table to store test case execution status before applying current fix
 			-- Key is test case UUID, value is the execution status
 			-- associated with that test case
 
-	post_fix_execution_status: detachable HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
+	post_fix_execution_status: detachable HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]
 			-- table to store test case execution status when applying current fix
 			-- Key is test case UUID, value is the execution status
 			-- associated with that test case
@@ -113,16 +117,16 @@ feature -- Access
 			-- Value is the mean of the distances between the post states of all passing test cases.
 			-- The smaller the value, the better.
 		local
-			l_pre_status: AFX_TEST_CASE_EXECUTION_STATUS
-			l_post_status: AFX_TEST_CASE_EXECUTION_STATUS
+			l_pre_status: AFX_TEST_CASE_EXECUTION_SUMMARY
+			l_post_status: AFX_TEST_CASE_EXECUTION_SUMMARY
 			l_done: BOOLEAN
 			l_passing_tc: INTEGER
 			l_distance_sum: DOUBLE
 		do
 			fixme ("Better impact formula is needed. 26.12.2009 Jasonw")
 			if
-				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} pre_fix_execution_status as l_pre and then
-				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]} post_fix_execution_status as l_post
+				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]} pre_fix_execution_status as l_pre and then
+				attached {HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]} post_fix_execution_status as l_post
 			then
 				from
 					l_pre.start
@@ -133,11 +137,11 @@ feature -- Access
 					l_post_status := l_post.item (l_pre.key_for_iteration)
 					fixme ("l_pre_status and l_post_status should always be attached. 26.1.2010 Jasonw")
 					if l_pre_status /= Void and then l_post_status /= Void then
-						if  attached {EPA_STATE} l_pre_status.post_state as l_pre_post then
+						if attached {EPA_STATE} l_pre_status.exit_state as l_pre_post then
 							l_passing_tc := l_passing_tc + 1
-							if attached {EPA_STATE} l_post_status.post_state as l_post_post then
+							if attached {EPA_STATE} l_post_status.exit_state as l_post_post then
 									-- Current test case is passing before and after current fix.
-								l_distance_sum := l_distance_sum + l_pre_status.post_state_distance (l_post_status).to_double
+								l_distance_sum := l_distance_sum + l_pre_status.exit_state_distance (l_post_status).to_double
 							else
 									-- Current test case passed before current fix and failed after current fix.
 								l_done := True
@@ -202,11 +206,19 @@ feature -- Setting
 			feature_text.replace_substring_all ("%R", "")
 		end
 
-	set_exception_spot (a_spot: like exception_spot)
-			-- Set `exception_spot' with `a_spot'.
+	set_fixing_target (a_target: AFX_FIXING_TARGET)
+			-- Set `fixing_target'.
+		require
+			target_attached: a_target /= Void
 		do
-			exception_spot := a_spot
+			fixing_target := a_target
 		end
+
+--	set_exception_spot (a_spot: like exception_spot)
+--			-- Set `exception_spot' with `a_spot'.
+--		do
+--			exception_spot := a_spot
+--		end
 
 	set_ranking (a_ranking: like ranking)
 			-- Set `ranking' with `a_ranking'.
@@ -279,7 +291,7 @@ feature -- Status report
 		do
 			create Result.make (1024)
 			Result.append ("Exception: ")
-			Result.append (exception_spot.id)
+			Result.append (exception_signature.id)
 			Result.append_character ('%N')
 
 			Result.append ("Precondition:%N")
@@ -314,7 +326,7 @@ feature{NONE} -- Implementation
 					l_pre.after
 				loop
 					if l_post.has (l_pre.key_for_iteration) then
-						l_post.item (l_pre.key_for_iteration).set_pre_state (l_pre.item_for_iteration.pre_state)
+						l_post.item (l_pre.key_for_iteration).set_entry_state (l_pre.item_for_iteration.entry_state)
 					end
 					l_pre.forth
 				end

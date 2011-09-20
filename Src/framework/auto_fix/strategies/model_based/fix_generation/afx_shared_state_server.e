@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	state_server: AFX_STATE_SERVER
+	state_server: AFX_INVARIANT_SERVER
 			-- State server
 		once
 			create Result.make

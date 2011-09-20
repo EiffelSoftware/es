@@ -12,24 +12,10 @@ inherit
 
 	EPA_EXPRESSION_STRUCTURE_ANALYZER_VISITOR
 
-create
-	make
-
-feature{NONE} -- Initialization
-
-	make (a_spot: like exception_spot; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
-			-- Initialize.
-		do
-			exception_spot := a_spot
-			config := a_config
-			test_case_execution_status := a_test_case_execution_status
-		end
-
 feature -- Basic operations
 
 	generate
-			-- Generate fixes for `exception_spot' and
-			-- store result in `fix_skeletons'.
+			-- <Precursor>
 		local
 			l_done: BOOLEAN
 		do
@@ -41,7 +27,7 @@ feature -- Basic operations
 			generate_relevant_asts
 
 				-- Analyze structure type of the failing assertion.			
-			assertion_structure_analyzers.do_all (agent {EPA_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_spot.failing_assertion))
+			assertion_structure_analyzers.do_all (agent {EPA_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_signature.exception_condition_in_recipient))
 
 				-- Generate fixes according to structure type of the failing assertion.
 			from
@@ -93,31 +79,25 @@ feature{NONE} -- Implementation
 			assertion_structure_analyzers.extend (create {EPA_ANY_STRUCTURE_ANALYZER})
 		end
 
-	config: AFX_CONFIG
-			-- Config for Current AutoFix session
-
-	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
-			-- Table of test case execution status
-			-- Key is the UUID of a test case, value is the execution status
-			-- assoicated with that test case
-
 feature{NONE} -- Implementation
 
 	generate_relevant_asts
 			-- Generate `fixing_locations'.
 		local
-			l_spot: like exception_spot
+			l_signature: like exception_signature
+			l_recipient: like exception_recipient_feature
 			l_node: detachable AFX_AST_STRUCTURE_NODE
 			l_nlist: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
 			l_scope_level: INTEGER
 		do
 			create fixing_locations.make
-			l_spot := exception_spot
-			if l_spot.is_precondition_violation  or l_spot.is_check_violation then
+			l_signature := exception_signature
+			l_recipient := exception_recipient_feature
+			if l_signature.is_precondition_violation  or l_signature.is_check_violation then
 					-- Generate possible fixing locations:
 				from
 					l_scope_level := 1
-					l_node := l_spot.recipient_ast_structure.surrounding_instruction (l_spot.failing_assertion_break_point_slot)
+					l_node := l_recipient.ast_structure.surrounding_instruction (l_signature.recipient_breakpoint)
 				until
 					l_node = Void or else l_node.is_feature_node or l_scope_level > config.max_fixing_location_scope_level
 				loop
@@ -128,7 +108,7 @@ feature{NONE} -- Implementation
 
 						-- The fixing locations containing all the instructions which appear
 						-- in the same basic block as the instruction in trouble.						
-					if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_spot.recipient_ast_structure.instructions_in_block_as (l_node) as l_list and then l_list.count > 1 then
+					if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as l_list and then l_list.count > 1 then
 						create l_nlist.make
 						l_nlist.append (l_list)
 						fixing_locations.extend ([l_scope_level, l_nlist])
@@ -136,7 +116,7 @@ feature{NONE} -- Implementation
 					l_node := l_node.parent
 					l_scope_level := l_scope_level + 1
 				end
-			elseif l_spot.is_postcondition_violation or l_spot.is_class_invariant_violation then
+			elseif l_signature.is_postcondition_violation or l_signature.is_class_invariant_violation then
 					-- The only fix location is right before the end of the feature body.
 				fixing_locations.extend ([1, create {LINKED_LIST [AFX_AST_STRUCTURE_NODE]}.make])
 			else
@@ -151,7 +131,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
+			create l_generator.make (a_analyzer, fixing_locations)
 			l_generator.generate
 			fix_skeletons.append (l_generator.fixes)
 		end
@@ -161,7 +141,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ABQ_IMPLICATION_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
+			create l_generator.make (a_analyzer, fixing_locations)
 			l_generator.generate
 			fix_skeletons.append (l_generator.fixes)
 		end
@@ -171,7 +151,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_LINEAR_CONSTRAINT_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
+			create l_generator.make (a_analyzer, fixing_locations)
 			l_generator.generate
 			fix_skeletons.append (l_generator.fixes)
 		end
@@ -181,7 +161,7 @@ feature{NONE} -- Implementation
 		local
 			l_generator: AFX_ANY_STRUCTURE_FIX_GENERATOR
 		do
-			create l_generator.make (exception_spot, a_analyzer, fixing_locations, config, test_case_execution_status)
+			create l_generator.make (a_analyzer, fixing_locations)
 			l_generator.generate
 			fix_skeletons.append (l_generator.fixes)
 		end

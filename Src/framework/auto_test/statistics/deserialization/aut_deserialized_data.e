@@ -31,7 +31,6 @@ feature -- Initialization
 			time_str := a_time.twin
 			hash_code_str := a_hash_code.twin
 			pre_serialization := a_pre_serialization
---			post_serialization := a_post_serialization
 		end
 
 feature -- Access string representation
@@ -39,7 +38,6 @@ feature -- Access string representation
 	time_str: STRING
 	hash_code_str: STRING
 	pre_serialization: ARRAYED_LIST[NATURAL_8]
---	post_serialization: ARRAYED_LIST[NATURAL_8]
 
 	file_path: detachable STRING
 			-- Full path of the serialization file
@@ -114,7 +112,7 @@ feature{NONE} -- Variable renaming
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

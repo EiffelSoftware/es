@@ -12,17 +12,17 @@ inherit
 
 feature -- Generation
 
-	generate (a_spot: EPA_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
+	generate (a_written_class: CLASS_C; a_feature: FEATURE_I; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_skeleton: EPA_STATE_SKELETON
 		do
 			create l_gen.make
-			l_gen.generate (a_spot.recipient_written_class, a_spot.recipient_)
+			l_gen.generate (a_written_class, a_feature)
 			update_expressions_with_ranking (
 				a_expressions,
-				accesses_as_skeleton (l_gen.accesses, a_spot.recipient_class_, a_spot.recipient_),
+				accesses_as_skeleton (l_gen.accesses, a_written_class, a_feature),
 				{AFX_EXPR_RANK}.rank_basic)
 		end
 

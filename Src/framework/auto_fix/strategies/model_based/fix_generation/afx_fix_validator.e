@@ -12,36 +12,32 @@ inherit
 
 	SHARED_DEBUGGER_MANAGER
 
+	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+
 	AFX_INTERPRETER_CONSTANTS
 
 	EPA_COMPILATION_UTILITY
 
 	AFX_UTILITY
 
-	AFX_SHARED_EVENT_ACTIONS
+--	AFX_SHARED_EVENT_ACTIONS
+
+	AFX_SHARED_SESSION
 
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config; a_spot: like exception_spot; a_fixes: DS_LINKED_LIST [AFX_FIX]; a_status: like test_case_execution_status)
+	make (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- Initialize Current to validate fix candidates `a_fixes'.
-		require
-			a_config_attached: a_config /= Void
-			a_spot_attached: a_spot /= Void
-			a_status_attached: a_status /= Void
 		local
 			l_fix: AFX_FIX
 			l_sorter: DS_QUICK_SORTER [AFX_FIX]
 			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
 			i: DOUBLE
 		do
-			config := a_config
-			exception_spot := a_spot
-			test_case_execution_status := a_status
-
-				-- Setup `test_cases'.
+				-- Initialize sets of test cases `test_cases' and `passing_test_cases'.
 			create test_cases.make
 			create passing_test_cases.make
 			from
@@ -50,7 +46,7 @@ feature{NONE} -- Initialization
 				test_case_execution_status.after
 			loop
 				test_cases.extend (test_case_execution_status.key_for_iteration)
-				if test_case_execution_status.item_for_iteration.info.is_passing then
+				if test_case_execution_status.item_for_iteration.is_passing then
 					passing_test_cases.extend (test_case_execution_status.key_for_iteration)
 				end
 				test_case_execution_status.forth
@@ -94,25 +90,15 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	config: AFX_CONFIG
-			-- Config of Current AutoFix session
-
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Exception spot
-
 	fixes: HASH_TABLE [AFX_FIX, INTEGER]
 			-- Fix candidates to validate
 			-- Key is fix ID, value is the fix associated with that ID
 
-	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
-			-- Execution status for test cases related to the fault
-			-- Key is uuid of a test case, value is the execution status of that test case
+	test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- Test cases used to validate fix candidates.
 
-	test_cases: LINKED_LIST [STRING]
-			-- Universal IDs for test cases used to validate fix candidates
-
-	passing_test_cases: LINKED_LIST [STRING]
-			-- Universal IDs for passing test cases used to validate fix candidates
+	passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- Passing test cases used to validate fix candidates
 			-- This should be a subset of `test_cases'
 
 	valid_fixes: LINKED_LIST [AFX_FIX]
@@ -217,8 +203,8 @@ feature -- Basic operations
 
 						create timer.make (agent on_test_case_execution_time_out)
 							--| Do we need the two operations below? 'timer' will be set at the beginning of 'worker.execute'.
-						timer.set_timeout (0)
-						timer.start
+--						timer.set_timeout (0)
+--						timer.start
 
 						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases, passing_test_cases)
 						worker.execute

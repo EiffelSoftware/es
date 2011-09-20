@@ -17,8 +17,8 @@ create
 
 feature{NONE} -- Initialization
 
-	make_boolean_relation (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_written_class: CLASS_C; a_bp_index: INTEGER;
-					a_left_operand, a_right_operand: AFX_PROGRAM_STATE_EXPRESSION; a_boolean_operator: INTEGER)
+	make_boolean_relation (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_written_class: CLASS_C;
+					a_left_operand, a_right_operand: EPA_EXPRESSION; a_boolean_operator: INTEGER)
 			-- Initialization
 		require
 			context_attached: a_context_class /= Void and then a_context_feature /= Void and then a_written_class /= Void
@@ -32,12 +32,17 @@ feature{NONE} -- Initialization
 			right_operand := a_right_operand
 			operator := a_boolean_operator
 
+			create operand_expressions.make_equal (2)
+			operand_expressions.force (left_operand)
+
 			if is_unary_boolean_operator (a_boolean_operator) then
 				l_exp_text := boolean_operator_text (a_boolean_operator) + " (" + a_left_operand.text + ")"
 			else
 				l_exp_text := "(" + a_left_operand.text + ") " + boolean_operator_text (a_boolean_operator) + " (" + a_right_operand.text + ")"
+				operand_expressions.force (right_operand)
 			end
-			make_with_text (a_context_class, a_context_feature, l_exp_text, a_written_class, a_bp_index)
+
+			make_with_text (a_context_class, a_context_feature, l_exp_text, a_written_class)
 		end
 
 feature -- Basic operation
@@ -45,7 +50,6 @@ feature -- Basic operation
 	evaluate (a_state: EPA_STATE)
 			-- <Precursor>
 		local
---			l_left_equation, l_right_equation: EPA_EQUATION
 			l_left_value, l_right_value: EPA_EXPRESSION_VALUE
 		do
 			if left_operand /= Void and then attached {EPA_EQUATION} a_state.item_with_expression_text (left_operand.text) as lt_left_equation then
@@ -58,12 +62,22 @@ feature -- Basic operation
 			last_value := evaluate_boolean_relation (l_left_value, l_right_value, operator)
 		end
 
+	derived_change_requirements (a_result: BOOLEAN): DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
+			-- <Precursor>
+		local
+			l_requirements: DS_LINKED_LIST[TUPLE[expr1: EPA_EXPRESSION; expr2: EPA_EXPRESSION]]
+			l_new_expr: EPA_AST_EXPRESSION
+		do
+				-- For the moment, the boolean expression takes the form of either an expression, or the negation of an expression.
+			Result := change_requirements_for_one_boolean_expression (Current)
+		end
+
 feature -- Access
 
-	left_operand: AFX_PROGRAM_STATE_EXPRESSION
+	left_operand: EPA_EXPRESSION
 			-- Expression appearing to the left of the operator.
 
-	right_operand: AFX_PROGRAM_STATE_EXPRESSION
+	right_operand: EPA_EXPRESSION
 			-- Expression appearing to the right of the operator.
 
 	operator: INTEGER

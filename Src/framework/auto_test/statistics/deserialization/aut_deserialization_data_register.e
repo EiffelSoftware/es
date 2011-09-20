@@ -25,6 +25,7 @@ feature -- Setting
 		do
 			internal_register.put (a_register)
 		end
+
 feature{NONE} -- Implementation
 
 	internal_register: CELL [EPA_NESTED_HASH_TABLE[AUT_DESERIALIZED_DATA, FEATURE_I, CLASS_C]]
@@ -52,7 +53,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -68,7 +68,7 @@ feature -- Access
 			l_output := output_from_program (l_cmd, Void)
 			create l_parser
 			l_parser.parse_from_string (l_output, a_declarations)
-			Result := l_parser.last_invariants
+			Result := l_parser.last_daikon_results
 
 				-- Remove temp files.
 --			create l_file.make (l_decls_file)

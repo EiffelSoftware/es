@@ -89,6 +89,7 @@ feature -- Extract contract expressions
 			end
 		ensure
 			all_postconditions: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_postcondition end)
+				-- Result.count is not the number of postcondition clauses.  April 26, 2011. Max
 --			count_correct: Result.count = postcondition_count (a_feature)
 		end
 
@@ -126,7 +127,7 @@ feature -- Extract contract expressions
 					end(?,Result))
 		ensure
 			all_postconditions: Result.for_all (agent (a: ETR_CONTRACT_EXPRESSION):BOOLEAN do Result := a.is_postcondition end)
-			count_correct: Result.count = inherited_postcondition_count (a_feature)
+--			count_correct: Result.count = inherited_postcondition_count (a_feature)
 		end
 
 	inherited_preconditions (a_feature: FEATURE_I): LIST[ETR_CONTRACT_EXPRESSION]

@@ -31,8 +31,8 @@ feature -- Access
 					do
 						a_skeleton.force_last (a_equation.expression)
 					end (?, Result))
-		ensure
-			good_result: Result.count = a_state.count
+--		ensure
+--			good_result: Result.count = a_state.count
 		end
 
 feature -- Solver input file generator

@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 		do
 			eiffel_system := a_system
 			set_is_using_model_based_strategy (True)
-			set_is_monitoring_breakpointwise (True)
+--			set_is_monitoring_breakpointwise (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -158,47 +158,6 @@ feature -- State retrieval related
 			Result := state_test_case_class_name_cache
 		end
 
-	state_class_under_test: detachable CLASS_C
-			-- CLASS_C for `state_test_case_class_name'
-			-- Void if no such class exists.
-		local
-			l_feat: like state_feature_under_test
-		do
-			l_feat := state_feature_under_test
-			if l_feat /= Void then
-				Result := l_feat.access_class
-			end
-		end
-
-	state_feature_under_test: detachable FEATURE_I
-			-- FEATURE_I for `state_feature_under_test',
-			-- Void if no such feature exists.
-		do
-			if state_test_case_class_name_cache = Void then
-				analyze_test_case_class_name
-			end
-			Result := state_feature_under_test_cache
-		end
-
-	state_recipient_class: detachable CLASS_C
-			-- Class containing the feature `state_feature_under_test'
-			-- Void if no such class exists.
-		do
-			if state_recipient /= Void then
-				Result := state_recipient.access_class
-			end
-		end
-
-	state_recipient: detachable FEATURE_I
-			-- Recipient feature of the exception in a failed test case.
-			-- In a passing test case, same as `state_feature_under_test'.
-		do
-			if state_recipient_cache = Void then
-				analyze_test_case_class_name
-			end
-			Result := state_recipient_cache
-		end
-
 feature -- Test case analysis
 
 	test_case_path: detachable STRING
@@ -207,6 +166,14 @@ feature -- Test case analysis
 	max_test_case_number: INTEGER
 			-- Max number of test cases
 			-- Default: 0
+
+	max_passing_test_case_number: INTEGER
+			-- Max number of passing test cases.
+			-- Default: 0. (All passing test cases)
+
+	max_failing_test_case_number: INTEGER
+			-- Max number of failing test cases.
+			-- Default: 0. (All faiing test cases)
 
 	is_arff_generation_enabled: BOOLEAN
 			-- Should ARFF file be generated during test case analysis?
@@ -221,29 +188,29 @@ feature -- Test case analysis
 			-- Should project be freezed before auto-fixing?
 			-- Default: False
 
-	is_combining_integral_expressions_in_feature: BOOLEAN assign set_is_combining_integral_expressions_in_feature
-			-- Is current strategy for combining integral expressions based on feature?
-			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
-			--		`is_combining_integral_expressions_in_breakpoint' is True.
+--	is_combining_integral_expressions_in_feature: BOOLEAN assign set_is_combining_integral_expressions_in_feature
+--			-- Is current strategy for combining integral expressions based on feature?
+--			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
+--			--		`is_combining_integral_expressions_in_breakpoint' is True.
 
-	is_combining_integral_expressions_in_breakpoint: BOOLEAN assign set_is_combining_integral_expressions_in_breakpoint
-			-- Is current strategy for combining integral expressions based on breakpoint?
-			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
-			--		`is_combining_integral_expressions_in_breakpoint' is True.
+--	is_combining_integral_expressions_in_breakpoint: BOOLEAN assign set_is_combining_integral_expressions_in_breakpoint
+--			-- Is current strategy for combining integral expressions based on breakpoint?
+--			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
+--			--		`is_combining_integral_expressions_in_breakpoint' is True.
 
-feature -- Distinguishing expressions based on their breakpoint index
+--feature -- Distinguishing expressions based on their breakpoint index
 
-	is_breakpoint_specific: BOOLEAN assign set_breakpoint_specific
-			-- Is comparison between expressions breakpoint-specific?
+--	is_breakpoint_specific: BOOLEAN assign set_breakpoint_specific
+--			-- Is comparison between expressions breakpoint-specific?
 
-	set_breakpoint_specific (a_flag: BOOLEAN)
-			-- Set `is_breakpoint_specific'.
-		do
-			is_breakpoint_specific := a_flag
-		end
+--	set_breakpoint_specific (a_flag: BOOLEAN)
+--			-- Set `is_breakpoint_specific'.
+--		do
+--			is_breakpoint_specific := a_flag
+--		end
 
-	is_program_state_extended: BOOLEAN
-			-- Is monitoring extended program states?
+--	is_program_state_extended: BOOLEAN
+--			-- Is monitoring extended program states?
 
 feature -- Usage of Control Flow Graph (CFG) in rank computation
 
@@ -360,37 +327,37 @@ feature -- Type of fault localization algorithm
 	Fault_localization_strategy_heuristicIII_new: INTEGER = 12
 	Default_fault_localization_strategy: INTEGER = 12
 
-feature -- Fix condition preference
+--feature -- Fix condition preference
 
-	fix_condition_preference: INTEGER
-			-- Preference of sources of fix conditions.
+--	fix_condition_preference: INTEGER
+--			-- Preference of sources of fix conditions.
 
-	set_fix_condition_preference (a_pref: INTEGER)
-			-- Set `fix_condition_preference'.
-		require
-			is_valid_preference: is_valid_fix_condition_preference (a_pref)
-		do
-			fix_condition_preference := a_pref
-		end
+--	set_fix_condition_preference (a_pref: INTEGER)
+--			-- Set `fix_condition_preference'.
+--		require
+--			is_valid_preference: is_valid_fix_condition_preference (a_pref)
+--		do
+--			fix_condition_preference := a_pref
+--		end
 
-	is_valid_fix_condition_preference (a_pref: INTEGER): BOOLEAN
-		do
-			Result := (a_pref = Fix_condition_preference_invariant) or else (a_pref = is_fix_condition_preferring_evidence)
-		end
+--	is_valid_fix_condition_preference (a_pref: INTEGER): BOOLEAN
+--		do
+--			Result := (a_pref = Fix_condition_preference_invariant) or else (a_pref = Fix_condition_preference_evidence)
+--		end
 
-	is_fix_condition_preferring_invariant: BOOLEAN
-		do
-			Result := fix_condition_preference = Fix_condition_preference_invariant
-		end
+--	is_fix_condition_preferring_invariant: BOOLEAN
+--		do
+--			Result := fix_condition_preference = Fix_condition_preference_invariant
+--		end
 
-	is_fix_condition_preferring_evidence: BOOLEAN
-		do
-			Result := fix_condition_preference = Fix_condition_preference_evidence
-		end
+--	is_fix_condition_preferring_evidence: BOOLEAN
+--		do
+--			Result := fix_condition_preference = Fix_condition_preference_evidence
+--		end
 
-	Fix_condition_preference_invariant: INTEGER = 1
-	Fix_condition_preference_evidence: INTEGER = 2
-	Default_fix_condition_preference: INTEGER = 2
+--	Fix_condition_preference_invariant: INTEGER = 1
+--	Fix_condition_preference_evidence: INTEGER = 2
+--	Default_fix_condition_preference: INTEGER = 2
 
 feature -- Fix generation
 
@@ -477,21 +444,34 @@ feature -- Status report
 			same_as_cache: Result = is_using_random_based_strategy_cache
 		end
 
-	is_monitoring_featurewise: BOOLEAN
-			-- Will all expressions be monitored featurewise?
+	is_using_state_based_test_case_selection: BOOLEAN
+			-- Is the current fixing process selecting test cases based on
+			-- the states of objects in the test cases?
+
+	set_state_based_test_case_selection (a_flag: BOOLEAN)
+			-- Set `is_using_state_based_test_case_selection' with `a_flag'.
 		do
-			Result := is_monitoring_featurewise_cache
+			is_using_state_based_test_case_selection := a_flag
 		ensure
-			definition: Result = is_monitoring_featurewise_cache
+			is_using_state_based_test_case_selection_set:
+					is_using_state_based_test_case_selection = a_flag
 		end
 
-	is_monitoring_breakpointwise: BOOLEAN
-			-- Will expressions be monitored breakpointwise?
-		do
-			Result := is_monitoring_breakpointwise_cache
-		ensure
-			definition: Result = is_monitoring_breakpointwise_cache
-		end
+--	is_monitoring_featurewise: BOOLEAN
+--			-- Will all expressions be monitored featurewise?
+--		do
+--			Result := is_monitoring_featurewise_cache
+--		ensure
+--			definition: Result = is_monitoring_featurewise_cache
+--		end
+
+--	is_monitoring_breakpointwise: BOOLEAN
+--			-- Will expressions be monitored breakpointwise?
+--		do
+--			Result := is_monitoring_breakpointwise_cache
+--		ensure
+--			definition: Result = is_monitoring_breakpointwise_cache
+--		end
 
 	should_retrieve_state: BOOLEAN
 			-- Should state of the system be retrieved?
@@ -523,33 +503,53 @@ feature -- Setting
 			is_using_random_based_strategy_cache := not b
 		end
 
-	set_is_monitoring_featurewise (a_flag: BOOLEAN)
-			-- Set `is_monitoring_featurewise'.
+	set_max_passing_test_case_number (a_number: INTEGER)
+			-- Set `max_passing_test_case_number' with `a_number'.
+		require
+			positive_number: a_number >= 0
 		do
-			is_monitoring_featurewise_cache := a_flag
-			is_monitoring_breakpointwise_cache := not a_flag
+			max_passing_test_case_number := a_number
+		ensure
+			max_passing_test_case_number_set: max_passing_test_case_number  = a_number
 		end
 
-	set_is_monitoring_breakpointwise (a_flag: BOOLEAN)
-			-- Set `is_monitoring_breakpointwise'.
+	set_max_failing_test_case_number (a_number: INTEGER)
+			-- Set `max_failing_test_case_number' with `a_number'.
+		require
+			positive_number: a_number >= 0
 		do
-			is_monitoring_breakpointwise_cache := a_flag
-			is_monitoring_featurewise_cache := not a_flag
+			max_failing_test_case_number := a_number
+		ensure
+			max_failing_test_case_number_set: max_failing_test_case_number = a_number
 		end
 
-	set_is_combining_integral_expressions_in_feature (a_flag: BOOLEAN)
-			-- Set `is_combining_integral_expressions_in_feature'.
-		do
-			is_combining_integral_expressions_in_feature := a_flag
-			is_combining_integral_expressions_in_breakpoint := not a_flag
-		end
+--	set_is_monitoring_featurewise (a_flag: BOOLEAN)
+--			-- Set `is_monitoring_featurewise'.
+--		do
+--			is_monitoring_featurewise_cache := a_flag
+--			is_monitoring_breakpointwise_cache := not a_flag
+--		end
 
-	set_is_combining_integral_expressions_in_breakpoint (a_flag: BOOLEAN)
-			-- Set `is_combining_integral_expressions_in_breakpoint'.
-		do
-			is_combining_integral_expressions_in_breakpoint := a_flag
-			is_combining_integral_expressions_in_feature := not a_flag
-		end
+--	set_is_monitoring_breakpointwise (a_flag: BOOLEAN)
+--			-- Set `is_monitoring_breakpointwise'.
+--		do
+--			is_monitoring_breakpointwise_cache := a_flag
+--			is_monitoring_featurewise_cache := not a_flag
+--		end
+
+--	set_is_combining_integral_expressions_in_feature (a_flag: BOOLEAN)
+--			-- Set `is_combining_integral_expressions_in_feature'.
+--		do
+--			is_combining_integral_expressions_in_feature := a_flag
+--			is_combining_integral_expressions_in_breakpoint := not a_flag
+--		end
+
+--	set_is_combining_integral_expressions_in_breakpoint (a_flag: BOOLEAN)
+--			-- Set `is_combining_integral_expressions_in_breakpoint'.
+--		do
+--			is_combining_integral_expressions_in_breakpoint := a_flag
+--			is_combining_integral_expressions_in_feature := not a_flag
+--		end
 
 	set_should_retrieve_state (b: BOOLEAN)
 			-- Set `should_retrieve_state' with `b'.
@@ -557,22 +557,6 @@ feature -- Setting
 			should_retrieve_state_cache := b
 		ensure
 			should_retrieve_state_set: should_retrieve_state = b
-		end
-
-	set_state_recipient (a_recipient: like state_recipient)
-			-- Set `state_recipient' with `a_recipient'.
-		do
-			state_recipient_cache := a_recipient
-		ensure
-			state_recipient_set: state_recipient = a_recipient
-		end
-
-	set_state_feature_under_test (a_feature_under_test: like state_feature_under_test)
-			-- Set `state_feature_under_test' with `a_feature_under_test'.
-		do
-			state_feature_under_test_cache := a_feature_under_test
-		ensure
-			state_feature_under_test_set: state_feature_under_test = a_feature_under_test
 		end
 
 	set_should_build_test_cases (b: BOOLEAN)
@@ -686,11 +670,11 @@ feature -- Setting
 			model_directory := a_directory.twin
 		end
 
-	set_program_state_extended (a_flag: BOOLEAN)
-			-- Set `is_program_state_extended'.
-		do
-			is_program_state_extended := a_flag
-		end
+--	set_program_state_extended (a_flag: BOOLEAN)
+--			-- Set `is_program_state_extended'.
+--		do
+--			is_program_state_extended := a_flag
+--		end
 
 	set_max_fix_candidate (a_max: INTEGER)
 			-- Set `max_fix_candidate'.
@@ -722,9 +706,6 @@ feature{NONE} -- Implementation
 	should_retrieve_state_cache: BOOLEAN
 			-- Cache for `should_retrieve_state'
 
-	state_feature_under_test_cache: like state_feature_under_test
-			-- Cache for `state_feature_under_test'
-
 	state_recipient_cache: detachable FEATURE_I
 			-- Cache for `state_recipient'
 
@@ -734,11 +715,11 @@ feature{NONE} -- Implementation
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
 
-	is_monitoring_featurewise_cache: BOOLEAN
-			-- Cache for `is_monitoring_featurewise'.
+--	is_monitoring_featurewise_cache: BOOLEAN
+--			-- Cache for `is_monitoring_featurewise'.
 
-	is_monitoring_breakpointwise_cache: BOOLEAN
-			-- Cache for `is_monitoring_breakpointwise'.
+--	is_monitoring_breakpointwise_cache: BOOLEAN
+--			-- Cache for `is_monitoring_breakpointwise'.
 
 feature{NONE} -- Implementation
 
@@ -764,26 +745,10 @@ feature{NONE} -- Implementation
 				i = n or else Result /= Void
 			loop
 				l_class := l_classes.item (i)
-				if l_class /= Void then
---					io.put_string ("--> " + l_class.name + "%N")
-				end
 				if l_class /= Void and then l_class.already_compiled and then l_class.name.starts_with (once "TC__") then
 					Result := l_class.name.twin
 				end
 				i := i + 1
-			end
-		end
-
-	analyze_test_case_class_name
-			-- Analyze `state_test_case_class_name' to find out
-			-- tested feature, and (in case of a failed test case, recipient of the exception'.
-		local
-			l_tc_info: EPA_TEST_CASE_INFO
-		do
-			if state_test_case_class_name /= Void then
-				create l_tc_info.make_with_string (state_test_case_class_name)
-				state_feature_under_test_cache := feature_from_class (l_tc_info.class_under_test, l_tc_info.feature_under_test)
-				state_recipient_cache := feature_from_class (l_tc_info.recipient_class, l_tc_info.recipient)
 			end
 		end
 

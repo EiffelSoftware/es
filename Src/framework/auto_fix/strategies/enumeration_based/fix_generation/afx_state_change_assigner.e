@@ -10,6 +10,8 @@ class
 inherit
 	SHARED_WORKBENCH
 
+	REFACTORING_HELPER
+
 create
 	default_create
 
@@ -28,23 +30,31 @@ feature -- Access
 
 feature -- Basic operation
 
+	target_object_detector: AFX_TARGET_OBJECT_DETECTOR
+			-- Shared target object detector.
+		once
+			create Result
+		end
+
 	generate_assignment (a_requirement: AFX_STATE_CHANGE_REQUIREMENT)
 			-- Generate assignment texts that will fulfil `a_requirement'.
 		require
 			requirement_attached: a_requirement /= Void
 		local
-			l_src, l_dest: AFX_PROGRAM_STATE_EXPRESSION
-			l_immediate_target_objects: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
-			l_cursor: DS_HASH_SET_CURSOR [AFX_PROGRAM_STATE_EXPRESSION]
-			l_target: AFX_PROGRAM_STATE_EXPRESSION
+			l_src, l_dest: EPA_EXPRESSION
+			l_immediate_target_objects: EPA_HASH_SET [EPA_EXPRESSION]
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_target: EPA_EXPRESSION
 			l_operations: EPA_HASH_SET [STRING]
 		do
 			l_src := a_requirement.src_expr
 			l_dest := a_requirement.dest_expr
 
-			l_immediate_target_objects := l_src.immediate_target_objects
+			target_object_detector.detect_target_objects_for_fixing (l_src)
+			fixme ("Cache the target objects for expressions")
+			l_immediate_target_objects := target_object_detector.immediate_target_objects
 			if l_immediate_target_objects.has (l_src) then
-				-- We can directly assign to the source expression.
+					-- We can directly assign to the source expression.
 				last_operation_texts.force_last (l_src.text + " := " + l_dest.text)
 			else
 				-- Source expression cannot be used as assignment target.
@@ -70,7 +80,7 @@ feature -- Basic operation
 			end
 		end
 
-	generate_for_integer (a_integer_expr: AFX_PROGRAM_STATE_EXPRESSION): EPA_HASH_SET [STRING]
+	generate_for_integer (a_integer_expr: EPA_EXPRESSION): EPA_HASH_SET [STRING]
 			-- Generate fixng operations for an integer expression.
 		local
 			l_text: STRING
@@ -85,7 +95,7 @@ feature -- Basic operation
 			Result.force_last (l_text + " := " + "-1")
 		end
 
-	generate_for_boolean (a_boolean_expr: AFX_PROGRAM_STATE_EXPRESSION): EPA_HASH_SET [STRING]
+	generate_for_boolean (a_boolean_expr: EPA_EXPRESSION): EPA_HASH_SET [STRING]
 			-- Generate fixng operations for a boolean expression.
 		local
 			l_op: AFX_FIXING_OPERATION_ON_BOOLEAN
@@ -94,7 +104,7 @@ feature -- Basic operation
 			Result.force_last (a_boolean_expr.text + " := not (" + a_boolean_expr.text + ")")
 		end
 
-	generate_for_reference (a_reference_expr: AFX_PROGRAM_STATE_EXPRESSION): EPA_HASH_SET [STRING]
+	generate_for_reference (a_reference_expr: EPA_EXPRESSION): EPA_HASH_SET [STRING]
 			-- Generate fixng operations for a reference expression.
 		local
 			l_class: CLASS_C

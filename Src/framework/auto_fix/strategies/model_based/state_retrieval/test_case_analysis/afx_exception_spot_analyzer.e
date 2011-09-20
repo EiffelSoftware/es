@@ -31,7 +31,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	analyze (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER)
+	analyze (a_tc: EPA_TEST_CASE_SIGNATURE; a_dm: DEBUGGER_MANAGER)
 			-- Generate `last_spot' for text case `a_tc' in the context
 			-- given by the debugger `a_dm'.			
 		do
@@ -39,7 +39,7 @@ feature -- Basic operations
 			last_spot.set_trace (a_dm.application_status.exception_text)
 
 				-- Analyze different aspects of the failure.
-			analyze_state_predicates (a_tc, a_dm, last_spot)
+			analyze_state_predicates (a_tc, last_spot)
 --			analyze_ast_structure (a_tc, a_dm, last_spot)
 			analyze_failing_assertion (a_Tc, a_dm, last_spot.recipient_ast_structure, last_spot)
 		end
@@ -66,7 +66,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	implication_file_path (a_tc: EPA_TEST_CASE_INFO): PLAIN_TEXT_FILE
+	implication_file_path (a_tc: EPA_TEST_CASE_SIGNATURE): PLAIN_TEXT_FILE
 			-- File which stores the possible implication candidates used
 			-- in state model for the fault specified in `a_tc'.
 		local
@@ -77,11 +77,10 @@ feature{NONE} -- Implementation
 			create Result.make (l_file_name)
 		end
 
-	analyze_state_predicates (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_spot: like last_spot)
+	analyze_state_predicates (a_tc: EPA_TEST_CASE_SIGNATURE; a_spot: like last_spot)
 			-- Analyze predicates that should be included in state for current exception, and
 			-- set those predicates into `a_spot'.
 			-- `a_tc' includes basic information of the current exception.
-			-- `a_dm' is a debugger manager.
 		local
 			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
@@ -128,7 +127,7 @@ feature{NONE} -- Implementation
 			a_file.close
 		end
 
-	implications_from_file (a_tc: EPA_TEST_CASE_INFO; a_file: PLAIN_TEXT_FILE): EPA_STATE_SKELETON
+	implications_from_file (a_tc: EPA_TEST_CASE_SIGNATURE; a_file: PLAIN_TEXT_FILE): EPA_STATE_SKELETON
 			-- Implications loaded from `a_file' for test case `a_tc'
 		local
 			l_imps: LINKED_LIST [STRING]
@@ -181,7 +180,7 @@ feature{NONE} -- Implementation
 --			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
 --		end
 
-	analyze_failing_assertion (a_tc: EPA_TEST_CASE_INFO; a_dm: DEBUGGER_MANAGER; a_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
+	analyze_failing_assertion (a_tc: EPA_TEST_CASE_SIGNATURE; a_dm: DEBUGGER_MANAGER; a_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
 			-- Analyze failing assertion of the exception, and
 			-- set the information into `a_spot'.
 			-- `a_tc' includes basic information of the current exception.

@@ -460,6 +460,16 @@ feature -- Options: test case deserialization
 			good_result: Result = is_recursive_cache
 		end
 
+	is_building_behavioral_models: BOOLEAN assign set_building_behavioral_models
+			-- Is building behavioral models during deserialization?
+
+	is_deserializing_for_fixing: BOOLEAN assign set_deserialization_for_fixing
+			-- Is AutoTest deserializing test cases to favor fixing?
+			-- When True, test cases are grouped by faults; otherwise, by routine under test.
+
+	model_directory: FILE_NAME assign set_model_directory
+			-- Directory to save the constructed models.
+
 	data_input: detachable STRING
 			-- Directory or file name of the serialization files.
 		do
@@ -474,6 +484,26 @@ feature -- Options: test case deserialization
 			Result := data_output_cache
 		ensure then
 			good_result: Result = data_output_cache
+		end
+
+	set_building_behavioral_models (a_flag: BOOLEAN)
+			-- Set `is_building_behavioral_models' with `a_flag'.
+		do
+			is_building_behavioral_models := a_flag
+		end
+
+	set_deserialization_for_fixing (a_flag: BOOLEAN)
+			-- Set `is_deserializing_for_fixing' with `a_flag'.
+		do
+			is_deserializing_for_fixing := a_flag
+		end
+
+	set_model_directory (a_dir: FILE_NAME)
+			-- Set `model_directory' with `a_dir'.
+		require
+			valid_dir: a_dir /= Void and then a_dir.is_valid
+		do
+			model_directory := a_dir
 		end
 
 feature -- Options: Interface related class collection

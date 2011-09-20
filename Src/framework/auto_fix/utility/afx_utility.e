@@ -24,7 +24,7 @@ inherit
 
 feature -- Access
 
-	test_case_info_from_string (a_string: STRING): EPA_TEST_CASE_INFO
+	test_case_info_from_string (a_string: STRING): EPA_TEST_CASE_SIGNATURE
 			-- Test case information analyzed from `a_string'
 		do
 			create Result.make_with_string (a_string)

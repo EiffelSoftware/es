@@ -8,28 +8,37 @@ class
 	AFX_PROGRAM_STATE_SKELETON
 
 inherit
-	EPA_HASH_SET [AFX_PROGRAM_STATE_ASPECT]
+	DS_HASH_TABLE [AFX_PROGRAM_STATE_ASPECT, STRING]
 		redefine
 			default_capacity
 		end
 
 create
-	make_skeleton_breakpoint_unspecific, make_skeleton_breakpoint_specific
+	make_skeleton_breakpoint_unspecific
+
+feature -- Basic operation
+
+	merge (a_skeleton: like Current)
+			-- Merge `a_skeleton' into `Current'.
+		require
+			skeleton_attached: a_skeleton /= Void
+		local
+		do
+			from a_skeleton.start
+			until a_skeleton.after
+			loop
+				force (a_skeleton.item_for_iteration, a_skeleton.key_for_iteration)
+
+				a_skeleton.forth
+			end
+		end
 
 feature{NONE} -- Initialization
 
 	make_skeleton_breakpoint_unspecific (a_capacity: INTEGER)
 			-- Initialization.
 		do
-			make (a_capacity)
-			set_equality_tester (Breakpoint_unspecific_equality_tester)
-		end
-
-	make_skeleton_breakpoint_specific (a_capacity: INTEGER)
-			-- Initialization.
-		do
-			make (a_capacity)
-			set_equality_tester (Breakpoint_specific_equality_tester)
+			make_equal (a_capacity)
 		end
 
 feature -- Basic operation
@@ -67,38 +76,5 @@ feature -- Constant
 
 	Default_capacity: INTEGER = 100
 			-- <Precursor>
-
-	Breakpoint_specific_equality_tester: KL_EQUALITY_TESTER [AFX_PROGRAM_STATE_ASPECT]
-			-- Shared equality tester.
-		once
-			create {AGENT_BASED_EQUALITY_TESTER [AFX_PROGRAM_STATE_ASPECT]} Result.make (
-						agent (a_exp1, a_exp2: AFX_PROGRAM_STATE_ASPECT): BOOLEAN
-							do
-								if a_exp1 = a_exp2 then
-									Result := True
-								elseif a_exp1 = Void or a_exp2 = Void then
-									Result := false
-								else
-									Result := a_exp1.text ~ a_exp2.text and then a_exp1.breakpoint_slot = a_exp2.breakpoint_slot
-								end
-							end)
-		end
-
-	Breakpoint_unspecific_equality_tester: KL_EQUALITY_TESTER [AFX_PROGRAM_STATE_ASPECT]
-			-- Shared equality tester.
-		once
-			create {AGENT_BASED_EQUALITY_TESTER [AFX_PROGRAM_STATE_ASPECT]} Result.make (
-						agent (a_exp1, a_exp2: AFX_PROGRAM_STATE_ASPECT): BOOLEAN
-							do
-								if a_exp1 = a_exp2 then
-									Result := True
-								elseif a_exp1 = Void or a_exp2 = Void then
-									Result := false
-								else
-									Result := a_exp1.text ~ a_exp2.text
-								end
-							end)
-		end
-
 
 end

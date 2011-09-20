@@ -54,7 +54,7 @@ feature -- Basic operations
 			l_ranking: AFX_FIX_RANKING
 		do
 			create fixes.make
-			l_written_class := exception_spot.recipient_written_class
+			l_written_class := exception_recipient_feature.written_class
 			l_match_list := match_list_server.item (l_written_class.class_id)
 
 			create l_text.make (1024)
@@ -69,9 +69,9 @@ feature -- Basic operations
 			l_text.append ("%Nend%N")
 			original_ast.replace_text (l_text, l_match_list)
 
-			create l_fix.make (exception_spot, next_fix_id)
-			l_fix.set_text (feature_body_compound_ast.text (l_match_list))
-			l_fix.set_feature_text (feature_as_ast.text (l_match_list))
+			create l_fix.make (next_fix_id)
+			l_fix.set_text (exception_recipient_feature.body_compound_ast.text (l_match_list))
+			l_fix.set_feature_text (exception_recipient_feature.feature_as_ast.text (l_match_list))
 			l_fix.set_pre_fix_execution_status (test_case_execution_status)
 			l_fix.set_skeleton_type ({AFX_FIX}.wrapping_skeleton_type)
 			l_match_list.remove_modifications

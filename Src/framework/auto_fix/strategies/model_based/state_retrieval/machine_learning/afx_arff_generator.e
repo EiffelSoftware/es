@@ -7,28 +7,40 @@ note
 class
 	AFX_ARFF_GENERATOR
 
+inherit
+	AFX_TEST_CASE_EXECUTION_EVENT_LISTENER
+
+	AFX_SHARED_SESSION
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config)
+	make
 			-- Initialize.
 		do
-			config := a_config
 			last_file_name := Void
 		end
 
-feature -- Access
+feature -- Status report
 
-	config: AFX_CONFIG
-			-- AutoFix configuration
+	is_test_case_new (a_tc: EPA_TEST_CASE_INFO): BOOLEAN
+			-- <Precursor>
+		do
+			Result := True
+		end
 
-feature -- Actions
+feature -- Event handler
 
-	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
-			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
-			-- `a_state' is the set of expressions with their evaluated values.
+	on_new_test_case (a_tc: EPA_TEST_CASE_INFO)
+			-- <Precursor>
+		do
+			-- Do nothing.
+		end
+
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+			-- <Precursor>
 		local
 			l_file_name: STRING
 			l_file_path: FILE_NAME
@@ -54,8 +66,8 @@ feature -- Actions
 			put_data (output_file, a_bpslot, a_state)
 		end
 
-	on_application_exited (a_dm: DEBUGGER_MANAGER)
-			-- Action to perform when application exited in debugger
+	on_application_exit
+			-- <Precursor>
 		do
 			close_output_file
 		end
@@ -157,24 +169,29 @@ feature{NONE} -- Implementation
 		end
 
 	output_file_name (a_tc: EPA_TEST_CASE_INFO; a_bpslot: INTEGER): STRING
-			-- Name of the file used to store data retrieved breakpoint `a_bpslot'
-			-- in test case `a_tc'
+			-- Name of the file used to store data retrieved breakpoint `a_bpslot' for `a_tc'.
+		local
+			l_bp_context_feature: EPA_FEATURE_WITH_CONTEXT_CLASS
 		do
+			l_bp_context_feature := exception_recipient_feature
 			create Result.make (64)
-			Result.append (a_tc.recipient_class)
+			Result.append (l_bp_context_feature.context_class.name)
 			Result.append (once "__")
-			Result.append (a_tc.recipient)
-			if a_tc.is_passing then
-				Result.append (once "__S")
-			else
-				Result.append (once "__F")
-			end
-			Result.append (once "__c")
-			Result.append (a_tc.exception_code.out)
-			Result.append (once "__b")
-			Result.append (a_tc.breakpoint_slot.out)
-			Result.append (once "__TAG_")
-			Result.append (a_tc.tag)
+			Result.append (l_bp_context_feature.feature_.feature_name_32)
+			Result.append (once "__")
+			Result.append (a_tc.id)
+			
+--			if a_tc.is_passing then
+--				Result.append (once "__S")
+--			else
+--				Result.append (once "__F")
+--			end
+--			Result.append (once "__c")
+--			Result.append (a_tc.exception_code.out)
+--			Result.append (once "__b")
+--			Result.append (a_tc.breakpoint_slot.out)
+--			Result.append (once "__TAG_")
+--			Result.append (a_tc.tag)
 		end
 
 end

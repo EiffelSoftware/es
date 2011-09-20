@@ -33,12 +33,31 @@ feature -- Initialize
 		    l_start_pos, l_end_pos: INTEGER
 		    l_exp_str, l_predicator_str: STRING
 		    l_extractor: AFX_BOOLEAN_STATE_OUTLINE_EXTRACTOR_I
+		    l_feature_table: FEATURE_TABLE
+		    l_feature: FEATURE_I
+		    l_found : BOOLEAN
 		do
 		    l_start_pos := a_xml_string.index_of ('(', 1)
 		    l_end_pos := a_xml_string.last_index_of (')', a_xml_string.count)
 		    check l_start_pos > 0 and then l_end_pos > 0 and l_start_pos < l_end_pos and then l_end_pos <= a_xml_string.count end
 		    l_exp_str := a_xml_string.substring (l_start_pos + 1, l_end_pos - 1)
-		    create expression.make_with_text (a_class, Void, l_exp_str, a_class)
+
+		    	-- Select a feature for constructing the outline expressions, preferrably one written in `a_class'.
+		    from
+		    	l_feature_table := a_class.feature_table
+		    	l_found := False
+		    	l_feature_table.start
+		    until
+		    	l_feature_table.after or else l_found
+		    loop
+		    	l_feature := l_feature_table.item_for_iteration
+		    	if l_feature.written_class ~ a_class then
+		    		l_found := True
+		    	else
+		    		l_feature_table.forth
+		    	end
+		    end
+		    create expression.make_with_text (a_class, l_feature, l_exp_str, a_class)
 
 		    	-- predicator from string
 		    l_extractor := boolean_state_outline_manager.effective_extractor

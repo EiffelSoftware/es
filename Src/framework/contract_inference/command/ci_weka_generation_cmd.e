@@ -102,7 +102,7 @@ feature{NONE} -- Actions
 	on_test_case_found (a_path: STRING; a_name: STRING)
 			-- Action performed when a test case in `a_file' is found.
 		local
-			l_tc_info: EPA_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_SIGNATURE
 			l_feat_name: STRING
 			l_tc_set: DS_HASH_SET [STRING]
 		do

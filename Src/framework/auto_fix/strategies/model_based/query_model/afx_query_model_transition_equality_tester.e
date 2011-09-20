@@ -28,7 +28,8 @@ feature -- Equality
 		    elseif u.hash_code = v.hash_code then
 		        if state_tester.test (u.source, v.source)
 		        		and then state_tester.test (u.destination, v.destination)
-		        		and then request_tester.test (u.feature_call, v.feature_call) then
+--		        		and then request_tester.test (u.feature_call, v.feature_call)
+				then
 		            Result := True
 		        end
 		    end
@@ -42,9 +43,9 @@ feature{NONE} -- Implementation
     	    create Result
     	end
 
-    request_tester: AFX_CALL_BASED_REQUEST_EQUALITY_TESTER
-    		-- Request tester.
-    	once
-    	    create Result
-    	end
+--    request_tester: AFX_CALL_BASED_REQUEST_EQUALITY_TESTER
+--    		-- Request tester.
+--    	once
+--    	    create Result
+--    	end
 end

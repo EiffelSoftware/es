@@ -8,13 +8,17 @@ class
 	AFX_PROGRAM_EXECUTION_TRACE_TO_DAIKON_PRINTER
 
 inherit
+	AFX_SHARED_SESSION
+
 	DKN_SHARED_EQUALITY_TESTERS
 
 	DKN_CONSTANTS
 
 	DKN_UTILITY
 
-	AFX_SHARED_SERVER_PROGRAM_STATE_SKELETON
+--	AFX_SHARED_STATIC_ANALYSIS_REPORT
+
+--	AFX_SHARED_SERVER_PROGRAM_STATE_SKELETON
 
 create
 	make
@@ -49,7 +53,7 @@ feature -- Access
 
 feature -- Basic operation
 
-	print_trace_repository (a_repository: DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, STRING])
+	print_trace_repository (a_repository: DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, EPA_TEST_CASE_INFO])
 			-- Print the program execution traces in `a_repository' to be used for Daikon.
 		require
 			repository_attached: a_repository /= Void
@@ -147,7 +151,7 @@ feature{NONE} -- Implementation
 			l_context_class, l_written_class: CLASS_C
 			l_feature: FEATURE_I
 			l_ppt_name: STRING
-			l_skeleton: AFX_PROGRAM_STATE_SKELETON
+			l_skeleton: EPA_STATE_SKELETON
 			l_aspect: AFX_PROGRAM_STATE_ASPECT
 			l_variable: DKN_VARIABLE
 			l_var_name: STRING
@@ -164,19 +168,49 @@ feature{NONE} -- Implementation
 			create Result.make_with_type (l_ppt_name, Point_program_point)
 
 			-- Variables declared at this program point.
-			l_skeleton := server_program_state_skeleton.skeleton_breakpoint_unspecific (l_context_class, l_feature)
+			l_skeleton := exception_recipient_feature.state_skeleton
 			from l_skeleton.start
 			until l_skeleton.after
 			loop
-				l_aspect := l_skeleton.item_for_iteration
-
-				l_var_name := l_aspect.text
-				l_var_type := l_aspect.type
-				create l_variable.make (l_var_name, Boolean_rep_type, Variable_var_kind, Boolean_rep_type, l_var_name.hash_code)
-				Result.variables.force (l_variable)
-
+				check attached {EPA_EXPRESSION} l_skeleton.item_for_iteration as lv_aspect then
+					l_var_name := lv_aspect.text
+					l_var_type := lv_aspect.type
+					Result.variables.force (variable_declaration (l_var_name, l_var_type))
+				end
 				l_skeleton.forth
 			end
+		end
+
+	variable_declaration (a_var_name: STRING; a_type: TYPE_A): DKN_VARIABLE
+			-- Variable declaraction for `a_var_name' and `a_type'
+			-- From {CI_TRANSITION_TO_DAIKON}.
+		local
+			l_rep_type: STRING
+			l_var_kind: STRING
+			l_dec_type: STRING
+			l_comparability: INTEGER
+		do
+			if a_type.is_boolean then
+				l_rep_type := boolean_rep_type
+				l_comparability := a_var_name.hash_code
+			elseif a_type.is_integer then
+				l_rep_type := integer_rep_type
+--				fixme ("This is a hack to avoid comparing irrelevant integer expressions. We ignore all feature calls with arguments. 23.6.2010 Jasonw")
+				if a_var_name.has ('(') then
+					l_comparability := a_var_name.hash_code
+				else
+					l_comparability := integer_comparability
+				end
+			elseif a_type.is_real_32 or a_type.is_real_64 then
+				l_rep_type := double_rep_type
+				l_comparability := double_comparability
+			else
+				l_rep_type := hashcode_rep_type
+				l_comparability := hash_code_comparability
+			end
+			l_dec_type := l_rep_type
+			l_var_kind := variable_var_kind
+			create Result.make (a_var_name, l_rep_type, l_var_kind, l_dec_type, l_comparability)
 		end
 
 	daikon_value (a_value: EPA_EXPRESSION_VALUE): STRING
@@ -190,6 +224,8 @@ feature{NONE} -- Implementation
 				else
 					Result := once "0"
 				end
+			elseif attached {EPA_INTEGER_VALUE} a_value as l_int then
+				Result := l_int.item.out
 			else
 				check should_not_happend: False end
 			end

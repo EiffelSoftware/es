@@ -46,7 +46,7 @@ feature{NONE} -- Implementation
 		do
 				-- Initialize.
 			create l_value.make (True)
-			l_failing_assert := exception_spot.failing_assertion
+			l_failing_assert := exception_signature.exception_condition_in_recipient
 			l_negated_failing_assert := not l_failing_assert
 
 				-- Generate fix: (p is the failing assertion)
@@ -55,7 +55,6 @@ feature{NONE} -- Implementation
 				--		ensure: p
 			fixes.extend (
 				new_afore_fix_skeleton (
-					exception_spot,
 					a_fixing_location.instructions,
 					Void,
 					equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -67,7 +66,6 @@ feature{NONE} -- Implementation
 				--		require: not p
 				--		ensure: p
 			l_fix := new_afore_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						Void,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -82,7 +80,6 @@ feature{NONE} -- Implementation
 				--		ensure:  S_inv - F_inv
 			fixes.extend (
 				new_afore_fix_skeleton (
-					exception_spot,
 					a_fixing_location.instructions,
 					Void,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
@@ -98,7 +95,6 @@ feature{NONE} -- Implementation
 					--		ensure: p
 				fixes.extend (
 					new_afore_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_negated_failing_assert,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -113,7 +109,6 @@ feature{NONE} -- Implementation
 					--		ensure: p
 				l_fix :=
 					new_afore_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_negated_failing_assert,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -130,7 +125,6 @@ feature{NONE} -- Implementation
 					--		ensure:  S_inv - F_inv
 				fixes.extend (
 					new_afore_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_negated_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,
@@ -151,7 +145,7 @@ feature{NONE} -- Implementation
 			if not a_fixing_location.is_empty then
 					-- Initialize.
 				create l_value.make (True)
-				l_failing_assert := exception_spot.failing_assertion
+				l_failing_assert := exception_signature.exception_condition_in_recipient
 				l_negated_failing_assert := not l_failing_assert
 
 					-- Generate fix: (p is the failing assertion)
@@ -164,7 +158,6 @@ feature{NONE} -- Implementation
 					-- end
 				fixes.extend (
 					new_wrapping_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -181,7 +174,6 @@ feature{NONE} -- Implementation
 					-- end
 				l_fix :=
 					new_wrapping_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -200,7 +192,6 @@ feature{NONE} -- Implementation
 					-- end
 				fixes.extend (
 					new_wrapping_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
 						equation_as_state (equation_with_value (l_negated_failing_assert, l_value)),
@@ -218,7 +209,6 @@ feature{NONE} -- Implementation
 					-- end
 				fixes.extend (
 					new_wrapping_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,

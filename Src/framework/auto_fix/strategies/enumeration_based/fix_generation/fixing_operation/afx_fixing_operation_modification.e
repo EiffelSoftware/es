@@ -15,8 +15,8 @@ inherit
 
 feature -- Access
 
-	target_expressions: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
-			-- Actual target expressions that the fixing operation will be applied to.
+	target_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+			-- Expressions capturing the state properties we want to break.
 
 feature -- Status report
 
@@ -45,7 +45,7 @@ feature{NONE} -- Implementation
 			create l_list.make (target_expressions.count + 3)
 			l_list.force_last (fixing_target.hash_code)
 			target_expressions.do_all (
-					agent (a_expr: AFX_PROGRAM_STATE_EXPRESSION; a_list: DS_ARRAYED_LIST [INTEGER])
+					agent (a_expr: EPA_EXPRESSION; a_list: DS_ARRAYED_LIST [INTEGER])
 						do
 							a_list.force_last (a_expr.hash_code)
 						end (?, l_list))

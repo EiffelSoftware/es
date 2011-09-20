@@ -8,7 +8,13 @@ class
 	AFX_DAIKON_FACILITY
 
 inherit
+	AFX_TEST_CASE_EXECUTION_EVENT_LISTENER
+
 	AFX_SHARED_STATE_SERVER
+
+	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+
+	AFX_SHARED_SESSION
 
 	PROCESS_HELPER
 
@@ -17,11 +23,10 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_config: like config)
+	make
 			-- Initialize set the file names to store the daikon declaration
 			-- and create the tables to store the daikon decl and trace.
 		do
-			config := a_config
 			create daikon_generator.make
 			create daikon_fail_states.make (100)
 			create daikon_pass_states.make (100)
@@ -37,61 +42,63 @@ feature -- Access
 	fail_result: AFX_DAIKON_RESULT
 			-- Result of all fail test cases
 
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Spot describing the current expressions
+feature -- Status report
+
+	is_test_case_new (a_tc: EPA_TEST_CASE_INFO): BOOLEAN
+			-- <Precursor>
+		do
+				-- FIXME: check the condition for new test cases.
+			Result := True
+		end
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
-			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
-			-- `a_state' is the set of expressions with their evaluated values.
-		require
-			a_tc_attached: a_tc /= Void
-		do
-			if pass_test_case_info = void then
-				if (a_tc.is_passing) then
-					set_pass_test_case_info (a_tc)
-				end
-			end
-
-			if fail_test_case_info = void then
-				if (a_tc.is_failing) then
-					set_fail_test_case_info (a_tc)
-				end
-			end
-
-			daikon_generator.add_state (exception_spot.skeleton, a_state, a_bpslot, a_tc.is_failing)
-		end
-
-	on_new_test_case_found (tc_info: EPA_TEST_CASE_INFO) is
-			-- Store the current
-		require
-			tc_info_attached: tc_info /= Void
+	on_new_test_case (tc_info: EPA_TEST_CASE_INFO)
+			-- <Precursor>
 		do
 			store_daikon_state
 		end
 
-	on_application_exited (a_dm: DEBUGGER_MANAGER)
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+			-- <Precursor>
+		do
+--			if pass_test_case_info = void then
+--				if (a_tc.is_passing) then
+--					set_pass_test_case_info (a_tc)
+--				end
+--			end
+
+--			if fail_test_case_info = void then
+--				if (a_tc.is_failing) then
+--					set_fail_test_case_info (a_tc)
+--				end
+--			end
+
+----			daikon_generator.add_state (exception_recipient_feature.state_skeleton, a_state, a_bpslot, a_tc.is_failing)
+--			daikon_generator.add_state (state_skeleton_for_exception_recipient, a_state, a_bpslot, a_tc.is_failing)
+		end
+
+	on_application_exit
 			-- Execute daikon
 		do
-			store_daikon_state
+--			store_daikon_state
 
-				--write daikon files
-			write_daikon_to_file
+--				--write daikon files
+--			write_daikon_to_file
 
-				-- Run and load daikon output
-			load_daikon_result
+--				-- Run and load daikon output
+--			load_daikon_result
 
-				-- Set the daikon output
-			create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
-			create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
+--				-- Set the daikon output
+--			create pass_result.make_from_string (daikon_pass_result, pass_test_case_info)
+--			create fail_result.make_from_string (daikon_fail_result, fail_test_case_info)
 
-				-- Store Daikon output into files for cacheing.
-			store_invariant_in_file (daikon_pass_result, daikon_result_file_name (pass_test_case_info))
-			store_invariant_in_file (daikon_fail_result, daikon_result_file_name (fail_test_case_info))
+--				-- Store Daikon output into files for cacheing.
+--			store_invariant_in_file (daikon_pass_result, daikon_result_file_name (pass_test_case_info))
+--			store_invariant_in_file (daikon_fail_result, daikon_result_file_name (fail_test_case_info))
 
-				-- Put results into server.
-			state_server.put_state_for_fault (fail_test_case_info, [pass_result, fail_result])
+--				-- Put results into server.
+--			register_invariants (exception_recipient_feature, [pass_result, fail_result])
 		end
 
 feature -- Setting
@@ -116,36 +123,13 @@ feature -- Setting
 			fail_test_case_info_set: fail_test_case_info = a_tc
 		end
 
-	set_exception_spot (a_spot: like exception_spot)
-			-- Set `exception_spot' with `a_spot'.
-		do
-			exception_spot := a_spot
-		end
-
-feature{NONE} -- Implementation
-
-	daikon_result_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
-			-- Full file path for the file to store Daikon output
-		local
-			l_path: FILE_NAME
-			l_name: STRING
-		do
-			create l_path.make_from_string (config.daikon_directory)
-			l_name := a_tc.id
-			if a_tc.is_passing then
-				l_name := l_name + "__S.invariant"
-			else
-				l_name := l_name + "__F.invariant"
-			end
-			l_path.set_file_name (l_name)
-			Result := l_path
-		end
-
-	config: AFX_CONFIG
-			-- AutoFix configuration
+feature{NONE} -- Query
 
 	daikon_generator: AFX_DAIKON_GENERATOR
 			-- Daikon generator
+
+	fail_test_case_info: detachable EPA_TEST_CASE_SIGNATURE
+			-- Information about a fail test case
 
 	daikon_pass_states:  DS_ARRAYED_LIST [STRING]
 			-- List of pass states
@@ -165,66 +149,71 @@ feature{NONE} -- Implementation
 	daikon_fail_result: STRING
 			-- Result from running Daikon
 
-	pass_test_case_info: detachable EPA_TEST_CASE_INFO
+feature{NONE} -- Derived Query
+
+	pass_file_name (a_tc: EPA_TEST_CASE_SIGNATURE): STRING
+			-- Faull path for the file to store passing test case states
+			-- for fault indicated in `a_Tc'
+		require
+			a_tc_attached: a_tc /= Void
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_path.set_file_name (a_tc.id + "__S.dtrace")
+			Result := l_path
+		end
+
+	fail_file_name (a_tc: EPA_TEST_CASE_SIGNATURE): STRING
+			-- Faull path for the file to store failing test case states
+			-- for fault indicated in `a_Tc'
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_path.set_file_name (a_tc.id + "__F.dtrace")
+			Result := l_path
+		end
+
+	daikon_result_file_name (a_tc: EPA_TEST_CASE_SIGNATURE): STRING
+			-- Full file path for the file to store Daikon output
+		local
+			l_path: FILE_NAME
+			l_name: STRING
+		do
+			create l_path.make_from_string (config.daikon_directory)
+			l_name := a_tc.id
+			if a_tc.is_passing then
+				l_name := l_name + "__S.invariant"
+			else
+				l_name := l_name + "__F.invariant"
+			end
+			l_path.set_file_name (l_name)
+			Result := l_path
+		end
+
+	state_skeleton_for_exception_recipient: EPA_STATE_SKELETON
+			-- State skeleton expressions for the recipient of the exception.
+		do
+			if state_skeleton_for_exception_recipient_cache = Void then
+				state_skeleton_for_exception_recipient_cache := exception_recipient_feature.state_skeleton
+			end
+			Result := state_skeleton_for_exception_recipient_cache
+		ensure
+			result_attached: Result /= Void
+		end
+
+	pass_test_case_info: detachable EPA_TEST_CASE_SIGNATURE
 			-- Information about a pass test case
 		do
-			if attached {EPA_TEST_CASE_INFO} pass_test_case_info_internal as l_pass_info then
+			if attached {EPA_TEST_CASE_SIGNATURE} pass_test_case_info_internal as l_pass_info then
 				Result := l_pass_info
 			else
-				if attached {EPA_TEST_CASE_INFO} fail_test_case_info as l_fail_info then
+				if attached {EPA_TEST_CASE_SIGNATURE} fail_test_case_info as l_fail_info then
 					Result := l_fail_info.deep_twin
 					Result.set_is_passing (True)
 				end
 			end
-		end
-
-	fail_test_case_info: detachable EPA_TEST_CASE_INFO
-			-- Information about a fail test case
-
-	write_daikon_to_file is
-			-- Write the pass and fail declaration and trace to file
-		local
-			pass_file:PLAIN_TEXT_FILE
-			fail_file:PLAIN_TEXT_FILE
-		do
-			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
-
-				--Save to file.
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, False))
-			from
-				daikon_pass_states.start
-			until
-				daikon_pass_states.after
-			loop
-				pass_file.put_string (daikon_pass_states.item_for_iteration)
-				daikon_pass_states.forth
-			end
-			pass_file.close
-
-			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
-			pass_file.put_string (daikon_generator.declaraction_for_skeleton (exception_spot.skeleton, exception_spot.recipient_written_class, exception_spot.recipient_, True))
-				--Save to file.
-			from
-				daikon_fail_states.start
-			until
-				daikon_fail_states.after
-			loop
-				fail_file.put_string (daikon_fail_states.item_for_iteration)
-				daikon_fail_states.forth
-			end
-			fail_file.close
-		end
-
-	load_daikon_result is
-			-- Load the result from the Daikon execution
-		local
-			pass_CMD : STRING
-			fail_CMD : STRING
-		do
-			pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
-			fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
-			daikon_fail_result := output_from_program (fail_cmd, void)
-			daikon_pass_result := output_from_program (pass_cmd, void)
 		end
 
 	daikon_command: STRING
@@ -237,7 +226,55 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	store_daikon_state is
+feature{NONE} -- Implementation
+
+	write_daikon_to_file
+			-- Write the pass and fail declaration and trace to file
+		local
+			pass_file:PLAIN_TEXT_FILE
+			fail_file:PLAIN_TEXT_FILE
+		do
+			create pass_file.make_open_write (pass_file_name (pass_test_case_info))
+
+				--Save to file.
+			pass_file.put_string (daikon_generator.declaraction_for_skeleton (state_skeleton_for_exception_recipient, exception_recipient_feature.context_class, exception_recipient_feature.feature_, False))
+			from
+				daikon_pass_states.start
+			until
+				daikon_pass_states.after
+			loop
+				pass_file.put_string (daikon_pass_states.item_for_iteration)
+				daikon_pass_states.forth
+			end
+			pass_file.close
+
+			create fail_file.make_create_read_write (fail_file_name (fail_test_case_info))
+			fail_file.put_string (daikon_generator.declaraction_for_skeleton (state_skeleton_for_exception_recipient, exception_recipient_feature.context_class, exception_recipient_feature.feature_, True))
+				--Save to file.
+			from
+				daikon_fail_states.start
+			until
+				daikon_fail_states.after
+			loop
+				fail_file.put_string (daikon_fail_states.item_for_iteration)
+				daikon_fail_states.forth
+			end
+			fail_file.close
+		end
+
+	load_daikon_result
+			-- Load the result from the Daikon execution
+		local
+			pass_CMD : STRING
+			fail_CMD : STRING
+		do
+			pass_cmd := daikon_command + " " + pass_file_name (pass_test_case_info)
+			fail_cmd := daikon_command + " " + fail_file_name (fail_test_case_info)
+			daikon_fail_result := output_from_program (fail_cmd, void)
+			daikon_pass_result := output_from_program (pass_cmd, void)
+		end
+
+	store_daikon_state
 			-- Store the current state for Daikon
 		local
 			daikon_state : STRING
@@ -264,31 +301,12 @@ feature{NONE} -- Implementation
 			l_file.close
 		end
 
-	pass_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
-			-- Faull path for the file to store passing test case states
-			-- for fault indicated in `a_Tc'
-		require
-			a_tc_attached: a_tc /= Void
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (config.daikon_directory)
-			l_path.set_file_name (a_tc.id + "__S.dtrace")
-			Result := l_path
-		end
-
-	fail_file_name (a_tc: EPA_TEST_CASE_INFO): STRING
-			-- Faull path for the file to store failing test case states
-			-- for fault indicated in `a_Tc'
-		local
-			l_path: FILE_NAME
-		do
-			create l_path.make_from_string (config.daikon_directory)
-			l_path.set_file_name (a_tc.id + "__F.dtrace")
-			Result := l_path
-		end
+feature{NONE} -- Internal
 
 	pass_test_case_info_internal: like pass_test_case_info
 			-- Storage for `pass_test_case_info'
+
+	state_skeleton_for_exception_recipient_cache: like state_skeleton_for_exception_recipient
+			-- Cache for `state_skeleton_for_exception_recipient'.
 
 end

@@ -16,15 +16,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target: AFX_FIXING_TARGET; a_expression: AFX_PROGRAM_STATE_EXPRESSION; a_type: INTEGER)
+	make (a_target: AFX_FIXING_TARGET; a_expression: EPA_EXPRESSION; a_type: INTEGER)
 			-- Initialization.
 		require
 			is_valid_type_for_integer (a_type)
 		do
 			fixing_target := a_target
 
-			create target_expressions.make (1)
-			target_expressions.set_equality_tester (program_state_expression_equality_tester)
+			create target_expressions.make_equal (1)
 			target_expressions.force (a_expression)
 
 			type := a_type

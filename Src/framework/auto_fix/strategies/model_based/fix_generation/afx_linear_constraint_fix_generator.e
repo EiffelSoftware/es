@@ -37,7 +37,7 @@ feature -- Basic operations
 		do
 				-- Analyze the linear constrained problem.
 			create l_structure_analyzer
-			l_structure_analyzer.analyze (exception_spot.original_failing_assertion)
+			l_structure_analyzer.analyze (exception_signature.exception_condition)
 			constraints := l_structure_analyzer.constraints
 
 			create relevant_constraints.make (Void)
@@ -128,19 +128,19 @@ feature{NONE} -- Implementation
 			create l_asserts.make (20)
 			l_asserts.set_equality_tester (expression_equality_tester)
 
-			l_feat := exception_spot.feature_of_failing_assertion
-			l_class := exception_spot.class_of_feature_of_failing_assertion
-			if exception_spot.is_precondition_violation then
+			l_feat := exception_signature.exception_feature
+			l_class := exception_signature.exception_class
+			if exception_signature.is_precondition_violation then
 					-- Collect all precondion assertions and class invariant assertions.
 				l_asserts.append (precondition_expression_set (l_class, l_feat))
 				l_asserts.append (invariant_expression_set (l_class, True))
 
-			elseif exception_spot.is_postcondition_violation then
+			elseif exception_signature.is_postcondition_violation then
 					-- Collect all postcondition assertions and class invariant assertions.
 				l_asserts.append (postcondition_expression_set (l_class, l_feat))
 				l_asserts.append (invariant_expression_set (l_class, True))
 
-			elseif exception_spot.is_class_invariant_violation then
+			elseif exception_signature.is_class_invariant_violation then
 					-- Collect class invariant assertions.
 				l_asserts.append (invariant_expression_set (l_class, True))
 
@@ -195,16 +195,17 @@ feature{NONE} -- Implementation
 		do
 				-- Rewrite the solution in the context of the recipient.
 			create l_solution_text.make (64)
-			if attached {EPA_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not is_for_boogie then
-				l_solution_text.append (l_target_expr.text)
-				l_solution_text.append (".")
-			end
+			check is_next_if_useful: False end
+--			if attached {EPA_EXPRESSION} exception_spot.target_expression_of_failing_feature as l_target_expr and then not is_for_boogie then
+--				l_solution_text.append (l_target_expr.text)
+--				l_solution_text.append (".")
+--			end
 			l_solution_text.append (a_solution.solution.text)
-			create l_solution_expr.make_with_text (exception_spot.recipient_class_, exception_spot.recipient_, l_solution_text, exception_spot.recipient_class_)
+			create l_solution_expr.make_with_text (exception_signature.recipient_class, exception_signature.recipient_feature, l_solution_text, exception_signature.recipient_feature.written_class)
 
 				-- Generate different types of fixes depending on the type of the constrained expressoin.
 			l_constrained_expr := a_solution.constrained_expression
-			if exception_spot.is_precondition_violation then
+			if exception_signature.is_precondition_violation then
 				if config.is_wrapping_fix_enabled then
 						-- Generate wrapping fixes according to solved numeric constraints.
 					fixing_locations.do_if (
@@ -280,8 +281,8 @@ feature{NONE} -- Implementation
 			l_ranking.set_snippet_complexity (1)
 
 				-- Construct fix skeleton.
-			create l_fix_skeleton.make (exception_spot, config, test_case_execution_status, False)
-			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion.negated)
+			create l_fix_skeleton.make (False)
+			l_fix_skeleton.set_guard_condition (exception_signature.exception_condition_in_recipient.negated)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (l_new_ast)
 			l_fix_skeleton.set_ranking (l_ranking)
@@ -296,7 +297,7 @@ feature{NONE} -- Implementation
 			instructions_valid: a_fixing_location.instructions.count = 1
 		local
 			l_arg_index: INTEGER
-			l_actual_argument: EPA_EXPRESSION
+--			l_actual_argument: EPA_EXPRESSION
 			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
 			l_old_ast: AST_EIFFEL
 			l_new_ast: AST_EIFFEL
@@ -311,11 +312,11 @@ feature{NONE} -- Implementation
 
 				-- Get the new ast node with actual argument replaced with the linear constrained solution.
 			check a_solution.constrained_expression.is_argument end
-			l_arg_index := arguments_of_feature (exception_spot.feature_of_failing_assertion).item (a_solution.constrained_expression.text)
-			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
+			l_arg_index := arguments_of_feature (exception_signature.exception_feature).item (a_solution.constrained_expression.text)
+--			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
 			l_old_ast := a_fixing_location.instructions.first.ast.ast
 			create l_replacer
-			l_replacer.replace (l_old_ast, exception_spot.feature_of_failing_assertion, l_arg_index, a_solved_expression.ast, exception_spot.recipient_written_class)
+			l_replacer.replace (l_old_ast, exception_signature.exception_feature, l_arg_index, a_solved_expression.ast, exception_recipient_feature.written_class)
 			l_new_ast := l_replacer.last_ast
 
 				-- Construct ranking for fix skeleton.
@@ -326,8 +327,8 @@ feature{NONE} -- Implementation
 			l_ranking.set_snippet_complexity (1)
 
 				-- Construct fix skeleton.
-			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status, False)
-			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion)
+			create l_fix_skeleton.make (exception_signature.exception_condition_in_recipient, False)
+			l_fix_skeleton.set_guard_condition (exception_signature.exception_condition_in_recipient)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (Void)
 			l_fix_skeleton.set_ranking (l_ranking)
@@ -342,7 +343,7 @@ feature{NONE} -- Implementation
 			instructions_valid: a_fixing_location.instructions.count = 1
 		local
 			l_arg_index: INTEGER
-			l_actual_argument: EPA_EXPRESSION
+--			l_actual_argument: EPA_EXPRESSION
 			l_replacer: AFX_ACTUAL_PARAMETER_REPLACER
 			l_old_ast: AST_EIFFEL
 			l_new_ast: AST_EIFFEL
@@ -358,11 +359,11 @@ feature{NONE} -- Implementation
 
 				-- Get the new ast node with actual argument replaced with the linear constrained solution.
 			check a_solution.constrained_expression.is_argument end
-			l_arg_index := arguments_of_feature (exception_spot.feature_of_failing_assertion).item (a_solution.constrained_expression.text)
-			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
+			l_arg_index := arguments_of_feature (exception_signature.exception_feature).item (a_solution.constrained_expression.text)
+--			l_actual_argument := exception_spot.actual_arguments_in_failing_assertion.item (l_arg_index)
 			l_old_ast := a_fixing_location.instructions.first.ast.ast
 			create l_replacer
-			l_replacer.replace (l_old_ast, exception_spot.feature_of_failing_assertion, l_arg_index, a_solved_expression.ast, exception_spot.recipient_written_class)
+			l_replacer.replace (l_old_ast, exception_signature.exception_feature, l_arg_index, a_solved_expression.ast, exception_recipient_feature.written_class)
 			l_new_ast := l_replacer.last_ast
 
 				-- Construct ranking for fix skeleton.
@@ -373,8 +374,8 @@ feature{NONE} -- Implementation
 			l_ranking.set_snippet_complexity (1)
 
 				-- Construct fix skeleton.
-			create l_fix_skeleton.make (exception_spot, exception_spot.failing_assertion, config, test_case_execution_status, False)
-			l_fix_skeleton.set_guard_condition (exception_spot.failing_assertion)
+			create l_fix_skeleton.make (exception_signature.exception_condition_in_recipient, False)
+			l_fix_skeleton.set_guard_condition (exception_signature.exception_condition_in_recipient)
 			l_fix_skeleton.set_original_ast (l_old_ast)
 			l_fix_skeleton.set_new_ast (l_new_ast)
 			l_fix_skeleton.set_ranking (l_ranking)

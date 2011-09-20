@@ -1,4 +1,4 @@
-indexing
+note
 	description:
 		"[
 			Command to launch EVE Proofs.
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Execute menu command.
 		do
 			execute_proof_current_item
@@ -66,7 +66,7 @@ feature -- Execution
 			execute_with_stone_content (a_stone, Void)
 		end
 
-	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT) is
+	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT)
 			-- Execute with `a_stone'.
 		local
 			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
@@ -179,7 +179,7 @@ feature {NONE} -- Basic operations
 			show_proof_tool
 		end
 
-	show_proof_tool is
+	show_proof_tool
 			-- Shows the proof tool
 		local
 			l_tool: ES_TOOL [EB_TOOL]
@@ -278,7 +278,7 @@ feature -- Items
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
 		end
 
-	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON; display_text: BOOLEAN) is
+	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON; display_text: BOOLEAN)
 			-- <Precursor>
 		do
 			Precursor (a_item, display_text)
@@ -305,7 +305,7 @@ feature -- Context menu
 
 feature -- Status report
 
-	droppable (a_pebble: ANY): BOOLEAN is
+	droppable (a_pebble: ANY): BOOLEAN
 			-- Can user drop `a_pebble' on `Current'?
 		local
 			l_class_stone: CLASSI_STONE
@@ -355,7 +355,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execute_proof_parent_cluster is
+	execute_proof_parent_cluster
 			-- Proof parent cluster of window item.
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execute_proof_system is
+	execute_proof_system
 			-- Proof whole system (excluding libraries).
 		do
 			last_execution := agent execute_proof_system
@@ -480,8 +480,8 @@ feature {NONE} -- Implementation
 			Result := "Proof"
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

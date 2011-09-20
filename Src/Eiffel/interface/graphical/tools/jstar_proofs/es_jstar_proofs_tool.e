@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {ES_PROOF_ASSISTANT_TOOL}."
 	author: ""
 	date: "$Date$"
@@ -50,8 +50,8 @@ feature {NONE} -- Factory
 			Result := {st: !CLASSC_STONE} a_stone and then st.is_storable
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

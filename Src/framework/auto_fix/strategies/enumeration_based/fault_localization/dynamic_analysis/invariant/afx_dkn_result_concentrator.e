@@ -15,7 +15,7 @@ feature -- Access
 	original_results: DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT] assign set_original_results
 			-- Raw results from Daikon.
 
-	concentrated_results: DS_HASH_TABLE [EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION], DKN_PROGRAM_POINT]
+	concentrated_results: DS_HASH_TABLE [EPA_HASH_SET [EPA_EXPRESSION], DKN_PROGRAM_POINT]
 			-- Concentrated results.
 			-- After concentration, only expressions that always evaluate to True would be retained.
 			-- For example: "(is_empty) = true" and "not (is_empty) = false" would be merged into "(is_empty) = true".
@@ -50,7 +50,7 @@ feature -- Basic operation
 			l_table_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
 			l_inv_set : DS_HASH_SET [DKN_INVARIANT]
 			l_set_cursor: DS_HASH_SET_CURSOR [DKN_INVARIANT]
-			l_new_inv_set: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
+			l_new_inv_set: EPA_HASH_SET [EPA_EXPRESSION]
 
 			l_ppt: DKN_PROGRAM_POINT
 			l_inv: DKN_INVARIANT
@@ -85,7 +85,7 @@ feature -- Basic operation
 
 feature{NONE} -- Implementation
 
-	invariant_in_positive_form (a_inv: DKN_INVARIANT; a_ppt: DKN_PROGRAM_POINT): AFX_PROGRAM_STATE_EXPRESSION
+	invariant_in_positive_form (a_inv: DKN_INVARIANT; a_ppt: DKN_PROGRAM_POINT): EPA_EXPRESSION
 			-- Invariant based on `a_inv', but in positive form, at `a_ppt'.
 			-- I.e. the expression in the invariant always evaluates to True at `a_ppt'.
 		local
@@ -139,37 +139,9 @@ feature{NONE} -- Implementation
 				end
 
 				if l_ast /= Void then
-					create Result.make_with_text (l_class, l_feature, text_from_ast (l_ast), l_feature.written_class, a_ppt.bp_index)
+					create {EPA_AST_EXPRESSION}Result.make_with_text (l_class, l_feature, text_from_ast (l_ast), l_feature.written_class)
 				end
 			end
 		end
-
---	context_info_from_program_point (a_ppt: DKN_PROGRAM_POINT): TUPLE[CLASS_C, FEATURE_I]
---			-- Information about the context class and the context feature from `a_ppt'.
---		local
---			l_ppt_name, l_class_name, l_feature_name, l_index_text: STRING
---			l_start_index, l_end_index: INTEGER
---			l_class: CLASS_C
---			l_feature: FEATURE_I
---		do
---			l_ppt_name := a_ppt.name
---			l_start_index := l_ppt_name.index_of ('.', 1)
---			check start_index_positive: l_start_index > 0 end
---			l_class_name := l_ppt_name.substring (1, l_start_index - 1)
-
---			l_start_index := l_start_index + 1
---			l_end_index := l_ppt_name.substring_index ({DKN_CONSTANTS}.ppt_tag_separator, l_start_index)
---			l_feature_name := l_ppt_name.substring (l_start_index, l_end_index - 1)
-
---			l_index_text := l_ppt_name.substring (l_end_index + {DKN_CONSTANTS}.ppt_tag_separator.count, l_ppt_name.count)
---			check valid_index: l_index_text.is_integer and then l_index_text.to_integer > 0 end
-
---			l_class := first_class_starts_with_name (l_class_name)
---			check valid_class: l_class /= Void end
---			l_feature := l_class.feature_named_32 (l_feature_name)
---			check valid_feature: l_feature /= Void end
-
---			Result := [l_class, l_feature]
---		end
 
 end

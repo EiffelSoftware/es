@@ -11,6 +11,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	AFX_SHARED_SESSION
+
 	SHARED_DEBUGGER_MANAGER
 
 	EPA_SHARED_CLASS_THEORY
@@ -23,7 +25,7 @@ inherit
 
 	AFX_UTILITY
 
-	AFX_SHARED_EVENT_ACTIONS
+--	AFX_SHARED_EVENT_ACTIONS
 
 	EPA_COMPILATION_UTILITY
 
@@ -32,12 +34,11 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_config: AFX_CONFIG)
+	make
 			-- Initialize Current.
 		local
 			l: AFX_INTERPRETER
 		do
-			config := a_config
 			create test_case_start_actions
 			create test_case_breakpoint_hit_actions
 			create application_exited_actions
@@ -45,20 +46,15 @@ feature{NONE} -- Initialization
 			exception_spots.compare_objects
 
 			create test_case_execution_status.make (config)
-		ensure
-			config_set: config = a_config
 		end
 
 feature -- Access
 
-	config: AFX_CONFIG
-			-- Config for AutoFix ocmmand line	
-
-	test_case_start_actions: ACTION_SEQUENCE[TUPLE [EPA_TEST_CASE_INFO]]
+	test_case_start_actions: ACTION_SEQUENCE[TUPLE [EPA_TEST_CASE_SIGNATURE]]
 			-- Actions to be performed when a test case is to be analyzed.
 			-- The information about the test case is passed as the argument to the agent.
 
-	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER]]
+	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: EPA_TEST_CASE_SIGNATURE; a_state: EPA_STATE; a_bpslot: INTEGER]]
 			-- Actions to be performed when a breakpoint is hit in a test case.
 			-- `a_tc' is the test case currently analyzed.
 			-- `a_state' is the state evaluated at the breakpoint.
@@ -173,7 +169,7 @@ feature{NONE} -- Access
 			create Result.make_with_text (a_class, a_feature, l_exprs)
 		end
 
-	current_test_case_info: detachable EPA_TEST_CASE_INFO
+	current_test_case_info: detachable EPA_TEST_CASE_SIGNATURE
 			-- Information about currently analyzed test case
 
 feature{NONE} -- Implementation
@@ -196,8 +192,6 @@ feature{NONE} -- Implementation
 			l_mark_tc_feat := root_class.feature_named (mark_test_case_feature_name)
 			create l_new_tc_bp_manager.make (root_class, l_mark_tc_feat)
 			l_tc_info_skeleton := test_case_info_skeleton (root_class, l_mark_tc_feat)
---			l_new_tc_bp_manager.set_all_breakpoints_with_expression_and_actions (l_tc_info_skeleton, agent on_new_test_case_found)
---			l_new_tc_bp_manager.set_breakpoint (l_tc_info_skeleton, 1)
 			l_new_tc_bp_manager.set_breakpoint_with_expression_and_action (1, l_tc_info_skeleton, agent on_new_test_case_found)
 			l_new_tc_bp_manager.toggle_breakpoints (True)
 			l_app_stop_agent := agent on_application_stopped
@@ -492,7 +486,7 @@ feature{NONE} -- Implication
 			-- Keys are test case info id, check {AFX_TEST_CASE_INFO}.`id' for details.
 			-- Values are the associated exception spots.
 
-	on_test_case_breakpoint_hit_print_state (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_test_case_breakpoint_hit_print_state (a_tc: EPA_TEST_CASE_SIGNATURE; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		local

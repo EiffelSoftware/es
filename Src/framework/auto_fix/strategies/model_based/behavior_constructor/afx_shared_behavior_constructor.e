@@ -10,6 +10,8 @@ class
 inherit
     AFX_SHARED_STATE_TRANSITION_MODEL
 
+    AFX_SHARED_SESSION
+
 create
     default_create
 
@@ -25,14 +27,21 @@ feature -- Query
 		local
 		    l_config: AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 		    l_constructor: AFX_BEHAVIOR_CONSTRUCTOR
+		    l_transitor: AFX_STATE_TRANSITOR
 		do
-				-- Load the model, raise exception if failed.
-   			load_model (a_objects, a_dest_objects)
+			if True then
+				create l_transitor.make (create {DIRECTORY}.make (config.model_directory))
+				l_transitor.construct_behavior (a_dest_objects)
+				Result := l_transitor.call_sequences
+			else
+					-- Load the model, raise exception if failed.
+	   			load_model (a_objects, a_dest_objects)
 
-			l_constructor := constructor
-		    create l_config.make (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria, a_is_forward)
-   			l_constructor.construct_behavior (l_config)
-   			Result := l_constructor.call_sequences
+				l_constructor := constructor
+			    create l_config.make (a_objects, a_dest_objects, a_context_class, a_class_set, a_criteria, a_is_forward)
+	   			l_constructor.construct_behavior (l_config)
+	   			Result := l_constructor.call_sequences
+			end
 		end
 
 

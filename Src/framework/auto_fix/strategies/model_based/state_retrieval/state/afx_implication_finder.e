@@ -86,7 +86,9 @@ feature -- Basic operations
 			until
 				l_exprs.after
 			loop
-				generate_implications (l_exprs.item_for_iteration.expr, l_exprs.item_for_iteration.feat)
+					-- Use the `feature_' from the expression, in case `feat' is Void.  -- April 26, 2011. Max.
+--				generate_implications (l_exprs.item_for_iteration.expr, l_exprs.item_for_iteration.feat)
+				generate_implications (l_exprs.item_for_iteration.expr, l_exprs.item_for_iteration.expr.feature_)
 				l_exprs.forth
 			end
 		end
@@ -197,7 +199,7 @@ feature{NONE} -- Implementation
 				l_feat.argument_count = 0 and then
 				not is_written_in_any (l_feat)
 			then
-				create l_expr.make_with_text (context_class, context_feature, l_feat.feature_name.as_lower, written_class)
+				create l_expr.make_with_text (context_class, current_feature, l_feat.feature_name.as_lower, written_class)
 				if term_writer /= Void then
 					term_writer.call ([l_expr])
 				end

@@ -18,14 +18,11 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
+	make (a_guard_in_negation: BOOLEAN)
 			-- Initialize.
 		do
-			exception_spot := a_spot
 			create relevant_ast.make
 			create fixes.make
-			config := a_config
-			test_case_execution_status := a_test_case_execution_status
 			set_is_guard_condition_in_negation_form (a_guard_in_negation)
 		end
 
@@ -49,9 +46,9 @@ feature -- Basic operations
 		do
 				-- Decide the break point slot at which states in passing and failing runs should be compared.
 			if relevant_ast.is_empty then
-				l_passing_bpslot := exception_spot.recipient_ast_structure.last_breakpoint_slot_number + 1
+				l_passing_bpslot := exception_recipient_feature.ast_structure.last_breakpoint_slot_number + 1
 			else
-				l_passing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point(relevant_ast.first).breakpoint_slot
+				l_passing_bpslot := exception_recipient_feature.ast_structure.first_node_with_break_point(relevant_ast.first).breakpoint_slot
 			end
 			l_failing_bpslot := l_passing_bpslot
 			Result := [l_passing_bpslot, l_failing_bpslot]
@@ -91,14 +88,14 @@ feature{NONE} -- Implementation
 			l_match_list: LEAF_AS_LIST
 			l_ranking: like ranking
 		do
-			l_written_class := exception_spot.recipient_.written_class
+			l_written_class := exception_recipient_feature.written_class
 			l_match_list := match_list_server.item (l_written_class.class_id)
 			l_after_do := relevant_ast.is_empty
 
 				-- Decide the anchor AST node to which `a_fix' is attached.
 			if l_after_do then
 					-- `a_fix' should be generated at the end of the feature body compound.
-				l_anchor_as := feature_body_compound_ast
+				l_anchor_as := exception_recipient_feature.body_compound_ast
 				l_anchor_as.append_text (a_text, l_match_list)
 			else
 					-- `a_fix' should be generated before the first node of `relevant_ast'.
@@ -107,10 +104,9 @@ feature{NONE} -- Implementation
 			end
 
 				-- Build result fix.
-			create Result.make (exception_spot, next_fix_id)
-			Result.set_exception_spot (exception_spot)
-			Result.set_text (feature_body_compound_ast.text (l_match_list))
-			Result.set_feature_text (feature_as_ast.text (l_match_list))
+			create Result.make (next_fix_id)
+			Result.set_text (exception_recipient_feature.body_compound_ast.text (l_match_list))
+			Result.set_feature_text (exception_recipient_feature.feature_as_ast.text (l_match_list))
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_pre_fix_execution_status (test_case_execution_status)

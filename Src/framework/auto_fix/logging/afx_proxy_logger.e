@@ -111,7 +111,7 @@ feature -- Actions
 				log_break_point_hit_statistics
 			end
 
-			log_time_stamp (new_test_case_found_message + a_tc_info.id + ", " + a_tc_info.uuid + ", " + a_tc_info.is_passing.out)
+			log_time_stamp (new_test_case_found_message + a_tc_info.id)
 			test_case_count := test_case_count + 1
 			break_point_count := 0
 			break_point_hit_statistics.wipe_out

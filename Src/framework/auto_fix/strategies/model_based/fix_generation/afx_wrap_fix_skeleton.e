@@ -18,18 +18,14 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_spot: AFX_EXCEPTION_SPOT; a_guard_condition: EPA_EXPRESSION; a_config: like config; a_test_case_execution_status: like test_case_execution_status; a_guard_in_negation: BOOLEAN)
+	make (a_guard_condition: EPA_EXPRESSION; a_guard_in_negation: BOOLEAN)
 			-- Initialize.
 		require
 			a_guard_condition_attached: a_guard_condition /= Void
-			a_config_attached: a_config /= Void
 		do
-			exception_spot := a_spot
 			create relevant_ast.make
 			create fixes.make
 			set_guard_condition (a_guard_condition)
-			config := a_config
-			test_case_execution_status := a_test_case_execution_status
 			set_is_guard_condition_in_negation_form (a_guard_in_negation)
 		end
 
@@ -48,14 +44,14 @@ feature -- Access
 			if relevant_ast.is_empty then
 				check should_not_happen: False end
 			else
-				l_failing_bpslot := exception_spot.recipient_ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
-				if attached {AFX_AST_STRUCTURE_NODE} exception_spot.recipient_ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
-					l_passing_bpslot := exception_spot.recipient_ast_structure.next_break_point (l_node.breakpoint_slot)
+				l_failing_bpslot := exception_recipient_feature.ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
+				if attached {AFX_AST_STRUCTURE_NODE} exception_recipient_feature.ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
+					l_passing_bpslot := exception_recipient_feature.ast_structure.next_break_point (l_node.breakpoint_slot)
 					if l_passing_bpslot = 0 then
-						l_passing_bpslot := exception_spot.recipient_.number_of_breakpoint_slots
+						l_passing_bpslot := exception_recipient_feature.feature_.number_of_breakpoint_slots
 					end
 				else
-					l_passing_bpslot := exception_spot.recipient_.number_of_breakpoint_slots
+					l_passing_bpslot := exception_recipient_feature.feature_.number_of_breakpoint_slots
 				end
 			end
 
@@ -108,7 +104,7 @@ feature{NONE} -- Implementation
 			l_else_text: STRING
 			l_ranking: AFX_FIX_RANKING
 		do
-			l_written_class := exception_spot.recipient_.written_class
+			l_written_class := exception_recipient_feature.written_class
 			l_match_list := match_list_server.item (l_written_class.class_id)
 
 			check not relevant_ast.is_empty end
@@ -130,10 +126,9 @@ feature{NONE} -- Implementation
 			l_last_as.append_text (l_else_text, l_match_list)
 
 				-- Build result fix.
-			create Result.make (exception_spot, next_fix_id)
-			Result.set_exception_spot (exception_spot)
-			Result.set_text (feature_body_compound_ast.text (l_match_list))
-			Result.set_feature_text (feature_as_ast.text (l_match_list))
+			create Result.make (next_fix_id)
+			Result.set_text (exception_recipient_feature.body_compound_ast.text (l_match_list))
+			Result.set_feature_text (exception_recipient_feature.feature_as_ast.text (l_match_list))
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_pre_fix_execution_status (test_case_execution_status)

@@ -51,6 +51,7 @@ feature{NONE} -- Implementation
 				create log_processors_internal.make (5)
 				log_processors_internal.compare_objects
 				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (configuration.system, configuration), "ps")
+--				log_processors_internal.extend (create{AUT_OBJECT_STATE_LOG_PROCESSOR}.make (configuration.system, configuration), "state")
 			end
 			Result := log_processors_internal
 		end
@@ -59,7 +60,7 @@ feature{NONE} -- Implementation
 			-- Implementation of `log_processors'
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -10,9 +10,9 @@ class
 inherit
 	AFX_DAIKON_FACILITY
 		redefine
-			on_test_case_breakpoint_hit,
-			on_new_test_case_found,
-			on_application_exited
+			on_breakpoint_hit,
+			on_new_test_case,
+			on_application_exit
 		end
 
 create
@@ -20,14 +20,14 @@ create
 
 feature -- Actions
 
-	on_test_case_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
 			-- Action to perform when a breakpoint `a_bpslot' is hit in test case `a_tc'.
 			-- `a_state' is the set of expressions with their evaluated values.
 		do
 			-- Do nothing
 		end
 
-	on_new_test_case_found (tc_info: EPA_TEST_CASE_INFO) is
+	on_new_test_case (tc_info: EPA_TEST_CASE_INFO) is
 			-- Store the current
 		local
 			l_tc_info: EPA_TEST_CASE_INFO
@@ -47,7 +47,7 @@ feature -- Actions
 			end
 		end
 
-	on_application_exited (a_dm: DEBUGGER_MANAGER)
+	on_application_exit
 			-- Execute daikon
 		do
 			create pass_result.make_from_string (invariants_from_file (daikon_result_file_name (pass_test_case_info)), pass_test_case_info)

@@ -8,25 +8,22 @@ deferred class
 	AFX_ASSERTION_STRUCTURE_BASED_FIX_GENERATOR
 
 inherit
+	AFX_SHARED_SESSION
+
 	AFX_UTILITY
 
 	AFX_FIX_SKELETON_CONSTANT
 
 feature{NONE} -- Initialization
 
-	make (a_spot: like exception_spot; a_analyzer: like structure_analyzer; a_fixing_locations: like fixing_locations; a_config: like config; a_test_case_execution_status: like test_case_execution_status)
+	make (a_analyzer: like structure_analyzer; a_fixing_locations: like fixing_locations)
 			-- Initialize.
 		require
-			a_spot_has_failing_assertion: a_spot.failing_assertion /= Void
 			a_analyzer_is_matched: a_analyzer.is_matched
-			a_config_attached: a_config /= Void
 		do
 			create fixes.make
 			structure_analyzer := a_analyzer
-			exception_spot := a_spot
 			fixing_locations := a_fixing_locations.twin
-			config := a_config
-			test_case_execution_status := a_test_case_execution_status
 		end
 
 feature -- Access
@@ -37,18 +34,18 @@ feature -- Access
 	structure_analyzer: EPA_EXPRESSION_STRUCTURE_ANALYZER
 			-- Failing assertion structure analyzer
 
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Exception spot containing information of the failing
+--	exception_spot: AFX_EXCEPTION_SPOT
+--			-- Exception spot containing information of the failing
 
 	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
 			-- List of fixing locations
 
-	config: AFX_CONFIG
-			-- Config for current AutoFix session
+--	config: AFX_CONFIG
+--			-- Config for current AutoFix session
 
 	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
 			-- Table of test case execution status
-			-- Key is the UUID of a test case, value is the execution status
+			-- Key is a test case, value is the execution status
 			-- assoicated with that test case
 
 --feature -- Constants
@@ -69,7 +66,6 @@ feature -- Basic operations
 feature{NONE} -- Implementation
 
 	new_afore_fix_skeleton (
-			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable EPA_STATE;
@@ -80,7 +76,7 @@ feature{NONE} -- Implementation
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot, config, test_case_execution_status, a_guard_in_negation)
+			create Result.make (a_guard_in_negation)
 			Result.set_guard_condition (a_guard)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
@@ -93,7 +89,6 @@ feature{NONE} -- Implementation
 		end
 
 	new_wrapping_fix_skeleton (
-			a_spot: AFX_EXCEPTION_SPOT;
 			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable EPA_STATE;
@@ -107,7 +102,7 @@ feature{NONE} -- Implementation
 		local
 			l_ranking: AFX_FIX_RANKING
 		do
-			create Result.make (a_spot, a_guard, config, test_case_execution_status, a_guard_in_negation)
+			create Result.make (a_guard, a_guard_in_negation)
 			Result.set_precondition (a_precondition)
 			Result.set_postcondition (a_postcondition)
 			Result.set_relevant_ast (a_fixing_location)

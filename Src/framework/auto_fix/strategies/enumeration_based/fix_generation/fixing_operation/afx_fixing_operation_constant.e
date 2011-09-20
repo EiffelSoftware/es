@@ -50,7 +50,7 @@ feature -- Constant
 
 	Fixing_operation_lower_bound: INTEGER = 0
 
-	-- Operation types for one fixing target.
+	-- Changes involving one value.
 	Fixing_operation_integer_increase_by_one: INTEGER = 1
 	Fixing_operation_integer_decrease_by_one: INTEGER = 2
 	Fixing_operation_integer_set_to_zero: INTEGER = 3
@@ -59,7 +59,7 @@ feature -- Constant
 	Fixing_operation_boolean_negate: INTEGER = 6
 	Fixing_operation_reference_call_command: INTEGER = 7
 
-	-- Operation types for two fixing targets.
+	-- Changes involving two values.
 	Fixing_operation_integers_set_equal_forward: INTEGER = 8
 	Fixing_operation_integers_set_equal_backward: INTEGER = 9
 	Fixing_operation_integers_set_bigger_by_one_forward: INTEGER = 10

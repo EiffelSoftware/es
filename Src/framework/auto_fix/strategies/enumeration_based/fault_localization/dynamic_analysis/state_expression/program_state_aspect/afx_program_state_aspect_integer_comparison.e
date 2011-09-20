@@ -17,8 +17,8 @@ create
 
 feature{NONE} -- Initialization
 
-	make_comparison (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_written_class: CLASS_C; a_bp_index: INTEGER;
-					a_left_operand, a_right_operand: AFX_PROGRAM_STATE_EXPRESSION; a_operator: INTEGER)
+	make_comparison (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_written_class: CLASS_C;
+					a_left_operand, a_right_operand: EPA_EXPRESSION; a_operator: INTEGER)
 			-- Initialization.
 		require
 			context_attached: a_context_class /= VOid and then a_context_feature /= Void and then a_written_class /= Void
@@ -32,8 +32,12 @@ feature{NONE} -- Initialization
 			right_operand := a_right_operand
 			operator := a_operator
 
+			create operand_expressions.make_equal (2)
+			operand_expressions.force (left_operand)
+			operand_expressions.force (right_operand)
+
 			l_exp_text := "(" + left_operand.text + ") " + operator_text (operator) + " (" + right_operand.text + ")"
-			make_with_text (a_context_class, a_context_feature, l_exp_text, a_written_class, a_bp_index)
+			make_with_text (a_context_class, a_context_feature, l_exp_text, a_written_class)
 		end
 
 feature -- Basic operation
@@ -62,12 +66,18 @@ feature -- Basic operation
 			last_value := evaluate_integer_comparison (l_left_value, l_right_value, operator)
 		end
 
+	derived_change_requirements (a_result: BOOLEAN): DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
+			-- <Precursor>
+		do
+			Result := change_requirements_for_two_integer_expression (left_operand, right_operand)
+		end
+
 feature -- Access
 
-	left_operand: AFX_PROGRAM_STATE_EXPRESSION
+	left_operand: EPA_EXPRESSION
 			-- Expression appearing to the left of the operator.
 
-	right_operand: AFX_PROGRAM_STATE_EXPRESSION
+	right_operand: EPA_EXPRESSION
 			-- Expression appearing to the right of the operator.
 
 	operator: INTEGER

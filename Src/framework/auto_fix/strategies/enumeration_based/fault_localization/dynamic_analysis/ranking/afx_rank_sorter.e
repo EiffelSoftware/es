@@ -41,11 +41,7 @@ feature{NONE} -- Implementation
 			if a_target1.rank /= a_target2.rank then
 				Result := a_target1.rank > a_target2.rank
 			else
-				if a_target1.expressions.count /= a_target2.expressions.count then
-					Result := a_target1.expressions.count < a_target2.expressions.count
-				else
-					Result := a_target1.hash_code > a_target2.hash_code
-				end
+				Result := a_target1.expression.text < a_target2.expression.text
 			end
 		end
 

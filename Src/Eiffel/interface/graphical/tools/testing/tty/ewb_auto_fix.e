@@ -12,6 +12,8 @@ inherit
 
 	AFX_SHARED_SESSION
 
+	EPA_COMPILATION_UTILITY
+
 create
 	make_with_arguments
 
@@ -57,9 +59,8 @@ feature -- Properties
 			l_parser: AFX_COMMAND_LINE_PARSER
 			l_config: AFX_CONFIG
 			l_session: AFX_SESSION
-			l_build_tc_cmd: AFX_TEST_CASE_APP_BUILDER
-			l_analyze_tc_cmd: AFX_TEST_CASE_APP_ANALYZER
 			l_initializer: AFX_INITIALIZER
+			l_fix_proposer: AFX_FIX_PROPOSER
 
 			l_fixing_project_builder: AFX_FIXING_PROJECT_BUILDER
 		do
@@ -67,40 +68,28 @@ feature -- Properties
 			l_parser.parse
 			l_config := l_parser.config
 
+				-- Save configuration into the shared session object.
 			create l_session.make (l_config)
 			set_session (l_session)
 
+				-- Initialize infrastructure.
 			create l_initializer
-			l_initializer.prepare (l_config)
+			l_initializer.prepare (config)
 
-			if l_config.is_using_model_based_strategy then
-				if l_config.should_build_test_cases then
-					create l_build_tc_cmd.make (l_config)
-					l_build_tc_cmd.execute
-				end
-
-				if l_config.should_analyze_test_cases then
-					create l_analyze_tc_cmd.make (l_config)
-					l_analyze_tc_cmd.execute
-				end
-			else
-				-- Using random-based fix strategy.
-				check using_random_based_strategy: l_config.is_using_random_based_strategy end
-
-				if l_config.should_build_test_cases then
-					create l_fixing_project_builder.make
-					l_fixing_project_builder.execute
-				end
-
-				if l_config.should_analyze_test_cases then
-					create {AFX_TEST_CASE_APP_RANDOM_BASED_ANALYZER}l_analyze_tc_cmd.make (l_config)
-					l_analyze_tc_cmd.execute
-				end
+				-- Re-structure the project to include test cases.
+			if config.should_build_test_cases then
+				create l_fixing_project_builder.make
+				l_fixing_project_builder.execute
+--			else
+--				compile_project (eiffel_project, True)
 			end
+
+			create l_fix_proposer.make
+			l_fix_proposer.execute
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

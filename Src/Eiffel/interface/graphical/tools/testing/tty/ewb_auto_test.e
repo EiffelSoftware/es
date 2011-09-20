@@ -217,6 +217,9 @@ feature -- Execution
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
 				l_generator.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
+				l_generator.set_building_behavioral_models (l_ap.is_building_behavioral_model)
+				l_generator.set_model_directory (l_ap.model_dir)
+				l_generator.set_deserialization_for_fixing (l_ap.is_deserializing_for_fixing)
 
 				l_generator.set_recursive (l_ap.is_recursive)
 

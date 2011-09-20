@@ -138,32 +138,32 @@ feature{NONE} -- Stats retrieval
 	is_validating_fixes: BOOLEAN
 			-- Is validating fixes?
 
-	retrieve_pre_state (a_operands: SPECIAL [detachable ANY])
-			-- Retrieve prestate of `a_operands'.
-		do
-			-- Not needed for the moment.
-		end
+--	retrieve_pre_state (a_operands: SPECIAL [detachable ANY])
+--			-- Retrieve prestate of `a_operands'.
+--		do
+--			-- Not needed for the moment.
+--		end
 
-	retrieve_post_state (a_operands: SPECIAL [detachable ANY])
-			-- Retrieve post of `a_operands'.
-		local
-			l_retried: BOOLEAN
-		do
-			last_post_state := Void
-			if is_validating_fixes and then not l_retried then
-				if should_retrieve_post_state then
-					last_post_state := operand_states (a_operands)
-				end
-			end
-		rescue
-			l_retried := True
-			retry
-		end
+--	retrieve_post_state (a_operands: SPECIAL [detachable ANY])
+--			-- Retrieve post of `a_operands'.
+--		local
+--			l_retried: BOOLEAN
+--		do
+--			last_post_state := Void
+--			if is_validating_fixes and then not l_retried then
+--				if should_retrieve_post_state then
+--					last_post_state := operand_states (a_operands)
+--				end
+--			end
+--		rescue
+--			l_retried := True
+--			retry
+--		end
 
-	operand_states (a_operands: SPECIAL [detachable ANY]): like state_type
-			-- Operand states of `a_operands'
-		deferred
-		end
+--	operand_states (a_operands: SPECIAL [detachable ANY]): like state_type
+--			-- Operand states of `a_operands'
+--		deferred
+--		end
 
 feature{NONE} -- Implementation
 

@@ -639,7 +639,9 @@ feature {NONE} -- Type checking
 			l_cl := context.current_class
 			l_error_level := error_level
 			if current_feature /= Void then
-				l_wc := current_feature.written_class
+				fixme("Should we use the `written_class' from `current_feature' or `context'?  Sept. 9, 2011")
+--				l_wc := current_feature.written_class
+				l_wc := context.written_class
 				if l_wc /= l_cl then
 						--| The context's feature is an inherited feature
 						--| thus we need to first process in the ancestor to set specific

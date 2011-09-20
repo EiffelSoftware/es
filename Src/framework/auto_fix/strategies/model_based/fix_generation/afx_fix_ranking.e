@@ -44,40 +44,40 @@ feature -- Access
 			relevance_to_failure := a_relevance
 		end
 
-	fix_condition_category: DOUBLE
-			-- Category of fix conditions, used in evidence-based fix.
+--	fix_condition_category: DOUBLE
+--			-- Category of fix conditions, used in evidence-based fix.
 
-	set_fix_condition_category (a_category: DOUBLE)
-		require
-			is_valid_fix_condition_category (a_category)
-		do
-			fix_condition_category := a_category
-		end
+--	set_fix_condition_category (a_category: DOUBLE)
+--		require
+--			is_valid_fix_condition_category (a_category)
+--		do
+--			fix_condition_category := a_category
+--		end
 
-	is_valid_fix_condition_category (a_category: DOUBLE): BOOLEAN
-		do
-			Result := a_category = fix_condition_category_assertion
-					or else a_category = fix_condition_category_invariant
-					or else a_category = fix_condition_category_evidence
-		end
+--	is_valid_fix_condition_category (a_category: DOUBLE): BOOLEAN
+--		do
+--			Result := a_category = fix_condition_category_assertion
+--					or else a_category = fix_condition_category_invariant
+--					or else a_category = fix_condition_category_evidence
+--		end
 
-	fix_condition_category_assertion: DOUBLE = 3.0
-	fix_condition_category_invariant: DOUBLE = 2.0
-	fix_condition_category_evidence: DOUBLE = 1.0
+--	fix_condition_category_assertion: DOUBLE = 3.0
+--	fix_condition_category_invariant: DOUBLE = 2.0
+--	fix_condition_category_evidence: DOUBLE = 1.0
 
-	fix_condition_category_weight: DOUBLE = 1.0
+--	fix_condition_category_weight: DOUBLE = 1.0
 
-	fix_condition_category_weight_with_preference: DOUBLE
-			-- Fix condition category weight, taking into account preferences.
-		do
-			if config.is_fix_condition_preferring_invariant then
-				Result := - fix_condition_category_weight
-			elseif config.is_fix_condition_preferring_evidence then
-				Result := fix_condition_category_weight
-			else
-				Result := 0
-			end
-		end
+--	fix_condition_category_weight_with_preference: DOUBLE
+--			-- Fix condition category weight, taking into account preferences.
+--		do
+--			if config.is_fix_condition_preferring_invariant then
+--				Result := - fix_condition_category_weight
+--			elseif config.is_fix_condition_preferring_evidence then
+--				Result := fix_condition_category_weight
+--			else
+--				Result := 0
+--			end
+--		end
 
 	pre_validation_score: DOUBLE
 			-- Syntax ranking for a fix, which describe how large is
@@ -90,7 +90,7 @@ feature -- Access
 					+ (relevant_instructions   / max_relevant_instructions) * relevant_instructions_weight
 					+ (fix_skeleton_complexity / max_skeleton_complexity)   * skeleton_complexity_weight
 					+ (snippet_complexity      / max_snippet_complexity)    * snippet_complexity_weight
-					+ (fix_condition_category / fix_condition_category_assertion) * fix_condition_category_weight_with_preference
+--					+ (fix_condition_category / fix_condition_category_assertion) * fix_condition_category_weight_with_preference
 					- relevance_to_failure * relevance_weight
 			end
 			Result := pre_validation_score_cache

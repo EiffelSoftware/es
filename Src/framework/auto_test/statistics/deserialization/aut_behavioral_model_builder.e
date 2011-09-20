@@ -1,0 +1,127 @@
+note
+	description: "Summary description for {AUT_BEHAVIORAL_MODEL_BUILDER}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AUT_BEHAVIORAL_MODEL_BUILDER
+
+inherit
+	AUT_FILE_SYSTEM_ROUTINES
+		rename make as old_make end
+
+create
+	make
+
+feature -- Initiailization
+
+	make (a_dir: FILE_NAME)
+			-- Initialization.
+			-- `a_dir': directory to save the models.
+		require
+			valid_dir: a_dir.is_valid
+		do
+			model_directory_name := a_dir
+		end
+
+feature -- Data event handler
+
+	on_deserialization_started
+			-- Event handler.
+		do
+			create last_models.make_equal (10)
+		end
+
+	on_test_case_deserialized (a_data: AUT_DESERIALIZED_DATA; a_is_unique: BOOLEAN)
+			-- Action on new serialization data.
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
+			l_model: EPA_BEHAVIORAL_MODEL
+		do
+			l_class := a_data.class_
+			l_feature := a_data.feature_
+			create l_feature_with_context.make (l_feature, l_class)
+			if l_feature_with_context.is_argumentless_public_command then
+				if last_models.has (l_class) then
+					l_model := last_models.item (l_class)
+				else
+					create l_model.make (l_class)
+					last_models.force (l_model, l_class)
+				end
+				l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
+				if not l_model.is_last_merge_successful then
+					io.put_string ("Warning: Transition merge unsuccessful.%N")
+				end
+			end
+		end
+
+	on_deserialization_finished
+			-- Event handler
+		local
+			l_file_name: FILE_NAME
+			l_class: CLASS_C
+			l_model: EPA_BEHAVIORAL_MODEL
+		do
+				-- Prepare the model directory.
+			recursive_create_directory (model_directory_name)
+
+			from last_models.start
+			until last_models.after
+			loop
+				l_class := last_models.key_for_iteration
+				l_model := last_models.item_for_iteration
+
+				create l_file_name.make_from_string (model_directory_name)
+				l_file_name.set_file_name (l_class.name_in_upper)
+				l_file_name.add_extension ("txt")
+				l_model.save_to (l_file_name)
+
+				last_models.forth
+			end
+		end
+
+feature -- Access
+
+	model_directory_name: FILE_NAME
+			-- Directory to store the behavioral models.
+
+feature{NONE} -- Access
+
+	last_models: DS_HASH_TABLE [EPA_BEHAVIORAL_MODEL, CLASS_C]
+			-- Behavioral models.
+
+;note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

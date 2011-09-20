@@ -32,10 +32,10 @@ feature{NONE} -- Cache
 feature -- Basic operation
 
 	perform (a_requirement: AFX_STATE_CHANGE_REQUIREMENT; a_instruction: AFX_AST_STRUCTURE_NODE)
-			--
+			-- Modify `a_instruction' according to the substitution defined by `a_requirement'.
 		local
-			l_src: AFX_PROGRAM_STATE_EXPRESSION
-			l_dest: AFX_PROGRAM_STATE_EXPRESSION
+			l_src: EPA_EXPRESSION
+			l_dest: EPA_EXPRESSION
 			l_src_text: STRING
 			l_dest_text: STRING
 			l_instr_ast: AST_EIFFEL
@@ -50,10 +50,10 @@ feature -- Basic operation
 			l_dest := a_requirement.dest_expr
 			l_dest_text := l_dest.text
 			l_instr_ast := a_instruction.ast.ast
-			l_match_list := match_list_server.item (a_instruction.written_class.class_id)
+			l_match_list := match_list_server.item (a_instruction.feature_.written_class.class_id)
 			l_instr_text := l_instr_ast.text_32 (l_match_list).twin
 
-			-- Replace src_text with dest_text.
+				-- Replace src_text with dest_text.
 			from
 				l_start_index := l_instr_text.substring_index (l_src_text, 1)
 				l_src_length := l_src_text.count

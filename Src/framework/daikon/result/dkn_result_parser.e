@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	last_invariants: DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
+	last_daikon_results: DS_HASH_TABLE [DS_HASH_SET [DKN_INVARIANT], DKN_PROGRAM_POINT]
 			-- Invariants parsed by last `parse_from_string' or `parse_from_file'
 			-- Key is program point, value is the set of invariants detected at the porgram point.
 
@@ -36,8 +36,8 @@ feature -- Basic operations
 			l_ppt_name: STRING
 			l_invs: DS_HASH_SET [DKN_INVARIANT]
 		do
-			create last_invariants.make_equal (20)
-			last_invariants.set_key_equality_tester (daikon_program_point_equality_tester)
+			create last_daikon_results.make_equal (20)
+			last_daikon_results.set_key_equality_tester (daikon_program_point_equality_tester)
 			create l_sections.make
 			create l_stream.make (a_string)
 
@@ -70,7 +70,7 @@ feature -- Basic operations
 					if attached {DKN_PROGRAM_POINT} a_declaration.item_by_daikon_name (l_ppt_name) as l_ppt then
 						create l_invs.make (20)
 						l_invs.set_equality_tester (daikon_invariant_equality_tester)
-						last_invariants.force_last (l_invs, l_ppt)
+						last_daikon_results.force_last (l_invs, l_ppt)
 						from
 							l_section.go_i_th (2)
 						until

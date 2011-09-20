@@ -23,7 +23,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_info: EPA_TEST_CASE_INFO)
+	make (a_info: EPA_TEST_CASE_SIGNATURE)
 			-- Initialize Current with `a_info.
 		do
 			test_case_info := a_info
@@ -32,20 +32,8 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	test_case_info: EPA_TEST_CASE_INFO
+	test_case_info: EPA_TEST_CASE_SIGNATURE
 			-- Test case information
-
-	class_under_test: STRING
-			-- Name of class under test
-		do
-			Result := test_case_info.class_under_test
-		end
-
-	feature_under_test: STRING
-			-- Name of feature under test
-		do
-			Result := test_case_info.feature_under_test
-		end
 
 	recipient_class: STRING
 			-- Name of the class containing `recipient' in case of a failed test case.

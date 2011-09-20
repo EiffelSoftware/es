@@ -57,7 +57,7 @@ feature{NONE} -- Implementation
 		do
 				-- Initialize.
 			create l_value.make (True)
-			l_failing_assert := exception_spot.failing_assertion
+			l_failing_assert := exception_signature.exception_condition_in_recipient
 			l_negated_failing_assert := not l_failing_assert
 			l_premise := structure_analyzer.premise
 			l_consequent := structure_analyzer.consequent
@@ -71,7 +71,6 @@ feature{NONE} -- Implementation
 				-- end
 			fixes.extend (
 				new_afore_fix_skeleton (
-					exception_spot,
 					a_fixing_location.instructions,
 					l_premise,
 					equation_as_state (equation_with_value ((not l_consequent), l_value)).union (equation_as_state (equation_with_value (l_premise, l_value))),
@@ -86,7 +85,6 @@ feature{NONE} -- Implementation
 				-- end
 			fixes.extend (
 				new_afore_fix_skeleton (
-					exception_spot,
 					a_fixing_location.instructions,
 					l_premise,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
@@ -102,7 +100,6 @@ feature{NONE} -- Implementation
 			l_negated_premise := not l_premise
 			fixes.extend (
 				new_afore_fix_skeleton (
-					exception_spot,
 					a_fixing_location.instructions,
 					l_negated_premise,
 					create {AFX_DELAYED_STATE}.make_as_failing_invariants,
@@ -123,7 +120,7 @@ feature{NONE} -- Implementation
 			if not a_fixing_location.is_empty then
 					-- Initialize.
 				create l_value.make (True)
-				l_failing_assert := exception_spot.failing_assertion
+				l_failing_assert := exception_signature.exception_condition_in_recipient
 				l_negated_failing_assert := not l_failing_assert
 				l_premise := structure_analyzer.premise
 				l_consequent := structure_analyzer.consequent
@@ -138,7 +135,6 @@ feature{NONE} -- Implementation
 					-- end
 				fixes.extend (
 					new_wrapping_fix_skeleton (
-						exception_spot,
 						a_fixing_location.instructions,
 						l_failing_assert,
 						create {AFX_DELAYED_STATE}.make_as_failing_invariants,

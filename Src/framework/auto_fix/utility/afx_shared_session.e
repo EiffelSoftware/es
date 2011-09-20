@@ -7,12 +7,6 @@ note
 class
 	AFX_SHARED_SESSION
 
-inherit
-
-	ANY
-
-	AFX_SHARED_PROGRAM_STATE_EXPRESSION_EQUALITY_TESTER
-
 feature -- Access
 
 	session: AFX_SESSION
@@ -31,15 +25,35 @@ feature -- Access
 			Result := session.config
 		end
 
-	program_state_expression_equality_tester: KL_EQUALITY_TESTER [AFX_PROGRAM_STATE_EXPRESSION]
-			-- Expression equality tester for current session.
+	event_actions: AFX_EVENT_ACTIONS
+			-- Event actions.
+		require
+			session_attached: is_session_attached
 		do
-			if config.is_breakpoint_specific then
-				Result := Breakpoint_specific_equality_tester
-			else
-				Result := Breakpoint_unspecific_equality_tester
-			end
+			Result := session.event_actions
 		end
+
+	exception_signature: AFX_EXCEPTION_SIGNATURE
+			-- Signature of the exception.
+		do
+			Result := session.exception_signature
+		end
+
+	exception_recipient_feature: AFX_EXCEPTION_RECIPIENT_FEATURE
+			-- Recipient feature of `exception_signature'.
+		do
+			Result := session.exception_recipient_feature
+		end
+
+--	program_state_expression_equality_tester: KL_EQUALITY_TESTER [AFX_PROGRAM_STATE_EXPRESSION]
+--			-- Expression equality tester for current session.
+--		do
+--			if config.is_breakpoint_specific then
+--				Result := Breakpoint_specific_equality_tester
+--			else
+--				Result := Breakpoint_unspecific_equality_tester
+--			end
+--		end
 
 feature -- Status report
 
@@ -63,7 +77,7 @@ feature{NONE} -- Initialization
 
 	session_cell: CELL [AFX_SESSION]
 			-- Cell to store a session object.
-		once
+		once("PROCESS")
 			create Result.put (Void)
 		end
 

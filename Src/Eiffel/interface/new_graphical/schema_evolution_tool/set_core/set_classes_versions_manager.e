@@ -91,7 +91,7 @@ feature -- Basic operations
 			tmp.force (v_class, name)
 		end
 
-	close is
+	close 
 			-- Write the class versions info file. TODO: think about changing the name
 		local
 			file: PLAIN_TEXT_FILE
@@ -181,7 +181,7 @@ feature -- String representation
 invariant
 	-- Insert invariant here
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

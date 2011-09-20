@@ -42,12 +42,11 @@ feature -- Basic operations
 			l_args: DS_LINKED_LIST [STRING]
 			l_fix_strategy: AP_STRING_OPTION
 			l_rank_control_dependance: AP_STRING_OPTION
-			l_rank_condition_preference: AP_STRING_OPTION
 			l_generate_report: AP_STRING_OPTION
 			l_fault_localization_strategy: AP_STRING_OPTION
-			l_program_state: AP_STRING_OPTION
+			l_state_based_test_case_selection_option: AP_FLAG
+--			l_program_state: AP_STRING_OPTION
 			l_breakpoint_specific_option: AP_FLAG
-			l_monitor_strategy: AP_STRING_OPTION
 			l_rank_computation_mean_type: AP_STRING_OPTION
 			l_max_fixing_target: AP_STRING_OPTION
 			l_max_fix_candidate: AP_STRING_OPTION
@@ -56,9 +55,10 @@ feature -- Basic operations
 			l_feat_under_test: AP_STRING_OPTION
 			l_build_tc_option: AP_STRING_OPTION
 			l_analyze_tc_option: AP_FLAG
-			l_integral_combination_option: AP_STRING_OPTION
 			l_combination_strategy: STRING
 			l_max_test_case_no_option: AP_INTEGER_OPTION
+			l_max_passing_test_case_number_option: AP_INTEGER_OPTION
+			l_max_failing_test_case_number_option: AP_INTEGER_OPTION
 			l_arff_option: AP_FLAG
 			l_daikon_option: AP_FLAG
 			l_max_valid_fix_option: AP_INTEGER_OPTION
@@ -68,7 +68,7 @@ feature -- Basic operations
 			l_mocking_option: AP_FLAG
 			l_freeze_option: AP_FLAG
 			l_max_fix_postcondition: AP_INTEGER_OPTION
-			l_model_xml_option: AP_STRING_OPTION
+			l_model_dir_option: AP_STRING_OPTION
 			l_path_name: FILE_NAME
 
 			l_report_file_name_str: FILE_NAME
@@ -87,17 +87,9 @@ feature -- Basic operations
 			l_rank_control_dependance.set_description ("Choose how CFG would be used to rank the fixing locations. Options: optimistic|pessimistic.")
 			l_parser.options.force_last (l_rank_control_dependance)
 
-			create l_rank_condition_preference.make_with_long_form ("condition-preference")
-			l_rank_condition_preference.set_description ("Prefer the source from which fix conditions come from. Options: invariant|evidence.")
-			l_parser.options.force_last (l_rank_condition_preference)
-
 			create l_fault_localization_strategy.make_with_long_form ("fault-localization-strategy")
 			l_fault_localization_strategy.set_description ("Choose the strategy for fault localization.")
 			l_parser.options.force_last (l_fault_localization_strategy)
-
-			create l_monitor_strategy.make_with_long_form ("monitoring")
-			l_monitor_strategy.set_description ("Choose how expressions would be monitored, i.e. only at the declaring breakpoint or at every breakpoint in the feature. Options: breakpointwise|featurewise.")
-			l_parser.options.force_last (l_monitor_strategy)
 
 			create l_generate_report.make_with_long_form ("generate-report")
 			l_generate_report.set_description ("Generate AutoFix report. Optional argument: name of the file to which the report will be appended.")
@@ -115,10 +107,6 @@ feature -- Basic operations
 			l_max_fix_candidate.set_description ("Maximum number of fix candidates to be evaluated.")
 			l_parser.options.force_last (l_max_fix_candidate)
 
-			create l_program_state.make_with_long_form ("program-state")
-			l_program_state.set_description ("Choose how the program states are to be monitored, i.e. in basic or extended expressions. Options: basic|extended")
-			l_parser.options.force_last (l_program_state)
-
 			create l_retrieve_state_option.make ('s', "retrieve-state")
 			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
 			l_parser.options.force_last (l_retrieve_state_option)
@@ -127,25 +115,25 @@ feature -- Basic operations
 			l_breakpoint_specific_option.set_description ("Should we differentiate expressions based on their corresponding breakpoints?")
 			l_parser.options.force_last (l_breakpoint_specific_option)
 
-			create l_recipient.make_with_long_form ("recipient")
-			l_recipient.set_description ("Specify the recipient of the exception in the test case. The format is CLASS_NAME.feature_name. If this option is provided while the <feature_under_test> option is not provided, the value of <feature_under_test> will be set to current value as well.")
-			l_parser.options.force_last (l_recipient)
-
-			create l_feat_under_test.make_with_long_form ("feature-under-test")
-			l_feat_under_test.set_description ("Specify the feature under test. The format is CLASS_NAME.feature_name. When presents, its value will overwrite the one which is set by <recipient>.")
-			l_parser.options.force_last (l_feat_under_test)
+			create l_state_based_test_case_selection_option.make_with_long_form ("state-based-tc-selection")
+			l_state_based_test_case_selection_option.set_description ("Should we select test cases based on states of the objects used in the test case?")
+			l_parser.options.force_last (l_state_based_test_case_selection_option)
 
 			create l_build_tc_option.make_with_long_form ("build-tc")
 			l_build_tc_option.set_description ("Build current project to contain test cases storing in the folder specified by the parameter.")
 			l_parser.options.force_last (l_build_tc_option)
 
-			create l_integral_combination_option.make_with_long_form ("integral-combination")
-			l_integral_combination_option.set_description ("Strategy for combining integral expressions into the ones to be monitored. It can be either %"breakpoint%" or %"feature%".")
-			l_parser.options.force_last (l_integral_combination_option)
-
 			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
 			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
 			l_parser.options.force_last (l_max_test_case_no_option)
+
+			create l_max_passing_test_case_number_option.make_with_long_form ("max-passing-tc-number")
+			l_max_passing_test_case_number_option.set_description ("Maximum number of test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_parser.options.force_last (l_max_passing_test_case_number_option)
+
+			create l_max_failing_test_case_number_option.make_with_long_form ("max-failing-tc-number")
+			l_max_failing_test_case_number_option.set_description ("Maximum number of test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_parser.options.force_last (l_max_failing_test_case_number_option)
 
 			create l_analyze_tc_option.make_with_long_form ("analyze-tc")
 			l_analyze_tc_option.set_description ("Analyze test cases in current project. This assumes that the test cases are already built with the build-tc command.")
@@ -183,24 +171,15 @@ feature -- Basic operations
 			l_max_fix_postcondition.set_description ("Maximal number of assertions that can appear as fix postcondition. If there are too many fix postcondition assertions, the number of possible fixes are very large, the fix generation will be extremely time-consuming. Default: 10.")
 			l_parser.options.force_last (l_max_fix_postcondition)
 
-			create l_model_xml_option.make_with_long_form ("model-dir")
-			l_model_xml_option.set_description ("The directory to store XML files for behavior models. Default: EIFGENs/target/AutoFix/model")
-			l_parser.options.force_last (l_model_xml_option)
+			create l_model_dir_option.make_with_long_form ("model-dir")
+			l_model_dir_option.set_description ("The directory to find behavior model files. Default: EIFGENs/target/AutoFix/model")
+			l_parser.options.force_last (l_model_dir_option)
 
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
 				-- Setup `config'.
 			config.set_should_retrieve_state (l_retrieve_state_option.was_found)
-
-			if l_recipient.was_found then
-				config.set_state_recipient (feature_from_string (l_recipient.parameter))
-				config.set_state_feature_under_test (config.state_recipient)
-			end
-
-			if l_feat_under_test.was_found then
-				config.set_state_feature_under_test (feature_from_string (l_feat_under_test.parameter))
-			end
 
 			config.set_should_build_test_cases (l_build_tc_option.was_found)
 			if config.should_build_test_cases then
@@ -211,6 +190,18 @@ feature -- Basic operations
 				config.set_max_test_case_number (l_max_test_case_no_option.parameter)
 			else
 				config.set_max_test_case_number (0)
+			end
+
+			if l_max_passing_test_case_number_option.was_found then
+				config.set_max_passing_test_case_number (l_max_passing_test_case_number_option.parameter)
+			else
+				config.set_max_passing_test_case_number (0)
+			end
+
+			if l_max_failing_test_case_number_option.was_found then
+				config.set_max_failing_test_case_number (l_max_failing_test_case_number_option.parameter)
+			else
+				config.set_max_failing_test_case_number (0)
 			end
 
 			if l_max_valid_fix_option.was_found then
@@ -243,22 +234,6 @@ feature -- Basic operations
 				config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
 			end
 
-			if l_rank_condition_preference.was_found then
-				if attached l_rank_condition_preference.parameter as lt_con_pref then
-					lt_con_pref.to_lower
-					if lt_con_pref ~ "invariant" then
-						config.set_fix_condition_preference ({AFX_CONFIG}.Fix_condition_preference_invariant)
-					elseif lt_con_pref ~ "evidence" then
-						config.set_fix_condition_preference ({AFX_CONFIG}.Fix_condition_preference_evidence)
-					else
-						-- Error: invalid parameter, use the default setting.
-						config.set_fix_condition_preference ({AFX_CONFIG}.Default_fix_condition_preference)
-					end
-				end
-			else
-				config.set_fix_condition_preference ({AFX_CONFIG}.Default_fix_condition_preference)
-			end
-
 			if l_fault_localization_strategy.was_found then
 				if attached l_fault_localization_strategy.parameter as lt_suspicious then
 					lt_suspicious.to_lower
@@ -268,11 +243,11 @@ feature -- Basic operations
 						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
 					else
 						-- Error: invalid parameter.
-						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Default_fault_localization_strategy)
+						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
 					end
 				end
 			else
-				config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Default_fault_localization_strategy)
+				config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
 			end
 
 			config.set_generate_report (l_generate_report.was_found)
@@ -317,20 +292,6 @@ feature -- Basic operations
 				end
 			end
 
-			if l_program_state.was_found then
-				if attached l_program_state.parameter as lt_program_state then
-					lt_program_state.to_lower
-					if lt_program_state ~ "extended" then
-						config.set_program_state_extended (True)
-					elseif lt_program_state ~ "basic" then
-						config.set_program_state_extended (False)
-					else
-						-- Report unrecognized parameter.
-						-- Use the default setting, i.e. "extended"
-					end
-				end
-			end
-
 			if l_rank_control_dependance.was_found then
 				if attached l_rank_control_dependance.parameter as lt_cd then
 					lt_cd.to_lower
@@ -344,33 +305,7 @@ feature -- Basic operations
 				end
 			end
 
-			if l_monitor_strategy.was_found then
-				if attached l_monitor_strategy.parameter as lt_monitoring then
-					lt_monitoring.to_lower
-					if lt_monitoring ~ "breakpointwise" then
-						config.set_is_monitoring_breakpointwise (True)
-					elseif lt_monitoring ~ "featurewise" then
-						config.set_is_monitoring_featurewise (True)
-					else
-						-- Use the default strategy: featurewise
-					end
-				end
-			end
-
-			config.set_breakpoint_specific (l_breakpoint_specific_option.was_found)
-
-			if l_integral_combination_option.was_found then
-				l_combination_strategy := l_integral_combination_option.parameter
-				if l_combination_strategy.is_case_insensitive_equal (once "breakpoint") then
-					config.set_is_combining_integral_expressions_in_breakpoint (True)
-				elseif l_combination_strategy.is_case_insensitive_equal (once "feature") then
-					config.set_is_combining_integral_expressions_in_feature (True)
-				else
-					-- Ignoring the parameter.
-					-- Use the default strategy: "breakpoint"
-					config.set_is_combining_integral_expressions_in_breakpoint (True)
-				end
-			end
+			config.set_state_based_test_case_selection (l_state_based_test_case_selection_option.was_found)
 
 			if l_fix_skeleton.was_found then
 				l_skeleton_types := l_fix_skeleton.parameter.split (',')
@@ -397,8 +332,8 @@ feature -- Basic operations
 				config.set_max_fix_postcondition_assertion (10)
 			end
 
-			if l_model_xml_option.was_found then
-				config.set_model_directory (l_model_xml_option.parameter)
+			if l_model_dir_option.was_found then
+				config.set_model_directory (l_model_dir_option.parameter)
 			else
 				create l_path_name.make_from_string (config.output_directory)
 				l_path_name.extend ("model")

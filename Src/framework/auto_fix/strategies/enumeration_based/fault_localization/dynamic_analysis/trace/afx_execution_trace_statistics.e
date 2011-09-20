@@ -44,12 +44,12 @@ feature -- Access
 	trace: AFX_PROGRAM_EXECUTION_TRACE
 			-- Trace from which the statistics is produced.
 
-	id: STRING
-			-- Id of the associated trace.
+	test_case: EPA_TEST_CASE_INFO
+			-- Test case of the associated trace.
 		require
 			is_trace_specific: is_trace_specific
 		do
-			Result := trace.id
+			Result := trace.test_case
 		end
 
 feature -- Status report
@@ -105,10 +105,9 @@ feature -- Basic operation
 			end
 		end
 
-	update_statistic_info (a_target: AFX_FIXING_TARGET; a_change: REAL; a_update_mode: INTEGER; a_cond: AFX_FIXING_TARGET)
+	update_statistic_info (a_target: AFX_FIXING_TARGET; a_change: REAL; a_update_mode: INTEGER)
 			-- Update the statistic information for `a_target'.
 			-- Applying `a_change' to the statistic value of `a_target', according to `a_update_mode'.
-			-- Adopt `a_cond' as the most relevant fixing condition, if it is more relevant than the one already in statistic.
 		require
 			valid_mode: is_valid_update_mode (a_update_mode)
 		local
@@ -129,21 +128,18 @@ feature -- Basic operation
 
 					if l_target.is_about_the_same_target (a_target) then
 						l_target.set_suspiciousness_value (statistic_value_after_update (l_target.suspiciousness_value, a_change, a_update_mode))
-						l_target.update_most_relevant_fixing_condition (a_cond)
 						l_found := True
 					end
 
 					l_set.forth
 				end
 			else
-				create l_set.make (10)
-				l_set.set_equality_tester (tester_based_on_expressions_and_bp_index)
+				create l_set.make_equal (10)
 				force (l_set, l_bp_index)
 			end
 
 			if not l_found then
-				create l_target.make (a_target.expressions, l_bp_index, statistic_value_after_update (0, a_change, a_update_mode))
-				l_target.update_most_relevant_fixing_condition (a_cond)
+				create l_target.make (a_target.expression, l_bp_index, statistic_value_after_update (0, a_change, a_update_mode))
 				l_set.force (l_target)
 			end
 		end
@@ -167,7 +163,7 @@ feature -- Basic operation
 			loop
 				l_target := l_list.item_for_iteration
 
-				update_statistic_info (l_target, l_target.suspiciousness_value, a_merge_mode, l_target.most_relevant_fixing_condition)
+				update_statistic_info (l_target, l_target.suspiciousness_value, a_merge_mode)
 
 				l_list.forth
 			end

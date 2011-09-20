@@ -9,29 +9,19 @@ class
 
 inherit
 
---	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
-
 	EPA_DEBUGGER_UTILITY
 
 	AFX_SHARED_STATE_SERVER
 
 	AFX_UTILITY
 
-	AFX_SHARED_EVENT_ACTIONS
-
 	EQA_TEST_EXECUTION_MODE
-
-	AFX_SHARED_SERVER_EXPRESSIONS_TO_MONITOR
-
-	AFX_SHARED_STATIC_ANALYSIS_REPORT
-
-	AFX_SHARED_SESSION
 
 	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
 
-	REFACTORING_HELPER
+	AFX_SHARED_SESSION
 
---	AFX_SHARED_PROGRAM_STATE_EXPRESSIONS_SERVER
+	REFACTORING_HELPER
 
 create
 	make
@@ -41,62 +31,30 @@ feature -- Initialization
 	make
 			-- Initialization.
 		do
-			create test_case_start_actions
-			create test_case_breakpoint_hit_actions
-			create application_exited_actions
-
-			create test_case_execution_status_collector.make (config)
+			create test_case_execution_event_listeners.make
 		end
-
-feature -- Actions
-
-	test_case_start_actions: ACTION_SEQUENCE[TUPLE [EPA_TEST_CASE_INFO]]
-			-- Actions to be performed when a test case is to be analyzed.
-			-- The information about the test case is passed as the argument to the agent.
-
-	test_case_breakpoint_hit_actions: ACTION_SEQUENCE [TUPLE [a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER]]
-			-- Actions to be performed when a breakpoint is hit in a test case.
-			-- `a_tc' is the test case currently analyzed.
-			-- `a_state' is the state evaluated at the breakpoint.
-			-- `a_bpslot' is the breakpoint slot number.
-
-	application_exited_actions: ACTION_SEQUENCE [TUPLE [DEBUGGER_MANAGER]]
-			-- Actions to be performed when application exited in debugger
 
 feature -- Basic operation
-
-	register_general_action_listeners
-			-- Register general action listeners to respond to actions.
-		do
-			test_case_start_actions.extend (agent trace_repository.start_trace_for_test_case)
-			test_case_breakpoint_hit_actions.extend (agent trace_repository.extend_current_trace_with_state_and_index)
-			application_exited_actions.extend (agent unregister_test_case_handler)
-
-				-- Setup test case execution status collector.
-			test_case_start_actions.extend (agent test_case_execution_status_collector.on_test_case_start (?, False))
-			test_case_breakpoint_hit_actions.extend (agent test_case_execution_status_collector.on_break_point_hit)
-			application_exited_actions.extend (agent test_case_execution_status_collector.on_application_exited)
-		end
 
 	reset_collector
 			-- Reset the state of collector.
 		do
-			reset_trace_repository
+				-- Reset listeners.
+			test_case_execution_event_listeners.wipe_out
 
-			test_case_start_actions.wipe_out
-			test_case_breakpoint_hit_actions.wipe_out
-			application_exited_actions.wipe_out
+				-- Reset execution information.
+			test_case_info := Void
+			monitored_breakpoint_manager := Void
+			entry_breakpoint_manager := Void
+			current_test_case_execution_mode := Mode_default
 
-			current_test_case_info := Void
-			current_test_case_breakpoint_manager := Void
-			current_test_execution_mode := Mode_default
-			enter_test_case_breakpoint_manager := Void
+				-- Reset execution monitors.
+			arff_generator_cache := Void
 		end
 
 	collect_trace
 			-- Run current project to collect execution traces from test cases.
 		local
---			l_state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
 			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_app_exit_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
 			l_new_tc_bp_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
@@ -106,70 +64,83 @@ feature -- Basic operation
 		do
 			reset_collector
 
---			create l_state_expression_server.make (config, 5)
---			set_state_expression_server (l_state_expression_server)
-
 			register_general_action_listeners
 
-			-- Initialize debugger.
+				-- Initialize debugger.
 			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
 			remove_breakpoint (debugger_manager, Test_case_super_class)
 
-			-- Register debugger event listener.
+				-- Register debugger event listener.
 			l_app_stop_agent := agent on_application_stopped
 			l_app_exit_agent := agent on_application_exit
 			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exit_agent)
 
-			-- Start debugging the application.
+				-- Start debugging the application.
 			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, {EXEC_MODES}.Run, False)
 
-			-- Unregister debugger event listener.
+				-- Unregister debugger event listener.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
 			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exit_agent)
 
-			-- Clean up debugger.
+				-- Clean up debugger.
 			remove_breakpoint (debugger_manager, Test_case_super_class)
 			remove_debugger_session
 
-			if config.is_program_state_extended then
-				-- Interprete state-expression based traces as state-aspect based ones.
-				set_trace_repository (trace_repository.interpretation)
+			if config.is_using_random_based_strategy then
+					-- Interprete program states based on the observed evaluations.
+				set_trace_repository (trace_repository.derived_repository (exception_recipient_feature.derived_state_skeleton))
 			end
-			set_test_case_execution_status (test_case_execution_status_collector.status)
 		end
 
 feature{None} -- Implementation
 
-	current_test_case_info: detachable EPA_TEST_CASE_INFO
-			-- Information about currently analyzed test case
+	current_test_case_info: detachable EPA_TEST_CASE_SIGNATURE
+			-- Information about the test case currently under analysis.
 
-	current_test_case_breakpoint_manager: detachable EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
-			-- Breakpoint manager for current test case
+	test_case_info: EPA_TEST_CASE_INFO
+			-- Information about the test case currently being executed.
 
-	exception_summary: EPA_EXCEPTION_TRACE_SUMMARY
-			-- Summary information about the exception.
+	current_test_case_execution_mode: INTEGER
+			-- Execution mode of the current test case.
 
-	test_case_execution_status_collector: AFX_TEST_CASE_EXECUTION_STATUS_COLLECTOR
-			-- Test case execution status collector.
-			-- Include both passing and failing test cases.
+	monitored_breakpoint_manager: detachable EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Manager for breakpoints where program states need to be monitored.
 
+	entry_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Manager for the breakpoint that marks the entries of test cases.
+
+	exit_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			-- Manager for the breakpoint that marks the exits of test cases.
 
 feature{NONE} -- Execution mode
 
-	current_test_execution_mode: INTEGER
-			-- Execution mode of current test.
-
 	is_in_mode_execute: BOOLEAN
-			-- Is current test case running in 'Mode_execute'?
+			-- Is current test case being executed?
 		do
-			Result := current_test_execution_mode = Mode_execute
+			Result := current_test_case_execution_mode = Mode_execute
 		end
 
 	is_in_mode_monitor: BOOLEAN
-			-- Is current test case running in 'Mode_monitor'?
+			-- Is current test case being monitored?
 		do
-			Result := current_test_execution_mode = Mode_monitor
+			Result := current_test_case_execution_mode = Mode_monitor
+		end
+
+feature{NONE} -- Execution Evetn Listener
+
+	test_case_execution_event_listeners: DS_LINKED_LIST[AFX_TEST_CASE_EXECUTION_EVENT_LISTENER]
+			-- Subscribed event listeners.
+
+	arff_generator: AFX_ARFF_GENERATOR
+			-- Generator for ARFF file, ARFF file is used for the Weka tool.
+		do
+			if arff_generator_cache = Void then
+				create arff_generator_cache.make
+			end
+			Result := arff_generator_cache
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature{NONE} -- Event handler
@@ -214,18 +185,18 @@ feature{NONE} -- Event handler
 
 			io.put_string ("Entering test case " + l_uuid + "%N")
 
-			current_test_execution_mode := l_execution_mode
-
+			current_test_case_execution_mode := l_execution_mode
 			check
 				in_monitor_mode: is_in_mode_monitor
-				exception_info_available: exception_spot /= Void
+				exception_signature_available: exception_signature /= Void
 			end
-			current_test_case_info := exception_spot.test_case_info.deep_twin
-			current_test_case_info.set_is_passing (l_passing)
-			current_test_case_info.set_uuid (l_uuid)
+--			current_test_case_info := exception_spot.test_case_info.deep_twin
+			create test_case_info.make (l_uuid, l_uuid)
+--			current_test_case_info.set_is_passing (l_passing)
+--			current_test_case_info.set_uuid (l_uuid)
 
-			event_actions.notify_on_new_test_case_found (current_test_case_info)
-			test_case_start_actions.call ([current_test_case_info])
+			test_case_execution_event_listeners.do_all (agent {AFX_TEST_CASE_EXECUTION_EVENT_LISTENER}.on_new_test_case(test_case_info))
+			event_actions.notify_on_new_test_case_found (test_case_info)
 
 			register_program_state_monitoring
 		end
@@ -241,15 +212,15 @@ feature{NONE} -- Event handler
 						Result := a_equation.value.is_boolean or else a_equation.value.is_integer
 					end)
 
-			test_case_breakpoint_hit_actions.call ([current_test_case_info, a_state, a_breakpoint.breakable_line_number])
-			event_actions.notify_on_break_point_hit (current_test_case_info, a_breakpoint.breakable_line_number)
+			test_case_execution_event_listeners.do_all (agent {AFX_TEST_CASE_EXECUTION_EVENT_LISTENER}.on_breakpoint_hit (test_case_info, a_state, a_breakpoint.breakable_line_number))
+			event_actions.notify_on_break_point_hit (test_case_info, a_breakpoint.breakable_line_number)
 		end
 
 	on_application_exit (a_dm: DEBUGGER_MANAGER)
 			-- Action to be performed when application exited.
 		do
-			application_exited_actions.call ([a_dm])
-			set_test_case_execution_status (test_case_execution_status_collector.status)
+			test_case_execution_event_listeners.do_all (agent {AFX_TEST_CASE_EXECUTION_EVENT_LISTENER}.on_application_exit)
+			unregister_test_case_entry_handler (a_dm)
 		end
 
 	on_application_stopped (a_dm: DEBUGGER_MANAGER)
@@ -265,19 +236,26 @@ feature{NONE} -- Event handler
 				else
 					if a_dm.application_status.exception_occurred then
 						if not is_in_mode_monitor then
-							static_exception_analysis (a_dm)
+								-- Corresponds to the execution of the first test case, which is used to reproduce the fault.
 
+								-- Analyze the exception and its recipient.
+							analyze_exception (a_dm)
+
+								-- Initialize current test case info.
+--							initialize_test_case_info
+
+								-- Mark the code range of test cases.
 							register_test_case_entry_handler
 							register_test_case_exit_handler
 						else
-							-- Mark the trace as from a FAILED execution.
+								-- During monitoring, mark the trace as from a FAILED execution.
 							trace_repository.current_trace.set_status_as_failing
 						end
-
+							-- Remove any breakpoint that might interfere with monitoring.
 						unregister_program_state_monitoring (Void, a_dm)
 					end
 
-					-- Resume anyway.
+						-- Resume anyway.
 					a_dm.controller.resume_workbench_application
 				end
 			end
@@ -285,63 +263,17 @@ feature{NONE} -- Event handler
 
 feature{NONE} -- Event handler registration/unregistration
 
-	enter_test_case_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
-			-- Breakpoint manager for handling test-case-entry event.
-
-	register_test_case_entry_handler
-			-- Register test-case-entry handler at breakpoint.
+	register_general_action_listeners
+			-- Register general action listeners to respond to actions.
 		do
-			if enter_test_case_breakpoint_manager = Void then
-				create enter_test_case_breakpoint_manager.make (Test_case_super_class, Test_case_setup_feature)
-				enter_test_case_breakpoint_manager.set_breakpoint_with_expression_and_action (1, test_case_info_skeleton, agent on_test_case_setup)
+			test_case_execution_event_listeners.force_last (trace_repository)
+			if config.is_using_model_based_strategy and then config.is_arff_generation_enabled then
+				test_case_execution_event_listeners.force_last (arff_generator)
 			end
-			enter_test_case_breakpoint_manager.toggle_breakpoints (True)
-		end
-
-	register_program_state_monitoring
-			-- Register program state monitoring at each breakpoint in the recipient feature.
-		require
-			current_test_case_attached: current_test_case_info /= Void
-		local
-			l_recipient_class: CLASS_C
-			l_recipient: FEATURE_I
-			l_expression_set, l_expression_set_from_failing_assertion: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
-			l_orig_failing_assertion: EPA_EXPRESSION
-			l_failing_assertion: AFX_PROGRAM_STATE_EXPRESSION
-			l_collector: AFX_EXPRESSIONS_TO_MONITOR_COLLECTOR
-		do
-			if current_test_case_breakpoint_manager = Void then
-				-- Set of expressions to evaluate.
---				l_recipient_class := current_test_case_info.recipient_class_
---				l_recipient := current_test_case_info.recipient_
-				l_recipient_class := exception_spot.recipient_class_
-				l_recipient := exception_spot.recipient_
-				check l_recipient_class = current_test_case_info.recipient_class_ and then l_recipient = current_test_case_info.recipient_ end
-				l_expression_set := server_expressions_to_monitor.set_of_expressions_to_monitor_without_bp_index (l_recipient_class, l_recipient)
-
-				-- Add the failing assertion expression to the set of expressions.
-				l_orig_failing_assertion := exception_spot.failing_assertion
-				if l_orig_failing_assertion /= Void then
-					create l_failing_assertion.make_with_text (l_orig_failing_assertion.class_, l_orig_failing_assertion.feature_, l_orig_failing_assertion.text,l_orig_failing_assertion.written_class, 0)
-					l_failing_assertion.set_type (l_orig_failing_assertion.type)
-					create l_expression_set_from_failing_assertion.make_equal (1)
-					l_expression_set_from_failing_assertion.force (l_failing_assertion)
-					create l_collector
-					l_collector.collect_from (l_expression_set_from_failing_assertion)
-					l_expression_set.append (l_collector.expressions_to_monitor)
-				end
-
-				-- Register expressions at all breakpoints.
-				create current_test_case_breakpoint_manager.make (l_recipient_class, l_recipient)
-				current_test_case_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (l_expression_set, agent on_breakpoint_hit_in_test_case)
-			end
-
-			current_test_case_breakpoint_manager.toggle_breakpoints (True)
-			check debugger_manager.breakpoints_manager.is_breakpoint_enabled (l_recipient.e_feature, 1) end
 		end
 
 	register_test_case_exit_handler
-			-- Register test-case-exit handler at breakpoint.
+			-- Register handler at the exits of test cases.
 		local
 			l_class: CLASS_C
 			l_bp_manager: BREAKPOINTS_MANAGER
@@ -350,7 +282,7 @@ feature{NONE} -- Event handler registration/unregistration
 		do
 			l_bp_manager := debugger_manager.breakpoints_manager
 
-			-- Ending point of monitoring.
+				-- Ending point of monitoring.
 			l_bp_location := l_bp_manager.breakpoint_location (Test_case_exit_feature.e_feature, 1, False)
 			l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp_location)
 			l_breakpoint.add_when_hits_action (create {BREAKPOINT_WHEN_HITS_ACTION_EXECUTE}.make (agent unregister_program_state_monitoring))
@@ -359,13 +291,49 @@ feature{NONE} -- Event handler registration/unregistration
 			l_bp_manager.notify_breakpoints_changes
 		end
 
-	unregister_test_case_handler (a_dm: DEBUGGER_MANAGER)
+	register_test_case_entry_handler
+			-- Register test-case-entry handler at breakpoint.
+		do
+			if entry_breakpoint_manager = Void then
+				create entry_breakpoint_manager.make (Test_case_super_class, Test_case_setup_feature)
+				entry_breakpoint_manager.set_breakpoint_with_expression_and_action (1, test_case_info_skeleton, agent on_test_case_setup)
+			end
+			entry_breakpoint_manager.toggle_breakpoints (True)
+		end
+
+	unregister_test_case_entry_handler (a_dm: DEBUGGER_MANAGER)
 			-- Unregister test-case entry & exit handler.
 		do
-			if enter_test_case_breakpoint_manager /= Void then
-				enter_test_case_breakpoint_manager.toggle_breakpoints (False)
+			if entry_breakpoint_manager /= Void then
+				entry_breakpoint_manager.toggle_breakpoints (False)
 			end
 			remove_breakpoint (a_dm, Test_case_super_class)
+		end
+
+	register_program_state_monitoring
+			-- Register program state monitoring at each breakpoint in the recipient feature.
+		local
+			l_recipient_class: CLASS_C
+			l_recipient: FEATURE_I
+			l_recipient_feature: EPA_FEATURE_WITH_CONTEXT_CLASS
+			l_expressions: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+			l_expression_set: EPA_HASH_SET [EPA_EXPRESSION]
+		do
+			l_recipient_class := exception_recipient_feature.context_class
+			l_recipient := exception_recipient_feature.feature_
+
+			if monitored_breakpoint_manager = Void then
+					-- Register expressions at all breakpoints.
+				l_expressions := exception_recipient_feature.expressions_to_monitor
+				create l_expression_set.make_equal (l_expressions.count)
+				l_expressions.keys.do_all (agent l_expression_set.force)
+
+				create monitored_breakpoint_manager.make (l_recipient_class, l_recipient)
+				monitored_breakpoint_manager.set_all_breakpoints_with_expression_and_actions (l_expression_set, agent on_breakpoint_hit_in_test_case)
+			end
+
+			monitored_breakpoint_manager.toggle_breakpoints (True)
+			check debugger_manager.breakpoints_manager.is_breakpoint_enabled (l_recipient.e_feature, 1) end
 		end
 
 	unregister_program_state_monitoring (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)
@@ -373,10 +341,10 @@ feature{NONE} -- Event handler registration/unregistration
 		require
 			current_test_case_attached: current_test_case_info /= Void
 		do
-			if current_test_case_breakpoint_manager /= Void then
-				current_test_case_breakpoint_manager.toggle_breakpoints (False)
+			if monitored_breakpoint_manager /= Void then
+				monitored_breakpoint_manager.toggle_breakpoints (False)
 			end
-			remove_breakpoint (a_dm, current_test_case_info.recipient_class_)
+			remove_breakpoint (a_dm, exception_recipient_feature.context_class)
 		end
 
 feature{NONE} -- Test case info
@@ -434,42 +402,90 @@ feature{NONE} -- Test case info
 
 feature{NONE} -- Implementation
 
-	static_exception_analysis (a_dm: DEBUGGER_MANAGER)
+	analyze_exception (a_dm: DEBUGGER_MANAGER)
 			-- Analyze exception statically.
 		require
 			exception_raised: a_dm /= Void and then a_dm.application_status.exception_occurred
-			exception_info_not_set: exception_spot = Void
+			exception_info_not_set: exception_signature = Void
 		local
-			l_exception_trace: STRING
-			l_exception_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
-			l_exception_summary: EPA_EXCEPTION_TRACE_SUMMARY
-			l_recipient_id: STRING
-			l_static_analyzer: AFX_EXCEPTION_STATIC_ANALYZER
-			l_exception_spot: AFX_EXCEPTION_SPOT
+			l_exception_code: INTEGER
+			l_exception_tag: STRING
+
+			l_call_stack: EIFFEL_CALL_STACK
+			l_current_stack_element, l_previous_stack_element: CALL_STACK_ELEMENT
+			l_current_class, l_previous_class: CLASS_C
+			l_current_feature, l_previous_feature: FEATURE_I
+			l_current_breakpoint, l_previous_breakpoint: INTEGER
+			l_current_breakpoint_nested, l_previous_breakpoint_nested: INTEGER
+			l_exception_signature: AFX_EXCEPTION_SIGNATURE
 		do
-			l_exception_trace := a_dm.application_status.exception_text
-			create l_exception_explainer
-			l_exception_explainer.explain (l_exception_trace)
-			l_exception_summary := l_exception_explainer.last_explanation
+			l_exception_code := a_dm.application_status.exception.code
+			l_exception_tag := a_dm.application_status.exception.message.twin
 
-			-- Use exception information to initialize a test case info object.
-			-- Since class/feature under test will not be used during fixing, we just use empty string.
-			create current_test_case_info.make ("", "",
-					l_exception_summary.recipient_context_class_name,
-					l_exception_summary.recipient_feature_name,
-					l_exception_summary.exception_code,
-					l_exception_summary.failing_position_breakpoint_index,
-					l_exception_summary.failing_assertion_tag,
-					False, "")
+			l_call_stack := a_dm.application_status.current_call_stack
+			l_current_stack_element := l_call_stack.i_th (1)
+			l_current_class := first_class_starts_with_name (l_current_stack_element.class_name)
+			l_current_feature := l_current_class.feature_named_32 (l_current_stack_element.routine_name)
+			l_current_breakpoint := l_current_stack_element.break_index
+			l_current_breakpoint_nested := l_current_stack_element.break_nested_index
+			l_previous_stack_element := l_call_stack.i_th (2)
+			l_previous_class := first_class_starts_with_name (l_previous_stack_element.class_name)
+			l_previous_feature := l_previous_class.feature_named_32 (l_previous_stack_element.routine_name)
+			l_previous_breakpoint := l_previous_stack_element.break_index
+			l_previous_breakpoint_nested := l_previous_stack_element.break_nested_index
 
-			create l_static_analyzer.make
-			l_static_analyzer.analyze_exception (current_test_case_info, a_dm.application_status.exception_text)
---			set_exception_spot (l_static_analyzer.last_spot)
-
---			if attached {AFX_DAIKON_FACILITY} daikon_facility as l_daikon then
---				l_daikon.set_exception_spot (exception_spot)
---			end
+			if l_exception_code = {EXCEP_CONST}.Void_call_target then
+				create {AFX_VOID_CALL_TARGET_VIOLATION_SIGNATURE}l_exception_signature.make (
+						l_exception_tag,
+						l_current_class, l_current_feature,
+						l_current_breakpoint, l_current_breakpoint_nested)
+			elseif l_exception_code = {EXCEP_CONST}.precondition then
+				create {AFX_PRECONDITION_VIOLATION_SIGNATURE}l_exception_signature.make (
+						l_current_class, l_current_feature, l_current_breakpoint,
+						l_previous_class, l_previous_feature, l_previous_breakpoint, l_previous_breakpoint_nested)
+			elseif l_exception_code = {EXCEP_CONST}.postcondition then
+				create {AFX_POSTCONDITION_VIOLATION_SIGNATURE}l_exception_signature.make (
+						l_current_class, l_current_feature, l_current_breakpoint)
+			elseif l_exception_code = {EXCEP_CONST}.Class_invariant then
+				create {AFX_INVARIANT_VIOLATION_SIGNATURE}l_exception_signature.make (
+						l_exception_tag, l_previous_class, l_previous_feature)
+			elseif l_exception_code = {EXCEP_CONST}.Check_instruction then
+				create {AFX_CHECK_VIOLATION_SIGNATURE}l_exception_signature.make (
+						l_current_class, l_current_feature, l_current_breakpoint)
+			end
+			session.set_exception_signature (l_exception_signature)
 		end
+
+--	analyze_exception_recipient (a_exception: AFX_EXCEPTION_SIGNATURE)
+--			-- Analyze the recipient of `a_exception'.
+--		require
+--			exception_attached: a_exception /= Void
+--		local
+--			l_recipient: AFX_EXCEPTION_RECIPIENT_FEATURE
+--		do
+--			create l_recipient.make_for_exception (a_exception)
+--		end
+
+--	initialize_test_case_info
+--			-- Initialize `current_test_case_info' using exception information.
+--		local
+--			l_tag: STRING
+--		do
+--			if attached{AFX_ASSERTION_VIOLATION_SIGNATURE}exception_signature as lt_assertion_violation then
+--				l_tag := lt_assertion_violation.violated_assertion_tag
+--			else
+--				l_tag := ""
+--			end
+
+--				-- Use exception information to initialize a test case info object.
+--				-- Since class/feature under test will not be used during fixing, we just use empty string.
+--			create current_test_case_info.make ("", "",
+--					exception_signature.recipient_class.name,
+--					exception_signature.recipient_feature.feature_name_32,
+--					exception_signature.exception_code,
+--					exception_signature.recipient_breakpoint,
+--					l_tag, False, "")
+--		end
 
 feature{NONE} -- Constant
 
@@ -497,71 +513,10 @@ feature{NONE} -- Constant
 
 feature{NONE} -- Cache
 
+	arff_generator_cache: detachable AFX_ARFF_GENERATOR
+			-- Cache for `arff_generator'.
+
 	test_case_info_skeleton_cache: like test_case_info_skeleton
 			-- Cache for `test_case_info_skeleton'.
 
---	analyze_exception (a_dm: DEBUGGER_MANAGER)
---			-- Get exception information from execution status, and make the result available in `exception_summary'.
---		local
---			l_recipient_id: STRING
---			l_static_analyzer: AFX_EXCEPTION_STATIC_ANALYZER
-
---			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
---			l_status: APPLICATION_STATUS
---			l_call_stack: EIFFEL_CALL_STACK
---			l_call_stack_element: CALL_STACK_ELEMENT
---			l_class_under_test, l_feature_under_test: STRING
---			l_syntax_checker: EIFFEL_SYNTAX_CHECKER
-
---			l_exception_code: INTEGER
-
---			l_failing_class, l_failing_feature: STRING
---			l_failing_breakpoint_slot_index: INTEGER
---			l_failing_tag: STRING
-
---			l_recipient_class, l_recipient_feature: STRING
---			l_recipient_breakpoint_slot_index: INTEGER
---		do
---			l_status := a_dm.application_status
-
---			l_call_stack := l_status.current_call_stack
---			l_exception_code := l_status.exception.code
-
---			fixme ("Check the statuses of call stacks in occurrences of different exceptions.")
-
---			-- Information about the failing position.
---			l_call_stack_element := l_call_stack.i_th (1)
---			l_failing_class := l_call_stack_element.class_name
-
---			l_failing_tag := l_status.exception_message
---			create l_syntax_checker
---			if l_failing_tag = Void or else l_failing_tag.is_empty or else not l_syntax_checker.is_valid_identifier (l_failing_tag) then
---				l_failing_tag := "noname"
---			end
-
---			if l_exception_code /= {EXCEP_CONST}.Class_invariant then
---				l_failing_feature := l_call_stack_element.routine_name
---				l_failing_breakpoint_slot_index := l_call_stack_element.break_index
---			end
-
---			-- Information about the recipient.
---			if l_exception_code = {EXCEP_CONST}.Precondition then
---				-- Get recipient information from the call stack element next to the top, i.e. with index 2.
---				l_call_stack_element := l_call_stack.i_th (2)
---				l_recipient_class := l_call_stack_element.class_name
---				l_recipient_feature := l_call_stack_element.routine_name
---				l_recipient_breakpoint_slot_index := l_call_stack_element.break_index
---			else
---				l_recipient_class := l_failing_class
---				l_recipient_feature := l_failing_feature
---				l_recipient_breakpoint_slot_index := l_failing_breakpoint_slot_index
---			end
-
---			create exception_summary.make (l_exception_code,
---					l_failing_class, l_failing_feature,
---					l_failing_breakpoint_slot_index,
---					l_failing_tag,
---					l_recipient_class, l_recipient_feature,
---					l_recipient_breakpoint_slot_index)
---		end
 end

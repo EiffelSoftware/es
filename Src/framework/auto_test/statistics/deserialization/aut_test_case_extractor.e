@@ -35,12 +35,22 @@ create
 
 feature -- Data event handler
 
-	on_serialization_data (a_data: AUT_DESERIALIZED_DATA; a_is_unique: BOOLEAN)
-			-- <Precursor>
+	on_deserialization_started
+			-- Event handler.
+		do
+		end
+
+	on_test_case_deserialized (a_data: AUT_DESERIALIZED_DATA; a_is_unique: BOOLEAN)
+			-- Event handler.
 		do
 			if a_is_unique then
 				generate_test_case (a_data)
 			end
+		end
+
+	on_deserialization_finished
+			-- Event handler
+		do
 		end
 
 feature -- Configuration
@@ -1081,7 +1091,7 @@ feature{NONE} -- Auxiliary features
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

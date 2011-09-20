@@ -8,6 +8,9 @@ class
 	AFX_BEHAVIOR_CONSTRUCTOR
 
 inherit
+
+	AFX_STATE_TRANSITOR_I
+
     AFX_SHARED_STATE_TRANSITION_MODEL
 
 create
@@ -17,12 +20,6 @@ feature -- Access
 
 	config: detachable AFX_BEHAVIOR_CONSTRUCTOR_CONFIG
 			-- Configuration of the behavior construction.
-
---	criteria: AFX_BEHAVIOR_FEATURE_SELECTOR_I
---			-- Feature selection criteria.
---		do
---		    Result := internal_criteria.item
---		end
 
 	call_sequences: DS_ARRAYED_LIST [AFX_STATE_TRANSITION_FIX]
 			-- List of state transition fixes.

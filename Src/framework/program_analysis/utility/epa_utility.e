@@ -99,6 +99,31 @@ feature -- AST
 			check Result /= Void end
 		end
 
+	ast_from_statement_or_expression_text (a_text: STRING): AST_EIFFEL
+			-- AST node for `a_text'.
+			-- `a_text' can be from an instruction or an expression.
+		require
+			text_not_empty: a_text /= Void and then not a_text.is_empty
+		local
+			l_tried_as_instruction, l_tried_as_expression: BOOLEAN
+		do
+			if not l_tried_as_instruction then
+				Result := ast_from_statement_text (a_text)
+			elseif not l_tried_as_expression then
+				Result := ast_from_expression_text (a_text)
+			else
+				Result := Void
+			end
+		rescue
+			if not l_tried_as_instruction then
+				l_tried_as_instruction := True
+				retry
+			elseif not l_tried_as_expression then
+				l_tried_as_expression := True
+				retry
+			end
+		end
+
 	ast_from_statement_text (a_text: STRING): INSTRUCTION_AS
 			-- AST node from `a_text'
 			-- `a_text' must a statement AST and must be able to be parsed in to a single AST node.
@@ -311,6 +336,95 @@ feature -- Contract extractor
 		once
 			create Result
 		end
+
+feature -- Breakpoint related
+
+	shared_debugger_manager: SHARED_DEBUGGER_MANAGER
+			-- Shared debugger manager.
+		once
+			create Result
+		end
+
+	breakpoint_info_at (a_class: CLASS_C; a_feature: FEATURE_I; a_index: INTEGER): DBG_BREAKABLE_POINT_INFO
+			-- Information about the `a_index'-th breakpoint in `a_class'.`a_feature'.
+		local
+			l_debugger_manager: DEBUGGER_MANAGER
+			l_ast_server: DEBUGGER_AST_SERVER
+			l_breakable_info: DBG_BREAKABLE_FEATURE_INFO
+			l_points: ARRAYED_LIST [DBG_BREAKABLE_POINT_INFO]
+			l_index, l_count: INTEGER
+			l_found: BOOLEAN
+			l_breakpoint: DBG_BREAKABLE_POINT_INFO
+		do
+			l_debugger_manager := shared_debugger_manager.debugger_manager
+			l_ast_server := l_debugger_manager.debugger_ast_server
+			l_breakable_info := l_ast_server.breakable_feature_info (a_feature.e_feature)
+			l_points := l_breakable_info.points
+			from
+				l_index := l_points.lower
+				l_count := l_points.upper
+			until
+				l_found or else l_index > l_count
+			loop
+				l_breakpoint := l_points[l_index]
+				if l_breakpoint /= Void and then l_breakpoint.bp = a_index and then l_breakpoint.bp_nested = 0 then
+					Result := l_breakpoint
+					l_found := True
+				end
+
+				l_index := l_index + 1
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	breakpoint_count (a_feature: FEATURE_I): INTEGER
+			-- Count of breakpoints in `a_feature'.
+		local
+			l_breakable_info: DBG_BREAKABLE_FEATURE_INFO
+		do
+			l_breakable_info := shared_debugger_manager.debugger_manager.debugger_ast_server.breakable_feature_info (a_feature.e_feature)
+			Result := l_breakable_info.breakable_count
+		end
+
+	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_EXPRESSION]
+			-- Assertion, consists of an optional tag and an expression, at `a_breakpoint' of `a_feature' from `a_class'.
+		require
+			is_assertion_at_breakpoint: True -- The arguments indicate an assertion.
+		local
+			l_breakpoint: DBG_BREAKABLE_POINT_INFO
+			l_written_class: CLASS_C
+			l_written_feature: FEATURE_I
+			l_context_breakpoint_expression: EPA_AST_EXPRESSION
+			l_written_ast: EXPR_AS
+			l_breakpoint_text: STRING
+			l_column_position: INTEGER
+			l_tag: STRING
+		do
+			l_breakpoint := breakpoint_info_at (a_class, a_feature, a_breakpoint_index)
+			l_breakpoint_text := l_breakpoint.text
+
+				-- A naive way to get the tag.
+			l_column_position := l_breakpoint_text.index_of (':', 1)
+			if l_column_position > 1 then
+				l_tag := l_breakpoint_text.substring (1, l_column_position - 1)
+				l_breakpoint_text := l_breakpoint_text.substring (l_column_position + 1, l_breakpoint_text.count)
+			else
+				l_tag := ""
+			end
+
+				-- Rewrite the expression in the desired context.
+			l_written_class := l_breakpoint.class_c
+			l_written_feature := l_written_class.feature_of_rout_id_set (a_feature.rout_id_set)
+			l_written_ast := ast_from_expression_text (l_breakpoint_text)
+			check l_written_ast /= Void end
+			check attached {EXPR_AS} ast_in_context_class (l_written_ast, l_written_class, l_written_feature, a_class) as lt_context_ast then
+				create l_context_breakpoint_expression.make_with_text (a_class, a_feature, text_from_ast (lt_context_ast), l_written_class)
+			end
+
+			Result := [l_tag, l_context_breakpoint_expression]
+		end
+
 
 feature -- Class/feature related
 

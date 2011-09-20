@@ -38,6 +38,12 @@ inherit
 			out
 		end
 
+	EPA_UTILITY
+		undefine
+			is_equal,
+			out
+		end
+
 create
 	make_with_type,
 	make_as_enter,

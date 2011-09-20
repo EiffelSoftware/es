@@ -9,7 +9,7 @@ class
 
 inherit
 	INTERNAL_COMPILER_STRING_EXPORTER
-	
+
 create
 	make
 
@@ -21,6 +21,7 @@ feature -- creator
 		end
 
 feature -- Declaration
+
 	is_failing_tc : BOOLEAN
 		-- is the test case a fail
 
@@ -71,19 +72,6 @@ feature -- Declaration
 
 				l_cursor.forth
 			end
-
---   			from
---				a_state.start
---			until
---				a_state.after
---			loop
---				create a_daikon_declaration.make (a_state.item_for_iteration)
---				create a_daikon_trace.make (a_state.item_for_iteration)
---				daikon_state.add_ordered_declaration (a_daikon_declaration)
---				daikon_state.add_ordered_trace (a_daikon_trace)
---				a_state.forth
---			end
-
    			daikon_state_list.put_left  (daikon_state)
 
    		end

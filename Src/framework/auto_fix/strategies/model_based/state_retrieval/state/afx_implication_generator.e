@@ -21,15 +21,14 @@ feature -- Access
 
 feature -- Generation
 
-	generate (a_spot: EPA_TEST_CASE_INFO; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
+	generate (a_written_class: CLASS_C; a_feature: FEATURE_I; a_expressions: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION])
 			-- <Precursor>
 		local
 			l_implications: DS_HASH_SET [AFX_IMPLICATION_EXPR]
 			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
 		do
 				-- Find implications from source code.
-			l_implications := possible_implications (a_spot.recipient_written_class, atomic_predicates (a_spot.recipient_written_class, a_spot.recipient_))
---			l_implications := possible_implications (a_spot.recipient_class_, atomic_predicates (a_spot.recipient_class_, a_spot.recipient_))
+			l_implications := possible_implications (a_written_class, atomic_predicates (a_written_class, a_feature))
 			implications := l_implications
 			create l_exprs.make (l_implications.count)
 			l_exprs.set_equality_tester (create {EPA_EXPRESSION_EQUALITY_TESTER})
@@ -68,7 +67,7 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (create {AFX_IMPLICATION_EXPR_EQUALITY_TESTER})
 
 			from
-				l_combinations := non_reflective_combinations (a_class)
+--				l_combinations := non_reflective_combinations (a_class)
 				l_combinations.start
 			until
 				l_combinations.after
@@ -115,7 +114,9 @@ feature{NONE} -- Implementation
 					a_atomic_predicates.after
 				loop
 					create l_expr.make_with_text (l_impl.class_, l_impl.feature_, "(" + l_impl.text + ") = (" + a_atomic_predicates.item_for_iteration.text + ")", l_impl.written_class)
-					l_temp_exprs.extend (l_expr)
+					if l_expr.type /= Void then
+						l_temp_exprs.extend (l_expr)
+					end
 					a_atomic_predicates.forth
 				end
 				a_implications.forth

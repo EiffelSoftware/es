@@ -7,11 +7,12 @@ note
 deferred class
 	AFX_FIX_GENERATOR
 
-feature -- Access
+inherit
+	AFX_SHARED_SESSION
 
-	exception_spot: AFX_EXCEPTION_SPOT
-			-- Exception spot containing information
-			-- of the failure
+	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+
+feature -- Access
 
 	fix_skeletons: LINKED_LIST [AFX_FIX_SKELETON]
 			-- Fixes generated for `exception_spot' by
@@ -23,8 +24,7 @@ feature -- Access
 feature -- Basic operations
 
 	generate
-			-- Generate fixes for `exception_spot' and
-			-- store result in `fix_skeletons'.
+			-- Generate fixes for `exception_signature' and store them in `fix_skeletons'.
 		deferred
 		end
 

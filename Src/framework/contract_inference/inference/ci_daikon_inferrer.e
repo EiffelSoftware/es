@@ -43,7 +43,7 @@ feature -- Basic operations
 
 			logger.put_line_with_time ("Found the following Daikon invariants:")
 			from
-				l_cursor := l_parser.last_invariants.new_cursor
+				l_cursor := l_parser.last_daikon_results.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after

@@ -9,37 +9,37 @@ class
 
 inherit
 	LINKED_LIST [AFX_PROGRAM_EXECUTION_STATE]
-
-	AFX_SHARED_PROGRAM_STATE_EXPRESSION_EQUALITY_TESTER
+		rename make as make_list end
 
 create
-	make_with_id
+	make
 
 feature -- Initialization
 
-	make_with_id (a_id: STRING)
-			-- Initialize an execution trace with `a_id'.
+	make (a_tc: EPA_TEST_CASE_INFO)
+			-- Initialize an execution trace for `a_tc'.
 		do
-			make
-			id := a_id
+			make_list
+			test_case := a_tc
 		end
 
 feature -- Access
 
-	id: STRING
-			-- Execution trace id.
+	test_case: EPA_TEST_CASE_INFO
+			-- Test case of the trace.
 
-	execution_status: INTEGER
+	execution_status: NATURAL
 			-- Status of the execution related with current trace.
+
+	exception_signature: AFX_EXCEPTION_SIGNATURE assign set_exception_signature
+			-- Exception signature in case of a failing execution.
 
 feature -- Trace interpretation
 
-	interpretation: AFX_PROGRAM_EXECUTION_TRACE
-			-- Interpret the current trace using the skeleton associated with each feature, and return the result trace.
-		local
-			l_state: AFX_PROGRAM_EXECUTION_STATE
+	derived_trace (a_derived_skeleton: EPA_STATE_SKELETON): AFX_PROGRAM_EXECUTION_TRACE
+			-- Trace derived from the current, based on `a_derived_skeleton'.
 		do
-			create Result.make_with_id (id)
+			create Result.make (test_case)
 			if is_passing then
 				Result.set_status_as_passing
 			elseif is_failing then
@@ -49,7 +49,7 @@ feature -- Trace interpretation
 			from start
 			until after
 			loop
-				Result.force (item_for_iteration.interpretation)
+				Result.force (item_for_iteration.derived_state (a_derived_skeleton))
 				forth
 			end
 		end
@@ -92,21 +92,27 @@ feature -- Status report
 feature -- Status set
 
 	set_status_as_failing
-			-- Set `execution_status' as `Execution_failing'.
+			-- Set the trace status as failing.
 		do
 			execution_status := Execution_failing
 		end
 
 	set_status_as_passing
-			-- Set `execution_status' as `Execution_passing'.
+			-- Set the trace status as passing.
 		do
 			execution_status := Execution_passing
 		end
 
+	set_exception_signature (a_signature: AFX_EXCEPTION_SIGNATURE)
+			-- Set `exception_signature'.
+		do
+			exception_signature := a_signature
+		end
+
 feature -- Constant
 
-	Execution_unknown: INTEGER = 0
-	Execution_passing: INTEGER = 1
-	Execution_failing: INTEGER = 2
+	Execution_unknown: NATURAL = 0
+	Execution_passing: NATURAL = 1
+	Execution_failing: NATURAL = 2
 
 end

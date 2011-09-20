@@ -16,21 +16,21 @@ inherit
 
 feature -- Shared equality testers
 
-	tester_based_on_expressions_and_bp_index: KL_EQUALITY_TESTER [AFX_FIXING_TARGET]
-			-- Equality tester that compares fixing targets based on their set of expressions and the bp index.
-		once
-				create {AGENT_BASED_EQUALITY_TESTER [AFX_FIXING_TARGET]} Result.make (
-						agent (a_target1, a_target2: AFX_FIXING_TARGET): BOOLEAN
-							do
-								if a_target1 = a_target2 then
-									Result := True
-								elseif a_target1 = Void or a_target2 = Void then
-									Result := False
-								else
-									Result := a_target1.expressions ~ a_target2.expressions and then a_target1.bp_index = a_target2.bp_index
-								end
-							end)
-		end
+--	tester_based_on_expressions_and_bp_index: KL_EQUALITY_TESTER [AFX_FIXING_TARGET]
+--			-- Equality tester that compares fixing targets based on their set of expressions and the bp index.
+--		once
+--				create {AGENT_BASED_EQUALITY_TESTER [AFX_FIXING_TARGET]} Result.make (
+--						agent (a_target1, a_target2: AFX_FIXING_TARGET): BOOLEAN
+--							do
+--								if a_target1 = a_target2 then
+--									Result := True
+--								elseif a_target1 = Void or a_target2 = Void then
+--									Result := False
+--								else
+--									Result := a_target1.expressions ~ a_target2.expressions and then a_target1.bp_index = a_target2.bp_index
+--								end
+--							end)
+--		end
 
 --feature{NONE} -- Cache
 

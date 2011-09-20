@@ -12,16 +12,23 @@ feature -- Access
 	configuration: TEST_GENERATOR
 			-- Configuration of current AutoTest run.
 
---	session: AUT_SESSION
---			-- Current AutoTest Session.
-
 	system: SYSTEM_I
 			-- Current system.
 
-	data_event: detachable EVENT_TYPE [TUPLE[AUT_DESERIALIZED_DATA, BOOLEAN]]
-			-- Deserialized data event.
+	deserialization_started_event: detachable EVENT_TYPE [TUPLE[]]
+			-- Deserialization started event.
+		deferred
+		end
+
+	test_case_deserialized_event: detachable EVENT_TYPE [TUPLE[AUT_DESERIALIZED_DATA, BOOLEAN]]
+			-- Test case deserialized event.
 			-- First argument: deserialized data;
 			-- Second argument: is the data unique?
+		deferred
+		end
+
+	deserialization_finished_event: detachable EVENT_TYPE [TUPLE[]]
+			-- Deserialization finished event.
 		deferred
 		end
 
@@ -39,7 +46,7 @@ feature -- Status report
 					and then not l_conf.data_input.is_empty
 					and then l_conf.data_output /= Void
 					and then not l_conf.data_output.is_empty
-					and then data_event /= Void
+					and then test_case_deserialized_event /= Void
 		end
 
 feature -- Status set
@@ -62,7 +69,7 @@ feature -- Process
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

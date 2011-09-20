@@ -253,7 +253,8 @@ feature{NONE} -- Implementation
 			l_check_post := l_checker.is_checking_postcondition
 			l_checker.set_is_checking_postcondition (has_old_expression)
 
-			l_checker.check_expression_type (ast, feature_, class_, Void)
+				-- Shall we use `Void' or `written_class' for the last argument of the `check_expression_type' call??
+			l_checker.check_expression_type (ast, feature_, class_, written_class)
 			l_checker.set_is_checking_postcondition (l_check_post)
 			type := l_checker.last_type
 

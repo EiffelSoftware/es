@@ -71,6 +71,8 @@ feature{NONE} -- Initialization
 			l_use_random_cursor_option: AP_STRING_OPTION
 			l_test_case_serialization_option: AP_STRING_OPTION
 			l_test_case_deserialization_option: AP_STRING_OPTION
+			l_build_behavioral_model_option: AP_STRING_OPTION
+			l_deserialization_for_fixing: AP_FLAG
 			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
@@ -100,6 +102,10 @@ feature{NONE} -- Initialization
 			l_pr_check_objects: AP_FLAG
 			l_arff_directory_option: AP_STRING_OPTION
 			l_online_statistics_frequency: AP_INTEGER_OPTION
+
+			l_dir: DIRECTORY
+			l_file_name: FILE_NAME
+			l_file: RAW_FILE
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -268,6 +274,14 @@ feature{NONE} -- Initialization
 			create l_test_case_deserialization_option.make_with_long_form ("deserialization")
 			l_test_case_deserialization_option.set_description ("Enable test case deserialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_deserialization_option)
+
+			create l_build_behavioral_model_option.make_with_long_form ("build-model")
+			l_build_behavioral_model_option.set_description ("Build behavioral model from serialization files. The value is a directory where the models would be saved. This option is only effective when 'deserialization' is present. Default 'auto_test\model'.")
+			parser.options.force_last (l_build_behavioral_model_option)
+
+			create l_deserialization_for_fixing.make_with_long_form ("deserialization-for-fixing")
+			l_deserialization_for_fixing.set_description ("Organize the deserialized test cases to favor fixing, i.e. each directory contains failing test cases that reveal the same fault and relevant passing test cases. This option is only effective when 'deserialization' is present.")
+			parser.options.force_last (l_deserialization_for_fixing)
 
 			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
 			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
@@ -688,6 +702,19 @@ feature{NONE} -- Initialization
 						end
 						l_strs.forth
 					end
+
+					if l_build_behavioral_model_option.was_found then
+							-- Check if the parameter designates a valid directory.
+						create l_file_name.make_from_string (l_build_behavioral_model_option.parameter)
+						if l_file_name.is_valid then
+							is_building_behavioral_model := True
+							model_dir := l_file_name
+						else
+							error_handler.report_cannot_write_error (l_file_name)
+						end
+					end
+
+					is_deserializing_for_fixing := l_deserialization_for_fixing.was_found
 				end
 			end
 
@@ -1158,6 +1185,16 @@ feature -- Status report
 
 	is_failing_test_cases_deserialization_enabled: BOOLEAN
 			-- Is test case deserialization for failing test cases enabled?
+
+	is_building_behavioral_model: BOOLEAN
+			-- Is AutoTest building behavioral models from serialization files?
+
+	is_deserializing_for_fixing: BOOLEAN
+			-- Is AutoTest deserializing test cases to favor fixing?
+			-- When True, test cases are grouped by faults; otherwise, by routine under test.
+
+	model_dir: FILE_NAME
+			-- Directory to save the behavioral models.
 
 	is_interpreter_log_enabled: BOOLEAN
 			-- Is the messages from the interpreter logged?

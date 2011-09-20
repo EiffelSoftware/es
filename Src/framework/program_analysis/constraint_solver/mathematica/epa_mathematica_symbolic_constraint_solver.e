@@ -155,7 +155,9 @@ feature{NONE} -- Implementation
 					l_valuations.compare_objects
 					if not l_value.as_lower.has_substring ("infinity") then
 						create l_expr.make_with_text (a_function.class_, a_function.feature_, l_value, a_function.written_class)
-						last_solutions.force ([l_conditions, l_valuations], l_expr)
+						if not l_expr.has_syntax_error and then not l_expr.has_type_error then
+							last_solutions.force ([l_conditions, l_valuations], l_expr)
+						end
 					end
 					l_solution.forth
 				end

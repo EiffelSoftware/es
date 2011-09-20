@@ -63,6 +63,8 @@ feature{NONE} -- Initialization
 			test_cases := a_test_cases.twin
 			passing_test_cases := a_passing_test_cases.twin
 			config := a_config
+
+			create nbr_of_valid_fix_map.make_equal (config.max_fixing_target + 1)
 		end
 
 feature -- Access
@@ -83,20 +85,19 @@ feature -- Access
 			Result := config.max_test_case_execution_time
 		end
 
-	test_cases: LINKED_LIST [STRING]
-			-- Universal IDs for test cases used to validate fix candidates.
+	test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- Test cases used to validate fix candidates.
 
-	passing_test_cases: LINKED_LIST [STRING]
-			-- Universal IDs for passing test cases used to validate fix candidates.
+	passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- Passing test cases used to validate fix candidates.
 			-- This should be a subset of `test_cases'.
 
 	exception_count: NATURAL_32
 			-- Number of exceptions when executing test cases.
 
-	last_test_case_execution_state: HASH_TABLE [AFX_TEST_CASE_EXECUTION_STATUS, STRING]
+	last_test_case_execution_state: HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]
 			-- State retrieved before/after test case execution.
-			-- Key is test case UUID, value is the execution status
-			-- associated with that test case			
+			-- Key is test case, value is the execution summary associated with that test case.
 
 feature -- Status report
 
@@ -135,15 +136,15 @@ feature{NONE} -- Impelmentation
 			socket.read_natural_32
 		end
 
-	send_execute_test_case_request (a_uuid: STRING; a_fix: AFX_FIX; a_retrieve_post_state: BOOLEAN)
+	send_execute_test_case_request (a_test_case: EPA_TEST_CASE_INFO; a_fix: AFX_FIX; a_retrieve_post_state: BOOLEAN)
 			-- Send and execute test case request to the interpreter
-			-- to execute the test case specified by `a_uuid' to validate fix `a_fix'
+			-- to execute the test case `a_test_case' to validate fix `a_fix'
 			-- If `a_retrieve_post_state' is True, retrieve state after test case execution.
 		local
 			l_request: AFX_EXECUTE_TEST_CASE_REQUEST
 			l_response: detachable ANY
 		do
-			create l_request.make (a_uuid, a_retrieve_post_state)
+			create l_request.make (a_test_case.id, a_retrieve_post_state)
 			socket.put_natural_32 (request_execute_test_case_type)
 			socket.independent_store (l_request)
 			socket.read_natural_32
@@ -153,9 +154,9 @@ feature{NONE} -- Impelmentation
 			if a_retrieve_post_state then
 				l_response := socket.retrieved
 				if attached {HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]} l_response as l_post_state then
-					set_last_post_execution_state (l_post_state, a_uuid, a_fix)
+					set_last_post_execution_state (l_post_state, a_test_case, a_fix)
 				elseif attached {STRING} l_response as l_str and then l_str ~ void_state then
-					set_last_post_execution_state (Void, a_uuid, a_fix)
+					set_last_post_execution_state (Void, a_test_case, a_fix)
 				end
 			end
 		end
@@ -177,6 +178,11 @@ feature{NONE} -- Inter-process communication
 	timer: AFX_TIMER_THREAD
 			-- Timer to control test case execution time
 
+	nbr_of_valid_fix_map: DS_HASH_TABLE [INTEGER, AFX_FIXING_TARGET]
+			-- Number of valid fixes for each fixing target.
+			-- Key: fixing target.
+			-- Val: number of valid fixes.
+
 feature -- Execution
 
 	execute
@@ -186,6 +192,7 @@ feature -- Execution
 			l_origin_fix: AFX_FIX
 			l_retried: BOOLEAN
 			l_exception_count: NATURAL_32
+			l_fixing_target: AFX_FIXING_TARGET
 		do
 			if not l_retried then
 				timer.set_timeout (0)
@@ -199,47 +206,61 @@ feature -- Execution
 					l_fix := melted_fixes.item_for_iteration
 					melted_fixes.remove
 					l_origin_fix := fixes.item (l_fix.id)
-					on_fix_validation_start.call ([l_fix])
-					timer.set_timeout (max_test_case_time)
-
-						-- Melt feature body with fix.
-					send_melt_feature_request (l_fix)
-
-						-- Execute all registered test cases.
-					l_exception_count := exception_count
-					create last_test_case_execution_state.make (test_cases.count)
-					from
-						test_cases.start
-					until
-						exception_count /= l_exception_count or else test_cases.after
-					loop
+					l_fixing_target := l_origin_fix.fixing_target
+					if l_fixing_target = Void
+							or else not nbr_of_valid_fix_map.has (l_fixing_target)
+							or else nbr_of_valid_fix_map.item (l_fixing_target) < 3 then
+						on_fix_validation_start.call ([l_fix])
 						timer.set_timeout (max_test_case_time)
-						send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix, False)
-						timer.set_timeout (0)
-						if exception_count /= l_exception_count then
-							io.put_string ("Failing test case: ")
-							io.put_string (test_cases.item_for_iteration)
-							io.put_new_line
-						end
-						test_cases.forth
-					end
 
-						-- We found a fix which passes all test cases, re-execute all passing test cases to retrieve post states.
-					if exception_count = l_exception_count then
+							-- Melt feature body with fix.
+						send_melt_feature_request (l_fix)
+
+							-- Execute all registered test cases.
+						l_exception_count := exception_count
+						create last_test_case_execution_state.make (test_cases.count)
 						from
-							passing_test_cases.start
+							test_cases.start
 						until
-							passing_test_cases.after
+							exception_count /= l_exception_count or else test_cases.after
 						loop
 							timer.set_timeout (max_test_case_time)
-							send_execute_test_case_request (passing_test_cases.item_for_iteration, l_origin_fix, True)
+							send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix, False)
 							timer.set_timeout (0)
-							passing_test_cases.forth
+							if exception_count /= l_exception_count then
+								io.put_string ("Failing test case: ")
+								io.put_string (test_cases.item_for_iteration.id)
+								io.put_new_line
+							end
+							test_cases.forth
 						end
+
+							-- We found a fix which passes all test cases, re-execute all passing test cases to retrieve post states.
+						if exception_count = l_exception_count then
+							if l_fixing_target /= Void then
+								if nbr_of_valid_fix_map.has (l_fixing_target) then
+									nbr_of_valid_fix_map.force (nbr_of_valid_fix_map.item (l_fixing_target) + 1, l_fixing_target)
+								else
+									nbr_of_valid_fix_map.force (1, l_fixing_target)
+								end
+							end
+
+							from
+								passing_test_cases.start
+							until
+								passing_test_cases.after
+							loop
+								timer.set_timeout (max_test_case_time)
+								send_execute_test_case_request (passing_test_cases.item_for_iteration, l_origin_fix, True)
+								timer.set_timeout (0)
+								passing_test_cases.forth
+							end
+						end
+
+						l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
+						on_fix_validation_end.call ([l_fix, exception_count])
 					end
 
-					l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
-					on_fix_validation_end.call ([l_fix, exception_count])
 
 					if not should_quit then
 						set_should_quit (melted_fixes.after)
@@ -286,11 +307,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	set_last_post_execution_state (a_state: HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]; a_uuid: STRING; a_fix: AFX_FIX)
-			-- Set post state of the test case with UUID `a_uuid' to `a_state',
+	set_last_post_execution_state (a_state: HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]; a_test_case: EPA_TEST_CASE_INFO; a_fix: AFX_FIX)
+			-- Set post state of the test case `a_test_case' to `a_state',
 			-- `a_state' is retrieved when executing the test case to validate `a_fix'.
 		local
-			l_status: AFX_TEST_CASE_EXECUTION_STATUS
+			l_summary: AFX_TEST_CASE_EXECUTION_SUMMARY
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_state: detachable EPA_STATE
@@ -361,8 +382,8 @@ feature{NONE} -- Implementation
 				create l_state.make_from_string (l_class, l_feature, l_state_string)
 			end
 
-			create l_status.make_with_data (a_fix.exception_spot.test_case_info, Void, l_state, a_uuid)
-			last_test_case_execution_state.put (l_status, a_uuid)
+			create l_summary.make (a_test_case, Void, l_state)
+			last_test_case_execution_state.put (l_summary, a_test_case)
 		end
 
 end

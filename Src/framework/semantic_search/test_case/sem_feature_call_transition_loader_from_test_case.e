@@ -59,7 +59,7 @@ feature -- Operation
 			l_content, l_line: STRING
 			l_reg: RX_PCRE_REGULAR_EXPRESSION
 			l_class_name: STRING
-			l_tc_info: EPA_TEST_CASE_INFO
+			l_tc_info: EPA_TEST_CASE_SIGNATURE
 		do
 			l_class_name := a_file.split ((create {OPERATING_ENVIRONMENT}).directory_separator).last
 			l_class_name.remove_tail (2)
@@ -170,7 +170,6 @@ feature{NONE} -- Implementation
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_var_table: HASH_TABLE [TYPE_A, ITP_VARIABLE]
-			l_pre_state, l_post_state: EPA_STATE_TRANSITION_MODEL_STATE
 			l_is_creation: BOOLEAN
 		do
 			l_count := a_string.count

@@ -12,23 +12,23 @@ create
 
 feature -- Initialization
 
-	make (a_src, a_dest: AFX_PROGRAM_STATE_EXPRESSION; a_target: AFX_FIXING_TARGET)
+	make (a_src, a_dest: EPA_EXPRESSION)
 			-- Initialization.
 		do
 			src_expr := a_src
 			dest_expr := a_dest
-			fixing_target := a_target
+--			fixing_target := a_target
 		end
 
 feature -- Access
 
-	src_expr: AFX_PROGRAM_STATE_EXPRESSION
+	src_expr: EPA_EXPRESSION
 			-- Source expression to be changed.
 
-	dest_expr: AFX_PROGRAM_STATE_EXPRESSION
+	dest_expr: EPA_EXPRESSION
 			-- Destination expression, to which `src_expression' will be changed.
 
-	fixing_target: AFX_FIXING_TARGET
-			-- Related fixing target.
+--	fixing_target: AFX_FIXING_TARGET
+--			-- Related fixing target.
 
 end

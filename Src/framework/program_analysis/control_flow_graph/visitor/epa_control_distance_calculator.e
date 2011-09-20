@@ -16,6 +16,8 @@ inherit
 			visited_node_status
 		end
 
+	EPA_CONTROL_DISTANCE_CONSTANT
+
 	DEBUG_OUTPUT
 
 	EPA_UTILITY
@@ -30,14 +32,14 @@ feature -- Initialization
 		do
 			make_visitor
 
-			-- Use a more specific status class, so that we can start calculation from selected node(s).
+				-- Use a more specific status class, so that we can start calculation from selected node(s).
 			set_visited_node_status (create {EGX_GRAPH_UNORDERED_VISITOR_NODE_STATUS [EPA_BASIC_BLOCK, EPA_CFG_EDGE]})
 		end
 
 feature -- Basic operation
 
-	calculate_within_feature (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_bp_index: INTEGER)
-			-- Calculate the control distance from 'a_bp_index' to other breakpoint slots within `a_context_feature'.
+	calculate_within_feature (a_class: CLASS_C; a_feature: FEATURE_I; a_bp_index: INTEGER)
+			-- Calculate the control distance from 'a_bp_index' to other breakpoint slots within `a_class'.`a_feature'.
 			-- The results are available in `last_report'.
 		require
 			bp_index_valid: a_bp_index > 0
@@ -48,24 +50,25 @@ feature -- Basic operation
 			l_builder: EPA_CFG_BUILDER
 			l_graph: EPA_CONTROL_FLOW_GRAPH
 			l_file_name: FILE_NAME
+			l_ast_string: STRING
+			l_start_node, l_end_node, l_tmp_node: EPA_BASIC_BLOCK
 		do
 			reset_calculator
 
-			-- Cache command arguments.
-			context_class := a_context_class
-			context_feature := a_context_feature
+			context_class := a_class
+			context_feature := a_feature
 			reference_bp_index := a_bp_index
 
-			-- Construct feature ast as in 'context_class'.
-			l_ast := a_context_feature.e_feature.ast
+				-- Construct feature ast as in 'context_class'.
+			l_ast := context_feature.e_feature.ast
 			l_written_class := context_feature.written_class
 			l_ast := ast_in_context_class (l_ast, l_written_class, context_feature, context_class)
 
-			-- Associate breakpoint indexes to ast nodes.
+				-- Associate breakpoint indexes to ast nodes.
 			create l_initializer
 			l_initializer.init_with_context (l_ast, context_class)
 
-			-- Process only if `a_context_feature' has a body.
+				-- Process only if `a_context_feature' has a body.
 			is_successful := False
 			if attached {FEATURE_AS} l_ast as l_feature_as then
 				if attached {BODY_AS} l_feature_as.body as l_body then
@@ -76,7 +79,12 @@ feature -- Basic operation
 							l_builder.set_is_single_instruction_block (True)
 							l_builder.set_next_block_number (context_feature.first_breakpoint_slot_index)
 							l_builder.build_from_compound (l_do.compound, context_class, context_feature)
-							graph := l_builder.last_control_flow_graph.reversed_graph
+							graph := l_builder.last_control_flow_graph
+							l_start_node := graph.start_node
+							l_end_node := graph.end_node
+							graph := graph.reversed_graph
+							graph.set_start_node (l_end_node)
+							graph.set_end_node (l_start_node)
 --							use_breakpoint_index_as_node_id
 
 debug ("auto_fix")
@@ -319,9 +327,6 @@ feature -- Constant access
 						end)
 		end
 
-	Infinite_distance: INTEGER = 1_000_000
-			-- Infinite distance for unreachable nodes.
-
 feature{NONE} -- Auxiliary access
 
 	context_class: CLASS_C
@@ -436,8 +441,11 @@ feature{NONE} -- Auxiliary routine
 			l_cursor: DS_HASH_TABLE_CURSOR [EGX_GENERAL_GRAPH_NODE [EPA_BASIC_BLOCK, EPA_CFG_EDGE], EPA_BASIC_BLOCK]
 			l_node: EGX_GENERAL_GRAPH_NODE [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
 			l_block: EPA_BASIC_BLOCK
+			l_min_index, l_max_index, l_index: INTEGER
 		do
 			l_nodes := graph.nodes
+			l_min_index := a_index
+			l_max_index := 0
 
 			l_cursor := l_nodes.new_cursor
 			from
@@ -447,13 +455,29 @@ feature{NONE} -- Auxiliary routine
 			loop
 				l_node := l_nodes.item_for_iteration
 				l_block := l_node.data
-				if l_block.asts /= Void and then l_block.asts.count = 1 and then l_block.asts.first.breakpoint_slot = a_index then
-					l_found := True
-					Result := l_block
+				if l_block.asts /= Void and then l_block.asts.count = 1 then
+					l_index := l_block.asts.first.breakpoint_slot
+					if l_index = a_index then
+						l_found := True
+						Result := l_block
+					elseif l_index < l_min_index then
+						l_min_index := l_index
+					elseif l_index > l_max_index then
+						l_max_index := l_index
+					end
 				end
 				l_nodes.forth
 			end
 			l_nodes.go_to (l_cursor)
+
+			if not l_found then
+					-- Here `graph' is the REVERSED CFG.
+				if a_index <= l_min_index then
+					Result := graph.end_node
+				elseif a_index >= l_max_index then
+					Result := graph.start_node
+				end
+			end
 		end
 
 	string_without_extra_blanks (a_string: STRING): STRING

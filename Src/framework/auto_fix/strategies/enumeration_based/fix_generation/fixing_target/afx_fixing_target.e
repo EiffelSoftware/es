@@ -24,14 +24,14 @@ create
 
 feature -- Initialization
 
-	make (a_expressions: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]; a_bp_index: INTEGER; a_rank: REAL)
+	make (a_expression: EPA_EXPRESSION; a_bp_index: INTEGER; a_rank: REAL)
 			-- Initialization.
 		require
-			expressions_attached: a_expressions /= Void
+			expression_attached: a_expression /= Void
 			bp_index_valid: a_bp_index >= 0
 			rank_non_negative: a_rank >= 0
 		do
-			expressions := a_expressions
+			expression := a_expression
 			bp_index := a_bp_index
 			suspiciousness_value := a_rank
 		end
@@ -40,33 +40,24 @@ feature -- Access
 
 	context_class: CLASS_C
 			-- Context class of the fixing target.
-		require
-			expressions_not_empty: expressions /= Void and then not expressions.is_empty
 		do
-			Result := expressions.first.context_class
+			Result := expression.context_class
 		end
 
 	context_feature: FEATURE_I
 			-- Context feature of the fixing target.
-		require
-			expressions_not_empty: expressions /= Void and then not expressions.is_empty
 		do
-			Result := expressions.first.feature_
+			Result := expression.feature_
 		end
 
 	written_class: CLASS_C
 			-- Written class of the fixing target.
-		require
-			expressions_not_empty: expressions /= Void and then not expressions.is_empty
 		do
-			Result := expressions.first.written_class
+			Result := expression.written_class
 		end
 
-	expressions: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
-			-- Expressions as the target of fixing.
-
-	most_relevant_fixing_condition: AFX_FIXING_TARGET assign set_most_relevant_fixing_condition
-			-- The most relevant fixing condition for the current target.
+	expression: EPA_EXPRESSION
+			-- Expression as the target of fixing.
 
 	bp_index: INTEGER
 			-- Breakpoint index where `target' is considered as a fixing target.
@@ -118,29 +109,12 @@ feature -- Status set
 			rank := a_rank
 		end
 
-	set_most_relevant_fixing_condition (a_cond: like most_relevant_fixing_condition)
-			-- Set `most_relevant_fixing_condition'.
-		do
-			most_relevant_fixing_condition := a_cond
-		end
-
-	update_most_relevant_fixing_condition (a_target: AFX_FIXING_TARGET)
-			-- Update the most relevant fixing condition, using more relevant one of `Current'.`most_relevant_fixing_condition' and that of `a_target'.
-		require
-			target_with_single_boolean_expression: a_target /= Void implies
-						(a_target.expressions.count = 1 and then a_target.expressions.first.type.is_boolean)
-		do
-			if (most_relevant_fixing_condition = Void) or else (most_relevant_fixing_condition.suspiciousness_value < a_target.suspiciousness_value) then
-				set_most_relevant_fixing_condition (a_target)
-			end
-		end
-
 feature -- Status report
 
 	is_about_the_same_target (a_target: like Current): BOOLEAN
 			-- Is the current object and `a_target' about the same fixing target?
 		do
-			if bp_index = a_target.bp_index and then hash_code = a_target.hash_code and then expressions ~ a_target.expressions then
+			if bp_index = a_target.bp_index and then hash_code = a_target.hash_code and then expression ~ a_target.expression then
 				Result := True
 			end
 		end
@@ -148,7 +122,7 @@ feature -- Status report
 	is_equal (a_target: like Current): BOOLEAN
 			-- <Precursor>
 		do
-			if a_target /= Void and then expressions ~ a_target.expressions and then bp_index = a_target.bp_index and then suspiciousness_value = a_target.suspiciousness_value then
+			if a_target /= Void and then expression ~ a_target.expression and then bp_index = a_target.bp_index and then rank = a_target.rank then
 				Result := True
 			end
 		end
@@ -159,16 +133,7 @@ feature -- Debug output
 			-- <Precursor>
 		do
 			create Result.make_empty
-			from expressions.start
-			until expressions.after
-			loop
-				Result.append (expressions.item_for_iteration.text)
-				Result.append (",")
-				expressions.forth
-			end
-			if not Result.is_empty then
-				Result.remove (Result.count)
-			end
+			Result.append (expression.text)
 			Result.append ("@" + bp_index.out + "[" + rank.out + "]")
 		end
 
@@ -180,26 +145,16 @@ feature -- Hash
 			l_keys: DS_LINKED_LIST [INTEGER]
 		do
 			create l_keys.make
-
-			-- Since, in the future, we might need to localize faults across-features,
-			--		it's important that we can distinguish between targets from different features.
-			l_keys.force_last (context_class.class_id)
-			l_keys.force_last (context_feature.feature_id)
+			l_keys.force_last (expression.hash_code)
 			l_keys.force_last (bp_index)
-			from expressions.start
-			until expressions.after
-			loop
-				l_keys.force_last (expressions.item_for_iteration.hash_code)
-				expressions.forth
-			end
-			l_keys.force_last (bp_index)
+			l_keys.force_last ((suspiciousness_value * 1000).truncated_to_integer)
 
 			Result := l_keys
 		end
 
 invariant
 
-	expression_attached: expressions /= Void
+	expression_attached: expression /= Void
 	bp_index_valid: bp_index >= 0
 	rank_non_negative: suspiciousness_value >= 0
 

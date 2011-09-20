@@ -24,7 +24,6 @@ inherit
 
 	ITP_TEST_CASE_SERIALIZATION_CONSTANTS
 
-	-- For test only.
 	EQA_TEST_CASE_SERIALIZATION_UTILITY
 
 	REFACTORING_HELPER
@@ -44,26 +43,44 @@ feature{NONE} -- Initialization
 			system := a_system
 			configuration := a_conf
 
-			-- Configurate the process according to the `configuration'.
+			create deserialization_started_event
+			create deserialization_finished_event
+
+				-- Configurate the process according to the `configuration'.
 			config_processor
 
-			-- Config the `test_case_extractor' and subscribe it to `data_event'.
+				-- Config the `test_case_extractor' and subscribe it to `data_event'.
 			create test_case_extractor
 			test_case_extractor.config (configuration.error_handler, a_conf)
+				-- Subscribe listeners to the data event.
+			deserialization_started_event.subscribe (agent test_case_extractor.on_deserialization_started)
+			test_case_deserialized_event.subscribe (agent test_case_extractor.on_test_case_deserialized)
+			deserialization_finished_event.subscribe (agent test_case_extractor.on_deserialization_finished)
 
-			-- Subscribe listeners to the data event.
-			data_event.subscribe (agent test_case_extractor.on_serialization_data)
+
+			if configuration.is_building_behavioral_models then
+				create behavioral_model_builder.make (configuration.model_directory)
+				deserialization_started_event.subscribe (agent behavioral_model_builder.on_deserialization_started)
+				test_case_deserialized_event.subscribe (agent behavioral_model_builder.on_test_case_deserialized)
+				deserialization_finished_event.subscribe (agent behavioral_model_builder.on_deserialization_finished)
+			end
 
 			check is_ready: is_ready end
 		end
 
 feature -- Access
 
-	data_event: EVENT_TYPE [TUPLE [AUT_DESERIALIZED_DATA, BOOLEAN]]
+	deserialization_started_event: detachable EVENT_TYPE [TUPLE[]]
+			-- <Precursor>
+
+	test_case_deserialized_event: EVENT_TYPE [TUPLE [AUT_DESERIALIZED_DATA, BOOLEAN]]
 			-- <Precursor>
 		do
 			Result := register.value_event
 		end
+
+	deserialization_finished_event: detachable EVENT_TYPE [TUPLE[]]
+			-- <Precursor>
 
 	data_input: STRING
 			-- Data input file or directory.
@@ -79,6 +96,9 @@ feature -- Access
 
 	test_case_extractor: AUT_TEST_CASE_EXTRACTOR
 			-- Test case extractor from deserialized data.
+
+	behavioral_model_builder: AUT_BEHAVIORAL_MODEL_BUILDER
+			-- Behavioral model builder.
 
 feature -- Status report
 
@@ -112,8 +132,9 @@ feature -- Operation
 			l_file: RAW_FILE
 			l_entry_name: STRING
 		do
+			deserialization_started_event.publish ([])
 			if not configuration.error_handler.has_error then
-				-- Use a queue to recursively process all the input files .
+					-- Process all the input files recursively.
 				from
 					create l_file_names.make
 					l_file_names.force (data_input)
@@ -125,12 +146,11 @@ feature -- Operation
 
 					create l_file.make (l_name)
 					if l_file.exists and then l_name.ends_with (once ".txt") then
-						-- Process a single file.
 						process_file (l_file)
 						l_file_names.remove
 					else
 						if is_recursive then
-							-- Recursively add all directory entries into the list.
+								-- Recursively add all directory entries into the list.
 							create l_dir.make (l_name)
 							if l_dir.exists then
 								l_dir.open_read
@@ -159,6 +179,7 @@ feature -- Operation
 			else
 				configuration.error_handler.report_error_message ("Configuration error, deserialization cannot start.")
 			end
+			deserialization_finished_event.publish ([])
 		end
 
 feature{NONE} -- Implementation
@@ -175,24 +196,22 @@ feature{NONE} -- Implementation
 			l_conf := configuration
 			is_recursive_cache := l_conf.is_recursive
 
-			-- Check the existence of `data_input' source.
+				-- Check the existence of `data_input' source.
 			data_input_cache := l_conf.data_input
 			check data_input /= Void and then not data_input.is_empty end
 			create l_file.make (data_input)
+			create l_dir.make (data_input)
 			if l_file.exists then
 				is_input_from_file_cache := True
+			elseif l_dir.exists then
+				is_input_from_directory_cache := True
 			else
-				create l_dir.make (data_input)
-				if l_dir.exists then
-					is_input_from_directory_cache := True
-				else
-					configuration.error_handler.report_cannot_read_error (data_input)
-				end
+				configuration.error_handler.report_cannot_read_error (data_input)
 			end
 
 			if not configuration.error_handler.has_error then
-				-- `data_output' should always denote a directory.
-				-- As long as there is no existing file with the same name, it's acceptable.
+					-- `data_output' should always denote a directory.
+					-- As long as there is no existing file with the same name, it's acceptable.
 				data_output_cache := l_conf.data_output
 				check data_output /= Void and then not data_output.is_empty end
 				create l_file.make (data_output)
@@ -208,9 +227,7 @@ feature{NONE} -- Implementation
 			l_retried: BOOLEAN
 			l_line: STRING
 		do
-			io.put_string (once "%NNow processing: ")
-			io.put_string (a_file.name)
-			io.put_string (once "...")
+			io.put_string (once "%NNow processing: " + a_file.name + once "...")
 
 			if not l_retried then
 				a_file.open_read
@@ -360,7 +377,7 @@ feature{NONE} -- Auxiliary routines
 			until
 				l_finish_index /= 0
 			loop
-				-- Append all intermediate lines to the block.
+					-- Append all intermediate lines to the block.
 				l_block.append (l_line.substring (l_start_index, l_line.count))
 				l_block.append ("%N")
 
@@ -373,11 +390,11 @@ feature{NONE} -- Auxiliary routines
 				end
 			end
 
-			-- Append the content before finish tag to the block.
+				-- Append the content before finish tag to the block.
 			check l_finish_index /= 0 and then l_start_index <= l_finish_index end
 			l_block.append (l_line.substring (l_start_index, l_finish_index - 1))
 
-			-- Save tag block.
+				-- Save tag block.
 			save_tag_block (a_tag, l_block)
 		end
 
@@ -430,12 +447,12 @@ feature{NONE} -- Auxiliary routines
 			l_prefix_count, l_postfix_count: INTEGER
 			l_objects: like last_pre_serialization
 		do
-			-- Total length of the block, including the preceding/succeeding tags
+				-- Total length of the block, including the preceding/succeeding tags
 			l_prefix_count := pre_serialization_tag_start.count + cdata_tag_start.count
 			l_postfix_count := pre_serialization_tag_end.count + cdata_tag_end.count
 			l_length := a_length + l_prefix_count + l_postfix_count
 
-			-- Read the whole block (with delimiters) into a string.
+				-- Read the whole block (with delimiters) into a string.
 			a_stream.read_stream (l_length)
 			l_data := a_stream.last_string
 
@@ -445,12 +462,8 @@ feature{NONE} -- Auxiliary routines
 			check l_finish_index = l_length - l_postfix_count end
 			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
 
-			-- Test if the string can be successfully deserialized into a SPECIAL of TUPLEs.
-
--- Output the test case without testing if the serialization data is in good status.
--- Since even the testing itself would crash the program.
-          if is_valid_serialization_data (l_serialization_str) then
-				-- Convert the values between delimiters into {NATURAL_8}, and save them.
+			if is_valid_serialization_data (l_serialization_str) then
+					-- Save valid serialization data only.
 				create last_pre_serialization.make (a_length + 1)
 				l_objects := last_pre_serialization
 
@@ -462,9 +475,8 @@ feature{NONE} -- Auxiliary routines
 					l_objects.extend (l_serialization_str[l_index].code.as_natural_8)
 					l_index := l_index + 1
 				end
-          else
-            	-- Bad serialization data.
-            	-- Abandon current transition.
+          	else
+	            	-- Abandon bad serialization data.
             	last_pre_serialization := Void
          	end
 
@@ -527,8 +539,7 @@ feature{NONE} -- Auxiliary routines
 						last_hash_code,
 						last_pre_state,
 						last_post_state,
-						last_pre_serialization) --,
---						last_post_serialization)
+						last_pre_serialization)
 				l_serialization.set_file_path (last_file_path)
 				l_serialization.set_line_number (line_number)
 				report_serialization_data (l_serialization)
@@ -541,12 +552,10 @@ feature{NONE} -- Auxiliary routines
 		local
 			l_is_unique: BOOLEAN
 		do
---			if not a_data.is_resolved then
---				a_data.resolve (system, session)
---			end
-			if -- a_data.is_resolved and then a_data.is_good and then
-					(a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
-					and then (not a_data.is_execution_successful implies configuration.is_failing_test_case_deserialization_enabled) then
+			if (a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
+					and then (not a_data.is_execution_successful implies configuration.is_failing_test_case_deserialization_enabled)
+					or else (configuration.is_building_behavioral_models and then a_data.is_execution_successful)
+					or else (configuration.is_deserializing_for_fixing) then
 				check a_data.class_ /= Void and then a_data.feature_ /= Void end
 				register.put_value (a_data, a_data.feature_, a_data.class_)
 			end
@@ -667,51 +676,6 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Constants
 
---	test_case_tag_start: STRING = "<test_case>"
---	test_case_tag_end: STRING = "</test_case>"
-
---	class_tag_start: STRING = "<class>"
---	class_tag_end: STRING = "</class>"
-
---	time_tag_start: STRING = "<time>"
---	time_tag_end: STRING = "</time>"
-
---	code_tag_start: STRING = "<code>"
---	code_tag_end: STRING = "</code>"
-
---	operands_tag_start: STRING = "<operands>"
---	operands_tag_end: STRING = "</operands>"
-
---	all_variables_tag_start: STRING = "<all_variables>"
---	all_variables_tag_end: STRING = "</all_variables>"
-
---	trace_tag_start: STRING = "<trace>"
---	trace_tag_end: STRING = "</trace>"
-
---	hash_code_tag_start: STRING = "<hash_code>"
---	hash_code_tag_end: STRING = "</hash_code>"
-
---	pre_state_tag_start: STRING = "<pre_state>"
---	pre_state_tag_end: STRING = "</pre_state>"
-
---	post_state_tag_start: STRING = "<post_state>"
---	post_state_tag_end: STRING = "</post_state>"
-
---	pre_serialization_length_tag_start: STRING = "<pre_serialization_length>"
---	pre_serialization_length_tag_end: STRING = "</pre_serialization_length>"
-
---	pre_serialization_tag_start: STRING  = "<pre_serialization>"
---	pre_serialization_tag_end: STRING = "</pre_serialization>"
-
---	post_serialization_length_tag_start: STRING = "<post_serialization_length>"
---	post_serialization_length_tag_end: STRING = "</post_serialization_length>"
-
---	post_serialization_tag_start: STRING = "<post_serialization>"
---	post_serialization_tag_end: STRING = "</post_serialization>"
-
---	cdata_tag_start: STRING = "<![CDATA["
---	cdata_tag_end: STRING = "]]>"
-
 	serialization_tags: HASH_TABLE [STRING, STRING]
 			-- Serialization tags used in the files.
 		do
@@ -740,7 +704,7 @@ feature{NONE} -- Constants
 
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

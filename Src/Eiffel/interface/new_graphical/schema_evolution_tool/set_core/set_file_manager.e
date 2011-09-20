@@ -15,7 +15,7 @@ feature{NONE} --  Status
 
 feature -- Creation
 
-	make is
+	make
 			-- Create the code generator and utilities
 		do
 			create code_generator.make
@@ -37,7 +37,7 @@ feature -- Utility
 			end
 		end
 
-	generate_filter_file (dirs: TUPLE [DIRECTORY, DIRECTORY]; default_fields_value: DS_HASH_TABLE [STRING, STRING]) is
+	generate_filter_file (dirs: TUPLE [DIRECTORY, DIRECTORY]; default_fields_value: DS_HASH_TABLE [STRING, STRING]) 
 			-- Create the filter file and update the class to be filtered
 		local
 			dir, root_dir,filter_dir: DIRECTORY
@@ -107,7 +107,7 @@ feature -- Utility
 invariant
 	-- Insert invariant here
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
