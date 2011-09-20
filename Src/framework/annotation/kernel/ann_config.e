@@ -20,6 +20,7 @@ feature{NONE} -- Initialization
 		do
 			eiffel_system := a_system
 			create locations.make
+			create variables.make
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -31,6 +32,9 @@ feature -- Access
 
 	locations: LINKED_LIST [TUPLE [context_class: CLASS_C; feature_: FEATURE_I]]
 			-- Locations where annotation collection should be performed
+
+	variables: LINKED_LIST [STRING]
+			-- Variables which should be used to construct interesting expressions
 
 	output_path: detachable STRING assign set_output
 			-- Output-path for storing the collected equations.

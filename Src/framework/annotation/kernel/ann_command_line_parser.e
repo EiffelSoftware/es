@@ -40,7 +40,7 @@ feature -- Access
 			l_args: DS_LINKED_LIST [STRING]
 			l_dynamic_flag: AP_FLAG
 			l_static_flag: AP_FLAG
-			l_locations, l_output_path: AP_STRING_OPTION
+			l_locations, l_variables, l_output_path: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -61,6 +61,12 @@ feature -- Access
 				%Format: --locations CLASS_NAME.feature_name[,CLASS_NAME.feature_name].")
 			l_parser.options.force_last (l_locations)
 
+			create l_variables.make_with_long_form ("variables")
+			l_variables.set_description (
+				"Specify the name of variables which should be used to construct interesting expressions.%
+				%Format: --variables variable[,variable].")
+			l_parser.options.force_last (l_variables)
+
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
 			l_parser.options.force_last (l_output_path)
@@ -72,6 +78,10 @@ feature -- Access
 
 			if l_locations.was_found then
 				setup_locations (l_locations.parameter)
+			end
+
+			if l_variables.was_found then
+				setup_variables (l_variables.parameter)
 			end
 
 			if l_output_path.was_found then
@@ -110,5 +120,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	setup_variables (a_variables: STRING)
+			-- Setup variables in `config'.			
+		local
+			l_var: STRING
+		do
+			across a_variables.split (',') as l_vars loop
+				l_var := l_vars.item
+				l_var.left_adjust
+				l_var.right_adjust
+				config.variables.extend (l_var)
+			end
+		end
 
 end
