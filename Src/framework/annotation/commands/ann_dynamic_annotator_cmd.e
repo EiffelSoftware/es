@@ -35,9 +35,6 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	annotations: LINKED_LIST [ANN_ANNOTATION]
-			-- Collected annotations
-
 	pre_states: DS_HASH_TABLE [DS_HASH_SET [EPA_EQUATION], INTEGER]
 			-- Collected pre-states.
 			-- Keys are breakpoint slots and values are expressions
@@ -62,86 +59,98 @@ feature -- Basic operations
 			l_var_finder: ANN_INTERESTING_VARIABLE_FINDER
 			l_pre_state_finder: ANN_INTERESTING_PRE_STATE_FINDER
 			l_post_state_finder: ANN_POST_STATE_FINDER
+			l_variables: LINKED_LIST [STRING]
 		do
-			l_class := config.locations.first.context_class
-			l_feature := config.locations.first.feature_
+			across config.locations as l_locations loop
+				l_class := l_locations.item.context_class
+				l_feature := l_locations.item.feature_
 
-			-- Find post-state(s) for all pre-states in `l_feature'.
-			create l_post_state_finder.make_with (l_class, l_feature)
-			l_post_state_finder.find
-			post_state_map := l_post_state_finder.post_state_map
+				-- Find post-state(s) for all pre-states in `l_feature'.
+				create l_post_state_finder.make_with (l_class, l_feature)
+				l_post_state_finder.find
+				post_state_map := l_post_state_finder.post_state_map
 
-			-- Find interesting pre-states in `l_feature'.
-			create l_pre_state_finder.make_with (l_feature.e_feature.ast)
-			l_pre_state_finder.find
-			interesting_pre_states := l_pre_state_finder.interesting_pre_states
+				-- Find interesting pre-states in `l_feature'.
+				create l_pre_state_finder.make_with (l_feature.e_feature.ast)
+				l_pre_state_finder.find
+				interesting_pre_states := l_pre_state_finder.interesting_pre_states
 
-			-- Consider only attributes and queries without arguments which are not
-			-- inherited from ANY.
-			create l_feature_selector.default_create
-			l_feature_selector.add_query_selector
-			l_feature_selector.add_argumented_feature_selector (0, 0)
-			l_feature_selector.add_selector (l_feature_selector.not_from_any_feature_selector)
+				-- Consider only attributes and queries without arguments which are not
+				-- inherited from ANY.
+				create l_feature_selector.default_create
+				l_feature_selector.add_query_selector
+				l_feature_selector.add_argumented_feature_selector (0, 0)
+				l_feature_selector.add_selector (l_feature_selector.not_from_any_feature_selector)
 
-			-- Find interesting variable names in `l_feature'.
-			create l_var_finder.make_with (l_feature.e_feature.ast)
-			l_var_finder.find
+				create l_monitored_exprs.make_default
+				l_monitored_exprs.set_equality_tester (expression_equality_tester)
 
-			-- Set up the expressions to evaluate.
-			create l_monitored_exprs.make_default
-			l_monitored_exprs.set_equality_tester (expression_equality_tester)
+				if config.variables.count > 0 then
+					l_variables := config.variables
+				else
+					-- Find interesting variable names in `l_feature'.
+					create l_var_finder.make_with (l_feature.e_feature.ast)
+					l_var_finder.find
 
-			across l_var_finder.interesting_variables.to_array as l_var loop
-				create l_expr.make_with_text (l_class, l_feature, l_var.item, l_class)
-				l_feature_selector.select_from_class (l_expr.type.associated_class)
+					create l_variables.make
+					across l_var_finder.interesting_variables.to_array as l_var loop
+						l_variables.extend (l_var.item)
+					end
 
-				across l_feature_selector.last_features as l_queries loop
-					create l_expr.make_with_text (l_class, l_feature, l_var.item + "." + l_queries.item.feature_name, l_class)
-					l_monitored_exprs.force_last (l_expr)
+					if l_var_finder.interesting_variables.has ("Current") then
+						across local_names_of_feature (l_feature).to_array as l_locals loop
+							create l_expr.make_with_text (l_class, l_feature, "Current." + l_locals.item, l_class)
+							l_monitored_exprs.force_last (l_expr)
+						end
+					end
+
+					if l_var_finder.interesting_variables.has ("Result") then
+						create l_expr.make_with_text (l_class, l_feature, "Result", l_class)
+						l_monitored_exprs.force_last (l_expr)
+					end
 				end
-			end
 
-			if l_var_finder.interesting_variables.has ("Current") then
-				across local_names_of_feature (l_feature).to_array as l_locals loop
-					create l_expr.make_with_text (l_class, l_feature, "Current." + l_locals.item, l_class)
-					l_monitored_exprs.force_last (l_expr)
+				-- Set up the expressions to evaluate.
+				across l_variables as l_var loop
+					create l_expr.make_with_text (l_class, l_feature, l_var.item, l_class)
+					l_feature_selector.select_from_class (l_expr.type.associated_class)
+
+					across l_feature_selector.last_features as l_queries loop
+						create l_expr.make_with_text (l_class, l_feature, l_var.item + "." + l_queries.item.feature_name, l_class)
+						l_monitored_exprs.force_last (l_expr)
+					end
 				end
-			end
 
-			if l_var_finder.interesting_variables.has ("Result") then
-				create l_expr.make_with_text (l_class, l_feature, "Result", l_class)
-				l_monitored_exprs.force_last (l_expr)
-			end
+				-- Remove breakpoints set by previous debugging sessions.
+				remove_breakpoint (debugger_manager, config.root_class)
 
-			-- Remove breakpoints set by previous debugging sessions.
-			remove_breakpoint (debugger_manager, config.root_class)
+				-- Set up the action for the evaluation of pre- and post-states.
+				create interesting_post_states.make_default
 
-			-- Set up the action for the evaluation of pre- and post-states.
-			create interesting_post_states.make_default
-
-			across interesting_pre_states.to_array as l_pre_states loop
-				create l_bp_mgr.make (l_class, l_feature)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, l_monitored_exprs, agent on_expression_evalauted)
-				l_bp_mgr.toggle_breakpoints (True)
-
-				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
+				across interesting_pre_states.to_array as l_pre_states loop
 					create l_bp_mgr.make (l_class, l_feature)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, l_monitored_exprs, agent on_expression_evalauted)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, l_monitored_exprs, agent on_expression_evalauted)
 					l_bp_mgr.toggle_breakpoints (True)
-					interesting_post_states.force_last (l_post_states.item)
+
+					across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
+						create l_bp_mgr.make (l_class, l_feature)
+						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, l_monitored_exprs, agent on_expression_evalauted)
+						l_bp_mgr.toggle_breakpoints (True)
+						interesting_post_states.force_last (l_post_states.item)
+					end
 				end
+
+				-- Set up the data-structures used for storing the collected
+				-- run-time data.
+				create pre_states.make_default
+				create post_states.make_default
+
+				-- Start program execution in debugger.
+				start_debugger (debugger_manager, "", config.working_directory, {EXEC_MODES}.run, False)
+
+				-- Remove the last debugging session.
+				remove_debugger_session
 			end
-
-			-- Set up the data-structures used for storing the collected
-			-- run-time data.
-			create pre_states.make_default
-			create post_states.make_default
-
-			-- Start program execution in debugger.
-			start_debugger (debugger_manager, "", config.working_directory, {EXEC_MODES}.run, False)
-
-			-- Remove the last debugging session.
-			remove_debugger_session
 		end
 
 feature {NONE} -- Implementation
@@ -156,6 +165,9 @@ feature {NONE} -- Implementation
 			l_bp_slot: INTEGER
 			l_state: DS_HASH_SET [EPA_EQUATION]
 		do
+			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
+			io.put_string (a_state.debug_output +"%N")
+			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
 			create l_state.make_default
 

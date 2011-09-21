@@ -68,7 +68,6 @@ feature -- Process operations
 			-- Nothing to be done
 		end
 
-
 	process_nested_as (l_as: NESTED_AS)
 		do
 			is_nested := True
