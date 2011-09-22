@@ -8,7 +8,7 @@ class
 	AUT_DESERIALIZED_DATA_EQUALITY_TESTER
 
 inherit
-	KL_EQUALITY_TESTER [AUT_DESERIALIZED_DATA]
+	KL_EQUALITY_TESTER [AUT_DESERIALIZED_TEST_CASE]
 		redefine
 			test
 		end
@@ -18,7 +18,7 @@ create
 
 feature -- Equality
 
-	test (u, v: AUT_DESERIALIZED_DATA): BOOLEAN
+	test (u, v: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
 			-- <Precurosr>
 		do
 			if u = v then
@@ -26,12 +26,12 @@ feature -- Equality
 			elseif u = Void or else v = Void then
 				Result := False
 			else
-				Result := u.trans_hashcode ~ v.trans_hashcode
+				Result := u.hash_code_str ~ v.hash_code_str
 			end
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

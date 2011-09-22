@@ -37,7 +37,7 @@ feature -- Initialization
 			l_transition: EPA_BEHAVIORAL_MODEL_TRANSITION
 		do
 			create model.make_equal (10)
-			
+
 			create l_text_file.make_open_read (a_file_name)
 			l_line := read_next_line (l_text_file)
 			check l_line.starts_with ("<Class Name=") and then l_line.ends_with (">") then
@@ -97,15 +97,16 @@ feature -- Update
 			is_last_merge_successful := False
 			l_feature := a_feature.feature_
 			create l_transition.make (a_feature, a_pre_state, a_post_state)
-
-				-- Merge the transition into model.
-			if model.has (l_feature) then
-				l_set := model.item (l_feature)
-			else
-				create l_set.make_equal (10)
-				model.force (l_set, l_feature)
+			if not l_transition.is_changeless then
+					-- Merge the transition into model.
+				if model.has (l_feature) then
+					l_set := model.item (l_feature)
+				else
+					create l_set.make_equal (10)
+					model.force (l_set, l_feature)
+				end
+				l_set.force (l_transition)
 			end
-			l_set.force (l_transition)
 
 			is_last_merge_successful := True
 		end

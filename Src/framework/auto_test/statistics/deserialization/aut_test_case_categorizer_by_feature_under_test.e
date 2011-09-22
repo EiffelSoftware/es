@@ -1,69 +1,49 @@
 note
-	description: "Summary description for {AUT_SERIALIZATION_PROCESSOR}."
+	description: "Summary description for {AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_DESERIALIZATION_PROCESSOR_I
+class
+	AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST
 
-feature -- Access
+inherit
+	AUT_TEST_CASE_CATEGORIZER
 
-	configuration: TEST_GENERATOR
-			-- Configuration of current AutoTest run.
+create
+	make
 
-	system: SYSTEM_I
-			-- Current system.
+feature -- Data event handler
 
-	deserialization_started_event: detachable EVENT_TYPE [TUPLE[]]
-			-- Deserialization started event.
-		deferred
+	on_deserialization_started
+			-- <Precursor>
+		do
 		end
 
-	test_case_deserialized_event: detachable EVENT_TYPE [TUPLE[AUT_DESERIALIZED_TEST_CASE]]
-			-- Test case deserialized event.
-		deferred
-		end
-
-	deserialization_finished_event: detachable EVENT_TYPE [TUPLE[]]
-			-- Deserialization finished event.
-		deferred
-		end
-
-feature -- Status report
-
-	is_ready: BOOLEAN
-			-- Is the processor ready to process?
+	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
+			-- <Precursor>
 		local
-			l_conf: like configuration
+			l_categories: DS_ARRAYED_LIST [STRING]
 		do
-			l_conf := configuration
-			Result := l_conf /= Void
-					and then l_conf.is_test_case_deserialization_enabled
-					and then l_conf.data_input /= Void
-					and then not l_conf.data_input.is_empty
-					and then l_conf.data_output /= Void
-					and then not l_conf.data_output.is_empty
-					and then test_case_deserialized_event /= Void
+			if a_data.test_case_text.is_empty then
+				l_categories := categorize (a_data)
+				write_test_case (a_data, l_categories)
+			end
 		end
 
-feature -- Status set
-
-	set_configuration (a_conf: like configuration)
-			-- Set `configuration' with `a_conf'.
+	on_deserialization_finished
+			-- <Precursor>
 		do
-			configuration := a_conf
-		ensure
-			configuration_set: configuration = a_conf
 		end
 
-feature -- Process
+feature -- Basic operation
 
-	process
-			-- Process the serialization specified in `configuration'.
-		require
-			is_ready: is_ready
-		deferred
+	categorize (a_data: AUT_DESERIALIZED_TEST_CASE): DS_ARRAYED_LIST [STRING]
+			-- <Precursor>
+		do
+			create Result.make (2)
+			Result.force_last (a_data.tc_class_under_test)
+			Result.force_last (a_data.tc_feature_under_test)
 		end
 
 note

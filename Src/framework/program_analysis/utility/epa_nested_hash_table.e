@@ -15,7 +15,7 @@ inherit
 		end
 
 create
-	make, make_with_equality_testers
+	make, make_with_equality_testers, make_with_default_equality_testers
 
 feature -- Initialization
 

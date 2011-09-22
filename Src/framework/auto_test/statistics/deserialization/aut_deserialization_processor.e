@@ -13,12 +13,6 @@ inherit
 
 	AUT_DESERIALIZATION_PROCESSOR_I
 
-	AUT_DESERIALIZATION_DATA_REGISTER
-		undefine
-			copy,
-			is_equal
-		end
-
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
 
@@ -44,15 +38,18 @@ feature{NONE} -- Initialization
 			configuration := a_conf
 
 			create deserialization_started_event
+			create test_case_deserialized_event
 			create deserialization_finished_event
 
 				-- Configurate the process according to the `configuration'.
 			config_processor
 
-				-- Config the `test_case_extractor' and subscribe it to `data_event'.
-			create test_case_extractor
-			test_case_extractor.config (configuration.error_handler, a_conf)
-				-- Subscribe listeners to the data event.
+				-- Config the `test_case_categorizer' and subscribe it to `data_event'.
+			if a_conf.is_deserializing_for_fixing then
+				create {AUT_TEST_CASE_CATEGORIZER_BY_FAULT}test_case_extractor.make (configuration)
+			else
+				create {AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST}test_case_extractor.make (configuration)
+			end
 			deserialization_started_event.subscribe (agent test_case_extractor.on_deserialization_started)
 			test_case_deserialized_event.subscribe (agent test_case_extractor.on_test_case_deserialized)
 			deserialization_finished_event.subscribe (agent test_case_extractor.on_deserialization_finished)
@@ -73,53 +70,28 @@ feature -- Access
 	deserialization_started_event: detachable EVENT_TYPE [TUPLE[]]
 			-- <Precursor>
 
-	test_case_deserialized_event: EVENT_TYPE [TUPLE [AUT_DESERIALIZED_DATA, BOOLEAN]]
+	test_case_deserialized_event: EVENT_TYPE [TUPLE [AUT_DESERIALIZED_TEST_CASE]]
 			-- <Precursor>
-		do
-			Result := register.value_event
-		end
 
 	deserialization_finished_event: detachable EVENT_TYPE [TUPLE[]]
 			-- <Precursor>
 
-	data_input: STRING
-			-- Data input file or directory.
-		do
-			Result := data_input_cache
-		end
-
-	data_output: STRING
-			-- Data output directory.
-		do
-			Result := data_output_cache
-		end
-
-	test_case_extractor: AUT_TEST_CASE_EXTRACTOR
-			-- Test case extractor from deserialized data.
+	test_case_extractor: AUT_TEST_CASE_CATEGORIZER
+			-- Test case categorizer.
 
 	behavioral_model_builder: AUT_BEHAVIORAL_MODEL_BUILDER
 			-- Behavioral model builder.
 
-feature -- Status report
+feature -- Configuration
 
-	is_input_from_file: BOOLEAN
-			-- Is taking input from a file?
-		do
-			Result := is_input_from_file_cache
-		end
+	data_input: STRING
+			-- Data input file or directory.
 
-	is_input_from_directory: BOOLEAN
-			-- Is taking input from a directory?
-		do
-			Result := is_input_from_directory_cache
-		end
+	data_output: STRING
+			-- Data output directory.
 
 	is_recursive: BOOLEAN
 			-- Is subdirectory processed recursively?
-			-- Only considered when `is_input_from_directory' is 'True'.
-		do
-			Result := is_recursive_cache
-		end
 
 feature -- Operation
 
@@ -194,25 +166,21 @@ feature{NONE} -- Implementation
 			l_file: RAW_FILE
 		do
 			l_conf := configuration
-			is_recursive_cache := l_conf.is_recursive
+			is_recursive := l_conf.is_recursive
 
 				-- Check the existence of `data_input' source.
-			data_input_cache := l_conf.data_input
+			data_input := l_conf.data_input
 			check data_input /= Void and then not data_input.is_empty end
 			create l_file.make (data_input)
 			create l_dir.make (data_input)
-			if l_file.exists then
-				is_input_from_file_cache := True
-			elseif l_dir.exists then
-				is_input_from_directory_cache := True
-			else
+			if not l_file.exists then
 				configuration.error_handler.report_cannot_read_error (data_input)
 			end
 
 			if not configuration.error_handler.has_error then
 					-- `data_output' should always denote a directory.
 					-- As long as there is no existing file with the same name, it's acceptable.
-				data_output_cache := l_conf.data_output
+				data_output := l_conf.data_output
 				check data_output /= Void and then not data_output.is_empty end
 				create l_file.make (data_output)
 				if l_file.exists and then not l_file.is_directory then
@@ -424,7 +392,6 @@ feature{NONE} -- Auxiliary routines
 				last_hash_code := pruned_string (a_block)
 			elseif a_tag ~ pre_state_tag_start then
 				last_pre_state := pruned_string (a_block)
---				last_post_state := pruned_string (a_block)
 			elseif a_tag ~ post_state_tag_start then
 				last_post_state := pruned_string (a_block)
 			elseif a_tag ~ pre_serialization_length_tag_start then
@@ -527,11 +494,10 @@ feature{NONE} -- Auxiliary routines
 			-- Finish a serialization block.
 			-- Notify the listeners, if a serialization block was parsed successfully.
 		local
-			l_serialization: AUT_DESERIALIZED_DATA
+			l_serialization: AUT_DESERIALIZED_TEST_CASE
 		do
 			if is_good_serialization_block and then is_serialization_block_information_complete then
 				create l_serialization.make (last_class_name,
-						last_time,
 						last_test_case,
 						last_operands,
 						last_variables,
@@ -540,14 +506,12 @@ feature{NONE} -- Auxiliary routines
 						last_pre_state,
 						last_post_state,
 						last_pre_serialization)
-				l_serialization.set_file_path (last_file_path)
-				l_serialization.set_line_number (line_number)
 				report_serialization_data (l_serialization)
 			end
 			is_inside_serialization := False
 		end
 
-	report_serialization_data (a_data: AUT_DESERIALIZED_DATA)
+	report_serialization_data (a_data: AUT_DESERIALIZED_TEST_CASE)
 			-- Report a newly found serialization data.
 		local
 			l_is_unique: BOOLEAN
@@ -557,7 +521,7 @@ feature{NONE} -- Auxiliary routines
 					or else (configuration.is_building_behavioral_models and then a_data.is_execution_successful)
 					or else (configuration.is_deserializing_for_fixing) then
 				check a_data.class_ /= Void and then a_data.feature_ /= Void end
-				register.put_value (a_data, a_data.feature_, a_data.class_)
+				test_case_deserialized_event.publish ([a_data])
 			end
 		end
 
@@ -656,23 +620,6 @@ feature{NONE} -- Status report
 
 	is_inside_serialization: BOOLEAN
 			-- Is parsing inside a serialization block?
-
-feature{NONE} -- Implementation
-
-	is_input_from_file_cache: BOOLEAN
-			-- Cache for `is_input_from_file'.
-
-	is_input_from_directory_cache: BOOLEAN
-			-- Cache for `is_input_from_directory'.
-
-	is_recursive_cache: BOOLEAN
-			-- Cache for `is_recursive'.
-
-	data_input_cache: STRING
-			-- Cache for `data_input'.
-
-	data_output_cache: STRING
-			-- Cache for `data_output'.
 
 feature{NONE} -- Constants
 

@@ -11,6 +11,8 @@ inherit
 	AUT_FILE_SYSTEM_ROUTINES
 		rename make as old_make end
 
+	AUT_TEST_CASE_DESERIALIZATION_OBSERVER
+
 create
 	make
 
@@ -28,13 +30,13 @@ feature -- Initiailization
 feature -- Data event handler
 
 	on_deserialization_started
-			-- Event handler.
+			-- <Precursor>
 		do
 			create last_models.make_equal (10)
 		end
 
-	on_test_case_deserialized (a_data: AUT_DESERIALIZED_DATA; a_is_unique: BOOLEAN)
-			-- Action on new serialization data.
+	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
+			-- <Precursor>
 		local
 			l_class: CLASS_C
 			l_feature: FEATURE_I
@@ -43,23 +45,25 @@ feature -- Data event handler
 		do
 			l_class := a_data.class_
 			l_feature := a_data.feature_
-			create l_feature_with_context.make (l_feature, l_class)
-			if l_feature_with_context.is_argumentless_public_command then
-				if last_models.has (l_class) then
-					l_model := last_models.item (l_class)
-				else
-					create l_model.make (l_class)
-					last_models.force (l_model, l_class)
-				end
-				l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
-				if not l_model.is_last_merge_successful then
-					io.put_string ("Warning: Transition merge unsuccessful.%N")
+			if a_data.is_execution_successful then
+				create l_feature_with_context.make (l_feature, l_class)
+				if l_feature_with_context.is_argumentless_public_command then
+					if last_models.has (l_class) then
+						l_model := last_models.item (l_class)
+					else
+						create l_model.make (l_class)
+						last_models.force (l_model, l_class)
+					end
+					l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
+					if not l_model.is_last_merge_successful then
+						io.put_string ("Warning: Transition merge unsuccessful.%N")
+					end
 				end
 			end
 		end
 
 	on_deserialization_finished
-			-- Event handler
+			-- <Precursor>
 		local
 			l_file_name: FILE_NAME
 			l_class: CLASS_C

@@ -108,6 +108,12 @@ feature -- Status report
 			Result := state_changes.has (a_query_name)
 		end
 
+	is_changeless: BOOLEAN
+			-- Is the transition changing state?
+		do
+			Result := state_changes.is_empty
+		end
+
 	is_equal (a_other: like Current): BOOLEAN
 			-- <Precursor>
 		do

@@ -1,68 +1,26 @@
 note
-	description: "Summary description for {AUT_SERIALIZATION_PROCESSOR}."
+	description: "Summary description for {AUT_TEST_CASE_DESERIALIZATION_OBSERVER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	AUT_DESERIALIZATION_PROCESSOR_I
+	AUT_TEST_CASE_DESERIALIZATION_OBSERVER
 
-feature -- Access
+feature -- Data event handler
 
-	configuration: TEST_GENERATOR
-			-- Configuration of current AutoTest run.
-
-	system: SYSTEM_I
-			-- Current system.
-
-	deserialization_started_event: detachable EVENT_TYPE [TUPLE[]]
-			-- Deserialization started event.
+	on_deserialization_started
+			-- Event handler.
 		deferred
 		end
 
-	test_case_deserialized_event: detachable EVENT_TYPE [TUPLE[AUT_DESERIALIZED_TEST_CASE]]
-			-- Test case deserialized event.
+	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
+			-- Event handler.
 		deferred
 		end
 
-	deserialization_finished_event: detachable EVENT_TYPE [TUPLE[]]
-			-- Deserialization finished event.
-		deferred
-		end
-
-feature -- Status report
-
-	is_ready: BOOLEAN
-			-- Is the processor ready to process?
-		local
-			l_conf: like configuration
-		do
-			l_conf := configuration
-			Result := l_conf /= Void
-					and then l_conf.is_test_case_deserialization_enabled
-					and then l_conf.data_input /= Void
-					and then not l_conf.data_input.is_empty
-					and then l_conf.data_output /= Void
-					and then not l_conf.data_output.is_empty
-					and then test_case_deserialized_event /= Void
-		end
-
-feature -- Status set
-
-	set_configuration (a_conf: like configuration)
-			-- Set `configuration' with `a_conf'.
-		do
-			configuration := a_conf
-		ensure
-			configuration_set: configuration = a_conf
-		end
-
-feature -- Process
-
-	process
-			-- Process the serialization specified in `configuration'.
-		require
-			is_ready: is_ready
+	on_deserialization_finished
+			-- Event handler
 		deferred
 		end
 
