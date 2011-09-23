@@ -4,8 +4,8 @@ note
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "widget list, item list, container, dynamic, set, any"
-	date: "$Date$"
-	revision: "$Revision$"
+	date: "$Date: $"
+	revision: "$Revision: $"
 
 deferred class
 	EV_DYNAMIC_LIST [G -> detachable EV_CONTAINABLE]
@@ -479,6 +479,8 @@ feature {EV_DYNAMIC_LIST} -- Inapplicable
 		do
 			check applicable: False then
 			end
+				-- The following line is for 6.8 void-safety compatibility.
+			Result := Current
 		end
 
 feature {EV_DYNAMIC_LIST} -- Inapplicable

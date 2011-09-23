@@ -13,7 +13,7 @@ inherit
 
 feature -- Command
 
-	check_if_uicc_available: BOOLEAN
+	is_uicc_available: BOOLEAN
 			-- Setup the environment for generating the code for using a ribbon code.
 			-- If not available then nothing can be done.
 		local
@@ -24,7 +24,7 @@ feature -- Command
 			set_eiffel_layout (l_layout)
 
 				-- We try first the SDK and then VS.
-			if if_winsdk70_available (not {PLATFORM_CONSTANTS}.is_64_bits) or else if_vc8_available (not {PLATFORM_CONSTANTS}.is_64_bits) then
+			if is_winsdk70_available (not {PLATFORM_CONSTANTS}.is_64_bits) or else is_vc8_available (not {PLATFORM_CONSTANTS}.is_64_bits) then
 					-- Setup C compiler enviroment			
 				create l_c_compiler_env.make (void, not {PLATFORM_CONSTANTS}.is_64_bits)
 				Result := True
@@ -63,24 +63,20 @@ feature -- Command
 					l_process.set_separate_console (True)
 					l_process.set_hidden (True)
 					l_process.redirect_output_to_agent (agent on_output (?, True))
-					debug ("Ribbon")
-						on_output ("Launching " + uicc_name + "%N", True)
-					end
+					on_output ("Launching " + uicc_name + "%N", True)
 					l_process.launch
 					l_process.wait_for_exit
-					debug ("Ribbon")
-						if not l_process.launched or else l_process.exit_code /= 0 then
-								-- Display error
-							on_output ("%N" + uicc_name + " launched failed%N", False)
-						else
-							on_output ("%N" + uicc_name + " launched successfully%N", False)
-						end
+					if not l_process.launched or else l_process.exit_code /= 0 then
+							-- Display error
+						on_output ("%N" + uicc_name + " launched failed%N", False)
+					else
+						on_output ("%N" + uicc_name + " launched successfully%N", False)
 					end
 				end
 			end
 		end
 
-	code_page_to_936
+	set_code_page_to_936
 			-- We need set code page to 936, otherwise `rc_to_res' would complain invalid code page
 			local
 				l_process: PROCESS
@@ -103,23 +99,19 @@ feature -- Command
 					l_process.set_separate_console (True)
 					l_process.set_hidden (True)
 					l_process.redirect_output_to_agent (agent on_output (?, True))
-					debug ("Ribbon")
-						on_output ("Launching " + chcp_name + "%N", True)
-					end
+					on_output ("Launching " + chcp_name + "%N", True)
 					l_process.launch
 					l_process.wait_for_exit
-					debug ("Ribbon")
-						if not l_process.launched or else l_process.exit_code /= 0 then
-								-- Display error
-							on_output ("%N " + chcp_name + " launched failed%N", False)
-						else
-							on_output ("%N " + chcp_name + " launched successfully%N", False)
-						end
+					if not l_process.launched or else l_process.exit_code /= 0 then
+							-- Display error
+						on_output ("%N " + chcp_name + " launched failed%N", False)
+					else
+						on_output ("%N " + chcp_name + " launched successfully%N", False)
 					end
 				end
 			end
 
-	rc_to_res (a_index: INTEGER)
+	convert_rc_to_res_file (a_index: INTEGER)
 			-- Convert Ribbon makrup rc file to res file
 		require
 			valid: a_index >= 1
@@ -147,24 +139,20 @@ feature -- Command
 					l_process.set_separate_console (True)
 					l_process.set_hidden (True)
 					l_process.redirect_output_to_agent (agent on_output (?, True))
-					debug ("Ribbon")
-						on_output ("Launching " + rc_name + "%N", True)
-					end
+					on_output ("Launching " + rc_name + "%N", True)
 					l_process.launch
 					l_process.wait_for_exit
-					debug ("Ribbon")
-						if not l_process.launched or else l_process.exit_code /= 0 then
-								-- Display error
-							on_output ("%N" + rc_name + " launched failed%N", False)
-						else
-							on_output ("%N" + rc_name + " launched successfully%N", False)
-						end
+					if not l_process.launched or else l_process.exit_code /= 0 then
+							-- Display error
+						on_output ("%N" + rc_name + " launched failed%N", False)
+					else
+						on_output ("%N" + rc_name + " launched successfully%N", False)
 					end
 				end
 			end
 		end
 
-	res_to_dll (a_index: INTEGER)
+	convert_res_to_dll (a_index: INTEGER)
 			-- Convert Ribbon res file to DLL file
 		require
 			valid: a_index >= 1
@@ -186,7 +174,7 @@ feature -- Command
 				if {PLATFORM_CONSTANTS}.is_64_bits then
 					l_list.extend ("/MACHINE:X64")
 				else
-					l_list.extend ("/MACHINE:X32")
+					l_list.extend ("/MACHINE:X86")
 				end
 				l_list.extend ("/OUT:%"" + {ER_MISC_CONSTANTS}.dll_file_name_prefix + a_index.out + ".dll%"")
 				l_list.extend (l_res_file_name)
@@ -198,18 +186,14 @@ feature -- Command
 					l_process.set_separate_console (True)
 					l_process.set_hidden (True)
 					l_process.redirect_output_to_agent (agent on_output (?, True))
-					debug ("Ribbon")
-						on_output ("Launching " + link_name + "%N", True)
-					end
+					on_output ("Launching " + link_name + "%N", True)
 					l_process.launch
 					l_process.wait_for_exit
-					debug ("Ribbon")
-						if not l_process.launched or else l_process.exit_code /= 0 then
-								-- Display error
-							on_output ("%N" + link_name + " launched failed%N", False)
-						else
-							on_output ("%N" + link_name + " launched successfully%N", False)
-						end
+					if not l_process.launched or else l_process.exit_code /= 0 then
+							-- Display error
+						on_output ("%N" + link_name + " launched failed%N", False)
+					else
+						on_output ("%N" + link_name + " launched successfully%N", False)
 					end
 				end
 			end
@@ -276,23 +260,19 @@ feature {NONE} -- Implementation
 
 feature -- C compiler
 
-	if_vc8_available (a_for_32bits: BOOLEAN): BOOLEAN
+	is_vc8_available (a_for_32bits: BOOLEAN): BOOLEAN
 			-- Is VisualStudio 2008 or greater available?
 		local
 			l_manager: C_CONFIG_MANAGER
 			l_codes: LIST [C_CONFIG]
 			l_code, l_ver: STRING
 		do
-			debug ("Ribbon")
-				on_output ("Checking available C/C++ compilers:%N%N", False)
-			end
+			on_output ("Checking available C/C++ compilers:%N%N", False)
 			create l_manager.make (a_for_32bits)
 			l_codes := l_manager.applicable_configs
 
 			if l_codes.is_empty then
-				debug ("Ribbon")
-					on_output ("   No applicable compilers could be found.%N", False)
-				end
+				on_output ("   No applicable compilers could be found.%N", False)
 			else
 				from
 					l_codes.start
@@ -312,24 +292,20 @@ feature -- C compiler
 			end
 		end
 
-	if_winsdk70_available (a_for_32bits: BOOLEAN): BOOLEAN
+	is_winsdk70_available (a_for_32bits: BOOLEAN): BOOLEAN
 			-- Is Windows SDK v7.0 or greater available?
 		local
 			l_manager: C_CONFIG_MANAGER
 			l_codes: LIST [C_CONFIG]
 			l_code, l_ver: STRING
 		do
-			debug ("Ribbon")
-				on_output ("Checking available C/C++ compilers:%N%N", False)
-			end
+			on_output ("Checking available C/C++ compilers:%N%N", False)
 			create l_manager.make (a_for_32bits)
 
 			l_codes := l_manager.applicable_configs
 
 			if l_codes.is_empty then
-				debug ("Ribbon")
-					on_output ("No applicable compilers could be found.%N", False)
-				end
+				on_output ("No applicable compilers could be found.%N", False)
 			else
 				from
 					l_codes.start
@@ -342,10 +318,8 @@ feature -- C compiler
 								-- Check if greater or equal 70
 							l_ver := l_code.substring (5, l_code.count)
 							Result := l_ver.to_integer >= 70
-							debug ("Ribbon")
-								if Result then
-									on_output ("Using " + l_code + "installed at: " + l_config.install_path + "%N", False)
-								end
+							if Result then
+								on_output ("Using " + l_code + "installed at: " + l_config.install_path + "%N", False)
 							end
 						end
 					end

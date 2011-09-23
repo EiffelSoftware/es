@@ -422,8 +422,9 @@ feature {NONE} -- Handlers
 			is_failing_test_case := False
 			if attached {TUPLE [l_byte_code: STRING; l_feat_name: detachable STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
-				check l_bcode /= Void end
-				if l_bcode.count = 0 then
+				if l_bcode = Void then
+					report_error (byte_code_not_found_error)
+				elseif l_bcode.count = 0 then
 					report_error (byte_code_length_error)
 				else
 					if l_last_request.l_feat_name /= Void then

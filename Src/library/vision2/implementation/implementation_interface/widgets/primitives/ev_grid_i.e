@@ -753,7 +753,7 @@ feature -- Pick and Drop
 			a_x, a_y: INTEGER
 			a_item: detachable EV_GRID_ITEM_I
 		do
-			a_pointer_position := internal_screen.pointer_position
+			a_pointer_position := application_implementation.pnd_screen.pointer_position
 			a_x := a_pointer_position.x - drawable.screen_x
 			a_y := a_pointer_position.y - drawable.screen_y
 			if a_x > 0 and then a_y > 0 then
@@ -1504,7 +1504,6 @@ feature -- Status setting
 			-- Set height of all rows within `Current' to `a_row_height
 			-- If not `is_row_height_fixed' then use the height individually per row instead.
 		require
-			is_row_height_fixed: is_row_height_fixed
 			a_row_height_positive: a_row_height >= 1
 		do
 			if row_height /= a_row_height then

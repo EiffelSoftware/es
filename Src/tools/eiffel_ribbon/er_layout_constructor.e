@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			-- Creation method
 		do
 			create helper
-			create constants
 			create shared_singleton
 			create tree_node_factory.make
 
@@ -57,7 +56,7 @@ feature {NONE} -- Initialization
 			widget.key_press_actions.extend (agent on_tree_key_press)
 
 			-- Ribbon tabs
-			l_tree_item_app := tree_item_factory_method (constants.ribbon_tabs)
+			l_tree_item_app := tree_item_factory_method ({ER_XML_CONSTANTS}.ribbon_tabs)
 
 			widget.extend (l_tree_item_app)
 
@@ -152,13 +151,12 @@ feature -- Query
 			-- All tree items which data's command name equal `a_command_name'
 		do
 			create Result.make (5)
---			check widget.count >= 1 end
 			from
 				widget.start
 			until
 				widget.after
 			loop
-				recrusive_all_items_with_command_name (a_command_name, widget.item, Result)
+				recursive_all_items_with_command_name (a_command_name, widget.item, Result)
 				widget.forth
 			end
 		end
@@ -182,6 +180,23 @@ feature -- Query
 			end
 		end
 
+	is_root_pebble_valid (a_pebble: ANY) : BOOLEAN
+			-- If `a_pebble' valid for root?
+		require
+			not_void: a_pebble /= Void
+		do
+			if attached {STRING} a_pebble as l_item then
+				if
+					l_item.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu) or else
+					l_item.same_string ({ER_XML_CONSTANTS}.context_popup) or else
+					l_item.same_string ({ER_XML_CONSTANTS}.ribbon_quick_access_toolbar) or else
+					l_item.same_string ({ER_XML_CONSTANTS}.ribbon_helpbutton) or else
+					l_item.same_string ({ER_XML_CONSTANTS}.ribbon_contextual_tabs) then
+					Result := True
+				end
+			end
+		end
+
 feature -- Factory
 
 	tree_item_factory_method (a_item_text: STRING): EV_TREE_ITEM
@@ -194,6 +209,9 @@ feature -- Factory
 			Result.drop_actions.set_veto_pebble_function (agent on_veto_pebble_function (?, a_item_text))
 			Result.drop_actions.extend (agent on_drop (?, Result))
 			Result.set_data (tree_node_factory.tree_node_data_for (a_item_text))
+
+			-- Enable PnD within Layout Construstor
+			Result.set_pebble (Result)
 		end
 
 feature {NONE} -- Action handing
@@ -204,83 +222,90 @@ feature {NONE} -- Action handing
 			not_void: a_stone /= Void
 			not_void: a_parent /= Void
 		local
-			l_child: EV_TREE_ITEM
+			l_child: detachable EV_TREE_ITEM
 		do
-			if attached {STRING} a_stone as l_stone_child then
-				l_child := tree_item_factory_method (l_stone_child)
-				a_parent.extend (l_child)
-				if a_parent.is_expandable then
-					a_parent.expand
+			if attached {STRING} a_stone as l_string then
+				l_child := tree_item_factory_method (l_string)
+			elseif attached {EV_TREE_ITEM} a_stone as l_tree_item then
+				if attached l_tree_item.parent as l_parent then
+					l_parent.prune_all (l_tree_item)
 				end
+				l_child := l_tree_item
+			end
+			if l_child /= Void then
+				a_parent.extend (l_child)
+				expand_tree
 			end
 		end
 
 	on_veto_pebble_function (a_stone: ANY; a_parent_type: STRING): BOOLEAN
 			-- Veto pebble function
+		local
+			l_item_text: detachable STRING
 		do
 			if attached {STRING} a_stone as l_stone_child then
-				if a_parent_type.same_string (constants.application_commands) then
-					Result := l_stone_child.same_string (constants.command)
-				elseif a_parent_type.same_string (constants.application_views) then
-					Result := l_stone_child.same_string (constants.ribbon)
-				elseif a_parent_type.same_string (constants.ribbon) then
-					Result := l_stone_child.same_string (constants.ribbon_application_menu) or else
-						l_stone_child.same_string (constants.ribbon_contextual_tabs) or else
-						l_stone_child.same_string (constants.ribbon_helpbutton) or else
-						l_stone_child.same_string (constants.ribbon_quick_access_toolbar) or else
-						l_stone_child.same_string (constants.ribbon_size_definitions) or else
-						l_stone_child.same_string (constants.ribbon_tabs)
-				elseif a_parent_type.same_string (constants.ribbon_tabs) then
-					Result := l_stone_child.same_string (constants.tab)
-				elseif a_parent_type.same_string (constants.tab) then
-					Result := l_stone_child.same_string (constants.group) or else
-						l_stone_child.same_string (constants.tab_scaling_policy)
---				elseif a_parent_type.same_string (constants.ribbon_tabs) then
---					Result := l_stone_child.same_string (constants.tab)
---				elseif a_parent_type.same_string (constants.tab) then
---					Result := l_stone_child.same_string (constants.group) or else
---						l_stone_child.same_string (constants.tab_scaling_policy)
-				elseif a_parent_type.same_string (constants.group) then
-					Result := l_stone_child.same_string (constants.button) or else
-						l_stone_child.same_string (constants.check_box) or else
-						l_stone_child.same_string (constants.combo_box) or else
-						l_stone_child.same_string (constants.control_group) or else
-						l_stone_child.same_string (constants.toggle_button) or else
-						l_stone_child.same_string (constants.spinner) or else
-						l_stone_child.same_string (constants.split_button) or else
-						l_stone_child.same_string (constants.drop_down_gallery) or else
-						l_stone_child.same_string (constants.in_ribbon_gallery) or else
-						l_stone_child.same_string (constants.split_button_gallery) or else
-						l_stone_child.same_string (constants.drop_down_color_picker) or else
-						l_stone_child.same_string (constants.font_control)
-				elseif a_parent_type.same_string (constants.split_button) then
-					Result := l_stone_child.same_string (constants.button)
-				elseif a_parent_type.same_string (constants.ribbon_application_menu) then
-					Result := l_stone_child.same_string (constants.menu_group)
-				elseif a_parent_type.same_string (constants.menu_group) then
-					Result := l_stone_child.same_string (constants.button) or else
-						l_stone_child.same_string (constants.split_button) or else
+				l_item_text := l_stone_child
+			elseif attached {EV_TREE_ITEM} a_stone as l_tree_item then
+				l_item_text := l_tree_item.text
+			end
+			if l_item_text /= Void then
+				if a_parent_type.same_string ({ER_XML_CONSTANTS}.application_commands) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.command)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.application_views) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.ribbon) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_contextual_tabs) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_helpbutton) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_quick_access_toolbar) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_size_definitions) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.ribbon_tabs)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.ribbon_tabs) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.tab)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.tab) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.group) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.tab_scaling_policy)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.group) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.button) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.check_box) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.combo_box) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.control_group) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.toggle_button) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.spinner) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.split_button) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.drop_down_gallery) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.in_ribbon_gallery) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.split_button_gallery) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.drop_down_color_picker) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.font_control)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.split_button) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.button)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.ribbon_application_menu) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.menu_group)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.menu_group) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.button) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.split_button) or else
 						-- FIXME: Parent's parent must be ApplicationMenu here
-						l_stone_child.same_string (constants.drop_down_button)
-				elseif a_parent_type.same_string (constants.context_popup) then
-					Result := l_stone_child.same_string (constants.context_popup_context_menus) or else
-						l_stone_child.same_string (constants.context_popup_mini_toolbars)
-				elseif a_parent_type.same_string (constants.context_popup_context_menus) then
-					Result := l_stone_child.same_string (constants.context_menu)
-				elseif a_parent_type.same_string (constants.context_popup_mini_toolbars) then
-					Result := l_stone_child.same_string (constants.mini_toolbar)
-				elseif a_parent_type.same_string (constants.mini_toolbar) then
-					Result := l_stone_child.same_string (constants.menu_group)
-				elseif a_parent_type.same_string (constants.context_menu) then
-					Result := l_stone_child.same_string (constants.menu_group)
-				elseif a_parent_type.same_string (constants.drop_down_button) then
-					Result := l_stone_child.same_string (constants.button)
-				elseif a_parent_type.same_string (constants.ribbon_quick_access_toolbar) then
-					Result := l_stone_child.same_string (constants.button)	-- FIXME: It can be toggle button and check box also	
-				elseif a_parent_type.same_string (constants.ribbon_contextual_tabs) then
-					Result := l_stone_child.same_string (constants.tab_group)
-				elseif a_parent_type.same_string (constants.tab_group) then
-					Result := l_stone_child.same_string (constants.tab)
+						l_item_text.same_string ({ER_XML_CONSTANTS}.drop_down_button)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.context_popup) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.context_popup_context_menus) or else
+						l_item_text.same_string ({ER_XML_CONSTANTS}.context_popup_mini_toolbars)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.context_popup_context_menus) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.context_menu)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.context_popup_mini_toolbars) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.mini_toolbar)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.mini_toolbar) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.menu_group)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.context_menu) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.menu_group)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.drop_down_button) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.button)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.ribbon_quick_access_toolbar) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.button)	-- FIXME: It can be toggle button and check box also	
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.ribbon_contextual_tabs) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.tab_group)
+				elseif a_parent_type.same_string ({ER_XML_CONSTANTS}.tab_group) then
+					Result := l_item_text.same_string ({ER_XML_CONSTANTS}.tab)
 				end
 			end
 		end
@@ -313,11 +338,7 @@ feature {NONE} -- Action handing
 			l_tree_item: EV_TREE_ITEM
 		do
 			if attached {STRING} a_pebble as l_item then
-				check l_item.same_string (constants.ribbon_application_menu) or else
-					l_item.same_string (constants.context_popup) or else
-					l_item.same_string (constants.ribbon_quick_access_toolbar) or else
-					l_item.same_string (constants.ribbon_helpbutton) or else
-					l_item.same_string (constants.ribbon_contextual_tabs) end
+				check is_root_pebble_valid (a_pebble) end
 				l_tree_item := tree_item_factory_method (l_item)
 				widget.extend (l_tree_item)
 			end
@@ -326,15 +347,7 @@ feature {NONE} -- Action handing
 	on_veto_root_tree_drop (a_pebble: ANY): BOOLEAN
 			-- Veto pebble drop function
 		do
-			if attached {STRING} a_pebble as l_item then
-				if l_item.same_string (constants.ribbon_application_menu) or else
-					l_item.same_string (constants.context_popup) or else
-					l_item.same_string (constants.ribbon_quick_access_toolbar) or else
-					l_item.same_string (constants.ribbon_helpbutton) or else
-					l_item.same_string (constants.ribbon_contextual_tabs) then
-					Result := True
-				end
-			end
+			Result := is_root_pebble_valid (a_pebble)
 		end
 
 	on_close_content
@@ -422,7 +435,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	recrusive_all_items_with_command_name (a_text: STRING; a_tree_node: EV_TREE_NODE; a_list: ARRAYED_LIST [EV_TREE_NODE])
+	recursive_all_items_with_command_name (a_text: STRING; a_tree_node: EV_TREE_NODE; a_list: ARRAYED_LIST [EV_TREE_NODE])
 			-- Recursive find tree node which command anme is same as `a_text'
 		require
 			not_void: a_text /= Void
@@ -439,7 +452,7 @@ feature {NONE} -- Implementation
 			until
 				a_tree_node.after
 			loop
-				recrusive_all_items_with_command_name (a_text, a_tree_node.item, a_list)
+				recursive_all_items_with_command_name (a_text, a_tree_node.item, a_list)
 
 				a_tree_node.forth
 			end
@@ -450,9 +463,6 @@ feature {NONE} -- Implementation
 
 	helper: ER_HELPER
 			-- Helper
-
-	constants: ER_XML_CONSTANTS
-			-- Constants	
 
 	shared_singleton: ER_SHARED_SINGLETON
 			-- Shared singleton

@@ -11,6 +11,8 @@ class
 
 inherit
 	EV_TEXT_FIELD_I
+		rename
+			set_selection as text_component_imp_set_selection
 		redefine
 			interface,
 			hide_border
@@ -99,7 +101,8 @@ inherit
 			on_en_change,
 			default_style,
 			enable,
-			disable
+			disable,
+			internal_caret_position
 		end
 
 	EV_TEXT_FIELD_ACTION_SEQUENCES_IMP
@@ -130,6 +133,30 @@ feature {EV_ANY_I} -- Status report
 			-- Text of `Current'
 		do
 			Result := wel_text
+		end
+
+feature -- Access
+
+	internal_caret_position: INTEGER
+			-- <Precursor>
+		local
+			l_wel_point: WEL_POINT
+			sel_start, sel_end: INTEGER_32
+			l_success: BOOLEAN
+		do
+			{WEL_API}.send_message (wel_item, Em_getsel, $sel_start, $sel_end)
+			Result := sel_end
+			if sel_start /= sel_end then
+					-- We may have a reverse selection so we need to retrieve the caret position from the control.
+				create l_wel_point.make (0, 0)
+				l_success := {WEL_API}.get_caret_pos (l_wel_point.item)
+				if l_success then
+					Result := {WEL_API}.send_message_result_integer (wel_item, {WEL_RICH_EDIT_MESSAGE_CONSTANTS}.Em_charfrompos, default_pointer, cwin_make_long (l_wel_point.x, l_wel_point.y))
+					if Result /= sel_start and Result /= sel_end then
+						Result := sel_end
+					end
+				end
+			end
 		end
 
 feature -- Alignment
@@ -181,12 +208,15 @@ feature {EV_ANY_I} -- Status setting
 feature {NONE} -- WEL Implementation
 
 	default_style: INTEGER
-			-- We specify the Es_autovscroll style otherwise
-			-- the system beeps when we press the return key.
+			-- <Precursor>
 		do
 			Result := Ws_child | Ws_visible| Ws_tabstop
 					| Ws_group | Es_autohscroll
-					| Ws_clipchildren | Ws_clipsiblings
+					| Ws_clipchildren | Ws_clipsiblings | es_multiline
+
+				-- We set es_multiline as this gives the correct caret behavior when setting the selection from right to left.
+				-- The minimum height of the control is set so this emulates single line behavior with this control.
+
 				-- Set proper style depending on alignment.
 			inspect text_alignment
 			when {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left  then
