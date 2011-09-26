@@ -18,6 +18,9 @@ inherit
 			switch_groups
 		end
 
+	SYSTEM_CONSTANTS
+		export {NONE} all end
+
 create
 	make
 
@@ -207,8 +210,11 @@ feature {NONE} -- Usage
 	version: attached STRING
 			-- Version number of application
 		once
-			Result := "6.5.0"
+			Result := version_number
 		end
+
+	copyright: STRING = "Copyright Eiffel Software 1984-2011. All Rights Reserved."
+			-- <Precursor>
 
 	non_switched_argument_name: attached STRING_8
 			-- Name of lose argument, used in usage information
@@ -252,7 +258,7 @@ feature {NONE} -- Usage
 
 	switch_groups: ARRAYED_LIST [attached ARGUMENT_GROUP]
 			-- Valid switch grouping
-		do
+		once
 			create Result.make (4)
 
 			Result.extend (create {ARGUMENT_GROUP}.make (<<
@@ -314,7 +320,7 @@ feature {NONE} -- Option names
 	alias_switch: STRING = "alias"
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
