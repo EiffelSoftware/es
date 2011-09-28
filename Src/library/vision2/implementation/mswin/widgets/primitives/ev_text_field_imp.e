@@ -19,6 +19,8 @@ inherit
 		end
 
 	EV_TEXT_COMPONENT_IMP
+		rename
+			internal_set_caret_position as wel_set_caret_position
 		redefine
 			on_key_down,
 			interface,
@@ -51,8 +53,8 @@ inherit
 			selection_end as wel_selection_end,
 			width as wel_width,
 			height as wel_height,
-			set_caret_position as internal_set_caret_position,
-			caret_position as internal_caret_position,
+			set_caret_position as wel_set_caret_position,
+			caret_position as wel_caret_position,
 			enabled as is_sensitive,
 			item as wel_item,
 			move as wel_move,
@@ -60,7 +62,7 @@ inherit
 			y as y_position,
 			resize as wel_resize,
 			move_and_resize as wel_move_and_resize,
-			text as wel_text,
+			set_text as wel_set_text,
 			has_capture as wel_has_capture,
 			text_length as wel_text_length
 		undefine
@@ -101,8 +103,7 @@ inherit
 			on_en_change,
 			default_style,
 			enable,
-			disable,
-			internal_caret_position
+			disable
 		end
 
 	EV_TEXT_FIELD_ACTION_SEQUENCES_IMP
@@ -128,12 +129,19 @@ feature -- Initialization
 			enable_scroll_caret_at_selection
 		end
 
-feature {EV_ANY_I} -- Status report
+feature -- Element Change
 
-	text: STRING_32
-			-- Text of `Current'
+	set_text (a_text: detachable READABLE_STRING_GENERAL)
+			-- <Precursor>
 		do
-			Result := wel_text
+			wel_set_text (a_text)
+
+				-- If `Es_multiline' is specified then we need to make sure that the change actions are fired explicitly
+				-- as Windows does not fire `En_update' and `En_change' actions.
+			if is_multiline then
+					-- Explicitly fire En_change action to emulate single line behavior.
+				{WEL_API}.send_message (default_parent.item, Wm_command, to_wparam (En_change |<< 16) , wel_item)
+			end
 		end
 
 feature -- Access
@@ -171,7 +179,7 @@ feature -- Alignment
 	align_text_center
 			-- Display text centered.
 		do
-			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center  then
+			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center then
 				text_alignment := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
 				recreate_current
 			end
@@ -180,7 +188,7 @@ feature -- Alignment
 	align_text_right
 			-- Display text right aligned.
 		do
-			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right  then
+			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right then
 				text_alignment := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right
 				recreate_current
 			end
@@ -189,7 +197,7 @@ feature -- Alignment
 	align_text_left
 			-- Display text left aligned.
 		do
-			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left  then
+			if text_alignment /= {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left then
 				text_alignment := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left
 				recreate_current
 			end
@@ -226,8 +234,6 @@ feature {NONE} -- WEL Implementation
 				Result := Result | es_right
 			when {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center  then
 				Result := Result | es_center
-			else
-				check False end
 			end
 		end
 
@@ -245,22 +251,23 @@ feature {NONE} -- WEL Implementation
 			l_caret: like caret_position
 			l_is_read_only: like read_only
 		do
-			l_sensitive := is_sensitive
-			l_tooltip := tooltip
+
 			l_text := text
-			l_caret := caret_position
+			l_tooltip := tooltip
+			l_sensitive := is_sensitive
+
+			l_caret := internal_caret_position
 			l_is_read_only := read_only
 			set_tooltip ("")
 
 				-- We keep some useful informations that will be
 				-- destroyed when calling `wel_destroy'
-			par_imp ?= parent_imp
-				-- `Current' may not have been actually phsically parented
+			par_imp := wel_parent
+				-- `Current' may not have been actually physically parented
 				-- within windows yet.
 			if par_imp = Void then
-				par_imp ?= default_parent
+				par_imp := default_parent
 			end
-			check par_imp /= Void end
 			cur_x := x_position
 			cur_y := y_position
 			cur_width := ev_width
@@ -285,8 +292,8 @@ feature {NONE} -- WEL Implementation
 				set_foreground_color (foreground_color)
 			end
 			set_tooltip (l_tooltip)
-			set_text (l_text)
-			set_caret_position (l_caret)
+			wel_set_text (l_text)
+			wel_set_caret_position (l_caret)
 			if l_is_read_only then
 				set_read_only
 			end
@@ -295,29 +302,36 @@ feature {NONE} -- WEL Implementation
 	on_key_down (virtual_key, key_data: INTEGER)
 			-- We check if the enter key is pressed.
 			-- 13 is the number of the return key.
-		local
-			spin_button: detachable EV_SPIN_BUTTON_IMP
 		do
 			process_navigation_key (virtual_key)
 			Precursor {EV_TEXT_COMPONENT_IMP} (virtual_key, key_data)
-			if virtual_key = Vk_return and is_editable then
-				set_caret_position (1)
-				attached_interface.return_actions.call (Void)
+			if virtual_key = Vk_return and then is_editable then
+				wel_set_caret_position (0)
+				if return_actions_internal /= Void then
+					return_actions_internal.call (Void)
+				end
 			end
 				--| EV_SPIN_BUTTON_IMP is composed of `Current'.
 				--| Therefore if `Current' is parented in an EV_SPIN_BUTTON_IMP,
 				--| we must propagate the key press event.
-			spin_button ?= wel_parent
-			if spin_button /= Void then
-				spin_button.on_key_down (virtual_key, key_data)
+			if attached {EV_SPIN_BUTTON_IMP} wel_parent as l_spin_button then
+				l_spin_button.on_key_down (virtual_key, key_data)
 			end
+		end
+
+	is_multiline: BOOLEAN
+			-- Does `Current' have multiline set?
+		do
+			Result := style & es_multiline /= 0
 		end
 
 	on_en_change
 			-- The user has taken an action
 			-- that may have altered the text.
 		do
-			attached_interface.change_actions.call (Void)
+			if change_actions_internal /= Void then
+				change_actions_internal.call (Void)
+			end
 		end
 
 	enable
