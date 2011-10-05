@@ -212,7 +212,7 @@ feature {NONE} -- Parsing class types
 				l_roots.after or Result /= Void
 			loop
 				if attached l_roots.item_for_iteration.root_class.compiled_class as l_root_class then
-					Result := type_a_generator.evaluate_type_if_possible (a_type, l_root_class)
+					Result := type_a_generator.evaluate_optional_unchecked (a_type, l_root_class)
 				end
 				l_roots.forth
 			end
