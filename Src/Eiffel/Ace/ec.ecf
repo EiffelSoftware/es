@@ -52,7 +52,7 @@
 		<setting name="check_for_void_target" value="false"/>
 		<setting name="exception_trace" value="false"/>
 		<setting name="executable_name" value="ecb"/>
-		<setting name="concurrency" value="none"/>
+		<setting name="concurrency" value="thread"/>
 		<variable name="batch_preferences" value="true"/>
 		<variable name="batch_framework" value="true"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
@@ -89,6 +89,44 @@
 			</cluster>
 			<cluster name="tty" location="$|tty\" recursive="true"/>
 		</cluster>
+
+		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
+			<condition>
+				<platform excluded_value="windows"/>
+				<build value="workbench"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtewb.a">
+			<condition>
+				<platform excluded_value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libmtipc.a">
+			<condition>
+				<platform excluded_value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)\C\ipc\ewb\mtwewb.lib">
+			<condition>
+				<platform value="windows"/>
+				<build value="workbench"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)\C\ipc\ewb\mtewb.lib">
+			<condition>
+				<platform value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)\C\ipc\shared\mtipc.lib">
+			<condition>
+				<platform value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+
 	</target>
 	<target name="batch_unix" extends="batch">
 		<description>Compiling UNIX batch compiler on other platforms than Windows</description>
