@@ -1,163 +1,189 @@
 note
-	description: "Summary description for {SSA_EXPR_NESTED}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+  description: "Summary description for {SSA_EXPR_NESTED}."
+  author: ""
+  date: "$Date$"
+  revision: "$Revision$"
 
 class
-	SSA_EXPR_NESTED
+  SSA_EXPR_NESTED
 
 inherit
-	SSA_EXPR
+  SSA_EXPR
 
 create
-	make
+  make, make_unqual, make_create
 
 feature
-	make (a_target: SSA_EXPR; a_name: STRING; a_args: LIST [SSA_EXPR])
-		do
-			target := a_target
-			name := a_name
-			args := a_args
-		end
-
-	target: SSA_EXPR
-	name: STRING
-	args: LIST [SSA_EXPR]
-
-	replacements: LIST [SSA_REPLACEMENT]
-		local
-			repls: LIST [SSA_REPLACEMENT]
-			repl: SSA_REPLACEMENT
-			epa_expr: EPA_AST_EXPRESSION
-			text: STRING
-			type: TYPE_A
-      arg_strs: LIST [STRING]
-		do
-			create {ARRAYED_LIST [SSA_REPLACEMENT]} Result.make (10)
-
-			arg_strs := arg_strings (Result)
-      text := compose_name_and_args (arg_strs)
-
-			if attached target then
-				repls := target.replacements
-				Result.append (repls)
-
-				text := repls.last.var + "." + text
-
-				create repl.make (res_type (repls.last.type),
-                          ssa_prefix,
-                          text,
-                          repls.last.var,
-                          arg_strs,
-                          feat (repls.last.type)
-                          )
-			else
-				create epa_expr.make_with_text (class_c, feature_i, as_code, class_c)
-				type := epa_expr.type
-
-				create repl.make (type, ssa_prefix, text, "Current", arg_strs, feat (Void))
-			end
-
-			Result.extend (repl)
-		end
-
-	res_type (target_type: TYPE_A): TYPE_A
-		do
-			Result := target_type.associated_class.feature_named_32 (name).type
-		end
-
-	feat (type: TYPE_A): FEATURE_I
-		local
-			clas: CLASS_C
-			body: BODY_AS
-		do
-			if attached type then
-				clas := type.associated_class
-			else
-				clas := class_c
-			end
-
-      Result := clas.feature_named_32 (name)
-		end
-
-  compose_name_and_args (a_args: LIST [STRING]): STRING
+  make (a_target: SSA_EXPR; a_name: STRING; a_args: ARRAYED_LIST [SSA_EXPR])
+    require
+      non_void_target: attached a_target
     do
-      Result := name
+      target := a_target
+      name := a_name
+      args := a_args
+      non_create := True
+    end
 
-      if not a_args.empty then
-        Result :=  result + " ("
+  make_unqual (a_name: STRING; a_args: ARRAYED_LIST [SSA_EXPR])
+    local
+      this: SSA_EXPR_THIS
+    do
+      create this.make
+      make (this, a_name, a_args)
+    end
 
-        from a_args.start
-        until a_args.after
+  make_create (a_target: SSA_EXPR;
+               a_name: STRING;
+               a_args: ARRAYED_LIST [SSA_EXPR])
+    require
+      non_void_target: attached a_target
+    do
+      target := a_target
+      name := a_name
+      args := a_args
+      non_create := False
+    end
+
+
+  target: SSA_EXPR
+  name: STRING
+  args: ARRAYED_LIST [SSA_EXPR]
+
+  goal_string (var_prefix: STRING): STRING
+    local
+      l_args: ARRAYED_LIST [SSA_EXPR]
+    do      
+      if is_attribute then
+        Result := target.goal_string (var_prefix) + "." +
+          target.type.name + "_" + name
+      else
+        l_args := args.twin
+        l_args.put_front (target)
+
+        Result := target.type.name + "_" + name + " ("
+
+        from l_args.start
+        until l_args.after
         loop
-          Result := Result + a_args.item
-          a_args.forth
-
-          if not a_args.after then
+          Result := Result + l_args.item.goal_string (var_prefix)
+          
+          l_args.forth
+          
+          if not l_args.after then
             Result := Result + ", "
           end
         end
+        
         Result := Result + ")"
       end
     end
 
-	arg_strings (repls: LIST [SSA_REPLACEMENT]): ARRAYED_LIST [STRING]
-		local
-			arg_repls: LIST [SSA_REPLACEMENT]
-      str: STRING
-		do
-			create Result.make (10)
+  
+  as_code: STRING
+    do
+      if attached {SSA_EXPR_THIS} target then
+        Result := ""
+      else
+        Result := target.as_code + "."
+      end
+      
+      Result := Result + name
 
-			if not args.is_empty then
-				from
-					args.start
-				until
-					args.after
-				loop
-					arg_repls := args.item.replacements
-					repls.append (arg_repls)
+      if not args.is_empty then
+        Result := Result + " ("
 
-					if not arg_repls.is_empty then
-						str := arg_repls.last.var
-					else
-						str := args.item.as_code
-					end
+        from
+          args.start
+        until
+          args.after
+        loop
+          Result := Result + args.item.as_code
+          args.forth
 
-          Result.extend (str)
+          if not args.after then
+            Result := Result + ", "
+          end
+        end
 
-					args.forth
-				end
-			end
-		end
+        Result := Result + ")"
+      end
+    end
 
-	as_code: STRING
-		do
-			Result := ""
-			if attached target then
-				Result := Result + target.as_code + "."
-			end
+  non_create: BOOLEAN
+  
+  target_type: TYPE_A
+    do
+      Result := target.type
+    end
 
-			Result := Result + name
+  is_attribute: BOOLEAN
+    do
+      Result := featr_i.is_attribute or
+        (featr_i.argument_count = 0 and not featr_i.has_postcondition)
+    end
+  
+  featr_i: FEATURE_I
+    do
+      Result := target_type.associated_class.feature_named_32 (name)
+    ensure
+      attached Result
+    end
+      
+  featr: ROUTINE_AS
+    do
+      Result := featr_i.body.body.as_routine
+    end
 
-			if not args.is_empty then
-				Result := Result + " ("
+  pre_condition: SSA_EXPR
+    local
+      non_void: SSA_EXPR_BIN
+    do
+      if non_create then
+        create non_void.make ("/=",
+                              target,
+                              create {SSA_EXPR_VOID}.make (target_type))
+      end
 
-				from
-					args.start
-				until
-					args.after
-				loop
-					Result := Result + args.item.as_code
-					args.forth
+      if is_attribute then
+        Result := non_void
+      elseif non_create then
+        Result := create {SSA_EXPR_BIN}.make ("and",
+                                              from_pre (arg_map,
+                                                        featr.precondition),
+                                                        non_void)
+      else
+        Result := from_pre (arg_map, featr.precondition)
+      end
+    end
 
-					if not args.after then
-						Result := Result + ", "
-					end
-				end
+  arg_map: HASH_TABLE [SSA_EXPR, STRING]
+    local
+      i: INTEGER
+    do
+      create Result.make (10)
+      Result.compare_objects
+      from i := 1
+      until i > featr_i.argument_count
+      loop
+        Result.put (create {SSA_EXPR_UNARY}.make ("old", args [i]),
+                    featr_i.arguments.item_name (i))
+        i := i + 1
+      end
+      Result.put (target, "Current")
+    end
+  
+  all_pre_conditions: ARRAYED_LIST [SSA_EXPR]
+    do
+      create Result.make (10)
 
-				Result := Result + ")"
-			end
-		end
+      Result.append (target.all_pre_conditions)
+
+      across args as ac loop Result.append (ac.item.all_pre_conditions) end
+
+      if attached pre_condition then
+        Result.extend (pre_condition)
+      end
+    end
+
 
 end

@@ -1344,9 +1344,9 @@ feature -- Update
 			elseif option.is_equal ("-js_compile") then
 				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
-				workbench.set_planned_class_and_feature_name (argument (current_option + 1),
-				                                              argument (current_option + 2))
-				current_option := argument_count + 3
+				workbench.set_planned_class_and_feature_name (argument (current_option + 1).twin,
+				                                              argument (current_option + 2).twin)
+				current_option := argument_count + 2
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then

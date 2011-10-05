@@ -265,9 +265,9 @@
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<file_rule>
 				<exclude>/preferences$</exclude>
-				<exclude>^/tty$</exclude>
-				<exclude>/lite$</exclude>
 				<exclude>/overrides$</exclude>
+				<exclude>/lite$</exclude>
+				<exclude>^/tty$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

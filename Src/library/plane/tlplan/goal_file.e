@@ -21,6 +21,11 @@ feature
 			create goals.make (10)
 		end
 
+  set_state (a_state: PLAN_STATE)
+    do
+      state := a_state
+    end
+  
 	state: PLAN_STATE
 	goals: ARRAYED_LIST [EXPR]
 
@@ -37,9 +42,9 @@ feature
 			p.add_nl ("(enable pddl-support)")
 
 			p.add_nl ("(def-domain " + full_dom_name +
-			        " %"" + "Testing " + dom + " domain.%"" +
-			        " %"" + dom + "Domain.tlp.lisp%")"
-			      )
+                " %"" + "Testing " + dom + " domain.%"" +
+                " %"" + dom + "Domain.tlp.lisp%")"
+                )
 --			p.add_nl ("(load-pddl-problem %"" + dom + "Problem.tlp.lisp%")")
 
 			p.add_nl ("(load-domain " + full_dom_name + ")")
@@ -64,8 +69,10 @@ feature
 	goal_print (p : PRINTER)
 		local
 			big_and: EXPR
+      event: UN_EXPR
 		do
 			create big_and.make ("and", goals)
+      -- create event.make_un ("eventually", big_and)
 			big_and.to_printer (p)
 		end
 

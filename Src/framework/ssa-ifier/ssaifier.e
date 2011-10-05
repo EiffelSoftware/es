@@ -19,46 +19,48 @@ feature
       non_void_class: attached a_class
     local
       ssa_printer: SSA_PRINTER
-      dummy: SSA_EXTRACT_PRECOND_STATE
+      rely_guar: SSA_RELY_GUAR
     do
+      -- print ("DMN_TEST: " + a_class.name + "." + a_name + "%N")
       set_class (a_class)
 
       if attached a_class.feature_named_32 (a_name) as feat then
         set_feature (feat)
+
+        create rely_guar.make
+        class_c.ast.process (rely_guar)
+
+        if attached rely_guar.rely_str then
+          set_rely (rely_guar.rely_str)
+        else
+          set_rely ("True")
+        end
+
+        set_feature (feat)
+        create ssa_printer.make_for_ssa
+        ssa_printer.process
+        write_default_instrumented (ssa_printer.text)
       else
         io.put_string ("Feature " + a_name + " not found in " + a_class.name)
         io.new_line
         check False end
       end
-      
-      create ssa_printer.make_for_ssa
+    end
 
-      ssa_printer.process
-      print ("Expanded Class:%N")
-      print (ssa_printer.text)
-		end
+  write_default_instrumented (str: STRING)
+    do
+      write_instrumented_file (create {FILE_NAME}.make_from_string (class_c.name + "_instr.e"), str)
+    end
 
-	write_default_instrumented
-		do
-			write_instrumented_file (create {FILE_NAME}.make_from_string (class_c.name + ".plan.lisp"))
-		end
+  write_instrumented_file (file_name: FILE_NAME; str: STRING)
+    local
+      file: PLAIN_TEXT_FILE
+    do
+      create file.make (file_name.string)
 
-	write_instrumented_file (file_name: FILE_NAME)
-		local
-			file: PLAIN_TEXT_FILE
-			c2d: CLASS_TO_DOMAIN
-			p: PRINTER
-		do
-			create file.make (file_name.string)
-			create c2d.make (class_c.ast)
-			create p.make
-
-			c2d.process_ast_node (class_c.ast)
-			c2d.domain.to_printer (p)
-
-			file.create_read_write
-			file.put_string (p.context)
-			file.close
-		end
+      file.create_read_write
+      file.put_string (str)
+      file.close
+    end
 
 end

@@ -1,8 +1,8 @@
 note
-	description: "Used to print a feature body in SSA form."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+  description: "Used to print a feature body in SSA form."
+  author: ""
+  date: "$Date$"
+  revision: "$Revision$"
 
 class
   SSA_FEATURE_PRINTER
@@ -10,179 +10,231 @@ class
 inherit
   AST_ITERATOR
     redefine
-      process_nested_as,
-      process_access_feat_as,
+      process_instr_call_as,
       process_assign_as,
-      process_id_as,
-      process_binary_as,
-      process_unary_as,
-      process_bool_as,
-      process_integer_as
-		end
+      process_create_creation_as,
+      process_if_as,
+      process_elseif_as,
+      process_loop_as,
+      process_check_as
+    end
 
   INTERNAL_COMPILER_STRING_EXPORTER
 
-	SSA_SHARED
+  SSA_SHARED
 
-	SHARED_SERVER
+  SHARED_SERVER
 
 create
-	make
+  make
 
 feature
-  make
+  make (a_doms: ARRAYED_LIST [CLASS_C];
+        a_locals: LIST [TYPE_DEC_AS])
+    require
+      non_void_rely: rely /= Void
     do
+      doms := a_doms
+      locals := a_locals
       context := ""
-      in_body := True
     end
 
+  locals: LIST [TYPE_DEC_AS]
+  doms: ARRAYED_LIST [CLASS_C]
+  in_loop_inv: BOOLEAN
+  
 feature -- AST
-	process_assign_as (l_as: ASSIGN_AS)
+  process_check_as (l_as: CHECK_AS)
+    local
+      e: STRING
+    do
+      if l_as.check_list.count > 0 then
+        io.put_string ("Found check:%N")
+        e := eif_to_ssa_expr (l_as.check_list [1].expr).goal_string ("")
+        put_raw_string (serialize_pre (e, l_as.start_location.line))
+        io.new_line
+      end
+    end
+
+  process_assign_as (l_as: ASSIGN_AS)
     local
       str: STRING
-		do
-      str := fix_print (l_as.source)
+    do
+      str := instrument (l_as.source)
       put_raw_string ("%N")
       put_raw_string (l_as.target.access_name)
       put_raw_string (" := ")
       put_raw_string (str)
     end
 
-	in_body: BOOLEAN
-
-
-	process_id_as (l_as: ID_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_nested_as (l_as: NESTED_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_binary_as (l_as: BINARY_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_bool_as (l_as: BOOL_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_unary_as (l_as: UNARY_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	process_integer_as (l_as: INTEGER_AS)
-		do
-			fix_print_basic (l_as)
-		end
-
-	fix_print_basic (l_as: AST_EIFFEL)
-		do
-			if attached fix_print (l_as) then
-			end
-		end
-
-	fix_print (l_as: AST_EIFFEL): STRING
-		local
-			fix: EXPR_FIXER
-			expr: SSA_EXPR
-			repls: LIST [SSA_REPLACEMENT]
-		do
-			if in_body then
-				create fix.make
-				l_as.process (fix)
-				expr := fix.last_expr
-				repls := expr.replacements
-
-				from repls.start
-				until repls.after
-				loop
-					Result := repls.item.var
-					put_raw_string ("%N" + "-- planning step")
-          print_plan_call (repls.item)
-					put_raw_string ("%N" + Result  + " := " + repls.item.repl_text)
-					repls.forth
-				end
-			else
-        -- print nothing, we only operate in the body
-			end
-		end
-
-  print_plan_call (a_repl: SSA_REPLACEMENT)
+  process_create_creation_as (l_as: CREATE_CREATION_AS)
+    local
+      str: STRING
     do
-      put_raw_string ("%N" + "rely_call (%"[%N")
-
-      put_raw_string (req_to_lisp (a_repl))
-
-      put_raw_string ("%N%"])")
+      str := instrument (l_as)
+      put_raw_string ("%N")
+      put_raw_string ("create ")
+      put_raw_string (str)
     end
 
-
-  req_to_lisp (a_repl: SSA_REPLACEMENT): STRING
+  process_if_as (l_as: IF_AS)
     local
-      pres: LIST [TAGGED_AS]
-      pre_trans: PRE_TO_ADL
-      lexpr: EXPR
-      args: LIST [STRING]
-      i: INTEGER
+      var: STRING
     do
-      Result := "(and"
+      var := instrument (l_as.condition)
+      put_raw_string ("%Nif " + var + " then ")
+      safe_process (l_as.compound)
+      safe_process (l_as.elsif_list)
 
-      if not attached a_repl.args then
-        args := create {ARRAYED_LIST [STRING]}.make (10)
-      else
-        args := a_repl.args
+      if attached l_as.else_part then
+        put_raw_string ("%Nelse")
+        safe_process (l_as.else_part)
       end
-      
-      if attached a_repl.feat as feat and then
-        attached feat.body.body.as_routine as rout
-       then
-        pres := rout.precondition.assertions
 
-        from i := 1
-        until i > pres.count
-        loop
-          create pre_trans.make_for_instr (class_c.name,
-                                           a_repl.target,
-                                           inst_args (args, feat.arguments))
-
-          pres [i].process (pre_trans)
-          Result := Result + pre_trans.last_expr.print_string
-
-          i := i + 1
-        end
-      else
-        Result := Result + "(TRUE)"
-      end
-      
-      Result := Result + ")"
+      put_raw_string ("%Nend")
     end
 
-  inst_args (a_args: LIST [STRING];
-             a_form_args: FEAT_ARG): HASH_TABLE [STRING, STRING]
-    require
-      same_count: a_args.count = a_form_args.count
+  process_elseif_as (l_as: ELSIF_AS)
     local
-      i: INTEGER
+      var: STRING
     do
-      create Result.make (10)
+      var := instrument (l_as.expr)
+      put_raw_string ("%Nelseif " + var + " then ")
+      safe_process (l_as.compound)
+    end
 
-      from i := 1
-      until i > a_args.count
+  process_loop_as (l_as: LOOP_AS)
+    local
+      str: STRING
+    do
+      put_raw_string ("%Nfrom ")
+      safe_process (l_as.from_part)
+
+      in_loop_inv := True
+      safe_process (l_as.invariant_part)
+      in_loop_inv := False
+
+      str := instrument (l_as.stop)
+      put_raw_string ("%Nuntil ")
+      put_raw_string ("%N" + str)
+      put_raw_string ("%Nloop")
+      safe_process (l_as.compound)
+
+      str := instrument (l_as.stop)
+      put_raw_string ("%Nend")
+      safe_process (l_as.variant_part)
+    end
+
+  process_instr_call_as (l_as: INSTR_CALL_AS)
+    do
+      if attached {NESTED_AS} l_as.call as af then
+        put_raw_string ("%N" + instrument (af))
+      elseif attached {ACCESS_FEAT_AS} l_as.call as af then
+        put_raw_string ("%N" + instrument (af))
+      else
+        print ("SSA_FEATURE_PRINTER: Unhandled " +
+               l_as.call.generating_type +
+               "%N")
+      end
+    end
+
+  instrument (a_expr: AST_EIFFEL): STRING
+    local
+      expr: SSA_EXPR
+    do
+      expr := eif_to_ssa_expr (a_expr)
+      put_serialize_call (expr, a_expr.start_location.line)
+
+      Result := expr.as_code
+    end
+
+  put_serialize_call (a_expr: SSA_EXPR; line: INTEGER)
+    do
+      put_raw_string (serialize_call (a_expr, line))
+    end
+      
+  serialize_call (a_expr: SSA_EXPR; line: INTEGER): STRING
+    do
+      Result := serialize_pre (a_expr.single_precond (""), line)
+    end
+
+  serialize_pre (a_goal_str: STRING; line: INTEGER): STRING
+    local
+      args: HASH_TABLE [SSA_EXPR, STRING]
+      str: STRING
+    do
+      args := feat_arguments
+      str := "rely_call ("
+      str := str + line.out + ", "
+      str := str + "<" + "<" +
+        tuple_string ("%"Current%"", "Current")
+
+      from args.start
+      until args.after
       loop
-        Result.put (a_args [i], a_form_args.item_name (i))
-        i := i + 1
+        str := str + ","
+        str := str +
+          double_tuple_string (args.key_for_iteration)
+
+        args.forth
       end
+
+      from locals.start
+      until locals.after
+      loop
+        str := str + ","
+        str := str +
+          double_tuple_string (locals.item.item_name (1))
+
+        locals.forth
+      end
+      
+      str := str + ">>"
+
+
+      str := "%N" + str + ","
+      str := str + "%N" + doms_str + ","
+      str := str + "%N" + block_string (a_goal_str) + ","
+      str := str + "%N" + block_string (rely_string) + ","
+      str := str + "%N agent extra_serial"
+      str := str + ")"
+
+      Result := str
+    end
+
+  doms_str: STRING
+    do
+      Result := "<"+"<"
+      from doms.start
+      until doms.after
+      loop
+        Result := Result + "%"" + doms.item.name + "%""
+        doms.forth
+        if not doms.after then
+          Result := Result + ","
+        end
+      end
+      Result := Result + ">>"
+    end
+
+  rely_string: STRING
+    do
+      Result := rely
+    end
+
+  block_string (a_str: STRING): STRING
+    do
+      Result := "%"[%N" + a_str + "%N]%""
+    end
+
+  tuple_string (a_str1: STRING; a_str2: STRING): STRING
+    do
+      Result := "[" + a_str1 + "," + a_str2 + "]"
+    end
+
+  double_tuple_string (a_str: STRING): STRING
+    do
+      Result := tuple_string ("%"" + a_str + "%"", a_str)
     end
 
 feature

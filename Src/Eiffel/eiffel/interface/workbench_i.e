@@ -742,7 +742,7 @@ feature -- Added for Planning
 		end
 
 	planned_class_name: STRING
-	planned_feature_name: STRING
+	planned_feature_name: IMMUTABLE_STRING_8
 feature -- Added for SCOOP
 	is_degree_scoop_processing: BOOLEAN
 		-- Is the degree SCOOP processing?

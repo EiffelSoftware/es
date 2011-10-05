@@ -6493,12 +6493,13 @@ feature -- Added for Plan Generation
 	plan_generate_domain
 		local
 			class_: CLASS_C
-			domifier: DOMAINIFIER
+			domifier: SSA_DOMAINIFIER
 		do
 			class_ := find_class (workbench.planned_class_name)
 			if attached class_ then
 				create domifier.make (class_)
-        domifier.write_default_plan
+				domifier.write_domain_files
+				domifier.write_gen_dom_file
 			end
 		end
 

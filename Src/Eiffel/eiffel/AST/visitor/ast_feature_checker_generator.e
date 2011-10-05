@@ -4306,7 +4306,8 @@ feature {NONE} -- Implementation
 			l_un_old: UN_OLD_B
 			s: INTEGER
 		do
-			if not is_checking_postcondition then
+			if not is_checking_postcondition and
+			   workbench.planned_class_name = Void then
 					-- Old expression found somewhere else that in a
 					-- postcondition
 				create l_vaol1
@@ -4343,7 +4344,7 @@ feature {NONE} -- Implementation
 						context.init_error (l_vaol2)
 						l_vaol2.set_location (l_as.expr.end_location)
 						error_handler.insert_error (l_vaol2)
-					elseif is_byte_node_enabled then
+					elseif is_byte_node_enabled and workbench.planned_class_name = Void then
 						l_expr ?= last_byte_node
 						create l_un_old
 						l_un_old.set_expr (l_expr)
