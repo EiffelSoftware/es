@@ -3,7 +3,7 @@
 // * your application.                                                          *
 // ******************************************************************************
 
-#include ".\ribbon.h"
+#include ".\ribbon_1.h"
 
 STRINGTABLE 
 BEGIN
@@ -49,6 +49,16 @@ END
 STRINGTABLE 
 BEGIN
     toggle_button_check_state_LabelTitle_RESID L"Check toggle button state" /* LabelTitle toggle_button_check_state_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    toggle_button_change_small_image_LabelTitle_RESID L"Toggle button change small image" /* LabelTitle toggle_button_change_small_image_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    toggle_button_change_large_image_LabelTitle_RESID L"Toggle button change large image" /* LabelTitle toggle_button_change_large_image_LabelTitle_RESID: (null) */
 END
 
 STRINGTABLE 
@@ -113,6 +123,27 @@ END
 
 STRINGTABLE 
 BEGIN
+    split_button_change_small_image_child_1_LabelTitle_RESID L"split button change small image child 1" /* LabelTitle split_button_change_small_image_child_1_LabelTitle_RESID: (null) */
+END
+
+split_button_change_small_image_child_1_SmallImages_RESID    BITMAP    ".\\res\\Copy.bmp" /* SmallImages split_button_change_small_image_child_1_SmallImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    split_button_change_small_image_child_2_LabelTitle_RESID L"split button change small image child dummy" /* LabelTitle split_button_change_small_image_child_2_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    split_button_change_large_image_child_1_LabelTitle_RESID L"Split button change large image" /* LabelTitle split_button_change_large_image_child_1_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    split_button_change_large_image_child_2_LabelTitle_RESID L"Split button change large image dummy" /* LabelTitle split_button_change_large_image_child_2_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
     tab_dropdown_gallery_LabelTitle_RESID L"Dropdown Gallery" /* LabelTitle tab_dropdown_gallery_LabelTitle_RESID: (null) */
 END
 
@@ -124,7 +155,12 @@ END
 drop_down_gallery_LargeImages_RESID    BITMAP    ".\\res\\Button_Image.bmp" /* LargeImages drop_down_gallery_LargeImages_RESID: (null) */
 STRINGTABLE 
 BEGIN
+    application_menu_button_LabelTitle_RESID L"Application menu button" /* LabelTitle application_menu_button_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
     InternalCmd2_LabelTitle_RESID L"Label:InternalCmd2" /* LabelTitle InternalCmd2_LabelTitle_RESID: (null) */
 END
 
-APPLICATION_RIBBON    UIFILE    "ribbon.bml"
+APPLICATION_RIBBON    UIFILE    "ribbon_1.bml"

@@ -125,6 +125,7 @@ feature {NONE} -- Implementation
 				elseif a_value.is_equal (namespace_1_6_0) then namespace := namespace_1_6_0
 				elseif a_value.is_equal (namespace_1_7_0) then namespace := namespace_1_7_0
 				elseif a_value.is_equal (namespace_1_8_0) then namespace := namespace_1_8_0
+				elseif a_value.is_equal (namespace_1_9_0) then namespace := namespace_1_9_0
 				elseif a_value.is_equal (latest_namespace) then namespace := latest_namespace
 						-- current version
 				else
@@ -176,6 +177,7 @@ feature {NONE} -- Implementation
 		local
 			l_error: CONF_ERROR_PARSE
 			l_conf_exception: CONF_EXCEPTION
+			e: XML_POSITION
 		do
 				-- Do not promote error to warning if this is an XML error.
 			if not is_invalid_xml and then is_unknown_version then
@@ -183,6 +185,10 @@ feature {NONE} -- Implementation
 			else
 				create l_error
 				l_error.set_message (a_message)
+				if attached associated_parser as p then
+					e := p.position
+					l_error.set_position (e.source_name, e.line, e.column)
+				end
 				is_error := True
 				last_error := l_error
 				create l_conf_exception
@@ -191,13 +197,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_parse_warning_message (a_message: STRING)
+	set_parse_warning_message (a_message: READABLE_STRING_GENERAL)
 			-- We have a parse warning with a message.
 		local
 			l_error: CONF_ERROR_PARSE
+			e: XML_POSITION
 		do
 			create l_error
 			l_error.set_message (a_message)
+			if attached associated_parser as p then
+				e := p.position
+				l_error.set_position (e.source_name, e.line, e.column)
+			end
 			is_warning := True
 			if last_warning = Void then
 				create last_warning.make (1)

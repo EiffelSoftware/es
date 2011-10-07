@@ -1,7 +1,7 @@
 note
 	description: "[
 					Command to open a ribbon project
-																			]"
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -38,7 +38,7 @@ feature -- Command
 			-- Execute current command with `a_project_file'
 		local
 			l_warn: EV_WARNING_DIALOG
-			l_singleton: ER_SHARED_SINGLETON
+			l_singleton: ER_SHARED_TOOLS
 		do
 			if attached a_project_file as l_file and then not l_file.is_empty then
 				open_project_file (l_file)
@@ -135,7 +135,7 @@ feature {NONE}	-- Implementation
 			l_sed_utility: SED_STORABLE_FACILITIES
 			l_file: RAW_FILE
 			l_constants: ER_MISC_CONSTANTS
-			l_singleton: ER_SHARED_SINGLETON
+			l_singleton: ER_SHARED_TOOLS
 			l_retried: BOOLEAN
 		do
 			if not l_retried then
@@ -169,4 +169,35 @@ feature {NONE}	-- Implementation
 	is_open_file_successed: BOOLEAN
 			-- Is open project successed?
 
+;note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

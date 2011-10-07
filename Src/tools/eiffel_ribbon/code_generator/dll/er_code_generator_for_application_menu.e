@@ -1,7 +1,7 @@
 note
 	description: "[
 					Code generator for application menu when using DLL
-																						]"
+					]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,7 +20,7 @@ feature -- Command
 			l_file, l_dest_file: RAW_FILE
 			l_constants: ER_MISC_CONSTANTS
 			l_file_name, l_dest_file_name: FILE_NAME
-			l_singleton: ER_SHARED_SINGLETON
+			l_singleton: ER_SHARED_TOOLS
 			l_sub_dir, l_tool_bar_file, l_sub_imp_dir: STRING
 			l_last_string: STRING
 			l_tab_creation_string, l_tab_registry_string, l_tab_declaration_string: STRING
@@ -243,4 +243,35 @@ feature {ER_CODE_GENERATOR_FOR_CONTEXT_POPUP} -- Menu group generating
 			create l_code_generator.make
 			l_code_generator.generate_group_class (a_group_node, a_index, "ribbon_application_menu_group", "ribbon_application_menu_group_imp", "RIBBON_APPLICATION_MENU_GROUP")
 		end
+note
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

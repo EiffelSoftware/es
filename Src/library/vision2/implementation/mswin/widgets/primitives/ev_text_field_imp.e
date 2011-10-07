@@ -103,7 +103,8 @@ inherit
 			on_en_change,
 			default_style,
 			enable,
-			disable
+			disable,
+			text
 		end
 
 	EV_TEXT_FIELD_ACTION_SEQUENCES_IMP
@@ -133,8 +134,13 @@ feature -- Element Change
 
 	set_text (a_text: detachable READABLE_STRING_GENERAL)
 			-- <Precursor>
+		local
+			l_wel_string: WEL_STRING
 		do
-			wel_set_text (a_text)
+			--| FIXME Use a reusable buffer if possible.
+--			l_wel_string := wel_string_from_string (a_text)
+			create l_wel_string.make (a_text)
+			{WEL_API}.send_message (wel_item, {WEL_WM_CONSTANTS}.wm_settext, {WEL_API}.lparam (0), l_wel_string.item)
 
 				-- If `Es_multiline' is specified then we need to make sure that the change actions are fired explicitly
 				-- as Windows does not fire `En_update' and `En_change' actions.
@@ -145,6 +151,26 @@ feature -- Element Change
 		end
 
 feature -- Access
+
+	text: STRING_32
+			-- Text of `Current'.
+		local
+			length: INTEGER
+			l_wel_string: WEL_STRING
+			nb: INTEGER
+		do
+			length := wel_text_length
+			if length > 0 then
+				length := length + 1
+					--| FIXME IEK Replace with a reusable buffer.
+--				l_wel_string := wel_string_restricted (length)
+				create l_wel_string.make_empty (length)
+				nb := cwin_get_window_text (wel_item, l_wel_string.item, length)
+				Result := l_wel_string.string
+			else
+				create Result.make (0)
+			end
+		end
 
 	internal_caret_position: INTEGER
 			-- <Precursor>
@@ -303,6 +329,15 @@ feature {NONE} -- WEL Implementation
 			-- We check if the enter key is pressed.
 			-- 13 is the number of the return key.
 		do
+			if virtual_key = vk_escape and then attached {EV_DIALOG} top_level_window then
+					-- There is a bug in Windows where if you hit ESC in a multiline
+					-- edit parented at some level within a dialog, it posts a WM_CLOSE
+					-- to its parent in the mistaken belief that it is part of a dialog box.
+					-- By redefining `on_key_down' here, we can prevent this behaviour. Julian.
+					-- Search comp.os.ms-windows.programmer.controls for "hit ESC in a multiline edit".
+					-- We only perform the disable if `Current' is actually parented in a dialog.
+				disable_default_processing
+			end
 			process_navigation_key (virtual_key)
 			Precursor {EV_TEXT_COMPONENT_IMP} (virtual_key, key_data)
 			if virtual_key = Vk_return and then is_editable then

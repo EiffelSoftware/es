@@ -6,11 +6,11 @@ feature
 		local
 			r: detachable G
 		do
-				-- Built-in
-			check
-				r_attached: r /= Void
+				-- Can get here only for expanded or detachable reference types.
+				-- The latter are taken care by the compiler during code generation.
+			check attached r then
+				Result := r
 			end
-			Result := r
 		end
 
 end

@@ -416,16 +416,17 @@ feature {NONE} -- Implementation
 				l_index := l_nat32.to_integer_32
 
 				l_obj := object_references.item (l_index)
-				check l_obj_attached: l_obj /= Void end
-				l_dtype := l_int.dynamic_type (l_obj)
+				check attached l_obj then
+					l_dtype := l_int.dynamic_type (l_obj)
 
-				if l_int.is_special (l_obj) then
-						-- Get the abstract element type of the SPECIAL.
-					decode_special (l_obj, l_index, abstract_type (l_int.generic_dynamic_type_of_type (l_dtype, 1)))
-				elseif l_int.is_tuple (l_obj) then
-					decode_tuple (l_obj, l_dtype, l_index)
-				else
-					decode_normal_object (l_obj, l_dtype, l_index)
+					if l_int.is_special (l_obj) then
+							-- Get the abstract element type of the SPECIAL.
+						decode_special (l_obj, l_index, abstract_type (l_int.generic_dynamic_type_of_type (l_dtype, 1)))
+					elseif l_int.is_tuple (l_obj) then
+						decode_tuple (l_obj, l_dtype, l_index)
+					else
+						decode_normal_object (l_obj, l_dtype, l_index)
+					end
 				end
 			else
 					-- Read object dynamic type
@@ -1218,7 +1219,7 @@ invariant
 
 note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software

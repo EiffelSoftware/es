@@ -833,7 +833,6 @@ feature {NONE} -- Added for SCOOP
 	add_scoop_library
 			-- Add the SCOOP library to the universe target, if necessary.
 		local
-			l_location: CONF_FILE_LOCATION
 			l_factory: CONF_PARSE_FACTORY
 			l_library: CONF_LIBRARY
 			l_system: CONF_SYSTEM
@@ -854,8 +853,7 @@ feature {NONE} -- Added for SCOOP
 				l_system.set_application_target (l_target)
 
 				-- Create a new library configuration for the SCOOP library.
-				l_location := l_factory.new_location_from_full_path ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_path, l_target)
-				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name, l_location, l_target)
+				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name, {SCOOP_SYSTEM_CONSTANTS}.scoop_library_path, l_target)
 				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
 				l_library.set_library_target (l_factory.new_target ({SCOOP_SYSTEM_CONSTANTS}.scoop_library_name, l_system))
 
@@ -915,7 +913,6 @@ feature {NONE} -- Added for SCOOP
 	add_thread_library
 			-- Add the SCOOP library to the universe target, if necessary.
 		local
-			l_location: CONF_FILE_LOCATION
 			l_factory: CONF_PARSE_FACTORY
 			l_library: CONF_LIBRARY
 			l_system: CONF_SYSTEM
@@ -936,8 +933,7 @@ feature {NONE} -- Added for SCOOP
 				l_system.set_application_target (l_target)
 
 				-- Create a new library configuration for the thread library.
-				l_location := l_factory.new_location_from_full_path ({SCOOP_SYSTEM_CONSTANTS}.thread_library_path, l_target)
-				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name, l_location, l_target)
+				l_library := l_factory.new_library ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name, {SCOOP_SYSTEM_CONSTANTS}.thread_library_path, l_target)
 				l_library.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
 				l_library.set_library_target (l_factory.new_target ({SCOOP_SYSTEM_CONSTANTS}.thread_library_name, l_system))
 

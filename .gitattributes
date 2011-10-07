@@ -3431,6 +3431,7 @@ Src/tools/eiffel_image_embedder/eimgemb.lic -text
 Src/tools/eiffel_make/emake.lic -text
 Src/tools/eiffel_matrix_code_generator/emcgen.lic -text
 Src/tools/eiffel_matrix_code_generator/frames/tool.e.frame -text
+Src/tools/eiffel_ribbon/eiffel_ribbon.lic -text
 Src/tools/eiffel_ribbon/images/button_with_text.png -text
 Src/tools/eiffel_ribbon/images/button_with_text_highlight.png -text
 Src/tools/eiffel_ribbon/images/button_with_text_invalid.png -text

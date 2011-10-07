@@ -775,7 +775,7 @@ feature {NONE} -- Implementation attribute processing
 				l_name.to_lower
 			end
 			if is_valid_group_name (l_name) and l_location /= Void and not group_list.has (l_name) then
-				current_library := factory.new_library (l_name, factory.new_location_from_full_path (l_location, current_target), current_target)
+				current_library := factory.new_library (l_name, l_location, current_target)
 				current_group := current_library
 				if l_readonly /= Void then
 					if l_readonly.is_boolean then
@@ -1280,12 +1280,16 @@ feature {NONE} -- Implementation attribute processing
 				end
 			end
 			if l_is_void_safe /= Void then
-				if includes_this_or_before (namespace_1_4_0) then
+				if includes_this_or_before (namespace_1_4_0) or else includes_this_or_after (namespace_1_9_0) then
 					if l_is_void_safe.is_boolean then
-						if l_is_void_safe.to_boolean then
-							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_all)
+						if includes_this_or_before (namespace_1_4_0) then
+							if l_is_void_safe.to_boolean then
+								current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_all)
+							else
+								current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_none)
+							end
 						else
-							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_none)
+							current_option.set_is_strictly_void_safe (l_is_void_safe.to_boolean)
 						end
 					else
 						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("is_void_safe"))
@@ -1825,6 +1829,7 @@ feature {NONE} -- Processing of options
 					o := factory.new_option
 				end
 				if
+					namespace ~ namespace_1_9_0 or else
 					namespace ~ namespace_1_8_0 or else
 					namespace ~ namespace_1_7_0 or else
 					namespace ~ namespace_1_6_0 or else

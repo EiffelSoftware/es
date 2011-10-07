@@ -2687,16 +2687,16 @@ feature {NONE} -- Externals
 
 	x_position_from_lparam (lparam: POINTER): INTEGER
 		external
-			"C inline use <windows.h>"
+			"C macro use %"winx.h%""
 		alias
-			"((int)(short)LOWORD($lparam))"
+			"GET_X_LPARAM"
 		end
 
 	y_position_from_lparam (lparam: POINTER): INTEGER
 		external
-			"C inline use <windows.h>"
+			"C macro use %"winx.h%""
 		alias
-			"((int)(short)HIWORD($lparam))"
+			"GET_Y_LPARAM"
 		end
 
 	cwel_window_procedure_address: POINTER
