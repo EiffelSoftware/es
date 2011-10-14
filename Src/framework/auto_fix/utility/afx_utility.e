@@ -60,7 +60,7 @@ feature -- Fix
 				Result := a_fix.feature_text.twin
 			else
 				l_parser := entity_feature_parser
-				l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+				l_parser.set_syntax_version (l_parser.transitional_syntax)
 				l_parser.parse_from_utf8_string ("feature " + a_fix.feature_text, Void)
 				create l_output.make_with_indentation_string ("%T")
 				create l_printer.make_with_output (l_output)

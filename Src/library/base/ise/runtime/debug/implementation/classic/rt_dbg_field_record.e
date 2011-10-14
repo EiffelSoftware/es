@@ -225,7 +225,7 @@ feature {NONE} -- Internal Implementation
 
 feature {NONE} -- Output
 
-	out_value (v: G): STRING
+	out_value (v: attached G): STRING
 			-- Printable representation of `v'.
 		require
 			v_attached: attached v
@@ -247,7 +247,7 @@ invariant
 
 note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

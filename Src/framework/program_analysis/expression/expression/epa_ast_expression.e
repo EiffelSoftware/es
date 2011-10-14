@@ -279,7 +279,7 @@ feature{NONE} -- Implementation
 				-- Parse `a_text' into `ast'.
 			l_parser := parser
 			l_parser.set_has_old_expression (False)
-			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+			l_parser.set_syntax_version (l_parser.transitional_syntax)
 			l_parser.parse_from_utf8_string (once "check " + a_text, class_)
 			set_has_syntax_error (l_parser.syntax_error)
 

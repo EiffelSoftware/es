@@ -343,9 +343,9 @@ feature -- Types
 				l_options := a_context_class.lace_class.options
 				inspect l_options.syntax.index
 				when {CONF_OPTION}.syntax_index_obsolete then
-					type_parser.set_syntax_version ({EIFFEL_SCANNER}.obsolete_64_syntax)
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.obsolete_syntax)
 				when {CONF_OPTION}.syntax_index_transitional then
-					type_parser.set_syntax_version ({EIFFEL_SCANNER}.transitional_64_syntax)
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.transitional_syntax)
 				else
 					type_parser.set_syntax_version ({EIFFEL_SCANNER}.ecma_syntax)
 				end

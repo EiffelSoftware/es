@@ -165,7 +165,7 @@ feature{NONE} -- Implementation
 			l_text.append (a_type.name)
 
 			l_parser := entity_declaration_parser
-			l_parser.set_syntax_version (l_parser.transitional_64_syntax)
+			l_parser.set_syntax_version (l_parser.transitional_syntax)
 			l_parser.parse_from_ascii_string (l_text, Void)
 			l_vars_def := l_parser.entity_declaration_node
 			if a_universal then

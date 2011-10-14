@@ -435,7 +435,7 @@ feature {RT_DBG_EXECUTION_RECORDER, RT_DBG_CALL_RECORD} -- Change
 			no_records: not recorder.keep_calls_records implies call_records = Void
 		end
 
-	get_value_records_flattened_into (vals: like value_records)
+	get_value_records_flattened_into (vals: attached like value_records)
 			-- Flatten record `rec'
 			--| Note: all value records and object will be removed from sub call records.
 		require
@@ -1205,7 +1205,7 @@ invariant
 
 note
 	library:   "EiffelBase: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

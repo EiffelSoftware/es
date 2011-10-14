@@ -1,9 +1,9 @@
 class TEST
-creation
+create
 	make
 
 feature
-	make is
+	make
 		local
 			l_grandma: like person
 			l_grandson: like person2
