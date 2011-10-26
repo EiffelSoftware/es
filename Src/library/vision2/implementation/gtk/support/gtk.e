@@ -2375,6 +2375,11 @@ feature
 			"C (GtkWindow*, gint, gint) | <ev_gtk.h>"
 		end
 
+	frozen gtk_window_set_resizable (a_window: POINTER; a_resizable: BOOLEAN)
+		external
+			"C (GtkWindow*, gboolean) | <ev_gtk.h>"
+		end
+
 	frozen gtk_window_get_default_size (a_window: POINTER; a_width: POINTER; a_height: POINTER)
 		external
 			"C (GtkWindow*, EIF_INTEGER_32*, EIF_INTEGER_32*) | <ev_gtk.h>"
@@ -2388,6 +2393,11 @@ feature
 	frozen gtk_window_set_geometry_hints (a_window: POINTER; a_geometry_widget: POINTER; a_geometry: POINTER; a_geom_mask: INTEGER_32)
 		external
 			"C (GtkWindow*, GtkWidget*, GdkGeometry*, GdkWindowHints) | <ev_gtk.h>"
+		end
+
+	frozen gtk_window_set_type_hint (a_window: POINTER; a_type_hint: INTEGER_32)
+		external
+			"C (GtkWindow*, GdkWindowTypeHint) | <ev_gtk.h>"
 		end
 
 	frozen gtk_window_set_position (a_window: POINTER; a_position: INTEGER_32)
@@ -2433,16 +2443,16 @@ feature
 			"red"
 		end
 
-	frozen gdk_event_focus_struct_in (a_c_struct: POINTER): INTEGER_32
+	frozen gdk_event_focus_struct_in (a_c_struct: POINTER): INTEGER_8
 		external
-			"C [struct <ev_gtk.h>] (GdkEventFocus): EIF_INTEGER"
+			"C [struct <ev_gtk.h>] (GdkEventFocus): EIF_INTEGER_8"
 		alias
 			"in"
 		end
 
-	frozen gdk_event_any_struct_send_event (a_c_struct: POINTER): INTEGER_32
+	frozen gdk_event_any_struct_send_event (a_c_struct: POINTER): INTEGER_8
 		external
-			"C [struct <ev_gtk.h>] (GdkEventAny): EIF_INTEGER"
+			"C [struct <ev_gtk.h>] (GdkEventAny): EIF_INTEGER_8"
 		alias
 			"send_event"
 		end
@@ -2454,9 +2464,9 @@ feature
 			"window"
 		end
 
-	frozen gdk_event_any_struct_type (a_c_struct: POINTER): INTEGER_32
+	frozen gdk_event_any_struct_type (a_c_struct: POINTER): INTEGER_8
 		external
-			"C [struct <ev_gtk.h>] (GdkEventAny): EIF_INTEGER"
+			"C [struct <ev_gtk.h>] (GdkEventAny): EIF_INTEGER_8"
 		alias
 			"type"
 		end

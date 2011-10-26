@@ -993,6 +993,8 @@ test 	adding-removing-transient			incr413 tcf pass incrementality transient
 test 	removing-descendant-crash	incr414 tcf pass incrementality
 test 	system-change-crash			incr415 tcf fail incrementality
 test 	recompilation-forces-freeze	incr416 tcf pass incrementality
+test 	qat-spurious-veen		incr417 tcf fail incrementality validity
+test 	qat-precursor-anchored-to-caller incr418 tcf fail incrementality anchored_types
 
 
 -- Melting
@@ -1862,6 +1864,7 @@ test	inherit-formal-as-second-formal		term202 tcf pass termination dotnet
 test	inherit-generic-of-expanded		term203 tcf pass termination dotnet
 test	ise-ec-flags-missing-final-quote	term204 tcf fail termination
 test	inherited-feature-unadapted			term205 tcf fail termination
+test	generic-constrained-by-self-2		term206  tcf fail termination generic
 
 -- Config
 
@@ -1996,6 +1999,7 @@ test	c-header-mismatch-3				ccomp083 tcf fail c_compilation
 test	large-real-constant-c-compile-failure		ccomp084 tcf fail c_compilation
 test	c-header-sequence				ccomp085 tcf fail c_compilation
 test	finalize-without-then-with-assertions		ccomp086 tcf fail c_compilation
+test	finalize-expanded-generic-c-error	ccomp087 tcf fail c_compilation
 
 -- Storable tests
 
@@ -2657,6 +2661,10 @@ test	qat-using-generic-feature-finalized	anchor059 tcf fail anchored_type
 test	qat-in-creation-procedure	anchor060 tcf fail anchored_type finalizing
 test	qat-generic-with-rename		anchor061 tcf fail anchored_type
 test	qat-generic-inheritance		anchor062 tcf fail anchored_type
+test	qat-constraints-crash		anchor063 tcf fail anchored_type formal generic
+test	qat-generic-with-rename-inherited anchor064 tcf fail anchored_type formal generic
+test 	qat-generic-func-expanded-actual anchor065 tcf fail finalizing anchored_types
+test 	qat-generic-resolving-to-none 	anchor066 tcf fail finalizing anchored_types
 
 -- SCOOP
 test	scoop-access-smoke					scoop001 tcf pass scoop execution

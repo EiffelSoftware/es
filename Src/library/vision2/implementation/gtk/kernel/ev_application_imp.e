@@ -44,6 +44,7 @@ feature {NONE} -- Initialization
 			-- Set up the callback marshal and initialize GTK+.
 		local
 			locale_str: STRING
+			l_colormap: POINTER
 		do
 --			if {EV_GTK_DEPENDENT_EXTERNALS}.g_mem_is_system_malloc then
 --				{EV_GTK_DEPENDENT_EXTERNALS}.g_mem_set_vtable ({EV_GTK_EXTERNALS}.glib_mem_profiler_table)
@@ -79,7 +80,9 @@ feature {NONE} -- Initialization
 					-- 0 = No messages, 1 = Gtk Log Messages, 2 = Gtk Log Messages with Eiffel exception.
 				{GTK}.gdk_set_show_events (False)
 
-				{GTK}.gtk_widget_set_default_colormap ({GTK}.gdk_rgb_get_cmap)
+				l_colormap := {GTK}.gdk_rgb_get_cmap
+
+				{GTK}.gtk_widget_set_default_colormap (l_colormap)
 
 				gtk_dependent_initialize
 
@@ -89,7 +92,7 @@ feature {NONE} -- Initialization
 				set_tooltip_delay (500)
 
 					-- Uncomment for Gtk 2.x only
-				--feature {EV_GTK_DEPENDENT_EXTERNALS}.gdk_window_set_debug_updates (True)
+--				feature {GTK2}.gdk_window_set_debug_updates (True)
 
 					-- We do not want X Errors to exit the system so we ignore them indefinitely.
 				{GTK}.gdk_error_trap_push
@@ -109,7 +112,10 @@ feature {NONE} -- Initialization
 			l_primary_monitor_number: INTEGER
 			l_image: POINTER
 			l_supports_composite_symbol: POINTER
+			l_best_depth: INTEGER
 		do
+			l_best_depth := {GTK2}.gdk_visual_get_best_depth
+
 				-- Check if an GdkImage using the GDK_IMAGE_SHARED flag (first argument '1') may be created, if so then display is local.
 			l_image := {GTK}.gdk_image_new (1, {GTK}.gdk_rgb_get_visual, 1, 1)
 				-- This may fail if the X Server doesn't support the Shared extension, but if this is the case
@@ -179,6 +185,9 @@ feature {EV_ANY_I} -- Implementation
 	screen_monitor_count: INTEGER
 	screen_primary_monitor_number: INTEGER
 		-- Screen meta data.
+
+	best_available_color_depth: INTEGER
+		-- Best available color depth of display
 
 	is_display_alpha_capable: BOOLEAN
 			-- Is application display capable of displaying transparent windows?
@@ -258,11 +267,12 @@ feature {EV_ANY_I} -- Implementation
 			l_has_grab_widget: BOOLEAN
 			l_event_string: detachable STRING
 			l_call_theme_events: BOOLEAN
-			l_any_event, l_user_event: BOOLEAN
+			l_any_event, l_user_event, l_gdk_event_is_sent: BOOLEAN
 		do
 			from
 				l_motion_tuple := motion_tuple
 				l_app_motion_tuple := app_motion_tuple
+					-- Check if there are any gtk events pending before dispatching them at the end of the loop.
 			until
 				l_no_more_events or else is_destroyed
 			loop
@@ -270,6 +280,9 @@ feature {EV_ANY_I} -- Implementation
 				if gdk_event /= {GTK}.null_pointer then
 						-- GDK events are always handled before gtk events.
 					event_widget := {GTK}.gtk_get_event_widget (gdk_event)
+
+					l_gdk_event_is_sent := {GTK}.gdk_event_any_struct_send_event (gdk_event) /= 0
+
 						-- event_widget may be null.
 					l_any_event := True
 					l_call_event := True
@@ -409,7 +422,6 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_PROPERTY_NOTIFY%N")
 						end
-						l_propagate_event := True
 					when GDK_EXPOSE then
 							-- This is only called on gtk 1.2 as expose compression is
 							-- performed in gdk with 2.x and above.
@@ -636,6 +648,10 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_DROP_FINISHED")
 						end
+					when GDK_NOTHING then
+						debug ("GDK_NOTHING")
+							print ("GDK_NOTHING")
+					 	end
 					when GDK_SETTING then
 						debug ("GDK_SETTING")
 							print ("GDK_SETTING")
@@ -672,15 +688,31 @@ feature {EV_ANY_I} -- Implementation
 					end
 					{GTK}.gdk_event_free (gdk_event)
 				else
-					l_any_event := l_any_event or else {GTK2}.events_pending
-					{GTK2}.dispatch_events
-					l_no_more_events := not {GTK2}.events_pending
+					if {GTK2}.events_pending then
+						l_any_event := True
+						process_gtk_events
+					end
+					l_no_more_events := True
 				end
 			end
 
 				-- Set event status flags.
 			events_processed_from_underlying_toolkit := l_any_event
 			user_events_processed_from_underlying_toolkit := l_user_event
+		end
+
+	process_gtk_events
+			-- Process Pending gtk events.
+		local
+			l_events_processed: BOOLEAN
+		do
+			if not l_events_processed then
+				{GTK2}.dispatch_events
+			end
+		rescue
+				-- Catch any exceptions.
+			l_events_processed := True
+			retry
 		end
 
 feature -- Implementation
@@ -806,7 +838,7 @@ feature -- Basic operation
 	app_motion_tuple: TUPLE [widget: EV_WIDGET; x: INTEGER; y: INTEGER]
 			-- Tuple optimization
 		once
-			Result := [default_window, 0, 0]
+			Result := [default_widget, 0, 0]
 		end
 
 	process_button_event (a_gdk_event: POINTER)
@@ -978,42 +1010,42 @@ feature -- Basic operation
 		end
 
 
-	GDK_NOTHING: INTEGER = -1
-	GDK_DELETE: INTEGER = 0
-	GDK_DESTROY: INTEGER = 1
-	GDK_EXPOSE: INTEGER = 2
-	GDK_MOTION_NOTIFY: INTEGER = 3
-	GDK_BUTTON_PRESS: INTEGER = 4
-	GDK_2BUTTON_PRESS : INTEGER = 5
-	GDK_3BUTTON_PRESS: INTEGER = 6
-	GDK_BUTTON_RELEASE: INTEGER = 7
-	GDK_KEY_PRESS: INTEGER = 8
-	GDK_KEY_RELEASE: INTEGER = 9
-	GDK_ENTER_NOTIFY: INTEGER = 10
-	GDK_LEAVE_NOTIFY: INTEGER = 11
-	GDK_FOCUS_CHANGE: INTEGER = 12
-	GDK_CONFIGURE: INTEGER = 13
-	GDK_MAP: INTEGER = 14
-	GDK_UNMAP: INTEGER = 15
-	GDK_PROPERTY_NOTIFY: INTEGER = 16
-	GDK_SELECTION_CLEAR: INTEGER = 17
-	GDK_SELECTION_REQUEST: INTEGER = 18
-	GDK_SELECTION_NOTIFY: INTEGER = 19
-	GDK_PROXIMITY_IN: INTEGER = 20
-	GDK_PROXIMITY_OUT: INTEGER = 21
-	GDK_DRAG_ENTER: INTEGER = 22
-	GDK_DRAG_LEAVE: INTEGER = 23
-	GDK_DRAG_MOTION: INTEGER = 24
-	GDK_DRAG_STATUS: INTEGER = 25
-	GDK_DROP_START: INTEGER = 26
-	GDK_DROP_FINISHED : INTEGER = 27
-	GDK_CLIENT_EVENT: INTEGER = 28
-	GDK_VISIBILITY_NOTIFY: INTEGER = 29
-	GDK_NO_EXPOSE: INTEGER = 30
-	GDK_SCROLL: INTEGER = 31
-	GDK_WINDOW_STATE: INTEGER = 32
-	GDK_SETTING: INTEGER = 33
-	GDK_OWNER_CHANGE: INTEGER = 34
+	GDK_NOTHING: INTEGER_8 = -1
+	GDK_DELETE: INTEGER_8 = 0
+	GDK_DESTROY: INTEGER_8 = 1
+	GDK_EXPOSE: INTEGER_8 = 2
+	GDK_MOTION_NOTIFY: INTEGER_8 = 3
+	GDK_BUTTON_PRESS: INTEGER_8 = 4
+	GDK_2BUTTON_PRESS : INTEGER_8 = 5
+	GDK_3BUTTON_PRESS: INTEGER_8 = 6
+	GDK_BUTTON_RELEASE: INTEGER_8 = 7
+	GDK_KEY_PRESS: INTEGER_8 = 8
+	GDK_KEY_RELEASE: INTEGER_8 = 9
+	GDK_ENTER_NOTIFY: INTEGER_8 = 10
+	GDK_LEAVE_NOTIFY: INTEGER_8 = 11
+	GDK_FOCUS_CHANGE: INTEGER_8 = 12
+	GDK_CONFIGURE: INTEGER_8 = 13
+	GDK_MAP: INTEGER_8 = 14
+	GDK_UNMAP: INTEGER_8 = 15
+	GDK_PROPERTY_NOTIFY: INTEGER_8 = 16
+	GDK_SELECTION_CLEAR: INTEGER_8 = 17
+	GDK_SELECTION_REQUEST: INTEGER_8 = 18
+	GDK_SELECTION_NOTIFY: INTEGER_8 = 19
+	GDK_PROXIMITY_IN: INTEGER_8 = 20
+	GDK_PROXIMITY_OUT: INTEGER_8 = 21
+	GDK_DRAG_ENTER: INTEGER_8 = 22
+	GDK_DRAG_LEAVE: INTEGER_8 = 23
+	GDK_DRAG_MOTION: INTEGER_8 = 24
+	GDK_DRAG_STATUS: INTEGER_8 = 25
+	GDK_DROP_START: INTEGER_8 = 26
+	GDK_DROP_FINISHED: INTEGER_8 = 27
+	GDK_CLIENT_EVENT: INTEGER_8 = 28
+	GDK_VISIBILITY_NOTIFY: INTEGER_8 = 29
+	GDK_NO_EXPOSE: INTEGER_8 = 30
+	GDK_SCROLL: INTEGER_8 = 31
+	GDK_WINDOW_STATE: INTEGER_8 = 32
+	GDK_SETTING: INTEGER_8 = 33
+	GDK_OWNER_CHANGE: INTEGER_8 = 34
 		-- GDK Event Type Constants
 
 	sleep (msec: INTEGER)
@@ -1229,6 +1261,16 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 			-- access default visual information (color depth).
 		do
 			Result := {GTK}.gtk_widget_struct_window (default_gtk_window)
+		end
+
+	default_widget: EV_WIDGET
+			-- Default widget used for creation of tuples.
+		local
+			l_widget: detachable EV_WIDGET
+		once
+			l_widget ?= default_window
+			check l_widget /= Void end
+			Result := l_widget
 		end
 
 	default_window: EV_WINDOW

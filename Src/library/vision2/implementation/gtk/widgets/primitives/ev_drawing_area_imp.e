@@ -240,27 +240,23 @@ feature {NONE} -- Implementation
 	redraw
 			-- Redraw the entire area.
 		do
-			{GTK}.gtk_widget_queue_draw (c_object)
+			redraw_rectangle (0, 0, width, height)
 		end
 
 	redraw_rectangle (a_x, a_y, a_width, a_height: INTEGER)
 			-- Redraw the rectangle area defined by `a_x', `a_y', `a_width', a_height'.
 		local
 			a_rectangle: POINTER
-			a_drawable: POINTER
+			l_drawable: POINTER
 		do
-			a_drawable := drawable
-			if a_drawable /= NULL and then is_displayed then
-				if {GTK}.gtk_maj_ver > 1 then
-					a_rectangle := app_implementation.reusable_rectangle_struct
-					{GTK2}.set_gdk_rectangle_struct_width (a_rectangle, a_width)
-					{GTK2}.set_gdk_rectangle_struct_height (a_rectangle, a_height)
-					{GTK2}.set_gdk_rectangle_struct_x (a_rectangle, a_x)
-					{GTK2}.set_gdk_rectangle_struct_y  (a_rectangle, a_y)
-					{GTK2}.gdk_window_invalidate_rect (a_drawable, a_rectangle, False)
-				else
-					{GTK}.gtk_widget_queue_draw_area (visual_widget, a_x, a_y, a_width, a_height)
-				end
+			l_drawable := drawable
+			if l_drawable /= NULL and then is_displayed then
+				a_rectangle := app_implementation.reusable_rectangle_struct
+				{GTK2}.set_gdk_rectangle_struct_width (a_rectangle, a_width)
+				{GTK2}.set_gdk_rectangle_struct_height (a_rectangle, a_height)
+				{GTK2}.set_gdk_rectangle_struct_x (a_rectangle, a_x)
+				{GTK2}.set_gdk_rectangle_struct_y  (a_rectangle, a_y)
+				{GTK2}.gdk_window_invalidate_rect (l_drawable, a_rectangle, False)
 			end
 		end
 
@@ -281,9 +277,7 @@ feature {NONE} -- Implementation
 	flush
 			-- Redraw the screen immediately.
 		do
-			if is_displayed then
-				refresh_now
-			end
+			refresh_now
 		end
 
 	update_if_needed

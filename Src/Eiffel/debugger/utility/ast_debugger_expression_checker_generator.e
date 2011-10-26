@@ -70,6 +70,7 @@ feature -- Access: byte node
 			bak_byte_code: BYTE_CODE
 			bak_cc, l_cl: CLASS_C
 		do
+			a_context.reset_evaluation_data
 			dbg_error_handler := a_dbg_error_handler
 			if not retried then
 				error_handler.wipe_out
@@ -110,6 +111,8 @@ feature -- Access: byte node
 						if l_byte_code /= Void then
 							Byte_context.set_byte_code (l_byte_code)
 						end
+
+						a_context.set_byte_code (l_byte_code)
 							--| Locals and object test locals
 						add_local_info_to_ast_context (fi.e_feature, ast_context, a_context)
 					elseif a_context.on_object then
@@ -488,9 +491,9 @@ feature {NONE} -- Implementation
 			l_error_level := error_level
 			if is_inherited then
 					-- Convert TYPE_AS into TYPE_A.
-				l_type := type_a_generator.evaluate_type_if_possible (a_type, context.written_class)
+				l_type := type_a_generator.evaluate_optional_unchecked (a_type, context.written_class)
 			else
-				l_type := type_a_generator.evaluate_type_if_possible (a_type, context.current_class)
+				l_type := type_a_generator.evaluate_optional_unchecked (a_type, context.current_class)
 			end
 
 			if l_type = Void then
@@ -505,7 +508,7 @@ feature {NONE} -- Implementation
 					if l_classes.count = 1 then
 						l_cl := l_classes.first
 						if l_cl.is_compiled then
-							l_type := type_a_generator.evaluate_type_if_possible (l_class_type, l_cl.compiled_class)
+							l_type := type_a_generator.evaluate_optional_unchecked (l_class_type, l_cl.compiled_class)
 						end
 					elseif l_classes.count > 1 then
 						create l_vd29
@@ -614,7 +617,7 @@ feature {INSPECT_CONTROL} -- AST modification
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

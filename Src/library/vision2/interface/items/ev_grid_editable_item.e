@@ -83,14 +83,20 @@ feature {NONE} -- Implementation
 			a_widget_y_offset: INTEGER
 			a_widget: EV_WIDGET
 			l_parent: like parent
+			l_layout: like grid_label_item_layout
 		do
 			a_widget := a_popup.item
 
 			l_parent := parent
 			check l_parent /= Void end
 
+				-- Due to the drawing hack for text which assumes that text is by default drawing
+				-- {EV_GRID_LABEL_ITEM}.default_left_border pixels to the right, we need to check
+				-- if user has set `left_border' or not.
+			if internal_left_border >= 0 then
+				l_x_offset := left_border
+			end
 				-- Account for position of text relative to pixmap.
-			l_x_offset := left_border
 			if attached pixmap as l_pixmap then
 				l_x_offset := l_x_offset + l_pixmap.width + spacing
 			end
@@ -100,13 +106,19 @@ feature {NONE} -- Implementation
 
 			a_width := a_popup.width - l_x_coord - right_border
 
+				-- Border of the widget
 			a_widget_y_offset := (a_widget.minimum_height - text_height) // 2
 
 			a_widget.set_minimum_width (0)
 
 			a_popup.set_x_position (a_popup.x_position + l_x_coord)
 			a_popup.set_width (a_width)
-			a_popup.set_y_position (a_popup.y_position + ((a_popup.height - top_border - bottom_border - text_height) // 2) + top_border - a_widget_y_offset)
+				-- Move the popup above the text location which we need to compute.
+			l_layout := computed_initial_grid_label_item_layout (width, height)
+			if attached layout_procedure as l_layout_procedure then
+				l_layout_procedure.call ([Current, l_layout])
+			end
+			a_popup.set_y_position (a_popup.y_position + l_layout.text_y - a_widget_y_offset)
 			a_popup.set_height (text_height)
 		end
 
@@ -137,6 +149,13 @@ feature {NONE} -- Implementation
 				l_text_field.set_font (l_font)
 			end
 			l_text_field.set_text (text)
+
+				-- Follow the current alignment of item.
+			if is_right_aligned then
+				l_text_field.align_text_right
+			elseif is_center_aligned then
+				l_text_field.align_text_center
+			end
 
 				-- Hide the border of the text field.
 				-- This may trigger a minimum size calculation so it is performed after the contents have been updated.

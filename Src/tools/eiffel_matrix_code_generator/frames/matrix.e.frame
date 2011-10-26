@@ -15,10 +15,9 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_file_name: STRING) is
+	make (a_file_name: STRING)
 			-- Initialize matrix
 		require
-			a_file_name_attached: a_file_name /= Void
 			not_a_file_name_is_empty: not a_file_name.is_empty
 			a_file_name_exists: (create {RAW_FILE}.make (a_file_name)).exists
 		local
@@ -77,7 +76,7 @@ feature {NONE} -- Access
 
 feature -- Status report
 
-	has_named_icon (a_name: attached STRING): BOOLEAN
+	has_named_icon (a_name: STRING): BOOLEAN
 			-- Indicates if a name icon if availalbe.
 			--
 			-- `a_name': The icon name. (See section Access: Icon name constants)
@@ -92,7 +91,7 @@ feature -- Status report
 
 feature -- Query
 
-	named_icon_buffer (a_name: attached STRING): EV_PIXEL_BUFFER
+	named_icon_buffer (a_name: STRING): EV_PIXEL_BUFFER
 			-- Retrieves a icon buffer given a known icon name
 			--
 			-- `a_name':
@@ -100,17 +99,15 @@ feature -- Query
 		require
 			not_a_name_is_empty: not a_name.is_empty
 			has_named_icon_a_name: has_named_icon (a_name)
-		local
-			l_coords: TUPLE [x: NATURAL_8; y: NATURAL_8]
 		do
-			l_coords := icon_coordinates_table.item (a_name)
-			Result := matrix_buffer.sub_pixel_buffer (pixel_rectangle (l_coords.x, l_coords.y))
+			check attached icon_coordinates_table.item (a_name) as l_coords then
+				Result := matrix_buffer.sub_pixel_buffer (pixel_rectangle (l_coords.x, l_coords.y))
+			end
 		ensure
-			named_icon_buffer_attached: Result /= Void
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
-	named_icon (a_name: attached STRING): EV_PIXMAP
+	named_icon (a_name: STRING): EV_PIXMAP
 			-- Retrieves a icon buffer given a known icon name
 			--
 			-- `a_name':
@@ -118,13 +115,11 @@ feature -- Query
 		require
 			not_a_name_is_empty: not a_name.is_empty
 			has_named_icon_a_name: has_named_icon (a_name)
-		local
-			l_coords: TUPLE [x: NATURAL_8; y: NATURAL_8]
 		do
-			l_coords := icon_coordinates_table.item (a_name)
-			Result := matrix_buffer.sub_pixmap (pixel_rectangle (l_coords.x, l_coords.y))
+			check attached icon_coordinates_table.item (a_name) as l_coords then
+				Result := matrix_buffer.sub_pixmap (pixel_rectangle (l_coords.x, l_coords.y))
+			end
 		ensure
-			named_icon_attached: Result /= Void
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
