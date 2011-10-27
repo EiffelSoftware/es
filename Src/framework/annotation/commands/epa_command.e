@@ -5,11 +5,11 @@ note
 	revision: "$Revision$"
 
 deferred class
-	ANN_COMMAND
+	EPA_COMMAND
 
 feature -- Access
 
-	config: ANN_CONFIG
+	config: EPA_CONFIG
 			-- Config for annotation collection
 
 feature -- Basic operations

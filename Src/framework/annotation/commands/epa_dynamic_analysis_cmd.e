@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_DYNAMIC_ANNOTATOR_CMD
+	EPA_DYNAMIC_ANALYSIS_CMD
 
 inherit
-	ANN_COMMAND
+	EPA_COMMAND
 
 	EPA_DEBUGGER_UTILITY
 
@@ -56,9 +56,9 @@ feature -- Basic operations
 			l_feature: FEATURE_I
 			l_expr: EPA_AST_EXPRESSION
 			l_feature_selector: EPA_FEATURE_SELECTOR
-			l_var_finder: ANN_INTERESTING_VARIABLE_FINDER
-			l_pre_state_finder: ANN_INTERESTING_PRE_STATE_FINDER
-			l_post_state_finder: ANN_POST_STATE_FINDER
+			l_var_finder: EPA_INTERESTING_VARIABLE_FINDER
+			l_pre_state_finder: EPA_INTERESTING_PRE_STATE_FINDER
+			l_post_state_finder: EPA_POST_STATE_FINDER
 			l_variables: LINKED_LIST [STRING]
 		do
 			across config.locations as l_locations loop
@@ -165,9 +165,9 @@ feature {NONE} -- Implementation
 			l_bp_slot: INTEGER
 			l_state: DS_HASH_SET [EPA_EQUATION]
 		do
-			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
-			io.put_string (a_state.debug_output +"%N")
-			io.put_string ("==>%N")
+--			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
+--			io.put_string (a_state.debug_output +"%N")
+--			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
 			create l_state.make_default
 
