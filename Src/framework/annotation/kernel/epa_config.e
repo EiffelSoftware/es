@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_CONFIG
+	EPA_CONFIG
 
 inherit
 	SHARED_EXEC_ENVIRONMENT

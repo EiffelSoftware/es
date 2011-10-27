@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_COMMAND_LINE_PARSER
+	EPA_COMMAND_LINE_PARSER
 
 inherit
 	EPA_UTILITY
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	config: ANN_CONFIG
+	config: EPA_CONFIG
 			-- AutoFix command line options
 
 	arguments: LINKED_LIST [STRING]

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_INTERESTING_PRE_STATE_FINDER
+	EPA_INTERESTING_PRE_STATE_FINDER
 
 inherit
 	AST_ITERATOR

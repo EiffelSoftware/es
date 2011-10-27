@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_POST_STATE_FINDER
+	EPA_POST_STATE_FINDER
 
 inherit
 	EPA_UTILITY
@@ -30,6 +30,7 @@ feature -- Operation
 			-- Finds all post-states and makes them available in `post_state_map'
 		local
 			l_cfg_builder: EPA_CFG_BUILDER
+			l_cfg_printer: EGX_SIMPLE_DOT_GRAPH_PRINTER [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
 		do
 			-- Initialize helper attributes
 			create post_state_map.make_default
@@ -45,6 +46,9 @@ feature -- Operation
 			l_cfg_builder.set_is_auxilary_nodes_created (True)
 			l_cfg_builder.build_from_feature (class_, feature_)
 			cfg := l_cfg_builder.last_control_flow_graph
+
+			create l_cfg_printer.make_default
+			l_cfg_printer.print_and_save_graph (cfg, "/tmp/" + feature_.e_feature.name + ".dot")
 
 			-- Look for all post-states
 			cfg.start_node.process (Current)

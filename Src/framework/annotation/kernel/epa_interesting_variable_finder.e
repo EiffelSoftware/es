@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ANN_INTERESTING_VARIABLE_FINDER
+	EPA_INTERESTING_VARIABLE_FINDER
 
 inherit
 	AST_ITERATOR
@@ -58,6 +58,8 @@ feature -- Process operations
 				if not l_as.access_name_8.is_equal ("io") then
 					interesting_variables.force_last (l_as.access_name_8)
 				end
+			elseif is_creation_procedure then
+				interesting_variables.force_last (l_as.access_name_8)
 			else
 				interesting_variables.force_last ("Current")
 			end
@@ -66,7 +68,9 @@ feature -- Process operations
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
 		do
-			-- Nothing to be done
+			is_creation_procedure := True
+			process_creation_as (l_as)
+			is_creation_procedure := False
 		end
 
 
@@ -140,5 +144,8 @@ feature {NONE} -- Implementation
 
 	is_nested: BOOLEAN
 			-- Is the current node part of a NESTED_AS node?
+
+	is_creation_procedure: BOOLEAN
+			-- Is the current node part of a creation procedure?
 
 end
