@@ -331,6 +331,7 @@
 				<exclude>/ewb_contract_inference\.e$</exclude>
 				<exclude>/ewb_auto_test\.e$</exclude>
 				<exclude>/ewb_testing\.e$</exclude>
+				<exclude>/ewb_dynamic_program_analysis\.e$</exclude>
 				<exclude>/ewb_annotation\.e$</exclude>
 				<exclude>/ewb_snippet_extraction\.e$</exclude>
 			</file_rule>

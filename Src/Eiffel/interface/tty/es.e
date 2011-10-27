@@ -1337,11 +1337,15 @@ feature -- Update
 			elseif option.is_equal ("-snippet_extraction") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
-				create {EWB_SNIPPET_EXTRACTION} command.make_with_arguments (l_at_args)			
+				create {EWB_SNIPPET_EXTRACTION} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-annotation") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_ANNOTATION} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-dynamic_program_analysis") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_DYNAMIC_PROGRAM_ANALYSIS} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-boogie") then
 				create {EWB_BOOGIE_VERIFICATION} command
 			elseif option.is_equal ("-js_compile") then
