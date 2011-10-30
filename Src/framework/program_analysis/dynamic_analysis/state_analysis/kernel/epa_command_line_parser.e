@@ -41,7 +41,6 @@ feature -- Access
 			l_dynamic_flag: AP_FLAG
 			l_static_flag: AP_FLAG
 			l_locations, l_variables, l_output_path: AP_STRING_OPTION
-			l_expr_builder: EPA_EXPRESSIONS_TO_EVALUATE_BUILDER
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
