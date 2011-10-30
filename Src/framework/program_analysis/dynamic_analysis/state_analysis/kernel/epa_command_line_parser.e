@@ -41,6 +41,7 @@ feature -- Access
 			l_dynamic_flag: AP_FLAG
 			l_static_flag: AP_FLAG
 			l_locations, l_variables, l_output_path: AP_STRING_OPTION
+			l_expr_builder: EPA_EXPRESSIONS_TO_EVALUATE_BUILDER
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -75,6 +76,8 @@ feature -- Access
 
 			config.set_is_dynamic_annotation_enabled (l_dynamic_flag.was_found)
 			config.set_is_static_annotation_enabled (l_static_flag.was_found)
+			config.set_is_variables_specified (l_variables.was_found)
+			config.set_is_output_path_specified (l_output_path.was_found)
 
 			if l_locations.was_found then
 				setup_locations (l_locations.parameter)

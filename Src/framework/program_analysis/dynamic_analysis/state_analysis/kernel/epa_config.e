@@ -36,7 +36,7 @@ feature -- Access
 	variables: LINKED_LIST [STRING]
 			-- Variables which should be used to construct interesting expressions
 
-	output_path: detachable STRING assign set_output
+	output_path: STRING assign set_output
 			-- Output-path for storing the collected equations.
 
 	working_directory: STRING
@@ -59,6 +59,12 @@ feature -- Status report
 	is_static_annotation_enabled: BOOLEAN
 			-- Is annotation by static means enabled?
 
+	is_variables_specified: BOOLEAN
+			-- Are variables used to build expressions to evaluate specified?
+
+	is_output_path_specified: BOOLEAN
+			-- Is a output path specified?
+
 feature -- Setting
 
 	set_is_dynamic_annotation_enabled (b: BOOLEAN)
@@ -75,6 +81,22 @@ feature -- Setting
 			is_static_annotation_enabled := b
 		ensure
 			is_static_annotation_enabled_set: is_static_annotation_enabled = b
+		end
+
+	set_is_variables_specified (b: BOOLEAN)
+			-- Set `is_variables_specified' with `b'.
+		do
+			is_variables_specified := b
+		ensure
+			is_variables_specified_set: is_variables_specified = b
+		end
+
+	set_is_output_path_specified (b: BOOLEAN)
+			-- Set `is_output_path_specified' with `b'.
+		do
+			is_output_path_specified := b
+		ensure
+			is_output_path_specified_set: is_output_path_specified = b
 		end
 
 	set_output (a_output_path: like output_path)

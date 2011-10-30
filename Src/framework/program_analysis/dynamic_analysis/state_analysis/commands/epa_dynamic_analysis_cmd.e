@@ -60,6 +60,7 @@ feature -- Basic operations
 			l_pre_state_finder: EPA_INTERESTING_PRE_STATE_FINDER
 			l_post_state_finder: EPA_POST_STATE_FINDER
 			l_variables: LINKED_LIST [STRING]
+			l_expr_builder: EPA_EXPRESSIONS_TO_EVALUATE_BUILDER
 		do
 			across config.locations as l_locations loop
 				l_class := l_locations.item.context_class
@@ -82,44 +83,14 @@ feature -- Basic operations
 				l_feature_selector.add_argumented_feature_selector (0, 0)
 				l_feature_selector.add_selector (l_feature_selector.not_from_any_feature_selector)
 
-				create l_monitored_exprs.make_default
-				l_monitored_exprs.set_equality_tester (expression_equality_tester)
-
-				if config.variables.count > 0 then
-					l_variables := config.variables
+				create l_expr_builder.make (l_class, l_feature)
+				if config.is_variables_specified then
+					l_expr_builder.build_from_variables (config.variables)
 				else
-					-- Find interesting variable names in `l_feature'.
-					create l_var_finder.make_with (l_feature.e_feature.ast)
-					l_var_finder.find
-
-					create l_variables.make
-					across l_var_finder.interesting_variables.to_array as l_var loop
-						l_variables.extend (l_var.item)
-					end
-
-					if l_var_finder.interesting_variables.has ("Current") then
-						across local_names_of_feature (l_feature).to_array as l_locals loop
-							create l_expr.make_with_text (l_class, l_feature, "Current." + l_locals.item, l_class)
-							l_monitored_exprs.force_last (l_expr)
-						end
-					end
-
-					if l_var_finder.interesting_variables.has ("Result") then
-						create l_expr.make_with_text (l_class, l_feature, "Result", l_class)
-						l_monitored_exprs.force_last (l_expr)
-					end
+					l_expr_builder.build_from_ast (l_feature.e_feature.ast)
 				end
 
-				-- Set up the expressions to evaluate.
-				across l_variables as l_var loop
-					create l_expr.make_with_text (l_class, l_feature, l_var.item, l_class)
-					l_feature_selector.select_from_class (l_expr.type.associated_class)
-
-					across l_feature_selector.last_features as l_queries loop
-						create l_expr.make_with_text (l_class, l_feature, l_var.item + "." + l_queries.item.feature_name, l_class)
-						l_monitored_exprs.force_last (l_expr)
-					end
-				end
+				l_monitored_exprs := l_expr_builder.expressions_to_evaluate
 
 				-- Remove breakpoints set by previous debugging sessions.
 				remove_breakpoint (debugger_manager, config.root_class)
