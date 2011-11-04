@@ -55,6 +55,12 @@ feature -- Query
 			create Result.put (l_manger)
 		end
 
+	all_feedback_indicators: ARRAYED_LIST [ER_FEEDBACK_INDICATOR]
+			-- All feedback indicators
+		once
+			create Result.make (20)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

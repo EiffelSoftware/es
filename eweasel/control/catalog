@@ -521,6 +521,7 @@ test	bogus-vsrp3-with-require-else-false	valid269 tcf pass validity
 test	spurious-vuot-in-assertion		valid270 tcf pass validity object_test
 test	spurious-vweq-warning			valid271 tcf pass validity
 test	non-conforming-missing-vmss3		valid272 tcf fail validity non-conforming
+test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1641,6 +1642,7 @@ test	deep-twin-control-c				exec343 tcf pass execution manual
 test	wrong-argument-type-in-tuple	exec344 tcf pass execution
 test	wrong-attribute-type-in-tuple	exec345 tcf pass execution
 test	ptr-is-default-pointer			exec346 tcf pass execution
+test	small-eif-memory-scavenge-2		exec347	tcf pass execution
 
 -- Once specific
 
@@ -2037,6 +2039,7 @@ test	store-retrieve-with-version	store031 tcf pass storable
 test	store-in-different-thread	store032 tcf pass storable multithreaded
 test	store-bounded-queues-stacks	store033 tcf pass storable
 test	old-hashtable-retrieval		store034 tcf pass storable table
+test	store-retrieve-bogus-version-mismatch	store035 tcf pass storable
 
 -- Flat, short, flatshort tests
 
@@ -2686,6 +2689,7 @@ test	scoop-separate-call-to-constant			scoop017 tcf pass scoop execution
 test	scoop-once-per-object				scoop018 tcf pass scoop execution incrementality once
 test	scoop-top-exception				scoop019 tcf pass scoop
 test	scoop-separate-formal				scoop020 tcf pass scoop formal generic conformance validity
+test	scoop-object-test				scoop021 tcf pass scoop formal generic conformance object_test execution
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

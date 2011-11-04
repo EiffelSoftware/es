@@ -1,7 +1,7 @@
 note
 	description: "[
 					Command to save project
-		]"
+					]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,6 +18,8 @@ feature {NONE} -- Initlization
 
 	make (a_menu: EV_MENU_ITEM)
 			-- Creation method
+		require
+			not_void: a_menu /= Void
 		do
 			init
 			create shared_singleton
@@ -28,10 +30,28 @@ feature -- Command
 
 	execute
 			-- <Precursor>
+		local
+			l_tree_checker: ER_TREE_VALIDATOR
+			l_error_dialog: EV_ERROR_DIALOG
 		do
+			create l_tree_checker
+			l_tree_checker.check_tree
+			if not l_tree_checker.is_valid then
+				if attached main_window as l_win then
+					create l_error_dialog.make_with_text ("Error(s) found, please check Layout Constructor's tree.")
+					l_error_dialog.set_buttons (<<"OK">>)
+					l_error_dialog.show_modal_to_window (l_win)
+				end
+			end
 			if attached shared_singleton.layout_constructor_list.first as l_layout_constructor then
 				l_layout_constructor.save_tree
 			end
+		end
+
+	set_main_window (a_main_window: ER_MAIN_WINDOW)
+			-- Set `main_window' with `a_main_window'
+		do
+			main_window := a_main_window
 		end
 
 feature -- Query

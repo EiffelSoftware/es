@@ -1,9 +1,14 @@
 #!/bin/sh
 set -e
 
+if [ $# -lt 2 ]; then
+	echo Usage: $0 platform source [architecture]
+	exit 1
+fi
+
 ARCH=`dpkg-architecture -qDEB_BUILD_ARCH`
-if [ $# -ge 1 ]; then
-	ARCH=$1
+if [ $# -ge 3 ]; then
+	ARCH=$3
 	if ! `dpkg-architecture -L | grep $ARCH >/dev/null`; then
 		echo "$ARCH is not a valid architecture!"
 		echo "Common architectures are: alpha amd64 i386 i686 ia64 powerpc ppc64 sparc (type \`dpkg-architecture -L\` for a complete list)"
@@ -13,11 +18,11 @@ fi
 
 LOG=`pwd`/debian.log
 >$LOG
+set -- $1 $2
 . ./packaging/config.sh
 
-
 # Create unix layout in debian directoy
-DST_DIR=$DEBIAN_DIR/$PRODUCT
+set -- $1 $2 $DEBIAN_DIR/$PRODUCT
 . ./make_unix_layout
 
 
@@ -28,25 +33,7 @@ cp $PACKAGING_DIR/license $DEBIAN_DIR/copyright
 . $DEBIAN_DIR/postinst.sh
 . $DEBIAN_DIR/prerm.sh
 
-
 cd $DEBIAN_DIR
-
-
-# First we check if there are any docs (architecture independent)
-if test -d "$PRODUCT$DOCS_DIR"; then
-	mkdir -p $PRODUCT-doc$DOCS_DIR
-	mv $PRODUCT$DOCS_DIR/* $PRODUCT-doc$DOCS_DIR/
-	rm -rf $PRODUCT$DOCS_DIR
-
-	echo "Building $PRODUCT-doc package"
-	debuild -eARCH=all --check-dirname-level 0 binary-indep >>$LOG 2>>$LOG
-
-	# Clean up doc related build files
-	rm -rf $DEBIAN_DIR/$PRODUCT-doc
-else
-	echo "$0: No $DOCS_DIR present, $PRODUCT-doc package will not be created"
-fi
-
 
 # Then we build the main package (architecture dependent)
 echo "Building $PRODUCT ($ARCH) package"

@@ -2670,7 +2670,6 @@ Src/framework/eiffel_transform/Tests/test_setter_gen.1.ref -text
 Src/framework/eiffel_transform/Tests/test_wrap.1.ref -text
 Src/framework/eiffel_transform/eiffel_transform.lic -text
 Src/framework/emitter_loader/emitter_loader.lic -text
-Src/framework/enumerated_type/license.lic -text
 Src/framework/environment/environment.lic -text
 Src/framework/file_formats/ini.lic -text
 Src/framework/file_formats/pe/pe.lic -text
@@ -2795,8 +2794,6 @@ Src/framework/semantic_search/lucene_server/src/server/LuceneServer.java -text
 Src/framework/semantic_search/lucene_server/src/server/Message.java -text
 Src/framework/semantic_search/lucene_server/src/server/Protocol.java -text
 Src/framework/semantic_search/lucene_server/src/utility/Utility.java -text
-Src/framework/sqlite3/README -text
-Src/framework/sqlite3/license.lic -text
 Src/framework/tagging/ev/tagging-ev.lic -text
 Src/framework/tagging/tagging.lic -text
 Src/framework/terminal/license.lic -text
@@ -3505,6 +3502,10 @@ Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
+Src/unstable/README.txt -text
+Src/unstable/library/persistency/database/sqlite3/README -text
+Src/unstable/library/persistency/database/sqlite3/license.lic -text
+Src/unstable/library/text/regexp/pcre/pcre.rc -text
 eweasel/BUGS -text
 eweasel/CHANGES -text
 eweasel/GPL.txt -text
