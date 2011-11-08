@@ -36,13 +36,18 @@ feature {NONE} -- Initialization
 			is_conditional := a_conditional
 		end
 
-
 feature -- Access
 
 	expression: STRING
 			-- Is either a valid identifier e.g. 'var1' or
 			-- a valid identifier with feature call e.g. 'var1.feat1'
 			-- omitting brackets and arguments.
+
+	ast_of_expression: EXPR_AS
+			-- AST representtion of `expression'
+		do
+			Result := epa_utility.ast_from_expression_text (expression)
+		end
 
 	is_conditional: BOOLEAN
 			-- States if the `expression' occures conditionally or mandatory.
@@ -83,6 +88,13 @@ feature -- Process
 			-- Process current with `a_visitor'.
 		do
 			a_visitor.process_mention_annotation (Current)
+		end
+
+feature {NONE} -- Implementaton
+
+	epa_utility: EPA_UTILITY
+		once
+			create Result
 		end
 
 end
