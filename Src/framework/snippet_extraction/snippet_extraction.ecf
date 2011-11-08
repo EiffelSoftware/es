@@ -69,6 +69,7 @@
 			<file_rule>
 				<exclude>^/experimental/shared$</exclude>
 			</file_rule>
+			<!--<cluster name="xml" location="\Data\Development\source\eiffelstudio\branches\eth\eve\Src\framework\snippet_extraction\command\xml\"/>-->
 		</cluster>
 	</target>
 </system>

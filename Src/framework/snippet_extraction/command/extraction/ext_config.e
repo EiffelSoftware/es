@@ -54,6 +54,18 @@ feature -- Access
 		assign set_output
 			-- Output directory for some operations.
 
+	output_xml: BOOLEAN
+			-- Output snippets in XML format.
+			-- Only active, when `output' set.
+
+	output_txt: BOOLEAN
+			-- Output snippets in textual format.
+			-- Only active, when `output' set.			
+
+	output_bin: BOOLEAN
+			-- Output snippets in binary serialization format.
+			-- Only active, when `output' set.
+
 	log_file_name: detachable STRING
 		assign set_log_file_name
 			-- File name used to write logging information to.
@@ -140,6 +152,24 @@ feature -- Setting
 			-- Set `output' with `a_output'.
 		do
 			output := a_output
+		end
+
+	set_output_xml (b: BOOLEAN)
+			-- Set `output_xml' with `b'.
+		do
+			output_xml := b
+		end
+
+	set_output_bin (b: BOOLEAN)
+			-- Set `output_bin' with `b'.
+		do
+			output_bin := b
+		end
+
+	set_output_txt (b: BOOLEAN)
+			-- Set `output_txt' with `b'.
+		do
+			output_txt := b
 		end
 
 	set_log_file_name (a_log_file_name: like log_file_name)

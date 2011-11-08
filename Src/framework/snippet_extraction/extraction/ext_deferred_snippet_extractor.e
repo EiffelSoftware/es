@@ -25,7 +25,7 @@ feature -- Basic operations
 			a_context_class_not_void: attached a_context_class
 		deferred
 		ensure
-			last_snippets_not_void: attached last_snippets
+			-- last_snippets_not_void: attached last_snippets
 		end
 
 end

@@ -46,6 +46,9 @@ feature -- Basic operations
 			l_class: AP_STRING_OPTION
 			l_feature: AP_STRING_OPTION
 			l_output: AP_STRING_OPTION
+			l_output_xml: AP_FLAG
+			l_output_bin: AP_FLAG
+			l_output_txt: AP_FLAG
 			l_log_file: AP_STRING_OPTION
 			l_maximum_cfg_level: AP_INTEGER_OPTION
 			l_maximum_line: AP_INTEGER_OPTION
@@ -83,6 +86,18 @@ feature -- Basic operations
 			create l_output.make_with_long_form ("output-path")
 			l_output.set_description ("Specify a folder to output files.")
 			l_parser.options.force_last (l_output)
+
+			create l_output_xml.make_with_long_form ("xml")
+			l_output_xml.set_description ("Output snippets in XML format.")
+			l_parser.options.force_last (l_output_xml)
+
+			create l_output_bin.make_with_long_form ("bin")
+			l_output_bin.set_description ("Output snippets in binary serialization format.")
+			l_parser.options.force_last (l_output_bin)
+
+			create l_output_txt.make_with_long_form ("txt")
+			l_output_txt.set_description ("Output snippets in textual format.")
+			l_parser.options.force_last (l_output_txt)
 
 			create l_log_file.make_with_long_form ("log-file")
 			l_log_file.set_description ("File to write logging information to, additional to standard output.")
@@ -136,6 +151,18 @@ feature -- Basic operations
 
 			if l_output.was_found then
 				config.set_output (l_output.parameter)
+			end
+
+			if l_output_xml.was_found then
+				config.set_output_xml (True)
+			end
+
+			if l_output_bin.was_found then
+				config.set_output_bin (True)
+			end
+
+			if l_output_txt.was_found then
+				config.set_output_txt (True)
 			end
 
 			if l_log_file.was_found then

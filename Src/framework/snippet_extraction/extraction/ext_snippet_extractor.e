@@ -68,7 +68,13 @@ feature -- Basic operations
 			l_retried: BOOLEAN
 		do
 			if l_retried then
-				log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
+					log.put_string ("> Dropping feature; exception raised during extraction;")
+					log.put_string (a_context_class.name_in_upper)
+					log.put_string (".")
+					log.put_string (a_feature.feature_name)
+					log.put_string ("%N")
+
+					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
 			else
 				if a_type.has_associated_class and then a_context_class.name_in_upper /~ a_type.associated_class.name_in_upper then
 					log_feature_processing_header (a_context_class.name_in_upper, a_feature.feature_name, a_type.name)
@@ -103,11 +109,13 @@ feature -- Basic operations
 							create l_path_initializer
 							l_path_initializer.process_from_root (l_compound)
 
-							log.put_string ("%N")
-							log_ast_structure (l_compound)
-							log.put_string ("%N")
-							log_ast_text (l_compound)
-							log.put_string ("%N")
+						debug
+						log.put_string ("%N")
+						log_ast_structure (l_compound)
+						log.put_string ("%N")
+						log_ast_text (l_compound)
+						log.put_string ("%N")
+						end
 
 							relevant_variables.do_all_with_key (agent process_feature_with_relevant_variable (l_compound, ?, ?))
 						else

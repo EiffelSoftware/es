@@ -255,20 +255,25 @@ feature {NONE} -- Output
 					create l_file_path.make_from_string (l_path_name)
 					l_file_path.set_file_name (l_file_name)
 
-					if attached l_file_path.twin as l_bin_file_path then
+					if config.output_bin and attached l_file_path.twin as l_bin_file_path then
 						l_bin_file_path.add_extension ("BIN")
 
 						create {EXT_BINARY_SNIPPET_WRITER} l_snippet_writer
 						l_snippet_writer.write_to_file (l_cursor.item, l_bin_file_path)
 					end
 
-					debug
-						if attached l_file_path.twin as l_txt_file_path then
-							l_txt_file_path.add_extension ("TXT")
+					if config.output_txt and attached l_file_path.twin as l_txt_file_path then
+						l_txt_file_path.add_extension ("TXT")
 
-							create {EXT_TEXTUAL_SNIPPET_WRITER} l_snippet_writer
-							l_snippet_writer.write_to_file (l_cursor.item, l_txt_file_path)
-						end
+						create {EXT_TEXTUAL_SNIPPET_WRITER} l_snippet_writer
+						l_snippet_writer.write_to_file (l_cursor.item, l_txt_file_path)
+					end
+
+					if config.output_xml and attached l_file_path.twin as l_xml_file_path then
+						l_xml_file_path.add_extension ("XML")
+
+						create {EXT_XML_SNIPPET_WRITER} l_snippet_writer
+						l_snippet_writer.write_to_file (l_cursor.item, l_xml_file_path)
 					end
 				end
 			end
