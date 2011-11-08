@@ -31,6 +31,7 @@ inherit
 			process_real_as,
 			process_id_as,
 			process_access_feat_as,
+			process_access_id_as,
 			process_paran_as,
 			process_binary_as,
 			process_unary_as,
@@ -1102,6 +1103,18 @@ feature {AST_EIFFEL} -- Roundtrip: Access
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
 		do
+			processing_access_feat_as (l_as)
+		end
+
+	process_access_id_as (l_as: ACCESS_ID_AS)
+		do
+			processing_access_feat_as (l_as)
+		end
+
+feature {NONE} -- Roundtrip: Expressions (Helper)
+
+	processing_access_feat_as (l_as: ACCESS_FEAT_AS)
+		do
 			output.append_string (l_as.access_name)
 
 			if processing_needed (l_as.parameters,l_as,1) then
@@ -1483,8 +1496,10 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			output.append_string (ti_New_line)
 
 			output.enter_block
-			process_child_list (l_as.feature_list, ti_comma+ti_New_line, l_as, 2)
-			output.append_string (ti_New_line)
+			if processing_needed (l_as.feature_list, l_as, 2) then
+				process_child_list (l_as.feature_list, ti_comma+ti_New_line, l_as, 2)
+				output.append_string (ti_New_line)
+			end
 			output.exit_block
 		end
 
