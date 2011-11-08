@@ -1338,6 +1338,10 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_SNIPPET_EXTRACTION} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-to_xml") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_XML_TRANSFORMATION} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-annotation") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
