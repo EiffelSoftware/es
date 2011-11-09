@@ -86,6 +86,8 @@ feature -- Basic operations
 				create l_expr_builder.make (l_class, l_feature)
 				if config.is_variables_specified then
 					l_expr_builder.build_from_variables (config.variables)
+				elseif config.is_expressions_specified then
+					l_expr_builder.build_from_expressions (config.expressions)
 				else
 					l_expr_builder.build_from_ast (l_feature.e_feature.ast)
 				end

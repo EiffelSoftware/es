@@ -19,15 +19,9 @@ feature -- Creation procedure
 
 	make (a_class: like class_; a_feature: like feature_)
 			--
-		require
-			a_class_not_void: a_class /= Void
-			a_feature_not_void: a_feature /= Void
 		do
-			class_ := a_class
-			feature_ := a_feature
-		ensure
-			class_set: class_ = a_class
-			feature_set: feature_ = a_feature
+			set_class (a_class)
+			set_feature (a_feature)
 		end
 
 feature -- Basic operations
@@ -35,6 +29,8 @@ feature -- Basic operations
 	build_from_ast (a_ast: AST_EIFFEL)
 			-- Find all interesting variables and make them available
 			-- in `interesting_variables'
+		require
+			a_ast_not_void: a_ast /= Void
 		local
 			l_variable_finder: EPA_INTERESTING_VARIABLE_FINDER
 		do
@@ -50,6 +46,8 @@ feature -- Basic operations
 
 	build_from_variables (a_variables: LINKED_LIST [STRING])
 			--
+		require
+			a_variables_not_void: a_variables /= Void
 		do
 			create interesting_variables.make_default
 			interesting_variables.set_equality_tester (string_equality_tester)
@@ -60,12 +58,49 @@ feature -- Basic operations
 			build
 		end
 
+	build_from_expressions (a_expressions: LINKED_LIST [STRING])
+			--
+		require
+			a_expressions_not_void: a_expressions /= Void
+		local
+			l_expr: EPA_AST_EXPRESSION
+		do
+			create interesting_variables.make_default
+			interesting_variables.set_equality_tester (string_equality_tester)
+			across a_expressions as l_exprs loop
+				create l_expr.make_with_text (class_, feature_, l_exprs.item, class_)
+				expressions_to_evaluate.force_last (l_expr)
+			end
+		end
+
+feature -- Element change
+
+	set_class (a_class: like class_)
+			--
+		require
+			a_class_not_void: a_class /= Void
+		do
+			class_ := a_class
+		ensure
+			class_set: class_ = a_class
+		end
+
+	set_feature (a_feature: like feature_)
+			--
+		require
+			a_feature_not_void: a_feature /= Void
+		do
+			feature_ := a_feature
+		ensure
+			feature_set: feature_ = a_feature
+		end
+
 feature -- Access
 
-	class_: CLASS_C
+	class_: CLASS_C assign set_class
 			--
 
-	feature_: FEATURE_I
+	feature_: FEATURE_I assign set_feature
 			--
 
 	expressions_to_evaluate: DS_HASH_SET [EPA_EXPRESSION]

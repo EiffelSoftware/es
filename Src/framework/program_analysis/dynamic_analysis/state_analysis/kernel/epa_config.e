@@ -21,6 +21,7 @@ feature{NONE} -- Initialization
 			eiffel_system := a_system
 			create locations.make
 			create variables.make
+			create expressions.make
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -35,6 +36,9 @@ feature -- Access
 
 	variables: LINKED_LIST [STRING]
 			-- Variables which should be used to construct interesting expressions
+
+	expressions: LINKED_LIST [STRING]
+			-- Expressions which should be evaluated
 
 	output_path: STRING assign set_output
 			-- Output-path for storing the collected equations.
@@ -61,6 +65,9 @@ feature -- Status report
 
 	is_variables_specified: BOOLEAN
 			-- Are variables used to build expressions to evaluate specified?
+
+	is_expressions_specified: BOOLEAN
+			-- Are expressions to evaluate specified?
 
 	is_output_path_specified: BOOLEAN
 			-- Is a output path specified?
@@ -89,6 +96,14 @@ feature -- Setting
 			is_variables_specified := b
 		ensure
 			is_variables_specified_set: is_variables_specified = b
+		end
+
+	set_is_expressions_specified (b: BOOLEAN)
+			-- Set `is_expressions_specified' with `b'.
+		do
+			is_expressions_specified := b
+		ensure
+			is_expressions_specified_set: is_expressions_specified = b
 		end
 
 	set_is_output_path_specified (b: BOOLEAN)

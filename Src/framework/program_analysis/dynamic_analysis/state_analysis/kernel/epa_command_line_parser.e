@@ -40,7 +40,7 @@ feature -- Access
 			l_args: DS_LINKED_LIST [STRING]
 			l_dynamic_flag: AP_FLAG
 			l_static_flag: AP_FLAG
-			l_locations, l_variables, l_output_path: AP_STRING_OPTION
+			l_locations, l_variables, l_expressions, l_output_path: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -67,6 +67,12 @@ feature -- Access
 				%Format: --variables variable[,variable].")
 			l_parser.options.force_last (l_variables)
 
+			create l_expressions.make_with_long_form ("expressions")
+			l_variables.set_description (
+				"Specify expressions which should be evaluated.%
+				%Format: --expressions expression[,expression].")
+			l_parser.options.force_last (l_expressions)
+
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
 			l_parser.options.force_last (l_output_path)
@@ -76,6 +82,7 @@ feature -- Access
 			config.set_is_dynamic_annotation_enabled (l_dynamic_flag.was_found)
 			config.set_is_static_annotation_enabled (l_static_flag.was_found)
 			config.set_is_variables_specified (l_variables.was_found)
+			config.set_is_expressions_specified (l_expressions.was_found)
 			config.set_is_output_path_specified (l_output_path.was_found)
 
 			if l_locations.was_found then
@@ -84,6 +91,10 @@ feature -- Access
 
 			if l_variables.was_found then
 				setup_variables (l_variables.parameter)
+			end
+
+			if l_expressions.was_found then
+				setup_expressions (l_expressions.parameter)
 			end
 
 			if l_output_path.was_found then
@@ -132,6 +143,19 @@ feature {NONE} -- Implementation
 				l_var.left_adjust
 				l_var.right_adjust
 				config.variables.extend (l_var)
+			end
+		end
+
+	setup_expressions (a_expressions: STRING)
+			-- Setup expressions in `config'.			
+		local
+			l_expr: STRING
+		do
+			across a_expressions.split (',') as l_exprs loop
+				l_expr := l_exprs.item
+				l_expr.left_adjust
+				l_expr.right_adjust
+				config.expressions.extend (l_expr)
 			end
 		end
 
