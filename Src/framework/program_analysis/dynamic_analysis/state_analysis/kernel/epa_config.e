@@ -57,12 +57,6 @@ feature -- Access
 
 feature -- Status report
 
-	is_dynamic_annotation_enabled: BOOLEAN
-			-- Is annotation by dynamic means enabled?
-
-	is_static_annotation_enabled: BOOLEAN
-			-- Is annotation by static means enabled?
-
 	is_variables_specified: BOOLEAN
 			-- Are variables used to build expressions to evaluate specified?
 
@@ -73,22 +67,6 @@ feature -- Status report
 			-- Is a output path specified?
 
 feature -- Setting
-
-	set_is_dynamic_annotation_enabled (b: BOOLEAN)
-			-- Set `is_dynamic_annotation_enabled' with `b'.
-		do
-			is_dynamic_annotation_enabled := b
-		ensure
-			is_dynamic_annotation_enabled_set: is_dynamic_annotation_enabled = b
-		end
-
-	set_is_static_annotation_enabled (b: BOOLEAN)
-			-- Set `is_static_annotation_enabled' with `b'.
-		do
-			is_static_annotation_enabled := b
-		ensure
-			is_static_annotation_enabled_set: is_static_annotation_enabled = b
-		end
 
 	set_is_variables_specified (b: BOOLEAN)
 			-- Set `is_variables_specified' with `b'.

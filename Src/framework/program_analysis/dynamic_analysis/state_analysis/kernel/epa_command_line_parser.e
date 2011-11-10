@@ -47,14 +47,6 @@ feature -- Access
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_dynamic_flag.make_with_long_form ("dynamic")
-			l_dynamic_flag.set_description ("Enable annotation collection through dynamic means.")
-			l_parser.options.force_last (l_dynamic_flag)
-
-			create l_static_flag.make_with_long_form ("static")
-			l_static_flag.set_description ("Enable annotation collection through static means.")
-			l_parser.options.force_last (l_static_flag)
-
 			create l_locations.make_with_long_form ("locations")
 			l_locations.set_description (
 				"Specify the locations where annotations should be collected.%
@@ -79,8 +71,6 @@ feature -- Access
 
 			l_parser.parse_list (l_args)
 
-			config.set_is_dynamic_annotation_enabled (l_dynamic_flag.was_found)
-			config.set_is_static_annotation_enabled (l_static_flag.was_found)
 			config.set_is_variables_specified (l_variables.was_found)
 			config.set_is_expressions_specified (l_expressions.was_found)
 			config.set_is_output_path_specified (l_output_path.was_found)

@@ -63,10 +63,8 @@ feature -- Properties
 			l_parser.parse
 			l_config := l_parser.config
 
-			if l_config.is_dynamic_annotation_enabled then
-				create l_dynamic_cmd.make (l_config)
-				l_cmd := l_dynamic_cmd
-			end
+			create l_dynamic_cmd.make (l_config)
+			l_cmd := l_dynamic_cmd
 
 			if l_cmd /= Void then
 				l_cmd.execute
