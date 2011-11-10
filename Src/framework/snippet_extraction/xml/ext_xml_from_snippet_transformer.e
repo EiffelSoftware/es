@@ -14,7 +14,14 @@ inherit
 			process_instr_call_as
 		end
 
+	EXT_HOLE_UTILITY
+		export
+			{NONE} all
+		end
+
 	EPA_UTILITY
+
+	REFACTORING_HELPER
 
 create
 	make_from_snippet
@@ -77,6 +84,8 @@ feature -- Access
 				end
 			end
 
+			fixme ("Extend with holes from static and dynamic analysis.")
+			fixme ("Holes need to provide the identifier they refer to.")
 --				-- Attach Hole Annotations.
 --			across
 --				snippet.annotations as l_annotation_iterator
@@ -91,39 +100,14 @@ feature -- Access
 --			end
 		end
 
-feature {NONE} -- Hole Handling (Utiltiy)
-
-	last_hole_name: detachable STRING
-
-	is_hole (a_ast: AST_EIFFEL): BOOLEAN
-			-- Checks if `a_ast' is an AST repressentation of an `{EXT_HOLE}'.
-			-- In case it sets `last_hoel_name' to the first part before a space
-			-- and by stripping away possible new line characters.			
-		local
-			l_ast_as_text: STRING
-			l_ast_printer: ETR_AST_STRUCTURE_PRINTER
-			l_ast_printer_output: ETR_AST_STRING_OUTPUT
-		do
-			create l_ast_printer_output.make_with_indentation_string ("%T")
-			create l_ast_printer.make_with_output (l_ast_printer_output)
-
-			l_ast_as_text := text_from_ast_with_printer (a_ast, l_ast_printer)
-
-			if l_ast_as_text.starts_with ({EXT_HOLE}.hole_name_prefix) then
-				Result := True
-					-- Set `last_hole_name'.
-				l_ast_as_text.replace_substring_all ("%N", " ")
-				last_hole_name := l_ast_as_text.split (' ').at (1)
-			end
-		end
-
 feature -- Processing
 
 	process_expr_call_as (a_as: EXPR_CALL_AS)
 		do
-			if is_hole (a_as) then
+			if is_hole (a_as) and then attached get_hole_name (a_as) as l_hole_name then
 				output.xml_element_open  ("exprHole", xml_ns_eimala_hole)
-				output.xml_add_unqualified_attribute ("name", last_hole_name)
+				output.xml_add_unqualified_attribute ("name", l_hole_name)
+				output.xml_string_append (l_hole_name)
 				output.xml_element_close ("exprHole", xml_ns_eimala_hole)
 			else
 				Precursor (a_as)
@@ -132,9 +116,10 @@ feature -- Processing
 
 	process_instr_call_as (a_as: INSTR_CALL_AS)
 		do
-			if is_hole (a_as) then
+			if is_hole (a_as) and then attached get_hole_name (a_as) as l_hole_name then
 				output.xml_element_open  ("instructionHole", xml_ns_eimala_hole)
-				output.xml_add_unqualified_attribute ("name", last_hole_name)
+				output.xml_add_unqualified_attribute ("name", l_hole_name)
+				output.xml_string_append (l_hole_name)
 				output.xml_element_close ("instructionHole", xml_ns_eimala_hole)
 			else
 				Precursor (a_as)

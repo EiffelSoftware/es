@@ -68,12 +68,6 @@ feature -- Basic operations
 			l_retried: BOOLEAN
 		do
 			if l_retried then
-					log.put_string ("> Dropping feature; exception raised during extraction;")
-					log.put_string (a_context_class.name_in_upper)
-					log.put_string (".")
-					log.put_string (a_feature.feature_name)
-					log.put_string ("%N")
-
 					log.put_string ("> Dropping feature; exception raised during extraction: " + a_context_class.name_in_upper + "." + a_feature.feature_name + " target_type: " + a_type.name + "%N")
 			else
 				if a_type.has_associated_class and then a_context_class.name_in_upper /~ a_type.associated_class.name_in_upper then
@@ -152,7 +146,6 @@ feature {NONE} -- Implementation
 			-- Relevant variables are of either of the following kinds: Current, feature argument, local variable, Result, argumentless class feature.
 			-- Relevant variables must have types that conform to `relevant_target_type'. (See
 			-- the first argument of `extract_from_feature').
-
 
 	variable_context: EXT_VARIABLE_CONTEXT
 			-- Container to store variable information necessary for extraction process.
@@ -344,17 +337,11 @@ feature {NONE} -- Implementation
 			l_compound_as := perform_ast_if_as_hole_step		(l_compound_as, l_holes, l_hole_factory)
 			l_compound_as := perform_ast_inspect_as_hole_step	(l_compound_as, l_holes, l_hole_factory)
 			l_compound_as := perform_ast_loop_as_hole_step		(l_compound_as, l_holes, l_hole_factory)
-
---			log.put_string ("%N---%N")
---			log_ast_text (l_compound_as)
-
 			l_compound_as := perform_ast_general_hole_step		(l_compound_as, l_holes, l_hole_factory)
-
---			log.put_string ("%N---%N")
---			log_ast_text (l_compound_as)
-
 			l_compound_as := perform_ast_hole_merge				(l_compound_as, l_holes, l_hole_factory)
 
+			log.put_string ("%N---%N")
+			log_ast_structure (l_compound_as)
 			log.put_string ("%N---%N")
 			log_ast_text (l_compound_as)
 
@@ -479,14 +466,16 @@ feature {NONE} -- Implementation
 		local
 			l_ast_processor: EXT_AST_LOOP_AS_HOLE_PROCESSOR
 		do
-			create l_ast_processor.make_with_arguments (ast_printer_output, variable_context, a_factory)
+			create l_ast_processor.make_with_arguments (ast_printer_output, a_holes, variable_context, a_factory)
 
 				-- Process AST.
 			l_ast_processor.extract (a_compound_as)
 			l_ast_processor.rewrite (a_compound_as)
 
-				-- Add holes to collection and return rewritten AST.
+				-- Update hole table.
+			l_ast_processor.last_holes_removed.current_keys.do_all (agent a_holes.remove)
 			a_holes.merge (l_ast_processor.last_holes)
+
 			Result := l_ast_processor.last_ast
 		end
 

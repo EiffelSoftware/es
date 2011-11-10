@@ -175,6 +175,8 @@ inherit
 
 	EXT_SHARED_LOGGER
 
+	EPA_UTILITY
+
 feature -- Roundtrip
 
 	pre_process_none_id_as (l_as: NONE_ID_AS)

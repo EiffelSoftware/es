@@ -13,8 +13,8 @@ inherit
 			process_current_as,
 --			process_id_as,
 			process_nested_as,
-			process_result_as,
-			process_creation_as
+			process_result_as
+--			process_creation_as
 		end
 
 	REFACTORING_HELPER
@@ -141,12 +141,18 @@ feature {NONE} -- Access Recording
 --			Precursor (l_as)
 --		end
 
-	process_creation_as (l_as: CREATION_AS)
-		local
-			l_nested: NESTED_AS
-		do
-			create l_nested.initialize (l_as.target, l_as.call, Void)
-			l_nested.process (Current)
-		end
+--	process_creation_as (l_as: CREATION_AS)
+--			-- Shortcut processing of `{CREATION_AS}' nodes.
+--		local
+--			l_call: CALL_AS
+--		do
+--			if attached l_as.call then
+--				create {NESTED_AS} l_call.initialize (l_as.target, l_as.call, Void)
+--			else
+--				create {ACCESS_ID_AS} l_call.initialize (create {ID_AS}.initialize (l_as.target.access_name_8), Void)
+--			end
+
+--			l_call.process (Current)
+--		end
 
 end

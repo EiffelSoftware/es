@@ -21,7 +21,7 @@ feature -- Constants
 
 	xml_ns_eimala_envelope: XML_NAMESPACE
 		once
-			create Result.make ("env", "http://se.inf.ethz.ch/eimala/xsd/env")
+			create Result.make ("env", "http://se.inf.ethz.ch/eimala/xsd/envelope")
 		end
 
 	xml_ns_eimala_annotation: XML_NAMESPACE

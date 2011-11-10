@@ -109,12 +109,7 @@ feature {NONE} -- Implementation
 	get_call_name (a_as: CALL_AS): STRING
 			-- Returns the feature name of a call.
 		do
-			fixme ("Re-check if all cases are handled.")
-			-- CALL_AS
-			----ACCESS_AS
-			----CREATION_EXPR_AS
-			----NESTED_AS
-			----NESTED_EXPR_AS
+			fixme ("Re-check if all relevant cases are correctly handled. CALL_AS { ACCESS_AS, CREATION_EXPR_AS, NESTED_AS, NESTED_EXPR_AS }.")
 
 			if attached {ACCESS_AS} a_as as l_as then
 				Result := l_as.access_name_8

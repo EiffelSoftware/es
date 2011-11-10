@@ -20,6 +20,11 @@ inherit
 
 	EXT_HOLE_FACTORY_AWARE
 
+	EXT_HOLE_UTILITY
+		export
+			{NONE} all
+		end
+
 	EXT_VARIABLE_CONTEXT_AWARE
 
 	EXT_AST_UTILITY
@@ -31,12 +36,13 @@ create
 
 feature {NONE} -- Creation
 
-	make_with_arguments (a_output: like output; a_variable_context: like variable_context; a_factory: like hole_factory)
+	make_with_arguments (a_output: like output; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_variable_context: like variable_context; a_factory: like hole_factory)
 			-- Make with essential arguments.
 		local
 			l_variable_set: DS_HASH_SET [STRING]
 		do
 			make_with_output (a_output)
+			holes := a_holes.twin
 			variable_context := a_variable_context
 			hole_factory := a_factory
 
@@ -44,7 +50,15 @@ feature {NONE} -- Creation
 			variable_context.variables_of_interest.current_keys.do_all (agent l_variable_set.put)
 
 			create variable_of_interest_usage_checker.make_from_variables (l_variable_set)
+
+			create last_holes_removed.make (10)
+			last_holes_removed.compare_objects
 		end
+
+feature -- Access
+
+	last_holes_removed: HASH_TABLE [EXT_HOLE, STRING]
+			-- Holes removed due to merging by last `rewrite'.
 
 feature -- Basic operations
 
@@ -76,6 +90,9 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
+	holes: HASH_TABLE [EXT_HOLE, STRING]
+			-- List of holes that were present at initialization.
 
 	variable_of_interest_usage_checker: EXT_AST_VARIABLE_USAGE_CHECKER
 			-- Checks if an AST is accessing any variable of interest.
@@ -111,22 +128,22 @@ feature {NONE} -- Implementation
 
 				-- Decide on processing.
 			if not l_use_iteration then
-				if l_use_from_part and not l_use_stop and not l_use_compound then
+				if not l_done and l_use_from_part and not l_use_stop and not l_use_compound then
 					process_loop_as_only_from_part_used	(l_as)
 					l_done := True
 				end
 
-				if not l_use_from_part and l_use_stop and not l_use_compound then
+				if not l_done and not l_use_from_part and l_use_stop and not l_use_compound then
 					process_loop_as_only_expression_used (l_as)
 					l_done := True
 				end
 
-				if l_use_from_part and l_use_stop and not l_use_compound then
+				if not l_done and l_use_from_part and l_use_stop and not l_use_compound then
 					process_loop_as_only_from_part_and_expression_used (l_as)
 					l_done := True
 				end
 
-				if not l_use_from_part and not l_use_stop and l_use_compound then
+				if not l_done and not l_use_from_part and not l_use_stop and l_use_compound then
 					process_loop_as_only_compound_used (l_as)
 					l_done := True
 				end
@@ -153,7 +170,7 @@ feature {NONE} -- Helpers
 			l_hole := create_hole (a_as, False)
 			add_hole (l_hole, a_as.path)
 
-			output.append_string (l_hole.out)
+			output.append_string (l_hole.hole_name)
 			output.append_string (ti_New_line)
 		end
 
@@ -165,7 +182,7 @@ feature {NONE} -- Helpers
 			add_hole (l_hole, a_as.path)
 
 			safe_process (a_as.from_part)
-			output.append_string (l_hole.out)
+			output.append_string (l_hole.hole_name)
 			output.append_string (ti_New_line)
 		end
 
@@ -176,22 +193,69 @@ feature {NONE} -- Helpers
 			l_hole := create_hole (a_as, True)
 			add_hole (l_hole, a_as.path)
 
-			output.append_string (l_hole.out)
+			output.append_string (l_hole.hole_name)
 			output.append_string (ti_New_line)
 		end
 
 feature {NONE} -- Annotation Handling
 
 	create_hole (a_ast: AST_EIFFEL; a_conditionally: BOOLEAN): EXT_HOLE
-			-- Create a new `{EXT_ANN_HOLE}' with metadata.
+			-- Create a new `{EXT_ANN_HOLE}' with metadata and merges it with other holes that are contained within `a_ast'.
 		local
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
+			l_hole_names: LINKED_SET [STRING]
 		do
+				-- Extract fresh annotations.
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.set_conditional (a_conditionally)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
+				-- Create new hole and fill with fresh annotations
 			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+
+				-- Extract subsumed holes and merge into fresh hole.
+			l_hole_names := collect_hole_names (a_ast)
+
+			across last_holes as h loop
+					-- Book-keeping.	
+				last_holes_removed.force (h.item, h.key)
+
+					-- Merge annotations, but set them to conditional.
+				if attached h.item.annotations as a then
+					from
+						a.start
+					until
+						a.after
+					loop
+						Result.annotations.force (
+							create {ANN_MENTION_ANNOTATION}.make_as_conditional (a.item_for_iteration.expression)
+						)
+						a.forth
+					end
+				end
+			end
+		end
+
+	collect_hole_names (a_ast: AST_EIFFEL): LINKED_SET [STRING]
+			-- Collect identifier names that represent hole placeholders in `a_ast'.
+		local
+			l_identifier_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
+		do
+			create Result.make
+			Result.compare_objects
+
+			create l_identifier_usage_finder
+			l_identifier_usage_finder.set_is_mode_disjoint (True)
+			l_identifier_usage_finder.set_on_access_identifier (
+				agent (a_as: ACCESS_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_variable_usage: LINKED_SET [STRING])
+					do
+						if is_hole (a_as) then
+							a_variable_usage.force (a_as.access_name_8)
+						end
+					end (?, variable_context, Result)
+				)
+
+			a_ast.process (l_identifier_usage_finder)
 		end
 
 end

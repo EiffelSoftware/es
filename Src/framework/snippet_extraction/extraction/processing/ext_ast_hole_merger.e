@@ -19,6 +19,11 @@ inherit
 
 	EXT_HOLE_FACTORY_AWARE
 
+	EXT_HOLE_UTILITY
+		export
+			{NONE} all
+		end
+
 	EPA_UTILITY
 
 	REFACTORING_HELPER
@@ -138,51 +143,17 @@ feature {NONE} -- Hole Handling
 					end
 
 					if l_consecutive_hole then
-						Result.force (ast_from_statement_text (l_merged_hole.out))
+						Result.force (ast_from_statement_text (l_merged_hole.hole_name))
 
 							-- Book-keeping.
 						last_holes_added.force (l_merged_hole, l_merged_hole.hole_name)
 						last_holes_removed.force (l_start_hole, l_start_hole.hole_name)
 					else
-						Result.force (ast_from_statement_text (l_start_hole.out))
+						Result.force (ast_from_statement_text (l_start_hole.hole_name))
 					end
 				end
 			end
 			a_ast.go_i_th (l_cursor)
-		end
-
-feature {NONE} -- Hole Handling (Utiltiy)
-
-	is_hole (a_ast: AST_EIFFEL): BOOLEAN
-			-- Checks if `a_ast' is an AST repressentation of an `{EXT_HOLE}'.
-		local
-			l_ast_printer: ETR_AST_STRUCTURE_PRINTER
-			l_ast_printer_output: ETR_AST_STRING_OUTPUT
-		do
-			create l_ast_printer_output.make_with_indentation_string ("%T")
-			create l_ast_printer.make_with_output (l_ast_printer_output)
-
-			Result := text_from_ast_with_printer (a_ast, l_ast_printer).starts_with ({EXT_HOLE}.hole_name_prefix)
-		end
-
-	get_hole_name (a_ast: AST_EIFFEL): STRING
-			-- Returns the hole name of an AST that represents a hole,
-			-- by returning the first part before a space and by stripping
-			-- away possible new line characters.
-		require
-			a_ast_is_hole: is_hole (a_ast)
-		local
-			l_ast_as_text: STRING
-			l_ast_printer: ETR_AST_STRUCTURE_PRINTER
-			l_ast_printer_output: ETR_AST_STRING_OUTPUT
-		do
-			create l_ast_printer_output.make_with_indentation_string ("%T")
-			create l_ast_printer.make_with_output (l_ast_printer_output)
-
-			l_ast_as_text := text_from_ast_with_printer (a_ast, l_ast_printer)
-			l_ast_as_text.replace_substring_all ("%N", " ")
-
-			Result := l_ast_as_text.split (' ').at (1)
 		end
 
 end

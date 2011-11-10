@@ -99,12 +99,12 @@ feature {NONE} -- Implementation
 			end
 
 				-- Decide on processing.
-			if not l_use_elsif_list and then not l_use_branch_true and l_use_branch_false then
+			if not l_done and not l_use_elsif_list and then not l_use_branch_true and l_use_branch_false then
 				process_if_as_only_retaining_false_branch (l_as)
 				l_done := True
 			end
 
-			if l_use_elsif_list and l_used_elseifs = 1 and then not l_use_branch_true and not l_use_branch_false then
+			if not l_done and l_use_elsif_list and l_used_elseifs = 1 and then not l_use_branch_true and not l_use_branch_false then
 				process_if_as_only_retaining_one_elsif_branch (l_as)
 				l_done := True
 			end

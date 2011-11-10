@@ -235,5 +235,4 @@ feature{EXT_BINARY_SNIPPET_WRITER} -- Serialization related
 			ast_internal := Void
 		end
 
-
 end
