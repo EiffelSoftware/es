@@ -22,6 +22,7 @@ feature{NONE} -- Initialization
 			create locations.make
 			create variables.make
 			create expressions.make
+			create selected_program_locations.make_default
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -40,6 +41,9 @@ feature -- Access
 	expressions: LINKED_LIST [STRING]
 			-- Expressions which should be evaluated
 
+	selected_program_locations: DS_HASH_SET [INTEGER]
+			-- Selected program locations which should be evaluated
+
 	output_path: STRING assign set_output
 			-- Output-path for storing the collected equations.
 
@@ -57,6 +61,9 @@ feature -- Access
 
 feature -- Status report
 
+	is_all_program_locations_specified: BOOLEAN
+			-- Should all program locations be evaluated?
+
 	is_variables_specified: BOOLEAN
 			-- Are variables used to build expressions to evaluate specified?
 
@@ -67,6 +74,14 @@ feature -- Status report
 			-- Is a output path specified?
 
 feature -- Setting
+
+	set_is_all_program_locations_specified (b: BOOLEAN)
+			-- Set `is_all_program_locations_specified' with `b'.
+		do
+			is_all_program_locations_specified := b
+		ensure
+			is_all_program_locations_specified_set: is_all_program_locations_specified = b
+		end
 
 	set_is_variables_specified (b: BOOLEAN)
 			-- Set `is_variables_specified' with `b'.

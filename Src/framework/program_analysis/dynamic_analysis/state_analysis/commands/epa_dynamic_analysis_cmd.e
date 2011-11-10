@@ -50,6 +50,7 @@ feature -- Basic operations
 	execute
 			-- Execute Current command
 		local
+			i: INTEGER
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_monitored_exprs: DS_HASH_SET [EPA_EXPRESSION]
 			l_class: CLASS_C
@@ -71,10 +72,23 @@ feature -- Basic operations
 				l_post_state_finder.find
 				post_state_map := l_post_state_finder.post_state_map
 
-				-- Find interesting pre-states in `l_feature'.
-				create l_pre_state_finder.make_with (l_feature.e_feature.ast)
-				l_pre_state_finder.find
-				interesting_pre_states := l_pre_state_finder.interesting_pre_states
+				if config.is_all_program_locations_specified then
+					from
+						i := 1
+					until
+						i > config.locations.item.feature_.number_of_breakpoint_slots
+					loop
+						interesting_pre_states.force_last (i)
+						i := i + 1
+					end
+				elseif config.selected_program_locations /= Void then
+					interesting_pre_states := config.selected_program_locations
+				else
+					-- Find interesting pre-states in `l_feature'.
+					create l_pre_state_finder.make_with (l_feature.e_feature.ast)
+					l_pre_state_finder.find
+					interesting_pre_states := l_pre_state_finder.interesting_pre_states
+				end
 
 				-- Consider only attributes and queries without arguments which are not
 				-- inherited from ANY.

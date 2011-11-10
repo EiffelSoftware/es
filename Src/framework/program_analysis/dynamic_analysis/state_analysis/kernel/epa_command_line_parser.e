@@ -38,14 +38,17 @@ feature -- Access
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
-			l_dynamic_flag: AP_FLAG
-			l_static_flag: AP_FLAG
-			l_locations, l_variables, l_expressions, l_output_path: AP_STRING_OPTION
+			l_all_program_locations: AP_FLAG
+			l_locations, l_variables, l_expressions, l_selected_program_locations, l_output_path: AP_STRING_OPTION
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
+
+			create l_all_program_locations.make_with_long_form ("all_program_locations")
+			l_all_program_locations.set_description ("Evaluate all program locations.")
+			l_parser.options.force_last (l_all_program_locations)
 
 			create l_locations.make_with_long_form ("locations")
 			l_locations.set_description (
@@ -65,6 +68,12 @@ feature -- Access
 				%Format: --expressions expression[,expression].")
 			l_parser.options.force_last (l_expressions)
 
+			create l_selected_program_locations.make_with_long_form ("selected_program_locations")
+			l_variables.set_description (
+				"Specify selected program locations which should be evaluated.%
+				%Format: --selected_program_locations location[,location].")
+			l_parser.options.force_last (l_expressions)
+
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
 			l_parser.options.force_last (l_output_path)
@@ -74,6 +83,10 @@ feature -- Access
 			config.set_is_variables_specified (l_variables.was_found)
 			config.set_is_expressions_specified (l_expressions.was_found)
 			config.set_is_output_path_specified (l_output_path.was_found)
+
+			if l_all_program_locations.was_found then
+				config.set_is_all_program_locations_specified (l_all_program_locations.was_found)
+			end
 
 			if l_locations.was_found then
 				setup_locations (l_locations.parameter)
@@ -85,6 +98,10 @@ feature -- Access
 
 			if l_expressions.was_found then
 				setup_expressions (l_expressions.parameter)
+			end
+
+			if l_selected_program_locations.was_found then
+				setup_selected_program_locations (l_selected_program_locations.parameter)
 			end
 
 			if l_output_path.was_found then
@@ -124,7 +141,7 @@ feature {NONE} -- Implementation
 		end
 
 	setup_variables (a_variables: STRING)
-			-- Setup variables in `config'.			
+			-- Setup variables in `config'.
 		local
 			l_var: STRING
 		do
@@ -137,7 +154,7 @@ feature {NONE} -- Implementation
 		end
 
 	setup_expressions (a_expressions: STRING)
-			-- Setup expressions in `config'.			
+			-- Setup expressions in `config'.
 		local
 			l_expr: STRING
 		do
@@ -146,6 +163,19 @@ feature {NONE} -- Implementation
 				l_expr.left_adjust
 				l_expr.right_adjust
 				config.expressions.extend (l_expr)
+			end
+		end
+
+	setup_selected_program_locations (a_selected_program_locations: STRING)
+			-- Setup selected program locations in `config'.
+		local
+			l_program_location: STRING
+		do
+			across a_selected_program_locations.split (',') as l_program_locations loop
+				l_program_location := l_program_locations.item
+				l_program_location.left_adjust
+				l_program_location.right_adjust
+				config.selected_program_locations.force_last (l_program_location.to_integer)
 			end
 		end
 
