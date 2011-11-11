@@ -158,8 +158,6 @@ Delivery/scripts/windows/install/images/eiffelstudio/backdrop.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_c_compiler.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_error.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_info.bmp -text
-Delivery/scripts/windows/install/images/eiffelstudio/backdrop_precompile.bmp -text
-Delivery/scripts/windows/install/images/eiffelstudio/backdrop_precompile_warning.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_remove.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_warning.bmp -text
 Delivery/scripts/windows/install/images/error.ico -text
