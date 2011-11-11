@@ -136,6 +136,7 @@ Delivery/esbuilder/pixmaps/wizard.png -text
 Delivery/notes/new_development_period_todo.txt -text
 Delivery/scripts/unix/README.packaging -text
 Delivery/scripts/unix/compile_eweasel -text
+Delivery/scripts/unix/compile_other_libraries -text
 Delivery/scripts/unix/make_debian_package -text
 Delivery/scripts/unix/make_rpm_package -text
 Delivery/scripts/unix/make_svr_package -text
