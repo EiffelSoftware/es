@@ -3221,7 +3221,6 @@ Src/tools/repository_tool/ctr.exe.manifest -text
 Src/tools/repository_tool/ctr.ico -text
 Src/tools/repository_tool/ctr.rc -text
 Src/tools/repository_tool/data/catalog.ini -text
-Src/tools/repository_tool/lib/README.TXT -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.inc -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.info -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.module -text

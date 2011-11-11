@@ -549,8 +549,6 @@ Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
 Src/tools/quick_finalize/quick_finalize.rc
 Src/tools/repository_tool/data/db
-Src/tools/repository_tool/lib/eapml
-Src/tools/repository_tool/lib/eel
 Src/tools/repository_tool/mydata
 Src/tools/syntax_updater/parser_v60/eiffel_parser.e
 Src/tools/syntax_updater/parser_v60/eiffel_scanner.e
