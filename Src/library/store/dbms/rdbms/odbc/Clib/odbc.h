@@ -51,6 +51,7 @@ extern "C" {
 #define BOOLEAN_TYPE            3
 #define DATE_TYPE              11
 #define TIME_TYPE              12
+#define DECIMAL_TYPE			16
 #define UNKNOWN_TYPE            0
 
 /* the following are some lengthes' definitions */
@@ -228,6 +229,7 @@ extern void odbc_set_owner(SQLTCHAR *owner);
 extern void odbc_unset_catalog_flag(void *con, int no_desc);
 extern SQLTCHAR *odbc_str_from_str(SQLTCHAR *ptr);
 extern void odbc_connect (void *con, SQLTCHAR *name, SQLTCHAR *passwd, SQLTCHAR *dsn);
+extern void odbc_connect_by_connection_string (void *con, SQLTCHAR *a_string);
 extern void odbc_disconnect (void *con);
 extern void odbc_rollback (void *con);
 extern void odbc_commit (void *con);
@@ -255,6 +257,7 @@ extern int odbc_get_day(void *con);
 extern int odbc_get_hour(void *con);
 extern int odbc_get_min(void *con);
 extern int odbc_get_sec(void *con);
+extern int odbc_get_decimal (void *con, int no_des, int index, void *p);
 extern size_t odbc_str_len(SQLTCHAR *val);
 extern int odbc_get_error_code (void *con);
 extern SQLTCHAR * odbc_get_error_message (void *con);
@@ -263,6 +266,8 @@ extern void odbc_clear_error (void *);
 extern SQLSMALLINT odbc_c_type(SQLSMALLINT odbc_type);
 extern void odbc_get_col_desc (int no_desc, int index);
 extern void odbc_free_connection (void *con);
+extern EIF_NATURAL_64 strhextoval(SQL_NUMERIC_STRUCT *NumStr);
+extern void odbc_set_decimal_presicion_and_scale (void *con, int precision, int scale);
 
 /*****************************************************************/
 /*                                                               */

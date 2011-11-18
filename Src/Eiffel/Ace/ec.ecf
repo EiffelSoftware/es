@@ -88,6 +88,7 @@
 				</file_rule>
 			</cluster>
 			<cluster name="tty" location="$|tty\" recursive="true"/>
+			<cluster name="none" location="$|none\" recursive="true"/>
 		</cluster>
 
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
@@ -235,7 +236,7 @@
 		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
 		<library name="memory_analyzer" location="$ISE_LIBRARY\library\memory_analyzer\memory_analyzer.ecf" readonly="false"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf" readonly="false"/>
-		<library name="patterns" location="$EIFFEL_SRC\library\patterns\patterns.ecf" readonly="false"/>
+		<library name="patterns" location="$ISE_LIBRARY\library\patterns\patterns.ecf" readonly="false"/>
 		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
 			<condition>
 				<platform value="windows"/>
@@ -303,6 +304,7 @@
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<file_rule>
 				<exclude>/preferences$</exclude>
+				<exclude>^/none$</exclude>
 				<exclude>/overrides$</exclude>
 				<exclude>/lite$</exclude>
 				<exclude>^/tty$</exclude>

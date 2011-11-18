@@ -134,6 +134,14 @@ feature -- DATABASE_STRING
 			Result.is_equal ("varchar(500)")
 		end
 
+feature -- DECIMAL
+
+	sql_name_decimal: STRING
+			-- SQL type name for decimal
+		once
+			Result := " decimal"
+		end
+
 feature -- DATABASE_REAL
 
 	sql_name_real: STRING
@@ -534,6 +542,19 @@ feature -- External	features
 			Result := syb_get_month
 		end
 
+	get_decimal (no_descriptor: INTEGER; ind: INTEGER): detachable TUPLE [digits: STRING_8; sign, precision, scale: INTEGER]
+			-- Function used to get decimal info
+		do
+			Result := ["0", 1, 1, 0]
+		end
+
+	decimal_tuple_from_string (a_str: STRING_8): detachable TUPLE [digits: STRING_8; sign, precision, scale: INTEGER]
+			-- Decimal tuple from string
+			-- Simple implementation
+		do
+			Result := ["0", 1, 1, 0]
+		end
+
 	c_string_type: INTEGER
 		do
 			Result := syb_c_string_type
@@ -584,6 +605,11 @@ feature -- External	features
 			Result := syb_c_date_type
 		end
 
+	c_decimal_type: INTEGER
+		do
+			--|FIXME: To be implemented.
+		end
+
 	database_make (i: INTEGER)
 		do
 			syb_database_make (i)
@@ -599,6 +625,11 @@ feature -- External	features
 			create c_temp4.make (hostname)
 
 			last_error_code := syb_connect (c_temp1.item, c_temp2.item, c_temp3.item, c_temp4.item)
+		end
+
+	connect_by_connection_string (a_connect_string: STRING)
+			-- Connect to database by connection string
+		do
 		end
 
 	disconnect

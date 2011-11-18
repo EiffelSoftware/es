@@ -170,6 +170,14 @@ feature -- DATABASE_STRING
 			Result.append_string_general (a_para)
 		end
 
+feature -- DECIMAL
+
+	sql_name_decimal: STRING
+			-- SQL type name for decimal
+		once
+			Result := " decimal"
+		end
+
 feature -- DATABASE_REAL
 
 	sql_name_real: STRING = "FLOAT"
@@ -753,6 +761,19 @@ feature -- External features
 			end
 		end
 
+	get_decimal (no_descriptor: INTEGER; ind: INTEGER): detachable TUPLE [digits: STRING_8; sign, precision, scale: INTEGER]
+			-- Function used to get decimal info
+		do
+			Result := ["0", 1, 1, 0]
+		end
+
+	decimal_tuple_from_string (a_str: STRING_8): detachable TUPLE [digits: STRING_8; sign, precision, scale: INTEGER]
+			-- Decimal tuple from string
+			-- Simple implementation
+		do
+			Result := ["0", 1, 1, 0]
+		end
+
 	c_string_type: INTEGER
 		do
 			Result := eif_mysql_c_string_type
@@ -803,6 +824,11 @@ feature -- External features
 			Result := eif_mysql_c_date_type
 		end
 
+	c_decimal_type: INTEGER
+		do
+			--|FIXME: To be implemented.
+		end
+
 	database_make (i: INTEGER)
 		do
 		end
@@ -833,6 +859,12 @@ feature -- External features
 			mysql_pointer := eif_mysql_connect (l_user.item, l_pass.item, l_host.item, l_port, l_base.item)
 			is_error_updated := False
        	end
+
+	connect_by_connection_string (a_connect_string: STRING)
+			-- Connect to database by connection string
+		do
+			--| To be implemented
+		end
 
 	disconnect
 		do

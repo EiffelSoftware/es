@@ -743,6 +743,13 @@ feature -- Externals
 			"gtk_widget_set_size_request ((GtkWidget*) $a_widget, (gint) $a_width, (gint) $a_height)"
 		end
 
+	frozen gtk_widget_size_allocate (a_widget: POINTER; a_allocation: POINTER)
+		external
+			"C inline use <ev_gtk.h>"
+		alias
+			"gtk_widget_size_allocate ((GtkWidget*) $a_widget, (GtkAllocation*) $a_allocation)"
+		end
+
 	frozen gtk_file_chooser_list_filters (a_file_chooser: POINTER): POINTER
 		external
 			"C signature (GtkFileChooser*): GSList use <ev_gtk.h>"
@@ -858,6 +865,16 @@ feature -- Externals
 	frozen gdk_display_supports_cursor_color (a_display: POINTER): BOOLEAN
 		external
 			"C signature (GdkDisplay*): gboolean use <ev_gtk.h>"
+		end
+
+	frozen gdk_display_get_pointer (a_display: POINTER; a_screen: TYPED_POINTER [POINTER]; a_win_x, a_win_y: TYPED_POINTER [INTEGER_32]; a_mod_mask: TYPED_POINTER [NATURAL_32])
+		external
+			"C signature (GdkDisplay*, GdkScreen**, gint*, gint*, GdkModifierType*) use <ev_gtk.h>"
+		end
+
+	frozen gdk_display_get_window_at_pointer (a_display: POINTER; a_win_x, a_win_y: TYPED_POINTER [INTEGER]): POINTER
+		external
+			"C signature (GdkDisplay*, gint*, gint*): GdkWindow* use <ev_gtk.h>"
 		end
 
 	frozen gdk_cursor_new_from_pixbuf (a_display, a_pixbuf: POINTER; a_x, a_y: INTEGER_32): POINTER

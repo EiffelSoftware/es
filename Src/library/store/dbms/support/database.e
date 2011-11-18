@@ -213,6 +213,13 @@ feature -- DATABASE_DATETIME
 		deferred
 		end
 
+feature -- DATABASE_DECIMAL
+
+	sql_name_decimal: STRING
+			-- SQL type name for decimal
+		deferred
+		end
+
 feature -- DATABASE_DOUBLE
 
 	sql_name_double: STRING
@@ -277,6 +284,12 @@ feature -- LOGIN and DATABASE_APPL only for password_ok
 			uname_not_void: uname /= Void
 			upasswd_not_void: upasswd /= Void
 		deferred
+		end
+
+	is_connection_string_supported: BOOLEAN
+			-- Support login by connect string?
+		do
+			Result := False
 		end
 
 feature -- For DATABASE_PROC
@@ -971,6 +984,11 @@ feature -- External features
 		deferred
 		end
 
+	get_decimal (no_descriptor: INTEGER; ind: INTEGER): detachable TUPLE [digits: STRING_8; sign, precision, scale: INTEGER]
+			-- Function used to get decimal info
+		deferred
+		end
+
 	c_string_type: INTEGER
 			-- String Eiffel type
 		deferred
@@ -1021,13 +1039,23 @@ feature -- External features
 		deferred
 		end
 
+	c_decimal_type: INTEGER
+			-- Decimal type
+		deferred
+		end
+
 	database_make (i: INTEGER)
 			-- Initialize database c-module
 		deferred
 		end
 
 	connect (user_name, user_passwd, data_source, application, hostname, roleId: STRING; rolePassWd: detachable STRING; groupId: STRING)
-			-- Connect to an ODBC database
+			-- Connect to database
+		deferred
+		end
+
+	connect_by_connection_string (a_connect_string: STRING)
+			-- Connect to database by connection string
 		deferred
 		end
 

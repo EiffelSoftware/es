@@ -996,6 +996,7 @@ test 	system-change-crash			incr415 tcf fail incrementality
 test 	recompilation-forces-freeze	incr416 tcf pass incrementality
 test 	qat-spurious-veen		incr417 tcf fail incrementality validity
 test 	qat-precursor-anchored-to-caller incr418 tcf fail incrementality anchored_types
+test	static-type-id-crash-3			incr419 tcf fail incrementality anchored_types
 
 
 -- Melting
@@ -1251,6 +1252,7 @@ test	finalize-argument-anchors-formal	final107 tcf fail finalizing anchored_type
 test	finalize-external-invariant-skipped	final108 tcf fail finalizing assertions external
 test	inline-manifest-type			final109 tcf fail finalizing
 test	profile-once-per-process-function	final110 tcf fail finalizing
+test	inline-qat-static-external		final111 tcf fail finalizing inlining anchored_type
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1667,6 +1669,7 @@ test once-per-object-nonconforming-inheritance	once018 tcf fail once
 test once-per-object-redefined-precursor	once019 tcf fail once
 test once-per-object-nonconforming-2		once020 tcf fail once non-conforming
 test once-per-object-generic-precursor		once021 tcf fail once
+test once-per-object-array-of-expanded		once022 tcf fail once
 
 -- Compiler termination (exception trace, panic, etc.)
 
@@ -1867,6 +1870,7 @@ test	inherit-generic-of-expanded		term203 tcf pass termination dotnet
 test	ise-ec-flags-missing-final-quote	term204 tcf fail termination
 test	inherited-feature-unadapted			term205 tcf fail termination
 test	generic-constrained-by-self-2		term206  tcf fail termination generic
+test	inherited-static-access-on-generic	term207 tcf fail termination formal generic
 
 -- Config
 
@@ -1896,6 +1900,9 @@ test	config-generic-root-type-extra-chars	config023 tcf fail config
 test	config-generic-root-with-expanded	config024 tcf fail config generic expanded
 test	config-unclosed-element			config025 tcf fail config
 test	config-undetected-vtcg			config026 tcf fail config
+test	config-invalid-vd75			config027 tcf fail config incrementality
+test	config-change-library-location		config028 tcf fail config incrementality
+test	config-process-group-crash		config029 tcf fail config incrementality
 
 -- Lace
 
@@ -2386,6 +2393,7 @@ test	supplier-preconditions			assert001 tcf pass assertions execution
 test	use-application-options-assertions	assert002 tcf pass assertions execution
 test	undefined-assertion-merge		assert003 tcf pass assertions
 test	false-postcondition			assert004 tcf pass assertions execution unreachable_code
+test	false-postcondition-on-empty-routine	assert005 tcf fails assertions execution unreachable_code
 
 -- Multi Constraint Tests
 test	multi-constraint-basics							multicon001 tcf pass multiconstraint

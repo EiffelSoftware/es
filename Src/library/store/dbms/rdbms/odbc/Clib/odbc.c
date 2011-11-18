@@ -56,6 +56,8 @@ typedef struct con_context_ {
 	SQLTCHAR *warn_message;
 	int error_number;
 	short odbc_tranNumber; /* number of transaction opened at present */
+	int default_precision;
+	int default_scale;
 } CON_CONTEXT;
 
 
@@ -71,6 +73,7 @@ void setup_result_space (void *con, int no_desc);
 void free_sqldata (ODBCSQLDA *dap);
 int odbc_first_descriptor_available (void *con);
 rt_private void change_to_low(SQLTCHAR *buf, size_t length);
+void odbc_fetch_connection_info (void *con);
 
 /* Safe allocation and memory reset */\
 #define ODBC_SAFE_CLEAN_ALLOC(p,function,size) \
@@ -768,8 +771,8 @@ void setup_result_space (void *con, int no_desc)
 					break;
 				case SQL_C_NUMERIC:
 					SQLSetDescField (hdesc,i+1,SQL_DESC_TYPE,(SQLPOINTER)SQL_C_NUMERIC,0);
-					SQLSetDescField (hdesc,i+1,SQL_DESC_PRECISION,(SQLPOINTER) 19,0); /* presision of 64bits */
-					SQLSetDescField (hdesc,i+1,SQL_DESC_SCALE,(SQLPOINTER) 8,0); /* presision of 64bits */
+					SQLSetDescField (hdesc,i+1,SQL_DESC_PRECISION,(SQLPOINTER) l_con->default_precision,0); /* presision of 64bits */
+					SQLSetDescField (hdesc,i+1,SQL_DESC_SCALE,(SQLPOINTER) l_con->default_scale,0); /* presision of 64bits */
 					SetDbColLength(dap, i, sizeof (SQL_NUMERIC_STRUCT));
 					break;
 				case SQL_C_GUID:
@@ -1145,6 +1148,7 @@ void odbc_set_parameter(void *con, int no_desc, int seri, int dir, int eifType, 
 	SQLSMALLINT direction = (SQLSMALLINT)dir;
 	SQLLEN len;
 	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
+	SQL_NUMERIC_STRUCT *l_num;
 
 	l_con->pcbValue[no_desc][seriNumber-1] = len = value_count;
 	l_con->rc = 0;
@@ -1180,6 +1184,10 @@ void odbc_set_parameter(void *con, int no_desc, int seri, int dir, int eifType, 
 		case DATE_TYPE:
 			len = l_con->pcbValue[no_desc][seriNumber-1] = sizeof(TIMESTAMP_STRUCT);
 			l_con->rc = SQLBindParameter(l_con->hstmt[no_desc], seriNumber, direction, SQL_C_TIMESTAMP, SQL_TYPE_TIMESTAMP, 23, 3, value, 0, &(l_con->pcbValue[no_desc][seriNumber-1]));
+			break;
+		case DECIMAL_TYPE:
+			l_num = (SQL_NUMERIC_STRUCT *)value;
+			l_con->rc = SQLBindParameter(l_con->hstmt[no_desc], seriNumber, direction, SQL_C_NUMERIC, SQL_DECIMAL, l_con->default_precision, l_con->default_scale, value, 0, &(l_con->pcbValue[no_desc][seriNumber-1]));
 			break;
 		default:
 			odbc_error_handler(con, NULL, 204);
@@ -1396,7 +1404,6 @@ void odbc_unset_catalog_flag(void *con, int no_desc) {
 /*****************************************************************/
 void odbc_connect (void *con, SQLTCHAR *name, SQLTCHAR *passwd, SQLTCHAR *dsn)
 {
-	SQLSMALLINT indColName;
 	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
 
 	odbc_clear_error (con);
@@ -1414,6 +1421,72 @@ void odbc_connect (void *con, SQLTCHAR *name, SQLTCHAR *passwd, SQLTCHAR *dsn)
 		return;
 	}
 
+	odbc_fetch_connection_info (con);
+
+}
+
+/*****************************************************************/
+/*The following are the function related with DATABASE CONTROL   */
+/*****************************************************************/
+
+/*****************************************************************/
+/*                                                               */
+/*                     ROUTINE  DESCRIPTION                      */
+/*                                                               */
+/* NAME: odbc_connect_by_string(a_string)						 */
+/* PARAMETERS:                                                   */
+/*   a_string - connect string.	                                 */
+/*              current connection.                              */
+/* DESCRIPTION:                                                  */
+/*   Connect to an  ODBC  database.                              */
+/*                                                               */
+/*****************************************************************/
+void odbc_connect_by_connection_string (void *con, SQLTCHAR *a_string)
+{
+	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
+
+	odbc_clear_error (con);
+
+	l_con->rc = SQLAllocHandle(SQL_HANDLE_DBC,henv, &l_con->hdbc);
+	if (l_con->rc) {
+		odbc_error_handler(con, NULL,11);
+		return;
+	}
+
+	l_con->rc = SQLDriverConnect( // SQL_NULL_HDBC
+               l_con->hdbc, 
+               NULL, 
+               a_string, 
+               (SQLSMALLINT)sqlstrlen(a_string),
+               NULL,
+               0, 
+               NULL,
+               SQL_DRIVER_NOPROMPT);
+	if (l_con->rc<0) {
+		odbc_error_handler(con, NULL,12);
+		l_con->rc = SQLFreeHandle(SQL_HANDLE_DBC,l_con->hdbc);
+		return;
+	}
+
+	odbc_fetch_connection_info (con);
+
+}
+
+/*****************************************************************/
+/*                                                               */
+/*                     ROUTINE  DESCRIPTION                      */
+/*                                                               */
+/* NAME: odbc_get_connection_info()                              */
+/* DESCRIPTION:                                                  */
+/*   Get connection info after connection						 */
+/*                                                               */
+/*****************************************************************/
+
+void odbc_fetch_connection_info (void *con)
+{
+	SQLSMALLINT indColName;
+	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
+
 	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_PROCEDURES, dbmsName, sizeof(dbmsName), &indColName);
 	SQLTXTCPY(storedProc, dbmsName);
 	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_PROCEDURE_TERM, dbmsName, sizeof(dbmsName), &indColName);
@@ -1424,26 +1497,18 @@ void odbc_connect (void *con, SQLTCHAR *name, SQLTCHAR *passwd, SQLTCHAR *dsn)
 	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_QUOTED_IDENTIFIER_CASE, &odbc_case, sizeof(odbc_case), &indColName);
 	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_INFO_SCHEMA_VIEWS, &odbc_info_schema, sizeof(odbc_info_schema), &indColName);
 
-	if (indColName == 1 && idQuoter[0] == TXTC(' '))
+	if (indColName == 1 && idQuoter[0] == TXTC(' ')) {
 		idQuoter[0] = (SQLTCHAR)0;
-	else
+	} else {
 		idQuoter[indColName] = (SQLTCHAR)0;
-
-	/* l_con->rc = SQLGetInfo(l_con->hdbc, SQL_QUALIFIER_NAME_SEPARATOR, quaNameSep, sizeof(quaNameSep), &indColName);*/
-	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_CATALOG_NAME_SEPARATOR, quaNameSep, sizeof(quaNameSep), &indColName);
-	if (indColName == 1 && quaNameSep[0] == TXTC(' '))
-		quaNameSep[0] = (SQLTCHAR)0;
-	else
-		quaNameSep[indColName] = (SQLTCHAR)0;
-
-/*
-	for (i=0; i< MAX_DESCRIPTOR && l_con->error_number == 0; i++) {
-		l_con->rc = SQLAllocStmt(l_con->hdbc, &(l_con->hstmt[i]));
-		if (l_con->rc) {
-			odbc_error_handler(con, NULL, 101);
-		}
 	}
-*/
+
+	l_con->rc = SQLGetInfo(l_con->hdbc, SQL_CATALOG_NAME_SEPARATOR, quaNameSep, sizeof(quaNameSep), &indColName);
+	if (indColName == 1 && quaNameSep[0] == TXTC(' ')) {
+		quaNameSep[0] = (SQLTCHAR)0;
+	} else {
+		quaNameSep[indColName] = (SQLTCHAR)0;
+	}
 }
 
 /*****************************************************************/
@@ -1461,7 +1526,7 @@ void odbc_disconnect (void *con)
 	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
 
 	odbc_clear_error (con);
-	/* l_con->rc = SQLTransact(henv, SQL_NULL_HDBC, SQL_COMMIT); */
+
 	/* Call SQLEndTran on connection level rather than environment level.
 	* Because we don't want to EndTran on other connections in current enviroment */
 	l_con->rc = SQLEndTran(SQL_HANDLE_DBC, l_con->hdbc, SQL_COMMIT);
@@ -1630,6 +1695,17 @@ void cut_tail_blank(SQLTCHAR *buf) {
 	}
 }
 
+/*****************************************************************/
+/* Set precision and scale when reading from the decimal from ODBC */
+/*****************************************************************/
+/*                                                               */
+void odbc_set_decimal_presicion_and_scale (void *con, int precision, int scale)
+{
+	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
+	l_con->default_precision = precision;
+	l_con->default_scale = scale;
+}
+
 int odbc_get_count (void *con, int no_des)
 {
 	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
@@ -1706,6 +1782,7 @@ int odbc_conv_type (int typeCode)
 			return WSTRING_TYPE;
 		case SQL_DECIMAL:
 		case SQL_NUMERIC:	
+			return DECIMAL_TYPE;
 		case SQL_FLOAT:
 		case SQL_DOUBLE:
 			return FLOAT_TYPE;
@@ -2058,6 +2135,29 @@ int odbc_get_date_data (void *con, int no_des, int index)
 		l_con->error_number = -DB_ERROR-5;
 		return 0;
   }
+}
+
+int odbc_get_decimal (void *con, int no_des, int index, void *p)
+{
+	int i = index - 1;
+	CON_CONTEXT *l_con = (CON_CONTEXT *)con;
+	ODBCSQLDA   * dbp = l_con->odbc_descriptor[no_des];
+	int data_type;
+
+	data_type = GetDbCType(dbp, i);
+	if (data_type == SQL_C_NUMERIC) {
+		memcpy((char *)p, GetDbColPtr(dbp, i), sizeof (SQL_NUMERIC_STRUCT));
+		return 1;
+	}
+
+	ATSTXTCAT(l_con->error_message, "\nError DECIMAL type in odbc_get_decimal. ");
+	if (l_con->error_number) {
+		return 0;
+	}
+	else {
+		l_con->error_number = -DB_ERROR-5;
+		return 0;
+	}
 }
 
 int odbc_get_year(void *con)

@@ -136,10 +136,12 @@ Delivery/esbuilder/pixmaps/wizard.png -text
 Delivery/notes/new_development_period_todo.txt -text
 Delivery/scripts/unix/README.packaging -text
 Delivery/scripts/unix/compile_eweasel -text
+Delivery/scripts/unix/compile_other_libraries -text
 Delivery/scripts/unix/make_debian_package -text
 Delivery/scripts/unix/make_rpm_package -text
 Delivery/scripts/unix/make_svr_package -text
 Delivery/scripts/unix/make_tools -text
+Delivery/scripts/unix/packaging/copyright -text
 Delivery/scripts/unix/packaging/debian/compat -text
 Delivery/scripts/unix/packaging/debian/rules -text
 Delivery/scripts/unix/packaging/description -text
@@ -157,8 +159,6 @@ Delivery/scripts/windows/install/images/eiffelstudio/backdrop.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_c_compiler.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_error.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_info.bmp -text
-Delivery/scripts/windows/install/images/eiffelstudio/backdrop_precompile.bmp -text
-Delivery/scripts/windows/install/images/eiffelstudio/backdrop_precompile_warning.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_remove.bmp -text
 Delivery/scripts/windows/install/images/eiffelstudio/backdrop_warning.bmp -text
 Delivery/scripts/windows/install/images/error.ico -text
@@ -2272,8 +2272,13 @@ Src/compatible/library/wel/extra/h2e.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e1.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
-Src/contrib/library/README.txt -text
+Src/contrib/README.txt -text
+Src/contrib/library/math/eapml/README.txt -text
+Src/contrib/library/math/eapml/tests/TODO.txt -text
 Src/contrib/library/svn/svn.lic -text
+Src/contrib/library/text/encryption/eel/README.txt -text
+Src/contrib/library/text/encryption/eel/src/digests/sha_functions.e.orig -text
+Src/contrib/library/text/encryption/eel/src/ec/ec_domain_parameters.e.orig -text
 Src/dotnet/codedom_provider_2.0/test/tester/icons/tester.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/ecdpman.ico -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/application.png -text
@@ -3463,7 +3468,6 @@ Src/tools/repository_tool/ctr.exe.manifest -text
 Src/tools/repository_tool/ctr.ico -text
 Src/tools/repository_tool/ctr.rc -text
 Src/tools/repository_tool/data/catalog.ini -text
-Src/tools/repository_tool/lib/README.TXT -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.inc -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.info -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.module -text

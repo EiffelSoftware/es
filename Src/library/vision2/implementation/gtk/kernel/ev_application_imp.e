@@ -45,7 +45,6 @@ feature {NONE} -- Initialization
 		local
 			locale_str: STRING
 			l_colormap: POINTER
-			l_best_depth: INTEGER
 			l_gdk_screen_get_rgba_colormap_symbol: POINTER
 		do
 --			if {EV_GTK_DEPENDENT_EXTERNALS}.g_mem_is_system_malloc then
@@ -66,9 +65,6 @@ feature {NONE} -- Initialization
 
 				-- Initialize the marshal object.
 			create gtk_marshal
-
-				-- Initialize the dependent routines object
-			create gtk_dependent_routines
 
 			create window_oids.make
 
@@ -419,8 +415,8 @@ feature {EV_ANY_I} -- Implementation
 								l_focused_popup_window.handle_mouse_button_event (
 									{GTK}.gdk_button_press_enum,
 									2,
-									{GTK}.gdk_event_scroll_struct_x_root (gdk_event).truncated_to_integer,
-									{GTK}.gdk_event_scroll_struct_y_root (gdk_event).truncated_to_integer
+									{GTK}.gdk_event_scroll_struct_x_root (gdk_event).truncated_to_integer + screen_virtual_x,
+									{GTK}.gdk_event_scroll_struct_y_root (gdk_event).truncated_to_integer + screen_virtual_y
 									)
 							end
 							l_widget_imp ?= eif_object_from_gtk_object (event_widget)
@@ -487,6 +483,8 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_MAP%N")
 						end
+						l_call_event := False
+						{GTK}.gtk_main_do_event (gdk_event)
 						l_widget_imp ?= eif_object_from_gtk_object (event_widget)
 						if l_widget_imp /= Void then
 							l_widget_imp.on_widget_mapped
@@ -496,6 +494,8 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_UNMAP%N")
 						end
+						l_call_event := False
+						{GTK}.gtk_main_do_event (gdk_event)
 						l_gtk_widget_imp ?= eif_object_from_gtk_object (event_widget)
 						if l_gtk_widget_imp /= Void then
 							if currently_shown_control = l_gtk_widget_imp.interface then
@@ -562,8 +562,8 @@ feature {EV_ANY_I} -- Implementation
 						l_call_event := False
 						if
 							l_gdk_window /= {GTK}.null_pointer
-							and then {GTK}.gdk_event_any_struct_send_event (gdk_event) = 0
---							and then {EV_GTK_EXTERNALS}.gdk_event_crossing_struct_mode (gdk_event) = 0
+							--and then {GTK}.gdk_event_any_struct_send_event (gdk_event) = 0
+							and then {GTK}.gdk_event_crossing_struct_mode (gdk_event) = 0
 						then
 							{GTK}.gdk_window_get_user_data (l_gdk_window, $l_gtk_widget_ptr)
 
@@ -713,8 +713,9 @@ feature {EV_ANY_I} -- Implementation
 				else
 					if {GTK2}.events_pending then
 						process_gtk_events
+					else
+						l_no_more_events := True
 					end
-					l_no_more_events := True
 				end
 			end
 
@@ -741,9 +742,6 @@ feature -- Implementation
 
 	gtk_marshal: EV_GTK_CALLBACK_MARSHAL
 		-- Marshal object for all gtk signal emission event handling.
-
-	gtk_dependent_routines: EV_GTK_DEPENDENT_ROUTINES
-		-- Object used for exporting gtk version dependent routines to independent implementation.
 
 feature {EV_ANY_I} -- Implementation
 
@@ -1181,13 +1179,18 @@ feature -- Implementation
 	update_display_data
 			-- Update stored values with current values.
 		local
+			l_window: POINTER
 			temp_mask: NATURAL_32
 			temp_x, temp_y: INTEGER
+			l_screen: POINTER
 			l_stored_display_data: like stored_display_data
 		do
 				-- Update coords for physical to logical.
 			l_stored_display_data := stored_display_data
-			l_stored_display_data.window := {GTK}.gdk_window_get_pointer ({GTK}.null_pointer, $temp_x, $temp_y, $temp_mask)
+
+			l_window := {GTK2}.gdk_display_get_window_at_pointer ({GTK2}.gdk_display_get_default, $temp_x, $temp_y)
+			{GTK2}.gdk_display_get_pointer ({GTK2}.gdk_display_get_default, $l_screen, $temp_x, $temp_y, $temp_mask)
+			l_stored_display_data.window := l_window
 			l_stored_display_data.x := temp_x + screen_virtual_x
 			l_stored_display_data.y := temp_y + screen_virtual_y
 			l_stored_display_data.mask := temp_mask
@@ -1248,10 +1251,10 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 	gtk_widget_imp_at_pointer_position: detachable EV_GTK_WIDGET_IMP
 			-- Gtk Widget implementation at current mouse pointer position (if any)
 		local
-			a_x, a_y: INTEGER
+			temp_x, temp_y: INTEGER
 			gdkwin, l_null: POINTER
 		do
-			gdkwin := {GTK}.gdk_window_at_pointer ($a_x, $a_y)
+			gdkwin := {GTK2}.gdk_display_get_window_at_pointer ({GTK2}.gdk_display_get_default, $temp_x, $temp_y)
 			if gdkwin /= l_null then
 				Result := gtk_widget_from_gdk_window (gdkwin)
 			end
@@ -1339,7 +1342,7 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 		end
 
 	reusable_rectangle_struct: POINTER
-			-- Persistent GdkColorStruct
+			-- Persistent GdkRectangle struct
 		once
 			Result := {GTK}.c_gdk_rectangle_struct_allocate
 		end

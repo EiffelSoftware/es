@@ -36,19 +36,23 @@ BIN_DIR=$BASE_PATH/bin
 INCLUDE_DIR=$BASE_PATH/include/$PRODUCT
 LIB_DIR=$BASE_PATH/lib/$PRODUCT
 LIB_BIN_DIR=$LIB_DIR/studio
+LIB_TOOLS_BIN_DIR=$LIB_DIR/tools
 SHARE_DIR=$BASE_PATH/share/$PRODUCT
 APPLICATIONS_DIR=$BASE_PATH/share/applications
 ICONS_DIR=$BASE_PATH/share/icons
 DOC_DIR=$BASE_PATH/share/doc/$PRODUCT
 SRC_BIN_DIR=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin
+TOOLS_BIN_DIR=$ISE_EIFFEL/tools/spec/$ISE_PLATFORM/bin
 
+TOOLS_BINS="compile_all eiffel_echo eimgemb syntax_updater"
 MAIN_BINS="estudio ec ecb finish_freezing"
-LIB_BINS="ecdbgd prelink quick_finalize x2c"
+LIB_BINS="ecdbgd prelink quick_finalize x2c make_precompiled_libraries"
 
 mkdir -p $BIN_DIR
 mkdir -p $INCLUDE_DIR
 mkdir -p $LIB_DIR
 mkdir -p $LIB_BIN_DIR
+mkdir -p $LIB_TOOLS_BIN_DIR
 mkdir -p $SHARE_DIR
 mkdir -p $APPLICATIONS_DIR
 mkdir -p $ICONS_DIR
@@ -58,33 +62,26 @@ mkdir -p $DOC_DIR
 cp -r $ISE_EIFFEL/studio/spec/$ISE_PLATFORM/include/* $INCLUDE_DIR
 cp -r $ISE_EIFFEL/studio/spec/$ISE_PLATFORM/lib/* $LIB_DIR
 
-# Copy library
+# Copy libraries
 cp -r $ISE_EIFFEL/library $LIB_DIR
-if test -d "$ISE_EIFFEL/compatible/library"; then
-	mkdir $LIB_DIR/compatible
-	cp -r $ISE_EIFFEL/compatible/library $LIB_DIR/compatible
-fi
+cp -r $ISE_EIFFEL/compatible $LIB_DIR
+cp -r $ISE_EIFFEL/contrib $LIB_DIR
+cp -r $ISE_EIFFEL/unstable $LIB_DIR
 
 # Copy precompile without EIFGENs and remove WEL files
-mkdir -p $LIB_DIR/precomp/spec/$UNIX_PLATFORM
-cp $ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/*.ecf $LIB_DIR/precomp/spec/$UNIX_PLATFORM/
-rm -f $LIB_DIR/precomp/spec/$UNIX_PLATFORM/wel*
+mkdir -p $SHARE_DIR/precomp/spec/$UNIX_PLATFORM
+cp $ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/*.ecf $SHARE_DIR/precomp/spec/$UNIX_PLATFORM/
+rm -f $SHARE_DIR/precomp/spec/$UNIX_PLATFORM/wel*
 if test -d "$ISE_EIFFEL/compatible/precomp/spec/$ISE_PLATFORM"; then
-	mkdir -p $LIB_DIR/compatible/precomp/spec/$UNIX_PLATFORM
-	cp $ISE_EIFFEL/compatible/precomp/spec/$ISE_PLATFORM/*.ecf $LIB_DIR/compatible/precomp/spec/$UNIX_PLATFORM/
-	rm -f $LIB_DIR/compatible/precomp/spec/$UNIX_PLATFORM/wel*
+	mkdir -p $SHARE_DIR/compatible/precomp/spec/$UNIX_PLATFORM
+	cp $ISE_EIFFEL/compatible/precomp/spec/$ISE_PLATFORM/*.ecf $SHARE_DIR/compatible/precomp/spec/$UNIX_PLATFORM/
+	rm -f $SHARE_DIR/compatible/precomp/spec/$UNIX_PLATFORM/wel*
 fi
 
 # Copy documentation
 cp $ISE_EIFFEL/VERSION $DOC_DIR
 cp $ISE_EIFFEL/INSTALL.readme $DOC_DIR
 cp -r $ISE_EIFFEL/examples $DOC_DIR
-
-if test -d "$ISE_EIFFEL/docs"; then
-    cp -r $ISE_EIFFEL/docs $DOC_DIR
-else
-    echo $ISE_EIFFEL/docs does not exist - new unix layout will not contain Eiffel documentation
-fi
 
 # Copy esbuilder
 cp $ISE_EIFFEL/esbuilder/spec/$ISE_PLATFORM/bin/esbuilder $BIN_DIR/esbuilder$VERSION_SUFFIX
@@ -104,6 +101,12 @@ do
 	cp $SRC_BIN_DIR/$BIN $LIB_BIN_DIR/$BIN
 done
 
+# Copy tools binaries
+for BIN in $TOOLS_BINS;
+do
+	cp $TOOLS_BIN_DIR/$BIN $LIB_TOOLS_BIN_DIR/$BIN
+done
+
 # Copy main binaries
 for BIN in $MAIN_BINS;
 do
@@ -118,9 +121,9 @@ cp -r $ISE_EIFFEL/studio $SHARE_DIR/studio
 rm -r $SHARE_DIR/studio/spec
 rm -r $SHARE_DIR/studio/wizards
 
-# Create make_install file and move it to share directory
-. $PACKAGING_DIR/make_install.sh
-mv $PACKAGING_DIR/make_install $SHARE_DIR/
+# Copy tools
+cp -r $ISE_EIFFEL/tools $SHARE_DIR/tools
+rm -r $SHARE_DIR/tools/spec
 
 # Copy application information
 . $PACKAGING_DIR/desktop.sh
