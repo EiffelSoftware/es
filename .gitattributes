@@ -2218,6 +2218,9 @@ Src/compatible/library/wel/extra/h2e1.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
 Src/contrib/README.txt -text
+Src/contrib/library/graphic/toolkit/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
+Src/contrib/library/graphic/toolkit/wex/examples/wex/Framework_example/app.ico svneol=native#unset
+Src/contrib/library/graphic/toolkit/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 Src/contrib/library/math/decimal/decimal/format -text
 Src/contrib/library/math/eapml/README.txt -text
 Src/contrib/library/math/eapml/tests/TODO.txt -text
@@ -8396,6 +8399,3 @@ free_add_ons/gcc/windows/msys/1.0/etc/termcap -text
 free_add_ons/gcc/windows/msys/1.0/m.ico -text
 free_add_ons/gcc/windows/msys/1.0/msys.bat -text
 free_add_ons/gcc/windows/msys/1.0/msys.ico -text
-free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
-free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
-free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
