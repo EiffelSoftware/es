@@ -3058,6 +3058,7 @@ Src/tools/com_wizard/root/resources/help.png -text
 Src/tools/com_wizard/root/resources/output.png -text
 Src/tools/com_wizard/root/resources/settings.png -text
 Src/tools/com_wizard/root/resources/wizard.ico -text
+Src/tools/compile_all/README.txt -text
 Src/tools/compile_all/compile_all.lic -text
 Src/tools/compliance_checker/ace/ecchecker.lic -text
 Src/tools/compliance_checker/resources/blank.ico -text
