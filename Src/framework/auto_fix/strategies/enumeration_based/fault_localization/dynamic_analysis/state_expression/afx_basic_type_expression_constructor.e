@@ -35,6 +35,7 @@ feature -- Basic operation
 		local
 			l_exp: EPA_EXPRESSION
 			l_exp_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_constant_set: EPA_HASH_SET [EPA_EXPRESSION]
 		do
 			from
 				create l_exp_set.make_equal (a_expressions.count + 1)
@@ -47,6 +48,20 @@ feature -- Basic operation
 
 				a_expressions.forth
 			end
+
+				-- Remove constant expressions.
+			from
+				create l_constant_set.make_equal (l_exp_set.count)
+				l_exp_set.start
+			until l_exp_set.after
+			loop
+				l_exp := l_exp_set.item_for_iteration
+				if attached l_exp.text as lt_text and then (lt_text.is_boolean or else lt_text.is_integer) then
+					l_constant_set.force (l_exp)
+				end
+				l_exp_set.forth
+			end
+			l_exp_set.subtract (l_constant_set)
 
 			last_constructed_expressions_cache := l_exp_set
 		end

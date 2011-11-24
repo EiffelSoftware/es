@@ -77,6 +77,7 @@ feature{NONE} -- Implementation
 			l_value: BOOLEAN
 			l_command_list: DS_ARRAYED_LIST [TUPLE [cmd_name: STRING; usefulness: REAL]]
 			l_fix: AFX_STATE_TRANSITION_FIX
+			l_target_str: STRING
 			l_usefulness: REAL
 			l_call_sequence: DS_ARRAYED_LIST [STRING]
 		do
@@ -103,6 +104,11 @@ feature{NONE} -- Implementation
 				l_command_list := l_model.command_usefulnesses (l_requirement_table)
 
 					-- Generate transition fixes.
+				l_target_str := ""
+				if not a_pre_expr.is_empty then
+					l_target_str.append (a_pre_expr + ".")
+				end
+
 				from l_command_list.start
 				until l_command_list.after
 				loop
@@ -110,7 +116,7 @@ feature{NONE} -- Implementation
 					l_usefulness := l_command_list.item_for_iteration.usefulness + 0.5 -- round up
 
 					create l_call_sequence.make (1)
-					l_call_sequence.force_last (a_pre_expr + "." + l_command_name)
+					l_call_sequence.force_last (l_target_str + l_command_name)
 					create l_fix.make_with_rank (l_call_sequence, 1, l_usefulness.truncated_to_integer)
 					call_sequences.force_last (l_fix)
 

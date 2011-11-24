@@ -146,6 +146,17 @@ feature -- Access
 			Result := l_path
 		end
 
+	cutoff_time_minutes: INTEGER
+			-- Cut-off time in minutes.
+
+	set_cutoff_time_minutes (a_time: INTEGER)
+			-- Set `cutoff_time_minutes' with `a_time'.
+		require
+			time_great_enough: a_time > 0
+		do
+			cutoff_time_minutes := a_time
+		end
+
 feature -- State retrieval related
 
 	state_test_case_class_name: detachable STRING

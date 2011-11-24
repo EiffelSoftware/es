@@ -21,14 +21,14 @@ create
 
 feature -- Initialization
 
-	make (a_class_name, a_code, a_operands, a_variables, a_trace, a_hash_code, a_pre_state, a_post_state: STRING;
-				a_pre_serialization: ARRAYED_LIST[NATURAL_8])
+	make (a_class_name, a_code, a_operands, a_variables, a_trace, a_hash_code, a_pre_state, a_post_state, a_time: STRING;
+				a_pre_serialization: ARRAY [NATURAL_8])
 			-- Initialization.
 		local
 			l_string: STRING
 			l_start: INTEGER
 		do
-			make_summarization (a_class_name, a_code, a_operands, a_variables, a_trace, a_pre_state, a_post_state)
+			make_summarization (a_class_name, a_code, a_operands, a_variables, a_trace, a_pre_state, a_post_state, a_time)
 			pre_serialization := a_pre_serialization
 				-- Parse the `hash_code' part from "CLASS_NAME.feature_name.hash_code" and save it into `hash_code_str'.
 			hash_code_str := a_hash_code.substring (a_hash_code.last_index_of ('.', a_hash_code.count) + 1, a_hash_code.count)
@@ -90,7 +90,7 @@ feature -- Access
 	hash_code_str: STRING
 			-- Hash code of the test case.
 
-	pre_serialization: ARRAYED_LIST[NATURAL_8]
+	pre_serialization: ARRAY [NATURAL_8]
 			-- Serialized objects before testing.
 
 feature{AUT_TEST_CASE_TEXT_BUILDER} -- Direct information

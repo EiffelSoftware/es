@@ -54,13 +54,16 @@ feature{NONE} -- Initialization
 			test_case_deserialized_event.subscribe (agent test_case_extractor.on_test_case_deserialized)
 			deserialization_finished_event.subscribe (agent test_case_extractor.on_deserialization_finished)
 
-
 			if configuration.is_building_behavioral_models then
 				create behavioral_model_builder.make (configuration.model_directory)
 				deserialization_started_event.subscribe (agent behavioral_model_builder.on_deserialization_started)
 				test_case_deserialized_event.subscribe (agent behavioral_model_builder.on_test_case_deserialized)
 				deserialization_finished_event.subscribe (agent behavioral_model_builder.on_deserialization_finished)
 			end
+
+			create test_case_deserializability_checker.make (test_case_extractor.test_case_dir)
+			deserialization_started_event.subscribe (agent test_case_deserializability_checker.start_checking)
+			deserialization_finished_event.subscribe (agent test_case_deserializability_checker.finish_checking)
 
 			check is_ready: is_ready end
 		end
@@ -81,6 +84,9 @@ feature -- Access
 
 	behavioral_model_builder: AUT_BEHAVIORAL_MODEL_BUILDER
 			-- Behavioral model builder.
+
+	test_case_deserializability_checker: AUT_TEST_CASE_DESERIALIZABILITY_CHECKER
+			-- Deserializability checker.
 
 feature -- Configuration
 
@@ -163,6 +169,7 @@ feature{NONE} -- Implementation
 		local
 			l_conf: like configuration
 			l_dir: DIRECTORY
+			l_input_name: FILE_NAME
 			l_file: RAW_FILE
 		do
 			l_conf := configuration
@@ -170,7 +177,12 @@ feature{NONE} -- Implementation
 
 				-- Check the existence of `data_input' source.
 			data_input := l_conf.data_input
-			check data_input /= Void and then not data_input.is_empty end
+			if data_input = Void or else data_input.is_empty then
+					-- Use the serialization file from project directory.
+				create l_input_name.make_from_string (configuration.log_dirname)
+				l_input_name.extend ("serialization.txt")
+			end
+
 			create l_file.make (data_input)
 			create l_dir.make (data_input)
 			if not l_file.exists then
@@ -283,9 +295,9 @@ feature{NONE} -- Implementation
 
 	last_length: detachable STRING
 
-	last_pre_serialization: detachable ARRAYED_LIST[NATURAL_8]
+	last_pre_serialization: detachable ARRAY[NATURAL_8]
 
-	last_post_serialization: detachable ARRAYED_LIST[NATURAL_8]
+	last_post_serialization: detachable ARRAY[NATURAL_8]
 
 	last_tag: detachable STRING
 
@@ -429,41 +441,18 @@ feature{NONE} -- Auxiliary routines
 			check l_finish_index = l_length - l_postfix_count end
 			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
 
-			if is_valid_serialization_data (l_serialization_str) then
-					-- Save valid serialization data only.
-				create last_pre_serialization.make (a_length + 1)
-				l_objects := last_pre_serialization
+				-- Save pre serialization string.
+			create last_pre_serialization.make (1, a_length + 1)
+			l_objects := last_pre_serialization
 
-				from
-					l_index := 1
-				until
-					l_index > a_length
-				loop
-					l_objects.extend (l_serialization_str[l_index].code.as_natural_8)
-					l_index := l_index + 1
-				end
-          	else
-	            	-- Abandon bad serialization data.
-            	last_pre_serialization := Void
-         	end
-
-		end
-
-	is_valid_serialization_data (a_str: STRING): BOOLEAN
-			-- Is 'a_str' encoding a valid serialization data of type {SPECIAL[detachable ANY]}?
-		local
-			l_retried: BOOLEAN
-		do
-			Result := True
-			fixme ("I have to comment out the following block because it is too often that we have segmentation fault by doing deserialization. If the code is not commented, the deserialization will never succeeded. 21.5.2010 Jasonw")
---			if not l_retried then
---	            if attached {SPECIAL [detachable ANY]}deserialized_object (a_str) as lt_variable then
---					Result := True
---				end
---			end
-		rescue
-			l_retried := True
-			retry
+			from
+				l_index := 1
+			until
+				l_index > a_length
+			loop
+				l_objects.put (l_serialization_str[l_index].code.as_natural_8, l_index)
+				l_index := l_index + 1
+			end
 		end
 
 	has_start_tag (a_line: STRING): BOOLEAN
@@ -505,8 +494,12 @@ feature{NONE} -- Auxiliary routines
 						last_hash_code,
 						last_pre_state,
 						last_post_state,
+						last_time,
 						last_pre_serialization)
-				report_serialization_data (l_serialization)
+				test_case_deserializability_checker.check_deserializability (l_serialization)
+				if test_case_deserializability_checker.last_result then
+					report_serialization_data (l_serialization)
+				end
 			end
 			is_inside_serialization := False
 		end

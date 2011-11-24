@@ -7,6 +7,9 @@ note
 class
 	AFX_SESSION
 
+inherit
+	EPA_TIME_UTILITY
+
 create
 	make
 
@@ -18,6 +21,7 @@ feature -- Initialization
 			config_attached: a_config /= Void
 		do
 			config := a_config
+			maximum_session_length_millisecond := config.cutoff_time_minutes * 60 * 1000
 			create event_actions.make
 		end
 
@@ -34,6 +38,26 @@ feature -- Access
 
 	event_actions: AFX_EVENT_ACTIONS
 			-- Event actions.
+
+	starting_time: DT_DATE_TIME
+			-- Time when AutoFix session started.
+
+	maximum_session_length_millisecond: INTEGER
+			-- Maximum session length in millisecond.			
+
+feature -- Basic operation
+
+	start
+			-- Start session.
+		do
+			starting_time := time_now
+		end
+
+	is_time_out: BOOLEAN
+			-- Is current session out of time?
+		do
+			Result := duration_from_time (starting_time) >= maximum_session_length_millisecond
+		end
 
 feature -- Status set
 

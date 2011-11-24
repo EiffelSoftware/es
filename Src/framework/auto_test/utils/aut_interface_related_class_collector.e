@@ -186,13 +186,16 @@ feature{NONE} -- Implementation
 
 	is_interesting_type (a_type: TYPE_A): BOOLEAN
 			-- Is 'a_type' interesting w.r.t. related-class collection?
+		local
+			l_class: CLASS_C
+			l_class_name: STRING
 		do
-			if not a_type.is_formal
-					and then not a_type.is_integer
-					and then not a_type.is_real_32
-					and then not a_type.is_boolean
-			then
-				Result := True
+			if not a_type.is_formal and then not a_type.is_basic then
+				l_class := a_type.associated_class
+				l_class_name := l_class.name
+				if not l_class.is_deferred and then not l_class.is_class_any and then l_class_name /~ "FUNCTION" and then l_class_name /~ "PROCEDURE" then
+					Result := True
+				end
 			end
 		end
 
@@ -249,7 +252,7 @@ feature{NONE} -- Implementation
 
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

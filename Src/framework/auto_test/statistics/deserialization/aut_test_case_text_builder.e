@@ -629,7 +629,6 @@ feature{NONE} -- Operands & Arguments
 feature{NONE} -- Cache
 
 	tc_operand_table_initializer_cache: detachable STRING
---	tc_variables_decleration: detachable STRING
 	operand_reindexing_table_cache: like operand_reindexing_table
 	all_variable_declaration_cache: STRING
 
@@ -647,14 +646,15 @@ feature{NONE} -- Cache
 				-- Cache
 			tc_operand_table_initializer_cache := Void
 			operand_reindexing_table_cache := Void
+			all_variable_declaration_cache := Void
 		end
 
 feature{NONE} -- Auxiliary features
 
-	tc_serialized_data (a_object: ARRAYED_LIST[NATURAL_8]): STRING
+	tc_serialized_data (a_object: ARRAY [NATURAL_8]): STRING
 			-- Serialization data, i.e. an array of {NATURAL_8} values, in {STRING}.
 		local
-			l_data: ARRAYED_LIST[NATURAL_8]
+			l_data: ARRAY [NATURAL_8]
 			l_index: INTEGER
 			l_line: STRING
 		do
@@ -663,24 +663,22 @@ feature{NONE} -- Auxiliary features
 			from
 				create Result.make (l_data.count * 4 + 1)
 				create l_line.make (128)
-				l_index := 1
-				l_data.start
+				l_index := l_data.lower
 			until
-				l_data.after
+				l_index > l_data.upper
 			loop
-				l_line.append (l_data.item.out)
-				if not l_data.islast then
+				l_line.append (l_data[l_index].out)
+				if l_index < l_data.upper then
 					l_line.append (", ")
 				end
 
-				if l_line.count > 120 or else l_data.islast then
+				if l_line.count > 120 or else l_index >= l_data.upper then
 					l_line.append ("%N")
 					Result.append (l_line)
 					l_line.wipe_out
 				end
 
 				l_index := l_index + 1
-				l_data.forth
 			end
 			Result.prune_all_trailing ('%N')
 		end

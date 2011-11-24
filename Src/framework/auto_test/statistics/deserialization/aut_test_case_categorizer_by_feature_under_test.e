@@ -9,6 +9,10 @@ class
 
 inherit
 	AUT_TEST_CASE_CATEGORIZER
+		redefine
+			on_deserialization_started,
+			on_deserialization_finished
+		end
 
 create
 	make
@@ -18,6 +22,7 @@ feature -- Data event handler
 	on_deserialization_started
 			-- <Precursor>
 		do
+--			Precursor
 		end
 
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
@@ -34,6 +39,7 @@ feature -- Data event handler
 	on_deserialization_finished
 			-- <Precursor>
 		do
+--			Precursor
 		end
 
 feature -- Basic operation

@@ -229,18 +229,16 @@ feature{NONE} -- Implementation
 		do
 			l_parts := string_slices (a_class_name, once "__")
 			l_parts.start
+			l_parts.remove 		-- Bypass "TC".
+			class_under_test := l_parts.i_th (1).as_upper
 			l_parts.remove
-			class_under_test := l_parts.i_th (1)
-			feature_under_test := l_parts.i_th (2).as_lower
+			feature_under_test := l_parts.i_th (1).as_lower
+			l_parts.remove
+			l_parts.remove		-- Bypass "FUN"/"CMD".
 			recipient_class := class_under_test
 			recipient := feature_under_test
 			is_passing := True
 			tag := "noname"
-
-			l_parts.start
-			l_parts.remove
-			l_parts.start
-			l_parts.remove
 
 			from
 				l_parts.start
@@ -249,7 +247,11 @@ feature{NONE} -- Implementation
 			loop
 				l_part := l_parts.item_for_iteration
 				if not l_parts.is_empty then
-					if l_part.is_equal (once "S") then
+						-- UUID doesn't need to always start with digit. Max 10.12.2011
+					-- if l_parts.islast and then l_part.item (1).is_digit then
+					if l_parts.islast then
+						uuid := l_part.twin
+					elseif l_part.is_equal (once "S") then
 						is_passing := True
 
 					elseif l_part.is_equal (once "F") then
@@ -268,8 +270,6 @@ feature{NONE} -- Implementation
 
 					elseif l_part.starts_with (once "TAG_") then
 						tag := l_part.substring (5, l_part.count)
-					elseif l_parts.islast and then l_part.item (1).is_digit then
-						uuid := l_part.twin
 					end
 				end
 				l_parts.forth

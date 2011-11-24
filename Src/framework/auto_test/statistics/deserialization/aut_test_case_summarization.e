@@ -28,16 +28,17 @@ create
 feature -- Initialization
 
 	make (a_class_name, a_code, a_operands, a_variables, a_trace,
-					a_pre_state, a_post_state: STRING;)
+					a_pre_state, a_post_state, a_time: STRING;)
 			-- Initialization.
 		do
-			class_name_str := a_class_name
-			code_str := a_code
-			operands_str := a_operands
-			variables_str := a_variables
-			trace_str := a_trace
-			pre_state_str := a_pre_state
-			post_state_str := a_post_state
+			class_name_str := a_class_name.twin
+			code_str := a_code.twin
+			operands_str := a_operands.twin
+			variables_str := a_variables.twin
+			trace_str := a_trace.twin
+			pre_state_str := a_pre_state.twin
+			post_state_str := a_post_state.twin
+			time_str := a_time.twin
 
 			reset_summarization_availability
 		end
@@ -51,6 +52,7 @@ feature -- Access
 	trace_str: STRING
 	pre_state_str: STRING
 	post_state_str: STRING
+	time_str: STRING
 
 feature -- Query
 
@@ -216,6 +218,14 @@ feature -- Query
 				create context_cache.make_with_variable_names (all_variable_name_type_in_string_table)
 			end
 			Result := context_cache
+		end
+
+	time: INTEGER
+			-- Time stamp of the test case, in mini-second, since the beginning of AutoTest session.
+		require
+			time_not_empty: time_str /= Void and then not time_str.is_empty
+		do
+			Result := time_str.to_integer
 		end
 
 feature -- Status report

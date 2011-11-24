@@ -27,15 +27,13 @@ feature -- Initialization
 			-- Initialization.
 		do
 			make_summarization (a_class_name, a_code, a_operands, a_variables, a_trace,
-					a_pre_state, a_post_state)
-			time_str := a_time.twin
+					a_pre_state, a_post_state, a_time)
 			hash_code_str := a_hash_code.twin
 			pre_serialization := a_pre_serialization
 		end
 
 feature -- Access string representation
 
-	time_str: STRING
 	hash_code_str: STRING
 	pre_serialization: ARRAYED_LIST[NATURAL_8]
 

@@ -55,24 +55,25 @@ feature {NONE} -- Status setting
 				then
 					system.remove_explicit_root (interpreter_root_class_name, interpreter_root_feature_name)
 					system.make_update (False)
-					initiate_testing_task
-					if attached interpreter_root_class then
-						if is_precondition_reduction_enabled then
-							create l_test_task.make_precondition_reduction (Current, class_names)
-							l_test_task.start
-							sub_task := l_test_task
-						elseif is_random_testing_enabled then
-							create l_test_task.make_random (Current, class_names)
-							l_test_task.start
-							sub_task := l_test_task
-						elseif is_load_log_enabled then
-							load_log
-						elseif is_test_case_deserialization_enabled then
-							process_deserialization
-						elseif is_collecting_interface_related_classes then
-							collect_interface_related_classes
+
+					if is_precondition_reduction_enabled or else is_random_testing_enabled then
+						initiate_testing_task
+						if attached interpreter_root_class then
+							if is_precondition_reduction_enabled then
+								create l_test_task.make_precondition_reduction (Current, class_names)
+								l_test_task.start
+								sub_task := l_test_task
+							elseif is_random_testing_enabled then
+								create l_test_task.make_random (Current, class_names)
+								l_test_task.start
+								sub_task := l_test_task
+							end
 						end
+					else
+						launch_additional_process
 					end
+				elseif attached {ETEST_GENERATION_TESTING} sub_task as lt_task then
+					launch_additional_process
 				end
 			end
 			if not has_next_step then
@@ -152,6 +153,18 @@ feature {NONE} -- Basic operations
 			l_melt.set_is_freezing_needed (should_freeze_before_testing)
 			l_melt.start (True)
 			sub_task := l_melt
+		end
+
+	launch_additional_process
+			-- Launch additional process according to the configuration.
+		do
+			if is_load_log_enabled then
+				load_log
+			elseif is_test_case_deserialization_enabled then
+				process_deserialization
+			elseif is_collecting_interface_related_classes then
+				collect_interface_related_classes
+			end
 		end
 
 feature {NONE} -- Factory

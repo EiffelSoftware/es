@@ -141,11 +141,15 @@ feature -- Visitor routine
 			l_expr: EPA_AST_EXPRESSION
 		do
 			l_access_name := l_as.access_name_8
-			if operand_mapping.has (l_access_name) then
-				output.append_string ("(" + operand_mapping.item (l_access_name) + ")")
+			if is_within_nested then
+				output.append_string ("." + l_access_name)
 			else
-				output.append_string (operand_mapping.item ("Current") + ".")
-				Precursor (l_as)
+				if operand_mapping.has (l_access_name) then
+					output.append_string ("(" + operand_mapping.item (l_access_name) + ")")
+				else
+					output.append_string (operand_mapping.item ("Current") + ".")
+					Precursor (l_as)
+				end
 			end
 		end
 
