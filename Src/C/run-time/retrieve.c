@@ -81,9 +81,6 @@ doc:<file name="retrieve.c" header="eif_retrieve.h" version="$Id$" summary="Retr
 
 #ifdef RECOVERABLE_DEBUG
 #define EIF_OBJECT_TYPE(obj)    eif_typename (Dftype (obj))
-#ifdef PRINT_OBJECT
-extern void print_object (EIF_REFERENCE object);
-#endif
 #endif
 
 /*#define DEBUG_GENERAL_STORE */	/**/
@@ -668,14 +665,34 @@ rt_private void grow_mismatch_table (void)
 {
 	RT_GET_CONTEXT
 	EIF_REFERENCE res;
+	rt_uint_ptr l_old_size;
 
 	mismatches->capacity *= 2;
+
+	l_old_size = RT_SPECIAL_VISIBLE_SIZE(eif_access(mismatches->objects));
 	res = sprealloc (eif_wean (mismatches->objects), mismatches->capacity);
 	CHECK("res not null", res);
-
+	if (!egc_has_old_special_semantic) {
+			/* When using the new special semantics, the `count' is not updated. Since here
+			 * we are handling a SPECIAL [detachable ANY] we are ok to set the count to the capacity. */
+		RT_SPECIAL_COUNT(res) = mismatches->capacity;
+			/* Clear the area that was reallocated. */
+		memset(res + l_old_size , 0, RT_SPECIAL_VISIBLE_SIZE(res) - l_old_size);
+	}
+	CHECK("Count same as capacity", RT_SPECIAL_COUNT(res) == RT_SPECIAL_CAPACITY(res));
 	mismatches->objects = eif_protect (res);
+
+	l_old_size = RT_SPECIAL_VISIBLE_SIZE(eif_access(mismatches->values));
 	res = sprealloc (eif_wean (mismatches->values), mismatches->capacity);
 	CHECK("res not null", res);
+	if (!egc_has_old_special_semantic) {
+			/* When using the new special semantics, the `count' is not updated. Since here
+			 * we are handling a SPECIAL [detachable ANY] we are ok to set the count to the capacity. */
+		RT_SPECIAL_COUNT(res) = mismatches->capacity;
+			/* Clear the area that was reallocated. */
+		memset(res + l_old_size , 0, RT_SPECIAL_VISIBLE_SIZE(res) - l_old_size);
+	}
+	CHECK("Count same as capacity", RT_SPECIAL_COUNT(res) == RT_SPECIAL_CAPACITY(res));
 	mismatches->values = eif_protect (res);
 }
 
@@ -1099,13 +1116,6 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(char rt_type, int (*char_r
 	}
 	rt_reset_retrieve();
 
-#ifdef PRINT_OBJECT
-	printf ("-- Recovered object:\n");
-	if (retrieved != NULL)
-		print_object (retrieved);
-	else if (retrieved_i != NULL)
-		print_object (eif_access (retrieved_i));
-#endif
 	if (recoverable_tables)
 	{
 			/* Global variables are freed at this point, allowing safe call-back
@@ -2764,10 +2774,10 @@ rt_shared void print_old_generic_names (int32 *gtypes, int count)
 	}
 }
 
-rt_shared void print_generic_names (struct cecil_info *info, int type)
+rt_shared void print_generic_names (struct cecil_info *info, size_t type)
 {
 	int i, j, found = 0;
-	int32 *patterns;
+	uint32 *patterns;
 
 	for (i = 0; i < info->nb_param ; ++i) {
 		if (info->dynamic_types[i] == type) {
@@ -2787,7 +2797,7 @@ rt_shared void print_generic_names (struct cecil_info *info, int type)
 }
 
 rt_shared void print_object_summary (
-		char *prefix, EIF_REFERENCE object, long expanded_offset, EIF_TYPE_INDEX dtype)
+		char *prefix, EIF_REFERENCE object, rt_uint_ptr expanded_offset, EIF_TYPE_INDEX dtype)
 {
 	type_descriptor *conv = type_description (dtype);
 	if (object == NULL)

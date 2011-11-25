@@ -88,14 +88,6 @@ feature {NONE} -- Basic operations
 				end
 				io.put_string (".%N")
 
-				if a_parser.is_compatibile then
-					io.put_string ("Using 6.3 compatibility mode%N")
-				end
-					-- Set the compatibility mode.
-				(create {CONF_DEFAULT_OPTION_SETTING}).set_is_63_compatible (a_parser.is_compatibile)
-
-				io.new_line
-
 				from l_files.start until l_files.after loop
 					if attached l_files.item as l_file_name then
 						io.put_string ("Processing: ")
@@ -170,7 +162,7 @@ feature {NONE} -- Basic operations
 						l_new_content := a_modifier.convert_from_stream (l_content)
 						if a_modifier.has_error then
 							io.error.put_string ("Error: ")
-							io.error.put_string (a_modifier.last_error)
+							io.error.put_string (a_modifier.last_error.as_string_8)
 							io.error.new_line
 							exit_code := -1
 						else
@@ -261,7 +253,7 @@ feature {NONE} -- Basic operations
 
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

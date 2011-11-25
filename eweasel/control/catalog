@@ -245,6 +245,7 @@ test	multiple-semicolons-after-feature	syntax064 tcf fail syntax
 test	non-decimal-percent-char-codes		syntax065 tcf fail syntax
 test	number-end-without-break	syntax066 tcf fail syntax
 test	empty-array-tuple-wrong-error-line	syntax067 tcf pass syntax
+test	once-followed-by-static-call	syntax068 tcf fail syntax
 
 
 -- Validity tests
@@ -997,6 +998,9 @@ test 	recompilation-forces-freeze	incr416 tcf pass incrementality
 test 	qat-spurious-veen		incr417 tcf fail incrementality validity
 test 	qat-precursor-anchored-to-caller incr418 tcf fail incrementality anchored_types
 test	static-type-id-crash-3			incr419 tcf fail incrementality anchored_types
+test	internal-search-crash			incr420 tcf fail incrementality skip
+test	change-application-options		incr421 tcf fail incrementality
+test	fix-vlec-infinite-recursion		incr422	tcf fail incrementality scoop expanded manual
 
 
 -- Melting
@@ -1253,6 +1257,7 @@ test	finalize-external-invariant-skipped	final108 tcf fail finalizing assertions
 test	inline-manifest-type			final109 tcf fail finalizing
 test	profile-once-per-process-function	final110 tcf fail finalizing
 test	inline-qat-static-external		final111 tcf fail finalizing inlining anchored_type
+test	finalize-keep-once-strings		final112 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1871,6 +1876,10 @@ test	ise-ec-flags-missing-final-quote	term204 tcf fail termination
 test	inherited-feature-unadapted			term205 tcf fail termination
 test	generic-constrained-by-self-2		term206  tcf fail termination generic
 test	inherited-static-access-on-generic	term207 tcf fail termination formal generic
+test	agent-in-postcondition			term208 tcf fail termination agents
+test	long-string-constants-crash		term209 tcf fail termination
+test	empty-class-file-crash			term210 tcf fail termination
+test	root-class-none				term211 tcf fail termination
 
 -- Config
 
@@ -1903,6 +1912,7 @@ test	config-undetected-vtcg			config026 tcf fail config
 test	config-invalid-vd75			config027 tcf fail config incrementality
 test	config-change-library-location		config028 tcf fail config incrementality
 test	config-process-group-crash		config029 tcf fail config incrementality
+test	config-root-class-precursor		config030 tcf fail config
 
 -- Lace
 
