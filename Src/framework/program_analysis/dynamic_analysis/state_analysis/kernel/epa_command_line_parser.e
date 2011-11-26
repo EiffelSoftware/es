@@ -38,41 +38,61 @@ feature -- Access
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
-			l_all_program_locations: AP_FLAG
-			l_locations, l_variables, l_expressions, l_selected_program_locations, l_output_path: AP_STRING_OPTION
+			l_aut_choice_of_prgm_locs, l_all_progm_locs, l_aut_choice_of_exprs: AP_FLAG
+			l_location, l_specific_prgm_locs, l_specific_vars, l_specific_exprs, l_prgm_locs_with_exprs, l_output_path: AP_STRING_OPTION
 		do
-				-- Setup command line argument parser.
+			-- Setup command line argument parser.
 			create l_parser.make
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_all_program_locations.make_with_long_form ("all_program_locations")
-			l_all_program_locations.set_description ("Evaluate all program locations.")
-			l_parser.options.force_last (l_all_program_locations)
+			create l_location.make_with_long_form ("location")
+			l_location.set_description (
+				"Specify the location where annotations should be collected.%
+				%Format: --locations CLASS_NAME.feature_name.")
+			l_parser.options.force_last (l_location)
 
-			create l_locations.make_with_long_form ("locations")
-			l_locations.set_description (
-				"Specify the locations where annotations should be collected.%
-				%Format: --locations CLASS_NAME.feature_name[,CLASS_NAME.feature_name].")
-			l_parser.options.force_last (l_locations)
+			create l_aut_choice_of_prgm_locs.make_with_long_form ("aut_choice_of_prgm_locs")
+			l_aut_choice_of_prgm_locs.set_description (
+				"Choose program locations for analysis automatically.%
+				%Format: --aut_choice_of_prgm_locs")
+			l_parser.options.force_last (l_aut_choice_of_prgm_locs)
 
-			create l_variables.make_with_long_form ("variables")
-			l_variables.set_description (
-				"Specify the name of variables which should be used to construct interesting expressions.%
-				%Format: --variables variable[,variable].")
-			l_parser.options.force_last (l_variables)
+			create l_aut_choice_of_exprs.make_with_long_form ("aut_choice_of_exprs")
+			l_aut_choice_of_exprs.set_description (
+				"Choose expressions to be evaluated automatically.%
+				%Format: --l_aut_choice_of_exprs")
+			l_parser.options.force_last (l_aut_choice_of_exprs)
 
-			create l_expressions.make_with_long_form ("expressions")
-			l_variables.set_description (
+			create l_all_progm_locs.make_with_long_form ("all_progm_locs")
+			l_all_progm_locs.set_description (
+				"Consider all program locations.%
+				%Format: --all_progm_locs")
+			l_parser.options.force_last (l_all_progm_locs)
+
+			create l_specific_vars.make_with_long_form ("specific_vars")
+			l_specific_vars.set_description (
+				"Specify the name of variables which should be used to construct expressions to be evaluated.%
+				%Format: --specific_vars variable[,variable].")
+			l_parser.options.force_last (l_specific_vars)
+
+			create l_specific_exprs.make_with_long_form ("specific_exprs")
+			l_specific_exprs.set_description (
 				"Specify expressions which should be evaluated.%
-				%Format: --expressions expression[,expression].")
-			l_parser.options.force_last (l_expressions)
+				%Format: --specific_exprs expression[,expression]")
+			l_parser.options.force_last (l_specific_exprs)
 
-			create l_selected_program_locations.make_with_long_form ("selected_program_locations")
-			l_variables.set_description (
-				"Specify selected program locations which should be evaluated.%
-				%Format: --selected_program_locations location[,location].")
-			l_parser.options.force_last (l_expressions)
+			create l_specific_prgm_locs.make_with_long_form ("specific_prgm_locs")
+			l_specific_prgm_locs.set_description (
+				"Specify specific program locations which should be evaluated.%
+				%Format: --specific_prgm_locs bp_slot[,bp_slot]")
+			l_parser.options.force_last (l_specific_prgm_locs)
+
+			create l_prgm_locs_with_exprs.make_with_long_form ("prgm_locs_with_exprs")
+			l_prgm_locs_with_exprs.set_description (
+				"Specify selected program locations with expresions which should be evaluated.%
+				%Format: --prgm_locs_with_exprs bp_slot:expr[;bp_slot:expr].")
+			l_parser.options.force_last (l_prgm_locs_with_exprs)
 
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
@@ -80,28 +100,33 @@ feature -- Access
 
 			l_parser.parse_list (l_args)
 
-			config.set_is_variables_specified (l_variables.was_found)
-			config.set_is_expressions_specified (l_expressions.was_found)
+			config.set_is_aut_choice_of_exprs_set (l_aut_choice_of_exprs.was_found)
+			config.set_is_aut_choice_of_prgm_locs_set (l_aut_choice_of_prgm_locs.was_found)
+			config.set_is_all_progm_locs_set (l_all_progm_locs.was_found)
 			config.set_is_output_path_specified (l_output_path.was_found)
 
-			if l_all_program_locations.was_found then
-				config.set_is_all_program_locations_specified (l_all_program_locations.was_found)
+			if l_location.was_found then
+				setup_location (l_location.parameter)
 			end
 
-			if l_locations.was_found then
-				setup_locations (l_locations.parameter)
+			if l_specific_vars.was_found then
+				config.set_is_specific_vars_set (True)
+				setup_variables (l_specific_vars.parameter)
 			end
 
-			if l_variables.was_found then
-				setup_variables (l_variables.parameter)
+			if l_specific_exprs.was_found then
+				config.set_is_specific_exprs_set (True)
+				setup_expressions (l_specific_exprs.parameter)
 			end
 
-			if l_expressions.was_found then
-				setup_expressions (l_expressions.parameter)
+			if l_specific_prgm_locs.was_found then
+				config.set_is_specific_prgm_locs_set (True)
+				setup_program_locations (l_specific_prgm_locs.parameter)
 			end
 
-			if l_selected_program_locations.was_found then
-				setup_selected_program_locations (l_selected_program_locations.parameter)
+			if l_prgm_locs_with_exprs.was_found then
+				config.set_is_prgm_locs_with_exprs_set (True)
+				setup_program_locations_with_expressions (l_prgm_locs_with_exprs.parameter)
 			end
 
 			if l_output_path.was_found then
@@ -111,72 +136,100 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	setup_locations (a_locations: STRING)
-			-- Setup locations in `config'.			
+	setup_location (a_location: STRING)
+			-- Setup location in `config'.			
 		local
-			l_feat: STRING
-			l_index: INTEGER
-			l_class_name: STRING
-			l_feat_name: STRING
+			l_location: LIST [STRING]
+			l_class_name, l_feat_name: STRING
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 		do
-			across a_locations.split (',') as l_feats loop
-				l_feat := l_feats.item
-				l_feat.left_adjust
-				l_feat.right_adjust
-				l_index := l_feat.index_of ('.', 1)
-				if l_index > 0 then
-					l_class_name := l_feat.substring (1, l_index - 1).as_upper
-					l_feat_name := l_feat.substring (l_index + 1, l_feat.count).as_lower
-					l_class := first_class_starts_with_name (l_class_name)
-					if l_class /= Void then
-						l_feature := l_class.feature_named (l_feat_name)
-						if l_feature /= Void then
-							config.locations.extend ([l_class, l_feature])
-						end
-					end
-				end
-			end
+			a_location.left_adjust
+			a_location.right_adjust
+			l_location := a_location.split ('.')
+			l_class_name := l_location.i_th (1)
+			l_feat_name := l_location.i_th (2)
+			l_class := first_class_starts_with_name (l_class_name)
+			l_feature := feature_from_class (l_class_name, l_feat_name)
+			config.set_location ([l_class, l_feature])
 		end
 
 	setup_variables (a_variables: STRING)
 			-- Setup variables in `config'.
 		local
 			l_var: STRING
+			l_variables: LINKED_LIST [STRING]
 		do
-			across a_variables.split (',') as l_vars loop
+			create l_variables.make
+			across a_variables.split (';') as l_vars loop
 				l_var := l_vars.item
 				l_var.left_adjust
 				l_var.right_adjust
-				config.variables.extend (l_var)
+				l_variables.extend (l_var)
 			end
+			config.set_variables (l_variables)
 		end
 
 	setup_expressions (a_expressions: STRING)
 			-- Setup expressions in `config'.
 		local
 			l_expr: STRING
+			l_expressions: LINKED_LIST [STRING]
 		do
-			across a_expressions.split (',') as l_exprs loop
+			create l_expressions.make
+			across a_expressions.split (';') as l_exprs loop
 				l_expr := l_exprs.item
 				l_expr.left_adjust
 				l_expr.right_adjust
-				config.expressions.extend (l_expr)
+				l_expressions.extend (l_expr)
 			end
+			config.set_expressions (l_expressions)
 		end
 
-	setup_selected_program_locations (a_selected_program_locations: STRING)
-			-- Setup selected program locations in `config'.
+	setup_program_locations (a_program_locations: STRING)
+			-- Setup specific program locations in `config'.
 		local
 			l_program_location: STRING
+			l_program_locations: DS_HASH_SET [INTEGER]
 		do
-			across a_selected_program_locations.split (',') as l_program_locations loop
-				l_program_location := l_program_locations.item
+			create l_program_locations.make_default
+			across a_program_locations.split (';') as l_locations loop
+				l_program_location := l_locations.item
 				l_program_location.left_adjust
 				l_program_location.right_adjust
-				config.selected_program_locations.force_last (l_program_location.to_integer)
+				l_program_locations.force_last (l_program_location.to_integer)
 			end
+			config.set_specific_prgm_locs (l_program_locations)
+		end
+
+	setup_program_locations_with_expressions (a_program_locations_with_expressions: STRING)
+			-- Setup specific program locations with expressions in `config'.
+		local
+			l_location_with_expression: LIST [STRING]
+			l_expressions: LINKED_LIST [STRING]
+			l_tmp_set: DS_HASH_SET [STRING]
+			l_bp_slot: INTEGER
+			l_expression: STRING
+			l_tmp: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+		do
+			create l_tmp.make_default
+			create l_expressions.make
+			across a_program_locations_with_expressions.split (';') as l_locations_with_expressions loop
+				l_location_with_expression := l_locations_with_expressions.item.split (':')
+				l_bp_slot := l_location_with_expression.i_th (1).to_integer
+				l_expression := l_location_with_expression.i_th (2)
+				if l_tmp.has (l_bp_slot) then
+					l_tmp.item (l_bp_slot).force_last (l_expression)
+				else
+					create l_tmp_set.make_default
+					l_expressions.extend (l_expression)
+					l_tmp_set.force_last (l_expression)
+					l_tmp.put (l_tmp_set, l_bp_slot)
+				end
+			end
+			config.set_prgm_locs_with_exprs (l_tmp)
+			config.set_expressions (l_expressions)
 		end
 
 end
+

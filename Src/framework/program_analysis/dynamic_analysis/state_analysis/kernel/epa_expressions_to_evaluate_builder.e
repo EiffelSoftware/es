@@ -18,7 +18,7 @@ create
 feature -- Creation procedure
 
 	make (a_class: like class_; a_feature: like feature_)
-			--
+			-- Set `class_' to `a_class' and `feature_' to `a_feature'
 		do
 			set_class (a_class)
 			set_feature (a_feature)
@@ -27,8 +27,7 @@ feature -- Creation procedure
 feature -- Basic operations
 
 	build_from_ast (a_ast: AST_EIFFEL)
-			-- Find all interesting variables and make them available
-			-- in `interesting_variables'
+			-- Build expressions to evaluate from `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void
 		local
@@ -41,11 +40,11 @@ feature -- Basic operations
 			l_variable_finder.find
 			interesting_variables := l_variable_finder.interesting_variables
 
-			build
+			build_from_interesting_variables
 		end
 
 	build_from_variables (a_variables: LINKED_LIST [STRING])
-			--
+			-- Build expressions to evaluate from `a_variables'
 		require
 			a_variables_not_void: a_variables /= Void
 		do
@@ -55,11 +54,11 @@ feature -- Basic operations
 				interesting_variables.force_last (l_variables.item)
 			end
 
-			build
+			build_from_interesting_variables
 		end
 
 	build_from_expressions (a_expressions: LINKED_LIST [STRING])
-			--
+			-- Build expressions to evaluate from `a_expressions'
 		require
 			a_expressions_not_void: a_expressions /= Void
 		local
@@ -76,7 +75,7 @@ feature -- Basic operations
 feature -- Element change
 
 	set_class (a_class: like class_)
-			--
+			-- Set `class_' to `a_class'
 		require
 			a_class_not_void: a_class /= Void
 		do
@@ -86,7 +85,7 @@ feature -- Element change
 		end
 
 	set_feature (a_feature: like feature_)
-			--
+			-- Set `feature_' to `a_feature'
 		require
 			a_feature_not_void: a_feature /= Void
 		do
@@ -98,13 +97,13 @@ feature -- Element change
 feature -- Access
 
 	class_: CLASS_C assign set_class
-			--
+			-- Class containing the feature which should be analyzed
 
 	feature_: FEATURE_I assign set_feature
-			--
+			-- Feature which should be analyzed
 
 	expressions_to_evaluate: DS_HASH_SET [EPA_EXPRESSION]
-			--
+			-- Built expressions to evaluate
 
 feature {NONE} -- Implementation
 
@@ -114,8 +113,8 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	build
-			--
+	build_from_interesting_variables
+			-- Build expressions to evaluate from `interesting_variables'
 		local
 			l_feature_selector: EPA_FEATURE_SELECTOR
 			l_expr: EPA_AST_EXPRESSION
