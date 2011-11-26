@@ -35,6 +35,8 @@ feature {NONE} -- Initialization
 			feature_ := config.location.feature_
 		ensure
 			config_set: config = a_config
+			class_set: class_ = config.location.class_
+			feature_set: feature_ = config.location.feature_
 		end
 
 feature -- Access
@@ -48,6 +50,9 @@ feature -- Access
 			-- Collected pre-states.
 			-- Keys are breakpoint slots and values are expressions
 			-- and its associated values.
+
+	collected_data: LINKED_LIST [DS_HASH_SET [EPA_EQUATION]]
+			-- Data collected during dynamic analysis of `feature_'
 
 feature -- Basic operations
 
@@ -97,28 +102,28 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_state: DS_HASH_SET [EPA_EQUATION]
+			l_equations: DS_HASH_SET [EPA_EQUATION]
 		do
 --			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
 --			io.put_string (a_state.debug_output +"%N")
 --			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
-			create l_state.make_default
+			create l_equations.make_default
 
-			across a_state.to_array as l_equations loop
-				l_state.force_last (l_equations.item)
+			across a_state.to_array as l_state loop
+				l_equations.force_last (l_state.item)
 			end
 
 			-- Add collected run-time data to `pre_states'
 			-- if `a_bp' is a pre-state
 			if interesting_pre_states.has (l_bp_slot) then
-				pre_states.force_last (l_state, l_bp_slot)
+				pre_states.force_last (l_equations, l_bp_slot)
 			end
 
 			-- Add collected run-time data to `post_states'
 			-- if `a_bp' is a post-state
 			if interesting_post_states.has (l_bp_slot) then
-				post_states.force_last (l_state, l_bp_slot)
+				post_states.force_last (l_equations, l_bp_slot)
 			end
 		end
 
@@ -130,28 +135,28 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_state: DS_HASH_SET [EPA_EQUATION]
+			l_equations: DS_HASH_SET [EPA_EQUATION]
 		do
 --			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
 --			io.put_string (a_state.debug_output +"%N")
 --			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
-			create l_state.make_default
+			create l_equations.make_default
 
-			across a_state.to_array as l_equations loop
-				l_state.force_last (l_equations.item)
+			across a_state.to_array as l_state loop
+				l_equations.force_last (l_state.item)
 			end
 
 			-- Add collected run-time data to `pre_states'
 			-- if `a_bp' is a pre-state
 			if interesting_pre_states.has (l_bp_slot) then
-				pre_states.force_last (l_state, l_bp_slot)
+				pre_states.force_last (l_equations, l_bp_slot)
 			end
 
 			-- Add collected run-time data to `post_states'
 			-- if `a_bp' is a post-state
 			if interesting_post_states.has (l_bp_slot) then
-				post_states.force_last (l_state, l_bp_slot)
+				post_states.force_last (l_equations, l_bp_slot)
 			end
 		end
 
