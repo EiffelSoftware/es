@@ -33,10 +33,12 @@ feature {NONE} -- Initialization
 			end
 			class_ := config.location.class_
 			feature_ := config.location.feature_
+			create collected_runtime_data.make
 		ensure
 			config_set: config = a_config
 			class_set: class_ = config.location.class_
 			feature_set: feature_ = config.location.feature_
+			collected_runtime_data_not_void: collected_runtime_data /= Void
 		end
 
 feature -- Access
@@ -51,13 +53,15 @@ feature -- Access
 			-- Keys are breakpoint slots and values are expressions
 			-- and its associated values.
 
-	collected_data: LINKED_LIST [DS_HASH_SET [EPA_EQUATION]]
+	collected_runtime_data: LINKED_LIST [EPA_STATE_CHANGE]
 			-- Data collected during dynamic analysis of `feature_'
 
 feature -- Basic operations
 
 	execute
 			-- Execute Current command
+		local
+			l_collected_data: EPA_COLLECTED_RUNTIME_DATA
 		do
 			-- Find post-state(s) for all pre-states in `l_feature'.
 			find_all_post_states
@@ -85,6 +89,8 @@ feature -- Basic operations
 			create pre_states.make_default
 			create post_states.make_default
 
+			is_bp_pre_state := True
+
 			-- Start program execution in debugger.
 			start_debugger (debugger_manager, "", config.working_directory, {EXEC_MODES}.run, False)
 
@@ -102,28 +108,28 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_equations: DS_HASH_SET [EPA_EQUATION]
+			l_equations: DS_HASH_TABLE [STRING, STRING]
 		do
 --			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
 --			io.put_string (a_state.debug_output +"%N")
 --			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
 			create l_equations.make_default
-
 			across a_state.to_array as l_state loop
-				l_equations.force_last (l_state.item)
+				l_equations.force (l_state.item.value.text, l_state.item.expression.text)
+			end
+			if not is_bp_pre_state and post_state_map.item (temp_state_change.pre_state_bp_slot).has (l_bp_slot) then
+				temp_state_change.set_post_state_bp_slot (l_bp_slot)
+				temp_state_change.set_post_state (l_equations)
+				collected_runtime_data.extend (temp_state_change)
+				is_bp_pre_state := True
 			end
 
-			-- Add collected run-time data to `pre_states'
-			-- if `a_bp' is a pre-state
-			if interesting_pre_states.has (l_bp_slot) then
-				pre_states.force_last (l_equations, l_bp_slot)
-			end
-
-			-- Add collected run-time data to `post_states'
-			-- if `a_bp' is a post-state
-			if interesting_post_states.has (l_bp_slot) then
-				post_states.force_last (l_equations, l_bp_slot)
+			if interesting_pre_states.has (l_bp_slot) and is_bp_pre_state then
+				create temp_state_change
+				temp_state_change.set_pre_state_bp_slot (l_bp_slot)
+				temp_state_change.set_pre_state (l_equations)
+				is_bp_pre_state := False
 			end
 		end
 
@@ -135,28 +141,42 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_equations: DS_HASH_SET [EPA_EQUATION]
+			l_equations: DS_HASH_TABLE [STRING, STRING]
+			l_expressions: DS_HASH_SET [STRING]
+			l_expression: STRING
 		do
 --			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
 --			io.put_string (a_state.debug_output +"%N")
 --			io.put_string ("==>%N")
 			l_bp_slot := a_bp.breakable_line_number
-			create l_equations.make_default
-
-			across a_state.to_array as l_state loop
-				l_equations.force_last (l_state.item)
+			if not is_bp_pre_state and post_state_map.item (temp_state_change.pre_state_bp_slot).has (l_bp_slot) then
+				l_expressions := prgm_locs_with_exprs.item (temp_state_change.pre_state_bp_slot)
+				create l_equations.make_default
+				across a_state.to_array as l_state loop
+					l_expression := l_state.item.expression.text
+					if l_expressions.has (l_expression) then
+						l_equations.force (l_state.item.value.text, l_expression)
+					end
+				end
+				temp_state_change.set_post_state_bp_slot (l_bp_slot)
+				temp_state_change.set_post_state (l_equations)
+				collected_runtime_data.extend (temp_state_change)
+				is_bp_pre_state := True
 			end
 
-			-- Add collected run-time data to `pre_states'
-			-- if `a_bp' is a pre-state
-			if interesting_pre_states.has (l_bp_slot) then
-				pre_states.force_last (l_equations, l_bp_slot)
-			end
-
-			-- Add collected run-time data to `post_states'
-			-- if `a_bp' is a post-state
-			if interesting_post_states.has (l_bp_slot) then
-				post_states.force_last (l_equations, l_bp_slot)
+			if interesting_pre_states.has (l_bp_slot) and is_bp_pre_state then
+				l_expressions := prgm_locs_with_exprs.item (l_bp_slot)
+				create l_equations.make_default
+				across a_state.to_array as l_state loop
+					l_expression := l_state.item.expression.text
+					if l_expressions.has (l_expression) then
+						l_equations.force (l_state.item.value.text, l_expression)
+					end
+				end
+				create temp_state_change
+				temp_state_change.set_pre_state_bp_slot (l_bp_slot)
+				temp_state_change.set_pre_state (l_equations)
+				is_bp_pre_state := False
 			end
 		end
 
@@ -182,6 +202,9 @@ feature {NONE} -- Implemenation
 			Result := (l_prgm_locs_valid and l_exprs_valid) xor a_config.is_prgm_locs_with_exprs_set
 		end
 
+	is_bp_pre_state: BOOLEAN
+			--
+
 feature {NONE} -- Implementation
 
 	find_all_post_states
@@ -204,6 +227,7 @@ feature {NONE} -- Implementation
 			if config.is_all_progm_locs_set then
 				-- Use all pre-states
 				fixme("This is not a good solution since contracts are taken into account as well. Nov 26, 2011. megg")
+				create interesting_pre_states.make_default
 				from
 					i := 1
 				until
@@ -216,6 +240,7 @@ feature {NONE} -- Implementation
 				-- Use selected pre-states
 				interesting_pre_states := config.specific_prgm_locs
 			elseif config.is_prgm_locs_with_exprs_set  then
+				create interesting_pre_states.make_default
 				across config.prgm_locs_with_exprs.keys.to_array as l_pre_states loop
 					interesting_pre_states.force_last (l_pre_states.item)
 				end
@@ -268,6 +293,8 @@ feature {NONE} -- Implementation
 		local
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 		do
+			prgm_locs_with_exprs := config.prgm_locs_with_exprs
+
 			across interesting_pre_states.to_array as l_pre_states loop
 				create l_bp_mgr.make (class_, feature_)
 				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressons, agent on_expression_evaluated2)
@@ -280,6 +307,8 @@ feature {NONE} -- Implementation
 					interesting_post_states.force_last (l_post_states.item)
 				end
 			end
+		ensure
+			prgm_locs_with_exprs_set: prgm_locs_with_exprs = config.prgm_locs_with_exprs
 		end
 
 feature {NONE} -- Implementation
@@ -302,5 +331,13 @@ feature {NONE} -- Implementation
 	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Contains the found post-states.
 			-- Keys are pre-states and values are (possibly multiple) post-states
+
+	temp_state_change: EPA_STATE_CHANGE
+			-- Temporary object used to save pre-state before the associated post-state is evaluated
+
+	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+			-- Stores a set of expressions for a specific program location.
+			-- Keys are program locations and values are the associated expressions.
+			-- Only used when `config.is_prgm_locs_with_exprs_set' is set.
 
 end

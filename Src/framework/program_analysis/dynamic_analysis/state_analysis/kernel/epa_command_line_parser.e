@@ -10,6 +10,8 @@ class
 inherit
 	EPA_UTILITY
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+
 create
 	make_with_arguments
 
@@ -222,10 +224,11 @@ feature {NONE} -- Implementation
 					l_tmp.item (l_bp_slot).force_last (l_expression)
 				else
 					create l_tmp_set.make_default
-					l_expressions.extend (l_expression)
+					l_tmp_set.set_equality_tester (string_equality_tester)
 					l_tmp_set.force_last (l_expression)
 					l_tmp.put (l_tmp_set, l_bp_slot)
 				end
+				l_expressions.extend (l_expression)
 			end
 			config.set_prgm_locs_with_exprs (l_tmp)
 			config.set_expressions (l_expressions)

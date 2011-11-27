@@ -64,8 +64,8 @@ feature -- Basic operations
 		local
 			l_expr: EPA_AST_EXPRESSION
 		do
-			create interesting_variables.make_default
-			interesting_variables.set_equality_tester (string_equality_tester)
+			create expressions_to_evaluate.make_default
+			expressions_to_evaluate.set_equality_tester (expression_equality_tester)
 			across a_expressions as l_exprs loop
 				create l_expr.make_with_text (class_, feature_, l_exprs.item, class_)
 				expressions_to_evaluate.force_last (l_expr)
