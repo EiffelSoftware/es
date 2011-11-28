@@ -60,8 +60,6 @@ feature -- Basic operations
 
 	execute
 			-- Execute Current command
-		local
-			l_collected_data: EPA_COLLECTED_RUNTIME_DATA
 		do
 			-- Find post-state(s) for all pre-states in `l_feature'.
 			find_all_post_states
@@ -266,7 +264,7 @@ feature {NONE} -- Implementation
 				l_expr_builder.build_from_ast (feature_.e_feature.ast)
 			end
 
-			monitored_expressons := l_expr_builder.expressions_to_evaluate
+			monitored_expressions := l_expr_builder.expressions_to_evaluate
 		end
 
 	setup_action_for_evaluation
@@ -276,12 +274,12 @@ feature {NONE} -- Implementation
 		do
 			across interesting_pre_states.to_array as l_pre_states loop
 				create l_bp_mgr.make (class_, feature_)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressons, agent on_expression_evaluated)
+				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent on_expression_evaluated)
 				l_bp_mgr.toggle_breakpoints (True)
 
 				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
 					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressons, agent on_expression_evaluated)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent on_expression_evaluated)
 					l_bp_mgr.toggle_breakpoints (True)
 					interesting_post_states.force_last (l_post_states.item)
 				end
@@ -297,12 +295,12 @@ feature {NONE} -- Implementation
 
 			across interesting_pre_states.to_array as l_pre_states loop
 				create l_bp_mgr.make (class_, feature_)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressons, agent on_expression_evaluated2)
+				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent on_expression_evaluated2)
 				l_bp_mgr.toggle_breakpoints (True)
 
 				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
 					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressons, agent on_expression_evaluated2)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent on_expression_evaluated2)
 					l_bp_mgr.toggle_breakpoints (True)
 					interesting_post_states.force_last (l_post_states.item)
 				end
@@ -319,7 +317,7 @@ feature {NONE} -- Implementation
 	feature_: FEATURE_I
 			-- Feature which will be analyzed.
 
-	monitored_expressons: DS_HASH_SET [EPA_EXPRESSION]
+	monitored_expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions which are monitored
 
 	interesting_pre_states: DS_HASH_SET [INTEGER]
