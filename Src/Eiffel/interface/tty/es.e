@@ -1,7 +1,8 @@
 ﻿note
-	description:
-		"Batch compiler without invoking the -loop. This is the root%
+
+	description: "Batch compiler without invoking the -loop. This is the root%
 		%class for the personal version (which does allow c compilation)."
+
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"

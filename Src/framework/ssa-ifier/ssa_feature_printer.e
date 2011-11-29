@@ -33,6 +33,7 @@ feature
         a_locals: LIST [TYPE_DEC_AS])
     require
       non_void_rely: rely /= Void
+      non_void_locals: a_locals /= Void
     do
       doms := a_doms
       locals := a_locals
@@ -42,7 +43,7 @@ feature
   locals: LIST [TYPE_DEC_AS]
   doms: ARRAYED_LIST [CLASS_C]
   in_loop_inv: BOOLEAN
-  
+
 feature -- AST
   process_check_as (l_as: CHECK_AS)
     local
@@ -152,7 +153,7 @@ feature -- AST
     do
       put_raw_string (serialize_call (a_expr, line))
     end
-      
+
   serialize_call (a_expr: SSA_EXPR; line: INTEGER): STRING
     do
       Result := serialize_pre (a_expr.single_precond (""), line)
@@ -188,7 +189,7 @@ feature -- AST
 
         locals.forth
       end
-      
+
       str := str + ">>"
 
 

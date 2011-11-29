@@ -21,7 +21,7 @@ inherit
   SSA_SHARED
 
   SSA_GET_SUPPLIERS
-  
+
   SHARED_SERVER
 
 create
@@ -99,14 +99,19 @@ feature {NONE}
     end
 
   locals: LIST [TYPE_DEC_AS]
-  
+
   process_feature_as (l_as: FEATURE_AS)
     -- Process only the selected feature.
     do
       if l_as.feature_name.name_32.is_equal (feature_i.feature_name_32) then
         idx := l_as.body.as_routine.end_keyword.last_token (match_list).index
 
-        locals := l_as.body.as_routine.locals
+        if attached l_as.body.as_routine.locals as ls then
+          locals := ls
+        else
+          create {ARRAYED_LIST [TYPE_DEC_AS]} locals.make(10)
+        end
+
         process_this := True
         Precursor (l_as)
         process_this := False
@@ -124,7 +129,7 @@ feature {NONE}
         safe_process (l_as.do_keyword (match_list))
 
         create ssa_printer.make (fetch_suppliers (class_c), locals)
-        
+
         l_as.process (ssa_printer)
         last_index := idx
         context.add_string (ssa_printer.context + "%N")
@@ -157,5 +162,5 @@ feature {NONE}
         Precursor (l_as)
       end
     end
-  
+
 end
