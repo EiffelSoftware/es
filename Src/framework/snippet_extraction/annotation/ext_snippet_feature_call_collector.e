@@ -39,6 +39,12 @@ feature -- Basic operations
 		local
 			l_collector: EPA_FEATURE_CALL_COLLECTOR
 			l_calls: like last_calls;
+			l_hole: EXT_HOLE
+			l_expr: EXPR_AS
+			l_mention_ann_exprs: LINKED_LIST[EXPR_AS]
+			l_mentioned_call_collector: EPA_FEATURE_CALL_COLLECTOR
+			l_mentioned_calls: like last_calls
+			l_call: CALL_AS
 		do
 			create l_collector.make
 			l_collector.collect_from_ast (a_snippet.ast, a_snippet.operand_names)
@@ -47,6 +53,9 @@ feature -- Basic operations
 			-- TODO: post-process `l_calls' to handle holes in snippets.
 			--		 then merge both calls collected from normal statements and holes
 			--		 into `last_calls'.
+
+			create l_mention_ann_exprs.make
+				-- List that will store expressions of corresponding annotations found in holes of this snippet
 
 			if not a_snippet.holes.is_empty then
 					-- If the snippet contains holes, remove feature calls of the form hole__x (..) and mentions (...)
@@ -58,11 +67,25 @@ feature -- Basic operations
 					from l_hash_table.item.start
 					until l_hash_table.item.after
 					loop
+
 						if attached {ACCESS_FEAT_AS} l_hash_table.item.item as l_access_as then
-							if l_access_as.access_name.is_equal ("mentions")
-							 or l_access_as.access_name.is_equal ("mentions_conditionally")
-							  or a_snippet.holes.has (l_access_as.access_name) then
-									-- If the feature call is a hole, remove it
+								-- Holes are only possible for feature access AS
+
+							if a_snippet.holes.has (l_access_as.access_name) then
+									-- If it is indeed a hole, iterate through its annotations
+
+								l_hole := a_snippet.holes.item (l_access_as.access_name)
+								from l_hole.annotations.start
+								until l_hole.annotations.after
+								loop
+										-- Add the corresponding EXPR_AS of this annotation to the list of annotations
+									l_expr := l_hole.annotations.item_for_iteration.ast_of_expression
+									l_expr.set_breakpoint_slot (l_access_as.breakpoint_slot)
+									l_mention_ann_exprs.extend (l_expr)
+									l_hole.annotations.forth
+								end
+
+									-- Remove the hole (all its annotations will be added to l_calls afterwards)
 								l_hash_table.item.prune (l_access_as)
 							else
 								l_hash_table.item.forth
@@ -72,18 +95,55 @@ feature -- Basic operations
 						end
 					end
 				end
+			end
 
+				-- Let an additional feature call collector collect all feature calls found in the expressions of the annotations
+			create l_mentioned_call_collector.make
+
+			from l_mention_ann_exprs.start
+			until l_mention_ann_exprs.after
+			loop
+					-- For every expression of a corresponding annotation, collect the included feature call(s)
+				l_mentioned_call_collector.last_calls.wipe_out
+				l_mentioned_call_collector.collect_from_ast (l_mention_ann_exprs.item_for_iteration, a_snippet.operand_names)
+				l_mentioned_calls := l_mentioned_call_collector.last_calls.twin
+
+					-- Iterate through the feature calls of this expression / annotation
+				from l_mentioned_calls.start
+				until l_mentioned_calls.after
+				loop
+					if l_calls.has (l_mention_ann_exprs.item_for_iteration.breakpoint_slot) then
+							-- l_calls already contains a list of calls with this breakpoint slot as a key -> add additional ones to this list
+						from l_mentioned_calls.item_for_iteration.start
+						until l_mentioned_calls.item_for_iteration.after
+						loop
+							l_call := l_mentioned_calls.item_for_iteration.item_for_iteration
+							l_call.set_breakpoint_slot (l_mention_ann_exprs.item_for_iteration.breakpoint_slot)
+							l_calls.item (l_mention_ann_exprs.item_for_iteration.breakpoint_slot).extend (l_call)
+							l_mentioned_calls.item_for_iteration.forth
+						end
+					else
+							-- l_calls doesn't contain a list of calls with this breakpoint slot as a key -> add list (and update brakpoints befor)
+						from l_mentioned_calls.item_for_iteration.start
+						until l_mentioned_calls.item_for_iteration.after
+						loop
+							l_mentioned_calls.item_for_iteration.item_for_iteration.set_breakpoint_slot (l_mention_ann_exprs.item_for_iteration.breakpoint_slot)
+							l_mentioned_calls.item_for_iteration.forth
+						end
+						l_calls.put (l_mentioned_calls.item_for_iteration.twin, l_mention_ann_exprs.item_for_iteration.breakpoint_slot)
+					end
+
+					l_mentioned_calls.forth
+				end
+				l_mention_ann_exprs.forth
 			end
 
 				-- Set last_calls attribute
 			last_calls := l_calls
-
-				-- TODO: remove (debugging)
-			print_calls
 		end
 
 
-feature {NONE} -- TODO: remove (debugging)
+feature {NONE} -- Debugging
 
 	print_calls
 			-- Print all calls available in last_calls
