@@ -104,8 +104,16 @@ feature -- Processing
 
 	process_expr_call_as (a_as: EXPR_CALL_AS)
 		do
-			if is_hole (a_as) and then attached get_hole_name (a_as) as l_hole_name then
+			if
+				is_hole (a_as)
+				and then attached get_hole_name (a_as) as l_hole_name
+				and then attached snippet.holes.at (l_hole_name) as l_hole
+			then
 				output.xml_element_open  ("exprHole", xml_ns_eimala_hole)
+				output.xml_add_unqualified_attribute ("name", l_hole_name)
+				if attached l_hole.hole_type as l_hole_type then
+					output.xml_add_unqualified_attribute ("type", l_hole_type)
+				end
 				output.xml_add_unqualified_attribute ("name", l_hole_name)
 				output.xml_string_append (l_hole_name)
 				output.xml_element_close ("exprHole", xml_ns_eimala_hole)
@@ -116,9 +124,16 @@ feature -- Processing
 
 	process_instr_call_as (a_as: INSTR_CALL_AS)
 		do
-			if is_hole (a_as) and then attached get_hole_name (a_as) as l_hole_name then
+			if
+				is_hole (a_as)
+				and then attached get_hole_name (a_as) as l_hole_name
+				and then attached snippet.holes.at (l_hole_name) as l_hole
+			then
 				output.xml_element_open  ("instructionHole", xml_ns_eimala_hole)
 				output.xml_add_unqualified_attribute ("name", l_hole_name)
+				if attached l_hole.hole_type as l_hole_type then
+					output.xml_add_unqualified_attribute ("type", l_hole_type)
+				end
 				output.xml_string_append (l_hole_name)
 				output.xml_element_close ("instructionHole", xml_ns_eimala_hole)
 			else

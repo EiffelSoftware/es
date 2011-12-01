@@ -16,8 +16,8 @@ feature -- Access
 feature -- Basic operations
 
 	extract_from_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_context_class: CLASS_C; a_source: detachable EXT_SNIPPET_ORIGIN)
-			-- Extract snippet for relevant target of type `a_type' from
-			-- `a_feature' viewed in `a_context_class'.
+			-- Extract snippet for relevant target of type `a_type'
+			-- from `a_feature' viewed in `a_context_class'.
 			-- Make results available in `last_snippets'.
 		require
 			a_type_not_void: attached a_type

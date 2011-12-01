@@ -63,8 +63,6 @@ feature -- Basic operations
 			create l_holes.make (a_snippet.holes.count)
 			l_holes.compare_objects
 			across a_snippet.holes as l_hs loop
-				create l_new_hole
-				l_new_hole.set_hole_id (l_hs.item.hole_id)
 				create l_ann.make (5)
 				l_ann.set_equality_tester (mention_annotation_equality_tester)
 				from
@@ -79,7 +77,12 @@ feature -- Basic operations
 					l_ann.force_last (l_men)
 					l_cursor.forth
 				end
-				l_new_hole.set_annotations (l_ann)
+
+				create l_new_hole.make_with_annotations (l_hs.item.hole_id, l_ann)
+				if attached l_hs.item.hole_type as l_hole_type then
+					l_new_hole.set_hole_type (l_hole_type)
+				end
+
 				l_holes.force (l_new_hole, l_hs.item.hole_name)
 			end
 

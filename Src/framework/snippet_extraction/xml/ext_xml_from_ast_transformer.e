@@ -165,7 +165,12 @@ inherit
 			output,
 			output_as_string,
 			print_ast_to_output,
-			processing_access_feat_as
+			processing_access_feat_as,
+				-- AST Iterator (Creation)
+			process_create_creation_as,
+			process_bang_creation_as,
+			process_create_creation_expr_as,
+			process_bang_creation_expr_as
 		end
 
 	EXT_AST_NODE_CONSTANTS
@@ -532,16 +537,16 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 			output.append_string (ti_When_keyword+ti_Space)
 
-			conditionally_open_other_xml  ("interval_list", xml_ns_eimala_core, node_inspect_as)
+			conditionally_open_other_xml  ("interval_list", xml_ns_eimala_core, node_case_as)
 			process_child_list (l_as.interval, ti_comma+ti_space, l_as, 1)
-			conditionally_close_other_xml ("interval_list", xml_ns_eimala_core, node_inspect_as)
+			conditionally_close_other_xml ("interval_list", xml_ns_eimala_core, node_case_as)
 
 			output.append_string (ti_Space+ti_Then_keyword+ti_New_line)
+			conditionally_open_other_xml  ("compound", xml_ns_eimala_core, node_case_as)
 			if processing_needed (l_as.compound, l_as, 2) then
-				conditionally_open_other_xml  ("compound", xml_ns_eimala_core, node_inspect_as)
 				process_child_block (l_as.compound, l_as, 2)
-				conditionally_close_other_xml ("compound", xml_ns_eimala_core, node_inspect_as)
 			end
+			conditionally_close_other_xml ("compound", xml_ns_eimala_core, node_case_as)
 
 			conditionally_close_xml (node_case_as, xml_ns_eimala_core)
 		end
@@ -550,16 +555,16 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 		do
 			conditionally_open_xml  (node_interval_as, xml_ns_eimala_core)
 
-			conditionally_open_other_xml  ("lower", xml_ns_eimala_core, node_inspect_as)
+			conditionally_open_other_xml  ("lower", xml_ns_eimala_core, node_interval_as)
 			process_child(l_as.lower, l_as, 1)
-			conditionally_close_other_xml ("lower", xml_ns_eimala_core, node_inspect_as)
+			conditionally_close_other_xml ("lower", xml_ns_eimala_core, node_interval_as)
 
 			if processing_needed (l_as.upper, l_as, 2) then
 				output.append_string (ti_Dotdot)
 
-				conditionally_open_other_xml  ("upper", xml_ns_eimala_core, node_inspect_as)
+				conditionally_open_other_xml  ("upper", xml_ns_eimala_core, node_interval_as)
 				process_child(l_as.upper, l_as, 2)
-				conditionally_close_other_xml ("upper", xml_ns_eimala_core, node_inspect_as)
+				conditionally_close_other_xml ("upper", xml_ns_eimala_core, node_interval_as)
 			end
 
 			conditionally_close_xml (node_interval_as, xml_ns_eimala_core)
@@ -663,27 +668,7 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 		do
 			conditionally_open_xml  (node_creation_as, xml_ns_eimala_core)
 
-			output.append_string (ti_create_keyword+ti_Space)
-
-			if processing_needed (l_as.type, l_as, 2) then
-				conditionally_open_other_xml  ("type", xml_ns_eimala_core, node_creation_as)
-				output.append_string (ti_l_curly)
-				process_child (l_as.type, l_as, 2)
-				output.append_string (ti_r_curly+ti_Space)
-				conditionally_close_other_xml ("type", xml_ns_eimala_core, node_creation_as)
-			end
-
-			conditionally_open_other_xml  ("target", xml_ns_eimala_core, node_creation_as)
-			process(l_as.target, l_as, 1)
-			conditionally_close_other_xml ("target", xml_ns_eimala_core, node_creation_as)
-
-			if processing_needed (l_as.call, l_as, 3) then
-				output.append_string (ti_dot)
-
-				conditionally_open_other_xml  ("message", xml_ns_eimala_core, node_creation_as)
-				process_child (l_as.call, l_as, 3)
-				conditionally_close_other_xml ("message", xml_ns_eimala_core, node_creation_as)
-			end
+			processing_creation_as (l_as, node_creation_as)
 
 			conditionally_close_xml (node_creation_as, xml_ns_eimala_core)
 			output.append_string (ti_New_line)
@@ -693,14 +678,23 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 		do
 			conditionally_open_xml  (node_debug_as, xml_ns_eimala_core)
 
+			output.append_string(ti_debug_keyword+ti_Space)
+
 			if processing_needed (l_as.internal_keys, l_as, 1) then
+				output.append_string (ti_l_parenthesis)
+				conditionally_open_other_xml  ("keys", xml_ns_eimala_core, node_debug_as)
 				process_child_list (l_as.internal_keys.keys, ", ", l_as, 1)
+				conditionally_close_other_xml ("keys", xml_ns_eimala_core, node_debug_as)
+				output.append_string (ti_r_parenthesis)
 			end
 
-			output.append_string (ti_debug_keyword+ti_New_line)
+			output.append_string(ti_New_line)
+
+			conditionally_open_other_xml  ("compound", xml_ns_eimala_core, node_debug_as)
 			if processing_needed (l_as.compound, l_as, 2) then
 				process_child_block(l_as.compound, l_as, 2)
 			end
+			conditionally_close_other_xml ("compound", xml_ns_eimala_core, node_debug_as)
 
 			output.append_string (ti_End_keyword)
 
@@ -724,11 +718,11 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 	process_retry_as (l_as: RETRY_AS)
 		do
---			conditionally_open_xml  (node_retry_as, xml_ns_eimala_core)
+			conditionally_open_xml  (node_retry_as, xml_ns_eimala_core)
 
 			output.append_string (ti_retry_keyword)
 
---			conditionally_close_xml (node_retry_as, xml_ns_eimala_core)			
+			conditionally_close_xml (node_retry_as, xml_ns_eimala_core)
 			output.append_string (ti_New_line)
 		end
 
@@ -819,7 +813,9 @@ feature {AST_EIFFEL} -- Roundtrip: Instructions
 
 			if processing_needed (l_as.full_invariant_list, l_as, 2) then
 				output.append_string (ti_invariant_keyword+ti_New_line)
+				conditionally_open_other_xml  ("invariant", xml_ns_eimala_core, node_loop_as)
 				process_child_block_list(l_as.full_invariant_list, void, l_as, 2)
+				conditionally_close_other_xml ("invariant", xml_ns_eimala_core, node_loop_as)
 				output.append_string (ti_New_line)
 			end
 
@@ -1279,7 +1275,21 @@ feature {AST_EIFFEL} -- Roundtrip: Access
 		do
 			conditionally_open_xml  (node_precursor_as, xml_ns_eimala_core)
 			conditionally_add_unqualified_attribute ("name", "Precursor", node_precursor_as)
-			Precursor (l_as)
+
+			output.append_string (ti_precursor_keyword+ti_Space)
+			if processing_needed (l_as.parent_base_class,l_as,1) then
+				output.append_string (ti_l_curly)
+				process_child(l_as.parent_base_class, l_as, 1)
+				output.append_string (ti_r_curly)
+			end
+			if processing_needed (l_as.parameters,l_as,2) then
+				output.append_string (ti_Space+ti_l_parenthesis)
+				conditionally_open_other_xml  ("parameters", xml_ns_eimala_core, node_precursor_as)
+				process_child_list(l_as.parameters, ti_comma+ti_Space,l_as,2)
+				conditionally_close_other_xml ("parameters", xml_ns_eimala_core, node_precursor_as)
+				output.append_string (ti_r_parenthesis)
+			end
+
 			conditionally_close_xml (node_precursor_as, xml_ns_eimala_core)
 		end
 
@@ -1346,6 +1356,58 @@ feature {NONE} -- Roundtrip: Expressions (Helper)
 				output.append_string (ti_r_parenthesis)
 				conditionally_close_other_xml ("parameters", xml_ns_eimala_core, node_access_feat_as)
 			end
+		end
+
+	processing_creation_as (l_as: CREATION_AS; a_key: STRING)
+		do
+			conditionally_open_xml  (a_key, xml_ns_eimala_core)
+
+			output.append_string (ti_create_keyword+ti_Space)
+
+			if processing_needed (l_as.type, l_as, 2) then
+				conditionally_open_other_xml  ("type", xml_ns_eimala_core, a_key)
+				output.append_string (ti_l_curly)
+				process_child (l_as.type, l_as, 2)
+				output.append_string (ti_r_curly+ti_Space)
+				conditionally_close_other_xml ("type", xml_ns_eimala_core, a_key)
+			end
+
+			conditionally_open_other_xml  ("target", xml_ns_eimala_core, a_key)
+			process(l_as.target, l_as, 1)
+			conditionally_close_other_xml ("target", xml_ns_eimala_core, a_key)
+
+			if processing_needed (l_as.call, l_as, 3) then
+				output.append_string (ti_dot)
+
+				conditionally_open_other_xml  ("message", xml_ns_eimala_core, a_key)
+				process_child (l_as.call, l_as, 3)
+				conditionally_close_other_xml ("message", xml_ns_eimala_core, a_key)
+			end
+
+			conditionally_close_xml (a_key, xml_ns_eimala_core)
+			output.append_string (ti_New_line)
+		end
+
+	processing_creation_expr_as (l_as: CREATION_EXPR_AS; a_key: STRING)
+		do
+			conditionally_open_xml  (a_key, xml_ns_eimala_core)
+
+			output.append_string (ti_create_keyword+ti_Space)
+
+			conditionally_open_other_xml  ("type", xml_ns_eimala_core, a_key)
+			output.append_string(ti_l_curly)
+			process_child (l_as.type, l_as, 1)
+			output.append_string(ti_r_curly)
+			conditionally_close_other_xml ("type", xml_ns_eimala_core, a_key)
+
+			if processing_needed (l_as.call, l_as, 1) then
+				output.append_string (ti_dot)
+				conditionally_open_other_xml  ("message", xml_ns_eimala_core, a_key)
+				process(l_as.call, l_as, 2)
+				conditionally_close_other_xml ("message", xml_ns_eimala_core, a_key)
+			end
+
+			conditionally_close_xml (a_key, xml_ns_eimala_core)
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Inheritance clauses
@@ -1418,11 +1480,9 @@ feature {AST_EIFFEL} -- Roundtrip: Misc
 			conditionally_close_xml (node_formal_dec_as, xml_ns_eimala_core)
 		end
 
-	process_creation_expr_as (l_as: CREATION_EXPR_AS)
+	process_creation_expr_as (a_as: CREATION_EXPR_AS)
 		do
-			conditionally_open_xml  (node_creation_expr_as, xml_ns_eimala_core)
-			Precursor (l_as)
-			conditionally_close_xml (node_creation_expr_as, xml_ns_eimala_core)
+			processing_creation_expr_as (a_as, node_creation_expr_as)
 		end
 
 	process_routine_as (l_as: ROUTINE_AS)
@@ -1822,6 +1882,32 @@ feature {AST_EIFFEL} -- Unary Operators
 			conditionally_open_xml  (node_un_plus_as, xml_ns_eimala_core)
 			Precursor (a_as)
 			conditionally_close_xml (node_un_plus_as, xml_ns_eimala_core)
+		end
+
+feature -- Roundtrip Creation
+
+	process_create_creation_as (a_as: CREATE_CREATION_AS)
+			-- Process `a_as'.
+		do
+			processing_creation_as (a_as, node_create_creation_as)
+		end
+
+	process_bang_creation_as (a_as: BANG_CREATION_AS)
+			-- Process `a_as'.
+		do
+			processing_creation_as (a_as, node_bang_creation_as)
+		end
+
+	process_create_creation_expr_as (a_as: CREATE_CREATION_EXPR_AS)
+			-- Process `a_as'.
+		do
+			processing_creation_expr_as (a_as, node_create_creation_expr_as)
+		end
+
+	process_bang_creation_expr_as (a_as: BANG_CREATION_EXPR_AS)
+			-- Process `a_as'.
+		do
+			processing_creation_expr_as (a_as, node_bang_creation_expr_as)
 		end
 
 end

@@ -97,7 +97,7 @@ feature -- Mapping
 			Result.force ("exprCallExpr", node_expr_call_as)
 			Result.force ("external", node_external_as)
 			Result.force ("externalLang", node_external_lang_as)
-			Result.force ("featNameId", node_feat_name_id_as)
+			Result.force ("featureNameId", node_feat_name_id_as)
 			Result.force ("feature", node_feature_as)
 			Result.force ("featureClause", node_feature_clause_as)
 			Result.force ("featureList", node_feature_list_as)
@@ -179,7 +179,7 @@ feature -- Mapping
 			Result.force ("undefineClause", node_undefine_clause_as)
 			Result.force ("uniqueExpr", node_unique_as)
 			Result.force ("variant", node_variant_as)
-			Result.force ("verbatimString", node_verbatim_string_as)
+			Result.force ("verbatimStringExpr", node_verbatim_string_as)
 			Result.force ("voidExpr", node_void_as)
 		end
 

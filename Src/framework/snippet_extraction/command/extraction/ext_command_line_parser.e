@@ -56,6 +56,7 @@ feature -- Basic operations
 			l_extract_contracts: AP_FLAG
 			l_normalizer: AP_FLAG
 			l_extract_fragments: AP_FLAG
+			l_extract_hole_type: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -127,6 +128,10 @@ feature -- Basic operations
 			l_extract_fragments.set_description ("Extract fragments of the snippets.")
 			l_parser.options.force_last (l_extract_fragments)
 
+			create l_extract_hole_type.make_with_long_form ("extract-hole_type")
+			l_extract_hole_type.set_description ("Try to evaluate type information of expressions substituted by holes.")
+			l_parser.options.force_last (l_extract_hole_type)
+
 			l_parser.parse_list (l_args)
 
 			if l_target_types.was_found then
@@ -193,6 +198,10 @@ feature -- Basic operations
 
 			if l_extract_fragments.was_found then
 				config.set_should_extract_fragment (True)
+			end
+
+			if l_extract_hole_type.was_found then
+				config.set_should_extract_hole_type (True)
 			end
 		end
 

@@ -187,6 +187,21 @@ feature -- Access
 			Result.force (node_void_as)
 		end
 
+	allow_set: like node_name_set
+		do
+			Result := internal_allow_set.twin
+		end
+
+	deny_set: like node_name_set
+		do
+			create Result.make_equal (127)
+
+			Result.merge (node_name_set)
+			Result.subtract (internal_allow_set)
+		end
+
+feature -- Configuration
+
 	allow_all
 			-- Allow the traversal of all AST node elements.
 		do
@@ -204,11 +219,6 @@ feature -- Access
 			-- Allow the traversal of an AST node elements denoted by `a_name'.
 		do
 			set_allow (a_name, True)
-		end
-
-	allow_set: like node_name_set
-		do
-			Result := internal_allow_set.twin
 		end
 
 	deny_all
@@ -230,13 +240,10 @@ feature -- Access
 			set_allow (a_name, False)
 		end
 
-	deny_set: like node_name_set
-		do
-			create Result.make_equal (127)
+feature {NONE} -- Implementaton
 
-			Result.merge (node_name_set)
-			Result.subtract (internal_allow_set)
-		end
+	internal_allow_set: like node_name_set
+			-- Set of all AST node names that were allowed.	
 
 	set_allow (a_name: STRING; a_allow: BOOLEAN)
 			-- Set if an AST node element denoted by `a_name' is allowed to occour during traversal.
@@ -247,10 +254,5 @@ feature -- Access
 				internal_allow_set.remove (a_name)
 			end
 		end
-
-feature {NONE} -- Implementaton
-
-	internal_allow_set: like node_name_set
-			-- Set of all AST node names that were allowed.	
 
 end

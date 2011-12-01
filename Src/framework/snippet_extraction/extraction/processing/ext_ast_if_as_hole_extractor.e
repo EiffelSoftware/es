@@ -20,6 +20,8 @@ inherit
 
 	EXT_AST_UTILITY
 
+	EXT_HOLE_UTILITY
+
 	EPA_UTILITY
 
 create
@@ -108,12 +110,18 @@ feature {NONE} -- Annotation Handling
 	create_hole (a_ast: AST_EIFFEL): EXT_HOLE
 			-- Create a new `{EXT_ANN_HOLE}' with metadata.
 		local
+			l_hole_type_string: STRING
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
-			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+			if evaluate_hole_types then
+				-- Try to determinable hole type.
+				l_hole_type_string := get_hole_type (a_ast, variable_context.context_class, variable_context.context_feature)
+			end
+
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations, l_hole_type_string)
 		end
 
 end

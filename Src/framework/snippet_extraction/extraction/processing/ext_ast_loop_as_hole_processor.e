@@ -202,6 +202,7 @@ feature {NONE} -- Annotation Handling
 	create_hole (a_ast: AST_EIFFEL; a_conditionally: BOOLEAN): EXT_HOLE
 			-- Create a new `{EXT_ANN_HOLE}' with metadata and merges it with other holes that are contained within `a_ast'.
 		local
+			l_hole_type_string: STRING
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 			l_hole_names: LINKED_SET [STRING]
 		do
@@ -210,8 +211,13 @@ feature {NONE} -- Annotation Handling
 			l_annotation_extractor.set_conditional (a_conditionally)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
+			if evaluate_hole_types then
+				-- Try to determinable hole type.
+				l_hole_type_string := get_hole_type (a_ast, variable_context.context_class, variable_context.context_feature)
+			end
+			
 				-- Create new hole and fill with fresh annotations
-			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations, l_hole_type_string)
 
 				-- Extract subsumed holes and merge into fresh hole.
 			l_hole_names := collect_hole_names (a_ast)

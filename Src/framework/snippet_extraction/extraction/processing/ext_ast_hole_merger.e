@@ -120,7 +120,7 @@ feature {NONE} -- Hole Handling
 					check attached l_start_hole end
 
 						-- Create new hole with annotations from retrieved hole.
-					l_merged_hole := hole_factory.new_hole (l_start_hole.annotations)
+					l_merged_hole := hole_factory.new_hole (l_start_hole.annotations, l_start_hole.hole_type)
 
 					from
 						l_consecutive_hole := False

@@ -125,6 +125,36 @@ feature -- Configuration
 			result := is_target_variable (a_variable_name) or is_interface_variable (a_variable_name)
 		end
 
+feature -- Access (Extraction Context)
+
+	context_feature: FEATURE_I
+			-- Feature from which snippets are extracted.
+
+	context_class: CLASS_C
+			-- Class where `context_feature' is contained.
+
+feature -- Configuration (Extraction Context)
+
+	set_context_feature (a_context_feature: like context_feature)
+			-- Sets `context_feature'.
+		require
+			a_context_feature_not_void: a_context_feature /= Void
+		do
+			context_feature := a_context_feature
+		ensure
+			context_feature_not_void: context_feature /= Void
+		end
+
+	set_context_class (a_context_class: like context_class)
+			-- Sets `context_class'.
+		require
+			a_context_class_not_void: a_context_class /= Void
+		do
+			context_class := a_context_class
+		ensure
+			context_class_not_void: context_class /= Void
+		end
+
 feature -- Status report
 
 	debug_output: STRING

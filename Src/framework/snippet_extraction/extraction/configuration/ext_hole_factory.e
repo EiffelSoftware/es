@@ -19,12 +19,14 @@ feature -- Initialization
 
 feature -- Access
 
-	new_hole (a_annotations: DS_HASH_SET [ANN_MENTION_ANNOTATION]): EXT_HOLE
+	new_hole (a_annotations: DS_HASH_SET [ANN_MENTION_ANNOTATION]; a_type: detachable STRING): EXT_HOLE
 		do
 				-- Create and setup `{EXT_HOLE}'.
-			create Result
-			Result.set_hole_id (next_hole_id)
-			Result.set_annotations (a_annotations)
+			create Result.make_with_annotations (next_hole_id, a_annotations)
+
+			if attached a_type as l_type then
+				Result.set_hole_type (l_type)
+			end
 		end
 
 	next_hole_id: NATURAL

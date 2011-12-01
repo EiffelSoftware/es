@@ -282,7 +282,6 @@ feature {NONE} -- Implementation
 			l_target_variable_table.force (a_variable_type, a_variable_name)
 
 			fixme ("EXPERIMENTAL")
-			fixme ("Add `{OBJECT_TEST_AS}' aliases as target variables.")
 			create l_object_test_as_alias_finder.make (l_target_variable_table, context_class)
 			a_compound_as.process (l_object_test_as_alias_finder)
 
@@ -293,6 +292,9 @@ feature {NONE} -- Implementation
 			variable_context.set_target_variables (l_target_variable_table)
 			variable_context.set_candidate_interface_variables (collect_candidate_interface_variables)
 			variable_context.set_interface_variables (collect_interface_variables (a_compound_as, a_variable_type, a_variable_name))
+
+			variable_context.set_context_class (context_class)
+			variable_context.set_context_feature (feature_)
 
 				-- Log
 			log_interface_variables (variable_context.interface_variables)
@@ -399,6 +401,7 @@ feature {NONE} -- Implementation
 		do
 				-- Associate statements with holes.
 			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
+			l_ast_hole_extractor.set_evaluate_hole_types (config.should_extract_hole_type)
 			l_ast_hole_extractor.extract (a_compound_as)
 
 				-- Rewrite statements associated with holes.
@@ -433,6 +436,7 @@ feature {NONE} -- Implementation
 		do
 				-- Associate statements with holes.
 			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
+			l_ast_hole_extractor.set_evaluate_hole_types (config.should_extract_hole_type)
 			l_ast_hole_extractor.extract (a_compound_as)
 
 				-- Rewrite statements associated with holes.
@@ -451,6 +455,7 @@ feature {NONE} -- Implementation
 		do
 				-- Associate statements with holes.
 			create l_ast_hole_extractor.make_with_arguments (variable_context, a_factory)
+			l_ast_hole_extractor.set_evaluate_hole_types (config.should_extract_hole_type)
 			l_ast_hole_extractor.extract (a_compound_as)
 
 				-- Rewrite statements associated with holes.
@@ -467,6 +472,7 @@ feature {NONE} -- Implementation
 			l_ast_processor: EXT_AST_LOOP_AS_HOLE_PROCESSOR
 		do
 			create l_ast_processor.make_with_arguments (ast_printer_output, a_holes, variable_context, a_factory)
+			l_ast_processor.set_evaluate_hole_types (config.should_extract_hole_type)
 
 				-- Process AST.
 			l_ast_processor.extract (a_compound_as)

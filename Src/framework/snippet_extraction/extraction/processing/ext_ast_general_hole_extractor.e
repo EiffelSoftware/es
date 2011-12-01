@@ -29,6 +29,8 @@ inherit
 
 	EPA_UTILITY
 
+	EXT_HOLE_UTILITY
+
 	REFACTORING_HELPER
 
 create
@@ -78,8 +80,6 @@ feature {NONE} -- Implementation
 			-- Checker if feature calls are chained together.
 
 	process_assign_as (l_as: ASSIGN_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
 		do
 			if variable_context.is_variable_of_interest (l_as.target.access_name_8) then
 					-- Retain target, scan and annotate source expression.
@@ -94,15 +94,11 @@ feature {NONE} -- Implementation
 		end
 
 	process_creation_as (l_as: CREATION_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
 		do
 			processing_call (l_as, l_as.target, l_as.call)
 		end
 
 	process_elseif_as (l_as: ELSIF_AS)
-		require else
-			l_as_path_not_void: attached l_as.path
 		do
 				-- Annotate the expression, continue parsing with the body.
 			processing_expr (l_as.expr)
@@ -178,7 +174,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation (Helper)
 
 	processing_call (l_as: AST_EIFFEL; l_target_as: ACCESS_AS; l_call_as: CALL_AS)
-		require else
+		require
 			l_as_path_not_void: attached l_as.path
 			l_target_as_not_void: attached l_target_as
 		do
@@ -199,15 +195,18 @@ feature {NONE} -- Implementation (Helper)
 					-- class feature call
 				elseif attached {ACCESS_FEAT_AS} l_target_as as l_access_feat_as then
 					if attached l_access_feat_as.internal_parameters as l_internal_parameter then
-							-- make hole: variables of interest used in call
-						process_as_hole (l_as)
+						variable_of_interest_usage_checker.check_ast (l_internal_parameter)
+						if variable_of_interest_usage_checker.passed_check then
+								-- make hole: variables of interest used in call
+							process_as_hole (l_as)
+						end
 					end
 				end
 			end
 		end
 
 	processing_class_feature_call (l_as: AST_EIFFEL; l_target_as: ACCESS_AS)
-		require else
+		require
 			l_as_path_not_void: attached l_as.path
 			l_target_as_not_void: attached l_target_as
 		do
@@ -240,12 +239,18 @@ feature {NONE} -- Hole Handling
 	create_hole (a_ast: AST_EIFFEL): EXT_HOLE
 			-- Create a new `{EXT_HOLE}' with metadata.
 		local
+			l_hole_type_string: STRING
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
 		do
 			create l_annotation_extractor.make_from_variable_context (variable_context)
 			l_annotation_extractor.extract_from_ast (a_ast)
 
-			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations)
+			if evaluate_hole_types then
+				-- Try to determinable hole type.
+				l_hole_type_string := get_hole_type (a_ast, variable_context.context_class, variable_context.context_feature)
+			end
+
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations, l_hole_type_string)
 		end
 
 	process_as_hole (a_ast: AST_EIFFEL)
@@ -257,12 +262,6 @@ feature {NONE} -- Hole Handling
 				l_hole := create_hole (a_ast)
 				add_hole (l_hole, a_ast.path)
 			end
-		end
-
-	is_hole (a_ast: AST_EIFFEL): BOOLEAN
-			-- Checks if `a_ast' is an AST repressentation of an `{EXT_HOLE}'.
-		do
-			Result := text_from_ast (a_ast).starts_with ({EXT_HOLE}.hole_name_prefix)
 		end
 
 feature {NONE} -- Helper

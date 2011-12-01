@@ -55,14 +55,17 @@ feature -- Access
 			-- Output directory for some operations.
 
 	output_xml: BOOLEAN
+		assign set_output_xml
 			-- Output snippets in XML format.
 			-- Only active, when `output' set.
 
 	output_txt: BOOLEAN
+		assign set_output_txt
 			-- Output snippets in textual format.
 			-- Only active, when `output' set.			
 
 	output_bin: BOOLEAN
+		assign set_output_bin
 			-- Output snippets in binary serialization format.
 			-- Only active, when `output' set.
 
@@ -71,29 +74,40 @@ feature -- Access
 			-- File name used to write logging information to.
 
 	maximum_lines_of_code: INTEGER
+		assign set_maximum_lines_of_code
 			-- The allowed maximum lines of code for a snippet to be reported
 			-- 0 means no limit. Default: 0.
 			-- This option is used to ignore snippets which are too large.
 
 	maximum_cfg_structure_level: INTEGER
+		assign set_maximum_cfg_structure_level
 			-- The allowed maximum structure levels for a snippet to be reported
 			-- 0 means no limit. Default: 0.
 			-- This option is used to ignore snippets which have too complicated control flow structures.
 
 	snippet_log_file: detachable STRING
+		assign set_snippet_log_file
 			-- If attached, the absolute path of the file used to log only snippets
 			-- Default: Void
 
 	should_extract_contract: BOOLEAN
+		assign set_should_extract_contract
 			-- Should extract contracts from callees of snippets?
 			-- Default: False
 
 	should_normalize_variable_name: BOOLEAN
+		assign set_should_normalize_variable_name
 			-- Should normalize variable names in snippets?
 			-- Default: False
 
 	should_extract_fragment: BOOLEAN
+		assign set_should_extract_fragment
 			-- Should fragments of snippets be extracted?
+			-- Default: False
+
+	should_extract_hole_type: BOOLEAN
+		assign set_should_extract_hole_type
+			-- Should the type of the expression subsituted by a hole be evaluated?
 			-- Default: False
 
 feature -- Setting
@@ -212,6 +226,12 @@ feature -- Setting
 			-- Set `should_extract_fragment' with `b'.
 		do
 			should_extract_fragment := b
+		end
+
+	set_should_extract_hole_type (b: BOOLEAN)
+			-- Set `should_extract_hole_type' with `b'.
+		do
+			should_extract_hole_type := b
 		end
 
 end

@@ -19,8 +19,8 @@ feature -- Basic operations
 			-- The default implementation is empty because
 			-- `extract_from_snippet' is the preferred way
 			-- to extract snippets and `extract_from_ast'
-			-- won't be supported from descendants of
-			-- `{EXT_ANNOTATION_EXTRACTOR}'.
+			-- is not mandatory to be supported from
+			-- descendants of `{EXT_ANNOTATION_EXTRACTOR}'.
 		do
 		end
 

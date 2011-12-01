@@ -58,8 +58,8 @@ feature -- Basic operations
 			l_parser.options.force_last (l_group)
 
 			create l_output_path.make_with_long_form ("output-path")
-			l_output_path.enable_mandatory
 			l_output_path.set_description ("Specify a folder to output files.")
+			l_output_path.enable_mandatory
 			l_parser.options.force_last (l_output_path)
 
 			l_parser.parse_list (l_args)
@@ -67,10 +67,6 @@ feature -- Basic operations
 			if l_class.was_found then
 				config.set_class_name (l_class.parameter)
 			end
-
---			if l_target_types.was_found then
---				config.set_target_types (l_target_types.parameter.split (';'))
---			end
 
 			if l_group.was_found then
 				config.set_group_name (l_group.parameter)

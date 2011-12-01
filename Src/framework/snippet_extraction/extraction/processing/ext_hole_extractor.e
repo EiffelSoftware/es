@@ -25,6 +25,20 @@ feature -- Basic operations
 		deferred
 		end
 
+feature -- Configuration
+
+	evaluate_hole_types: BOOLEAN
+		assign set_evaluate_hole_types
+			-- Should type information of expressions
+			-- substituted by holes be evaluated?
+
+	set_evaluate_hole_types (a_enable: BOOLEAN)
+			-- Set `evaluate_hole_types'.
+		do
+			evaluate_hole_types := a_enable
+		end
+
+
 feature {NONE} -- Implementation
 
 	initialize_hole_context
