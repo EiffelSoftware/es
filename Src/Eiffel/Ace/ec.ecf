@@ -336,6 +336,7 @@
 				<exclude>/ewb_dynamic_program_analysis\.e$</exclude>
 				<exclude>/ewb_annotation\.e$</exclude>
 				<exclude>/ewb_snippet_extraction\.e$</exclude>
+				<exclude>/ewb_xml_transformation\.e$</exclude>				
 			</file_rule>
 		</cluster>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
