@@ -467,6 +467,9 @@ feature -- Options: test case deserialization
 			-- Is AutoTest deserializing test cases to favor fixing?
 			-- When True, test cases are grouped by faults; otherwise, by routine under test.
 
+	is_validating_serialization: BOOLEAN assign set_validating_serialization
+			-- Is AutoTest validating serialization data during test case deserialization?
+
 	model_directory: FILE_NAME assign set_model_directory
 			-- Directory to save the constructed models.
 
@@ -497,6 +500,13 @@ feature -- Options: test case deserialization
 		do
 			is_deserializing_for_fixing := a_flag
 		end
+
+	set_validating_serialization (a_flag: BOOLEAN)
+			-- Set `is_validating_serialization' with `a_flag'.
+		do
+			is_validating_serialization := a_flag
+		end
+
 
 	set_model_directory (a_dir: FILE_NAME)
 			-- Set `model_directory' with `a_dir'.

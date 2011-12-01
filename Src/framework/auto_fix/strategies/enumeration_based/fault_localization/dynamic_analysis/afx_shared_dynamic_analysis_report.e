@@ -65,16 +65,18 @@ feature -- Access
 					l_test_case := l_repository_cursor.key
 					l_trace := l_repository_cursor.item
 
-					l_entry_state := l_trace.first.state
-					l_exit_state := l_trace.last.state
-					l_exception := l_trace.exception_signature
+					if not l_trace.is_empty then
+						l_entry_state := l_trace.first.state
+						l_exit_state := l_trace.last.state
+						l_exception := l_trace.exception_signature
 
-					if l_trace.is_passing then
-						create l_summary.make_passing (l_test_case, l_entry_state, l_exit_state)
-					elseif l_trace.is_failing then
-						create l_summary.make_failing (l_test_case, l_entry_state, l_exception)
+						if l_trace.is_passing then
+							create l_summary.make_passing (l_test_case, l_entry_state, l_exit_state)
+						elseif l_trace.is_failing then
+							create l_summary.make_failing (l_test_case, l_entry_state, l_exception)
+						end
+						Result.force (l_summary, l_test_case)
 					end
-					Result.force (l_summary, l_test_case)
 
 					l_repository_cursor.forth
 				end

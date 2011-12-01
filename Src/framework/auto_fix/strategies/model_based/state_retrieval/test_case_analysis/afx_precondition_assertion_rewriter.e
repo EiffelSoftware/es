@@ -10,7 +10,7 @@ class
 inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
-			process_access_feat_as,
+			processing_access_feat_as,
 			process_current_as,
 			process_eiffel_list,
 			process_nested_as,
@@ -133,7 +133,7 @@ feature -- Visitor routine
 			exit_nested
 		end
 
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+	processing_access_feat_as (l_as: ACCESS_FEAT_AS)
 			-- <Precursor>
 		local
 			l_text: STRING

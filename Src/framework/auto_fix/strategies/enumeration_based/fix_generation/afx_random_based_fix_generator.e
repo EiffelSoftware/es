@@ -37,6 +37,10 @@ feature -- Basic operations
 			l_target: AFX_FIXING_TARGET
 			l_max_target, l_max_fix: INTEGER
 			l_count: INTEGER
+			l_parser: ETR_PARSING_HELPER
+			l_fixes: like fixes
+			l_fix: AFX_FIX
+			l_fix_text: STRING
 		do
 				--Initialize.
 			create fix_skeletons.make
@@ -151,7 +155,6 @@ feature -- Basic operations
 			l_fix_ranking.set_relevance_to_failure (a_target.rank)
 			l_fix_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
 			l_fix_ranking.set_scope_levels (1)
---			l_fix_ranking.set_fix_condition_category (a_condition.cat)
 			l_fix.set_ranking (l_fix_ranking)
 
 			l_fix.set_fixing_target (a_target)
@@ -183,7 +186,6 @@ feature -- Basic operations
 					l_fix_ranking.set_relevance_to_failure (a_target.rank)
 					l_fix_ranking.set_fix_skeleton_complexity (afore_skeleton_complexity)
 					l_fix_ranking.set_scope_levels (1)
---					l_fix_ranking.set_fix_condition_category (a_condition.cat)
 					l_fix.set_ranking (l_fix_ranking)
 
 					l_fix.set_fixing_target (a_target)
@@ -218,7 +220,6 @@ feature -- Basic operations
 					l_fix_ranking.set_relevance_to_failure (a_target.rank)
 					l_fix_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
 					l_fix_ranking.set_scope_levels (1)
---					l_fix_ranking.set_fix_condition_category (a_condition.cat)
 					l_fix.set_ranking (l_fix_ranking)
 
 					l_fix.set_fixing_target (a_target)
@@ -251,7 +252,6 @@ feature -- Basic operations
 				l_fix_ranking.set_relevance_to_failure (a_target.rank)
 				l_fix_ranking.set_fix_skeleton_complexity (wrapping_skeleton_complexity)
 				l_fix_ranking.set_scope_levels (1)
---				l_fix_ranking.set_fix_condition_category (a_condition.cat)
 				l_fix.set_ranking (l_fix_ranking)
 
 				l_fix.set_fixing_target (a_target)

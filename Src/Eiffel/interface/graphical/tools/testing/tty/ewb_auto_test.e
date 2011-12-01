@@ -220,6 +220,7 @@ feature -- Execution
 				l_generator.set_building_behavioral_models (l_ap.is_building_behavioral_model)
 				l_generator.set_model_directory (l_ap.model_dir)
 				l_generator.set_deserialization_for_fixing (l_ap.is_deserializing_for_fixing)
+				l_generator.set_validating_serialization (l_ap.is_validating_serialization)
 
 				l_generator.set_recursive (l_ap.is_recursive)
 

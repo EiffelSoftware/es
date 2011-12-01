@@ -22,7 +22,7 @@ feature -- Data event handler
 	on_deserialization_started
 			-- <Precursor>
 		do
---			Precursor
+			-- Do nothing.
 		end
 
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
@@ -30,7 +30,7 @@ feature -- Data event handler
 		local
 			l_categories: DS_ARRAYED_LIST [STRING]
 		do
-			if a_data.test_case_text.is_empty then
+			if not a_data.test_case_text.is_empty then
 				l_categories := categorize (a_data)
 				write_test_case (a_data, l_categories)
 			end
@@ -39,7 +39,7 @@ feature -- Data event handler
 	on_deserialization_finished
 			-- <Precursor>
 		do
---			Precursor
+			-- Do nothing.
 		end
 
 feature -- Basic operation

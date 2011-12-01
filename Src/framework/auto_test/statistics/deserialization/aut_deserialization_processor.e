@@ -56,14 +56,17 @@ feature{NONE} -- Initialization
 
 			if configuration.is_building_behavioral_models then
 				create behavioral_model_builder.make (configuration.model_directory)
+
 				deserialization_started_event.subscribe (agent behavioral_model_builder.on_deserialization_started)
 				test_case_deserialized_event.subscribe (agent behavioral_model_builder.on_test_case_deserialized)
 				deserialization_finished_event.subscribe (agent behavioral_model_builder.on_deserialization_finished)
 			end
 
-			create test_case_deserializability_checker.make (test_case_extractor.test_case_dir)
-			deserialization_started_event.subscribe (agent test_case_deserializability_checker.start_checking)
-			deserialization_finished_event.subscribe (agent test_case_deserializability_checker.finish_checking)
+			if configuration.is_validating_serialization then
+				create test_case_deserializability_checker.make (test_case_extractor.test_case_dir)
+				deserialization_started_event.subscribe (agent test_case_deserializability_checker.start_checking)
+				deserialization_finished_event.subscribe (agent test_case_deserializability_checker.finish_checking)
+			end
 
 			check is_ready: is_ready end
 		end
@@ -496,8 +499,12 @@ feature{NONE} -- Auxiliary routines
 						last_post_state,
 						last_time,
 						last_pre_serialization)
-				test_case_deserializability_checker.check_deserializability (l_serialization)
-				if test_case_deserializability_checker.last_result then
+				if configuration.is_validating_serialization then
+					test_case_deserializability_checker.check_deserializability (l_serialization)
+					if test_case_deserializability_checker.last_result then
+						report_serialization_data (l_serialization)
+					end
+				else
 					report_serialization_data (l_serialization)
 				end
 			end

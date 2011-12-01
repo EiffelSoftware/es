@@ -73,6 +73,7 @@ feature{NONE} -- Initialization
 			l_test_case_deserialization_option: AP_STRING_OPTION
 			l_build_behavioral_model_option: AP_STRING_OPTION
 			l_deserialization_for_fixing: AP_FLAG
+			l_validate_serialization: AP_FLAG
 			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
@@ -282,6 +283,10 @@ feature{NONE} -- Initialization
 			create l_deserialization_for_fixing.make_with_long_form ("deserialization-for-fixing")
 			l_deserialization_for_fixing.set_description ("Organize the deserialized test cases to favor fixing, i.e. each directory contains failing test cases that reveal the same fault and relevant passing test cases. This option is only effective when 'deserialization' is present.")
 			parser.options.force_last (l_deserialization_for_fixing)
+
+			create l_validate_serialization.make_with_long_form ("validating-serialization")
+			l_validate_serialization.set_description ("Enable serialization validation during deserialization. When enabled, perform deserialization multiple times to generate test cases.")
+			parser.options.force_last (l_validate_serialization)
 
 			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
 			l_interpreter_log_enabled.set_description ("Should messaged from the interpreter be logged? Valid options are: on, off. Default: off.")
@@ -715,6 +720,7 @@ feature{NONE} -- Initialization
 					end
 
 					is_deserializing_for_fixing := l_deserialization_for_fixing.was_found
+					is_validating_serialization := l_validate_serialization.was_found
 				end
 			end
 
@@ -1192,6 +1198,12 @@ feature -- Status report
 	is_deserializing_for_fixing: BOOLEAN
 			-- Is AutoTest deserializing test cases to favor fixing?
 			-- When True, test cases are grouped by faults; otherwise, by routine under test.
+
+	is_validating_serialization: BOOLEAN
+			-- Is validating serialization during deserialization?
+			-- When True, validation failure may cause AutoTest to crash.
+			-- Therefore we use external storage to log the validation states.
+			-- Multiple deserialization sessions may be necessary to generate test cases.
 
 	model_dir: FILE_NAME
 			-- Directory to save the behavioral models.
