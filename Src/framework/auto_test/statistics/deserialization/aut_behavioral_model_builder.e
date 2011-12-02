@@ -18,13 +18,12 @@ create
 
 feature -- Initiailization
 
-	make (a_dir: FILE_NAME)
+	make (a_conf: TEST_GENERATOR)
 			-- Initialization.
-			-- `a_dir': directory to save the models.
 		require
-			valid_dir: a_dir.is_valid
+			configuration_attached: a_conf /= Void
 		do
-			model_directory_name := a_dir
+			configuration := a_conf
 		end
 
 feature -- Data event handler
@@ -33,6 +32,7 @@ feature -- Data event handler
 			-- <Precursor>
 		do
 			create last_models.make_equal (10)
+			create last_faulty_features.make_equal (100)
 		end
 
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
@@ -41,22 +41,30 @@ feature -- Data event handler
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
+			l_feature_under_test: STRING
 			l_model: EPA_BEHAVIORAL_MODEL
 		do
-			l_class := a_data.class_
-			l_feature := a_data.feature_
-			if a_data.is_execution_successful then
-				create l_feature_with_context.make (l_feature, l_class)
-				if l_feature_with_context.is_argumentless_public_command then
-					if last_models.has (l_class) then
-						l_model := last_models.item (l_class)
-					else
-						create l_model.make (l_class)
-						last_models.force (l_model, l_class)
+			if configuration.is_building_behavioral_models then
+				l_class := a_data.class_
+				l_feature := a_data.feature_
+				if a_data.is_execution_successful then
+					create l_feature_with_context.make (l_feature, l_class)
+					if l_feature_with_context.is_argumentless_public_command then
+						if last_models.has (l_class) then
+							l_model := last_models.item (l_class)
+						else
+							create l_model.make (l_class)
+							last_models.force (l_model, l_class)
+						end
+						l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
+						if not l_model.is_last_merge_successful then
+							io.put_string ("Warning: Transition merge unsuccessful.%N")
+						end
 					end
-					l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
-					if not l_model.is_last_merge_successful then
-						io.put_string ("Warning: Transition merge unsuccessful.%N")
+				else
+					l_feature_under_test := a_data.class_and_feature_under_test
+					if not last_faulty_features.has(l_feature_under_test) then
+						last_faulty_features.force (l_feature_under_test)
 					end
 				end
 			end
@@ -85,17 +93,54 @@ feature -- Data event handler
 
 				last_models.forth
 			end
+
+			save_faulty_feature_list
 		end
 
 feature -- Access
 
+	configuration: TEST_GENERATOR
+			-- Configuration.
+
 	model_directory_name: FILE_NAME
 			-- Directory to store the behavioral models.
+		do
+			Result := configuration.model_directory
+		end
+
+feature{NONE} -- Implementation
+
+	save_faulty_feature_list
+			-- Save `last_faulty_features' to disk.
+		local
+			l_file_name: FILE_NAME
+			l_text_file: PLAIN_TEXT_FILE
+			l_content: STRING
+		do
+			create l_content.make (1000)
+			from last_faulty_features.start
+			until last_faulty_features.after
+			loop
+				l_content := l_content + last_faulty_features.item_for_iteration + "%N"
+				last_faulty_features.forth
+			end
+
+			create l_file_name.make_from_string (model_directory_name)
+			l_file_name.set_file_name ("faulty_feature_list.log")
+			create l_text_file.make_open_write (l_file_name)
+			l_text_file.put_string (l_content)
+			l_text_file.flush
+			l_text_file.close
+		end
 
 feature{NONE} -- Access
 
 	last_models: DS_HASH_TABLE [EPA_BEHAVIORAL_MODEL, CLASS_C]
 			-- Behavioral models.
+
+	last_faulty_features: EPA_HASH_SET[STRING]
+			-- Set of faulty features.
+
 
 ;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

@@ -30,7 +30,9 @@ feature -- Data event handler
 		local
 			l_categories: DS_ARRAYED_LIST [STRING]
 		do
-			if not a_data.test_case_text.is_empty then
+			if ((a_data.is_execution_successful and then configuration.is_passing_test_case_deserialization_enabled)
+					or else (not a_data.is_execution_successful and then configuration.is_failing_test_case_deserialization_enabled))
+					and then not a_data.test_case_text.is_empty then
 				l_categories := categorize (a_data)
 				write_test_case (a_data, l_categories)
 			end

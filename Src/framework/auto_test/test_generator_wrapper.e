@@ -160,7 +160,7 @@ feature {NONE} -- Basic operations
 		do
 			if is_load_log_enabled then
 				load_log
-			elseif is_test_case_deserialization_enabled then
+			elseif is_test_case_deserialization_enabled or current.is_building_behavioral_models then
 				process_deserialization
 			elseif is_collecting_interface_related_classes then
 				collect_interface_related_classes

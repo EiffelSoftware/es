@@ -28,6 +28,7 @@ feature -- Data event handler
 
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
 			-- <Precursor>
+			-- Always deserialize all non-empty test cases.
 		local
 			l_summary, l_signature: STRING
 			l_set: EPA_HASH_SET [AUT_DESERIALIZED_TEST_CASE]

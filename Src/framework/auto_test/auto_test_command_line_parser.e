@@ -708,20 +708,23 @@ feature{NONE} -- Initialization
 						l_strs.forth
 					end
 
-					if l_build_behavioral_model_option.was_found then
-							-- Check if the parameter designates a valid directory.
-						create l_file_name.make_from_string (l_build_behavioral_model_option.parameter)
-						if l_file_name.is_valid then
-							is_building_behavioral_model := True
-							model_dir := l_file_name
-						else
-							error_handler.report_cannot_write_error (l_file_name)
-						end
-					end
-
-					is_deserializing_for_fixing := l_deserialization_for_fixing.was_found
-					is_validating_serialization := l_validate_serialization.was_found
 				end
+			end
+
+			if not error_handler.has_error then
+				if l_build_behavioral_model_option.was_found then
+						-- Check if the parameter designates a valid directory.
+					create l_file_name.make_from_string (l_build_behavioral_model_option.parameter)
+					if l_file_name.is_valid then
+						is_building_behavioral_model := True
+						model_dir := l_file_name
+					else
+						error_handler.report_cannot_write_error (l_file_name)
+					end
+				end
+
+				is_deserializing_for_fixing := l_deserialization_for_fixing.was_found
+				is_validating_serialization := l_validate_serialization.was_found
 			end
 
 			if not error_handler.has_error then

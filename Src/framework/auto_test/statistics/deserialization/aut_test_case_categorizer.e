@@ -35,9 +35,8 @@ feature -- Initialization
 	make (a_conf: TEST_GENERATOR)
 			-- Initialization.
 		do
-			error_handler := a_conf.error_handler
+			configuration := a_conf
 			create test_case_dir.make_from_string (a_conf.data_output)
---			create validator.make (test_case_dir)
 		end
 
 feature -- Basic operation
@@ -50,8 +49,14 @@ feature -- Basic operation
 
 feature -- Access
 
+	configuration: TEST_GENERATOR
+			-- Configuration.
+
 	error_handler: UT_ERROR_HANDLER
 			-- <Precursor>
+		do
+			result := configuration.error_handler
+		end
 
 	test_case_dir: DIRECTORY_NAME
 			-- Directory where the test cases would be saved.
