@@ -422,7 +422,6 @@ Src/framework/cli_writer/spec
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/parser/parser/output.txt
-Src/framework/peg/test/EIFGENs
 Src/framework/program_analysis/behavioral_model
 Src/framework/program_analysis/control_flow_graph/visitor/epa_cfg_block_visitor.e
 Src/framework/program_analysis/control_flow_graph/visitor/epa_cfg_edge_visitor.e
@@ -481,10 +480,8 @@ Src/framework/web/xebra/c_projects/serverclienttest/server
 Src/framework/web/xebra/c_projects/serverclienttest/stamp-h1
 Src/framework/web/xebra/eiffel_projects/.project
 Src/framework/web/xebra/eiffel_projects/library/thread_utilities/EIFGENs
-Src/framework/web/xebra/eiffel_projects/library/xebra_ast_elements/EIFGENs
 Src/framework/web/xebra/eiffel_projects/library/xebra_error/EIFGENs
 Src/framework/web/xebra/eiffel_projects/library/xebra_http/EIFGENs
-Src/framework/web/xebra/eiffel_projects/library/xebra_precompile/EIFGENs
 Src/framework/web/xebra/eiffel_projects/library/xebra_taglibrary_base/EIFGENs
 Src/framework/web/xebra/eiffel_projects/library/xebra_taglibrary_form/EIFGENs
 Src/framework/web/xebra/eiffel_projects/library/xebra_taglibrary_xrpc/EIFGENs
@@ -585,7 +582,6 @@ Src/tools/compile_all/*.rc
 Src/tools/compile_all/baseline/*.log
 Src/tools/doc_builder/*.wb
 Src/tools/doc_builder/resources/xml/*.wb
-Src/tools/doc_builder/resources/xml/EIFGENs
 Src/tools/eiffel_image_embedder/EIFGENs
 Src/tools/eiffel_matrix_code_generator/*.exe
 Src/tools/estudio/*.wb

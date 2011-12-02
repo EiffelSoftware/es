@@ -166,6 +166,8 @@ feature {NONE} -- Initialization
 			set_will_process_leading_leaves (True)
 			last_index := 0
 			last_printed := '%U'
+			new_line_count := 0
+			change_indent := agent do_nothing
 		end
 
 feature -- Access
@@ -184,21 +186,45 @@ feature {NONE} -- Internal access
 	is_expr_iteration: BOOLEAN
 			-- Flag indicating if an `ITERATION_AS' is used in a loop expression.
 
-feature {NONE} -- Implementation
+	new_line_count: INTEGER
+			-- Number of consequitive new line characters.
+
+feature {NONE} -- Output
 
 	print_string (s: STRING)
 			-- Print `s' to the output stream.
+		local
+			i: INTEGER
 		do
 			if not s.is_empty then
 				out_stream.put_string (s)
-				last_printed := s.item (s.count)
+				from
+					i := s.count
+					last_printed := s [i]
+				until
+					i <= 0 or else s [i] /= '%N'
+				loop
+					i := i - 1
+				variant
+					i
+				end
+				if i <= 0 then
+						-- All printer characters are new lines.
+					new_line_count := new_line_count + s.count
+				else
+						-- Only last chacaters are new lines.
+					new_line_count := s.count - i
+				end
 			end
 		end
 
 	print_new_line
 			-- Print a new line to the output stream.
 		do
-			print_string ("%N")
+				-- Collapse multiple new lines into one empty line.
+			if new_line_count <= 1 then
+				print_string ("%N")
+			end
 		end
 
 	print_indent
@@ -261,18 +287,18 @@ feature {NONE} -- Implementation
 				if attached a.first_token (match_list) as t then
 					process_leading_leaves (t.index)
 				end
-				if last_printed /= '%N' then
-					print_new_line
-				end
+				print_new_line
 				print_new_line
 				a.process (Current)
 			end
 		end
 
+feature {NONE} -- List processing
+
 	print_list_inline (l: EIFFEL_LIST [AST_EIFFEL])
 			-- Output `l' with items separated by associated separators and a space.
 		do
-			process_and_print_eiffel_list (l, "", " ", True, False)
+			process_and_print_eiffel_list (l, list_separator_delimiting_space)
 		end
 
 	print_list_indented (l: EIFFEL_LIST [AST_EIFFEL])
@@ -280,7 +306,7 @@ feature {NONE} -- Implementation
 		do
 			if attached l then
 				increase_indent
-				process_and_print_eiffel_list (l, indent, "", False, True)
+				process_and_print_eiffel_list (l, list_separator_new_line)
 				decrease_indent
 			end
 		end
@@ -288,12 +314,30 @@ feature {NONE} -- Implementation
 	print_list_separated (l: EIFFEL_LIST [AST_EIFFEL])
 			-- Output `l' with items starting of new lines with a blank line between items.
 		do
-			process_and_print_eiffel_list (l, "%N" + indent, "", False, True)
+			process_and_print_eiffel_list (l, list_separator_blank_line)
 		end
 
-	process_and_print_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL]; pre, post: STRING; exclude_last, add_new_line: BOOLEAN)
+	list_separator_blank_line: NATURAL_8 = 1
+			-- List separator: blank line before every element.
+
+	list_separator_new_line: NATURAL_8 = 2
+			-- List separator: new line before every element.
+
+	list_separator_leading_space: NATURAL_8 = 3
+			-- List separator: space before every element.
+
+	list_separator_delimiting_space: NATURAL_8 = 4
+			-- List separator: space before every element but the first one.
+
+	process_and_print_eiffel_list (l_as: EIFFEL_LIST [AST_EIFFEL]; list_separator: NATURAL_8)
 			-- Process an eiffel list while printing `pre' and `post' before and after
 			-- processing of a list element.
+		require
+			valid_list_separator:
+				list_separator = list_separator_blank_line or
+				list_separator = list_separator_new_line or
+				list_separator = list_separator_leading_space or
+				list_separator = list_separator_delimiting_space
 		local
 			i: INTEGER
 			n: INTEGER
@@ -326,17 +370,25 @@ feature {NONE} -- Implementation
 							process_leading_leaves (l_token.index)
 						end
 							-- Leading leaves may include optional delimiters such as semicolons,
-							-- so `post' should be printed after them.
-						if post /= Void and then i > 1 then
-							print_string (post)
-						end
-
-						if add_new_line and last_printed /= '%N' and last_printed /= '%T' then
+							-- so any separators should be printed after them.
+						inspect list_separator
+						when list_separator_blank_line then
 							print_new_line
-						end
-
-						if pre /= Void and last_printed /= '%T' then
-							print_string (pre)
+							print_new_line
+							print_indent
+						when list_separator_new_line then
+							if not new_line_chars.has (last_printed) then
+								print_new_line
+							end
+							print_indent
+						when list_separator_leading_space then
+							if not white_space_chars.has (last_printed) then
+								print_string (" ")
+							end
+						when list_separator_delimiting_space then
+							if i > 1 and then not white_space_chars.has (last_printed) then
+								print_string (" ")
+							end
 						end
 
 						safe_process (a)
@@ -352,10 +404,6 @@ feature {NONE} -- Implementation
 						i := i + 1
 					end
 					process_leading_leaves (l_as.last_token (match_list).index)
-						-- Print `post' for the last item.
-					if post /= Void and then not exclude_last then
-						print_string (post)
-					end
 				end
 			end
 		end
@@ -476,23 +524,15 @@ feature {NONE} -- Implementation
 			-- Process all not-processed leading leaves in `match_list' before index `ind'.
 		local
 			i: INTEGER
-			l_as: LEAF_AS
 		do
 			if will_process_leading_leaves then
-				if ind > last_index + 1 then
-					from
-						i := last_index + 1
-					until
-						i = ind
-					loop
-						l_as := match_list.i_th (i)
-						if attached {BREAK_AS}l_as as break_as then
-							safe_process (break_as)
-						else
-							safe_process_and_print (l_as, "", "")
-						end
-						i := i + 1
-					end
+				from
+					i := last_index + 1
+				until
+					i >= ind
+				loop
+					safe_process (match_list.i_th (i))
+					i := i + 1
 				end
 			end
 		end
@@ -515,82 +555,6 @@ feature {CLASS_AS} -- Process leafs
 			print_string (l_as.text_32 (match_list))
 		end
 
-	format_comment_string (s: STRING): STRING
-			-- Formats the comment string `s' into a printable format.
-		require
-			has_comment: s.has_substring ("--")
-		local
-			i: INTEGER
-			n: INTEGER
-			l_start_idx: INTEGER
-			inline_comment: BOOLEAN
-		do
-				-- The string can hold multiple comments, starting with '--'.
-				-- Remove all '%N' and '%R' characters before and after each comment line.
-				-- If there is a '%N' before a comment, it is printed on a new line with the
-				-- current indent.
-				--
-				-- Check the preceding characters for newlines characters.
-			inline_comment := True
-			n := s.count
-			l_start_idx := s.substring_index ("--", 1)
-			Result := ""
-
-			from
-				i := 1
-			until
-				i >= l_start_idx
-			loop
-				if s [i] = '%N' then
-					inline_comment := False
-					i := l_start_idx
-				end
-				i := i+1
-			end
-
-			from
-				i := l_start_idx
-			until
-				i >= n
-			loop
-				if not inline_comment then
-					Result.append ("%N%T" + indent)
-				elseif last_index <= 1 then
-						-- This is the first token in the source, it is not inline.
-					Result.append ("%T" + indent)
-				elseif last_printed /= ' ' then
-					Result.append_character (' ')
-				end
-
-					-- Look for end of line.
-				from
-				until
-					i > n or new_line_chars.has (s [i])
-				loop
-					Result.append_character (s [i])
-					i := i + 1
-				end
-
-					-- Remove trailing white spaces.
-				from
-				until
-					Result.is_empty or else not white_space_chars.has (Result [Result.count])
-				loop
-					Result.remove_tail (1)
-				end
-
-					-- Advance to the next line of a comment.
-				i := s.substring_index ("--", i)
-				if i = 0 then
-					i := n
-				end
-				l_start_idx := i
-				inline_comment := False
-			end
-				-- Put new line after the comment end.
-			Result.append_character ('%N')
-		end
-
 	process_break_as (l_as: BREAK_AS)
 			-- Process `l_as'.
 		local
@@ -598,10 +562,9 @@ feature {CLASS_AS} -- Process leafs
 		do
 			process_leading_leaves (l_as.index)
 			last_index := l_as.index
-			create l_text.make_from_string (l_as.text_32 (match_list))
-
+			l_text := l_as.text_32 (match_list)
 			if l_text.has_substring ("--") then
-				print_string (format_comment_string (l_text))
+				print_comment (l_text)
 			end
 		end
 
@@ -770,7 +733,6 @@ feature {CLASS_AS} -- Class Declarations
 			safe_process_and_print (l_as.frozen_keyword (match_list), "", " ")
 			safe_process_and_print (l_as.deferred_keyword (match_list), "", " ")
 			safe_process_and_print (l_as.expanded_keyword (match_list), "", " ")
-			safe_process_and_print (l_as.separate_keyword (match_list), "", " ")
 			safe_process_and_print (l_as.external_keyword (match_list), "", " ")
 
 			safe_process_and_print (l_as.class_keyword (match_list), "", "")
@@ -796,13 +758,13 @@ feature {CLASS_AS} -- Class Declarations
 			print_on_new_line_separated (l_as.internal_non_conforming_parents)
 
 			-- Creators
-			process_and_print_eiffel_list (l_as.creators, "%N", "", False, True)
+			process_and_print_eiffel_list (l_as.creators, list_separator_blank_line)
 
 			-- Convertors
 			print_on_new_line_separated (l_as.convertors)
 
 			-- Features
-			process_and_print_eiffel_list (l_as.features, "%N", "", False, True)
+			process_and_print_eiffel_list (l_as.features, list_separator_blank_line)
 
 			-- Invariant
 			indent := ""
@@ -846,7 +808,7 @@ feature {CLASS_AS} -- Indexing
 		do
 			safe_process (l_as.tag)
 			safe_process (l_as.colon_symbol (match_list))
-			process_and_print_eiffel_list (l_as.index_list, " ", "", True, False)
+			process_and_print_eiffel_list (l_as.index_list, list_separator_leading_space)
 		end
 
 feature {CLASS_AS} -- Inheritance
@@ -879,7 +841,9 @@ feature {CLASS_AS} -- Inheritance
 			-- Process inherit clause `l_as'.
 		do
 			safe_process (l_as.clause_keyword (match_list))
-			process_and_print_eiffel_list (l_as.content, "%T%T%T", "", False, True)
+			increase_indent
+			process_and_print_eiffel_list (l_as.content, list_separator_new_line)
+			decrease_indent
 		end
 
 	process_rename_clause_as (l_as: RENAME_CLAUSE_AS)
@@ -981,7 +945,7 @@ feature {CLASS_AS} -- Generics
 			safe_process_and_print (l_as.constrain_symbol (match_list), " ", " ")
 			print_list_inline (l_as.constraints)
 			safe_process_and_print (l_as.create_keyword (match_list), " ", "")
-			process_and_print_eiffel_list (l_as.creation_feature_list, " ", "", True, False)
+			process_and_print_eiffel_list (l_as.creation_feature_list, list_separator_leading_space)
 			safe_process_and_print (l_as.end_keyword (match_list), " ", "")
 		end
 
@@ -1012,12 +976,7 @@ feature {CLASS_AS} -- Convertors
 			-- Process convertor feature list `l_as'.
 		do
 			safe_process (l_as.convert_keyword (match_list))
-
 			process_leading_leaves (l_as.i_th (1).first_token (match_list).index)
-			if last_printed /= '%N' then
-				print_new_line
-			end
-
 			print_list_indented (l_as)
 		end
 
@@ -1040,7 +999,7 @@ feature {CLASS_AS} -- Features
 		do
 			safe_process (l_as.feature_keyword)
 			safe_process_and_print (l_as.clients, " ", "")
-			increase_indent
+			increase_indent_with_breaks
 			print_list_separated (l_as.features)
 			decrease_indent
 		end
@@ -1051,7 +1010,7 @@ feature {CLASS_AS} -- Features
 			print_list_inline (l_as.feature_names)
 			increase_indent
 			safe_process (l_as.body)
-			decrease_indent
+			decrease_indent_with_breaks
 		end
 
 	process_body_as (l_as: BODY_AS)
@@ -1109,12 +1068,8 @@ feature {CLASS_AS} -- Routine
 			safe_process (l_as.internal_locals)
 			safe_process (l_as.routine_body)
 			safe_process (l_as.postcondition)
-
 			print_on_new_line (l_as.rescue_keyword (match_list))
-			increase_indent
-			safe_process (l_as.rescue_clause)
-			decrease_indent
-
+			print_compound (l_as.rescue_clause)
 			print_on_new_line (l_as.end_keyword)
 		end
 
@@ -1173,18 +1128,14 @@ feature {CLASS_AS} -- Routine
 			-- Process attribute routine `l_as'
 		do
 			print_on_new_line (l_as.attribute_keyword (match_list))
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 		end
 
 	process_do_as (l_as: DO_AS)
 			-- Process do routine `l_as'.
 		do
 			print_on_new_line (l_as.do_keyword (match_list))
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound(l_as.compound)
 		end
 
 	process_once_as (l_as: ONCE_AS)
@@ -1192,9 +1143,7 @@ feature {CLASS_AS} -- Routine
 		do
 			print_on_new_line (l_as.once_keyword (match_list))
 			safe_process_and_print (l_as.internal_keys, " ", "")
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 		end
 
 	process_key_list_as (l_as: KEY_LIST_AS)
@@ -1277,9 +1226,7 @@ feature {CLASS_AS} -- Instructions
 		do
 			print_on_new_line (l_as.debug_keyword (match_list))
 			safe_process_and_print (l_as.internal_keys, " ", "")
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 			print_on_new_line (l_as.end_keyword)
 		end
 
@@ -1306,9 +1253,7 @@ feature {CLASS_AS} -- Instructions
 				print_list_indented (check_list)
 				print_on_new_line (l_as.then_keyword (match_list))
 			end
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 			print_on_new_line (l_as.end_keyword)
 		end
 
@@ -1327,18 +1272,10 @@ feature {CLASS_AS} -- Instructions
 			else
 				print_inline_unindented (t)
 			end
-
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
-
+			print_compound (l_as.compound)
 			safe_process (l_as.elsif_list)
-
 			print_on_new_line (l_as.else_keyword (match_list))
-			increase_indent
-			safe_process (l_as.else_part)
-			decrease_indent
-
+			print_compound (l_as.else_part)
 			print_on_new_line (l_as.end_keyword)
 		end
 
@@ -1357,10 +1294,7 @@ feature {CLASS_AS} -- Instructions
 			else
 				print_inline_unindented (t)
 			end
-
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 		end
 
 	process_inspect_as (l_as: INSPECT_AS)
@@ -1368,15 +1302,9 @@ feature {CLASS_AS} -- Instructions
 		do
 			print_on_new_line (l_as.inspect_keyword (match_list))
 			safe_process_and_print (l_as.switch, " ", "")
-
 			safe_process (l_as.case_list)
-
 			print_on_new_line (l_as.else_keyword (match_list))
-
-			increase_indent
-			safe_process (l_as.else_part)
-			decrease_indent
-
+			print_compound (l_as.else_part)
 			print_on_new_line (l_as.end_keyword)
 		end
 
@@ -1384,12 +1312,9 @@ feature {CLASS_AS} -- Instructions
 			-- Process inspect case `l_as'
 		do
 			print_on_new_line (l_as.when_keyword (match_list))
-			process_and_print_eiffel_list (l_as.interval, " ", "", True, False)
+			process_and_print_eiffel_list (l_as.interval, list_separator_leading_space)
 			safe_process_and_print (l_as.then_keyword (match_list), " ", "")
-
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
@@ -1408,9 +1333,7 @@ feature {CLASS_AS} -- Instructions
 			print_on_new_line (l_as.iteration)
 
 			print_on_new_line (l_as.from_keyword (match_list))
-			increase_indent
-			safe_process (l_as.from_part)
-			decrease_indent
+			print_compound (l_as.from_part)
 
 			print_on_new_line (l_as.invariant_keyword (match_list))
 			print_list_indented (l_as.full_invariant_list)
@@ -1432,10 +1355,7 @@ feature {CLASS_AS} -- Instructions
 			print_on_new_line_indented (l_as.stop)
 
 			print_on_new_line (l_as.loop_keyword (match_list))
-
-			increase_indent
-			safe_process (l_as.compound)
-			decrease_indent
+			print_compound (l_as.compound)
 
 			if l_variant_processing_after then
 				print_on_new_line (l_as.variant_part)
@@ -1825,12 +1745,40 @@ feature {NONE} -- Modification
 			indent.append_character ('%T')
 		end
 
+	increase_indent_with_breaks
+			-- Add one space element to `indent' and process breaks (if any).
+		do
+			change_indent := agent
+				do
+					indent.append_character ('%T')
+					change_indent := agent do_nothing
+				end
+			process_trailing_breaks
+			change_indent.apply
+		ensure
+			indent_increased: indent.count > old indent.count
+		end
+
 	decrease_indent
 			-- Remove one space element from `indent'.
+		require
+			valid_indent: not indent.is_empty
 		do
-				-- Process all breaks before decreasing indentation.
-			process_trailing_breaks
 			indent.remove_tail (1)
+		end
+
+	decrease_indent_with_breaks
+			-- Remove one space element from `indent' and process breaks (if any).
+		require
+			valid_indent: not indent.is_empty
+		do
+			change_indent := agent
+				do
+					indent.remove_tail (1)
+					change_indent := agent do_nothing
+				end
+			process_trailing_breaks
+			change_indent.apply
 		end
 
 feature {NONE} -- New lines
@@ -1844,6 +1792,18 @@ feature {NONE} -- New lines
 			end
 		end
 
+feature {NONE} -- Lists
+
+	print_compound (c: detachable EIFFEL_LIST [INSTRUCTION_AS])
+			-- Print `c'.
+		do
+			increase_indent
+			safe_process (c)
+				-- Make sure all comments are printed using the inner indentation.
+			process_trailing_breaks
+			decrease_indent
+		end
+
 feature {NONE} -- Comments
 
 	process_trailing_breaks
@@ -1854,6 +1814,124 @@ feature {NONE} -- Comments
 				not match_list.valid_index (last_index + 1) or else not attached {BREAK_AS} match_list [last_index + 1] as b
 			loop
 				safe_process (b)
+			end
+		end
+
+	change_indent: PROCEDURE [ANY, TUPLE]
+			-- Procedure to change `indent'.
+
+	print_comment (s: STRING)
+			-- Print the comment string `s'.
+		require
+			has_comment: s.has_substring ("--")
+		local
+			i: INTEGER
+			n: INTEGER
+			l_start_idx: INTEGER
+			inline_comment: BOOLEAN
+			c: CHARACTER
+			line: STRING
+		do
+				-- The string can hold multiple comments, starting with '--'.
+				-- Remove all '%N' and '%R' characters before and after each comment line.
+
+				-- The first token in the source is not considered inline.
+			inline_comment := last_index > 1
+			n := s.count
+
+			from
+				l_start_idx := s.substring_index ("--", 1)
+				i := 1
+			until
+				i >= n
+			loop
+					-- Check the preceding characters for newlines characters.
+				from
+				until
+					i >= l_start_idx
+				loop
+					if s [i] = '%N' then
+						print_new_line
+						inline_comment := False
+					end
+					i := i + 1
+				end
+				if new_line_count > 1 then
+						-- The comment is not associated with a previous construct.
+						-- It may use different indentation.
+					change_indent.apply
+				end
+				if not inline_comment then
+						-- The comment starts on a new line.
+					line := "%T" + indent
+				elseif not white_space_chars.has (last_printed) then
+						-- The inline comment should be separated
+						-- from the previous token by a white space.
+					line := " "
+				else
+						-- The inline comment is already separated by a white space.
+					line := ""
+				end
+
+					-- Look for end of line.
+				from
+				until
+					i > n or new_line_chars.has (s [i])
+				loop
+					line.append_character (s [i])
+					i := i + 1
+				end
+
+					-- Remove trailing white spaces.
+				from
+				until
+					line.is_empty or else not white_space_chars.has (line [line.count])
+				loop
+					line.remove_tail (1)
+				end
+
+					-- Output a line.
+				print_string (line)
+
+					-- Output a new line.
+				print_new_line
+
+					-- Advance to the next line of a comment.
+				l_start_idx := s.substring_index ("--", i)
+				if l_start_idx = 0 then
+					l_start_idx := n
+				end
+
+					-- Check if the comments are separated with additional new lines.
+				if i < l_start_idx then
+					from
+							-- Record used new-line character.
+							-- If this character is repeated, there are multiple new lines.
+						c := s [i]
+						check
+							new_line: new_line_chars.has (c)
+						end
+							-- Skip recorded new-line character.
+						i := i + 1
+					until
+						i >= l_start_idx
+					loop
+						if s [i] = c then
+								-- There are multiple new lines.
+								-- Collapse them into one empty new line.
+							print_new_line
+							i := l_start_idx
+						else
+							i := i + 1
+						end
+					end
+				end
+
+					-- Prepare to the next line of a comment.
+				check
+					i_set: i >= l_start_idx
+				end
+				inline_comment := False
 			end
 		end
 

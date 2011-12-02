@@ -79,10 +79,10 @@ feature -- Parsing
 					parse_from_file (f)
 					f.close
 				else
-					report_error ("Unable to open the file %"" + a_filename + "%".")
+					report_error ("Unable to open file %"" + a_filename + "%".")
 				end
 			else
-				report_error ("Error when trying to open the file %"" + a_filename + "%".")
+				report_error ("Error when trying to open file %"" + a_filename + "%".")
 				if f /= Void and then not f.is_closed then
 					f.close
 				end
@@ -235,7 +235,7 @@ feature {NONE} -- Implementation: parse
 					else
 						l_ignore_non_printable_char := False
 						if not is_blank (l_content) then
-							report_unexpected_content (l_content)
+							report_unexpected_content_in_prolog (l_content)
 						end
 						l_content.wipe_out
 					end
@@ -278,7 +278,13 @@ feature {NONE} -- Implementation: parse
 					end
 				end
 			end
-			l_callbacks.on_finish
+			if not parsing_stopped then
+				if not l_content.is_empty then
+					l_callbacks.on_content (l_content.string)
+					l_content.wipe_out
+				end
+				l_callbacks.on_finish
+			end
 		end
 
 	parse_start_tag
@@ -739,6 +745,12 @@ feature {NONE} -- Implementation: parse
 			report_error ("Unexpected content (not well-formed XML)")
 		end
 
+	report_unexpected_content_in_prolog (a_content: STRING)
+			-- Report unexpected content `a_content' in prolog
+		do
+			report_error ("Unexpected content in prolog (not well-formed XML)")
+		end
+
 feature {NONE} -- Doctype
 
 	register_doctype (s: STRING)
@@ -770,7 +782,6 @@ feature {NONE} -- Query
 			if Result = '%U' then
 				Result := last_character
 			end
---			Result := buffer.last_character
 		end
 
 	rewind_character
@@ -795,7 +806,7 @@ feature {NONE} -- Query
 				if not buf.end_of_input then
 					Result := internal_read_character (buf)
 				else
-					report_error ("no more character")
+					report_error ("no more characters")
 				end
 			else
 				rewinded_character := '%U'
@@ -1054,8 +1065,7 @@ feature {NONE} -- Query
 			att_name := next_attribute_name
 			n := att_name.local_part
 			p := att_name.prefix_part
-			if n.is_empty then
-			else
+			if not n.is_empty then
 				c := current_character
 				set_checkpoint_position --| record potential error position
 				if c.is_space then
@@ -1068,7 +1078,7 @@ feature {NONE} -- Query
 				elseif l_was_space then
 					-- no value FIXME: strict?
 					-- we do not allow attribute without value
-					report_error ("Attribute without any value are forbidden")
+					report_error ("Attributes without any value are forbidden")
 					Result := [p, n, ""]
 				else -- not l_was_space
 					report_error ("unexpected character '" + character_output (c) + "' in attribute name")
@@ -1091,6 +1101,13 @@ feature {NONE} -- Query
 						unset_checkpoint_position
 					end
 					Result := [p, n, v]
+					c := current_character
+					if c.is_space or c = '>' or c = '/' or c = '?' then
+						-- expected character
+					else
+						-- STRICT: foo="val"bar="foobar"  is not valid, we expect a white space
+						report_error ("unexpected character '" + current_character.out + "' after attribute declaration (expecting white space or '>' or '/' or '?' )")
+					end
 				end
 			end
 		ensure
