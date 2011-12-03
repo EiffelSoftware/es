@@ -43,31 +43,37 @@ feature -- Data event handler
 			l_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
 			l_feature_under_test: STRING
 			l_model: EPA_BEHAVIORAL_MODEL
+			l_retried: BOOLEAN
 		do
-			if configuration.is_building_behavioral_models then
-				l_class := a_data.class_
-				l_feature := a_data.feature_
-				if a_data.is_execution_successful then
-					create l_feature_with_context.make (l_feature, l_class)
-					if l_feature_with_context.is_argumentless_public_command then
-						if last_models.has (l_class) then
-							l_model := last_models.item (l_class)
-						else
-							create l_model.make (l_class)
-							last_models.force (l_model, l_class)
+			if not l_retried then
+				if configuration.is_building_behavioral_models then
+					l_class := a_data.class_
+					l_feature := a_data.feature_
+					if a_data.is_execution_successful then
+						create l_feature_with_context.make (l_feature, l_class)
+						if l_feature_with_context.is_argumentless_public_command then
+							if last_models.has (l_class) then
+								l_model := last_models.item (l_class)
+							else
+								create l_model.make (l_class)
+								last_models.force (l_model, l_class)
+							end
+							l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
+							if not l_model.is_last_merge_successful then
+								io.put_string ("Warning: Transition merge unsuccessful.%N")
+							end
 						end
-						l_model.merge (l_feature_with_context, a_data.pre_state, a_data.post_state)
-						if not l_model.is_last_merge_successful then
-							io.put_string ("Warning: Transition merge unsuccessful.%N")
+					else
+						l_feature_under_test := a_data.class_and_feature_under_test
+						if not last_faulty_features.has(l_feature_under_test) then
+							last_faulty_features.force (l_feature_under_test)
 						end
-					end
-				else
-					l_feature_under_test := a_data.class_and_feature_under_test
-					if not last_faulty_features.has(l_feature_under_test) then
-						last_faulty_features.force (l_feature_under_test)
 					end
 				end
 			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	on_deserialization_finished

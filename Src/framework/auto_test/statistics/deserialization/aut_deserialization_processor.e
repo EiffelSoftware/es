@@ -194,16 +194,16 @@ feature{NONE} -- Implementation
 				configuration.error_handler.report_cannot_read_error (data_input)
 			end
 
-			if not configuration.error_handler.has_error then
-					-- `data_output' should always denote a directory.
-					-- As long as there is no existing file with the same name, it's acceptable.
-				data_output := l_conf.data_output
-				check data_output /= Void and then not data_output.is_empty end
-				create l_file.make (data_output)
-				if l_file.exists and then not l_file.is_directory then
-					configuration.error_handler.report_cannot_write_error (data_output)
-				end
-			end
+--			if not configuration.error_handler.has_error then
+--					-- `data_output' should always denote a directory.
+--					-- As long as there is no existing file with the same name, it's acceptable.
+--				data_output := l_conf.data_output
+--				check data_output /= Void and then not data_output.is_empty end
+--				create l_file.make (data_output)
+--				if l_file.exists and then not l_file.is_directory then
+--					configuration.error_handler.report_cannot_write_error (data_output)
+--				end
+--			end
 		end
 
 	process_file (a_file: RAW_FILE)
