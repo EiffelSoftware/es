@@ -72,6 +72,7 @@ feature -- Process
 			-- Process Current using `a_visitor'.
 		do
 			fixme ("To implement. 27.2.2010 Jasonw")
+			a_visitor.process_reference_value (Current)
 		end
 
 end

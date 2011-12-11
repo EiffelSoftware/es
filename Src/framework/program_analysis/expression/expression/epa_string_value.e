@@ -14,7 +14,8 @@ inherit
 		redefine
 			text, out,
 			as_string,
-			is_string
+			is_string,
+			process
 		end
 
 create
@@ -51,5 +52,13 @@ feature -- Status report
 
 	is_string: BOOLEAN = True
 			-- Is current a string value?	
+
+feature -- Process
+
+	process (a_visitor: EPA_EXPRESSION_VALUE_VISITOR)
+			-- Process Current using `a_visitor'.
+		do
+			a_visitor.process_string_value (Current)
+		end
 
 end

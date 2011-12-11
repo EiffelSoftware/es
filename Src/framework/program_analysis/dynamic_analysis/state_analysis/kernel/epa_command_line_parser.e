@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_COMMAND_LINE_PARSER
+	EPA_DYN_ANALYSIS_CMD_LINE_PARSER
 
 inherit
 	EPA_UTILITY
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	config: EPA_CONFIG
+	config: EPA_DYNAMIC_ANALYSIS_CONFIG
 			-- AutoFix command line options
 
 	arguments: LINKED_LIST [STRING]
@@ -40,7 +40,7 @@ feature -- Access
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
-			l_aut_choice_of_prgm_locs, l_all_progm_locs, l_aut_choice_of_exprs: AP_FLAG
+			l_aut_choice_of_prgm_locs, l_all_prgm_locs, l_aut_choice_of_exprs: AP_FLAG
 			l_location, l_specific_prgm_locs, l_specific_vars, l_specific_exprs, l_prgm_locs_with_exprs, l_output_path: AP_STRING_OPTION
 		do
 			-- Setup command line argument parser.
@@ -66,11 +66,11 @@ feature -- Access
 				%Format: --l_aut_choice_of_exprs")
 			l_parser.options.force_last (l_aut_choice_of_exprs)
 
-			create l_all_progm_locs.make_with_long_form ("all_progm_locs")
-			l_all_progm_locs.set_description (
+			create l_all_prgm_locs.make_with_long_form ("all_prgm_locs")
+			l_all_prgm_locs.set_description (
 				"Consider all program locations.%
 				%Format: --all_progm_locs")
-			l_parser.options.force_last (l_all_progm_locs)
+			l_parser.options.force_last (l_all_prgm_locs)
 
 			create l_specific_vars.make_with_long_form ("specific_vars")
 			l_specific_vars.set_description (
@@ -104,7 +104,7 @@ feature -- Access
 
 			config.set_is_aut_choice_of_exprs_set (l_aut_choice_of_exprs.was_found)
 			config.set_is_aut_choice_of_prgm_locs_set (l_aut_choice_of_prgm_locs.was_found)
-			config.set_is_all_progm_locs_set (l_all_progm_locs.was_found)
+			config.set_is_all_prgm_locs_set (l_all_prgm_locs.was_found)
 			config.set_is_output_path_specified (l_output_path.was_found)
 
 			if l_location.was_found then

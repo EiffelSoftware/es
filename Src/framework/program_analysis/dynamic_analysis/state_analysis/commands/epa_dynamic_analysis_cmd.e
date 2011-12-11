@@ -1,5 +1,5 @@
 note
-	description: "Command to collect annotations through dynamic means"
+	description: "Command to collect runtime data through dynamic means"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,8 +8,6 @@ class
 	EPA_DYNAMIC_ANALYSIS_CMD
 
 inherit
-	EPA_COMMAND
-
 	EPA_DEBUGGER_UTILITY
 
 	SHARED_WORKBENCH
@@ -20,6 +18,8 @@ inherit
 
 	EPA_CFG_UTILITY
 
+	EXCEPTIONS
+
 create
 	make
 
@@ -28,38 +28,35 @@ feature {NONE} -- Initialization
 	make (a_config: like config)
 			-- Initialize Current command.
 		do
-			check is_config_valid (a_config) then
-				config := a_config
+			check_config_validity (a_config)
+			if not is_config_valid then
+				io.put_string ("%N" + error_message + "%N")
+				die (-1)
 			end
+			config := a_config
 			class_ := config.location.class_
 			feature_ := config.location.feature_
-			create collected_runtime_data.make
 		ensure
 			config_set: config = a_config
 			class_set: class_ = config.location.class_
 			feature_set: feature_ = config.location.feature_
-			collected_runtime_data_not_void: collected_runtime_data /= Void
 		end
 
 feature -- Access
 
-	pre_states: DS_HASH_TABLE [DS_HASH_SET [EPA_EQUATION], INTEGER]
-			-- Collected pre-states.
-			-- Keys are breakpoint slots and values are expressions
-			-- and its associated values.
-
-	post_states: DS_HASH_TABLE [DS_HASH_SET [EPA_EQUATION], INTEGER]
-			-- Collected pre-states.
-			-- Keys are breakpoint slots and values are expressions
-			-- and its associated values.
+	config: EPA_DYNAMIC_ANALYSIS_CONFIG
+			-- Config for runtime data collection
 
 	collected_runtime_data: LINKED_LIST [EPA_STATE_CHANGE]
-			-- Data collected during dynamic analysis of `feature_'
+			-- Runtime data collected during dynamic analysis of `feature_'
 
 feature -- Basic operations
 
 	execute
 			-- Execute Current command
+		local
+			l_writer: EPA_COLLECTED_RUNTIME_DATA_WRITER
+			l_reader: EPA_COLLECTED_RUNTIME_DATA_READER
 		do
 			-- Find post-state(s) for all pre-states in `l_feature'.
 			find_all_post_states
@@ -84,8 +81,7 @@ feature -- Basic operations
 
 			-- Set up the data-structures used for storing the collected
 			-- run-time data.
-			create pre_states.make_default
-			create post_states.make_default
+			create collected_runtime_data.make
 
 			is_bp_pre_state := True
 
@@ -94,6 +90,12 @@ feature -- Basic operations
 
 			-- Remove the last debugging session.
 			remove_debugger_session
+
+			create l_writer.make (class_, feature_, collected_runtime_data, config.output_path)
+			l_writer.write
+
+			create l_reader.make (config.output_path + "APPLICATION.make.txt")
+			l_reader.read
 		end
 
 feature {NONE} -- Implementation
@@ -106,7 +108,9 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_equations: DS_HASH_TABLE [STRING, STRING]
+			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
+			l_equation: EPA_EQUATION
+			l_expression: STRING
 		do
 --			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
 --			io.put_string (a_state.debug_output +"%N")
@@ -114,7 +118,9 @@ feature {NONE} -- Implementation
 			l_bp_slot := a_bp.breakable_line_number
 			create l_equations.make_default
 			across a_state.to_array as l_state loop
-				l_equations.force (l_state.item.value.text, l_state.item.expression.text)
+				l_equation := l_state.item
+				l_expression := l_equation.expression.text
+				l_equations.force (l_equation.value, l_expression)
 			end
 			if not is_bp_pre_state and post_state_map.item (temp_state_change.pre_state_bp_slot).has (l_bp_slot) then
 				temp_state_change.set_post_state_bp_slot (l_bp_slot)
@@ -139,7 +145,7 @@ feature {NONE} -- Implementation
 			a_state_not_void: a_state /= Void
 		local
 			l_bp_slot: INTEGER
-			l_equations: DS_HASH_TABLE [STRING, STRING]
+			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			l_expressions: DS_HASH_SET [STRING]
 			l_expression: STRING
 		do
@@ -153,7 +159,7 @@ feature {NONE} -- Implementation
 				across a_state.to_array as l_state loop
 					l_expression := l_state.item.expression.text
 					if l_expressions.has (l_expression) then
-						l_equations.force (l_state.item.value.text, l_expression)
+						l_equations.force (l_state.item.value, l_expression)
 					end
 				end
 				temp_state_change.set_post_state_bp_slot (l_bp_slot)
@@ -168,7 +174,7 @@ feature {NONE} -- Implementation
 				across a_state.to_array as l_state loop
 					l_expression := l_state.item.expression.text
 					if l_expressions.has (l_expression) then
-						l_equations.force (l_state.item.value.text, l_expression)
+						l_equations.force (l_state.item.value, l_expression)
 					end
 				end
 				create temp_state_change
@@ -180,25 +186,70 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implemenation
 
-	is_config_valid (a_config: EPA_CONFIG): BOOLEAN
-			-- Is `a_config' a valid configuration?
+	check_config_validity (a_config: EPA_DYNAMIC_ANALYSIS_CONFIG)
+			-- Checks, if `a_config' a valid configuration and makes result available
+			-- in `is_config_valid' and makes error message available in `error_message'.
 		require
 			a_config_not_void: a_config /= Void
 		local
-			l_prgm_locs_valid, l_exprs_valid: BOOLEAN
+			l_class_valid, l_feature_valid, l_prgm_locs_valid, l_exprs_valid, l_exprs_locs_comb_valid, l_outputh_path_valid: BOOLEAN
 		do
-			l_prgm_locs_valid := (
-				a_config.is_all_progm_locs_set xor
-				a_config.is_aut_choice_of_prgm_locs_set xor
-				a_config.is_specific_prgm_locs_set)
+			error_message := ""
 
-			l_exprs_valid := (
+			l_class_valid := a_config.location.class_ /= Void
+			if not l_class_valid then
+				error_message.append ("Specified class is invalid.%N")
+			end
+
+			l_feature_valid := a_config.location.feature_ /= Void
+			if not l_feature_valid then
+				error_message.append ("Specified feature is invalid.%N")
+			end
+
+			l_prgm_locs_valid :=
+				a_config.is_all_prgm_locs_set xor
+				a_config.is_aut_choice_of_prgm_locs_set xor
+				a_config.is_specific_prgm_locs_set
+			if not l_prgm_locs_valid then
+				error_message.append ("Only of the following options can be used at a time: all_prgm_locs, aut_choice_of_prgm_locs or specific_prgm_locs.%N")
+			end
+
+			l_exprs_valid :=
 				a_config.is_aut_choice_of_exprs_set xor
 				a_config.is_specific_exprs_set xor
-				a_config.is_specific_vars_set)
+				a_config.is_specific_vars_set
+			if not l_exprs_valid then
+				error_message.append ("Only of the following options can be used at a time: aut_choice_of_exprs, specific_exprs or specific_vars.%N")
+			end
 
-			Result := (l_prgm_locs_valid and l_exprs_valid) xor a_config.is_prgm_locs_with_exprs_set
+			l_exprs_locs_comb_valid :=
+				(l_prgm_locs_valid and l_exprs_valid) xor
+				a_config.is_prgm_locs_with_exprs_set
+			if not l_exprs_locs_comb_valid then
+				error_message.append (
+					"Option 'prgm_locs_with_exprs' can not be used together with one of the following options: " +
+					"all_prgm_locs, aut_choice_of_prgm_locs, specific_prgm_locs, aut_choice_of_exprs, specific_exprs or specific_vars.%N"
+				)
+			end
+
+			l_outputh_path_valid :=
+				a_config.output_path /= Void and
+				a_config.output_path.ends_with ("/")
+			if not l_outputh_path_valid then
+				error_message.append ("The output-path isn't valid because it was not set or because it doesn't end with a '/'.%N")
+			end
+
+			is_config_valid :=
+				l_class_valid and
+				l_feature_valid and
+				l_prgm_locs_valid and
+				l_exprs_valid and
+				l_exprs_locs_comb_valid and
+				l_outputh_path_valid
 		end
+
+	is_config_valid: BOOLEAN
+			-- Is the configuration a valid configuration?
 
 	is_bp_pre_state: BOOLEAN
 			--
@@ -222,14 +273,14 @@ feature {NONE} -- Implementation
 			l_pre_state_finder: EPA_INTERESTING_PRE_STATE_FINDER
 		do
 			-- Choose pre-states
-			if config.is_all_progm_locs_set then
+			if config.is_all_prgm_locs_set then
 				-- Use all pre-states
 				fixme("This is not a good solution since contracts are taken into account as well. Nov 26, 2011. megg")
 				create interesting_pre_states.make_default
 				from
 					i := 1
 				until
-					i > feature_.number_of_breakpoint_slots
+					i > feature_.number_of_breakpoint_slots - 1
 				loop
 					interesting_pre_states.force_last (i)
 					i := i + 1
@@ -337,5 +388,8 @@ feature {NONE} -- Implementation
 			-- Stores a set of expressions for a specific program location.
 			-- Keys are program locations and values are the associated expressions.
 			-- Only used when `config.is_prgm_locs_with_exprs_set' is set.
+
+	error_message: STRING
+			-- Error message indicating why the configuration is not a valid configuration.
 
 end

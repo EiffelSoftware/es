@@ -9,10 +9,10 @@ class
 
 feature -- Access
 
-	pre_state: DS_HASH_TABLE [STRING, STRING]
+	pre_state: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			--
 
-	post_state: DS_HASH_TABLE [STRING, STRING]
+	post_state: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			--
 
 	pre_state_bp_slot: INTEGER

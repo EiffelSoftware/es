@@ -54,10 +54,9 @@ feature -- Properties
 			-- Action performed when invoked from the
 			-- command line.
 		local
-			l_parser: EPA_COMMAND_LINE_PARSER
-			l_config: EPA_CONFIG
-			l_dynamic_cmd: EPA_DYNAMIC_ANALYSIS_CMD
-			l_cmd: EPA_COMMAND
+			l_parser: EPA_DYN_ANALYSIS_CMD_LINE_PARSER
+			l_config: EPA_DYNAMIC_ANALYSIS_CONFIG
+			l_cmd, l_dynamic_cmd: EPA_DYNAMIC_ANALYSIS_CMD
 		do
 			create l_parser.make_with_arguments (contract_inference_arguments, system)
 			l_parser.parse

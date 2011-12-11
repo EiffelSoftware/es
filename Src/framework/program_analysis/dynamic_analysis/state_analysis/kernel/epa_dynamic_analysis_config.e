@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_CONFIG
+	EPA_DYNAMIC_ANALYSIS_CONFIG
 
 inherit
 	SHARED_EXEC_ENVIRONMENT
@@ -69,7 +69,7 @@ feature -- Status report
 			-- Are specific program locations where expressions should
 			-- be evaluated specified?
 
-	is_all_progm_locs_set: BOOLEAN
+	is_all_prgm_locs_set: BOOLEAN
 			-- Are expresions at all program locations evaluated?
 
 	is_aut_choice_of_exprs_set: BOOLEAN
@@ -157,12 +157,12 @@ feature -- Setting
 			is_specific_prgm_locs_set_set: is_specific_prgm_locs_set = b
 		end
 
-	set_is_all_progm_locs_set (b: BOOLEAN)
+	set_is_all_prgm_locs_set (b: BOOLEAN)
 			-- Set `is_all_progm_locs_set' to `b'
 		do
-			is_all_progm_locs_set := b
+			is_all_prgm_locs_set := b
 		ensure
-			is_all_progm_locs_set_set: is_all_progm_locs_set = b
+			is_all_prgm_locs_set_set: is_all_prgm_locs_set = b
 		end
 
 	set_is_aut_choice_of_exprs_set (b: BOOLEAN)
