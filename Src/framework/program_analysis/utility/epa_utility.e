@@ -387,6 +387,34 @@ feature -- Breakpoint related
 			Result := l_breakable_info.breakable_count
 		end
 
+	feature_body_breakpoint_count (a_feature: FEATURE_I): INTEGER
+			-- Count of breakpoints of the feature body of `a_feature'.
+		require
+			a_feature_not_void: a_feature /= Void
+		local
+			l_body_bp_slots: TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
+		do
+			l_body_bp_slots := feature_body_breakpoint_slots (a_feature)
+			Result := l_body_bp_slots.last_bp_slot - l_body_bp_slots.first_bp_slot + 1
+		end
+
+	feature_body_breakpoint_slots (a_feature: FEATURE_I): TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
+			-- First and last breakpoint slot of the feature body of `a_feature'.
+		require
+			a_feature_not_void: a_feature /= Void
+		local
+			l_bp_finder: EPA_AST_BP_SLOTS_FINDER
+			l_bp_initializer: ETR_BP_SLOT_INITIALIZER
+		do
+			create l_bp_initializer
+			l_bp_initializer.init_with_context (a_feature.e_feature.ast, a_feature.written_class)
+			create l_bp_finder
+			l_bp_finder.set_feature (a_feature)
+			l_bp_finder.set_ast (body_ast_from_feature (a_feature))
+			l_bp_finder.find
+			Result := [l_bp_finder.first_bp_slot, l_bp_finder.last_bp_slot]
+		end
+
 	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_EXPRESSION]
 			-- Assertion, consists of an optional tag and an expression, at `a_breakpoint' of `a_feature' from `a_class'.
 		require
