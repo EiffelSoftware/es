@@ -93,9 +93,6 @@ feature -- Basic operations
 
 			create l_writer.make (class_, feature_, collected_runtime_data, config.output_path)
 			l_writer.write
-
-			create l_reader
-			l_reader.read_from_path (config.output_path + "APPLICATION.make.txt")
 		end
 
 feature {NONE} -- Implementation
@@ -271,16 +268,16 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 			l_pre_state_finder: EPA_INTERESTING_PRE_STATE_FINDER
+			l_body_bp_slots: TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
 		do
 			-- Choose pre-states
 			if config.is_all_prgm_locs_set then
 				-- Use all pre-states
-				fixme("This is not a good solution since contracts are taken into account as well. Nov 26, 2011. megg")
 				create interesting_pre_states.make_default
 				from
-					i := 1
+					i := l_body_bp_slots.first_bp_slot
 				until
-					i > feature_.number_of_breakpoint_slots - 1
+					i > l_body_bp_slots.last_bp_slot
 				loop
 					interesting_pre_states.force_last (i)
 					i := i + 1
