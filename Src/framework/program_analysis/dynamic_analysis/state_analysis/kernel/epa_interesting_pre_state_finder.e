@@ -1,5 +1,5 @@
 note
-	description: "Finds interesting pre-states with respect to data flow."
+	description: "Class to find interesting pre-states with respect to data flow."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -26,7 +26,7 @@ inherit
 create
 	default_create, make_with
 
-feature -- Creation Procedures
+feature -- Initialization
 
 	make_with (a_ast: like ast)
 			-- Sets `ast' to `a_ast'
@@ -118,7 +118,7 @@ feature -- Access
 feature -- Setting
 
 	set_ast (a_ast: like ast)
-			-- Sets `ast' to `a_ast'
+			-- Set `ast' to `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void
 		local

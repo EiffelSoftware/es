@@ -1,5 +1,5 @@
 note
-	description: "Command line parser for annotation facilities"
+	description: "Command line parser for dynamic program analysis options."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,19 +18,23 @@ create
 feature {NONE} -- Initialization
 
 	make_with_arguments (a_args: LINKED_LIST [STRING]; a_system: SYSTEM_I)
-			-- Initialize Current with arguments `a_args'.
+			-- Initialize `config' with `a_system' and
+			-- `arguments' with `a_args'.
+		require
+			a_args_not_void: a_args /= Void
+			a_system_not_void: a_system /= Void
 		do
 			create config.make (a_system)
 			arguments := a_args
 		ensure
 			arguments_set: arguments = a_args
-			options_set: config.eiffel_system = a_system
+			eiffel_system_set: config.eiffel_system = a_system
 		end
 
 feature -- Access
 
 	config: EPA_DYNAMIC_ANALYSIS_CONFIG
-			-- AutoFix command line options
+			-- Dynamic program analysis configuration
 
 	arguments: LINKED_LIST [STRING]
 			-- Command line options
@@ -140,6 +144,8 @@ feature {NONE} -- Implementation
 
 	setup_location (a_location: STRING)
 			-- Setup location in `config'.			
+		require
+			a_location_not_void: a_location /= Void
 		local
 			l_location: LIST [STRING]
 			l_class_name, l_feat_name: STRING
@@ -154,10 +160,14 @@ feature {NONE} -- Implementation
 			l_class := first_class_starts_with_name (l_class_name)
 			l_feature := feature_from_class (l_class_name, l_feat_name)
 			config.set_location ([l_class, l_feature])
+		ensure
+			location_not_void: config.location /= Void
 		end
 
 	setup_variables (a_variables: STRING)
 			-- Setup variables in `config'.
+		require
+			a_variables_not_void: a_variables /= Void
 		local
 			l_var: STRING
 			l_variables: LINKED_LIST [STRING]
@@ -170,10 +180,14 @@ feature {NONE} -- Implementation
 				l_variables.extend (l_var)
 			end
 			config.set_variables (l_variables)
+		ensure
+			variables_not_void: config.variables /= Void
 		end
 
 	setup_expressions (a_expressions: STRING)
 			-- Setup expressions in `config'.
+		require
+			a_expressions_not_void: a_expressions /= Void
 		local
 			l_expr: STRING
 			l_expressions: LINKED_LIST [STRING]
@@ -186,10 +200,14 @@ feature {NONE} -- Implementation
 				l_expressions.extend (l_expr)
 			end
 			config.set_expressions (l_expressions)
+		ensure
+			expressions_not_void: config.expressions /= Void
 		end
 
 	setup_program_locations (a_program_locations: STRING)
 			-- Setup specific program locations in `config'.
+		require
+			a_program_locations_not_void: a_program_locations /= Void
 		local
 			l_program_location: STRING
 			l_program_locations: DS_HASH_SET [INTEGER]
@@ -202,10 +220,14 @@ feature {NONE} -- Implementation
 				l_program_locations.force_last (l_program_location.to_integer)
 			end
 			config.set_specific_prgm_locs (l_program_locations)
+		ensure
+			specific_prgm_locs_not_void:  config.specific_prgm_locs /= Void
 		end
 
 	setup_program_locations_with_expressions (a_program_locations_with_expressions: STRING)
 			-- Setup specific program locations with expressions in `config'.
+		require
+			a_program_locations_with_expressions_not_void: a_program_locations_with_expressions /= Void
 		local
 			l_location_with_expression: LIST [STRING]
 			l_expressions: LINKED_LIST [STRING]
@@ -232,6 +254,9 @@ feature {NONE} -- Implementation
 			end
 			config.set_prgm_locs_with_exprs (l_tmp)
 			config.set_expressions (l_expressions)
+		ensure
+			prgm_locs_with_exprs_not_void: config.prgm_locs_with_exprs /= Void
+			expressions_not_void: config.expressions /= Void
 		end
 
 end

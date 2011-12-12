@@ -13,12 +13,12 @@ inherit
 	EPA_CFG_BLOCK_VISITOR
 
 create
-	default_create, make_with
+	default_create, make
 
 feature -- Creation procedure
 
-	make_with (a_class: like class_; a_feature: like feature_)
-			-- Initializes `class_' with `a_class' and `feature_' with `a_feature'
+	make (a_class: like class_; a_feature: like feature_)
+			-- Initialize `class_' with `a_class' and `feature_' with `a_feature'
 		do
 			set_class (a_class)
 			set_feature (a_feature)

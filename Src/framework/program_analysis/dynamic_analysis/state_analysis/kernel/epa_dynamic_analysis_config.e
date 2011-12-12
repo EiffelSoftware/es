@@ -206,9 +206,13 @@ feature -- Setting
 		end
 
 	set_output (a_output_path: like output_path)
-			-- Set `output' to `a_output'.
+			-- Set `output_path' to `a_output_path'.
+		require
+			a_output_path_not_void: a_output_path /= Void
 		do
 			output_path := a_output_path
+		ensure
+			output_path_set: output_path.is_equal (a_output_path)
 		end
 
 end

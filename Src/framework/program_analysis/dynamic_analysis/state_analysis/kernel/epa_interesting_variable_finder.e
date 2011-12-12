@@ -26,7 +26,7 @@ inherit
 create
 	default_create, make_with
 
-feature -- Creation Procedures
+feature -- Initialization
 
 	make_with (a_ast: like ast)
 			-- Sets `ast' to `a_ast'
@@ -72,7 +72,6 @@ feature -- Process operations
 			process_creation_as (l_as)
 			is_creation_procedure := False
 		end
-
 
 	process_nested_as (l_as: NESTED_AS)
 		do
@@ -124,7 +123,7 @@ feature -- Access
 feature -- Setting
 
 	set_ast (a_ast: like ast)
-			-- Sets `ast' to `a_ast'
+			-- Set `ast' to `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void
 		local

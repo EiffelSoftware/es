@@ -80,7 +80,7 @@ feature -- Access
 	output_path: STRING
 			-- Output-path where the file should be written to.
 
-feature -- Write
+feature -- Basic operations
 
 	write
 			-- Writes `context_class', `analyzed_feature' and `collected_runtime_data' to `output_path'

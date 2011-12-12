@@ -10,7 +10,7 @@ class
 inherit
 	EPA_UTILITY
 
-feature -- Read
+feature -- Basic operations
 
 	read_from_path (a_path: STRING)
 			-- Read the file specified by `a_path' and make result available

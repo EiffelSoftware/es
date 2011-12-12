@@ -252,7 +252,7 @@ feature {NONE} -- Implemenation
 			-- Is the configuration a valid configuration?
 
 	is_bp_pre_state: BOOLEAN
-			--
+			-- Is the analyzed state a pre-state?
 
 feature {NONE} -- Implementation
 
@@ -261,7 +261,7 @@ feature {NONE} -- Implementation
 		local
 			l_post_state_finder: EPA_POST_STATE_FINDER
 		do
-			create l_post_state_finder.make_with (class_, feature_)
+			create l_post_state_finder.make (class_, feature_)
 			l_post_state_finder.find
 			post_state_map := l_post_state_finder.post_state_map
 		end

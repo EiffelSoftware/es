@@ -1,5 +1,5 @@
 note
-	description: ""
+	description: "Class to build expressions which are evaluated during dynamic program analysis."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,10 +15,10 @@ inherit
 create
 	make
 
-feature -- Creation procedure
+feature -- Initialization
 
 	make (a_class: like class_; a_feature: like feature_)
-			-- Set `class_' to `a_class' and `feature_' to `a_feature'
+			-- Initialize `class_' with `a_class' and `feature_' with `a_feature'
 		do
 			set_class (a_class)
 			set_feature (a_feature)
