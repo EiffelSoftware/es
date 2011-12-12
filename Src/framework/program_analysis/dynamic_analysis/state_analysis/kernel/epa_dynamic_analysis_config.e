@@ -16,7 +16,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_system: like eiffel_system)
-			-- Initialize Current.
+			-- Initialize `eiffel_system' with `a_system'.
 		do
 			eiffel_system := a_system
 		ensure
@@ -45,7 +45,7 @@ feature -- Access
 			-- be evaluated.
 
 	output_path: STRING
-			-- Output-path for storing the collected data.
+			-- Output-path where the collected runtime data should be stored.
 
 	working_directory: STRING
 			-- Working directory of the project
@@ -54,7 +54,7 @@ feature -- Access
 		end
 
 	root_class: CLASS_C
-			-- Root class in `system'.
+			-- Root class in `eiffel_system'.
 		do
 			Result := eiffel_system.root_type.associated_class
 		end

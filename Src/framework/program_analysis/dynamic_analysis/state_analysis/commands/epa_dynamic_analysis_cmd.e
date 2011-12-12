@@ -94,8 +94,8 @@ feature -- Basic operations
 			create l_writer.make (class_, feature_, collected_runtime_data, config.output_path)
 			l_writer.write
 
-			create l_reader.make (config.output_path + "APPLICATION.make.txt")
-			l_reader.read
+			create l_reader
+			l_reader.read_from_path (config.output_path + "APPLICATION.make.txt")
 		end
 
 feature {NONE} -- Implementation

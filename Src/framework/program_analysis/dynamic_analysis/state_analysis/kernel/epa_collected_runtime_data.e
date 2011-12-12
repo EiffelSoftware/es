@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_COLLECTED_RUNTIME_DATA}."
+	description: "Class containing the dynamically analyzed feature, the execution order and the collected runtime data."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,29 +10,44 @@ class
 create
 	make
 
-feature -- Creation procedure
+feature -- Initialization
 
-	make (a_class: like class_; a_feature: like feature_; a_order: like order; a_data: like data)
-			--
+	make (a_class: like context_class; a_feature: like analyzed_feature; a_order: like analysis_order; a_data: like collected_runtime_data)
+			-- Initialize `context_class' with `a_class',
+			-- `analyzed_feature' with `a_feature',
+			-- `execution_order' with `a_order' and
+			-- `collected_runtime_data' with `a_data'.
+		require
+			a_class_not_void: a_class /= Void
+			a_feature_not_void: a_feature /= Void
+			a_order_not_void: a_order /= Void
+			a_data_not_void: a_data /= Void
 		do
-			class_ := a_class
-			feature_ := a_feature
-			order := a_order
-			data := a_data
+			context_class := a_class
+			analyzed_feature := a_feature
+			analysis_order := a_order
+			collected_runtime_data := a_data
+		ensure
+			context_class_set: context_class = a_class
+			analyzed_feature_set: analyzed_feature = a_feature
+			analysis_order_set: analysis_order = a_order
+			collected_runtime_data_set: collected_runtime_data = a_data
 		end
 
 feature -- Access
 
-	class_: CLASS_C
-			--
+	context_class: CLASS_C
+			-- Context class to which `analyzed_feature' belongs
 
-	feature_: FEATURE_I
-			--
+	analyzed_feature: FEATURE_I
+			-- Feature which was analyzed through dynamic means
 
-	order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
-			--
+	analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
+			-- List of pre-state / post-state pairs in the order they were analyzed.
 
-	data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			--
+	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
+			-- Runtime data collected through dynamic means.
+			-- Keys are program locations and expressions of the form `loc;expr'.
+			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
 
 end

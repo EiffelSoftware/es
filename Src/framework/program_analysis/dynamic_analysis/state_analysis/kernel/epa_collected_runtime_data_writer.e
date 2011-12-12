@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_COLLECTED_RUNTIME_DATA_WRITER}."
+	description: "Class to write the dynamically gained runtime data to disk."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,10 +10,13 @@ class
 create
 	make, default_create
 
-feature -- Creation procedure
+feature -- Initialization
 
-	make (a_class: like class_; a_feature: like feature_; a_data: like data; a_path: like path)
-			--
+	make (a_class: like context_class; a_feature: like analyzed_feature; a_data: like collected_runtime_data; a_path: like output_path)
+			-- Initialize `context_class' with `a_class',
+			-- `analyzed_feature' with `a_feature',
+			-- `collected_runtime_data' with `a_data' and
+			-- `output_path' with `a_path'.
 		do
 			set_class (a_class)
 			set_feature (a_feature)
@@ -23,94 +26,103 @@ feature -- Creation procedure
 
 feature -- Setting
 
-	set_class (a_class: like class_)
-			--
+	set_class (a_class: like context_class)
+			-- Set `context_class' to `a_class'.
 		require
 			a_class_not_void: a_class /= Void
 		do
-			class_ := a_class
+			context_class := a_class
 		ensure
-			class_set: class_ = a_class
+			context_class_set: context_class = a_class
 		end
 
-	set_feature (a_feature: like feature_)
-			--
+	set_feature (a_feature: like analyzed_feature)
+			-- Set `analyzed_feature' to `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
 		do
-			feature_ := a_feature
+			analyzed_feature := a_feature
 		ensure
-			feature_set: feature_ = a_feature
+			analyzed_feature_set: analyzed_feature = a_feature
 		end
 
-	set_data (a_data: like data)
-			--
+	set_data (a_data: like collected_runtime_data)
+			-- Set `collected_runtime_data' to `a_data'.
 		require
 			a_data_not_void: a_data /= Void
 		do
-			data := a_data
+			collected_runtime_data := a_data
 		ensure
-			data_set: data = a_data
+			collected_runtime_data_set: collected_runtime_data = a_data
 		end
 
-	set_path (a_path: like path)
-			--
+	set_path (a_path: like output_path)
+			-- Set `output_path' to `a_path'.
 		require
 			a_path_not_void: a_path /= Void
 		do
-			path := a_path
+			output_path := a_path
 		ensure
-			path_set: path.is_equal (a_path)
+			output_path_set: output_path.is_equal (a_path)
 		end
 
 feature -- Access
 
-	class_: CLASS_C
-			--
+	context_class: CLASS_C
+			-- Context class to which `analyzed_feature' belongs.
 
-	feature_: FEATURE_I
-			--
+	analyzed_feature: FEATURE_I
+			-- Feature which was analyzed through dynamic means.
 
-	data: LINKED_LIST [EPA_STATE_CHANGE]
-			--
+	collected_runtime_data: LINKED_LIST [EPA_STATE_CHANGE]
+			-- Runtime data collected through dynamic means.
 
-	path: STRING
-			--
+	output_path: STRING
+			-- Output-path where the file should be written to.
 
 feature -- Write
 
 	write
-			--
+			-- Writes `context_class', `analyzed_feature' and `collected_runtime_data' to `output_path'
 		local
 			l_file: PLAIN_TEXT_FILE
-			l_object: JSON_OBJECT
+			l_object, l_data: JSON_OBJECT
+			l_analysis_order: JSON_ARRAY
 			l_printer: PRINT_JSON_VISITOR
+			l_map: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 		do
-			fill_map
-
+			-- Object to be written to the disk.
 			create l_object.make
-			l_object.put (create {JSON_STRING}.make_json (class_.name), create {JSON_STRING}.make_json ("class"))
-			l_object.put (create {JSON_STRING}.make_json (feature_.feature_name_32), create {JSON_STRING}.make_json ("feature"))
 
-			build_execution_order_object
-			l_object.put (last_json_value, create {JSON_STRING}.make_json ("execution_order"))
+			-- Add context class and feature information
+			l_object.put (create {JSON_STRING}.make_json (context_class.name), create {JSON_STRING}.make_json ("class"))
+			l_object.put (create {JSON_STRING}.make_json (analyzed_feature.feature_name_32), create {JSON_STRING}.make_json ("feature"))
 
-			build_map_object
-			l_object.put (last_json_value, create {JSON_STRING}.make_json ("data"))
+			-- Add analysis order.
+			l_analysis_order := analysis_order_from_runtime_data
+			l_object.put (l_analysis_order, create {JSON_STRING}.make_json ("execution_order"))
 
+			-- Add collected runtime data.
+			l_map := map_from_runtime_data
+			l_data := json_object_from_runtime_data (l_map)
+			l_object.put (l_data, create {JSON_STRING}.make_json ("data"))
+
+			-- Write object to disk.
 			create l_printer.make
 			l_object.accept (l_printer)
-			create l_file.make_create_read_write (path + class_.name + "." + feature_.feature_name_32 + ".txt")
+			create l_file.make_create_read_write (output_path + context_class.name + "." + analyzed_feature.feature_name_32 + ".txt")
 			l_file.put_string (l_printer.to_json)
 			l_file.close
 		end
 
 feature {NONE} -- Implementation
 
-	fill_map
-			--
+	map_from_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
+			-- Transformed runtime data.
+			-- Keys are program locations and expressions of the form `loc;expr'.
+			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
 		require
-			data_not_void: data /= Void
+			collected_runtime_data_not_void: collected_runtime_data /= Void
 		local
 			l_list: LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
 			l_pre_state: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
@@ -121,14 +133,14 @@ feature {NONE} -- Implementation
 			l_pre_value: EPA_POSITIONED_VALUE
 			l_post_value: EPA_POSITIONED_VALUE
 		do
-			create bp_expr_value_map.make_default
-			across data as l_data loop
+			create Result.make_default
+			across collected_runtime_data as l_data loop
 				l_bp_slot := l_data.item.pre_state_bp_slot.out
 				l_pre_state := l_data.item.pre_state
 				l_post_state := l_data.item.post_state
 				across l_pre_state.keys.to_array as l_exprs loop
 					l_key := l_bp_slot + ";" + l_exprs.item
-					if not bp_expr_value_map.has (l_key) then
+					if not Result.has (l_key) then
 						l_value := l_pre_state.item (l_exprs.item)
 						create l_pre_value.make (l_data.item.pre_state_bp_slot, l_value)
 						l_value := l_post_state.item (l_exprs.item)
@@ -137,9 +149,9 @@ feature {NONE} -- Implementation
 						create l_list.make
 						l_list.extend ([l_pre_value, l_post_value])
 
-						bp_expr_value_map.force_last (l_list, l_key)
+						Result.force_last (l_list, l_key)
 					else
-						l_list := bp_expr_value_map.item (l_key)
+						l_list := Result.item (l_key)
 						l_value := l_pre_state.item (l_exprs.item)
 						create l_pre_value.make (l_data.item.pre_state_bp_slot, l_value)
 						l_value := l_post_state.item (l_exprs.item)
@@ -149,53 +161,54 @@ feature {NONE} -- Implementation
 				end
 			end
 		ensure
-			bp_expr_value_map_not_void: bp_expr_value_map /= Void
+			Result_not_void: Result /= Void
 		end
 
-	build_execution_order_object
-			--
+	analysis_order_from_runtime_data: JSON_ARRAY
+			-- JSON array of pre-state / post-state pairs in the order they were analyzed.
 		local
-			l_execution_order: JSON_ARRAY
 			l_object: JSON_OBJECT
 			i: INTEGER
 			l_value: STRING
 		do
-			create l_execution_order.make_array
+			create Result.make_array
 			from
-				data.start
+				collected_runtime_data.start
 				i := 1
 			until
-				data.after
+				collected_runtime_data.after
 			loop
-				l_value := data.item.pre_state_bp_slot.out + ";" + data.item.post_state_bp_slot.out
-				l_execution_order.add (create {JSON_STRING}.make_json (l_value))
+				l_value := collected_runtime_data.item.pre_state_bp_slot.out + ";" + collected_runtime_data.item.post_state_bp_slot.out
+				Result.add (create {JSON_STRING}.make_json (l_value))
 				i := i + 1
-				data.forth
+				collected_runtime_data.forth
 			end
-			last_json_value := l_execution_order
 		end
 
-	build_map_object
-			--
+	json_object_from_runtime_data (a_collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]): JSON_OBJECT
+			-- Transform `a_collected_runtime_data' into a JSON object.
+		require
+			a_collected_runtime_data_not_void: a_collected_runtime_data /= Void
 		local
 			l_tuple: TUPLE [pre_value: EPA_POSITIONED_VALUE; post_value: EPA_POSITIONED_VALUE]
 			l_json_values: JSON_OBJECT
 			l_json_array: JSON_ARRAY
-			l_json_object: JSON_OBJECT
 			l_type_finder: EPA_EXPRESSION_VALUE_TYPE_FINDER
 		do
 			create l_type_finder
 
-			create l_json_object.make
+			create Result.make
 
-			across bp_expr_value_map.keys.to_array as l_keys loop
+			-- Iterate over keys.
+			across a_collected_runtime_data.keys.to_array as l_keys loop
 				create l_json_array.make_array
-				across bp_expr_value_map.item (l_keys.item) as l_values loop
+				-- Iterate over values.
+				across a_collected_runtime_data.item (l_keys.item) as l_values loop
 					l_tuple := l_values.item
 
 					create l_json_values.make
 
-					-- Pre-state information
+					-- Pre-state value
 					l_type_finder.set_value (l_tuple.pre_value.value)
 					l_type_finder.find
 					l_json_values.put (create {JSON_STRING}.make_json (l_type_finder.type), create {JSON_STRING}.make_json ("pre_type"))
@@ -207,7 +220,7 @@ feature {NONE} -- Implementation
 						end
 					end
 
-					-- Post-state information
+					-- Post-state value
 					l_type_finder.set_value (l_tuple.post_value.value)
 					l_type_finder.find
 					l_json_values.put (create {JSON_STRING}.make_json (l_type_finder.type), create {JSON_STRING}.make_json ("post_type"))
@@ -221,18 +234,8 @@ feature {NONE} -- Implementation
 
 					l_json_array.add (l_json_values)
 				end
-				l_json_object.put (l_json_array, create {JSON_STRING}.make_json (l_keys.item))
+				Result.put (l_json_array, create {JSON_STRING}.make_json (l_keys.item))
 			end
-
-			last_json_value := l_json_object
 		end
-
-feature {NONE} -- Implementation
-
-	bp_expr_value_map: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			--
-
-	last_json_value: JSON_VALUE
-			--
 
 end
