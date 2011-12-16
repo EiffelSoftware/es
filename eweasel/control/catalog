@@ -525,6 +525,7 @@ test	spurious-vuot-in-assertion		valid270 tcf pass validity object_test
 test	spurious-vweq-warning			valid271 tcf pass validity
 test	non-conforming-missing-vmss3		valid272 tcf fail validity non-conforming
 test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
+test	duplicate-vfac1				valid274 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1003,6 +1004,7 @@ test	static-type-id-crash-3			incr419 tcf fail incrementality anchored_types
 test	internal-search-crash			incr420 tcf fail incrementality skip
 test	change-application-options		incr421 tcf fail incrementality
 test	fix-vlec-infinite-recursion		incr422	tcf fail incrementality scoop expanded manual
+test	duplicate-vlec-after-resume		incr423	tcf fail incrementality expanded
 
 
 -- Melting
@@ -2485,6 +2487,7 @@ test	complex-expanded-generic-inheritance-crash		expanded007 tcf pass expanded
 test	expanded-with-references-crash					expanded008 tcf pass expanded
 test	external-with-expanded-crash					expanded009 tcf pass expanded
 test	expanded-attribute-crash-with-tiny				expanded010 tcf pass expanded
+test	expanded-result-not-gc-tracked					expanded011 tcf fail expanded
 
 test	filename-classname-mismatch-warning	warn001	tcf pass warning
 
