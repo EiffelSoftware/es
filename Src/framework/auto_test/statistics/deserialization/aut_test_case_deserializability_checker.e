@@ -16,12 +16,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_log_dir: DIRECTORY_NAME)
+	make (a_config: TEST_GENERATOR)
 			-- Initialization.
 		require
-			log_dir_not_empty: a_log_dir /= Void and then not a_log_dir.is_empty
+			config_attached: a_config /= Void
 		do
-			log_directory := a_log_dir.twin
+			log_file_full_path := a_config.serialization_validity_log
 			create deserializability_table.make (128)
 		end
 
@@ -30,9 +30,6 @@ feature -- Access
 	last_result: BOOLEAN
 			-- Result from last check.
 
-	log_directory: DIRECTORY_NAME
-			-- Name of the directory where the log should be put.
-
 	deserializability_table: DS_HASH_TABLE [BOOLEAN, INTEGER]
 			-- Table mapping test case time stamps to their deserializability states.
 
@@ -40,19 +37,8 @@ feature -- Derived access
 
 	log_file_full_path: FILE_NAME
 			-- Full path to the log file.
-		require
-			log_directory_set: not log_directory.is_empty
-		do
-			create Result.make_from_string (log_directory)
-			Result.set_file_name (log_file_base_name)
-		ensure
-			result_not_empty: Result /= Void and then not Result.is_empty
-		end
 
 feature -- Constant
-
-	log_file_base_name: STRING = "deserializability.log"
-			-- Base name for the log file.
 
 	log_end_str: STRING = "<<END>>"
 			-- End string of a log.
@@ -253,7 +239,6 @@ feature{NONE} -- Log entry reading/writing
 invariant
 
 	deserializability_table_attached: deserializability_table /= Void
-	log_directory_not_empty: log_directory /= Void and then not log_directory.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

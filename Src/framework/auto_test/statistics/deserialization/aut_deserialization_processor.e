@@ -47,7 +47,7 @@ feature{NONE} -- Initialization
 				-- Config the `test_case_categorizer' and subscribe it to `data_event'.
 			if a_conf.is_deserializing_for_fixing then
 				create {AUT_TEST_CASE_CATEGORIZER_BY_FAULT}test_case_extractor.make (configuration)
-			elseif a_conf.is_failing_test_case_deserialization_enabled or a_conf.is_passing_test_case_deserialization_enabled then
+			elseif a_conf.is_test_case_deserialization_enabled then
 				create {AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST}test_case_extractor.make (configuration)
 			end
 			if test_case_extractor /= VOid then
@@ -65,7 +65,7 @@ feature{NONE} -- Initialization
 			end
 
 			if configuration.is_validating_serialization then
-				create test_case_deserializability_checker.make (test_case_extractor.test_case_dir)
+				create test_case_deserializability_checker.make (configuration)
 				deserialization_started_event.subscribe (agent test_case_deserializability_checker.start_checking)
 				deserialization_finished_event.subscribe (agent test_case_deserializability_checker.finish_checking)
 			end
@@ -194,16 +194,16 @@ feature{NONE} -- Implementation
 				configuration.error_handler.report_cannot_read_error (data_input)
 			end
 
---			if not configuration.error_handler.has_error then
---					-- `data_output' should always denote a directory.
---					-- As long as there is no existing file with the same name, it's acceptable.
---				data_output := l_conf.data_output
---				check data_output /= Void and then not data_output.is_empty end
---				create l_file.make (data_output)
---				if l_file.exists and then not l_file.is_directory then
---					configuration.error_handler.report_cannot_write_error (data_output)
---				end
---			end
+			if not configuration.error_handler.has_error and then (l_conf.is_test_case_deserialization_enabled or else l_conf.is_deserializing_for_fixing) then
+					-- `data_output' should always denote a directory.
+					-- As long as there is no existing file with the same name, it's acceptable.
+				data_output := l_conf.data_output
+				check data_output /= Void and then not data_output.is_empty end
+				create l_file.make (data_output)
+				if l_file.exists and then not l_file.is_directory then
+					configuration.error_handler.report_cannot_write_error (data_output)
+				end
+			end
 		end
 
 	process_file (a_file: RAW_FILE)

@@ -87,9 +87,16 @@ feature -- Generation
 			absolute_pathname: STRING
 			executable_filename: STRING
 			l_new: like last_interpreter
+			l_serialization_file: STRING
 		do
 			file_system.recursive_create_directory (a_log_dirname)
 			executable_filename := system.eiffel_system.application_name (True)
+
+			if session.test_case_serialization_file /= Void and then not session.test_case_serialization_file.is_empty then
+				l_serialization_file := session.test_case_serialization_file
+			else
+				l_serialization_file := file_system.pathname (a_log_dirname, "serialization.txt")
+			end
 
 			--compute_interpreter_root_class
 			if file_system.file_exists (executable_filename) and interpreter_root_class /= Void then
@@ -98,7 +105,7 @@ feature -- Generation
 					system,
 					file_system.pathname (a_log_dirname, "interpreter_log.txt"),
 					file_system.pathname (a_log_dirname, "proxy_log.txt"),
-					file_system.pathname (a_log_dirname, "serialization.txt"),
+					l_serialization_file,
 					session.error_handler,
 					a_config)
 				l_new.add_observer (session.error_handler)
@@ -108,7 +115,7 @@ feature -- Generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

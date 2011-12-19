@@ -22,26 +22,39 @@ feature -- Data event handler
 	on_deserialization_started
 			-- <Precursor>
 		do
-			-- Do nothing.
+			all_unique_test_cases.wipe_out
 		end
 
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
 			-- <Precursor>
-		local
-			l_categories: DS_ARRAYED_LIST [STRING]
 		do
-			if ((a_data.is_execution_successful and then configuration.is_passing_test_case_deserialization_enabled)
-					or else (not a_data.is_execution_successful and then configuration.is_failing_test_case_deserialization_enabled))
-					and then not a_data.test_case_text.is_empty then
-				l_categories := categorize (a_data)
-				write_test_case (a_data, l_categories)
-			end
+			all_unique_test_cases.put_last (a_data)
 		end
 
 	on_deserialization_finished
 			-- <Precursor>
+		local
+			l_data: AUT_DESERIALIZED_TEST_CASE
+			l_categories: DS_ARRAYED_LIST [STRING]
 		do
-			-- Do nothing.
+				-- Log time and UUID of test cases.
+			write_test_case_list_to_time_uuid_log (all_unique_test_cases)
+
+				-- Write test cases to disk.
+			from all_unique_test_cases.start
+			until all_unique_test_cases.after
+			loop
+				l_data := all_unique_test_cases.item_for_iteration
+
+				if ((l_data.is_execution_successful and then configuration.is_passing_test_case_deserialization_enabled)
+						or else (not l_data.is_execution_successful and then configuration.is_failing_test_case_deserialization_enabled))
+						and then not l_data.test_case_text.is_empty then
+					l_categories := categorize (l_data)
+					write_test_case (l_data, l_categories)
+				end
+
+				all_unique_test_cases.forth
+			end
 		end
 
 feature -- Basic operation
@@ -54,7 +67,21 @@ feature -- Basic operation
 			Result.force_last (a_data.tc_feature_under_test)
 		end
 
-note
+feature{NONE}
+
+	all_unique_test_cases: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE]
+			-- <Precursor>
+		do
+			if all_unique_test_cases_cache = Void then
+				create all_unique_test_cases_cache.make(1024)
+			end
+			Result := all_unique_test_cases_cache
+		end
+
+	all_unique_test_cases_cache: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE]
+			-- Cache for `all_unique_test_cases'.
+
+;note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -213,14 +213,17 @@ feature -- Execution
 					-- Set test case serialization arguments.
 				l_generator.set_is_passing_test_case_serialization_enabled (l_ap.is_passing_test_cases_serialization_enabled)
 				l_generator.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
+				l_generator.set_test_case_serialization_file (l_ap.test_case_serialization_file)
 
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
 				l_generator.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
 				l_generator.set_building_behavioral_models (l_ap.is_building_behavioral_model)
 				l_generator.set_model_directory (l_ap.model_dir)
+				l_generator.set_building_faulty_feature_list (l_ap.is_building_faulty_feature_list)
+				l_generator.set_faulty_feature_list_file_name (l_ap.faulty_feature_list_file_name)
 				l_generator.set_deserialization_for_fixing (l_ap.is_deserializing_for_fixing)
-				l_generator.set_validating_serialization (l_ap.is_validating_serialization)
+				l_generator.set_serialization_validity_log (l_ap.serialization_validity_log)
 
 				l_generator.set_recursive (l_ap.is_recursive)
 

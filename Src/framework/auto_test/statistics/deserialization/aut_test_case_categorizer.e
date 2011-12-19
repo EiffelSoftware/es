@@ -70,38 +70,6 @@ feature -- Access
 	validator: AUT_TEST_CASE_DESERIALIZABILITY_CHECKER
 			-- Test case validator.
 
---feature -- Validation
-
---	validation_log_file_name: STRING = "validation.log"
---			-- Name of the file where the time stamp, UUID, and the validation state of all test cases are logged.
-
---	validation_log_file_full_path: FILE_NAME
---			-- Full path of the validation log file.
---		do
---			if validation_log_file_full_path_cache = Void then
---				create validation_log_file_full_path_cache.make_from_string (test_case_dir)
---				validation_log_file_full_path_cache.set_file_name (validation_log_file_name)
---			end
---			Result := validation_log_file_full_path_cache
---		end
-
---	validation_log_file_full_path_cache: FILE_NAME
---			-- Cache for `validation_log_file_full_path'.
-
---feature -- Redefinition
-
---	on_deserialization_started
---			-- <Precursor>
---		do
---			validator.start_checking
---		end
-
---	on_deserialization_finished
---			-- <Precursor>
---		do
---			validator.finish_checking
---		end
-
 feature{NONE} -- Implementation
 
 	write_test_case (a_data: AUT_DESERIALIZED_TEST_CASE; a_categories: DS_ARRAYED_LIST [STRING])
@@ -147,121 +115,59 @@ feature{NONE} -- Implementation
 			retry
 		end
 
---feature{AUT_TEST_CASE_CATEGORIZER} -- Test case validation: Access
+	all_unique_test_cases: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE]
+			-- All unique test cases from the deserialization.
+		deferred
+		ensure
+			result_attached: Result /= Void
+		end
 
---	validation_log_file_name: STRING = "validation.log"
---			-- Name of the file where the time stamp, UUID, and the validation state of all test cases are logged.
+	write_test_case_list_to_time_uuid_log (a_list: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE])
+			-- Write <time,uuid> pairs, in increasing order of time, into 'test_case_dir'/'time_uuid_log_file_name'.
+			-- The argument list may be reordered.
+			-- Format of the log file is:
+			--     time1:uuid1
+			--     time2:uuid2
+			--     ...
+			--     timen:uuidn
+		local
+			l_sorter: DS_QUICK_SORTER [AUT_DESERIALIZED_TEST_CASE]
+			l_is_before: AGENT_BASED_EQUALITY_TESTER [AUT_DESERIALIZED_TEST_CASE]
+			l_log_name: FILE_NAME
+			l_log: KL_TEXT_OUTPUT_FILE
+			l_tc: AUT_DESERIALIZED_TEST_CASE
+		do
+				-- Sort test cases.
+			create l_is_before.make (agent is_test_case_before)
+			create l_sorter.make (l_is_before)
+			l_sorter.sort (a_list)
 
---	validation_log_file_full_path: FILE_NAME
---			-- Full path of the validation log file.
---		do
---			if validation_log_file_name_cache = Void then
---				create validation_log_file_full_path_cache.make_from_string (test_case_dir)
---				validation_log_file_full_path_cache.set_file_name (validation_log_file_name)
---			end
---			Result := validation_log_file_full_path_cache
---		end
+				-- Write to log.
+			create l_log_name.make_from_string (test_case_dir)
+			l_log_name.set_file_name (time_uuid_log_file_name)
+			create l_log.make (l_log_name)
+			l_log.recursive_open_write
+			if l_log.is_open_write then
+				from a_list.start
+				until a_list.after
+				loop
+					l_tc := a_list.item_for_iteration
+					l_log.put_string ("" + l_tc.time_str + ":" + l_tc.tc_uuid + "%N")
+					a_list.forth
+				end
 
---	categorizer_log_file_full_path_cache: FILE_NAME
---			-- Cache for `categorizer_log_file_full_path'.
+				l_log.close
+			end
+		end
 
---	validation_log_end_str: STRING = "<<END>>"
---			-- End string of a validation log.
+	is_test_case_before (a_tc1, a_tc2: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
+			-- Is `a_tc1' before `a_tc2'?
+		do
+			Result := a_tc1.time < a_tc2.time
+		end
 
---	validation_log_file: KL_TEXT_OUTPUT_FILE
---			-- File where time stamp, UUID, and validation state of all test cases are logged.
+	time_uuid_log_file_name: STRING = "time_uuid.log"
 
---	has_pending_validation_state: BOOLEAN
---			-- If catigorization log has any pending validation state due to, for example, failed object deserialization.
-
---	test_case_validation_state_table: DS_HASH_TABLE [BOOLEAN, STRING]
---			-- Table of test cases and their validation states.
-
---feature{AUT_TEST_CASE_CATEGORIZER} -- Test case validation: Implementation
-
---	load_existing_validation_log
---			-- Load existing validation log, if any, into `test_case_validation_state_table'.
---		local
---			l_table: like test_case_validation_state_table
---			l_file: KL_TEXT_INPUT_FILE
---			l_line, l_uuid, l_state_str: STRING
---			l_state, l_end: BOOLEAN
---			l_fields: LIST [STRING]
---		do
---			log_has_pending_state := False
---			l_table := test_case_validation_state_table
-
---			create l_file.make (validation_log_file_full_path)
---			l_file.open_read
---			if l_file.is_open_read then
---				from
---				until l_file.end_of_file or else l_end
---				loop
---					l_file.read_line
---					l_line := l_file.last_string
-
---					if l_line ~ validation_log_end_str then
---						l_end := True
---					else
---						l_fields := l_line.split (':')
---						check l_fields.count = 3 end
---						l_uuid := l_fields.i_th (2)
---						l_state_str := l_fields.i_th (3)
---						if l_state_str.is_boolean then
---							l_state := l_state_str.to_boolean
---						else
---							l_state := False
---							has_pending_validation_state := True
---						end
---						check unique_uuid: not l_table.has (l_uuid) end
---						l_table.force (l_state, l_uuid)
---					end
---				end
---				l_file.close
---			end
---		end
-
---	prepare_log_for_new_validation
---			-- Prepare log file for new validations, complete pending validation state, if any.
---		local
---			l_file: KL_TEXT_OUTPUT_FILE
---		do
---			create l_file.make (validation_log_file_full_path)
---			l_file.recursive_open_append
---			if l_file.is_open_write then
---				validation_log_file := l_file
---				if log_has_pending_state then
---					l_file.put_boolean (False)
---					l_file.put_new_line
---					l_file.flush
---				end
---			end
---		end
-
---	log_validation_state (a_data: AUT_DESERIALIZED_TEST_CASE; a_state: BOOLEAN)
---			-- Log the state `a_state' of a test case `a_data' into `validation_log_file'.
---			--	`a_data': test case;
---			--	`a_state': validation state of `a_data';
---		local
---			l_str: STRING
---		do
---			if validation_log_file /= Void and then validation_log_file.is_open_write then
---				create l_str.make_empty
---				l_str.append (a_data.time_str + ",%T" + a_data.tc_uuid + ",%T" + a_state.out + "%N")
---				validation_log_file.put_string (l_str)
---				validation_log_file.flush
---			end
---		end
-
---	finish_validation
---			-- Finish test case validation.
---		do
---			if validation_log_file /= Void and then validation_log_file.is_open_write then
---				validation_log_file.put_string (validation_log_end_str)
---				validation_log_file.put_new_line
---				validation_log_file.close
---			end
---		end
 
 note
 	copyright: "Copyright (c) 1984-2011, Eiffel Software"

@@ -15,6 +15,8 @@ inherit
 
 	KL_SHARED_ARGUMENTS
 
+	KL_SHARED_FILE_SYSTEM
+
 create
 	make_with_arguments
 
@@ -70,10 +72,12 @@ feature{NONE} -- Initialization
 			l_integer_bound_option: AP_STRING_OPTION
 			l_use_random_cursor_option: AP_STRING_OPTION
 			l_test_case_serialization_option: AP_STRING_OPTION
+			l_test_case_serialization_file_option: AP_STRING_OPTION
 			l_test_case_deserialization_option: AP_STRING_OPTION
 			l_build_behavioral_model_option: AP_STRING_OPTION
+			l_build_faulty_feature_list_option: AP_STRING_OPTION
 			l_deserialization_for_fixing: AP_FLAG
-			l_validate_serialization: AP_FLAG
+			l_validate_serialization: AP_STRING_OPTION
 			l_interpreter_log_enabled: AP_STRING_OPTION
 			l_proxy_log_option: AP_STRING_OPTION
 			l_console_log_option: AP_STRING_OPTION
@@ -106,7 +110,9 @@ feature{NONE} -- Initialization
 
 			l_dir: DIRECTORY
 			l_file_name: FILE_NAME
+			l_text_output: KL_TEXT_OUTPUT_FILE
 			l_file: RAW_FILE
+			l_is_ok: BOOLEAN
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -272,6 +278,10 @@ feature{NONE} -- Initialization
 			l_test_case_serialization_option.set_description ("Enable test case serialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_serialization_option)
 
+			create l_test_case_serialization_file_option.make_with_long_form ("serialization-file")
+			l_test_case_serialization_file_option.set_description ("Full path to the serialization file.")
+			parser.options.force_last (l_test_case_serialization_file_option)
+
 			create l_test_case_deserialization_option.make_with_long_form ("deserialization")
 			l_test_case_deserialization_option.set_description ("Enable test case deserialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_deserialization_option)
@@ -280,12 +290,16 @@ feature{NONE} -- Initialization
 			l_build_behavioral_model_option.set_description ("Build behavioral model from serialization files. The value is a directory where the models would be saved. This option is only effective when 'deserialization' is present. Default 'auto_test\model'.")
 			parser.options.force_last (l_build_behavioral_model_option)
 
+			create l_build_faulty_feature_list_option.make_with_long_form ("build_faulty_feature_list")
+			l_build_faulty_feature_list_option.set_description ("Build list of faulty features during model construction.")
+			parser.options.force_last (l_build_faulty_feature_list_option)
+
 			create l_deserialization_for_fixing.make_with_long_form ("deserialization-for-fixing")
 			l_deserialization_for_fixing.set_description ("Organize the deserialized test cases to favor fixing, i.e. each directory contains failing test cases that reveal the same fault and relevant passing test cases. This option is only effective when 'deserialization' is present.")
 			parser.options.force_last (l_deserialization_for_fixing)
 
 			create l_validate_serialization.make_with_long_form ("validating-serialization")
-			l_validate_serialization.set_description ("Enable serialization validation during deserialization. When enabled, perform deserialization multiple times to generate test cases.")
+			l_validate_serialization.set_description ("Enable serialization validation during deserialization. Log validities into the file from the argument.")
 			parser.options.force_last (l_validate_serialization)
 
 			create l_interpreter_log_enabled.make_with_long_form ("interpreter-log")
@@ -688,6 +702,27 @@ feature{NONE} -- Initialization
 						l_strs.forth
 					end
 				end
+				if l_test_case_serialization_file_option.was_found then
+					test_case_serialization_file := l_test_case_serialization_file_option.parameter
+
+--					l_is_ok := False
+--					create l_file_name.make_from_string (test_case_serialization_file)
+--					if l_file_name.is_valid then
+--						create l_text_output.make (l_file_name)
+--						l_text_output.recursive_open_write
+--						if l_text_output.is_open_write then
+--							l_text_output.close
+--						end
+--						if l_text_output.exists then
+--							l_is_ok := True
+--						end
+--					end
+
+					prepare_directory_for_output (test_case_serialization_file)
+					if not was_last_directory_ready_for_output then
+						error_handler.report_cannot_write_error (test_case_serialization_file)
+					end
+				end
 			end
 
 			if not error_handler.has_error then
@@ -723,8 +758,29 @@ feature{NONE} -- Initialization
 					end
 				end
 
+				if l_build_faulty_feature_list_option.was_found then
+					create l_file_name.make_from_string (l_build_faulty_feature_list_option.parameter)
+					if l_file_name.is_valid then
+						is_building_faulty_feature_list := True
+						faulty_feature_list_file_name := l_file_name
+					else
+						error_handler.report_cannot_write_error (l_file_name)
+					end
+				end
+
 				is_deserializing_for_fixing := l_deserialization_for_fixing.was_found
-				is_validating_serialization := l_validate_serialization.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_validate_serialization.was_found then
+						-- Check if the parameter designates a valid directory.
+					create l_file_name.make_from_string (l_validate_serialization.parameter)
+					if l_file_name.is_valid then
+						serialization_validity_log := l_file_name
+					else
+						error_handler.report_cannot_write_error (l_file_name)
+					end
+				end
 			end
 
 			if not error_handler.has_error then
@@ -1189,6 +1245,9 @@ feature -- Status report
 			-- Only has effect if `is_test_case_serialization_enabled' is True.
 			-- Default: False
 
+	test_case_serialization_file: STRING
+			-- Full path to the serialization file.
+
 	is_passing_test_cases_deserialization_enabled: BOOLEAN
 			-- Is test case deserialization for passing test cases enabled?
 
@@ -1198,18 +1257,22 @@ feature -- Status report
 	is_building_behavioral_model: BOOLEAN
 			-- Is AutoTest building behavioral models from serialization files?
 
+	is_building_faulty_feature_list: BOOLEAN
+			-- Is AutoTest building faulty feature list file?
+
 	is_deserializing_for_fixing: BOOLEAN
 			-- Is AutoTest deserializing test cases to favor fixing?
 			-- When True, test cases are grouped by faults; otherwise, by routine under test.
 
-	is_validating_serialization: BOOLEAN
-			-- Is validating serialization during deserialization?
-			-- When True, validation failure may cause AutoTest to crash.
-			-- Therefore we use external storage to log the validation states.
+	serialization_validity_log: FILE_NAME
+			-- External storage to log the validation states.
 			-- Multiple deserialization sessions may be necessary to generate test cases.
 
 	model_dir: FILE_NAME
 			-- Directory to save the behavioral models.
+
+	faulty_feature_list_file_name: FILE_NAME
+			-- File name of the faulty feature list.
 
 	is_interpreter_log_enabled: BOOLEAN
 			-- Is the messages from the interpreter logged?
@@ -1281,6 +1344,37 @@ feature -- Status report
 			-- Number of seconds for the online-statistics to be outputed once.
 			-- If 0, no online-statistics is outputed.
 			-- Default: 0
+
+feature{NONE} -- Implementation
+
+	prepare_directory_for_output (a_path: STRING)
+			-- Prepare the parent directory of 'a_path' for writing.
+		require
+			path_not_empty: a_path /= Void and then not a_path.is_empty
+		local
+			l_file_name: FILE_NAME
+			l_dir_str: STRING
+			l_dir: DIRECTORY
+		do
+			was_last_directory_ready_for_output := False
+
+			create l_file_name.make_from_string (a_path)
+			if l_file_name.is_valid then
+				l_dir_str := File_system.dirname (a_path)
+				if l_file_name.is_directory_name_valid (l_dir_str) then
+					create l_dir.make (l_dir_str)
+					if not l_dir.exists then
+						l_dir.recursive_create_dir
+					end
+					if l_dir.exists then
+						was_last_directory_ready_for_output := True
+					end
+				end
+			end
+		end
+
+	was_last_directory_ready_for_output: BOOLEAN
+			-- Was last call to 'prepare_directory_for_output' successful?
 
 feature {NONE} -- Constants
 

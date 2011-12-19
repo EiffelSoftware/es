@@ -39,11 +39,11 @@ feature -- Status report
 		do
 			l_conf := configuration
 			Result := l_conf /= Void
-					and then l_conf.is_test_case_deserialization_enabled
+					and then (l_conf.is_test_case_deserialization_enabled or l_conf.is_building_behavioral_models)
 					and then l_conf.data_input /= Void
 					and then not l_conf.data_input.is_empty
-					and then l_conf.data_output /= Void
-					and then not l_conf.data_output.is_empty
+					and then ((l_conf.is_test_case_deserialization_enabled or else l_conf.is_deserializing_for_fixing)
+							implies (l_conf.data_output /= Void and then not l_conf.data_output.is_empty))
 					and then test_case_deserialized_event /= Void
 		end
 

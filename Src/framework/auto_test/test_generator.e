@@ -424,6 +424,9 @@ feature -- Options: test case serialization
 			Result := is_failing_test_case_serialization_enabled_cache
 		end
 
+	test_case_serialization_file: STRING
+			-- Full path to the serialization file.
+
 	is_duplicated_test_case_serialized: BOOLEAN
 			-- Should duplicated test case be serialized?
 			-- Two test cases are considered duplicated if their operands have
@@ -467,8 +470,19 @@ feature -- Options: test case deserialization
 			-- Is AutoTest deserializing test cases to favor fixing?
 			-- When True, test cases are grouped by faults; otherwise, by routine under test.
 
-	is_validating_serialization: BOOLEAN assign set_validating_serialization
-			-- Is AutoTest validating serialization data during test case deserialization?
+	is_validating_serialization: BOOLEAN
+		do
+			Result := serialization_validity_log /= Void
+		end
+
+	serialization_validity_log: FILE_NAME assign set_serialization_validity_log
+			-- Log of serialization validity.
+
+	is_building_faulty_feature_list: BOOLEAN assign set_building_faulty_feature_list
+			-- Is building faulty feature list during model construction?
+
+	faulty_feature_list_file_name: FILE_NAME assign set_faulty_feature_list_file_name
+			-- File name of the faulty feature list.
 
 	model_directory: FILE_NAME assign set_model_directory
 			-- Directory to save the constructed models.
@@ -495,16 +509,22 @@ feature -- Options: test case deserialization
 			is_building_behavioral_models := a_flag
 		end
 
+	set_building_faulty_feature_list (a_flag: BOOLEAN)
+			-- Set `is_building_faulty_feature_list'.
+		do
+			is_building_faulty_feature_list := a_flag
+		end
+
 	set_deserialization_for_fixing (a_flag: BOOLEAN)
 			-- Set `is_deserializing_for_fixing' with `a_flag'.
 		do
 			is_deserializing_for_fixing := a_flag
 		end
 
-	set_validating_serialization (a_flag: BOOLEAN)
-			-- Set `is_validating_serialization' with `a_flag'.
+	set_serialization_validity_log (a_log: FILE_NAME)
+			-- Set `serialization_validity_log' with `a_log'.
 		do
-			is_validating_serialization := a_flag
+			serialization_validity_log := a_log
 		end
 
 
@@ -514,6 +534,13 @@ feature -- Options: test case deserialization
 			valid_dir: a_dir /= Void and then a_dir.is_valid
 		do
 			model_directory := a_dir
+		end
+
+	set_faulty_feature_list_file_name (a_file_name: FILE_NAME)
+		require
+			valid_file_name: a_file_name /= Void and then a_file_name.is_valid
+		do
+			faulty_feature_list_file_name := a_file_name
 		end
 
 feature -- Options: Interface related class collection
@@ -900,6 +927,12 @@ feature -- Status setting
 			is_passing_test_case_serialization_enabled_cache := b
 		ensure
 			is_passing_test_case_serialization_enabled_set: is_passing_test_case_serialization_enabled = b
+		end
+
+	set_test_case_serialization_file (a_path: STRING)
+			-- Set `test_case_serialization_file'.
+		do
+			test_case_serialization_file := a_path
 		end
 
 	set_is_failing_test_case_serialization_enabled (b: BOOLEAN)

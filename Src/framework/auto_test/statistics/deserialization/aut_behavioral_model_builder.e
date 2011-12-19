@@ -120,23 +120,28 @@ feature{NONE} -- Implementation
 			-- Save `last_faulty_features' to disk.
 		local
 			l_file_name: FILE_NAME
+			l_file: KL_TEXT_OUTPUT_FILE
 			l_text_file: PLAIN_TEXT_FILE
 			l_content: STRING
 		do
-			create l_content.make (1000)
-			from last_faulty_features.start
-			until last_faulty_features.after
-			loop
-				l_content := l_content + last_faulty_features.item_for_iteration + "%N"
-				last_faulty_features.forth
-			end
+			if configuration.is_building_faulty_feature_list then
+				create l_content.make (1000)
+				from last_faulty_features.start
+				until last_faulty_features.after
+				loop
+					l_content := l_content + last_faulty_features.item_for_iteration + "%N"
+					last_faulty_features.forth
+				end
 
-			create l_file_name.make_from_string (model_directory_name)
-			l_file_name.set_file_name ("faulty_feature_list.log")
-			create l_text_file.make_open_write (l_file_name)
-			l_text_file.put_string (l_content)
-			l_text_file.flush
-			l_text_file.close
+				l_file_name := configuration.faulty_feature_list_file_name
+				create l_file.make (l_file_name)
+				l_file.recursive_open_write
+				if l_file.is_open_write then
+					l_file.put_string (l_content)
+					l_file.flush
+					l_file.close
+				end
+			end
 		end
 
 feature{NONE} -- Access

@@ -66,7 +66,7 @@ feature -- Data event handler
 			l_categories: DS_ARRAYED_LIST [STRING]
 		do
 				-- Log time and UUID of test cases.
-			log_uuids_in_order_of_time
+			write_test_case_list_to_time_uuid_log (all_unique_test_cases)
 
 				-- Write test cases.
 			from failing_repository.start
@@ -121,22 +121,10 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Time-UUID log
 
-	log_uuids_in_order_of_time
-			-- Log <time, UUID> pairs into file named `time_uuid_log_file_name'.
-			-- Format of the log file is:
-			-- time_uuids = [
-			--     [time1, uuid1],
-			--     [time2, uuid2],
-			--     ...
-			--     [timen, uuidn],
-			--  ]
+	all_unique_test_cases: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE]
+			-- <Precursor>
 		local
 			l_test_cases: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE]
-			l_sorter: DS_QUICK_SORTER [AUT_DESERIALIZED_TEST_CASE]
-			l_is_before: AGENT_BASED_EQUALITY_TESTER [AUT_DESERIALIZED_TEST_CASE]
-			l_log_name: FILE_NAME
-			l_log: KL_TEXT_OUTPUT_FILE
-			l_tc: AUT_DESERIALIZED_TEST_CASE
 		do
 				-- Collect all test cases.
 			create l_test_cases.make (1000)
@@ -147,43 +135,8 @@ feature{NONE} -- Time-UUID log
 				passing_repository.forth
 			end
 			l_test_cases.append_last (failing_repository.all_values)
-
-			if l_test_cases.count > 0 then
-					-- Sort test cases.
-				create l_is_before.make (agent is_test_case_before)
-				create l_sorter.make (l_is_before)
-				l_sorter.sort (l_test_cases)
-
-					-- Write to log.
-				create l_log_name.make_from_string (test_case_dir)
-				l_log_name.set_file_name (time_uuid_log_file_name)
-				create l_log.make (l_log_name)
-				l_log.recursive_open_write
-				if l_log.is_open_write then
-					l_log.put_string ("time_uuid_log = [%N")
-
-					from l_test_cases.start
-					until l_test_cases.after
-					loop
-						l_tc := l_test_cases.item_for_iteration
-						l_log.put_string ("%T[" + l_tc.time_str + ", %"" + l_tc.tc_uuid + "%"],%N")
-						l_test_cases.forth
-					end
-
-					l_log.put_string ("]%N")
-					l_log.close
-				end
-			end
-
+			Result := l_test_cases
 		end
-
-	is_test_case_before (a_tc1, a_tc2: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
-			-- Is `a_tc1' before `a_tc2'?
-		do
-			Result := a_tc1.time < a_tc2.time
-		end
-
-	time_uuid_log_file_name: STRING = "time_uuid.py"
 
 feature{NONE} -- Access
 

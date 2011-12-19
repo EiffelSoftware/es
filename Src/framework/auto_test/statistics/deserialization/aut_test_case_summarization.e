@@ -39,6 +39,7 @@ feature -- Initialization
 			pre_state_str := a_pre_state.twin
 			post_state_str := a_post_state.twin
 			time_str := a_time.twin
+			is_building_states_from_signature := True
 
 			reset_summarization_availability
 		end
@@ -53,6 +54,9 @@ feature -- Access
 	pre_state_str: STRING
 	post_state_str: STRING
 	time_str: STRING
+
+		-- Building states from signature, i.e. irrelevant variables won't appear in 'pre_state' and 'post_state'.
+	is_building_states_from_signature: BOOLEAN
 
 feature -- Query
 
@@ -406,10 +410,24 @@ feature{NONE} -- Implementation
 			l_internal: like internal
 			l_value: EPA_EXPRESSION_VALUE
 			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, EPA_EXPRESSION]
+			l_operands_with_feature: DS_HASH_TABLE [STRING, INTEGER]
+			l_count, i: INTEGER
 		do
-			l_context := context
 			l_internal := internal
 			l_str := a_state_string.twin
+
+			if is_building_states_from_signature then
+					-- Replace variable names like "v_0" and "v_1" with "Current" and "Result".
+				l_operands_with_feature := operands_with_feature (feature_)
+				from i := l_operands_with_feature.count - 1
+				until i < 0
+				loop
+					l_str.replace_substring_all ("v_" + i.out, l_operands_with_feature.item (i))
+					i := i - 1
+				end
+			else
+				l_context := context
+			end
 
 			-- Split types into lines of declarations
 			l_str.prune_all ('%R')
@@ -439,11 +457,24 @@ feature{NONE} -- Implementation
 						check only_one_equality_sign: l_line.substring_index (query_value_separator, l_end_index) = 0 end
 						-- Prepend "var." to the expression
 						l_exp_str := l_line.substring (1, l_end_index - 1)
-						l_exp_type := l_context.expression_text_type (l_exp_str)
-							-- Sometimes, the expression does not type check, we ignore those expressions.
-						if l_exp_type /= Void then
-							create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
+						l_expr := Void
 
+						if is_building_states_from_signature then
+							create l_expr.make_with_text (class_, feature_, l_exp_str, class_)
+							l_exp_type := l_expr.type
+								-- Keep only expressions that are valid.
+							if l_exp_type = Void then
+								l_expr := Void
+							end
+						else
+							l_exp_type := l_context.expression_text_type (l_exp_str)
+								-- Sometimes, the expression does not type check, we ignore those expressions.
+							if l_exp_type /= Void then
+								create l_expr.make_with_text_and_type (l_context.class_, l_context.feature_, l_exp_str, l_context.class_, l_exp_type)
+							end
+						end
+
+						if l_expr /= Void then
 							-- Value of the expression.
 							l_start_index := l_end_index + query_value_separator.count
 							l_val_str := l_line.substring (l_start_index, l_line.count)
@@ -471,7 +502,7 @@ feature{NONE} -- Implementation
 						end
 
 						-- Store the <expr, value> pair
-						if l_valid_exp and then not l_equations.has (l_expr) then
+						if l_valid_exp and then l_expr /= Void and then not l_equations.has (l_expr) then
 							l_equations.force_last (l_value, l_expr)
 						end
 					end

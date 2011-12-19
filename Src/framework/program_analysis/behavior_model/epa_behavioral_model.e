@@ -21,7 +21,7 @@ feature -- Initialization
 			class_attached: a_class /= Void
 		do
 			class_ := a_class
-			create model.make_equal (10)
+			create model.make_equal (100)
 		end
 
 	make_from_file (a_file_name: FILE_NAME)
@@ -51,7 +51,7 @@ feature -- Initialization
 					check l_line.starts_with ("<Command Name=") and then l_line.ends_with (">") then
 						l_feature_name := l_line.substring (l_line.index_of ('=', 1) + 1, l_line.index_of ('>', 1) - 1)
 						l_feature := class_.feature_named_32 (l_feature_name)
-						create l_set.make_equal (10)
+						create l_set.make_equal (128)
 						from
 							l_line := read_next_line (l_text_file)
 						until
@@ -102,7 +102,7 @@ feature -- Update
 				if model.has (l_feature) then
 					l_set := model.item (l_feature)
 				else
-					create l_set.make_equal (10)
+					create l_set.make_equal (256)
 					model.force (l_set, l_feature)
 				end
 				l_set.force (l_transition)
