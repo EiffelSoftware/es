@@ -65,7 +65,7 @@ feature -- Data event handler
 						end
 					else
 						l_feature_under_test := a_data.class_and_feature_under_test
-						if not last_faulty_features.has(l_feature_under_test) then
+						if not last_faulty_features.has(l_feature_under_test) and then is_interesting_faulty_feature_under_test (l_feature_under_test) then
 							last_faulty_features.force (l_feature_under_test)
 						end
 					end
@@ -151,6 +151,22 @@ feature{NONE} -- Access
 
 	last_faulty_features: EPA_HASH_SET[STRING]
 			-- Set of faulty features.
+
+	is_interesting_faulty_feature_under_test (a_feature: STRING): BOOLEAN
+			-- A naiive criterion for filtering out uninteresting features.
+		require
+			feature_not_empty: a_feature /= Void and then not a_feature.is_empty
+		do
+			Result := True
+			if a_feature.substring_index ("for_all", 1) /= 0
+					or else a_feature.substring_index ("there_exists", 1) /= 0
+					or else a_feature.substring_index ("correct_mismatch", 1) /= 0
+					or else a_feature.substring_index ("do_if", 1) /= 0
+					or else a_feature.substring_index ("do_all", 1) /= 0
+			then
+				Result := False
+			end
+		end
 
 
 ;note
