@@ -123,8 +123,7 @@ feature{NONE} -- Implementation
 		end
 
 	write_test_case_list_to_time_uuid_log (a_list: DS_ARRAYED_LIST [AUT_DESERIALIZED_TEST_CASE])
-			-- Write <time,uuid> pairs, in increasing order of time, into 'test_case_dir'/'time_uuid_log_file_name'.
-			-- The argument list may be reordered.
+			-- Write <time,uuid> pairs, in arbitrary into 'test_case_dir'/'time_uuid_log_file_name'.
 			-- Format of the log file is:
 			--     time1:uuid1
 			--     time2:uuid2
@@ -137,10 +136,10 @@ feature{NONE} -- Implementation
 			l_log: KL_TEXT_OUTPUT_FILE
 			l_tc: AUT_DESERIALIZED_TEST_CASE
 		do
-				-- Sort test cases.
-			create l_is_before.make (agent is_test_case_before)
-			create l_sorter.make (l_is_before)
-			l_sorter.sort (a_list)
+--				-- Sort test cases.
+--			create l_is_before.make (agent is_test_case_before)
+--			create l_sorter.make (l_is_before)
+--			l_sorter.sort (a_list)
 
 				-- Write to log.
 			create l_log_name.make_from_string (test_case_dir)
@@ -160,11 +159,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	is_test_case_before (a_tc1, a_tc2: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
-			-- Is `a_tc1' before `a_tc2'?
-		do
-			Result := a_tc1.time < a_tc2.time
-		end
+--	is_test_case_before (a_tc1, a_tc2: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
+--			-- Is `a_tc1' before `a_tc2'?
+--		do
+--			Result := a_tc1.time < a_tc2.time
+--		end
 
 	time_uuid_log_file_name: STRING = "time_uuid.log"
 

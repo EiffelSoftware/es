@@ -20,7 +20,7 @@ inherit
 
 	AFX_UTILITY
 
---	AFX_SHARED_EVENT_ACTIONS
+	AFX_SHARED_PROJECT_ROOT_INFO
 
 	AFX_SHARED_SESSION
 
@@ -57,12 +57,6 @@ feature{NONE} -- Initialization
 			create l_fixes.make (a_fixes.count)
 			create fixes.make (a_fixes.count)
 			a_fixes.do_all (agent l_fixes.force_last)
---			from l_fixes.start
---			until l_fixes.after
---			loop
---				i := l_fixes.item_for_iteration.ranking.pre_validation_score
---				l_fixes.forth
---			end
 
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
 				agent (af, bf: AFX_FIX): BOOLEAN
@@ -194,7 +188,7 @@ feature -- Basic operations
 				if socket_listener.is_listening then
 					event_actions.notify_on_interpreter_starts (port)
 					create l_fac
-					process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out , config.working_directory)
+					process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out + " -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory)
 					process.launch
 					check process.launched end
 

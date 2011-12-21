@@ -9,6 +9,8 @@ class
 
 inherit
 
+	AFX_SHARED_PROJECT_ROOT_INFO
+
 	EPA_DEBUGGER_UTILITY
 
 	AFX_SHARED_STATE_SERVER
@@ -77,7 +79,7 @@ feature -- Basic operation
 			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exit_agent)
 
 				-- Start debugging the application.
-			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, {EXEC_MODES}.Run, False)
+			start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory, {EXEC_MODES}.Run, False)
 
 				-- Unregister debugger event listener.
 			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -455,37 +457,6 @@ feature{NONE} -- Implementation
 			end
 			session.set_exception_signature (l_exception_signature)
 		end
-
---	analyze_exception_recipient (a_exception: AFX_EXCEPTION_SIGNATURE)
---			-- Analyze the recipient of `a_exception'.
---		require
---			exception_attached: a_exception /= Void
---		local
---			l_recipient: AFX_EXCEPTION_RECIPIENT_FEATURE
---		do
---			create l_recipient.make_for_exception (a_exception)
---		end
-
---	initialize_test_case_info
---			-- Initialize `current_test_case_info' using exception information.
---		local
---			l_tag: STRING
---		do
---			if attached{AFX_ASSERTION_VIOLATION_SIGNATURE}exception_signature as lt_assertion_violation then
---				l_tag := lt_assertion_violation.violated_assertion_tag
---			else
---				l_tag := ""
---			end
-
---				-- Use exception information to initialize a test case info object.
---				-- Since class/feature under test will not be used during fixing, we just use empty string.
---			create current_test_case_info.make ("", "",
---					exception_signature.recipient_class.name,
---					exception_signature.recipient_feature.feature_name_32,
---					exception_signature.exception_code,
---					exception_signature.recipient_breakpoint,
---					l_tag, False, "")
---		end
 
 feature{NONE} -- Constant
 

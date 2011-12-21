@@ -13,6 +13,8 @@ inherit
 			system
 		end
 
+	AFX_SHARED_PROJECT_ROOT_INFO
+
 	AFX_SHARED_SESSION
 
 	EPA_ARGUMENTLESS_PRIMITIVE_FEATURE_FINDER
@@ -25,20 +27,9 @@ inherit
 	REFACTORING_HELPER
 
 create
-	make, make_with_test_cases
+	make_with_test_cases
 
 feature{NONE} -- Initialization
-
-	make (a_system: like system; a_config: like config;
-				a_failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_SIGNATURE];
-				a_passing_test_cases: ARRAYED_LIST [STRING])
-			-- Initialization.
-		do
---			system := a_system
---			config := a_config
---			failing_test_cases := a_failing_test_cases
---			passing_test_cases := a_passing_test_cases
-		end
 
 	make_with_test_cases (a_system: like system; a_failing_test_cases, a_passing_test_cases: DS_ARRAYED_LIST [STRING];
 					a_fault_signature: EPA_TEST_CASE_SIGNATURE)
@@ -55,9 +46,6 @@ feature -- Access
 	system: SYSTEM_I
 			-- System under which test cases are analyzed
 
---	config: AFX_CONFIG
---			-- Config for AutoFix
-
 	current_fault_signature: EPA_TEST_CASE_SIGNATURE
 			-- Signature of the fault under fix.
 
@@ -66,14 +54,6 @@ feature -- Access
 
 	current_passing_test_cases: DS_ARRAYED_LIST [STRING]
 			-- List of passing test case files for fixing.
-
---	failing_test_cases: HASH_TABLE [ARRAYED_LIST [STRING], EPA_TEST_CASE_SIGNATURE]
---			-- Table of failing test cases.
---			-- Key: {EPA_TEST_CASE_INFO}.`id' describing a failure senario;
---			-- Value: List of test cases revealing the same fault.
-
---	passing_test_cases: ARRAYED_LIST [STRING]
---			-- List of passing test cases from `test_case_folder'.
 
 	last_class_text: detachable STRING
 			-- Class text from last building.
@@ -91,7 +71,7 @@ feature -- Basic operation
 			l_root_class_name: STRING
 			l_executor: STRING
 		do
-			l_root_class_name := system.root_type.associated_class.name.twin
+			l_root_class_name := afx_project_root_class
 			create test_cases.make
 
 			create l_executor.make (4096 * 4)
@@ -104,14 +84,166 @@ feature -- Basic operation
 
 			last_class_text := Root_class_body_template.twin
 			last_class_text.replace_substring_all ("${CLASS_NAME}", l_root_class_name)
+			last_class_text.replace_substring_all ("${RELEVANT_TYPES_FEATURE}", relevant_types_feature_text)
 			last_class_text.replace_substring_all ("${INITIALIZE_TEST_CASES}", feature_for_initialize_test_cases (test_cases))
 			last_class_text.replace_substring_all ("${FIRST_FAILING_TEST_CASE_UUID}", feature_for_first_test_case_uuid)
 			last_class_text.replace_substring_all ("${EXECUTE_TEST_CASES}", feature_for_execute_test_cases)
---			last_class_text.replace_substring_all ("${RETRIEVE_OPERAND_STATES}", feature_for_operand_states (current_fault_signature.recipient_, current_fault_signature.recipient_class_))
 			last_class_text.replace_substring_all ("${TEST_CASES}", l_executor)
 		end
 
 feature{NONE} -- Auxiliary operation
+
+	test_case_folder: STRING
+			-- Folder storing test cases.
+		do
+			Result := config.test_case_path
+		end
+
+	relevant_types_feature_text: STRING
+			-- Text for relevant types feature.
+		local
+			l_types: DS_HASH_SET [STRING]
+			l_feature_text: STRING
+			l_feature_body: STRING
+			l_list: LEAF_AS_LIST
+		do
+			l_types := types_from_test_case_list (current_passing_test_cases)
+			l_types := l_types.union (types_from_test_case_list (current_failing_test_cases))
+
+			l_feature_text := "%Trelevant_types%N%T%Tlocal%N%T%T%Tl_type: TYPE [detachable ANY]%N%T%Tdo%N$(FEAT_BODY)%N%T%Tend%N"
+			from
+				l_feature_body := ""
+				l_types.start
+			until
+				l_types.after
+			loop
+				l_feature_body.append ("%T%T%Tl_type := {" + l_types.item_for_iteration + "}%N")
+				l_types.forth
+			end
+			l_feature_text.replace_substring_all ("$(FEAT_BODY)", l_feature_body)
+
+			result := l_feature_text.twin
+		end
+
+	types_from_test_case_list (a_test_case_files: DS_ARRAYED_LIST [STRING]): DS_HASH_SET [STRING]
+			-- All variable types mentioned by the test cases in `a_test_case_files'.
+		require
+			test_case_files_attached: a_test_case_files /= Void
+		local
+			l_test_case_folder_path, l_test_case_file_path: FILE_NAME
+			l_cursor: DS_ARRAYED_LIST_CURSOR [STRING]
+			l_dir: DIRECTORY
+			l_file_name: STRING
+		do
+			create Result.make_equal (5)
+
+			create l_test_case_folder_path.make_from_string (test_case_folder)
+			from
+				l_cursor := a_test_case_files.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_file_name := l_cursor.item
+
+					-- Prepare absolute file path.
+				create l_test_case_file_path.make_from_string (l_test_case_folder_path)
+				l_test_case_file_path.set_file_name (l_file_name)
+				l_test_case_file_path.add_extension ("e")
+
+				Result.append (types_from_test_case (l_test_case_file_path))
+
+				l_cursor.forth
+			end
+		ensure
+			result_not_empty: Result /= Void and then Result.count /= 0
+		end
+
+	types_from_test_case (a_file: STRING): DS_HASH_SET [STRING]
+			-- All variable types mentioned by the test case in `a_file'.
+			-- `a_file' is the full path to the test case.
+		require
+			file_name_not_empty: a_file /= Void and then not a_file.is_empty
+		local
+			l_tc_path: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_line: STRING
+			l_type: STRING
+			l_start_mark, l_end_mark: STRING
+			l_start_count, l_end_count: INTEGER
+			l_start_pos, l_end_pos: INTEGER
+			l_done: BOOLEAN
+		do
+			-- Get types from the file.
+			create l_file.make_open_read (a_file)
+			if l_file.is_open_read then
+				l_start_mark := once "<variable_declaration>"
+				l_start_count := l_start_mark.count
+				l_end_mark := once "</variable_declaration>"
+				l_end_count := l_end_mark.count
+
+				from l_file.read_line
+				until l_file.after or l_done
+				loop
+					l_line := l_file.last_string.twin
+					l_start_pos := l_line.substring_index (l_start_mark, 1)
+					l_end_pos := l_line.substring_index (l_end_mark, 1)
+
+					if l_start_pos /= 0 and then l_end_pos /= 0 then
+						if l_start_pos + l_start_count < l_end_pos then
+							l_line := l_line.substring (l_start_pos + l_start_count, l_end_pos - 1)
+							Result := types_from_variable_declaration (l_line)
+						else
+							create Result.make (1)
+						end
+						l_done := True
+					end
+
+					l_file.read_line
+				end
+				l_file.close
+			else
+				create Result.make (1)
+				Result.set_equality_tester (String_equality_tester)
+			end
+		ensure
+			result_not_empty: Result /= Void and then Result.count /= 0
+		end
+
+	types_from_variable_declaration (a_dec: STRING): DS_HASH_SET [STRING]
+			-- Types referenced by a variable declaration.
+		require
+			dec_not_empty: a_dec /= Void and then not a_dec.is_empty
+		local
+			l_dec: STRING
+			l_vars: LIST [STRING]
+			l_var, l_type: STRING
+			l_reg: RX_PCRE_REGULAR_EXPRESSION
+		do
+			create l_reg.make
+			l_reg.compile ("v_[0-9]+:(.+)")
+
+			l_dec := a_dec.twin
+			l_dec.prune_all_trailing ('$')
+			l_dec.prune_all (' ')
+			l_vars := l_dec.split ('$')
+
+			create Result.make (l_vars.count)
+			Result.set_equality_tester (String_equality_tester)
+
+			from l_vars.start
+			until l_vars.after
+			loop
+				l_var := l_vars.item_for_iteration
+				l_reg.match (l_var)
+				check l_reg.has_matched end
+				Result.force (l_reg.captured_substring (1))
+
+				l_vars.forth
+			end
+		ensure
+			result_not_empty: Result /= Void and then Result.count /= 0
+		end
 
 	append_test_to_executor (a_executor: STRING; a_test_class_name: STRING; a_test: EPA_TEST_CASE_SIGNATURE; a_passing: BOOLEAN; a_execution_mode: INTEGER)
 			-- Append the execution command of the test with its name 'a_test_class_name' to the execution string 'a_executor'.
@@ -189,11 +321,6 @@ feature{NONE} -- Auxiliary operation
 			l_uuid: STRING
 			l_signature: EPA_TEST_CASE_SIGNATURE
 		do
---			l_cursor := a_failing_test_cases.cursor
---			a_failing_test_cases.start
---			l_uuid := a_failing_test_cases.key_for_iteration.uuid
---			a_failing_test_cases.go_to (l_cursor)
-
 			create l_signature.make_with_string (current_failing_test_cases.first)
 			check same_uuid: l_signature.uuid ~ current_fault_signature.uuid end
 			l_uuid := current_fault_signature.uuid
@@ -201,20 +328,6 @@ feature{NONE} -- Auxiliary operation
 			Result := First_failing_test_case_uuid_feature_template.twin
 			Result.replace_substring_all ("${UUID}", l_uuid)
 		end
-
-feature{NONE} -- State retrieval
-
---	feature_for_operand_states (a_feature: FEATURE_I; a_context_class: CLASS_C): STRING
---			-- Implementation of feature {AFX_INTERPRETER}.`operand_states'.
---			-- NOT IMPLEMENTED YET.
---		do
---			fixme ("Do we still need to look at the operands in random fixing?")
---			create Result.make (512)
---			Result.append ("%Toperand_states (a_operands: SPECIAL [detachable ANY]):  like state_type%N")
---			Result.append ("%T%Tlocal%N")
---			Result.append ("%T%Tdo%N")
---			Result.append ("%T%Tend%N")
---		end
 
 feature{NONE} -- Implementation
 
@@ -238,6 +351,8 @@ create
 feature{NONE} -- Implementation
 
 ${INITIALIZE_TEST_CASES}
+
+${RELEVANT_TYPES_FEATURE}
 
 ${FIRST_FAILING_TEST_CASE_UUID}
 

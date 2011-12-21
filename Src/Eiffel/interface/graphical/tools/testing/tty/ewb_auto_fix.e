@@ -14,6 +14,8 @@ inherit
 
 	EPA_COMPILATION_UTILITY
 
+	AFX_SHARED_PROJECT_ROOT_INFO
+
 create
 	make_with_arguments
 
@@ -78,14 +80,15 @@ feature -- Properties
 
 				-- Re-structure the project to include test cases.
 			if config.should_build_test_cases then
-				create l_fixing_project_builder.make
+				create l_fixing_project_builder
 				l_fixing_project_builder.execute
---			else
---				compile_project (eiffel_project, True)
 			end
 
 			create l_fix_proposer.make
 			l_fix_proposer.execute
+
+			system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
+			system.make_update (False)
 		end
 
 note
