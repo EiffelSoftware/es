@@ -25,7 +25,7 @@ feature -- Basic operations
 		do
 			create l_reader
 			create l_parser.make_parser (l_reader.read_json_from (a_path))
-			if attached {JSON_OBJECT} l_parser.parse as l_json_object then
+			check attached {JSON_OBJECT} l_parser.parse as l_json_object then
 				-- Extract class
 				l_class := first_class_starts_with_name (string_from_json (l_json_object.item ("class")))
 

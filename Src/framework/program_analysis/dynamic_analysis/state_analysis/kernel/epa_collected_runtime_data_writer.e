@@ -12,7 +12,7 @@ create
 
 feature -- Initialization
 
-	make (a_class: like context_class; a_feature: like analyzed_feature; a_data: like collected_runtime_data; a_path: like output_path)
+	make (a_class: like context_class; a_feature: like analyzed_feature; a_data: like collected_runtime_data; a_order: like analysis_order; a_path: like output_path)
 			-- Initialize `context_class' with `a_class',
 			-- `analyzed_feature' with `a_feature',
 			-- `collected_runtime_data' with `a_data' and
@@ -21,6 +21,7 @@ feature -- Initialization
 			set_class (a_class)
 			set_feature (a_feature)
 			set_data (a_data)
+			set_analysis_order (a_order)
 			set_path (a_path)
 		end
 
@@ -56,6 +57,16 @@ feature -- Setting
 			collected_runtime_data_set: collected_runtime_data = a_data
 		end
 
+	set_analysis_order (a_analysis_order: like analysis_order)
+			--
+		require
+			a_analysis_order_not_void: a_analysis_order /= Void
+		do
+			analysis_order := a_analysis_order
+		ensure
+			analysis_order_set: analysis_order = a_analysis_order
+		end
+
 	set_path (a_path: like output_path)
 			-- Set `output_path' to `a_path'.
 		require
@@ -74,8 +85,11 @@ feature -- Access
 	analyzed_feature: FEATURE_I
 			-- Feature which was analyzed through dynamic means.
 
-	collected_runtime_data: LINKED_LIST [EPA_STATE_CHANGE]
+	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 			-- Runtime data collected through dynamic means.
+
+	analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
+			--
 
 	output_path: STRING
 			-- Output-path where the file should be written to.
@@ -99,12 +113,11 @@ feature -- Basic operations
 			l_object.put (create {JSON_STRING}.make_json (analyzed_feature.feature_name_32), create {JSON_STRING}.make_json ("feature"))
 
 			-- Add analysis order.
-			l_analysis_order := analysis_order_from_runtime_data
-			l_object.put (l_analysis_order, create {JSON_STRING}.make_json ("execution_order"))
+			l_analysis_order := analysis_order_from_list (analysis_order)
+			l_object.put (l_analysis_order, create {JSON_STRING}.make_json ("analysis_order"))
 
 			-- Add collected runtime data.
-			l_map := map_from_runtime_data
-			l_data := json_object_from_runtime_data (l_map)
+			l_data := json_object_from_runtime_data (collected_runtime_data)
 			l_object.put (l_data, create {JSON_STRING}.make_json ("data"))
 
 			-- Write object to disk.
@@ -117,71 +130,23 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	map_from_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			-- Transformed runtime data.
-			-- Keys are program locations and expressions of the form `loc;expr'.
-			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
-		require
-			collected_runtime_data_not_void: collected_runtime_data /= Void
-		local
-			l_list: LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
-			l_pre_state: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_post_state: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_bp_slot: STRING
-			l_key: STRING
-			l_value: EPA_EXPRESSION_VALUE
-			l_pre_value: EPA_POSITIONED_VALUE
-			l_post_value: EPA_POSITIONED_VALUE
-		do
-			create Result.make_default
-			across collected_runtime_data as l_data loop
-				l_bp_slot := l_data.item.pre_state_bp_slot.out
-				l_pre_state := l_data.item.pre_state
-				l_post_state := l_data.item.post_state
-				across l_pre_state.keys.to_array as l_exprs loop
-					l_key := l_bp_slot + ";" + l_exprs.item
-					if not Result.has (l_key) then
-						l_value := l_pre_state.item (l_exprs.item)
-						create l_pre_value.make (l_data.item.pre_state_bp_slot, l_value)
-						l_value := l_post_state.item (l_exprs.item)
-						create l_post_value.make (l_data.item.post_state_bp_slot, l_value)
-
-						create l_list.make
-						l_list.extend ([l_pre_value, l_post_value])
-
-						Result.force_last (l_list, l_key)
-					else
-						l_list := Result.item (l_key)
-						l_value := l_pre_state.item (l_exprs.item)
-						create l_pre_value.make (l_data.item.pre_state_bp_slot, l_value)
-						l_value := l_post_state.item (l_exprs.item)
-						create l_post_value.make (l_data.item.post_state_bp_slot, l_value)
-						l_list.extend ([l_pre_value, l_post_value])
-					end
-				end
-			end
-		ensure
-			Result_not_void: Result /= Void
-		end
-
-	analysis_order_from_runtime_data: JSON_ARRAY
+	analysis_order_from_list (a_list: LINKED_LIST [TUPLE [INTEGER, INTEGER]]): JSON_ARRAY
 			-- JSON array of pre-state / post-state pairs in the order they were analyzed.
 		local
 			l_object: JSON_OBJECT
-			i: INTEGER
 			l_value: STRING
+			l_bp_slots: TUPLE [pre_state_bp_slot: INTEGER; post_state_bp_slot: INTEGER]
 		do
 			create Result.make_array
 			from
-				collected_runtime_data.start
-				i := 1
+				a_list.start
 			until
-				collected_runtime_data.after
+				a_list.after
 			loop
-				l_value := collected_runtime_data.item.pre_state_bp_slot.out + ";" + collected_runtime_data.item.post_state_bp_slot.out
+				l_bp_slots := a_list.item
+				l_value := l_bp_slots.pre_state_bp_slot.out + ";" + l_bp_slots.post_state_bp_slot.out
 				Result.add (create {JSON_STRING}.make_json (l_value))
-				i := i + 1
-				collected_runtime_data.forth
+				a_list.forth
 			end
 		end
 

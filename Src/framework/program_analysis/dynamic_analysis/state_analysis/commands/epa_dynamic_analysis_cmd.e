@@ -28,11 +28,11 @@ feature {NONE} -- Initialization
 	make (a_config: like config)
 			-- Initialize Current command.
 		do
-			check_config_validity (a_config)
-			if not is_config_valid then
-				io.put_string ("%N" + error_message + "%N")
-				die (-1)
-			end
+--			check_config_validity (a_config)
+--			if not is_config_valid then
+--				io.put_string ("%N" + error_message + "%N")
+--				die (-1)
+--			end
 			config := a_config
 			class_ := config.location.class_
 			feature_ := config.location.feature_
@@ -47,14 +47,12 @@ feature -- Access
 	config: EPA_DYNAMIC_ANALYSIS_CONFIG
 			-- Config for runtime data collection
 
-	collected_runtime_data: LINKED_LIST [EPA_STATE_CHANGE]
-			-- Runtime data collected during dynamic analysis of `feature_'
-
 feature -- Basic operations
 
 	execute
 			-- Execute Current command
 		local
+			l_processor: EPA_COLLECTED_RUNTIME_DATA_PROCESSOR
 			l_writer: EPA_COLLECTED_RUNTIME_DATA_WRITER
 			l_reader: EPA_COLLECTED_RUNTIME_DATA_READER
 		do
@@ -71,19 +69,8 @@ feature -- Basic operations
 			remove_breakpoint (debugger_manager, config.root_class)
 
 			-- Set up the action for the evaluation of pre- and post-states.
-			create interesting_post_states.make_default
-
-			if not config.is_prgm_locs_with_exprs_set then
-				setup_action_for_evaluation
-			else
-				setup_action_for_evaluation2
-			end
-
-			-- Set up the data-structures used for storing the collected
-			-- run-time data.
-			create collected_runtime_data.make
-
-			is_bp_pre_state := True
+			create l_processor.make (interesting_pre_states, post_state_map, config.prgm_locs_with_exprs)
+			setup_action_for_evaluation (l_processor)
 
 			-- Start program execution in debugger.
 			start_debugger (debugger_manager, "", config.working_directory, {EXEC_MODES}.run, False)
@@ -91,94 +78,11 @@ feature -- Basic operations
 			-- Remove the last debugging session.
 			remove_debugger_session
 
-			create l_writer.make (class_, feature_, collected_runtime_data, config.output_path)
+			-- Post process data for writing to disk.
+			l_processor.post_process
+
+			create l_writer.make (class_, feature_, l_processor.last_data, l_processor.last_analysis_order, config.output_path)
 			l_writer.write
-		end
-
-feature {NONE} -- Implementation
-
-	on_expression_evaluated (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Action to be performed when expressions are evaluated at breakpoint `a_bp'.
-			-- `a_state' is a set of expression evaluations.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
-		local
-			l_bp_slot: INTEGER
-			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_equation: EPA_EQUATION
-			l_expression: STRING
-		do
---			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
---			io.put_string (a_state.debug_output +"%N")
---			io.put_string ("==>%N")
-			l_bp_slot := a_bp.breakable_line_number
-			create l_equations.make_default
-			across a_state.to_array as l_state loop
-				l_equation := l_state.item
-				l_expression := l_equation.expression.text
-				l_equations.force (l_equation.value, l_expression)
-			end
-			if not is_bp_pre_state and post_state_map.item (temp_state_change.pre_state_bp_slot).has (l_bp_slot) then
-				temp_state_change.set_post_state_bp_slot (l_bp_slot)
-				temp_state_change.set_post_state (l_equations)
-				collected_runtime_data.extend (temp_state_change)
-				is_bp_pre_state := True
-			end
-
-			if interesting_pre_states.has (l_bp_slot) and is_bp_pre_state then
-				create temp_state_change
-				temp_state_change.set_pre_state_bp_slot (l_bp_slot)
-				temp_state_change.set_pre_state (l_equations)
-				is_bp_pre_state := False
-			end
-		end
-
-	on_expression_evaluated2 (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Action to be performed when expressions are evaluated at breakpoint `a_bp'.
-			-- `a_state' is a set of expression evaluations.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
-		local
-			l_bp_slot: INTEGER
-			l_equations: DS_HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_expressions: DS_HASH_SET [STRING]
-			l_expression: STRING
-		do
---			io.put_string ("%N==> " + a_bp.breakable_line_number.out + "%N")
---			io.put_string (a_state.debug_output +"%N")
---			io.put_string ("==>%N")
-			l_bp_slot := a_bp.breakable_line_number
-			if not is_bp_pre_state and post_state_map.item (temp_state_change.pre_state_bp_slot).has (l_bp_slot) then
-				l_expressions := prgm_locs_with_exprs.item (temp_state_change.pre_state_bp_slot)
-				create l_equations.make_default
-				across a_state.to_array as l_state loop
-					l_expression := l_state.item.expression.text
-					if l_expressions.has (l_expression) then
-						l_equations.force (l_state.item.value, l_expression)
-					end
-				end
-				temp_state_change.set_post_state_bp_slot (l_bp_slot)
-				temp_state_change.set_post_state (l_equations)
-				collected_runtime_data.extend (temp_state_change)
-				is_bp_pre_state := True
-			end
-
-			if interesting_pre_states.has (l_bp_slot) and is_bp_pre_state then
-				l_expressions := prgm_locs_with_exprs.item (l_bp_slot)
-				create l_equations.make_default
-				across a_state.to_array as l_state loop
-					l_expression := l_state.item.expression.text
-					if l_expressions.has (l_expression) then
-						l_equations.force (l_state.item.value, l_expression)
-					end
-				end
-				create temp_state_change
-				temp_state_change.set_pre_state_bp_slot (l_bp_slot)
-				temp_state_change.set_pre_state (l_equations)
-				is_bp_pre_state := False
-			end
 		end
 
 feature {NONE} -- Implemenation
@@ -208,7 +112,7 @@ feature {NONE} -- Implemenation
 				a_config.is_aut_choice_of_prgm_locs_set xor
 				a_config.is_specific_prgm_locs_set
 			if not l_prgm_locs_valid then
-				error_message.append ("Only of the following options can be used at a time: all_prgm_locs, aut_choice_of_prgm_locs or specific_prgm_locs.%N")
+				error_message.append ("At most one of the following options can be used at a time: all_prgm_locs, aut_choice_of_prgm_locs or specific_prgm_locs.%N")
 			end
 
 			l_exprs_valid :=
@@ -216,7 +120,7 @@ feature {NONE} -- Implemenation
 				a_config.is_specific_exprs_set xor
 				a_config.is_specific_vars_set
 			if not l_exprs_valid then
-				error_message.append ("Only of the following options can be used at a time: aut_choice_of_exprs, specific_exprs or specific_vars.%N")
+				error_message.append ("At most one of the following options can be used at a time: aut_choice_of_exprs, specific_exprs or specific_vars.%N")
 			end
 
 			l_exprs_locs_comb_valid :=
@@ -248,9 +152,6 @@ feature {NONE} -- Implemenation
 	is_config_valid: BOOLEAN
 			-- Is the configuration a valid configuration?
 
-	is_bp_pre_state: BOOLEAN
-			-- Is the analyzed state a pre-state?
-
 feature {NONE} -- Implementation
 
 	find_all_post_states
@@ -273,6 +174,7 @@ feature {NONE} -- Implementation
 			-- Choose pre-states
 			if config.is_all_prgm_locs_set then
 				-- Use all pre-states
+				l_body_bp_slots := feature_body_breakpoint_slots (feature_)
 				create interesting_pre_states.make_default
 				from
 					i := l_body_bp_slots.first_bp_slot
@@ -315,46 +217,22 @@ feature {NONE} -- Implementation
 			monitored_expressions := l_expr_builder.expressions_to_evaluate
 		end
 
-	setup_action_for_evaluation
+	setup_action_for_evaluation (a_processor: EPA_COLLECTED_RUNTIME_DATA_PROCESSOR)
 			-- Setup action for evaluation
 		local
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 		do
 			across interesting_pre_states.to_array as l_pre_states loop
 				create l_bp_mgr.make (class_, feature_)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent on_expression_evaluated)
+				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent a_processor.process)
 				l_bp_mgr.toggle_breakpoints (True)
 
 				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
 					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent on_expression_evaluated)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent a_processor.process)
 					l_bp_mgr.toggle_breakpoints (True)
-					interesting_post_states.force_last (l_post_states.item)
 				end
 			end
-		end
-
-	setup_action_for_evaluation2
-			-- Setup action for evaluation
-		local
-			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
-		do
-			prgm_locs_with_exprs := config.prgm_locs_with_exprs
-
-			across interesting_pre_states.to_array as l_pre_states loop
-				create l_bp_mgr.make (class_, feature_)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent on_expression_evaluated2)
-				l_bp_mgr.toggle_breakpoints (True)
-
-				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
-					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent on_expression_evaluated2)
-					l_bp_mgr.toggle_breakpoints (True)
-					interesting_post_states.force_last (l_post_states.item)
-				end
-			end
-		ensure
-			prgm_locs_with_exprs_set: prgm_locs_with_exprs = config.prgm_locs_with_exprs
 		end
 
 feature {NONE} -- Implementation
@@ -371,20 +249,9 @@ feature {NONE} -- Implementation
 	interesting_pre_states: DS_HASH_SET [INTEGER]
 			-- Contains all interesting pre-states
 
-	interesting_post_states: DS_HASH_SET [INTEGER]
-			-- Contains all interesting post-states
-
 	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Contains the found post-states.
 			-- Keys are pre-states and values are (possibly multiple) post-states
-
-	temp_state_change: EPA_STATE_CHANGE
-			-- Temporary object used to save pre-state before the associated post-state is evaluated
-
-	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Stores a set of expressions for a specific program location.
-			-- Keys are program locations and values are the associated expressions.
-			-- Only used when `config.is_prgm_locs_with_exprs_set' is set.
 
 	error_message: STRING
 			-- Error message indicating why the configuration is not a valid configuration.

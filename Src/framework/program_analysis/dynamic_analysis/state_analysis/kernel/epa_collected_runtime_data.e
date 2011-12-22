@@ -45,8 +45,8 @@ feature -- Access
 	analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
 			-- List of pre-state / post-state pairs in the order they were analyzed.
 
-	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			-- Runtime data collected through dynamic means.
+	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [pre_state_value: EPA_POSITIONED_VALUE; post_state_value: EPA_POSITIONED_VALUE]], STRING]
+			-- Runtime data collected through dynamic means
 			-- Keys are program locations and expressions of the form `loc;expr'.
 			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
 

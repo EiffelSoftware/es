@@ -51,10 +51,10 @@ feature -- Access
 			-- slot should be looked for.
 
 	first_bp_slot: INTEGER
-			-- First breakpoint slot of the feature body of `feature_'
+			-- First breakpoint slot of the feature body of `ast'
 
 	last_bp_slot: INTEGER
-			-- Last breakpoint slot of the feature body of `feature_'
+			-- Last breakpoint slot of the feature body of `ast'
 
 feature -- Setting
 
