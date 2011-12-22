@@ -173,11 +173,15 @@ feature {NONE} -- Implementation
 			l_variables: LINKED_LIST [STRING]
 		do
 			create l_variables.make
-			across a_variables.split (';') as l_vars loop
-				l_var := l_vars.item
-				l_var.left_adjust
-				l_var.right_adjust
-				l_variables.extend (l_var)
+			if a_variables.has (';') then
+				across a_variables.split (';') as l_vars loop
+					l_var := l_vars.item
+					l_var.left_adjust
+					l_var.right_adjust
+					l_variables.extend (l_var)
+				end
+			else
+				l_variables.extend (a_variables)
 			end
 			config.set_variables (l_variables)
 		ensure
@@ -193,11 +197,15 @@ feature {NONE} -- Implementation
 			l_expressions: LINKED_LIST [STRING]
 		do
 			create l_expressions.make
-			across a_expressions.split (';') as l_exprs loop
-				l_expr := l_exprs.item
-				l_expr.left_adjust
-				l_expr.right_adjust
-				l_expressions.extend (l_expr)
+			if a_expressions.has (';') then
+				across a_expressions.split (';') as l_exprs loop
+					l_expr := l_exprs.item
+					l_expr.left_adjust
+					l_expr.right_adjust
+					l_expressions.extend (l_expr)
+				end
+			else
+				l_expressions.extend (a_expressions)
 			end
 			config.set_expressions (l_expressions)
 		ensure
@@ -213,12 +221,17 @@ feature {NONE} -- Implementation
 			l_program_locations: DS_HASH_SET [INTEGER]
 		do
 			create l_program_locations.make_default
-			across a_program_locations.split (';') as l_locations loop
-				l_program_location := l_locations.item
-				l_program_location.left_adjust
-				l_program_location.right_adjust
-				l_program_locations.force_last (l_program_location.to_integer)
+			if a_program_locations.has (';') then
+				across a_program_locations.split (';') as l_locations loop
+					l_program_location := l_locations.item
+					l_program_location.left_adjust
+					l_program_location.right_adjust
+					l_program_locations.force_last (l_program_location.to_integer)
+				end
+			else
+				l_program_locations.force_last (a_program_locations.to_integer)
 			end
+
 			config.set_specific_prgm_locs (l_program_locations)
 		ensure
 			specific_prgm_locs_not_void:  config.specific_prgm_locs /= Void
@@ -238,18 +251,29 @@ feature {NONE} -- Implementation
 		do
 			create l_tmp.make_default
 			create l_expressions.make
-			across a_program_locations_with_expressions.split (';') as l_locations_with_expressions loop
-				l_location_with_expression := l_locations_with_expressions.item.split (':')
+			if a_program_locations_with_expressions.has (';') then
+				across a_program_locations_with_expressions.split (';') as l_locations_with_expressions loop
+					l_location_with_expression := l_locations_with_expressions.item.split (':')
+					l_bp_slot := l_location_with_expression.i_th (1).to_integer
+					l_expression := l_location_with_expression.i_th (2)
+					if l_tmp.has (l_bp_slot) then
+						l_tmp.item (l_bp_slot).force_last (l_expression)
+					else
+						create l_tmp_set.make_default
+						l_tmp_set.set_equality_tester (string_equality_tester)
+						l_tmp_set.force_last (l_expression)
+						l_tmp.put (l_tmp_set, l_bp_slot)
+					end
+					l_expressions.extend (l_expression)
+				end
+			else
+				l_location_with_expression := a_program_locations_with_expressions.split (':')
 				l_bp_slot := l_location_with_expression.i_th (1).to_integer
 				l_expression := l_location_with_expression.i_th (2)
-				if l_tmp.has (l_bp_slot) then
-					l_tmp.item (l_bp_slot).force_last (l_expression)
-				else
-					create l_tmp_set.make_default
-					l_tmp_set.set_equality_tester (string_equality_tester)
-					l_tmp_set.force_last (l_expression)
-					l_tmp.put (l_tmp_set, l_bp_slot)
-				end
+				create l_tmp_set.make_default
+				l_tmp_set.set_equality_tester (string_equality_tester)
+				l_tmp_set.force_last (l_expression)
+				l_tmp.put (l_tmp_set, l_bp_slot)
 				l_expressions.extend (l_expression)
 			end
 			config.set_prgm_locs_with_exprs (l_tmp)
