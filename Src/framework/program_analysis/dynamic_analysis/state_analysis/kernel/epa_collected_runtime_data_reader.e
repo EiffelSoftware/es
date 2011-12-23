@@ -162,40 +162,30 @@ feature {NONE} -- Implementation
 		do
 			if a_type.is_equal ("EPA_BOOLEAN_VALUE") then
 				create {EPA_BOOLEAN_VALUE} Result.make (a_value.to_boolean)
-			elseif a_type.is_equal ("EPA_RANDOM_BOOLEAN_VALUE") then
-				create {EPA_RANDOM_BOOLEAN_VALUE} Result.make
 			elseif a_type.is_equal ("EPA_INTEGER_VALUE") then
 				create {EPA_INTEGER_VALUE} Result.make (a_value.to_integer)
 			elseif a_type.is_equal ("EPA_REAL_VALUE") then
 				create {EPA_REAL_VALUE} Result.make (a_value.to_real)
 			elseif a_type.is_equal ("EPA_POINTER_VALUE") then
 				create {EPA_POINTER_VALUE} Result.make (a_value)
-			elseif a_type.is_equal ("EPA_RANDOM_INTEGER_VALUE") then
-				create {EPA_RANDOM_INTEGER_VALUE} Result.make
 			elseif a_type.is_equal ("EPA_NONSENSICAL_VALUE") then
 				create {EPA_NONSENSICAL_VALUE} Result
 			elseif a_type.is_equal ("EPA_VOID_VALUE") then
 				create {EPA_VOID_VALUE} Result.make
 			elseif a_type.is_equal ("EPA_ANY_VALUE") then
 				create {EPA_ANY_VALUE} Result.make (a_value)
-			elseif a_type.is_equal ("EPA_AST_EXPRESSION_VALUE") then
-				fixme("Tbd. Dec 10, 2011. megg")
-			elseif a_type.is_equal ("EPA_STRING_VALUE") then
-				fixme("Tbd. Dec 10, 2011. megg")
-			elseif a_type.is_equal ("EPA_EXPRESSION_SET_VALUE") then
-				fixme("Tbd. Dec 10, 2011. megg")
-			elseif a_type.is_equal ("EPA_NUMERIC_RANGE_VALUE") then
-				fixme("Tbd. Dec 10, 2011. megg")
+			else
+				check not_suported: False end
 			end
 		end
 
 	ref_value_from_data (a_value: STRING; a_class_id: STRING): EPA_REFERENCE_VALUE
 			-- Reference value from `a_value' and `a_class_id'
-		local
-			l_type: CL_TYPE_A
+		require
+			a_value_not_void: a_value /= Void
+			a_class_id_not_void: a_class_id /= Void
 		do
-			create l_type.make (a_class_id.to_integer)
-			create Result.make (a_value, l_type)
+			create Result.make (a_value, create {CL_TYPE_A}.make (a_class_id.to_integer))
 		end
 
 feature {NONE} -- Implementation

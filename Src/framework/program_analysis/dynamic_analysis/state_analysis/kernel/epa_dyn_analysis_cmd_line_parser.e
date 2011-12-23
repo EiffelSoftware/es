@@ -12,6 +12,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	EXCEPTIONS
+
 create
 	make_with_arguments
 
@@ -36,8 +38,7 @@ feature -- Access
 	config: EPA_DYNAMIC_ANALYSIS_CONFIG
 			-- Dynamic program analysis configuration
 
-	arguments: LINKED_LIST [STRING]
-			-- Command line options
+feature -- Parsing
 
 	parse
 			-- Parse `arguments' and store result in `config'.
@@ -142,6 +143,18 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
+	post_error_message (a_messge: STRING)
+			--
+		require
+			a_message_not_void: a_messge /= Void
+		local
+			l_message: STRING
+		do
+			l_message := "%N----------------%NParsing failure:%N----------------%N%N"
+			l_message.append (a_messge)
+			io.put_string (l_message)
+		end
+
 	setup_location (a_location: STRING)
 			-- Setup location in `config'.			
 		require
@@ -154,12 +167,17 @@ feature {NONE} -- Implementation
 		do
 			a_location.left_adjust
 			a_location.right_adjust
-			l_location := a_location.split ('.')
-			l_class_name := l_location.i_th (1)
-			l_feat_name := l_location.i_th (2)
-			l_class := first_class_starts_with_name (l_class_name)
-			l_feature := feature_from_class (l_class_name, l_feat_name)
-			config.set_location ([l_class, l_feature])
+			if a_location.has ('.') then
+				l_location := a_location.split ('.')
+				l_class_name := l_location.i_th (1)
+				l_feat_name := l_location.i_th (2)
+				l_class := first_class_starts_with_name (l_class_name)
+				l_feature := feature_from_class (l_class_name, l_feat_name)
+				config.set_location ([l_class, l_feature])
+			else
+				post_error_message ("The specified location is invalid.%N")
+				die (-1)
+			end
 		ensure
 			location_not_void: config.location /= Void
 		end
@@ -172,6 +190,8 @@ feature {NONE} -- Implementation
 			l_var: STRING
 			l_variables: LINKED_LIST [STRING]
 		do
+			a_variables.left_adjust
+			a_variables.right_adjust
 			create l_variables.make
 			if a_variables.has (';') then
 				across a_variables.split (';') as l_vars loop
@@ -196,6 +216,8 @@ feature {NONE} -- Implementation
 			l_expr: STRING
 			l_expressions: LINKED_LIST [STRING]
 		do
+			a_expressions.left_adjust
+			a_expressions.right_adjust
 			create l_expressions.make
 			if a_expressions.has (';') then
 				across a_expressions.split (';') as l_exprs loop
@@ -220,6 +242,8 @@ feature {NONE} -- Implementation
 			l_program_location: STRING
 			l_program_locations: DS_HASH_SET [INTEGER]
 		do
+			a_program_locations.left_adjust
+			a_program_locations.right_adjust
 			create l_program_locations.make_default
 			if a_program_locations.has (';') then
 				across a_program_locations.split (';') as l_locations loop
@@ -246,16 +270,26 @@ feature {NONE} -- Implementation
 			l_expressions: LINKED_LIST [STRING]
 			l_tmp_set: DS_HASH_SET [STRING]
 			l_bp_slot: INTEGER
+			l_bp_slot_string: STRING
 			l_expression: STRING
 			l_tmp: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
 		do
+			a_program_locations_with_expressions.left_adjust
+			a_program_locations_with_expressions.right_adjust
 			create l_tmp.make_default
 			create l_expressions.make
 			if a_program_locations_with_expressions.has (';') then
 				across a_program_locations_with_expressions.split (';') as l_locations_with_expressions loop
+					l_locations_with_expressions.item.left_adjust
+					l_locations_with_expressions.item.right_adjust
 					l_location_with_expression := l_locations_with_expressions.item.split (':')
-					l_bp_slot := l_location_with_expression.i_th (1).to_integer
+					l_bp_slot_string := l_location_with_expression.i_th (1)
+					l_bp_slot_string.left_adjust
+					l_bp_slot_string.right_adjust
+					l_bp_slot := l_bp_slot_string.to_integer
 					l_expression := l_location_with_expression.i_th (2)
+					l_expression.left_adjust
+					l_expression.right_adjust
 					if l_tmp.has (l_bp_slot) then
 						l_tmp.item (l_bp_slot).force_last (l_expression)
 					else
@@ -267,14 +301,24 @@ feature {NONE} -- Implementation
 					l_expressions.extend (l_expression)
 				end
 			else
-				l_location_with_expression := a_program_locations_with_expressions.split (':')
-				l_bp_slot := l_location_with_expression.i_th (1).to_integer
-				l_expression := l_location_with_expression.i_th (2)
-				create l_tmp_set.make_default
-				l_tmp_set.set_equality_tester (string_equality_tester)
-				l_tmp_set.force_last (l_expression)
-				l_tmp.put (l_tmp_set, l_bp_slot)
-				l_expressions.extend (l_expression)
+				if a_program_locations_with_expressions.has (':') then
+					l_location_with_expression := a_program_locations_with_expressions.split (':')
+					l_bp_slot_string := l_location_with_expression.i_th (1)
+					l_bp_slot_string.left_adjust
+					l_bp_slot_string.right_adjust
+					l_bp_slot := l_bp_slot_string.to_integer
+					l_expression := l_location_with_expression.i_th (2)
+					l_expression.left_adjust
+					l_expression.right_adjust
+					create l_tmp_set.make_default
+					l_tmp_set.set_equality_tester (string_equality_tester)
+					l_tmp_set.force_last (l_expression)
+					l_tmp.put (l_tmp_set, l_bp_slot)
+					l_expressions.extend (l_expression)
+				else
+					post_error_message ("The specified program locations with expressions are invalid.%N")
+					die (-1)
+				end
 			end
 			config.set_prgm_locs_with_exprs (l_tmp)
 			config.set_expressions (l_expressions)
@@ -282,6 +326,11 @@ feature {NONE} -- Implementation
 			prgm_locs_with_exprs_not_void: config.prgm_locs_with_exprs /= Void
 			expressions_not_void: config.expressions /= Void
 		end
+
+feature {NONE} -- Implementation
+
+	arguments: LINKED_LIST [STRING]
+			-- Command line options
 
 end
 

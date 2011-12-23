@@ -48,7 +48,7 @@ feature -- Access
 
 	last_analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
 
-feature -- Process
+feature {EPA_DYNAMIC_ANALYSIS_CMD} -- Process
 
 	process (a_bp: BREAKPOINT; a_state: EPA_STATE)
 			--
@@ -74,7 +74,7 @@ feature -- Post processing
 			l_key, l_expr: STRING
 			l_expressions: ARRAY [STRING]
 		do
-			-- Initialize `last_data' where the result of the post-processing
+			-- Initialize `last_data' and `last_analysis_order' where the result of the post-processing
 			-- will be made available.
 			create last_data.make_default
 			create last_analysis_order.make
@@ -125,7 +125,6 @@ feature -- Post processing
 						end
 					end
 				end
-
 				i := i + 1
 			end
 		ensure

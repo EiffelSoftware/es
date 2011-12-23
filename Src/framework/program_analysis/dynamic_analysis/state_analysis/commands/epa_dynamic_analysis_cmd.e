@@ -28,11 +28,11 @@ feature {NONE} -- Initialization
 	make (a_config: like config)
 			-- Initialize Current command.
 		do
---			check_config_validity (a_config)
---			if not is_config_valid then
---				io.put_string ("%N" + error_message + "%N")
---				die (-1)
---			end
+			check_config_validity (a_config)
+			if not is_config_valid then
+				io.put_string ("%N" + error_message + "%N")
+				die (-1)
+			end
 			config := a_config
 			class_ := config.location.class_
 			feature_ := config.location.feature_
@@ -83,6 +83,9 @@ feature -- Basic operations
 
 			create l_writer.make (class_, feature_, l_processor.last_data, l_processor.last_analysis_order, config.output_path)
 			l_writer.write
+
+			create l_reader
+			l_reader.read_from_path (config.output_path)
 		end
 
 feature {NONE} -- Implemenation
@@ -94,8 +97,9 @@ feature {NONE} -- Implemenation
 			a_config_not_void: a_config /= Void
 		local
 			l_class_valid, l_feature_valid, l_prgm_locs_valid, l_exprs_valid, l_exprs_locs_comb_valid, l_outputh_path_valid: BOOLEAN
+			l_file_name: FILE_NAME
 		do
-			error_message := ""
+			error_message := "-------------------------------%NThe configuration is not valid:%N-------------------------------%N%N"
 
 			l_class_valid := a_config.location.class_ /= Void
 			if not l_class_valid then
@@ -111,40 +115,37 @@ feature {NONE} -- Implemenation
 				a_config.is_all_prgm_locs_set xor
 				a_config.is_aut_choice_of_prgm_locs_set xor
 				a_config.is_specific_prgm_locs_set
-			if not l_prgm_locs_valid then
-				error_message.append ("At most one of the following options can be used at a time: all_prgm_locs, aut_choice_of_prgm_locs or specific_prgm_locs.%N")
-			end
 
 			l_exprs_valid :=
 				a_config.is_aut_choice_of_exprs_set xor
 				a_config.is_specific_exprs_set xor
 				a_config.is_specific_vars_set
-			if not l_exprs_valid then
-				error_message.append ("At most one of the following options can be used at a time: aut_choice_of_exprs, specific_exprs or specific_vars.%N")
-			end
 
 			l_exprs_locs_comb_valid :=
 				(l_prgm_locs_valid and l_exprs_valid) xor
 				a_config.is_prgm_locs_with_exprs_set
 			if not l_exprs_locs_comb_valid then
 				error_message.append (
-					"Option 'prgm_locs_with_exprs' can not be used together with one of the following options: " +
-					"all_prgm_locs, aut_choice_of_prgm_locs, specific_prgm_locs, aut_choice_of_exprs, specific_exprs or specific_vars.%N"
+					"The combination of program locations and expressions must fulfill the following property: " +
+					"((all_prgm_locs xor aut_choice_of_prgm_locs xor specific_prgm_locs) and " +
+					"(aut_choice_of_exprs xor specific_exprs xor specific_vars)) " +
+					"xor prgm_locs_with_exprs%N"
 				)
 			end
 
-			l_outputh_path_valid :=
-				a_config.output_path /= Void and
-				a_config.output_path.ends_with ("/")
-			if not l_outputh_path_valid then
-				error_message.append ("The output-path isn't valid because it was not set or because it doesn't end with a '/'.%N")
+			if a_config.output_path /= Void then
+				create l_file_name.make_from_string (a_config.output_path)
+				if not l_file_name.is_valid then
+					error_message.append ("The output-path is not valid.%N")
+				end
+				l_outputh_path_valid := True
+			else
+				error_message.append ("The output-path is void.%N")
 			end
 
 			is_config_valid :=
 				l_class_valid and
 				l_feature_valid and
-				l_prgm_locs_valid and
-				l_exprs_valid and
 				l_exprs_locs_comb_valid and
 				l_outputh_path_valid
 		end

@@ -123,7 +123,7 @@ feature -- Basic operations
 			-- Write object to disk.
 			create l_printer.make
 			l_object.accept (l_printer)
-			create l_file.make_create_read_write (output_path + context_class.name + "." + analyzed_feature.feature_name_32 + ".txt")
+			create l_file.make_create_read_write (output_path)
 			l_file.put_string (l_printer.to_json)
 			l_file.close
 		end
