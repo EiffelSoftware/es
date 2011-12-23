@@ -32,8 +32,8 @@ feature -- Basic operations
 				-- Extract feature
 				l_feature := feature_from_class (l_class.name, string_from_json (l_json_object.item ("feature")))
 
-				-- Extract execution order
-				l_order := analysis_order_from_json (l_json_object.item ("execution_order"))
+				-- Extract analysis order
+				l_order := analysis_order_from_json (l_json_object.item ("analysis_order"))
 
 				-- Extract collected data
 				l_data := data_from_json (l_json_object.item ("data"))
