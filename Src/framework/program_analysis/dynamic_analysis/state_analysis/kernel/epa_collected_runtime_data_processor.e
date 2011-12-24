@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_COLLECTED_RUNTIME_DATA_PROCESSOR}."
+	description: "Class to (post) process collected runtime data."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,7 +13,7 @@ create
 feature -- Initialization
 
 	make (a_program_locations: like program_locations; a_post_state_map: like post_state_map; a_prgm_locs_with_exprs: like prgm_locs_with_exprs)
-			--
+			-- Initialize Current.
 		require
 			a_program_locations_not_void: a_program_locations /= Void
 			a_post_state_map_not_void: a_post_state_map /= Void
@@ -31,27 +31,20 @@ feature -- Initialization
 
 feature -- Access
 
-	collected_states: ARRAYED_LIST [TUPLE [bp_slot: INTEGER; state: EPA_STATE]]
-			--
-
-	program_locations: DS_HASH_SET [INTEGER]
-			--
-
-	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
-			--
-
-	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			--
-
 	last_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			--
+			-- Runtime data collected through dynamic means
+			-- Keys are program locations and expressions of the form `loc;expr'.
+			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
 
 	last_analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
+			-- List of pre-state / post-state pairs in the order they were analyzed.
+			-- Note: The analysis order is not the same as the execution order which is complete
+			-- whilst the analysis order only contains the hit pre-state / post-state breakpoint slots.
 
 feature {EPA_DYNAMIC_ANALYSIS_CMD} -- Process
 
 	process (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			--
+			-- Add `a_bp' and `a_state' to `collected_states'.
 		require
 			a_bp_not_void: a_bp /= Void
 			a_state_not_void: a_state /= Void
@@ -62,9 +55,8 @@ feature {EPA_DYNAMIC_ANALYSIS_CMD} -- Process
 feature -- Post processing
 
 	post_process
-			--
-		require
-			collected_states_not_void: collected_states /= Void
+			-- Post-process `collected_states' and make results available in
+			-- `last_data' and `last_analysis_order'.
 		local
 			l_pre_state_bp_slot, l_post_state_bp_slot: INTEGER
 			l_pre_state_value, l_post_state_value: EPA_POSITIONED_VALUE
@@ -134,7 +126,7 @@ feature -- Post processing
 feature {NONE} -- Implementation
 
 	is_valid_pre_post_state_pair (a_pre_state_bp_slot: INTEGER; a_post_state_bp_slot: INTEGER): BOOLEAN
-			--
+			-- Is `a_pre_state_bp_slot' and `a_post_state_bp_slot' a valid pre-state / post-state pair?
 		require
 			program_locations_not_void: program_locations /= Void
 			post_state_map_not_void: post_state_map /= Void
@@ -142,5 +134,21 @@ feature {NONE} -- Implementation
 		do
 			Result := program_locations.has (a_pre_state_bp_slot) and post_state_map.item (a_pre_state_bp_slot).has (a_post_state_bp_slot)
 		end
+
+feature {NONE} -- Implementation
+
+	collected_states: ARRAYED_LIST [TUPLE [bp_slot: INTEGER; state: EPA_STATE]]
+			-- States and their associated breakpoint slot which were collected through dynamic means.
+
+	program_locations: DS_HASH_SET [INTEGER]
+			-- Program locations which were analyzed.
+
+	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			-- Contains the found post-states.
+			-- Keys are pre-states and values are (possibly multiple) post-states
+
+	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+			-- Program locations where the associated expressions should
+			-- be evaluated.
 
 end

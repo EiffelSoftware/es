@@ -44,6 +44,8 @@ feature -- Access
 
 	analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
 			-- List of pre-state / post-state pairs in the order they were analyzed.
+			-- Note: The analysis order is not the same as the execution order which is complete
+			-- whilst the analysis order only contains the hit pre-state / post-state breakpoint slots.
 
 	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [pre_state_value: EPA_POSITIONED_VALUE; post_state_value: EPA_POSITIONED_VALUE]], STRING]
 			-- Runtime data collected through dynamic means
