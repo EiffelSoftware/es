@@ -9,8 +9,6 @@ class
 
 inherit
 
-	AFX_SHARED_STATIC_ANALYSIS_REPORT
-
 	AFX_SHARED_SESSION
 
 create

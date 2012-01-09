@@ -31,14 +31,7 @@ feature -- Basic operation
 		do
 			compute_suspiciousness_values_of_targets
 			fixing_target_list.do_all (agent (a_target: AFX_FIXING_TARGET) do a_target.set_rank (a_target.suspiciousness_value) end)
-			sort_ranking (fixing_target_list)
-
---			if config.is_program_state_extended then
---				-- In this case, we need to map the rankings of program state aspects
---				--		to that of program state expressions.
-----				compute_suspiciousness_values_of_state_expressions
---			end
-
+--			sort_ranking (fixing_target_list)
 			compute_ranks_of_state_expressions
 			sort_ranking (fixing_target_list)
 		end
@@ -195,61 +188,6 @@ feature{NONE} -- Implementation
 
 			set_fixing_target_list (l_target_list)
 		end
-
---	compute_suspiciousness_values_of_state_expressions
---			-- Attribute program state aspect rankings to program state expressions,
---			-- 		based on `fixing_target_list' where rankings of program state aspects are available.
---		require
---			fixing_target_list_attached: fixing_target_list /= Void
---		local
---			l_target_cursor: DS_ARRAYED_LIST_CURSOR [AFX_FIXING_TARGET]
---			l_statistics_about_originates: AFX_EXECUTION_TRACE_STATISTICS
---			l_target, l_new_target: AFX_FIXING_TARGET
---			l_expr_set: EPA_HASH_SET [EPA_EXPRESSION]
---			l_expr: EPA_EXPRESSION
---			l_cursor: DS_HASH_SET_CURSOR [AFX_PROGRAM_STATE_EXPRESSION]
---			l_originates: EPA_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
---			l_ranking_for_tuple: DS_LINKED_LIST [TUPLE [rank: REAL; expr: AFX_PROGRAM_STATE_EXPRESSION; bp_index: INTEGER]]
---			l_ranking: DS_ARRAYED_LIST [AFX_FIXING_TARGET]
---		do
---			create l_statistics_about_originates.make_trace_unspecific (20)
-
---			-- Compute ranking values for all ultimate originating program state expressions,
---			--		based on the ranking values of program state aspects.
---			from
---				l_target_cursor := fixing_target_list.new_cursor
---				l_target_cursor.start
---			until
---				l_target_cursor.after
---			loop
---				l_target := l_target_cursor.item
-
---				-- Collect original expressions associated with the target.
---				create l_originates.make (2)
---				l_originates.set_equality_tester (breakpoint_unspecific_equality_tester)
-
---				l_expr_set := l_target.expressions
---				check only_one_target: l_expr_set.count = 1 end
---				l_expr := l_expr_set.first
---				check expr_of_boolean: l_expr /= Void and then l_expr.type.is_boolean end
---				if l_expr.originate_expressions.count = 1 then
---					-- For targets involving a single expression, use the original expression as the real fixing target.
---					l_originates.append (l_expr.originate_expressions.first.ultimate_originate_expressions)
---				else
---					-- For targets involving more than one expression, we keep the expressions as they are.
---					l_originates.append (l_expr.originate_expressions)
---				end
-
---				-- Use the original expressions as new targets.
---				create l_new_target.make (l_originates, l_target.bp_index, l_target.suspiciousness_value)
---				l_statistics_about_originates.update_statistic_info (l_new_target, l_target.suspiciousness_value,
---						{AFX_EXECUTION_TRACE_STATISTICS_UPDATE_MODE}.Update_mode_replace, l_target)
-
---				l_target_cursor.forth
---			end
-
---			set_fixing_target_list (l_statistics_about_originates.as_list)
---		end
 
 	suspiciousness_value (a_passing_count, a_failing_count: INTEGER): REAL
 			-- Suspiciousness value based on the count of hits in passing and failing executions.

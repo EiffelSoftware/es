@@ -76,4 +76,28 @@ feature -- Status set
 			create exception_recipient_feature.make_for_exception (exception_signature)
 		end
 
+feature -- Logging
+
+	logger: AFX_PROXY_LOGGER;
+			-- Logger to log proxy messages
+
+	console_logger: AFX_CONSOLE_PRINTER
+			-- Logger to print messages to console
+
+	time_trace_logger: AFX_TIME_LOGGER
+			-- Logger to keep track of time spent in AutoFix.
+
+	initialize_logging
+			-- Initialize logging.
+		do
+			create logger.make
+			event_actions.subscribe_action_listener (logger)
+
+			create console_logger.make
+			event_actions.subscribe_action_listener (console_logger)
+
+			create time_trace_logger.reset
+			event_actions.subscribe_action_listener (time_trace_logger)
+		end
+
 end

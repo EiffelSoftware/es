@@ -10,8 +10,6 @@ class
 inherit
 	AFX_UTILITY
 
---	AFX_RANK_COMPUTATION_MEAN_TYPE_CONSTANT
-
 	SHARED_EXEC_ENVIRONMENT
 
 create
@@ -23,8 +21,6 @@ feature{NONE} -- Initialization
 			-- Initialize `eiffel_system' with `a_system'.
 		do
 			eiffel_system := a_system
-			set_is_using_model_based_strategy (True)
---			set_is_monitoring_breakpointwise (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -199,30 +195,6 @@ feature -- Test case analysis
 			-- Should project be freezed before auto-fixing?
 			-- Default: False
 
---	is_combining_integral_expressions_in_feature: BOOLEAN assign set_is_combining_integral_expressions_in_feature
---			-- Is current strategy for combining integral expressions based on feature?
---			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
---			--		`is_combining_integral_expressions_in_breakpoint' is True.
-
---	is_combining_integral_expressions_in_breakpoint: BOOLEAN assign set_is_combining_integral_expressions_in_breakpoint
---			-- Is current strategy for combining integral expressions based on breakpoint?
---			-- One, and only one, of `is_combining_integral_expressions_in_feature' and
---			--		`is_combining_integral_expressions_in_breakpoint' is True.
-
---feature -- Distinguishing expressions based on their breakpoint index
-
---	is_breakpoint_specific: BOOLEAN assign set_breakpoint_specific
---			-- Is comparison between expressions breakpoint-specific?
-
---	set_breakpoint_specific (a_flag: BOOLEAN)
---			-- Set `is_breakpoint_specific'.
---		do
---			is_breakpoint_specific := a_flag
---		end
-
---	is_program_state_extended: BOOLEAN
---			-- Is monitoring extended program states?
-
 feature -- Usage of Control Flow Graph (CFG) in rank computation
 
 	CFG_usage: INTEGER
@@ -338,38 +310,6 @@ feature -- Type of fault localization algorithm
 	Fault_localization_strategy_heuristicIII_new: INTEGER = 12
 	Default_fault_localization_strategy: INTEGER = 12
 
---feature -- Fix condition preference
-
---	fix_condition_preference: INTEGER
---			-- Preference of sources of fix conditions.
-
---	set_fix_condition_preference (a_pref: INTEGER)
---			-- Set `fix_condition_preference'.
---		require
---			is_valid_preference: is_valid_fix_condition_preference (a_pref)
---		do
---			fix_condition_preference := a_pref
---		end
-
---	is_valid_fix_condition_preference (a_pref: INTEGER): BOOLEAN
---		do
---			Result := (a_pref = Fix_condition_preference_invariant) or else (a_pref = Fix_condition_preference_evidence)
---		end
-
---	is_fix_condition_preferring_invariant: BOOLEAN
---		do
---			Result := fix_condition_preference = Fix_condition_preference_invariant
---		end
-
---	is_fix_condition_preferring_evidence: BOOLEAN
---		do
---			Result := fix_condition_preference = Fix_condition_preference_evidence
---		end
-
---	Fix_condition_preference_invariant: INTEGER = 1
---	Fix_condition_preference_evidence: INTEGER = 2
---	Default_fix_condition_preference: INTEGER = 2
-
 feature -- Fix generation
 
 	max_fix_candidate: INTEGER
@@ -468,22 +408,6 @@ feature -- Status report
 					is_using_state_based_test_case_selection = a_flag
 		end
 
---	is_monitoring_featurewise: BOOLEAN
---			-- Will all expressions be monitored featurewise?
---		do
---			Result := is_monitoring_featurewise_cache
---		ensure
---			definition: Result = is_monitoring_featurewise_cache
---		end
-
---	is_monitoring_breakpointwise: BOOLEAN
---			-- Will expressions be monitored breakpointwise?
---		do
---			Result := is_monitoring_breakpointwise_cache
---		ensure
---			definition: Result = is_monitoring_breakpointwise_cache
---		end
-
 	should_retrieve_state: BOOLEAN
 			-- Should state of the system be retrieved?
 		do
@@ -533,34 +457,6 @@ feature -- Setting
 		ensure
 			max_failing_test_case_number_set: max_failing_test_case_number = a_number
 		end
-
---	set_is_monitoring_featurewise (a_flag: BOOLEAN)
---			-- Set `is_monitoring_featurewise'.
---		do
---			is_monitoring_featurewise_cache := a_flag
---			is_monitoring_breakpointwise_cache := not a_flag
---		end
-
---	set_is_monitoring_breakpointwise (a_flag: BOOLEAN)
---			-- Set `is_monitoring_breakpointwise'.
---		do
---			is_monitoring_breakpointwise_cache := a_flag
---			is_monitoring_featurewise_cache := not a_flag
---		end
-
---	set_is_combining_integral_expressions_in_feature (a_flag: BOOLEAN)
---			-- Set `is_combining_integral_expressions_in_feature'.
---		do
---			is_combining_integral_expressions_in_feature := a_flag
---			is_combining_integral_expressions_in_breakpoint := not a_flag
---		end
-
---	set_is_combining_integral_expressions_in_breakpoint (a_flag: BOOLEAN)
---			-- Set `is_combining_integral_expressions_in_breakpoint'.
---		do
---			is_combining_integral_expressions_in_breakpoint := a_flag
---			is_combining_integral_expressions_in_feature := not a_flag
---		end
 
 	set_should_retrieve_state (b: BOOLEAN)
 			-- Set `should_retrieve_state' with `b'.
@@ -681,12 +577,6 @@ feature -- Setting
 			model_directory := a_directory.twin
 		end
 
---	set_program_state_extended (a_flag: BOOLEAN)
---			-- Set `is_program_state_extended'.
---		do
---			is_program_state_extended := a_flag
---		end
-
 	set_max_fix_candidate (a_max: INTEGER)
 			-- Set `max_fix_candidate'.
 		require
@@ -725,12 +615,6 @@ feature{NONE} -- Implementation
 
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
-
---	is_monitoring_featurewise_cache: BOOLEAN
---			-- Cache for `is_monitoring_featurewise'.
-
---	is_monitoring_breakpointwise_cache: BOOLEAN
---			-- Cache for `is_monitoring_breakpointwise'.
 
 feature{NONE} -- Implementation
 

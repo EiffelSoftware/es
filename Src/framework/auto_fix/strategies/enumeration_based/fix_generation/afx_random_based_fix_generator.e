@@ -266,14 +266,12 @@ feature -- Basic operations
 			-- State change requirements regarding one fixing target.
 		require
 			target_attached: a_target /= Void
-		local
-			l_generator: AFX_STATE_CHANGE_REQUIREMENT_GENERATOR
 		do
-			create Result.make_default
-
-			create l_generator
-			l_generator.generate_change_requirements (a_target)
-			Result.append_last (l_generator.last_generated_requirements)
+			if attached {AFX_PROGRAM_STATE_ASPECT} a_target.expression as lv_aspect then
+				Result := lv_aspect.derived_change_requirements
+			else
+				create Result.make_default
+			end
 		end
 
 	guard_conditions_for_target (a_target: AFX_FIXING_TARGET): DS_ARRAYED_LIST [EPA_EXPRESSION]

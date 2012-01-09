@@ -92,5 +92,9 @@ feature -- Actions
 		do
 		end
 
+	on_valid_fix_found (a_fix: AFX_FIX)
+			-- Action to be performed when a valid fix is found.
+		do
+		end
 
 end

@@ -114,9 +114,9 @@ feature -- Basic operation
 			copy_test_case_files (current_passing_test_cases, test_case_folder, l_eifgens_dir_path)
 			copy_test_case_files (current_failing_test_cases, test_case_folder, l_eifgens_dir_path)
 
-			if not l_system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-				l_system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
-			end
+--			if not l_system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+--				l_system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
+--			end
 
 				-- Recompile current project.
 			compile_project (eiffel_project, True)

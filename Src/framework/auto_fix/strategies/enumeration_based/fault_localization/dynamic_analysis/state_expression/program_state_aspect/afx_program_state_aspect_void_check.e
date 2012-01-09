@@ -50,7 +50,7 @@ feature -- Basic operation
 			last_value := evaluate_void_check (l_value, operator)
 		end
 
-	derived_change_requirements (a_result: BOOLEAN): DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
+	derived_change_requirements: DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
 			-- <Precursor>
 		do
 			Result := change_requirements_for_one_boolean_expression (Current)

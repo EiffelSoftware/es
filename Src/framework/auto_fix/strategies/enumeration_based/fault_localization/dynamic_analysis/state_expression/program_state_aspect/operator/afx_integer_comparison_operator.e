@@ -52,6 +52,14 @@ feature -- Basic operator
 			end
 		end
 
+	negation_operator (a_operator_value: INTEGER): INTEGER
+			-- Negation of the operator `a_operator_value'.
+		require
+			valid_operator: is_valid_integer_comparison (a_operator_value)
+		do
+			Result := Operator_integer_ub - a_operator_value
+		end
+
 feature -- Status report
 
 	is_valid_integer_comparison (a_operator: INTEGER): BOOLEAN
@@ -89,11 +97,11 @@ feature -- Constant
 
 	Operator_integer_lb: INTEGER = 0
 	Operator_integer_eq: INTEGER = 1
-	Operator_integer_ne: INTEGER = 2
-	Operator_integer_gt: INTEGER = 3
-	Operator_integer_ge: INTEGER = 4
-	Operator_integer_lt: INTEGER = 5
-	Operator_integer_le: INTEGER = 6
+	Operator_integer_gt: INTEGER = 2
+	Operator_integer_ge: INTEGER = 3
+	Operator_integer_lt: INTEGER = 4
+	Operator_integer_le: INTEGER = 5
+	Operator_integer_ne: INTEGER = 6
 	Operator_integer_ub: INTEGER = 7
 
 end

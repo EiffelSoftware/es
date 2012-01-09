@@ -168,7 +168,6 @@ feature -- Basic operations
 			l_fix: AFX_FIX
 		do
 			create fixes.make
-			Model_loader.set_model_repository_directory (create {DIRECTORY_NAME}.make_from_string (config.model_directory))
 
 				-- Decide precondition and postcondition for the fix.
 			l_contracts := actual_fix_contracts
@@ -476,7 +475,7 @@ feature{NONE} -- Implementation
 					end (?, ?, l_source_state))
 
 			l_fixes := state_transitions_from_model (l_source_state, l_target_state, exception_recipient_feature.written_class,
-					Void, Void, False)
+					Void, False)
 			create Result.make
 			l_fixes.do_all (
 				agent (a_fix:AFX_STATE_TRANSITION_FIX; a_list: LINKED_LIST [TUPLE [transitions: DS_LIST [STRING]; ranking: INTEGER]])

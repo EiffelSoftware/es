@@ -105,23 +105,6 @@ feature -- Derived repository
 			end
 		end
 
---	derivation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
---			-- Trace repository derived from the Current repository,
---			-- using skeletons built on the existing state expressioins to model states.
---		do
---			if config.is_program_state_extended then
---				create Result.make (count)
---				from start
---				until after
---				loop
---					Result.force (item_for_iteration.derivation, key_for_iteration)
---					forth
---				end
---			else
---				Result := Current
---			end
---		end
-
 feature -- Execution event listener
 
 	is_test_case_new (a_tc: EPA_TEST_CASE_INFO): BOOLEAN

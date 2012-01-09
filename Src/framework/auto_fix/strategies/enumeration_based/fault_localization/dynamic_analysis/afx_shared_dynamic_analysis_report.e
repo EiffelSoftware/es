@@ -14,8 +14,6 @@ inherit
 			copy
 		end
 
-	AFX_SHARED_STATIC_ANALYSIS_REPORT
-
 	AFX_PROGRAM_EXECUTION_INVARIANT_ACCESS_MODE
 
 feature -- Access
@@ -38,6 +36,24 @@ feature -- Access
 			-- Number of hits of an expression at a breakpoint slot from all failing test cases.
 		do
 			Result := statistics_from_failing_cell.item
+		end
+
+	all_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- All test cases.
+		do
+			Result := all_test_cases_cell.item
+		end
+
+	all_passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- All passing test cases.
+		do
+			Result := all_passing_test_cases_cell.item
+		end
+
+	all_failing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+			-- All failing test cases.
+		do
+			Result := all_failing_test_cases_cell.item
 		end
 
 	test_case_execution_status: HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]
@@ -93,22 +109,6 @@ feature -- Access
 		ensure
 			result_attached: Result /= Void
 		end
-
---	invariants_table: DS_HASH_TABLE[TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT], AFX_FEATURE_WITH_CONTEXT_CLASS]
---			-- Table of invariants.
---		do
---			Result := invariants_table_cell.item
---		ensure
---			result_attached: Result /= Void
---		end
-
---	invariants_for_feature (a_feature: AFX_FEATURE_WITH_CONTEXT_CLASS): TUPLE [AFX_DAIKON_RESULT, AFX_DAIKON_RESULT]
---			-- Invariants for `a_feature'.
---		require
---			invariants_available: invariants_table.has (a_feature)
---		do
---			Result := invariants_table.item (a_feature)
---		end
 
 	register_invariants (a_passing, a_failing: DS_HASH_TABLE [DS_HASH_TABLE [EPA_STATE, INTEGER], EPA_FEATURE_WITH_CONTEXT_CLASS])
 			-- Register `a_passing' and `a_failing' as the passing and failing invariants.
@@ -226,8 +226,33 @@ feature -- Status set
 			-- Set `test_case_execution_status'.
 		require
 			status_attached: a_status /= Void
+		local
+			l_all, l_passing, l_failing: LINKED_LIST [EPA_TEST_CASE_INFO]
+			l_tc: EPA_TEST_CASE_INFO
 		do
 			test_case_execution_status_cell.put (a_status)
+			if a_status /= Void then
+				create l_all.make
+				create l_passing.make
+				create l_failing.make
+				from
+					a_status.start
+				until
+					a_status.after
+				loop
+					l_tc := a_status.key_for_iteration
+					l_all.extend (l_tc)
+					if a_status.item_for_iteration.is_passing then
+						l_passing.extend (l_tc)
+					else
+						l_failing.extend (l_tc)
+					end
+					a_status.forth
+				end
+			end
+			all_test_cases_cell.put (l_all)
+			all_passing_test_cases_cell.put (l_passing)
+			all_failing_test_cases_cell.put (l_failing)
 		end
 
 	set_statistics_from_passing (a_sta: like statistics_from_passing)
@@ -265,6 +290,24 @@ feature{NONE} -- Storage
 			create Result.put (Void)
 		end
 
+	all_test_cases_cell: CELL[LINKED_LIST [EPA_TEST_CASE_INFO]]
+			-- Storage for `all_test_cases'.
+		once
+			create Result.put (Void)
+		end
+
+	all_passing_test_cases_cell: CELL [LINKED_LIST [EPA_TEST_CASE_INFO]]
+			-- Storage for `all_test_cases'.
+		once
+			create Result.put (Void)
+		end
+
+	all_failing_test_cases_cell: CELL [LINKED_LIST [EPA_TEST_CASE_INFO]]
+			-- Storage for `all_test_cases'.
+		once
+			create Result.put (Void)
+		end
+
 	statistics_from_passing_cell: CELL [AFX_EXECUTION_TRACE_STATISTICS]
 			-- Cell for `statistics_from_passing'.
 		once
@@ -282,12 +325,6 @@ feature{NONE} -- Storage
 		once
 			create Result.put (Void)
 		end
-
---	invariants_table_cell: CELL [DS_HASH_TABLE[TUPLE [passing: AFX_DAIKON_RESULT; failing: AFX_DAIKON_RESULT], AFX_FEATURE_WITH_CONTEXT_CLASS]]
---			-- Cell for `invariants_table'.
---		once
---			create Result.put (Void)
---		end
 
 	invariants_from_passing_cell: CELL [DS_HASH_TABLE [DS_HASH_TABLE [EPA_STATE, INTEGER], EPA_FEATURE_WITH_CONTEXT_CLASS]]
 			-- Storage for `invariants_from_passing'.

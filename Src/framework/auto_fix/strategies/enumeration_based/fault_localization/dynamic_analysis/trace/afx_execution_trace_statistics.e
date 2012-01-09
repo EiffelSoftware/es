@@ -14,8 +14,6 @@ inherit
 
 	AFX_EXECUTION_TRACE_STATISTICS_UPDATE_MODE
 
-	AFX_SHARED_FIXING_TARGET_EQUALITY_TESTER
-
 create
 	make_trace_specific, make_trace_unspecific
 

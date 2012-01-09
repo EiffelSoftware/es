@@ -8,9 +8,6 @@ class
 	AFX_CROSS_FEATURE_TRACE_COLLECTOR
 
 inherit
---	AFX_SHARED_PROGRAM_EXECUTION_TRACE_REPOSITORY
-
-	AFX_SHARED_SERVER_EXPRESSIONS_TO_MONITOR
 
 	EPA_DEBUGGER_UTILITY
 
@@ -21,8 +18,6 @@ inherit
 	SHARED_EIFFEL_PARSER
 
 	AFX_UTILITY
-
---	AFX_SHARED_EVENT_ACTIONS
 
 	EPA_COMPILATION_UTILITY
 
@@ -222,7 +217,7 @@ feature{NONE} -- Implementation
 			-- Starting point of monitoring.
 			l_bp_location := l_bp_manager.breakpoint_location (feature_as_monitor_activator.e_feature, 1, False)
 			l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp_location)
-			l_breakpoint.add_when_hits_action (create {BREAKPOINT_WHEN_HITS_ACTION_MONITOR_EXECUTION}.make (True, should_activate_monitor))
+--			l_breakpoint.add_when_hits_action (create {BREAKPOINT_WHEN_HITS_ACTION_MONITOR_EXECUTION}.make (True, should_activate_monitor))
 			-- Stop after the breakpoint, so that `on_application_stopped' would get a chance to be called.
 			l_breakpoint.set_continue_execution (False)
 			l_bp_manager.add_breakpoint (l_breakpoint)
@@ -230,7 +225,7 @@ feature{NONE} -- Implementation
 			-- Ending point of monitoring.
 			l_bp_location := l_bp_manager.breakpoint_location (feature_as_monitor_deactivator.e_feature, 1, False)
 			l_breakpoint := l_bp_manager.new_user_breakpoint (l_bp_location)
-			l_breakpoint.add_when_hits_action (create {BREAKPOINT_WHEN_HITS_ACTION_MONITOR_EXECUTION}.make (False, should_activate_monitor))
+--			l_breakpoint.add_when_hits_action (create {BREAKPOINT_WHEN_HITS_ACTION_MONITOR_EXECUTION}.make (False, should_activate_monitor))
 			-- Stop after the breakpoint, so that `on_application_stopped' would get a chance to be called.
 			l_breakpoint.set_continue_execution (False)
 			l_bp_manager.add_breakpoint (l_breakpoint)
@@ -337,7 +332,6 @@ feature{NONE} -- Implementation
 			-- Get exception information from execution status, and make the result available in `exception_summary'.
 		local
 			l_recipient_id: STRING
-			l_static_analyzer: AFX_EXCEPTION_STATIC_ANALYZER
 
 			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
 			l_status: APPLICATION_STATUS
@@ -436,12 +430,6 @@ feature{NONE} -- Access
 	is_monitor_activated: BOOLEAN
 			-- Is monitor activated?
 
---	state_expression_server: AFX_PROGRAM_STATE_EXPRESSIONS_SERVER
---			-- Server from which program-state-expressions associated with a feature can be queried.
---		once
---			create Result.make (5)
---		end
-
 feature -- Status set
 
 	set_feature_as_monitor_activator (a_class_name: STRING; a_routine_name: STRING)
@@ -470,148 +458,5 @@ feature{NONE} -- Cache
 
 	application_exited_actions_cache: like application_exited_actions
 			-- Cache for `application_exited_actions'.
-
---feature -- Monitored execution markup
-
---feature{BREAKPOINT_WHEN_HITS_ACTION_MONITOR_EXECUTION} -- Monitor execution
-
---	should_activate_monitor (a_dm: DEBUGGER_MANAGER): BOOLEAN
---			-- Should monitor be activated in `a_dm'?
---			-- This is done by checking on if the execution is entering the `feature_as_monitor_activator'.
---		require
---			application_running: a_dm.application.is_running
---			monitor_is_not_activated: not is_monitor_activated
---		do
---			Result := (feature_as_monitor_activator /= Void)
---					and then (a_dm.application_status.e_feature.name ~ "setup_before_test")
---			Result := (feature_as_monitor_activator /= Void)
---					and then (a_dm.application_status.e_feature.name ~ "generated_test_1")
---			Result := (feature_as_monitor_activator /= Void)
---					and then (a_dm.application_status.e_feature.associated_feature_i.rout_id_set ~ feature_as_monitor_activator.rout_id_set)
---		end
-
---	should_deactivate_monitor (a_dm: DEBUGGER_MANAGER): BOOLEAN
---			-- Should monitor be deactivated in `a_dm'?
---			-- This is done by checking on if the execution is entering the `feature_as_monitor_deactivator'.
---		require
---			application_running: a_dm.application.is_running
---			monitor_is_activated: is_monitor_activated
---		do
---			Result := (feature_as_monitor_deactivator /= Void)
---					and then (a_dm.application_status.e_feature.associated_feature_i.rout_id_set ~ feature_as_monitor_deactivator.rout_id_set)
---		end
-
---feature -- Application data
-
---	current_test_case_info: detachable EPA_TEST_CASE_INFO
---			-- Information about currently analyzed test case
-
---	exception_spots: HASH_TABLE [AFX_EXCEPTION_SPOT, STRING]
---			-- Set of state models that are already met
---			-- Keys are test case info id, check {AFX_TEST_CASE_INFO}.`id' for details.
---			-- Values are the associated exception spots.
-
---feature{NONE} -- Cache
-
---	test_case_info_skeleton_cache: like test_case_info_skeleton
---			-- Internal cache for 'test_case_info_skeleton_cache'.
-
---	test_case_info_skeleton: DS_HASH_SET [EPA_EXPRESSION]
---			-- State skeleton of test case information.
---		local
---			l_class: CLASS_C
---			l_feature: FEATURE_I
---			l_expr: EPA_AST_EXPRESSION
---			l_expr_set: like test_case_info_skeleton
---		do
---			if test_case_info_skeleton_cache = Void then
---				l_feature := feature_as_monitor_activator
---				l_class := l_feature.written_class
-
---				create l_expr_set.make_equal (14)
-
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_class_name, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_execution_mode, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_class_uuid, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_class_under_test, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_feature_under_test, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_breakpoint_index, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_is_creation, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_is_query, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_is_passing, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_code, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_assertion_tag, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_recipient_class, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_recipient, l_class)
---				l_expr_set.force_last (l_expr)
---				create l_expr.make_with_text (l_class, l_feature, {EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_trace, l_class)
---				l_expr_set.force_last (l_expr)
-
---				test_case_info_skeleton_cache := l_expr_set
---			end
-
---			Result := test_case_info_skeleton_cache
---		ensure
---			result_size_correct: Result /= Void and then Result.count = 14
---		end
-
---	debug_project
---			-- Debug current project to retrieve system states from test cases.
---		local
---			l_app_stop_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
---			l_app_exited_agent: PROCEDURE [ANY, TUPLE [DEBUGGER_MANAGER]]
---		do
---			-- Initialize debugger.
---			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
-
---			-- Register debugger event listener.
---			l_app_stop_agent := agent on_application_stopped
---			l_app_exited_agent := agent on_application_exited
---			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
---			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exited_agent)
-
---			-- Start debugging the application step-by-step.
---			start_debugger (debugger_manager, "--analyze-tc " + config.interpreter_log_path + " false", config.working_directory, {EXEC_MODES}.Step_into, True)
-
---			-- Unregister debugger event listener.
---			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
---			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exited_agent)
-
---			-- Clean up debugger.
---			remove_debugger_session
---		end
-
---	toggle_monitor (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER; a_to_enable: BOOLEAN)
---			-- Toggle monitor on or off, depending on `a_to_enable'.
---		require
---			application_attached: debugger_manager /= Void and then debugger_manager.application /= Void
---		local
---			l_app: APPLICATION_EXECUTION
---		do
---			is_monitor_activated := a_to_enable
-
---			-- Update application execution mode.
---			l_app := a_dm.application
---			if a_to_enable then
---				l_app.set_execution_mode ({EXEC_MODES}.Step_into)
---				monitor_activated_actions.call ([a_dm])
---			else
---				l_app.set_execution_mode ({EXEC_MODES}.Run)
---				monitor_deactivated_actions.call ([a_dm])
---			end
---		end
-
 
 end

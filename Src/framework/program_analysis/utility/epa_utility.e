@@ -29,6 +29,8 @@ inherit
 
 	SHARED_NAMES_HEAP
 
+	SHARED_TYPES
+
 feature -- AST
 
 	text_from_ast (a_ast: AST_EIFFEL): like text_from_ast_with_printer
@@ -416,7 +418,7 @@ feature -- Breakpoint related
 		end
 
 	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_EXPRESSION]
-			-- Assertion, consists of an optional tag and an expression, at `a_breakpoint' of `a_feature' from `a_class'.
+			-- Assertion, consisting of an optional tag and an expression, at `a_breakpoint' of `a_feature' from `a_class'.
 		require
 			is_assertion_at_breakpoint: True -- The arguments indicate an assertion.
 		local
@@ -448,6 +450,11 @@ feature -- Breakpoint related
 			check l_written_ast /= Void end
 			check attached {EXPR_AS} ast_in_context_class (l_written_ast, l_written_class, l_written_feature, a_class) as lt_context_ast then
 				create l_context_breakpoint_expression.make_with_text (a_class, a_feature, text_from_ast (lt_context_ast), l_written_class)
+
+					-- FIXME: Make sure the assertion expression has the right type, even if type checking has failed.
+				if l_context_breakpoint_expression.type = Void then
+					l_context_breakpoint_expression.set_type (Boolean_type)
+				end
 			end
 
 			Result := [l_tag, l_context_breakpoint_expression]

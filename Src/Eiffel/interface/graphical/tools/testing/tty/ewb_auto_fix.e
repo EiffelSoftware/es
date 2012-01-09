@@ -84,15 +84,39 @@ feature -- Properties
 				l_fixing_project_builder.execute
 			end
 
-			create l_fix_proposer.make
-			l_fix_proposer.execute
+			if is_fixing_root_available then
+				if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+					system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
+				end
 
-			system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
-			system.make_update (False)
+				create l_fix_proposer.make
+				l_fix_proposer.execute
+
+				system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
+				system.make_update (False)
+			else
+				Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
+			end
+
+		end
+
+	is_fixing_root_available: BOOLEAN
+			-- Is the project root for fixing available in the EIFGENs/Cluster directory?
+		local
+			l_eifgens_dir_path: DIRECTORY_NAME
+			l_file: KL_TEXT_OUTPUT_FILE
+			l_file_name: FILE_NAME
+		do
+			l_eifgens_dir_path := system.project_location.eifgens_cluster_path
+			create l_file_name.make_from_string (l_eifgens_dir_path)
+			l_file_name.set_file_name (afx_project_root_class.as_lower)
+			l_file_name.add_extension ("e")
+			create l_file.make (l_file_name)
+			Result := l_file.exists
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

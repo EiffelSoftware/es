@@ -207,9 +207,10 @@ feature -- Execution
 					melted_fixes.remove
 					l_origin_fix := fixes.item (l_fix.id)
 					l_fixing_target := l_origin_fix.fixing_target
-					if l_fixing_target = Void
-							or else not nbr_of_valid_fix_map.has (l_fixing_target)
-							or else nbr_of_valid_fix_map.item (l_fixing_target) < 3 then
+--					if l_fixing_target = Void
+--							or else not nbr_of_valid_fix_map.has (l_fixing_target)
+--							or else nbr_of_valid_fix_map.item (l_fixing_target) < 3
+--					then
 						on_fix_validation_start.call ([l_fix])
 						timer.set_timeout (max_test_case_time)
 
@@ -237,13 +238,13 @@ feature -- Execution
 
 							-- We found a fix which passes all test cases, re-execute all passing test cases to retrieve post states.
 						if exception_count = l_exception_count then
-							if l_fixing_target /= Void then
-								if nbr_of_valid_fix_map.has (l_fixing_target) then
-									nbr_of_valid_fix_map.force (nbr_of_valid_fix_map.item (l_fixing_target) + 1, l_fixing_target)
-								else
-									nbr_of_valid_fix_map.force (1, l_fixing_target)
-								end
-							end
+--							if l_fixing_target /= Void then
+--								if nbr_of_valid_fix_map.has (l_fixing_target) then
+--									nbr_of_valid_fix_map.force (nbr_of_valid_fix_map.item (l_fixing_target) + 1, l_fixing_target)
+--								else
+--									nbr_of_valid_fix_map.force (1, l_fixing_target)
+--								end
+--							end
 
 							from
 								passing_test_cases.start
@@ -259,7 +260,7 @@ feature -- Execution
 
 						l_origin_fix.set_post_fix_execution_status (last_test_case_execution_state)
 						on_fix_validation_end.call ([l_fix, exception_count])
-					end
+--					end
 
 
 					if not should_quit then

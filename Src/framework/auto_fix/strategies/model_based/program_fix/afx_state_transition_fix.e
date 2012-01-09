@@ -17,7 +17,8 @@ inherit
     	end
 
 create
-    make, make_with_rank, make_from_behavior_state
+    make, make_with_rank
+--    , make_from_behavior_state
 
 feature -- Initialization
 
@@ -35,13 +36,13 @@ feature -- Initialization
 		    impact_on_states := a_impact
 		end
 
-	make_from_behavior_state (a_state: AFX_BEHAVIOR_STATE)
-			-- Initialize.
-		do
-		    call_sequence := a_state.to_call_sequence
-		    confidence_of_executability := a_state.confidence_of_reachability
-		    impact_on_states := a_state.distance_from_previous
-		end
+--	make_from_behavior_state (a_state: AFX_BEHAVIOR_STATE)
+--			-- Initialize.
+--		do
+--		    call_sequence := a_state.to_call_sequence
+--		    confidence_of_executability := a_state.confidence_of_reachability
+--		    impact_on_states := a_state.distance_from_previous
+--		end
 
 feature -- Access
 

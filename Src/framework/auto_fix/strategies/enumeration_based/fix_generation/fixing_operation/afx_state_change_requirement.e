@@ -17,7 +17,6 @@ feature -- Initialization
 		do
 			src_expr := a_src
 			dest_expr := a_dest
---			fixing_target := a_target
 		end
 
 feature -- Access
@@ -27,8 +26,5 @@ feature -- Access
 
 	dest_expr: EPA_EXPRESSION
 			-- Destination expression, to which `src_expression' will be changed.
-
---	fixing_target: AFX_FIXING_TARGET
---			-- Related fixing target.
 
 end

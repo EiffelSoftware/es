@@ -37,27 +37,28 @@ feature{NONE} -- Initialization
 			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
 			i: DOUBLE
 		do
-				-- Initialize sets of test cases `test_cases' and `passing_test_cases'.
-			create test_cases.make
-			create passing_test_cases.make
-			from
-				test_case_execution_status.start
-			until
-				test_case_execution_status.after
-			loop
-				test_cases.extend (test_case_execution_status.key_for_iteration)
-				if test_case_execution_status.item_for_iteration.is_passing then
-					passing_test_cases.extend (test_case_execution_status.key_for_iteration)
-				end
-				test_case_execution_status.forth
-			end
+--				-- Initialize sets of test cases `test_cases' and `passing_test_cases'.
+--			create all_test_cases.make
+--			create all_passing_test_cases.make
+--			from
+--				test_case_execution_status.start
+--			until
+--				test_case_execution_status.after
+--			loop
+--				test_cases.extend (test_case_execution_status.key_for_iteration)
+--				if test_case_execution_status.item_for_iteration.is_passing then
+--					passing_test_cases.extend (test_case_execution_status.key_for_iteration)
+--				end
+--				test_case_execution_status.forth
+--			end
 
 				-- Setup `fixes' and `melted_fixes'.
 				-- Sort fixes according to their syntatic ranking, so syntatically simpler fixes are validated first.
-			create l_fixes.make (a_fixes.count)
-			create fixes.make (a_fixes.count)
-			a_fixes.do_all (agent l_fixes.force_last)
+--			create l_fixes.make (a_fixes.count)
+--			l_fixes.append_last (a_fixes)
+--			a_fixes.do_all (agent l_fixes.force_last)
 
+			create l_fixes.make_from_linear (a_fixes)
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
 				agent (af, bf: AFX_FIX): BOOLEAN
 					do
@@ -65,6 +66,7 @@ feature{NONE} -- Initialization
 					end))
 			l_sorter.sort (l_fixes)
 
+			create fixes.make (l_fixes.count)
 			create melted_fixes.make
 			from
 				l_fixes.start
@@ -88,12 +90,12 @@ feature -- Access
 			-- Fix candidates to validate
 			-- Key is fix ID, value is the fix associated with that ID
 
-	test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
-			-- Test cases used to validate fix candidates.
+--	test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+--			-- Test cases used to validate fix candidates.
 
-	passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
-			-- Passing test cases used to validate fix candidates
-			-- This should be a subset of `test_cases'
+--	passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
+--			-- Passing test cases used to validate fix candidates
+--			-- This should be a subset of `test_cases'
 
 	valid_fixes: LINKED_LIST [AFX_FIX]
 			-- List of valid fixed found so far
@@ -103,8 +105,8 @@ feature -- Actions
 	worker: AFX_FIX_VALIDATION_THREAD
 			-- Worker thread to validate fix candidates
 
-	valid_fix_count: INTEGER
-			-- Number of good fixes validated so far
+--	valid_fix_count: INTEGER
+--			-- Number of good fixes validated so far
 
 	should_quit: BOOLEAN
 			-- Should fix validation be stopped?
@@ -125,6 +127,7 @@ feature{NONE} -- Actions
 			l_fix_text: STRING
 			l_passing_count: INTEGER
 			l_failing_count: INTEGER
+			l_valid_fixes_count: INTEGER
 		do
 			l_passing_count := test_case_execution_status.count - (a_exception_count.to_integer_32 - exception_count.to_integer_32)
 			l_failing_count := a_exception_count.to_integer_32 - exception_count.to_integer_32
@@ -134,17 +137,17 @@ feature{NONE} -- Actions
 				l_fix.ranking.set_impact_on_passing_test_cases (l_fix.impact_on_passing_test_cases)
 				l_fix.set_is_valid (True)
 				l_fix_text := formated_fix (l_fix)
-				valid_fix_count := valid_fix_count + 1
+				valid_fixes.extend (fixes.item (a_melted_fix.id))
+				l_valid_fixes_count := valid_fixes.count
 				store_fix_in_file (config.fix_directory, l_fix, True, Void)
-				store_string_in_file (config.valid_fix_directory, "f" + valid_fix_count.out + ".e", l_fix_text)
+				store_string_in_file (config.valid_fix_directory, "f" + l_valid_fixes_count.out + ".e", l_fix_text)
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
-				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number = valid_fix_count then
+				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number <= l_valid_fixes_count then
 					timer.set_timeout (0)
 					worker.set_should_quit (True)
 					should_quit := True
 				end
-				valid_fixes.extend (fixes.item (a_melted_fix.id))
 			end
 			event_actions.notify_on_fix_candidate_validation_ends (fixes.item (a_melted_fix.id), l_valid, l_passing_count, l_failing_count)
 			exception_count := a_exception_count
@@ -156,7 +159,7 @@ feature{NONE} -- Actions
 			event_actions.notify_on_test_case_execution_time_out
 			check process /= Void end
 			process.terminate_tree
---			process.wait_for_exit
+			process.wait_for_exit
 		end
 
 feature{NONE} -- Requests for interpreter
@@ -196,11 +199,8 @@ feature -- Basic operations
 						socket := l_socket
 
 						create timer.make (agent on_test_case_execution_time_out)
-							--| Do we need the two operations below? 'timer' will be set at the beginning of 'worker.execute'.
---						timer.set_timeout (0)
---						timer.start
 
-						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, test_cases, passing_test_cases)
+						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, all_test_cases, all_passing_test_cases)
 						worker.execute
 						process.wait_for_exit_with_timeout (5000)
 						if not process.has_exited then

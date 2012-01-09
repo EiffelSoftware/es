@@ -289,7 +289,6 @@ feature{NONE} -- Implementation
 			log ((duration // 1000).out)
 			log ("; ")
 			log_line (duration.out)
-			log_file.flush
 		end
 
 	log_line (a_string: STRING)
@@ -299,6 +298,7 @@ feature{NONE} -- Implementation
 		do
 			log (a_string)
 			log ("%N")
+			log_file.flush
 		end
 
 	log (a_string: STRING)

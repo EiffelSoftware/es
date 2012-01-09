@@ -7,13 +7,6 @@ note
 class
 	AFX_PROGRAM_EXECUTION_STATE
 
-inherit
-	ANY
-
-	AFX_SHARED_STATIC_ANALYSIS_REPORT
-
-	AFX_SHARED_FIXING_TARGET_EQUALITY_TESTER
-
 create
 	make_with_state_and_bp_index
 
@@ -87,7 +80,7 @@ feature -- Statistic
 					l_equation := state.item_for_iteration
 
 					check attached {EPA_EXPRESSION} l_equation.expression as lt_expression then
-						-- Update statistics if, and only if, the value is "True".
+							-- Update statistics if, and only if, the value is "True".
 						l_value := l_equation.value
 						if l_value.is_boolean and then l_value.as_boolean.item then
 							create l_target.make (lt_expression, l_bp_index, 1.0)

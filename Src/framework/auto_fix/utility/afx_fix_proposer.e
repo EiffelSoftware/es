@@ -75,8 +75,8 @@ feature -- Basic operations
 			l_file: PLAIN_TEXT_FILE
 		do
 			reset_report
+			session.initialize_logging
 
-			initialize_logging
 			event_actions.notify_on_session_starts
 
 				-- HACK: force re-compiling the root class by "touch"ing it, otherwise expression evaluation might fail.
@@ -112,6 +112,31 @@ feature -- Basic operations
 		end
 
 feature{NONE} -- Implementation
+
+--	generate_report
+--			-- Generate report on the AutoFix session.
+--		local
+--			l_report: STRING
+--			cnt: INTEGER
+--		do
+--			create l_report.make (1024)
+--			l_report.append ("Total fixes: " + fixes.count.out + "%N")
+--			l_report.append ("Valid fixes: " + valid_fixes.count.out + "%N")
+--			l_report.append ("session length: " + time_trace_logger.session_duration.out + "%N")
+--		end
+
+	store_fixes (a_fixes: DS_LINKED_LIST [AFX_FIX]; a_file_name: STRING)
+			-- Store fixes in to files.
+		local
+			l_big_file: PLAIN_TEXT_FILE
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make_from_string (config.data_directory)
+			l_file_name.set_file_name (a_file_name)
+			create l_big_file.make_create_read_write (l_file_name)
+			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False, l_big_file))
+			l_big_file.close
+		end
 
 	analyze_test_cases
 			-- Analyze the execution of test cases.
@@ -191,19 +216,6 @@ feature{NONE} -- Implementation
 			l_validator.validate
 		end
 
-	store_fixes (a_fixes: DS_LINKED_LIST [AFX_FIX]; a_file_name: STRING)
-			-- Store fixes in to files.
-		local
-			l_big_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
-		do
-			create l_file_name.make_from_string (config.data_directory)
-			l_file_name.set_file_name (a_file_name)
-			create l_big_file.make_create_read_write (l_file_name)
-			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False, l_big_file))
-			l_big_file.close
-		end
-
 feature{NONE} -- Auxiliary
 
 	fixes: DS_LINKED_LIST [AFX_FIX]
@@ -235,29 +247,29 @@ feature{NONE} -- Auxiliary
 			l_sorter.sort (valid_fixes)
 		end
 
-feature -- Logging
+--feature -- Logging
 
-	logger: AFX_PROXY_LOGGER;
-			-- Logger to log proxy messages
+--	logger: AFX_PROXY_LOGGER;
+--			-- Logger to log proxy messages
 
-	console_logger: AFX_CONSOLE_PRINTER
-			-- Logger to print messages to console
+--	console_logger: AFX_CONSOLE_PRINTER
+--			-- Logger to print messages to console
 
-	time_trace_logger: AFX_TIME_LOGGER
-			-- Logger to keep track of time spent in AutoFix.
+--	time_trace_logger: AFX_TIME_LOGGER
+--			-- Logger to keep track of time spent in AutoFix.
 
-	initialize_logging
-			-- Initialize logging.
-		do
-			create logger.make
-			event_actions.subscribe_action_listener (logger)
+--	initialize_logging
+--			-- Initialize logging.
+--		do
+--			create logger.make
+--			event_actions.subscribe_action_listener (logger)
 
-			create console_logger.make
-			event_actions.subscribe_action_listener (console_logger)
+--			create console_logger.make
+--			event_actions.subscribe_action_listener (console_logger)
 
-			create time_trace_logger.reset
-			event_actions.subscribe_action_listener (time_trace_logger)
-		end
+--			create time_trace_logger.reset
+--			event_actions.subscribe_action_listener (time_trace_logger)
+--		end
 
 feature{NONE} -- Cache
 

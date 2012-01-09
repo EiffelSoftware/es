@@ -259,7 +259,7 @@ feature{NONE} -- Implementation
 			-- class to execute all those test cases.
 			-- C compile current porject after copying and rewriting.
 		local
-			l_genreator: AFX_TEST_CASE_RUNNER_GENERATOR
+--			l_genreator: AFX_TEST_CASE_RUNNER_GENERATOR
 			l_file: PLAIN_TEXT_FILE
 			l_root_class_folder: STRING
 		do
@@ -271,10 +271,10 @@ feature{NONE} -- Implementation
 			compile_project_with_mentioned_types
 
 				-- Rewrite system root class.
-			create l_genreator.make (system, config, failing_test_cases, passing_test_cases)
-			l_genreator.generate
+--			create l_genreator.make (system, config, failing_test_cases, passing_test_cases)
+--			l_genreator.generate
 			create l_file.make_create_read_write (root_class.file_name)
-			l_file.put_string (l_genreator.last_class_text)
+--			l_file.put_string (l_genreator.last_class_text)
 			l_file.close
 
 				-- Copy failing test case classes into `system'.

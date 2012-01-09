@@ -62,7 +62,7 @@ feature -- Basic operation
 			last_value := evaluate_boolean_relation (l_left_value, l_right_value, operator)
 		end
 
-	derived_change_requirements (a_result: BOOLEAN): DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
+	derived_change_requirements : DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
 			-- <Precursor>
 		local
 			l_requirements: DS_LINKED_LIST[TUPLE[expr1: EPA_EXPRESSION; expr2: EPA_EXPRESSION]]

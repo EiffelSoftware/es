@@ -192,10 +192,7 @@ feature{NONE} -- Event handler
 				in_monitor_mode: is_in_mode_monitor
 				exception_signature_available: exception_signature /= Void
 			end
---			current_test_case_info := exception_spot.test_case_info.deep_twin
 			create test_case_info.make (l_uuid, l_uuid)
---			current_test_case_info.set_is_passing (l_passing)
---			current_test_case_info.set_uuid (l_uuid)
 
 			test_case_execution_event_listeners.do_all (agent {AFX_TEST_CASE_EXECUTION_EVENT_LISTENER}.on_new_test_case(test_case_info))
 			event_actions.notify_on_new_test_case_found (test_case_info)
