@@ -30,4 +30,17 @@ feature -- Basic operations
 			l_dest_file.close
 		end
 
+	base_eiffel_file_name_from_full_path (a_full_path: STRING): STRING
+			-- File base name from its full path.
+		local
+			l_reg: RX_PCRE_REGULAR_EXPRESSION
+		do
+			create l_reg.make
+			l_reg.compile ("([^/\\]+).e$")
+			l_reg.match (a_full_path)
+			check l_reg.has_matched then
+				Result := l_reg.captured_substring (1)
+			end
+		end
+
 end

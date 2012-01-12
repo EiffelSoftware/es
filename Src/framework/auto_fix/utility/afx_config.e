@@ -142,15 +142,20 @@ feature -- Access
 			Result := l_path
 		end
 
-	cutoff_time_minutes: INTEGER
-			-- Cut-off time in minutes.
-
-	set_cutoff_time_minutes (a_time: INTEGER)
-			-- Set `cutoff_time_minutes' with `a_time'.
-		require
-			time_great_enough: a_time > 0
+	report_file_path: STRING
+			-- Path to the AutoFix report file.
 		do
-			cutoff_time_minutes := a_time
+			Result := report_file_path_cache
+		end
+
+	maximum_session_length_in_minutes: NATURAL
+			-- Maximum AutoFix session length in minutes.
+			-- '0' means unlimited length.
+
+	set_maximum_session_length_in_minutes (a_length: NATURAL)
+			-- Set `maximum_session_length_in_minutes' with `a_length'.
+		do
+			maximum_session_length_in_minutes := a_length
 		end
 
 feature -- State retrieval related
@@ -169,6 +174,9 @@ feature -- Test case analysis
 
 	test_case_path: detachable STRING
 			-- Full path of the folder storing test cases
+
+	test_case_file_list: STRING
+			-- Full path to a file, where test cases to be used to build the fixing project are listed.
 
 	max_test_case_number: INTEGER
 			-- Max number of test cases
@@ -357,15 +365,6 @@ feature -- Fix generation
 
 feature -- AutoFix report
 
-	should_generate_report: BOOLEAN
-			-- Should a report be generated regarding the AutoFix process?
-
-	set_generate_report (a_flag: BOOLEAN)
-			-- Set `should_generate_report'.
-		do
-			should_generate_report := a_flag
-		end
-
 	report_file: PLAIN_TEXT_FILE
 			-- File to which the AutoFix report will be sent.
 
@@ -483,6 +482,16 @@ feature -- Setting
 			test_case_path_set: test_case_path ~ a_path
 		end
 
+	set_test_case_file_list (a_path: STRING)
+			-- Set `test_case_file_list'.
+		require
+			path_not_empty: a_path /= Void and then not a_path.is_empty
+		do
+			create test_case_file_list.make_from_string (a_path)
+		ensure
+			file_list_set: test_case_file_list ~ a_path
+		end
+
 	set_max_test_case_number (b: INTEGER)
 			-- Set `max_test_case_number' with `b'.
 		do
@@ -593,7 +602,18 @@ feature -- Setting
 			max_fixing_target := a_max
 		end
 
+	set_report_file_path (a_path: STRING)
+			-- Set `report_file_path'.
+		require
+			path_not_empty: a_path /= VOid and then not a_path.is_empty
+		do
+			report_file_path_cache := a_path
+		end
+
 feature{NONE} -- Implementation
+
+	report_file_path_cache: STRING
+			-- Cache of `report_file_path'.
 
 	working_directory_cache: detachable STRING
 			-- Cache for working_directory

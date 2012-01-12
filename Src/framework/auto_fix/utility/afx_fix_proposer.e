@@ -73,9 +73,11 @@ feature -- Basic operations
 			-- <Precursor>
 		local
 			l_file: PLAIN_TEXT_FILE
+			l_validator: AFX_FIX_VALIDATOR
 		do
 			reset_report
 			session.initialize_logging
+			session.start
 
 			event_actions.notify_on_session_starts
 
@@ -95,12 +97,14 @@ feature -- Basic operations
 			event_actions.notify_on_fix_generation_starts
 			generate_fixes
 			store_fixes (fixes, "fixes.txt")
-			event_actions.notify_on_fix_generation_ends (fixes.count)
+			event_actions.notify_on_fix_generation_ends (fixes)
 
 				-- Validate generated fixes.
-			event_actions.notify_on_fix_validation_starts
-			validate_fixes
-			event_actions.notify_on_fix_validation_ends
+			check exception_signature /= Void end
+			create l_validator.make (fixes)
+			event_actions.notify_on_fix_validation_starts(l_validator.melted_fixes)
+			l_validator.validate
+			event_actions.notify_on_fix_validation_ends(l_validator.valid_fixes)
 
 				-- Generate profiling data about AutoFix.
 			event_actions.notify_on_report_generation_starts
@@ -109,21 +113,10 @@ feature -- Basic operations
 			event_actions.notify_on_report_generation_ends
 
 			event_actions.notify_on_session_ends
+			session.clean_up
 		end
 
 feature{NONE} -- Implementation
-
---	generate_report
---			-- Generate report on the AutoFix session.
---		local
---			l_report: STRING
---			cnt: INTEGER
---		do
---			create l_report.make (1024)
---			l_report.append ("Total fixes: " + fixes.count.out + "%N")
---			l_report.append ("Valid fixes: " + valid_fixes.count.out + "%N")
---			l_report.append ("session length: " + time_trace_logger.session_duration.out + "%N")
---		end
 
 	store_fixes (a_fixes: DS_LINKED_LIST [AFX_FIX]; a_file_name: STRING)
 			-- Store fixes in to files.
@@ -150,6 +143,7 @@ feature{NONE} -- Implementation
 			create l_intra_feature_trace_collector.make
 			l_intra_feature_trace_collector.collect_trace
 			l_trace_repository := trace_repository
+			progression_monitor.set_progression (progression_monitor.progression_test_case_analysis_execution_end)
 
 			if config.is_using_random_based_strategy then
 				create l_trace_analyzer
@@ -175,41 +169,43 @@ feature{NONE} -- Implementation
 			l_text: STRING
 			l_count: INTEGER
 		do
-			if config.is_using_random_based_strategy then
-				create {AFX_RANDOM_BASED_FIX_GENERATOR} l_generator
-			elseif config.is_using_model_based_strategy then
-				create {AFX_ASSERTION_VIOLATION_FIX_GENERATOR} l_generator
-			end
-			l_generator.generate
+			if session.should_continue then
+				if config.is_using_random_based_strategy then
+					create {AFX_RANDOM_BASED_FIX_GENERATOR} l_generator
+				elseif config.is_using_model_based_strategy then
+					create {AFX_ASSERTION_VIOLATION_FIX_GENERATOR} l_generator
+				end
+				l_generator.generate
 
-			create fixes.make
-			fixes.append_last (l_generator.fixes)
+				if session.should_continue then
+					create fixes.make
+					fixes.append_last (l_generator.fixes)
 
-				-- Remove syntactially equivalent fixes.
-			create l_text_equal_fixes.make (fixes.count)
-			l_text_equal_fixes.compare_objects
-			from
-				fixes.start
-			until
-				fixes.after
-			loop
-				l_fix := fixes.item_for_iteration
-				l_text := l_fix.text
-				if l_text_equal_fixes.has (l_text) then
-					fixes.remove_at
-				else
-					l_text_equal_fixes.put (1, l_text)
-					fixes.forth
+						-- Remove syntactially equivalent fixes.
+					create l_text_equal_fixes.make (fixes.count)
+					l_text_equal_fixes.compare_objects
+					from
+						fixes.start
+					until
+						fixes.after
+					loop
+						l_fix := fixes.item_for_iteration
+						l_text := l_fix.text
+						if l_text_equal_fixes.has (l_text) then
+							fixes.remove_at
+						else
+							l_text_equal_fixes.put (1, l_text)
+							fixes.forth
+						end
+					end
 				end
 			end
 		end
 
 	validate_fixes
 			-- Validate `fix_skeletons'.
-			-- (from AFX_TEST_CASE_APP_ANALYZER)
 		local
 			l_validator: AFX_FIX_VALIDATOR
-			l_spot: AFX_EXCEPTION_SPOT
 		do
 			check exception_signature /= Void end
 			create l_validator.make (fixes)
@@ -246,30 +242,6 @@ feature{NONE} -- Auxiliary
 						end))
 			l_sorter.sort (valid_fixes)
 		end
-
---feature -- Logging
-
---	logger: AFX_PROXY_LOGGER;
---			-- Logger to log proxy messages
-
---	console_logger: AFX_CONSOLE_PRINTER
---			-- Logger to print messages to console
-
---	time_trace_logger: AFX_TIME_LOGGER
---			-- Logger to keep track of time spent in AutoFix.
-
---	initialize_logging
---			-- Initialize logging.
---		do
---			create logger.make
---			event_actions.subscribe_action_listener (logger)
-
---			create console_logger.make
---			event_actions.subscribe_action_listener (console_logger)
-
---			create time_trace_logger.reset
---			event_actions.subscribe_action_listener (time_trace_logger)
---		end
 
 feature{NONE} -- Cache
 

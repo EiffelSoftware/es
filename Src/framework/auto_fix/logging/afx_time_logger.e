@@ -12,6 +12,7 @@ inherit
 		redefine
 			on_session_starts,
 			on_session_ends,
+			on_session_canceled,
 			on_test_case_analysis_starts,
 			on_test_case_analysis_ends,
 			on_fix_generation_starts,
@@ -22,6 +23,8 @@ inherit
 
 	EPA_TIME_UTILITY
 
+	AFX_SHARED_SESSION
+
 create
 	reset
 
@@ -30,7 +33,6 @@ feature -- Reset time trace
 	reset
 			-- Reset time trace.
 		do
-			session_start_time := Void
 			session_end_time := Void
 			test_case_analysis_start_time := Void
 			test_case_analysis_end_time := Void
@@ -44,6 +46,11 @@ feature -- Access
 
 	session_start_time: DT_DATE_TIME
 			-- Time when session starts.
+		require
+			session_started: session.has_started
+		do
+			Result := session.starting_time
+		end
 
 	session_end_time: DT_DATE_TIME
 			-- Time when session ends.
@@ -111,10 +118,16 @@ feature -- Actions
 	on_session_starts
 			-- <Precursor>
 		do
-			session_start_time := time_now
+			session_end_time := Void
+			test_case_analysis_start_time := Void
+			test_case_analysis_end_time := Void
+			fix_generation_start_time := Void
+			fix_generation_end_time := Void
+			fix_validation_start_time := Void
+			fix_validation_end_time := Void
 		end
 
-	on_session_ends
+	on_session_ends, on_session_canceled
 			-- <Precursor>
 		do
 			session_end_time := time_now
@@ -138,19 +151,19 @@ feature -- Actions
 			fix_generation_start_time := time_now
 		end
 
-	on_fix_generation_ends (a_candidate_count: INTEGER)
+	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- <Precursor>
 		do
 			fix_generation_end_time := time_now
 		end
 
-	on_fix_validation_starts
+	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- <Precursor>
 		do
 			fix_validation_start_time := time_now
 		end
 
-	on_fix_validation_ends
+	on_fix_validation_ends (a_fixes: LINKED_LIST [AFX_FIX])
 			-- <Precursor>
 		do
 			fix_validation_end_time := time_now

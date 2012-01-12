@@ -22,6 +22,8 @@ inherit
 			system
 		end
 
+	EPA_FILE_UTILITY
+
 	EQA_TEST_EXECUTION_MODE
 
 	REFACTORING_HELPER
@@ -130,26 +132,18 @@ feature{NONE} -- Auxiliary operation
 		require
 			test_case_files_attached: a_test_case_files /= Void
 		local
-			l_test_case_folder_path, l_test_case_file_path: FILE_NAME
+			l_test_case_file_path: STRING
 			l_cursor: DS_ARRAYED_LIST_CURSOR [STRING]
-			l_dir: DIRECTORY
-			l_file_name: STRING
 		do
 			create Result.make_equal (5)
 
-			create l_test_case_folder_path.make_from_string (test_case_folder)
 			from
 				l_cursor := a_test_case_files.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
 			loop
-				l_file_name := l_cursor.item
-
-					-- Prepare absolute file path.
-				create l_test_case_file_path.make_from_string (l_test_case_folder_path)
-				l_test_case_file_path.set_file_name (l_file_name)
-				l_test_case_file_path.add_extension ("e")
+				l_test_case_file_path := l_cursor.item
 
 				Result.append (types_from_test_case (l_test_case_file_path))
 
@@ -249,19 +243,21 @@ feature{NONE} -- Auxiliary operation
 			-- Append the execution command of the test with its name 'a_test_class_name' to the execution string 'a_executor'.
 			-- The way this test is executed depends on the execution mode given by 'a_execution_mode'.
 		local
+			l_test_case_class_file_base_name: STRING
 			l_test_executor: STRING
 			l_slices: LIST [STRING]
 		do
+			l_test_case_class_file_base_name := base_eiffel_file_name_from_full_path (a_test_class_name)
 			l_test_executor := Execute_test_case_feature_template.twin
 			l_test_executor.replace_substring_all ("${TEST_CASE_INDEX}", test_case_index.out)
-			l_test_executor.replace_substring_all ("${TEST_CASE_CLASS_NAME}", a_test_class_name)
+			l_test_executor.replace_substring_all ("${TEST_CASE_CLASS_NAME}", l_test_case_class_file_base_name.as_upper)
 			l_test_executor.replace_substring_all ("${EXECUTION_MODE}", a_execution_mode.out)
 
 			a_executor.append (l_test_executor)
 			a_executor.append ("%N%N")
 
 			if a_execution_mode = Mode_monitor then
-				l_slices := string_slices (a_test_class_name, "__")
+				l_slices := string_slices (l_test_case_class_file_base_name, "__")
 				test_cases.extend (["execute_test_case_" + test_case_index.out, l_slices.last])
 			end
 
@@ -321,7 +317,7 @@ feature{NONE} -- Auxiliary operation
 			l_uuid: STRING
 			l_signature: EPA_TEST_CASE_SIGNATURE
 		do
-			create l_signature.make_with_string (current_failing_test_cases.first)
+			create l_signature.make_with_string (base_eiffel_file_name_from_full_path(current_failing_test_cases.first))
 			check same_uuid: l_signature.uuid ~ current_fault_signature.uuid end
 			l_uuid := current_fault_signature.uuid
 

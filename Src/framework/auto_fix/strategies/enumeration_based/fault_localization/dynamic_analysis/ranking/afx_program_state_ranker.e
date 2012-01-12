@@ -31,7 +31,6 @@ feature -- Basic operation
 		do
 			compute_suspiciousness_values_of_targets
 			fixing_target_list.do_all (agent (a_target: AFX_FIXING_TARGET) do a_target.set_rank (a_target.suspiciousness_value) end)
---			sort_ranking (fixing_target_list)
 			compute_ranks_of_state_expressions
 			sort_ranking (fixing_target_list)
 		end

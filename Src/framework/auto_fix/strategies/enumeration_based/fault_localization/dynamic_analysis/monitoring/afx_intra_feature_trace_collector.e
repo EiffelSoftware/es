@@ -63,36 +63,52 @@ feature -- Basic operation
 			l_expression_set: DS_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 			l_class: CLASS_C
 			l_feature: FEATURE_I
+			l_timer: DEBUGGER_TIMER
+			l_time_left: INTEGER
+			l_retried: BOOLEAN
 		do
-			reset_collector
+			if not l_retried then
+				l_time_left := session.time_left
+				if l_time_left >= 0 then
+					reset_collector
+					l_timer := debugger_manager.new_timer
+					l_timer.actions.extend (agent quit_debugging)
 
-			register_general_action_listeners
+					register_general_action_listeners
 
-				-- Initialize debugger.
-			debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
-			remove_breakpoint (debugger_manager, Test_case_super_class)
+						-- Initialize debugger.
+					debugger_manager.set_should_menu_be_raised_when_application_stopped (False)
+					remove_breakpoint (debugger_manager, Test_case_super_class)
 
-				-- Register debugger event listener.
-			l_app_stop_agent := agent on_application_stopped
-			l_app_exit_agent := agent on_application_exit
-			debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
-			debugger_manager.observer_provider.application_exited_actions.extend (l_app_exit_agent)
+						-- Register debugger event listener.
+					l_app_stop_agent := agent on_application_stopped
+					l_app_exit_agent := agent on_application_exit
+					debugger_manager.observer_provider.application_stopped_actions.extend (l_app_stop_agent)
+					debugger_manager.observer_provider.application_exited_actions.extend (l_app_exit_agent)
 
-				-- Start debugging the application.
-			start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory, {EXEC_MODES}.Run, False)
+						-- Start debugging the application.
+					l_timer.set_interval (l_time_left)
+					start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory, {EXEC_MODES}.Run, False)
+					l_timer.set_interval (0)
 
-				-- Unregister debugger event listener.
-			debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
-			debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exit_agent)
+						-- Unregister debugger event listener.
+					debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
+					debugger_manager.observer_provider.application_exited_actions.prune_all (l_app_exit_agent)
 
-				-- Clean up debugger.
-			remove_breakpoint (debugger_manager, Test_case_super_class)
-			remove_debugger_session
+						-- Clean up debugger.
+					remove_breakpoint (debugger_manager, Test_case_super_class)
+					remove_debugger_session
 
-			if config.is_using_random_based_strategy then
-					-- Interprete program states based on the observed evaluations.
-				set_trace_repository (trace_repository.derived_repository (exception_recipient_feature.derived_state_skeleton))
+					if config.is_using_random_based_strategy then
+							-- Interprete program states based on the observed evaluations.
+						set_trace_repository (trace_repository.derived_repository (exception_recipient_feature.derived_state_skeleton))
+					end
+				end
 			end
+		rescue
+			l_retried := True
+			session.cancel
+			retry
 		end
 
 feature{None} -- Implementation
@@ -147,6 +163,15 @@ feature{NONE} -- Execution Evetn Listener
 
 feature{NONE} -- Event handler
 
+	quit_debugging
+			-- Quit debugging.
+		do
+			unregister_test_case_entry_handler (debugger_manager)
+			unregister_program_state_monitoring (Void, debugger_manager)
+			kill_debuggee (debugger_manager)
+			session.cancel
+		end
+
 	on_test_case_setup (a_breakpoint: BREAKPOINT; a_test_case_info: EPA_STATE)
 			-- Action to be performed when a new test case has been setup.
 			-- The handler is registered during the first exception handling.
@@ -184,8 +209,6 @@ feature{NONE} -- Event handler
 			l_passing := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_is_passing).out.to_boolean
 			l_uuid := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_class_uuid).out
 			l_trace := l_table.item ({EQA_SERIALIZED_TEST_SET}.Txt_tci_exception_trace).out
-
-			io.put_string ("Entering test case " + l_uuid + "%N")
 
 			current_test_case_execution_mode := l_execution_mode
 			check
@@ -239,9 +262,6 @@ feature{NONE} -- Event handler
 
 								-- Analyze the exception and its recipient.
 							analyze_exception (a_dm)
-
-								-- Initialize current test case info.
---							initialize_test_case_info
 
 								-- Mark the code range of test cases.
 							register_test_case_entry_handler

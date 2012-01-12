@@ -27,8 +27,6 @@ inherit
 			on_test_case_execution_time_out
 		end
 
-	EPA_TIME_UTILITY
-
 	AFX_UTILITY
 
 	AFX_SHARED_SESSION
@@ -50,7 +48,6 @@ feature -- Actions
 	on_session_starts
 			-- Action to be performed when the whole AutoFix session starts
 		do
-			start_time := time_now
 			log_time_stamp_new_line (session_start_message)
 		end
 
@@ -78,24 +75,24 @@ feature -- Actions
 			log_time_stamp_new_line (fix_generation_start_message)
 		end
 
-	on_fix_generation_ends (a_candidate_count: INTEGER)
+	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix generation ends
 		do
-			log_time_stamp_new_line (fix_generation_end_message + a_candidate_count.out + " candidates generated.")
+			log_time_stamp_new_line (fix_generation_end_message + a_fixes.count.out + " candidates generated.")
 			fix_candidate_count := a_candidate_count
 			finish_validated_fix_candidate_count := 0
 		end
 
-	on_fix_validation_starts
+	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- Action to be performed when fix validation starts
 		do
-			log_time_stamp_new_line (fix_validation_start_message)
+			log_time_stamp_new_line (fix_validation_start_message + ": " + a_fixes.count.out + " fixes to validate.")
 		end
 
-	on_fix_validation_ends
+	on_fix_validation_ends (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix validation ends
 		do
-			log_time_stamp_new_line (fix_validation_end_message)
+			log_time_stamp_new_line (fix_validation_end_message + ": " + a_fixes.count.out + " valid fixes.")
 		end
 
 	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
@@ -191,9 +188,6 @@ feature -- Constants
 
 feature{NONE} -- Implementation
 
-	start_time: DT_DATE_TIME
-			-- Starting time of current AutoFix session
-
 	break_point_count: INTEGER
 			-- Number of break points that are met in the last found test case
 
@@ -260,12 +254,11 @@ feature{NONE} -- Implementation
 	log_time_stamp (a_tag: STRING)
 			-- Log tag `a_tag' with timing information.
 		local
-			l_time_now: DT_DATE_TIME
 			duration: INTEGER
 			l_minute: INTEGER
 			l_second: INTEGER
 		do
-			duration := duration_from_time (start_time)
+			duration := session.length
 			l_second := duration // 1000
 			l_minute := l_second // 60
 			l_second := l_second \\ 60

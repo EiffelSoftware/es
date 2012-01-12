@@ -111,12 +111,8 @@ feature -- Basic operation
 			end
 
 				-- Copy test case files, both passing and failing, into `system'.
-			copy_test_case_files (current_passing_test_cases, test_case_folder, l_eifgens_dir_path)
-			copy_test_case_files (current_failing_test_cases, test_case_folder, l_eifgens_dir_path)
-
---			if not l_system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
---				l_system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
---			end
+			copy_test_case_files (current_passing_test_cases, l_eifgens_dir_path)
+			copy_test_case_files (current_failing_test_cases, l_eifgens_dir_path)
 
 				-- Recompile current project.
 			compile_project (eiffel_project, True)
@@ -124,30 +120,28 @@ feature -- Basic operation
 
 feature{NONE} -- Implementation
 
-	copy_test_case_files (a_class_names: DS_ARRAYED_LIST [STRING]; a_src_dir, a_dest_dir: STRING)
-			-- Copy test cases, with names in `a_class_names', from `a_src_dir' to `a_dest_dir'.
+	copy_test_case_files (a_class_file_names: DS_ARRAYED_LIST [STRING]; a_dest_dir: STRING)
+			-- Copy test cases, with names in `a_class_file_names' to `a_dest_dir'.
 			-- Existing files in `a_dest_file' with the same names will be overwritten.
 		require
-			class_names_attached: a_class_names /= Void
-			dirs_not_empty: a_src_dir /= Void and then not a_src_dir.is_empty
-						and then a_dest_dir /= Void and then not a_dest_dir.is_empty
+			class_file_names_attached: a_class_file_names /= Void
+			dirs_not_empty: a_dest_dir /= Void and then not a_dest_dir.is_empty
 		local
-			l_src_file_name, l_dest_file_name: FILE_NAME
+			l_src_file_name: STRING
+			l_dest_file_name: FILE_NAME
 			l_class_name: STRING
 		do
-			from a_class_names.start
-			until a_class_names.after
+			from a_class_file_names.start
+			until a_class_file_names.after
 			loop
-				l_class_name := a_class_names.item_for_iteration.as_lower
+				l_src_file_name := a_class_file_names.item_for_iteration
 				create l_dest_file_name.make_from_string (a_dest_dir)
-				l_dest_file_name.set_file_name (l_class_name)
+				l_dest_file_name.set_file_name (base_eiffel_file_name_from_full_path(l_src_file_name))
 				l_dest_file_name.add_extension ("e")
-				create l_src_file_name.make_from_string (a_src_dir)
-				l_src_file_name.set_file_name (l_class_name)
-				l_src_file_name.add_extension ("e")
+
 				File_system.copy_file (l_src_file_name, l_dest_file_name)
 
-				a_class_names.forth
+				a_class_file_names.forth
 			end
 		end
 

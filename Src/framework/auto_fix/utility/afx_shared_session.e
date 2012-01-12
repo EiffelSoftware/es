@@ -33,6 +33,14 @@ feature -- Access
 			Result := session.event_actions
 		end
 
+	progression_monitor: AFX_PROGRESSION_MONITOR
+			-- Progression monitor.
+		require
+			session_attached: is_session_attached
+		do
+			Result := session.progression_monitor
+		end
+
 	exception_signature: AFX_EXCEPTION_SIGNATURE
 			-- Signature of the exception.
 		do
@@ -44,16 +52,6 @@ feature -- Access
 		do
 			Result := session.exception_recipient_feature
 		end
-
---	program_state_expression_equality_tester: KL_EQUALITY_TESTER [AFX_PROGRAM_STATE_EXPRESSION]
---			-- Expression equality tester for current session.
---		do
---			if config.is_breakpoint_specific then
---				Result := Breakpoint_specific_equality_tester
---			else
---				Result := Breakpoint_unspecific_equality_tester
---			end
---		end
 
 feature -- Status report
 

@@ -66,7 +66,7 @@ feature -- Basic operation
 			create l_statistics_from_failing.make_trace_unspecific (10)
 
 			from trace_repository.start
-			until trace_repository.after
+			until trace_repository.after or not session.should_continue
 			loop
 				l_trace := trace_repository.item_for_iteration
 
@@ -82,11 +82,13 @@ feature -- Basic operation
 				trace_repository.forth
 			end
 
-			remove_statistics_out_of_range (l_statistics_from_passing)
-			remove_statistics_out_of_range (l_statistics_from_failing)
+			if session.should_continue then
+				remove_statistics_out_of_range (l_statistics_from_passing)
+				remove_statistics_out_of_range (l_statistics_from_failing)
 
-			set_statistics_from_passing (l_statistics_from_passing)
-			set_statistics_from_failing (l_statistics_from_failing)
+				set_statistics_from_passing (l_statistics_from_passing)
+				set_statistics_from_failing (l_statistics_from_failing)
+			end
 		end
 
 	clear_statistics

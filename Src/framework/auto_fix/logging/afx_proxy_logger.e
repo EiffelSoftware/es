@@ -12,6 +12,7 @@ inherit
 		redefine
 			on_session_starts,
 			on_session_ends,
+			on_session_canceled,
 			on_test_case_analysis_starts,
 			on_test_case_analysis_ends,
 			on_fix_generation_starts,
@@ -27,8 +28,6 @@ inherit
 			on_test_case_execution_time_out
 		end
 
-	EPA_TIME_UTILITY
-
 	AFX_UTILITY
 
 	AFX_SHARED_SESSION
@@ -38,14 +37,22 @@ create
 
 feature{NONE} -- Initialization
 
-	make
+	make (a_log_file: PLAIN_TEXT_FILE; a_verbose: BOOLEAN)
 			-- Initialize Current.
+		require
+			log_file_attached: a_log_file /= Void
 		do
-			create log_file.make_create_read_write (config.proxy_log_path)
-			create break_point_hit_statistics.make (50)
+			log_file := a_log_file
+			is_verbose := a_verbose
+			if is_verbose then
+				create break_point_hit_statistics.make (50)
+			end
 		end
 
 feature -- Access
+
+	is_verbose: BOOLEAN
+			-- Is logging verbose?
 
 	log_file: PLAIN_TEXT_FILE
 			-- File to store logs
@@ -55,14 +62,21 @@ feature -- Actions
 	on_session_starts
 			-- Action to be performed when the whole AutoFix session starts
 		do
-			start_time := time_now
 			log_time_stamp (session_start_message)
+			finish_validated_fix_candidate_count := 0
+			fix_candidate_count := 0
 		end
 
 	on_session_ends
 			-- Action to be performed when the whole AutoFix session ends.
 		do
 			log_time_stamp (session_end_message)
+		end
+
+	on_session_canceled
+			-- <Precursor>
+		do
+			log_time_stamp (session_canceled_message)
 		end
 
 	on_test_case_analysis_starts
@@ -83,21 +97,20 @@ feature -- Actions
 			log_time_stamp (fix_generation_start_message)
 		end
 
-	on_fix_generation_ends (a_candidate_count: INTEGER)
+	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix generation ends
 		do
-			log_time_stamp (fix_generation_end_message + a_candidate_count.out + " candidates generated.")
-			fix_candidate_count := a_candidate_count
-			finish_validated_fix_candidate_count := 0
+			log_time_stamp (fix_generation_end_message + a_fixes.count.out + " candidates generated.")
 		end
 
-	on_fix_validation_starts
+	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- Action to be performed when fix validation starts
 		do
-			log_time_stamp (fix_validation_start_message)
+			log_time_stamp (fix_validation_start_message + a_fixes.count.out + " candidates to validate.")
+			fix_candidate_count := a_fixes.count
 		end
 
-	on_fix_validation_ends
+	on_fix_validation_ends  (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix validation ends
 		do
 			log_time_stamp (fix_validation_end_message)
@@ -106,26 +119,28 @@ feature -- Actions
 	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
 			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
 		do
-			if test_case_count > 0 then
+			if is_verbose and then test_case_count > 0 then
 					-- There are some test cases before.				
 				log_break_point_hit_statistics
+				break_point_count := 0
+				break_point_hit_statistics.wipe_out
 			end
 
 			log_time_stamp (new_test_case_found_message + a_tc_info.id)
 			test_case_count := test_case_count + 1
-			break_point_count := 0
-			break_point_hit_statistics.wipe_out
 		end
 
 	on_break_point_hits (a_tc_info: EPA_TEST_CASE_INFO; a_bpslot: INTEGER)
 			-- Action to be performed when break point `a_bpslot' in `a_tc_info' is hit
 		do
-			break_point_count := break_point_count + 1
-			break_point_hit_statistics.search (a_bpslot)
-			if break_point_hit_statistics.found then
-				break_point_hit_statistics.replace (break_point_hit_statistics.found_item + 1, a_bpslot)
-			else
-				break_point_hit_statistics.put (1, a_bpslot)
+			if is_verbose then
+				break_point_count := break_point_count + 1
+				break_point_hit_statistics.search (a_bpslot)
+				if break_point_hit_statistics.found then
+					break_point_hit_statistics.replace (break_point_hit_statistics.found_item + 1, a_bpslot)
+				else
+					break_point_hit_statistics.put (1, a_bpslot)
+				end
 			end
 		end
 
@@ -139,12 +154,11 @@ feature -- Actions
 			l_message.append (fix_signature (a_candidate, False, True))
 			if fix_candidate_count > 0 then
 				l_message.append ("; progression = ")
-				l_message.append (finish_validated_fix_candidate_count.out)
+				l_message.append ((finish_validated_fix_candidate_count+1).out)
 				l_message.append (" / ")
 				l_message.append (fix_candidate_count.out)
 			end
 			log_time_stamp (l_message)
-			finish_validated_fix_candidate_count := finish_validated_fix_candidate_count + 1
 		end
 
 	on_fix_candidate_validation_ends (a_candidate: AFX_FIX; a_valid: BOOLEAN; a_passing_count: INTEGER; a_failing_count: INTEGER)
@@ -166,6 +180,7 @@ feature -- Actions
 			else
 				log_line (l_message)
 			end
+			finish_validated_fix_candidate_count := finish_validated_fix_candidate_count + 1
 		end
 
 	on_interpreter_starts (a_port: INTEGER)
@@ -192,6 +207,8 @@ feature -- Constants
 
 	session_end_message: STRING = "AutoFix session ends"
 
+	session_canceled_message: STRING = "AutoFix session canceled"
+
 	test_case_analyzing_start_message: STRING = "test case analyzing starts"
 
 	test_case_analyzing_end_message: STRING = "test case analyzing ends"
@@ -216,8 +233,8 @@ feature -- Constants
 
 feature{NONE} -- Implementation
 
-	start_time: DT_DATE_TIME
-			-- Starting time of current AutoFix session
+--	start_time: DT_DATE_TIME
+--			-- Starting time of current AutoFix session
 
 	break_point_count: INTEGER
 			-- Number of break points that are met in the last found test case
@@ -277,18 +294,21 @@ feature{NONE} -- Implementation
 
 	log_time_stamp (a_tag: STRING)
 			-- Log tag `a_tag' with timing information.
+		require
+			session_started: session.has_started
 		local
 			l_time_now: DT_DATE_TIME
 			duration: INTEGER
+			l_length: NATURAL
+			l_line: STRING
 		do
-			check start_time /= Void end
-			duration := duration_from_time (start_time)
-			log ("-- time stamp: ")
-			log (a_tag)
-			log ("; ")
-			log ((duration // 1000).out)
-			log ("; ")
-			log_line (duration.out)
+			l_length := session.length
+			create l_line.make (32)
+			l_line.append (once "-- time stamp: ")
+			l_line.append (a_tag)
+			l_line.append ("; ")
+			l_line.append (l_length.out)
+			log_line (l_line)
 		end
 
 	log_line (a_string: STRING)
@@ -296,8 +316,7 @@ feature{NONE} -- Implementation
 		require
 			a_string_not_void: a_string /= Void
 		do
-			log (a_string)
-			log ("%N")
+			log (a_string + "%N")
 			log_file.flush
 		end
 
@@ -311,6 +330,8 @@ feature{NONE} -- Implementation
 
 	log_break_point_hit_statistics is
 			-- 	Log `break_point_hit_statistics'.
+		require
+			break_point_hit_statistics_attached: break_point_hit_statistics /= Void
 		local
 			l_tbl: like break_point_hit_statistics
 		do

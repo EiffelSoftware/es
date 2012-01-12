@@ -58,6 +58,7 @@ feature -- Basic operations
 				l_ranking_cursor.after
 					or else (l_max_target /= 0 and then l_count > l_max_target)
 					or else (l_max_fix /= 0 and then fixes.count > l_max_fix)
+					or else not session.should_continue
 			loop
 				l_target := l_ranking_cursor.item
 

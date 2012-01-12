@@ -42,10 +42,10 @@ feature -- Basic operations
 			l_args: DS_LINKED_LIST [STRING]
 			l_fix_strategy: AP_STRING_OPTION
 			l_rank_control_dependance: AP_STRING_OPTION
-			l_generate_report: AP_STRING_OPTION
+			l_report_file_option: AP_STRING_OPTION
+			l_cutoff_time_option: AP_STRING_OPTION
 			l_fault_localization_strategy: AP_STRING_OPTION
 			l_state_based_test_case_selection_option: AP_FLAG
---			l_program_state: AP_STRING_OPTION
 			l_breakpoint_specific_option: AP_FLAG
 			l_rank_computation_mean_type: AP_STRING_OPTION
 			l_max_fixing_target: AP_STRING_OPTION
@@ -53,7 +53,8 @@ feature -- Basic operations
 			l_retrieve_state_option: AP_FLAG
 			l_recipient: AP_STRING_OPTION
 			l_feat_under_test: AP_STRING_OPTION
-			l_build_tc_option: AP_STRING_OPTION
+			l_test_case_dir: AP_STRING_OPTION
+			l_test_case_file_list: AP_STRING_OPTION
 			l_analyze_tc_option: AP_FLAG
 			l_combination_strategy: STRING
 			l_max_test_case_no_option: AP_INTEGER_OPTION
@@ -91,9 +92,13 @@ feature -- Basic operations
 			l_fault_localization_strategy.set_description ("Choose the strategy for fault localization.")
 			l_parser.options.force_last (l_fault_localization_strategy)
 
-			create l_generate_report.make_with_long_form ("generate-report")
-			l_generate_report.set_description ("Generate AutoFix report. Optional argument: name of the file to which the report will be appended.")
-			l_parser.options.force_last (l_generate_report)
+			create l_report_file_option.make_with_long_form ("report-file")
+			l_report_file_option.set_description ("Full path of the AutoFix report file. Optional argument: name of the file to which the report will be written.")
+			l_parser.options.force_last (l_report_file_option)
+
+			create l_cutoff_time_option.make_with_long_form ("cutoff-time")
+			l_cutoff_time_option.set_description ("Cutoff time, in minutes, for the whole AutoFix session. Argument: session length in minutes.")
+			l_parser.options.force_last (l_cutoff_time_option)
 
 			create l_rank_computation_mean_type.make_with_long_form ("rank-computation-mean-type")
 			l_rank_computation_mean_type.set_description ("The kind of mean value calculation to use for computing ranking.")
@@ -119,9 +124,13 @@ feature -- Basic operations
 			l_state_based_test_case_selection_option.set_description ("Should we select test cases based on states of the objects used in the test case?")
 			l_parser.options.force_last (l_state_based_test_case_selection_option)
 
-			create l_build_tc_option.make_with_long_form ("build-tc")
-			l_build_tc_option.set_description ("Build current project to contain test cases storing in the folder specified by the parameter.")
-			l_parser.options.force_last (l_build_tc_option)
+			create l_test_case_dir.make_with_long_form ("test-case-dir")
+			l_test_case_dir.set_description ("Build fixing project using the test cases from directory specified by the parameter.")
+			l_parser.options.force_last (l_test_case_dir)
+
+			create l_test_case_file_list.make_with_long_form ("test-case-file-list")
+			l_test_case_file_list.set_description ("Build fixing project using the test case files listed in the parameter.")
+			l_parser.options.force_last (l_test_case_file_list)
 
 			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
 			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
@@ -181,9 +190,12 @@ feature -- Basic operations
 				-- Setup `config'.
 			config.set_should_retrieve_state (l_retrieve_state_option.was_found)
 
-			config.set_should_build_test_cases (l_build_tc_option.was_found)
-			if config.should_build_test_cases then
-				config.set_test_case_path (l_build_tc_option.parameter)
+			config.set_should_build_test_cases (l_test_case_dir.was_found or else l_test_case_file_list.was_found)
+			if l_test_case_dir.was_found then
+				config.set_test_case_path (l_test_case_dir.parameter)
+			end
+			if l_test_case_file_list.was_found then
+				config.set_test_case_file_list (l_test_case_file_list.parameter)
 			end
 
 			if l_max_test_case_no_option.was_found then
@@ -250,17 +262,12 @@ feature -- Basic operations
 				config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
 			end
 
-			config.set_generate_report (l_generate_report.was_found)
-			if l_generate_report.was_found then
-				if attached l_generate_report.parameter as lt_report_file_name then
-					create l_report_file.make_open_read_append (lt_report_file_name)
-					if l_report_file.is_open_append then
-						config.set_report_file (l_report_file)
-					end
-				end
-				if config.report_file = Void then
-					config.set_report_file (io.output)
-				end
+			if l_report_file_option.was_found and then attached l_report_file_option.parameter as lt_report_file_name and then not lt_report_file_name.is_empty then
+				config.set_report_file_path (lt_report_file_name)
+			end
+
+			if l_cutoff_time_option.was_found and then attached l_cutoff_time_option.parameter as lt_cutoff_time and then lt_cutoff_time.is_natural then
+				config.set_maximum_session_length_in_minutes (lt_cutoff_time.to_natural)
 			end
 
 			if l_fix_strategy.was_found then

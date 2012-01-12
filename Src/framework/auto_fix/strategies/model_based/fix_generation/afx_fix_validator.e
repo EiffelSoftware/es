@@ -37,27 +37,6 @@ feature{NONE} -- Initialization
 			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
 			i: DOUBLE
 		do
---				-- Initialize sets of test cases `test_cases' and `passing_test_cases'.
---			create all_test_cases.make
---			create all_passing_test_cases.make
---			from
---				test_case_execution_status.start
---			until
---				test_case_execution_status.after
---			loop
---				test_cases.extend (test_case_execution_status.key_for_iteration)
---				if test_case_execution_status.item_for_iteration.is_passing then
---					passing_test_cases.extend (test_case_execution_status.key_for_iteration)
---				end
---				test_case_execution_status.forth
---			end
-
-				-- Setup `fixes' and `melted_fixes'.
-				-- Sort fixes according to their syntatic ranking, so syntatically simpler fixes are validated first.
---			create l_fixes.make (a_fixes.count)
---			l_fixes.append_last (a_fixes)
---			a_fixes.do_all (agent l_fixes.force_last)
-
 			create l_fixes.make_from_linear (a_fixes)
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AFX_FIX]}.make (
 				agent (af, bf: AFX_FIX): BOOLEAN
@@ -77,6 +56,8 @@ feature{NONE} -- Initialization
 				if attached {AFX_MELTED_FIX} melted_fix_from_fix (l_fix) as l_melted then
 					fixes.put (l_fix, l_fix.id)
 					melted_fixes.extend (l_melted)
+				else
+					l_fix := l_fix
 				end
 				l_fixes.forth
 			end
@@ -90,13 +71,6 @@ feature -- Access
 			-- Fix candidates to validate
 			-- Key is fix ID, value is the fix associated with that ID
 
---	test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
---			-- Test cases used to validate fix candidates.
-
---	passing_test_cases: LINKED_LIST [EPA_TEST_CASE_INFO]
---			-- Passing test cases used to validate fix candidates
---			-- This should be a subset of `test_cases'
-
 	valid_fixes: LINKED_LIST [AFX_FIX]
 			-- List of valid fixed found so far
 
@@ -105,11 +79,11 @@ feature -- Actions
 	worker: AFX_FIX_VALIDATION_THREAD
 			-- Worker thread to validate fix candidates
 
---	valid_fix_count: INTEGER
---			-- Number of good fixes validated so far
-
 	should_quit: BOOLEAN
 			-- Should fix validation be stopped?
+
+	melted_fixes: LINKED_LIST [AFX_MELTED_FIX]
+			-- Melted fixes for fixes in `fixes'
 
 feature{NONE} -- Actions
 
@@ -173,9 +147,6 @@ feature{NONE} -- Requests for interpreter
 	process: PROCESS
 		-- Process for the interpreter
 
-	melted_fixes: LINKED_LIST [AFX_MELTED_FIX]
-			-- Melted fixes for fixes in `fixes'
-
 feature -- Basic operations
 
 	validate_left_fixes
@@ -200,7 +171,7 @@ feature -- Basic operations
 
 						create timer.make (agent on_test_case_execution_time_out)
 
-						create worker.make (config, fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, all_test_cases, all_passing_test_cases)
+						create worker.make (fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, all_test_cases, all_passing_test_cases)
 						worker.execute
 						process.wait_for_exit_with_timeout (5000)
 						if not process.has_exited then
@@ -228,7 +199,7 @@ feature -- Basic operations
 				store_string_in_file (config.valid_fix_directory, "fx.e", formated_feature (fixes.item_for_iteration.recipient_))
 
 				from until
-					melted_fixes.is_empty or else should_quit
+					melted_fixes.is_empty or else should_quit or else not session.should_continue
 				loop
 					validate_left_fixes
 				end

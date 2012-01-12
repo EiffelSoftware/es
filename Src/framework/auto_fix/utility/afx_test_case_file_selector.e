@@ -95,6 +95,20 @@ feature -- Basic operation
 		do
 			reset
 
+			if config.test_case_file_list /= Void and then not config.test_case_file_list.is_empty then
+				collect_all_test_case_files_from_list
+			elseif config.test_case_path /= Void and then not config.test_case_path.is_empty then
+				collect_all_test_case_files_from_directory
+			end
+		end
+
+	collect_all_test_case_files_from_directory
+			-- Collect all the test case files from `config.test_case_path'.
+		local
+			l_dir: DIRECTORY
+			l_file_name: STRING
+			l_full_path: FILE_NAME
+		do
 			create l_dir.make_open_read (test_case_folder)
 			from l_dir.readentry
 			until l_dir.lastentry = Void
@@ -104,10 +118,43 @@ feature -- Basic operation
 						not l_file_name.is_equal (once "..") and then
 						l_file_name.ends_with (once ".e")
 				then
-					l_file_name.remove_tail (2)
-					collect_test_case_file (l_file_name)
+					create l_full_path.make
+					l_full_path.set_directory (test_case_folder)
+					l_full_path.set_file_name (l_file_name)
+
+					collect_test_case_file (l_full_path)
 				end
 				l_dir.readentry
+			end
+		end
+
+	collect_all_test_case_files_from_list
+			-- Collect all the test case files from `config.test_case_file_list'.
+		require
+			test_case_file_list_not_empty: config.test_case_file_list /= Void and then not config.test_case_file_list.is_empty
+		local
+			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_line: STRING
+			l_tc_path: STRING
+		do
+			create l_file_name.make_from_string (config.test_case_file_list)
+			check l_file_name.is_valid end
+			create l_file.make_open_read (l_file_name)
+			if l_file.is_open_read then
+
+				from l_file.read_line
+				until l_file.after
+				loop
+					l_line := l_file.last_string.twin
+
+					if not l_line.starts_with ("--") and l_line.ends_with (".e") then
+						collect_test_case_file (l_line)
+					end
+
+					l_file.read_line
+				end
+				l_file.close
 			end
 		end
 
@@ -201,12 +248,13 @@ feature{NONE} -- Implementation
 	collect_test_case_file (a_file_name: STRING)
 			-- Collect a test case file with the name 'a_file_name'.
 		local
+			l_base_name: STRING
 			l_signature: EPA_TEST_CASE_SIGNATURE
 			l_list: like all_passing_test_case_files
 			l_max_tc_number: INTEGER
 		do
-			create l_signature.make_with_string (a_file_name)
-
+			l_base_name := base_eiffel_file_name_from_full_path (a_file_name)
+			create l_signature.make_with_string (l_base_name)
 			if l_signature.is_failing then
 				if all_failing_test_case_files_by_signature.has (l_signature) then
 					l_list := all_failing_test_case_files_by_signature.item (l_signature)
@@ -223,6 +271,7 @@ feature{NONE} -- Implementation
 	test_case_file_selection_from_list (a_file_list: DS_ARRAYED_LIST [STRING]; a_max_number: INTEGER): DS_ARRAYED_LIST [STRING]
 			-- A selection, of at most `a_max_number' number of test case files, from `a_file_list'.
 			-- No size constraint for the result list, if `a_max_number' is 0.
+			-- Note: all the test cases would not necessarily be selected even if `a_max_number' is 0, if `is_using_state_based_test_case_selection' is enabled.
 		require
 			file_list_attached: a_file_list /= Void
 			max_number_not_negative: a_max_number >= 0
@@ -231,6 +280,7 @@ feature{NONE} -- Implementation
 			l_file: STRING
 			l_count: INTEGER
 			l_object_states: HASH_TABLE [NATURAL_8, STRING]
+			l_reg: RX_PCRE_REGULAR_EXPRESSION
 		do
 				-- Maximum number of files to select.
 			if a_max_number = 0 then
@@ -273,9 +323,7 @@ feature{NONE} -- Implementation
 			l_state_extractor: AFX_TEST_CASE_STATE_EXTRACTOR
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (test_case_folder)
-			l_file_name.set_file_name (a_test_case_file)
-			create l_state_extractor.make (l_file_name + ".e")
+			create l_state_extractor.make (a_test_case_file)
 			Result := l_state_extractor.states
 		end
 

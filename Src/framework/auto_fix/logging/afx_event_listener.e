@@ -26,6 +26,11 @@ feature -- Actions
 		do
 		end
 
+	on_session_canceled
+			-- Action to be performed when the AutoFix session is canceled.
+		do
+		end
+
 	on_test_case_analysis_starts
 			-- Action to be performed when test case analyzing starts
 		do
@@ -41,17 +46,17 @@ feature -- Actions
 		do
 		end
 
-	on_fix_generation_ends (a_candidate_count: INTEGER)
+	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix generation ends
 		do
 		end
 
-	on_fix_validation_starts
+	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- Action to be performed when fix validation starts
 		do
 		end
 
-	on_fix_validation_ends
+	on_fix_validation_ends (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Action to be performed when fix validation ends
 		do
 		end
@@ -89,11 +94,6 @@ feature -- Actions
 
 	on_test_case_execution_time_out
 			-- Action to be performed when test case execution during validation times out.
-		do
-		end
-
-	on_valid_fix_found (a_fix: AFX_FIX)
-			-- Action to be performed when a valid fix is found.
 		do
 		end
 

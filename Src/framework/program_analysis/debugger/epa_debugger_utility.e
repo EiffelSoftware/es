@@ -110,7 +110,7 @@ feature -- Basic operations
 	kill_debuggee (a_dm: DEBUGGER_MANAGER)
 			-- Kill the debuggee.
 		do
-			if a_dm.application.is_running then
+			if a_dm.application_is_executing then
 				a_dm.application.kill
 			end
 		end

@@ -21,19 +21,26 @@ feature -- Basic operations
 		do
 				-- Initialize.
 			create fix_skeletons.make
-			initialize_assertion_structure_analyzer
+			if session.should_continue then
+				initialize_assertion_structure_analyzer
 
-				-- Generate fixing locations.
-			generate_relevant_asts
+					-- Generate fixing locations.
+				generate_relevant_asts
+			end
 
 				-- Analyze structure type of the failing assertion.			
-			assertion_structure_analyzers.do_all (agent {EPA_EXPRESSION_STRUCTURE_ANALYZER}.analyze (exception_signature.exception_condition_in_recipient))
+			from assertion_structure_analyzers.start
+			until assertion_structure_analyzers.after or else not session.should_continue
+			loop
+				assertion_structure_analyzers.item_for_iteration.analyze (exception_signature.exception_condition_in_recipient)
+				assertion_structure_analyzers.forth
+			end
 
 				-- Generate fixes according to structure type of the failing assertion.
 			from
 				assertion_structure_analyzers.start
 			until
-				assertion_structure_analyzers.after or l_done
+				assertion_structure_analyzers.after or else l_done or else not session.should_continue
 			loop
 				if assertion_structure_analyzers.item_for_iteration.is_matched then
 					assertion_structure_analyzers.item_for_iteration.process (Current)
@@ -47,7 +54,7 @@ feature -- Basic operations
 			from
 				fix_skeletons.start
 			until
-				fix_skeletons.after
+				fix_skeletons.after or else not session.should_continue
 			loop
 				fix_skeletons.item_for_iteration.generate
 				fixes.append_last (fix_skeletons.item_for_iteration.fixes)

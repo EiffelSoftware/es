@@ -63,14 +63,6 @@ feature -- Access
 			create l_file_name.make_from_string (a_config.model_directory)
 			create l_dir.make (l_file_name)
 			l_dir.recursive_create_directory
-
---			create l_file_name.make_from_string (a_config.forward_model_directory)
---			create l_dir.make (l_file_name)
---			l_dir.recursive_create_directory
-
---			create l_file_name.make_from_string (a_config.backward_model_directory)
---			create l_dir.make (l_file_name)
---			l_dir.recursive_create_directory
 		end
 
 end

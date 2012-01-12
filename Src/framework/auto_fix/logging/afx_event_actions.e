@@ -17,6 +17,7 @@ feature{NONE} -- Initialization
 		do
 			create session_start_actions
 			create session_end_actions
+			create session_canceled_actions
 
 			create test_case_analysis_start_actions
 			create test_case_analysis_end_actions
@@ -49,6 +50,7 @@ feature -- Subscribe
 		do
 			session_start_actions.extend (agent a_listener.on_session_starts)
 			session_end_actions.extend (agent a_listener.on_session_ends)
+			session_canceled_actions.extend (agent a_listener.on_session_canceled)
 			test_case_analysis_start_actions.extend (agent a_listener.on_test_case_analysis_starts)
 			test_case_analysis_end_actions.extend (agent a_listener.on_test_case_analysis_ends)
 			fix_generation_start_actions.extend (agent a_listener.on_fix_generation_starts)
@@ -72,6 +74,9 @@ feature -- Access
 	session_end_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when the whole AutoFix session ends
 
+	session_canceled_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be performed when the whole AutoFix session is canceled.
+
 	test_case_analysis_start_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when the analyzing of test cases starts
 
@@ -81,14 +86,14 @@ feature -- Access
 	fix_generation_start_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be performed when fix generation starts
 
-	fix_generation_end_actions: ACTION_SEQUENCE [TUPLE [a_candidate_count: INTEGER]]
+	fix_generation_end_actions: ACTION_SEQUENCE [TUPLE [a_fixes: DS_LINKED_LIST [AFX_FIX]]]
 			-- Actions to be performed when fix generation ends
 			-- `a_candidate_count' indidates the number of generated fix candidates
 
-	fix_validation_start_actions: ACTION_SEQUENCE [TUPLE]
+	fix_validation_start_actions: ACTION_SEQUENCE [TUPLE[a_fixes: LINKED_LIST [AFX_MELTED_FIX]]]
 			-- Actions to be performed when fix validation starts
 
-	fix_validation_end_actions: ACTION_SEQUENCE [TUPLE]
+	fix_validation_end_actions: ACTION_SEQUENCE [TUPLE[a_fixes: LINKED_LIST [AFX_FIX]]]
 			-- Actions to be performed when fix validation ends
 
 	report_generation_start_actions: ACTION_SEQUENCE [TUPLE]
@@ -136,6 +141,12 @@ feature -- actions
 			session_end_actions.call (Void)
 		end
 
+	notify_on_session_canceled
+			-- Call actions in `session_canceled_actions'.
+		do
+			session_canceled_actions.call(Void)
+		end
+
 	notify_on_test_case_analysis_starts
 			-- Call actions in `test_case_analysis_start_actions'.
 		do
@@ -154,23 +165,23 @@ feature -- actions
 			fix_generation_start_actions.call (Void)
 		end
 
-	notify_on_fix_generation_ends (a_candidate_count: INTEGER)
+	notify_on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
 			-- Call actions in `fix_generation_end_actions'.
 			-- `a_candidate_count' indidates the number of generated fix candidates.
 		do
-			fix_generation_end_actions.call ([a_candidate_count])
+			fix_generation_end_actions.call ([a_fixes])
 		end
 
-	notify_on_fix_validation_starts
+	notify_on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- Call actions in `fix_validation_end_actions'.
 		do
-			fix_validation_start_actions.call (Void)
+			fix_validation_start_actions.call ([a_fixes])
 		end
 
-	notify_on_fix_validation_ends
+	notify_on_fix_validation_ends (a_fixes: LINKED_LIST [AFX_FIX])
 			-- Call actions in `fix_validation_end_actions'.
 		do
-			fix_validation_end_actions.call (Void)
+			fix_validation_end_actions.call ([a_fixes])
 		end
 
 	notify_on_report_generation_starts
