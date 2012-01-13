@@ -3561,6 +3561,7 @@ eweasel/tests/attach043/Ace -text
 eweasel/tests/attach051/Ace -text
 eweasel/tests/attach052/Ace -text
 eweasel/tests/attach064/Ace -text
+eweasel/tests/attach096/Ace -text
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
@@ -4415,6 +4416,7 @@ eweasel/tests/store033/bounded_stack_4 -text
 eweasel/tests/store033/bounded_stack_5 -text
 eweasel/tests/store034/Ace -text
 eweasel/tests/store034/data -text
+eweasel/tests/store036/file.store -text
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
 eweasel/tests/syntax003/notes -text
