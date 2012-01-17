@@ -28,7 +28,7 @@ feature -- Data event handler
 	on_test_case_deserialized (a_data: AUT_DESERIALIZED_TEST_CASE)
 			-- <Precursor>
 		do
-			all_unique_test_cases.put_last (a_data)
+			all_unique_test_cases.force_last (a_data)
 		end
 
 	on_deserialization_finished
@@ -82,7 +82,7 @@ feature{NONE}
 			-- Cache for `all_unique_test_cases'.
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
