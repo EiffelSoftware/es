@@ -43,6 +43,9 @@ feature -- Constant
 	log_end_str: STRING = "<<END>>"
 			-- End string of a log.
 
+	fatal_state_str: STRING = "Fatal"
+			-- State string for test cases whose deserialization will crash the program.
+
 feature -- Basic operation
 
 	start_checking
@@ -165,7 +168,7 @@ feature{NONE} -- Log file operation
 				create l_file.make (log_file_full_path)
 				l_file.recursive_open_append
 				if l_file.is_open_write then
-					l_file.put_boolean (False)
+					l_file.put_string (fatal_state_str)
 					l_file.put_new_line
 					l_file.flush
 					l_file.close
@@ -225,14 +228,18 @@ feature{NONE} -- Log entry reading/writing
 		local
 			l_fields: LIST [STRING]
 			l_state: STRING
+			l_time: INTEGER
 		do
 			l_fields := a_line.split (':')
 			check l_fields.count = 2 and then l_fields.i_th (1).is_integer end
+			l_time = l_fields.i_th (1).to_integer
 			l_state := l_fields.i_th (2)
 			if l_state.is_boolean then
-				Result := [l_fields.i_th (1).to_integer, True, l_state.to_boolean]
+				Result := [l_time, True, l_state.to_boolean]
+			elseif l_state ~ fatal_state_str then
+				Result := [l_time, True, False]
 			else
-				Result := [l_fields.i_th (1).to_integer, False, False]
+				Result := [l_time, False, False]
 			end
 		end
 
@@ -241,7 +248,7 @@ invariant
 	deserializability_table_attached: deserializability_table /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
