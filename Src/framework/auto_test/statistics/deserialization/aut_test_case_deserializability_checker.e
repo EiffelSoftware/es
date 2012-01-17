@@ -232,7 +232,7 @@ feature{NONE} -- Log entry reading/writing
 		do
 			l_fields := a_line.split (':')
 			check l_fields.count = 2 and then l_fields.i_th (1).is_integer end
-			l_time = l_fields.i_th (1).to_integer
+			l_time := l_fields.i_th (1).to_integer
 			l_state := l_fields.i_th (2)
 			if l_state.is_boolean then
 				Result := [l_time, True, l_state.to_boolean]
