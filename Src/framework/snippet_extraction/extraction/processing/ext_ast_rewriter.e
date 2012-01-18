@@ -9,7 +9,7 @@ deferred class
 feature -- Access
 
 	last_ast: detachable G
-			-- Holes extracted by last `extract'.
+			-- AST transfomed by last `rewrite'.
 
 feature -- Basic operations
 

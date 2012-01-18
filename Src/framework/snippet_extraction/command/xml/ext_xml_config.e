@@ -39,6 +39,10 @@ feature -- Access
 		assign set_output_path
 			-- Output directory for some operations.
 
+	generate_schema: BOOLEAN
+		assign set_generate_schema
+			-- Setting if the XML Schema file should be generated.			
+
 feature -- Setting
 
 	set_class_name (a_class_name: like class_name)
@@ -66,6 +70,12 @@ feature -- Setting
 			-- Set `output_path' with `a_output_path'.
 		do
 			output_path := a_output_path
+		end
+
+	set_generate_schema (a_should_generate: like generate_schema)
+			-- Set `generate_schema' with `a_should_generate'
+		do
+			generate_schema := a_should_generate
 		end
 
 end

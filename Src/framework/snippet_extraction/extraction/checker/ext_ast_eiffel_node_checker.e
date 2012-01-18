@@ -195,7 +195,7 @@ feature {NONE} -- Initialization
 			-- Default initialization.
 		do
 			initialize_ast_node_configurator
-			
+
 			passed_check := True
 		end
 
@@ -905,7 +905,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 
 	process_elseif_as (l_as: ELSIF_AS)
 		do
-			if deny_set.has (node_elseif_as) then passed_check := False else Precursor (l_as) end
+			if deny_set.has (node_elsif_as) then passed_check := False else Precursor (l_as) end
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)

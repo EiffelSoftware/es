@@ -64,7 +64,7 @@ feature -- Basic operations
 			arguments.do_all (agent l_args.force_last)
 
 			create l_target_types.make_with_long_form ("target-type")
-			l_target_types.set_description ("Specify a list of type names separated by ';' that are going to be mined.")
+			l_target_types.set_description ("Specify a list of target type names separated by ';'.")
 			l_target_types.enable_mandatory
 			l_parser.options.force_last (l_target_types)
 
@@ -77,7 +77,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_namespace)
 
 			create l_class.make_with_long_form ("class")
-			l_class.set_description ("Specify name of the class to analyze.")
+			l_class.set_description ("Restrict extraction to a single class.")
 			l_parser.options.force_last (l_class)
 
 			create l_feature.make_with_long_form ("feature")
@@ -89,19 +89,19 @@ feature -- Basic operations
 			l_parser.options.force_last (l_output)
 
 			create l_output_xml.make_with_long_form ("xml")
-			l_output_xml.set_description ("Output snippets in XML format.")
+			l_output_xml.set_description ("Serialize snippets to XML format.")
 			l_parser.options.force_last (l_output_xml)
 
 			create l_output_bin.make_with_long_form ("bin")
-			l_output_bin.set_description ("Output snippets in binary serialization format.")
+			l_output_bin.set_description ("Serialize snippets to binary serialization format.")
 			l_parser.options.force_last (l_output_bin)
 
 			create l_output_txt.make_with_long_form ("txt")
-			l_output_txt.set_description ("Output snippets in textual format.")
+			l_output_txt.set_description ("Serialize snippets to textual format.")
 			l_parser.options.force_last (l_output_txt)
 
 			create l_log_file.make_with_long_form ("log-file")
-			l_log_file.set_description ("File to write logging information to, additional to standard output.")
+			l_log_file.set_description ("File to write logging information.")
 			l_parser.options.force_last (l_log_file)
 
 			create l_maximum_cfg_level.make_with_long_form ("maximum-cfg-level")
@@ -121,7 +121,7 @@ feature -- Basic operations
 			l_parser.options.force_last (l_extract_contracts)
 
 			create l_normalizer.make_with_long_form ("normalize-variable")
-			l_normalizer.set_description ("Should variable names in snippets be normalized?")
+			l_normalizer.set_description ("Normalize variable names in snippets.")
 			l_parser.options.force_last (l_normalizer)
 
 			create l_extract_fragments.make_with_long_form ("extract-fragment")

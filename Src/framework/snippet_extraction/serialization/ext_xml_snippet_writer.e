@@ -23,8 +23,8 @@ feature -- Basic operations
 		do
 			if attached {FILE} a_medium as l_file then
 				create l_transformer.make_from_snippet (a_snippet)
-				a_snippet.ast.process (l_transformer)
-
+				l_transformer.transform (a_snippet.ast)
+				
 				create l_formatter.make
 				l_formatter.set_output_file (l_file)
 				l_formatter.process_document (l_transformer.xml_document)

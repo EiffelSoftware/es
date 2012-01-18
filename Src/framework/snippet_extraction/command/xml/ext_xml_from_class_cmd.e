@@ -44,9 +44,14 @@ feature -- Basic operations
 	execute
 			-- Execute current command.
 		do
-				-- Calling transformation for selected classes.
-			across select_classes_for_extraction as l_selected_classes loop
-				process_class (l_selected_classes.item)
+			if config.generate_schema then
+					-- Generate EAST XML Schema document(s).
+				generate_xsd_schema_documents
+			else
+					-- Calling transformation for selected classes.
+				across select_classes_for_extraction as l_selected_classes loop
+					process_class (l_selected_classes.item)
+				end
 			end
 		end
 
@@ -121,33 +126,9 @@ feature {NONE} -- Class selector
 feature {NONE} -- Output
 
 	transformer: EXT_XML_FROM_AST_TRANSFORMER
+			-- Transformer instance converting from AST to XML.
 		once
 			create Result.make
-
-			Result.allow_all
-			Result.deny_node (node_eiffel_list)
-			Result.deny_node (node_class_list_as)
---			Result.deny_node (node_constraint_list_as)
-			Result.deny_node (node_convert_feat_list_as)
-			Result.deny_node (node_formal_generic_list_as)
-			Result.deny_node (node_indexing_clause_as)
-			Result.deny_node (node_parent_list_as)
-			Result.deny_node (node_type_dec_list_as)
-			Result.deny_node (node_type_list_as)
---			Result.deny_node (node_use_list_as)
-			Result.deny_node (node_feature_list_as)
-			Result.deny_node (node_all_as)
-			Result.deny_node (node_break_as)
-			Result.deny_node (node_break_as)
-			Result.deny_node (node_keyword_stub_as)
-			Result.deny_node (node_leaf_stub_as)
-			Result.deny_node (node_symbol_stub_as)
-			Result.deny_node (node_symbol_as)
-			Result.deny_node (node_symbol_stub_as)
-			Result.deny_node (node_delayed_actual_list_as)
-			Result.deny_node (node_formal_argu_dec_list_as)
-			Result.deny_node (node_key_list_as)
-			Result.deny_node (node_parameter_list_as)
 		end
 
 	write (a_ast: AST_EIFFEL ; a_medium: IO_MEDIUM)
@@ -158,7 +139,7 @@ feature {NONE} -- Output
 			if attached {FILE} a_medium as l_file then
 
 					-- Transform to XML.
-				a_ast.process (transformer)
+				transformer.transform (a_ast)
 
 					-- Write fo file.
 				create l_formatter.make
@@ -178,6 +159,60 @@ feature {NONE} -- Output
 			create l_file.make_create_read_write (a_path)
 			write (a_ast, l_file)
 			l_file.close
+		end
+
+feature {NONE} -- XML Schema Generation
+
+	generate_xsd_schema_documents
+			-- Generate EAST XML Schema document(s).
+		local
+			l_generator: EXT_EAST_GENERATOR
+			l_record_list: SORTED_LIST [EXT_EAST_RECORD]
+		do
+			l_record_list := generate_xsd_record_list
+
+			create l_generator.make
+			l_generator.process (l_record_list)
+
+			write_xml_to_file (l_generator.last_xml_document, "east-schema")
+		end
+
+	generate_xsd_record_list: SORTED_LIST [EXT_EAST_RECORD]
+			-- Collect input for XML Schema generation.
+		local
+			l_config: EXT_EAST_CONFIG
+		do
+			create l_config
+
+			create {SORTED_TWO_WAY_LIST [EXT_EAST_RECORD]} Result.make
+			Result.append (l_config.record_list)
+		end
+
+	write_xml_to_file (a_document: XML_DOCUMENT; a_file_name: STRING)
+			-- Extension will be added to `a_file_name'.
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_file_path: FILE_NAME
+			l_formatter: XML_FORMATTER
+		do
+			if attached config.output_path as l_path_name then
+					-- Create whole path name.
+				create l_file_path.make_from_string (l_path_name)
+				l_file_path.set_file_name (a_file_name)
+
+				if attached l_file_path.twin as l_xml_file_path then
+					l_xml_file_path.add_extension ("xsd")
+
+					create l_file.make_create_read_write (l_xml_file_path.string)
+
+						-- Write fo file.
+					create l_formatter.make
+					l_formatter.set_output_file (l_file)
+					l_formatter.process_document (a_document)
+
+					l_file.close
+				end
+			end
 		end
 
 end

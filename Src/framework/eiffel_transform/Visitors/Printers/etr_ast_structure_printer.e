@@ -1636,7 +1636,7 @@ feature -- Quantifications
 			output.append_string (ti_space)
 			output.append_string (ti_comma)
 			output.append_string (ti_space)
-			process_child (a_as.expression, a_as, 1)
+			process_child (a_as.expression, a_as, 2)
 		end
 
 	process_for_all_as (a_as: FOR_ALL_AS)
@@ -1648,11 +1648,11 @@ feature -- Quantifications
 			output.append_string (ti_space)
 			output.append_string (ti_comma)
 			output.append_string (ti_space)
-			process_child (a_as.expression, a_as, 1)
+			process_child (a_as.expression, a_as, 2)
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

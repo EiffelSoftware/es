@@ -1104,4 +1104,105 @@ feature -- Typing
 			Result := is_type_conformant (a_type1, a_type2, root_class_of_system.actual_type)
 		end
 
+
+feature -- Class Descendants
+
+	candidate_class_list: HASH_TABLE [CLASS_C, INTEGER]
+			-- Table of ancestor classes (see `find_classes').
+			-- Key is `class_id' of a descendant class, value is CLASS_C object of that class
+
+	candidate_class_table: HASH_TABLE [HASH_TABLE [CLASS_C, INTEGER], INTEGER]
+			-- Table of descendant classes (see `find_classes').
+			-- Key is `class_id' of a descendant class, value is a list of its descendants.
+
+	processed_classes: SEARCH_TABLE [INTEGER];
+			-- Flag structure to indicate whether or not a class has been processed.
+			-- Item of this set is `class_id' of a compiled class.
+			-- Ssee `find_classes'.
+
+	find_classes_setup (a_wipe: BOOLEAN)
+			-- Reset `find_classes' data structures.
+			-- Used inside `find_classes'
+		do
+			if candidate_class_list = Void then
+				create candidate_class_list.make (100)
+			end
+
+			if candidate_class_table = Void then
+				create candidate_class_table.make (100)
+			end
+
+			if processed_classes = Void then
+				create processed_classes.make (100)
+			end
+
+			if a_wipe then
+				candidate_class_list.wipe_out
+				candidate_class_table.wipe_out
+				candidate_class_list.wipe_out
+			end
+		ensure then
+			candidate_class_list_attached: candidate_class_list /= Void
+			candidate_class_list_is_empty: a_wipe implies candidate_class_list.is_empty
+			candidate_class_table_attached: candidate_class_table /= Void
+			candidate_class_table_is_empty: a_wipe implies candidate_class_table.is_empty
+			processed_classes_attached: processed_classes /= Void
+			processed_classes_is_empty: a_wipe implies processed_classes.is_empty
+		end
+
+	find_class_descendants (a_class_c: CLASS_C; a_including_self: BOOLEAN; a_recursive: BOOLEAN)
+			-- Find all descendants of `a_class_c' and put them in `candidate_class_list' and `candidate_class_table'.
+			-- If `a_including_self' is True, `a_class_c' will be in resultset.)
+			-- If `a_recursive' is True, find recursively.
+			-- Extracted from `{QL_CLASS_DESCENDANT_RELATION_CRI}.find_classes'
+		local
+			l_descendants: ARRAYED_LIST [CLASS_C]
+			l_descendant_class: CLASS_C
+			l_list: HASH_TABLE [CLASS_C, INTEGER]
+			l_class_id: INTEGER
+			l_class_id2: INTEGER
+			l_candidate_class_list: like candidate_class_list
+			l_candidate_class_table: like candidate_class_table
+			l_processed_classes: like processed_classes
+		do
+			find_classes_setup (false)
+
+			if a_including_self then
+				create l_descendants.make (1)
+				l_descendants.extend (a_class_c)
+			else
+				l_descendants := a_class_c.direct_descendants
+			end
+			if not l_descendants.is_empty then
+				l_processed_classes := processed_classes
+				l_candidate_class_list := candidate_class_list
+				l_candidate_class_table := candidate_class_table
+				l_class_id2 := a_class_c.class_id
+				from
+					l_descendants.start
+				until
+					l_descendants.after
+				loop
+					l_descendant_class := l_descendants.item
+					l_class_id := l_descendant_class.class_id
+					l_candidate_class_list.put (l_descendant_class, l_class_id)
+					l_list := l_candidate_class_table.item (l_class_id2)
+					if l_list = Void then
+						create {HASH_TABLE [CLASS_C, INTEGER]}l_list.make (2)
+						l_candidate_class_table.put (l_list, l_class_id2)
+					end
+					if not a_including_self and then not l_list.has (l_class_id) then
+						l_list.put (l_descendant_class, l_class_id)
+					end
+					if not l_processed_classes.has (l_class_id) then
+						l_processed_classes.force (l_class_id)
+						if a_recursive then
+							find_class_descendants (l_descendant_class, False, a_recursive)
+						end
+					end
+					l_descendants.forth
+				end
+			end
+		end
+
 end

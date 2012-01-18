@@ -23,6 +23,11 @@ inherit
 
 	EXT_SHARED_LOGGER
 
+	EXT_HOLE_UTILITY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -389,12 +394,13 @@ feature {NONE} -- Implementation
 					-- Fallback to original AST if no dedicated entry point was found.
 				Result := a_compound_as
 			end
-
 		ensure
 			attached Result
 		end
 
 	perform_ast_general_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		require
+			sanity_of_holes_and_ast: check_holes_in_ast (a_compound_as, a_holes)
 		local
 			l_ast_hole_extractor: EXT_AST_GENERAL_HOLE_EXTRACTOR
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
@@ -411,9 +417,13 @@ feature {NONE} -- Implementation
 				-- Add holes to collection and return rewritten AST.
 			a_holes.merge (l_ast_hole_extractor.last_holes)
 			Result := l_ast_rewriter.last_ast
+		ensure
+			sanity_of_holes_and_ast: check_holes_in_ast (Result, a_holes)
 		end
 
 	perform_ast_hole_merge (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		require
+			sanity_of_holes_and_ast: check_holes_in_ast (a_compound_as, a_holes)
 		local
 			l_ast_processor: EXT_AST_HOLE_MERGER
 		do
@@ -427,9 +437,13 @@ feature {NONE} -- Implementation
 			l_ast_processor.last_holes_removed.current_keys.do_all (agent a_holes.remove)
 
 			Result := l_ast_processor.last_ast
+		ensure
+			sanity_of_holes_and_ast: check_holes_in_ast (Result, a_holes)
 		end
 
 	perform_ast_if_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		require
+			sanity_of_holes_and_ast: check_holes_in_ast (a_compound_as, a_holes)
 		local
 			l_ast_hole_extractor: EXT_AST_IF_AS_HOLE_EXTRACTOR
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
@@ -446,9 +460,13 @@ feature {NONE} -- Implementation
 				-- Add holes to collection and return rewritten AST.
 			a_holes.merge (l_ast_hole_extractor.last_holes)
 			Result := l_ast_rewriter.last_ast
+		ensure
+			sanity_of_holes_and_ast: check_holes_in_ast (Result, a_holes)
 		end
 
 	perform_ast_inspect_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		require
+			sanity_of_holes_and_ast: check_holes_in_ast (a_compound_as, a_holes)
 		local
 			l_ast_hole_extractor: EXT_AST_INSPECT_AS_HOLE_EXTRACTOR
 			l_ast_rewriter: EXT_AST_REWRITER [like a_compound_as]
@@ -465,9 +483,13 @@ feature {NONE} -- Implementation
 				-- Add holes to collection and return rewritten AST.
 			a_holes.merge (l_ast_hole_extractor.last_holes)
 			Result := l_ast_rewriter.last_ast
+		ensure
+			sanity_of_holes_and_ast: check_holes_in_ast (Result, a_holes)
 		end
 
 	perform_ast_loop_as_hole_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]; a_holes: HASH_TABLE [EXT_HOLE, STRING]; a_factory: EXT_HOLE_FACTORY): like a_compound_as
+		require
+			sanity_of_holes_and_ast: check_holes_in_ast (a_compound_as, a_holes)
 		local
 			l_ast_processor: EXT_AST_LOOP_AS_HOLE_PROCESSOR
 		do
@@ -476,13 +498,14 @@ feature {NONE} -- Implementation
 
 				-- Process AST.
 			l_ast_processor.extract (a_compound_as)
-			l_ast_processor.rewrite (a_compound_as)
 
 				-- Update hole table.
-			l_ast_processor.last_holes_removed.current_keys.do_all (agent a_holes.remove)
 			a_holes.merge (l_ast_processor.last_holes)
+			l_ast_processor.last_holes_removed.current_keys.do_all (agent a_holes.remove)
 
 			Result := l_ast_processor.last_ast
+		ensure
+			sanity_of_holes_and_ast: check_holes_in_ast (Result, a_holes)
 		end
 
 	perform_ast_prune_step (a_compound_as: EIFFEL_LIST [INSTRUCTION_AS]): EIFFEL_LIST [INSTRUCTION_AS]

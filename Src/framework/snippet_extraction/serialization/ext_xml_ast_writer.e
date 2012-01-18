@@ -21,7 +21,7 @@ feature -- Basic operations
 		do
 			if attached {FILE} a_medium as l_file then
 				create l_transformer.make
-				a_ast.process (l_transformer)
+				l_transformer.transform (a_ast)
 
 				create l_formatter.make
 				l_formatter.set_output_file (l_file)

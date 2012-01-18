@@ -14,8 +14,6 @@ inherit
 			process_loop_as
 		end
 
-	EXT_AST_REWRITER [EIFFEL_LIST [INSTRUCTION_AS]]
-
 	EXT_HOLE_EXTRACTOR
 
 	EXT_HOLE_FACTORY_AWARE
@@ -57,8 +55,11 @@ feature {NONE} -- Creation
 
 feature -- Access
 
+	last_ast: detachable EIFFEL_LIST [INSTRUCTION_AS]
+			-- AST transfomed by last `extract'.
+
 	last_holes_removed: HASH_TABLE [EXT_HOLE, STRING]
-			-- Holes removed due to merging by last `rewrite'.
+			-- Holes removed due to merging by last `extract'.
 
 feature -- Basic operations
 
@@ -66,20 +67,16 @@ feature -- Basic operations
 			-- Extract annotations from `a_ast' and
 			-- make results available in `last_holes' and
 			-- make transformed AST available in `last_ast'.
+		local
+			l_path_initializer: ETR_AST_PATH_INITIALIZER
 		do
 				-- Freshly initialize variables holding the output of the run.
 			initialize_hole_context
 
-				-- Process and rewrite AST to output while collecting holes.
-			a_ast.process (Current)
-		end
-
-	rewrite (a_ast: EIFFEL_LIST [INSTRUCTION_AS])
-		local
-			l_path_initializer: ETR_AST_PATH_INITIALIZER
-		do
+				-- Reset rewritten AST.
 			last_ast := Void
 
+				-- Extract and rewrite AST.
 			if attached {EIFFEL_LIST [INSTRUCTION_AS]} ast_from_compound_text (text_from_ast_with_printer (a_ast, Current)) as l_rewritten_ast then
 					-- Assign path IDs to nodes.
 				create l_path_initializer
@@ -204,7 +201,7 @@ feature {NONE} -- Annotation Handling
 		local
 			l_hole_type_string: STRING
 			l_annotation_extractor: EXT_MENTION_ANNOTATION_EXTRACTOR
-			l_hole_names: LINKED_SET [STRING]
+			l_hole_names: DS_HASH_SET [STRING]
 		do
 				-- Extract fresh annotations.
 			create l_annotation_extractor.make_from_variable_context (variable_context)
@@ -212,56 +209,45 @@ feature {NONE} -- Annotation Handling
 			l_annotation_extractor.extract_from_ast (a_ast)
 
 			if evaluate_hole_types then
-				-- Try to determinable hole type.
+				-- Try to determine hole type.
 				l_hole_type_string := get_hole_type (a_ast, variable_context.context_class, variable_context.context_feature)
 			end
-			
-				-- Create new hole and fill with fresh annotations
-			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations, l_hole_type_string)
 
 				-- Extract subsumed holes and merge into fresh hole.
 			l_hole_names := collect_hole_names (a_ast)
 
-			across last_holes as h loop
-					-- Book-keeping.	
-				last_holes_removed.force (h.item, h.key)
+			from
+				l_hole_names.start
+			until
+				l_hole_names.after
+			loop
+				check
+					attached l_hole_names.item_for_iteration as l_key and then
+					attached holes.at (l_key) as l_item
+				then
+						-- Book-keeping.	
+					last_holes_removed.force (l_item, l_key)
 
-					-- Merge annotations, but set them to conditional.
-				if attached h.item.annotations as a then
-					from
-						a.start
-					until
-						a.after
-					loop
-						Result.annotations.force (
-							create {ANN_MENTION_ANNOTATION}.make_as_conditional (a.item_for_iteration.expression)
-						)
-						a.forth
+						-- Merge annotations, but set them to conditional.
+					if attached l_item.annotations as a then
+						from
+							a.start
+						until
+							a.after
+						loop
+							Result.annotations.force (
+								create {ANN_MENTION_ANNOTATION}.make_as_conditional (a.item_for_iteration.expression)
+							)
+							a.forth
+						end
 					end
 				end
+
+				l_hole_names.forth
 			end
-		end
 
-	collect_hole_names (a_ast: AST_EIFFEL): LINKED_SET [STRING]
-			-- Collect identifier names that represent hole placeholders in `a_ast'.
-		local
-			l_identifier_usage_finder: EPA_IDENTIFIER_USAGE_CALLBACK_ITERATOR
-		do
-			create Result.make
-			Result.compare_objects
-
-			create l_identifier_usage_finder
-			l_identifier_usage_finder.set_is_mode_disjoint (True)
-			l_identifier_usage_finder.set_on_access_identifier (
-				agent (a_as: ACCESS_AS; a_variable_context: EXT_VARIABLE_CONTEXT; a_variable_usage: LINKED_SET [STRING])
-					do
-						if is_hole (a_as) then
-							a_variable_usage.force (a_as.access_name_8)
-						end
-					end (?, variable_context, Result)
-				)
-
-			a_ast.process (l_identifier_usage_finder)
+				-- Create new hole and fill with fresh annotations
+			Result := hole_factory.new_hole (l_annotation_extractor.last_annotations, l_hole_type_string)
 		end
 
 end

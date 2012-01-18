@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EXT_AST_XML_INDENTATION_OUTPUT}."
+	description: "XML enriched output created by AST traversal. Uses stack to validate opening and closing tags."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -68,7 +68,7 @@ feature -- Access
 feature -- Constants
 
 	default_indentation_string: STRING
-			-- The default indentation string
+			-- The default indentation string.
 		once
 			Result := "%T"
 		end
@@ -76,6 +76,7 @@ feature -- Constants
 feature -- Attributes
 
 	indentation_string: STRING
+			-- Current idendation.
 
 feature -- Operations
 
@@ -98,7 +99,7 @@ feature -- Operations
 		end
 
 	set_indentation_string (an_indentation_string: like indentation_string)
-			-- Set `indentation_string'
+			-- Set `indentation_string'.
 		require
 			not_void: an_indentation_string /= void
 		do
@@ -154,6 +155,7 @@ feature {NONE} -- Implementation
 feature -- Basic Operations
 
 	xml_element_open (a_name: STRING; a_xml_ns: XML_NAMESPACE)
+			-- Add opening XML element the document tree and push element to node stack to indicate the actual scope.
 		local
 			l_element: XML_ELEMENT
 			l_xml_node: XML_CHARACTER_DATA
@@ -168,20 +170,22 @@ feature -- Basic Operations
 		end
 
 	xml_element_close (a_name: STRING; a_xml_ns: XML_NAMESPACE)
+			-- Close XML element scope by removing top of node stack.
 		require
 			attached a_name
 			attached a_xml_ns
 		do
 			check
-				not xml_node_stack.is_empty
-				xml_node_stack.item.name ~ a_name
-				xml_node_stack.item.namespace ~ a_xml_ns
+				stack_not_empty: not xml_node_stack.is_empty
+				item_name_match: xml_node_stack.item.name ~ a_name
+				item_namespace_match: xml_node_stack.item.namespace ~ a_xml_ns
 			end
 
 			xml_node_stack.remove
 		end
 
 	xml_add_attribute (a_name: STRING; a_xml_ns: XML_NAMESPACE; a_value: STRING)
+			-- Add XML attribute to current scope element.
 		require
 			attached a_name
 			attached a_xml_ns
@@ -195,6 +199,7 @@ feature -- Basic Operations
 		end
 
 	xml_add_unqualified_attribute (a_name: STRING; a_value: STRING)
+			-- Add XML unqualified attribute to current scope element.
 		require
 			attached a_name
 			attached a_value
@@ -207,6 +212,7 @@ feature -- Basic Operations
 		end
 
 	xml_string_append, append_string (a_string: STRING)
+			-- Add character data to XML output.
 		local
 			l_xml_node: XML_CHARACTER_DATA
 		do

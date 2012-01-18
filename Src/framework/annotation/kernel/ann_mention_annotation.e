@@ -96,5 +96,5 @@ feature {NONE} -- Implementaton
 		once
 			create Result
 		end
-
+		
 end

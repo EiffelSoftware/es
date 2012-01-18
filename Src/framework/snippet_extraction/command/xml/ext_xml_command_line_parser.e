@@ -43,6 +43,7 @@ feature -- Basic operations
 			l_class: AP_STRING_OPTION
 			l_group: AP_STRING_OPTION
 			l_output_path: AP_STRING_OPTION
+			l_generate_schema: AP_FLAG
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -50,17 +51,21 @@ feature -- Basic operations
 			arguments.do_all (agent l_args.force_last)
 
 			create l_class.make_with_long_form ("class")
-			l_class.set_description ("Specify name of the class to analyze.")
+			l_class.set_description ("Specify name of the class to transform.")
 			l_parser.options.force_last (l_class)
 
 			create l_group.make_with_long_form ("group")
-			l_group.set_description ("Specify name of a cluster or library to restrict analysis to group contained classes.")
+			l_group.set_description ("Restrict transformation specific to a cluster or library.")
 			l_parser.options.force_last (l_group)
 
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a folder to output files.")
 			l_output_path.enable_mandatory
 			l_parser.options.force_last (l_output_path)
+
+			create l_generate_schema.make_with_long_form ("only-generate-schema")
+			l_generate_schema.set_description ("Generates XML Schema definition but does not transform classes. Requires a project that references class AST_EIFFEL and descendants for reflection.")
+			l_parser.options.force_last (l_generate_schema)
 
 			l_parser.parse_list (l_args)
 
@@ -75,6 +80,11 @@ feature -- Basic operations
 			if l_output_path.was_found then
 				config.set_output_path (l_output_path.parameter)
 			end
+
+			if l_generate_schema.was_found then
+				config.set_generate_schema (True)
+			end
+
 		end
 
 end

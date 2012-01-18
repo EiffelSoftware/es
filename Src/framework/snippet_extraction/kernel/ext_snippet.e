@@ -19,6 +19,11 @@ inherit
 
 	STORABLE
 
+	EXT_HOLE_UTILITY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -37,7 +42,6 @@ feature {NONE} -- Initialization
 			content := a_content.twin
 			source := a_source.twin
 
---			build_debug_output
 			hash_code := debug_output.hash_code
 
 			create annotations.make
@@ -115,6 +119,9 @@ feature -- Access
 				end
 			end
 			Result := ast_internal
+
+				-- Information for invariant checks.
+			hole_names_in_ast := collect_hole_names (ast_internal)
 		end
 
 feature -- Output
@@ -223,6 +230,15 @@ feature {EXT_BINARY_SNIPPET_WRITER} -- Serialization related
 			-- Clear internal data structure for serialization.
 		do
 			ast_internal := Void
+			hole_names_in_ast := Void
 		end
 
+feature {NONE} -- Invariant Support
+
+	hole_names_in_ast: detachable DS_HASH_SET [STRING]
+
+invariant
+--	hole_names_occur_in_ast: (attached ast and attached holes) implies across holes as cursor all hole_names_in_ast.has (cursor.key) end
+
+--	hole_key_equals_hole_name: (attached holes) implies across holes as cursor all cursor.key ~ cursor.item.hole_name end
 end
