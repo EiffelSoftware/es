@@ -168,6 +168,8 @@ test vmcs-warning1					replication004 tcf pass replication
 test vmcs-warning2					replication005 tcf pass replication
 test repeated-onces					replication006 tcf pass replication
 test nc-replication-not-apply-vmcs			replication007 tcf pass replication
+test undefinition-after-assertion-replication		replication008 tcf pass replication assertion
+test precompile-with-replication			replication009 tcf pass replication precompilation
 
 -- For testing only
 
@@ -527,6 +529,7 @@ test	spurious-vweq-warning			valid271 tcf pass validity
 test	non-conforming-missing-vmss3		valid272 tcf fail validity non-conforming
 test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
 test	duplicate-vfac1				valid274 tcf fail validity
+test	non-conforming-equality			valid275 tcf pass validity conformance equality warning
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors

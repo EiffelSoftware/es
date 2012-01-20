@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			last_descriptor := 0
 		end
 
-feature
+feature -- Constants
 
 	database_handle_name: STRING = "MYSQL"
 
@@ -59,6 +59,7 @@ feature -- For DATABASE_STATUS
 	clear_error
 			-- Reset database error status
 		do
+			--FIXME: this is not clearing any error
 		end
 
 	insert_auto_identity_column: BOOLEAN = True
@@ -455,7 +456,7 @@ feature -- External features
 
 	terminate_order (no_descriptor: INTEGER)
 		do
-			eif_mysql_free_result(result_pointers.item (no_descriptor))
+			eif_mysql_free_result (mysql_pointer, result_pointers.item (no_descriptor))
 			result_pointers.put (default_pointer, no_descriptor)
 			descriptors.put (Void, no_descriptor)
 			is_error_updated := False
@@ -834,7 +835,7 @@ feature -- External features
 		end
 
 	connect (user_name, user_passwd, data_source, application, hostname,
-		roleId, rolePassWd, groupId: STRING)
+			a_role_id, a_role_passwd, a_group_id: STRING)
 		local
 			l_base: C_STRING
 			l_colon_position: INTEGER
@@ -1063,7 +1064,7 @@ feature {NONE} -- C Externals
 			"C | %"eif_mysql.h%""
 		end
 
-	eif_mysql_free_result (result_ptr: POINTER)
+	eif_mysql_free_result (mysql_ptr: POINTER; result_ptr: POINTER)
 		external
 			"C | %"eif_mysql.h%""
 		end
