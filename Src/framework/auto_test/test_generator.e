@@ -455,6 +455,10 @@ feature -- Options: test case deserialization
 			Result := is_failing_test_case_deserialization_enabled_cache
 		end
 
+	features_under_test_to_deserialize: EPA_HASH_SET [STRING] assign set_features_under_test_to_deserialize
+			-- Set of features, in the format of "CLASS_NAME.feature_name",
+			-- test cases exercising which would be deserialized.
+
 	is_recursive: BOOLEAN
 			-- Is searching for serialization files recursive in sub-directories?
 		do
@@ -957,6 +961,14 @@ feature -- Status setting
 			is_failing_test_case_deserialization_enabled_cache := b
 		ensure
 			is_failing_test_case_deserialization_enabled_set: is_failing_test_case_deserialization_enabled = b
+		end
+
+	set_features_under_test_to_deserialize (a_features: like features_under_test_to_deserialize)
+			-- Set `features_under_test_to_deserialize'.
+		require
+			features_attached: a_features /= Void
+		do
+			features_under_test_to_deserialize := a_features.twin
 		end
 
 	set_recursive (b: BOOLEAN)
@@ -1583,7 +1595,7 @@ feature -- Option caches
 			-- inferred implications.
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

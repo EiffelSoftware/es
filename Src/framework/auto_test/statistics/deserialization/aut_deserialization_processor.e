@@ -44,6 +44,8 @@ feature{NONE} -- Initialization
 				-- Configurate the process according to the `configuration'.
 			config_processor
 
+			features_under_test_to_deserialize := configuration.features_under_test_to_deserialize
+
 				-- Config the `test_case_categorizer' and subscribe it to `data_event'.
 			if a_conf.is_deserializing_for_fixing then
 				create {AUT_TEST_CASE_CATEGORIZER_BY_FAULT}test_case_extractor.make (configuration)
@@ -92,6 +94,10 @@ feature -- Access
 
 	test_case_deserializability_checker: AUT_TEST_CASE_DESERIALIZABILITY_CHECKER
 			-- Deserializability checker.
+
+	features_under_test_to_deserialize: EPA_HASH_SET [STRING]
+			-- Set of features, in the format of "CLASS_NAME.feature_name",
+			-- test cases exercising which would be deserialized.
 
 feature -- Configuration
 
@@ -501,31 +507,35 @@ feature{NONE} -- Auxiliary routines
 						last_post_state,
 						last_time,
 						last_pre_serialization)
-				if configuration.is_validating_serialization then
-					test_case_deserializability_checker.check_deserializability (l_serialization)
-					if test_case_deserializability_checker.last_result then
-						test_case_deserialized_event.publish ([l_serialization])
-					end
-				else
+				if should_deserialize_test_case (l_serialization) then
 					test_case_deserialized_event.publish ([l_serialization])
 				end
 			end
 			is_inside_serialization := False
 		end
 
---	report_serialization_data (a_data: AUT_DESERIALIZED_TEST_CASE)
---			-- Report a newly found serialization data.
---		local
---			l_is_unique: BOOLEAN
---		do
---			if (a_data.is_execution_successful implies configuration.is_passing_test_case_deserialization_enabled)
---					and then (not a_data.is_execution_successful implies configuration.is_failing_test_case_deserialization_enabled)
---					or else (configuration.is_building_behavioral_models and then a_data.is_execution_successful)
---					or else (configuration.is_deserializing_for_fixing) then
---				check a_data.class_ /= Void and then a_data.feature_ /= Void end
---				test_case_deserialized_event.publish ([a_data])
---			end
---		end
+	should_deserialize_test_case (a_tc: AUT_DESERIALIZED_TEST_CASE): BOOLEAN
+			-- Should `a_tc' be deserialized?
+		require
+			tc_attached: a_tc /= Void
+		do
+				-- Passing/Failing
+			if a_tc.is_execution_successful and then configuration.is_passing_test_case_deserialization_enabled
+					or else not a_tc.is_execution_successful and then configuration.is_failing_test_case_deserialization_enabled then
+				Result := True
+			end
+
+				-- Feature under test
+			if Result and then not features_under_test_to_deserialize.is_empty then
+				Result := features_under_test_to_deserialize.has (a_tc.class_and_feature_under_test)
+			end
+
+				-- Validate serialization
+			if Result and then configuration.is_validating_serialization then
+				test_case_deserializability_checker.check_deserializability (a_tc)
+				Result := test_case_deserializability_checker.last_result
+			end
+		end
 
 	has_next_line (a_stream: RAW_FILE): BOOLEAN
 			-- Has next non-empty line in `a_stream'?
@@ -653,7 +663,7 @@ feature{NONE} -- Constants
 
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

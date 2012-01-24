@@ -218,6 +218,7 @@ feature -- Execution
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
 				l_generator.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
+				l_generator.set_features_under_test_to_deserialize (l_ap.features_under_test_to_deserialize)
 				l_generator.set_building_behavioral_models (l_ap.is_building_behavioral_model)
 				l_generator.set_model_directory (l_ap.model_dir)
 				l_generator.set_building_faulty_feature_list (l_ap.is_building_faulty_feature_list)
@@ -300,7 +301,7 @@ feature -- Execution
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

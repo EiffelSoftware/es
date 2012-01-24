@@ -208,18 +208,8 @@ feature{NONE} -- Implementation
 			until
 				a_asserts.after
 			loop
-				l_expr_as ?= ast_in_other_context (a_asserts.item.expr, l_source_context, l_target_context)
-				if l_expr_as /= Void then
-					if a_written_feature = Void then
-						create l_expr.make (l_expr_as, a_written_class, a_context_class)
-					else
-						create l_expr.make_with_feature (a_context_class, a_context_feature, l_expr_as, a_written_class)
-					end
-					if attached {ID_AS} a_asserts.item.tag as l_tag then
-						l_expr.set_tag (l_tag.name)
-					else
-						l_expr.set_tag (Void)
-					end
+				l_expr := expression_from_assert (a_written_class, a_written_feature, a_context_class, a_context_feature, a_asserts.item_for_iteration, l_source_context, l_target_context)
+				if l_expr /= Void then
 					Result.extend(l_expr)
 				end
 				a_asserts.forth
@@ -228,6 +218,37 @@ feature{NONE} -- Implementation
 
 		ensure
 			result_attached: Result /= Void
+		end
+
+	expression_from_assert (a_written_class: CLASS_C; a_written_feature: FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_tagged_as: TAGGED_AS; a_source_context, a_target_context: ETR_CONTEXT; ): EPA_AST_EXPRESSION
+			-- Assert expression rewritten in target context.
+			-- The rewritting is extracted from `tags' to wrap around the possible type-checking errors.
+		local
+			l_retried: BOOLEAN
+			l_expr_as: EXPR_AS
+			l_expr: EPA_AST_EXPRESSION
+		do
+			if not l_retried then
+				l_expr_as ?= ast_in_other_context (a_tagged_as.expr, a_source_context, a_target_context)
+				if l_expr_as /= Void then
+					if a_written_feature = Void then
+						create l_expr.make (l_expr_as, a_written_class, a_context_class)
+					else
+						create l_expr.make_with_feature (a_context_class, a_context_feature, l_expr_as, a_written_class)
+					end
+					if attached {ID_AS} a_tagged_as.tag as l_tag then
+						l_expr.set_tag (l_tag.name)
+					else
+						l_expr.set_tag (Void)
+					end
+					Result := l_expr
+				end
+			else
+				Result := Void
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	extend_expression_in_set (a_exprs: LINKED_LIST [EPA_EXPRESSION]; a_test: PREDICATE [ANY, TUPLE [EPA_EXPRESSION]]; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)

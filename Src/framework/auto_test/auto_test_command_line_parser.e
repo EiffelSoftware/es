@@ -74,6 +74,7 @@ feature{NONE} -- Initialization
 			l_test_case_serialization_option: AP_STRING_OPTION
 			l_test_case_serialization_file_option: AP_STRING_OPTION
 			l_test_case_deserialization_option: AP_STRING_OPTION
+			l_test_case_deserialization_by_feature_under_test_option: AP_STRING_OPTION
 			l_build_behavioral_model_option: AP_STRING_OPTION
 			l_build_faulty_feature_list_option: AP_STRING_OPTION
 			l_deserialization_for_fixing: AP_FLAG
@@ -285,6 +286,10 @@ feature{NONE} -- Initialization
 			create l_test_case_deserialization_option.make_with_long_form ("deserialization")
 			l_test_case_deserialization_option.set_description ("Enable test case deserialization. The value is a string consisting of comma separated keywords: 'passing' or 'failing', indicating passing and failing test cases, respectively, or 'off'. Default: off")
 			parser.options.force_last (l_test_case_deserialization_option)
+
+			create l_test_case_deserialization_by_feature_under_test_option.make_with_long_form ("deserialization-by-feature-under-test")
+			l_test_case_deserialization_by_feature_under_test_option.set_description ("Select the test cases to deserialize by feature under test.")
+			parser.options.force_last (l_test_case_deserialization_by_feature_under_test_option)
 
 			create l_build_behavioral_model_option.make_with_long_form ("build-model")
 			l_build_behavioral_model_option.set_description ("Build behavioral model from serialization files. The value is a directory where the models would be saved. This option is only effective when 'deserialization' is present. Default 'auto_test\model'.")
@@ -743,6 +748,21 @@ feature{NONE} -- Initialization
 						l_strs.forth
 					end
 
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_test_case_deserialization_by_feature_under_test_option.was_found then
+					l_strs := l_test_case_deserialization_by_feature_under_test_option.parameter.split (',')
+					create features_under_test_to_deserialize.make_equal (l_strs.count + 1)
+					from l_strs.start
+					until l_strs.after
+					loop
+						features_under_test_to_deserialize.force (l_strs.item_for_iteration)
+						l_strs.forth
+					end
+				else
+					create features_under_test_to_deserialize.make_equal (1)
 				end
 			end
 
@@ -1254,6 +1274,10 @@ feature -- Status report
 	is_failing_test_cases_deserialization_enabled: BOOLEAN
 			-- Is test case deserialization for failing test cases enabled?
 
+	features_under_test_to_deserialize: EPA_HASH_SET [STRING]
+			-- Set of features, in the format of "CLASS_NAME.feature_name",
+			-- test cases exercising which would be deserialized.
+
 	is_building_behavioral_model: BOOLEAN
 			-- Is AutoTest building behavioral models from serialization files?
 
@@ -1385,7 +1409,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
