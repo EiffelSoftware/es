@@ -1,11 +1,3 @@
-Delivery/scripts/windows/install/bin
-Delivery/scripts/windows/install/binaries
-Delivery/scripts/windows/install/redist/bin
-Delivery/scripts/windows/install/redist/obj
-Delivery/studio/wizards/new_projects/dotnet/spec
-Delivery/studio/wizards/new_projects/vision2/spec
-Delivery/studio/wizards/new_projects/wel/spec
-Delivery/studio/wizards/others/precompile/spec
 Src/C/CONFIGS/*.exe
 Src/C/CONFIGS/*.ilk
 Src/C/CONFIGS/*.lib
@@ -206,6 +198,14 @@ Src/C_library/zlib/zdll.exp
 Src/C_library/zlib/zlib1.dll
 Src/C_library/zlib/zlib1.res
 Src/Delivery
+Src/Delivery/scripts/windows/install/bin
+Src/Delivery/scripts/windows/install/binaries
+Src/Delivery/scripts/windows/install/redist/bin
+Src/Delivery/scripts/windows/install/redist/obj
+Src/Delivery/studio/wizards/new_projects/dotnet/spec
+Src/Delivery/studio/wizards/new_projects/vision2/spec
+Src/Delivery/studio/wizards/new_projects/wel/spec
+Src/Delivery/studio/wizards/others/precompile/spec
 Src/Documentation
 Src/Eiffel/Ace/*.epr
 Src/Eiffel/Ace/*.rc
