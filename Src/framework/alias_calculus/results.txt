@@ -1,0 +1,60 @@
+A further comment on recent messages regarding featurism. I am updating a program to take advantage of the new `across' variant of loops. An example is replacing
+
+	local
+		eht: HASH_TABLE [EXPRESSION, EXPRESSION]
+	do		
+		...	
+		from
+			eht := item (e)
+			eht.start
+		until
+			eht.off
+		loop
+			Result.extend (eht.key_for_iteration)
+			eht.forth
+		end
+
+by
+
+	across item (e) as eht loop Result.extend (eht.key) end
+
+with also gets rid of the local variable declaration. The second form is simply syntactic sugar for the first, but I do find it justified.
+
+Another case, involving nested loops:
+
+-- Previously:
+	from
+		other.start
+	until
+		other.off
+	loop
+		oht := other.item_for_iteration
+		e := other.key_for_iteration
+		from
+			oht.start
+		until
+			oht.off
+		loop
+			put (e, oht.item_for_iteration)
+			oht.forth
+		end
+		other.forth
+	end
+
+-- Now:
+
+	across other as o loop
+		across o.item as oht loop put (o.key, oht.item) end
+	end	
+
+also getting rid of two local variable declarations (although here I might for efficiency reintroduce the variable `e' to compute `o.key' just once). 
+
+It is important to note that these are not your grandmother's typical loops: they iterate on complex data structures, specifically hash tables of lists; the external loop in the last case is on the hash table and the internal loop on one of its elements, a list.
+
+The mechanism is applicable to all the relevant data structures in EiffelBase (in other words, no need for the programmer to modify anything, just apply the `across' loop to any such structure), and can easily extended to any new structure that one wishes to define.  In the short term at least, I still plan in my introductory teaching to show the explicit variants first, as it is important for beginners to understand how a loop works. (My hunch based on previous cases is that after a while we will feel comfortable introducing the abstract variants from the start, but it takes some time to learn how to do it right.)
+
+
+Disclaimer: you cannot run the above yet, as you need the updated version of EiffelBase. But you will very soon be able to, not just with beta versions of 6.6 but using the official 6.5 (in "experimental mode"), as I am  doing.
+
+-- BM
+	

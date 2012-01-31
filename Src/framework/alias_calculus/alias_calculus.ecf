@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="alias_calculus" uuid="A91C9AB6-7F3B-41B2-BB86-EAC3AAA876CC">
+	<target name="alias_calculus">
+		<root cluster="alias_calculus" class="APPLICATION" feature="make"/>
+		<option debug="true" warning="true" full_class_checking="false" cat_call_detection="true" void_safety="none" syntax="provisional">
+			<debug name="assignment" enabled="true"/>
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false">
+			<option>
+				<assertions/>
+			</option>
+		</library>
+		<cluster name="alias_calculus" location=".\">
+			<option debug="true" full_class_checking="false" void_safety="none">
+				<debug name="alias_equality" enabled="false"/>
+				<debug name="alias_loop" enabled="false"/>
+				<debug name="assignment" enabled="false"/>
+				<debug name="call" enabled="false"/>
+				<debug name="iterate" enabled="false"/>
+				<debug name="loop" enabled="false"/>
+				<debug name="multidot" enabled="false"/>
+				<debug name="put_in_alias_relation" enabled="false"/>
+				<debug name="qualified" enabled="false"/>
+				<debug name="remove" enabled="false"/>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
+			<class_option class="ALIAS_RELATION">
+				<assertions precondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</class_option>
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+	<target name="alias_calculus_dotnet" extends="alias_calculus">
+		<setting name="msil_generation" value="true"/>
+	</target>
+</system>

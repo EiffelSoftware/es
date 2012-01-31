@@ -1,0 +1,94 @@
+indexing
+	description : "alias_calculus application root class"
+	date        : "$Date$"
+	revision    : "$Revision$"
+
+class
+	APPLICATION
+
+inherit
+	ARGUMENTS
+	APPLICATION_CONSTANTS
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+			-- Build a program and compute its aliases.
+		do
+			create aliases.make (Expression_count)
+			create {COMPOUND} program.make
+
+			build_program
+			program.display
+			compute_aliases
+			print_aliases
+		end
+
+feature -- Access
+
+	program: INSTRUCTION
+	aliases: ALIAS_RELATION
+
+
+feature -- Basic operations
+	build_program
+			-- Build a program.
+		do
+			set (x, y)
+			set (y, z)
+		end
+
+	compute_aliases
+			-- Compute aliases.
+		do
+			program.update (aliases)
+		end
+
+
+	print_aliases
+			-- Compute aliases.
+		do
+			aliases.printout
+		end
+
+feature -- Program construction
+
+	start_then
+			-- Start new conditional instruction.
+		local
+			new: COMPOUND
+		do
+			create new.make
+			new.outer := program
+			program := new
+		end
+
+	end_compound
+			-- End current compound.
+		require
+			started: program.outer /= Void
+		do
+			program := program.outer
+		end
+
+	set (e: VARIABLE; f: EXPRESSION)
+			-- Add at end of current block
+			-- the assignment `e' := `f'.
+		require
+			attached {COMPOUND} program
+		local
+			sa: SIMPLE_ASSIGNMENT
+		do
+			create sa.make (e, f)
+			if attached {COMPOUND} program as pr then
+				pr.extend (sa)
+			end
+		end
+
+invariant
+	program_exists: program /= Void
+	aliases_exist: aliases /= Void
+end
