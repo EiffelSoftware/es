@@ -2594,7 +2594,6 @@ Src/examples/wel/xcell/spades9.bmp -text
 Src/examples/wel/xcell/start.bmp -text
 Src/examples/wel/xcell/xcell.bmp -text
 Src/examples/wel/xcell/xcell_demo.ico -text
-Src/framework/alias_calculus/BK.TXT -text
 Src/framework/alias_calculus/alias_calculus.rc -text
 Src/framework/alias_calculus/application_with_printout.BK -text
 Src/framework/alias_calculus/exception_trace.log -text
