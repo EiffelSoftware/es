@@ -96,7 +96,7 @@ feature -- Basic operations
 			l_report_file_option.set_description ("Full path of the AutoFix report file. Optional argument: name of the file to which the report will be written.")
 			l_parser.options.force_last (l_report_file_option)
 
-			create l_cutoff_time_option.make_with_long_form ("cutoff-time")
+			create l_cutoff_time_option.make ('t', "time-out")
 			l_cutoff_time_option.set_description ("Cutoff time, in minutes, for the whole AutoFix session. Argument: session length in minutes.")
 			l_parser.options.force_last (l_cutoff_time_option)
 
