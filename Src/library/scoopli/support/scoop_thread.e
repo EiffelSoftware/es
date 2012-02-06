@@ -7,35 +7,37 @@ indexing
 
 deferred class
 	SCOOP_THREAD
-	
+
 inherit
 	ANY
 		redefine
 			default_create
 		end
-	
+
 	THREAD
 		rename
-			execute as execute_thread
+			execute as execute_thread,
+			make as thread_make
 		undefine
 			default_create
 		end
 
 feature {NONE} -- Initialization
 
-	default_create is 
+	default_create is
 			-- Create new thread and associate it with feature `execute_thread'.
 		do
+			thread_make
 			Precursor {ANY}
 			launch
 		end
-		
+
 
 feature {NONE} -- Implementation	
-	
+
 	execute_thread is
 			-- Main execution loop.
 		deferred
-		end	
-		
+		end
+
 end -- class SCOOP_THREAD

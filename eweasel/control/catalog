@@ -1310,6 +1310,7 @@ test    shared-mutex-hang		thread018	tcf pass multithreaded manual
 test	thread-join-crash			thread019	tcf pass multithreaded
 test	thread-profiling-crash		thread020	tcf pass multithreaded profile
 test	thread-crashes-on-die		thread021	tcf pass multithreaded
+if UNIX test	thread-hangs-on-fork	thread022	tcf pass multithreaded
 
 -- Execution
 
@@ -2728,6 +2729,7 @@ test	scoop-separate-formal				scoop020 tcf pass scoop formal generic conformance
 test	scoop-object-test				scoop021 tcf pass scoop formal generic conformance object_test execution
 test	scoop-undetected-vuer				scoop022 tcf fail scoop validity incrementality
 test	scoop-expanded-class-constrained-generic	scoop023 tcf fail scoop termination expanded generic
+test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop execution
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

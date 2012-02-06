@@ -1,7 +1,7 @@
 note
 	description: "Process status listening timer implemented with thread."
-	status: "See notice at end of class."
 	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,6 +13,7 @@ inherit
 
 	THREAD
 		rename
+			make as thread_make,
 			sleep as obsolete_sleep
 		end
 
@@ -35,6 +36,7 @@ feature {NONE} -- Implementation
 			thread_capable: {PLATFORM}.is_thread_capable
 			interval_positive: a_sleep_time > 0
 		do
+			thread_make
 			sleep_time := a_sleep_time
 			create mutex.make
 			has_started := False
@@ -86,7 +88,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {PROCESS_IMP} process_launcher as l_prc_imp then
 				from
-					l_sleep_time := sleep_time.to_integer_64 * 1_000_000
+					l_sleep_time := sleep_time.to_integer_64 * one_millisecond_in_nanoseconds
 				until
 					should_destroy
 				loop
@@ -113,7 +115,7 @@ invariant
 	mutex_not_void: mutex /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -15,6 +15,7 @@ inherit
 
 	THREAD
 		rename
+			make as thread_make,
 			sleep as thread_sleep,
 			launch as launch_thread
 		export
@@ -57,6 +58,7 @@ feature {NONE} -- Initialization
 		local
 			l_factory: PROCESS_FACTORY
 		do
+			thread_make
 			create mutex.make
 			create condition_variable.make
 			create l_factory
@@ -238,7 +240,7 @@ invariant
 	timeout_not_negative: timeout >= 0
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

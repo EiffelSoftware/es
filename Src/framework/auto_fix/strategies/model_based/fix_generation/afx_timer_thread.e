@@ -11,7 +11,8 @@ inherit
 	THREAD
 		rename
 			sleep as thread_sleep,
-			launch as launch_thread
+			launch as launch_thread,
+			make as thread_make
 		export
 			{NONE} all
 		end
@@ -49,6 +50,7 @@ feature {NONE} -- Initialization
 	make (a_action: like action)
 			-- Initialize.
 		do
+			thread_make
 			create mutex.make
 			create condition_variable.make
 			action := a_action

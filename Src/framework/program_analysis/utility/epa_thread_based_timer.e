@@ -9,6 +9,9 @@ class
 
 inherit
 	THREAD
+		rename
+			make as make_thread
+		end
 
 
 create
@@ -20,6 +23,7 @@ feature{NONE} -- Initialization
 	make (a_timeout: INTEGER; a_should_repeat: BOOLEAN)
 			-- Initialize Current.
 		do
+			make_thread
 			timeout := a_timeout
 			should_repeat := a_should_repeat
 			create timeout_actions
