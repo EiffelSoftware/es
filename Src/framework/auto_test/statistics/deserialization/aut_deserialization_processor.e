@@ -453,7 +453,8 @@ feature{NONE} -- Auxiliary routines
 			l_serialization_str := l_data.substring (l_start_index, l_finish_index)
 
 				-- Save pre serialization string.
-			create last_pre_serialization.make (1, a_length + 1)
+--			create last_pre_serialization.make (1, a_length + 1)
+			create last_pre_serialization.make (1, a_length)
 			l_objects := last_pre_serialization
 
 			from

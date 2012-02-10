@@ -113,8 +113,11 @@ feature{NONE} -- Deserializability check
 		do
 			Result := False
 			if not l_retried then
-	            if attached {SPECIAL [detachable ANY]}deserialized_object_from_array (a_tc.pre_serialization) as lt_variable then
-					Result := True
+--	            if attached {SPECIAL [detachable ANY]} deserialized_object_from_array (a_tc.pre_serialization) as lt_variable then
+	            if attached deserialized_object_from_array (a_tc.pre_serialization) as lt_variable then
+	            	if attached {SPECIAL [ANY]} lt_variable as lt1 then
+	            		Result := True
+	            	end
 				end
 			end
 		rescue

@@ -112,6 +112,16 @@ feature -- Access
 			Result := l_path
 		end
 
+	afx_cluster_directory: STRING
+			-- Directory to store the classes useful for fixing.
+		local
+			l_path: FILE_NAME
+		do
+			create l_path.make_from_string (output_directory)
+			l_path.extend (Afx_cluster_name)
+			Result := l_path
+		end
+
 	valid_fix_directory: STRING
 			-- Directory to store generated fixes
 		local
@@ -158,17 +168,22 @@ feature -- Access
 			maximum_session_length_in_minutes := a_length
 		end
 
+feature -- Constant
+
+	Afx_cluster_name: STRING = "afx_cluster"
+			-- Name of AFX_cluster.
+
 feature -- State retrieval related
 
-	state_test_case_class_name: detachable STRING
-			-- Name of the test case class used for state retrieval
-			-- A test case class name starts with "TC__".
-		do
-			if state_test_case_class_name_cache = Void then
-				state_test_case_class_name_cache := first_test_case_class_name
-			end
-			Result := state_test_case_class_name_cache
-		end
+--	state_test_case_class_name: detachable STRING
+--			-- Name of the test case class used for state retrieval
+--			-- A test case class name starts with "TC__".
+--		do
+--			if state_test_case_class_name_cache = Void then
+--				state_test_case_class_name_cache := first_test_case_class_name
+--			end
+--			Result := state_test_case_class_name_cache
+--		end
 
 feature -- Test case analysis
 
@@ -638,34 +653,34 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	first_test_case_class_name: detachable STRING is
-			-- Name of the test case class
-			-- Search for a class whose name starts with "TC__", it is a naming convention
-			-- for test cases. The first found class is returned.
-			-- Note: If there are more than one test case classes in a probject, there is no
-			-- guarantee which one will be returned.
-		local
-			l_classes: CLASS_C_SERVER
-			i: INTEGER
-			n: INTEGER
-			l_done: BOOLEAN
-			l_class: CLASS_C
-		do
-			l_classes := eiffel_system.classes
-			i := l_classes.lower
-			n := l_classes.count
+--	first_test_case_class_name: detachable STRING is
+--			-- Name of the test case class
+--			-- Search for a class whose name starts with "TC__", it is a naming convention
+--			-- for test cases. The first found class is returned.
+--			-- Note: If there are more than one test case classes in a probject, there is no
+--			-- guarantee which one will be returned.
+--		local
+--			l_classes: CLASS_C_SERVER
+--			i: INTEGER
+--			n: INTEGER
+--			l_done: BOOLEAN
+--			l_class: CLASS_C
+--		do
+--			l_classes := eiffel_system.classes
+--			i := l_classes.lower
+--			n := l_classes.count
 
-			from
-			until
-				i = n or else Result /= Void
-			loop
-				l_class := l_classes.item (i)
-				if l_class /= Void and then l_class.already_compiled and then l_class.name.starts_with (once "TC__") then
-					Result := l_class.name.twin
-				end
-				i := i + 1
-			end
-		end
+--			from
+--			until
+--				i = n or else Result /= Void
+--			loop
+--				l_class := l_classes.item (i)
+--				if l_class /= Void and then l_class.already_compiled and then l_class.name.starts_with (once "TC__") then
+--					Result := l_class.name.twin
+--				end
+--				i := i + 1
+--			end
+--		end
 
 invariant
 

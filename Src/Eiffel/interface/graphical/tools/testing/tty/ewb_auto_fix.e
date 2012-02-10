@@ -86,7 +86,7 @@ feature -- Properties
 
 			if is_fixing_root_available then
 				if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-					system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
+					system.add_explicit_root (system.test_system.eifgens_cluster_name, afx_project_root_class, afx_project_root_feature)
 				end
 
 				create l_fix_proposer.make
