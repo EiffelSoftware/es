@@ -11,20 +11,14 @@ inherit
 	EV_STANDARD_DIALOG_I
 		redefine
 			interface
-		select
-			copy
---			interface,
---			make
 		end
 
 	EV_STANDARD_DIALOG_ACTION_SEQUENCES_IMP
 
 	EV_ANY_IMP
-		undefine
-			dispose,
-			destroy
 		redefine
-			interface
+			interface,
+			dispose
 		end
 
 	EV_DIALOG_CONSTANTS
@@ -33,16 +27,22 @@ inherit
 		end
 
 	EV_NS_WINDOW
+		redefine
+			make,
+			dispose
+		end
 
 feature {NONE} -- Implementation
 
 	make
 			-- Initialize dialog
 		do
-			cocoa_make (create {NS_RECT}.make_rect (100, 100, 100, 100),
-				{NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask, True)
-			make_key_and_order_front (current)
-			order_out
+			Precursor {EV_NS_WINDOW}
+--			cocoa_make
+--			cocoa_make (create {NS_RECT}.make_rect (100, 100, 100, 100),
+--				{NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask, True)
+			make_key_and_order_front_ (Current)
+			order_out_ (Current)
 			allow_resize
 			set_is_initialized (True)
 		end
@@ -59,12 +59,14 @@ feature -- Status setting
 		local
 			button: INTEGER
 		do
-			button := app_implementation.run_modal_for_window (current)
+			button := app_implementation.run_modal_for_window (Current)
 
-			if button =  {NS_PANEL}.ok_button then
+			-- NSOKButton = 1
+			if button =  1 then
 				selected_button := internal_accept
 				ok_actions.call (Void)
-			elseif button = {NS_PANEL}.cancel_button then
+			-- NSCancelButton = 0
+			elseif button = 0 then
 				selected_button := ev_cancel
 				cancel_actions.call (Void)
 			end
@@ -94,8 +96,12 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	destroy
+feature -- Dispose
+
+	dispose
 		do
+			Precursor {EV_ANY_IMP}
+			Precursor {EV_NS_WINDOW}
 		end
 
 feature {EV_ANY, EV_ANY_I}

@@ -4,8 +4,6 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
--- TODO: Refactor radio_group to be attached??
-
 deferred class
 	EV_RADIO_PEER_IMP
 

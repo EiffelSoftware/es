@@ -1,6 +1,6 @@
 note
 	description: "EiffelVision accelerator. Cocoa implementation."
-	author:	"Daniel Furrer"
+	author:	"Daniel Furrer, Emanuele Rudel"
 
 class
 	EV_ACCELERATOR_IMP
@@ -24,29 +24,6 @@ feature {NONE} -- Initialization
 		do
 			set_is_initialized (True)
 			create key
-		end
-
-feature {EV_TITLED_WINDOW_IMP} -- Implementation
-
-	modifier_mask: INTEGER
-			-- The mask consisting of alt, shift and control keys.
-		do
-		end
-
-feature {EV_TITLED_WINDOW_IMP} -- Implementation
-
-	add_accel (a_window_imp: EV_TITLED_WINDOW_IMP)
-			-- Add the current key combination
-		require
-			a_window_imp_not_void: a_window_imp /= Void
-		do
-		end
-
-	remove_accel (a_window_imp: EV_TITLED_WINDOW_IMP)
-			-- Remove the current key combination
-		require
-			a_window_imp_not_void: a_window_imp /= Void
-		do
 		end
 
 feature -- Access
@@ -113,6 +90,7 @@ feature {NONE} -- Implementation
 	destroy
 			-- Free resources of `Current'
 		do
+			set_is_destroyed (True)
 		end
 
 end -- class EV_ACCELERATOR_IMP

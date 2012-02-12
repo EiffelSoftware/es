@@ -18,7 +18,6 @@ inherit
 		redefine
 			interface,
 			make,
-			set_default_minimum_size,
 			set_background_color,
 			set_foreground_color
 		end
@@ -35,8 +34,6 @@ inherit
 			set_font
 		end
 
-	SINGLE_MATH
-
 create
 	make
 
@@ -45,10 +42,10 @@ feature {NONE} -- Initialization
 	make
 		do
 			create text_field.make
-			text_field.set_editable (false)
-			--text_field.set_draws_background (false)
-			text_field.set_bordered (false)
-			text_field.set_background_color (create {NS_COLOR}.control_color)
+			text_field.set_translates_autoresizing_mask_into_constraints_ (False)
+			text_field.set_editable_ (False)
+			text_field.set_bordered_ (False)
+			text_field.set_draws_background_ (False)
 			cocoa_view := text_field
 
 			align_text_center
@@ -56,29 +53,6 @@ feature {NONE} -- Initialization
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
 			disable_tabable_to
-		end
-
-feature -- Minimum size
-
-	set_default_minimum_size
-			-- Resize to a default size.
-		do
-			accomodate_text (" ")
-		end
-
-	accomodate_text (a_text: READABLE_STRING_GENERAL)
-			-- Change internal minimum size to make `a_text' fit.
-		require
-			a_text_not_void: a_text /= Void
-			a_text_not_empty: not a_text.is_empty
-		local
-			t: TUPLE [width: INTEGER; height: INTEGER]
-			a_width, a_height: INTEGER
-		do
-			t := font.string_size (a_text)
-			a_width := t.width
-			a_height := t.height
-			internal_set_minimum_size (a_width.abs + 5, a_height.abs + 5)
 		end
 
 feature -- Status setting
@@ -110,46 +84,41 @@ feature -- Status setting
 	set_text (a_text: READABLE_STRING_GENERAL)
 			-- Assign `a_text' to `text'.
 		do
-			if not a_text.same_string (text) then
-				if a_text.is_empty then
-					set_default_minimum_size
-				else
-					accomodate_text (a_text)
-				end
-				Precursor {EV_TEXTABLE_IMP} (a_text)
-				text_field.set_string_value (a_text)
-				-- invalidate
-			end
+			Precursor {EV_TEXTABLE_IMP} (a_text)
+			text_field.set_string_value_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 		end
 
 	set_background_color (a_color: EV_COLOR)
 			-- Assign `a_color' to `background_color'
 		local
 			color: NS_COLOR
+			l_color_utils: NS_COLOR_UTILS
 		do
 			Precursor {EV_PRIMITIVE_IMP} (a_color)
-			create color.color_with_calibrated_red_green_blue_alpha (a_color.red, a_color.green, a_color.blue, {REAL_32}1.0)
-			text_field.set_background_color (color)
+			create l_color_utils
+			color := l_color_utils.color_with_calibrated_red__green__blue__alpha_ (a_color.red.to_double, a_color.green.to_double, a_color.blue.to_double, 1.0)
+			text_field.set_background_color_ (color)
 		end
 
 	set_foreground_color (a_color: EV_COLOR)
 			-- <Precursor>
 		local
 			color: NS_COLOR
+			l_color_utils: NS_COLOR_UTILS
 		do
 			Precursor {EV_PRIMITIVE_IMP} (a_color)
-			create color.color_with_calibrated_red_green_blue_alpha (a_color.red, a_color.green, a_color.blue, {REAL_32}1.0)
-			text_field.set_text_color (color)
+			create l_color_utils
+			color := l_color_utils.color_with_calibrated_red__green__blue__alpha_ (a_color.red.to_double, a_color.green.to_double, a_color.blue.to_double, 1.0)
+			text_field.set_text_color_ (color)
 		end
 
 	set_font (a_font: EV_FONT)
 			-- <Precursor>
 		do
 			Precursor {EV_FONTABLE_IMP} (a_font)
-			if attached {EV_FONT_IMP} a_font.implementation as font_imp then
-				text_field.set_font (font_imp.font)
-			else
-				check False end
+			check attached {EV_FONT_IMP} a_font.implementation as font_imp then
+				-- NSTodo: font is not of the proper size. Fix bug
+--				text_field.set_font_ (font_imp.font)
 			end
 		end
 

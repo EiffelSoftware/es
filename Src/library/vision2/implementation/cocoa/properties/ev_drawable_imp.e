@@ -17,20 +17,6 @@ inherit
 	EV_DRAWABLE_CONSTANTS
 
 	DISPOSABLE
-		undefine
-			copy,
-			default_create
-		end
-
-	PLATFORM
-		undefine
-			copy,
-			default_create
-		end
-
-	MATH_CONST
-
-	NS_STRING_CONSTANTS
 
 feature {NONE} -- Initialization
 
@@ -42,8 +28,13 @@ feature {NONE} -- Initialization
 
 	make
 			-- Set default values. Call during initialization.
+		local
+			l_size: NS_SIZE
 		do
-			create image.make_with_size (create {NS_SIZE}.make_size (1000, 1000))
+			create l_size.make
+			l_size.set_width (1)
+			l_size.set_height (1)
+			create image.make_with_size_ (l_size)
 
 			if internal_background_color = void then
 				create internal_background_color.make_with_rgb (1, 1, 1)
@@ -51,9 +42,8 @@ feature {NONE} -- Initialization
 			if internal_foreground_color = void then
 	        	create internal_foreground_color.make_with_rgb (0, 0, 0)
 			end
-
+			create app_kit_additions
 			set_line_width (1)
-
 			set_is_initialized (True)
 		end
 
@@ -83,11 +73,12 @@ feature -- Access
 
 	foreground_color_internal: EV_COLOR
 			-- Color used to draw primitives.
+			-- Default: black.
 		do
 			if attached internal_foreground_color as l_color then
-				Result := l_color.twin
+				create Result.make_with_8_bit_rgb (l_color.red_8_bit, l_color.green_8_bit, l_color.blue_8_bit)
 			else
-				create Result
+				create Result.make_with_8_bit_rgb (0, 0, 0)
 			end
 		end
 
@@ -96,9 +87,9 @@ feature -- Access
 			-- Default: white.
 		do
 			if attached internal_background_color as l_color then
-				Result := l_color.twin
+				create Result.make_with_8_bit_rgb (l_color.red_8_bit, l_color.green_8_bit, l_color.blue_8_bit)
 			else
-				create Result
+				create Result.make_with_8_bit_rgb (255, 255, 255)
 			end
 		end
 
@@ -181,12 +172,13 @@ feature -- Element change
 			-- Set tile used to fill figures.
 			-- Set to Void to use `background_color' to fill.
 		do
-
+			tile := a_pixmap
 		end
 
 	remove_tile
 			-- Do not apply a tile when filling.
 		do
+			tile := Void
 		end
 
 	enable_dashed_line_style
@@ -213,13 +205,16 @@ feature -- Clearing operations
 			-- Erase rectangle specified with `background_color'.
 		local
 			path: NS_BEZIER_PATH
+			path_utils: NS_BEZIER_PATH_UTILS
 			color: detachable EV_COLOR_IMP
 		do
 			prepare_drawing
 			color ?= background_color.implementation
 			check color /= void end
 			color.color.set
-			create path.make_with_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
+			create path.make
+			create path_utils
+			path := path_utils.bezier_path_with_rect_ (create {NS_RECT}.make_with_coordinates (x, y, a_width, a_height))
 			path.fill
 			finish_drawing
 		end
@@ -268,31 +263,38 @@ feature -- Drawing operations
 			-- Draw `a_text' with top left corner at (`x', `y') using `font'.
 		local
 			l_string: NS_STRING
+			l_string_drawing: NS_STRING_DRAWING_CAT
 			l_attributes: NS_MUTABLE_DICTIONARY
 			l_font: detachable EV_FONT_IMP
 			l_color: detachable EV_COLOR_IMP
 			trans: NS_AFFINE_TRANSFORM
+			l_point: NS_POINT
 		do
-			create l_string.make_with_string (a_text)
+			create l_string.make_with_eiffel_string (a_text.as_string_8)
+			create l_string_drawing
 			l_font ?= font.implementation
 			check l_font /= Void end
 			l_color ?= foreground_color.implementation
 			check l_color /= Void end
 
-			create l_attributes.make_with_capacity (2)
-			l_attributes.set_object_for_key (l_font.font, font_attribute_name)
-			l_attributes.set_object_for_key (l_color.color, foreground_color_attribute_name)
+			create l_attributes.make_with_capacity_ (2)
+			l_attributes.set_object__for_key_ (l_font.font, create {NS_STRING}.make_with_eiffel_string ("NSFont"))
+			l_attributes.set_object__for_key_ (l_color.color, create {NS_STRING}.make_with_eiffel_string ("NSColor"))
 			prepare_drawing
 
 			create trans.make
-			trans.translate_by_xy (x, y)
+			trans.translate_x_by__y_by_ (x, y)
 			if not is_flipped then
-				trans.translate_by_xy (0, l_string.size_with_attributes (l_attributes).height.rounded)
-				trans.scale_by_xy ({REAL_32}1.0, {REAL_32}-1.0)
+				trans.translate_x_by__y_by_ (0, l_string_drawing.size_with_attributes_ (l_string, l_attributes).height)
+				trans.scale_x_by__y_by_ (1.0, -1.0)
 			end
-			trans.concat
+			app_kit_additions.concat (trans)
 
-			l_string.draw_at_point_with_attributes (create {NS_POINT}.make_point (0, 0), l_attributes)
+			create l_point.make
+			l_point.set_x (0)
+			l_point.set_y (0)
+
+			l_string_drawing.draw_at_point__with_attributes_ (l_string, l_point, l_attributes)
 
 			finish_drawing
 		end
@@ -301,15 +303,24 @@ feature -- Drawing operations
 			-- Draw line segment from (`x1', `y1') to (`x2', `y2').
 		local
 			path: NS_BEZIER_PATH
+			l_point1, l_point2: NS_POINT
 		do
 			prepare_drawing
 			create path.make
-			path.set_line_width (internal_line_width)
-			if internal_dashed_line_style then
-				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
-			end
-			path.move_to_point (create {NS_POINT}.make_point (x1, y1))
-			path.line_to_point (create {NS_POINT}.make_point (x2, y2))
+			path.set_line_width_ (internal_line_width)
+			-- Unsupported type!
+--			if internal_dashed_line_style then
+--				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
+--			end
+			create l_point1.make
+			l_point1.set_x (x1)
+			l_point1.set_y (y1)
+			path.move_to_point_ (l_point1)
+
+			create l_point2.make
+			l_point2.set_x (x2)
+			l_point2.set_y (y2)
+			path.line_to_point_ (l_point2)
 			path.stroke
 			finish_drawing
 		end
@@ -328,23 +339,25 @@ feature -- Drawing operations
 			pixel_buffer_imp: detachable EV_PIXEL_BUFFER_IMP
 			source_rect, destination_rect: NS_RECT
 			trans: NS_AFFINE_TRANSFORM
+			l_point: NS_POINT
 		do
 			prepare_drawing
 			pixel_buffer_imp ?= a_pixel_buffer.implementation
 			check pixel_buffer_imp /= void end
 
 			create trans.make
-			trans.translate_by_xy (x, y + a_area.height)
-			trans.scale_by_xy (1, -1)
-			trans.concat
+			trans.translate_x_by__y_by_ (x, y + a_area.height)
+			trans.scale_x_by__y_by_ (1, -1)
+			app_kit_additions.concat (trans)
 
-			destination_rect := create {NS_RECT}.make_rect (0, 0, a_area.height, a_area.width)
-			source_rect := create {NS_RECT}.make_rect (a_area.x, a_pixel_buffer.height - a_area.height - a_area.y, a_area.width, a_area.height)
-			pixel_buffer_imp.image.composite_to_point_from_rect_operation (create {NS_POINT}.make_point(0,0), source_rect, {NS_IMAGE}.composite_source_over)
---			pixel_buffer_imp.image.draw_in_rect (
---				create {NS_RECT}.make_rect (a_x, a_y, a_area.width, a_area.height),
---				create {NS_RECT}.make_rect (a_area.x, y_cocoa, a_area.width, a_area.height),
---				{NS_IMAGE}.composite_source_over, 1)
+			destination_rect := create {NS_RECT}.make_with_coordinates (0, 0, a_area.height, a_area.width)
+			source_rect := create {NS_RECT}.make_with_coordinates (a_area.x, a_pixel_buffer.height - a_area.height - a_area.y, a_area.width, a_area.height)
+			create l_point.make
+			l_point.set_x (0)
+			l_point.set_y (0)
+			-- NSCompositeSourceOver = 2
+			pixel_buffer_imp.image.composite_to_point__from_rect__operation_ (l_point, source_rect, 2)
+--			pixel_buffer_imp.image.draw_in_rect (create {NS_RECT}.make_rect (a_x, a_y, a_area.width, a_area.height), create {NS_RECT}.make_rect (a_area.x, y_cocoa, a_area.width, a_area.height), 2, 1)
 
 			finish_drawing
 		end
@@ -355,6 +368,7 @@ feature -- Drawing operations
 			pixmap_imp: detachable EV_PIXMAP_IMP
 			source_rect, destination_rect: NS_RECT
 			trans: NS_AFFINE_TRANSFORM
+			l_point: NS_POINT
 		do
 			pixmap_imp ?= a_pixmap.implementation
 			check pixmap_imp /= Void end
@@ -362,14 +376,18 @@ feature -- Drawing operations
 			prepare_drawing
 
 			create trans.make
-			trans.translate_by_xy (x, pixmap_imp.image.size.height.rounded + y)
-			trans.scale_by_xy (1, -1)
-			trans.concat
+			trans.translate_x_by__y_by_ (x, pixmap_imp.image.size.height.rounded + y)
+			trans.scale_x_by__y_by_ (1, -1)
+			app_kit_additions.concat (trans)
 
-			destination_rect := create {NS_RECT}.make_rect (0, 0, a_pixmap.height, a_pixmap.width)
-			source_rect := create {NS_RECT}.make_rect (0, 0, a_pixmap.width, a_pixmap.height)
+			destination_rect := create {NS_RECT}.make_with_coordinates (0, 0, a_pixmap.height, a_pixmap.width)
+			source_rect := create {NS_RECT}.make_with_coordinates (0, 0, a_pixmap.width, a_pixmap.height)
 --			pixmap_imp.image.draw_in_rect (destination_rect, source_rect, {NS_IMAGE}.composite_source_over, 1) -- did not work correctly for SD_NOTEBOOK_TAB_DRAWER_I.end_draw
-			pixmap_imp.image.draw_at_point (create {NS_POINT}.make_point (0, 0), source_rect, {NS_IMAGE}.composite_source_over, 1)
+			create l_point.make
+			l_point.set_x (0)
+			l_point.set_y (0)
+			-- NSCompositeSourceOver
+			pixmap_imp.image.draw_at_point__from_rect__operation__fraction_ (l_point, source_rect, 2, 1)
 			finish_drawing
 		end
 
@@ -382,10 +400,11 @@ feature -- Drawing operations
 			l_pixmap_imp ?= Result.implementation
 			check l_pixmap_imp /= Void end
 			l_pixmap_imp.image.lock_focus
-			image.draw_in_rect (
-				create {NS_RECT}.make_rect (0, 0, a_area.width, a_area.height),
-				create {NS_RECT}.make_rect (a_area.x, height - a_area.height - a_area.y, a_area.width, a_area.height),
-				{NS_IMAGE}.composite_source_over, 1)
+			-- NSCompositeSourceOver = 2
+			image.draw_in_rect__from_rect__operation__fraction_ (
+				create {NS_RECT}.make_with_coordinates (0, 0, a_area.width, a_area.height),
+				create {NS_RECT}.make_with_coordinates (a_area.x, height - a_area.height - a_area.y, a_area.width, a_area.height),
+				2, 1)
 			l_pixmap_imp.image.unlock_focus
 		end
 
@@ -397,6 +416,7 @@ feature -- Drawing operations
 --			path: NS_BEZIER_PATH
 			trans: NS_AFFINE_TRANSFORM
 			source_rect, destination_rect: NS_RECT
+			l_point: NS_POINT
 		do
 			pixmap_imp ?= a_pixmap.implementation
 			check pixmap_imp /= void end
@@ -404,15 +424,19 @@ feature -- Drawing operations
 			prepare_drawing
 
 			create trans.make
-			trans.translate_by_xy (x, y + a_area.height)
-			trans.scale_by_xy (1, -1)
-			trans.concat
+			trans.translate_x_by__y_by_ (x, y + a_area.height)
+			trans.scale_x_by__y_by_ (1, -1)
+			app_kit_additions.concat (trans)
 
-			destination_rect := create {NS_RECT}.make_rect (0, 0, a_area.height, a_area.width)
-			source_rect := create {NS_RECT}.make_rect (a_area.x, a_pixmap.height - a_area.height - a_area.y, a_area.width, a_area.height)
+			destination_rect := create {NS_RECT}.make_with_coordinates (0, 0, a_area.height, a_area.width)
+			source_rect := create {NS_RECT}.make_with_coordinates (a_area.x, a_pixmap.height - a_area.height - a_area.y, a_area.width, a_area.height)
 --			pixmap_imp.image.draw_in_rect (destination_rect, source_rect, {NS_IMAGE}.composite_source_over, 1)
 --			pixmap_imp.image.draw_at_point (create {NS_POINT}.make_point(0,0), source_rect, {NS_IMAGE}.composite_source_over, 1)
-			pixmap_imp.image.composite_to_point_from_rect_operation (create {NS_POINT}.make_point(0,0), source_rect, {NS_IMAGE}.composite_source_over)
+			create l_point.make
+			l_point.set_x (0)
+			l_point.set_y (0)
+			-- NSCompositeSourceOver = 2
+			pixmap_imp.image.composite_to_point__from_rect__operation_ (l_point, source_rect, 2)
 
 --			create color.blue_color
 --			color.color_with_alpha_component ({REAL_32}0.5).set
@@ -429,13 +453,17 @@ feature -- Drawing operations
 			-- with size `a_width' and `a_height'.
 		local
 			path: NS_BEZIER_PATH
+			path_utils: NS_BEZIER_PATH_UTILS
 		do
 			prepare_drawing
-			create path.make_with_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
-			path.set_line_width (internal_line_width)
-			if internal_dashed_line_style then
-				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
-			end
+			create path.make
+			create path_utils
+			path := path_utils.bezier_path_with_rect_ (create {NS_RECT}.make_with_coordinates (x, y, a_width, a_height))
+			path.set_line_width_ (internal_line_width)
+			-- Unsupported type!
+--			if internal_dashed_line_style then
+--				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
+--			end
 			path.stroke
 			finish_drawing
 		end
@@ -445,13 +473,17 @@ feature -- Drawing operations
 			-- size `a_width' and `a_height'.
 		local
 			path: NS_BEZIER_PATH
+			path_utils: NS_BEZIER_PATH_UTILS
 		do
 			prepare_drawing
-			create path.make_with_oval_in_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
-			path.set_line_width (internal_line_width)
-			if internal_dashed_line_style then
-				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
-			end
+			create path.make
+			create path_utils
+			path := path_utils.bezier_path_with_oval_in_rect_ (create {NS_RECT}.make_with_coordinates (x, y, a_width, a_height))
+			path.set_line_width_ (internal_line_width)
+			-- Unsupported type!
+--			if internal_dashed_line_style then
+--				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
+--			end
 			path.stroke
 			finish_drawing
 		end
@@ -463,29 +495,40 @@ feature -- Drawing operations
 		local
 			path: NS_BEZIER_PATH
 			i: INTEGER
-			l_point: EV_COORDINATE
+			l_coord: EV_COORDINATE
+			l_point: NS_POINT
 		do
 			prepare_drawing
 			create path.make
-			path.set_line_width (internal_line_width)
-			if internal_dashed_line_style then
-				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
-			end
+			path.set_line_width_ (internal_line_width)
+			-- Unsupported type!
+--			if internal_dashed_line_style then
+--				path.set_line_dash_count_phase (create {ARRAYED_LIST[REAL]}.make_from_array (<<{REAL_32}1.0, {REAL_32}1.0>>), {REAL_32}0.0)
+--			end
 			if not points.is_empty then
-				l_point := 	points.item (points.lower)
-				path.move_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+				l_coord := 	points.item (points.lower)
+				create l_point.make
+				l_point.set_x (l_coord.x)
+				l_point.set_y (l_coord.y)
+				path.move_to_point_ (l_point)
 				from
 					i := points.lower + 1
 				until
 					i > points.upper
 				loop
-					l_point := 	points.item (i)
-					path.line_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+					l_coord := 	points.item (i)
+					create l_point.make
+					l_point.set_x (l_coord.x)
+					l_point.set_y (l_coord.y)
+					path.line_to_point_ (l_point)
 					i := i + 1
 				end
 				if is_closed then
-					l_point := 	points.item (points.lower)
-					path.line_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+					l_coord := 	points.item (points.lower)
+					create l_point.make
+					l_point.set_x (l_coord.x)
+					l_point.set_y (l_coord.y)
+					path.line_to_point_ (l_point)
 				end
 			end
 			path.stroke
@@ -509,9 +552,12 @@ feature -- filling operations
 			-- with size `a_width' and `a_height'. Fill with `background_color'.
 		local
 			path: NS_BEZIER_PATH
+			path_utils: NS_BEZIER_PATH_UTILS
 		do
 			prepare_drawing
-			create path.make_with_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
+			create path.make
+			create path_utils
+			path := path_utils.bezier_path_with_rect_ (create {NS_RECT}.make_with_coordinates (x, y, a_width, a_height))
 			path.fill
 			finish_drawing
 		end
@@ -522,9 +568,12 @@ feature -- filling operations
 			-- Fill with `background_color'.
 		local
 			path: NS_BEZIER_PATH
+			path_utils: NS_BEZIER_PATH_UTILS
 		do
 			prepare_drawing
-			create path.make_with_oval_in_rect ( create {NS_RECT}.make_rect (x, y, a_width, a_height) )
+			create path.make
+			create path_utils
+			path := path_utils.bezier_path_with_oval_in_rect_ (create {NS_RECT}.make_with_coordinates (x, y, a_width, a_height))
 			path.fill
 			finish_drawing
 		end
@@ -535,24 +584,34 @@ feature -- filling operations
 		local
 			path: NS_BEZIER_PATH
 			i: INTEGER
-			l_point: EV_COORDINATE
+			l_coord: EV_COORDINATE
+			l_point: NS_POINT
 		do
 			prepare_drawing
 			create path.make
 			if not points.is_empty then
-				l_point := 	points.item (points.lower)
-				path.move_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+				l_coord := 	points.item (points.lower)
+				create l_point.make
+				l_point.set_x (l_coord.x)
+				l_point.set_y (l_coord.y)
+				path.move_to_point_ (l_point)
 				from
 					i := points.lower + 1
 				until
 					i > points.upper
 				loop
-					l_point := 	points.item (i)
-					path.line_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+					l_coord := 	points.item (i)
+					create l_point.make
+					l_point.set_x (l_coord.x)
+					l_point.set_y (l_coord.y)
+					path.line_to_point_ (l_point)
 					i := i + 1
 				end
-				l_point := 	points.item (points.lower)
-				path.line_to_point (create {NS_POINT}.make_point (l_point.x, l_point.y))
+				l_coord := 	points.item (points.lower)
+				create l_point.make
+				l_point.set_x (l_coord.x)
+				l_point.set_y (l_coord.y)
+				path.line_to_point_ (l_point)
 			end
 			path.fill
 			finish_drawing
@@ -571,6 +630,10 @@ feature -- Implementation
 
 	image: NS_IMAGE
 
+feature {NONE} -- Implementation
+
+	app_kit_additions: NS_APP_KIT_ADDITONS_CAT
+
 feature {EV_ANY_HANDLER} -- Implementation
 
 	is_flipped: BOOLEAN
@@ -583,26 +646,30 @@ feature {EV_ANY_HANDLER} -- Implementation
 			l_color: detachable EV_COLOR_IMP
 			trans: NS_AFFINE_TRANSFORM
 			gc: NS_GRAPHICS_CONTEXT
+			gc_utils: NS_GRAPHICS_CONTEXT_UTILS
 		do
 			image.lock_focus
 			if not is_flipped then
 				create trans.make
-				trans.translate_by_xy ({REAL_32}0.0, image.size.height.rounded)
-				trans.scale_by_xy ({REAL_32}1.0, {REAL_32}-1.0)
-				trans.concat
+				trans.translate_x_by__y_by_ (0.0, image.size.height)
+				trans.scale_x_by__y_by_ (1.0, -1.0)
+				app_kit_additions.concat (trans)
 			end
-			create gc.current_context
+			create gc_utils
+			gc := gc_utils.current_context
 			inspect drawing_mode
 				when drawing_mode_and then
-					gc.set_compositing_operation ({NS_IMAGE}.composite_source_over)
+					-- NSCompositeSourceOver = 2
+					gc.set_compositing_operation_ (2)
 				when drawing_mode_copy then
-					gc.set_compositing_operation ({NS_IMAGE}.composite_source_over)
+					gc.set_compositing_operation_ (2)
 				when drawing_mode_invert then
-					gc.set_compositing_operation ({NS_IMAGE}.composite_source_over)
+					gc.set_compositing_operation_ (2)
 				when drawing_mode_or then
-					gc.set_compositing_operation ({NS_IMAGE}.composite_source_over)
+					gc.set_compositing_operation_ (2)
 				when drawing_mode_xor then
-					gc.set_compositing_operation ({NS_IMAGE}.composite_xor)
+					-- NSCompositeXOR = 10
+					gc.set_compositing_operation_ (10)
 			end
 			l_color ?= foreground_color.implementation
 			check l_color /= void end

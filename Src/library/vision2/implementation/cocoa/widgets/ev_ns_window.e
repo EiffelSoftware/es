@@ -11,14 +11,23 @@ inherit
 
 	NS_WINDOW
 		rename
-			set_background_color as cocoa_set_background_color,
+			set_background_color_ as cocoa_set_background_color,
 			background_color as cocoa_background_color,
-			make as cocoa_make,
 			item as window_item,
 			title as cocoa_title,
-			set_title as cocoa_set_title,
-			copy as cocoa_copy
+			set_title_ as cocoa_set_title
 		undefine
+			copy,
+			is_equal
+		select
+			window_item
+		end
+
+	NS_WINDOW_DELEGATE_PROTOCOL
+		rename
+			item as window_delegate_item
+		undefine
+			copy,
 			is_equal
 		end
 
@@ -27,7 +36,7 @@ feature -- Window Title
 	set_title (a_title: READABLE_STRING_GENERAL)
 			-- <Precursor>
 		do
-			cocoa_set_title (create {NS_STRING}.make_with_string (a_title))
+			cocoa_set_title (create {NS_STRING}.make_with_eiffel_string (a_title.as_string_8))
 			internal_title := a_title.as_string_32
 		end
 
@@ -54,11 +63,8 @@ feature -- Measurement
 
 	y_position, screen_y: INTEGER
 			-- Y coordinate of `Current'
-		local
-			l_frame: NS_RECT
 		do
-			l_frame := frame
-			Result := (zero_screen.frame.size.height - l_frame.origin.y - l_frame.size.height).rounded
+			Result := (zero_screen.frame.size.height - frame.origin.y - frame.size.height).rounded
 		end
 
 	set_x_position (a_x: INTEGER)
@@ -76,8 +82,13 @@ feature -- Measurement
 	set_position (a_x, a_y: INTEGER)
 			-- Set horizontal offset to parent to `a_x'.
 			-- Set vertical offset to parent to `a_y'.
+		local
+			l_point: NS_POINT
 		do
-			set_frame_top_left_point_flipped (create {NS_POINT}.make_point (a_x, a_y))
+			create l_point.make
+			l_point.set_x (a_x)
+			l_point.set_y (a_y)
+			set_frame_top_left_point_ (l_point)
 		end
 
 	width: INTEGER
@@ -108,7 +119,7 @@ feature -- Measurement
 			-- Set the horizontal size to `a_width'.
 			-- Set the vertical size to `a_height'.
 		do
-			set_frame (create {NS_RECT}.make_rect (x_position, zero_screen.frame.size.height.rounded - y_position - a_height, a_width, a_height), True)
+			set_frame__display_ (create {NS_RECT}.make_with_coordinates (x_position, y_position, a_width, a_height), True)
 		end
 
 	forbid_resize
@@ -116,10 +127,11 @@ feature -- Measurement
 		local
 			l_button: detachable NS_BUTTON
 		do
-			set_shows_resize_indicator (False)
-			l_button := standard_window_button ({NS_WINDOW}.window_zoom_button)
+			set_shows_resize_indicator_ (False)
+			-- NSWindowZoomButton
+			l_button := standard_window_button_ (2)
 			if attached l_button then
-				l_button.set_enabled (False)
+				l_button.set_enabled_ (False)
 			end
 		end
 
@@ -128,10 +140,23 @@ feature -- Measurement
 		local
 			l_button: detachable NS_BUTTON
 		do
-			set_shows_resize_indicator (True)
-			l_button := standard_window_button ({NS_WINDOW}.window_zoom_button)
+			set_shows_resize_indicator_ (True)
+			-- NSWindowZoomButton = 2
+			l_button := standard_window_button_ (2)
 			if attached l_button then
-				l_button.set_enabled (True)
+				l_button.set_enabled_ (True)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	zero_screen: NS_SCREEN
+		local
+			l_screen_utils: NS_SCREEN_UTILS
+		once
+			create l_screen_utils
+			if attached {NS_SCREEN}l_screen_utils.screens.object_at_index_ (0) as l_screen then
+				Result := l_screen
 			end
 		end
 

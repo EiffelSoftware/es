@@ -16,7 +16,6 @@ inherit
 	EV_SCROLL_BAR_IMP
 		redefine
 			interface,
-			cocoa_set_size,
 			make
 		end
 
@@ -27,48 +26,21 @@ feature -- Initialization
 
 	make
 		do
-			create scroller.make_with_frame (create {NS_RECT}.make_rect (0, 0, 5, 10)) -- This call sets the orientation of the scrollbar
-			cocoa_view := scroller
+			add_objc_callback ("did_change_value:", agent did_change_value)
+			make_with_frame_ (create {NS_RECT}.make_with_coordinates (0, 0, 5, 10)) -- This call sets the orientation of the scrollbar
+			set_translates_autoresizing_mask_into_constraints_ (False)
+				-- NSScrollerStyleLegacy = 0
+			set_scroller_style_ (0)
+			cocoa_view := Current
 			Precursor {EV_SCROLL_BAR_IMP}
+			set_target_ (Current)
+			set_action_ (create {OBJC_SELECTOR}.make_with_name ("did_change_value:"))
 			disable_tabable_from
 			disable_tabable_to
-			scroller.set_enabled (True)
-
-			scroller.set_action (agent
-				do
-					set_proportion (scroller.double_value.truncated_to_real)
-					if change_actions_internal /= Void then
-						change_actions_internal.call ([value])
-					end
-				end)
+			set_enabled_ (True)
 
 			set_is_initialized (True)
-		end
-
-feature -- Minimum size
-
-   	set_default_minimum_size
-   			-- Platform dependant initializations.
-   		do
-			internal_set_minimum_width ({NS_SCROLLER}.scroller_width)
- 		end
-
-	cocoa_set_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32)
-			-- Make sure the width of the scrollbar stays the same - just center it in the available space.
-		local
-			l_x_position: INTEGER
-			l_width: INTEGER
-			l_scroller_width: INTEGER
-		do
-			l_scroller_width := {NS_SCROLLER}.scroller_width
-			if a_width <= l_scroller_width then
-				l_x_position := a_x_position
-				l_width := a_width
-			else
-				l_x_position := a_x_position + ((a_width - l_scroller_width) // 2)
-				l_width := l_scroller_width
-			end
-			Precursor {EV_SCROLL_BAR_IMP} (l_x_position, a_y_position, l_width, a_height)
+			set_fixed_width (15)
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

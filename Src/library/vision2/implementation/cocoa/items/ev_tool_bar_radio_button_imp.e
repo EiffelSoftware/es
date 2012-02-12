@@ -40,6 +40,8 @@ feature {NONE} -- Initialization
 
 			Precursor {EV_TOOL_BAR_BUTTON_IMP}
 			Precursor {EV_RADIO_PEER_IMP}
+				-- NSRadioButton = 4
+			button.set_button_type_ (4)
 			is_selected := True
 			select_actions.extend (agent enable_select)
 		end

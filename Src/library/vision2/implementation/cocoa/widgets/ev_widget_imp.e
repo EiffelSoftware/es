@@ -22,8 +22,7 @@ inherit
 			set_pointer_style
 		redefine
 			interface,
-			make,
-			destroy
+			make
 		end
 
 	EV_SENSITIVE_IMP
@@ -55,64 +54,25 @@ inherit
 			interface
 		end
 
-	EV_SIZEABLE_IMP
-		redefine
-			interface
-		end
-
 	EV_NS_VIEW
 		redefine
 			interface
 		end
-
-	NS_ENVIRONEMENT
-
-	NS_STRING_CONSTANTS
 
 feature {NONE} -- Initialization
 
 	initialize
 			-- Show non window widgets.
 			-- Initialize default options, colors and sizes.
-		require
+		require else
 			cocoa_view /= Void
 		do
 			is_show_requested := True
 			set_expandable (True)
 			set_is_initialized (True)
-
-			-- FIXME: should only be called once cocoa_view is set up (/= void)! otherwise we get multiple callbacks per widget
---			default_center.remove_observers
-			default_center.add_observer (agent on_size_change, view_frame_did_change_notification, cocoa_view)
 		end
 
 feature {EV_WINDOW_IMP, EV_INTERMEDIARY_ROUTINES, EV_ANY_I} -- Implementation
-
-	on_size_change (a_notification: NS_NOTIFICATION)
-			-- Notification sent to the Cocoa view
-		local
-			l_width, l_height: INTEGER
-		do
-			if attached cocoa_view then
-				--io.put_string ("Calling on_size_change of " + current.generator + " " + object_id.out + " (" + attached_view.item.out + ") with:" + a_notification.object.item.out + "%N")
-				if attached a_notification.object as l_object and then l_object.item /= attached_view.item then
-					io.put_string ("Incorrect callback to on_size_change: " + current.generator + " " + object_id.out + " (item " + attached_view.item.out + " but got " + l_object.item.out + ")%N")
-				end
-				l_width := width
-				l_height := height
-				if l_width /= last_width or l_height /= last_height and l_width > 0 and l_height > 0 then
-					if not in_resize_event and attached resize_actions_internal as l_actions then
-						in_resize_event := True
-						io.put_string ("Size change: " + current.generator + " " + object_id.out + "  " + width.out + "x" + height.out + "%N")
-						l_actions.call ([screen_x, screen_y, width, height])
-						in_resize_event := False
-					end
-					on_size (l_width, l_height)
-					last_width := l_width
-					last_height := l_height
-				end
-			end
-		end
 
 	on_size (a_width, a_height: INTEGER)
 		do
@@ -199,16 +159,13 @@ feature -- Status setting
 			-- Request that `Current' not be displayed even when its parent is.
 		do
 			is_show_requested := False
-			attached_view.set_hidden (True)
+			attached_view.set_hidden_ (True)
 		end
 
 	show
 		do
 			is_show_requested := True
-			attached_view.set_hidden (False)
-			if attached parent_imp as p_imp then
-				p_imp.notify_change (Nc_minsize, Current)
-			end
+			attached_view.set_hidden_ (False)
 		end
 
 	is_show_requested: BOOLEAN
@@ -218,7 +175,40 @@ feature -- Status setting
 	is_displayed: BOOLEAN
 			-- Precursor
 		do
-			Result := is_show_requested
+			if attached attached_view.window then
+				Result := attached_view.window.is_visible
+			end
+--			Result := is_show_requested
+		end
+
+feature -- Resizing
+
+	set_minimum_width (a_minimum_width: INTEGER_32)
+		do
+			set_minimum_width_constraint (a_minimum_width)
+		end
+
+	set_minimum_height (a_minimum_height: INTEGER_32)
+		do
+			if is_height_resizable then
+				set_minimum_height_constraint (a_minimum_height)
+			end
+		end
+
+	set_minimum_size (a_minimum_width, a_minimum_height: INTEGER_32)
+		do
+			set_minimum_width (a_minimum_width.max (minimum_width))
+			set_minimum_height (a_minimum_height.max (minimum_height))
+		end
+
+	set_fixed_width (a_width: INTEGER_32)
+		do
+			set_fixed_width_constraint (a_width)
+		end
+
+	set_fixed_height (a_height: INTEGER_32)
+		do
+			set_fixed_height_constraint (a_height)
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -226,6 +216,7 @@ feature {EV_ANY_I} -- Implementation
 	refresh_now
 			-- Flush any pending redraws due for `Current'.
 		do
+			attached_view.set_needs_display_ (True)
 		end
 
 feature {EV_WINDOW_IMP} -- Implementation
@@ -250,14 +241,6 @@ feature {EV_CONTAINER_IMP} -- Implementation
 
 feature {EV_ANY_IMP} -- Implementation
 
-	destroy
-		do
-			if attached parent_imp as pimp then
-				pimp.attached_interface.prune (attached_interface)
-			end
-			set_is_destroyed (True)
-		end
-
 	parent_imp: detachable EV_CONTAINER_IMP
 			-- Container widget that contains `Current'.
 			-- (Void if `Current' is not in a container)
@@ -278,15 +261,6 @@ feature -- Widget relationships
 		deferred
 		end
 
-feature {NONE} -- Minimum size
-
-	last_width, last_height: INTEGER
-			-- Dimenions during last resize message.
-			-- Used for optimizing callbacks
-
-	in_resize_event: BOOLEAN -- TODO: remove?
-			-- Is `interface.resize_actions' being executed?
-
 feature {EV_BOX_IMP, LAYOUT_INSPECTOR} -- expandable
 
 	is_expandable: BOOLEAN
@@ -294,6 +268,14 @@ feature {EV_BOX_IMP, LAYOUT_INSPECTOR} -- expandable
 	set_expandable (a_flag: BOOLEAN)
 		do
 			is_expandable := a_flag
+		end
+
+feature {EV_ANY_I} -- Implementation
+
+	is_height_resizable: BOOLEAN
+			-- Is the height of the wrapped Cocoa widget resizable?
+		do
+			Result := True
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

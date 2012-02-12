@@ -53,12 +53,20 @@ feature -- Access
 
 	default_pointer_style_width: INTEGER
 			-- Default pointer style width.
+		local
+			l_cursor: NS_CURSOR
 		do
+			l_cursor := (create {NS_CURSOR_UTILS}).arrow_cursor
+			Result := l_cursor.image.size.width.truncated_to_integer
 		end
 
 	default_pointer_style_height: INTEGER
 			-- Default pointer style height.
+		local
+			l_cursor: NS_CURSOR
 		do
+			l_cursor := (create {NS_CURSOR_UTILS}).arrow_cursor
+			Result := l_cursor.image.size.height.truncated_to_integer
 		end
 
 	has_printer: BOOLEAN
@@ -71,11 +79,25 @@ feature -- Access
 
 	font_families: LINEAR [STRING_32]
 			-- List of fonts available on the system
+		local
+			l_font_manager: NS_FONT_MANAGER
+			l_font_families: NS_ARRAY
+			l_font_list: LINKED_LIST [STRING_32]
+			i: NATURAL_64
 		once
-			check
-				not_implemented: False
+--			create {LINKED_LIST [STRING_32]}Result.make
+			create l_font_list.make
+			create l_font_manager.make
+			l_font_families := l_font_manager.available_font_families
+			from i := 0
+			until i >= l_font_families.count
+			loop
+				if attached {NS_STRING} l_font_families.object_at_index_ (i) as l_font then
+					l_font_list.extend (l_font.to_eiffel_string.as_string_32)
+				end
+				i := i + 1
 			end
-			create {LINKED_LIST [STRING_32]}Result.make
+			Result := l_font_list
 		end
 
 end -- class EV_ENVIRONMENT_IMP

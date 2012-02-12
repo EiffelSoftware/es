@@ -17,8 +17,7 @@ inherit
 		redefine
 			interface,
 			minimum_height,
-			minimum_width,
-			cocoa_set_size
+			minimum_width
 		end
 
 create
@@ -29,28 +28,13 @@ feature {NONE} -- Implementation
 	minimum_height: INTEGER
 			-- Minimum height that the widget may occupy.
 		do
-			Result := 15 -- Hardcode
+			Result := 15 -- Hardcoded
 		end
 
 	minimum_width: INTEGER
 			-- Minimum width that the widget may occupy.
 		do
-			Result := 150 -- Hardcode
-		end
-
-	cocoa_set_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32)
-		local
-			l_y_position: INTEGER
-			l_height: INTEGER
-		do
-			if a_height <= 25 then
-				l_y_position := a_y_position
-				l_height := a_height
-			else
-				l_y_position := a_y_position + ((a_height - 25) // 2)
-				l_height := 25
-			end
-			Precursor {EV_PROGRESS_BAR_IMP} (a_x_position, l_y_position, a_width, l_height)
+			Result := 150 -- Hardcoded
 		end
 
 

@@ -32,14 +32,16 @@ feature -- Status setting
 			-- Select this menu item.
 		do
 			is_selected := True
-			menu_item.set_state ({NS_CELL}.on_state)
+			-- NSOnState = 1
+			menu_item.set_state_ (1)
 		end
 
 	disable_select
 			-- Deselect this menu item.
 		do
 			is_selected := False
-			menu_item.set_state ({NS_CELL}.off_state)
+			-- NSOffState = 0
+			menu_item.set_state_ (0)
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

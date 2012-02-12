@@ -16,6 +16,8 @@ inherit
 		end
 
 	EV_STANDARD_DIALOG_IMP
+		undefine
+			wrapper_objc_class_name
 		redefine
 			interface,
 			make,
@@ -25,24 +27,22 @@ inherit
 
 	NS_OPEN_PANEL
 		rename
-			make as make_panel,
-			make_window as make_panel_window,
 			item as cocoa_panel_ptr,
 			copy as cocoa_copy_panel,
 			title as cocoa_title,
-			set_background_color as cocoa_set_background_color,
+			set_background_color_ as cocoa_set_background_color,
 			background_color as cocoa_background_color,
 			screen as cocoa_screen,
-			set_title as cocoa_set_title,
-			directory as cocoa_directory
+			set_title_ as cocoa_set_title
 		undefine
 			is_equal
 		redefine
+			make,
 			dispose
 		select
 			cocoa_panel_ptr,
-			cocoa_screen,
-			make_panel_window
+			cocoa_screen
+--			make_panel_window
 		end
 
 create
@@ -53,11 +53,11 @@ feature {NONE} -- Initialization
 	make
 			-- Setup action sequences.
 		do
-			make_panel
-			set_can_choose_directories (True)
-			set_can_create_directories (True)
-			set_can_choose_files (False)
-			set_prompt (create {NS_STRING}.make_with_string ("Choose"))
+			Precursor {NS_OPEN_PANEL}
+			set_can_choose_directories_ (True)
+			set_can_create_directories_ (True)
+			set_can_choose_files_ (False)
+			set_prompt_ (create {NS_STRING}.make_with_eiffel_string ("Choose"))
 		end
 
 feature -- Access
@@ -66,7 +66,7 @@ feature -- Access
 			-- Path of the current selected directory
 		do
 			if selected_button.is_equal (internal_accept) then
-				Result := filename
+				Result := url.path.to_eiffel_string
 			else
 				create Result.make_empty
 			end
@@ -79,9 +79,12 @@ feature -- Element change
 
 	set_start_directory (a_path: READABLE_STRING_GENERAL)
 			-- Make `a_path' the base directory.
+		local
+			l_url: NS_URL
 		do
 			start_directory := a_path.as_string_32.twin
-			set_directory (create {NS_STRING}.make_with_string (a_path))
+			create l_url.make_file_url_with_path__is_directory_ (create {NS_STRING}.make_with_eiffel_string (a_path.as_string_8), True)
+			set_directory_ur_l_ (l_url)
 		end
 
 feature {NONE} -- Implementation
@@ -92,23 +95,17 @@ feature {NONE} -- Implementation
 			button: INTEGER
 		do
 			check attached {EV_WINDOW_IMP} a_window.implementation as l_window then
-				begin_sheet (void, void, void, l_window, delegate_class.create_instance, default_pointer, default_pointer)
-				button := run_modal
-				if button =  {NS_PANEL}.ok_button then
+				button := run_modal.to_integer_32
+					-- NSOKButton = 1
+				if button =  1 then
 					selected_button := internal_accept
 					ok_actions.call ([])
-				elseif button = {NS_PANEL}.cancel_button then
+					-- NSCancelButton = 0
+				elseif button = 0 then
 					selected_button := ev_cancel
 					cancel_actions.call ([])
 				end
 			end
-		end
-
-	delegate_class: OBJC_CLASS
-		once
-			create Result.make_with_name ("NSOpenPanelSheetDelegate")
-			Result.add_method ("openPanelDidEnd:", agent (panel: POINTER; return_code: INTEGER; context_info: POINTER) do  end)
-			Result.register
 		end
 
 	dispose

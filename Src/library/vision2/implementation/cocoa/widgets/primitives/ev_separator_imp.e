@@ -16,8 +16,7 @@ inherit
 	EV_PRIMITIVE_IMP
 		redefine
 			make,
-			interface,
-			set_default_minimum_size
+			interface
 		end
 
 feature {NONE} -- Initialization
@@ -27,20 +26,14 @@ feature {NONE} -- Initialization
 		local
 			box: NS_BOX
 		do
-			create box.make
+			create box.make_with_frame_ (create {NS_RECT}.make_with_coordinates (0, 0, 4, 4))
+			box.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := box
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
-			box.set_box_type ({NS_BOX}.box_separator)
+			-- NSBoxSeparator = 2
+			box.set_box_type_ (2)
 			set_is_initialized (True)
-		end
-
-feature -- Layout handling
-
-	set_default_minimum_size
-			-- Minimum height/width that the widget may occupy.
-		do
-			internal_set_minimum_size (1, 1) -- Hardcoded value
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

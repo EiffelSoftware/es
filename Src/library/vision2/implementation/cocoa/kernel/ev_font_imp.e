@@ -21,11 +21,9 @@ inherit
 			interface
 		end
 
-	NS_STRING_CONSTANTS
-
 	EV_FONT_CONSTANTS
 
-	NS_ENVIRONEMENT
+	NS_FONT_MANAGER_UTILS
 
 create
 	make
@@ -34,8 +32,12 @@ feature {NONE} -- Initialization
 
 	make
 			-- Set up `Current'
+		local
+			l_font_utils: NS_FONT_UTILS
 		do
-			create font.system_font_of_size (0)
+			create l_font_utils
+				-- Note: if fontSize is 0 or negative, return the system font at the default size.
+			font := l_font_utils.system_font_of_size_ (0)
 
 			create preferred_families
 			set_shape (shape_regular)
@@ -43,8 +45,8 @@ feature {NONE} -- Initialization
 			set_family (family_screen)
 			set_is_initialized (True)
 
-			--preferred_families.internal_add_actions.extend (agent update_preferred_faces)
-			--preferred_families.internal_remove_actions.extend (preferred_families.internal_add_actions.first)
+			preferred_families.internal_add_actions.extend (agent update_preferred_faces)
+			preferred_families.internal_remove_actions.extend (preferred_families.internal_add_actions.first)
 		end
 
 feature -- Access
@@ -63,9 +65,6 @@ feature -- Access
 
 	height: INTEGER
 			-- Preferred font height measured in screen pixels.
-		do
-			Result := font.point_size.rounded
-		end
 
 	height_in_points: INTEGER
 			-- Preferred font height measured in points.
@@ -85,23 +84,24 @@ feature -- Element change
 			-- Set `a_family' as preferred font category.
 		do
 			family := a_family
-			--font := shared_font_manager.convert_font_to_family (font, ...)
+--			font := shared_font_manager.convert_font__to_family_ (font, create {NS_STRING}.make_with_eiffel_string (""))
 		end
 
 	set_face_name (a_face: READABLE_STRING_GENERAL)
 			-- Set the face name for current.
 		do
-			font := shared_font_manager.convert_font_to_face (font, a_face)
+			font := shared_font_manager.convert_font__to_face_ (font, create {NS_STRING}.make_with_eiffel_string (a_face.as_string_8))
 		end
 
 	set_weight (a_weight: INTEGER)
 			-- Set `a_weight' as preferred font thickness.
 		do
 			weight := a_weight
+				-- NSFontBoldTrait = 2
 			if weight > weight_regular then
-				font := shared_font_manager.convert_font_to_have_trait (font, {NS_FONT_DESCRIPTOR}.bold_trait)
+				font := shared_font_manager.convert_font__to_have_trait_ (font, 2)
 			else
-				font := shared_font_manager.convert_font_to_not_have_trait (font, {NS_FONT_DESCRIPTOR}.bold_trait)
+				font := shared_font_manager.convert_font__to_not_have_trait_ (font, 2)
 			end
 		end
 
@@ -109,23 +109,36 @@ feature -- Element change
 			-- Set `a_shape' as preferred font slant.
 		do
 			shape := a_shape
+				-- NSFontItalicTrait = 1
 			if shape = Shape_italic then
-				font := shared_font_manager.convert_font_to_have_trait (font, {NS_FONT_DESCRIPTOR}.italic_trait)
+				font := shared_font_manager.convert_font__to_have_trait_ (font, 1)
 			else
-				font := shared_font_manager.convert_font_to_not_have_trait (font, {NS_FONT_DESCRIPTOR}.italic_trait)
+				font := shared_font_manager.convert_font__to_not_have_trait_ (font, 1)
 			end
 		end
 
 	set_height (a_height: INTEGER)
 			-- Set `a_height' as preferred font size in screen pixels
+		local
+			l_resolution: INTEGER
+			l_points: REAL_64
 		do
-			font := shared_font_manager.convert_font_to_size (font, a_height.to_real)
+			height := a_height
+				-- Convert pixels to points
+			l_resolution := (create {EV_SCREEN}).vertical_resolution
+			l_points := (a_height / l_resolution) * 72
+			font := shared_font_manager.convert_font__to_size_ (font, l_points)
 		end
 
 	set_height_in_points (a_height: INTEGER)
 			-- Set `a_height' as preferred font size in screen pixels
+		local
+			l_resolution: INTEGER
 		do
-			font := shared_font_manager.convert_font_to_size (font, a_height.to_real)
+			l_resolution := (create {EV_SCREEN}).vertical_resolution
+				-- Convert points to pixels
+			height := ((a_height * l_resolution) / 72).rounded
+			font := shared_font_manager.convert_font__to_size_ (font, a_height.to_real)
 		end
 
 feature -- Status report
@@ -135,8 +148,8 @@ feature -- Status report
 		local
 			i: INTEGER
 		do
-			Result := font.font_name
-			-- The OS X font name may be ...-Bold, but we're just interested in the first part.
+			Result := font.font_name.to_eiffel_string.as_string_32
+				-- The OS X font name may be name-Bold, but we're just interested in the first part.
 			i := Result.index_of ('-', 1)
 			if i /= 0 then
 				Result.keep_head (i - 1)
@@ -178,12 +191,17 @@ feature -- Status report
 			-- current font, taking into account line breaks ('%N').
 		local
 			l_string: NS_STRING
-			l_attributes: NS_DICTIONARY
+			l_attributed_string: NS_ATTRIBUTED_STRING
+			l_attributes: NS_MUTABLE_DICTIONARY
 			l_size: NS_SIZE
 		do
-			create l_string.make_with_string (a_string)
-			create l_attributes.make_with_object_for_key (font, font_attribute_name)
-			l_size := l_string.size_with_attributes (l_attributes)
+			create l_string.make_with_eiffel_string (a_string.as_string_8)
+			create l_attributes.make
+			l_attributes.set_object__for_key_ (font, create {NS_STRING}.make_with_eiffel_string ("NSFont"))
+			create l_attributed_string.make_with_string__attributes_ (l_string, l_attributes)
+
+				-- Note: the size attribute is not automatically generated by the wrapper
+			l_size := l_attributed_string.size
 
 			create Result.default_create
 			Result.width := l_size.width.rounded
@@ -199,11 +217,13 @@ feature -- Status report
 	horizontal_resolution: INTEGER
 			-- Horizontal resolution of screen for which the font is designed.
 		do
+			Result := (create {EV_SCREEN}).horizontal_resolution
 		end
 
 	vertical_resolution: INTEGER
 			-- Vertical resolution of screen for which the font is designed.
 		do
+			Result := (create {EV_SCREEN}).vertical_resolution
 		end
 
 	is_proportional: BOOLEAN

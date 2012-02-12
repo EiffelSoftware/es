@@ -18,8 +18,7 @@ inherit
 
 	EV_STANDARD_DIALOG_IMP
 		undefine
-			internal_accept,
-			cocoa_copy
+			internal_accept
 		redefine
 			interface,
 			make,
@@ -31,20 +30,15 @@ inherit
 		rename
 			make as cocoa_panel_make,
 			item as cocoa_panel,
-			screen as cocoa_screen,
-			set_background_color as cocoa_set_background_color,
-			background_color as cocoa_background_color,
-			title as cocoa_title,
-			set_title as cocoa_set_title,
 			copy as cocoa_copy
 		undefine
-			is_equal
+			is_equal,
+			wrapper_objc_class_name
 		redefine
 			dispose
 		select
-			make_window,
 			cocoa_panel,
-			cocoa_screen
+			cocoa_panel_make
 		end
 
 create
@@ -68,7 +62,7 @@ feature {NONE} -- Initialization
 		local
 			ret: INTEGER
 		do
-			ret := print_panel.run_modal
+			ret := print_panel.run_modal.to_integer_32
 		end
 
 

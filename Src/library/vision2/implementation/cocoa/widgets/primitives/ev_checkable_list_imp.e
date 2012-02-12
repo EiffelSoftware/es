@@ -11,6 +11,8 @@ class
 
 inherit
 	EV_CHECKABLE_LIST_I
+		rename
+			item as list_item
 		undefine
 			wipe_out,
 			selected_items,
@@ -22,14 +24,27 @@ inherit
 
 	EV_LIST_IMP
 		redefine
+			make,
 			interface,
-			initialize
+			initialize,
+			table_view__object_value_for_table_column__row_,
+			table_view__data_cell_for_table_column__row_,
+			table_view__set_object_value__for_table_column__row_
 		end
 
 	EV_CHECKABLE_LIST_ACTION_SEQUENCES_IMP
 
 create
 	make
+
+feature {NONE} -- Initialization
+
+	make
+		do
+			add_objc_callback ("tableView:dataCellForTableColumn:row:", agent table_view__data_cell_for_table_column__row_)
+			add_objc_callback ("tableView:setObjectValue:forTableColumn:row:", agent table_view__set_object_value__for_table_column__row_)
+			Precursor {EV_LIST_IMP}
+		end
 
 feature -- Initialization
 
@@ -39,40 +54,57 @@ feature -- Initialization
 			Precursor {EV_LIST_IMP}
 		end
 
-	boolean_tree_model_column: INTEGER = 2
+feature -- Data Source
 
-	on_tree_path_toggle (a_tree_path_str: POINTER)
-			--
+	table_view__object_value_for_table_column__row_ (a_table_view: NS_TABLE_VIEW; a_table_column: NS_TABLE_COLUMN; a_row: INTEGER_64): detachable NS_OBJECT
 		do
-
+			Result := create {NS_NUMBER}.make_with_bool_ (i_th (a_row.as_integer_32 + 1).is_selected)
 		end
 
-	initialize_model
-			-- Create our data model for `Current'
-		do
+feature -- Delegate
 
+	table_view__data_cell_for_table_column__row_ (a_table_view: NS_TABLE_VIEW; a_table_column: NS_TABLE_COLUMN; a_row: INTEGER_64): NS_CELL
+		local
+			l_result: NS_BUTTON_CELL
+		do
+			create l_result.make
+				-- NSSwitchButton = 3
+			l_result.set_button_type_ (3)
+			l_result.set_title_ (create {NS_STRING}.make_with_eiffel_string (i_th (a_row.as_integer_32 + 1).text))
+			Result := l_result
+		end
+
+	table_view__set_object_value__for_table_column__row_ (a_table_view: NS_TABLE_VIEW; a_object: NS_OBJECT; a_table_column: NS_TABLE_COLUMN; a_row: INTEGER_64)
+		do
+			if not i_th (a_row.as_integer_32 + 1).is_selected then
+				i_th (a_row.as_integer_32 + 1).enable_select
+			else
+				i_th (a_row.as_integer_32 + 1).disable_select
+			end
 		end
 
 feature -- Access
 
-	is_item_checked (list_item: EV_LIST_ITEM): BOOLEAN
-			--
+	is_item_checked (a_list_item: EV_LIST_ITEM): BOOLEAN
 		do
-
+				-- Assume item is checked if and only if the item is selected
+			Result := a_list_item.is_selected
 		end
 
 feature -- Status setting
 
-	check_item (list_item: EV_LIST_ITEM)
+	check_item (a_list_item: EV_LIST_ITEM)
 		do
-
+			a_list_item.enable_select
+			table_view.reload_data
 		end
 
-	uncheck_item (list_item: EV_LIST_ITEM)
+	uncheck_item (a_list_item: EV_LIST_ITEM)
 			-- Ensure check associated with `list_item' is
 			-- checked.
 		do
-
+			a_list_item.disable_select
+			table_view.reload_data
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

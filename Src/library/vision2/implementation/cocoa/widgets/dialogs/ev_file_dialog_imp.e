@@ -113,9 +113,12 @@ feature -- Element change
 
 	set_start_directory (a_path: READABLE_STRING_GENERAL)
 			-- Make `a_path' the base directory.
+		local
+			l_url: NS_URL
 		do
 			start_directory := a_path.as_string_32.twin
-			save_panel.set_directory (create {NS_STRING}.make_with_string (a_path))
+			create l_url.make_file_url_with_path_ (create {NS_STRING}.make_with_eiffel_string (a_path.as_string_8))
+			save_panel.set_directory_ur_l_ (l_url)
 		end
 
 feature {NONE} -- Implementation

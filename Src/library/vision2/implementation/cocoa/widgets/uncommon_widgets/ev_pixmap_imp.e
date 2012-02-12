@@ -58,9 +58,13 @@ feature {NONE} -- Initialization
 			internal_width := 10
 			Precursor {EV_DRAWABLE_IMP}
 			create image_view.make
-			image_view.set_image (image)
+			image_view.set_translates_autoresizing_mask_into_constraints_ (False)
+			image_view.set_image_ (image)
 			cocoa_view := image_view
-			image_view.set_image_scaling ({NS_IMAGE_VIEW}.image_scaling_none)
+			-- NSImageScaleNone = 2
+			image_view.set_image_scaling_ (2)
+			-- NSImageFramePhoto = 1
+			image_view.set_image_frame_style_ (1)
 
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
@@ -109,6 +113,7 @@ feature -- Drawing operations
 	update_if_needed
 			-- Update `Current' if needed.
 		do
+			image_view.set_needs_display_ (True)
 		end
 
 feature -- Measurement
@@ -127,20 +132,12 @@ feature -- Measurement
 
 	minimum_height: INTEGER
 		do
-			if is_user_min_height_set then
-				Result := internal_minimum_height
-			else
-				Result := height
-			end
+			Result := height
 		end
 
 	minimum_width: INTEGER
 		do
-			if is_user_min_width_set then
-				Result := internal_minimum_width
-			else
-				Result := width
-			end
+			Result := width
 		end
 
 feature -- Element change
@@ -149,16 +146,16 @@ feature -- Element change
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			l_image: NS_IMAGE
-			l_image_rep: detachable NS_IMAGE_REP
 		do
-			create l_image.make_with_referencing_file (a_path)
-			image_view.set_image (l_image)
+			create l_image.make_by_referencing_file_ (create {NS_STRING}.make_with_eiffel_string (a_path.as_string_8))
+			image_view.set_image_ (l_image)
 			if l_image.representations.count > 0 then
 				-- File found, representation loaded
-				l_image_rep := l_image.representations.item (0)
-				check l_image_rep /= void end
-				internal_width := l_image_rep.pixels_wide
-				internal_height := l_image_rep.pixels_high
+				if attached {NS_IMAGE_REP} l_image.representations.object_at_index_ (0) as l_image_rep then
+					internal_width := l_image_rep.pixels_wide.to_integer_32
+					internal_height := l_image_rep.pixels_high.to_integer_32
+					set_minimum_size (internal_width, internal_height)
+				end
 				image := l_image
 			else
 				(create {EXCEPTIONS}).raise ("Could not load image file.")
@@ -168,16 +165,20 @@ feature -- Element change
 	load_system_image (a_name: READABLE_STRING_GENERAL)
 			-- Load a OS X default system image
 		local
-			l_image: NS_IMAGE
-			l_image_rep: detachable NS_IMAGE_REP
+			l_obj: NS_OBJECT
+			l_image_utils: NS_IMAGE_UTILS
 		do
-			create l_image.make_named (a_name)
-			image_view.set_image (l_image)
-			l_image_rep := l_image.representations.item (0)
-			check l_image_rep /= void end
-			internal_width := l_image_rep.pixels_wide
-			internal_height := l_image_rep.pixels_high
-			image := l_image
+			create l_obj.make
+			create l_image_utils
+			l_obj := l_image_utils.image_named_ (create {NS_STRING}.make_with_eiffel_string (a_name.as_string_8))
+			if attached {NS_IMAGE} l_obj as l_image then
+				image_view.set_image_ (l_image)
+				if attached {NS_IMAGE_REP} l_image.representations.object_at_index_ (0) as l_image_rep then
+					internal_width := l_image_rep.pixels_wide.to_integer_32
+					internal_height := l_image_rep.pixels_high.to_integer_32
+				end
+				image := l_image
+			end
 		end
 
 	set_with_default
@@ -194,10 +195,15 @@ feature -- Element change
 
 	set_size (a_width, a_height: INTEGER)
 			-- Set the size of the pixmap to `a_width' by `a_height'.
+		local
+			l_size: NS_SIZE
 		do
 			internal_width := a_width
 			internal_height := a_height
-			image.set_size (create {NS_SIZE}.make_size (a_width, a_height))
+			create l_size.make
+			l_size.set_width (a_width)
+			l_size.set_height (a_height)
+			image.set_size_ (l_size)
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER)
@@ -247,8 +253,8 @@ feature -- Duplication
 --			end
 			internal_width := other_imp.internal_width
 			internal_height := other_imp.internal_height
-			image := other_imp.image.twin
-			image_view.set_image (image)
+			create image.make_with_data_ (other_imp.image.tiff_representation)
+			image_view.set_image_ (image)
 
 --			private_mask_bitmap := other_simple_imp.private_mask_bitmap
 --			private_palette := other_simple_imp.private_palette
@@ -279,16 +285,18 @@ feature -- Saving
 			l_success: BOOLEAN
 		do
 			if attached {EV_BMP_FORMAT} a_format as bmp_format then
-				create l_image_rep.make_with_data (image.tiff_representation)
-				l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.BMP_file_type, Void)
-				l_success := l_data.write_to_file_atomically (a_filename.string, False)
+				create l_image_rep.make_with_data_ (image.tiff_representation)
+				-- NSBMPFileType = 1
+				l_data := l_image_rep.representation_using_type__properties_ (1, Void)
+				l_success := l_data.write_to_file__atomically_ (a_filename.string, False)
 				if not l_success then
 					(create {EXCEPTIONS}).raise ("Could not save image file.")
 				end
 			elseif attached {EV_PNG_FORMAT} a_format as png_format then
-				create l_image_rep.make_with_data (image.tiff_representation)
-				l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.PNG_file_type, Void)
-				l_success := l_data.write_to_file_atomically (a_filename.string, False)
+				create l_image_rep.make_with_data_ (image.tiff_representation)
+				-- NSPNGFileType = 4
+				l_data := l_image_rep.representation_using_type__properties_ (4, Void)
+				l_success := l_data.write_to_file__atomically_ (a_filename.string, False)
 				if not l_success then
 					(create {EXCEPTIONS}).raise ("Could not save image file.")
 				end

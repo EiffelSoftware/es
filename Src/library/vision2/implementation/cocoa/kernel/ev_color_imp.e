@@ -6,7 +6,7 @@ note
 		  as attributes and kept up to date.
 		  In Cocoa colors have an Alpha value in addition to the RGB or can even be a pattern
 		 ]"
-	author: "Daniel Furrer"
+	author: "Daniel Furrer, Emanuele Rudel"
 	keywords: "color, pixel, rgb, 8, 16, 24"
 	date: "$Date$";
 	revision: "$Revision$"
@@ -190,10 +190,6 @@ feature -- Conversion
 				red := imp.red
 				green := imp.green
 				blue := imp.blue
-			else
-				check
-					imp_void: False
-				end
 			end
 		end
 
@@ -203,11 +199,11 @@ feature {EV_ANY_I} -- Command
 			-- Amount by which two intensities can differ but still be
 			-- considered equal by `is_equal'.
 		do
-			Result := (1 / 255).truncated_to_real
+			Result := {REAL_32} 1.0 / {REAL_32} 255.0
 		end
 
 	destroy
-          		-- Render `Current' unusable.
+          	-- Render `Current' unusable.
 		do
 			set_is_destroyed (True)
 		end
@@ -216,7 +212,7 @@ feature {EV_ANY_I, ANY} -- Implementation
 
 	color: NS_COLOR
 		do
-			create Result.color_with_calibrated_red_green_blue_alpha (red, green, blue, (1.0).truncated_to_real)
+			Result := (create {NS_COLOR_UTILS}).color_with_calibrated_red__green__blue__alpha_ (red, green, blue, 1.0)
 		end
 
 end -- class EV_COLOR_IMP

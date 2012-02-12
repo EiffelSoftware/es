@@ -77,43 +77,4 @@ feature {EV_ANY_IMP} -- Implementation
 
 	alignment: INTEGER -- the alignement
 
-	filter_ampersand (s: STRING_32; char: CHARACTER)
-			-- Replace occurrences of '&' from `s'  by `char' and
-			-- replace occurrences of "&&" with '&'.
-		require
-			s_not_void: s /= Void
-			s_has_at_least_one_ampersand: s.occurrences ('&') > 0
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				i > s.count
-			loop
-				if s.item (i) = '&' then
-					if s.item (i + 1) /= '&' then
-						s.put (char, i)
-					else
-						i := i + 1
-					end
-				end
-				i := i + 1
-			end
-			s.replace_substring_all (once "&&", once "&")
-		end
-
-	u_lined_filter (s: READABLE_STRING_GENERAL): STRING_32
-			-- Copy of `s' with underscores instead of ampersands.
-			-- (If `s' does not contain ampersands, return `s'.)
-		require
-			s_not_void: s /= Void
-		do
-			Result := s.as_string_32
-			Result.replace_substring_all (once  "_", once  "__")
-			if s.has_code (('&').natural_32_code) then
-				filter_ampersand (Result, '_')
-			end
-		end
-
 end -- class EV_TEXTABLE_IMP

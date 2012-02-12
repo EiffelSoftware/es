@@ -35,7 +35,8 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_MENU_ITEM_IMP}
 			Precursor {EV_RADIO_PEER_IMP}
-			menu_item.set_state ({NS_CELL}.on_state)
+			-- NSOnState = 1
+			menu_item.set_state_ (1)
 		end
 
 feature -- Status report
@@ -43,7 +44,8 @@ feature -- Status report
 	is_selected: BOOLEAN
 			-- Is this menu item checked?
 		do
-			Result := menu_item.state = {NS_CELL}.on_state
+			-- NSOnState = 1
+			Result := menu_item.state = 1
 		end
 
 feature -- Status setting
@@ -52,7 +54,8 @@ feature -- Status setting
 			-- Select this menu item.
 		do
 			Precursor
-			menu_item.set_state ({NS_CELL}.on_state)
+			-- NSOnState = 1
+			menu_item.set_state_ (1)
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -61,7 +64,8 @@ feature {EV_ANY_I} -- Implementation
 			-- Used to deselect is without firing actions.
 		do
 			Precursor
-			menu_item.set_state ({NS_CELL}.off_state)
+			-- NSOffState = 0
+			menu_item.set_state_ (0)
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

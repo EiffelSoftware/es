@@ -30,14 +30,14 @@ feature {NONE} -- Initialization
 			Precursor {EV_GAUGE_IMP}
 			enable_tabable_to
 			change_actions_internal := create_change_actions
-			slider.set_action (agent
-				local
-					l_value: INTEGER
-				do
-					l_value := slider.double_value.floor
-					value := l_value
-					change_actions.call ([l_value])
-				end)
+--			slider.set_action (agent
+--				local
+--					l_value: INTEGER
+--				do
+--					l_value := slider.double_value.floor
+--					value := l_value
+--					change_actions.call ([l_value])
+--				end)
 			set_is_initialized (True)
 		end
 
@@ -45,14 +45,14 @@ feature {NONE} -- Initialization
 			-- Set `value' to `a_value'.
 		do
 			Precursor {EV_GAUGE_IMP} (a_value)
-			slider.set_double_value (a_value)
+			slider.set_double_value_ (a_value)
 		end
 
 	set_range
 		do
 			Precursor {EV_GAUGE_IMP}
-			slider.set_min_value (value_range.lower)
-			slider.set_max_value (value_range.upper)
+			slider.set_min_value_ (value_range.lower)
+			slider.set_max_value_ (value_range.upper)
 		end
 
 feature {EV_ANY_I} -- Implementation

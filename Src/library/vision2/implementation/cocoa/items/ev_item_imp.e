@@ -17,8 +17,7 @@ inherit
 		undefine
 			set_pointer_style
 		redefine
-			interface,
-			destroy
+			interface
 		end
 
 	EV_PIXMAPABLE_IMP
@@ -29,15 +28,6 @@ inherit
 	EV_ITEM_ACTION_SEQUENCES_IMP
 
 feature -- Status settings
-
-	destroy
-			-- Destroy the current item.
-		do
-			if attached parent_imp as p_imp then
-				p_imp.prune (interface)
-			end
-			set_is_destroyed (True)
-		end
 
 	set_parent_imp (a_parent_imp: detachable like parent_imp)
 			-- Assign `a_parent_imp' to `parent_imp'.

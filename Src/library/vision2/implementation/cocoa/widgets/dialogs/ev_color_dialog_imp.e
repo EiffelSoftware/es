@@ -23,11 +23,14 @@ inherit
 			make as make_cocoa,
 			item as color_panel,
 			title as cocoa_title,
-			set_title as cocoa_set_title,
-			set_background_color as set_background_color_cocoa,
-			background_color as background_color_cocoa
+			set_title_ as cocoa_set_title,
+			set_background_color_ as set_background_color_cocoa,
+			background_color as background_color_cocoa,
+			color as color_cocoa
 		undefine
-			copy, is_equal
+			copy,
+			is_equal,
+			wrapper_objc_class_name
 		redefine
 			dispose
 		select
@@ -45,7 +48,7 @@ feature {NONE} -- Initialization
 	make
 			-- Connect action sequences to button signals.
 		do
-			shared_color_panel
+--			shared_color_panel
 			Precursor {EV_STANDARD_DIALOG_IMP}
 
 			enable_closeable

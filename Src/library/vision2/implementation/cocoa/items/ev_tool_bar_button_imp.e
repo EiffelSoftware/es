@@ -48,11 +48,6 @@ inherit
 			cocoa_view
 		end
 
-	EV_SIZEABLE_PRIMITIVE_IMP
-		redefine
-			interface
-		end
-
 create
 	make
 
@@ -63,11 +58,14 @@ feature {NONE} -- Initialization
 		do
 			set_vertical_button_style
 			create button.make
-			button.set_bezel_style ({NS_BUTTON}.rectangular_square_bezel_style)
-			button.set_image_position ({NS_CELL}.image_above)
+			button.set_translates_autoresizing_mask_into_constraints_ (False)
+			-- NSRegularSquareBezelStyle = 2
+			button.set_bezel_style_ (2)
+			-- NSImageAbove = 5
+			button.set_image_position_ (5)
 			cocoa_view := button
 			pixmapable_imp_initialize
-			button.set_action (agent select_actions.call ([]))
+--			button.set_action (agent select_actions.call ([]))
 			set_is_initialized (True)
 		end
 
@@ -122,11 +120,8 @@ feature -- Element change
 			-- Assign `a_text' to `text'.
 		do
 			Precursor {EV_TEXTABLE_IMP} (a_text)
-			button.set_title (a_text)
+			button.set_title_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 			set_minsize
-			if attached parent_imp as l_parent then
-				l_parent.notify_change (nc_minsize, current)
-			end
 		end
 
 	set_pixmap (a_pixmap: EV_PIXMAP)
@@ -137,11 +132,8 @@ feature -- Element change
 			-- First load the pixmap into the button
 			pixmap_imp ?= a_pixmap.implementation
 			check pixmap_imp /= void end
-			button.set_image (pixmap_imp.image)
+			button.set_image_ (pixmap_imp.image)
 			set_minsize
-			if attached parent_imp as l_parent then
-				l_parent.notify_change (nc_minsize, current)
-			end
 		end
 
 	set_gray_pixmap (a_gray_pixmap: EV_PIXMAP)
@@ -164,6 +156,18 @@ feature -- Element change
 	disable_vertical_button_style
 			-- If vertical button style is disabled, then text is placed to the right of the pixmap (as opposed to 'below')
 		do
+		end
+
+feature -- Resizing
+
+	set_minimum_width (a_minimum_width: INTEGER_32)
+		do
+			-- Do nothing. Tool bar buttons cannot be resized
+		end
+
+	set_minimum_height (a_minimum_height: INTEGER_32)
+		do
+			-- Do nothing. Tool bar buttons cannot be resized
 		end
 
 feature {EV_TOOL_BAR_IMP} -- Implementation
@@ -203,12 +207,17 @@ feature {NONE} -- Implementation
 			size: NS_SIZE
 		do
 			if text.is_equal ("") then
-				button.set_image_position ({NS_CELL}.image_only)
+				-- NSImageOnly = 1
+				button.set_image_position_ (1)
 			else
-				button.set_image_position ({NS_CELL}.image_above)
+				-- NSImageAbove = 5
+				button.set_image_position_ (5)
 			end
-			size := button.cell.cell_size
-			internal_set_minimum_size (size.width.rounded, size.height.rounded)
+			if attached {NS_CELL} button.cell as l_cell then
+				size := l_cell.cell_size
+				-- NSTodo: resize button?
+--				set_minimum_size (size.width.rounded, size.height.rounded)
+			end
 		end
 
 feature -- Implementation

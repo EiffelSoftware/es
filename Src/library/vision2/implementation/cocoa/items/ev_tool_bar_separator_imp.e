@@ -29,7 +29,9 @@ inherit
 	EV_NS_VIEW
 		redefine
 			interface,
-			cocoa_view
+			cocoa_view,
+			minimum_width,
+			minimum_height
 		end
 
 create
@@ -42,8 +44,10 @@ feature {NONE} -- Initialization
 	make
 			--
 		do
-			create box.make
-			box.set_box_type ({NS_BOX}.box_separator)
+			create box.make_with_frame_ (create {NS_RECT}.make_with_coordinates (0, 0, minimum_width, minimum_height))
+			box.set_translates_autoresizing_mask_into_constraints_ (False)
+			-- NSBoxSeparator = 2
+			box.set_box_type_ (2)
 			cocoa_view := box
 			set_is_initialized (True)
 		end
@@ -53,7 +57,7 @@ feature -- Measurement
 
 	minimum_height: INTEGER = 10
 
-	minimum_width: INTEGER = 10
+	minimum_width: INTEGER = 5
 
 feature -- Statur Report
 

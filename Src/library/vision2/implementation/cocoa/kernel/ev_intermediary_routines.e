@@ -1,5 +1,5 @@
 note
-	description: "Intermediary routines between ... and eiffel."
+	description: "Intermediary routines between Cocoa and eiffel."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"

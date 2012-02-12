@@ -28,7 +28,8 @@ feature -- Initialization
 			-- Create a Cocoa toggle button.
 		do
 			Precursor {EV_TOOL_BAR_BUTTON_IMP}
-			button.set_button_type ({NS_BUTTON}.push_on_push_off_button)
+			-- NSPushOnPushOffButton = 1
+			button.set_button_type_ (1)
 			cocoa_view := button
 		end
 
@@ -39,7 +40,8 @@ feature -- Status setting
 		do
 			if is_selected then
 				is_selected := False
-				button.set_state ({NS_CELL}.off_state)
+				-- NSOffState
+				button.set_state_ (0)
 				if attached select_actions_internal as l_actions then
 					l_actions.call (Void)
 				end
@@ -51,7 +53,8 @@ feature -- Status setting
 		do
 			if not is_selected then
 				is_selected := True
-				button.set_state ({NS_CELL}.on_state)
+				-- NSOnState
+				button.set_state_ (1)
 				if attached select_actions_internal as l_actions then
 					l_actions.call (Void)
 				end

@@ -56,7 +56,7 @@ feature -- Element change
 		do
 			Precursor {EV_NOTEBOOK_TAB_I} (a_notebook, a_widget)
 			if attached {EV_WIDGET_IMP} a_widget.implementation as v_imp then
-				tab_view_item.set_view (v_imp.attached_view)
+				tab_view_item.set_view_ (v_imp.attached_view)
 			end
 		end
 
@@ -64,7 +64,7 @@ feature -- Element change
 			-- Assign `a_text' to `text'.
 		do
 			Precursor {EV_TEXTABLE_IMP} (a_text)
-			tab_view_item.set_label (a_text)
+			tab_view_item.set_label_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 		end
 
 	set_pixmap (a_pixmap: EV_PIXMAP)

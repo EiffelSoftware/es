@@ -80,15 +80,12 @@ feature {NONE} -- Implementation
 		do
 			v.implementation.on_parented
 			v_imp ?= v.implementation
-			check
-				v_imp_not_void: v_imp /= Void
-			end
+			check v_imp /= Void end
 			ev_children.go_i_th (i)
 			ev_children.put_left (v_imp)
 			v_imp.set_parent_imp (Current)
 			new_item_actions.call ([v])
-			notify_change (Nc_minsize, Current)
-			attached_view.add_subview (v_imp.attached_view)
+			attached_view.add_subview_ (v_imp.attached_view)
 		end
 
 	remove_i_th (i: INTEGER)
@@ -104,7 +101,6 @@ feature {NONE} -- Implementation
 			remove_item_actions.call ([v_imp.attached_interface])
 			ev_children.go_i_th (i)
 			ev_children.remove
-			notify_change (Nc_minsize, Current)
 			-- Unlink the widget from its parent and
 			-- signal it.
 			v_imp.set_parent_imp (Void)

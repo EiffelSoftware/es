@@ -90,41 +90,65 @@ feature -- Status setting
 	set_font (a_font: EV_FONT)
 			-- Make `value' the new font
 		do
+			set_font_attributes (a_font.name, a_font.family, a_font.height_in_points, a_font.weight, a_font.shape, 0)
 		end
 
 	set_font_attributes (a_name: READABLE_STRING_GENERAL; a_family, a_point_height, a_weight, a_shape, a_charset: INTEGER)
 			-- Set internal font attributes
 		do
+			name := a_name.as_string_32
+			family := a_family
+			height_in_points := a_point_height
+			weight := a_weight
+			shape := a_shape
+			char_set := a_charset
 		end
 
 	set_color (a_color: EV_COLOR)
 			-- Make `value' the new color
 		do
+			set_fcolor (a_color.red_8_bit, a_color.green_8_bit, a_color.blue_8_bit)
 		end
 
 	set_fcolor (a_red, a_green, a_blue: INTEGER)
 			-- Pack `fcolor' with `a_red', `a_green' and `a_blue'
 		do
+			fcolor := a_blue
+			fcolor := fcolor |<< 8
+			fcolor := fcolor + a_green
+			fcolor := fcolor |<< 8
+			fcolor := fcolor + a_red
 		end
 
 	set_bcolor (a_red, a_green, a_blue: INTEGER)
 			-- Pack `bcolor' with `a_red', `a_green' and `a_blue'
 		do
+			bcolor := a_blue
+			bcolor := bcolor |<< 8
+			bcolor := bcolor + a_green
+			bcolor := bcolor |<< 8
+			bcolor := bcolor + a_red
+			bcolor_set := True
 		end
 
 	set_background_color (a_color: EV_COLOR)
 			-- Make `value' the new color
 		do
+			set_bcolor (a_color.red_8_bit, a_color.green_8_bit, a_color.blue_8_bit)
 		end
 
 	set_effects (an_effect: EV_CHARACTER_FORMAT_EFFECTS)
 			-- Make `an_effect' the new `effects'
 		do
+			set_effects_internal (an_effect.is_underlined, an_effect.is_striked_out, an_effect.vertical_offset)
 		end
 
 	set_effects_internal (a_underlined, a_striked_out: BOOLEAN; a_vertical_offset: INTEGER)
 			--
 		do
+			is_underlined := a_underlined
+			is_striked_out := a_striked_out
+			vertical_offset := a_vertical_offset
 		end
 
 feature {EV_RICH_TEXT_IMP} -- Implementation
@@ -172,6 +196,7 @@ feature {NONE} -- Implementation
 	is_bold: BOOLEAN
 			-- Is `Current' bold?
 		do
+			Result := (weight = {EV_FONT_CONSTANTS}.weight_bold)
 		end
 
 	shape: INTEGER
@@ -197,12 +222,11 @@ feature {NONE} -- Implementation
 
 	bcolor_set: BOOLEAN
 			-- Has `bcolor' been set explicitly via `bcolor_set'?
-		do
-		end
 
 	destroy
 			-- Clean up
 		do
+			set_is_destroyed (True)
 		end
 
 note

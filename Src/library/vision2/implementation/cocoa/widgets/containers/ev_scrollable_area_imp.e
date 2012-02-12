@@ -19,11 +19,12 @@ inherit
 		end
 
 	EV_VIEWPORT_IMP
+		export {NONE}
+			clip_view
 		redefine
 			interface,
 			make,
-			replace,
-			ev_apply_new_size
+			replace
 		end
 
 create
@@ -33,24 +34,33 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create scroll_view.make_with_flipped_content_view
-			scroll_view.set_has_horizontal_scroller (True)
-			scroll_view.set_has_vertical_scroller (True)
---			scroll_view.set_autohides_scrollers (True)
-			scroll_view.set_draws_background (False)
+			create scroll_view.make
+			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
+				-- NSBezelBorder = 2
+			scroll_view.set_border_type_ (2)
+			scroll_view.set_has_horizontal_scroller_ (True)
+			scroll_view.set_has_vertical_scroller_ (True)
+			scroll_view.set_draws_background_ (False)
 			cocoa_view := scroll_view
+
+			initialize
+			set_is_initialized (True)
 
 			set_horizontal_step (10)
 			set_vertical_step (10)
-			initialize
-			set_is_initialized (True)
 		end
 
 feature -- Access
 
 	horizontal_step: INTEGER
+		do
+			Result := scroll_view.horizontal_line_scroll.truncated_to_integer
+		end
 
 	vertical_step: INTEGER
+		do
+			Result := scroll_view.vertical_line_scroll.truncated_to_integer
+		end
 
 	is_horizontal_scroll_bar_visible: BOOLEAN
 			-- Should horizontal scroll bar be displayed?
@@ -71,66 +81,54 @@ feature -- Element change
 		do
 			if attached item_imp as l_item_imp then
 				l_item_imp.set_parent_imp (Void)
-				notify_change (Nc_minsize, Current)
 			end
 			if attached v and then attached {like item_imp} v.implementation as v_imp then
-				v_imp.set_parent_imp (current)
-				scroll_view.set_document_view (v_imp.attached_view)
-				v_imp.ev_apply_new_size (0, 0, v_imp.width, v_imp.height, True)
 				v_imp.set_parent_imp (Current)
-				notify_change (Nc_minsize, Current)
+				scroll_view.set_document_view_ (v_imp.attached_view)
+				v_imp.set_parent_imp (Current)
 			end
 			item := v
-			ev_apply_new_size (x_position, y_position, width, height, False)
 		end
 
 	set_horizontal_step (a_step: INTEGER)
 			-- Set `horizontal_step' to `a_step'.
 		do
-			horizontal_step := a_step
+			scroll_view.set_horizontal_line_scroll_ (a_step)
 		end
 
 	set_vertical_step (a_step: INTEGER)
 			-- Set `vertical_step' to `a_step'.
 		do
-			vertical_step := a_step
+			scroll_view.set_vertical_line_scroll_ (a_step)
 		end
 
 	show_horizontal_scroll_bar
 			-- Display horizontal scroll bar.
 		do
-			scroll_view.set_has_horizontal_scroller (True)
+			scroll_view.set_has_horizontal_scroller_ (True)
 		end
 
 	hide_horizontal_scroll_bar
 			-- Do not display horizontal scroll bar.
 		do
-			scroll_view.set_has_horizontal_scroller (False)
+			scroll_view.set_has_horizontal_scroller_ (False)
 		end
 
 	show_vertical_scroll_bar
 			-- Display vertical scroll bar.
 		do
-			scroll_view.set_has_vertical_scroller (True)
+			scroll_view.set_has_vertical_scroller_ (True)
 		end
 
 	hide_vertical_scroll_bar
 			-- Do not display vertical scroll bar.
 		do
-			scroll_view.set_has_vertical_scroller (False)
+			scroll_view.set_has_vertical_scroller_ (False)
 		end
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
-	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
-		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			if attached item_imp as l_item_imp then
-				scroll_view.set_document_view (l_item_imp.attached_view)
-				l_item_imp.ev_apply_new_size (0, 0, l_item_imp.width, l_item_imp.height, True)
-			end
-		end
-
+	scroll_view: NS_SCROLL_VIEW;
 
 feature {EV_ANY, EV_ANY_I} -- Implementation		
 

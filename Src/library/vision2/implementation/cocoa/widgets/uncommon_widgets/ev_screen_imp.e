@@ -11,6 +11,8 @@ class
 
 inherit
 	EV_SCREEN_I
+		undefine
+			is_equal
 		redefine
 			interface
 		select
@@ -18,6 +20,8 @@ inherit
 		end
 
 	EV_DRAWABLE_IMP
+		undefine
+			is_equal
 		redefine
 			interface,
 			make
@@ -26,11 +30,9 @@ inherit
 	NS_SCREEN
 		rename
 			copy as copy_cocoa
-		undefine
-			is_equal
+		redefine
+			make
 		end
-
-	NS_ENVIRONEMENT
 
 create
 	make
@@ -39,9 +41,12 @@ feature {NONE} -- Initialization
 
 	make
 			-- Initialize Current to be the main screen
+		local
+			l_screen_utils: NS_SCREEN_UTILS
 		do
-			item := main_screen.item
 			Precursor {EV_DRAWABLE_IMP}
+			Precursor {NS_SCREEN}
+			create l_screen_utils
 		end
 
 feature -- Status report
@@ -50,8 +55,11 @@ feature -- Status report
 			-- Position of the screen pointer.
 		local
 			point: NS_POINT
+			event_utils: NS_EVENT_UTILS
 		do
-			create point.make_from_mouse_location
+			create point.make
+			create event_utils
+			point := event_utils.mouse_location
 			create Result.make (point.x.rounded, point.y.rounded)
 		end
 
@@ -81,11 +89,6 @@ feature -- Basic operation
 
 	redraw
 			-- Redraw the entire area.
-		do
-		end
-
-	x_test_capable: BOOLEAN
-			-- Is current display capable of performing x tests.
 		do
 		end
 
@@ -132,26 +135,18 @@ feature -- Measurement
 
 	horizontal_resolution: INTEGER
 			-- Number of pixels per inch along horizontal axis
-		local
-			resolution: NS_VALUE
-			l_size: NS_SIZE
 		do
-			create resolution.share_from_pointer (device_description.object_for_key ({NS_WINDOW}.device_resolution))
-			create l_size.make
-			{NS_VALUE_API}.size_value (item, l_size.item)
-			Result := l_size.width.rounded
+			if attached {NS_VALUE} device_description.object_for_key_ (create {NS_STRING}.make_with_eiffel_string ("NSDeviceResolution")) as l_value then
+				Result := l_value.size_value.width.truncated_to_integer
+			end
 		end
 
 	vertical_resolution: INTEGER
 			-- Number of pixels per inch along vertical axis
-		local
-			resolution: NS_VALUE
-			l_size: NS_SIZE
 		do
-			create resolution.share_from_pointer (device_description.object_for_key ({NS_WINDOW}.device_resolution))
-			create l_size.make
-			{NS_VALUE_API}.size_value (item, l_size.item)
-			Result := l_size.height.rounded
+			if attached {NS_VALUE} device_description.object_for_key_ (create {NS_STRING}.make_with_eiffel_string ("NSDeviceResolution")) as l_value then
+				Result := l_value.size_value.height.truncated_to_integer
+			end
 		end
 
 	height: INTEGER
@@ -182,6 +177,7 @@ feature {NONE} -- Implementation
 
 	destroy
 		do
+			safe_destroy
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

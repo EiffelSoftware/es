@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_MENU_ITEM_IMP}
 			create menu.make
-			menu_item.set_submenu (menu)
+			menu_item.set_submenu_ (menu)
 			initialize_item_list
 		end
 

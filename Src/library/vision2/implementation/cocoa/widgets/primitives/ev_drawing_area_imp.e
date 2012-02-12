@@ -43,27 +43,22 @@ inherit
 			interface
 		end
 
-	NS_VIEW
+	EV_FLIPPED_VIEW
 		rename
-			make as make_cocoa,
-			make_with_drawing as make_with_drawing_cocoa,
 			copy as copy_cocoa
 		undefine
-			key_down,
-			key_up,
 			is_equal
 		redefine
+			make,
 			dispose,
-			mouse_down,
-			mouse_up,
-			mouse_moved,
+			mouse_down_,
+			mouse_up_,
+			mouse_moved_,
 			accepts_first_responder,
 			become_first_responder,
 			resign_first_responder,
-			draw_rect
+			draw_rect_
 		end
-
-	EV_NS_RESPONDER
 
 create
 	make
@@ -74,8 +69,16 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'
 		do
 			Precursor {EV_DRAWABLE_IMP}
-			make_with_drawing_cocoa
-			cocoa_view := current
+			add_objc_callback ("mouseDown:", agent mouse_down_)
+			add_objc_callback ("mouseUp:", agent mouse_up_)
+			add_objc_callback ("mouseMoved:", agent mouse_moved_)
+			add_objc_callback ("acceptsFirstResponder", agent accepts_first_responder)
+			add_objc_callback ("becomeFirstResponder:", agent become_first_responder)
+			add_objc_callback ("resignFirstResponder:", agent resign_first_responder)
+			add_objc_callback ("drawRect:", agent draw_rect_)
+			Precursor {EV_FLIPPED_VIEW}
+			set_translates_autoresizing_mask_into_constraints_ (False)
+			cocoa_view := Current
 			Precursor {EV_PRIMITIVE_IMP}
 			initialize_events
 			disable_tabable_from
@@ -86,13 +89,14 @@ feature -- Status setting
 	redraw
 			-- Redraw the entire area.
 		do
-			set_needs_display (True)
+			set_needs_display_ (True)
 		end
 
 	redraw_rectangle (a_x, a_y, a_width, a_height: INTEGER)
 			-- Redraw the rectangle area defined by `a_x', `a_y', `a_width', a_height'.
 		do
-			set_needs_display_in_rect (create {NS_RECT}.make_rect (a_x, a_y, a_width, a_height))
+			-- Redraw the whole rectangle until the implementation of EV_GRID_I works properly
+			set_needs_display_ (True)
 		end
 
 	clear_and_redraw
@@ -105,20 +109,21 @@ feature -- Status setting
 	clear_and_redraw_rectangle (a_x, a_y, a_width, a_height: INTEGER)
 			-- Clear the rectangle area defined by `a_x', `a_y', `a_width', `a_height' and then redraw it.
 		do
-			clear
+			clear_rectangle (a_x, a_y, a_width, a_height)
 			redraw_rectangle (a_x, a_y, a_width, a_height)
 		end
 
 	flush
 			-- Redraw the screen immediately, if change actions have been requested
 		do
-			display_if_needed
+			if is_displayed then
+				refresh_now
+			end
 		end
 
 	prepare_drawing
 		local
 			l_color: detachable EV_COLOR_IMP
---			trans: NS_AFFINE_TRANSFORM
 		do
 			if not lock_focus_if_can_draw then
 				image.lock_focus
@@ -126,10 +131,6 @@ feature -- Status setting
 			else
 				is_drawing_buffered := False
 			end
---				create trans.make
---				trans.translate_by_xy (0.0, height)
---				trans.scale_by_xy (1.0, -1.0)
---				trans.concat
 			l_color ?= foreground_color.implementation
 			check l_color /= void end
 			l_color.color.set
@@ -147,24 +148,17 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	mouse_down (a_event: NS_EVENT)
+	mouse_down_ (a_event: NS_EVENT)
+		-- Call pointer_button_press_actions or pointer_double_press_actions
+		-- depending on the number of clicks of `a_event'. When executing a
+		-- double click, pointer_button_press_actions is also executed first.
+		-- We assume the behavior of the single click is complementary to the
+		-- one of the double click
 		local
 			pointer_button_action: TUPLE [x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
 			point: NS_POINT
 			actions: detachable EV_POINTER_BUTTON_ACTION_SEQUENCE
 		do
--- NOTE Should the pointer_button_press actions always be fired - even when a double click is coming up?
---      At the moment it is.
---
--- From the topic "detecting a double click ahead of time" on cocoa-dev:
---
---  The standard method is to run start a timer when you see the first
---  click, then if you don't get a double-click before the timer fires,
---  assume that there isn't going to be one.  Obviously you need to
---  remember to cancel the timer if you see a double click, and you will
---  also want to ignore double-clicks if they don't happen when you're
---  running the timer (otherwise a spurious double-click event could cause
---  a lot of trouble).
 			if a_event.click_count = 1 then
 				actions := pointer_button_press_actions_internal
 			else -- if click_count >= 2
@@ -172,36 +166,38 @@ feature {NONE} -- Implementation
 			end
 			if attached actions then
 				create pointer_button_action
-				point := a_event.window.content_view.convert_point_to_view (a_event.location_in_window, cocoa_view)
+				point := convert_point__from_view_ (a_event.location_in_window, Void)
 				pointer_button_action.x := point.x.rounded
 				pointer_button_action.y := point.y.rounded
-				point := a_event.window.convert_base_to_screen_top_left (a_event.location_in_window)
+				point := a_event.window.convert_base_to_screen_ (a_event.location_in_window)
 				pointer_button_action.screen_x := point.x.rounded
 				pointer_button_action.screen_y := point.y.rounded
-				pointer_button_action.button :=	a_event.button_number + 1
+				pointer_button_action.button :=	a_event.button_number.to_integer_32 + 1
 				actions.call (pointer_button_action)
 			end
 		end
 
-	mouse_up (a_event: NS_EVENT)
+	mouse_up_ (a_event: NS_EVENT)
 		local
 			pointer_button_action: TUPLE [x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
 			point: NS_POINT
 		do
 			if attached pointer_button_release_actions_internal as actions then
 				create pointer_button_action
-				point := a_event.window.content_view.convert_point_to_view (a_event.location_in_window, cocoa_view)
-				pointer_button_action.x := point.x.rounded
-				pointer_button_action.y := point.y.rounded
-				point := a_event.window.convert_base_to_screen_top_left (a_event.location_in_window)
-				pointer_button_action.screen_x := point.x.rounded
-				pointer_button_action.screen_y := point.y.rounded
-				pointer_button_action.button :=	a_event.button_number + 1
-				actions.call (pointer_button_action)
+				if attached {NS_VIEW} a_event.window.content_view as l_content_view then
+					point := l_content_view.convert_point__to_view_ (a_event.location_in_window, cocoa_view)
+					pointer_button_action.x := point.x.rounded
+					pointer_button_action.y := point.y.rounded
+					point := a_event.window.convert_base_to_screen_ (a_event.location_in_window)
+					pointer_button_action.screen_x := point.x.rounded
+					pointer_button_action.screen_y := point.y.rounded
+					pointer_button_action.button :=	a_event.button_number.to_integer_32 + 1
+					actions.call (pointer_button_action)
+				end
 			end
 		end
 
-	mouse_moved (a_event: NS_EVENT)
+	mouse_moved_ (a_event: NS_EVENT)
 			-- Translate a Cocoa mouseMoved NS_EVENT to a pointer_motion_action call
 		local
 			pointer_motion_action: TUPLE [x: INTEGER; y: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
@@ -209,13 +205,15 @@ feature {NONE} -- Implementation
 		do
 			if attached pointer_motion_actions_internal as actions then
 				create pointer_motion_action
-				point := a_event.window.content_view.convert_point_to_view (a_event.location_in_window, cocoa_view)
-				pointer_motion_action.x := point.x.rounded
-				pointer_motion_action.y := point.y.rounded
-				point := a_event.window.convert_base_to_screen_top_left (a_event.location_in_window)
-				pointer_motion_action.screen_x := point.x.rounded
-				pointer_motion_action.screen_y := point.y.rounded
-				actions.call (pointer_motion_action)
+				if attached {NS_VIEW} a_event.window.content_view as l_content_view then
+					point := l_content_view.convert_point__to_view_ (a_event.location_in_window, cocoa_view)
+					pointer_motion_action.x := point.x.rounded
+					pointer_motion_action.y := point.y.rounded
+					point := a_event.window.convert_base_to_screen_ (a_event.location_in_window)
+					pointer_motion_action.screen_x := point.x.rounded
+					pointer_motion_action.screen_y := point.y.rounded
+					actions.call (pointer_motion_action)
+				end
 			end
 		end
 
@@ -249,10 +247,10 @@ feature -- Implementation
 
 	update_if_needed
 		do
---			set_needs_display (True) -- Not necessaey -> Will send a redraw event right again
+			set_needs_display_ (True)
 		end
 
-	draw_rect (a_dirty_rect: NS_RECT)
+	draw_rect_ (a_dirty_rect: NS_RECT)
 			-- Draw callback
 		do
 			if expose_actions_internal /= Void then
@@ -269,7 +267,7 @@ feature {EV_ANY_I} -- Implementation
 
 	dispose
 		do
-			Precursor {NS_VIEW}
+			Precursor {EV_FLIPPED_VIEW}
 			Precursor {EV_PRIMITIVE_IMP}
 		end
 

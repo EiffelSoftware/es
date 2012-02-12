@@ -42,43 +42,44 @@ feature -- Commands
 	asterisk
 			-- Asterisk beep.
 		do
-			-- TODO see NSSound +soundNamed
-			check
-				not_implemented: False
-			end
+			objc_beep
 		end
 
 	exclamation
 			-- Exclamation beep.
 		do
-			check
-				not_implemented: False
-			end
+			objc_beep
 		end
 
 	hand
 			-- Hand beep.
 		do
-			check
-				not_implemented: False
-			end
+			objc_beep
 		end
 
 	question
 			-- Question beep.
 		do
-			check
-				not_implemented: False
-			end
+			objc_beep
 		end
 
 	ok
 			-- Ok beep.
 			-- System default beep.
 		do
-			check
-				not_implemented: False
-			end
+			objc_beep
+		end
+
+feature {NONE} -- Implementation
+
+	objc_beep
+			-- Play sound NSBeep(), defined in System Preferences
+		external
+			"C inline use <AppKit/AppKit.h>"
+		alias
+			"[
+				NSBeep();
+			 ]"
 		end
 
 note

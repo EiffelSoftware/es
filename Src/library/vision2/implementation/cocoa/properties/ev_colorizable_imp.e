@@ -38,7 +38,6 @@ feature -- Access
 
 feature -- Status setting
 
-
 	set_background_color (a_color: EV_COLOR)
 			-- Assign `a_color' to `background_color'
 		do

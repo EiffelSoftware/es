@@ -1,12 +1,12 @@
 note
-	description: 
-		"EiffelVision bar item, gtk implementation."
+	description:
+		"EiffelVision bar item. Cocoa implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	id: "$Id$"
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_BAR_ITEM_IMP
 

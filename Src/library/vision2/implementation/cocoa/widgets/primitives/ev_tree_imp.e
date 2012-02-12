@@ -38,16 +38,26 @@ inherit
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
-	NS_OUTLINE_VIEW_DATA_SOURCE [EV_TREE_NODE]
+	NS_OUTLINE_VIEW_DATA_SOURCE_PROTOCOL -- [EV_TREE_NODE]
 		rename
-			make as create_data_source,
+--			make as create_data_source,
 			item as data_source
+		undefine
+			copy,
+			is_equal,
+			dispose
 		end
 
-	NS_OUTLINE_VIEW_DELEGATE
+	NS_OUTLINE_VIEW_DELEGATE_PROTOCOL
 		rename
-			make as create_delegate,
+--			make as create_delegate,
 			item as delegate
+		undefine
+			copy,
+			is_equal,
+			dispose
+		select
+			delegate
 		end
 
 create
@@ -61,31 +71,34 @@ feature {NONE} -- Initialization
 			table_column: NS_TABLE_COLUMN
 		do
 			create scroll_view.make
+			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := scroll_view
 			create outline_view.make
-			scroll_view.set_document_view (outline_view)
-			scroll_view.set_has_horizontal_scroller (True)
-			scroll_view.set_has_vertical_scroller (True)
-			scroll_view.set_autohides_scrollers (True)
+			scroll_view.set_document_view_ (outline_view)
+			scroll_view.set_has_horizontal_scroller_ (True)
+			scroll_view.set_has_vertical_scroller_ (True)
+			scroll_view.set_autohides_scrollers_ (True)
 			create table_column.make
-			table_column.set_editable (False)
-			table_column.set_data_cell (create {NS_IMAGE_CELL}.make)
-			table_column.set_width ({REAL_32}20.0)
-			outline_view.add_table_column (table_column)
+			table_column.set_editable_ (False)
+			table_column.set_data_cell_ (create {NS_IMAGE_CELL}.make)
+			table_column.set_width_ ({REAL_32}20.0)
+			outline_view.add_table_column_ (table_column)
 			create table_column.make
-			table_column.set_editable (False)
-			outline_view.add_table_column (table_column)
-			outline_view.set_outline_table_column (table_column)
-			outline_view.set_header_view (default_pointer)
-			table_column.set_width ({REAL_32}1000.0)
+			table_column.set_editable_ (False)
+			outline_view.add_table_column_ (table_column)
+			outline_view.set_outline_table_column_ (table_column)
+--			outline_view.set_header_view (default_pointer)
+			table_column.set_width_ ({REAL_32}1000.0)
 
 			initialize_item_list
 
-			create_data_source
-			create_delegate
+			-- TODO: set up data source and delegate
 
-			outline_view.set_data_source (current)
-			outline_view.set_delegate (current)
+--			create_data_source
+--			create_delegate
+
+--			outline_view.set_data_source (current)
+--			outline_view.set_delegate (current)
 
 			Precursor {EV_PRIMITIVE_IMP}
 			Precursor {EV_TREE_I}
@@ -151,14 +164,14 @@ feature -- DataSource
 			l_pixmap_imp: detachable EV_PIXMAP_IMP
 		do
 			-- FIXME: do proper reverse mapping from the a_table_column pointer to the eiffel object
-			if attached outline_view.table_columns.item (0) as l_item and then l_item.item = a_table_column then
+			if attached outline_view.table_columns.item as l_item and then l_item.item = a_table_column then
 				if attached a_node.pixmap as l_pixmap then
 					l_pixmap_imp ?= l_pixmap.implementation
 					check l_pixmap_imp /= Void end
 					Result := l_pixmap_imp.image.item
 				end
 			else
-				Result := (create {NS_STRING}.make_with_string (a_node.text)).item
+				Result := (create {NS_STRING}.make_with_eiffel_string (a_node.text.as_string_8)).item
 			end
 		end
 
@@ -167,11 +180,11 @@ feature -- Status report
 	selected_item: detachable EV_TREE_NODE
 			-- Item which is currently selected; Void if none
 		local
-			l_row: INTEGER
+			l_row: INTEGER_64
 		do
 			l_row := outline_view.selected_row
 			if l_row /= -1 then
-				Result ?= outline_view.item_at_row (l_row)
+				Result ?= outline_view.item_at_row_ (l_row)
 			end
 		end
 
@@ -244,14 +257,14 @@ feature {NONE} -- Implementation
 			-- Insert `item_imp' at the `an_index' position.
 		do
 			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+--			outline_view.reload_item_reload_children (default_pointer, True)
 		end
 
 	remove_item (item_imp: EV_TREE_NODE_IMP)
 			-- Remove `item_imp' from `Current'.
 		do
 			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+--			outline_view.reload_item_reload_children (default_pointer, True)
 		end
 
 
@@ -288,5 +301,12 @@ feature {EV_ANY_I, EV_TREE_NODE_IMP} -- Implementation
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_TREE note option: stable attribute end;
+
+feature {NONE} -- Implementation
+
+	wrapper_objc_class_name: STRING
+		do
+			Result := "NSOutlineView"
+		end
 
 end -- class EV_TREE_IMP

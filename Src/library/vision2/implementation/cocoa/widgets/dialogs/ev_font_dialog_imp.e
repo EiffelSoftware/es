@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			-- Initialize the dialog.
 		do
 			Precursor {EV_STANDARD_DIALOG_IMP}
-			create font_panel.shared_font_panel
+--			create font_panel.shared_font_panel
 --			window := font_panel
 		end
 
@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 		do
 			selected_button := Void
 
-			font_panel.make_key_and_order_front (current)
+			font_panel.make_key_and_order_front_ (Current)
 
 			selected_button := ev_ok
 			interface.ok_actions.call (Void)

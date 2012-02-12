@@ -27,8 +27,7 @@ feature {NONE} -- Initlization
 	make
 			-- Initialize
 		do
-			create cursor.make
-			cursor := cursor.arrow_cursor
+			cursor := (create {NS_CURSOR_UTILS}).arrow_cursor
 			set_is_initialized (True)
 		end
 
@@ -36,39 +35,46 @@ feature {NONE} -- Initlization
 			-- Initialize from `a_pixel_buffer'
 		local
 			l_pixel_buffer_imp: detachable EV_PIXEL_BUFFER_IMP
+			l_point: NS_POINT
 		do
 			l_pixel_buffer_imp ?= a_pixel_buffer.implementation
 			check l_pixel_buffer_imp /= Void end
-			create cursor.make_with_image (l_pixel_buffer_imp.image, create {NS_POINT}.make_point (a_hotspot_x, a_hotspot_y))
+			create l_point.make
+			l_point.set_x (a_hotspot_x)
+			l_point.set_y (a_hotspot_y)
+			create cursor.make_with_image__hot_spot_ (l_pixel_buffer_imp.image, l_point)
 		end
 
 	init_predefined (a_constant: INTEGER)
 			-- Initialized a predefined cursor.
+		local
+			l_cursor_utils: NS_CURSOR_UTILS
 		do
 			create cursor.make
+			create l_cursor_utils
 			if a_constant = {EV_POINTER_STYLE_CONSTANTS}.Busy_cursor then
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Standard_cursor then
-				cursor := cursor.arrow_cursor
+				cursor := l_cursor_utils.arrow_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Crosshair_cursor then
-				cursor := cursor.crosshair_cursor
+				cursor := l_cursor_utils.crosshair_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Help_cursor then
-				cursor := cursor.ibeam_cursor
+				cursor := l_cursor_utils.i_beam_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Ibeam_cursor then
-				cursor := cursor.ibeam_cursor
+				cursor := l_cursor_utils.i_beam_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.No_cursor then
-				cursor := cursor.closed_hand_cursor
+				cursor := l_cursor_utils.closed_hand_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Sizeall_cursor then
-				cursor := cursor.resize_up_down_cursor
+				cursor := l_cursor_utils.resize_up_down_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Sizens_cursor then
-				cursor := cursor.resize_up_down_cursor
+				cursor := l_cursor_utils.resize_up_down_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Sizenwse_cursor then
-				cursor := cursor.resize_up_down_cursor
+				cursor := l_cursor_utils.resize_up_down_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Sizenesw_cursor then
-				cursor := cursor.resize_up_down_cursor
+				cursor := l_cursor_utils.resize_up_down_cursor
 			elseif a_constant = {EV_POINTER_STYLE_CONSTANTS}.Hyperlink_cursor then
-				cursor := cursor.pointing_hand_cursor
+				cursor := l_cursor_utils.pointing_hand_cursor
 			else
-				cursor := cursor.arrow_cursor
+				cursor := l_cursor_utils.arrow_cursor
 			end
 		end
 
@@ -76,20 +82,28 @@ feature {NONE} -- Initlization
 			-- Initialize from `a_cursor'
 		local
 			l_pixmap_imp: detachable EV_PIXMAP_IMP
+			l_point: NS_POINT
 		do
 			l_pixmap_imp ?= a_cursor.implementation
 			check l_pixmap_imp /= Void end
-			create cursor.make_with_image (l_pixmap_imp.image, create {NS_POINT}.make_point (a_cursor.x_hotspot, a_cursor.y_hotspot))
+			create l_point.make
+			l_point.set_x (a_cursor.x_hotspot)
+			l_point.set_y (a_cursor.y_hotspot)
+			create cursor.make_with_image__hot_spot_ (l_pixmap_imp.image, l_point)
 		end
 
 	init_from_pixmap (a_pixmap: EV_PIXMAP; a_hotspot_x, a_hotspot_y: INTEGER_32)
 			-- Initalize from `a_pixmap'
 		local
 			l_pixmap_imp: detachable EV_PIXMAP_IMP
+			l_point: NS_POINT
 		do
 			l_pixmap_imp ?= a_pixmap.implementation
 			check l_pixmap_imp /= Void end
-			create cursor.make_with_image (l_pixmap_imp.image, create {NS_POINT}.make_point (a_hotspot_x, a_hotspot_y))
+			create l_point.make
+			l_point.set_x (a_hotspot_x)
+			l_point.set_y (a_hotspot_y)
+			create cursor.make_with_image__hot_spot_ (l_pixmap_imp.image, l_point)
 		end
 
 feature -- Command
@@ -103,6 +117,7 @@ feature -- Command
 	set_y_hotspot (a_y: INTEGER)
 			-- Set `y_hotspot' to `a_y'.
 		do
+			y_hotspot := a_y
 		end
 
 feature -- Query
@@ -110,11 +125,13 @@ feature -- Query
 	width: INTEGER
 			-- Width of pointer style.
 		do
+			Result := cursor.image.size.width.truncated_to_integer
 		end
 
 	height: INTEGER
 			-- Height of pointer style.
 		do
+			Result := cursor.image.size.height.truncated_to_integer
 		end
 
 	x_hotspot: INTEGER

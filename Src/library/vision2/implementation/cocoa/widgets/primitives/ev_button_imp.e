@@ -14,16 +14,14 @@ inherit
 	EV_BUTTON_I
 		redefine
 			interface
-		select
-			copy
 		end
 
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
 			make,
-			set_default_minimum_size,
 			is_sensitive,
+			is_height_resizable,
 			enable_sensitive,
 			disable_sensitive,
 			dispose,
@@ -60,15 +58,14 @@ inherit
 
 	NS_BUTTON
 		rename
-			make as cocoa_make,
 			font as cocoa_font,
 			alignment as cocoa_alignment,
-			set_font as cocoa_set_font,
-			copy as cocoa_copy
+			set_font_ as cocoa_set_font
 		undefine
-			is_equal
+			is_equal,
+			copy
 		redefine
-			mouse_down,
+			make,
 			dispose
 		end
 
@@ -81,11 +78,16 @@ feature {NONE} -- Initialization
 			-- `Precursor' initialization,
 			-- create button box to hold label and pixmap.
 		do
-			cocoa_view := current
-			cocoa_make
+			cocoa_view := Current
+			add_objc_callback ("did_press_button:", agent did_press_button)
+			Precursor {NS_BUTTON}
+			set_translates_autoresizing_mask_into_constraints_ (False)
+			set_target_ (Current)
+			set_action_ (create {OBJC_SELECTOR}.make_with_name ("did_press_button:"))
 			Precursor {EV_PRIMITIVE_IMP}
 
-			set_bezel_style ({NS_BUTTON}.rounded_bezel_style)
+				-- NSRoundedBezelStyle = 1
+			set_bezel_style_ (1)
 			align_text_center
 
 			enable_tabable_to
@@ -93,10 +95,7 @@ feature {NONE} -- Initialization
 			initialize_events
 			pixmapable_imp_initialize
 
-			set_action (agent select_actions.call ([]))
-			set_title ("")
-
-			default_center.add_observer (agent on_size_change, view_frame_did_change_notification, cocoa_view)
+			set_title_ (create {NS_STRING}.make_with_eiffel_string(""))
 		end
 
 feature -- Access
@@ -116,29 +115,36 @@ feature -- Status Setting
 			-- <Precursor>
 		do
 			Precursor
-			set_alignment ({NS_CONTROL}.left_text_alignment)
+				-- NSLeftTextAlignment = 0
+			set_alignment_ (0)
 		end
 
 	align_text_center
 			-- <Precursor>
 		do
 			Precursor
-			set_alignment ({NS_CONTROL}.center_text_alignment)
+				-- NSCenterTextAlignment = 2
+			set_alignment_ (2)
 		end
 
 	align_text_right
 			-- <Precursor>
 		do
 			Precursor
-			set_alignment ({NS_CONTROL}.right_text_alignment)
+				-- NSRightTextAlignment = 1
+			set_alignment_ (1)
 		end
 
 	enable_default_push_button
 			-- Set the style of the button corresponding
 			-- to the default push button.
 		do
-			set_key_equivalent ("%R")
-			--top_level_window_imp.window.set_default_button_cell (cell)
+			-- WARNING: this causes the application to crash.
+--			set_key_equivalent_ (create {NS_STRING}.make_with_eiffel_string ("\r"))
+--			window.enable_key_equivalent_for_default_button_cell
+--			if attached {NS_BUTTON_CELL} cell as l_cell then
+--				window.set_default_button_cell_ (l_cell)
+--			end
 		end
 
 	disable_default_push_button
@@ -146,63 +152,29 @@ feature -- Status Setting
 			-- to the default push button.
 		do
 			if attached top_level_window_imp as l_window then
-				l_window.set_default_button_cell (void)
+				l_window.set_default_button_cell_ (Void)
 			end
 		end
 
 	enable_can_default
-			-- Not necessary in Cocoa ??
 		do
 		end
 
 	set_text (a_text: READABLE_STRING_GENERAL)
 			-- <Precursor>
 		do
-			if not a_text.same_string (text) then
-				if a_text.is_empty then
-					set_default_minimum_size
-				else
-					accomodate_text (a_text)
-				end
-				Precursor {EV_TEXTABLE_IMP} (a_text)
-				set_title (a_text.as_string_8)
-			end
+			Precursor {EV_TEXTABLE_IMP} (a_text)
+			set_title_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 		end
 
 	set_background_color (a_color: EV_COLOR)
 			-- <Precursor>
 		do
-			-- TODO: Refactor - same for all NS_CONTROLS
 			Precursor {EV_PRIMITIVE_IMP} (a_color)
-			set_bordered (False)
-			if attached {EV_COLOR_IMP} a_color.implementation as imp then
-				cell.set_background_color (imp.color)
+			set_bordered_ (False)
+			if attached {EV_COLOR_IMP} a_color.implementation as imp and attached {NS_BUTTON_CELL} cell as l_cell then
+				l_cell.set_background_color_ (imp.color)
 			end
-		end
-
-feature -- Measurement
-
-	set_default_minimum_size
-			-- Reset `Current' to its default minimum size.
-		do
-			-- TODO: This is not very smart at the moment!
-			-- Caluclate dynamically (this depends on the button style and the text)
-			accomodate_text (" ")
-		end
-
-	accomodate_text (a_text: READABLE_STRING_GENERAL)
-			-- Change internal minimum size to make `a_text' fit.
-		require
-			a_text_not_void: a_text /= Void
-			a_text_not_empty: not a_text.is_empty
-		local
-			t: TUPLE [width: INTEGER; height: INTEGER]
-			a_width, a_height: INTEGER
-		do
-			t := font.string_size (a_text)
-			a_width := t.width
-			a_height := t.height
-			internal_set_minimum_size (a_width.abs + 30, a_height.abs + 10)
 		end
 
 feature -- Sensitivity
@@ -216,15 +188,15 @@ feature -- Sensitivity
 	enable_sensitive
 			-- Allow the object to be sensitive to user input.
 		do
-			set_enabled (True)
-			set_needs_display (True)
+			set_enabled_ (True)
+			set_needs_display_ (True)
 		end
 
 	disable_sensitive
 			-- Set the object to ignore all user input.
 		do
-			set_enabled (False)
-			set_needs_display (True)
+			set_enabled_ (False)
+			set_needs_display_ (True)
 		end
 
 feature {NONE} -- implementation
@@ -239,30 +211,37 @@ feature {NONE} -- implementation
 		do
 		end
 
-	mouse_down (a_event: NS_EVENT)
-		local
-			x, y: INTEGER
-			l_screen_x, l_screen_y: INTEGER
+	did_press_button (sender: NS_BUTTON)
+			-- Code to be executed when `click_me_button' is pressed.
 		do
-			x := a_event.location_in_window.x.rounded
-			y := a_event.location_in_window.y.rounded
-			pointer_button_press_actions.call ([x, y, 0, 0.0, 0.0, 0.0, l_screen_x, l_screen_y])
+			select_actions.call ([])
 		end
 
 	set_pixmap (a_pixmap: EV_PIXMAP)
 		do
 			if attached {EV_PIXMAP_IMP} a_pixmap.implementation as pixmap_imp then
---				set_bezel_style ({NS_BUTTON}.rectangular_square_bezel_style)
---				set_image (pixmap_imp.image)
+					-- NSRegularSquareBezelStyle = 2
+				set_bezel_style_ (2)
+					-- NSImageLeft = 2
+				set_image_position_ (2)
+				set_image_ (pixmap_imp.image)
 			end
+		end
+
+feature {EV_ANY_I} -- Implementation
+
+	is_height_resizable: BOOLEAN
+			-- Is the height of the wrapped Cocoa widget resizable?
+		do
+			Result := False
 		end
 
 feature {EV_ANY, EV_ANY_I} -- implementation
 
 	dispose
 		do
-			Precursor {EV_PRIMITIVE_IMP}
 			Precursor {NS_BUTTON}
+			Precursor {EV_PRIMITIVE_IMP}
 		end
 
 	interface: detachable EV_BUTTON note option: stable attribute end;

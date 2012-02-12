@@ -21,8 +21,7 @@ inherit
 	EV_WINDOW_IMP
 		redefine
 			interface,
-			make,
-			window_mask
+			make
 		end
 
 	EV_TITLED_WINDOW_ACTION_SEQUENCES_IMP
@@ -37,11 +36,6 @@ feature {NONE} -- Initialization
 			internal_icon_name := ""
 			create icon_pixmap
 			Precursor {EV_WINDOW_IMP}
-		end
-
-	window_mask: NATURAL
-		do
-			Result := {NS_WINDOW}.closable_window_mask | {NS_WINDOW}.miniaturizable_window_mask | {NS_WINDOW}.resizable_window_mask
 		end
 
 feature -- Access
@@ -74,19 +68,22 @@ feature -- Status setting
 			-- Request that window be displayed above all other windows.
 		do
 			--show
-			 make_key_and_order_front (current)
+			-- TODO
+--			 make_key_and_order_front_ (Current)
 		end
 
 	lower
 			-- Request that window be displayed below all other windows.
 		do
-			order_back
+			-- TODO: order_back_ (Current)
+--			order_back_ (a_sender: [detachable] NS_OBJECT)
 		end
 
 	minimize
 			-- Display iconified/minimised.
 		do
-			miniaturize
+			-- TODO: miniaturize_ (Current)
+--			miniaturize_ (a_sender: [detachable] NS_OBJECT)
 			is_maximized := False
 		end
 
@@ -94,7 +91,8 @@ feature -- Status setting
 			-- Display at maximum size.
 		do
 			if not is_zoomed then
-				zoom
+				-- TODO: zoom_ (Current)
+--				zoom_ (a_sender: [detachable] NS_OBJECT)
 			end
 			is_maximized := True
 		end
@@ -103,7 +101,8 @@ feature -- Status setting
 			-- Restore to original position when minimized or maximized.
 		do
 			if is_zoomed then
-				zoom
+				-- TODO: zoom_ (Current)
+--				zoom_ (a_sender: [detachable] NS_OBJECT)
 			end
 			is_maximized := False
 		end
@@ -121,7 +120,8 @@ feature -- Element change
 		local
 			l_pix_imp: detachable EV_PIXMAP_IMP
 		do
-			-- FIXME Mac Issue: This is problematic because on the Mac there is a application icon in the dock, but usually no window icon (there may be one for document windows... should probably go with that)
+			-- Note: Cocoa only allows one icon per application.
+			-- Here we potentially change the icon for all the windows.
 			icon_pixmap := a_icon
 			l_pix_imp ?= a_icon.implementation
 			check l_pix_imp /= Void end

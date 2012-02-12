@@ -40,13 +40,19 @@ feature -- Access
 	set_interval (an_interval: INTEGER)
 			-- Assign `an_interval' in milliseconds to `interval'.
 			-- Zero disables.
+		local
+			l_timer_utils: NS_TIMER_UTILS
 		do
 			if attached timer as previous_timer then
 				previous_timer.invalidate
 				timer := Void
 			end
 			if an_interval > 0 then
-				create timer.scheduled_timer (an_interval / 1000.0, agent on_timeout, Void, True)
+				create l_timer_utils
+				timer := l_timer_utils.scheduled_timer_with_time_interval__target__selector__user_info__repeats_ (an_interval / 1000.0, Void,
+				create {OBJC_SELECTOR}.make_with_name ("on_timeout:"), Void, True)
+--				TODO: make sure the selector calls the on_timeout feature of EV_TIMEOUT_IMP and not the NS_TIMEOUT one
+--				create timer.scheduled_timer (an_interval / 1000.0, agent on_timeout, Void, True)
 			end
 			interval := an_interval
 		end

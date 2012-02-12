@@ -88,7 +88,7 @@
 			</condition>
 		</external_library>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="cocoa" location="$ISE_LIBRARY\library\cocoa\cocoa.ecf" readonly="false">
+		<library name="cocoa" location="$ISE_LIBRARY\library\objc_wrapper\objc_wrapper.ecf" readonly="false">
 			<condition>
 				<platform value="macintosh"/>
 				<custom name="vision_implementation" value="cocoa"/>

@@ -35,14 +35,17 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'
 		do
 			create scroll_view.make
+			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := scroll_view
 			create text_view.make
-			text_view.set_horizontally_resizable (True)
-			scroll_view.set_document_view (text_view)
-			scroll_view.set_has_horizontal_scroller (True)
-			scroll_view.set_has_vertical_scroller (True)
-			scroll_view.set_autohides_scrollers (True)
-			scroll_view.set_border_type ({NS_SCROLL_VIEW}.ns_line_border)
+			text_view.set_translates_autoresizing_mask_into_constraints_ (False)
+			text_view.set_horizontally_resizable_ (True)
+			scroll_view.set_document_view_ (text_view)
+			scroll_view.set_has_horizontal_scroller_ (True)
+			scroll_view.set_has_vertical_scroller_ (True)
+			scroll_view.set_autohides_scrollers_ (True)
+			-- NSBezelBorder = 2
+			scroll_view.set_border_type_ (2)
 
 			enable_word_wrapping
 			set_editable (True)
@@ -69,7 +72,7 @@ feature -- Access
 	text: STRING_32
 			-- Text displayed in label.
 		do
-			Result := text_view.string.to_string_32
+			Result := text_view.string.to_eiffel_string.to_string_32
 		end
 
 	line (a_line: INTEGER): STRING_32
@@ -100,7 +103,7 @@ feature -- Status report
 	caret_position: INTEGER
 			-- Current position of the caret.
 		do
-			Result := text_view.selected_range.location + 1
+			Result := text_view.selected_range.location.to_integer_32 + 1
 		end
 
 	line_count: INTEGER
@@ -141,14 +144,14 @@ feature -- Status setting
 		do
 			l_text := text
 			l_text.insert_string (a_text.as_string_32, caret_position)
-			text_view.set_string (l_text)
+			text_view.set_string_ (create {NS_STRING}.make_with_eiffel_string (l_text.as_string_8))
 			text_view.size_to_fit
 		end
 
 	set_text (a_text: READABLE_STRING_GENERAL)
 			-- Set `text' to `a_text'
 		do
-			text_view.set_string (a_text)
+			text_view.set_string_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 			text_view.size_to_fit
 		end
 
@@ -161,16 +164,19 @@ feature -- Status setting
 			l_text := text
 			l_text.append (a_text.as_string_32)
 
-			create l_range.make_range (a_text.count, text_view.string.to_string_8.count)
+--			create l_range.make_range (a_text.count, text_view.string.to_string_8.count)
+			create l_range.make
+			l_range.set_length (a_text.count.to_natural_64)
+			l_range.set_location (text_view.string.to_eiffel_string.count.to_natural_64)
 
 			range := text_view.selected_range
 --			text_view.replace_characters_in_range_with_string (l_range, create {NS_STRING}.make_with_string (a_text))
-			text_view.set_string (l_text)
+			text_view.set_string_ (create {NS_STRING}.make_with_eiffel_string (l_text.as_string_8))
 			text_view.size_to_fit
 
-			text_view.scroll_range_to_visible (l_range)
+			text_view.scroll_range_to_visible_ (l_range)
 
-			text_view.set_selected_range (range)
+			text_view.set_selected_range_ (range)
 		end
 
 	prepend_text (a_text: READABLE_STRING_GENERAL)
@@ -180,7 +186,7 @@ feature -- Status setting
 		do
 			l_text := text
 			l_text.prepend (a_text.as_string_32)
-			text_view.set_string (l_text)
+			text_view.set_string_ (create {NS_STRING}.make_with_eiffel_string (l_text.as_string_8))
 			text_view.size_to_fit
 		end
 
@@ -192,7 +198,7 @@ feature -- Status setting
 		do
 			l_text := text
 			l_text.remove_substring (start, finish)
-			text_view.set_string (l_text)
+			text_view.set_string_ (create {NS_STRING}.make_with_eiffel_string (l_text.as_string_8))
 			text_view.size_to_fit
 		end
 
@@ -230,10 +236,9 @@ feature {EV_ANY, EV_ANY_I} -- Basic operation
 		do
 		end
 
-	set_selection (start_pos, end_pos: INTEGER)
-			-- <Precursor>
+	set_selection (a_start_pos, a_end_pos: INTEGER)
+			-- Select (highlight) the characters between valid caret positions `a_start_pos' and `a_end_pos'.
 		do
-			check not_implemented: False end
 		end
 
 --	select_all is
@@ -288,7 +293,7 @@ feature {EV_ANY_I} -- Implementation
 
 	scroll_view: NS_SCROLL_VIEW
 
-	text_view: NS_TEXT_VIEW;
+	text_view: NS_TEXT_VIEW
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 

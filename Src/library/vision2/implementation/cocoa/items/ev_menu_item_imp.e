@@ -48,10 +48,10 @@ feature {NONE} -- Initialization
 		do
 			pixmapable_imp_initialize
 			create menu_item.make
-			menu_item.set_action (agent
-				do
-					select_actions.call ([])
-				end)
+--			menu_item.set_action (agent
+--				do
+--					select_actions.call ([])
+--				end)
 			set_is_initialized (True)
 		end
 
@@ -112,10 +112,10 @@ feature -- Element change
 				l_text := l_text.substring (1, i - 1) + l_text.substring (i + 1, l_text.count)
 			end
 
-			create ns_text.make_with_string (l_text)
-			menu_item.set_title (ns_text)
+			create ns_text.make_with_eiffel_string (l_text.as_string_8)
+			menu_item.set_title_ (ns_text)
 			if attached {EV_MENU_ITEM_LIST_IMP} current as a_menu_imp then
-				a_menu_imp.menu.set_title (ns_text)
+				a_menu_imp.menu.set_title_ (ns_text)
 			end
 		end
 
@@ -125,17 +125,20 @@ feature -- Element change
 			l_split_list: LIST [STRING_32]
 		do
 			l_split_list :=  a_text.split ('+')
-			menu_item.set_key_equivalent (l_split_list.last.as_lower)
+			menu_item.set_key_equivalent_ (create {NS_STRING}.make_with_eiffel_string (l_split_list.last.as_lower.as_string_8))
 			if l_split_list.there_exists (agent (other: STRING_32): BOOLEAN do Result := ("Ctrl").is_equal(other) end) then
-				l_key_mask := l_key_mask.bit_or ({NS_MENU_ITEM}.control_key_mask)
+				-- NSControlKeyMask = 262144
+				l_key_mask := l_key_mask.bit_or (262144)
 			end
 			if l_split_list.there_exists (agent (other: STRING_32): BOOLEAN do Result := ("Shift").is_equal(other) end) then
-				l_key_mask := l_key_mask.bit_or ({NS_MENU_ITEM}.shift_key_mask)
+				-- NSShiftKeyMask = 131072
+				l_key_mask := l_key_mask.bit_or (131072)
 			end
 			if l_split_list.there_exists (agent (other: STRING_32): BOOLEAN do Result := ("Alt").is_equal(other) end) then
-				l_key_mask := l_key_mask.bit_or ({NS_MENU_ITEM}.alternate_key_mask)
+				-- NSAlternateKeyMask = 524288
+				l_key_mask := l_key_mask.bit_or (524288)
 			end
-			menu_item.set_key_equivalent_modifier_mask (l_key_mask)
+			menu_item.set_key_equivalent_modifier_mask_ (l_key_mask.to_natural_64)
 		end
 
 feature -- Measurement

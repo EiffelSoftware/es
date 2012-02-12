@@ -15,43 +15,21 @@ inherit
 			propagate_background_color
 		redefine
 			interface
-		select
-			copy
 		end
 
 	EV_CONTAINER_IMP
 		redefine
 			interface,
-			make,
-			dispose
-		end
-
-	NS_SPLIT_VIEW_DELEGATE
-		rename
-			make as create_split_view_delegate,
-			item as delegate_item,
-			copy as copy_cocoa
-		undefine
-			is_equal
-		redefine
-			split_view_did_resize_subviews,
-			dispose
+			make
 		end
 
 feature -- Access
 
 	make
 		do
-			create_split_view_delegate
 			initialize
-			split_view.set_delegate (current)
 			first_expandable := True
 			second_expandable := True
-		end
-
-	split_view_did_resize_subviews
-		do
-			split_view.adjust_subviews
 		end
 
 	set_first (v: attached like item)
@@ -62,79 +40,47 @@ feature -- Access
 			l_imp ?= v.implementation
 			check l_imp_not_void: l_imp /= Void end
 			first := v
---			on_new_item (l_imp)
-			l_imp.set_parent_imp (current)
+			l_imp.set_parent_imp (Current)
 			disable_item_expand (v)
-			update_subviews
 
-			--notify_change (nc_minsize, Current)
+			if split_view.subviews.count > 0 then
+				check attached {NS_VIEW} split_view.subviews.object_at_index_ (0) as l_old_view then
+					split_view.replace_subview__with_ (l_old_view, l_imp.attached_view)
+				end
+			else
+				split_view.add_subview_ (l_imp.attached_view)
+			end
+			l_imp.set_padding_constraints (0)
+
 			if second_visible then
 				set_split_position (minimum_split_position)
 			else
 				set_split_position (maximum_split_position)
 			end
-			notify_change (Nc_minsize, Current)
 			new_item_actions.call ([v])
 		end
 
 	set_second (v: attached like item)
 			-- Make `an_item' `second'.
 		local
-			v_imp: detachable EV_WIDGET_IMP
+			l_imp: detachable EV_WIDGET_IMP
 		do
 			v.implementation.on_parented
-			v_imp ?= v.implementation
-			check l_imp_not_void: v_imp /= Void end
-			v_imp.set_parent_imp (Current)
-			notify_change (Nc_minsize, Current)
+			l_imp ?= v.implementation
+			check l_imp_not_void: l_imp /= Void end
+			l_imp.set_parent_imp (Current)
 			second := v
-			update_subviews
 
-			notify_change (Nc_minsize, Current)
-			if first_visible then
-				check
-					second /= Void
-				end
-				if attached {EV_HORIZONTAL_SPLIT_AREA_IMP} current then
-					set_split_position (width - splitter_width - v.minimum_width.min
-						(width - minimum_split_position - splitter_width))
-				else
-					set_split_position (height - splitter_width - v.minimum_height.min
-						(height - minimum_split_position - splitter_width))
+			if split_view.subviews.count > 1 then
+				check attached {NS_VIEW} split_view.subviews.object_at_index_ (1) as l_old_view then
+					split_view.replace_subview__with_ (l_old_view, l_imp.attached_view)
 				end
 			else
-				set_split_position (0)
+				split_view.add_subview_ (l_imp.attached_view)
 			end
-				--| Notify change is called twice, as we need
-				--| the sizing calculations performed once before
-				--| we call set_split_position, so we can use `height'
-				--| and be sure it is correct. Then we call notify change
-				--| again after the split position has been set,
-				--| to reflect these changes.
-			notify_change (Nc_minsize, Current)
+			l_imp.set_padding_constraints (0)
+
 			new_item_actions.call ([v])
-		end
-
-	update_subviews
-		local
-			l_subviews: NS_ARRAY [NS_VIEW]
-		do
-			l_subviews := attached_view.subviews.twin
-			from
-				l_subviews.start
-			until
-				l_subviews.after
-			loop
-				l_subviews.item_for_iteration.remove_from_superview
-				l_subviews.forth
-			end
-
-			if attached first_imp as l_imp then
-				attached_view.add_subview (l_imp.attached_view)
-			end
-			if attached second_imp as l_imp then
-				attached_view.add_subview (l_imp.attached_view)
-			end
 		end
 
 	prune (an_item: like item)
@@ -161,7 +107,6 @@ feature -- Access
 					end
 				end
 				an_item_imp.attached_view.remove_from_superview
-				notify_change (Nc_minsize, Current)
 			end
 		end
 
@@ -188,19 +133,8 @@ feature -- Access
 			-- Set the position of the splitter.
 		do
 			internal_split_position := a_split_position
-			layout_widgets (True)
 		ensure then
 			split_position_set: split_position = a_split_position
-		end
-
-	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
-		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			layout_widgets (False)
-		end
-
-	layout_widgets (originator: BOOLEAN)
-		deferred
 		end
 
 feature -- Widget relationships
@@ -277,13 +211,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {EV_ANY_I} -- Implementation
-
-	dispose
-			-- <Precursor>
-		do
-			Precursor {EV_CONTAINER_IMP}
-			Precursor {NS_SPLIT_VIEW_DELEGATE}
-		end
 
 	split_view: NS_SPLIT_VIEW
 

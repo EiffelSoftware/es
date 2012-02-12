@@ -1,6 +1,6 @@
 note
-	description: "EiffelVision vertical box. Puts child widgets in a column. Cocoa implementation."
-	author:	"Daniel Furrer <daniel.furrer@gmail.com>"
+	description: "EiffelVision vertical box. Cocoa implementation."
+	author:	"Daniel Furrer, Emanuele Rudel"
 	keywords: "container, box, vertical"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -20,261 +20,69 @@ inherit
 	EV_BOX_IMP
 		redefine
 			interface,
-			ev_apply_new_size
+			insert_i_th,
+			set_child_expandable
 		end
 create
 	make
 
-feature -- Access
+feature {NONE} -- Implementation
 
-	children_height: INTEGER
-			-- Sum of the width of all the children.
-
-feature -- Basic operation
-
-	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
-		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			set_children_height (a_height, False)
-		end
-
--- TODO?: abstract to box to avoid duplicated code
-
-	set_children_height (a_height: INTEGER; originator: BOOLEAN)
-			-- Move and resize the children to have them adapted to the
-			-- current height.
+	insert_i_th (v: like item; i: INTEGER_32)
 		local
-			litem: EV_WIDGET_IMP
-			rate, total_rest, y: INTEGER
-			children_size, item_height: INTEGER
-			item_width: INTEGER
-			cur: CURSOR
-			int1, int2: INTEGER
+			v_imp: detachable EV_WIDGET_IMP
 		do
-			if childvisible_nb /= 0 then
-				cur := ev_children.cursor
-				item_width := client_width
-				children_size := a_height - 2 * border_width - total_spacing
+			Precursor (v, i)
+			v_imp ?= v.implementation
+			check v_imp /= Void end
 
-					-- Homogeneous state : only the visible children are
-					-- important.
-				if is_homogeneous then
-					rate := children_size // childvisible_nb
-					total_rest := children_size \\ childvisible_nb
-					from
-						y := border_width
-						ev_children.start
-					until
-						ev_children.after
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							item_height := rate + rest (total_rest)
-							total_rest := (total_rest - 1).max (0)
-							if originator then
-								litem.ev_move_and_resize (border_width, y, item_width, item_height, True)
-							else
-								litem.ev_apply_new_size (border_width, y, item_width, item_height, True)
-							end
-							y := y + padding + item_height
-						end
-						ev_children.forth
-					end
+			v_imp.set_left_padding (0)
+			v_imp.set_right_padding (0)
 
-					-- Non homogeneous state : we have to be carefull to the non
-					-- expanded children too.
-				else
-					int1 := children_size - children_height
-					int2 := childexpand_nb.max (1)
-						-- It is possible that int1 < 0.
-						-- This occurs when `Current' has a minimum width and
-						-- the children are larger. Because of the minimum
-						-- width, `Current' does not expand.
-					if int1 >= 0 then
-						rate := int1 // int2
-						total_rest := int1 \\ int2
-					else
-						rate := 0
-						total_rest := 0
-					end
-
-						-- Then, we ask the children to move and resize.
-						-- Be carefull to the expanded child.
-					from
-						y := border_width
-						ev_children.start
-					until
-						ev_children.after or not ev_children.valid_index (ev_children.index)
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							if litem.is_expandable then
-								item_height := litem.minimum_height + rate + rest (total_rest)
-								if total_rest > 0 then
-									total_rest := total_rest - 1
-								elseif total_rest < 0 then
-									total_rest := total_rest + 1
-								end
-							else
-								item_height := litem.minimum_height
-							end
-							if originator then
-								litem.ev_move_and_resize (border_width, y, item_width, item_height, True)
-							else
-								litem.ev_apply_new_size	(border_width, y, item_width, item_height, True)
-							end
-							y := y + padding + item_height
-						end
-						ev_children.forth
-					end -- loop.
-				end -- is_homogeneous.
-				if ev_children.valid_cursor (cur) then
-					ev_children.go_to (cur)
+			if i - 1 >= 1 then
+				check attached {EV_WIDGET_IMP} i_th (i-1).implementation as l_prev then
+					remove_constraint_ (l_prev.bottom_constraint)
+					set_vertical_padding_constraints (l_prev.attached_view, v_imp.attached_view, padding)
 				end
+
+			end
+			if i + 1 <= count then
+				check attached {EV_WIDGET_IMP} i_th (i+1).implementation as l_next then
+					remove_constraint_ (l_next.top_constraint)
+					set_vertical_padding_constraints (v_imp.attached_view, l_next.attached_view, padding)
+				end
+			end
+
+			if i = 1 then
+				v_imp.set_top_padding (1)
+			end
+			if i = count then
+				v_imp.set_bottom_padding (1)
 			end
 		end
 
-feature {NONE} -- Implementation for automatic size compute
+feature {EV_ANY, EV_ANY_I} -- Status settings
 
-	compute_minimum_height
-			-- Recompute the minimum_height of `Current'.
+	set_child_expandable (child: EV_WIDGET; flag: BOOLEAN)
 		local
-			litem: EV_WIDGET_IMP
-			cur: CURSOR
-			value, nb_visi: INTEGER
+			w_imp: EV_WIDGET_IMP
 		do
-			childvisible_nb := 0
-			if not ev_children.is_empty then
-				cur := ev_children.cursor
-				if is_homogeneous then
-					from
-						ev_children.start
-					until
-						ev_children.after
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							nb_visi := nb_visi + 1
-							value := value.max (litem.minimum_height)
-						end
-						ev_children.forth
-					end
-					childvisible_nb := nb_visi
-					compute_childexpand_nb
-					internal_set_minimum_height (value * nb_visi + total_spacing + 2 * border_width)
-				else
-					from
-						ev_children.start
-					until
-						ev_children.after
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							nb_visi := nb_visi + 1
-							value := value + litem.minimum_height
-						end
-						ev_children.forth
-					end
-					children_height := value
-					childvisible_nb := nb_visi
-					compute_childexpand_nb
-					internal_set_minimum_height (value + total_spacing + 2 * border_width)
-				end
-				if ev_children.valid_cursor (cur) then
-					ev_children.go_to (cur)
-				end
-			else
-				children_height := 0
-				internal_set_minimum_height (2 * border_width)
-			end
+			w_imp ?= child.implementation
+			check w_imp /= Void end
+
+			Precursor {EV_BOX_IMP} (child, flag)
+--			if flag then
+--				w_imp.set_minimum_height (w_imp.minimum_height)
+--			else
+--				w_imp.set_fixed_height (w_imp.minimum_height)
+--			end
 		end
 
-	compute_minimum_width
-			-- Recompute the minimum_width of `Current'.
-		local
-			litem: EV_WIDGET_IMP
-			cur: CURSOR
-			value, nb_visi: INTEGER
+	set_padding (value: INTEGER)
+			-- Assign `value' to `padding'.
 		do
-			childvisible_nb := 0
-			-- TODO: is this check really needed before the loop??
-			if not ev_children.is_empty then
-				from
-					cur := ev_children.cursor
-					ev_children.start
-				until
-					ev_children.after
-				loop
-					litem := ev_children.item
-					if litem.is_show_requested then
-						nb_visi := nb_visi + 1
-						value := value.max (litem.minimum_width)
-					end
-					ev_children.forth
-				end
-				if ev_children.valid_cursor (cur) then
-					ev_children.go_to (cur)
-				end
-				childvisible_nb := nb_visi
-				compute_childexpand_nb
-			end
-			internal_set_minimum_width (value + 2 * border_width)
-		end
-
-	compute_minimum_size
-			-- Recompute both the minimum_width and the minimum_height of
-			-- `Current'.
-		local
-			litem: EV_WIDGET_IMP
-			cur: CURSOR
-			hvalue, wvalue, nb_visi: INTEGER
-		do
-			childvisible_nb := 0
-			if not ev_children.is_empty then
-				cur := ev_children.cursor
-				if is_homogeneous then
-					from
-						ev_children.start
-					until
-						ev_children.after
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							nb_visi := nb_visi + 1
-							wvalue := wvalue.max (litem.minimum_width)
-							hvalue := hvalue.max (litem.minimum_height)
-						end
-						ev_children.forth
-					end
-					childvisible_nb := nb_visi
-					compute_childexpand_nb
-					internal_set_minimum_size (wvalue + 2 * border_width, hvalue * nb_visi + total_spacing + 2 * border_width)
-				else
-					from
-						ev_children.start
-					until
-						ev_children.after
-					loop
-						litem := ev_children.item
-						if litem.is_show_requested then
-							nb_visi := nb_visi + 1
-							wvalue := wvalue.max (litem.minimum_width)
-							hvalue := hvalue + litem.minimum_height
-						end
-						ev_children.forth
-					end
-					children_height := hvalue
-					childvisible_nb := nb_visi
-					compute_childexpand_nb
-					internal_set_minimum_size (wvalue + 2 * border_width, hvalue + total_spacing + 2 * border_width)
-				end
-				if ev_children.valid_cursor (cur) then
-					ev_children.go_to (cur)
-				end
-			else
-				children_height := 0
-				internal_set_minimum_size (2 * border_width, 2 * border_width)
-			end
+			padding := value
+			update_vertical_padding_constraints (padding)
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

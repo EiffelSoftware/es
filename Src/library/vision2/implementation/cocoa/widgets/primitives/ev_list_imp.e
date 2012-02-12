@@ -9,6 +9,8 @@ class
 
 inherit
 	EV_LIST_I
+		rename
+			item as list_item
 		undefine
 			wipe_out,
 			selected_items,
@@ -19,25 +21,45 @@ inherit
 		end
 
 	EV_LIST_ITEM_LIST_IMP
+		rename
+			item as list_item
 		redefine
 			interface,
 			make,
 			on_mouse_button_event,
 			row_height,
 			minimum_height,
-			minimum_width
+			minimum_width,
+			dispose
 		end
 
-	NS_OUTLINE_VIEW_DATA_SOURCE [EV_LIST_ITEM] -- TODO: should probably be TABLE_VIEW
-		rename
-			make as create_data_source,
-			item as data_source
+	NS_TABLE_VIEW_DATA_SOURCE_PROTOCOL
+		undefine
+			copy,
+			is_equal
+		redefine
+			number_of_rows_in_table_view_,
+			table_view__object_value_for_table_column__row_,
+			dispose
 		end
 
-	NS_OUTLINE_VIEW_DELEGATE
-		rename
-			make as create_delegate,
-			item as delegate
+	NS_TABLE_VIEW_DELEGATE_PROTOCOL
+		undefine
+			copy,
+			is_equal
+		redefine
+			table_view_selection_did_change_,
+			dispose
+		end
+
+	NS_OBJECT
+		undefine
+			copy,
+			is_equal,
+			wrapper_objc_class_name
+		redefine
+			make,
+			dispose
 		end
 
 create
@@ -50,36 +72,35 @@ feature -- Initialize
 		local
 			table_column: NS_TABLE_COLUMN
 		do
-			create scroll_view.make
+			add_objc_callback ("numberOfRowsInTableView:", agent number_of_rows_in_table_view_)
+			add_objc_callback ("tableView:objectValueForTableColumn:row:", agent table_view__object_value_for_table_column__row_)
+			add_objc_callback ("tableViewSelectionDidChange:", agent table_view_selection_did_change_)
+			create scroll_view.make_with_frame_ (create {NS_RECT}.make_with_coordinates (0, 0 , 0, 0))
+			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := scroll_view
-			create outline_view.make
-			scroll_view.set_document_view (outline_view)
-			scroll_view.set_has_horizontal_scroller (True)
-			scroll_view.set_has_vertical_scroller (True)
-			scroll_view.set_autohides_scrollers (True)
+			create table_view.make_with_frame_ (create {NS_RECT}.make_with_coordinates (0, 0 , minimum_width, minimum_height))
+			table_view.set_header_view_ (Void)
+			scroll_view.set_border_type_ (2)
+			scroll_view.set_document_view_ (table_view)
+			scroll_view.set_has_horizontal_scroller_ (True)
+			scroll_view.set_has_vertical_scroller_ (True)
+			scroll_view.set_autohides_scrollers_ (True)
 			create table_column.make
-			table_column.set_editable (False)
-			outline_view.add_table_column (table_column)
-			outline_view.set_outline_table_column (table_column)
-			outline_view.set_header_view (default_pointer)
-			table_column.set_width ({REAL_32}1000.0)
-
+			table_column.set_editable_ (False)
+			table_view.add_table_column_ (table_column)
+			table_column.set_width_ ({REAL_32}1000.0)
+			Precursor {NS_OBJECT}
 			Precursor {EV_LIST_ITEM_LIST_IMP}
+			table_view.set_data_source_ (Current)
+			table_view.set_delegate_ (Current)
 
-			create_data_source
-			outline_view.set_data_source (current)
-
-			create_delegate
-			outline_view.set_delegate (current)
-
-			-- FIXME: Change to TableView
 			enable_tabable_to
 		end
 
 feature -- Delegate
 
-	selection_did_change
-			-- The selection of the NSOutlineView changed
+	table_view_selection_did_change_ (a_notification: NS_NOTIFICATION)
+			-- The selection of the table view changed
 		do
 			select_actions.call ([])
 			if attached selected_item as l_item then
@@ -89,29 +110,14 @@ feature -- Delegate
 
 feature -- DataSource
 
-	number_of_children_of_item (a_node: detachable EV_LIST_ITEM): INTEGER
+	number_of_rows_in_table_view_ (a_table_view:NS_TABLE_VIEW): INTEGER_64
 		do
-			check a_node = Void end
 			Result := count
 		end
 
-	is_item_expandable (a_node: detachable EV_LIST_ITEM): BOOLEAN
+	table_view__object_value_for_table_column__row_ (a_table_view: detachable NS_TABLE_VIEW; a_table_column: detachable NS_TABLE_COLUMN; a_row: INTEGER_64): detachable NS_OBJECT
 		do
-			Result := False
-		end
-
-	child_of_item (an_index: INTEGER; a_node: detachable EV_LIST_ITEM): EV_LIST_ITEM
-		local
-			l_result: detachable EV_LIST_ITEM
-		do
-			l_result := i_th (an_index + 1)
-			check l_result /= Void end
-			Result := l_result
-		end
-
-	object_value_for_table_column_by_item (a_table_column: POINTER; a_node: EV_LIST_ITEM): POINTER
-		do
-			Result := (create {NS_STRING}.make_with_string (a_node.text)).item
+			Result := create {NS_STRING}.make_with_eiffel_string (i_th (a_row.as_integer_32 + 1).text)
 		end
 
 feature -- Access
@@ -120,7 +126,9 @@ feature -- Access
 			-- Item which is currently selected, for a multiple
 			-- selection.
 		do
-			Result ?= outline_view.item_at_row (outline_view.selected_row)
+			if table_view.selected_row >= 0 then
+				Result := i_th (table_view.selected_row.as_integer_32 + 1)
+			end
 		end
 
 	selected_items: ARRAYED_LIST [EV_LIST_ITEM]
@@ -191,6 +199,16 @@ feature -- PND
 		do
 		end
 
+feature -- Dispose
+
+	dispose
+		do
+--			table_view.set_data_source_ (Void)
+--			table_view.set_delegate_ (Void)
+			Precursor {NS_OBJECT}
+			Precursor {EV_LIST_ITEM_LIST_IMP}
+		end
+
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 
@@ -220,37 +238,42 @@ feature {NONE} -- Implementation
 	insert_item (item_imp: EV_LIST_ITEM_IMP; an_index: INTEGER)
 			-- Insert `item_imp' at `an_index'.
 		do
-			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+			table_view.reload_data
 		end
 
 	remove_item (item_imp: EV_LIST_ITEM_IMP)
 			-- Remove `item' from the list
 		do
-			-- TODO: optimization potential?
-			outline_view.reload_item_reload_children (default_pointer, True)
+			table_view.reload_data
 		end
 
 	minimum_height: INTEGER
 			-- Minimum height that the widget may occupy.
 		do
-			Result := 74 -- Hardcoded, TODO calculate a meaningful height depending on the content.
+			Result := 74 -- Hardcoded
 		end
 
 	minimum_width: INTEGER
 			-- Minimum width that the widget may occupy.
 		do
-			Result := 55 -- Hardcoded, TODO calculate a meaningful width depending on the content
+			Result := 55 -- Hardcoded
 		end
 
 feature {EV_ANY_I, EV_TREE_NODE_IMP} -- Implementation
 
 	scroll_view: NS_SCROLL_VIEW
 
-	outline_view: NS_OUTLINE_VIEW;
+	table_view: NS_TABLE_VIEW;
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_LIST note option: stable attribute end;
+
+feature {NONE} -- Implementation
+
+	wrapper_objc_class_name: STRING
+		do
+			Result := "NSOutlineView"
+		end
 
 end -- class EV_LIST_IMP

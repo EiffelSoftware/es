@@ -1,5 +1,5 @@
 note
-	description: "Objects that ..."
+	description: "Objects that represent EiffelVision2 header items. Cocoa implementation."
 	author: "Daniel Furrer"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -30,9 +30,7 @@ inherit
 
 	EV_ITEM_IMP
 		redefine
-			interface,
-			width,
-			height
+			interface
 		end
 
 create
@@ -44,19 +42,13 @@ feature -- Initialization
 			-- Initialize the header item.
 		do
 			create table_column.make
-			table_column.set_min_width ({REAL_32}0.0)
+			table_column.set_min_width_ ({REAL_32}0.0)
 			align_text_left
 			set_width (80)
 			set_text ("")
 			set_is_initialized (True)
 			user_can_resize := True
-			maximum_width := 32000
-		end
-
-	handle_resize
-			-- Call the appropriate actions for the header item resize
-		do
-
+			maximum_width := 1000
 		end
 
 feature -- Access
@@ -77,13 +69,15 @@ feature -- Access
 	disable_user_resize
 			-- Prevent `Current' from being resized by users.
 		do
-
+			table_column.set_resizing_mask_ (0)
+			user_can_resize := False
 		end
 
 	enable_user_resize
 			-- Permit `Current' to be resized by users.
 		do
-
+			table_column.set_resizing_mask_ (2)
+			user_can_resize := True
 		end
 
 	is_dockable: BOOLEAN
@@ -93,14 +87,16 @@ feature -- Status setting
 	set_text (a_text: READABLE_STRING_GENERAL)
 		do
 			Precursor {EV_TEXTABLE_IMP} (a_text)
-			table_column.header_cell.set_string_value (create {NS_STRING}.make_with_string (a_text))
+			check attached {NS_TABLE_HEADER_CELL} table_column.header_cell as l_header_cell then
+				l_header_cell.set_string_value_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
+			end
 		end
 
 	set_minimum_width (a_minimum_width: INTEGER)
 			-- Assign `a_minimum_width' in pixels to `minimum_width'.
 			-- If `width' is less than `a_minimum_width', resize.
 		do
-			table_column.set_min_width (a_minimum_width)
+			table_column.set_min_width_ (a_minimum_width)
 			minimum_width := a_minimum_width
 			if width < minimum_width then
 				set_width (minimum_width)
@@ -111,7 +107,7 @@ feature -- Status setting
 			-- Assign `a_maximum_width' in pixels to `maximum_width'.
 			-- If `width' is greater than `a_maximum_width', resize.
 		do
-			table_column.set_max_width (a_maximum_width)
+			table_column.set_max_width_ (a_maximum_width)
 			maximum_width := a_maximum_width
 			if width > maximum_width then
 				set_width (maximum_width)
@@ -121,19 +117,18 @@ feature -- Status setting
 	set_width (a_width: INTEGER)
 			-- Assign `a_width' to `width'.
 		do
-			table_column.set_width (a_width)
-			--width := a_width
+			table_column.set_width_ (a_width)
+--			width := a_width
 		end
 
 	width: INTEGER
 		do
-			-- Test: Does not work because cocoa seems to enforce a minimum with of 10
-			Result := table_column.width.floor
+			Result := table_column.width.rounded
 		end
 
 	height: INTEGER
 		do
-			Result := 18
+			Result := 17
 		end
 
 	screen_x: INTEGER

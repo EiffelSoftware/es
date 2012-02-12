@@ -19,33 +19,20 @@ inherit
 		end
 
 	EV_WIDGET_IMP
-		undefine
-			ev_apply_new_size,
-			minimum_width,
-			minimum_height
 		redefine
 			initialize,
-			interface,
-			destroy
-		end
-
-	EV_SIZEABLE_CONTAINER_IMP
-		redefine
 			interface
 		end
 
 	EV_CONTAINER_ACTION_SEQUENCES_IMP
 
-	PLATFORM
-
-feature {NONE}
+feature {NONE} -- Initialization
 
 	initialize
 			-- Show non window widgets.
 			-- Initialize default options, colors and sizes.
 		do
 			create radio_group.make
-			initialize_sizeable
 			new_item_actions.extend (agent add_radio_button)
 			create remove_item_actions
 			remove_item_actions.extend (agent remove_radio_button)
@@ -84,7 +71,6 @@ feature -- Element change
 	replace (v: like item)
 			-- Replace `item' with `v'.
 		deferred
-
 		end
 
 feature -- Status Setting
@@ -197,7 +183,7 @@ feature -- Basic operations
 			-- Propagate the current foreground color of the
 			-- container to the children.
 		do
-			--precursor {EV_CONTAINER_PI}
+			--Precursor {EV_CONTAINER_I}
 
 		end
 
@@ -206,17 +192,6 @@ feature -- Basic operations
 			-- container to the children.
 		do
 			Precursor {EV_CONTAINER_I}
-		end
-
-feature -- Command
-
-	destroy
-			-- Render `Current' unusable.
-		do
---			if interface.prunable then
---				interface.wipe_out
---			end
-			Precursor {EV_WIDGET_IMP}
 		end
 
 feature -- Event handling
@@ -270,7 +245,8 @@ feature {EV_CONTAINER_IMP} -- Implementation
 		do
 			if attached {EV_RADIO_BUTTON_IMP} w.implementation as r then
 				if not radio_group.is_empty then
-					r.set_state ({NS_CELL}.off_state)
+					-- NSOffState = 0
+					r.set_state_ (0)
 				end
 				r.set_radio_group (radio_group)
 			end
@@ -285,7 +261,8 @@ feature {EV_CONTAINER_IMP} -- Implementation
 		do
 			if attached {EV_RADIO_BUTTON_IMP} w.implementation as r then
 				r.remove_from_radio_group
-				r.set_state ({NS_CELL}.on_state)
+				-- NSOnState = 1
+				r.set_state_ (1)
 			end
 		end
 

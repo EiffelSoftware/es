@@ -2931,8 +2931,6 @@ Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
 Src/library/cURL/readme.txt -text
-Src/library/cocoa/Clib/ns_responder_category.m -text
-Src/library/cocoa/Clib/ns_text_delegate.m -text
 Src/library/diff/diff_index_link.e -text
 Src/library/diff/diff_line.e -text
 Src/library/diff/diff_line_add.e -text
@@ -3183,7 +3181,7 @@ Src/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/mysql/Clib_Full/Makefile-win.SH -text
 Src/library/mysql/README -text
-Src/library/objc_base/Clib/objc_callback_marshal.m -text
+Src/library/objc_wrapper/Clib/objc_callbacks.m -text
 Src/library/plane/soln.plan -text
 Src/library/preferences/license.lic -text
 Src/library/process/classic/windows/wel_process_id_pair.e -text

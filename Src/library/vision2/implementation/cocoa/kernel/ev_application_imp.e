@@ -1,6 +1,6 @@
 note
 	description: "EiffelVision application, Cocoa implementation."
-	author: "Daniel Furrer <daniel.furrer@gmail.com>"
+	author: "Daniel Furrer, Emanuele Rudel"
 	todo: "[
 
 	]"
@@ -16,8 +16,6 @@ inherit
 		redefine
 			make,
 			dispose
-		select
-			copy
 		end
 
 	EV_APPLICATION_ACTION_SEQUENCES_IMP
@@ -28,48 +26,21 @@ inherit
 			launch as ee_launch
 		end
 
-	PLATFORM
-
-	EXCEPTIONS
-
-	NS_APPLICATION
-		rename
-			make as make_application_cocoa,
-			launch as launch_cocoa,
-			copy as copy_cocoa,
-			process_events as process_events_cocoa
-		undefine
-			is_equal
-		redefine
-			dispose
-		end
-
-	NS_ENVIRONEMENT
-
-	NS_STRING_CONSTANTS
-
 create
 	make
 
 feature {NONE} -- Initialization
 
 	make
-			-- Set up the callback marshalL.... TODO
-		local
-			menu: NS_MENU
 		do
 			Precursor {EV_APPLICATION_I}
-			if {PLATFORM}.is_thread_capable then
-				create idle_action_mutex.make
-			end
 			create windows_imp.make
-			make_application_cocoa
+			create app_delegate.make
 			set_is_initialized (True)
-
-			-- Fix the menu because we are not loading from a nib
-			create menu.make
-			menu.insert_item_at_index (default_application_menu, 0)
-			set_main_menu (menu)
+			check attached (create {NS_APPLICATION_UTILS}).shared_application as l_application then
+				application := l_application
+				application.set_delegate_ (app_delegate)
+			end
 		end
 
 feature -- Access
@@ -120,65 +91,8 @@ feature -- Basic operation
 
 	process_underlying_toolkit_event_queue
 			-- Process Cocoa events
-		local
-			event: detachable NS_EVENT
---			view: detachable NS_VIEW
---			l_window: detachable NS_WINDOW
---			pointer_button_action: TUPLE [x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
---			pointer_motion_action: TUPLE [x: INTEGER; y: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER]
---			point: NS_POINT
-			l_loop_pool: NS_AUTORELEASE_POOL
 		do
-			create l_loop_pool.make
-			from
-				event := next_event ({NS_APPLICATION_API}.ns_any_event_mask, Void, default_run_loop_mode, true)
-			until
-				event = Void
-			loop
-
-				-- We are translating and forwarding the Cocoa events to Vision events here, but this way of doing it has its problems.
-				-- (E.g. because modal windows have their own event loop)
-				-- We already hanlde things better in EV_DRAWING_AREA_IMP and this is how all widgets should wirk in the future.
---				if event.type = {NS_EVENT}.left_mouse_down or event.type = {NS_EVENT}.right_mouse_down or event.type = {NS_EVENT}.other_mouse_down
---					or event.type = {NS_EVENT}.left_mouse_up or event.type = {NS_EVENT}.right_mouse_up or event.type = {NS_EVENT}.other_mouse_up then
---					view := event.window.content_view.hit_test (event.location_in_window)
---					--io.output.put_string ("MouseDown event at " + event.location_in_window.out + " in object of type " + view.class_.name + "  " + view.generating_type + "%N")
-
---					if attached {EV_WIDGET_IMP} view as widget then
---						create pointer_button_action
---						point := event.window.content_view.convert_point_to_view (event.location_in_window, widget.cocoa_view)
---						pointer_button_action.x := point.x.rounded
---						pointer_button_action.y := point.y.rounded
---						point := event.window.convert_base_to_screen_top_left (event.location_in_window)
---						pointer_button_action.screen_x := point.x.rounded
---						pointer_button_action.screen_y := point.y.rounded
---						pointer_button_action.button :=	event.button_number + 1
---						if event.type = {NS_EVENT}.left_mouse_up or event.type = {NS_EVENT}.right_mouse_up or event.type = {NS_EVENT}.other_mouse_up then
---							widget.pointer_button_release_actions.call (pointer_button_action)
---						else
---							widget.pointer_button_press_actions.call (pointer_button_action)
---						end
---					end
---				elseif event.type = {NS_EVENT}.mouse_moved then
---					view := event.window.content_view.hit_test (event.location_in_window)
---					--io.output.put_string ("Move event at " + event.location_in_window.out + " in object of type " + view.class_.name + "  " + view.generating_type + "%N")
-
---					if attached {EV_WIDGET_IMP} view as widget then
---						create pointer_motion_action
---						point := event.window.content_view.convert_point_to_view (event.location_in_window, widget.cocoa_view)
---						pointer_motion_action.x := point.x.rounded
---						pointer_motion_action.y := point.y.rounded
-----						point := event.window.convert_base_to_screen_top_left (event.location_in_window)
-----						pointer_button_action.screen_x := point.x
-----						pointer_button_action.screen_y := point.y
---						widget.pointer_motion_actions.call (pointer_motion_action)
---					end
---				end
-				send_event (event)
-				update_windows
-				event := next_event ({NS_APPLICATION_API}.ns_any_event_mask, Void, default_run_loop_mode, true)
-			end
-			l_loop_pool.release
+			application.run
 		end
 
 	process_graphical_events
@@ -196,10 +110,10 @@ feature -- Basic operation
 			-- End the application.
 		do
 			if not is_destroyed then
+				application.terminate_ (application)
 				set_is_destroyed (True)
 				destroy_actions.call (Void)
 			end
-			stop
 		end
 
 feature -- Status report
@@ -213,6 +127,27 @@ feature -- Status setting
 			-- Set `tooltip_delay' to `a_delay'.
 		do
 			tooltip_delay := a_delay
+		end
+
+	set_application_icon_image (a_image: NS_IMAGE)
+			-- Set the application's icon to  `a_image'
+		do
+			application.set_application_icon_image_ (a_image)
+		end
+
+	run_modal_for_window (a_window: NS_WINDOW): INTEGER
+			-- Start a modal event loop for `a_window'
+		do
+			Result := application.run_modal_for_window_ (a_window).as_integer_32
+			application.end_sheet_ (a_window)
+			a_window.order_out_ (Void)
+		end
+
+	abort_modal
+			-- Abort the event loop started by run_modal_for_window_ or run_modal_session_
+		do
+--			application.abort_modal
+			application.stop_modal
 		end
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
@@ -237,12 +172,8 @@ feature {NONE} -- Implementation
 
 	wait_for_input (msec: INTEGER)
 			-- Wait for at most `msec' milliseconds for an event.
-		local
-			event: detachable NS_EVENT
-			until_time: NS_DATE
 		do
-			create until_time.make_with_time_interval_since_now (msec / 1000.0)
-			event := next_event ({NS_APPLICATION_API}.ns_any_event_mask, until_time, default_run_loop_mode, false)
+			sleep (msec)
 		end
 
 	is_in_transport: BOOLEAN
@@ -285,14 +216,24 @@ feature -- Thread Handling.
 			end
 		end
 
+feature {EV_WINDOW_IMP} -- Menu handling
+
+	set_cocoa_menu (a_menu: NS_MENU)
+		require
+			menu_not_void: a_menu /= Void
+		do
+			application.set_main_menu_ (a_menu)
+		end
+
 feature {NONE} -- Implementation
+
+	application: NS_APPLICATION
+
+	app_delegate: EV_APPLICATION_DELEGATE
 
 	dispose
 		do
 			Precursor {EV_APPLICATION_I}
-			Precursor {NS_APPLICATION}
 		end
 
-invariant
-	idle_action_mutex_valid: {PLATFORM}.is_thread_capable implies idle_action_mutex /= Void
 end -- class EV_APPLICATION_IMP

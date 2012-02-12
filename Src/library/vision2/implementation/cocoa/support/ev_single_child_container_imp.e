@@ -16,9 +16,7 @@ inherit
 			enable_sensitive,
 			disable_sensitive,
 			propagate_foreground_color,
-			propagate_background_color,
-			on_size
---			next_tabstop_widget
+			propagate_background_color
 		end
 
 feature -- Access
@@ -62,7 +60,6 @@ feature -- Element change
 				item := Void
 				v_imp.set_parent_imp (Void)
 				v_imp.on_orphaned
-				notify_change (nc_minsize, Current)
 				v_imp.attached_view.remove_from_superview
 			end
 		end
@@ -83,9 +80,10 @@ feature -- Element change
 				end
 				v_imp.set_parent_imp (current)
 				item := v
-				notify_change (nc_minsize, Current)
 				new_item_actions.call ([v])
-				attached_view.add_subview (v_imp.attached_view)
+				attached_view.add_subview_ (v_imp.attached_view)
+				-- make the item stick to `attached_view'
+				v_imp.set_padding_constraints (0)
 			end
 		end
 
@@ -122,91 +120,6 @@ feature -- Basic operations
 					c.propagate_foreground_color
 				end
 			end
-		end
-
-feature {EV_ANY_I} -- WEL Implementation
-
-	index_of_child (child: EV_WIDGET_IMP): INTEGER
-			-- `Result' is 1 based index of `child' within `Current'.
-		do
-			Result := 1
-		end
-
---	next_tabstop_widget (start_widget: EV_WIDGET; search_pos: INTEGER; forwards: BOOLEAN): EV_WIDGET_IMP
---			-- Return the next widget that may by tabbed to as a result of pressing the tab key from `start_widget'.
---			-- `search_pos' is the index where searching must start from for containers, and `forwards' determines the
---			-- tabbing direction. If `search_pos' is less then 1 or more than `count' for containers, the parent of the
---			-- container must be searched next.
---		require else
---			valid_search_pos: search_pos >= 0 and search_pos <= interface.count + 1
---		local
---			w: EV_WIDGET_IMP
---			container: EV_CONTAINER
---		do
---			Result := return_current_if_next_tabstop_widget (start_widget, search_pos, forwards)
---			if Result = Void and search_pos = 1 and item /= Void and is_sensitive then
---					-- Otherwise search the child.
---				w := item_imp
---				if forwards then
---					Result := w.next_tabstop_widget (start_widget, 1, forwards)
---				else
---					container ?= w.interface
---					if container /= Void then
---						Result := w.next_tabstop_widget (start_widget, container.count, forwards)
---					else
---						Result := w.next_tabstop_widget (start_widget, 1, forwards)
---					end
---				end
---			end
---			if Result = Void then
---				Result := next_tabstop_widget_from_parent (start_widget, search_pos, forwards)
---			end
---		end
-
---	is_control_in_window (hwnd_control: POINTER): BOOLEAN
---			-- Is the control of handle `hwnd_control'
---			-- located inside the current window?
---		local
---			hwnd_current: POINTER
---		do
---			hwnd_current := wel_item
---			if hwnd_control = hwnd_current then
---				Result := True
---			else
---				if item_imp /= Void then
---					Result := item_imp.is_control_in_window (hwnd_control)
---				else
---					Result := False
---				end
---			end
---		end
-
-	on_size (a_width, a_height: INTEGER)
-			-- Called when `Current' is resized.
-		do
---			if size_type /= ({WEL_WINDOW_CONSTANTS}.Size_minimized) then
-				if attached item_imp as l_item_imp then
-					l_item_imp.set_move_and_size (0, 0, client_width, client_height)
-				end
-				Precursor {EV_CONTAINER_IMP} (a_width, a_height)
---			end
-		end
-
-	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
-		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
-			if attached item_imp as l_item_imp then
-				l_item_imp.ev_apply_new_size (0, 0, client_width, client_height, True)
-				-- was: client_x, client_y
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	is_child (a_child: EV_WIDGET_IMP): BOOLEAN
-			-- Is `a_child' a child of the container?
-		do
-			Result := a_child.interface = item
 		end
 
 note

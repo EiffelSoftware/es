@@ -38,8 +38,10 @@ feature {NONE} -- Implementation
 			box: NS_BOX
 		do
 			create box.make
-			box.set_box_type ({NS_BOX}.box_custom)
-			box.set_border_type ({NS_BOX}.no_border)
+			-- NSBoxCustom = 4
+			box.set_box_type_ (4)
+			-- NSNoBorder = 0
+			box.set_border_type_ (0)
 			cocoa_view := box
 			-- Initialize internal values
 			rows := 1
@@ -180,7 +182,7 @@ feature -- Status settings
 			table_child.set_attachment (a_y - 1, a_x - 1, a_y + a_height - 1, a_x + a_width - 1)
 			-- We show the child and resize the container
 			child_imp.show
-			attached_view.add_subview (child_imp.attached_view)
+			attached_view.add_subview_ (child_imp.attached_view)
 			notify_change (Nc_minsize, Current)
 			new_item_actions.call ([child])
 		end
@@ -310,217 +312,6 @@ feature {NONE} -- Access features for implementation
 	rows_sum: INTEGER
 			-- Sum of the minimum row values.
 			-- Used during sizing computations.
-
-feature {NONE} -- Basic operations for implementation
-
-	compute_minimum_width
-			-- Recompute minimum_width of `Curren'.
-		local
-			list: ARRAYED_LIST [EV_TABLE_CHILD_IMP]
-			minimums: ARRAYED_LIST [INTEGER]
-			tchild: EV_TABLE_CHILD_IMP
-			right, mw: INTEGER
-			cur: CURSOR
-		do
-			list := ev_children
-			if not list.is_empty then
-				initialize_columns (columns)
-
-				-- A first loop for the children that take only one cell
-				from
-					cur := list.cursor
-					minimums := columns_minimum
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					right := tchild.right_attachment
-					if (right - tchild.left_attachment = 1) then
-						mw := tchild.widget.minimum_width
-						if mw > minimums.i_th (right) then
-							minimums.put_i_th (mw, right)
-						end
-
-					end
-					list.forth
-				end
-
-				-- Then, a second loop for the children that take more than one
-				-- cell
-				from
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					if (tchild.right_attachment - tchild.left_attachment > 1)
-						then
-						second_body_loop (minimums, tchild.widget.minimum_width,
-							tchild.left_attachment, tchild.right_attachment,
-							column_spacing)
-					end
-					list.forth
-				end
-				list.go_to (cur)
-				if is_homogeneous then
-						-- Note that `sum_rows_minimum' does not correctly sum when homogeneous,
-						-- as the values are still the non - homogeneous transformed values.
-						-- Therefore, we compute directly.
-					internal_set_minimum_width (maximum_value (columns_minimum) * columns_minimum.count +
-						border_width * 2 + column_spacing * (columns_minimum.count - 1))
-				else
-					sum_columns_minimums
-					internal_set_minimum_width (columns_sum + border_width * 2)
-				end
-			else
-				internal_set_minimum_width (0)
-			end
-		end
-
-	compute_minimum_height
-			-- Recompute minimum_width of `Current'.
-		local
-			list: ARRAYED_LIST [EV_TABLE_CHILD_IMP]
-			minimums: ARRAYED_LIST [INTEGER]
-			tchild: EV_TABLE_CHILD_IMP
-			bottom, mh: INTEGER
-			cur: CURSOR
-		do
-			list := ev_children
-			if not list.is_empty then
-				initialize_rows (rows)
-
-				-- A first loop for the children that take only one cell
-				from
-					cur := list.cursor
-					minimums := rows_minimum
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					bottom := tchild.bottom_attachment
-					if (bottom - tchild.top_attachment = 1) then
-						mh := tchild.widget.minimum_height
-						if mh > minimums.i_th (bottom) then
-							minimums.put_i_th (mh, bottom)
-						end
-					end
-					list.forth
-				end
-
-				-- Then, a second loop for the children that take more than one
-				-- cell
-				from
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					if (tchild.bottom_attachment - tchild.top_attachment > 1)
-						then
-						second_body_loop (minimums, tchild.widget.minimum_height,
-							tchild.top_attachment, tchild.bottom_attachment,
-							row_spacing)
-					end
-					list.forth
-				end
-				list.go_to (cur)
-				if is_homogeneous then
-						-- Note that `sum_rows_minimum' does not correctly sum when homogeneous,
-						-- as the values are still the non - homogeneous transformed values.
-						-- Therefore, we compute directly.
-					internal_set_minimum_height (maximum_value (rows_minimum) * rows_minimum.count +
-						border_width * 2 + row_spacing * (rows_minimum.count - 1))
-				else
-					sum_rows_minimums
-					internal_set_minimum_height (rows_sum + border_width * 2)
-				end
-			else
-				internal_set_minimum_height (0)
-			end
-		end
-
-	compute_minimum_size
-			-- Recompute minimum size of `Current'.
-		local
-			list: ARRAYED_LIST [EV_TABLE_CHILD_IMP]
-			minrow, mincol: ARRAYED_LIST [INTEGER]
-			tchild: EV_TABLE_CHILD_IMP
-			bottom, mh: INTEGER
-			right, mw: INTEGER
-			cur: CURSOR
-		do
-			list := ev_children
-			if not list.is_empty then
-				initialize_rows (rows)
-				initialize_columns (columns)
-
-				-- A first loop for the children that take only one cell
-				from
-					cur := list.cursor
-					minrow := rows_minimum
-					mincol := columns_minimum
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					bottom := tchild.bottom_attachment
-					right := tchild.right_attachment
-					if (bottom - tchild.top_attachment = 1) then
-						mh := tchild.widget.minimum_height
-						if mh > minrow.i_th (bottom) then
-							minrow.put_i_th (mh, bottom)
-						end
-					end
-					if (right - tchild.left_attachment = 1) then
-						mw := tchild.widget.minimum_width
-						if mw > mincol.i_th (right) then
-							mincol.put_i_th (mw, right)
-						end
-					end
-					list.forth
-				end
-
-				-- Then, a second loop for the children that take more than one
-				-- cell
-				from
-					list.start
-				until
-					list.after
-				loop
-					tchild := list.item
-					if (tchild.bottom_attachment - tchild.top_attachment > 1)
-						then
-						second_body_loop (minrow, tchild.widget.minimum_height,
-							tchild.top_attachment, tchild.bottom_attachment,
-							row_spacing)
-					end
-					if (tchild.right_attachment - tchild.left_attachment > 1)
-						then
-						second_body_loop (mincol, tchild.widget.minimum_width,
-							tchild.left_attachment, tchild.right_attachment,
-							column_spacing)
-					end
-					list.forth
-				end
-				list.go_to (cur)
-				if is_homogeneous then
-						-- Note that `sum_rows_minimum' does not correctly sum when homogeneous,
-						-- as the values are still the non - homogeneous transformed values.
-						-- Therefore, we compute directly.
-					internal_set_minimum_size (maximum_value (columns_minimum) * columns_minimum.count + border_width * 2 + column_spacing * (columns_minimum.count - 1), maximum_value (rows_minimum) * rows_minimum.count + border_width * 2 + row_spacing * (rows_minimum.count - 1))
-				else
-					sum_rows_minimums
-					sum_columns_minimums
-					internal_set_minimum_size (columns_sum + border_width * 2, rows_sum + border_width * 2)
-				end
-			else
-				internal_set_minimum_size (border_width * 2, border_width * 2)
-			end
-		end
 
 feature {NONE} -- Resize Implementation
 
@@ -730,17 +521,19 @@ feature {NONE} -- Implementation
 						end
 
 					if originator then
-						tchild.widget.set_move_and_size
-							(columns_value @ left + ((left -1) * column_spacing),
-							rows_value @ top + ((top - 1) * row_spacing),
-							columns_value @ right - columns_value @ left + column_spacing_to_add,
-							rows_value @ bottom - rows_value @ top + row_spacing_to_add)
+						-- NSTodo: reimplement this
+--						tchild.widget.set_move_and_size
+--							(columns_value @ left + ((left -1) * column_spacing),
+--							rows_value @ top + ((top - 1) * row_spacing),
+--							columns_value @ right - columns_value @ left + column_spacing_to_add,
+--							rows_value @ bottom - rows_value @ top + row_spacing_to_add)
 					else
-						tchild.widget.ev_apply_new_size
-							(columns_value @ left + ((left -1) * column_spacing),
-							rows_value @ top + ((top - 1) * row_spacing),
-							columns_value @ right - columns_value @ left,
-							rows_value @ bottom - rows_value @ top + row_spacing_to_add, True)
+						-- NSTodo: reimplement this
+--						tchild.widget.ev_apply_new_size
+--							(columns_value @ left + ((left -1) * column_spacing),
+--							rows_value @ top + ((top - 1) * row_spacing),
+--							columns_value @ right - columns_value @ left,
+--							rows_value @ bottom - rows_value @ top + row_spacing_to_add, True)
 					end
 					list.forth
 				end

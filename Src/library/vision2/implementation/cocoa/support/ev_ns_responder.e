@@ -16,45 +16,43 @@ inherit
 
 feature -- Event handling
 
-	key_down (a_event: NS_EVENT)
+	key_down_ (a_event: NS_EVENT)
 			-- Translate a Cocoa key-event to an EiffelVision key event
 		local
 			cocoa_code: NATURAL_16
+			l_ns_function_key_mask: INTEGER_32
 		do
-			io.put_string ("Key down: " + a_event.characters + " (" + a_event.key_code.out + ")%N")
 			if attached key_press_actions_internal as actions then
-				if a_event.characters_ignoring_modifiers.count = 1 then
-					cocoa_code := a_event.characters_ignoring_modifiers.character_at_index (0)
+				if a_event.characters_ignoring_modifiers.length = 1 then
+					cocoa_code := a_event.characters_ignoring_modifiers.character_at_index_ (0)
 					actions.call ([create {EV_KEY}.make_with_code (key_code_from_cocoa (cocoa_code))])
 				end
 			end
 
+			l_ns_function_key_mask := 1 |<< 23
 			if attached key_press_string_actions_internal as actions then
-				if a_event.modifier_flags & {NS_EVENT}.function_key_mask = 0 then
-					-- Do not call for arrow keys, etc.
-					actions.call ([a_event.characters.as_string_32])
+					-- NSFunctionKeyMask = 1 << 23
+				if a_event.modifier_flags & l_ns_function_key_mask.to_natural_64 = 0 then
+						-- Do not call for arrow keys, etc.
+					actions.call ([a_event.characters.to_eiffel_string.as_string_32])
 				end
 			end
-
-			--Precursor {EV_NS_WINDOW} (a_event)
 		end
 
-	key_up (a_event: NS_EVENT)
+	key_up_ (a_event: NS_EVENT)
 			-- Translate a Cocoa key-event to an EiffelVision key event
 		local
 			cocoa_code: NATURAL_16
 		do
-			io.put_string ("Key up: " + a_event.characters + " (" + a_event.key_code.out + ")%N")
 			if attached key_release_actions_internal as actions then
-				if a_event.characters_ignoring_modifiers.count = 1 then
-					cocoa_code := a_event.characters_ignoring_modifiers.character_at_index (0)
+				if a_event.characters_ignoring_modifiers.length = 1 then
+					cocoa_code := a_event.characters_ignoring_modifiers.character_at_index_ (0)
 					actions.call ([create {EV_KEY}.make_with_code (key_code_from_cocoa (cocoa_code))])
 				end
 			end
-			--Precursor {EV_NS_WINDOW} (a_event)
 		end
 
-	flags_changed
+	flags_changed_ (a_event: NS_EVENT)
 			-- Cocoa doesn't generate keyDown/Up messages for modifier keys. We have to override the flagsChanged: message
 		do
 

@@ -32,7 +32,7 @@ feature {NONE} -- Implementation
 			menu_item_imp: detachable EV_MENU_ITEM_IMP
 		do
 			ev_children.go_i_th (pos)
-			menu.insert_item_at_index (item_imp.menu_item, pos - 1)
+			menu.insert_item__at_index_ (item_imp.menu_item, pos - 1)
 
 			sep_imp ?= item_imp
 			if sep_imp /= Void then
@@ -77,7 +77,8 @@ feature {NONE} -- Implementation
 							-- We are adding to an existing group,
 							-- so there must be a radio button already checked.
 							-- Therefore, we uncheck this one.
-						radio_imp.menu_item.set_state ({NS_CELL}.off_state)
+						-- NSOffState = 0
+						radio_imp.menu_item.set_state_ (0)
 						radio_imp.disable_select
 					end
 					radio_imp.set_radio_group (sep_imp.radio_group)
@@ -112,7 +113,7 @@ feature {NONE} -- Implementation
 			pos: INTEGER
 		do
 			pos := ev_children.index_of (item_imp, 1)
-			menu.remove_item_at_index (pos - 1)
+			menu.remove_item_at_index_ (pos - 1)
 		end
 
 	insert_separator_item (sep_imp: EV_MENU_SEPARATOR_IMP; pos: INTEGER)
@@ -132,7 +133,8 @@ feature {NONE} -- Implementation
 					if rgroup = Void then
 						create rgroup.make
 					else
-						radio_imp.menu_item.set_state ({NS_CELL}.off_state)
+						-- NSOffState = 0
+						radio_imp.menu_item.set_state_ (0)
 						radio_imp.disable_select
 					end
 					radio_imp.set_radio_group (rgroup)

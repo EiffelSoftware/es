@@ -3,7 +3,8 @@ note
 		Widget which is a combination of an EV_TREE and an EV_MULTI_COLUMN_LIST.
 		Cocoa implementation.
 			]"
-	copyright:	"Copyright (c) 2009, Daniel Furrer"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,6 +17,7 @@ inherit
 			propagate_background_color,
 			propagate_foreground_color
 		redefine
+			initialize_grid,
 			interface,
 			make
 		end
@@ -54,8 +56,6 @@ inherit
 			set_foreground_color
 		end
 
-	NS_STRING_CONSTANTS
-
 create
 	make
 
@@ -69,35 +69,51 @@ feature {NONE} -- Initialization
 
 	make
 			-- Initialize `Current'
-		local
-			l_color: detachable NS_COLOR
 		do
 			create focused_selection_color.make_with_rgb (1, 0, 0)
-
-			create l_color.selected_text_background_color
-			l_color := l_color.color_using_color_space_name (create {NS_STRING}.make_with_string ("NSDeviceRGBColorSpace"))
-			if attached l_color then
-				create non_focused_selection_color.make_with_rgb (l_color.red_component, l_color.green_component, l_color.blue_component)
-			else
-				-- FIXME: What to do in this case ?
-				create non_focused_selection_color
-			end
+			create non_focused_selection_color.make_with_rgb (0.266667, 0.592157, 0.874510)
 
 			create focused_selection_text_color.make_with_rgb (0, 1, 0)
-			create l_color.selected_text_color
-			l_color := l_color.color_using_color_space_name (create {NS_STRING}.make_with_string ("NSDeviceRGBColorSpace"))
-			if attached l_color then
-				create non_focused_selection_text_color.make_with_rgb (l_color.red_component, l_color.green_component, l_color.blue_component)
-			else
-				-- FIXME
-				create non_focused_selection_text_color
-			end
+			create non_focused_selection_text_color.make_with_rgb (1, 1, 1)
 
-			create cocoa_view.make
-			Precursor {EV_CELL_IMP}
+			create {EV_FLIPPED_VIEW}cocoa_view.make
+			cocoa_view.set_translates_autoresizing_mask_into_constraints_ (False)
 			initialize_grid
 
 			set_is_initialized (True)
+		end
+
+feature {EV_GRID_LOCKED_I} -- Drawing implementation
+
+	initialize_grid
+		local
+			l_constraint_utils: NS_LAYOUT_CONSTRAINT_UTILS
+			v_imp: EV_VIEWPORT_IMP
+		do
+			Precursor
+			v_imp ?= viewport.implementation
+			check v_imp /= Void end
+			create l_constraint_utils
+			if attached v_imp.clip_view.superview.superview as l_superview then
+				-- Set the viewport size to be equal to the static_fixed_viewport size
+				if attached {NS_LAYOUT_CONSTRAINT}l_constraint_utils.constraint_with_item__attribute__related_by__to_item__attribute__multiplier__constant_ (v_imp.clip_view, 7, 0, l_superview, 7, 1.0, 0) as l_constraint then
+					l_superview.add_constraint_ (l_constraint)
+				end
+				if attached {NS_LAYOUT_CONSTRAINT}l_constraint_utils.constraint_with_item__attribute__related_by__to_item__attribute__multiplier__constant_ (v_imp.clip_view, 8, 0, l_superview, 8, 1.0, 0) as l_constraint then
+					l_superview.add_constraint_ (l_constraint)
+				end
+			end
+			if attached {EV_HORIZONTAL_BOX_IMP} item_imp as l_box then
+				if attached {EV_VERTICAL_BOX_IMP} l_box.i_th (1).implementation as l_vertical_box then
+					-- Fix header height to 17 pixels
+					check attached {EV_WIDGET_IMP} l_vertical_box.i_th (1).implementation as l_header then
+						l_header.set_fixed_height(17)
+					end
+				end
+			end
+			if attached {EV_CELL_IMP} scroll_bar_spacer.implementation as l_cell then
+				l_cell.set_fixed_height (15)
+			end
 		end
 
 feature -- Element change
@@ -106,6 +122,9 @@ feature -- Element change
 			-- Assign `a_color' to `background_color'
 		do
 			Precursor {EV_CELL_IMP} (a_color)
+			check attached {EV_FLIPPED_VIEW} attached_view as l_view then
+				l_view.set_cocoa_background_color (a_color)
+			end
 			redraw_client_area
 		end
 
@@ -134,7 +153,8 @@ feature {EV_GRID_ITEM_I} -- Implementation
 		local
 			l_font_imp: detachable EV_FONT_IMP
 			l_string: NS_STRING
-			l_attributes: NS_DICTIONARY
+			l_string_drawing: NS_STRING_DRAWING_CAT
+			l_attributes: NS_MUTABLE_DICTIONARY
 			l_size: NS_SIZE
 		do
 			if a_string.is_empty then
@@ -143,9 +163,12 @@ feature {EV_GRID_ITEM_I} -- Implementation
 			else
 				l_font_imp ?= a_font.implementation
 				check l_font_imp /= void end
-				create l_string.make_with_string (a_string)
-				create l_attributes.make_with_object_for_key (l_font_imp.font, font_attribute_name)
-				l_size := l_string.size_with_attributes (l_attributes)
+				create l_string.make_with_eiffel_string (a_string.as_string_8)
+				create l_attributes.make
+				l_attributes.set_object__for_key_ (l_font_imp.font, create {NS_STRING}.make_with_eiffel_string ("NSFont"))
+				create l_attributes.make
+				create l_string_drawing
+				l_size := l_string_drawing.size_with_attributes_ (l_string, l_attributes)
 
 				tuple.put_integer (l_size.width.rounded, 1)
 				tuple.put_integer (l_size.height.rounded, 2)

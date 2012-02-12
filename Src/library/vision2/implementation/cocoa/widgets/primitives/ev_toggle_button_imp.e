@@ -30,8 +30,10 @@ feature {NONE} -- Initialization
 	make
 		do
 			Precursor {EV_BUTTON_IMP}
-			set_bezel_style ({NS_BUTTON}.rounded_bezel_style)
-			set_button_type ({NS_BUTTON}.push_on_push_off_button)
+				-- NSRoundedBezelStyle = 1
+			set_bezel_style_ (1)
+				-- NSPushOnPushOffButton = 1
+			set_button_type_ (1)
 			align_text_left
 			set_is_initialized (True)
 		end
@@ -41,13 +43,15 @@ feature -- Status setting
 	enable_select
 			-- Set `is_selected' `True'.
 		do
-			set_state ({NS_CELL}.on_state)
+				-- NSOnState = 1
+			set_state_ (1)
 		end
 
 	disable_select
 				-- Set `is_selected' `False'.
 		do
-			set_state ({NS_CELL}.off_state)
+				-- NSOffState = 0
+			set_state_ (0)
 		end
 
 feature -- Status report
@@ -55,7 +59,8 @@ feature -- Status report
 	is_selected: BOOLEAN
 			-- Is toggle button pressed?
 		do
-			Result := (state = {NS_CELL}.on_state)
+				-- NSOnState = 1
+			Result := (state = 1)
 		end
 
 feature -- Element change

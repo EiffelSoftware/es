@@ -21,8 +21,7 @@ inherit
 			interface,
 			initialize,
 			remove_i_th,
-			insert_i_th,
-			ev_apply_new_size
+			insert_i_th
 		end
 
 	EV_FONTABLE_IMP
@@ -52,105 +51,6 @@ feature {NONE} -- Initialization
 			initialize_pixmaps
 
 			last_selected := 0
-		end
-
-feature {NONE} -- Layout
-
-	compute_minimum_width
-			-- Recompute the minimum_width of `Current'.
-		local
-			child_imp: EV_WIDGET_IMP
-			counter, value: INTEGER
-		do
-			from
-				counter := 1
-				value := 0
-			until
-				counter > ev_children.count
-			loop
-				child_imp := ev_children.i_th (counter)
-				check
-					child_imp_not_void: child_imp /= Void
-				end
-				value := child_imp.minimum_width.max (value)
-				counter := counter + 1
-			end
-
-				-- We found the biggest child.
-			if
-				tab_position = {EV_NOTEBOOK}.Tab_right
-				or else tab_position = {EV_NOTEBOOK}.Tab_left
-			then
-				internal_set_minimum_width (value + tab_height + 4)
-			else
-				internal_set_minimum_width (value + 6)
-			end
-		end
-
-	compute_minimum_height
-			-- Recompute the minimum_height of `Current'.
-		local
-			counter: INTEGER
-			child_imp: EV_WIDGET_IMP
-			value: INTEGER
-		do
-			from
-				counter := 1
-				value := 0
-			until
-				counter > ev_children.count
-			loop
-				child_imp := ev_children.i_th (counter)
-				check
-					child_imp_not_void: child_imp /= Void
-				end
-				value := child_imp.minimum_height.max (value)
-				counter := counter + 1
-			end
-
-				-- We found the biggest child.
-			if
-				tab_position = {EV_NOTEBOOK}.Tab_top
-				or else tab_position = {EV_NOTEBOOK}.Tab_bottom
-			then
-				internal_set_minimum_height (value + tab_height + 4)
-			else
-				internal_set_minimum_height (value + 6)
-			end
-		end
-
-	compute_minimum_size
-			-- Recompute both the minimum_width and then
-			-- minimum_height of `Current'.
-		local
-			counter: INTEGER
-			child_imp: EV_WIDGET_IMP
-			mw, mh: INTEGER
-		do
-			from
-				counter := 1
-				mw := 0; mh := 0
-			until
-				counter > ev_children.count
-			loop
-				child_imp := ev_children.i_th (counter)
-				check
-					child_imp_not_void: child_imp /= Void
-				end
-				mw := child_imp.minimum_width.max (mw)
-				mh := child_imp.minimum_height.max (mh)
-				counter := counter + 1
-			end
-
-			-- We found the biggest child.
-			if
-				tab_position = {EV_NOTEBOOK}.Tab_top
-				or else tab_position = {EV_NOTEBOOK}.Tab_bottom
-			then
-				internal_set_minimum_size (mw + 6, mh + tab_height + 4)
-			else
-				internal_set_minimum_size (mw + tab_height + 4, mh + 6)
-			end
 		end
 
 feature -- Access
@@ -257,7 +157,7 @@ feature -- Element change
 			tabs.go_i_th (i)
 			l_tab_imp ?= tabs.item.implementation
 			check l_tab_imp /= Void end
-			tab_view.remove_tab_view_item (l_tab_imp.tab_view_item)
+			tab_view.remove_tab_view_item_ (l_tab_imp.tab_view_item)
 			tabs.remove
 
 			v := i_th (i)
@@ -272,8 +172,6 @@ feature -- Element change
 
 			ev_children.go_i_th (i)
 			ev_children.remove
-
-			notify_change (Nc_minsize, v_imp)
 		end
 
 	insert_i_th (v: attached like item; i: INTEGER)
@@ -294,7 +192,6 @@ feature -- Element change
 			end
 			v.implementation.on_parented
 			v_imp.set_parent_imp (Current)
-			notify_change (Nc_minsize, Current)
 			v_imp.set_top_level_window_imp (top_level_window_imp)
 
 			create l_tab.make_with_widgets (attached_interface, v)
@@ -305,36 +202,11 @@ feature -- Element change
 			tabs.go_i_th (i)
 			tabs.put_left (l_tab)
 
-			tab_view.add_tab_view_item (l_tab_imp.tab_view_item)
-			--l_tab_imp.tab_view_item.set_view (v_imp.cocoa_view)
-
-			notify_change (Nc_minsize, v_imp)
+			tab_view.add_tab_view_item_ (l_tab_imp.tab_view_item)
+			l_tab_imp.tab_view_item.set_view_ (v_imp.attached_view)
 
 			-- Call `new_item_actions' on `Current'.
 			new_item_actions.call ([v])
-		end
-
-	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32; repaint: BOOLEAN)
-		local
---			l_tab_imp: detachable EV_NOTEBOOK_TAB_IMP
---			l_widget: detachable EV_WIDGET
---			l_widget_imp: detachable EV_WIDGET_IMP
-		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
---			from
---				tabs.start
---			until
---				tabs.after
---			loop
---				l_tab_imp ?= tabs.item.implementation
---				check l_tab_imp /= Void end
---				l_widget ?= l_tab_imp.widget
---				check l_widget /= Void end
---				l_widget_imp ?= l_widget.implementation
---				check l_widget_imp /= Void end
---				l_widget_imp.ev_apply_new_size (a_x_position, a_y_position, client_width, a_height, True)
---				tabs.forth
---			end
 		end
 
 feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
@@ -362,7 +234,6 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	tab_height : INTEGER = 20
-		-- Offset between the tabs and the content -- TODO
 
 	last_selected : INTEGER
 

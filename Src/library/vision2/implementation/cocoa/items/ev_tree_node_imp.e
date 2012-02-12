@@ -117,7 +117,7 @@ feature {EV_ANY_I} -- Status setting
 		do
 			internal_text := a_text.as_string_32.twin
 			if attached parent_tree_imp as l_tree then
-				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
+--				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
 			end
 		end
 
@@ -208,7 +208,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 		do
 			-- TODO: optimization potential, only reload under the current item
 			if attached parent_tree_imp as l_tree then
-				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
+--				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
 			end
 		end
 
@@ -217,7 +217,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 		do
 			-- TODO: optimization potential, only reload under the current item
 			if attached parent_tree_imp as l_tree then
-				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
+--				l_tree.outline_view.reload_item_reload_children (default_pointer, True)
 			end
 		end
 

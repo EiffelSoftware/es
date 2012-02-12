@@ -20,10 +20,7 @@ inherit
 			make
 		end
 
-	EV_SIZEABLE_PRIMITIVE_IMP
-		redefine
-			interface
-		end
+--	EV_TOOLTIPABLE_IMP implemented in EV_NS_VIEW
 
 feature {NONE} -- Initialization
 
@@ -31,7 +28,6 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		do
 			initialize
-			set_default_minimum_size
 			enable_tabable_from
 		end
 
@@ -70,15 +66,6 @@ feature -- Element change
 			-- of `Current'.
 		do
 			top_level_window_imp := a_window
-		end
-
-feature -- Minimum size
-
-	set_default_minimum_size
-			-- Initialize the size of `Current'.
-			-- Redefined by many widgets.
-		do
-			internal_set_minimum_size (0, 0)
 		end
 
 feature -- Status report

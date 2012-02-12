@@ -38,28 +38,29 @@ feature {NONE} -- Initialization
 			-- Note: OS X does not present a list with file types to select from. The files displayed are any of those in the filter
 		local
 			button: INTEGER
-			l_file_types: NS_ARRAY[NS_STRING]
-			l_filters: ARRAYED_LIST[NS_STRING]
+			l_file_types: NS_MUTABLE_ARRAY
 		do
-			create l_filters.make (filters.count)
+			create l_file_types.make
 			from
 				filters.start
 			until
 				filters.after
 			loop
-				l_filters.extend (create {NS_STRING}.make_with_string (filters.item.filter.substring (3, filters.item.filter.count))) -- cut off the beginning "*." part
+					-- cut off the beginning "*." part
+				l_file_types.add_object_ (create {NS_STRING}.make_with_eiffel_string (filters.item.filter.substring (3, filters.item.filter.count).as_string_8))
 				filters.forth
 			end
-			create l_file_types.make_with_objects (l_filters)
-			open_panel.set_allowed_file_types (l_file_types)
+			open_panel.set_allowed_file_types_ (l_file_types)
 
-			button := open_panel.run_modal
+			button := open_panel.run_modal.to_integer_32
 
-			if button =  {NS_PANEL}.ok_button then
-				set_file_name (open_panel.filename.as_string_32)
+				--NSOkButton = 1
+			if button =  1 then
+				set_file_name (open_panel.url.absolute_string.to_eiffel_string)
 				selected_button := internal_accept
 				attached_interface.open_actions.call (Void)
-			elseif button = {NS_PANEL}.cancel_button then
+				-- NSCancelButton = 0
+			elseif button = 0 then
 				set_file_name ("")
 				selected_button := ev_cancel
 				attached_interface.cancel_actions.call (Void)
@@ -77,20 +78,18 @@ feature {NONE} -- Access
 	file_names: ARRAYED_LIST [STRING_32]
 			-- List of filenames selected by user
 		local
-			l_filenames: NS_ARRAY [NS_STRING]
-			l_item: detachable NS_STRING
-			i: like ns_uinteger
+			l_filenames: NS_ARRAY --[NS_STRING]
+			i: NATURAL_64
 		do
-			l_filenames := open_panel.filenames
+			create Result.make (1)
+			l_filenames := open_panel.ur_ls
 			create Result.make (l_filenames.count.to_integer_32)
-			from
-				i := 0
-			until
-				i > l_filenames.count
+			from i := 0
+			until i > l_filenames.count
 			loop
-				l_item := l_filenames.item (i)
-				check l_item /= Void end
-				Result.extend (l_item)
+				check attached {NS_URL} l_filenames.object_at_index_ (i) as l_url then
+					Result.extend (l_url.absolute_string.to_eiffel_string.as_string_32)
+				end
 				i := i + 1
 			end
 		end
@@ -100,13 +99,13 @@ feature {NONE} -- Setting
 	enable_multiple_selection
 			-- Enable multiple file selection
 		do
-			open_panel.set_allows_multiple_selection (True)
+			open_panel.set_allows_multiple_selection_ (True)
 		end
 
 	disable_multiple_selection
 			-- Disable multiple file selection
 		do
-			open_panel.set_allows_multiple_selection (False)
+			open_panel.set_allows_multiple_selection_ (False)
 		end
 
 feature {NONE} -- Implementation

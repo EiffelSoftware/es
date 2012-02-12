@@ -18,8 +18,7 @@ inherit
 		redefine
 			interface,
 			default_key_processing_blocked,
-			make,
-			set_default_minimum_size
+			make
 		end
 
 	EV_TEXT_COMPONENT_ACTION_SEQUENCES_IMP
@@ -64,12 +63,6 @@ feature -- Resizing
 	font: EV_FONT
 			-- Current font displayed by widget. (This can be removed if text component is made fontable)
 		deferred
-		end
-
-	set_default_minimum_size
-			-- Called after creation. Set current size and notify parent.
-		do
-			internal_set_minimum_size (maximum_character_width * 4, 24)
 		end
 
 feature {EV_WINDOW_IMP}

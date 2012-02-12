@@ -22,8 +22,10 @@ inherit
 	EV_PRIMITIVE_IMP
 		redefine
 			interface,
+			minimum_width,
+			minimum_height,
 			make,
-			set_default_minimum_size
+			is_height_resizable
 		end
 
 	EV_FONTABLE_IMP
@@ -34,12 +36,6 @@ inherit
 
 	EV_HEADER_ACTION_SEQUENCES_IMP
 
-	NS_OUTLINE_VIEW_DATA_SOURCE[ANY]
-		rename
-			make as create_data_source,
-			item as data_source
-		end
-
 create
 	make
 
@@ -48,22 +44,16 @@ feature -- Initialization
 	make
 			-- Initialize `Current'
 		do
---			create w.new
---			w.set_frame (create {NS_RECT}.make_rect (0, 0, 0, 18))
---			create h.new
---			w.set_cell (h)
-
-			create container.make
-			cocoa_view := container
-			container.set_frame (create {NS_RECT}.make_rect (0, 0, 0, header_height))
-			container.set_has_horizontal_scroller (False)
-			container.set_has_vertical_scroller (False)
+			create scroll_view.make
+			cocoa_view := scroll_view
+			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
+			scroll_view.set_has_horizontal_scroller_ (False)
+			scroll_view.set_has_vertical_scroller_ (False)
 
 			initialize_item_list
 
-			create outline_view.make
-			container.set_document_view (outline_view)
-			outline_view.set_data_source (current)
+			create table_view.make
+			scroll_view.set_document_view_ (table_view)
 
 			initialize_pixmaps
 
@@ -78,40 +68,20 @@ feature -- Access
 	insert_item (item_imp: EV_HEADER_ITEM_IMP; an_index: INTEGER)
 			-- Insert `item_imp' at `an_index'.
 		do
-			outline_view.add_table_column (item_imp.table_column)
+			table_view.add_table_column_ (item_imp.table_column)
 		end
 
 	remove_item (item_imp: EV_HEADER_ITEM_IMP)
 			-- Remove `item' from the list
-		local
-			an_index: INTEGER
 		do
-			an_index := ev_children.index_of (item_imp, 1) - 1
+			table_view.remove_table_column_ (item_imp.table_column)
 		end
 
-feature {EV_HEADER_ITEM_IMP} -- Implemnentation
+feature -- Size
 
-	number_of_children_of_item (an_item: ANY): INTEGER
-		do
-		end
+	minimum_width: INTEGER = 72
 
-	is_item_expandable (an_item: ANY): BOOLEAN
-		do
-		end
-
-	child_of_item (an_index: INTEGER; an_item: ANY): ANY
-		do
-			Result := 1
-		end
-
-	object_value_for_table_column_by_item (a_table_column: POINTER; an_item: ANY): POINTER
-		do
-		end
-
-	set_default_minimum_size
-		do
-			internal_set_minimum_size (0, header_height)
-		end
+	minimum_height : INTEGER = 17
 
 feature {NONE} -- Implementation
 
@@ -132,14 +102,19 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	header_height: INTEGER = 18
+	table_view: NS_TABLE_VIEW
 
-	outline_view: NS_OUTLINE_VIEW
+	scroll_view: NS_SCROLL_VIEW
 
-	container: NS_SCROLL_VIEW
+feature {EV_ANY_I} -- Implementation
+
+	is_height_resizable: BOOLEAN
+		do
+			Result := False
+		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
-	interface: detachable EV_HEADER note option: stable attribute end;
+	interface: detachable EV_HEADER note option: stable attribute end
 
 end

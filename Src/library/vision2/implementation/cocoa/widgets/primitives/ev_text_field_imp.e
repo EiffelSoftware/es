@@ -13,24 +13,15 @@ inherit
 			interface
 		end
 
-	EV_PRIMITIVE_IMP
-		undefine
-			make,
-			default_key_processing_blocked,
-			set_default_minimum_size
-		redefine
-			interface,
-			on_key_event
-		end
-
 	EV_TEXT_COMPONENT_IMP
 		redefine
 			interface,
 			create_change_actions,
 			on_key_event,
 			set_minimum_width_in_characters,
-			set_default_minimum_size,
-			make
+			make,
+			dispose,
+			is_height_resizable
 		end
 
 	EV_FONTABLE_IMP
@@ -46,6 +37,17 @@ inherit
 			create_return_actions
 		end
 
+	EV_TEXT_FIELD_DELEGATE
+		rename
+			item as delegate_item
+		undefine
+			copy,
+			is_equal
+		redefine
+			make,
+			dispose
+		end
+
 create
 	make
 
@@ -56,21 +58,25 @@ feature {NONE} -- Initialization
 			-- create button box to hold label and pixmap.
 		local
 			a_font: EV_FONT
+			l_combo_box_cell: NS_COMBO_BOX_CELL
+			-- Don't delete this otherwise the class won't be mapped
 		do
-			if text_field = Void then
-				create text_field.make
-			end
+			create text_field.make
+			text_field.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := text_field
-			text_field.cell.set_wraps (False)
+			if attached {NS_CELL} text_field.cell as l_cell then
+				l_cell.set_wraps_ (False)
+			end
 
+			Precursor {EV_TEXT_FIELD_DELEGATE}
 			Precursor {EV_TEXT_COMPONENT_IMP}
-			Precursor {EV_PRIMITIVE_IMP}
 			align_text_left
 			create a_font.default_create
-			a_font.set_height (12)
+			a_font.set_height (13)
 			set_font (a_font)
-
-			text_field.text_did_change_actions.extend (agent do change_actions.call ([]) end)
+			text_field.set_delegate_ (Current)
+			-- NSTodo: make delegate work to notify text changes
+--			text_field.text_did_change_actions.extend (agent do change_actions.call ([]) end)
 		end
 
 feature -- Access
@@ -78,7 +84,7 @@ feature -- Access
 	text: STRING_32
 			-- Text displayed in field.
 		do
-			Result := text_field.string_value.to_string_32
+			Result := text_field.string_value.to_eiffel_string.as_string_32
 		end
 
 feature -- Status setting
@@ -91,19 +97,19 @@ feature -- Status setting
 	set_text (a_text: READABLE_STRING_GENERAL)
 			-- Assign `a_text' to `text'.
 		do
-			text_field.set_string_value (a_text)
+			text_field.set_string_value_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
 		end
 
 	append_text (a_text: READABLE_STRING_GENERAL)
 			-- Append `a_text' to the end of the text.
 		do
-			text_field.set_string_value (text + a_text.as_string_32)
+			text_field.set_string_value_ (create {NS_STRING}.make_with_eiffel_string ((text + a_text.as_string_32).as_string_8))
 		end
 
 	prepend_text (a_text: READABLE_STRING_GENERAL)
 			-- Prepend `a_text' to the end of the text.
 		do
-			text_field.set_string_value (a_text + text)
+			text_field.set_string_value_ (create {NS_STRING}.make_with_eiffel_string ((a_text + text).as_string_8))
 		end
 
 	set_capacity (len: INTEGER)
@@ -156,12 +162,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			create Result
 		end
 
-	set_default_minimum_size
-			-- Called after creation. Set current size and notify parent.
-		do
-			internal_set_minimum_size (maximum_character_width * 4, text_field.cell.cell_size.height.rounded)
-		end
-
 feature -- Status report
 
 	is_editable: BOOLEAN
@@ -191,7 +191,7 @@ feature -- status settings
 	set_editable (a_editable: BOOLEAN)
 			-- Set editable state to `a_editable'.
 		do
-			text_field.set_editable (a_editable)
+			text_field.set_editable_ (a_editable)
 		end
 
 	set_caret_position (pos: INTEGER)
@@ -217,10 +217,9 @@ feature -- Basic operation
 		do
 		end
 
-	set_selection (start_pos, end_pos: INTEGER)
-			-- <Precursor>
+	set_selection (a_start_pos, a_end_pos: INTEGER)
+			-- Select (highlight) the characters between valid caret positions `a_start_pos' and `a_end_pos'.
 		do
-			check not_implemented: False end
 		end
 
 	select_from_start_pos (start_pos, end_pos: INTEGER)
@@ -272,22 +271,26 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			create Result
 		end
 
+	stored_text: detachable STRING_32
+			-- Value of 'text' prior to a change action, used to compare
+			-- between old and new text.
+
 	on_change_actions
 			-- A change action has occurred.
 		local
---			new_text: STRING_32
+			new_text: STRING_32
 		do
---			new_text := text
---			if not in_change_action and then (stored_text /= Void and then not new_text.is_equal (stored_text)) or else stored_text = Void then
---					-- The text has actually changed
---				in_change_action := True
---				if change_actions_internal /= Void then
+			new_text := text
+			if not in_change_action and then (stored_text /= Void and then not new_text.is_equal (stored_text)) or else stored_text = Void then
+					-- The text has actually changed
+				in_change_action := True
+				if change_actions_internal /= Void then
 
---					change_actions_internal.call (Void)
---				end
---				in_change_action := False
---				stored_text := text
---			end
+					change_actions_internal.call (Void)
+				end
+				in_change_action := False
+				stored_text := text
+			end
 
 		end
 
@@ -308,12 +311,24 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			Precursor {EV_TEXT_COMPONENT_IMP} (a_key, a_key_string, a_key_press)
 		end
 
+feature -- Dispose
+
+	dispose
+		do
+			Precursor {EV_TEXT_COMPONENT_IMP}
+			Precursor {EV_TEXT_FIELD_DELEGATE}
+		end
+
+feature {EV_ANY_I} -- Implementation
+
+	is_height_resizable: BOOLEAN
+		do
+			Result := False
+		end
+
 feature {EV_TEXT_FIELD_I} -- Implementation
 
 	text_field: NS_TEXT_FIELD
-		attribute
-			create Result.make
-		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 

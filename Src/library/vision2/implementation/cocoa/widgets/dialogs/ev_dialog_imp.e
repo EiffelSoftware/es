@@ -57,7 +57,8 @@ feature -- Status Report
 			is_modal := True
 			show
 			blocking_window := a_window
-			ret := app_implementation.run_modal_for_window (current)
+
+			ret := app_implementation.run_modal_for_window (Current)
 			is_modal := False
 			blocking_window := Void
 		end
@@ -69,6 +70,7 @@ feature -- Status Setting
 		do
 			is_modal := False
 			Precursor
+			order_out_ (Void)
 		end
 
 	enable_closeable
@@ -94,16 +96,10 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	is_dialog_closeable: BOOLEAN;
-			-- Temporary flag whose only use is to enable functions
-			-- `is_closeable', `enable_closeable' and `disable_closeable'
-			-- to be executed without raising zillions of assertion violations.
-			--| FIXME implement cited function, then remove me.
-
 	destroy
 		do
-			Precursor {EV_TITLED_WINDOW_IMP}
 			app_implementation.abort_modal
+			Precursor {EV_TITLED_WINDOW_IMP}
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

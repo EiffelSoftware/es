@@ -9,8 +9,6 @@ class
 
 inherit
 	EV_PASSWORD_FIELD_I
-		undefine
-			hide_border
 		redefine
 			interface
 		end
@@ -26,9 +24,8 @@ create
 
 feature {NONE} -- Initialization
 
-
 	make
-			-- Create Textfield on a user_pane
+			-- Create secure text field
 		do
 			create {NS_SECURE_TEXT_FIELD}text_field.make
 			cocoa_view := text_field
