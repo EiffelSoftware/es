@@ -1,0 +1,254 @@
+note
+	description: "Summary description for {AFX_SOCKET_LISTENER}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AFX_SOCKET_LISTENER
+
+inherit
+	EXECUTION_ENVIRONMENT
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_config: AFX_CONFIG)
+			-- Initialize `Current'
+		do
+			create mutex.make
+			create condition.make
+			create socket_cell.put (Void)
+
+			if a_config.min_socket_port_number = 0 then
+				min_port := default_min_port
+				max_port := default_max_port
+			else
+				min_port := a_config.min_socket_port_number
+				max_port := a_config.max_socket_port_number
+			end
+		end
+
+feature -- Access
+
+	current_port: NATURAL
+			-- Port we are currently listening on
+
+feature {NONE} -- Access
+
+	mutex: MUTEX
+			-- Mutex used for `condition'
+
+	condition: CONDITION_VARIABLE
+			-- Condition variable for waiting on socket
+
+	port_cell: CELL [NATURAL]
+			-- Cell to contain port number.
+		once
+			create Result.put (min_port)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	connection: detachable NETWORK_STREAM_SOCKET
+			-- Connection to client once established
+
+	listener_thread: WORKER_THREAD
+			-- Thread to listen to the socket to establish the connection.
+
+	socket_cell: CELL[NETWORK_STREAM_SOCKET]
+			-- Cell for storing the next candidate socket.
+
+	min_port: NATURAL
+
+	max_port: NATURAL
+
+feature -- Status report
+
+	is_listening: BOOLEAN
+			-- Has listening started?
+		do
+			Result := current_port /= 0
+		end
+
+feature -- Basic functionality
+
+	open_new_socket
+			-- Start listening on the next available port
+			--
+			-- Note: if available port was found, `is_listening' is True.
+		require
+			not_listening: not is_listening
+		local
+			l_socket: like open_listener
+			l_thread: WORKER_THREAD
+		do
+			connection := Void
+			l_socket := open_listener
+			if l_socket /= Void then
+				socket_cell.put (l_socket)
+				if listener_thread = Void then
+					create listener_thread.make (agent start_listening (socket_cell))
+				end
+				listener_thread.launch
+			else
+				current_port := 0
+			end
+		end
+
+	wait_for_connection (a_timeout: NATURAL): like connection
+			-- Stop listening and close open port
+			--
+			-- `a_timeout': Number of milliseconds spent waiting for socket. If zero, it will wait
+			--              without timeout for socket to become attached.
+		require
+			listening: is_listening
+		local
+			l_res: BOOLEAN
+		do
+			mutex.lock
+			if connection = Void then
+				if a_timeout = 0 then
+					condition.wait (mutex)
+				else
+					l_res := condition.wait_with_timeout (mutex, a_timeout.as_integer_32)
+					if connection = Void then
+						close_listener
+					end
+				end
+			end
+			Result := connection
+			current_port := 0
+			mutex.unlock
+		ensure
+			not_listening: not is_listening
+		end
+
+feature {NONE} -- Implementation
+
+	open_listener: detachable NETWORK_STREAM_SOCKET
+			-- Create listening socket. If no available port was found Void is returned.
+		local
+			l_attempts: NATURAL
+		do
+			from
+				l_attempts := 1
+			until
+				(Result /= Void and then Result.is_open_read) or
+					l_attempts > max_attempts
+			loop
+				port_cell.put (port_cell.item + 1)
+				if port_cell.item < min_port or port_cell.item > max_port then
+					port_cell.put (min_port)
+				end
+				current_port := port_cell.item
+
+				create Result.make_loopback_server_by_port (current_port.to_integer_32)
+
+				l_attempts := l_attempts + 1
+			end
+			if Result.is_open_read then
+				Result.set_blocking
+				Result.listen (1)
+--				Result.set_accept_timeout (120000) -- timeout in 120 Seconds
+			else
+				Result := Void
+			end
+		ensure
+			is_blocking: attached Result implies Result.is_blocking
+		end
+
+	close_listener
+			-- Close listening socket by connecting to it and closing immediatly.
+		require
+			listening: is_listening
+		local
+			l_socket: like open_listener
+			l_rescued: BOOLEAN
+		do
+			if not l_rescued then
+				create l_socket.make_client_by_address_and_port ((create {INET_ADDRESS_FACTORY}).create_loopback, current_port.to_integer_32)
+				l_socket.connect
+				l_socket.close
+			end
+		rescue
+			l_rescued := True
+			retry
+		end
+
+	start_listening (a_socket_cell: CELL[ attached like open_listener])
+			-- Start listening to `a_socket' for incomming connection. Once connection is established and
+			-- `is_listening' is still True, set `connection' to new connection with client.
+			--
+			-- Note: this routine is blocking.
+		require
+			cell_element_attached: a_socket_cell /= Void and then a_socket_cell.item /= Void
+			blocking_socket: a_socket_cell.item.is_blocking
+		local
+			l_rescued: BOOLEAN
+			l_socket: like open_listener
+			l_connection: like connection
+		do
+			if not l_rescued then
+				l_socket := a_socket_cell.item
+				l_socket.accept
+				mutex.lock
+				if is_listening then
+					l_connection := l_socket.accepted
+					if l_connection /= Void then
+						check is_blocking: l_connection.is_blocking end
+						l_connection.set_nodelay
+						connection := l_connection
+					end
+					condition.broadcast
+				end
+				mutex.unlock
+			end
+		rescue
+			l_rescued := True
+			retry
+		end
+
+feature {NONE} -- Constants
+
+	default_min_port: NATURAL = 49157
+	default_max_port: NATURAL = 65535
+	max_attempts: NATURAL = 100
+
+invariant
+	current_port_not_negative: current_port >= 0
+
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

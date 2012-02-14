@@ -55,6 +55,7 @@ feature -- Basic operations
 			l_feat_under_test: AP_STRING_OPTION
 			l_test_case_dir: AP_STRING_OPTION
 			l_test_case_file_list: AP_STRING_OPTION
+			l_socket_port_range: AP_STRING_OPTION
 			l_analyze_tc_option: AP_FLAG
 			l_combination_strategy: STRING
 			l_max_test_case_no_option: AP_INTEGER_OPTION
@@ -74,6 +75,7 @@ feature -- Basic operations
 
 			l_report_file_name_str: FILE_NAME
 			l_report_file: PLAIN_TEXT_FILE
+			l_range_borders: LIST[STRING]
 		do
 				-- Setup command line argument parser.
 			create l_parser.make
@@ -99,6 +101,10 @@ feature -- Basic operations
 			create l_cutoff_time_option.make ('t', "time-out")
 			l_cutoff_time_option.set_description ("Cutoff time, in minutes, for the whole AutoFix session. Argument: session length in minutes.")
 			l_parser.options.force_last (l_cutoff_time_option)
+
+			create l_socket_port_range.make_with_long_form ("socket-port-range")
+			l_socket_port_range.set_description ("Range of the socket port. Format: lower,upper.")
+			l_parser.options.force_last (l_socket_port_range)
 
 			create l_rank_computation_mean_type.make_with_long_form ("rank-computation-mean-type")
 			l_rank_computation_mean_type.set_description ("The kind of mean value calculation to use for computing ranking.")
@@ -268,6 +274,12 @@ feature -- Basic operations
 
 			if l_cutoff_time_option.was_found and then attached l_cutoff_time_option.parameter as lt_cutoff_time and then lt_cutoff_time.is_natural then
 				config.set_maximum_session_length_in_minutes (lt_cutoff_time.to_natural)
+			end
+
+			if l_socket_port_range.was_found and then attached l_socket_port_range.parameter as lt_port_range then
+				l_range_borders := lt_port_range.split(',')
+				check l_range_borders.count = 2 and then l_range_borders.first.is_natural and then l_range_borders.last.is_natural end
+				config.set_socket_port_range (l_range_borders.first.to_natural, l_range_borders.last.to_natural)
 			end
 
 			if l_fix_strategy.was_found then

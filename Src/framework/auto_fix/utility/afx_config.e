@@ -378,6 +378,21 @@ feature -- Fix generation
 			-- The control structure distance level away from the failing assertion.
 			-- Minimal is 1. Default: 2
 
+feature -- Fix validation
+
+	min_socket_port_number: NATURAL
+	max_socket_port_number: NATURAL
+			-- Min and Max port number to use for socket connection.
+
+	set_socket_port_range (a_min, a_max: NATURAL)
+			-- Set `min_socket_port_number' and `max_socket_port_number'.
+		require
+			valid_range: 0 < a_min and then a_min <= a_max and then a_max < 65536
+		do
+			min_socket_port_number := a_min
+			max_socket_port_number := a_max
+		end
+
 feature -- AutoFix report
 
 	report_file: PLAIN_TEXT_FILE

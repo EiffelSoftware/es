@@ -63,6 +63,8 @@ feature{NONE} -- Initialization
 			end
 
 			create valid_fixes.make
+
+			create timer.make (agent on_test_case_execution_time_out)
 		end
 
 feature -- Access
@@ -168,9 +170,7 @@ feature -- Basic operations
 
 					if attached {like socket} socket_listener.wait_for_connection (5000) as l_socket then
 						socket := l_socket
-
-						create timer.make (agent on_test_case_execution_time_out)
-
+						timer.reset_timer
 						create worker.make (fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, all_test_cases, all_passing_test_cases)
 						worker.execute
 						process.wait_for_exit_with_timeout (5000)
@@ -234,7 +234,7 @@ feature{NONE} -- Inter-process communication
 	socket: NETWORK_STREAM_SOCKET
 			-- Socked used to perform interprocess communication with the debuggee
 
-	socket_listener: AUT_SOCKET_LISTENER
+	socket_listener: AFX_SOCKET_LISTENER
 			-- Socket listener
 
 	port: INTEGER
@@ -257,10 +257,10 @@ feature{NONE} -- Inter-process communication
 					socket.cleanup
 				end
 
-				create socket_listener.make
+				create socket_listener.make (config)
 				socket_listener.open_new_socket
 				if socket_listener.is_listening then
-					port := socket_listener.current_port
+					port := socket_listener.current_port.to_integer_32
 					l_done := True
 				end
 				l_tried_times := l_tried_times + 1
