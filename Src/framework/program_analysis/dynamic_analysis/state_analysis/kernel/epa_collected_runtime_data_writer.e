@@ -188,6 +188,9 @@ feature {NONE} -- Implementation
 							l_json_values.put (create {JSON_STRING}.make_json (l_type.class_id.out), create {JSON_STRING}.make_json ("pre_ref_class_id"))
 						end
 					end
+					if l_type_finder.type.is_equal ("EPA_STRING_VALUE") then
+						l_json_values.put (create {JSON_STRING}.make_json (l_tuple.pre_value.value.item.out), create {JSON_STRING}.make_json ("pre_string_address"))
+					end
 
 					-- Post-state value
 					l_type_finder.set_value (l_tuple.post_value.value)
@@ -199,6 +202,9 @@ feature {NONE} -- Implementation
 						if attached {CL_TYPE_A} l_tuple.post_value.value.type as l_type then
 							l_json_values.put (create {JSON_STRING}.make_json (l_type.class_id.out), create {JSON_STRING}.make_json ("post_ref_class_id"))
 						end
+					end
+					if l_type_finder.type.is_equal ("EPA_STRING_VALUE") then
+						l_json_values.put (create {JSON_STRING}.make_json (l_tuple.post_value.value.item.out), create {JSON_STRING}.make_json ("post_string_address"))
 					end
 
 					l_json_array.add (l_json_values)

@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 			i, j: INTEGER
 			l_keys: ARRAY [JSON_STRING]
 			l_values: LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
-			l_value, l_type, l_class_id, l_bp_slot: STRING
+			l_value, l_type, l_class_id, l_address, l_bp_slot: STRING
 			l_pre_pos_value, l_post_pos_value: EPA_POSITIONED_VALUE
 		do
 			if attached {JSON_OBJECT} a_json_value as l_json_map then
@@ -127,6 +127,9 @@ feature {NONE} -- Implementation
 								if l_type.is_equal ("EPA_REFERENCE_VALUE") then
 									l_class_id := string_from_json (l_json_data.item (pre_ref_class_id_json_string))
 									create l_pre_pos_value.make (l_bp_slot.to_integer, ref_value_from_data (l_value, l_class_id))
+								elseif l_type.is_equal ("EPA_STRING_VALUE") then
+									l_address := string_from_json (l_json_data.item (pre_string_address_json_string))
+									create l_pre_pos_value.make (l_bp_slot.to_integer, string_value_from_data (l_value, l_address))
 								else
 									create l_pre_pos_value.make (l_bp_slot.to_integer, value_from_data (l_value, l_type))
 								end
@@ -138,6 +141,9 @@ feature {NONE} -- Implementation
 								if l_type.is_equal ("EPA_REFERENCE_VALUE") then
 									l_class_id := string_from_json (l_json_data.item (post_ref_class_id_json_string))
 									create l_post_pos_value.make (l_bp_slot.to_integer, ref_value_from_data (l_value, l_class_id))
+								elseif l_type.is_equal ("EPA_STRING_VALUE") then
+									l_address := string_from_json (l_json_data.item (post_string_address_json_string))
+									create l_post_pos_value.make (l_bp_slot.to_integer, string_value_from_data (l_value, l_address))
 								else
 									create l_post_pos_value.make (l_bp_slot.to_integer, value_from_data (l_value, l_type))
 								end
@@ -188,6 +194,15 @@ feature {NONE} -- Implementation
 			create Result.make (a_value, create {CL_TYPE_A}.make (a_class_id.to_integer))
 		end
 
+	string_value_from_data (a_value: STRING; a_address: STRING): EPA_STRING_VALUE
+			-- String value from `a_value' and `a_address'
+		require
+			a_value_not_void: a_value /= Void
+			a_address_not_void: a_address /= Void
+		do
+			create Result.make (a_address, a_value)
+		end
+
 feature {NONE} -- Implementation
 
 	pre_bp_json_string: JSON_STRING
@@ -214,6 +229,12 @@ feature {NONE} -- Implementation
 			create {JSON_STRING} Result.make_json ("pre_ref_class_id")
 		end
 
+	pre_string_address_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_string_address"
+		once
+			create {JSON_STRING} Result.make_json ("pre_string_address")
+		end
+
 	post_bp_json_string: JSON_STRING
 			-- JSON_STRING representing "post_bp"
 		once
@@ -236,6 +257,12 @@ feature {NONE} -- Implementation
 			-- JSON_STRING representing "post_ref_class_id"
 		once
 			create {JSON_STRING} Result.make_json ("post_ref_class_id")
+		end
+
+	post_string_address_json_string: JSON_STRING
+			-- JSON_STRING representing "post_string_address"
+		once
+			create {JSON_STRING} Result.make_json ("post_string_address")
 		end
 
 end
