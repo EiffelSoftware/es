@@ -32,7 +32,8 @@ inherit
 		redefine
 			interface,
 			make,
-			set_pixmap
+			set_pixmap,
+			remove_pixmap
 		end
 
 	EV_TEXTABLE_IMP
@@ -201,21 +202,13 @@ feature -- Sensitivity
 
 feature {NONE} -- implementation
 
-	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER)
-			--
-		do
-		end
-
-	internal_remove_pixmap
-			-- Remove pixmap from Current
-		do
-		end
-
 	did_press_button (sender: NS_BUTTON)
-			-- Code to be executed when `click_me_button' is pressed.
+			-- Code to be executed when `Current' is pressed.
 		do
 			select_actions.call ([])
 		end
+
+feature -- Element change
 
 	set_pixmap (a_pixmap: EV_PIXMAP)
 		do
@@ -226,6 +219,13 @@ feature {NONE} -- implementation
 				set_image_position_ (2)
 				set_image_ (pixmap_imp.image)
 			end
+		end
+
+	remove_pixmap
+		do
+			Precursor {EV_PIXMAPABLE_IMP}
+			set_image_ (Void)
+			set_bezel_style_ (1)
 		end
 
 feature {EV_ANY_I} -- Implementation

@@ -49,10 +49,8 @@ feature -- Access
 			end
 			if an_interval > 0 then
 				create l_timer_utils
-				timer := l_timer_utils.scheduled_timer_with_time_interval__target__selector__user_info__repeats_ (an_interval / 1000.0, Void,
-				create {OBJC_SELECTOR}.make_with_name ("on_timeout:"), Void, True)
---				TODO: make sure the selector calls the on_timeout feature of EV_TIMEOUT_IMP and not the NS_TIMEOUT one
---				create timer.scheduled_timer (an_interval / 1000.0, agent on_timeout, Void, True)
+				timer := l_timer_utils.scheduled_timer_with_time_interval__target__selector__user_info__repeats_ (an_interval * 1000.0, Void,
+				create {OBJC_SELECTOR}.make_with_name ("on_ns_timer_timeout:"), Void, True)
 			end
 			interval := an_interval
 		end
@@ -72,6 +70,13 @@ feature -- Implementation
 		-- Are the timeout actions in the process of being called.
 
 	timer: detachable NS_TIMER
+
+feature {NONE} -- Implementation
+
+	on_ns_timer_timeout (a_timer: NS_TIMER)
+		do
+			on_timeout
+		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 

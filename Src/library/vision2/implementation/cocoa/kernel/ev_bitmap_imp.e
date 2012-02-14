@@ -27,8 +27,8 @@ feature -- Initialization
 	make
 			-- Set up action sequence connections and create graphics context.
 		do
-			set_default_colors
 			Precursor {EV_DRAWABLE_IMP}
+			set_default_colors
 			set_is_initialized (True)
 		end
 
@@ -36,18 +36,28 @@ feature -- Status Setting
 
 	set_size (a_width, a_height: INTEGER)
 			-- Set the size of the pixmap to `a_width' by `a_height'.
+		local
+			l_size: NS_SIZE
 		do
-			width := a_width
-			height := a_height
+			create l_size.make
+			l_size.set_width (a_width)
+			l_size.set_height (a_height)
+			image.set_size_ (l_size)
 		end
 
 feature -- Access
 
 	width: INTEGER
 		-- Width in pixels of mask bitmap.
+		do
+			Result := image.size.width.rounded
+		end
 
 	height: INTEGER
 		-- Width in pixels of mask bitmap.
+		do
+			Result := image.size.height.rounded
+		end
 
 feature {NONE} -- Implementation
 
@@ -60,10 +70,14 @@ feature {NONE} -- Implementation
 	set_default_colors
 			-- Set foreground and background color to their default values.
 		do
+			if attached {EV_COLOR_IMP} background_color.implementation as l_color then
+				image.set_background_color_ (l_color.color)
+			end
 		end
 
 	destroy
 		do
+			set_is_destroyed (True)
 		end
 
 	dispose

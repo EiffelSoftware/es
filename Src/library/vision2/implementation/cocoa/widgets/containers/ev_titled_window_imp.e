@@ -67,23 +67,19 @@ feature -- Status setting
 	raise
 			-- Request that window be displayed above all other windows.
 		do
-			--show
-			-- TODO
---			 make_key_and_order_front_ (Current)
+			make_key_and_order_front_ (Current)
 		end
 
 	lower
 			-- Request that window be displayed below all other windows.
 		do
-			-- TODO: order_back_ (Current)
---			order_back_ (a_sender: [detachable] NS_OBJECT)
+			order_back_ (Current)
 		end
 
 	minimize
 			-- Display iconified/minimised.
 		do
-			-- TODO: miniaturize_ (Current)
---			miniaturize_ (a_sender: [detachable] NS_OBJECT)
+			miniaturize_ (Current)
 			is_maximized := False
 		end
 
@@ -91,8 +87,7 @@ feature -- Status setting
 			-- Display at maximum size.
 		do
 			if not is_zoomed then
-				-- TODO: zoom_ (Current)
---				zoom_ (a_sender: [detachable] NS_OBJECT)
+				zoom_ (Current)
 			end
 			is_maximized := True
 		end
@@ -101,8 +96,7 @@ feature -- Status setting
 			-- Restore to original position when minimized or maximized.
 		do
 			if is_zoomed then
-				-- TODO: zoom_ (Current)
---				zoom_ (a_sender: [detachable] NS_OBJECT)
+				zoom_ (Current)
 			end
 			is_maximized := False
 		end

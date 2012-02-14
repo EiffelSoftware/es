@@ -21,8 +21,7 @@ inherit
 	EV_TEXT_IMP
 		redefine
 			interface,
-			initialize,
-			initialize_buffer_events
+			initialize
 		end
 
 create
@@ -43,27 +42,22 @@ feature {NONE} -- Initialization
 			Precursor {EV_TEXT_IMP}
 		end
 
-	initialize_buffer_events
-			-- Initialize `text_buffer' events
-		do
-		end
-
 	create_caret_move_actions: EV_INTEGER_ACTION_SEQUENCE
 			-- Create a caret move action sequence.
 		do
-
+			create Result
 		end
 
 	create_selection_change_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Create a selection change action sequence.
 		do
-
+			create Result
 		end
 
 	create_file_access_actions: EV_INTEGER_ACTION_SEQUENCE
 			-- Create a file access action sequence.
 		do
-
+			create Result
 		end
 
 feature {NONE} -- Implementation
@@ -106,7 +100,7 @@ feature {NONE} -- Implementation
 	font_char_set (a_font: EV_FONT): INTEGER
 			-- `Result' is char set of font `a_font'.
 		do
-
+			Result := 0
 		end
 
 feature -- Status Report

@@ -240,6 +240,7 @@ feature {NONE} -- Implementation
 
 	update_preferred_faces (a_face: STRING_32)
 		do
+			update_font_face
 		end
 
 feature {EV_ANY_I} -- Implementation

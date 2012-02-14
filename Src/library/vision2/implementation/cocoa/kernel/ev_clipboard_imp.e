@@ -50,15 +50,31 @@ feature -- Access
 
 	text: STRING_32
 			-- `Result' is current clipboard content.
+		local
+			l_string: STRING
 		do
 			create Result.make_empty
+			l_string := clipboard.string_for_type_ (create {NS_STRING}.make_with_eiffel_string ("NSStringPboardType")).to_eiffel_string
+			if l_string /= Void then
+				Result.append (l_string)
+			end
 		end
 
 feature -- Status Setting
 
 	set_text (a_text: READABLE_STRING_GENERAL)
 			-- Assign `a_text' to clipboard.
+		local
+			l_array: NS_MUTABLE_ARRAY
+			l_string_type: NS_STRING
+			l_result : BOOLEAN
+			l_count: INTEGER_64
 		do
+			create l_array.make
+			create l_string_type.make_with_eiffel_string ("NSStringPboardType")
+			l_array.add_object_ (l_string_type)
+			l_count := clipboard.declare_types__owner_ (l_array, Void)
+			l_result := clipboard.set_string__for_type_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8), l_string_type)
 		end
 
 feature {EV_ANY_I}

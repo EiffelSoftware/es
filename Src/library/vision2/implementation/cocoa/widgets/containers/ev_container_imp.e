@@ -183,8 +183,7 @@ feature -- Basic operations
 			-- Propagate the current foreground color of the
 			-- container to the children.
 		do
-			--Precursor {EV_CONTAINER_I}
-
+			Precursor {EV_CONTAINER_I}
 		end
 
 	propagate_background_color

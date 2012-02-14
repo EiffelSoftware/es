@@ -73,8 +73,8 @@ feature {NONE} -- Initialization
 			add_objc_callback ("mouseUp:", agent mouse_up_)
 			add_objc_callback ("mouseMoved:", agent mouse_moved_)
 			add_objc_callback ("acceptsFirstResponder", agent accepts_first_responder)
-			add_objc_callback ("becomeFirstResponder:", agent become_first_responder)
-			add_objc_callback ("resignFirstResponder:", agent resign_first_responder)
+			add_objc_callback ("becomeFirstResponder", agent become_first_responder)
+			add_objc_callback ("resignFirstResponder", agent resign_first_responder)
 			add_objc_callback ("drawRect:", agent draw_rect_)
 			Precursor {EV_FLIPPED_VIEW}
 			set_translates_autoresizing_mask_into_constraints_ (False)

@@ -122,7 +122,19 @@ feature {EV_NOTEBOOK} -- Status setting
 	set_tab_position (a_tab_position: INTEGER)
 			-- Display tabs at `a_position'.
 			-- Recreate the tab control with changed settings
+		local
+			l_position: NATURAL_64
 		do
+			if a_tab_position = attached_interface.Tab_left then
+				l_position := 1
+			elseif a_tab_position = attached_interface.Tab_right then
+				l_position := 3
+			elseif a_tab_position = attached_interface.Tab_top then
+				l_position := 0
+			elseif a_tab_position = attached_interface.Tab_bottom then
+				l_position := 2
+			end
+			tab_view.set_tab_view_type_ (l_position)
 		end
 
 	select_item (an_item: like item)
@@ -137,10 +149,7 @@ feature {EV_NOTEBOOK} -- Status setting
 			end
 			item_index := index_of (an_item, 1)
 			if last_selected > 0 and last_selected <= count then
---				w_imp ?= i_th (last_selected).implementation
---				check
---					w_imp_not_void : w_imp /= Void
---				end
+				tab_view.select_tab_view_item_at_index_ (item_index - 1)
 			end
 			last_selected := selected_item_index
 		end

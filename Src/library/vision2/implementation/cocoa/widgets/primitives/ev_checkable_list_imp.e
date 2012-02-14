@@ -97,6 +97,9 @@ feature -- Status setting
 		do
 			a_list_item.enable_select
 			table_view.reload_data
+			if check_actions_internal /= Void then
+				check_actions_internal.call ([list_item])
+			end
 		end
 
 	uncheck_item (a_list_item: EV_LIST_ITEM)
@@ -105,6 +108,9 @@ feature -- Status setting
 		do
 			a_list_item.disable_select
 			table_view.reload_data
+			if uncheck_actions_internal /= Void then
+				uncheck_actions_internal.call ([list_item])
+			end
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 			-- Add objc callbacks
 			add_objc_callback ("applicationDidFinishLaunching:", agent application_did_finish_launching_)
 			add_objc_callback ("applicationShouldTerminateAfterLastWindowClosed:", agent application_should_terminate_after_last_window_closed_)
-			add_objc_callback ("applicationWillTerminate", agent application_will_terminate_)
+			add_objc_callback ("applicationWillTerminate:", agent application_will_terminate_)
 			Precursor
 		end
 
@@ -39,7 +39,6 @@ feature -- NS_APPLICATION_DELEGATE_PROTOCOL
 
 	application_did_finish_launching_ (a_notification: NS_NOTIFICATION)
 		do
---			print ("Application did finish launching%N")
 		end
 
 	application_should_terminate_after_last_window_closed_ (a_sender: NS_APPLICATION): BOOLEAN
@@ -49,7 +48,6 @@ feature -- NS_APPLICATION_DELEGATE_PROTOCOL
 
 	application_will_terminate_ (a_notification: NS_NOTIFICATION)
 		do
-			print ("Terminating application%N")
 		end
 
 end
