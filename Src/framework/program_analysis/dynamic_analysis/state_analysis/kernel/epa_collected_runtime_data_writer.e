@@ -85,7 +85,7 @@ feature -- Access
 	analyzed_feature: FEATURE_I
 			-- Feature which was analyzed through dynamic means.
 
-	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
+	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 			-- Runtime data collected through dynamic means
 			-- Keys are program locations and expressions of the form `loc;expr'.
 			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
@@ -154,12 +154,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	json_object_from_runtime_data (a_collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]): JSON_OBJECT
+	json_object_from_runtime_data (a_collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]): JSON_OBJECT
 			-- Transform `a_collected_runtime_data' into a JSON object.
 		require
 			a_collected_runtime_data_not_void: a_collected_runtime_data /= Void
 		local
-			l_tuple: TUPLE [pre_value: EPA_POSITIONED_VALUE; post_value: EPA_POSITIONED_VALUE]
+			l_tuple: TUPLE [call_stack_count: INTEGER; pre_value: EPA_POSITIONED_VALUE; post_value: EPA_POSITIONED_VALUE]
 			l_json_values: JSON_OBJECT
 			l_json_array: JSON_ARRAY
 			l_type_finder: EPA_EXPRESSION_VALUE_TYPE_FINDER
@@ -206,6 +206,7 @@ feature {NONE} -- Implementation
 					if l_type_finder.type.is_equal ("EPA_STRING_VALUE") then
 						l_json_values.put (create {JSON_STRING}.make_json (l_tuple.post_value.value.item.out), create {JSON_STRING}.make_json ("post_string_address"))
 					end
+					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.call_stack_count.out), create {JSON_STRING}.make_json ("call_stack_count"))
 
 					l_json_array.add (l_json_values)
 				end

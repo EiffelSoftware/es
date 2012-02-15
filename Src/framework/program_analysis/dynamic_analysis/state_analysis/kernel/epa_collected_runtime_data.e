@@ -47,7 +47,7 @@ feature -- Access
 			-- Note: The analysis order is not the same as the execution order which is complete
 			-- whilst the analysis order only contains the hit pre-state / post-state breakpoint slots.
 
-	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [pre_state_value: EPA_POSITIONED_VALUE; post_state_value: EPA_POSITIONED_VALUE]], STRING]
+	collected_runtime_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [call_stack_count: INTEGER; pre_state_value: EPA_POSITIONED_VALUE; post_state_value: EPA_POSITIONED_VALUE]], STRING]
 			-- Runtime data collected through dynamic means
 			-- Keys are program locations and expressions of the form `loc;expr'.
 			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.

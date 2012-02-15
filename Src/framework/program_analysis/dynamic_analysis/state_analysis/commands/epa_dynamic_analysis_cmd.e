@@ -69,7 +69,7 @@ feature -- Basic operations
 			remove_breakpoint (debugger_manager, config.root_class)
 
 			-- Set up the action for the evaluation of pre- and post-states.
-			create l_processor.make (interesting_pre_states, post_state_map, config.prgm_locs_with_exprs)
+			create l_processor.make (interesting_pre_states, post_state_map, config.prgm_locs_with_exprs, debugger_manager)
 			setup_action_for_evaluation (l_processor)
 
 			-- Start program execution in debugger.

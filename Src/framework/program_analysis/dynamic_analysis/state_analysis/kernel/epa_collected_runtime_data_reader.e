@@ -21,7 +21,7 @@ feature -- Basic operations
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
-			l_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
+			l_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 		do
 			create l_reader
 			create l_parser.make_parser (l_reader.read_json_from (a_path))
@@ -87,16 +87,16 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	data_from_json (a_json_value: JSON_VALUE): DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
+	data_from_json (a_json_value: JSON_VALUE): DS_HASH_TABLE [LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 			-- Runtime data collected through dynamic means if `a_json_value' is a JSON_OBJECT.
 			-- Keys are program locations and expressions of the form `loc;expr'.
 			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
 		require
 			a_json_value_not_void: a_json_value /= Void
 		local
-			i, j: INTEGER
+			i, j, l_call_stack_count: INTEGER
 			l_keys: ARRAY [JSON_STRING]
-			l_values: LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
+			l_values: LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
 			l_value, l_type, l_class_id, l_address, l_bp_slot: STRING
 			l_pre_pos_value, l_post_pos_value: EPA_POSITIONED_VALUE
 		do
@@ -147,7 +147,8 @@ feature {NONE} -- Implementation
 								else
 									create l_post_pos_value.make (l_bp_slot.to_integer, value_from_data (l_value, l_type))
 								end
-								l_values.extend ([l_pre_pos_value, l_post_pos_value])
+								l_call_stack_count := string_from_json (l_json_data.item (call_stack_count_json_string)).to_integer
+								l_values.extend ([l_call_stack_count, l_pre_pos_value, l_post_pos_value])
 							end
 							j := j + 1
 						end
@@ -204,6 +205,12 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	call_stack_count_json_string: JSON_STRING
+			-- JSON_STRING representing "call_stack_count"
+		once
+			create {JSON_STRING} Result.make_json ("call_stack_count")
+		end
 
 	pre_bp_json_string: JSON_STRING
 			-- JSON_STRING representing "pre_bp"
