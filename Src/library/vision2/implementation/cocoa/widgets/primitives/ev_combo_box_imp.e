@@ -21,7 +21,8 @@ inherit
 			text_field as combo_box
 		undefine
 			pre_pick_steps,
-			is_height_resizable
+			is_height_resizable,
+			control_text_did_change_
 		redefine
 			make,
 			interface,

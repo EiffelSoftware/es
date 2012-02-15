@@ -22,9 +22,7 @@ inherit
 	EV_RADIO_PEER_IMP
 		redefine
 			interface,
-			make,
-			enable_select,
-			disable_select
+			make
 		end
 
 create
@@ -51,14 +49,12 @@ feature -- Status setting
 	enable_select
 			-- Select `Current'.
 		do
-			Precursor
 			is_selected := True
 		end
 
 	disable_select
 			-- Unselect 'Current'
 		do
-			Precursor
 			is_selected := False
 		end
 

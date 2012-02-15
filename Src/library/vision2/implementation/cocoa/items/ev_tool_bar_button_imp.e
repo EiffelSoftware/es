@@ -104,16 +104,16 @@ feature -- Access
 feature -- Element change
 
 	disable_sensitive_internal
-			--
 		do
-
+			disable_sensitive
+			button.set_enabled_ (False)
 		end
 
 
 	enable_sensitive_internal
-			--
 		do
-
+			enable_sensitive
+			button.set_enabled_ (True)
 		end
 
 	set_text (a_text: READABLE_STRING_GENERAL)

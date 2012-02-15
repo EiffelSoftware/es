@@ -21,9 +21,7 @@ inherit
 	EV_RADIO_PEER_IMP
 		redefine
 			interface,
-			make,
-			enable_select,
-			disable_select
+			make
 		end
 
 create
@@ -53,7 +51,6 @@ feature -- Status setting
 	enable_select
 			-- Select this menu item.
 		do
-			Precursor
 			-- NSOnState = 1
 			menu_item.set_state_ (1)
 		end
@@ -63,7 +60,6 @@ feature {EV_ANY_I} -- Implementation
 	disable_select
 			-- Used to deselect is without firing actions.
 		do
-			Precursor
 			-- NSOffState = 0
 			menu_item.set_state_ (0)
 		end

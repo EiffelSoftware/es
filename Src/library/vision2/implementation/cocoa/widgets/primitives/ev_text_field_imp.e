@@ -45,7 +45,8 @@ inherit
 			is_equal
 		redefine
 			make,
-			dispose
+			dispose,
+			control_text_did_change_
 		end
 
 create
@@ -309,6 +310,13 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 				end
 			end
 			Precursor {EV_TEXT_COMPONENT_IMP} (a_key, a_key_string, a_key_press)
+		end
+
+feature {NONE} -- Callbacks
+
+	control_text_did_change_ (a_notification: NS_NOTIFICATION)
+		do
+			change_actions.call ([])
 		end
 
 feature -- Dispose

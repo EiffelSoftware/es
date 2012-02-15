@@ -108,6 +108,7 @@ feature -- Drawing operations
 	redraw
 			-- Force `Current' to redraw itself.
 		do
+			update_if_needed
 		end
 
 	update_if_needed
@@ -226,15 +227,16 @@ feature -- Access
 
 	raw_image_data: EV_RAW_IMAGE_DATA
 		local
---			l_image_rep: NS_BITMAP_IMAGE_REP
---			l_data: NS_DATA
+			l_image_rep: NS_BITMAP_IMAGE_REP
+			l_data: NS_DATA
 		do
 			create Result.make_with_alpha_zero (width, height)
 			Result.set_originating_pixmap (attached_interface)
 
---			create l_image_rep.make_with_data (image.tiff_representation)
---			l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.BMP_file_type, Void)
-			-- TODO: image -> bitmap, read bitmap values and write in Result
+			create l_image_rep.make_with_data_ (image.tiff_representation)
+				-- NSBMPFileType = 1
+			l_data := l_image_rep.representation_using_type__properties_ (1, Void)
+			-- TODO: read bitmap values and write in Result
 		end
 
 feature -- Duplication

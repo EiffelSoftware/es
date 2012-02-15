@@ -42,31 +42,14 @@ feature -- Status setting
 			-- Assign `a_color' to `background_color'
 		do
 			background_color_imp ?= a_color.implementation
-			check
-				background_color_imp /= Void
-			end
-		end
-
-	real_set_background_color (a_c_object: POINTER; a_color: EV_COLOR)
-			-- Implementation of `set_background_color'
-			-- Used also by classes that inherit EV_WIDGET_IMP but not
-			-- EV_WIDGET. (eg EV_PIXMAPABLE_IMP)
-		do
-
+			check background_color_imp /= Void end
 		end
 
 	set_foreground_color (a_color: EV_COLOR)
 			-- Assign `a_color' to `foreground_color'
 		do
 			foreground_color_imp ?= a_color.implementation
-			check
-				foreground_color_imp /= Void
-			end
-		end
-
-	real_set_foreground_color (a_c_object: POINTER; a_color: EV_COLOR)
-			-- Implementation of `set_foreground_color'
-		do
+			check foreground_color_imp /= Void end
 		end
 
 

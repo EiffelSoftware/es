@@ -17,7 +17,8 @@ inherit
 			make,
 			width,
 			height,
-			set_pixmap
+			set_pixmap,
+			remove_pixmap
 		end
 
 	EV_SENSITIVE_IMP
@@ -183,20 +184,16 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	set_pixmap (a_pixmap: EV_PIXMAP)
 		local
---			l_pixmap_imp: EV_PIXMAP_IMP
+			l_pixmap_imp: EV_PIXMAP_IMP
 		do
---			l_pixmap_imp ?= a_pixmap.implementation
---			menu_item.set_image (l_pixmap_imp.image)
+			l_pixmap_imp ?= a_pixmap.implementation
+			menu_item.set_image_ (l_pixmap_imp.image)
 		end
 
-	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER)
-			--
+	remove_pixmap
 		do
-		end
-
-	internal_remove_pixmap
-			-- Remove pixmap from Current
-		do
+			Precursor {EV_ITEM_IMP}
+			menu_item.set_image_ (Void)
 		end
 
 	accelerators_enabled: BOOLEAN = True

@@ -25,9 +25,7 @@ inherit
 	EV_RADIO_PEER_IMP
 		redefine
 			interface,
-			make,
-			enable_select,
-			disable_select
+			make
 		end
 
 create
@@ -60,7 +58,6 @@ feature -- Status setting
 	enable_select
 			-- Select `Current'.
 		do
-			Precursor
 				-- NSOnState = 1
 			set_state_ (1)
 		end
@@ -68,7 +65,6 @@ feature -- Status setting
 	disable_select
 			-- Unselect 'Current'
 		do
-			Precursor
 				-- NSOffState = 0
 			set_state_ (0)
 		end

@@ -23,15 +23,14 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			add_objc_callback ("controlTextDidChange", agent control_text_did_change_)
+			add_objc_callback ("controlTextDidChange:", agent control_text_did_change_)
 			Precursor {NS_OBJECT}
 		end
 
-feature -- Callbacks
+feature {NONE} -- Callbacks
 
 	control_text_did_change_ (a_notification: NS_NOTIFICATION)
 		do
-			print ("Text changed%N")
 		end
 
 end

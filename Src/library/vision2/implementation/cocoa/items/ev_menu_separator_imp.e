@@ -84,11 +84,13 @@ feature {NONE} -- Implementation
 	enable_sensitive
 			-- Implemented to fulfill assertions but leave c_object unsensitive.
 		do
+			is_sensitive := True
 		end
 
 	disable_sensitive
 			-- Implemented to fulfill assertions but leave c_object unsensitive.
 		do
+			is_sensitive := False
 		end
 
 feature {EV_ANY_I} -- Implementation
