@@ -16,7 +16,7 @@ inherit
 		redefine
 			implementation, create_implementation, initialize,
 			computed_initial_grid_label_item_layout,
-			is_in_default_state
+			is_in_default_state, is_tab_navigatable
 		end
 
 create
@@ -77,6 +77,12 @@ feature -- Change
 
 feature -- Status
 
+	is_tab_navigatable: BOOLEAN
+			-- <Precursor>
+		do
+			Result := True
+		end
+
 	is_sensitive: BOOLEAN
 			-- Is current sensitive ?
 		do
@@ -107,7 +113,7 @@ feature -- Status setting
 
 feature -- Actions
 
-	checked_changed_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [like Current]]
+	checked_changed_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [EV_GRID_CHECKABLE_LABEL_ITEM]]
 			-- Actions called when checkbox value changed.
 		do
 			Result := implementation.checked_changed_actions
@@ -218,14 +224,14 @@ feature {EV_GRID_LABEL_ITEM_I} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end
