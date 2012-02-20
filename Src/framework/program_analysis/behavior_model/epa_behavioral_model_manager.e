@@ -51,9 +51,8 @@ feature{NONE} -- Implementation
 			create l_file_name.make_from_string (model_directory.name)
 			l_file_name.set_file_name (a_class.name_in_upper)
 			l_file_name.add_extension ("txt")
-			create l_file.make_open_read (l_file_name)
-			if l_file.is_open_read then
-				l_file.close
+			create l_file.make (l_file_name)
+			if l_file.exists then
 				create Result.make_from_file (l_file_name)
 			end
 		end

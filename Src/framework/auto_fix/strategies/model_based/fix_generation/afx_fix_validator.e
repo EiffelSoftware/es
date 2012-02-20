@@ -155,6 +155,7 @@ feature -- Basic operations
 			-- Validate fixes in `melted_fixes'.
 		local
 			l_fac: PROCESS_FACTORY
+			l_cmd_line: STRING
 		do
 			if not melted_fixes.is_empty then
 				exception_count := 0
@@ -164,7 +165,10 @@ feature -- Basic operations
 				if socket_listener.is_listening then
 					event_actions.notify_on_interpreter_starts (port)
 					create l_fac
-					process := l_fac.process_launcher_with_command_line (system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out + " -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory)
+					l_cmd_line := system.eiffel_system.application_name (True) + " --validate-fix " + config.interpreter_log_path + " true " + port.out + " -eif_root " + afx_project_root_class + "." + afx_project_root_feature
+--					Io.put_string ("Launching debugee with: " + l_cmd_line + "%N")
+--					Io.output.flush
+					process := l_fac.process_launcher_with_command_line (l_cmd_line, config.working_directory)
 					process.launch
 					check process.launched end
 
@@ -218,15 +222,21 @@ feature -- Basic operations
 			l_body_id: INTEGER
 			l_pattern_id: INTEGER
 			l_data: TUPLE [byte_code: STRING; last_bpslot: INTEGER]
+			l_retried: BOOLEAN
 		do
-			l_class ?= a_fix.recipient_written_class
-			l_feat := a_fix.origin_recipient
-			l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text, False)
-			if not l_data.byte_code.is_empty then
-				l_body_id := l_feat.real_body_id (l_class.types.first) - 1
-				l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
-				create Result.make (a_fix.id, l_body_id, l_pattern_id, l_data.byte_code, l_data.last_bpslot)
+			if not l_retried then
+				l_class ?= a_fix.recipient_written_class
+				l_feat := a_fix.origin_recipient
+				l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text, False)
+				if not l_data.byte_code.is_empty then
+					l_body_id := l_feat.real_body_id (l_class.types.first) - 1
+					l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
+					create Result.make (a_fix.id, l_body_id, l_pattern_id, l_data.byte_code, l_data.last_bpslot)
+				end
 			end
+		rescue
+			l_retried := True
+			Result := Void
 		end
 
 feature{NONE} -- Inter-process communication
