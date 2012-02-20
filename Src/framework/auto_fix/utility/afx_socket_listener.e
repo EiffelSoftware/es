@@ -20,7 +20,6 @@ feature {NONE} -- Initialization
 		do
 			create mutex.make
 			create condition.make
-			create socket_cell.put (Void)
 
 			if a_config.min_socket_port_number = 0 then
 				min_port := default_min_port
@@ -55,12 +54,6 @@ feature {NONE} -- Access
 	connection: detachable NETWORK_STREAM_SOCKET
 			-- Connection to client once established
 
-	listener_thread: WORKER_THREAD
-			-- Thread to listen to the socket to establish the connection.
-
-	socket_cell: CELL[NETWORK_STREAM_SOCKET]
-			-- Cell for storing the next candidate socket.
-
 	min_port: NATURAL
 
 	max_port: NATURAL
@@ -88,11 +81,8 @@ feature -- Basic functionality
 			connection := Void
 			l_socket := open_listener
 			if l_socket /= Void then
-				socket_cell.put (l_socket)
-				if listener_thread = Void then
-					create listener_thread.make (agent start_listening (socket_cell))
-				end
-				listener_thread.launch
+				create l_thread.make (agent start_listening (l_socket))
+				l_thread.launch
 			else
 				current_port := 0
 			end
@@ -152,7 +142,7 @@ feature {NONE} -- Implementation
 			if Result.is_open_read then
 				Result.set_blocking
 				Result.listen (1)
---				Result.set_accept_timeout (120000) -- timeout in 120 Seconds
+--				Result.set_accept_timeout (180000) -- timeout in 120 Seconds
 			else
 				Result := Void
 			end
@@ -178,25 +168,23 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	start_listening (a_socket_cell: CELL[ attached like open_listener])
+	start_listening (a_socket: attached like open_listener)
 			-- Start listening to `a_socket' for incomming connection. Once connection is established and
 			-- `is_listening' is still True, set `connection' to new connection with client.
 			--
 			-- Note: this routine is blocking.
 		require
-			cell_element_attached: a_socket_cell /= Void and then a_socket_cell.item /= Void
-			blocking_socket: a_socket_cell.item.is_blocking
+			socket_attached: a_socket /= Void
+			blocking_socket: a_socket.is_blocking
 		local
 			l_rescued: BOOLEAN
-			l_socket: like open_listener
 			l_connection: like connection
 		do
 			if not l_rescued then
-				l_socket := a_socket_cell.item
-				l_socket.accept
+				a_socket.accept
 				mutex.lock
 				if is_listening then
-					l_connection := l_socket.accepted
+					l_connection := a_socket.accepted
 					if l_connection /= Void then
 						check is_blocking: l_connection.is_blocking end
 						l_connection.set_nodelay
