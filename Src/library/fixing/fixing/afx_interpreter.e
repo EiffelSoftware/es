@@ -359,13 +359,22 @@ feature{NONE} -- Logging
 			-- otherwise, create a new one.
 		require
 			a_path_attached: a_path /= Void
+		local
+			l_retried: BOOLEAN
 		do
-			create log_file.make (a_path)
-			if log_file.exists and then a_append then
-				log_file.open_append
+			if not l_retried then
+				create log_file.make (a_path)
+				if log_file /= Void and then log_file.exists and then a_append then
+					log_file.open_append
+				else
+					log_file.create_read_write
+				end
 			else
-				log_file.create_read_write
+				log_file := Void
 			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	close_log_file
