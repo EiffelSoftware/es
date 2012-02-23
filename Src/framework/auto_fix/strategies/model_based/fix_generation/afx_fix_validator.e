@@ -63,8 +63,6 @@ feature{NONE} -- Initialization
 			end
 
 			create valid_fixes.make
-
-			create timer.make (agent on_test_case_execution_time_out)
 		end
 
 feature -- Access
@@ -120,7 +118,6 @@ feature{NONE} -- Actions
 
 					-- Maximal number of valid fixes have already been found, terminate fix validation.
 				if config.max_valid_fix_number > 0 and then config.max_valid_fix_number <= l_valid_fixes_count then
-					timer.set_timeout (0)
 					worker.set_should_quit (True)
 					should_quit := True
 				end
@@ -140,9 +137,6 @@ feature{NONE} -- Actions
 
 feature{NONE} -- Requests for interpreter
 
-	timer: AFX_TIMER_THREAD
-			-- Timer to control test case execution time out.
-
 	exception_count: NATURAL_32
 			-- Number of exceptions that are encountered so far
 
@@ -156,6 +150,7 @@ feature -- Basic operations
 		local
 			l_fac: PROCESS_FACTORY
 			l_cmd_line: STRING
+			l_timer: AFX_TIMER_THREAD
 		do
 			if not melted_fixes.is_empty then
 				exception_count := 0
@@ -174,8 +169,9 @@ feature -- Basic operations
 
 					if attached {like socket} socket_listener.wait_for_connection (5000) as l_socket then
 						socket := l_socket
-						timer.reset_timer
-						create worker.make (fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, timer, socket, all_test_cases, all_passing_test_cases)
+						create l_timer.make (agent on_test_case_execution_time_out)
+						l_timer.reset_timer
+						create worker.make (fixes, melted_fixes, agent on_fix_validation_start, agent on_fix_validation_end, l_timer, socket, all_test_cases, all_passing_test_cases)
 						worker.execute
 						process.wait_for_exit_with_timeout (5000)
 						if not process.has_exited then
@@ -191,7 +187,6 @@ feature -- Basic operations
 						process.wait_for_exit
 					end
 				end
-
 			end
 		end
 
@@ -237,6 +232,7 @@ feature -- Basic operations
 		rescue
 			l_retried := True
 			Result := Void
+			retry
 		end
 
 feature{NONE} -- Inter-process communication
