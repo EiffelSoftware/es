@@ -168,6 +168,7 @@ feature{NONE} -- Implementation
 			l_fix: AFX_FIX
 			l_text: STRING
 			l_count: INTEGER
+			l_fixes: like fixes
 		do
 			if session.should_continue then
 				if config.is_using_random_based_strategy then
@@ -178,24 +179,24 @@ feature{NONE} -- Implementation
 				l_generator.generate
 
 				if session.should_continue then
-					create fixes.make
-					fixes.append_last (l_generator.fixes)
+					l_fixes := fixes
+					l_fixes.append_last (l_generator.fixes)
 
 						-- Remove syntactially equivalent fixes.
-					create l_text_equal_fixes.make (fixes.count)
+					create l_text_equal_fixes.make (l_fixes.count)
 					l_text_equal_fixes.compare_objects
 					from
-						fixes.start
+						l_fixes.start
 					until
-						fixes.after
+						l_fixes.after
 					loop
-						l_fix := fixes.item_for_iteration
+						l_fix := l_fixes.item_for_iteration
 						l_text := l_fix.text
 						if l_text_equal_fixes.has (l_text) then
-							fixes.remove_at
+							l_fixes.remove_at
 						else
 							l_text_equal_fixes.put (1, l_text)
-							fixes.forth
+							l_fixes.forth
 						end
 					end
 				end
@@ -216,6 +217,14 @@ feature{NONE} -- Auxiliary
 
 	fixes: DS_LINKED_LIST [AFX_FIX]
 			-- Generated fixes
+		do
+			if fixes_cache = Void then
+				create fixes_cache.make
+			end
+			Result := fixes_cache
+		ensure
+			result_attached: Result /= Void
+		end
 
 	valid_fixes: DS_LINKED_LIST [AFX_FIX]
 			-- List of valid fixes.
@@ -247,5 +256,8 @@ feature{NONE} -- Cache
 
 	valid_fixes_cache: DS_LINKED_LIST [AFX_FIX]
 			-- Cache for `valid_fixes'.
+
+	fixes_cache: DS_LINKED_LIST[AFX_FIX]
+			-- Cache for 'fixes'.
 
 end

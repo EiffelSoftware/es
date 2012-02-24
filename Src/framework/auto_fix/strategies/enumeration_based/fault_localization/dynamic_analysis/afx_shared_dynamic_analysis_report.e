@@ -122,7 +122,9 @@ feature -- Access
 		require
 			feature_attached: a_feature /= Void
 		do
-			Result := invariants_from_passing_cell.item.item (a_feature)
+			if invariants_from_passing_cell.item.has (a_feature) then
+				Result := invariants_from_passing_cell.item.item (a_feature)
+			end
 		end
 
 	invariants_from_failing (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): DS_HASH_TABLE [EPA_STATE, INTEGER]
@@ -130,7 +132,9 @@ feature -- Access
 		require
 			feature_attached: a_feature /= Void
 		do
-			Result := invariants_from_failing_cell.item.item (a_feature)
+			if invariants_from_passing_cell.item.has (a_feature) then
+				Result := invariants_from_failing_cell.item.item (a_feature)
+			end
 		end
 
 feature -- Reset
@@ -180,33 +184,35 @@ feature -- Basic operation
 		do
 				-- Invariants from passing executions.
 			l_invariants_from_passing := invariants_from_passing (a_feature)
-			if l_invariants_from_passing.has (a_bp_index) then
+			if l_invariants_from_passing /= Void and then l_invariants_from_passing.has (a_bp_index) then
 				l_invariants_p := l_invariants_from_passing.item (a_bp_index)
 			end
 
 				-- Invariants from failing executions.
 			l_invariants_from_failing := invariants_from_failing (a_feature)
-			if l_invariants_from_failing.has (a_bp_index) then
+			if l_invariants_from_failing /= Void and then l_invariants_from_failing.has (a_bp_index) then
 				l_invariants_f := l_invariants_from_failing.item (a_bp_index)
 			end
 
 				-- Result invariants.
-			inspect a_mode
-			when Invariant_passing_all then
-				Result := l_invariants_p
-			when Invariant_passing_only then
-				if attached l_invariants_p and then attached l_invariants_f then
-					Result := l_invariants_p.subtraction (l_invariants_f)
-				else
+			if l_invariants_f /= Void and then l_invariants_p /= Void then
+				inspect a_mode
+				when Invariant_passing_all then
 					Result := l_invariants_p
-				end
-			when Invariant_failing_all then
-				Result := l_invariants_f
-			when Invariant_failing_only then
-				if attached l_invariants_f and then attached l_invariants_p then
-					Result := l_invariants_f.subtraction (l_invariants_p)
-				else
+				when Invariant_passing_only then
+					if attached l_invariants_p and then attached l_invariants_f then
+						Result := l_invariants_p.subtraction (l_invariants_f)
+					else
+						Result := l_invariants_p
+					end
+				when Invariant_failing_all then
 					Result := l_invariants_f
+				when Invariant_failing_only then
+					if attached l_invariants_f and then attached l_invariants_p then
+						Result := l_invariants_f.subtraction (l_invariants_p)
+					else
+						Result := l_invariants_f
+					end
 				end
 			end
 		end
