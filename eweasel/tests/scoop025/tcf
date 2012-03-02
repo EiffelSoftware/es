@@ -1,19 +1,11 @@
-test_name 	 self-init-attribute-void-safe
-test_description A call to a self-initializing INTEGER attribute does not work in void safe mode.
+test_name	 scoop-expanded-separate
+test_description A "separate" call on an expanded object should be performed on the current processor, because the object should be imported to the current processor.
 
-define WARNING false
-copy_sub	Ace $TEST Ace
-copy_raw	test.e $CLUSTER test.e
+copy_sub	Ace	$TEST Ace
+copy_raw	test.e	$CLUSTER test.e
 
 compile_melted
 compile_result ok
-
-define WARNING true
-copy_sub	Ace $TEST Ace
-copy_raw	test.e $CLUSTER test.e
-
-compile_melted
-compile_result validity_warning TEST Unused_attribute_body_warning
 execute_work 	NONE 	exec_output_m
 execute_result 	ok
 compare		exec_output_m output
