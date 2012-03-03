@@ -145,18 +145,20 @@ feature{NONE} -- Implementation
 			l_trace_repository := trace_repository
 			progression_monitor.set_progression (progression_monitor.progression_test_case_analysis_execution_end)
 
-			if config.is_using_random_based_strategy then
-				create l_trace_analyzer
-				l_trace_analyzer.set_breakpoint_index_range (
-							[exception_recipient_feature.first_breakpoint_in_body,
-							exception_recipient_feature.last_breakpoint_in_body])
-				l_trace_analyzer.collect_statistics_from_trace_repository ({AFX_EXECUTION_TRACE_STATISTICS_UPDATE_MODE}.Update_mode_merge_presence)
+			if session.should_continue then
+				if config.is_using_random_based_strategy then
+					create l_trace_analyzer
+					l_trace_analyzer.set_breakpoint_index_range (
+								[exception_recipient_feature.first_breakpoint_in_body,
+								exception_recipient_feature.last_breakpoint_in_body])
+					l_trace_analyzer.collect_statistics_from_trace_repository ({AFX_EXECUTION_TRACE_STATISTICS_UPDATE_MODE}.Update_mode_merge_presence)
 
-				create l_ranker
-				l_ranker.compute_ranks
-			elseif config.is_using_model_based_strategy and then config.is_daikon_enabled then
-				create l_invariant_detecter
-				l_invariant_detecter.detect
+					create l_ranker
+					l_ranker.compute_ranks
+				elseif config.is_using_model_based_strategy and then config.is_daikon_enabled then
+					create l_invariant_detecter
+					l_invariant_detecter.detect
+				end
 			end
 		end
 
