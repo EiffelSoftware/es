@@ -99,10 +99,15 @@ feature -- Basic operation
 					remove_breakpoint (debugger_manager, Test_case_super_class)
 					remove_debugger_session
 
-					if config.is_using_random_based_strategy then
-							-- Interprete program states based on the observed evaluations.
-						set_trace_repository (trace_repository.derived_repository (exception_recipient_feature.derived_state_skeleton))
+					if session.exception_signature /= Void then
+						if config.is_using_random_based_strategy then
+								-- Interprete program states based on the observed evaluations.
+							set_trace_repository (trace_repository.derived_repository (exception_recipient_feature.derived_state_skeleton))
+						end
+					else
+						session.cancel
 					end
+
 				end
 			end
 		rescue
