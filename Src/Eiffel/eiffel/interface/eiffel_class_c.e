@@ -1960,11 +1960,13 @@ feature -- Supplier checking
 							supplier_class.compiled_class.record_precompiled_class_in_system
 						end
 					end
-					if not supplier_class.is_void_safety_supported (original_class) then
-							-- Report an error that `supplier_class' is less void-safe
-							-- than the class that replies on it.
-						error_handler.insert_error (create {VD88}.make (supplier_class, class_name, Current))
-					end
+-- For the time being we decided not to report an VD88 error to allow people who tried
+-- on demand void-safety to continue using it with non-void-safe code.
+--					if not supplier_class.is_void_safety_supported (original_class) then
+--							-- Report an error that `supplier_class' is less void-safe
+--							-- than the class that replies on it.
+--						error_handler.insert_error (create {VD88}.make (supplier_class, class_name, Current))
+--					end
 				end
 				comp_class := supplier_class.compiled_class
 				check
