@@ -1,10 +1,10 @@
 note
-	description: "Summary description for {TEXTUAL_BON_TEXT_FORMATTER_DECORATOR}."
+	description: "Formatter decorator for textual BON views. Works as a mediator between formatter and output strategy."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+class -- This class is not used for the time being.
 	TEXTUAL_BON_TEXT_FORMATTER_DECORATOR
 
 inherit
@@ -14,23 +14,6 @@ inherit
 			is_formal_bon as format_is_formal_bon,
 			set_is_informal_bon as format_set_is_informal_bon,
 			set_is_formal_bon as format_set_is_formal_bon
-		redefine
-			make
-		end
-
-create
-	make
-
-feature -- Creation
-	make (c: CLASS_C; a_text_formatter: TEXT_FORMATTER)
-		do
-			Precursor {TEXT_FORMATTER_DECORATOR} (c, a_text_formatter)
-			if is_informal_bon then
-				create {TEXTUAL_BON_INFORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
-			elseif is_formal_bon then
-				create {TEXTUAL_BON_FORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
-			end
-			setup_output_strategy
 		end
 
 feature -- Status report
@@ -41,6 +24,23 @@ feature -- Status report
 			-- Are we currently formatting formal BON?
 
 feature -- Status setting
+--	set_for_informal_bon
+--			-- Prepare formatter decorator for informal BON.
+--		do
+--			set_is_informal_bon
+--			create {TEXTUAL_BON_INFORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
+--			setup_output_strategy
+--		end
+
+--	set_for_formal_bon
+--			-- Prepare formatter decorator for formal BON.
+--		do
+--			set_is_formal_bon
+--			create {TEXTUAL_BON_FORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
+--			setup_output_strategy
+--		end
+
+
 	set_is_informal_bon
 			-- Set is_informal_bon to True.
 		do

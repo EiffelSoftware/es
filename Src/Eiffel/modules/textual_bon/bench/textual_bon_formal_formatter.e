@@ -9,10 +9,9 @@ class
 
 inherit
 	TEXTUAL_BON_FORMATTER
-
-	EB_CLASS_TEXT_FORMATTER
 		redefine
-			create_class_cmd
+			create_class_cmd,
+			generate_text
 		end
 
 create
@@ -66,13 +65,31 @@ feature -- Status setting
 feature {NONE} -- Implementation
 	create_class_cmd
 		do
+		end
 
+	generate_text
+			-- Fill `formatted_text' with information concerning `class'.
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				set_is_without_breakable
+				editor.handle_before_processing (False)
+				last_was_error := formal_bon_context_text (associated_class, editor.text_displayed)
+				editor.handle_after_processing
+			else
+				last_was_error := True
+			end
+		rescue
+			retried := True
+			retry
 		end
 
 	has_breakpoints: BOOLEAN = False
 		-- Should `Current' display breakpoints?
 
 	line_numbers_allowed: BOOLEAN = False
+		-- Should `Current' allow line numbers?
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

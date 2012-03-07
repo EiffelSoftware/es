@@ -9,9 +9,23 @@ class
 
 inherit
 	TEXTUAL_BON_OUTPUT_STRATEGY
+		redefine
+			process_class_as
+		end
 
 create
 	make
+
+feature -- Processing
+	process_class_as (l_as: CLASS_AS)
+			-- Process the abstract syntax (represented by 'CLASS_AS') for an Eiffel class into informal textual BON.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.put_classi (current_class.lace_class)
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
