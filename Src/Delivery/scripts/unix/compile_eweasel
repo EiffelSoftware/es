@@ -1,0 +1,8 @@
+#!/bin/sh
+
+EWEASEL=$EXPORT_DIR/eweasel
+export EWEASEL
+
+cd $EWEASEL
+untgz_ccode eweasel no_cancel
+move eweasel $INSTALL_DIR/eweasel/spec/$ISE_PLATFORM/bin

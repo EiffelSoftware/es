@@ -1,0 +1,99 @@
+Ubuntu Server 8.04 (2 Intel Xeon Quad Core E5420  @ 2.50GHz with 6MB cache)
+
+7.0
+===
+7.0.8.7345 non-RTEA, non-MT, inlining_size = 8, full class checking (exe size = 17314840):
+116.520u 5.600s 2:03.39 98.9%        0+0k 528+836600io 0pf+0w
+
+7.0.8.6860 non-RTEA, non-MT, inlining_size = 8, full class checking (exe size = 17274920):
+118.340u 4.900s 2:03.63 99.6%        0+0k 80+832616io 0pf+0w
+
+7.0.8.6860 non-RTEA, non-MT, inlining_size = 0, full class checking (exe size = 15839848):
+110.100u 5.270s 1:56.27 99.2%        0+0k 16+815720io 0pf+0w
+
+6.8
+===
+
+6.8.5331 non-RTEA, non-MT, full class checking (COMP size: 123MB):
+112.900u 4.990s 1:58.31 99.6%        0+0k 16+806432io 0pf+0w
+
+6.7
+===
+
+6.7.8.4288 non-RTEA, non-MT,full class checking (COMP size : 125MB )
+109.690u 5.000s 2:06.75 90.4%        0+0k 67272+809824io 139pf+0w
+109.790u 5.420s 1:55.88 99.4%        0+0k 80+809760io 0pf+0w
+
+6.5
+===
+
+6.5.8.1162 non-RTEA, non-MT,full class checking (COMP size : 126MB)
+109.530u 5.140s 1:55.93 98.9%        0+0k 80+810936io 0pf+0w
+
+6.4
+===
+
+6.4.7.7440 non-RTEA, non-MT:
+85.690u 5.700s 1:31.81 99.5% 0+0k 0+794576io 0pf+0w
+86.680u 5.810s 1:34.02 98.3% 0+0k 0+794472io 0pf+0w
+
+6.4.7.6833 non-RTEA, non-multithreaded with FEATURE_I aliasing (COMP size: 127MB):
+85.340u 4.710s 1:30.22 99.8% 0+0k 0+791760io 0pf+0w
+83.310u 4.580s 1:28.47 99.3% 0+0k 24+791840io 0pf+0w
+106.190u 4.570s 1:50.83 99.9% 0+0k 0+817376io 0pf+0w (with full class checking enabled)
+
+6.4.7.6747 non-RTEA, non-multithreaded (COMP size: 155MB):
+94.330u 5.540s 1:40.44 99.4% 0+0k 96+893968io 0pf+0w
+
+6.4.7.6402 non-RTEA, non-multithreaded (exe size: 14430600 bytes):
+92.910u 5.840s 1:39.16 99.5% 0+0k 8+892376io 0pf+0w
+
+6.3
+===
+
+6.3.7.5639 non-RTEA, non-multithreaded (classes: 2554; exe size: 14387136 bytes):
+117.480u 6.000s 2:06.97 97.2%   0+0k 48+882696io 0pf+0w
+
+
+Fedora Core 2 (2 x AMD Opteron 244 at 1.8GHz and 1024KB of cache)
+
+6.2
+===
+
+6.2.7.1651 non-RTEA, non-multithreaded (classes: 2501; exe size: 16762024 bytes):
+266.017u 12.425s 4:58.47 93.2%  0+0k 0+0io 13pf+0w
+266.391u 12.605s 5:04.66 91.5%  0+0k 0+0io 15pf+0w
+
+6.2.7.1651 non-RTEA (classes: 2501; exe size: 17575600 bytes):
+328.258u 12.262s 6:13.81 91.0%  0+0k 0+0io 15pf+0w
+327.226u 12.915s 6:08.76 92.2%  0+0k 0+0io 15pf+0w
+
+6.2.7.1651 RTEA, non-multithreaded (classes: 2501; exe size: 19333768 bytes):
+317.681u 12.919s 5:49.95 94.4%       0+0k 0+0io 0pf+0w
+318.253u 12.895s 5:52.19 94.0%       0+0k 0+0io 15pf+0w
+
+6.2.7.1651 RTEA (classes: 2501; exe size: 20139696 bytes):
+408.326u 12.987s 7:34.46 92.7%  0+0k 0+0io 15pf+0w
+407.748u 12.773s 7:23.05 94.9%  0+0k 0+0io 15pf+0w
+
+
+Fedora Core 3 (AMD64 3500+ at 2.2GHz and 512KB of cache)
+
+5.7
+===
+
+5.7.0331 RTEA (non-multithreaded):
+118.185u 4.204s 2:04.80 98.0%   0+0k 0+0io 0pf+0w
+118.217u 4.359s 2:12.30 92.6%   0+0k 0+0io 0pf+0w
+
+5.7.0331 RTEA (multithreaded):
+148.756u 4.491s 2:42.87 94.0%   0+0k 0+0io 0pf+0w
+148.841u 4.454s 2:44.89 92.9%   0+0k 0+0io 0pf+0w
+
+5.7.0331 non-RTEA (non-multithreaded):
+96.373u 4.139s 1:50.54 90.9%    0+0k 0+0io 0pf+0w
+96.417u 3.958s 1:42.72 97.7%    0+0k 0+0io 0pf+0w
+
+5.7.0331 non-RTEA (multithreaded):
+117.934u 4.351s 2:12.32 92.4%   0+0k 0+0io 0pf+0w
+118.038u 4.243s 2:12.44 92.3%   0+0k 0+0io 0pf+0w

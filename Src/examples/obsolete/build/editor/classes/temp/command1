@@ -1,0 +1,33 @@
+class COMMAND1
+
+inherit
+
+	BUILD_OPEN
+		rename
+			argument1 as build_open_argument1
+		redefine
+			execute,
+			make
+		end
+
+creation
+
+	make
+
+feature -- Initialization
+
+	make (arg1: SCROLLED_T) is
+		do
+			{BUILD_OPEN} Precursor (arg1)
+		end
+
+feature -- Access
+
+feature -- Command
+
+	execute is
+		do
+			{BUILD_OPEN} Precursor
+		end
+
+end

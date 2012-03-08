@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Create a delivery from scratch for all ISE supported platforms we have at ISE,
+# ie solaris, ppx, linux and linux RH9.
+
+# Let's initialize our environments variables
+. ./set_aliases
+
+# Let's create an enterprise package for Unix
+rm -rf PorterPackage
+
+# Let's create the PorterPackage (use 'all' as argument to also generate the enterprise version).
+printf "\n" | /bin/sh make_delivery $1
+
+# Let's keep an archive of this package
+if [ ! -f PorterPackage_all.tar ]; then
+	pax -w -f PorterPackage_all.tar PorterPackage
+	echo $* > tmpin$$.tmp
+	awk 'index($0, "all") != 0 { exit 54 }' tmpin$$.tmp
+	if [ $? -ne 54 ] ;  then
+		scp PorterPackage_all.tar manus@eiffel.com:builds/nightly/PorterPackage_71_$ORIGO_SVN_REVISION.tar
+	fi
+	rm -f tmpin$$.tmp
+fi
+
+./compile_for_all_platforms &

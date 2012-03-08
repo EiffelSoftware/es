@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project version='7' encrypted='1'>
+	<steps type='0'>
+		<step action='Group'>
+			<name>Project steps</name>
+		</step>
+		<step action='Delete Folder'>
+			<Path>%ROOT%</Path>
+			<Recurse type='11'>-1</Recurse>
+			<indent type='3'>1</indent>
+			<name>Delete root (clean)</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Setup Eiffel</name>
+		</step>
+		<step action='Subversion'>
+			<Host>svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework</Host>
+			<LocalPath>%EIFFEL_SRC%</LocalPath>
+			<Protocol>https</Protocol>
+			<Subcommand>export --force</Subcommand>
+			<indent type='3'>2</indent>
+			<name>Checkout EIFFEL_SRC/framework</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Compile Xebra Bins</name>
+		</step>
+		<step action='Batch File'>
+			<CmdStr>ecb %EC_FLAGS% -config %XEBRA_DEV%\eiffel_projects\library\xebra_precompile\xebra_precompile.ecf -target xebra_precompile -c_compile  -precompile -stop</CmdStr>
+			<CmdType type='3'>1</CmdType>
+			<NoEcho type='11'>-1</NoEcho>
+			<indent type='3'>2</indent>
+			<name>Compile Precompile</name>
+		</step>
+		<step action='Batch File'>
+			<CmdStr>ecb %EC_FLAGS% -config %XEBRA_DEV%\eiffel_projects\xebra_translator\xebra_translator.ecf -target xebra_translator -c_compile  -finalize -stop</CmdStr>
+			<CmdType type='3'>1</CmdType>
+			<NoEcho type='11'>-1</NoEcho>
+			<indent type='3'>2</indent>
+			<name>Compile Translator</name>
+		</step>
+		<step action='Batch File'>
+			<CmdStr>ecb %EC_FLAGS% -config %XEBRA_DEV%\eiffel_projects\xebra_server\xebra_server.ecf -target xebra_server -c_compile -finalize -stop</CmdStr>
+			<CmdType type='3'>1</CmdType>
+			<NoEcho type='11'>-1</NoEcho>
+			<indent type='3'>2</indent>
+			<name>Compile Server</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Compile Install Helpers</name>
+		</step>
+		<step action='Batch File'>
+			<CmdStr>ecb %EC_FLAGS% -config %XEBRA_DEV%\tools\installer\win\xebra_deployer\xebra_deployer.ecf -target xebra_deployer -c_compile  -finalize</CmdStr>
+			<CmdType type='3'>1</CmdType>
+			<NoEcho type='11'>-1</NoEcho>
+			<indent type='3'>2</indent>
+			<name>Compile Deployer</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Copy Xebra Files</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\bin</DestDir>
+			<Ext>xebra_server.exe</Ext>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\eiffel_projects\xebra_server\EIFGENs\xebra_server\F_code</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Server exe</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\bin</DestDir>
+			<Ext>xebra_translator.exe</Ext>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%/eiffel_projects\xebra_translator\EIFGENs\xebra_translator\F_code\</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Translator Exe</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\apache</DestDir>
+			<Empty type='11'>-1</Empty>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%APACHE%</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Apache</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%ROOT%\xebra_build\apache\conf\</DestDir>
+			<Ext>httpd.conf</Ext>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\tools\installer\win\</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy httpd.conf</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\apache\modules</DestDir>
+			<Ext>mod_xebra.so</Ext>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\c_projects\apache_mod_xebra\</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy mod_xebra</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Copy Webapps</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\www\helloworld</DestDir>
+			<Empty type='11'>-1</Empty>
+			<ExclExt><![CDATA[\EIFGENs
+\.svn
+\.generated
+*.sh]]></ExclExt>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\www\helloworld</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy hellworld</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\www\servercontrol</DestDir>
+			<Empty type='11'>-1</Empty>
+			<ExclExt><![CDATA[\EIFGENs
+\.svn
+\.generated
+*.sh]]></ExclExt>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\www\servercontrol</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy servercontrol</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\www\demoapplication</DestDir>
+			<Empty type='11'>-1</Empty>
+			<ExclExt><![CDATA[\EIFGENs
+\.svn
+\.generated
+*.sh]]></ExclExt>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\www\demoapplication</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy demoapp</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\www\examples</DestDir>
+			<Empty type='11'>-1</Empty>
+			<ExclExt><![CDATA[\EIFGENs
+\.svn
+\.generated
+*.sh]]></ExclExt>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\www\examples</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy examples</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Copy Xebra Libraries</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\</DestDir>
+			<ExclExt><![CDATA[\EIFGENs
+\.svn]]></ExclExt>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\web\xebra\eiffel_projects\library\</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Web application libraries</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Copy Framework libraries</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\framework\settable_types</DestDir>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\settable_types</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Settable_Types</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\framework\base\</DestDir>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\base\</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Base</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\framework\string_expander</DestDir>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\string_expander</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy String_expander</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\framework\environment</DestDir>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\environment</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Environment</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\library\framework\peg</DestDir>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Recurse type='11'>-1</Recurse>
+			<Retries>10</Retries>
+			<SourceDir>%EIFFEL_SRC%\framework\peg</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Peg</name>
+		</step>
+		<step action='Group'>
+			<indent type='3'>1</indent>
+			<name>Create config files</name>
+		</step>
+		<step action='Create Folder'>
+			<Path>%BUILD%\upload_tmp</Path>
+			<indent type='3'>2</indent>
+			<name>Create upload_tmp</name>
+		</step>
+		<step action='Copy Files'>
+			<Converted type='11'>-1</Converted>
+			<Delay>15</Delay>
+			<DestDir>%BUILD%\conf</DestDir>
+			<Ext>config.srv</Ext>
+			<Incremental type='11'>-1</Incremental>
+			<LogCopied type='11'>-1</LogCopied>
+			<ReadOnly type='11'>-1</ReadOnly>
+			<Retries>10</Retries>
+			<SourceDir>%XEBRA_DEV%\tools\installer\win</SourceDir>
+			<TBD type='11'>-1</TBD>
+			<indent type='3'>2</indent>
+			<name>Copy Files</name>
+		</step>
+		<step action='Write File'>
+			<Filename>%BUILD%\bin\launch_xebra_full.bat</Filename>
+			<Text><![CDATA[start ..\apache\bin\httpd.exe 
+start xebra_server.exe ..\conf\config.srv
+start /max /wait http://localhost:55000/helloworld]]></Text>
+			<indent type='3'>2</indent>
+			<name>Write launcher full</name>
+		</step>
+		<step action='Write File'>
+			<Filename>%BUILD%\bin\launch_xebra_apache.bat</Filename>
+			<Text>start ..\apache\bin\httpd.exe</Text>
+			<indent type='3'>2</indent>
+			<name>Write apache launcher</name>
+		</step>
+		<step action='Write File'>
+			<Filename>%BUILD%\bin\launch_xebra_server.bat</Filename>
+			<Text><![CDATA[start xebra_server.exe ..\conf\config.srv
+]]></Text>
+			<indent type='3'>2</indent>
+			<name>Write server launcher</name>
+		</step></steps>
+	<macros>
+		<macro name='APACHE'>
+			<description>Path where apache was installed manually</description>
+			<value>c:\apache</value>
+		</macro>
+		<macro name='BUILD'>
+			<description>The target folder of the builded xebra</description>
+			<value>%ROOT%\xebra_build</value>
+		</macro>
+		<macro name='EC_FLAGS'>
+			<description><![CDATA[Can be used to pass additional arguments to ec
+]]></description>
+			<value>-experiment</value>
+		</macro>
+		<macro name='EIFFEL_SRC'>
+			<description><![CDATA[Path to where eiffel_src will be checked out
+]]></description>
+			<envvar type='11'>-1</envvar>
+			<value>%ROOT%\eiffel_src</value>
+		</macro>
+		<macro name='ROOT'>
+			<description>The root folder for the whole operation</description>
+			<envvar type='11'>-1</envvar>
+			<value>c:\virtual_box_share</value>
+		</macro>
+		<macro name='RUNPROGRAM_EXITCODE'>
+			<description>The exit code of the last Run Program, Batch File, PowerShell, VisBuildPro Project, or derived action or RunProgramEx call</description>
+			<value>-1</value>
+		</macro>
+		<macro name='XEBRA_DEV'>
+			<description>Path to xebra</description>
+			<envvar type='11'>-1</envvar>
+			<value>%EIFFEL_SRC%\framework\web\xebra</value>
+		</macro>
+		<macro name='XEBRA_LIBRARY'>
+			<description>Path to xebra libraries</description>
+			<envvar type='11'>-1</envvar>
+			<value>%XEBRA_DEV%\eiffel_projects\library</value>
+		</macro></macros>
+</project>
