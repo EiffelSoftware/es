@@ -56,6 +56,12 @@ feature {NONE} -- Implementation
 			if i = count then
 				v_imp.set_right_padding (0)
 			end
+			if i > 1 then
+					-- Set the same width of first object
+				check attached {EV_WIDGET_IMP} i_th (1).implementation as first_imp then
+					set_same_width (first_imp, v_imp)
+				end
+			end
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Status settings

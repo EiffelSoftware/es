@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 			cocoa_view := clip_view
 
 			initialize
+			create color_utils
 			set_is_initialized (True)
 		end
 

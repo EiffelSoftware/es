@@ -45,6 +45,7 @@ feature {NONE} -- Initialization
 
 			initialize
 			set_is_initialized (True)
+			create color_utils
 
 			set_horizontal_step (10)
 			set_vertical_step (10)

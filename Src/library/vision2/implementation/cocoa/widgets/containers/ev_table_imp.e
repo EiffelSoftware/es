@@ -126,7 +126,7 @@ feature -- Status settings
 			-- the box has the same size.
 		do
 			is_homogeneous := True
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	disable_homogeneous
@@ -134,28 +134,28 @@ feature -- Status settings
 			-- the box has the same size.
 		do
 			is_homogeneous := False
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	set_border_width (a_value: INTEGER)
 			-- Set the tables border width to `a_value' pixels.
 		do
 			border_width := a_value
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	set_row_spacing (a_value: INTEGER)
 			-- Spacing between two rows of the table.
 		do
 			row_spacing := a_value
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	set_column_spacing (a_value: INTEGER)
 			-- Spacing between two columns of the table.
 		do
 			column_spacing := a_value
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	put (child: EV_WIDGET; a_x, a_y, a_width, a_height: INTEGER)
@@ -183,7 +183,7 @@ feature -- Status settings
 			-- We show the child and resize the container
 			child_imp.show
 			attached_view.add_subview_ (child_imp.attached_view)
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 			new_item_actions.call ([child])
 		end
 
@@ -264,7 +264,7 @@ feature {EV_ANY_I, EV_ANY} -- Status Settings
 			Precursor {EV_TABLE_I} (a_column, a_row)
 			initialize_columns (a_column)
 			initialize_rows (a_row)
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 	set_item_span (v: EV_WIDGET; column_span, row_span: INTEGER)
@@ -286,7 +286,7 @@ feature {EV_ANY_I, EV_ANY} -- Status Settings
 			table_child.set_attachment
 				(a_row - 1, a_column - 1, table_child.bottom_attachment - table_child.top_attachment + a_row - 1,
 				table_child.right_attachment - table_child.left_attachment + a_column - 1)
-			notify_change (Nc_minsize, Current)
+--			notify_change (Nc_minsize, Current)
 		end
 
 feature {NONE} -- Access features for implementation
@@ -318,8 +318,7 @@ feature {NONE} -- Resize Implementation
 	ev_apply_new_size (a_x_position, a_y_position,
 				a_width, a_height: INTEGER; repaint: BOOLEAN)
 		do
-			ev_move_and_resize (a_x_position, a_y_position, a_width,
-					a_height, repaint)
+--			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
 			set_local_size (a_width, a_height, False)
 		end
 

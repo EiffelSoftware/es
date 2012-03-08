@@ -419,6 +419,18 @@ feature {EV_ANY_I} -- Implementation
 			end
 		end
 
+	set_same_width (first_view, second_view: EV_NS_VIEW)
+		local
+			l_string: NS_STRING
+			l_dictionary: NS_MUTABLE_DICTIONARY
+		do
+			create l_string.make_with_eiffel_string ("H:[second_view(first_view)]")
+			create l_dictionary.make
+			l_dictionary.set_object__for_key_ (first_view.attached_view, create {NS_STRING}.make_with_eiffel_string ("first_view"))
+			l_dictionary.set_object__for_key_ (second_view.attached_view, create {NS_STRING}.make_with_eiffel_string ("second_view"))
+			attached_view.add_constraints_ (constraint_utils.constraints_with_visual_format__options__metrics__views_ (l_string, 0, Void, l_dictionary))
+		end
+
 feature {EV_ANY_I} -- Widget constraints
 
 	left_constraint, right_constraint, top_constraint, bottom_constraint: NS_LAYOUT_CONSTRAINT

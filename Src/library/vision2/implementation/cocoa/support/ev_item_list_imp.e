@@ -65,9 +65,9 @@ feature {NONE} -- Implementation
 			end
 			v_imp.on_orphaned
 			remove_item_actions.call ([v_imp.attached_interface])
-			remove_item (v_imp)
 			v_imp.set_parent_imp (Void)
 			Precursor {EV_DYNAMIC_LIST_IMP} (i)
+			remove_item (v_imp)
 		end
 
 feature {EV_ANY_I} -- Implementation

@@ -41,6 +41,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
+			add_objc_callback ("did_check_box:", agent did_check_box)
 			add_objc_callback ("tableView:dataCellForTableColumn:row:", agent table_view__data_cell_for_table_column__row_)
 			add_objc_callback ("tableView:setObjectValue:forTableColumn:row:", agent table_view__set_object_value__for_table_column__row_)
 			Precursor {EV_LIST_IMP}
@@ -71,6 +72,8 @@ feature -- Delegate
 				-- NSSwitchButton = 3
 			l_result.set_button_type_ (3)
 			l_result.set_title_ (create {NS_STRING}.make_with_eiffel_string (i_th (a_row.as_integer_32 + 1).text))
+			l_result.set_target_ (Current)
+			l_result.set_action_ (create {OBJC_SELECTOR}.make_with_name ("did_check_box:"))
 			Result := l_result
 		end
 
@@ -80,6 +83,20 @@ feature -- Delegate
 				i_th (a_row.as_integer_32 + 1).enable_select
 			else
 				i_th (a_row.as_integer_32 + 1).disable_select
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	did_check_box (a_sender: NS_TABLE_VIEW)
+		local
+			l_clicked: INTEGER
+		do
+			l_clicked := a_sender.clicked_row.as_integer_32 + 1
+			if not i_th (l_clicked).is_selected then
+				check_actions.call ([i_th (l_clicked)])
+			else
+				uncheck_actions.call ([i_th (l_clicked)])
 			end
 		end
 

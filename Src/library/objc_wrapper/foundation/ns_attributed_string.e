@@ -47,7 +47,7 @@ feature -- NSAttributedString
 			end
 		end
 
-	size: detachable NS_SIZE
+	size: NS_SIZE
 			-- Manual implementation
 		do
 			create Result.make
@@ -92,7 +92,7 @@ feature {NONE} -- NSAttributedString Externals
 	objc_size (an_item: POINTER; result_pointer: POINTER)
 			-- Manual implementation.
 		external
-			"C inline use <Foundation/Foundation.h>"
+			"C inline use <Cocoa/Cocoa.h>"
 		alias
 			"[
 				*(NSSize *)$result_pointer = [(NSAttributedString *)$an_item size];
