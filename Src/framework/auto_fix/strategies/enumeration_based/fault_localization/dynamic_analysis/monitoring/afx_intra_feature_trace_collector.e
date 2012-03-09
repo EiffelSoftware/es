@@ -63,7 +63,6 @@ feature -- Basic operation
 			l_expression_set: DS_HASH_SET [AFX_PROGRAM_STATE_EXPRESSION]
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_timer: DEBUGGER_TIMER
 			l_time_left: INTEGER
 			l_retried: BOOLEAN
 		do
@@ -71,8 +70,8 @@ feature -- Basic operation
 				l_time_left := session.time_left
 				if l_time_left >= 0 then
 					reset_collector
-					l_timer := debugger_manager.new_timer
-					l_timer.actions.extend (agent quit_debugging)
+					dbg_timer := debugger_manager.new_timer
+					dbg_timer.actions.extend (agent quit_debugging)
 
 					register_general_action_listeners
 
@@ -87,9 +86,9 @@ feature -- Basic operation
 					debugger_manager.observer_provider.application_exited_actions.extend (l_app_exit_agent)
 
 						-- Start debugging the application.
-					l_timer.set_interval (l_time_left)
+					dbg_timer.set_interval (l_time_left)
 					start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory, {EXEC_MODES}.Run, False)
-					l_timer.set_interval (0)
+					dbg_timer.set_interval (0)
 
 						-- Unregister debugger event listener.
 					debugger_manager.observer_provider.application_stopped_actions.prune_all (l_app_stop_agent)
@@ -149,6 +148,12 @@ feature{NONE} -- Execution mode
 		do
 			Result := current_test_case_execution_mode = Mode_monitor
 		end
+
+	dbg_timer: DEBUGGER_TIMER
+			-- Debugger timer.
+
+	test_case_starting_time: DT_DATE_TIME
+			-- Time when the current test case started executing.
 
 feature{NONE} -- Execution Evetn Listener
 
@@ -226,6 +231,68 @@ feature{NONE} -- Event handler
 			event_actions.notify_on_new_test_case_found (test_case_info)
 
 			register_program_state_monitoring
+			test_case_starting_time := session.time_now
+			update_cutoff_time_for_test_case_execution (True)
+		end
+
+	time_left_for_test_case: INTEGER
+			-- Time left in milliseconds before the test case, and therefore the debugging session, should be stopped.
+			-- Negative value means time is up; 0 means unlimited time; positive value means limited time.
+		local
+			l_time_left_for_session, l_time_left_for_test_case: INTEGER
+			l_cutoff_time: INTEGER
+			l_past: INTEGER
+		do
+				-- Time left for the test case, despite the session time limit.
+			l_cutoff_time := session.config.max_test_case_execution_time * 1000
+			if l_cutoff_time > 0 then
+				if test_case_starting_time = Void then
+					l_time_left_for_test_case := 0
+				else
+					l_past := session.duration_from_time(test_case_starting_time).to_integer
+					if l_past >= l_cutoff_time then
+						l_time_left_for_test_case := -1
+					else
+						l_time_left_for_test_case := l_cutoff_time - l_past
+					end
+				end
+			else
+				l_time_left_for_test_case := 0
+			end
+
+			l_time_left_for_session := session.time_left
+			if l_time_left_for_session < 0 or else l_time_left_for_test_case < 0 then
+				Result := -1
+			elseif l_time_left_for_session = 0 or else l_time_left_for_test_case = 0 then
+				Result := l_time_left_for_session.max (l_time_left_for_test_case)
+			else
+				Result := l_time_left_for_session.min (l_time_left_for_test_case)
+			end
+		end
+
+	update_cutoff_time_for_test_case_execution (is_setting: BOOLEAN)
+			-- Set cutoff time for test case execution, when 'is_setting';
+			-- Otherwise, clear cutoff time.
+		require
+			dbg_timer_attached: dbg_timer /= Void
+		local
+			l_timer: DEBUGGER_TIMER
+			l_time_left, l_cutoff_time: INTEGER
+			l_max_time_per_test_case: INTEGER
+		do
+			l_timer := dbg_timer
+			if is_setting then
+				l_time_left := time_left_for_test_case
+				if l_time_left < 0 then
+					l_cutoff_time := 0
+					quit_debugging
+				else
+					l_cutoff_time := l_time_left
+				end
+			else
+				l_cutoff_time := 0
+			end
+			l_timer.set_interval (l_cutoff_time)
 		end
 
 	on_breakpoint_hit_in_test_case (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
@@ -233,6 +300,7 @@ feature{NONE} -- Event handler
 			-- `a_breakpoint' is a break point in a test case.
 			-- `a_state' stores the values of all evaluated expressions'.
 		do
+			update_cutoff_time_for_test_case_execution (False)
 			a_state.keep_if (
 				agent (a_equation: EPA_EQUATION): BOOLEAN
 					do
@@ -241,6 +309,7 @@ feature{NONE} -- Event handler
 
 			test_case_execution_event_listeners.do_all (agent {AFX_TEST_CASE_EXECUTION_EVENT_LISTENER}.on_breakpoint_hit (test_case_info, a_state, a_breakpoint.breakable_line_number))
 			event_actions.notify_on_break_point_hit (test_case_info, a_breakpoint.breakable_line_number)
+			update_cutoff_time_for_test_case_execution (True)
 		end
 
 	on_application_exit (a_dm: DEBUGGER_MANAGER)
@@ -262,6 +331,8 @@ feature{NONE} -- Event handler
 					a_dm.application.kill
 				else
 					if a_dm.application_status.exception_occurred then
+						update_cutoff_time_for_test_case_execution (False)
+
 						if not is_in_mode_monitor then
 								-- Corresponds to the execution of the first test case, which is used to reproduce the fault.
 
@@ -277,6 +348,8 @@ feature{NONE} -- Event handler
 						end
 							-- Remove any breakpoint that might interfere with monitoring.
 						unregister_program_state_monitoring (Void, a_dm)
+
+						update_cutoff_time_for_test_case_execution (True)
 					end
 
 						-- Resume anyway.

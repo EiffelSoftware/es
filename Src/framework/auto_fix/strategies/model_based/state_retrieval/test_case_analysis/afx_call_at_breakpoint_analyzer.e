@@ -34,6 +34,7 @@ feature -- Analysis setting
 
 	nested_breakpoint_index: INTEGER
 			-- Position inside `caller_feature' where the call is made.
+			-- NOTE: See comment for `current_nested_breakpoint_index'.
 
 	callee_class: CLASS_C
 			-- Callee class.
@@ -105,14 +106,10 @@ feature --  Visitor routine (Ref: AST_DEBUGGER_BREAKABLE_STRATEGY)
 			-- <Precursor>
 			-- Refer to {NESTED_BL}.generate for calculating breakpoint nested indexes.
 		do
-			enter_nested
 			l_as.target.process (Current)
-				-- If nested target is a feature, increase nested breakpoint index.
-				-- Refer to {MELTED_GENERATOR}.
-			if current_nested_level > 1 or else not local_variables.has (l_as.target.access_name_32) then
-				current_nested_breakpoint_index := current_nested_breakpoint_index + 1
-			end
-			process_feature_call (current_nested, l_as.message)
+			enter_nested
+			current_nested_expression_stack.put (text_from_ast(l_as.target))
+			current_nested_breakpoint_index := current_nested_breakpoint_index + 1
 			l_as.message.process (Current)
 			exit_nested
 		end
@@ -121,10 +118,11 @@ feature --  Visitor routine (Ref: AST_DEBUGGER_BREAKABLE_STRATEGY)
 			-- <Precursor>
 			-- Refer to {NESTED_BL}.generate for calculating breakpoint nested indexes.
 		do
-			enter_nested
 			l_as.target.process (Current)
+			enter_nested
+			current_nested_expression_stack.put (text_from_ast(l_as.target))
 			current_nested_breakpoint_index := current_nested_breakpoint_index + 1
-			process_feature_call (current_nested, l_as.message)
+			-- process_feature_call (current_nested, l_as.message)
 			l_as.message.process (Current)
 			exit_nested
 		end
@@ -134,9 +132,7 @@ feature --  Visitor routine (Ref: AST_DEBUGGER_BREAKABLE_STRATEGY)
 		local
 			l_precursor_table: LINKED_LIST [TUPLE [feat: FEATURE_I; parent_type: CL_TYPE_A]]
 		do
-			if is_within_nested then
-				current_nested_expression_stack.put (text_from_ast (l_as))
-			elseif not is_result_set then
+			if not is_result_set then
 				l_precursor_table := precursor_table (l_as, caller_class, caller_feature.rout_id_set)
 				check unique_precursor: l_precursor_table.count = 1 end
 				l_precursor_table.start
@@ -156,18 +152,12 @@ feature --  Visitor routine (Ref: AST_DEBUGGER_BREAKABLE_STRATEGY)
 			-- <Precursor>
 		do
 			precursor (l_as)
-			if is_within_nested then
-				current_nested_expression_stack.put (text_from_ast (l_as))
-			end
 		end
 
 	process_result_as (l_as: RESULT_AS)
 			-- <Precursor>
 		do
 			precursor (l_as)
-			if is_within_nested then
-				current_nested_expression_stack.put (text_from_ast (l_as))
-			end
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -180,9 +170,9 @@ feature --  Visitor routine (Ref: AST_DEBUGGER_BREAKABLE_STRATEGY)
 			l_access_name := l_as.access_name_8
 			l_text := text_from_ast (l_as)
 			if is_within_nested then
+				process_feature_call (current_nested, l_as)
 				current_nested_expression_stack.put (l_text)
-			end
-			if not local_variables.has (l_access_name) then
+			elseif not local_variables.has (l_access_name) then
 				process_feature_call ("Current", l_as)
 			end
 
@@ -220,6 +210,11 @@ feature{NONE} -- Access
 
 	current_nested_breakpoint_index: INTEGER
 			-- Nested breakpoint index at the current processing position.
+			--
+			-- NOTE: evaluation order of expressions has to be considered to compute the
+			--		 nested breakpoint index correctly.
+			--		 This is not the case in the current implementation,
+			--		 therefore, we only use the name of the callee to locate the call.
 
 	is_result_set: BOOLEAN
 			-- Is result already set?
@@ -267,7 +262,7 @@ feature{NONE} -- Implementation
 			l_feature_name: STRING
 			l_parameters: EIFFEL_LIST [EXPR_AS]
 		do
-			if not is_result_set and then current_nested_breakpoint_index = nested_breakpoint_index then
+			if not is_result_set then -- and then current_nested_breakpoint_index = nested_breakpoint_index then
 				if attached {ACCESS_FEAT_AS} a_message as lt_access then
 					l_feature_name := lt_access.access_name_8
 					l_parameters := lt_access.parameters
@@ -296,8 +291,9 @@ feature{NONE} -- Implementation
 			class_attached: a_target_class /= Void
 			feature_name_not_empty: a_feature_name /= Void and then not a_feature_name.is_empty
 		do
-			Result := (nested_breakpoint_index = 0 or else a_nested_breakpoint_index = nested_breakpoint_index)
-					and then (callee_class = Void or else callee_class.conform_to (a_target_class))
+			Result := -- (nested_breakpoint_index = 0 or else a_nested_breakpoint_index = nested_breakpoint_index)
+					-- and then
+					(callee_class = Void or else callee_class.conform_to (a_target_class))
 					and then a_feature_name ~ callee_name
 		end
 
