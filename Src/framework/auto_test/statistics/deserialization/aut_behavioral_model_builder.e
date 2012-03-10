@@ -41,7 +41,7 @@ feature -- Data event handler
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
-			l_feature_under_test: STRING
+			l_feature_under_test, l_fault_signature: STRING
 			l_model: EPA_BEHAVIORAL_MODEL
 			l_retried: BOOLEAN
 		do
@@ -64,9 +64,9 @@ feature -- Data event handler
 							end
 						end
 					else
-						l_feature_under_test := a_data.class_and_feature_under_test
-						if not last_faulty_features.has(l_feature_under_test) and then is_interesting_faulty_feature_under_test (l_feature_under_test) then
-							last_faulty_features.force (l_feature_under_test)
+						l_fault_signature := a_data.class_and_feature_under_test + ":" + a_data.exception_signature
+						if not last_faulty_features.has(l_fault_signature) and then is_interesting_faulty_feature_under_test (l_fault_signature) then
+							last_faulty_features.force (l_fault_signature)
 						end
 					end
 				end
@@ -170,7 +170,7 @@ feature{NONE} -- Access
 
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
