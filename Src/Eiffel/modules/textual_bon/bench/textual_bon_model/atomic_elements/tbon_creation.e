@@ -1,11 +1,11 @@
 note
-	description: "The export clause in a textual BON feature describing its visibility."
+	description: "A creation in a system described in a BON specification."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_SELECTIVE_EXPORT
+	TBON_CREATION
 
 inherit
 	TEXTUAL_BON_ELEMENT
@@ -17,26 +17,22 @@ inherit
 		end
 
 create
-	make_element, make_element_with_class_list
+	make_element
 
 feature -- Initialization
-	make_element
-			-- Create a selective export element.
+	make_element (creator_class: TBON_CLASS; created_classes: LIST[TBON_CLASS])
+			-- Create a creation element.
 		do
-			class_list := Void
-		end
-
-	make_element_with_class_list (cl_list: LIST[TBON_CLASS])
-			-- Create a selective export element with the given class list.
-		do
-			class_list := cl_list
+			creator := creator_class
+			created_class_list := created_classes
 		end
 
 feature -- Access
-	class_list: LIST[TBON_CLASS]
-			-- What classes are listed in this export clause?
-			-- Empty list: export status NONE
-			-- No/Void list: export status ANY
+	creator: attached TBON_CLASS
+			-- Which class is the creator of this creation?
+
+	created_class_list: attached LIST[TBON_CLASS]
+			-- Which classes are created by the creator of this chart?
 
 feature -- Processing
 	process_to_textual_bon
@@ -47,45 +43,35 @@ feature -- Processing
 			l_is_first_list_item: BOOLEAN
 			i: INTEGER
 		do
-			if has_class_list then
-				l_text_formatter_decorator.process_symbol_text (ti_l_curly)
-				l_text_formatter_decorator.put_space
+			l_text_formatter_decorator := text_formatter_decorator
 
-				if class_list.count < 0 then
-					from
-						i := 0
-						l_is_first_list_item := True
-					until
-						i >= class_list.count
-					loop
-						if not l_is_first_list_item then
-							l_text_formatter_decorator.process_symbol_text (ti_comma)
-							l_text_formatter_decorator.put_space
-							l_is_first_list_item := False
-						end
-						l_text_formatter_decorator.process_string_text (class_list.i_th (i).name, Void)
-
-						i := i + 1
-					end
-				else
-					l_text_formatter_decorator.process_string_text (bti_none_class_name, Void)
+			l_text_formatter_decorator.process_keyword_text (bti_creator_keyword, Void)
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_string_text (creator.name, Void)
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_keyword_text (bti_creates_keyword, Void)
+			l_text_formatter_decorator.put_space
+			-- Process class names
+			from
+				i := 0
+				l_is_first_list_item := True
+			until
+				i >= created_class_list.count
+			loop
+				if not l_is_first_list_item then
+					l_text_formatter_decorator.process_symbol_text (ti_comma)
+					l_text_formatter_decorator.put_space
+					l_is_first_list_item := False
 				end
-
-				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_r_curly)
-
+				l_text_formatter_decorator.process_string_text (created_class_list.i_th (i).name, Void)
 			end
-				-- If no list is present, the implied export status is equivalent to { ANY }
+
 		end
 
-feature -- Status report
-	has_class_list: BOOLEAN
-			-- Does this export clause have an export list?
-		do
-			Result := class_list /= Void
-		end
+invariant
+	must_create_at_least_one_class: not created_class_list.is_empty
 
-note
+;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

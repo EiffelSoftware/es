@@ -1,17 +1,80 @@
 note
-	description: "A class in a BON specification."
+	description: "A feature in a class described by a BON specification."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	TBON_CLASS
+deferred class
+	TBON_FEATURE
+
+inherit
+	TEXTUAL_BON_ELEMENT
 
 feature -- Access
-	name: STRING
-			-- What is the name of this class?
+	comment: STRING
+			-- What is the comment of this feature?
 
-;note
+	-- What are the arguments to this feature? LIST[TUPLE[STRING, STRING]]?
+
+	name: STRING
+			-- What is the name of this feature?
+
+	renaming_clause: TBON_RENAMING_CLAUSE
+			-- What is the renaming clause of this feature?
+
+	-- What is this feature's precondition?
+	-- What is this feature's postcondition?
+
+
+feature -- Status report
+	is_deferred: BOOLEAN
+			-- Is this feature deferred?
+
+	is_effective: BOOLEAN
+			-- Is this feature effective?
+
+	is_redefined: BOOLEAN
+			-- Is this feature redefined?
+
+	is_renamed: BOOLEAN
+			-- Is this feature renamed?
+		do
+			Result := renaming_clause /= Void
+		end
+
+feature -- Status setting
+	set_deferred
+			-- Set this feature to be deferred.
+		do
+			is_deferred := True
+			is_effective := False
+		ensure
+			is_deferred: is_deferred
+			is_not_effective: not is_effective
+		end
+
+	set_effective
+			-- Set this feature to be effective.
+		do
+			is_effective := True
+			is_deferred := False
+		ensure
+			is_effective: is_effective
+			is_not_deferred: not is_deferred
+		end
+
+	set_redefined
+			-- Set this feature to be redefined.
+		do
+			is_redefined := True
+		ensure
+			is_redefined: is_redefined
+		end
+
+invariant
+	not_deferred_and_effective: is_deferred implies not is_effective
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

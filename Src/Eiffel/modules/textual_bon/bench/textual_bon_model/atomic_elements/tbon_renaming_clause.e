@@ -1,17 +1,27 @@
 note
-	description: "A class in a BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_RENAMING_CLAUSE}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_CLASS
+	TBON_RENAMING_CLAUSE
 
-feature -- Access
-	name: STRING
-			-- What is the name of this class?
+inherit
+	TEXTUAL_BON_ELEMENT
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon
+		end
 
-;note
+feature -- Processing
+	process_to_textual_bon
+			-- Process this element into textual BON.
+		do
+		end
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

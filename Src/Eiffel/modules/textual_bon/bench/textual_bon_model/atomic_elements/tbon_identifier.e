@@ -1,11 +1,11 @@
 note
-	description: "The export clause in a textual BON feature describing its visibility."
+	description: "An identifier in a textual BON specification."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_SELECTIVE_EXPORT
+	TBON_IDENTIFIER
 
 inherit
 	TEXTUAL_BON_ELEMENT
@@ -17,75 +17,55 @@ inherit
 		end
 
 create
-	make_element, make_element_with_class_list
+	make_element
 
 feature -- Initialization
-	make_element
-			-- Create a selective export element.
+	make_element (string_id: attached STRING)
+			-- Create an identifier from a string.
 		do
-			class_list := Void
+			string_representation := string_id
+			regex_matcher.compile (validation_pattern)
 		end
-
-	make_element_with_class_list (cl_list: LIST[TBON_CLASS])
-			-- Create a selective export element with the given class list.
-		do
-			class_list := cl_list
-		end
-
-feature -- Access
-	class_list: LIST[TBON_CLASS]
-			-- What classes are listed in this export clause?
-			-- Empty list: export status NONE
-			-- No/Void list: export status ANY
 
 feature -- Processing
 	process_to_textual_bon
 			-- Process this element into textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
-
-			l_is_first_list_item: BOOLEAN
-			i: INTEGER
 		do
-			if has_class_list then
-				l_text_formatter_decorator.process_symbol_text (ti_l_curly)
-				l_text_formatter_decorator.put_space
-
-				if class_list.count < 0 then
-					from
-						i := 0
-						l_is_first_list_item := True
-					until
-						i >= class_list.count
-					loop
-						if not l_is_first_list_item then
-							l_text_formatter_decorator.process_symbol_text (ti_comma)
-							l_text_formatter_decorator.put_space
-							l_is_first_list_item := False
-						end
-						l_text_formatter_decorator.process_string_text (class_list.i_th (i).name, Void)
-
-						i := i + 1
-					end
-				else
-					l_text_formatter_decorator.process_string_text (bti_none_class_name, Void)
-				end
-
-				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_r_curly)
-
-			end
-				-- If no list is present, the implied export status is equivalent to { ANY }
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_string_text (string_representation, Void)
 		end
 
-feature -- Status report
-	has_class_list: BOOLEAN
-			-- Does this export clause have an export list?
+feature -- Access
+	as_string: STRING
+			-- What is the string representation of this identifier?
 		do
-			Result := class_list /= Void
+			Result := string_representation
 		end
 
-note
+feature {NONE} -- Implementation
+	is_valid: BOOLEAN
+			-- Is this identifier valid?
+			-- An identifier must begin with an alphanumeric [a-zA-Z0-9] character.
+			-- An identifier must not end must not end with an underscore.
+		do
+			Result := regex_matcher.matches (string_representation) and not string_representation.ends_with (bti_underscore)
+		end
+
+	regex_matcher: RX_PCRE_MATCHER
+			-- Regex matcher used to determine validity of the identifier.
+
+	string_representation: attached STRING
+			-- The internal string representatio of this identifier.
+
+	validation_pattern: STRING = "^[a-zA-Z0-9]+.+$"
+			-- The pattern to which the string representation must conform.
+
+invariant
+	is_valid_identifier: is_valid
+
+;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
