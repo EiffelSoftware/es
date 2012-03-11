@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {TBON_TEXT_ITEMS}."
-	author: ""
+	description: "Text items used in textual BON specifications."
+	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,11 +20,20 @@ feature -- Access: BON keywords
 	bti_constraint_keyword: STRING = "constraint"
 			-- Informal textual BON keyword for the constraint clause.
 
+	bti_creates_keyword: STRING = "creates"
+			-- Textual BON keyword for specifying created classes in a creation clause.
+
+	bti_creator_keyword: STRING = "creator"
+			-- Textual BON keyword for specifying the creator of a creation clause.
+
 	bti_delta_keyword: STRING = "delta"
 			-- Textual BON keyword for a delta expression in an assertion.
 
 	bti_end_keyword: STRING = "end"
 			-- Textual BON keyword for ending a chart or diagram.
+
+	bti_event_keyword: STRING = "event"
+			-- Textual BON keyword for specifying an event.
 
 	bti_explanation_keyword: STRING = "explanation"
 			-- Informal textual BON keyword for the explanation clause.
@@ -34,6 +43,9 @@ feature -- Access: BON keywords
 
 	bti_inherit_keyword: STRING = "inherit"
 			-- Textual BON keyword for the inherit clause.
+
+	bti_involves_keyword: STRING = "involves"
+			-- Textual BON keyword for specifying involved classes.
 
 	bti_member_of_keyword: STRING = "member_of"
 			-- Textual BON keyword for expressing set membership.
@@ -106,6 +118,14 @@ feature -- Access: BON operators
 	bti_power_operator: STRING = "^"
 			-- Power operator for textual BON.
 			-- Is also used for renaming.
+
+feature -- Access: Special class names
+	bti_none_class_name: STRING = "NONE"
+			-- Class name for the BON class NONE (the class at the bottom of the inheritance hierarchy).
+
+feature -- Access: Characters
+	bti_underscore: STRING = "_"
+			-- The character "_"
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

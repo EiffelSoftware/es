@@ -20,7 +20,7 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (creator_class: TBON_CLASS; created_classes: LIST[TBON_CLASS])
+	make_element (creator_class: attached TBON_CLASS; created_classes: attached LIST[TBON_CLASS])
 			-- Create a creation element.
 		do
 			creator := creator_class
