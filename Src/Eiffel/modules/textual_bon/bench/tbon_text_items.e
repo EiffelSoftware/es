@@ -41,6 +41,9 @@ feature -- Access: BON keywords
 	bti_explanation_keyword: STRING = "explanation"
 			-- Informal textual BON keyword for the explanation clause.
 
+	bti_feature_keyword: STRING = "feature"
+			-- Textual BON keyword for the feature clause.
+
 	bti_indexing_keyword: STRING = "indexing"
 			-- Informal textual BON keyword for the indexing clause.
 

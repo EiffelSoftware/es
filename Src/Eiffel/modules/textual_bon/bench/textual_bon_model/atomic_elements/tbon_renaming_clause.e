@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {TBON_RENAMING_CLAUSE}."
-	author: ""
+	description: "A renaming clause of a feature in a class in textual BON."
+	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,11 +16,43 @@ inherit
 			process_to_textual_bon
 		end
 
+create
+	make_element
+
+feature -- Initialization
+	make_element (ancestor: attached TBON_CLASS; final_name_string: attached STRING)
+			-- Create a renaming clause element.
+		do
+			ancestor_class := ancestor
+			final_name := final_name_string
+		end
+
+feature -- Access
+	ancestor_class: attached TBON_CLASS
+			-- From which ancestor class is this feature being renamed?
+
+	final_name: attached STRING
+			-- What is the final name of the feature?
+
 feature -- Processing
 	process_to_textual_bon
 			-- Process this element into textual BON.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
 		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+			l_text_formatter_decorator.put_space
+			-- ^class_name.final_name
+			l_text_formatter_decorator.process_symbol_text (bti_power_operator)
+			ancestor_class.name.process_to_textual_bon
+			l_text_formatter_decorator.process_symbol_text (ti_dot)
+			l_text_formatter_decorator.process_string_text (final_name, Void)
+
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_symbol_text (ti_r_curly)
 		end
+
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

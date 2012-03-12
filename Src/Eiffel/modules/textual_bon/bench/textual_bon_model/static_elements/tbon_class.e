@@ -8,7 +8,7 @@ class
 	TBON_CLASS
 
 feature -- Access
-	name: STRING
+	name: TBON_IDENTIFIER
 			-- What is the name of this class?
 
 ;note

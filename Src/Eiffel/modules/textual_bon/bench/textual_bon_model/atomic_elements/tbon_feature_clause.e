@@ -1,11 +1,11 @@
 note
-	description: "The export clause in a textual BON feature describing its visibility."
+	description: "A feature clause containing features in a textual BON specification."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_SELECTIVE_EXPORT
+	TBON_FEATURE_CLAUSE
 
 inherit
 	TEXTUAL_BON_ELEMENT
@@ -17,73 +17,70 @@ inherit
 		end
 
 create
-	make_element, make_element_with_class_list
+	make_element
 
 feature -- Initialization
-	make_element
-			-- Create a selective export element.
+	make_element (comment_string: STRING; feature_list: attached LIST[TBON_FEATURE]; sel_export: TBON_SELECTIVE_EXPORT)
+			-- Create a feature clause element.
 		do
-			class_list := Void
-		end
-
-	make_element_with_class_list (cl_list: LIST[TBON_CLASS])
-			-- Create a selective export element with the given class list.
-		do
-			class_list := cl_list
+			comment := comment_string
+			features := feature_list
+			selective_export := sel_export
 		end
 
 feature -- Access
-	class_list: LIST[TBON_CLASS]
-			-- What classes are listed in this export clause?
-			-- Empty list: export status NONE
-			-- No/Void list: export status ANY
+	comment: STRING
+			-- What is the comment for this feature clause?
+
+	features: attached LIST[TBON_FEATURE]
+			-- What features are in this feature clause?
+
+	selective_export: TBON_SELECTIVE_EXPORT
+			-- What is the selective export of this feature clause?
 
 feature -- Processing
 	process_to_textual_bon
 			-- Process this element into textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
-
-			l_is_first_list_item: BOOLEAN
-			i: INTEGER
 		do
-			if has_class_list then
-				l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+			l_text_formatter_decorator := text_formatter_decorator
+
+			l_text_formatter_decorator.process_keyword_text (bti_feature_keyword, Void)
+			-- Process selective export
+			if has_selective_export then
 				l_text_formatter_decorator.put_space
-
-				if class_list.count > 0 then
-					from
-						i := 1
-						l_is_first_list_item := True
-					until
-						i >= class_list.count
-					loop
-						if not l_is_first_list_item then
-							l_text_formatter_decorator.process_symbol_text (ti_comma)
-							l_text_formatter_decorator.put_space
-							l_is_first_list_item := False
-						end
-						class_list.i_th (i).name.process_to_textual_bon
-
-						i := i + 1
-					end
-				else
-					l_text_formatter_decorator.process_string_text (bti_none_class_name, Void)
-				end
-
-				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_r_curly)
-
+				selective_export.process_to_textual_bon
 			end
-				-- If no list is present, the implied export status is equivalent to { ANY }
+			-- Process comment
+			if has_comment then
+				l_text_formatter_decorator.put_space
+				process_textual_bon_comment (comment)
+			end
+
+			l_text_formatter_decorator.put_new_line
+			l_text_formatter_decorator.indent
+
+			-- Process features
+			process_formal_textual_bon_list (features, Void, True)
+
 		end
 
 feature -- Status report
-	has_class_list: BOOLEAN
-			-- Does this export clause have an export list?
+	has_comment: BOOLEAN
+			-- Does this feaure clause have a comment?
 		do
-			Result := class_list /= Void
+			Result := comment /= Void
 		end
+
+	has_selective_export: BOOLEAN
+			-- Does this feature clause have a selective export clause?
+		do
+			Result := selective_export /= Void
+		end
+
+invariant
+	must_include_at_least_one_feature: not features.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

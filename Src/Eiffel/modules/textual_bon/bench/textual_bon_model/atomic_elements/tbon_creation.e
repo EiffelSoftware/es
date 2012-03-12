@@ -47,13 +47,13 @@ feature -- Processing
 
 			l_text_formatter_decorator.process_keyword_text (bti_creator_keyword, Void)
 			l_text_formatter_decorator.put_space
-			l_text_formatter_decorator.process_string_text (creator.name, Void)
+			creator.name.process_to_textual_bon
 			l_text_formatter_decorator.put_space
 			l_text_formatter_decorator.process_keyword_text (bti_creates_keyword, Void)
 			l_text_formatter_decorator.put_space
 			-- Process class names
 			from
-				i := 0
+				i := 1
 				l_is_first_list_item := True
 			until
 				i >= created_class_list.count
@@ -63,7 +63,7 @@ feature -- Processing
 					l_text_formatter_decorator.put_space
 					l_is_first_list_item := False
 				end
-				l_text_formatter_decorator.process_string_text (created_class_list.i_th (i).name, Void)
+				created_class_list.i_th (i).name.process_to_textual_bon
 			end
 
 		end

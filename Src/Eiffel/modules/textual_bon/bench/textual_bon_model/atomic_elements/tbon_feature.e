@@ -9,24 +9,68 @@ deferred class
 
 inherit
 	TEXTUAL_BON_ELEMENT
+		redefine
+			process_to_informal_textual_bon
+		end
 
 feature -- Access
+	arguments: LIST[TUPLE[STRING, STRING]]
+			-- What are the arguments to this feature?
+
 	comment: STRING
 			-- What is the comment of this feature?
 
-	-- What are the arguments to this feature? LIST[TUPLE[STRING, STRING]]?
-
-	name: STRING
+	name: attached TBON_IDENTIFIER
 			-- What is the name of this feature?
 
 	renaming_clause: TBON_RENAMING_CLAUSE
 			-- What is the renaming clause of this feature?
 
-	-- What is this feature's precondition?
-	-- What is this feature's postcondition?
+	postcondition: TBON_POSTCONDITION
+			-- What is the postcondition of this feature?
 
+	precondition: TBON_PRECONDITION
+			-- What is the precondition of this feature?
+
+feature -- Processing
+	process_to_informal_bon
+			-- Process this element into informal textual BON.
+		require else
+			has_comment: has_comment
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
+			l_text_formatter_decorator.process_string_text (comment, Void)
+			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
+		end
 
 feature -- Status report
+	has_arguments: BOOLEAN
+			-- Does this feature have any arguments?
+		do
+			Result := arguments /= Void
+		end
+
+	has_comment: BOOLEAN
+			-- Does this feature have a comment
+		do
+			Result := comment /= Void
+		end
+
+	has_postcondition: BOOLEAN
+			-- Does this feature have a postcondition?
+		do
+			Result := postcondition /= Void
+		end
+
+	has_precondition: BOOLEAN
+			-- Does this feature have a precondition?
+		do
+			Result := precondition /= Void
+		end
+
 	is_deferred: BOOLEAN
 			-- Is this feature deferred?
 
@@ -73,6 +117,7 @@ feature -- Status setting
 
 invariant
 	not_deferred_and_effective: is_deferred implies not is_effective
+	must_have_arguments_if_not_void: has_arguments implies not arguments.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
