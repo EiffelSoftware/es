@@ -1,39 +1,59 @@
 note
-	description: "A precondition for a feature."
+	description: "A specific type of class."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_PRECONDITION
+	TBON_CLASS_TYPE
 
 inherit
-	TBON_CONSTRAINT
+	TBON_TYPE
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
-			process_to_formal_textual_bon
+			process_to_textual_bon
 		end
 
 create
 	make_element
 
+feature -- Access
+	actual_generics: LIST[TBON_TYPE]
+			-- What are the actual generics of this class type?
+
+	name: attached STRING
+			-- What is the name of this class?
+
 feature -- Initialization
-	make_element (l_assertion: like assertion)
-			-- Make a precondition.
+	make_element (l_name: like name)
+			-- Create a class type.
 		do
-			assertion ?= l_assertion
+			name ?= l_name
 		end
 
-feature -- Processing
-	process_to_formal_textual_bon
-			-- Process the precondition to formal bon
+feature -- Process
+	process_to_textual_bon
+			-- Process this class type to formal textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+			x: INTEGER
+			not_first: BOOLEAN
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_require_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-		 	assertion.process_to_formal_textual_bon
+			l_text_formatter_decorator.process_string_text (name, Void)
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_symbol_text (ti_l_bracket)
+			process_formal_textual_bon_list(actual_generics, ", ", False)
+			l_text_formatter_decorator.process_symbol_text (ti_r_bracket)
+		end
+
+feature -- Status report
+	has_actual_generics: BOOLEAN
+			-- Does this class type have any actual generics?
+		do
+			Result := actual_generics /= Void or else actual_generics.is_empty
 		end
 
 note

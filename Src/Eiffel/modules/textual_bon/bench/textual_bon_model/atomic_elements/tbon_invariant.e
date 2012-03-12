@@ -20,7 +20,7 @@ feature -- Initialization
 	make_element (l_assertion: like assertion)
 			-- Make an invariant for a class.
 		do
-			set_assertion (l_assertion)
+			assertion ?= l_assertion
 		end
 
 feature -- Processing

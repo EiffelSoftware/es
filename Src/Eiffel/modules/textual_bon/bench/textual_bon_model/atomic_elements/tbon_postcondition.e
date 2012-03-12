@@ -18,14 +18,14 @@ create
 
 feature -- Initialization
 	make_element (l_assertion: like assertion)
-			-- Make a postcondition
+			-- Make a postcondition.
 		do
-			set_assertion (l_assertion)
+			assertion ?= l_assertion
 		end
 
 feature -- Processing
 	process_to_formal_textual_bon
-			-- Process postcondition to formal bon
+			-- Process postcondition to formal bon.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do

@@ -1,40 +1,14 @@
 note
-	description: "A precondition for a feature."
+	description: "A type in the system."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	TBON_PRECONDITION
+deferred class
+	TBON_TYPE
 
 inherit
-	TBON_CONSTRAINT
-		redefine
-			process_to_formal_textual_bon
-		end
-
-create
-	make_element
-
-feature -- Initialization
-	make_element (l_assertion: like assertion)
-			-- Make a precondition.
-		do
-			assertion ?= l_assertion
-		end
-
-feature -- Processing
-	process_to_formal_textual_bon
-			-- Process the precondition to formal bon
-		local
-			l_text_formatter_decorator: like text_formatter_decorator
-		do
-			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_require_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-		 	assertion.process_to_formal_textual_bon
-		end
+	TEXTUAL_BON_ELEMENT
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

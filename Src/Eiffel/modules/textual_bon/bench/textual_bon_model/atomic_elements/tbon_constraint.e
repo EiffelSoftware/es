@@ -14,21 +14,11 @@ inherit
 	end
 
 feature -- Access
-	get_assertion: like assertion
+	assertion: attached TBON_ASSERTION
 			-- What is the assertion of this constraint?
-		do
-			Result := assertion
-		end
 
-	get_label: like label
+	label: STRING
 			-- What is the label for this constraint?
-		require
-			has_a_label: has_label
-		do
-			Result := label
-		ensure
-			Result_not_void: Result /= Void
-		end
 
 feature -- Processing
 	process_to_informal_textual_bon
@@ -40,13 +30,6 @@ feature -- Processing
 			assertion.process_to_informal_textual_bon
 		end
 
-feature {NONE} -- Status
-	assertion: TBON_ASSERTION
-			-- The assertion of a constraint.
-
-	label: STRING
-			-- The label of a constraint.
-
 feature -- Status report
 	has_label: BOOLEAN
 			-- Does this constraint have a label?
@@ -56,25 +39,13 @@ feature -- Status report
 			has_a_labl: Result implies label /= Void
 		end
 
-feature -- Status setting
-	set_assertion (l_assertion: like assertion)
-			-- Update the assertion of the constraint
-		require
-			input_not_void: l_assertion /= Void
-		do
-			assertion ?= l_assertion
-		ensure
-			l_assertion /= Void implies assertion = l_assertion
-		end
-		
+feature -- Element change
+
 	set_label (l_label: like label)
 			-- Update the label of the constraint.
 		do
 			label := l_label
 		end
-
-invariant
-	has_assertion: assertion /= Void
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

@@ -1,39 +1,40 @@
 note
-	description: "A precondition for a feature."
+	description: "A formal generic name."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_PRECONDITION
+	TBON_FORMAL_GENERIC_NAME
 
 inherit
-	TBON_CONSTRAINT
+	TBON_TYPE
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
-			process_to_formal_textual_bon
+			process_to_textual_bon
 		end
 
 create
 	make_element
 
+feature -- Access
+	identifier: attached TBON_IDENTIFIER
+			-- What is the identifier of this formal generic name?
+
 feature -- Initialization
-	make_element (l_assertion: like assertion)
-			-- Make a precondition.
+	make_element (l_identifier: like identifier)
+			-- Make a formal generic name.
 		do
-			assertion ?= l_assertion
+			identifier ?= l_identifier
 		end
 
-feature -- Processing
-	process_to_formal_textual_bon
-			-- Process the precondition to formal bon
-		local
-			l_text_formatter_decorator: like text_formatter_decorator
+feature -- Process
+	process_to_textual_bon
+			-- Process this formal generic name
 		do
-			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_require_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-		 	assertion.process_to_formal_textual_bon
+			
 		end
 
 note
