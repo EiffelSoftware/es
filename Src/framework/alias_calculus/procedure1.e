@@ -27,7 +27,6 @@ feature {NONE} -- Initializaation
 				set: name = n
 				aliases_exist: aliases /= Void
 				aliases_empty: aliases.is_empty
-
 			end
 
 

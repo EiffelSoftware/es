@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="alias_calculus" uuid="A91C9AB6-7F3B-41B2-BB86-EAC3AAA876CC">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="alias_calculus" uuid="A91C9AB6-7F3B-41B2-BB86-EAC3AAA876CC">
 	<target name="alias_calculus">
 		<root cluster="alias_calculus" class="APPLICATION" feature="make"/>
 		<option debug="true" warning="true" full_class_checking="false" cat_call_detection="true" void_safety="none" syntax="provisional">

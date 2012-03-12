@@ -224,7 +224,7 @@ feature -- Element change
 		end
 
 	add (other: ALIAS_RElATION)
-			-- Add all aliases from òther'.
+			-- Add all aliases from `other'.
 		require
 			exists: other /= Void
 			different: other /= Current

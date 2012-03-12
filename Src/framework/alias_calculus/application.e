@@ -20,8 +20,6 @@ feature {NONE} -- Initialization
 
 	make
 			-- Build a program and compute its aliases.
-		local
-			l: LINKED_LIST [INTEGER]
 		do
 			fill_examples
 			get_environment_example_number
