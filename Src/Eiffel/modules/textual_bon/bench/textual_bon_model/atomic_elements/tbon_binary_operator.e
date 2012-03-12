@@ -52,7 +52,7 @@ feature -- Processing
 			l_text_formatter_decorator.process_symbol_text (item)
 		end
 
-feature -- Status setting
+feature -- Element change
 --	Operators: +, -, *, /, <, >, <=, >=, =, /=, //, \\, ^, or, xor, and, ->, <->, member_of, :
 
 	set_as_and

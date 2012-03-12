@@ -26,8 +26,14 @@ feature -- Access: BON keywords
 	bti_creator_keyword: STRING = "creator"
 			-- Textual BON keyword for specifying the creator of a creation clause.
 
+	bti_deferred_keyword: STRING = "deferred"
+			-- Textual BON keyword for specifying a deferred class or feature.
+
 	bti_delta_keyword: STRING = "delta"
 			-- Textual BON keyword for a delta expression in an assertion.
+
+	bti_effective_keyword: STRING = "effective"
+			-- Textual BON keyword for specifying an effective class or feature.
 
 	bti_end_keyword: STRING = "end"
 			-- Textual BON keyword for ending a chart or diagram.
@@ -73,6 +79,9 @@ feature -- Access: BON keywords
 
 	bti_query_keyword: STRING = "query"
 			-- Informal textual BON keyword for the query clause.
+
+	bti_redefined_keyword: STRING = "redefined"
+			-- Textual BON keyword specifying a redefined feature.
 
 	bti_require_keyword: STRING = "require"
 			-- Formal textual BON keyword for a precondition.
@@ -136,8 +145,17 @@ feature -- Access: Special class names
 			-- Class name for the BON class NONE (the class at the bottom of the inheritance hierarchy).
 
 feature -- Access: Characters
+	bti_arrow: STRING = "->"
+			-- The character "->"
+
+	bti_backslash: STRING = "\"
+			-- The character "\"
+
 	bti_underscore: STRING = "_"
 			-- The character "_"
+
+feature -- Access: Type marks
+	bti_aggregation_mark: STRING = ":{"
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

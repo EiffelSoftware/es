@@ -4,21 +4,46 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	TBON_FEATURE
 
 inherit
 	TEXTUAL_BON_ELEMENT
 		redefine
-			process_to_informal_textual_bon
+			process_to_informal_textual_bon,
+			process_to_formal_textual_bon
+		end
+
+create
+	make_element
+
+feature -- Initialization
+	make_element (feature_name: attached TBON_IDENTIFIER;
+				  feature_arguments: LIST[TBON_FEATURE_ARGUMENT];
+				  feature_type: TBON_TYPE;
+				  feature_type_mark: TBON_TYPE_MARK;
+				  feature_comments: LIST[STRING];
+				  feature_renaming_clause: TBON_RENAMING_CLAUSE;
+				  feature_precondition: TBON_PRECONDITION;
+				  feature_postcondition: TBON_POSTCONDITION)
+			-- Create a feature element
+		do
+			name 			:= feature_name
+			arguments 		:= feature_arguments
+			type 			:= feature_type
+			type_mark		:= feature_type_mark
+			comments		:= feature_comments
+			renaming_clause := feature_renaming_clause
+			precondition 	:= feature_precondition
+			postcondition 	:= feature_postcondition
 		end
 
 feature -- Access
-	arguments: LIST[TUPLE[STRING, STRING]]
+	arguments: LIST[TBON_FEATURE_ARGUMENT]
 			-- What are the arguments to this feature?
 
-	comment: STRING
-			-- What is the comment of this feature?
+	comments: LIST[STRING]
+			-- What are the comments for this feature?
 
 	name: attached TBON_IDENTIFIER
 			-- What is the name of this feature?
@@ -32,18 +57,145 @@ feature -- Access
 	precondition: TBON_PRECONDITION
 			-- What is the precondition of this feature?
 
+	type: TBON_TYPE
+			-- What is the type of this feature?
+
+	type_mark: TBON_TYPE_MARK
+			-- What is the type mark of this feature?
+
 feature -- Processing
-	process_to_informal_bon
+	process_to_informal_textual_bon
 			-- Process this element into informal textual BON.
 		require else
-			has_comment: has_comment
+			has_comments: has_comments
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+
+			l_is_first_item_in_list: BOOLEAN
+			i: INTEGER
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+
+			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
+			from
+				i := 1
+				l_is_first_item_in_list := True
+			until
+				i >= comments.count
+			loop
+				-- If there are multiple comments, put them on separate lines.
+				if not l_is_first_item_in_list then
+					l_text_formatter_decorator.process_string_text (bti_backslash, Void)
+					l_text_formatter_decorator.put_new_line
+					l_text_formatter_decorator.process_string_text (bti_backslash, Void)
+					l_text_formatter_decorator.put_space
+					l_is_first_item_in_list := False
+				end
+				l_text_formatter_decorator.process_string_text (comments.i_th (i), Void)
+
+				i := i + 1
+			end
+			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
+		end
+
+	process_to_formal_textual_bon
+			-- Process this element into formal textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
-			l_text_formatter_decorator.process_string_text (comment, Void)
-			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
+
+			-- deferred/effective/redefined
+			process_status
+
+			l_text_formatter_decorator.put_space
+
+			-- Feature name
+			name.process_to_textual_bon
+
+			-- Process type
+			if has_type then
+				-- Process type mark
+				type_mark.process_to_textual_bon
+				l_text_formatter_decorator.put_space
+				type.process_to_formal_textual_bon
+			end
+
+			-- Process renaming clause
+			if is_renamed then
+				renaming_clause.process_to_textual_bon
+			end
+
+			l_text_formatter_decorator.put_new_line
+			l_text_formatter_decorator.indent
+			l_text_formatter_decorator.indent
+
+			-- Process comments
+			if has_comments then
+				process_comments_into_formal_textual_bon
+			end
+
+			l_text_formatter_decorator.exdent
+
+			-- Process arguments
+			if has_arguments then
+				process_formal_textual_bon_list (arguments, Void, True)
+				l_text_formatter_decorator.put_new_line
+			end
+
+			-- Process contracts
+			if has_precondition then
+				precondition.process_to_formal_textual_bon
+				l_text_formatter_decorator.put_new_line
+			end
+			if has_postcondition then
+				postcondition.process_to_formal_textual_bon
+				l_text_formatter_decorator.put_new_line
+			end
+			if has_precondition or has_postcondition then
+				l_text_formatter_decorator.process_keyword_text (bti_end_keyword, Void)
+			end
+
+		end
+
+feature {NONE} -- Implementation: Processing
+	process_comments_into_formal_textual_bon
+			-- Process feature comments into formal textual BON.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+
+			l_is_first_list_item: BOOLEAN
+			i: INTEGER
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			from
+				i := 1
+				l_is_first_list_item := True
+			until
+				i >= comments.count
+			loop
+				if not l_is_first_list_item then
+					l_text_formatter_decorator.put_new_line
+					l_is_first_list_item := False
+				end
+				process_textual_bon_comment (comments.i_th (i))
+			end
+		end
+
+	process_status
+			-- Process the status (deferred/effective/redefined) of the feature.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+
+			if is_deferred then
+				l_text_formatter_decorator.process_keyword_text (bti_deferred_keyword, Void)
+			elseif is_effective then
+				l_text_formatter_decorator.process_keyword_text (bti_effective_keyword, Void)
+			elseif is_redefined then
+				l_text_formatter_decorator.process_keyword_text (bti_redefined_keyword, Void)
+			end
 		end
 
 feature -- Status report
@@ -53,10 +205,10 @@ feature -- Status report
 			Result := arguments /= Void
 		end
 
-	has_comment: BOOLEAN
-			-- Does this feature have a comment
+	has_comments: BOOLEAN
+			-- Does this feature have comments?
 		do
-			Result := comment /= Void
+			Result := comments /= Void
 		end
 
 	has_postcondition: BOOLEAN
@@ -69,6 +221,12 @@ feature -- Status report
 			-- Does this feature have a precondition?
 		do
 			Result := precondition /= Void
+		end
+
+	has_type: BOOLEAN
+			-- Does this feature have a type?
+		do
+			Result := type /= Void
 		end
 
 	is_deferred: BOOLEAN
@@ -92,9 +250,11 @@ feature -- Status setting
 		do
 			is_deferred := True
 			is_effective := False
+			is_redefined := False
 		ensure
 			is_deferred: is_deferred
 			is_not_effective: not is_effective
+			is_not_redefined: not is_redefined
 		end
 
 	set_effective
@@ -102,22 +262,32 @@ feature -- Status setting
 		do
 			is_effective := True
 			is_deferred := False
+			is_redefined := False
 		ensure
 			is_effective: is_effective
 			is_not_deferred: not is_deferred
+			is_not_redefined: not is_redefined
 		end
 
 	set_redefined
 			-- Set this feature to be redefined.
 		do
 			is_redefined := True
+			is_deferred := False
+			is_effective := False
 		ensure
 			is_redefined: is_redefined
+			is_not_deferred: not is_deferred
+			is_not_effective: not is_effective
 		end
 
 invariant
-	not_deferred_and_effective: is_deferred implies not is_effective
+	deferred_status_is_consistent: is_deferred implies not is_effective and not is_redefined
+	effective_status_is_consistent: is_effective implies not is_deferred and not is_redefined
+	redefined_status_is_consistent: is_redefined implies not is_deferred and not is_effective
 	must_have_arguments_if_not_void: has_arguments implies not arguments.is_empty
+	must_have_comments_if_not_void: has_comments implies not comments.is_empty
+	must_have_type_mark_if_type_is_present: has_type implies type_mark /= Void
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

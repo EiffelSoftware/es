@@ -16,6 +16,7 @@ inherit
 feature -- Processing
 	process_formal_textual_bon_list (list: attached LIST[TEXTUAL_BON_ELEMENT]; separator: STRING; line_break_after_each_list_item: BOOLEAN)
 			-- Process the list items into formal textual BON.
+			-- Separator can be Void.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 
@@ -50,6 +51,7 @@ feature -- Processing
 
 	process_informal_textual_bon_list (list: attached LIST[TEXTUAL_BON_ELEMENT]; separator: STRING; line_break_after_each_list_item: BOOLEAN)
 			-- Process the list items into informal textual BON.
+			-- Separator can be Void
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 

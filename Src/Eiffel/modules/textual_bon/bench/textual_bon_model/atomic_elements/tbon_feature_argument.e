@@ -1,14 +1,14 @@
 note
-	description: "A unary operator in a textual BON expression."
+	description: "An argument to a feature in textual BON."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_UNARY_OPERATOR
+	TBON_FEATURE_ARGUMENT
 
 inherit
-	TBON_OPERATOR
+	TEXTUAL_BON_ELEMENT
 		rename
 			process_to_informal_textual_bon as process_to_textual_bon,
 			process_to_formal_textual_bon as process_to_textual_bon
@@ -20,97 +20,45 @@ create
 	make_element
 
 feature -- Initialization
-	make_element
-			-- Create a unary operator.
+	make_element (arg_identifier: TBON_IDENTIFIER; arg_type: attached TBON_TYPE)
+			-- Create a feature argument element.
 		do
-			is_unary_operator := True
-			internal_value := Void
+			identifier := arg_identifier
+			type := arg_type
 		end
 
 feature -- Access
-	item: STRING
-			-- Which operator does this unary operator currently represent?
-		require
-			operator_set: is_set
-				-- An operator must be set.
+	identifier: TBON_IDENTIFIER
+			-- What is the identifier of this argument?
+
+	type: attached TBON_TYPE
+			-- What is the type of this argument?
+
+feature -- Status report
+	has_identifier: BOOLEAN
+			-- Does this feature argument have an identifier?
 		do
-			Result := internal_value
-		ensure
-			Result_not_void: Result /= Void
+			Result := identifier /= Void
 		end
 
 feature -- Processing
 	process_to_textual_bon
 			-- Process this element into textual BON.
-		require else
-			operator_set: is_set
-				-- An operator must be set.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_symbol_text (item)
+
+			l_text_formatter_decorator.process_string_text (bti_arrow, Void)
+			l_text_formatter_decorator.put_space
+
+			if has_identifier then
+				identifier.process_to_textual_bon
+				l_text_formatter_decorator.process_string_text (bti_colon_operator, Void)
+			end
+
+			type.process_to_formal_textual_bon
 		end
-
-feature -- Element change
--- Operators: delta, old, not, +, -
-
-	set_as_delta
-			-- Set unary operator to be a delta expression.
-		do
-			internal_value := bti_delta_keyword
-		ensure
-			is_delta: item.is_equal (bti_delta_keyword)
-		end
-
-	set_as_minus
-			-- Set unary operator to be a minus.
-		do
-			internal_value := bti_minus_operator
-		ensure
-			is_minus: item.is_equal (bti_minus_operator)
-		end
-
-	set_as_not
-			-- Set unary operator to be a delta expression.
-		do
-			internal_value := bti_not_keyword
-		ensure
-			is_not: item.is_equal (bti_not_keyword)
-		end
-
-
-	set_as_old
-			-- Set unary operator to be a delta expression.
-		do
-			internal_value := bti_old_keyword
-		ensure
-			is_old: item.is_equal (bti_old_keyword)
-		end
-
-	set_as_plus
-			-- Set unary operator to be a plus.
-		do
-			internal_value := bti_plus_operator
-		ensure
-			is_plus: item.is_equal (bti_plus_operator)
-		end
-
-feature -- Status report
-	is_set: BOOLEAN
-			-- Is the unary operator set to represent a specific operator?
-		do
-			Result := internal_value /= Void
-		end
-
-
-feature {NONE} -- Implementation
-	internal_value: STRING
-			-- What is the internal value of this unary operator?
-
-invariant
-	is_unary: is_unary_operator
-			-- This operator will always be a unary operator.
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
