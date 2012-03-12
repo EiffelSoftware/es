@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {SIMPLE}."
+	description: "Basic (non-composite) instruction, such as assignment or call."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

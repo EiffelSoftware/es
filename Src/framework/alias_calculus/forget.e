@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {FORGET}."
+	description: "Instruction that sets a variable to void"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -41,7 +41,7 @@ feature -- Basic operations
 feature -- Input and output
 
 	out: STRING
-			-- Printable representation of assignment.
+			-- Printable representation of forget instruction.
 		do
 			Result := tabs + "forget " + target.name + New_line
 		end
