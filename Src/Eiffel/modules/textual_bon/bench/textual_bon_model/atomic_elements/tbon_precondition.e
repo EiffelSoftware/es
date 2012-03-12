@@ -9,8 +9,11 @@ class
 
 inherit
 	TBON_CONSTRAINT
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
-			process_to_formal_textual_bon
+			process_to_textual_bon
 		end
 
 create
@@ -24,7 +27,7 @@ feature -- Initialization
 		end
 
 feature -- Processing
-	process_to_formal_textual_bon
+	process_to_textual_bon
 			-- Process the precondition to formal bon
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
