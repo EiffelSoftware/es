@@ -32,6 +32,9 @@ feature -- Access: BON keywords
 	bti_end_keyword: STRING = "end"
 			-- Textual BON keyword for ending a chart or diagram.
 
+	bti_ensure_keyword: STRING = "ensure"
+			-- Formal textual BON keyword for postconditions.
+
 	bti_event_keyword: STRING = "event"
 			-- Textual BON keyword for specifying an event.
 
@@ -43,6 +46,9 @@ feature -- Access: BON keywords
 
 	bti_inherit_keyword: STRING = "inherit"
 			-- Textual BON keyword for the inherit clause.
+
+	bti_invariant_keyword: STRING = "invariant"
+			-- Formal textual BON keyword for a class invariant.
 
 	bti_involves_keyword: STRING = "involves"
 			-- Textual BON keyword for specifying involved classes.
@@ -64,6 +70,9 @@ feature -- Access: BON keywords
 
 	bti_query_keyword: STRING = "query"
 			-- Informal textual BON keyword for the query clause.
+
+	bti_require_keyword: STRING = "require"
+			-- Formal textual BON keyword for a precondition.
 
 	bti_xor_keyword: STRING = "xor"
 			-- Textual BON keyword for exclusive-OR.
