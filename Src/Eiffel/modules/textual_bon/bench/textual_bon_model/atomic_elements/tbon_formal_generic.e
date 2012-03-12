@@ -1,14 +1,14 @@
-note
-	description: "A specific type of class."
+﻿note
+	description: "A formal generic."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_CLASS_TYPE
+	TBON_FORMAL_GENERIC
 
 inherit
-	TBON_TYPE
+	TEXTUAL_BON_ELEMENT
 		rename
 			process_to_informal_textual_bon as process_to_textual_bon,
 			process_to_formal_textual_bon as process_to_textual_bon
@@ -20,42 +20,39 @@ create
 	make_element
 
 feature -- Access
-	actual_generics: LIST[TBON_TYPE]
-			-- What are the actual generics of this class type?
+	class_type: TBON_CLASS_TYPE
+			-- What is this formal generic’s class type?
+	formal_generic_name: TBON_FORMAL_GENERIC_NAME
+			-- What is this formal generic’s formal generic name?
 
-	name: attached STRING
-			-- What is the name of this class?
-
-feature -- Initialization
-	make_element (l_name: like name)
-			-- Create a class type.
+feature -- Initializatoin
+	make_element (l_formal_generic_name: like formal_generic_name)
+			-- Create a formal generic.
 		do
-			name ?= l_name
+			formal_generic_name := l_formal_generic_name
 		end
 
 feature -- Process
 	process_to_textual_bon
-			-- Process this class type to formal textual BON.
+			-- Process this formal generic name.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_string_text (name, Void)
-			if
-				has_actual_generics
-			then
+			formal_generic_name.process_to_textual_bon
+			if has_generic_class_type then
 				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_l_bracket)
-				process_formal_textual_bon_list(actual_generics, ", ", False)
-				l_text_formatter_decorator.process_symbol_text (ti_r_bracket)
+				l_text_formatter_decorator.process_symbol_text (bti_implication_operator)
+				l_text_formatter_decorator.put_space
+				class_type.process_to_textual_bon
 			end
 		end
 
 feature -- Status report
-	has_actual_generics: BOOLEAN
-			-- Does this class type have any actual generics?
+	has_generic_class_type: BOOLEAN
+			-- Does this formal generic have a class type?
 		do
-			Result := actual_generics /= Void or else actual_generics.is_empty
+			Result := class_type /= Void
 		end
 
 note

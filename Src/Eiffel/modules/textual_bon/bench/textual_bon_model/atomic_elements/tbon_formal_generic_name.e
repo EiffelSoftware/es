@@ -32,9 +32,9 @@ feature -- Initialization
 
 feature -- Process
 	process_to_textual_bon
-			-- Process this formal generic name
+			-- Process this formal generic name.
 		do
-			
+			identifier.process_to_textual_bon
 		end
 
 note
