@@ -32,6 +32,12 @@ feature -- Access
 	aliases: ALIAS_RELATION
 			-- Alias relation being built
 
+	snapshots: HASH_TABLE [SNAP, STRING]
+			-- Snap instructions, indexed by their labels
+			once
+				create Result.make (1)
+			end
+
 feature -- Program construction
 
 	set (e: VARIABLE; f: EXPRESSION)
@@ -94,6 +100,26 @@ feature -- Program construction
 					-- Unchanged from precondition
 		end
 
+	snap (l: STRING)
+			-- Add at end of current block
+			-- a snap instruction with label `l'.
+		require
+			in_block: attached {COMPOUND} scope
+			label_exists: l /= Void
+			label_not_empty: not l.is_empty
+			label_not_taken: (snapshots /= Void) implies not snapshots.has (l)
+		local
+			sn: SNAP
+		do
+			create sn.make (l)
+			snapshots.put (sn, l)
+			extend (sn)
+		ensure
+			in_block: attached {COMPOUND} scope
+					-- Unchanged from precondition
+			recorded: snapshots.has (l)
+		end
+
 
 	printout (tag: STRING)
 			-- Add at end of current block
@@ -106,6 +132,26 @@ feature -- Program construction
 		do
 			create po.make (tag)
 			extend (po)
+		ensure
+			in_block: attached {COMPOUND} scope
+					-- Unchanged from precondition
+		end
+
+	printsnap (l: STRING)
+			-- Add at end of current block
+			-- an instruction that prints the snap instruction of label `l'.
+		require
+			in_block: attached {COMPOUND} scope
+			label_exists: l /= Void
+			label_not_empty: not l.is_empty
+			snap_exists: snapshots.has (l)
+		local
+			s: SNAP
+			pn: PRINTSNAP
+		do
+			s := snapshots.item (l)
+			create pn.make (s)
+			extend (pn)
 		ensure
 			in_block: attached {COMPOUND} scope
 					-- Unchanged from precondition

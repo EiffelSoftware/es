@@ -31,6 +31,8 @@ feature -- Examples from the paper
 					set (x, ff)
 				end_if
 				set (z, ff)
+				snap ("END")
+				printsnap ("END")
 			end_procedure
 		end
 

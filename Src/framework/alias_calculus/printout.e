@@ -25,7 +25,7 @@ feature -- Initialization
 
 feature -- Basic operations
 	update (a: ALIAS_RELATION)
-			-- DO not change `a' , but print it.
+			-- Do not change `a' , but print it.
 		local
 			title: STRING
 		do
