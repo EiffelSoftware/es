@@ -1,5 +1,6 @@
 note
 	description: "Procedure with a body and no argument."
+	terminology: "Called PROCEDURE1 because `procedure' is an Eiffel keyword"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

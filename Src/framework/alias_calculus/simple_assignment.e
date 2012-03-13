@@ -72,7 +72,7 @@ feature -- Basic operations
 feature -- Input and output
 
 	out: STRING
-			-- Produce printable representation of assignment.
+			-- Printable representation of assignment.
 		do
 			Result := tabs + target.name + " := " + source.name + New_line
 		end

@@ -45,7 +45,7 @@ feature -- Basic operations
 
 feature -- Input and output
 	out: STRING
-			-- Printable representation of assignment.
+			-- Printable representation of cut instruction.
 		do
 			Result :=
 				tabs + "cut " + first.name + ", " + second.name + New_line

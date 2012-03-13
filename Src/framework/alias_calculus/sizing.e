@@ -1,8 +1,9 @@
 note
 	description: "Summary description for {SIZING}."
-	author: ""
+	author: "Bertrand Meyer"
 	date: "$Date$"
 	revision: "$Revision$"
+
 
 class
 	SIZING

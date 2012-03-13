@@ -1,5 +1,6 @@
 note
 	description: "Indefinite loop instruction."
+	terminology: "Called LOOP1 because `loop' is an Eiffel keyword"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

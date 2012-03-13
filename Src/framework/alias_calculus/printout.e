@@ -46,7 +46,7 @@ feature -- Access
 feature -- Input and output
 
 	out: STRING
-			-- Produce printable representation of printout instruction.
+			-- Printable representation of printout instruction.
 		local
 			args: STRING
 		do

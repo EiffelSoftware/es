@@ -115,7 +115,7 @@ feature -- Basic operations
 feature -- Input and output
 
 	out: STRING
-			-- Produce printable representation of call.
+			-- Printable representation of call.
 		do
 			Result := tabs + "call "+ proc_name + "%N"
 		end

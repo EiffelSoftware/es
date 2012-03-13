@@ -40,7 +40,7 @@ feature -- Access
 feature -- Input and output
 
 	out: STRING
-			-- Printable representation of instruction,
+			-- Printable representation of compound instruction,
 			-- indented at `level', followed by return to next line.
 			-- Here no indentation (taken care of by the instructions
 			-- making up the compound).

@@ -40,7 +40,7 @@ feature -- Basic operations
 feature -- Input and output
 
 	out: STRING
-			-- Printable representation of assignment.
+			-- Printable representation of creation instruction.
 		do
 			Result := tabs + "create " + target.name + New_line
 		end
