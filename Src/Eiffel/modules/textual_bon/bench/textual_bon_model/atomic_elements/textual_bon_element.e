@@ -29,7 +29,7 @@ feature -- Processing
 				i := 1
 				l_is_first_list_item := True
 			until
-				i >= 1
+				i >= list.count
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then
@@ -64,7 +64,7 @@ feature -- Processing
 				i := 1
 				l_is_first_list_item := True
 			until
-				i >= 1
+				i >= list.count
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then

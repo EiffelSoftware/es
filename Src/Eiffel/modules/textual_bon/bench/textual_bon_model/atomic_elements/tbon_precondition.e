@@ -37,6 +37,7 @@ feature -- Processing
 			l_text_formatter_decorator.put_new_line
 			l_text_formatter_decorator.indent
 		 	assertion.process_to_formal_textual_bon
+		 	l_text_formatter_decorator.exdent
 		end
 
 note
