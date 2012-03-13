@@ -20,17 +20,17 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (comment_string: STRING; feature_list: attached LIST[TBON_FEATURE]; sel_export: TBON_SELECTIVE_EXPORT)
+	make_element (comment_strings: like comments; feature_list: attached like features; sel_export: like selective_export)
 			-- Create a feature clause element.
 		do
-			comment := comment_string
+			comments := comment_strings
 			features := feature_list
 			selective_export := sel_export
 		end
 
 feature -- Access
-	comment: STRING
-			-- What is the comment for this feature clause?
+	comments: LIST[STRING]
+			-- What is the comments for this feature clause?
 
 	features: attached LIST[TBON_FEATURE]
 			-- What features are in this feature clause?
@@ -52,10 +52,10 @@ feature -- Processing
 				l_text_formatter_decorator.put_space
 				selective_export.process_to_textual_bon
 			end
-			-- Process comment
-			if has_comment then
+			-- Process comments
+			if has_comments then
 				l_text_formatter_decorator.put_space
-				process_textual_bon_comment (comment)
+				--process_textual_bon_comment (comments)
 			end
 
 			l_text_formatter_decorator.put_new_line
@@ -67,10 +67,10 @@ feature -- Processing
 		end
 
 feature -- Status report
-	has_comment: BOOLEAN
-			-- Does this feaure clause have a comment?
+	has_comments: BOOLEAN
+			-- Does this feaure clause have comments?
 		do
-			Result := comment /= Void
+			Result := comments /= Void
 		end
 
 	has_selective_export: BOOLEAN

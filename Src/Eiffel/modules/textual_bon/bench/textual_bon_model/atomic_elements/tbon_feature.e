@@ -18,14 +18,14 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (feature_name: attached TBON_IDENTIFIER;
-				  feature_arguments: LIST[TBON_FEATURE_ARGUMENT];
-				  feature_type: TBON_TYPE;
-				  feature_type_mark: TBON_TYPE_MARK;
-				  feature_comments: LIST[STRING];
-				  feature_renaming_clause: TBON_RENAMING_CLAUSE;
-				  feature_precondition: TBON_PRECONDITION;
-				  feature_postcondition: TBON_POSTCONDITION)
+	make_element (feature_name: attached like name;
+				  feature_arguments: like arguments;
+				  feature_type: like type;
+				  feature_type_mark: like type_mark;
+				  feature_comments: like comments;
+				  feature_renaming_clause: like renaming_clause;
+				  feature_precondition: like precondition;
+				  feature_postcondition: like postcondition)
 			-- Create a feature element
 		do
 			name 			:= feature_name
@@ -145,11 +145,11 @@ feature -- Processing
 
 			-- Process contracts
 			if has_precondition then
-				precondition.process_to_formal_textual_bon
+				precondition.process_to_textual_bon
 				l_text_formatter_decorator.put_new_line
 			end
 			if has_postcondition then
-				postcondition.process_to_formal_textual_bon
+				postcondition.process_to_textual_bon
 				l_text_formatter_decorator.put_new_line
 			end
 			if has_precondition or has_postcondition then

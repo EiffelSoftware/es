@@ -23,7 +23,7 @@ feature -- Initialization
 	make_element (string_id: attached STRING)
 			-- Create an identifier from a string.
 		do
-			string_representation := string_id
+			string_value := string_id
 			regex_matcher.compile (validation_pattern)
 		end
 
@@ -34,15 +34,12 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_string_text (string_representation, Void)
+			l_text_formatter_decorator.process_string_text (string_value, Void)
 		end
 
 feature -- Access
-	as_string: STRING
+	string_value: attached STRING
 			-- What is the string representation of this identifier?
-		do
-			Result := string_representation
-		end
 
 feature {NONE} -- Implementation
 	is_valid: BOOLEAN
@@ -50,14 +47,11 @@ feature {NONE} -- Implementation
 			-- An identifier must begin with an alphanumeric [a-zA-Z0-9] character.
 			-- An identifier must not end must not end with an underscore.
 		do
-			Result := regex_matcher.matches (string_representation) and not string_representation.ends_with (bti_underscore)
+			Result := regex_matcher.matches (string_value) and not string_value.ends_with (bti_underscore)
 		end
 
 	regex_matcher: RX_PCRE_MATCHER
 			-- Regex matcher used to determine validity of the identifier.
-
-	string_representation: attached STRING
-			-- The internal string representatio of this identifier.
 
 	validation_pattern: STRING = "^[a-zA-Z0-9]+.+$"
 			-- The pattern to which the string representation must conform.
