@@ -60,24 +60,28 @@ feature{NONE} -- Implementation
 		do
 			l_time_left := session.time_left
 			if l_time_left >= 0 and session.should_continue then
-					-- Prepare input file for Daikon.
-				daikon_printer.print_trace_repository (a_repository)
-				create l_declaration_file.make_create_read_write (declaration_file_name)
-				l_declaration_file.put_string (daikon_printer.last_declarations.out)
-				l_declaration_file.close
-				create l_trace_file.make_create_read_write (trace_file_name)
-				l_trace_file.put_string (daikon_printer.last_trace.out)
-				l_trace_file.close
+				if a_repository.is_empty then
+					create Result.make_equal (1)
+				else
+						-- Prepare input file for Daikon.
+					daikon_printer.print_trace_repository (a_repository)
+					create l_declaration_file.make_create_read_write (declaration_file_name)
+					l_declaration_file.put_string (daikon_printer.last_declarations.out)
+					l_declaration_file.close
+					create l_trace_file.make_create_read_write (trace_file_name)
+					l_trace_file.put_string (daikon_printer.last_trace.out)
+					l_trace_file.close
 
-					-- Execute Daikon.
-				l_daikon_output := output_from_program_with_input_file_and_time_limit (daikon_command, Void, Void, l_time_left)
-				if not l_daikon_output.is_empty then
-						-- Retrieve Daikon result.
-					create l_parser
-					l_parser.parse_from_string (l_daikon_output, daikon_printer.last_declarations)
-					l_invariants := l_parser.last_daikon_results
+						-- Execute Daikon.
+					l_daikon_output := output_from_program_with_input_file_and_time_limit (daikon_command, Void, Void, l_time_left)
+					if not l_daikon_output.is_empty then
+							-- Retrieve Daikon result.
+						create l_parser
+						l_parser.parse_from_string (l_daikon_output, daikon_printer.last_declarations)
+						l_invariants := l_parser.last_daikon_results
 
-					Result := daikon_results_to_invariant_expressions (l_invariants)
+						Result := daikon_results_to_invariant_expressions (l_invariants)
+					end
 				end
 			end
 		end

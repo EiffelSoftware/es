@@ -9,7 +9,7 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER
 		redefine
 			process_nested_as,
-			process_access_feat_as,
+			processing_access_feat_as,
 			process_id_as,
 			process_instr_call_as,
 			process_expr_call_as,
@@ -231,7 +231,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			output.append_string(ti_New_line)
 		end
 
-	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+	processing_access_feat_as (l_as: ACCESS_FEAT_AS)
 		local
 			l_changed_arguments: ETR_CT_CHANGED_NAME_TYPE
 		do
@@ -394,7 +394,7 @@ feature {AST_EIFFEL} -- Roundtrip
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

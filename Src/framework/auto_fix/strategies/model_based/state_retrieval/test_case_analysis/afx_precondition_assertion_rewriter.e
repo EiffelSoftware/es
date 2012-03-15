@@ -147,9 +147,16 @@ feature -- Visitor routine
 				if operand_mapping.has (l_access_name) then
 					output.append_string ("(" + operand_mapping.item (l_access_name) + ")")
 				else
-					output.append_string (operand_mapping.item ("Current") + ".")
-					Precursor (l_as)
+					output.append_string (operand_mapping.item ("Current") + "." + l_access_name)
+--					Precursor (l_as)
 				end
+			end
+
+			if processing_needed (l_as.parameters, l_as, 1) then
+				output.append_string (Ti_space + Ti_l_parenthesis)
+				safe_process (l_as.parameters)
+--				process_child_list (l_as.parameters, Ti_comma + Ti_space, l_as, 1)
+				output.append_string (Ti_r_parenthesis)
 			end
 		end
 
@@ -174,6 +181,9 @@ feature -- Visitor routine
 					if attached l_as.item as l_item then
 						enter_sub_expression
 						l_item.process (Current)
+						if lt_list.index /= lt_list.count then
+							output.append_string (", ")
+						end
 						exit_sub_expression
 					else
 						check False end

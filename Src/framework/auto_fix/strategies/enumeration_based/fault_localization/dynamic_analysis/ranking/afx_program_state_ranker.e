@@ -119,7 +119,7 @@ feature -- Basic operation
 					if config.is_cfg_usage_optimistic then
 						l_control_distance_contribution := 1 - l_control_distance_contribution
 					end
-					l_control_distance_contribution := (l_control_distance_contribution + l_delta) / 3
+					l_control_distance_contribution := (l_control_distance_contribution + l_delta) / 8
 				end
 --				if l_control_distance_contribution <= 0 then
 --					l_control_distance_contribution := 0.0001

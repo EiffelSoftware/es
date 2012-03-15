@@ -124,6 +124,8 @@ feature -- Access
 		do
 			if invariants_from_passing_cell.item.has (a_feature) then
 				Result := invariants_from_passing_cell.item.item (a_feature)
+			else
+				create Result.make_equal (1)
 			end
 		end
 
@@ -132,8 +134,10 @@ feature -- Access
 		require
 			feature_attached: a_feature /= Void
 		do
-			if invariants_from_passing_cell.item.has (a_feature) then
+			if invariants_from_failing_cell.item.has (a_feature) then
 				Result := invariants_from_failing_cell.item.item (a_feature)
+			else
+				create Result.make_equal (1)
 			end
 		end
 
@@ -186,12 +190,16 @@ feature -- Basic operation
 			l_invariants_from_passing := invariants_from_passing (a_feature)
 			if l_invariants_from_passing /= Void and then l_invariants_from_passing.has (a_bp_index) then
 				l_invariants_p := l_invariants_from_passing.item (a_bp_index)
+			else
+				create l_invariants_p.make (1, a_feature.context_class, a_feature.feature_)
 			end
 
 				-- Invariants from failing executions.
 			l_invariants_from_failing := invariants_from_failing (a_feature)
 			if l_invariants_from_failing /= Void and then l_invariants_from_failing.has (a_bp_index) then
 				l_invariants_f := l_invariants_from_failing.item (a_bp_index)
+			else
+				create l_invariants_f.make (1, a_feature.context_class, a_feature.feature_)
 			end
 
 				-- Result invariants.
