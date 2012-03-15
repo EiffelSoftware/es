@@ -248,7 +248,7 @@ feature -- Basic operations
 		do
 			is_test_case_setup := b
 		ensure
-			is_test_case_valid_set: is_test_case_setup
+			is_test_case_valid_set: is_test_case_setup = b
 		end
 
 	retrieve_pre_state is
@@ -812,7 +812,7 @@ invariant
 	interpreter_attached: interpreter /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
