@@ -1,0 +1,9 @@
+To install the library and execute the provided example project, we are here assuming that the environment variables are defined as follows:
+$ISE_EIFFEL points at the current Eiffel installation, and $ISE_LIBRARY points at $ISE_EIFFEL. Then follow the following steps:
+
+1) Copy the 3 folders we gave you ("sqlite3", "enumerated_type" and "patterns") in $ISE_LIBRARY/library
+
+2) Go to dir $ISE_LIBRARY/library/sqlite3/Clib and type "compile_library" on Windows or "finish_freezing - library" on Unix
+
+3) Launch Eiffelstudio, open example.ecf located in $ISE_LIBRARY/library/sqlite3/examples/insert_and_print
+
