@@ -1,0 +1,78 @@
+note
+	description: "Data Access Object, specialized in queries on {PERSON} objects."
+	author: "Marco Piccioni"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	PERSON_DAO
+
+create
+	make_with_repository,
+	default_create
+
+feature -- Initialization
+
+	make_with_repository (a_repository: CUSTOM_IN_MEMORY_REPOSITORY)
+			-- Initialize `Current' with a repository implementation.
+		do
+			repository := a_repository
+		ensure
+			repository_set: repository = a_repository
+		end
+
+feature -- Access
+
+	repository: CUSTOM_IN_MEMORY_REPOSITORY
+			-- Repository implementation.
+
+feature -- Routines for agent criteria.
+
+	items_greater_than (p: PERSON; v: INTEGER): BOOLEAN
+				-- Are items owned by `p' greater than `v'?
+		do
+			Result := p.items_owned > v
+		end
+
+	items_equal_to (p: PERSON; v: INTEGER): BOOLEAN
+				-- Are items owned by `p' equal to `v'?
+		do
+			Result := p.items_owned = v
+		end
+
+	items_less_than (p: PERSON; v: INTEGER): BOOLEAN
+				-- Are items owned by `p' less than `v'?
+		do
+			Result := p.items_owned < v
+		end
+
+	first_name_matches (p: PERSON; s: STRING): BOOLEAN
+				-- Does `p''s first name match `s'?
+		do
+			Result := p.first_name.is_equal (s)
+		end
+
+	first_name_contains (p: PERSON; s: STRING): BOOLEAN
+				-- Does `p''s first name contain `s'?
+		do
+			Result := p.first_name.has_substring (s)
+		end
+
+	last_name_matches (p: PERSON; s: STRING): BOOLEAN
+				-- Does `p''s last name match `s'?
+		do
+			Result := p.last_name.is_equal (s)
+		end
+
+	last_name_contains (p: PERSON; s: STRING): BOOLEAN
+				-- Does `p''s last name contain `s'?
+		do
+			Result := p.last_name.has_substring (s)
+		end
+
+feature {NONE} -- Implementation
+
+invariant
+	invariant_clause: True -- Your invariant here
+
+end

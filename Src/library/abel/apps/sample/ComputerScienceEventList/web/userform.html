@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" dir="ltr" >
+<head>
+<!-- userform.html -->
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="robots" content="index, follow" />
+<meta name="keywords" content="informatics, Europe, association" />
+<meta name="description" content="Informatics Europe is the association of computer science departments and research laboratories in Europe and neighboring areas." />
+<title>Informatics Europe: Computer Science Event List - User form</title>
+<link href="../templates/yoo_intro/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/layout.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/typography.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/menus.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/modules.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/system.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/extensions.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/variations/ieu-cs-events.css" type="text/css" />
+<link rel="stylesheet" href="../templates/yoo_intro/css/custom.css" type="text/css" />
+<link href="{#STYLESHEET#}" rel="Stylesheet" type="text/css" />
+<script type="text/javascript" src="{#JAVASCRIPT#}" ></script>
+<style type="text/css">
+.wrapper { width: 940px; }
+</style>
+<link rel="apple-touch-icon" href="../templates/yoo_intro/apple_touch_icon.png" />
+</head>
+<body id="page" class="yoopage nofrontpage">
+<div id="page-body">
+  <div class="wrapper">
+<div id="header">
+      <div id="headerbar"> </div>
+      <div id="logo">
+        <div class="custom"  > <span><a title="Informatics Europe Home" href="../index.php"><img alt="Informatics Europe logo" src="/images/logos/logo-informatics-europe.png" height="106" width="199"  border="0" /></a></span></div>
+      </div>
+      <div id="motto">
+        <div class="custom"  ><h1>The Computer Science Event List </h1></div>
+      </div>
+    </div>    <!-- header end -->
+    
+    <div id="middle">
+      <div id="middle-expand">
+        <div id="main">
+          <div id="main-shift">
+            <div id="mainmiddle">
+              <div id="mainmiddle-expand">
+                <div id="content">
+                  <div id="content-shift">
+                    <div id="component">
+                      <div class="component-bg floatbox">
+                        <div id="system-message-container"> </div>
+                        <div id="system" class="cs-event-list">
+                          <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                              <td><div id="mainmaster">
+                                  <div id="main1">
+                                    <div id="navigation">
+                                      <div id="usermenu">{#USER_MENU#}</div>
+                                      {#MAIN_MENU#} </div>
+                                    <div id='note'>Please note that the access data (login and password) for this service differ from those used to access the other services of the Informatics Europe website.</div>
+                                    <div id='content1'>
+                                      <h1>{#FORM_TITLE#}</h1>
+                                      <!--##VALIDATION_ERROR_MESSAGES##
+									<div id="errors_div">
+										<table>
+											<tr>
+												<td valign="top"><img src="{#IMAGE_PATH#}err.gif" style="float:left" alt="" /></td>
+												<td valign="middle">{#ERROR_MESSAGES#}</td>
+											</tr>
+										</table>
+									</div>                  
+			##/VALIDATION_ERROR_MESSAGES##--> 
+                                      <!--##USER_FORM_0##-->
+                                      <form action="{#APP_PATH#}?user&amp;cmd=submit" method="post">
+                                        <div>
+                                          <input type="hidden" name="handler_id" value="user" />
+                                        </div>
+                                        <div>
+                                          <input type="hidden" name="cmd" value="submit" />
+                                        </div>
+                                        <div>
+                                          <input type="hidden" name="mode" value="{#SAVE_MODE#}" />
+                                        </div>
+                                        <!--update/new-->
+                                        <table id="user_form" border="0" cellpadding="4" cellspacing="0">
+                                          <tr>
+                                            <td class="form_top_left">&nbsp;</td>
+                                            <td class="form_top_right">&nbsp;</td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand" width="200px">Fields in red are mandatory</td>
+                                            <td>&nbsp;</td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand" width="200px">First name</td>
+                                            <td><input type="text"  name="first_name"  maxlength="25" size="50" title="First Name" value="{#first_name#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Family name</td>
+                                            <td><input type="text" name="last_name" maxlength="25" size="50" title="Family Name" value="{#last_name#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Email (username)</td>
+                                            <td><input type="text" name="email" maxlength="50" size="50" title="E-mail" value="{#email#}" {#READONLY#} /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Password</td>
+                                            <td><input type="password" name="password" maxlength="25" size="50" title="Password" value="{#password#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Password again</td>
+                                            <td><input type="password" name="confirm_password" maxlength="25" size="50" title="Password again" value="{#confirm_password#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Organization</td>
+                                            <td><input type="text" name="organization" maxlength="100" size="50" title="Institution name" value="{#organization#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name">Telephone</td>
+                                            <td><input type="text" name="telephone" maxlength="100" size="50" title="Institution name" value="{#telephone#}" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="input_name_mand">Security question: {#question#}
+                                              <INPUT type="hidden" name="questionid" value="{#questionid#}"></td>
+                                            <td><input type="text" name="captcha" maxlength="3" size="50" title="Security answer" value="{#captcha#}" /></td>
+                                          </tr>
+                                          
+                                          <!--##ADMINISTRATOR_INFORMATION##
+                <tr><td></td><td></td>
+                </tr>
+                <tr>
+                  <td class="input_subtitle">Administrator Information</td>
+                  <td>&nbsp;</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Role</td>
+                  <td>
+                    <select name="user_role" title="Role">
+                      {#user_role#}
+                      <option value=""></option>
+                      <option value="Administrator">Administrator</option>
+                      <option value="User">User</option>
+                    </select>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Suspend</td>
+                  <td>
+                    <input type="checkbox" name="suspend" value="1" title="suspend" {#suspend#} />
+                  </td>
+                </tr>
+              ##/ADMINISTRATOR_INFORMATION##-->
+                                          
+                                          <tr>
+                                            <td>&nbsp;</td>
+                                            <td><input type="submit" name="send" value="{#BUTTON_TEXT#}" title="Send button" /></td>
+                                          </tr>
+                                          <tr>
+                                            <td class="form_bottom_left">&nbsp;</td>
+                                            <td class="form_bottom_right">&nbsp;</td>
+                                          </tr>
+                                        </table>
+                                      </form>
+                                      <!--##/USER_FORM_0##--> 
+                                      <!--##USER_FORM_1##
+      	      <p>Account <b>{#EMAIL_ADDRESS#}</b> is registered successfully.</p>
+			##/USER_FORM_1##--> 
+                                      <!--##USER_FORM_2##
+      	      <p>Account information for <b>{#EMAIL_ADDRESS#}</b> is updated successfully.</p>
+			##/USER_FORM_2##--> 
+                                    </div>
+                                  </div>
+                                </div></td>
+                            </tr>
+                            <tr>
+                              <td align="right"><a href="/cgi-bin/informatics_events.cgi?other&cmd=about">about this program</a></td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- content end --> 
+                
+              </div>
+            </div>
+            <!-- mainmiddle end --> 
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="page-footer">
+  <div class="wrapper">
+    <div id="footer"> 
+      <div id="jefooter"> Copyright&nbsp;&copy;&nbsp;2007-2011&nbsp;<a href="../index.php" target="_blank">Informatics Europe</a>. All rights reserved.</div>
+      <div class="custom"  >
+        <div>design+programming by <a title="makebelieve design &amp; consulting" href="http://www.makebelieve.gr/" target="_blank">makebelieve</a></div>
+      </div>
+      <script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-24831090-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+
+</script> 
+    </div>
+    <!-- footer end --> 
+    
+  </div>
+</div>
+</body>
+</html>
