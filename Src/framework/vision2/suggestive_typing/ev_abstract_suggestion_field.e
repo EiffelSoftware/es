@@ -161,6 +161,7 @@ feature -- Element change
 
 	refresh
 			-- Refresh current display.
+			-- To be redefined to provide descendant specific actions.
 		do
 		end
 
@@ -218,7 +219,7 @@ feature -- Text operation
 		end
 
 	move_caret_to (a_pos: INTEGER)
-			-- Move caret at `a_pos'. If `a_pos' is negative, carete is remains at the beginning. If `a_pos' is
+			-- Move caret at `a_pos'. If `a_pos' is negative, caret remains at the beginning. If `a_pos' is
 			-- greater than the maximum possible caret position, it stays at the end.
 		require
 			not_destroyed: not is_destroyed
@@ -289,16 +290,17 @@ feature -- Basic operation
 	provide_suggestion
 			-- Prepare suggestion list and show suggestion window directly.
 		do
-			if not is_suggesting then
-				if suggestion_provider.is_available and then attached choices as l_choices then
-						-- We are done processing the keys for the time being until
-						-- the `choices' are hidden and user starts typing again.
-					is_suggesting := True
-						-- We are resetting the previous suggestion.
-					last_suggestion := Void
-					disable_suggestion_timeout
-					l_choices.show
-				end
+			if
+				not is_suggesting and then
+				suggestion_provider.is_available and then attached choices as l_choices
+			then
+					-- We are done processing the keys for the time being until
+					-- the `choices' are hidden and user starts typing again.
+				is_suggesting := True
+					-- We are resetting the previous suggestion.
+				last_suggestion := Void
+				disable_suggestion_timeout
+				l_choices.show
 			end
 		ensure
 			is_suggesting_updated: old is_suggesting implies is_suggesting
@@ -365,9 +367,9 @@ feature {EV_SUGGESTION_WINDOW} -- Interact with suggestion window.
  			inspect
  				ev_key.code
  			when {EV_KEY_CONSTANTS}.key_back_space then
-				delete_character_before
+				delete_word_before
 			when {EV_KEY_CONSTANTS}.key_delete then
-				delete_character_after
+				delete_word_after
 			else
 			end
  		end
@@ -425,8 +427,6 @@ feature {NONE} -- Trigger suggestion
 			-- Handle `a_key' and check against `settings.override_shortcut_trigger', if specified,
 			-- that `a_key' is a shortcut for triggering the suggestion. If not specified
 			-- we use `is_shortcut_for_suggestion' instead.
-		require
-			a_key_attached: a_key /= Void
 		do
 			if not is_suggesting then
 				if attached settings.override_shortcut_trigger as l_agent then
@@ -464,19 +464,19 @@ feature {NONE} -- Trigger suggestion
 		end
 
 	is_shift_pressed: BOOLEAN
-			-- Is any of the shift key pushed?
+			-- Are any of the Shift keys pressed?
 		do
 			Result := ev_application.shift_pressed
 		end
 
 	is_ctrl_pressed: BOOLEAN
-			-- Is any of the ctrl key pushed?
+			-- Are any of the Ctrl keys pressed?
 		do
 			Result := ev_application.ctrl_pressed
 		end
 
 	is_alt_pressed: BOOLEAN
-			-- Is any of the alt key pushed?
+			-- Are any of the Alt keys pressed?
 		do
 			Result := ev_application.alt_pressed
 		end
@@ -519,8 +519,8 @@ feature {NONE} -- Implementation: Access
 			-- Window used internally to show the list of choices.
 
 	default_suggestion_settings: EV_SUGGESTION_SETTINGS
-			-- Default settings used for displaying the list of suggestions. It can be overridden
-			-- by setting `settings'.
+			-- Default settings used for displaying the list of suggestions.
+			-- It can be overridden by setting `settings'.
 		once
 			create Result.make
 		end
