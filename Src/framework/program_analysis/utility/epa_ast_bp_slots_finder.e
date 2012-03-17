@@ -17,7 +17,6 @@ inherit
 			process_instr_call_as,
 			process_assigner_call_as,
 			process_retry_as,
-			process_loop_as,
 			process_reverse_as,
 			process_tagged_as,
 			process_feature_as,
@@ -142,12 +141,6 @@ feature -- Roundtrip
 		end
 
 	process_instr_call_as (l_as: INSTR_CALL_AS)
-		do
-			Precursor (l_as)
-			adjust_first_last_bp_slot (l_as.breakpoint_slot)
-		end
-
-	process_loop_as (l_as: LOOP_AS)
 		do
 			Precursor (l_as)
 			adjust_first_last_bp_slot (l_as.breakpoint_slot)

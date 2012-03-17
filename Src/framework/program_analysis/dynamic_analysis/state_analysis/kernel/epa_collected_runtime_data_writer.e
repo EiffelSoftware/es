@@ -106,7 +106,7 @@ feature -- Basic operations
 			l_file: PLAIN_TEXT_FILE
 			l_object, l_data: JSON_OBJECT
 			l_analysis_order: JSON_ARRAY
-			l_printer: PRINT_JSON_VISITOR
+			l_printer: EPA_COLLECTED_RUNTIME_DATA_PRINT_VISITOR
 			l_map: DS_HASH_TABLE [LINKED_LIST [TUPLE [EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
 		do
 			-- Object to be written to the disk.
