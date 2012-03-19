@@ -14,8 +14,10 @@ feature -- Initialization
 	make (class_as: CLASS_AS)
 			-- Create a textual BON class.
 		do
+			associated_class := class_as
 			create name.make_element (associated_class_name)
 			create {ARRAYED_LIST[TBON_CLASS_TYPE]} ancestors.make (10)
+			create {ARRAYED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make (10)
 
 			extract_associated_class_ancestors
 		end
@@ -111,33 +113,371 @@ feature {NONE} -- Implementation
 			Result := associated_class.class_name.string_value_32
 		end
 
-	create_feature_clause_with_features (feature_clause: FEATURE_CLAUSE_AS)
-			-- Create a textual BON feature clause and its associated features
+	create_arguments_for_feature (feat: FEATURE_AS): LIST[TBON_FEATURE_ARGUMENT]
+			-- Create BON arguments for a feature AST
 		local
-			--bon_feature_clause: TBON_FEATURE_CLAUSE
+			l_feature_arguments: LIST[TBON_FEATURE_ARGUMENT]
 		do
-			--create bon_feature_clause.make_element (feature_clause., feature_list: [detachable] LIST [[detachable] TBON_FEATURE], sel_export: [detachable] TBON_SELECTIVE_EXPORT)
+			create {ARRAYED_LIST[TBON_FEATURE_ARGUMENT]} l_feature_arguments.make (5)
+
+			feat.body.arguments.do_all (
+				agent (l_argument: TYPE_DEC_AS; l_argument_list: LIST[TBON_FEATURE_ARGUMENT])
+					require
+						argument_not_void: l_argument /= Void
+					local
+						l_feature_argument: TBON_FEATURE_ARGUMENT
+						l_argument_formal_name: TBON_IDENTIFIER
+						l_argument_type: TBON_CLASS_TYPE
+					do
+						-- Loop through IDs of formal argument names
+						from
+							l_argument.id_list.start
+						until
+							l_argument.id_list.exhausted
+						loop
+							-- Index the names heap to get formal argument name
+							create l_argument_formal_name.make_element (l_argument.names_heap.item_32 (l_argument.id_list.item))
+							-- Get argument type
+							create l_argument_type.make_element (l_argument.type.dump)
+
+							create l_feature_argument.make_element (l_argument_formal_name, l_argument_type)
+							l_argument_list.put (l_feature_argument)
+
+							l_argument.id_list.forth
+						end
+					ensure
+						l_argument_list.count = old l_argument_list.count + l_argument.id_list.count
+					end (?, l_feature_arguments)
+			)
 		end
 
 	extract_associated_class_ancestors
 			-- Extract the ancestors for the associated class
 		do
-			associated_class.conforming_parents.do_all (agent (ancestor: PARENT_AS)
-				local
-					ancestor_class_type: TBON_CLASS_TYPE
-				do
-					create ancestor_class_type.make_element (ancestor.type.class_name.string_value_32)
-					ancestors.put (ancestor_class_type)
-				ensure
-					ancestors.count = old ancestors.count + 1
-				end
+			associated_class.conforming_parents.do_all (
+				agent (ancestor: PARENT_AS)
+					local
+						ancestor_class_type: TBON_CLASS_TYPE
+					do
+						create ancestor_class_type.make_element (ancestor.type.class_name.string_value_32)
+						ancestors.put (ancestor_class_type)
+					ensure
+						ancestors.count = old ancestors.count + 1
+					end
 			)
 		end
 
 	extract_associated_class_feature_clauses
 			-- Extract the feature clauses and features of the associated class
 		do
-			--associated_class.features
+			associated_class.features.do_all (
+				agent (feature_clause: FEATURE_CLAUSE_AS; feature_clause_list: LIST[TBON_FEATURE_CLAUSE])
+					require
+						feature_clause_not_void: feature_clause /= Void
+						feature_clause_list_not_void: feature_clause_list /= Void
+					local
+						l_feature_clause: TBON_FEATURE_CLAUSE
+					do
+						l_feature_clause := new_feature_clause_with_features (feature_clause)
+						feature_clause_list.put (l_feature_clause)
+					ensure
+						feature_clause_list.count = old  feature_clause_list.count + 1
+					end (?, feature_clauses)
+				)
+
+		end
+
+	new_feature (feat: FEATURE_AS): TBON_FEATURE
+			-- Create a BON feature from the AST.
+		local
+			l_feature: TBON_FEATURE
+			l_feature_name: TBON_IDENTIFIER
+			l_feature_arguments: LIST[TBON_FEATURE_ARGUMENT]
+			l_feature_type: TBON_CLASS_TYPE
+			l_feature_type_mark: TBON_TYPE_MARK
+			l_feature_comments: LIST[STRING]
+			l_feature_renaming_clause: TBON_RENAMING_CLAUSE
+			l_feature_precondition: TBON_PRECONDITION
+			l_feature_postcondition: TBON_POSTCONDITION
+
+			l_renaming_parent: TBON_CLASS_TYPE
+			l_renaming_old_name: STRING
+			l_renaming_final_name: STRING
+
+			l_pre_assertion_list: LIST[TBON_ASSERTION]
+			l_post_assertion_list: LIST[TBON_ASSERTION]
+
+			-- Remember deferred/effective/redefined!
+		do
+			-- Name
+			create l_feature_name.make_element (feat.feature_name.string_value_32)
+
+			-- Arguments
+			l_feature_arguments := create_arguments_for_feature (feat)
+
+			-- Type
+			if feat.body.type /= Void then -- feat.is_function or feat.is_attribute then
+				create l_feature_type.make_element (feat.body.type.dump)
+			else
+				l_feature_type := Void
+			end
+
+			-- Type mark
+			create l_feature_type_mark.make_element
+				-- Set as association if not a constant, due to difficulty of finding out whether the type is expanded
+			if feat.body.is_constant or else (feat.body.as_routine /= Void and then feat.body.as_routine.is_once) then
+				l_feature_type_mark.set_as_shared_association (1)
+			else
+				l_feature_type_mark.set_as_association
+			end
+
+
+			-- Comments
+			create {ARRAYED_LIST[STRING]} l_feature_comments.make (5)
+			feat.comment (Void).do_all (
+				agent (l_comment: EIFFEL_COMMENT_LINE; l_comment_list: LIST[STRING])
+					do
+						l_comment_list.put (l_comment.content_32)
+					ensure
+						l_comment_list.count = old l_comment_list.count + 1
+					end (?, l_feature_comments)
+			)
+
+			-- Renaming clause
+			from
+				associated_class.parents.start
+			until
+				associated_class.parents.exhausted
+			loop
+				if associated_class.parents.item.renaming /= Void then
+					from
+						associated_class.parents.item.renaming.start
+					until
+						associated_class.parents.item.renaming.exhausted
+					loop
+						l_renaming_old_name := associated_class.parents.item.renaming.item.old_name.visual_name_32
+						l_renaming_final_name := associated_class.parents.item.renaming.item.new_name.visual_name_32
+
+						if l_renaming_old_name.is_equal (l_feature_name.string_value) then
+							check l_renaming_old_name /= Void and l_renaming_final_name /= Void end
+
+							create l_renaming_parent.make_element (associated_class.parents.item.type.class_name.string_value_32)
+							create l_feature_renaming_clause.make_element (l_renaming_parent, l_renaming_final_name)
+
+							-- End both loops
+							associated_class.parents.item.renaming.finish
+							associated_class.parents.finish
+						end
+					end
+
+					associated_class.parents.item.renaming.forth
+				end
+
+				associated_class.parents.forth
+			end
+
+			-- Precondition
+			if feat.body.as_routine /= Void and then feat.body.as_routine.has_precondition then
+				create {ARRAYED_LIST[TBON_ASSERTION]} l_pre_assertion_list.make (10) -- ITU_FIXME_42
+
+				feat.body.as_routine.precondition.assertions.do_all (
+					agent (l_precondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
+						require
+							precondition_not_void: l_precondition /= Void
+							list_not_void: assertion_list /= Void
+						local
+							l_bon_assertion: TBON_EXPRESSION
+						do
+							create l_bon_assertion.make_element
+							assertion_list.put (l_bon_assertion)
+						ensure
+							assertion_list.count = old assertion_list.count + 1
+						end
+				)
+
+				create l_feature_precondition.make_element (l_pre_assertion_list)
+			end
+
+			check -- If feature has a precondition, a precondition muat have been created
+				feat.body.as_routine /= Void and then feat.body.as_routine.has_precondition
+				implies
+				l_feature_precondition /= Void
+			end
+
+			-- Postcondition
+			if feat.body.as_routine /= Void and then feat.body.as_routine.has_postcondition then
+				create {ARRAYED_LIST[TBON_ASSERTION]} l_post_assertion_list.make (10) -- ITU_FIXME_42
+
+				feat.body.as_routine.postcondition.assertions.do_all (
+					agent (l_postcondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
+						require
+							postcondition_not_void: l_postcondition /= Void
+							list_not_void: assertion_list /= Void
+						local
+							l_bon_assertion: TBON_EXPRESSION
+						do
+							create l_bon_assertion.make_element
+							assertion_list.put (l_bon_assertion)
+						ensure
+							assertion_list.count = old assertion_list.count + 1
+						end
+				)
+
+				create l_feature_postcondition.make_element (l_post_assertion_list)
+			end
+
+			check -- If feature has a postcondition, a postcondition muat have been created
+				feat.body.as_routine /= Void and then feat.body.as_routine.has_postcondition
+				implies
+				l_feature_postcondition /= Void
+			end
+
+			create l_feature.make_element (l_feature_name,
+										   l_feature_arguments,
+										   l_feature_type,
+										   l_feature_type_mark,
+										   l_feature_comments,
+										   l_feature_renaming_clause,
+										   l_feature_precondition,
+										   l_feature_postcondition)
+
+			-- Set status
+			if feat.body.as_routine /= Void and then feat.body.as_routine.is_deferred then
+				l_feature.set_deferred
+			end
+
+			Result := l_feature
+		end
+
+	new_feature_clause_with_features (feature_clause: FEATURE_CLAUSE_AS): TBON_FEATURE_CLAUSE
+			-- Create a textual BON feature clause and its associated features
+		local
+			l_bon_feature_clause: TBON_FEATURE_CLAUSE
+			l_comment_list: LIST[STRING]
+			l_feature_list: LIST[TBON_FEATURE]
+			l_selective_export: TBON_SELECTIVE_EXPORT
+
+			l_redefined_features: LIST[STRING]
+		do
+			-- Get comments
+			create {ARRAYED_LIST[STRING]} l_comment_list.make(2)
+
+			feature_clause.comment (Void).do_all (
+				agent (line: EIFFEL_COMMENT_LINE; l_l_comment_list: LIST[STRING])
+					do
+						l_l_comment_list.put (line.content_32)
+					ensure
+						l_l_comment_list.count = old l_l_comment_list.count + 1
+					end (?, l_comment_list)
+				)
+
+			-- Create features
+			feature_clause.features.do_all (
+				agent (l_feature_as: FEATURE_AS; l_l_feature_list: LIST[TBON_FEATURE])
+					require
+						feature_as_not_void: l_feature_as /= Void
+						feature_list_not_void: l_l_feature_list /= Void
+					local
+						l_feature: TBON_FEATURE
+					do
+						l_feature := new_feature (l_feature_as)
+						l_l_feature_list.put (l_feature)
+					ensure
+						l_l_feature_list.count = old l_l_feature_list.count + 1
+					end (?, l_feature_list)
+			)
+
+			l_selective_export := new_selective_export (feature_clause)
+
+			set_redefined_bon_features_as_redefined (l_feature_list)
+
+			create l_bon_feature_clause.make_element (l_comment_list, l_feature_list, l_selective_export)
+
+			Result := l_bon_feature_clause
+		end
+
+	new_selective_export (feature_clause: FEATURE_CLAUSE_AS): TBON_SELECTIVE_EXPORT
+			-- Create a new selective export from a feature clause
+		local
+			l_selective_export: TBON_SELECTIVE_EXPORT
+			l_export_list: LIST[TBON_CLASS_TYPE]
+		do
+			-- Get export client classes
+			create {ARRAYED_LIST[TBON_CLASS_TYPE]} l_export_list.make(3)
+
+			if feature_clause.clients.clients /= Void then
+				feature_clause.clients.clients.do_all (
+					agent (client_id: ID_AS; l_client_list: LIST[TBON_CLASS_TYPE])
+						require
+							client_id_not_void: client_id /= Void
+							client_list_not_void: l_client_list /= Void
+						local
+							l_class_type: TBON_CLASS_TYPE
+						do
+							create l_class_type.make_element (client_id.name_8)
+							l_client_list.put (l_class_type)
+						ensure
+							l_client_list.count = old l_client_list.count + 1
+						end (?, l_export_list)
+				)
+
+				create l_selective_export.make_element_with_class_list (l_export_list)
+			else
+				l_selective_export := Void
+			end
+
+			Result := l_selective_export
+		end
+
+	set_redefined_bon_features_as_redefined (feature_list: LIST[TBON_FEATURE])
+			-- Set 'is_redefined' for all redefined textual BON features that represent a redefined feture.
+		local
+			l_feature_list: LIST[TBON_FEATURE]
+			l_redefined_features: LIST[STRING]
+		do
+			l_feature_list := feature_list
+
+			-- Get redefined features from AST
+			create {ARRAYED_LIST[STRING]} l_redefined_features.make (10)
+			associated_class.parents.do_if (
+				agent (parent: PARENT_AS; feature_name_list: LIST[STRING])
+					require
+						parent_not_void: parent /= Void
+						feature_name_list_not_void: feature_name_list /= Void
+					do
+						from
+							parent.redefining.start
+						until
+							parent.redefining.exhausted
+						loop
+							feature_name_list.put (parent.redefining.item.visual_name_32)
+							parent.redefining.forth
+						end
+					end (?, l_redefined_features)
+			, agent (parent: PARENT_AS): BOOLEAN do Result := parent.is_effecting end)
+
+			-- Set redefined BON features as redefined
+			l_redefined_features.do_all (
+				agent (l_feature_name: STRING; l_l_feature_list: LIST[TBON_FEATURE])
+					require
+						feature_name_not_void: l_feature_name /= Void
+						feature_list_not_void: l_l_feature_list /= Void
+					do
+						from
+							l_l_feature_list.start
+						until
+							l_l_feature_list.exhausted
+						loop
+							if l_l_feature_list.item.name.string_value.is_equal (l_feature_name) then
+								l_l_feature_list.item.set_redefined
+							end
+
+							l_l_feature_list.forth
+						end
+					ensure
+						l_l_feature_list.count = old l_l_feature_list.count + 1
+					end (?,l_feature_list)
+			)
 		end
 
 

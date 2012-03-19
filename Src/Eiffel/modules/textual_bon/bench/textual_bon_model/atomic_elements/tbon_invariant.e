@@ -20,10 +20,10 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (l_assertion: like assertion)
+	make_element (l_assertions: like assertions)
 			-- Make an invariant for a class.
 		do
-			assertion ?= l_assertion
+			assertions ?= l_assertions
 		end
 
 feature -- Processing
@@ -36,7 +36,7 @@ feature -- Processing
 			l_text_formatter_decorator.process_keyword_text (bti_invariant_keyword, Void)
 			l_text_formatter_decorator.put_new_line
 			l_text_formatter_decorator.indent
-			assertion.process_to_formal_textual_bon
+			process_formal_textual_bon_list (assertions, Void, True)
 			l_text_formatter_decorator.exdent
 		end
 note

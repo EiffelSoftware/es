@@ -43,6 +43,9 @@ feature -- Processing
 			-- Process this element into textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+
+			l_is_first_item_in_list: BOOLEAN
+			i: INTEGER
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
@@ -55,7 +58,20 @@ feature -- Processing
 			-- Process comments
 			if has_comments then
 				l_text_formatter_decorator.put_space
-				--process_textual_bon_comment (comments)
+
+				from
+					i := 1
+					l_is_first_item_in_list := True
+				until
+					i >= comments.count
+				loop
+					if not l_is_first_item_in_list then
+						l_text_formatter_decorator.put_new_line
+					end
+					process_textual_bon_comment (comments.i_th (i))
+
+					i := i + 1
+				end
 			end
 
 			l_text_formatter_decorator.put_new_line

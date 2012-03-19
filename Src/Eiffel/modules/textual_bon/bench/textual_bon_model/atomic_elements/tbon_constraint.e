@@ -14,8 +14,8 @@ inherit
 	end
 
 feature -- Access
-	assertion: attached TBON_ASSERTION
-			-- What is the assertion of this constraint?
+	assertions: attached LIST[TBON_ASSERTION]
+			-- What are the assertions of this constraint?
 
 	label: STRING
 			-- What is the label for this constraint?
@@ -27,7 +27,7 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			assertion.process_to_informal_textual_bon
+			process_informal_textual_bon_list (assertions, Void, True)
 		end
 
 feature -- Status report
@@ -46,6 +46,9 @@ feature -- Element change
 		do
 			label := l_label
 		end
+
+invariant
+	must_have_assertions: assertions /= Void
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

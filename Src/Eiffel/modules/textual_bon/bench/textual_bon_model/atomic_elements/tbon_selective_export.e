@@ -26,14 +26,14 @@ feature -- Initialization
 			class_list := Void
 		end
 
-	make_element_with_class_list (cl_list: LIST[TBON_CLASS])
+	make_element_with_class_list (cl_list: like class_list)
 			-- Create a selective export element with the given class list.
 		do
 			class_list := cl_list
 		end
 
 feature -- Access
-	class_list: LIST[TBON_CLASS]
+	class_list: LIST[TBON_CLASS_TYPE]
 			-- What classes are listed in this export clause?
 			-- Empty list: export status NONE
 			-- No/Void list: export status ANY
@@ -53,19 +53,19 @@ feature -- Processing
 
 				if class_list.count > 0 then
 					from
-						i := 1
+						class_list.start
 						l_is_first_list_item := True
 					until
-						i >= class_list.count
+						class_list.exhausted
 					loop
 						if not l_is_first_list_item then
 							l_text_formatter_decorator.process_symbol_text (ti_comma)
 							l_text_formatter_decorator.put_space
 							l_is_first_list_item := False
 						end
-						class_list.i_th (i).name.process_to_textual_bon
+						class_list.item.process_to_textual_bon
 
-						i := i + 1
+						class_list.forth
 					end
 				else
 					l_text_formatter_decorator.process_string_text (bti_none_class_name, Void)

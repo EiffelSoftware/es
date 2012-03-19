@@ -1,44 +1,40 @@
 note
-	description: "A postcondition for a feature."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_EXPRESSION}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_POSTCONDITION
+	TBON_EXPRESSION
 
 inherit
-	TBON_CONSTRAINT
-		rename
-			process_to_informal_textual_bon as process_to_textual_bon,
-			process_to_formal_textual_bon as process_to_textual_bon
+	TBON_ASSERTION
 		redefine
-			process_to_textual_bon
+			process_to_informal_textual_bon,
+			process_to_formal_textual_bon
 		end
 
 create
 	make_element
 
 feature -- Initialization
-	make_element (l_assertions: like assertions)
-			-- Make a postcondition.
+	make_element
+			-- Create an expression element
 		do
-			assertions ?= l_assertions
+
 		end
 
 feature -- Processing
-	process_to_textual_bon
-			-- Process postcondition to formal bon.
-		local
-			l_text_formatter_decorator: like text_formatter_decorator
+	process_to_informal_textual_bon
 		do
-			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_ensure_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-			process_formal_textual_bon_list (assertions, Void, True)
-			l_text_formatter_decorator.exdent
+
 		end
+
+	process_to_formal_textual_bon
+		do
+			
+		end
+
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

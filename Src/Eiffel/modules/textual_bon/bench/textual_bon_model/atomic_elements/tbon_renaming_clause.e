@@ -20,7 +20,7 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (ancestor: attached TBON_CLASS; final_name_string: attached STRING)
+	make_element (ancestor: attached TBON_CLASS_TYPE; final_name_string: attached STRING)
 			-- Create a renaming clause element.
 		do
 			ancestor_class := ancestor
@@ -28,7 +28,7 @@ feature -- Initialization
 		end
 
 feature -- Access
-	ancestor_class: attached TBON_CLASS
+	ancestor_class: attached TBON_CLASS_TYPE
 			-- From which ancestor class is this feature being renamed?
 
 	final_name: attached STRING
@@ -45,7 +45,7 @@ feature -- Processing
 			l_text_formatter_decorator.put_space
 			-- ^class_name.final_name
 			l_text_formatter_decorator.process_symbol_text (bti_power_operator)
-			ancestor_class.name.process_to_textual_bon
+			ancestor_class.process_to_textual_bon
 			l_text_formatter_decorator.process_symbol_text (ti_dot)
 			l_text_formatter_decorator.process_string_text (final_name, Void)
 
