@@ -22,7 +22,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 			private_cursor: ITERATION_CURSOR [ANY]
 		do
 			id := new_identifier
-			private_cursor := private_database [query.class_name].new_cursor
+			check attached private_database[query.class_name] as list then
+				private_cursor := list.new_cursor
+			end
 			resultset_to_cursor_map [id] := private_cursor
 			query.set_identifier (id)
 --			query.query_result.set_repo (Current)
@@ -43,9 +45,11 @@ feature {PS_EIFFELSTORE_EXPORT}
 	next_entry (query: PS_QUERY [ANY])
 			-- retrieves the next object. stores item directly into query_result
 		local
-			private_cursor: detachable ITERATION_CURSOR [ANY]
+			private_cursor: ITERATION_CURSOR [ANY]
 		do
-			private_cursor := resultset_to_cursor_map [query.backend_identifier]
+			check attached resultset_to_cursor_map [query.backend_identifier] as cursor then
+				private_cursor := cursor
+			end
 			private_cursor.forth
 			from
 			until
@@ -78,7 +82,9 @@ feature {PS_EIFFELSTORE_EXPORT}-- Modification
 				private_database.extend (new_list, object_class)
 			end
 			private_copy := object.deep_twin
-			private_database.item (object_class).extend (private_copy)
+			check attached private_database.item (object_class) as list then
+				list.extend (private_copy)
+			end
 			cache.cache (object, private_copy)
 		end
 
@@ -91,11 +97,15 @@ feature {PS_EIFFELSTORE_EXPORT}-- Modification
 		do
 			create reflection_library
 			object_class := reflection_library.class_name (object)
-			private_copy := cache.get_identifier (object).as_attached
-			private_database [object_class].search (private_copy)
-			private_copy := object.deep_twin
-			private_database [object_class].replace (private_copy)
-			cache.update_repo_link (object, private_copy)
+			check attached cache.get_identifier (object) as identifier and attached private_database[object_class] as list then
+				private_copy := identifier
+				list.search (private_copy)
+				private_copy := object.deep_twin
+				list.replace (private_copy)
+				cache.update_repo_link (object, private_copy)
+
+			end
+
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)

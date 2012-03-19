@@ -51,7 +51,9 @@ feature -- Access
 		require
 			already_executed: is_executed
 		do
-			Result := transaction_impl.as_attached
+			check attached transaction_impl as transact then
+				Result:=transact
+			end
 		end
 
 

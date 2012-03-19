@@ -16,15 +16,12 @@ feature -- Initialization
 	make_with_repository (a_repository: CUSTOM_IN_MEMORY_REPOSITORY)
 			-- Initialize `Current' with a repository implementation.
 		do
-			repository := a_repository
-		ensure
-			repository_set: repository = a_repository
+
 		end
 
 feature -- Access
 
-	repository: CUSTOM_IN_MEMORY_REPOSITORY
-			-- Repository implementation.
+
 
 feature -- Routines for agent criteria.
 

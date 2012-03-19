@@ -19,7 +19,9 @@ feature -- Access
 	item: G
 			-- Item at current cursor position.
 		do
-			Result := int_item.as_attached
+			check attached int_item as res then
+				Result := res
+			end
 		end
 
 feature -- Status report	
@@ -32,7 +34,9 @@ feature -- Cursor movement
 	forth
 			-- Move cursor to next position.
 		do
-			query.transaction.repository.next_entry (query.as_attached)
+			check attached query as q then
+				q.transaction.repository.next_entry (q)
+			end
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}

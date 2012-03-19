@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="eiffelstore2-tests" uuid="671C9530-CB14-493E-8F77-39A919C5723A" library_target="eiffelstore2-tests">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="eiffelstore2-tests" uuid="671C9530-CB14-493E-8F77-39A919C5723A" library_target="eiffelstore2-tests">
 	<description>Unit-tests for the EiffelStore2 library.</description>
 	<target name="eiffelstore2-tests">
 		<root class="ANY" feature="default_create"/>
@@ -12,8 +12,11 @@
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false"/>
-		<library name="mysql" location="$ABEL\trunk\libraries\ethz\src\mysqli\mysqli.ecf"/>
+		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false">
+			<option full_class_checking="true" void_safety="all">
+			</option>
+		</library>
+		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf" readonly="false"/>
 		<tests name="tests" location=".\">
 			<option void_safety="all" syntax="provisional" namespace="Tests">
