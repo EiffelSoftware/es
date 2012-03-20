@@ -24,6 +24,7 @@ feature -- Initialization
 			-- Create an identifier from a string.
 		do
 			string_value := string_id
+			create regex_matcher.make
 			regex_matcher.compile (validation_pattern)
 		end
 

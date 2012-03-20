@@ -19,11 +19,13 @@ feature -- Initialization
 			create {ARRAYED_LIST[TBON_CLASS_TYPE]} ancestors.make (10)
 			create {ARRAYED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make (10)
 			create {ARRAYED_LIST[TBON_FORMAL_GENERIC]} type_parameters.make (10)
-			create indexing_clause.make_element (extract_associated_class_indices)
-			create class_invariant.make_element (extract_associated_class_invariant_assertions)
+			create indexing_clause.make_element (associated_class_indices)
+			create class_invariant.make_element (associated_class_invariant_assertion_list)
 
 			extract_associated_class_ancestors
 			extract_associated_class_type_parameters
+
+			io.put_string ("TBON_CLASS DONE")
 		end
 
 feature -- Access
@@ -56,7 +58,7 @@ feature -- Status report
 	is_generic: BOOLEAN
 			-- Is this class generic?
 		do
-			Result := type_parameters /= Void or else type_paramters.is_empty
+			Result := type_parameters /= Void or else type_parameters.is_empty
 		end
 
 	is_interfaced: BOOLEAN
@@ -111,6 +113,51 @@ feature -- Status setting
 feature {NONE} -- Implementation
 	associated_class: CLASS_AS
 			-- What is the associated Eiffel class of this BON class?
+
+	associated_class_invariant_assertion_list: LIST[TBON_ASSERTION]
+			-- Extract the class invariants of the assocated class.	
+		local
+			l_assertion: TBON_ASSERTION
+			l_assertions: like associated_class.invariant_part.assertion_list
+		do
+			l_assertions := associated_class.invariant_part.assertion_list
+			from
+				l_assertions.start
+			until
+				l_assertions.exhausted
+			loop
+				-- Get assertion details from l_assertions.i_th
+				-- create l_assertion.make_element
+				-- Result.put (l_assertion)
+				l_assertions.forth
+			end
+		end
+
+	associated_class_indices: LIST[TBON_INDEX]
+			-- Extract the indices of an indexing clause of the associated class
+		local
+			l_index_tag: TBON_IDENTIFIER
+			l_index_terms: LIST[STRING]
+			l_index: TBON_INDEX
+			l_index_list: LIST[TBON_INDEX]
+		do
+			create {LINKED_LIST[TBON_INDEX]} l_index_list.make
+			from
+				associated_class.top_indexes.start
+			until
+				associated_class.top_indexes.exhausted
+			loop
+				create l_index_tag.make_element (associated_class.top_indexes.item.tag.string_value_32)
+				l_index_terms := strings_from_atomics (associated_class.top_indexes.item.index_list)
+				create l_index.make_element (l_index_tag, l_index_terms)
+
+				l_index_list.put (l_index)
+
+				associated_class.top_indexes.forth
+			end
+
+			Result := l_index_list
+		end
 
 	associated_class_name: STRING
 			-- Extract class name from the abstract class syntax.
@@ -192,75 +239,33 @@ feature {NONE} -- Implementation
 
 		end
 
-
-
-	extract_associated_class_indices: LIST[TBON_INDEX]
-			-- Extract the indices of an indexing clause of the associated class
-		local
-		i: INTEGER
-		l_index_tag: TBON_IDENTIFIER
-		l_index_terms: LIST[STRING]
-		l_index: TBON_INDEX
-		do
-			from
-				i := 0
-			until
-				i >= associated_class.top_indexes.count
-			loop
-				l_index_tag.make_element (associated_class.top_indexes.i_th (i).tag.string_value_32)
-				l_index_terms := extract_list_from_atomics(associated_class.top_indexes.i_th (i).index_list)
-				create l_index.make_element (l_index_tag, l_index_terms)
-				Result.put (l_index)
-				i := i + 1
-			end
-		end
-
-	extract_associated_class_invariant_assertions: LIST[TBON_ASSERTION]
-			-- Extract the class invariants of the assocated class.	
-		local
-			x: INTEGER
-			l_assertion: TBON_ASSERTION
-			l_assertions: like associated_class.invariant_part.assertion_list
-		do
-			from
-				x := 1
-			until
-				x >= l_assertions.count
-			loop
-				-- Get assertion details from l_assertions.i_th
-				-- create l_assertion.make_element
-				-- Result.put (l_assertion)
-				x := x + 1
-			end
-		end
-
 	extract_associated_class_type_parameters
 			-- Extract the type paramters of the associated class.
 			-- Results are stored in the type_parameters list.
 		do
 			associated_class.generics.do_all (
-				agent (generic: STRING)
+				agent (generic: FORMAL_DEC_AS)
+					local
+						l_formal_generic_name: TBON_FORMAL_GENERIC_NAME
+						l_identifier: TBON_IDENTIFIER
+						l_formal_generic: TBON_FORMAL_GENERIC
+						l_constraining_type: TBON_CLASS_TYPE
 					do
-						type_parameters.put (generic)
+						create l_identifier.make_element (generic.name.name_8)
+						create l_formal_generic_name.make_element (l_identifier)
+
+						if generic.has_constraint then
+							create l_constraining_type.make_element (generic.constraints.first.type.dump)
+						else
+							l_constraining_type := Void
+						end
+
+						create l_formal_generic.make_element (l_formal_generic_name, l_constraining_type)
+						type_parameters.put (l_formal_generic)
 					ensure
-						type_parameters.count = old type_paramters.count + 1
+						type_parameters.count = old type_parameters.count + 1
 					end
 				)
-		end
-
-	extract_strings_from_atomics (l_list: EIFFEL_LIST[ATOMIC_AS]): LIST[STRING]
-			-- Extract the string values of a list of ATOMIC_AS's and return them as list of strings
-		local
-			i: INTEGER
-		do
-			from
-				i := 0
-			until
-				i < l_list.count
-			loop
-				Result.put (l_list.i_th (i).string_value_32)
-				i := i + 1
-			end
 		end
 
 	new_feature (feat: FEATURE_AS): TBON_FEATURE
@@ -554,6 +559,21 @@ feature {NONE} -- Implementation
 						l_l_feature_list.count = old l_l_feature_list.count + 1
 					end (?,l_feature_list)
 			)
+		end
+
+	strings_from_atomics (l_list: EIFFEL_LIST[ATOMIC_AS]): LIST[STRING]
+			-- Extract the string values of a list of ATOMIC_AS's and return them as list of strings
+		local
+			i: INTEGER
+		do
+			from
+				i := 0
+			until
+				i < l_list.count
+			loop
+				Result.put (l_list.i_th (i).string_value_32)
+				i := i + 1
+			end
 		end
 
 

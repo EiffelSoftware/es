@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {TEXTUAL_BON_FORMAL_OUTPUT_STRATEGY}."
-	author: ""
+	description: "AST output strategy for the formal BON view."
+	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,10 +20,12 @@ feature -- Processing
 	process_class_as (l_as: CLASS_AS)
 			-- Process the abstract syntax (represented by 'CLASS_AS') for an Eiffel class into informal textual BON.
 		local
+			tbon_class: TBON_CLASS
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 			l_text_formatter_decorator.put_classi (current_class.lace_class)
+			create tbon_class.make (l_as)
 		end
 
 note
