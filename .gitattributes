@@ -2541,7 +2541,6 @@ Src/examples/wel/xcell/xcell.bmp -text
 Src/examples/wel/xcell/xcell_demo.ico -text
 Src/framework/alias_calculus/alias_calculus.rc -text
 Src/framework/alias_calculus/application_with_printout.BK -text
-Src/framework/alias_calculus/exception_trace.log -text
 Src/framework/alias_calculus/results.txt -text
 Src/framework/auto_test/Clib/lp_solve/README.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL-overview.txt -text
