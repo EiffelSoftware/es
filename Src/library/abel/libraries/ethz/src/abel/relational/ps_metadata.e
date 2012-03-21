@@ -36,7 +36,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	get_attribute_type (attribute_name: STRING): PS_METADATA
 			-- Get the metadata of the type of the attribute `attribute_name'
 		do
-			result := private_type_hash [attribute_name].as_attached
+			check attached private_type_hash[attribute_name] as res then
+				Result := res
+			end
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status

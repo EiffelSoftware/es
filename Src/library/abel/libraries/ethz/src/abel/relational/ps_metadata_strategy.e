@@ -25,7 +25,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 			-- The function will also search for descendants of the class denoted in the generic argument of PS_QUERY (not ANY, the actual type...)
 		local
 			i: INTEGER
-			mysql_result: MYSQLI_RESULT
 			fieldname_value_hash: HASH_TABLE [STRING, STRING]
 		do
 			create_values_table_if_nonexistent
@@ -38,20 +37,21 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 				query_to_mysqlresult_map.put (database.last_result.as_attached, query.backend_identifier)
 				database.last_result.start
 			end
-			mysql_result := query_to_mysqlresult_map [query.backend_identifier].as_attached
-			if mysql_result.after then
-				Result := Void
-			else
-				from -- loop through metadata.attributes.count rows to retrieve the values of a single object (object id's are sorted...)
-					create Result.make (metadata.attributes.count)
-					i := 1
-				until
-					i > metadata.attributes.count
-				loop
-					Result.put (mysql_result.item.at_field ("value").as_string_8.as_attached, mysql_result.item.at_field ("field").as_string_8.as_attached)
-						--print (mysql_result.item.at_field ("value").as_string_8.as_attached)
-					mysql_result.forth
-					i := i + 1
+			check attached query_to_mysqlresult_map [query.backend_identifier] as mysql_result then
+				if mysql_result.after then
+					Result := Void
+				else
+					from -- loop through metadata.attributes.count rows to retrieve the values of a single object (object id's are sorted...)
+						create Result.make (metadata.attributes.count)
+						i := 1
+					until
+						i > metadata.attributes.count
+					loop
+						Result.put (mysql_result.item.at_field ("value").as_string_8.as_attached, mysql_result.item.at_field ("field").as_string_8.as_attached)
+							--print (mysql_result.item.at_field ("value").as_string_8.as_attached)
+						mysql_result.forth
+						i := i + 1
+					end
 				end
 			end
 		end
@@ -64,7 +64,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 				-- grab a new primary key for the object
 			from
 				metadata.attributes.start
-				database.execute_query ("INSERT INTO ps_value (attributeid, value) VALUES ( " + metadata.get_attribute_id (metadata.attributes.item).out + ", '" + object [metadata.attributes.item].as_attached + "')")
+				check attached object [metadata.attributes.item] as val then
+					database.execute_query ("INSERT INTO ps_value (attributeid, value) VALUES ( " + metadata.get_attribute_id (metadata.attributes.item).out + ", '" + val + "')")
+				end
 				print (database.last_error_message)
 				Result := database.last_result.last_insert_id
 				metadata.attributes.forth
@@ -72,7 +74,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 			until
 				metadata.attributes.after
 			loop
-				database.execute_query ("INSERT INTO ps_value VALUES (" + Result.out + ", " + metadata.get_attribute_id (metadata.attributes.item).out + ", '" + object [metadata.attributes.item].as_attached + "')")
+				check attached object [metadata.attributes.item] as val then
+					database.execute_query ("INSERT INTO ps_value VALUES (" + Result.out + ", " + metadata.get_attribute_id (metadata.attributes.item).out + ", '" + val + "')")
+				end
 				print (database.last_error_message)
 				metadata.attributes.forth
 			end

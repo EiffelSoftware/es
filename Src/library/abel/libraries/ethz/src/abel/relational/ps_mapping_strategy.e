@@ -49,11 +49,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database access
 
-	database: detachable MYSQLI_CLIENT
+	database: MYSQLI_CLIENT
+	do
+		check attached database_impl as db then
+			Result:=db
+		end
+	end
+
+	database_impl: detachable MYSQLI_CLIENT
+	-- attribute to work around a void safety error in all descendants...
 
 	set_database (a_client: MYSQLI_CLIENT)
 		do
-			database := a_client
+			database_impl := a_client
 		end
 
 end

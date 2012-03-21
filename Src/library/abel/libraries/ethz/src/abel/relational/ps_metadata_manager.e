@@ -31,7 +31,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 			create reflection
 			class_name := reflection.class_name (object)
 			if metadata_list.has (class_name) then
-				Result := metadata_list [class_name].as_attached
+				check attached metadata_list[class_name] as res then
+					Result := res
+				end
 			else
 				create Result.make (class_name, false)
 				metadata_list.put (Result, class_name)

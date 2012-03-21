@@ -25,8 +25,11 @@ feature -- Creating a criterion
 					Result:=new_agent (predicate)
 				end
 			else
-			-- is_predefined = True, otherwise there would be a contract violation	
-				Result := new_predefined (tuple[1].out, tuple[2].out, tuple[3].as_attached)
+			-- is_predefined = True, otherwise there would be a contract violation
+				-- however, we need to do all these checks again because of void safety-.-
+				check attached {STRING} tuple[1] as attr and attached{STRING} tuple[2] as operator and attached tuple[3] as value then
+					Result := new_predefined (attr, operator, value)
+				end
 			end
 		end
 
@@ -57,8 +60,8 @@ feature -- Preconditions
 	is_predefined (tuple: TUPLE [ANY]): BOOLEAN
 			-- See if the tuple corresponds to the format of predefined tuples and has a valid operator/value combination
 		do
-			if attached {TUPLE [STRING, STRING, ANY]} tuple then
-				Result := is_valid_combination (tuple[2].out, tuple[3].as_attached)
+			if attached {TUPLE [STRING, STRING, ANY]} tuple and then (attached {STRING} tuple[2] as operator and attached tuple[3] as value) then
+				Result := is_valid_combination (operator, value)
 			else
 				Result:=false
 			end

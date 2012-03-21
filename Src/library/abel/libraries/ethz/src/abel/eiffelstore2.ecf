@@ -16,7 +16,7 @@ Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</descri
 		<setting name="dotnet_naming_convention" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="db" location="$ISE_LIBRARY\library\store\dbms\rdbms\odbc\odbc-safe.ecf"/>
-		<library name="mysql" location="$ABEL\trunk\libraries\ethz\src\mysqli\mysqli.ecf"/>
+		<library name="mysql" location="..\mysqli\mysqli.ecf"/>
 		<library name="store" location="$ISE_LIBRARY\library\store\store-safe.ecf"/>
 		<cluster name="eiffelstore2" location=".\" recursive="true">
 			<option void_safety="all" namespace="EiffelStore2">
@@ -28,15 +28,12 @@ Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</descri
 				<exclude>^/relational$</exclude>
 			</file_rule>
 			<file_rule>
-				<exclude>^/new_cluster_5$</exclude>
-			</file_rule>
-			<file_rule>
 				<exclude>^/criteriontree$</exclude>
 			</file_rule>
-			<cluster name="serialization" location="$ABEL\trunk\libraries\ethz\src\abel\serialization\"/>
-			<cluster name="relational" location="$ABEL\trunk\libraries\ethz\src\abel\relational\" recursive="true"/>
-			<cluster name="example" location="$ABEL\trunk\libraries\ethz\src\abel\relational\example\"/>
-			<cluster name="criteriontree" location="$ABEL\trunk\libraries\ethz\src\abel\criteriontree\"/>
+			<cluster name="serialization" location=".\serialization\"/>
+			<cluster name="relational" location=".\relational\" recursive="true"/>
+			<cluster name="example" location=".\relational\example\"/>
+			<cluster name="criteriontree" location=".\criteriontree\"/>
 		</cluster>
 	</target>
 </system>

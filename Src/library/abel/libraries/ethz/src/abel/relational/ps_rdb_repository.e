@@ -56,7 +56,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 				i > reflection.field_count (object)
 			loop
 				field_name := reflection.field_name (i, object)
-				attributes.put (reflection.field (i, object).out, field_name)
+				check attached reflection.field (i, object) as attr then
+					attributes.put (attr.out, field_name)
+				end
 				i := i + 1
 			end
 			primary_key := strategy.insert (attributes, obj_metadata, transaction)
@@ -145,12 +147,15 @@ feature {NONE} -- Implementation
 					loop
 						field_name := reflection.field_name (i, obj)
 							--print (field_name)
-						if obj_metadata.get_attribute_type (field_name).is_basic_type then
-							if obj_metadata.get_attribute_type (field_name).name.has_substring ("STRING") then
-								reflection.set_reference_field (i, obj, values [field_name])
-							elseif obj_metadata.get_attribute_type (field_name).name.has_substring ("INTEGER") then
-								reflection.set_integer_32_field (i, obj, values [field_name].to_integer_32)
-							end -- todo: extend this list for all basic types
+						check attached values[field_name] as val then
+
+							if obj_metadata.get_attribute_type (field_name).is_basic_type then
+								if obj_metadata.get_attribute_type (field_name).name.has_substring ("STRING") then
+									reflection.set_reference_field (i, obj, val)
+								elseif obj_metadata.get_attribute_type (field_name).name.has_substring ("INTEGER") then
+									reflection.set_integer_32_field (i, obj, val.to_integer_32)
+								end -- todo: extend this list for all basic types
+							end
 						end
 						i := i + 1
 					end
