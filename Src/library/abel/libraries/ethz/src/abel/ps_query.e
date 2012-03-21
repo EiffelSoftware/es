@@ -10,11 +10,11 @@ note
 			where the user can set a projection.
 			]"
 
-class
+deferred class
 	PS_QUERY [G -> ANY]
 
-create
-	make
+--create
+--	make
 
 
 feature {NONE} -- Creation

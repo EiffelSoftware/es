@@ -37,7 +37,7 @@ feature {NONE} -- Test criteria setting
 	test_query_no_result
 			-- Test a query using agent criterion `items_greater_than' yielding no result.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -54,7 +54,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_agent_greater_than
 			-- Test a query using agent criterion `items_greater_than' yielding one result.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -73,7 +73,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_agent_equals_to
 			-- Test a query using agent criterion `items_equals_to'. One result expected.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -92,7 +92,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_agent_matching_string
 			-- Test a query using agent criterion `first_name_matches'. One result expected.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -110,7 +110,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_agent_less_than
 			-- Test a query using agent criterion `items_less_than'. One result expected.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -128,7 +128,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_agent_string_contains
 			-- Test a query using agent criterion `string_contains'. One result expected.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -146,7 +146,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_two_agent_criteria_anded
 			-- Test a query using agent `items_reater_than' anded with agent `first_name_matches'. One result expected.
 		local
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create q.make
@@ -166,7 +166,7 @@ feature {NONE} -- Test criteria setting
 			-- Test a query using agent `items_greater_than' ored with agent `first_name_matches'. One result expected.
 		local
 			p: PERSON
-			q: PS_QUERY [PERSON]
+			q: PS_OBJECT_QUERY [PERSON]
 		do
 			create q.make
 			q.set_criterion (factory [[agent p_dao.items_less_than(?, 3)]] or factory [[agent p_dao.items_greater_than(?, 5)]])
@@ -194,7 +194,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_greater_than
 			-- Test a query using criterion greater_than. One result expected.
 		local
-			query: PS_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create query.make
@@ -213,7 +213,7 @@ feature {NONE} -- Test criteria setting
 	test_query_one_result_equals_to
 			-- Test a query using criterion equals_to. One result expected.
 		local
-			query: PS_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 			p: PERSON
 		do
 			create query.make
@@ -232,7 +232,7 @@ feature {NONE} -- Test criteria setting
 	test_query_many_results_two_criteria_anded
 			-- Test a query using two criteria anded.
 		local
-			query: PS_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 			p1: PERSON
 			p2: PERSON
 		do
@@ -254,7 +254,7 @@ feature {NONE} -- Test criteria setting
 	test_query_many_results_two_criteria_ored
 			-- Test a query using two criteria ored.
 		local
-			query: PS_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 			p1: PERSON
 			p2: PERSON
 		do
@@ -282,7 +282,7 @@ feature {NONE} -- Test criteria setting
 	test_query_many_results_three_mixed_criteria
 			-- Test a query using theree criteria, two predefined and one using an agent.
 		local
-			query: PS_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 			p1, p2: PERSON
 		do
 			create query.make
@@ -326,6 +326,6 @@ feature {NONE} -- Initialization
 	person_executor: PS_CRUD_EXECUTOR [PERSON]
 
 	p_dao: PERSON_DAO
-	
+
 
 end
