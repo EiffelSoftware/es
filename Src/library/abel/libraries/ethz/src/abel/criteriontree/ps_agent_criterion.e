@@ -33,6 +33,9 @@ feature -- Check
 
 feature -- Miscellaneous
 
+	has_agent_criterion:BOOLEAN = True
+		-- Is there an agent criterion in the criterion tree?
+
 	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
 			-- Call visit_agent on `a_visitor'
 		do

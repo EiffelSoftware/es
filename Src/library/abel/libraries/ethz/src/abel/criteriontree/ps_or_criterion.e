@@ -53,6 +53,12 @@ feature -- Check
 
 feature -- Miscellaneous
 
+	has_agent_criterion:BOOLEAN
+			-- Is there an agent criterion in the criterion tree?
+		do
+			Result := left.has_agent_criterion and right.has_agent_criterion
+		end
+
 	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
 			-- Call visit_or on `a_visitor'
 		do

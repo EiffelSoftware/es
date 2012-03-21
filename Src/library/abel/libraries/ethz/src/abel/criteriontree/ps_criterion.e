@@ -45,6 +45,11 @@ feature -- Check
 
 feature -- Miscellaneous
 
+	has_agent_criterion:BOOLEAN
+		-- Is there an agent criterion in the criterion tree?
+		deferred
+		end
+
 	is_empty_criterion:BOOLEAN
 			-- Is `Current' a PS_EMPTY_CRITERION?
 		do

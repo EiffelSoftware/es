@@ -1,21 +1,12 @@
 note
-	description: "Objects representing a general query."
+	description: "Represents a general query to a repository."
 	author: "Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
 
 
-	fixme: "[
-			This class should be splitted into two subclasses, one returning objects and the other returning (readonly) tuples, 
-			where the user can set a projection.
-			]"
-
 deferred class
 	PS_QUERY [G -> ANY]
-
---create
---	make
-
 
 feature {NONE} -- Creation
 
@@ -23,7 +14,7 @@ feature {NONE} -- Creation
 			-- Create an new query on objects of type `G'.
 		do
 			create {PS_EMPTY_CRITERION} criteria.default_create
-			create {PS_RESULT_SET [G]} query_result.make
+			create query_result.make
 			query_result.set_query (Current)
 			is_executed := False
 		ensure
@@ -38,7 +29,7 @@ feature -- Access
 			-- Criteria for `Current' query.
 
 
-	query_result: PS_RESULT_SET [G]
+	query_result: PS_RESULT_SET [ANY]
 			-- Iteration cursor containing the result of the query.
 		require
 			already_executed: is_executed
@@ -71,6 +62,17 @@ feature -- Status
 			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.dynamic_type_from_string (class_name)))
 		end
 
+	is_object_query:BOOLEAN
+			-- Is `Current' an instance of PS_OBJECT_QUERY?
+		deferred
+		end
+
+	is_tuple_query:BOOLEAN
+			-- Is `Current' an instance of PS_TUPLE_QUERY?
+		do
+			Result:= not is_object_query
+		end
+
 
 feature -- Basic operations
 
@@ -78,9 +80,7 @@ feature -- Basic operations
 			-- Set the criteria `a_criterion', against which the objects will be selected
 		require
 			set_before_execution: not is_executed
-			only_predefined: True
-			-- fixme: when splitting the class, the base class should contain
-			-- this precondition. It then has to be weakened for the object based query
+			only_predefined: not a_criterion.has_agent_criterion
 			criterion_can_handle_objects: is_criterion_fitting_generic_type (a_criterion)
 		do
 			criteria := a_criterion
@@ -126,24 +126,5 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 feature {NONE}
 
 	transaction_impl: detachable PS_TRANSACTION
-
-
-feature -- Projections
-	note
-		fixme: "Move this to a descendant"
-
-	--projection: ARRAY [STRING]
-			-- Data to be included for projection.
-
-
---	set_projection (a_projection: ARRAY [STRING])
-			-- Set `a_projection' to the current query.
---		do
---			fixme ("This should be in the creation procedure of the tuple query")			
---			projection := a_projection
---		ensure
---			projected_data_set: projection = a_projection
---		end
-
 
 end

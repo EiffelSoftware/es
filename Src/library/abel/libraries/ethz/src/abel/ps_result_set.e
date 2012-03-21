@@ -57,13 +57,13 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 feature {PS_QUERY} -- Creation
 
-	set_query (a_query: PS_QUERY [G])
+	set_query (a_query: PS_QUERY [ANY])
 			-- Set query to `a_query'. Part of initialization process
 		do
 			query := a_query
 		end
 
-	query: detachable PS_QUERY [G]
+	query: detachable PS_QUERY [ANY]
 
 	make
 			-- Create a new result set.

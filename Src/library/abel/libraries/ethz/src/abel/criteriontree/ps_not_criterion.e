@@ -47,6 +47,12 @@ feature -- Check
 
 feature -- Miscellaneous
 
+	has_agent_criterion:BOOLEAN
+			-- Is there an agent criterion in the criterion tree?
+		do
+			Result := child.has_agent_criterion
+		end
+
 	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
 			-- call visit_not on `a_visitor'
 		do
