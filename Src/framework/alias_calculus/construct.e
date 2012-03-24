@@ -9,9 +9,8 @@ deferred class
 
 inherit
 	ANY
-		undefine out end
-
-
+		undefine out
+		redefine out end
 
 feature -- Status report
 
@@ -22,22 +21,22 @@ feature -- Status report
 
 feature -- Access
 
-	outer: CONSTRUCT assign set_outer
+	outer: detachable CONSTRUCT assign set_outer
 			-- Enclosing block.
 
 	level: INTEGER
 			-- Level of indentation.
 		do
-			if outer /= Void then
-				Result := outer.level
-				if outer.is_indenting then
+			if attached outer as o then
+				Result := o.level
+				if o.is_indenting then
 					Result := Result + 1
 				end
 			end
 		ensure
 			non_negative: Result >= 0
-			non_decreasing: (outer /= Void) implies (Result >= outer.level)
-			like_outer_or_just_above: (outer /= Void) implies ((Result = outer.level) or (Result = outer.level + 1))
+			non_decreasing: attached outer as o implies (Result >= o.level)
+			like_outer_or_just_above: attached outer as o implies ((Result = o.level) or (Result = o.level + 1))
 			zero_at_outermost: (outer = Void) implies (Result = 0)
 		end
 
@@ -58,7 +57,7 @@ feature -- Input and output
 
 feature {CONSTRUCT, APPLICATION} -- Implementation
 
-	set_outer (c: CONSTRUCT)
+	set_outer (c: like outer)
 			-- Make `c' the outer block of current construct specimen.
 		require
 			exists: c /= Void
@@ -79,10 +78,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-
 	Tab: STRING = "    "
 			-- Tab character, or simulation.
-
 
 	New_line: STRING = "%N"
 			-- New_line.
