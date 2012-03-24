@@ -26,7 +26,6 @@ feature -- Initialization
 			-- Corrected BM 15.11.2009: No need to do anything,
 			-- they will be set up by the program
 		do
-		ensure
 		end
 
 feature -- Status report
@@ -48,9 +47,15 @@ feature -- Access
 
 	then_part: COMPOUND assign set_then
 			-- Then part of conditional
+		attribute
+			create Result.make
+		end
 
 	else_part: COMPOUND assign set_else
 			-- Else part of conditional
+		attribute
+			create Result.make
+		end
 
 feature -- Element change
 
