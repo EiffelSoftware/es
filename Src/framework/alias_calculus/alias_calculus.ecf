@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="alias_calculus" uuid="A91C9AB6-7F3B-41B2-BB86-EAC3AAA876CC">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="alias_calculus" uuid="A91C9AB6-7F3B-41B2-BB86-EAC3AAA876CC">
 	<target name="alias_calculus">
 		<root cluster="alias_calculus" class="APPLICATION" feature="make"/>
-		<option debug="true" warning="true" full_class_checking="false" cat_call_detection="true" void_safety="none" syntax="provisional">
+		<option debug="true" warning="true" full_class_checking="true" cat_call_detection="true" void_safety="all" is_void_safe="true">
 			<debug name="assignment" enabled="true"/>
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false">
-			<option>
-				<assertions/>
-			</option>
-		</library>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<cluster name="alias_calculus" location=".\">
-			<option debug="true" full_class_checking="false" void_safety="none">
+			<option debug="true">
 				<debug name="alias_equality" enabled="false"/>
 				<debug name="alias_loop" enabled="false"/>
 				<debug name="assignment" enabled="false"/>
@@ -26,9 +22,6 @@
 				<debug name="remove" enabled="false"/>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 			</option>
-			<class_option class="ALIAS_RELATION">
-				<assertions precondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
-			</class_option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/CVS$</exclude>
