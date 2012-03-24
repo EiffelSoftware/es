@@ -26,11 +26,10 @@ feature -- Initialization
 			call_make (pn, pr)
 			target := t
 			create cached_input.make (Default_cached_call_aliases)
-			create cached_output.make (1, Default_cached_call_aliases)
+			create cached_output.make_empty
 		ensure then
 			cached_input_exists: cached_input /= Void
 			cached_output_exists: cached_output /= Void
-			cached_output_sized: cached_output.count = Default_cached_call_aliases
 			variable_set: target = t
 		end
 
@@ -58,7 +57,6 @@ feature -- Status report
 	is_stable: BOOLEAN
 			-- Has computation of this call reached a fixed point?
 			-- FIXME: currently useless, may need to be removed BM 4.12.2009
-
 
 feature -- Basic operations
 
@@ -94,7 +92,7 @@ feature -- Basic operations
 				b := b.prepended (target)
 				a.copy (b)
 
-				cached_output.force (a.deep_twin, cc)
+				cached_output [cc] := a.deep_twin
 
 			end
 
