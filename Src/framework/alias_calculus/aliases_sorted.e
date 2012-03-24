@@ -60,13 +60,12 @@ feature {NONE} -- Initialization
 			al: SORTED_TWO_WAY_LIST [EXPRESSION]
 		do
 			list_make
-			base := a.deep_twin
-			across base as  b loop
+			across a as b loop
 				check
 					b.item /= Void
 				end
 				if not b.item.is_empty then
-					al := base.aliases (b.key)
+					al := a.aliases (b.key)
 					al.sort
 					extend (create {SORTABLE_EXPRESSION_LIST}.make (b.key, al))
 				end
@@ -140,10 +139,9 @@ feature -- Element change
 			end
 		end
 
-
 feature -- Access
 
-	base: ALIAS_RELATION
+--	base: ALIAS_RELATION
 			-- The underlying alias relation.
 
 feature -- Input and output
