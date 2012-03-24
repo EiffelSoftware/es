@@ -20,6 +20,8 @@ inherit
 	HASH_TABLE [PROCEDURE1, STRING]
 		rename
 			make as ht_make, out as old_out
+		redefine
+			empty_duplicate
 		select
 			copy, is_equal
 			-- FIXME write specific versions BM 21.11.2009
@@ -50,10 +52,10 @@ feature -- Access
 		require
 			has_main
 		do
-			Result := item (main_name)
+			check attached item (main_name) as p then
+				Result := p
+			end
 		end
-
-
 
 feature -- Status report
 
@@ -62,7 +64,6 @@ feature -- Status report
 		do
 			Result := main_body /= Void and then main_body.is_applicable (a)
 		end
-
 
 	is_indenting: BOOLEAN
 			-- Should sub-components be indented one more level?
@@ -110,6 +111,13 @@ feature {NONE} -- Implementation
 
 	Min_proc: INTEGER = 20
 			-- Initial number of procedures in program.
+
+feature {NONE} -- Duplication
+
+	empty_duplicate (n: INTEGER): like Current
+		do
+			create Result.make (main_name)
+		end
 
 invariant
 
