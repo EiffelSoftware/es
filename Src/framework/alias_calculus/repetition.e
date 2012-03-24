@@ -31,6 +31,9 @@ feature -- Access
 
 	body: COMPOUND assign set_body
 			-- Instructions to be iterated.
+		attribute
+			create Result.make
+		end
 
 feature -- Element change
 
