@@ -14,6 +14,7 @@ create
 	make
 
 feature -- Initialization
+
 	make (c: INTEGER)
 			-- Use `c' as count.
 		require
@@ -27,8 +28,8 @@ feature -- Access
 	count: INTEGER
 			-- Number of iterations of `body'.
 
-
 feature -- Input and output
+
 	out: STRING
 			-- Printable representation of iteration.
 		do
@@ -38,7 +39,7 @@ feature -- Input and output
 					tabs + "end"+ New_line
 		end
 
-		feature -- Basic operations
+feature -- Basic operations
 
 	update (a: ALIAS_RELATION)
 			-- Make `a' include aliases induced by iteration.
@@ -51,11 +52,17 @@ feature -- Input and output
 				debug ("ITERATE") a.printout ("before iterations") end
 				i := ic.cursor_index
 				iterate_silent (a, i)
-			 	debug itertext := " iterations"; if i = 1 then itertext := " iteration" end end
-			 	debug ("ITERATE") a.printout ("not cumulated, after " + i.out + itertext) end
+			 	debug ("ITERATE")
+			 		itertext := " iterations"
+			 		if i = 1 then itertext := " iteration" end
+			 		a.printout ("not cumulated, after " + i.out + itertext)
+			 	end
 			end
-			debug ("ITERATE") a.printout ("for repetition construct, not cumulated, after " + count.out + itertext) end
+			debug ("ITERATE")
+		 		itertext := " iterations"
+		 		if i = 1 then itertext := " iteration" end
+				a.printout ("for repetition construct, not cumulated, after " + count.out + itertext)
+			end
 		end
-
 
 end
