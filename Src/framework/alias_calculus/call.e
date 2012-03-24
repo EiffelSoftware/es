@@ -46,7 +46,9 @@ feature -- Access
 			require
 				exists: program.has (proc_name)
 			do
-				Result := program.item (proc_name)
+				check attached program.item (proc_name) as p then
+					Result := p
+				end
 			ensure
 				consistent_name: Result.name ~ proc_name
 			end
