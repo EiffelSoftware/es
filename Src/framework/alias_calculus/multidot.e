@@ -37,6 +37,9 @@ inherit
 create
 	make_from_array, make_from_simple_expression, make_from_two_variables
 
+create {LINKED_LIST}
+	make_empty
+
 feature -- Initialization
 
 	make_from_array (a: ARRAY [SIMPLE_EXPRESSION])
@@ -145,11 +148,14 @@ feature -- Access
 
 	as_array: ARRAY [SIMPLE_EXPRESSION]
 			-- Array form of expression, with successive variables.
+		local
+			s: SPECIAL [SIMPLE_EXPRESSION]
 		do
-			create Result.make (1, dot_count)
+			create s.make_empty (dot_count)
 			across Current as c loop
-				Result.put (c.item, c.cursor_index)
+				s.extend (c.item)
 			end
+			create Result.make_from_special (s)
 		ensure
 			same_count: Result.count = dot_count
 			start_at_1: Result.lower = 1
@@ -157,36 +163,13 @@ feature -- Access
 			non_empty: Result.count > 0
 		end
 
-			-- OLD VERSION BELOW ("from" loop) TEMPORARILY RETAINED AS COMMENT
-			-- FOR DISCUSSION, CAN BE REMOVED BM 28.01.2010		
---	as_array: ARRAY [SIMPLE_EXPRESSION]
---			-- Array form of expression, with successive variables.
---		local
---			i: INTEGER
---		do
---			create Result.make (1, dot_count)
---			from
---				i:= 1; start
---			until
---				after
---			loop
---				Result.put (item, i)
---				i := i + 1 ; forth
---			end
---		ensure
---			same_count: Result.count = dot_count
---			start_at_1: Result.lower = 1
---			end_at_count: Result.upper = dot_count
---			non_empty: Result.count > 0
---		end
-
 	initial: SIMPLE_EXPRESSION
 			-- The starting variable, e.g. `a' in `a.b.c...'.
 		do
 			Result := first
 		end
 
-	full_aliases (a: ALIAS_RELATION; xcl: VARIABLE): SORTED_TWO_WAY_LIST [EXPRESSION]
+	full_aliases (a: ALIAS_RELATION; xcl: detachable VARIABLE): SORTED_TWO_WAY_LIST [EXPRESSION]
 			-- List (possibly empty) of expressions starting with a variable
 			-- other than `xcl' and aliased to current expression in `a'.
 			-- This includes indirect aliases: for `e.f', any `x.y' such that

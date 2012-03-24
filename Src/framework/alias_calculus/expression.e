@@ -55,7 +55,7 @@ feature -- Access
 			exists: Result /= Void
 		end
 
-	full_aliases (a: ALIAS_RELATION; xcl: VARIABLE): SORTED_TWO_WAY_LIST [EXPRESSION]
+	full_aliases (a: ALIAS_RELATION; xcl: detachable VARIABLE): SORTED_TWO_WAY_LIST [EXPRESSION]
 			-- List (possibly empty) of expressions starting with a variable
 			-- other than `xcl' and aliased to current expression in `a'.
 			-- This includes indirect aliases: for `e.f', any `x.y' such that
@@ -82,7 +82,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_equal (e: EXPRESSION): BOOLEAN
+	is_equal (e: like Current): BOOLEAN
 			-- Is `e' considered equal?
 			-- Yes if and only if identical representations
 		do
