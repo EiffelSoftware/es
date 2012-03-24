@@ -90,7 +90,9 @@ feature -- Access
 --			eht := item (e)
 			if ht_has (e) then
 				debug ("REMOVE") print ("Found " + e.name + " in table%N") end
-				across item (e) as eht loop	Result.extend (eht.key) end
+				check attached item(e) as eht then
+					across eht as ehtc loop Result.extend (ehtc.key) end
+				end
 --				Result.sort		-- We do not need to sort here, see `printout'. BM ,Dec 2009
 			else
 				debug
@@ -106,13 +108,18 @@ feature -- Access
 	sorted_representation: ALIASES_SORTED
 			-- List of aliased expressions, each with its list of aliases.
 		local
-
+			c: ALIASES_SORTED
 		do
-			if not has_sorted_representation then
-				create computed_sorted_representation.make (Current)
+			if has_sorted_representation then
+				check attached computed_sorted_representation as r then
+					Result := r
+				end
+			else
+				create c.make (Current)
+				computed_sorted_representation := c
 				validate_sorted_representation
+				Result := c
 			end
-			Result := computed_sorted_representation
 		ensure
 			exists: Result /= Void
 		end
@@ -132,6 +139,8 @@ feature -- Measurement
 			-- Hashing value (currently just the number of aliases).
 		do
 			Result := count
+				-- Make sure `count' reflect the actual number of aliased variables.
+			check consistent_count: sorted_representation.count = count end
 		end
 
 feature -- Comparison
@@ -143,22 +152,18 @@ feature -- Comparison
 		do
 				-- The following version causes a postcondition violation in is_deep_equal!
 --			Result := is_deep_equal (other)
-				-- Other rejected versions. FIXME: These lines should just be removed at some point BM 5 Jan 2010
---			Result := Precursor {HASH_TABLE} (other)
---			Result :=
---				keys ~ other.keys and
---				content ~ other.content and
---				deleted_marks ~ other.deleted_marks and
---				(has_default = other.has_default)
---			Result :=
---				keys.is_deep_equal (other.keys) and
---				content.is_deep_equal (other.content) and
---				deleted_marks.is_deep_equal (other.deleted_marks) and
---				(has_default = other.has_default)
 
 				-- The following version seems to do what we want, albeit expensively:
-			rep := sorted_representation
-			rep_other := other.sorted_representation
+			if has_sorted_representation then
+				rep := sorted_representation
+			else
+				create rep.make (Current)
+			end
+			if other.has_sorted_representation then
+				rep_other := other.sorted_representation
+			else
+				create rep_other.make (other)
+			end
 			Result := rep.is_equal (rep_other)
 		end
 
@@ -177,11 +182,8 @@ feature -- Status report
 
 	has (e, f: EXPRESSION): BOOLEAN
 			-- Is pair [`e', `f'] in relation?
-		local
-			eht: HASH_TABLE [EXPRESSION, EXPRESSION]
 		do
-			eht := item (e)
-			Result := (eht /= Void) and then eht.has (f)
+			Result := attached item (e) as eht and then eht.has (f)
 		ensure
 			symmetric: Result = has (f, e)
 		end
@@ -220,7 +222,7 @@ feature -- Element change
 				record_as_suffix (f)
 			end
 		ensure
-			present_if_distinct: (e /~ f) implies has (e, f)
+			present_if_distinct: (e /~ f and e.dot_count <= Max_dots and f.dot_count <= Max_dots) implies has (e.simplified, f.simplified)
 		end
 
 	add (other: ALIAS_RElATION)
@@ -245,7 +247,7 @@ feature -- Element change
 			second_exists: f /= Void
 			different: e /~ f
 		local
-			eht: HASH_TABLE [EXPRESSION, EXPRESSION]
+			eht: detachable HASH_TABLE [EXPRESSION, EXPRESSION]
 			e1, f1: EXPRESSION
 				-- The ones we actually insert: simplified to variables
 				-- if possible.
@@ -253,9 +255,8 @@ feature -- Element change
 			invalidate_sorted_representation
 			e1 := e.simplified
 			f1 := f.simplified
-			if ht_has (e1) then
-				eht := item (e1)
-			else
+			eht := item (e1)
+			if not attached eht then
 				create eht.make (Average_aliases)
 				ht_put (eht, e1)
 			end
@@ -266,18 +267,24 @@ feature -- Element change
 	remove_one_pair (e, f: EXPRESSION)
 			-- Remove pairs [`e', `f'] and [`f,`e'].
 			-- Do nothing if they were not present.
-		local
-			eht, fht: HASH_TABLE [EXPRESSION, EXPRESSION]
 		do
 			debug ("REMOVE") print (" Removing [" + e.name + " , " + f.name + "]") end
 			invalidate_sorted_representation
-			if ht_has (e) then
+			if attached item (e) as eht then
 				debug ("REMOVE") print (", found.%N") end
-						check ht_has (f) end
-				eht := item (e)
-				fht := item (f)
-				eht.remove (f)
-				fht.remove (e)
+				check ht_has (f) end
+				check attached item (f) as fht then
+					eht.remove (f)
+					if eht.is_empty then
+							-- There are no more items associated with `e'.
+						ht_remove (e)
+					end
+					fht.remove (e)
+					if fht.is_empty then
+							-- There are no more items associated with `f'.
+						ht_remove (f)
+					end
+				end
 			else
 				debug ("REMOVE") print (", NOT found.%N") end
 			end
@@ -337,9 +344,11 @@ feature -- Duplication
 			Precursor {HASH_TABLE} (other)
 			suffixes := other.suffixes.twin
 			dot_count := other.dot_count
+			if other.has_sorted_representation then
+				computed_sorted_representation := other.sorted_representation.twin
+			end
 --			deep_copy (other)	-- This does not work (deep_copy calls copy!
 		end
-
 
 feature -- Input and output
 
@@ -392,10 +401,6 @@ feature -- Input and output
 			aso := new.sorted_representation
 			aso.remove_symmetry
 			create aco.make (new)
-			debug ("CANONIZE")
-				aco.printout ("NOT canonized")
-			end
-			aco.canonize
 			aco.printout (tag)
 		end
 
@@ -412,6 +417,12 @@ feature -- Basic operations
 			i.update (Current)
 		end
 
+feature {ALIAS_RELATION} -- Status report
+
+	has_sorted_representation: BOOLEAN
+			-- Is sorted representation available and up to date?
+			-- RULE: call `invalidate_sorted_representation' whenever modifying the relation.
+
 feature {NONE} -- Implementation
 
 	record_as_suffix (e: EXPRESSION)
@@ -420,19 +431,18 @@ feature {NONE} -- Implementation
 		require
 			exists: e /= Void
 		local
-			suf: HASH_TABLE [INTEGER, EXPRESSION]
+			suf: detachable HASH_TABLE [INTEGER, EXPRESSION]
 			v: SIMPLE_EXPRESSION
 		do
 			if attached {MULTIDOT} e as em and then em.dot_count > 1 then
 				v := em.initial
-				if suffixes.has (v) then
-					suf := suffixes.item (v)
-				else
+				suf := suffixes.item (v)
+				if not attached suf then
 					create suf.make (Average_aliases)
 					suffixes.put (suf, v)
 				end
-			check suf = suffixes.item (v) end
-			suf.force (0, e)
+				check suf = suffixes.item (v) end
+				suf.force (0, e)
 			end
 		end
 
@@ -442,22 +452,18 @@ feature {NONE} -- Implementation
 		require
 			exists: e /= Void
 		do
-			if attached {SIMPLE_EXPRESSION} e as v then
-				if suffixes.has (v) then
-					across suffixes.item (v) as suf loop
+			if attached {SIMPLE_EXPRESSION} e as v and then suffixes.has (v) then
+				check attached suffixes.item (v) as s then
+					across s as suf loop
 						check attached {MULTIDOT} suf.key end
 						remove_item (suf.key)
 					end
-				suffixes.remove (v)
 				end
+				suffixes.remove (v)
 			end
 		end
 
-	has_sorted_representation: BOOLEAN
-			-- Is sorted representation available and up to date?
-			-- RULE: call `invalidate_sorted_representation' whenever modifying the relation.
-
-	computed_sorted_representation: ALIASES_SORTED
+	computed_sorted_representation: detachable ALIASES_SORTED
 			-- Sorted representation, computed and stored for reuse
 			-- if needed again when the relation has not changed.
 

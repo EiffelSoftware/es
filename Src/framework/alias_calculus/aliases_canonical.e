@@ -21,6 +21,9 @@ inherit
 create
 	make
 
+create {LINKED_LIST}
+	list_make
+
 feature {NONE} -- Initialization
 
 	make (a: ALIAS_RELATION)
@@ -30,12 +33,10 @@ feature {NONE} -- Initialization
 		local
 			rep: ALIASES_SORTED
 			sel: SORTABLE_EXPRESSION_LIST
-			list: SORTED_TWO_WAY_LIST [EXPRESSION]
 			el: LINKED_LIST [EXPRESSION]
 		do
-			base := a
 			list_make
-			rep := base.sorted_representation.deep_twin
+			rep := a.sorted_representation.deep_twin
 			rep.remove_symmetry
 			across rep as r loop
 				sel := r.item
@@ -45,23 +46,19 @@ feature {NONE} -- Initialization
 				end
 				extend (el)
 			end
---			canonize		-- For the moment, prefer to do it separately (BM, 6 Jan 2010)
+			debug ("CANONIZE")
+				printout ("NOT canonized")
+			end
+			canonize (a)
 		end
-
-feature -- Access
-
-	base: ALIAS_RELATION
-			-- The underlying alias relation.
 
 feature -- Element change
 
-	canonize
+	canonize (base: ALIAS_RELATION)
 			-- Produce canonical form.
 		local
 			el, new: LINKED_LIST [EXPRESSION]
 			split, bad: INTEGER
-
-
 		do
 			from
 				start
@@ -79,7 +76,7 @@ feature -- Element change
 					el.after
 				loop
 					check base.has (el.item, el.first) end
-					bad := non_aliased (el.item, el.index, el)
+					bad := non_aliased (el.item, el.index, el, base)
 					if bad > 0 then
 							-- Split the list into two:
 						split := el.index
@@ -96,8 +93,6 @@ feature -- Element change
 			end
 			remove_subsets
 		end
-
-
 
 feature -- Input and output
 
@@ -131,7 +126,7 @@ feature -- Input and output
 
 feature {NONE} --Implementation
 
-	non_aliased (v: EXPRESSION; i: INTEGER; el: LINKED_LIST [EXPRESSION]): INTEGER
+	non_aliased (v: EXPRESSION; i: INTEGER; el: LINKED_LIST [EXPRESSION]; base: ALIAS_RELATION): INTEGER
 			-- Assuming `v' appears at index `i' in `el':
 			-- if all preceding elements are aliased to `v', then 0;
 			-- otherwise, position of first preceding element not aliased to `v'.
