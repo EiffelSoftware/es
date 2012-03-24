@@ -30,12 +30,13 @@ feature {NONE} -- Initializaation
 				aliases_empty: aliases.is_empty
 			end
 
-
-
 feature -- Access
 
 	body: COMPOUND assign set_body
 			-- Procedure body.
+		attribute
+			create Result.make
+		end
 
 	name: STRING
 			-- Procedure name.
