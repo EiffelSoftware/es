@@ -583,6 +583,31 @@ feature -- Examples from the paper
 
 		end
 
+	ex23_gerasimov
+			-- Gerasimov's recursion example ("Program 1")).
+		do
+			start_program ("Main")
+			start_procedure ("Main")
+				start_then
+					set (x, y)
+				start_else
+					set (x, a)
+					call ("q")
+				end_if
+			end_procedure
+
+			start_procedure ("q")
+				set (x, b)
+				start_then
+					call ("Main")
+				start_else
+					set (a, c)
+				end_if
+			end_procedure
+
+		end
+
+
 feature -- Other examples
 
 	build_iter_simulated

@@ -181,6 +181,7 @@ feature -- Element change
 			put_example (agent ex20_deadlock, "Example 20, not in the article: deadlock", "This is example 20, not in the article.")
 			put_example (agent ex21_deadlock, "Example 21, not in the article: deadlock variant", "This is example 21, not in the article.")
 			put_example (agent ex22_qualified, "Example 22, not in the article: qualified call with argument handling", "This is example 22, not in the article.")
+			put_example (agent ex23_gerasimov, "Example 23, not in the article: Gerasimov's recursive procedure example", "This is example 23, not in the article.")
 		end
 
 
