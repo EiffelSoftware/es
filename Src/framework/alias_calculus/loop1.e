@@ -14,6 +14,7 @@ inherit
 feature -- Initialization
 
 feature -- Input and output
+
 	out: STRING
 			-- Printable representation of conditional.
 		do
@@ -41,6 +42,7 @@ feature -- Basic operations
 			from
 				original := a.deep_twin
 				accumulated_powers := a.deep_twin
+				next := a -- Make sure this variable is set as it is used after a loop.
 			until is_fixpoint loop
 				other := a.deep_twin
 				next := a.deep_twin
@@ -57,12 +59,6 @@ feature -- Basic operations
 				end
 				if a /~ accumulated_powers then
 					io.put_string ("== Not identical: " + a.difference (accumulated_powers) + " ==%N" )
-					debug ("LOOP")
---						io.put_string ("Content of s:%N")
-----						print (accumulated_powers.content)
---						io.put_string ("Content of t:%N")
-----						print (a.content)
-					end
 				end
 			end
 			debug ("LOOP")
