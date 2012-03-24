@@ -1,10 +1,9 @@
 note
-	description: "Summary description for {EXAMPLE_PROGRAMS}."
-	author: ""
+	description: "Sample programs."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EXAMPLE_PROGRAMS
 
 inherit
@@ -12,7 +11,6 @@ inherit
 	APPLICATION_CONSTANTS
 
 feature -- Examples from the paper
-
 
 	ex1_simple_assignments
 			-- Build a program consisting of some assignments.
@@ -55,8 +53,6 @@ feature -- Examples from the paper
 				end_if
 			end_procedure
 		end
-
-
 
 	ex3_iter0
 			-- Build a repetition (0 iteration).
@@ -159,7 +155,6 @@ feature -- Examples from the paper
 				end_iter
 			end_procedure
 		end
-
 
 	ex9_loop
 			-- Build a loop.
@@ -533,7 +528,7 @@ feature -- Examples from the paper
 
 		end
 
-ex21_deadlock
+	ex21_deadlock
 			-- Build a program, with a routine causing deadlock and the other not.
 			-- Version with better argument handling
 		do
@@ -590,8 +585,6 @@ ex21_deadlock
 
 feature -- Other examples
 
-
-
 	build_iter_simulated
 			-- Build a repetition, not using the iteration construct.
 			-- Should no longer be useful, was a kludge before ITER
@@ -616,7 +609,5 @@ feature -- Other examples
 					set (z, x)
 			end_procedure
 		end
-
-
 
 end
