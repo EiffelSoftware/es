@@ -16,11 +16,11 @@ create
 
 feature {NONE} -- Initialization
 
-	t: CALL_QUALIFIED
-
 	make
 			-- Build a program and compute its aliases.
 		do
+			create aliases.make
+			create {COMPOUND} scope.make
 			fill_examples
 			get_environment_example_number
 			from until example_number = 0 loop
@@ -41,8 +41,6 @@ feature {NONE} -- Initialization
 			end
 		end
 
-
-
 feature -- Access
 
 	automatic: BOOLEAN
@@ -54,7 +52,7 @@ feature -- Access
 	examples: ARRAY [TUPLE [prog: PROCEDURE [APPLICATION, TUPLE]; tag: STRING; comment: STRING]]
 			-- Example programs for alias computation.
 		once
-			create Result.make (1, Example_estimate)
+			create Result.make_empty
 		end
 
 	example_number: INTEGER
@@ -69,6 +67,8 @@ feature -- Access
 	just_one: BOOLEAN
 			-- Are we in a mode where we execute one example and stop?
 
+	aliases: ALIAS_RELATION
+			-- Alias relation being built.
 
 feature -- Status report
 
@@ -208,7 +208,6 @@ feature -- Basic operations
 			end
 			prog.call ([])
 		end
-
 
 	compute_aliases
 			-- Compute aliases.

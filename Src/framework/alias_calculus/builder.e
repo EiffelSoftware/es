@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	BUILDER
 
 feature -- Status report
@@ -28,15 +28,11 @@ feature -- Access
 	scope: CONSTRUCT
 			-- Program element at the current level of nesting.
 
-
-	aliases: ALIAS_RELATION
-			-- Alias relation being built
-
 	snapshots: HASH_TABLE [SNAP, STRING]
-			-- Snap instructions, indexed by their labels
-			once
-				create Result.make (1)
-			end
+			-- Snap instructions, indexed by their labels.
+		once
+			create Result.make (1)
+		end
 
 feature -- Program construction
 
@@ -146,12 +142,12 @@ feature -- Program construction
 			label_not_empty: not l.is_empty
 			snap_exists: snapshots.has (l)
 		local
-			s: SNAP
 			pn: PRINTSNAP
 		do
-			s := snapshots.item (l)
-			create pn.make (s)
-			extend (pn)
+			check attached snapshots.item (l) as s then
+				create pn.make (s)
+				extend (pn)
+			end
 		ensure
 			in_block: attached {COMPOUND} scope
 					-- Unchanged from precondition
@@ -210,10 +206,12 @@ feature -- Program construction
 				co.else_part := pr
 				end_block
 				check attached {CONDITIONAL} scope end
-				scope := scope.outer
-				check attached {COMPOUND} scope end
-				if attached {COMPOUND} scope as outermost then
-					outermost.extend (co)
+				if attached scope.outer as o then
+					scope := o
+					check attached {COMPOUND} scope end
+					if attached {COMPOUND} scope as outermost then
+						outermost.extend (co)
+					end
 				end
 			end
 		ensure
@@ -247,11 +245,12 @@ feature -- Program construction
 				lo.body := pr
 				end_block
 				check attached {LOOP1} scope end
-				scope := scope.outer
-
-				check attached {COMPOUND} scope end
-				if attached {COMPOUND} scope as outermost then
-					outermost.extend (lo)
+				if attached scope.outer as o then
+					scope := o
+					check attached {COMPOUND} scope end
+					if attached {COMPOUND} scope as outermost then
+						outermost.extend (lo)
+					end
 				end
 			end
 		ensure
@@ -284,11 +283,12 @@ feature -- Program construction
 				it.body := pr
 				end_block
 				check attached {ITER} scope end
-				scope := scope.outer
-
-				check attached {COMPOUND} scope end
-				if attached {COMPOUND} scope as outermost then
-					outermost.extend (it)
+				if attached scope.outer as o then
+					scope := o
+					check attached {COMPOUND} scope end
+					if attached {COMPOUND} scope as outermost then
+						outermost.extend (it)
+					end
 				end
 			end
 		ensure
@@ -303,7 +303,7 @@ feature -- Program construction
 				name_non_empty: not pn.is_empty
 		local
 			c: CALL_UNQUALIFIED
-			enclosing: CONSTRUCT
+			enclosing: detachable CONSTRUCT
 		do
 			from
 				enclosing:= scope
@@ -312,8 +312,7 @@ feature -- Program construction
 			loop
 				enclosing := enclosing.outer
 			end
-			check attached {PROGRAM} enclosing end
-			if attached {PROGRAM} enclosing as pr then
+			check attached {PROGRAM} enclosing as pr then
 				create c.make (pn, pr)
 			end
 			extend (c)
@@ -329,7 +328,7 @@ feature -- Program construction
 				name_non_empty: not pn.is_empty
 		local
 			cq: CALL_QUALIFIED
-			enclosing: CONSTRUCT
+			enclosing: detachable CONSTRUCT
 		do
 			from
 				enclosing:= scope
@@ -338,8 +337,7 @@ feature -- Program construction
 			loop
 				enclosing := enclosing.outer
 			end
-			check attached {PROGRAM} enclosing end
-			if attached {PROGRAM} enclosing as pr then
+			check attached {PROGRAM} enclosing as pr then
 				create cq.make (v, pn, pr)
 			end
 			extend (cq)
@@ -381,10 +379,12 @@ feature -- Program construction
 					check procname /= Void and then not procname.is_empty end
 				end_block
 				check attached {PROCEDURE1} scope end
-				scope := scope.outer
-				check attached {PROGRAM} scope end
-				if attached {PROGRAM} scope as outermost then
-					outermost.force (pd, procname)
+				if attached scope.outer as o then
+					scope := o
+					check attached {PROGRAM} scope end
+					if attached {PROGRAM} scope as outermost then
+						outermost.force (pd, procname)
+					end
 				end
 			end
 		ensure
@@ -440,7 +440,11 @@ feature {NONE} -- Implementation
 				attached {CONTROL} scope.outer or
 				attached {PROCEDURE1} scope.outer
 		do
-			scope := scope.outer
+			check
+				from_precondition: attached scope.outer as o
+			then
+				scope := o
+			end
 		end
 
 end
