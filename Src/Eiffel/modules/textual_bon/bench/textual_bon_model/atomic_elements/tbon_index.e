@@ -26,11 +26,12 @@ feature -- Access
 			-- What are this index's terms?
 
 feature -- Initialization
-	make_element (l_identifier: like identifier; l_terms: like terms)
+	make_element (a_text_formatter: like text_formatter_decorator; an_identifier: like identifier; a_term_list: like terms)
 			-- Make a index for an indexing clause.
 		do
-			identifier ?= l_identifier
-			terms ?= l_terms
+			make (a_text_formatter)
+			identifier := an_identifier
+			terms := a_term_list
 		end
 
 feature -- Process

@@ -11,27 +11,40 @@ create
 	make
 
 feature -- Initialization
-	make (class_as: CLASS_AS)
+	make (a_class_as: CLASS_AS; a_text_formatter: like associated_text_formatter_decorator)
 			-- Create a textual BON class.
 		do
-			associated_class := class_as
-			create name.make_element (associated_class_name)
-			create {ARRAYED_LIST[TBON_CLASS_TYPE]} ancestors.make (10)
-			create {ARRAYED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make (10)
-			create {ARRAYED_LIST[TBON_FORMAL_GENERIC]} type_parameters.make (10)
-			create indexing_clause.make_element (associated_class_indices)
-			create class_invariant.make_element (associated_class_invariant_assertion_list)
+			associated_class := a_class_as
+			associated_text_formatter_decorator := a_text_formatter
 
-			extract_associated_class_ancestors
-			extract_associated_class_type_parameters
+			create name.make_element (associated_text_formatter_decorator, associated_class_name)
+			create {LINKED_LIST[TBON_CLASS_TYPE]} ancestors.make
+			create {LINKED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make
+			create {LINKED_LIST[TBON_FORMAL_GENERIC]} type_parameters.make
 
-			io.put_string ("TBON_CLASS DONE")
+			if associated_class.top_indexes /= Void then
+				create indexing_clause.make_element (associated_text_formatter_decorator, associated_class_indices)
+			end
+
+			if associated_class.invariant_part /= Void then
+				create class_invariant.make_element (associated_text_formatter_decorator, associated_class_invariant_assertion_list)
+			end
+
+			if associated_class.conforming_parents /= Void then
+				extract_associated_class_ancestors
+			end
+
+			if associated_class.generics /= Void then
+				extract_associated_class_type_parameters
+			end
 		end
 
 feature -- Access
 
 	ancestors: LIST[TBON_CLASS_TYPE]
 			-- From which classes does this class inherit?
+
+	associated_text_formatter_decorator: TEXT_FORMATTER_DECORATOR
 
 	class_invariant: TBON_INVARIANT
 			-- What is the invariant of this class?
@@ -48,7 +61,25 @@ feature -- Access
 	type_parameters: LIST[TBON_FORMAL_GENERIC]
 			-- What are the type parameters of this class?
 
-feature -- Status report	
+feature -- Status report
+	has_ancestors: BOOLEAN
+			-- Does this class have any ancestors?
+		do
+			Result := ancestors /= Void and then ancestors.count > 0
+		end
+
+	has_indexing_clause: BOOLEAN
+			-- Does this class have an indexing clause?
+		do
+			Result := indexing_clause /= Void
+		end
+
+	has_type_parameters: BOOLEAN
+			-- Does this class have any type parameters?
+		do
+			Result := type_parameters /= Void and then type_parameters.count > 0
+		end
+
 	is_deferred: BOOLEAN
 			-- Is this class deferred?
 
@@ -116,6 +147,8 @@ feature {NONE} -- Implementation
 
 	associated_class_invariant_assertion_list: LIST[TBON_ASSERTION]
 			-- Extract the class invariants of the assocated class.	
+		require
+			class_has_invariant: associated_class.invariant_part /= Void
 		local
 			l_assertion: TBON_ASSERTION
 			l_assertions: like associated_class.invariant_part.assertion_list
@@ -147,11 +180,11 @@ feature {NONE} -- Implementation
 			until
 				associated_class.top_indexes.exhausted
 			loop
-				create l_index_tag.make_element (associated_class.top_indexes.item.tag.string_value_32)
+				create l_index_tag.make_element (associated_text_formatter_decorator, associated_class.top_indexes.item.tag.string_value_32)
 				l_index_terms := strings_from_atomics (associated_class.top_indexes.item.index_list)
-				create l_index.make_element (l_index_tag, l_index_terms)
+				create l_index.make_element (associated_text_formatter_decorator, l_index_tag, l_index_terms)
 
-				l_index_list.put (l_index)
+				l_index_list.extend (l_index)
 
 				associated_class.top_indexes.forth
 			end
@@ -188,11 +221,11 @@ feature {NONE} -- Implementation
 							l_argument.id_list.exhausted
 						loop
 							-- Index the names heap to get formal argument name
-							create l_argument_formal_name.make_element (l_argument.names_heap.item_32 (l_argument.id_list.item))
+							create l_argument_formal_name.make_element (associated_text_formatter_decorator, l_argument.names_heap.item_32 (l_argument.id_list.item))
 							-- Get argument type
-							create l_argument_type.make_element (l_argument.type.dump)
+							create l_argument_type.make_element (associated_text_formatter_decorator, l_argument.type.dump)
 
-							create l_feature_argument.make_element (l_argument_formal_name, l_argument_type)
+							create l_feature_argument.make_element (associated_text_formatter_decorator, l_argument_formal_name, l_argument_type)
 							l_argument_list.put (l_feature_argument)
 
 							l_argument.id_list.forth
@@ -205,13 +238,15 @@ feature {NONE} -- Implementation
 
 	extract_associated_class_ancestors
 			-- Extract the ancestors for the associated class
+		require
+			has_conforming_parents: associated_class.conforming_parents /= Void
 		do
 			associated_class.conforming_parents.do_all (
 				agent (ancestor: PARENT_AS)
 					local
 						ancestor_class_type: TBON_CLASS_TYPE
 					do
-						create ancestor_class_type.make_element (ancestor.type.class_name.string_value_32)
+						create ancestor_class_type.make_element (associated_text_formatter_decorator, ancestor.type.class_name.string_value_32)
 						ancestors.put (ancestor_class_type)
 					ensure
 						ancestors.count = old ancestors.count + 1
@@ -242,6 +277,8 @@ feature {NONE} -- Implementation
 	extract_associated_class_type_parameters
 			-- Extract the type paramters of the associated class.
 			-- Results are stored in the type_parameters list.
+		require
+			has_generics: associated_class.generics /= Void
 		do
 			associated_class.generics.do_all (
 				agent (generic: FORMAL_DEC_AS)
@@ -251,16 +288,16 @@ feature {NONE} -- Implementation
 						l_formal_generic: TBON_FORMAL_GENERIC
 						l_constraining_type: TBON_CLASS_TYPE
 					do
-						create l_identifier.make_element (generic.name.name_8)
-						create l_formal_generic_name.make_element (l_identifier)
+						create l_identifier.make_element (associated_text_formatter_decorator, generic.name.name_8)
+						create l_formal_generic_name.make_element (associated_text_formatter_decorator, l_identifier)
 
 						if generic.has_constraint then
-							create l_constraining_type.make_element (generic.constraints.first.type.dump)
+							create l_constraining_type.make_element (associated_text_formatter_decorator, generic.constraints.first.type.dump)
 						else
 							l_constraining_type := Void
 						end
 
-						create l_formal_generic.make_element (l_formal_generic_name, l_constraining_type)
+						create l_formal_generic.make_element (associated_text_formatter_decorator, l_formal_generic_name, l_constraining_type)
 						type_parameters.put (l_formal_generic)
 					ensure
 						type_parameters.count = old type_parameters.count + 1
@@ -291,14 +328,14 @@ feature {NONE} -- Implementation
 			-- Remember deferred/effective/redefined!
 		do
 			-- Name
-			create l_feature_name.make_element (feat.feature_name.string_value_32)
+			create l_feature_name.make_element (associated_text_formatter_decorator, feat.feature_name.string_value_32)
 
 			-- Arguments
 			l_feature_arguments := create_arguments_for_feature (feat)
 
 			-- Type
 			if feat.body.type /= Void then -- feat.is_function or feat.is_attribute then
-				create l_feature_type.make_element (feat.body.type.dump)
+				create l_feature_type.make_element (associated_text_formatter_decorator, feat.body.type.dump)
 			else
 				l_feature_type := Void
 			end
@@ -342,7 +379,7 @@ feature {NONE} -- Implementation
 						if l_renaming_old_name.is_equal (l_feature_name.string_value) then
 							check l_renaming_old_name /= Void and l_renaming_final_name /= Void end
 
-							create l_renaming_parent.make_element (associated_class.parents.item.type.class_name.string_value_32)
+							create l_renaming_parent.make_element (associated_text_formatter_decorator, associated_class.parents.item.type.class_name.string_value_32)
 							create l_feature_renaming_clause.make_element (l_renaming_parent, l_renaming_final_name)
 
 							-- End both loops
@@ -413,7 +450,8 @@ feature {NONE} -- Implementation
 				l_feature_postcondition /= Void
 			end
 
-			create l_feature.make_element (l_feature_name,
+			create l_feature.make_element (associated_text_formatter_decorator,
+										   l_feature_name,
 										   l_feature_arguments,
 										   l_feature_type,
 										   l_feature_type_mark,
@@ -472,7 +510,7 @@ feature {NONE} -- Implementation
 
 			set_redefined_bon_features_as_redefined (l_feature_list)
 
-			create l_bon_feature_clause.make_element (l_comment_list, l_feature_list, l_selective_export)
+			create l_bon_feature_clause.make_element (associated_text_formatter_decorator, l_comment_list, l_feature_list, l_selective_export)
 
 			Result := l_bon_feature_clause
 		end
@@ -495,7 +533,7 @@ feature {NONE} -- Implementation
 						local
 							l_class_type: TBON_CLASS_TYPE
 						do
-							create l_class_type.make_element (client_id.name_8)
+							create l_class_type.make_element (associated_text_formatter_decorator, client_id.name_8)
 							l_client_list.put (l_class_type)
 						ensure
 							l_client_list.count = old l_client_list.count + 1
@@ -508,6 +546,15 @@ feature {NONE} -- Implementation
 			end
 
 			Result := l_selective_export
+		end
+
+	set_class_status
+			-- Set the status of this class
+		do
+			if associated_class.is_deferred then
+				set_is_deferred
+			-- Sufficient information about parents seems to be unavailable to determine other status flags.
+			end
 		end
 
 	set_redefined_bon_features_as_redefined (feature_list: LIST[TBON_FEATURE])
@@ -578,6 +625,8 @@ feature {NONE} -- Implementation
 
 
 invariant
+	must_have_name: name /= Void
+	must_describe_class: associated_class /= Void
 	deferred_status_is_consistent: is_deferred implies not is_effective and not is_root
 	effective_status_is_consistent: is_effective implies not is_deferred and not is_root
 	root_status_is_consistent: is_root implies not is_deferred and not is_effective

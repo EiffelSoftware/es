@@ -21,15 +21,14 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 
 			l_is_first_list_item: BOOLEAN
-			i: INTEGER
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
 			from
-				i := 1
+				list.start
 				l_is_first_list_item := True
 			until
-				i >= list.count
+				list.exhausted
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then
@@ -43,9 +42,9 @@ feature -- Processing
 					l_is_first_list_item := False
 				end
 
-				list.i_th (i).process_to_formal_textual_bon
+				list.item.process_to_formal_textual_bon
 
-				i := i + 1
+				list.forth
 			end
 		end
 
@@ -56,15 +55,14 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 
 			l_is_first_list_item: BOOLEAN
-			i: INTEGER
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
 			from
-				i := 1
+				list.start
 				l_is_first_list_item := True
 			until
-				i >= list.count
+				list.exhausted
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then
@@ -78,9 +76,9 @@ feature -- Processing
 					l_is_first_list_item := False
 				end
 
-				list.i_th (i).process_to_informal_textual_bon
+				list.item.process_to_informal_textual_bon
 
-				i := i + 1
+				list.forth
 			end
 		end
 
@@ -92,9 +90,9 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_string_text (ti_dashdash, Void)
+			l_text_formatter_decorator.process_comment_text (ti_dashdash, Void)
 			l_text_formatter_decorator.put_space
-			l_text_formatter_decorator.process_string_text (comment, Void)
+			l_text_formatter_decorator.process_comment_text (comment, Void)
 		end
 
 	process_to_informal_textual_bon
@@ -106,7 +104,6 @@ feature -- Processing
 			-- Process this element into formal textual BON.
 		deferred
 		end
-
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

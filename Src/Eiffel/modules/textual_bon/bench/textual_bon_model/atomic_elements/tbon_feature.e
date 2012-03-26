@@ -18,24 +18,25 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (feature_name: attached like name;
-				  feature_arguments: like arguments;
-				  feature_type: like type;
-				  feature_type_mark: like type_mark;
-				  feature_comments: like comments;
-				  feature_renaming_clause: like renaming_clause;
-				  feature_precondition: like precondition;
-				  feature_postcondition: like postcondition)
+	make_element (a_text_formatter: like text_formatter_decorator;
+				  a_feature_name: attached like name;
+				  a_feature_arguments: like arguments;
+				  a_feature_type: like type;
+				  a_feature_type_mark: like type_mark;
+				  a_feature_comments: like comments;
+				  a_feature_renaming_clause: like renaming_clause;
+				  a_feature_precondition: like precondition;
+				  a_feature_postcondition: like postcondition)
 			-- Create a feature element
 		do
-			name 			:= feature_name
-			arguments 		:= feature_arguments
-			type 			:= feature_type
-			type_mark		:= feature_type_mark
-			comments		:= feature_comments
-			renaming_clause := feature_renaming_clause
-			precondition 	:= feature_precondition
-			postcondition 	:= feature_postcondition
+			name 			:= a_feature_name
+			arguments 		:= a_feature_arguments
+			type 			:= a_feature_type
+			type_mark		:= a_feature_type_mark
+			comments		:= a_feature_comments
+			renaming_clause := a_feature_renaming_clause
+			precondition 	:= a_feature_precondition
+			postcondition 	:= a_feature_postcondition
 		end
 
 feature -- Access

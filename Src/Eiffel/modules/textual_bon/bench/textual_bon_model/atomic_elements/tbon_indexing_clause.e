@@ -24,10 +24,11 @@ feature -- Access
 			-- What are this indexing clause's indexing tags?
 
 feature -- Initialization
-	make_element (l_indexing_tags: like indexing_tags)
+	make_element (a_text_formatter: like text_formatter_decorator; an_indexing_tag_list: like indexing_tags)
 			-- Make a indexing clause for a class.
 		do
-			indexing_tags ?= l_indexing_tags
+			make (a_text_formatter)
+			indexing_tags := an_indexing_tag_list
 		end
 
 feature -- Process

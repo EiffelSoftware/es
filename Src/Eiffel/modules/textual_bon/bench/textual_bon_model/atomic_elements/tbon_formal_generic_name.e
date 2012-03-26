@@ -24,10 +24,11 @@ feature -- Access
 			-- What is the identifier of this formal generic name?
 
 feature -- Initialization
-	make_element (l_identifier: like identifier)
+	make_element (a_text_formatter: like text_formatter_decorator; an_identifier: like identifier)
 			-- Make a formal generic name.
 		do
-			identifier ?= l_identifier
+			make (a_text_formatter)
+			identifier := an_identifier
 		end
 
 feature -- Process

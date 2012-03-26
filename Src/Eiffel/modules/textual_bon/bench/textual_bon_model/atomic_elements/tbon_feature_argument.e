@@ -20,11 +20,12 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (arg_identifier: TBON_IDENTIFIER; arg_type: attached TBON_TYPE)
+	make_element (a_text_formatter: like text_formatter_decorator; an_identifier: TBON_IDENTIFIER; a_type: attached TBON_TYPE)
 			-- Create a feature argument element.
 		do
-			identifier := arg_identifier
-			type := arg_type
+			make (a_text_formatter)
+			identifier := an_identifier
+			type := a_type
 		end
 
 feature -- Access

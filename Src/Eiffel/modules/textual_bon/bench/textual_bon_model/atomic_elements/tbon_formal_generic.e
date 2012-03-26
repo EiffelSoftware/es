@@ -26,11 +26,12 @@ feature -- Access
 			-- What is this formal generic’s formal generic name?
 
 feature -- Initializatoin
-	make_element (l_formal_generic_name: like formal_generic_name; l_class_type_bound: like class_type)
+	make_element (a_text_formatter: like text_formatter_decorator; a_formal_generic_name: like formal_generic_name; a_class_type_bound: like class_type)
 			-- Create a formal generic.
 		do
-			formal_generic_name := l_formal_generic_name
-			class_type := l_class_type_bound
+			make (a_text_formatter)
+			formal_generic_name := a_formal_generic_name
+			class_type := a_class_type_bound
 		end
 
 feature -- Process

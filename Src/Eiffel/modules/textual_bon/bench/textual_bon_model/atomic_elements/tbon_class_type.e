@@ -27,10 +27,11 @@ feature -- Access
 			-- What is the name of this class?
 
 feature -- Initialization
-	make_element (l_name: like name)
+	make_element (a_text_formatter: like text_formatter_decorator; a_name: like name)
 			-- Create a class type.
 		do
-			name ?= l_name
+			make (a_text_formatter)
+			name ?= a_name
 		end
 
 feature -- Process

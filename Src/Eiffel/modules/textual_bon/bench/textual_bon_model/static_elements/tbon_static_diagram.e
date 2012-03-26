@@ -1,11 +1,11 @@
 note
-	description: "A feature clause containing features in a textual BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_STATIC_DIAGRAM}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_FEATURE_CLAUSE
+	TBON_STATIC_DIAGRAM
 
 inherit
 	TEXTUAL_BON_ELEMENT
@@ -17,27 +17,28 @@ inherit
 		end
 
 create
-	make_element
+	make, make_element
 
 feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; a_comment_list: like comments; a_feature_list: attached like features; a_selective_export: like selective_export)
-			-- Create a feature clause element.
+	make_element (id: like extended_id; comment_list: like comments; static_component_list: like static_components)
+			-- Create a static diagram
 		do
-			make (a_text_formatter)
-			comments := a_comment_list
-			features := a_feature_list
-			selective_export := a_selective_export
+			extended_id := id
+			comments := comment_list
+			static_components := static_component_list
 		end
 
 feature -- Access
+
+	extended_id: TBON_IDENTIFIER
+			-- What is the extended ID of this static diagram?
+			-- Can either be a textual identifier or an integer (which is wrapped inside a TBON_IDENTIFIER)		
+
 	comments: LIST[STRING]
-			-- What is the comments for this feature clause?
+			-- What are the comments for this static diagram?
 
-	features: attached LIST[TBON_FEATURE]
-			-- What features are in this feature clause?
-
-	selective_export: TBON_SELECTIVE_EXPORT
-			-- What is the selective export of this feature clause?
+	static_components: attached LIST[TBON_STATIC_COMPONENT]
+			-- What are the static components of this diagram?
 
 feature -- Processing
 	process_to_textual_bon
@@ -45,59 +46,66 @@ feature -- Processing
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 
-			l_is_first_item_in_list: BOOLEAN
-			i: INTEGER
+			l_is_first_comment: BOOLEAN
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
-			l_text_formatter_decorator.process_keyword_text (bti_feature_keyword, Void)
-			-- Process selective export
-			if has_selective_export then
+			l_text_formatter_decorator.process_keyword_text (bti_static_diagram_keyword, Void)
+			l_text_formatter_decorator.put_space
+
+			if has_extended_id then
+				extended_id.process_to_textual_bon
 				l_text_formatter_decorator.put_space
-				selective_export.process_to_textual_bon
 			end
-			-- Process comments
+
+			-- Comments
 			if has_comments then
-				l_text_formatter_decorator.put_space
-
 				from
-					i := 1
-					l_is_first_item_in_list := True
+					comments.start
+					l_is_first_comment := True
 				until
-					i >= comments.count
+					comments.exhausted
 				loop
-					if not l_is_first_item_in_list then
+					if not l_is_first_comment then
 						l_text_formatter_decorator.put_new_line
+						l_is_first_comment := False
 					end
-					process_textual_bon_comment (comments.i_th (i))
-
-					i := i + 1
+					process_textual_bon_comment (comments.item.as_string_8)
+					comments.forth
 				end
 			end
 
 			l_text_formatter_decorator.put_new_line
+
+			l_text_formatter_decorator.process_keyword_text (bti_component_keyword, Void)
+			l_text_formatter_decorator.put_new_line
+
 			l_text_formatter_decorator.indent
 
-			-- Process features
-			process_formal_textual_bon_list (features, Void, True)
+			process_formal_textual_bon_list (static_components, Void, True)
 
+			l_text_formatter_decorator.exdent
+
+			l_text_formatter_decorator.put_new_line
+
+			l_text_formatter_decorator.process_keyword_text (bti_end_keyword, Void)
 		end
 
 feature -- Status report
 	has_comments: BOOLEAN
-			-- Does this feaure clause have comments?
+			-- Does this static diagram have any comments?
 		do
-			Result := comments /= Void
+			Result := comments /= Void and then not comments.is_empty
 		end
 
-	has_selective_export: BOOLEAN
-			-- Does this feature clause have a selective export clause?
+	has_extended_id: BOOLEAN
+			-- Does this static diagram have an extended id?
 		do
-			Result := selective_export /= Void
+			Result := extended_id /= Void
 		end
 
 invariant
-	must_include_at_least_one_feature: not features.is_empty
+	must_have_at_least_one_static_component: static_components /= Void and then not static_components.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

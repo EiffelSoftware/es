@@ -20,10 +20,11 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (string_id: attached STRING)
+	make_element (a_text_formatter: like text_formatter_decorator; a_string_id: attached STRING)
 			-- Create an identifier from a string.
 		do
-			string_value := string_id
+			make (a_text_formatter)
+			string_value := a_string_id
 			create regex_matcher.make
 			regex_matcher.compile (validation_pattern)
 		end
