@@ -1,6 +1,6 @@
 note
 	description: "Formatter class for viewing Eiffel source code as informal textual BON."
-	author: ""
+	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,6 +10,7 @@ class
 inherit
 	TEXTUAL_BON_FORMATTER
 		redefine
+			class_cmd,
 			create_class_cmd,
 			generate_text
 		end
@@ -60,8 +61,13 @@ feature -- Properties
 feature -- Status setting
 
 feature {NONE} -- Implementation
+	class_cmd: E_SHOW_FLAT
+			-- Only used for compability. Do not use.
+
 	create_class_cmd
+			-- Create `class_cmd'.
 		do
+			create class_cmd
 		end
 
 	generate_text

@@ -11,11 +11,17 @@ feature -- Access: BON keywords
 	bti_and_keyword: STRING = "and"
 			-- Textual BON keyword for logical AND.
 
+	bti_class_keyword: STRING = "class"
+			-- Textual BON keyword for specifying a class.
+
 	bti_class_chart_keyword: STRING = "class_chart"
 			-- Informal textual BON keyword for declaring class charts.
 
 	bti_command_keyword: STRING = "command"
 			-- Informal textual BON keyword for the command clause.
+
+	bti_component_keyword: STRING = "component"
+			-- Formal textual BON keyword for specifying a diagram component.
 
 	bti_constraint_keyword: STRING = "constraint"
 			-- Informal textual BON keyword for the constraint clause.
@@ -56,6 +62,9 @@ feature -- Access: BON keywords
 	bti_inherit_keyword: STRING = "inherit"
 			-- Textual BON keyword for the inherit clause.
 
+	bti_interfaced_keyword: STRING = "interfaced"
+			-- Textual BON keyword for specifying an interfaced class.
+
 	bti_invariant_keyword: STRING = "invariant"
 			-- Formal textual BON keyword for a class invariant.
 
@@ -77,6 +86,9 @@ feature -- Access: BON keywords
 	bti_part_keyword: STRING = "part"
 			-- Informal textual BON keyword for the part clause.
 
+	bti_persistent_keyword: STRING = "persistent"
+			-- Textual BON keyword for specifying a persistent class.
+
 	bti_query_keyword: STRING = "query"
 			-- Informal textual BON keyword for the query clause.
 
@@ -85,6 +97,15 @@ feature -- Access: BON keywords
 
 	bti_require_keyword: STRING = "require"
 			-- Formal textual BON keyword for a precondition.
+
+	bti_reused_keyword: STRING = "reused"
+			-- Textual BON keyword for specifying a reused class.
+
+	bti_root_keyword: STRING = "root"
+			-- Textual BON keyword for specifying a root class.
+
+	bti_static_diagram_keyword: STRING = "static_diagram"
+			-- Formal textual BON keyword for declaring a static diagram.
 
 	bti_xor_keyword: STRING = "xor"
 			-- Textual BON keyword for exclusive-OR.
