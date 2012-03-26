@@ -1,20 +1,59 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "A unary operator expression in an assertion."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_UNARY_OPERATOR_EXPRESSION
 
 inherit
-	TBON_ASSERTION
-	
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
+	TBON_OPERATOR_EXPRESSION
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon,
+			operator
+		end
 
-;note
+create
+	make_element
+
+feature -- Access
+	expr: attached TBON_EXPRESSION
+			-- The expression of the unary operator expression
+
+	operator: attached TBON_UNARY_OPERATOR
+			-- What is the unary/prefix operator described by this expression?
+
+feature -- Initialization
+	make_element(l_operator: TBON_UNARY_OPERATOR; l_expr: TBON_EXPRESSION)
+			-- Create a unary operator expression
+		do
+			operator := l_operator
+			expr := l_expr
+		end
+
+feature -- Process
+	process_to_textual_bon
+			-- Process current to textual BON
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			if is_parenthezised then
+				l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
+			end
+			operator.process_to_textual_bon
+			l_text_formatter_decorator.put_space
+			expr.process_to_formal_textual_bon
+			if is_parenthezised then
+				l_text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+			end
+		end
+
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

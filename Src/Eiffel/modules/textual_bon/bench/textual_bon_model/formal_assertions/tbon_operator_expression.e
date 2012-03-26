@@ -1,18 +1,19 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
+	description: "An operator expression in an assertion."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	TBON_EXPRESSION
+	TBON_OPERATOR_EXPRESSION
 
 inherit
-	TBON_ASSERTION
-	
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
+	TBON_EXPRESSION
+
+feature -- Access
+	operator: attached TBON_OPERATOR
+		-- What is this operator expressions operator?
+
 
 ;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

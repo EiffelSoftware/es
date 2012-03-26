@@ -1,20 +1,43 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "An comment in an assertion clause in a formal BON specification."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_ASSERTION_COMMENT
 
 inherit
 	TBON_ASSERTION
-	
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon
+		end
 
-;note
+create
+	make_element
+
+feature -- Initialization
+	make_element
+			-- Create an expression element
+		do
+
+		end
+
+feature -- Access
+	comment: STRING
+			-- What is the string representation of this comment?
+
+feature -- Processing
+	process_to_textual_bon
+			-- Process this comment to textual bon.
+		do
+			process_textual_bon_comment (comment)
+		end
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

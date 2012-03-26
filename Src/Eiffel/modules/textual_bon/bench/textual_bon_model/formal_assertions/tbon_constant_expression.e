@@ -1,20 +1,45 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_CONSTANT_EXPRESSION}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_CONSTANT_EXPRESSION
 
 inherit
-	TBON_ASSERTION
-	
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
+	TBON_EXPRESSION
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon
+		end
 
-;note
+create
+	make_element
+
+feature -- Access
+	constant: attached STRING
+			-- The constant
+
+feature -- Initialization
+	make_element (l_constant: like constant)
+			-- Make a constant expression
+		do
+			constant := l_constant
+		end
+
+feature -- Process
+	process_to_textual_bon
+			-- Process this constant expression to textual bon.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator.process_string_text (constant, Void)
+		end
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

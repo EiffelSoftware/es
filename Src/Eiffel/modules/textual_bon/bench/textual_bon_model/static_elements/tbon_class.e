@@ -406,7 +406,8 @@ feature {NONE} -- Implementation
 						local
 							l_bon_assertion: TBON_EXPRESSION
 						do
-							create l_bon_assertion.make_element
+							l_bon_assertion := make_tbon_expression_from_tagged_as (l_precondition)
+
 							assertion_list.put (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
@@ -434,7 +435,8 @@ feature {NONE} -- Implementation
 						local
 							l_bon_assertion: TBON_EXPRESSION
 						do
-							create l_bon_assertion.make_element
+							l_bon_assertion := make_tbon_expression_from_tagged_as (l_postcondition)
+
 							assertion_list.put (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
@@ -621,6 +623,242 @@ feature {NONE} -- Implementation
 				Result.put (l_list.i_th (i).string_value_32)
 				i := i + 1
 			end
+		end
+
+	feature {TBON_CLASS} -- Expression handling
+
+	make_tbon_expression_from_atomic_as (l_atomic_as: ATOMIC_AS): TBON_EXPRESSION
+			-- Make a TBON_EXPRESSION from a ATOMIC_AS
+			-- Actually returns a TBON_CONSTANT_EXPRESSION
+		local
+			l_constant: TBON_CONSTANT_EXPRESSION
+			l_string_value: STRING_32
+			-- Assignment attempts
+			l_bit_const: BIT_CONST_AS
+			l_bool: BOOL_AS
+			l_char: CHAR_AS
+			l_id: ID_AS
+			l_integer: INTEGER_AS
+			l_real: REAL_AS
+			l_static_access: STATIC_ACCESS_AS
+			l_string: STRING_AS
+			l_unique: UNIQUE_AS
+		do
+			l_bit_const ?= l_atomic_as
+			l_bool ?= l_atomic_as
+			l_char ?= l_atomic_as
+			l_id ?= l_atomic_as
+			l_integer ?= l_atomic_as
+			l_real ?= l_atomic_as
+			l_static_access ?= l_atomic_as
+			l_string ?= l_atomic_as
+			l_unique ?= l_atomic_as
+
+			l_string_value := "ERROR"
+
+			if l_bit_const /= Void then
+				l_string_value := l_bit_const.value.string_value_32
+			elseif l_bool /= Void then
+				if l_bool.value then
+					l_string_value := "True" -- ITUFIXME42 shouldn't this come from ti or bti?
+				else
+					l_string_value := "False"
+				end
+			elseif l_char /= Void then
+				if l_char.value.out /= Void then
+					l_string_value := l_char.value.out
+				end
+			elseif l_id /= Void then
+				l_string_value := l_id.name_32
+			elseif l_integer /= Void then
+				if l_integer.has_integer (8) then
+				    l_string_value.append_integer_8 (l_integer.integer_8_value)
+				elseif l_integer.has_integer (16) then
+				    l_string_value.append_integer_16 (l_integer.integer_16_value)
+				elseif l_integer.has_integer (32) then
+				    l_string_value.append_integer (l_integer.integer_32_value)
+				elseif l_integer.has_integer (64) then
+				    l_string_value.append_integer_64 (l_integer.integer_64_value)
+				elseif l_integer.has_natural (8) then
+					l_string_value.append_natural_8 (l_integer.natural_8_value)
+				elseif l_integer.has_natural (16) then
+					l_string_value.append_natural_16 (l_integer.natural_16_value)
+				elseif l_integer.has_natural (32) then
+					l_string_value.append_natural_32 (l_integer.natural_32_value)
+				elseif l_integer.has_natural (64) then
+					l_string_value.append_natural_64 (l_integer.natural_64_value)
+				end
+			elseif l_real /= Void then
+				l_string_value := l_real.value
+			elseif l_static_access /= Void then
+				l_string_value :=  l_static_access.access_name_32
+			elseif l_string /= Void then
+				l_string_value := l_string.value_32
+			elseif l_unique /= Void then
+				l_string_value := l_unique.string_value_32
+			end
+			create l_constant.make_element (l_string_value)
+			Result := l_constant
+		end
+
+	make_tbon_expression_from_binary_as (l_binary_as: BINARY_AS): TBON_EXPRESSION
+			-- Make a TBON_EXPRESSION from a BINARY_AS
+		local
+			l_operator: TBON_BINARY_OPERATOR
+			l_binary: TBON_BINARY_OPERATOR_EXPRESSION
+			-- Following locals are used for assignment attempts
+			l_div: BIN_DIV_AS
+			l_minus: BIN_MINUS_AS
+			l_mod: BIN_MOD_AS
+			l_plus: BIN_PLUS_AS
+			l_power: BIN_POWER_AS
+			l_slash: BIN_SLASH_AS
+			l_star: BIN_STAR_AS
+			l_and: BIN_AND_AS
+			l_and_then: BIN_AND_THEN_AS
+			l_eq: BIN_EQ_AS
+			l_ne: BIN_NE_AS
+			l_not_tilde: BIN_NOT_TILDE_AS
+			l_tilde: BIN_TILDE_AS
+			l_free: BIN_FREE_AS
+			l_implies: BIN_IMPLIES_AS
+			l_or: BIN_OR_AS
+			l_or_else: BIN_OR_ELSE_AS
+			l_xor: BIN_XOR_AS
+		do
+			-- Assignment attempts
+			l_div ?= l_binary_as
+			l_minus ?= l_binary_as
+			l_mod ?= l_binary_as
+			l_plus ?= l_binary_as
+			l_power ?= l_binary_as
+			l_slash ?= l_binary_as
+			l_star ?= l_binary_as
+			l_and ?= l_binary_as
+			l_and_then ?= l_binary_as
+			l_eq ?= l_binary_as
+			l_ne ?= l_binary_as
+			l_not_tilde ?= l_binary_as
+			l_tilde ?= l_binary_as
+			l_free ?= l_binary_as
+			l_implies ?= l_binary_as
+			l_or ?= l_binary_as
+			l_or_else ?= l_binary_as
+			l_xor ?= l_binary_as
+
+			create l_operator.make_element
+
+			if l_div /= Void then
+				l_operator.set_as_division
+			elseif l_minus /= Void then
+				l_operator.set_as_minus
+			elseif l_mod /= Void then
+				l_operator.set_as_modulo
+			elseif l_plus /= Void then
+				l_operator.set_as_plus
+			elseif l_power /= Void then
+				l_operator.set_as_power
+			elseif l_slash /= Void then
+				-- ITUFIXME42
+			elseif l_star /= Void then
+				-- ITUFIXME42
+			elseif l_and /= Void then
+				l_operator.set_as_and
+			elseif l_and_then /= Void then
+				-- ITUFIXME42
+			elseif l_eq /= Void then
+				l_operator.set_as_equals
+			elseif l_ne /= Void then
+				l_operator.set_as_not_equals
+			elseif l_not_tilde /= Void then
+				-- ITUFIXME42
+			elseif l_tilde /= Void then
+				-- ITUFIXME42
+			elseif l_free /= Void then
+				-- ITUFIXME42
+			elseif l_implies /= Void then
+				l_operator.set_as_implication
+			elseif l_or /= Void then
+				l_operator.set_as_or
+			elseif l_or_else /= Void then
+				-- ITUFIXME42
+			elseif l_xor /= Void then
+				l_operator.set_as_xor
+			else
+				-- Handle faulty state
+			end
+
+			l_binary.make_element (make_tbon_expression_from_expr_as (l_div.left), l_operator, make_tbon_expression_from_expr_as (l_div.right))
+			Result := l_binary
+		end
+
+	make_tbon_expression_from_expr_as (l_expr_as: EXPR_AS): TBON_EXPRESSION
+			-- Makes a TBON_ASSERTION from the given EXPR_AS
+		local
+			l_binary: BINARY_AS
+			l_unary: UNARY_AS
+			l_atomic: ATOMIC_AS
+			l_quantified: QUANTIFIED_AS
+			l_type_expr: TYPE_EXPR_AS
+		do
+			l_binary ?= l_expr_as
+			l_unary ?= l_expr_as
+			l_atomic ?= l_expr_as
+			l_quantified ?= l_expr_as
+			l_type_expr ?= l_expr_as
+			if l_binary /= Void then
+				Result := make_tbon_expression_from_binary_as (l_binary)
+			elseif l_unary /= Void then
+				Result := make_tbon_expression_from_unary_as (l_unary)
+			elseif l_atomic /= Void then
+				Result := make_tbon_expression_from_atomic_as (l_atomic)
+			elseif l_quantified /= Void then
+
+			elseif l_type_expr /= Void then
+
+			end
+		end
+
+	make_tbon_expression_from_tagged_as (l_tagged_as: TAGGED_AS): TBON_EXPRESSION
+			-- Makes a TBON_ASSERTION from the given TAGGED_AS
+		do
+			-- ITUFIXME42: Could be a handling for the tag.
+			Result := make_tbon_expression_from_expr_as(l_tagged_as.expr)
+		end
+
+	make_tbon_expression_from_unary_as (l_unary_as: UNARY_AS): TBON_EXPRESSION
+			-- Make a TBON_EXPRESSION from a UNARY_AS
+		local
+			l_operator: TBON_UNARY_OPERATOR
+			l_unary: TBON_UNARY_OPERATOR_EXPRESSION
+			-- Assignment attempt
+			l_un_free: UN_FREE_AS
+			l_un_minus: UN_MINUS_AS
+			l_un_not: UN_NOT_AS
+			l_un_old: UN_OLD_AS
+			l_un_plus: UN_PLUS_AS
+		do
+			l_un_free ?= l_unary_as
+			l_un_minus ?= l_unary_as
+			l_un_not ?= l_unary_as
+			l_un_old ?= l_unary_as
+			l_un_plus ?= l_unary_as
+
+			l_operator.make_element
+
+			if l_un_free /= Void then
+				-- ITUFIXME42
+			elseif l_un_minus /= Void then
+				l_operator.set_as_minus
+			elseif l_un_not /= Void then
+				l_operator.set_as_not
+			elseif l_un_old /= Void then
+				l_operator.set_as_old
+			elseif l_un_plus /= Void then
+				l_operator.set_as_plus
+			end
+
+			l_unary.make_element (l_operator, make_tbon_expression_from_expr_as (l_unary_as.expr))
 		end
 
 

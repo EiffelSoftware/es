@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {TBON_ASSERTION}."
+	description: "An assertion in a formal BON specification."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,6 @@ deferred class
 inherit
 	TEXTUAL_BON_ELEMENT
 
-feature
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
