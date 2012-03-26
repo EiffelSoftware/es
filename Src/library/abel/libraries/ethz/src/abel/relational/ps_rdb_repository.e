@@ -22,7 +22,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			-- Execute `query'.
 		do
 				-- Initialize query for calls to next_entry
-			query.set_executed_to_true (transaction)
+			query.register_as_executed (transaction)
 			--query.query_result.set_repo (current)
 			retrieve_one_object (query)
 		end

@@ -13,18 +13,24 @@ inherit {NONE}
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
-	repository: PS_REPOSITORY
-			-- The repository this transaction is bound to.
+	make (a_repository: PS_REPOSITORY)
+			-- Initialize `Current'
+		do
+			repository := a_repository
+			create {PS_NO_ERROR} error
+		end
+
+feature -- Basic operations
 
 	commit
 			-- Try to commit the transaction.
 		do
-			is_commited:=True
+			has_commit_been_called:=True
 			fixme ("TODO")
 		ensure
-			commited: is_commited
+			commited: has_commit_been_called
 		end
 
 	rollback
@@ -33,26 +39,38 @@ feature
 			fixme ("TODO")
 		end
 
-	is_commited: BOOLEAN
+feature -- Status report
+
+	has_commit_been_called: BOOLEAN
 			-- Has Current.commit been called?
+
 
 	has_error: BOOLEAN
 			-- Has there been an error in any of the operations or the final commit?
-
-
-	error: detachable ANY
-			-- Error description
-		require
-			has_error
 		do
-			fixme ("TODO: error system")
+			Result := not attached {PS_NO_ERROR} error
 		end
 
 
-	make (a_repository: PS_REPOSITORY)
-			-- Initialize `Current'
+feature -- Access
+
+
+	error: PS_ERROR
+			-- Error description
+
+	repository: PS_REPOSITORY
+			-- The repository this transaction is bound to.
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Internals
+
+	set_error (an_error:PS_ERROR)
+			-- Set the error field if an error occured.
 		do
-			repository := a_repository
+			error := an_error
+		ensure
+			error_set: error = an_error
 		end
 
 end
+

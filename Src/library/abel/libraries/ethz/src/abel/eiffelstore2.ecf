@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="eiffelstore2" uuid="067A6237-38BE-4CA2-82E6-03A37BF60E9F" library_target="eiffelstore2">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="eiffelstore2" uuid="067A6237-38BE-4CA2-82E6-03A37BF60E9F" library_target="eiffelstore2">
 	<description>A library for unified access to persistence services.
 Copyright (c) 1984-2006, Eiffel Software and others.
 Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</description>
@@ -27,9 +27,14 @@ Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</descri
 			<file_rule>
 				<exclude>^/criteriontree$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/error_representation$</exclude>
+			</file_rule>
+
 			<cluster name="relational" location=".\relational\" recursive="true"/>
 			<cluster name="example" location=".\relational\example\"/>
 			<cluster name="criteriontree" location=".\criteriontree\"/>
+			<cluster name="error_representation" location=".\error_representation\"/>
 		</cluster>
 	</target>
 </system>

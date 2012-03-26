@@ -4,7 +4,7 @@ note
 		Please note that you cannot update or insert data tuples of objects into the repository.
 		
 		You can set a projection on the attributes you would like to have, to restrict the amount of data that is going to be retrieved.
-		You'll get completely loaded objects as attributes if you include an attribute in your projection that is not of a basic type (strings and numbers)		
+		You'll get completely loaded objects as attributes if you include an attribute in your projection that is not of a basic type (strings and numbers)
 		]"
 	author: "Roman Schmocker"
 	date: "$Date$"
@@ -15,9 +15,23 @@ class
 
 inherit
 	PS_QUERY [G]
-		redefine query_result end
 
 create make
+
+
+feature {NONE} -- Creation
+
+	make
+			-- Create an new query on objects of type `G'.
+		do
+			create {PS_EMPTY_CRITERION} criteria.default_create
+			create query_result.make
+			query_result.set_query (Current)
+			is_executed := False
+		ensure
+			not_executed: not is_executed
+			query_result_initialized: query_result.query = Current
+		end
 
 feature
 

@@ -39,7 +39,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 			else
 				query.query_result.set_entry (private_cursor.item.deep_twin)
 			end
-			query.set_executed_to_true (transaction)
+			query.register_as_executed (transaction)
 		end
 
 	next_entry (query: PS_QUERY [ANY])

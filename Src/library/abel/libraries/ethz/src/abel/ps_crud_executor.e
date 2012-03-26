@@ -179,14 +179,13 @@ feature --Error handling
 
 	has_error: BOOLEAN
 		-- Did the last operation produce an error?
-
-	last_error: detachable ANY
-		-- Description of last error message
-		require
-			error_present: has_error
 		do
-			fixme ("TODO: How to represent errors? Strings or classes? What type of errors can occur?")
+			Result := not attached {PS_NO_ERROR} last_error
 		end
+
+
+	last_error: PS_ERROR
+		-- Description of last error message
 
 
 feature {NONE} -- Initialization
@@ -196,6 +195,7 @@ feature {NONE} -- Initialization
 		do
 			repository := a_repository
 			create activation_strategy.make_rely_on_repository
+			create {PS_NO_ERROR} last_error
 		end
 
 end

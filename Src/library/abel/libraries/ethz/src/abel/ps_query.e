@@ -1,5 +1,5 @@
 note
-	description: "Represents a general query to a repository."
+	description: "Represents a general query on objects of type G to a repository."
 	author: "Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,19 +8,6 @@ note
 deferred class
 	PS_QUERY [G -> ANY]
 
-feature {NONE} -- Creation
-
-	make
-			-- Create an new query on objects of type `G'.
-		do
-			create {PS_EMPTY_CRITERION} criteria.default_create
-			create query_result.make
-			query_result.set_query (Current)
-			is_executed := False
-		ensure
-			not_executed: not is_executed
-			query_result_initialized: query_result.query = Current
-		end
 
 
 feature -- Access
@@ -33,7 +20,7 @@ feature -- Access
 			-- Iteration cursor containing the result of the query.
 		require
 			already_executed: is_executed
-		attribute
+		deferred
 		end
 
 
@@ -53,14 +40,6 @@ feature -- Status
 	is_executed: BOOLEAN
 			-- Has query been executed?
 
-	is_criterion_fitting_generic_type (a_criterion:PS_CRITERION): BOOLEAN
-			-- Can `a_criterion' handle objects of type `G'?
-		local
-			reflection:INTERNAL
-		do
-			create reflection
-			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.dynamic_type_from_string (class_name)))
-		end
 
 	is_object_query:BOOLEAN
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
@@ -89,10 +68,24 @@ feature -- Basic operations
 		end
 
 
+feature -- Miscellaneous
+
+	is_criterion_fitting_generic_type (a_criterion:PS_CRITERION): BOOLEAN
+			-- Can `a_criterion' handle objects of type `G'?
+		local
+			reflection:INTERNAL
+		do
+			create reflection
+			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.dynamic_type_from_string (class_name)))
+		end
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Internal
 
-	set_executed_to_true (a_transaction: PS_TRANSACTION)
+	register_as_executed (a_transaction: PS_TRANSACTION)
 			-- Set `is_executed' to true and bind query to `a_transaction'
+		require
+			not_yet_executed: not is_executed
 		do
 			is_executed := True
 			transaction_impl := a_transaction
@@ -123,8 +116,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 
 
 
-feature {NONE}
+feature {NONE} -- Implementation
 
 	transaction_impl: detachable PS_TRANSACTION
+
+
+invariant
+	query_result_correctly_initialized: query_result.query = Current
+	transaction_set_if_executed: is_executed implies transaction_impl /= Void
 
 end

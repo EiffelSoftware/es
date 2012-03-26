@@ -8,10 +8,24 @@ class
 	PS_OBJECT_QUERY [G -> ANY]
 inherit
 	PS_QUERY [G]
-		redefine set_criterion, query_result end
+		redefine set_criterion end
 
 create make
 
+
+feature {NONE} -- Creation
+
+	make
+			-- Create an new query on objects of type `G'.
+		do
+			create {PS_EMPTY_CRITERION} criteria.default_create
+			create query_result.make
+			query_result.set_query (Current)
+			is_executed := False
+		ensure
+			not_executed: not is_executed
+			query_result_initialized: query_result.query = Current
+		end
 
 feature
 

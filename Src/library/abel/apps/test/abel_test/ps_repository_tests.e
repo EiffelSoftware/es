@@ -315,6 +315,7 @@ feature {NONE} -- Initialization
 				person_executor.insert (p.item)
 			end
 			create p_dao
+			create tuple_query.make
 		end
 
 	factory: PS_CRITERION_FACTORY
@@ -327,5 +328,6 @@ feature {NONE} -- Initialization
 
 	p_dao: PERSON_DAO
 
+	tuple_query: PS_TUPLE_QUERY [PERSON]
 
 end
