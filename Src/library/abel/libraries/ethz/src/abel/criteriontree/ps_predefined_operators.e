@@ -64,4 +64,38 @@ feature -- Status
 		end
 
 
+feature -- Utilities
+
+	is_boolean_type (object:ANY):BOOLEAN
+		-- Is `object' of a boolean type?
+		do
+			Result:= attached{BOOLEAN} object
+		end
+
+	is_string_type (object:ANY):BOOLEAN
+		-- Is `object' of a string type?
+		do
+			Result:= attached {READABLE_STRING_8} object or  attached {READABLE_STRING_32} object
+		end
+
+	is_integer_type (object:ANY):BOOLEAN
+		-- Is `object' of an integer type?
+		do
+			Result:=attached {INTEGER_64} object or attached {INTEGER_32} object
+						or attached {INTEGER_16} object or attached {INTEGER_8} object
+		end
+
+	is_real_type (object:ANY):BOOLEAN
+		-- Is `object' of a real type?
+		do
+			Result:= attached {REAL_64} object or attached {REAL_32} object
+		end
+
+	is_natural_type (object:ANY):BOOLEAN
+		-- Is `object' of a natural type?
+		do
+			Result:= attached {NATURAL_64} object or attached {NATURAL_32} object
+					or attached {NATURAL_16} object or attached {NATURAL_8} object
+		end
+
 end

@@ -35,9 +35,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 				private_cursor.forth
 			end
 			if private_cursor.after then
-				query.query_result.set_entry (Void)
+				query.result_cursor.set_entry (Void)
 			else
-				query.query_result.set_entry (private_cursor.item.deep_twin)
+				query.result_cursor.set_entry (private_cursor.item.deep_twin)
 			end
 			query.register_as_executed (transaction)
 		end
@@ -58,9 +58,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 				private_cursor.forth
 			end
 			if private_cursor.after then
-				query.query_result.set_entry (Void)
+				query.result_cursor.set_entry (Void)
 			else
-				query.query_result.set_entry (private_cursor.item.deep_twin)
+				query.result_cursor.set_entry (private_cursor.item.deep_twin)
 			end
 		end
 

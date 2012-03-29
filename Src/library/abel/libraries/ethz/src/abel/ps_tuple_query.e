@@ -25,12 +25,14 @@ feature {NONE} -- Creation
 			-- Create an new query on objects of type `G'.
 		do
 			create {PS_EMPTY_CRITERION} criteria.default_create
-			create query_result.make
-			query_result.set_query (Current)
+			create result_cursor.make
+			create projection.make_empty -- some stupid void safety rule...
+			create projection.make_from_array (default_projection)
+			result_cursor.set_query (Current)
 			is_executed := False
 		ensure
 			not_executed: not is_executed
-			query_result_initialized: query_result.query = Current
+			query_result_initialized: result_cursor.query = Current
 		end
 
 feature
@@ -39,21 +41,58 @@ feature
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
 
 
-	query_result: PS_RESULT_SET[TUPLE]
+	result_cursor: PS_RESULT_SET[TUPLE]
 
 feature -- Projections
 
-	--projection: ARRAY [STRING]
-			-- Data to be included for projection.
+	projection: ARRAY [STRING]
+			-- Data to be included for projection. Defaults to all basic types: numbers and strings
+
+	default_projection:ARRAY[STRING]
+			-- An array containing all the attribute names that are of a basic type.
+		local
+			reflection:INTERNAL
+			instance: ANY
+			field:detachable ANY
+			i,j, num_fields:INTEGER
+
+			field_type, string_type : INTEGER
+		do
+			create reflection
+			instance:=reflection.new_instance_of (reflection.dynamic_type_from_string (class_name))
+			num_fields:= reflection.field_count (instance)
+			create Result.make_filled (create {STRING}.make_empty, 1, num_fields)
+
+			from
+				i:=1
+				j:=1
+			until i> num_fields
+			loop
+				field:= reflection.field (i, instance)
+				if attached {NUMERIC} field or attached{BOOLEAN} field  then
+					Result.put (reflection.field_name (i, instance), j)
+					j:=j+1
+				else
+					field_type := reflection.field_static_type_of_type (i, reflection.dynamic_type (instance))
+					string_type := reflection.dynamic_type_from_string ("READABLE_STRING_GENERAL")
+					--print (field_type.out + " " + string_type.out + "%N")
+					if reflection.field_conforms_to (field_type, string_type) then
+						Result.put (reflection.field_name (i, instance), j)
+						j:=j+1
+					end
+				end
+				i:=i+1
+			end
+		end
 
 
---	set_projection (a_projection: ARRAY [STRING])
+
+	set_projection (a_projection: ARRAY [STRING])
 			-- Set `a_projection' to the current query.
---		do
---			fixme ("This should be in the creation procedure of the tuple query")			
---			projection := a_projection
---		ensure
---			projected_data_set: projection = a_projection
---		end
+		do
+			projection := a_projection
+		ensure
+			projected_data_set: projection = a_projection
+		end
 
 end

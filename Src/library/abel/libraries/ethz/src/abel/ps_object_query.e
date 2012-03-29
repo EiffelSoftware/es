@@ -19,12 +19,12 @@ feature {NONE} -- Creation
 			-- Create an new query on objects of type `G'.
 		do
 			create {PS_EMPTY_CRITERION} criteria.default_create
-			create query_result.make
-			query_result.set_query (Current)
+			create result_cursor.make
+			result_cursor.set_query (Current)
 			is_executed := False
 		ensure
 			not_executed: not is_executed
-			query_result_initialized: query_result.query = Current
+			query_result_initialized: result_cursor.query = Current
 		end
 
 feature
@@ -39,7 +39,7 @@ feature
 		end
 
 
-	query_result: PS_RESULT_SET[G]
+	result_cursor: PS_RESULT_SET[G]
 
 	is_object_query:BOOLEAN = True
 			-- Is `Current' an instance of PS_OBJECT_QUERY?

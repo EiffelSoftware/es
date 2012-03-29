@@ -13,6 +13,9 @@ inherit {NONE}
 create
 	make
 
+create {PS_EIFFELSTORE_EXPORT}
+	make_readonly
+
 feature {NONE} -- Initialization
 
 	make (a_repository: PS_REPOSITORY)
@@ -20,6 +23,15 @@ feature {NONE} -- Initialization
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} error
+			is_readonly:=False
+		end
+
+	make_readonly (a_repository:PS_REPOSITORY)
+			-- Initialize `Current', mark transaction as readonly
+		do
+			repository := a_repository
+			create {PS_NO_ERROR} error
+			is_readonly:=True
 		end
 
 feature -- Basic operations
@@ -50,6 +62,10 @@ feature -- Status report
 		do
 			Result := not attached {PS_NO_ERROR} error
 		end
+
+
+	is_readonly:BOOLEAN
+			-- Is this a readonly transaction?
 
 
 feature -- Access

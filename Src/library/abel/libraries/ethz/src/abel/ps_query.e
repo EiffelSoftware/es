@@ -9,14 +9,13 @@ deferred class
 	PS_QUERY [G -> ANY]
 
 
-
 feature -- Access
 
 	criteria: PS_CRITERION
 			-- Criteria for `Current' query.
 
 
-	query_result: PS_RESULT_SET [ANY]
+	result_cursor: PS_RESULT_SET [ANY]
 			-- Iteration cursor containing the result of the query.
 		require
 			already_executed: is_executed
@@ -122,7 +121,7 @@ feature {NONE} -- Implementation
 
 
 invariant
-	query_result_correctly_initialized: query_result.query = Current
+	query_result_correctly_initialized: result_cursor.query = Current
 	transaction_set_if_executed: is_executed implies transaction_impl /= Void
 
 end

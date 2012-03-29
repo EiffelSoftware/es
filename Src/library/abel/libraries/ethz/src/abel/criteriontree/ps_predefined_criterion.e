@@ -75,9 +75,46 @@ feature -- Check
 
 	can_handle_object (an_object: ANY): BOOLEAN
 			-- Can `Current' handle `an_object' in the is_satisfied_by check?
+		local
+			attribute_is_present: BOOLEAN
+			index: INTEGER
+			loop_var: INTEGER
+			intern: INTERNAL
+			field_value: detachable ANY
 		do
-			fixme ("TODO")
-			Result:=True
+			-- See if the attribute is actually present in the object and get its value
+			create intern
+			from
+				loop_var := intern.field_count (an_object)
+				attribute_is_present := false
+			until
+				loop_var < 1 or attribute_is_present
+			loop
+				if attribute_name.is_case_insensitive_equal (intern.field_name (loop_var, an_object)) then
+					attribute_is_present := true
+					field_value := intern.field (index, an_object)
+				end
+				loop_var := loop_var - 1
+			variant
+				loop_var
+			end
+
+			-- now see if both types match
+			if attribute_is_present and attached field_value as field_val then
+				-- One of the combinations has to apply
+				Result := 	   (is_string_type(field_val) and is_string_type (value))
+							or (is_boolean_type(field_val) and is_boolean_type (value))
+							or (is_natural_type(field_val) and is_natural_type (value))
+							or (is_integer_type(field_val) and is_integer_type (value))
+							or (is_real_type(field_val) and is_real_type (value))
+
+				fixme ("TODO: Fix an error in here: When creating objects with INTERNAL.new_instance, even expanded types like integers seem to be initialized as Void. This means we somehow have to check differently...")
+			else
+				Result:=False
+			end
+
+			fixme ("don't forget to delete this line when error above is fixed")	Result:= attribute_is_present
+
 		end
 
 feature -- Miscellaneous

@@ -31,7 +31,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			-- retrieves the next object. stores item directly into result_set
 			-- in case of an error it is written into the transaction connected to the query
 		require
-			not_after: not query.query_result.after
+			not_after: not query.result_cursor.after
 			already_executed: query.is_executed
 			query_executed_by_me: query.transaction.repository = Current
 		deferred
@@ -70,9 +70,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			from
 				execute_query (query, transaction)
 			until
-				query.query_result.after
+				query.result_cursor.after
 			loop
-				delete (query.query_result.item, transaction)
+				delete (query.result_cursor.item, transaction)
 			end
 		end
 

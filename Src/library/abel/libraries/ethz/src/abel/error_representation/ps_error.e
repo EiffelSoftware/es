@@ -6,6 +6,8 @@ note
 
 deferred class
 	PS_ERROR
+inherit
+	DEVELOPER_EXCEPTION
 
 feature
 

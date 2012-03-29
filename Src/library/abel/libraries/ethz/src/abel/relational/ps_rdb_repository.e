@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 					-- call strategy.retrieve_an_object
 				values := strategy.retrieve_an_object (query, obj_metadata, query.transaction)
 				if values = Void then
-					query.query_result.set_entry (void)
+					query.result_cursor.set_entry (void)
 					found := true
 				else
 						-- Create an empty object and put it into the cache (and maybe fill in strings and numeric values)
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 						-- Fill in all referenced objects.
 						-- If the criteria have agents: perform a check if the newly created object matches. If no, start over...
 					if query.criteria.is_satisfied_by (obj) then
-						query.query_result.set_entry (obj)
+						query.result_cursor.set_entry (obj)
 						found := true
 					end
 				end
