@@ -72,10 +72,16 @@ feature -- Utilities
 			Result:= attached{BOOLEAN} object
 		end
 
-	is_string_type (object:ANY):BOOLEAN
+	is_string_8_type (object:ANY):BOOLEAN
 		-- Is `object' of a string type?
 		do
-			Result:= attached {READABLE_STRING_8} object or  attached {READABLE_STRING_32} object
+			Result:= attached {READABLE_STRING_8} object
+		end
+
+	is_string_32_type (object:ANY):BOOLEAN
+		-- Is `object' of a string type?
+		do
+			Result:= attached {READABLE_STRING_32} object
 		end
 
 	is_integer_type (object:ANY):BOOLEAN

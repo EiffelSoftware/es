@@ -80,9 +80,9 @@ feature -- Check
 			index: INTEGER
 			loop_var: INTEGER
 			intern: INTERNAL
-			field_value: detachable ANY
+			field_type:INTEGER
 		do
-			-- See if the attribute is actually present in the object and get its value
+			-- See if the attribute is actually present in the object and get its type ID
 			create intern
 			from
 				loop_var := intern.field_count (an_object)
@@ -92,7 +92,7 @@ feature -- Check
 			loop
 				if attribute_name.is_case_insensitive_equal (intern.field_name (loop_var, an_object)) then
 					attribute_is_present := true
-					field_value := intern.field (index, an_object)
+					field_type:=intern.field_static_type_of_type (loop_var, intern.dynamic_type (an_object))
 				end
 				loop_var := loop_var - 1
 			variant
@@ -100,21 +100,14 @@ feature -- Check
 			end
 
 			-- now see if both types match
-			if attribute_is_present and attached field_value as field_val then
-				-- One of the combinations has to apply
-				Result := 	   (is_string_type(field_val) and is_string_type (value))
-							or (is_boolean_type(field_val) and is_boolean_type (value))
-							or (is_natural_type(field_val) and is_natural_type (value))
-							or (is_integer_type(field_val) and is_integer_type (value))
-							or (is_real_type(field_val) and is_real_type (value))
-
-				fixme ("TODO: Fix an error in here: When creating objects with INTERNAL.new_instance, even expanded types like integers seem to be initialized as Void. This means we somehow have to check differently...")
+			if attribute_is_present then
+				Result:= valid_types.there_exists (agent intern.field_conforms_to (field_type, ?))
+				--print (field_type.out + "%N")
+				--across valid_types as int loop print(int.item.out + " ") end
+				--print ("%N" + Result.out +"%N")
 			else
 				Result:=False
 			end
-
-			fixme ("don't forget to delete this line when error above is fixed")	Result:= attribute_is_present
-
 		end
 
 feature -- Miscellaneous
@@ -145,28 +138,49 @@ feature --Access
 feature -- Predefined Operators
 
 	string8_op (s1, s2: READABLE_STRING_8): BOOLEAN
+		local
+			cursor:INDEXABLE_ITERATION_CURSOR[CHARACTER_8]
+			index, stored_index, substring_index:INTEGER
+			i:INTEGER
+			result_found, place_found : BOOLEAN
+
+			variable_start, variable_end:BOOLEAN
+			substrings:LIST[STRING]
+		do
+			if operator.is_case_insensitive_equal (equals) then
+				Result := s2.is_case_insensitive_equal (s1)
+			else -- operator = like_string
+
+				Result:= pattern_match_string8(s1, s2)
+				--print ("Final result: " + Result.out + "%N%N" )
+			end
+		end
+
+
+
+
+	string32_op (s1, s2: READABLE_STRING_32): BOOLEAN
 		do
 			if operator.is_case_insensitive_equal (equals) then
 				Result := s2.is_case_insensitive_equal (s1)
 			else
-				check operator.is_case_insensitive_equal (like_string) then
-					fixme ("TODO: pattern matching")
-					Result := false
-				end
-			-- Other operators are not possible due to the invariant
+				Result:= pattern_match_string32(s1, s2)
 			end
-		end
-
-	string32_op (s1, s2: READABLE_STRING_32): BOOLEAN
-		do
-			fixme ("TODO")
-			Result := true
 		end
 
 	real_op (r1, r2: REAL_64): BOOLEAN
 		do
-			fixme ("TODO")
-			Result := true
+			if operator.is_case_insensitive_equal (equals) then
+				Result := r1 = r2
+			elseif operator.is_case_insensitive_equal (less_equal) then
+				Result := r1 <= r2
+			elseif operator.is_case_insensitive_equal (less) then
+				Result := r1 < r2
+			elseif operator.is_case_insensitive_equal (greater_equal) then
+				Result := r1 >= r2
+			else-- Other operators are not possible due to the invariant
+				Result := r1 > r2
+			end
 		end
 
 	integer_op (i1, i2: INTEGER_64): BOOLEAN
@@ -189,14 +203,22 @@ feature -- Predefined Operators
 
 	natural_op (n1, n2: NATURAL_64): BOOLEAN
 		do
-			fixme ("TODO")
-			Result := true
+			if operator.is_case_insensitive_equal (equals) then
+				Result := n1 = n2
+			elseif operator.is_case_insensitive_equal (less_equal) then
+				Result := n1 <= n2
+			elseif operator.is_case_insensitive_equal (less) then
+				Result := n1 < n2
+			elseif operator.is_case_insensitive_equal (greater_equal) then
+				Result := n1 >= n2
+			else-- Other operators are not possible due to the invariant
+				Result := n1 > n2
+			end
 		end
 
 	boolean_op (b1, b2: BOOLEAN): BOOLEAN
 		do
-			fixme ("TODO")
-			Result := true
+			Result:= b1 = b2
 		end
 
 feature {NONE} -- Creation
@@ -245,6 +267,211 @@ feature {NONE} -- Creation
 				-- There should not be any other type according to the precondition
 			end
 		end
+
+
+feature -- Implementation
+
+	valid_types:LIST[INTEGER]
+		local
+			reflection:INTERNAL
+		do
+			create {LINKED_LIST[INTEGER]} Result.make
+			create reflection
+			if is_boolean_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("BOOLEAN"))
+			elseif is_string_8_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("READABLE_STRING_8"))
+			elseif is_string_32_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("READABLE_STRING_32"))
+			elseif is_natural_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("NATURAL_8"))
+				Result.extend (reflection.dynamic_type_from_string ("NATURAL_16"))
+				Result.extend (reflection.dynamic_type_from_string ("NATURAL_32"))
+				Result.extend (reflection.dynamic_type_from_string ("NATURAL_64"))
+			elseif is_integer_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("INTEGER_8"))
+				Result.extend (reflection.dynamic_type_from_string ("INTEGER_16"))
+				Result.extend (reflection.dynamic_type_from_string ("INTEGER_32"))
+				Result.extend (reflection.dynamic_type_from_string ("INTEGER_64"))
+			elseif is_real_type (value) then
+				Result.extend (reflection.dynamic_type_from_string ("REAL_32"))
+				Result.extend (reflection.dynamic_type_from_string ("REAL_64"))
+			end
+		end
+
+feature {NONE} -- Pattern matching
+
+	-- Unfortunately, I cannot use polymorphism or constrained genericity as some vital functions in the only common ancestor of both string types are missing...
+	-- Any idea on how to avoid this code duplication is welcome.
+	-- The algorithms are exactly the same in both versions, just the function names and some variable types are different.
+
+	pattern_match_string8 (word, pattern: READABLE_STRING_8) : BOOLEAN
+		-- See if word matches the pattern.
+		local
+			substrings: LIST[READABLE_STRING_8]
+			first_occurrence: INTEGER
+			current_index: INTEGER
+			ending:READABLE_STRING_8
+		do
+			Result:= True
+			current_index := 1
+			substrings:= pattern.split ('*')
+
+			-- Find all occurrences of substrings in list
+			from substrings.start
+			until substrings.after
+			loop
+				--print (substrings.item + "%N")
+				if not substrings.item.is_empty then
+
+					if not word.valid_index (current_index) then
+						first_occurrence:=-1
+					else
+						first_occurrence:= find_occurrence_string8 (word.substring (current_index, word.count), substrings.item)
+					end
+
+					if first_occurrence < 0 then
+						Result := False
+					else
+						current_index:= current_index + first_occurrence + substrings.item.count
+					end
+				end
+				substrings.forth
+			end
+
+			-- Cover special cases (if there are no asterisks at the start or the end of the string)		
+			if word[1] /= '*' then
+				Result:= Result and starts_with_string8 (word, substrings[1])
+			end
+
+			if word[word.count] /= '*' then
+				ending:= word.substring (word.count-substrings[substrings.count].count+1, word.count)
+				Result := Result and starts_with_string8 (ending, substrings[substrings.count])
+			end
+
+		end
+
+
+	find_occurrence_string8 (word, pattern: READABLE_STRING_8) : INTEGER
+		-- find first occurrence of `word' in `pattern', and return start index of it. Return -1 if not found
+		local
+			found:BOOLEAN
+		do
+			from Result:=1
+			until found or Result > word.count
+			loop
+				found:= starts_with_string8 (word.substring (Result, word.count), pattern)
+				if not found then
+					Result:= Result + 1
+				end
+			end
+
+			if not found then
+				Result:= -1
+			end
+		end
+
+	starts_with_string8 (word, pattern:READABLE_STRING_8) : BOOLEAN
+		-- does `word' start with `pattern'?
+		local
+			index:INTEGER
+		do
+			Result:=True
+			index:=1
+
+			across pattern as p loop
+				if word.valid_index (index) and then p.item = word[index] or p.item = '?' then
+					index:= index+1
+				else
+					Result:=False
+				end
+			end
+		end
+
+
+	pattern_match_string32 (word, pattern: READABLE_STRING_32) : BOOLEAN
+		-- See if word matches the pattern.
+		local
+			substrings: LIST[READABLE_STRING_32]
+			first_occurrence: INTEGER
+			current_index: INTEGER
+			ending:READABLE_STRING_32
+		do
+			Result:= True
+			current_index := 1
+			substrings:= pattern.split ('*')
+
+			-- Find all occurrences of substrings in list
+			from substrings.start
+			until substrings.after
+			loop
+				--print (substrings.item + "%N")
+				if not substrings.item.is_empty then
+
+					if not word.valid_index (current_index) then
+						first_occurrence:=-1
+					else
+						first_occurrence:= find_occurrence_string32 (word.substring (current_index, word.count), substrings.item)
+					end
+
+					if first_occurrence < 0 then
+						Result := False
+					else
+						current_index:= current_index + first_occurrence + substrings.item.count
+					end
+				end
+				substrings.forth
+			end
+
+			-- Cover special cases (if there are no asterisks at the start or the end of the string)		
+			if word[1] /= '*' then
+				Result:= Result and starts_with_string32 (word, substrings[1])
+			end
+
+			if word[word.count] /= '*' then
+				ending:= word.substring (word.count-substrings[substrings.count].count+1, word.count)
+				Result := Result and starts_with_string32 (ending, substrings[substrings.count])
+			end
+
+		end
+
+
+	find_occurrence_string32 (word, pattern: READABLE_STRING_32) : INTEGER
+		-- find first occurrence of `word' in `pattern', and return start index of it. Return -1 if not found
+		local
+			found:BOOLEAN
+		do
+			from Result:=1
+			until found or Result > word.count
+			loop
+				found:= starts_with_string32 (word.substring (Result, word.count), pattern)
+				if not found then
+					Result:= Result + 1
+				end
+			end
+
+			if not found then
+				Result:= -1
+			end
+		end
+
+	starts_with_string32 (word, pattern:READABLE_STRING_32) : BOOLEAN
+		-- does `word' start with `pattern'?
+		local
+			index:INTEGER
+		do
+			Result:=True
+			index:=1
+
+			across pattern as p loop
+				if word.valid_index (index) and then p.item = word[index] or p.item = '?' then
+					index:= index+1
+				else
+					Result:=False
+				end
+			end
+		end
+
 
 
 invariant

@@ -187,6 +187,9 @@ feature {NONE} -- Test criteria setting
 		do
 			test_query_one_result_greater_than
 			test_query_one_result_equals_to
+			test_query_one_result_like_string
+			test_query_no_result_like_string
+			test_query_four_results_like_string
 			test_query_many_results_two_criteria_anded
 			test_query_many_results_two_criteria_ored
 		end
@@ -227,6 +230,65 @@ feature {NONE} -- Test criteria setting
 			assert ("The result list has more than one item", query.result_cursor.after)
 
 			assert ("The person in result is supposed to own 5 items but owns " + p.items_owned.out + " instead.", p.items_owned = 5)
+		end
+
+	test_query_no_result_like_string
+			-- Test a query using criterion equals_to. One result expected.
+		local
+			query: PS_OBJECT_QUERY [PERSON]
+			p: PERSON
+		do
+			create query.make
+			query.set_criterion (factory [["first_name", factory.like_string, "*lb*"]] and factory[["last_name", factory.like_string, "it*ssi"]])
+			person_executor.execute_query (query)
+			assert ("The result list is not empty, but it should be.", query.result_cursor.after)
+		end
+
+	test_query_one_result_like_string
+			-- Test a query using criterion equals_to. One result expected.
+		local
+			query: PS_OBJECT_QUERY [PERSON]
+			p: PERSON
+		do
+			create query.make
+			query.set_criterion (factory [["first_name", factory.like_string, "*lb*"]] and factory[["last_name", factory.like_string, "*?ssi"]])
+			person_executor.execute_query (query)
+			assert ("The result list is empty", not query.result_cursor.after)
+			p := query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result list has more than one item", query.result_cursor.after)
+
+			assert ("The person in result is supposed to own 3 items but owns " + p.items_owned.out + " instead.", p.items_owned = 3)
+		end
+
+	test_query_four_results_like_string
+			-- Test a query using criterion equals_to. One result expected.
+		local
+			query: PS_OBJECT_QUERY [PERSON]
+			p1: PERSON
+			p2: PERSON
+			p3: PERSON
+			p4: PERSON
+			sum:INTEGER
+		do
+			create query.make
+			query.set_criterion (factory [["last_name", factory.like_string, "*i"]])
+			person_executor.execute_query (query)
+			assert ("The result list is empty", not query.result_cursor.after)
+			p1 := query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result list only has one item, but it should have 4", not query.result_cursor.after)
+			p2:= query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result list only has two items, but it should have 4", not query.result_cursor.after)
+			p3:= query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result list only has three items, but it should have 4", not query.result_cursor.after)
+			p4:= query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result list has more than four items", query.result_cursor.after)
+			sum:= p1.items_owned + p2.items_owned + p3.items_owned + p4.items_owned
+			assert ("The person in result is supposed to own 13 items but owns " + sum.out + " instead.", sum = 13)
 		end
 
 	test_query_many_results_two_criteria_anded
