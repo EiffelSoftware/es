@@ -7,8 +7,13 @@ note
 class
 	PS_TRANSACTION
 
+
+inherit
+	PS_EIFFELSTORE_EXPORT
+
 inherit {NONE}
 	REFACTORING_HELPER
+
 
 create
 	make
@@ -40,7 +45,7 @@ feature -- Basic operations
 			-- Try to commit the transaction.
 		do
 			has_commit_been_called:=True
-			fixme ("TODO")
+			repository.commit_transaction (Current)
 		ensure
 			commited: has_commit_been_called
 		end
@@ -48,7 +53,7 @@ feature -- Basic operations
 	rollback
 			-- Rollback all operations within this transaction.
 		do
-			fixme ("TODO")
+			repository.rollback_transaction (Current)
 		end
 
 feature -- Status report

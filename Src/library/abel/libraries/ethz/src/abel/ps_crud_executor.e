@@ -22,8 +22,8 @@ feature --Access
 	repository: PS_REPOSITORY
 			-- The data repository on which 'Current' operates
 
-	activation_strategy: PS_OBJECT_GRAPH_DEPTH
-			-- The activation strategies for the different storage operations. Default is to take whatever is defined in repository.
+	object_graph: PS_OBJECT_GRAPH_DEPTH
+			-- The object graph depth strategies for the different storage operations. Default is to take whatever is defined in repository.
 
 feature -- Data retrieval
 
@@ -194,7 +194,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			repository := a_repository
-			create activation_strategy.make_rely_on_repository
+			create object_graph.make_rely_on_repository
 			create {PS_NO_ERROR} last_error
 		end
 

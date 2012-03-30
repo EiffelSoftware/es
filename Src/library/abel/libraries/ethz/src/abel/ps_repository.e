@@ -14,6 +14,16 @@ deferred class
 inherit
 	PS_EIFFELSTORE_EXPORT
 
+feature -- Default values
+
+	default_object_graph: PS_OBJECT_GRAPH_DEPTH
+		-- Default object graph depth
+
+	transaction_isolation_level:ANY
+		-- Transaction isolation level
+
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
 	execute_query (query: PS_QUERY [ANY]; transaction: PS_TRANSACTION)
@@ -74,6 +84,29 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			loop
 				delete (query.result_cursor.item, transaction)
 			end
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
+
+	commit_transaction (transaction: PS_TRANSACTION)
+		-- Explicitly commit the transaction
+		require
+			not_yet_committed: not transaction.has_commit_been_called
+			no_error: not transaction.has_error
+			repository_correct: transaction.repository = Current
+			not_readonly: not transaction.is_readonly
+		do
+
+		end
+
+	rollback_transaction (transaction: PS_TRANSACTION)
+		-- Rollback the transaction
+		require
+			not_yet_committed: not transaction.has_commit_been_called
+			repository_correct: transaction.repository = Current
+			not_readonly: not transaction.is_readonly
+		do
+			
 		end
 
 end

@@ -91,6 +91,8 @@ feature {NONE} -- Initialization
 				--print (database.last_error_message)
 			strategy.set_database (database)
 			create metadata.make (database)
+			create transaction_isolation_level
+			create default_object_graph.make_default
 		ensure
 			strategy_set: strategy = a_strategy
 		end

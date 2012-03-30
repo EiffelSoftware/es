@@ -122,6 +122,8 @@ feature {NONE} -- Initialization
 			identifier_number := 1
 			create resultset_to_cursor_map.make (max_reads)
 			create cache.make
+			create transaction_isolation_level
+			create default_object_graph.make_default
 		end
 
 feature {NONE} -- Implementation

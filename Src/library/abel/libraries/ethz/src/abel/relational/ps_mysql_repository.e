@@ -93,9 +93,9 @@ feature {NONE} -- MySQL constants
 
 	Begin_transaction: STRING = "BEGIN;"
 
-	Commit_transaction: STRING = "COMMIT;"
+	--Commit_transaction: STRING = "COMMIT;"
 
-	Rollback_transaction: STRING = "ROLLBACK;"
+	--Rollback_transaction: STRING = "ROLLBACK;"
 
 invariant
 	invariant_clause: True -- Your invariant here
