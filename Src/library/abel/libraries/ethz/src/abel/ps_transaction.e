@@ -43,23 +43,29 @@ feature -- Basic operations
 
 	commit
 			-- Try to commit the transaction.
+		require
+			transaction_alive: is_active
 		do
-			has_commit_been_called:=True
 			repository.commit_transaction (Current)
+			is_active:=false
 		ensure
-			commited: has_commit_been_called
+			transaction_terminted: not is_active
 		end
 
 	rollback
 			-- Rollback all operations within this transaction.
+		require
+			transaction_alive: is_active
 		do
 			repository.rollback_transaction (Current)
+		ensure
+			transaction_terminated: not is_active
 		end
 
 feature -- Status report
 
-	has_commit_been_called: BOOLEAN
-			-- Has Current.commit been called?
+	is_active: BOOLEAN
+			-- Is the current transaction still active, or has it been commited or rolled back at some point?
 
 
 	has_error: BOOLEAN

@@ -91,7 +91,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 	commit_transaction (transaction: PS_TRANSACTION)
 		-- Explicitly commit the transaction
 		require
-			not_yet_committed: not transaction.has_commit_been_called
+			transaction_alive: transaction.is_active
 			no_error: not transaction.has_error
 			repository_correct: transaction.repository = Current
 			not_readonly: not transaction.is_readonly
@@ -102,11 +102,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 	rollback_transaction (transaction: PS_TRANSACTION)
 		-- Rollback the transaction
 		require
-			not_yet_committed: not transaction.has_commit_been_called
+			transaction_alive: transaction.is_active
 			repository_correct: transaction.repository = Current
 			not_readonly: not transaction.is_readonly
 		do
-			
+
 		end
 
 end
