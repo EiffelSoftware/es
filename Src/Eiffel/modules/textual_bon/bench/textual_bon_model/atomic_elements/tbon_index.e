@@ -39,24 +39,27 @@ feature -- Process
 			-- Process this index to formal textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
-			i: INTEGER
-			not_first: BOOLEAN
+
+			l_is_first_list_item: BOOLEAN
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 			identifier.process_to_textual_bon
 			l_text_formatter_decorator.process_symbol_text (bti_colon_operator)
 			from
-				i := 1
+				terms.start
+				l_is_first_list_item := True
 			until
-				i >= terms.count
+				terms.exhausted
 			loop
-				if not_first then
+				if not l_is_first_list_item then
 					l_text_formatter_decorator.process_symbol_text (ti_comma)
 				end
+				l_is_first_list_item := False
+				
 				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_quote)
-				l_text_formatter_decorator.process_string_text (terms.i_th (i), Void)
-				l_text_formatter_decorator.process_symbol_text (ti_quote)
+				l_text_formatter_decorator.process_string_text (terms.item, Void)
+
+				terms.forth
 			end
 		end
 

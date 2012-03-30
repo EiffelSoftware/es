@@ -20,10 +20,10 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (assoc_class: TBON_CLASS)
+	make_element (a_text_formatter: like text_formatter_decorator; a_class: TBON_CLASS)
 			-- Create a class component
 		do
-			associated_class := assoc_class
+			associated_class := a_class
 		end
 
 feature -- Access
@@ -73,19 +73,37 @@ feature -- Processing
 
 			-- Comments (no comments for classes are extracted from Eiffel. Relevant information is in the indexing clause.)
 
+			l_text_formatter_decorator.put_new_line
+
 			-- Indexing clause
 			if associated_class.has_indexing_clause then
 				associated_class.indexing_clause.process_to_textual_bon
+				l_text_formatter_decorator.put_new_line
 				l_text_formatter_decorator.put_new_line
 			end
 
 			-- Inherit clause
 			if associated_class.has_ancestors then
 				l_text_formatter_decorator.process_keyword_text (bti_inherit_keyword, Void)
-				
+				l_text_formatter_decorator.put_new_line
+				l_text_formatter_decorator.indent
+
+				process_formal_textual_bon_list (associated_class.ancestors, ";", True)
+
+				l_text_formatter_decorator.exdent
+				l_text_formatter_decorator.put_new_line
+				l_text_formatter_decorator.put_new_line
 			end
 
+			-- Features
+			process_formal_textual_bon_list (associated_class.feature_clauses, Void, True)
 			l_text_formatter_decorator.put_new_line
+
+			-- Invariant
+			if associated_class.has_invariant then
+				associated_class.class_invariant.process_to_textual_bon
+				l_text_formatter_decorator.put_new_line
+			end
 
 			l_text_formatter_decorator.process_keyword_text (bti_end_keyword, Void)
 		end

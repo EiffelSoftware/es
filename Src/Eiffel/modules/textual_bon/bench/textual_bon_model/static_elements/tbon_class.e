@@ -11,30 +11,33 @@ create
 	make
 
 feature -- Initialization
-	make (a_class_as: CLASS_AS; a_text_formatter: like associated_text_formatter_decorator)
+	make (a_class_as: CLASS_AS; a_text_formatter: like associated_text_formatter_decorator; an_output_strategy: like associated_output_strategy)
 			-- Create a textual BON class.
 		do
-			associated_class := a_class_as
+			associated_class_ast := a_class_as
 			associated_text_formatter_decorator := a_text_formatter
+			associated_output_strategy := an_output_strategy
 
 			create name.make_element (associated_text_formatter_decorator, associated_class_name)
-			create {LINKED_LIST[TBON_CLASS_TYPE]} ancestors.make
-			create {LINKED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make
-			create {LINKED_LIST[TBON_FORMAL_GENERIC]} type_parameters.make
 
-			if associated_class.top_indexes /= Void then
+			create {LINKED_LIST[TBON_FEATURE_CLAUSE]} feature_clauses.make
+			extract_associated_class_feature_clauses
+
+			if associated_class_ast.top_indexes /= Void then
 				create indexing_clause.make_element (associated_text_formatter_decorator, associated_class_indices)
 			end
 
-			if associated_class.invariant_part /= Void then
+			if associated_class_ast.invariant_part /= Void then
 				create class_invariant.make_element (associated_text_formatter_decorator, associated_class_invariant_assertion_list)
 			end
 
-			if associated_class.conforming_parents /= Void then
+			if associated_class_ast.conforming_parents /= Void then
+				create {LINKED_LIST[TBON_CLASS_TYPE]} ancestors.make
 				extract_associated_class_ancestors
 			end
 
-			if associated_class.generics /= Void then
+			if associated_class_ast.generics /= Void then
+				create {LINKED_LIST[TBON_FORMAL_GENERIC]} type_parameters.make
 				extract_associated_class_type_parameters
 			end
 		end
@@ -43,8 +46,6 @@ feature -- Access
 
 	ancestors: LIST[TBON_CLASS_TYPE]
 			-- From which classes does this class inherit?
-
-	associated_text_formatter_decorator: TEXT_FORMATTER_DECORATOR
 
 	class_invariant: TBON_INVARIANT
 			-- What is the invariant of this class?
@@ -72,6 +73,12 @@ feature -- Status report
 			-- Does this class have an indexing clause?
 		do
 			Result := indexing_clause /= Void
+		end
+
+	has_invariant: BOOLEAN
+			-- Does this class have an invariant?
+		do
+			Result := class_invariant /= Void
 		end
 
 	has_type_parameters: BOOLEAN
@@ -141,19 +148,33 @@ feature -- Status setting
 			is_root: is_root
 		end
 
+	set_is_interfaced
+			-- Set this class to be an interfaced class
+		do
+			is_interfaced := True
+		ensure
+			is_interfaced: is_interfaced
+		end
+
 feature {NONE} -- Implementation
-	associated_class: CLASS_AS
-			-- What is the associated Eiffel class of this BON class?
+	associated_class: CLASS_C
+			-- What is the associated Eiffe class of this BON class?
+		once
+			Result := associated_text_formatter_decorator.current_class
+		end
+
+	associated_class_ast: CLASS_AS
+			-- What is the associated Eiffel class AST of this BON class?
 
 	associated_class_invariant_assertion_list: LIST[TBON_ASSERTION]
 			-- Extract the class invariants of the assocated class.	
 		require
-			class_has_invariant: associated_class.invariant_part /= Void
+			class_has_invariant: associated_class_ast.invariant_part /= Void
 		local
 			l_assertion: TBON_ASSERTION
-			l_assertions: like associated_class.invariant_part.assertion_list
+			l_assertions: like associated_class_ast.invariant_part.assertion_list
 		do
-			l_assertions := associated_class.invariant_part.assertion_list
+			l_assertions := associated_class_ast.invariant_part.assertion_list
 			from
 				l_assertions.start
 			until
@@ -161,7 +182,7 @@ feature {NONE} -- Implementation
 			loop
 				-- Get assertion details from l_assertions.i_th
 				-- create l_assertion.make_element
-				-- Result.put (l_assertion)
+				-- Result.extend (l_assertion)
 				l_assertions.forth
 			end
 		end
@@ -176,17 +197,17 @@ feature {NONE} -- Implementation
 		do
 			create {LINKED_LIST[TBON_INDEX]} l_index_list.make
 			from
-				associated_class.top_indexes.start
+				associated_class_ast.top_indexes.start
 			until
-				associated_class.top_indexes.exhausted
+				associated_class_ast.top_indexes.exhausted
 			loop
-				create l_index_tag.make_element (associated_text_formatter_decorator, associated_class.top_indexes.item.tag.string_value_32)
-				l_index_terms := strings_from_atomics (associated_class.top_indexes.item.index_list)
+				create l_index_tag.make_element (associated_text_formatter_decorator, associated_class_ast.top_indexes.item.tag.string_value_32)
+				l_index_terms := strings_from_atomics (associated_class_ast.top_indexes.item.index_list)
 				create l_index.make_element (associated_text_formatter_decorator, l_index_tag, l_index_terms)
 
 				l_index_list.extend (l_index)
 
-				associated_class.top_indexes.forth
+				associated_class_ast.top_indexes.forth
 			end
 
 			Result := l_index_list
@@ -195,17 +216,26 @@ feature {NONE} -- Implementation
 	associated_class_name: STRING
 			-- Extract class name from the abstract class syntax.
 		once
-			Result := associated_class.class_name.string_value_32
+			Result := associated_class_ast.class_name.string_value_32
 		end
 
-	create_arguments_for_feature (feat: FEATURE_AS): LIST[TBON_FEATURE_ARGUMENT]
+	associated_output_strategy: TEXTUAL_BON_OUTPUT_STRATEGY
+			-- What is the output strategy associated with this class?
+
+	associated_text_formatter_decorator: TEXT_FORMATTER_DECORATOR
+			-- What is the associated text formatter of this class?
+			-- Is handed over to textual BON elements for processing.
+
+	create_arguments_for_feature (a_feature_as: FEATURE_AS): LIST[TBON_FEATURE_ARGUMENT]
 			-- Create BON arguments for a feature AST
 		local
+			l_feature_as: FEATURE_AS
 			l_feature_arguments: LIST[TBON_FEATURE_ARGUMENT]
 		do
+			l_feature_as := a_feature_as
 			create {ARRAYED_LIST[TBON_FEATURE_ARGUMENT]} l_feature_arguments.make (5)
 
-			feat.body.arguments.do_all (
+			l_feature_as.body.arguments.do_all (
 				agent (l_argument: TYPE_DEC_AS; l_argument_list: LIST[TBON_FEATURE_ARGUMENT])
 					require
 						argument_not_void: l_argument /= Void
@@ -226,7 +256,7 @@ feature {NONE} -- Implementation
 							create l_argument_type.make_element (associated_text_formatter_decorator, l_argument.type.dump)
 
 							create l_feature_argument.make_element (associated_text_formatter_decorator, l_argument_formal_name, l_argument_type)
-							l_argument_list.put (l_feature_argument)
+							l_argument_list.extend (l_feature_argument)
 
 							l_argument.id_list.forth
 						end
@@ -239,15 +269,15 @@ feature {NONE} -- Implementation
 	extract_associated_class_ancestors
 			-- Extract the ancestors for the associated class
 		require
-			has_conforming_parents: associated_class.conforming_parents /= Void
+			has_conforming_parents: associated_class_ast.conforming_parents /= Void
 		do
-			associated_class.conforming_parents.do_all (
+			associated_class_ast.conforming_parents.do_all (
 				agent (ancestor: PARENT_AS)
 					local
 						ancestor_class_type: TBON_CLASS_TYPE
 					do
 						create ancestor_class_type.make_element (associated_text_formatter_decorator, ancestor.type.class_name.string_value_32)
-						ancestors.put (ancestor_class_type)
+						ancestors.extend (ancestor_class_type)
 					ensure
 						ancestors.count = old ancestors.count + 1
 					end
@@ -257,7 +287,7 @@ feature {NONE} -- Implementation
 	extract_associated_class_feature_clauses
 			-- Extract the feature clauses and features of the associated class
 		do
-			associated_class.features.do_all (
+			associated_class_ast.features.do_all (
 				agent (feature_clause: FEATURE_CLAUSE_AS; feature_clause_list: LIST[TBON_FEATURE_CLAUSE])
 					require
 						feature_clause_not_void: feature_clause /= Void
@@ -266,9 +296,9 @@ feature {NONE} -- Implementation
 						l_feature_clause: TBON_FEATURE_CLAUSE
 					do
 						l_feature_clause := new_feature_clause_with_features (feature_clause)
-						feature_clause_list.put (l_feature_clause)
+						feature_clause_list.extend (l_feature_clause)
 					ensure
-						feature_clause_list.count = old  feature_clause_list.count + 1
+						feature_clause_list.count = old feature_clause_list.count + 1
 					end (?, feature_clauses)
 				)
 
@@ -278,9 +308,9 @@ feature {NONE} -- Implementation
 			-- Extract the type paramters of the associated class.
 			-- Results are stored in the type_parameters list.
 		require
-			has_generics: associated_class.generics /= Void
+			has_generics: associated_class_ast.generics /= Void
 		do
-			associated_class.generics.do_all (
+			associated_class_ast.generics.do_all (
 				agent (generic: FORMAL_DEC_AS)
 					local
 						l_formal_generic_name: TBON_FORMAL_GENERIC_NAME
@@ -298,16 +328,18 @@ feature {NONE} -- Implementation
 						end
 
 						create l_formal_generic.make_element (associated_text_formatter_decorator, l_formal_generic_name, l_constraining_type)
-						type_parameters.put (l_formal_generic)
+						type_parameters.extend (l_formal_generic)
 					ensure
 						type_parameters.count = old type_parameters.count + 1
 					end
 				)
 		end
 
-	new_feature (feat: FEATURE_AS): TBON_FEATURE
+	new_feature (a_feature_as: FEATURE_AS): TBON_FEATURE
 			-- Create a BON feature from the AST.
 		local
+			l_feature_as: FEATURE_AS
+
 			l_feature: TBON_FEATURE
 			l_feature_name: TBON_IDENTIFIER
 			l_feature_arguments: LIST[TBON_FEATURE_ARGUMENT]
@@ -324,81 +356,87 @@ feature {NONE} -- Implementation
 
 			l_pre_assertion_list: LIST[TBON_ASSERTION]
 			l_post_assertion_list: LIST[TBON_ASSERTION]
-
-			-- Remember deferred/effective/redefined!
 		do
+			l_feature_as := a_feature_as
+
 			-- Name
-			create l_feature_name.make_element (associated_text_formatter_decorator, feat.feature_name.string_value_32)
+			create l_feature_name.make_element (associated_text_formatter_decorator, l_feature_as.feature_name.string_value_32)
 
 			-- Arguments
-			l_feature_arguments := create_arguments_for_feature (feat)
+			if l_feature_as.body.arguments /= Void then
+				l_feature_arguments := create_arguments_for_feature (l_feature_as)
+			end
 
 			-- Type
-			if feat.body.type /= Void then -- feat.is_function or feat.is_attribute then
-				create l_feature_type.make_element (associated_text_formatter_decorator, feat.body.type.dump)
+			if l_feature_as.body.type /= Void then -- feat.is_function or feat.is_attribute then
+				create l_feature_type.make_element (associated_text_formatter_decorator, l_feature_as.body.type.dump)
 			else
 				l_feature_type := Void
 			end
 
 			-- Type mark
-			create l_feature_type_mark.make_element
+			create l_feature_type_mark.make_element (associated_text_formatter_decorator)
 				-- Set as association if not a constant, due to difficulty of finding out whether the type is expanded
-			if feat.body.is_constant or else (feat.body.as_routine /= Void and then feat.body.as_routine.is_once) then
+			if l_feature_as.body.is_constant or else (l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.is_once) then
 				l_feature_type_mark.set_as_shared_association (1)
+--			elseif associated_text_formatter_decorator.feature_by_name_32 (l_feature_as.feature_name.string_value_32).type.is_expanded then
+--				l_feature_type_mark.set_as_aggregation
 			else
 				l_feature_type_mark.set_as_association
 			end
 
 
 			-- Comments
-			create {ARRAYED_LIST[STRING]} l_feature_comments.make (5)
-			feat.comment (Void).do_all (
-				agent (l_comment: EIFFEL_COMMENT_LINE; l_comment_list: LIST[STRING])
-					do
-						l_comment_list.put (l_comment.content_32)
-					ensure
-						l_comment_list.count = old l_comment_list.count + 1
-					end (?, l_feature_comments)
-			)
+			create {LINKED_LIST[STRING]} l_feature_comments.make
+			if l_feature_as.comment (associated_text_formatter_decorator.match_list) /= Void then
+				l_feature_as.comment (associated_text_formatter_decorator.match_list).do_all (
+					agent (l_comment: EIFFEL_COMMENT_LINE; l_comment_list: LIST[STRING])
+						do
+							l_comment_list.extend (l_comment.content_32)
+						ensure
+							l_comment_list.count = old l_comment_list.count + 1
+						end (?, l_feature_comments)
+				)
+			end
 
 			-- Renaming clause
 			from
-				associated_class.parents.start
+				associated_class_ast.parents.start
 			until
-				associated_class.parents.exhausted
+				associated_class_ast.parents.exhausted
 			loop
-				if associated_class.parents.item.renaming /= Void then
+				if associated_class_ast.parents.item.renaming /= Void then
 					from
-						associated_class.parents.item.renaming.start
+						associated_class_ast.parents.item.renaming.start
 					until
-						associated_class.parents.item.renaming.exhausted
+						associated_class_ast.parents.item.renaming.exhausted
 					loop
-						l_renaming_old_name := associated_class.parents.item.renaming.item.old_name.visual_name_32
-						l_renaming_final_name := associated_class.parents.item.renaming.item.new_name.visual_name_32
+						l_renaming_old_name := associated_class_ast.parents.item.renaming.item.old_name.visual_name_32
+						l_renaming_final_name := associated_class_ast.parents.item.renaming.item.new_name.visual_name_32
 
 						if l_renaming_old_name.is_equal (l_feature_name.string_value) then
 							check l_renaming_old_name /= Void and l_renaming_final_name /= Void end
 
-							create l_renaming_parent.make_element (associated_text_formatter_decorator, associated_class.parents.item.type.class_name.string_value_32)
+							create l_renaming_parent.make_element (associated_text_formatter_decorator, associated_class_ast.parents.item.type.class_name.string_value_32)
 							create l_feature_renaming_clause.make_element (l_renaming_parent, l_renaming_final_name)
 
 							-- End both loops
-							associated_class.parents.item.renaming.finish
-							associated_class.parents.finish
+							associated_class_ast.parents.item.renaming.finish
+							associated_class_ast.parents.finish
 						end
-					end
 
-					associated_class.parents.item.renaming.forth
+						associated_class_ast.parents.item.renaming.forth
+					end
 				end
 
-				associated_class.parents.forth
+				associated_class_ast.parents.forth
 			end
 
 			-- Precondition
-			if feat.body.as_routine /= Void and then feat.body.as_routine.has_precondition then
-				create {ARRAYED_LIST[TBON_ASSERTION]} l_pre_assertion_list.make (10) -- ITU_FIXME_42
+			if l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_precondition then
+				create {LINKED_LIST[TBON_ASSERTION]} l_pre_assertion_list.make -- ITU_FIXME_42
 
-				feat.body.as_routine.precondition.assertions.do_all (
+				l_feature_as.body.as_routine.precondition.assertions.do_all (
 					agent (l_precondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
 						require
 							precondition_not_void: l_precondition /= Void
@@ -408,26 +446,26 @@ feature {NONE} -- Implementation
 						do
 							l_bon_assertion := make_tbon_expression_from_tagged_as (l_precondition)
 
-							assertion_list.put (l_bon_assertion)
+							assertion_list.extend (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
-						end
+						end (?, l_pre_assertion_list)
 				)
 
 				create l_feature_precondition.make_element (l_pre_assertion_list)
 			end
 
 			check -- If feature has a precondition, a precondition muat have been created
-				feat.body.as_routine /= Void and then feat.body.as_routine.has_precondition
+				l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_precondition
 				implies
 				l_feature_precondition /= Void
 			end
 
 			-- Postcondition
-			if feat.body.as_routine /= Void and then feat.body.as_routine.has_postcondition then
-				create {ARRAYED_LIST[TBON_ASSERTION]} l_post_assertion_list.make (10) -- ITU_FIXME_42
+			if l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_postcondition then
+				create {LINKED_LIST[TBON_ASSERTION]} l_post_assertion_list.make -- ITU_FIXME_42
 
-				feat.body.as_routine.postcondition.assertions.do_all (
+				l_feature_as.body.as_routine.postcondition.assertions.do_all (
 					agent (l_postcondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
 						require
 							postcondition_not_void: l_postcondition /= Void
@@ -437,17 +475,17 @@ feature {NONE} -- Implementation
 						do
 							l_bon_assertion := make_tbon_expression_from_tagged_as (l_postcondition)
 
-							assertion_list.put (l_bon_assertion)
+							assertion_list.extend (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
-						end
+						end (?, l_post_assertion_list)
 				)
 
 				create l_feature_postcondition.make_element (l_post_assertion_list)
 			end
 
 			check -- If feature has a postcondition, a postcondition muat have been created
-				feat.body.as_routine /= Void and then feat.body.as_routine.has_postcondition
+				l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_postcondition
 				implies
 				l_feature_postcondition /= Void
 			end
@@ -463,7 +501,7 @@ feature {NONE} -- Implementation
 										   l_feature_postcondition)
 
 			-- Set status
-			if feat.body.as_routine /= Void and then feat.body.as_routine.is_deferred then
+			if l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.is_deferred then
 				l_feature.set_deferred
 			end
 
@@ -481,18 +519,20 @@ feature {NONE} -- Implementation
 			l_redefined_features: LIST[STRING]
 		do
 			-- Get comments
-			create {ARRAYED_LIST[STRING]} l_comment_list.make(2)
+			create {LINKED_LIST[STRING]} l_comment_list.make
 
-			feature_clause.comment (Void).do_all (
+			feature_clause.comment (associated_text_formatter_decorator.match_list).do_all (
 				agent (line: EIFFEL_COMMENT_LINE; l_l_comment_list: LIST[STRING])
 					do
-						l_l_comment_list.put (line.content_32)
+						l_l_comment_list.extend (line.content_32)
 					ensure
 						l_l_comment_list.count = old l_l_comment_list.count + 1
 					end (?, l_comment_list)
 				)
 
 			-- Create features
+			create {LINKED_LIST[TBON_FEATURE]} l_feature_list.make
+
 			feature_clause.features.do_all (
 				agent (l_feature_as: FEATURE_AS; l_l_feature_list: LIST[TBON_FEATURE])
 					require
@@ -502,7 +542,7 @@ feature {NONE} -- Implementation
 						l_feature: TBON_FEATURE
 					do
 						l_feature := new_feature (l_feature_as)
-						l_l_feature_list.put (l_feature)
+						l_l_feature_list.extend (l_feature)
 					ensure
 						l_l_feature_list.count = old l_l_feature_list.count + 1
 					end (?, l_feature_list)
@@ -526,7 +566,7 @@ feature {NONE} -- Implementation
 			-- Get export client classes
 			create {ARRAYED_LIST[TBON_CLASS_TYPE]} l_export_list.make(3)
 
-			if feature_clause.clients.clients /= Void then
+			if feature_clause.clients /= Void and then feature_clause.clients.clients /= Void then
 				feature_clause.clients.clients.do_all (
 					agent (client_id: ID_AS; l_client_list: LIST[TBON_CLASS_TYPE])
 						require
@@ -536,13 +576,13 @@ feature {NONE} -- Implementation
 							l_class_type: TBON_CLASS_TYPE
 						do
 							create l_class_type.make_element (associated_text_formatter_decorator, client_id.name_8)
-							l_client_list.put (l_class_type)
+							l_client_list.extend (l_class_type)
 						ensure
 							l_client_list.count = old l_client_list.count + 1
 						end (?, l_export_list)
 				)
 
-				create l_selective_export.make_element_with_class_list (l_export_list)
+				create l_selective_export.make_element_with_class_list (associated_text_formatter_decorator, l_export_list)
 			else
 				l_selective_export := Void
 			end
@@ -553,8 +593,10 @@ feature {NONE} -- Implementation
 	set_class_status
 			-- Set the status of this class
 		do
-			if associated_class.is_deferred then
+			if associated_class_ast.is_deferred then
 				set_is_deferred
+			elseif associated_class.is_external then
+				set_is_interfaced
 			-- Sufficient information about parents seems to be unavailable to determine other status flags.
 			end
 		end
@@ -569,7 +611,7 @@ feature {NONE} -- Implementation
 
 			-- Get redefined features from AST
 			create {ARRAYED_LIST[STRING]} l_redefined_features.make (10)
-			associated_class.parents.do_if (
+			associated_class_ast.parents.do_if (
 				agent (parent: PARENT_AS; feature_name_list: LIST[STRING])
 					require
 						parent_not_void: parent /= Void
@@ -580,7 +622,7 @@ feature {NONE} -- Implementation
 						until
 							parent.redefining.exhausted
 						loop
-							feature_name_list.put (parent.redefining.item.visual_name_32)
+							feature_name_list.extend (parent.redefining.item.visual_name_32)
 							parent.redefining.forth
 						end
 					end (?, l_redefined_features)
@@ -610,18 +652,18 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	strings_from_atomics (l_list: EIFFEL_LIST[ATOMIC_AS]): LIST[STRING]
+	strings_from_atomics (a_list: EIFFEL_LIST[ATOMIC_AS]): LIST[STRING]
 			-- Extract the string values of a list of ATOMIC_AS's and return them as list of strings
-		local
-			i: INTEGER
 		do
+			create {LINKED_LIST[STRING]} Result.make
 			from
-				i := 0
+				a_list.start
 			until
-				i < l_list.count
+				a_list.exhausted
 			loop
-				Result.put (l_list.i_th (i).string_value_32)
-				i := i + 1
+				Result.extend (a_list.item.string_value_32)
+
+				a_list.forth
 			end
 		end
 
@@ -864,7 +906,7 @@ feature {NONE} -- Implementation
 
 invariant
 	must_have_name: name /= Void
-	must_describe_class: associated_class /= Void
+	must_describe_class: associated_class_ast /= Void
 	deferred_status_is_consistent: is_deferred implies not is_effective and not is_root
 	effective_status_is_consistent: is_effective implies not is_deferred and not is_root
 	root_status_is_consistent: is_root implies not is_deferred and not is_effective

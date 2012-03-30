@@ -20,15 +20,17 @@ create
 	make_element, make_element_with_class_list
 
 feature -- Initialization
-	make_element
+	make_element (a_text_formatter: like text_formatter_decorator)
 			-- Create a selective export element.
 		do
+			make (a_text_formatter)
 			class_list := Void
 		end
 
-	make_element_with_class_list (cl_list: like class_list)
+	make_element_with_class_list (a_text_formatter: like text_formatter_decorator; cl_list: like class_list)
 			-- Create a selective export element with the given class list.
 		do
+			make (a_text_formatter)
 			class_list := cl_list
 		end
 
@@ -45,11 +47,11 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 
 			l_is_first_list_item: BOOLEAN
-			i: INTEGER
 		do
+			l_text_formatter_decorator := text_formatter_decorator
+
 			if has_class_list then
 				l_text_formatter_decorator.process_symbol_text (ti_l_curly)
-				l_text_formatter_decorator.put_space
 
 				if class_list.count > 0 then
 					from
@@ -61,8 +63,9 @@ feature -- Processing
 						if not l_is_first_list_item then
 							l_text_formatter_decorator.process_symbol_text (ti_comma)
 							l_text_formatter_decorator.put_space
-							l_is_first_list_item := False
 						end
+						l_is_first_list_item := False
+
 						class_list.item.process_to_textual_bon
 
 						class_list.forth
@@ -70,8 +73,7 @@ feature -- Processing
 				else
 					l_text_formatter_decorator.process_string_text (bti_none_class_name, Void)
 				end
-
-				l_text_formatter_decorator.put_space
+				
 				l_text_formatter_decorator.process_symbol_text (ti_r_curly)
 
 			end

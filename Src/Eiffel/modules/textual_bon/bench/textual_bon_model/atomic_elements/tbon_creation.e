@@ -53,17 +53,20 @@ feature -- Processing
 			l_text_formatter_decorator.put_space
 			-- Process class names
 			from
-				i := 1
+				created_class_list.start
 				l_is_first_list_item := True
 			until
-				i >= created_class_list.count
+				created_class_list.exhausted
 			loop
 				if not l_is_first_list_item then
 					l_text_formatter_decorator.process_symbol_text (ti_comma)
 					l_text_formatter_decorator.put_space
-					l_is_first_list_item := False
 				end
-				created_class_list.i_th (i).name.process_to_textual_bon
+				l_is_first_list_item := False
+
+				created_class_list.item.name.process_to_textual_bon
+
+				created_class_list.forth
 			end
 
 		end

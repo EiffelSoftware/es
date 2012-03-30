@@ -31,7 +31,7 @@ feature -- Initialization
 			-- Create a class type.
 		do
 			make (a_text_formatter)
-			name ?= a_name
+			name := a_name
 		end
 
 feature -- Process
@@ -41,10 +41,9 @@ feature -- Process
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_string_text (name, Void)
-			if
-				has_actual_generics
-			then
+			l_text_formatter_decorator.process_class_name_text (name, Void, False)
+
+			if has_actual_generics then
 				l_text_formatter_decorator.put_space
 				l_text_formatter_decorator.process_symbol_text (ti_l_bracket)
 				process_formal_textual_bon_list(actual_generics, ", ", False)
@@ -56,7 +55,7 @@ feature -- Status report
 	has_actual_generics: BOOLEAN
 			-- Does this class type have any actual generics?
 		do
-			Result := actual_generics /= Void or else actual_generics.is_empty
+			Result := actual_generics /= Void and then not actual_generics.is_empty
 		end
 
 note

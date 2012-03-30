@@ -32,15 +32,14 @@ feature -- Processing
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then
-						l_text_formatter_decorator.process_string_text (separator, Void)
+						l_text_formatter_decorator.process_symbol_text (separator)
 					end
 
 					if line_break_after_each_list_item then
 						l_text_formatter_decorator.put_new_line
 					end
-
-					l_is_first_list_item := False
 				end
+				l_is_first_list_item := False
 
 				list.item.process_to_formal_textual_bon
 
@@ -66,15 +65,14 @@ feature -- Processing
 			loop
 				if not l_is_first_list_item then
 					if separator /= Void then
-						l_text_formatter_decorator.process_string_text (separator, Void)
+						l_text_formatter_decorator.process_symbol_text (separator)
 					end
 
 					if line_break_after_each_list_item then
 						l_text_formatter_decorator.put_new_line
 					end
-
-					l_is_first_list_item := False
 				end
+				l_is_first_list_item := False
 
 				list.item.process_to_informal_textual_bon
 

@@ -30,9 +30,9 @@ feature -- Processing
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 			--l_text_formatter_decorator.put_classi (current_class.lace_class)
-			create textual_bon_class.make (l_as, l_text_formatter_decorator)
+			create textual_bon_class.make (l_as, l_text_formatter_decorator, Current)
 
-			create textual_bon_class_component.make_element (textual_bon_class)
+			create textual_bon_class_component.make_element (text_formatter_decorator, textual_bon_class)
 			textual_bon_class_component.set_text_formatter (text_formatter_decorator)
 
 			create {LINKED_LIST[TBON_STATIC_COMPONENT]} static_component_list.make

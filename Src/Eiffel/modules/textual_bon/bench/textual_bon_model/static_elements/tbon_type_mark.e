@@ -20,9 +20,10 @@ create
 	make_element
 
 feature -- Initialization
-	make_element
+	make_element (a_text_formatter: like text_formatter_decorator)
 			-- Create a type mark.
 		do
+			make (a_text_formatter)
 			internal_value := Void
 		end
 
@@ -73,7 +74,7 @@ feature -- Element change
 		local
 			l_mark: STRING
 		do
-			l_mark := bti_colon_operator
+			l_mark := bti_colon_operator.string
 			l_mark.append (ti_l_parenthesis)
 			l_mark.append_integer (multiplicity)
 			l_mark.append (ti_r_parenthesis)

@@ -29,6 +29,7 @@ feature -- Initialization
 				  a_feature_postcondition: like postcondition)
 			-- Create a feature element
 		do
+			text_formatter_decorator := a_text_formatter
 			name 			:= a_feature_name
 			arguments 		:= a_feature_arguments
 			type 			:= a_feature_type
@@ -79,10 +80,10 @@ feature -- Processing
 
 			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
 			from
-				i := 1
+				comments.start
 				l_is_first_item_in_list := True
 			until
-				i >= comments.count
+				comments.exhausted
 			loop
 				-- If there are multiple comments, put them on separate lines.
 				if not l_is_first_item_in_list then
@@ -90,11 +91,12 @@ feature -- Processing
 					l_text_formatter_decorator.put_new_line
 					l_text_formatter_decorator.process_string_text (bti_backslash, Void)
 					l_text_formatter_decorator.put_space
-					l_is_first_item_in_list := False
 				end
-				l_text_formatter_decorator.process_string_text (comments.i_th (i), Void)
+				l_is_first_item_in_list := False
 
-				i := i + 1
+				l_text_formatter_decorator.process_comment_text (comments.item, Void)
+
+				comments.forth
 			end
 			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
 		end
@@ -129,7 +131,7 @@ feature -- Processing
 
 			l_text_formatter_decorator.put_new_line
 			l_text_formatter_decorator.indent
-			l_text_formatter_decorator.indent
+			--l_text_formatter_decorator.indent
 
 			-- Process comments
 			if has_comments then
@@ -170,16 +172,19 @@ feature {NONE} -- Implementation: Processing
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 			from
-				i := 1
+				comments.start
 				l_is_first_list_item := True
 			until
-				i >= comments.count
+				comments.exhausted
 			loop
 				if not l_is_first_list_item then
 					l_text_formatter_decorator.put_new_line
-					l_is_first_list_item := False
 				end
-				process_textual_bon_comment (comments.i_th (i))
+				l_is_first_list_item := False
+
+				process_textual_bon_comment (comments.item)
+
+				comments.forth
 			end
 		end
 
@@ -203,13 +208,13 @@ feature -- Status report
 	has_arguments: BOOLEAN
 			-- Does this feature have any arguments?
 		do
-			Result := arguments /= Void
+			Result := arguments /= Void and then not arguments.is_empty
 		end
 
 	has_comments: BOOLEAN
 			-- Does this feature have comments?
 		do
-			Result := comments /= Void
+			Result := comments /= Void and then not comments.is_empty
 		end
 
 	has_postcondition: BOOLEAN

@@ -1,15 +1,15 @@
-﻿note
-	description: "The indexing clause of a class containing meta-information about it."
+note
+	description: "A client relation in a static diagram."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_INDEXING_CLAUSE
+	TBON_CLIENT_RELATION
 
 inherit
-	TEXTUAL_BON_ELEMENT
-	rename
+	TBON_STATIC_RELATION
+		rename
 			process_to_informal_textual_bon as process_to_textual_bon,
 			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
@@ -19,35 +19,59 @@ inherit
 create
 	make_element
 
-feature -- Access
-	indexing_tags: attached LIST[TBON_INDEX]
-			-- What are this indexing clause's indexing tags?
-
 feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; an_indexing_tag_list: like indexing_tags)
-			-- Make an indexing clause for a class.
+	make_element (a_text_formatter: like text_formatter_decorator)
+			-- Create a client relation.
 		do
 			make (a_text_formatter)
-			indexing_tags := an_indexing_tag_list
 		end
 
-feature -- Process
-	process_to_textual_bon
-			-- Process this indexing clause to formal textual BON.
-		local
-			l_text_formatter_decorator: like text_formatter_decorator
+feature -- Access
+
+	client_class: attached TBON_CLASS_TYPE
+			-- Which client class is described by this relation?
+
+	semantic_label: STRING
+			-- What is the semantic label of this relation?
+
+	supplier_class: attached TBON_CLASS_TYPE
+			-- Which supplier class is described by this relation?
+
+	type_mark: TBON_TYPE_MARK
+			-- What is the type mark of this relation?
+
+
+			-- What client entities are described by this relation?
+
+feature -- Status report
+	has_type_mark: BOOLEAN
+			-- Does this relation have a type mark?
 		do
-			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_indexing_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-			process_informal_textual_bon_list (indexing_tags, ";", True)
-			l_text_formatter_decorator.exdent
+			Result := type_mark /= Void
 		end
+
+	has_semantic_label: BOOLEAN
+			-- Does this relation have a semantic label?
+		do
+			Result := semantic_label /= Void
+		end
+
+feature -- Processing
+	process_to_textual_bon
+			-- Process this element into textual BON.
+		do
+
+		end
+
 
 invariant
-	indexing_tags_not_empty: not indexing_tags.is_empty
-			-- An indexing tag must have an identifier.
+	must_specify_a_client_class: client_class /= Void
+			-- A client relation must specify a client class.
+
+	must_specify_a_supplier_class: supplier_class /= Void
+			-- A client relation must specify a supplier class.
+
+
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

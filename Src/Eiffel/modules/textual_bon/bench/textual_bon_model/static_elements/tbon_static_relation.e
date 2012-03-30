@@ -1,53 +1,15 @@
-﻿note
-	description: "The indexing clause of a class containing meta-information about it."
+note
+	description: "A static relation in a static diagram."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	TBON_INDEXING_CLAUSE
+deferred class
+	TBON_STATIC_RELATION
 
 inherit
-	TEXTUAL_BON_ELEMENT
-	rename
-			process_to_informal_textual_bon as process_to_textual_bon,
-			process_to_formal_textual_bon as process_to_textual_bon
-		redefine
-			process_to_textual_bon
-		end
+	TBON_STATIC_COMPONENT
 
-create
-	make_element
-
-feature -- Access
-	indexing_tags: attached LIST[TBON_INDEX]
-			-- What are this indexing clause's indexing tags?
-
-feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; an_indexing_tag_list: like indexing_tags)
-			-- Make an indexing clause for a class.
-		do
-			make (a_text_formatter)
-			indexing_tags := an_indexing_tag_list
-		end
-
-feature -- Process
-	process_to_textual_bon
-			-- Process this indexing clause to formal textual BON.
-		local
-			l_text_formatter_decorator: like text_formatter_decorator
-		do
-			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_keyword_text (bti_indexing_keyword, Void)
-			l_text_formatter_decorator.put_new_line
-			l_text_formatter_decorator.indent
-			process_informal_textual_bon_list (indexing_tags, ";", True)
-			l_text_formatter_decorator.exdent
-		end
-
-invariant
-	indexing_tags_not_empty: not indexing_tags.is_empty
-			-- An indexing tag must have an identifier.
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

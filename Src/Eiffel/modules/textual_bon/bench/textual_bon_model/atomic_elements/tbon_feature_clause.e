@@ -61,17 +61,19 @@ feature -- Processing
 				l_text_formatter_decorator.put_space
 
 				from
-					i := 1
+					comments.start
 					l_is_first_item_in_list := True
 				until
-					i >= comments.count
+					comments.exhausted
 				loop
 					if not l_is_first_item_in_list then
 						l_text_formatter_decorator.put_new_line
 					end
-					process_textual_bon_comment (comments.i_th (i))
+					l_is_first_item_in_list := False
 
-					i := i + 1
+					process_textual_bon_comment (comments.item)
+
+					comments.forth
 				end
 			end
 
@@ -79,7 +81,27 @@ feature -- Processing
 			l_text_formatter_decorator.indent
 
 			-- Process features
-			process_formal_textual_bon_list (features, Void, True)
+			--process_formal_textual_bon_list (features, Void, True)
+
+			from
+				features.start
+			until
+				features.exhausted
+			loop
+				features.item.process_to_formal_textual_bon
+
+				if not features.islast then
+					l_text_formatter_decorator.put_new_line
+					if features.item.has_comments then
+						l_text_formatter_decorator.put_new_line
+							-- Put an additional new line if comments are displayed
+					end
+				end
+
+				features.forth
+			end
+
+			l_text_formatter_decorator.exdent
 
 		end
 
