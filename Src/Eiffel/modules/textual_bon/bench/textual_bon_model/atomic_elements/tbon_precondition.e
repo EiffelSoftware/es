@@ -20,10 +20,11 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (l_assertions: like assertions)
+	make_element (a_text_formatter: like text_formatter_decorator; an_assertion_list: like assertions)
 			-- Make a precondition.
 		do
-			assertions ?= l_assertions
+			make (a_text_formatter)
+			assertions := an_assertion_list
 		end
 
 feature -- Processing

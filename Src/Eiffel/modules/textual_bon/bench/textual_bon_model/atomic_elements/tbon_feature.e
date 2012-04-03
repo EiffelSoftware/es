@@ -20,7 +20,7 @@ create
 feature -- Initialization
 	make_element (a_text_formatter: like text_formatter_decorator;
 				  a_feature_name: attached like name;
-				  a_feature_arguments: like arguments;
+				  a_feature_argument_list: like arguments;
 				  a_feature_type: like type;
 				  a_feature_type_mark: like type_mark;
 				  a_feature_comments: like comments;
@@ -31,7 +31,7 @@ feature -- Initialization
 		do
 			text_formatter_decorator := a_text_formatter
 			name 			:= a_feature_name
-			arguments 		:= a_feature_arguments
+			arguments 		:= a_feature_argument_list
 			type 			:= a_feature_type
 			type_mark		:= a_feature_type_mark
 			comments		:= a_feature_comments
@@ -131,11 +131,12 @@ feature -- Processing
 
 			l_text_formatter_decorator.put_new_line
 			l_text_formatter_decorator.indent
-			--l_text_formatter_decorator.indent
+			l_text_formatter_decorator.indent
 
 			-- Process comments
 			if has_comments then
 				process_comments_into_formal_textual_bon
+				l_text_formatter_decorator.put_new_line
 			end
 
 			l_text_formatter_decorator.exdent
@@ -158,6 +159,8 @@ feature -- Processing
 			if has_precondition or has_postcondition then
 				l_text_formatter_decorator.process_keyword_text (bti_end_keyword, Void)
 			end
+
+			l_text_formatter_decorator.exdent
 
 		end
 

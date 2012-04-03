@@ -1,11 +1,11 @@
 note
-	description: "An argument to a feature in textual BON."
+	description: "An event in a system described with textual BON."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_FEATURE_ARGUMENT
+	TBON_EVENT
 
 inherit
 	TEXTUAL_BON_ELEMENT
@@ -17,50 +17,58 @@ inherit
 		end
 
 create
-	make_element
+	make_element_with_involved_class_list
 
 feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; an_identifier: TBON_IDENTIFIER; a_type: attached TBON_TYPE)
-			-- Create a feature argument element.
+	make_element_with_involved_class_list (id: attached STRING; inv_cl_list: attached LIST[TBON_CLASS])
+			-- Create an event element involving the given classes.
 		do
-			make (a_text_formatter)
-			identifier := an_identifier
-			type := a_type
+			identifier := id
+			involved_class_list := inv_cl_list
 		end
 
 feature -- Access
-	identifier: TBON_IDENTIFIER
-			-- What is the identifier of this argument?
+	identifier: attached STRING
+			-- What is the identifier of this event?
 
-	type: attached TBON_TYPE
-			-- What is the type of this argument?
-
-feature -- Status report
-	has_identifier: BOOLEAN
-			-- Does this feature argument have an identifier?
-		do
-			Result := identifier /= Void
-		end
+	involved_class_list: attached LIST[TBON_CLASS]
+			-- Which classes does this event involve?
 
 feature -- Processing
 	process_to_textual_bon
 			-- Process this element into textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+
+			i: INTEGER
+			l_first_item_in_list: BOOLEAN
 		do
+			-- event 'identifier' involves 'class_list'
 			l_text_formatter_decorator := text_formatter_decorator
-
-			l_text_formatter_decorator.process_basic_text (bti_arrow)
+			l_text_formatter_decorator.process_keyword_text (bti_event_keyword, Void)
 			l_text_formatter_decorator.put_space
-
-			if has_identifier then
-				identifier.process_to_textual_bon
-				l_text_formatter_decorator.process_symbol_text (bti_colon_operator)
-				l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_string_text (identifier, Void)
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_keyword_text (bti_involves_keyword, Void)
+			l_text_formatter_decorator.put_space
+			-- Process class names
+			from
+				i := 1
+				l_first_item_in_list := True
+			until
+				i >= involved_class_list.count
+			loop
+				if not l_first_item_in_list then
+					l_text_formatter_decorator.process_symbol_text (ti_comma)
+					l_text_formatter_decorator.put_space
+					l_first_item_in_list := False
+				end
+				involved_class_list.i_th (i).name.process_to_textual_bon
 			end
-
-			type.process_to_formal_textual_bon
 		end
+
+invariant
+	must_involve_at_least_one_class: not involved_class_list.is_empty
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

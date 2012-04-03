@@ -233,7 +233,7 @@ feature {NONE} -- Implementation
 			l_feature_arguments: LIST[TBON_FEATURE_ARGUMENT]
 		do
 			l_feature_as := a_feature_as
-			create {ARRAYED_LIST[TBON_FEATURE_ARGUMENT]} l_feature_arguments.make (5)
+			create {LINKED_LIST[TBON_FEATURE_ARGUMENT]} l_feature_arguments.make
 
 			l_feature_as.body.arguments.do_all (
 				agent (l_argument: TYPE_DEC_AS; l_argument_list: LIST[TBON_FEATURE_ARGUMENT])
@@ -264,6 +264,8 @@ feature {NONE} -- Implementation
 						l_argument_list.count = old l_argument_list.count + l_argument.id_list.count
 					end (?, l_feature_arguments)
 			)
+
+			Result := l_feature_arguments
 		end
 
 	extract_associated_class_ancestors
@@ -452,10 +454,10 @@ feature {NONE} -- Implementation
 						end (?, l_pre_assertion_list)
 				)
 
-				create l_feature_precondition.make_element (l_pre_assertion_list)
+				create l_feature_precondition.make_element (associated_text_formatter_decorator, l_pre_assertion_list)
 			end
 
-			check -- If feature has a precondition, a precondition muat have been created
+			check -- If feature has a precondition, a precondition must have been created
 				l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_precondition
 				implies
 				l_feature_precondition /= Void
@@ -481,7 +483,7 @@ feature {NONE} -- Implementation
 						end (?, l_post_assertion_list)
 				)
 
-				create l_feature_postcondition.make_element (l_post_assertion_list)
+				create l_feature_postcondition.make_element (associated_text_formatter_decorator, l_post_assertion_list)
 			end
 
 			check -- If feature has a postcondition, a postcondition muat have been created
