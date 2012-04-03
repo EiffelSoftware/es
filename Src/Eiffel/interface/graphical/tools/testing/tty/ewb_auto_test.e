@@ -111,7 +111,7 @@ feature -- Execution
 					if not l_types.is_empty then
 						l_types.append_character (',')
 					end
-					l_types.append (l_types)
+					l_types.append (l_type)
 					l_ap.class_names.forth
 				end
 

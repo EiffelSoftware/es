@@ -125,8 +125,17 @@ feature -- Evaluation
 
 	evaluated_string_from_debugger (a_dm: DEBUGGER_MANAGER; a_expression: STRING): EPA_EXPRESSION_VALUE
 			-- Value of `a_expression' evaluated through debugger
+		local
+			l_retried: BOOLEAN
 		do
-			Result := expression_value_from_dump (a_dm.expression_evaluation_with_assertion_checking (a_expression, True, False), a_expression)
+			if not l_retried then
+				Result := expression_value_from_dump (a_dm.expression_evaluation_with_assertion_checking (a_expression, True, False), a_expression)
+			else
+				create {EPA_NONSENSICAL_VALUE} Result
+			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	expression_value_from_dump (a_dump_value: detachable DUMP_VALUE; a_expression_text: STRING): EPA_EXPRESSION_VALUE

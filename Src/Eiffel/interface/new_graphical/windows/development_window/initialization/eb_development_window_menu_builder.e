@@ -1235,6 +1235,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_JAVASCRIPT_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
+			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
 
 --			l_customized_tools := develop_window.tools.customized_tools
 --			if not l_customized_tools.is_empty then
@@ -1660,7 +1661,7 @@ feature -- Docking library menu items
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
