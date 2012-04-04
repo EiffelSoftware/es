@@ -20,9 +20,10 @@ create
 	make_element
 
 feature -- Initialization
-	make_element
+	make_element (a_text_formatter_decorator: like text_formatter_decorator)
 			-- Create a binary operator.
 		do
+			text_formatter_decorator := a_text_formatter_decorator
 			is_binary_operator := True
 			internal_value := Void
 		end

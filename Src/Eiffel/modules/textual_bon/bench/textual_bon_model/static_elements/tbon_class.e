@@ -671,9 +671,49 @@ feature {NONE} -- Implementation
 
 	feature {TBON_CLASS} -- Expression handling
 
+	make_tbon_expression_from_access_as (l_access_as: ACCESS_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a ACCESS_AS
+		local
+			panic_expr: TBON_CONSTANT_EXPRESSION
+		do
+			if attached {ACCESS_FEAT_AS} l_access_as as l_access_feat_as then
+				Result := make_tbon_expression_from_access_feat_as (l_access_feat_as)
+			elseif attached {CURRENT_AS} l_access_as as l_current_as then
+				Result := make_tbon_expression_from_current_as (l_current_as)
+			elseif attached {PRECURSOR_AS} l_access_as as l_precursor_as then
+				Result := make_tbon_expression_from_precursor_as (l_precursor_as)
+			elseif attached {RESULT_AS} l_access_as as l_result_as then
+				Result := make_tbon_expression_from_result_as (l_result_as)
+			else
+				create panic_expr.make_element (associated_text_formatter_decorator, "access_error")
+				Result := panic_expr
+			end
+		end
+
+	make_tbon_expression_from_access_feat_as (l_access_feat_as: ACCESS_FEAT_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION form a ACCESS_FEAT_AS
+		local
+			l_call: TBON_CALL
+			l_called_feature: STRING
+			l_classes: like associated_output_strategy.get_universe.all_classes
+			l_feature: E_FEATURE
+		do
+			l_called_feature := ""
+			create l_classes.make (1500)
+			l_classes.copy (associated_output_strategy.get_universe.all_classes)
+			from l_classes.start until l_classes.is_empty loop
+				if l_classes.item_for_iteration.compiled_class.class_id = l_access_feat_as.class_id then
+					l_called_feature.append ("<Fix me>")
+				end
+				l_classes.remove (l_classes.item_for_iteration)
+				l_classes.forth
+			end
+			create l_call.make_element (l_access_feat_as.access_name_32, l_called_feature, associated_text_formatter_decorator)
+			Result := l_call
+		end
+
 	make_tbon_expression_from_atomic_as (l_atomic_as: ATOMIC_AS): TBON_EXPRESSION
-			-- Make a TBON_EXPRESSION from a ATOMIC_AS
-			-- Actually returns a TBON_CONSTANT_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a ATOMIC_AS
 		local
 			l_constant: TBON_CONSTANT_EXPRESSION
 			l_string_value: STRING_32
@@ -698,7 +738,7 @@ feature {NONE} -- Implementation
 			l_string ?= l_atomic_as
 			l_unique ?= l_atomic_as
 
-			l_string_value := "ERROR"
+			l_string_value := ""
 
 			if l_bit_const /= Void then
 				l_string_value := l_bit_const.value.string_value_32
@@ -741,7 +781,7 @@ feature {NONE} -- Implementation
 			elseif l_unique /= Void then
 				l_string_value := l_unique.string_value_32
 			end
-			create l_constant.make_element (l_string_value)
+			create l_constant.make_element (associated_text_formatter_decorator, l_string_value)
 			Result := l_constant
 		end
 
@@ -761,9 +801,6 @@ feature {NONE} -- Implementation
 			l_and: BIN_AND_AS
 			l_and_then: BIN_AND_THEN_AS
 			l_eq: BIN_EQ_AS
-			l_ne: BIN_NE_AS
-			l_not_tilde: BIN_NOT_TILDE_AS
-			l_tilde: BIN_TILDE_AS
 			l_free: BIN_FREE_AS
 			l_implies: BIN_IMPLIES_AS
 			l_or: BIN_OR_AS
@@ -781,16 +818,13 @@ feature {NONE} -- Implementation
 			l_and ?= l_binary_as
 			l_and_then ?= l_binary_as
 			l_eq ?= l_binary_as
-			l_ne ?= l_binary_as
-			l_not_tilde ?= l_binary_as
-			l_tilde ?= l_binary_as
 			l_free ?= l_binary_as
 			l_implies ?= l_binary_as
 			l_or ?= l_binary_as
 			l_or_else ?= l_binary_as
 			l_xor ?= l_binary_as
 
-			create l_operator.make_element
+			create l_operator.make_element (associated_text_formatter_decorator)
 
 			if l_div /= Void then
 				l_operator.set_as_division
@@ -803,94 +837,237 @@ feature {NONE} -- Implementation
 			elseif l_power /= Void then
 				l_operator.set_as_power
 			elseif l_slash /= Void then
-				-- ITUFIXME42
+				l_operator.set_as_division -- ITU_FIXME_42
 			elseif l_star /= Void then
-				-- ITUFIXME42
+				l_operator.set_as_multiplication
 			elseif l_and /= Void then
 				l_operator.set_as_and
 			elseif l_and_then /= Void then
-				-- ITUFIXME42
+				l_operator.set_as_and -- ITU_FIXME_42
 			elseif l_eq /= Void then
-				l_operator.set_as_equals
-			elseif l_ne /= Void then
-				l_operator.set_as_not_equals
-			elseif l_not_tilde /= Void then
-				-- ITUFIXME42
-			elseif l_tilde /= Void then
-				-- ITUFIXME42
+				if attached {BIN_NE_AS} l_eq as l_ne then
+					if attached {BIN_NOT_TILDE_AS} l_ne then
+						l_operator.set_as_not_equals
+					else
+						l_operator.set_as_not_equals
+					end
+				elseif attached {BIN_TILDE_AS} l_eq then
+					l_operator.set_as_equals
+				else
+					l_operator.set_as_equals
+				end
 			elseif l_free /= Void then
-				-- ITUFIXME42
+				l_operator.set_as_logical_equivalence -- ITU_FIXME_42
 			elseif l_implies /= Void then
 				l_operator.set_as_implication
 			elseif l_or /= Void then
 				l_operator.set_as_or
 			elseif l_or_else /= Void then
-				-- ITUFIXME42
+				l_operator.set_as_or -- ITU_FIXME_42
 			elseif l_xor /= Void then
 				l_operator.set_as_xor
+			elseif attached {BIN_GE_AS} l_binary_as then
+				l_operator.set_as_greater_than_equals
+			elseif attached {BIN_GT_AS} l_binary_as then
+				l_operator.set_as_greater_than
+			elseif attached {BIN_LE_AS} l_binary_as then
+				l_operator.set_as_less_than_equals
+			elseif attached {BIN_LT_AS} l_binary_as then
+				l_operator.set_as_less_than
 			else
+				l_operator.set_as_colon -- ITU_FIXME_42
 				-- Handle faulty state
 			end
 
-			l_binary.make_element (make_tbon_expression_from_expr_as (l_div.left), l_operator, make_tbon_expression_from_expr_as (l_div.right))
+			create l_binary.make_element (associated_text_formatter_decorator, make_tbon_expression_from_expr_as (l_binary_as.left), l_operator, make_tbon_expression_from_expr_as (l_binary_as.right))
 			Result := l_binary
 		end
 
-	make_tbon_expression_from_expr_as (l_expr_as: EXPR_AS): TBON_EXPRESSION
-			-- Makes a TBON_ASSERTION from the given EXPR_AS
+	make_tbon_expression_from_call_as (l_call_as: CALL_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESISON from a CALL_AS
 		local
-			l_binary: BINARY_AS
-			l_unary: UNARY_AS
-			l_atomic: ATOMIC_AS
-			l_quantified: QUANTIFIED_AS
-			l_type_expr: TYPE_EXPR_AS
+			l_access: ACCESS_AS
+			l_nested: NESTED_AS
+			l_nested_expr: NESTED_EXPR_AS
+			--
+			l_expr: TBON_CONSTANT_EXPRESSION
+			--
+			panic_expr: TBON_CONSTANT_EXPRESSION
 		do
-			l_binary ?= l_expr_as
-			l_unary ?= l_expr_as
-			l_atomic ?= l_expr_as
-			l_quantified ?= l_expr_as
-			l_type_expr ?= l_expr_as
-			if l_binary /= Void then
-				Result := make_tbon_expression_from_binary_as (l_binary)
-			elseif l_unary /= Void then
-				Result := make_tbon_expression_from_unary_as (l_unary)
-			elseif l_atomic /= Void then
-				Result := make_tbon_expression_from_atomic_as (l_atomic)
-			elseif l_quantified /= Void then
+			l_access ?= l_call_as
+			l_nested ?= l_call_as
+			l_nested_expr ?= l_call_as
 
-			elseif l_type_expr /= Void then
-
+			if l_access /= Void then
+				create l_expr.make_element (associated_text_formatter_decorator, l_access.access_name_32)
+				Result:= l_expr
+			elseif l_nested /= Void then
+				Result := make_tbon_expression_from_access_as (l_nested.target)
+			elseif l_nested_expr /= Void then
+				Result := make_tbon_expression_from_expr_as (l_nested_expr.target)
 			end
 		end
 
+	make_tbon_expression_from_current_as (l_current_as: CURRENT_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a CURRENT_AS
+		local
+			l_current: TBON_CURRENT_EXPRESSION
+		do
+			create l_current.make_element (associated_text_formatter_decorator)
+			Result := l_current
+		end
+
+	make_tbon_expression_from_expr_call_as (l_expr_call_as: EXPR_CALL_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a EXPR_CLASS_AS
+		do
+			Result := make_tbon_expression_from_call_as (l_expr_call_as.call)
+		end
+
+	make_tbon_expression_from_expr_as (l_expr_as: EXPR_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from the given EXPR_AS
+		local
+			l_expr_call: EXPR_CALL_AS
+			l_quantified: QUANTIFIED_AS
+			l_tuple: TUPLE_AS
+			l_type_expr: TYPE_EXPR_AS
+			l_unary: UNARY_AS
+			l_void: VOID_AS
+			--
+			panic_expr: TBON_CONSTANT_EXPRESSION
+		do
+			l_expr_call ?= l_expr_as
+			l_quantified ?= l_expr_as
+			l_tuple ?= l_expr_as
+			l_type_expr ?= l_expr_as
+			l_unary ?= l_expr_as
+			l_void ?= l_expr_as
+
+			if attached {ATOMIC_AS} l_expr_as as l_atomic then
+				Result := make_tbon_expression_from_atomic_as (l_atomic)
+			elseif attached {BINARY_AS} l_expr_as as l_binary then
+				Result := make_tbon_expression_from_binary_as (l_binary)
+			elseif l_expr_call /= Void then
+				Result := make_tbon_expression_from_expr_call_as (l_expr_call)
+			elseif l_quantified /= Void then
+				Result := make_tbon_expression_from_quantified_as (l_quantified)
+			elseif l_tuple /= Void then
+				Result := make_tbon_expression_from_tuple_as (l_tuple)
+			elseif l_type_expr /= Void then
+
+			elseif l_unary /= Void then
+				Result := make_tbon_expression_from_unary_as (l_unary)
+			elseif l_void /= Void then
+				Result := make_tbon_expression_from_void_as (l_void)
+			elseif attached {ADDRESS_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "address_error")
+				Result := panic_expr
+			elseif attached {ADDRESS_CURRENT_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "address_current_error")
+				Result := panic_expr
+			elseif attached {ADDRESS_RESULT_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "address_result_error")
+				Result := panic_expr
+			elseif attached {ARRAY_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "array_error")
+				Result := panic_expr
+			elseif attached {BRACKET_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "bracket_error")
+				Result := panic_expr
+			elseif attached {CONVERTED_EXPR_AS} l_expr_as as converted_expr_as then
+				Result := make_tbon_expression_from_expr_as (converted_expr_as.expr)
+			elseif attached {EXPR_ADDRESS_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "expr_address_error")
+				Result := panic_expr
+			elseif attached {OPERAND_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "operand_error")
+				Result := panic_expr
+			elseif attached {PARAN_AS} l_expr_as as paran_expr then
+				Result := make_tbon_expression_from_expr_as (paran_expr.expr)
+				Result.parenthesize
+			elseif attached {ROUTINE_CREATION_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "routine_creation_error")
+				Result := panic_expr
+			elseif attached {UN_STRIP_AS} l_expr_as then
+				create panic_expr.make_element (associated_text_formatter_decorator, "un_strip_error")
+				Result := panic_expr
+			else
+				create panic_expr.make_element (associated_text_formatter_decorator, "expr_error")
+				Result := panic_expr
+			end
+		end
+
+	make_tbon_expression_from_precursor_as (l_precursor_as: PRECURSOR_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION frmo a PRECURSOR_AS
+		local
+			l_precursor: TBON_PRECURSOR_EXPRESSION
+		do
+			create l_precursor.make_element (associated_text_formatter_decorator)
+			Result := l_precursor
+		end
+
+	make_tbon_expression_from_quantified_as (l_quantified_as: QUANTIFIED_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a QUANTIFIED_AS
+			-- Returns Void
+		do
+		end
+
+	make_tbon_expression_from_result_as (l_result_as: RESULT_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from the a RESULT_AS
+		local
+			l_result: TBON_RESULT_EXPRESSION
+		do
+			create l_result.make_element (associated_text_formatter_decorator)
+			Result := l_result
+		end
+
 	make_tbon_expression_from_tagged_as (l_tagged_as: TAGGED_AS): TBON_EXPRESSION
-			-- Makes a TBON_ASSERTION from the given TAGGED_AS
+			-- Makes a TBON_EXPRESSION from the a TAGGED_AS
 		do
 			-- ITUFIXME42: Could be a handling for the tag.
 			Result := make_tbon_expression_from_expr_as(l_tagged_as.expr)
 		end
 
+	make_tbon_expression_from_tuple_as (l_tuple_as: TUPLE_AS): TBON_EXPRESSION
+			-- Makes a TBON_EXPRESSION from a TUPLE_AS
+		local
+			l_tbon_list: TBON_EXPRESSION_LIST
+			l_list: LIST[TBON_EXPRESSION]
+		do
+			create {LINKED_LIST[TBON_EXPRESSION]} l_list.make
+
+			from
+				l_tuple_as.expressions.start
+			until
+				l_tuple_as.expressions.exhausted
+			loop
+				l_list.extend (make_tbon_expression_from_expr_as (l_tuple_as.expressions.item))
+				l_tuple_as.expressions.forth
+			end
+
+			create l_tbon_list.make_element (l_list, associated_text_formatter_decorator)
+
+			Result := l_tbon_list
+		end
+
 	make_tbon_expression_from_unary_as (l_unary_as: UNARY_AS): TBON_EXPRESSION
-			-- Make a TBON_EXPRESSION from a UNARY_AS
+			-- Makes a TBON_EXPRESSION from a UNARY_AS
 		local
 			l_operator: TBON_UNARY_OPERATOR
 			l_unary: TBON_UNARY_OPERATOR_EXPRESSION
 			-- Assignment attempt
-			l_un_free: UN_FREE_AS
 			l_un_minus: UN_MINUS_AS
 			l_un_not: UN_NOT_AS
 			l_un_old: UN_OLD_AS
 			l_un_plus: UN_PLUS_AS
 		do
-			l_un_free ?= l_unary_as
 			l_un_minus ?= l_unary_as
 			l_un_not ?= l_unary_as
 			l_un_old ?= l_unary_as
 			l_un_plus ?= l_unary_as
 
-			l_operator.make_element
+			create l_operator.make_element (associated_text_formatter_decorator)
 
-			if l_un_free /= Void then
+			if attached {UN_FREE_AS} l_unary_as as l_un_free then
 				-- ITUFIXME42
 			elseif l_un_minus /= Void then
 				l_operator.set_as_minus
@@ -902,8 +1079,22 @@ feature {NONE} -- Implementation
 				l_operator.set_as_plus
 			end
 
-			l_unary.make_element (l_operator, make_tbon_expression_from_expr_as (l_unary_as.expr))
+			create l_unary.make_element (associated_text_formatter_decorator, l_operator, make_tbon_expression_from_expr_as (l_unary_as.expr))
+			Result := l_unary
 		end
+
+	make_tbon_expression_from_void_as (l_void_as: VOID_AS): TBON_EXPRESSION
+				-- Makes a TBON_EXPRESSION from a VOID_AS
+		local
+			l_constant: TBON_CONSTANT_EXPRESSION
+		do
+			create l_constant.make_element(associated_text_formatter_decorator, "Void")
+			Result := l_constant
+		end
+
+feature {NONE} -- Implementation
+	last_feature: STRING
+		-- Last feature seen
 
 
 invariant

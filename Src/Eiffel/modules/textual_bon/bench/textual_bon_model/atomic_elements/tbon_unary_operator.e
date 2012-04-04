@@ -20,9 +20,10 @@ create
 	make_element
 
 feature -- Initialization
-	make_element
+	make_element (a_text_formatter_decorator: like text_formatter_decorator)
 			-- Create a unary operator.
 		do
+			text_formatter_decorator := a_text_formatter_decorator
 			is_unary_operator := True
 			internal_value := Void
 		end
@@ -49,7 +50,7 @@ feature -- Processing
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_symbol_text (item)
+			l_text_formatter_decorator.process_keyword_text (item, Void)
 		end
 
 feature -- Element change

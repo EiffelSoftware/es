@@ -12,6 +12,13 @@ inherit
 
 	TBON_TEXT_ITEMS
 
+feature -- Access
+	get_universe: like universe
+			--
+		do
+			Result := universe
+		end
+
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

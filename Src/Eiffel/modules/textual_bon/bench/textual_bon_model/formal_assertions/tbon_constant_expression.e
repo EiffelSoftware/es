@@ -24,10 +24,11 @@ feature -- Access
 			-- The constant
 
 feature -- Initialization
-	make_element (l_constant: like constant)
+	make_element (a_text_formatter_decorator: like text_formatter_decorator; a_constant: like constant)
 			-- Make a constant expression
 		do
-			constant := l_constant
+			constant := a_constant
+			text_formatter_decorator := a_text_formatter_decorator
 		end
 
 feature -- Process
@@ -36,6 +37,7 @@ feature -- Process
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
+			l_text_formatter_decorator := text_formatter_decorator
 			l_text_formatter_decorator.process_string_text (constant, Void)
 		end
 

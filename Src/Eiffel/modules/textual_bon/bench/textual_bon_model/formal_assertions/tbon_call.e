@@ -1,27 +1,60 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_CALL}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_CALL
 
 inherit
-	TBON_ASSERTION
-
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
-
-feature -- Status Setting
-	parenthesize
-			-- Make this expression parenthezised.
-		do
-			is_parenthezised := True
+	TBON_EXPRESSION
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon
 		end
 
-;note
+create
+	make_element
+
+feature -- Access
+	target: attached STRING
+		-- Name of the target feature
+	called: attached STRING
+		-- Name of the called feature
+
+	arguments: LIST[STRING]
+		-- Arguments
+
+feature -- Initialization
+	make_element (a_target: like target; a_called: like called; a_text_formatter_decorator: TEXT_FORMATTER_DECORATOR)
+	do
+		text_formatter_decorator := a_text_formatter_decorator
+		target := a_target
+		called := a_called
+	end
+
+feature -- Process
+	process_to_textual_bon
+			-- Process this TBON_CALL
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_basic_text (target)
+			l_text_formatter_decorator.process_symbol_text (ti_dot)
+			l_text_formatter_decorator.process_basic_text (called)
+		end
+
+feature -- Status
+	has_arguments: BOOLEAN
+		do
+			Result := not arguments.is_empty
+		end
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

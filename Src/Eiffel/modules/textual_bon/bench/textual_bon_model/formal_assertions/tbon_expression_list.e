@@ -1,27 +1,53 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TBON_EXPRESSION_LIST}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_EXPRESSION_LIST
 
 inherit
-	TBON_ASSERTION
-
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
-
-feature -- Status Setting
-	parenthesize
-			-- Make this expression parenthezised.
-		do
-			is_parenthezised := True
+	TBON_EXPRESSION
+		redefine
+			process_to_informal_textual_bon,
+			process_to_formal_textual_bon
 		end
 
-;note
+create
+	make_element
+
+feature -- Access
+	expressions: LIST[TBON_EXPRESSION]
+			-- A list of expressions
+
+feature -- Initialization
+	make_element (a_list: LIST[TBON_EXPRESSION]; a_text_formatter_decorator: TEXT_FORMATTER_DECORATOR)
+			-- Make a list of expressions
+		do
+			expressions := a_list
+			text_formatter_decorator := a_text_formatter_decorator
+		end
+
+feature -- Process
+	process_to_informal_textual_bon
+			-- Process Current to informal textual bon
+		do
+
+		end
+
+	process_to_formal_textual_bon
+			-- Process Current to formal textual bon
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
+			process_formal_textual_bon_list (expressions, ", ", False)
+			l_text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+		end
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

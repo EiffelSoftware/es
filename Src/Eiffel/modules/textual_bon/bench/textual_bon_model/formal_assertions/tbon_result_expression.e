@@ -1,27 +1,42 @@
 note
-	description: "An expression in an assertion clause in a formal BON specification."
+	description: "The result keyword in TBON."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	TBON_EXPRESSION
+class
+	TBON_RESULT_EXPRESSION
 
 inherit
-	TBON_ASSERTION
-
-feature -- Status
-	is_parenthezised: BOOLEAN
-			-- Is this expression parenthezised?
-
-feature -- Status Setting
-	parenthesize
-			-- Make this expression parenthezised.
-		do
-			is_parenthezised := True
+	TBON_EXPRESSION
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
+		redefine
+			process_to_textual_bon
 		end
 
-;note
+create
+	make_element
+
+feature -- Initialize
+	make_element (a_text_formatter_decorator: like text_formatter_decorator)
+			-- Make a result expression
+		do
+			text_formatter_decorator := a_text_formatter_decorator
+		end
+
+feature -- Process
+	process_to_textual_bon
+			-- Process
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_keyword_text (ti_result, Void)
+		end
+
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

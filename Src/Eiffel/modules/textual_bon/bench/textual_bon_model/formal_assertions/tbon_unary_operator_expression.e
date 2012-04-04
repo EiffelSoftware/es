@@ -28,9 +28,10 @@ feature -- Access
 			-- What is the unary/prefix operator described by this expression?
 
 feature -- Initialization
-	make_element(l_operator: TBON_UNARY_OPERATOR; l_expr: TBON_EXPRESSION)
+	make_element(a_text_formatter_decorator: like text_formatter_decorator l_operator: TBON_UNARY_OPERATOR; l_expr: TBON_EXPRESSION)
 			-- Create a unary operator expression
 		do
+			text_formatter_decorator := a_text_formatter_decorator
 			operator := l_operator
 			expr := l_expr
 		end
@@ -41,14 +42,15 @@ feature -- Process
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
+			l_text_formatter_decorator := text_formatter_decorator
 			if is_parenthezised then
-				l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
+				l_text_formatter_decorator.process_basic_text (ti_l_parenthesis)
 			end
 			operator.process_to_textual_bon
 			l_text_formatter_decorator.put_space
 			expr.process_to_formal_textual_bon
 			if is_parenthezised then
-				l_text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+				l_text_formatter_decorator.process_basic_text (ti_r_parenthesis)
 			end
 		end
 
