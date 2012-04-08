@@ -389,18 +389,43 @@ feature -- Breakpoint related
 			Result := l_breakable_info.breakable_count
 		end
 
+	is_feature_body_breakpoint_slot (a_feature: FEATURE_I; a_bp_slot: INTEGER): BOOLEAN
+			-- Is `a_bp_slot' in the feature body of `a_feature'?
+		require
+			a_feature_not_void: a_feature /= Void
+			a_bp_slot_valid: a_bp_slot >= 1
+		local
+			l_bp_interval: INTEGER_INTERVAL
+		do
+			l_bp_interval := feature_body_breakpoint_slots (a_feature)
+			if l_bp_interval.has (a_bp_slot) then
+				Result := True
+			end
+		end
+
+	is_contract_breakpoint_slot (a_feature: FEATURE_I; a_bp_slot: INTEGER): BOOLEAN
+			-- Is `a_bp_slot' part of the contracts of `a_feature'?
+		require
+			a_feature_not_void: a_feature /= Void
+			a_bp_slot_valid: a_bp_slot >= 1
+		do
+			if not is_feature_body_breakpoint_slot (a_feature, a_bp_slot) and breakpoint_count (a_feature) < a_bp_slot then
+				Result := True
+			end
+		end
+
 	feature_body_breakpoint_count (a_feature: FEATURE_I): INTEGER
 			-- Count of breakpoints of the feature body of `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
 		local
-			l_body_bp_slots: TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
+			l_bp_interval: INTEGER_INTERVAL
 		do
-			l_body_bp_slots := feature_body_breakpoint_slots (a_feature)
-			Result := l_body_bp_slots.last_bp_slot - l_body_bp_slots.first_bp_slot + 1
+			l_bp_interval := feature_body_breakpoint_slots (a_feature)
+			Result := l_bp_interval.upper - l_bp_interval.lower + 1
 		end
 
-	feature_body_breakpoint_slots (a_feature: FEATURE_I): TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
+	feature_body_breakpoint_slots (a_feature: FEATURE_I): INTEGER_INTERVAL
 			-- First and last breakpoint slot of the feature body of `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
@@ -414,7 +439,7 @@ feature -- Breakpoint related
 			l_bp_finder.set_feature (a_feature)
 			l_bp_finder.set_ast (body_ast_from_feature (a_feature))
 			l_bp_finder.find
-			Result := [l_bp_finder.first_bp_slot, l_bp_finder.last_bp_slot]
+			create Result.make (l_bp_finder.first_bp_slot, l_bp_finder.last_bp_slot)
 		end
 
 	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_EXPRESSION]
