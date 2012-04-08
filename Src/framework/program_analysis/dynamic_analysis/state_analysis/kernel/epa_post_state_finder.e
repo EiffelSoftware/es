@@ -53,6 +53,7 @@ feature -- Operation
 			-- Look for all post-states
 			cfg.start_node.process (Current)
 			add_missing_post_states
+			add_contract_post_states
 		ensure
 			post_state_map_not_void: post_state_map /= Void
 		end
@@ -393,6 +394,42 @@ feature {NONE} -- Implementation
 				add_post_state (missing_post_states.item_for_iteration, maximal_breakpoint_slot)
 
 				missing_post_states.forth
+			end
+		end
+
+	add_contract_post_states
+			--
+		local
+			l_bp_interval: INTEGER_INTERVAL
+			i: INTEGER
+			l_post_state_bp: DS_HASH_SET [INTEGER]
+		do
+			l_bp_interval := feature_body_breakpoint_slots (feature_)
+			if l_bp_interval.lower > 1 then
+				from
+					i := 1
+				until
+					i = l_bp_interval.lower
+				loop
+					check not post_state_map.has (i) end
+					create l_post_state_bp.make_default
+					l_post_state_bp.force_last (i + 1)
+					post_state_map.force_last (l_post_state_bp, i)
+					i := i + 1
+				end
+			end
+			if l_bp_interval.upper + 1 < breakpoint_count (feature_) then
+				from
+					i := l_bp_interval.upper + 1
+				until
+					i = breakpoint_count (feature_)
+				loop
+					check not post_state_map.has (i) end
+					create l_post_state_bp.make_default
+					l_post_state_bp.force_last (i + 1)
+					post_state_map.force_last (l_post_state_bp, i)
+					i := i + 1
+				end
 			end
 		end
 

@@ -168,19 +168,20 @@ feature {NONE} -- Implementation
 	choose_pre_states
 			-- Choose pre-states
 		local
-			i: INTEGER
+			i, l_upper: INTEGER
 			l_pre_state_finder: EPA_INTERESTING_PRE_STATE_FINDER
-			l_body_bp_slots: TUPLE [first_bp_slot: INTEGER; last_bp_slot: INTEGER]
+			l_bp_interval: INTEGER_INTERVAL
 		do
 			-- Choose pre-states
 			if config.is_all_prgm_locs_set then
 				-- Use all pre-states
-				l_body_bp_slots := feature_body_breakpoint_slots (feature_)
+				l_bp_interval := feature_body_breakpoint_slots (feature_)
 				create interesting_pre_states.make_default
 				from
-					i := l_body_bp_slots.first_bp_slot
+					i := l_bp_interval.lower
+					l_upper := l_bp_interval.upper
 				until
-					i > l_body_bp_slots.last_bp_slot
+					i > l_upper
 				loop
 					interesting_pre_states.force_last (i)
 					i := i + 1
@@ -222,16 +223,21 @@ feature {NONE} -- Implementation
 			-- Setup action for evaluation
 		local
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			l_bp_count, l_pre_state_bp: INTEGER
 		do
+			l_bp_count := breakpoint_count (feature_)
 			across interesting_pre_states.to_array as l_pre_states loop
-				create l_bp_mgr.make (class_, feature_)
-				l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_states.item, monitored_expressions, agent a_processor.process)
-				l_bp_mgr.toggle_breakpoints (True)
-
-				across post_state_map.item (l_pre_states.item).to_array as l_post_states loop
+				l_pre_state_bp := l_pre_states.item
+				if l_pre_state_bp < l_bp_count then
 					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent a_processor.process)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_state_bp, monitored_expressions, agent a_processor.process)
 					l_bp_mgr.toggle_breakpoints (True)
+
+					across post_state_map.item (l_pre_state_bp).to_array as l_post_states loop
+						create l_bp_mgr.make (class_, feature_)
+						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, monitored_expressions, agent a_processor.process)
+						l_bp_mgr.toggle_breakpoints (True)
+					end
 				end
 			end
 		end
