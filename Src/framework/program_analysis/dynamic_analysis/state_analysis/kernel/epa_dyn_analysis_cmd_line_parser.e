@@ -296,7 +296,7 @@ feature {NONE} -- Implementation
 						create l_tmp_set.make_default
 						l_tmp_set.set_equality_tester (string_equality_tester)
 						l_tmp_set.force_last (l_expression)
-						l_tmp.put (l_tmp_set, l_bp_slot)
+						l_tmp.force_last (l_tmp_set, l_bp_slot)
 					end
 					l_expressions.extend (l_expression)
 				end
