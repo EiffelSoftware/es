@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_OBJECT_CACHE [REPO_IDENTIFIER]
+	PS_OBJECT_CACHE [REPO_IDENTIFIER] -- This class is now obsolete and will probably be replaced by OBJECT_IDENTIFICATION_MANAGER and some easier mechanism
 
 create make
 
