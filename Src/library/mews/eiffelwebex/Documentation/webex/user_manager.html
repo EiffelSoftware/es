@@ -1,0 +1,115 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Deferred Class that is a template for all User Data Access Classes">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>user_manager Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_manager_chart.html">Chart</A></TD><TD><A HREF="user_manager_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_manager_flat.html">Flat</A></TD><TD><A HREF="user_manager_short.html">Contracts</A></TD><TD><A HREF="user_manager_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Deferred Class that is a template for all User Data Access Classes"
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>deferred</B> <B>class</B> 
+    <A HREF="..\webex/user_manager.html">USER_MANAGER</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_user_list"><A HREF="..\webex/user_manager.html#f_user_list">user_list</A>: HASH_TABLE [<A HREF="..\webex/user.html">USER</A>, STRING_8]</A>
+
+    <A NAME="f_encryptor"><A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A>: <A HREF="..\webex/encryptor.html">ENCRYPTOR</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> encrypt user login name and password, void to skip encryption</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Basic Operations</FONT>
+
+    <A NAME="f_add_user"><A HREF="..\webex/user_manager.html#f_add_user">add_user</A> (a_user: <A HREF="..\webex/user.html">USER</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">adds a user to the userlist</FONT>
+        <B>require</B>
+            a_user_valid: a_user /= <B>Void</B>
+            user_not_exists: <B>not</B> <A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (a_user.<A HREF="..\webex/user.html#f_username">username</A>)
+        <B>do</B>
+            <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.extend (a_user, a_user.<A HREF="..\webex/user.html#f_username">username</A>)
+        <B>ensure</B>
+            one_user_added: <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count = <B>old</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count + 1
+        <B>end</B></A>
+
+    <A NAME="f_update_user"><A HREF="..\webex/user_manager.html#f_update_user">update_user</A> (a_user: <A HREF="..\webex/user.html">USER</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">update a existing user</FONT>
+        <B>require</B>
+            a_user_valid: a_user /= <B>Void</B>
+            user_exists: <A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (a_user.<A HREF="..\webex/user.html#f_username">username</A>)
+        <B>do</B>
+            <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.replace (a_user, a_user.<A HREF="..\webex/user.html#f_username">username</A>)
+        <B>ensure</B>
+            same_user_number: <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count = <B>old</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count
+        <B>end</B></A>
+
+    <A NAME="f_delete_user_by_name"><A HREF="..\webex/user_manager.html#f_delete_user_by_name">delete_user_by_name</A> (username: STRING_8)
+            <FONT COLOR="red">--</FONT>
+        <B>require</B>
+            username_exists: username /= <B>Void</B> <B>and then</B> <B>not</B> username.is_empty <B>and then</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.has (username)
+        <B>do</B>
+            <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.remove (username)
+        <B>ensure</B>
+            one_user_removed: <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count = <B>old</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count - 1
+        <B>end</B></A>
+
+    <A NAME="f_get_user_by_name"><A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (username: STRING_8): <A HREF="..\webex/user.html">USER</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> return the USER object identified by username</FONT>
+        <B>require</B>
+            username_exists: username /= <B>Void</B> <B>and then</B> <B>not</B> username.is_empty <B>and then</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.has (username)
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/user_manager.html#f_user_list">user_list</A> [username]
+        <B>ensure</B>
+            user_found: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_username_defined"><A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (username: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">adds a user to the userlist</FONT>
+        <B>require</B>
+            username_valid: username /= <B>Void</B> <B>and then</B> <B>not</B> username.is_empty
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.has (username)
+        <B>end</B></A>
+
+    <A NAME="f_is_user_authentication_valid"><A HREF="..\webex/user_manager.html#f_is_user_authentication_valid">is_user_authentication_valid</A> (username, pass: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> check user authentication</FONT>
+        <B>require</B>
+            name_pass_not_empty: username /= <B>Void</B> <B>and then</B> <B>not</B> username.is_empty <B>and then</B> pass /= <B>Void</B> <B>and then</B> <B>not</B> pass.is_empty
+        <B>do</B>
+            <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.start
+            <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.search (username)
+            <B>if</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.found <B>then</B>
+                <B>if</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A> [username].<A HREF="..\webex/user.html#f_password">password</A>.is_equal (pass) <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_set_encryptor"><A HREF="..\webex/user_manager.html#f_set_encryptor">set_encryptor</A> (cryptor: <A HREF="..\webex/encryptor.html">ENCRYPTOR</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the saved session object with given session_id</FONT>
+        <B>do</B>
+            <A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A> := cryptor
+        <B>end</B></A>
+
+    <A NAME="f_user_count"><A HREF="..\webex/user_manager.html#f_user_count">user_count</A>: INTEGER_32
+            <FONT COLOR="red">--</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.count
+        <B>end</B></A>
+
+    <A NAME="f_persist_data"><A HREF="..\webex/user_manager.html#f_persist_data">persist_data</A>
+        <B>deferred</B>
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/user_manager.html">USER_MANAGER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_manager_chart.html">Chart</A></TD><TD><A HREF="user_manager_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_manager_flat.html">Flat</A></TD><TD><A HREF="user_manager_short.html">Contracts</A></TD><TD><A HREF="user_manager_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

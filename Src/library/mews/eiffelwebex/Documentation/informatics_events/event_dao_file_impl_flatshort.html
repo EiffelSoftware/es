@@ -1,0 +1,318 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Data Access Objects that serialize data using raw files">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_dao_file_impl Flat contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_file_impl_chart.html">Chart</A></TD><TD><A HREF="event_dao_file_impl_links.html">Relations</A></TD><TD><A HREF="event_dao_file_impl.html">Text</A></TD><TD><A HREF="event_dao_file_impl_flat.html">Flat</A></TD><TD><A HREF="event_dao_file_impl_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE><B>indexing</B>
+    description: "Data Access Objects that serialize data using raw files"
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>class</B> <B>interface</B>
+    <A HREF="..\informatics_events/event_dao_file_impl_flatshort.html">EVENT_DAO_FILE_IMPL</A>
+
+<B>create</B> 
+    <A NAME="f_make"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_make">make</A> (path, event_fname, id_fname: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">	Creation procedure. Serialized data are retrieved</FONT>
+        <B>ensure</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A> /= <B>Void</B>
+            event_id_generator_exists: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_id_generator">event_id_generator</A> /= <B>Void</B>
+</A>
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_event_id_generator"><A HREF="..\informatics_events/event_dao_flatshort.html#f_event_id_generator">event_id_generator</A>: <A HREF="..\informatics_events/id_generator_flatshort.html">ID_GENERATOR</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">id generator, used to identify each event rerdless of its status</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_event_list"><A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>: <A HREF="..\informatics_events/event_list_flatshort.html">EVENT_LIST</A></A>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_generating_type">generating_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generating_type_not_void: <B>Result</B> /= <B>Void</B>
+            generating_type_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>
+    <A NAME="f_generator">generator: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating class</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (base class of the type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generator_not_void: <B>Result</B> /= <B>Void</B>
+            generator_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Access</FONT>
+
+    <A NAME="f_event_id_generator_data_file"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_event_id_generator_data_file">event_id_generator_data_file</A>: RAW_FILE</A>
+
+    <A NAME="f_event_id_generator_serializer"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_event_id_generator_serializer">event_id_generator_serializer</A>: SED_MEDIUM_READER_WRITER</A>
+
+    <A NAME="f_events_data_file"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_events_data_file">events_data_file</A>: RAW_FILE</A>
+
+    <A NAME="f_events_serializer"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_events_serializer">events_serializer</A>: SED_MEDIUM_READER_WRITER</A>
+
+    <A NAME="f_store_handler"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_store_handler">store_handler</A>: SED_STORABLE_FACILITIES</A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Comparison</FONT>
+
+    <A NAME="f_deep_equal"><B>frozen</B> deep_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> or attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_equal (some, other) <B>implies</B> <B>Result</B>
+            both_or_none_void: (some = <B>Void</B>) <B>implies</B> (<B>Result</B> = (other = <B>Void</B>))
+            same_type: (<B>Result</B> <B>and</B> (some /= <B>Void</B>)) <B>implies</B> some.same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> deep_equal (other, some)
+</A>
+    <A NAME="f_equal"><B>frozen</B> equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to objects considered equal?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.is_equal (other))
+</A>
+    <A NAME="f_is_deep_equal"><B>frozen</B> is_deep_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`Current'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_is_equal (other) <B>implies</B> <B>Result</B>
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.is_deep_equal (<B>Current</B>)
+</A>
+    <A NAME="f_is_equal">is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object considered</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to current object?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            symmetric: <B>Result</B> <B>implies</B> other.is_equal (<B>Current</B>)
+            consistent: standard_is_equal (other) <B>implies</B> <B>Result</B>
+</A>
+    <A NAME="f_standard_equal"><B>frozen</B> standard_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical objects of the same type?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default object comparison criterion.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.standard_is_equal (other))
+</A>
+    <A NAME="f_standard_is_equal"><B>frozen</B> standard_is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object of the same type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> as current object, and field-by-field identical to it?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.standard_is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_conforms_to">conforms_to (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does type of current object conform to type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`other'<FONT COLOR="red"> (as per Eiffel: The Language, chapter 13)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+</A>
+    <A NAME="f_same_type">same_type (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is type of current object identical to type of </FONT>`other'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (conforms_to (other) <B>and</B> other.conforms_to (<B>Current</B>))
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_copy">copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Update current object using fields of object attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to </FONT>`other'<FONT COLOR="red">, so as to yield equal objects.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_equal: is_equal (other)
+</A>
+    <A NAME="f_deep_copy"><B>frozen</B> deep_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Effect equivalent to that of:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">		</FONT>copy<FONT COLOR="red"> (</FONT>`other'<FONT COLOR="red"> . </FONT>deep_twin<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (<B>Current</B>, other)
+</A>
+    <A NAME="f_deep_twin"><B>frozen</B> deep_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object structure recursively duplicated from Current.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_twin_not_void: <B>Result</B> /= <B>Void</B>
+            deep_equal: deep_equal (<B>Current</B>, <B>Result</B>)
+</A>
+    <A NAME="f_standard_copy"><B>frozen</B> standard_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy every field of </FONT>`other'<FONT COLOR="red"> onto corresponding field</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_standard_equal: standard_is_equal (other)
+</A>
+    <A NAME="f_standard_twin"><B>frozen</B> standard_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            standard_twin_not_void: <B>Result</B> /= <B>Void</B>
+            equal: standard_equal (<B>Result</B>, <B>Current</B>)
+</A>
+    <A NAME="f_twin"><B>frozen</B> twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object equal to </FONT>`Current'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>twin<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">; to change copying/twining semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            twin_not_void: <B>Result</B> /= <B>Void</B>
+            is_equal: <B>Result</B>.is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_default"><B>frozen</B> default: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of object's type</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_pointer"><B>frozen</B> default_pointer: POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of type </FONT>`POINTER'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Avoid the need to write </FONT>`p'<FONT COLOR="red">.</FONT>default<FONT COLOR="red"> for</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> some </FONT>`p'<FONT COLOR="red"> of type </FONT>`POINTER'<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_rescue">default_rescue
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process exception for routines with no Rescue clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_do_nothing"><B>frozen</B> do_nothing
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Execute a null action.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_persist_data"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_persist_data">persist_data</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">serializes data</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Output</FONT>
+
+    <A NAME="f_io">io: STD_FILES
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handle to standard file setup</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            io_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_out">out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            out_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_print">print (some: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Write terse external representation of </FONT>`some'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> on standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_tagged_out"><B>frozen</B> tagged_out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            tagged_out_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Platform</FONT>
+
+    <A NAME="f_operating_environment">operating_environment: OPERATING_ENVIRONMENT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Objects available from the operating system</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            operating_environment_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes</FONT>
+
+    <A NAME="f_data_path"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_data_path">data_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> directory to save all these conference data files</FONT>
+
+    <A NAME="f_events_file_name"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_events_file_name">events_file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> file names</FONT>
+
+    <A NAME="f_id_file_name"><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html#f_id_file_name">id_file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> file names</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">basic operations</FONT>
+
+    <A NAME="f_add_event"><A HREF="..\informatics_events/event_dao_flatshort.html#f_add_event">add_event</A> (an_event: <A HREF="..\informatics_events/event_flatshort.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">adds a event to the appropriate list, based on its status</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            one_event_added: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count + 1
+</A>
+    <A NAME="f_delete_event"><A HREF="..\informatics_events/event_dao_flatshort.html#f_delete_event">delete_event</A> (an_event: <A HREF="..\informatics_events/event_flatshort.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">deletes an accepted, delayed or rejected event from the proposed event list</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            one_event_deleted: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count - 1
+</A>
+    <A NAME="f_delete_event_by_id"><A HREF="..\informatics_events/event_dao_flatshort.html#f_delete_event_by_id">delete_event_by_id</A> (id: NATURAL_64)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">returns an accepted event with given id</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            id_has_meaning: id &gt; 0
+</A>
+    <A NAME="f_get_event_by_id"><A HREF="..\informatics_events/event_dao_flatshort.html#f_get_event_by_id">get_event_by_id</A> (id: NATURAL_64): <A HREF="..\informatics_events/event_flatshort.html">EVENT</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">returns an accepted event with given id</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            id_has_meaning: id &gt; 0
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            event_found: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_update_event"><A HREF="..\informatics_events/event_dao_flatshort.html#f_update_event">update_event</A> (an_event: <A HREF="..\informatics_events/event_flatshort.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">updates an accepted event in the accepted event list</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+            same_event_count: <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_flatshort.html#f_event_list">event_list</A>.count
+</A>    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\informatics_events/event_dao_flatshort.html">EVENT_DAO</A>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+    reflexive_equality: standard_is_equal (<B>Current</B>)
+    reflexive_conformance: conforms_to (<B>Current</B>)
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event_dao_file_impl_flatshort.html">EVENT_DAO_FILE_IMPL</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_file_impl_chart.html">Chart</A></TD><TD><A HREF="event_dao_file_impl_links.html">Relations</A></TD><TD><A HREF="event_dao_file_impl.html">Text</A></TD><TD><A HREF="event_dao_file_impl_flat.html">Flat</A></TD><TD><A HREF="event_dao_file_impl_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

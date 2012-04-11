@@ -1,0 +1,5 @@
+In the eiffelwebex dir you will find the source code for the framework and for the sample application.
+The sample application is in fact a real application: CSEL (Computer science event list) used to advertise CS-related events.
+The application can be found at http://www.informatics-europe.org/cgi-bin/informatics_events.cgi
+The tutorials are in the "Report" dir (doc, pdf) and in the "Tutorial" dir.  
+ 

@@ -1,0 +1,110 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that represent a event">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event Chart</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="event_links.html">Relations</A></TD><TD><A HREF="event.html">Text</A></TD><TD><A HREF="event_flat.html">Flat</A></TD><TD><A HREF="event_short.html">Contracts</A></TD><TD><A HREF="event_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>class</B>
+    <A HREF="..\informatics_events/event_chart.html">EVENT</A>
+
+<B>General</B>
+    cluster: <A HREF="..\informatics_events/index.html">informatics_events</A>
+    description: "Objects that represent a event"
+    create: <A HREF="..\informatics_events/event.html#f_make">make</A>
+
+<B>Ancestors</B>
+    <A HREF="..\informatics_events/application_constants_chart.html">APPLICATION_CONSTANTS</A>*
+
+<B>Queries</B>
+    <A HREF="..\informatics_events/application_constants.html#f_accepted">Accepted</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A>: ARRAYED_LIST [STRING_8]
+    <A HREF="..\informatics_events/application_constants.html#f_admin_email">Admin_email</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_admin_first_name">Admin_first_name</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_admin_last_name">Admin_last_name</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_admin_organization">Admin_organization</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_admin_password">Admin_password</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_admin_telephone">Admin_telephone</A>: STRING_8<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/event.html#f_city">city</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_country">country</A>: STRING_8
+    <A HREF="..\informatics_events/application_constants.html#f_deleted">Deleted</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_event_status">event_status</A>: INTEGER_32
+    <A HREF="..\informatics_events/event.html#f_id">id</A>: NATURAL_64
+    <A HREF="..\informatics_events/event.html#f_is_equal">is_equal</A> (other: [<B>like</B> <B>Current</B>] <A HREF="..\informatics_events/event_chart.html">EVENT</A>): BOOLEAN
+    <A HREF="..\informatics_events/event.html#f_keywords">keywords</A>: ARRAYED_LIST [STRING_8]
+    <A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_name">name</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A>: STRING_8
+    <A HREF="..\informatics_events/application_constants.html#f_proposed">Proposed</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_rejected">Rejected</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_role_administrator">Role_administrator</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_role_guest">Role_guest</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_role_normal_user">Role_normal_user</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/event.html#f_short_description">short_description</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>: DATE
+    <A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>: STRING_8
+    <A HREF="..\informatics_events/event.html#f_url">url</A>: STRING_8
+    <A HREF="..\informatics_events/application_constants.html#f_user_active">User_active</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+    <A HREF="..\informatics_events/application_constants.html#f_user_suspended">User_suspended</A>: INTEGER_32<FONT COLOR="red"> -- (from APPLICATION_CONSTANTS)</FONT>
+
+<B>Commands</B>
+    <A HREF="..\informatics_events/event.html#f_make">make</A>
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_1">set_additional_deadline_1</A> (an_additional_deadline: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_2">set_additional_deadline_2</A> (an_additional_deadline: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_3">set_additional_deadline_3</A> (an_additional_deadline: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_1">set_additional_deadline_specification_1</A> (an_additional_deadline_specification: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_2">set_additional_deadline_specification_2</A> (an_additional_deadline_specification: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_3">set_additional_deadline_specification_3</A> (an_additional_deadline_specification: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_additional_notes">set_additional_notes</A> (some_additional_notes: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_additional_sponsors">set_additional_sponsors</A> (some_other_sponsors: ARRAYED_LIST [STRING_8])
+    <A HREF="..\informatics_events/event.html#f_set_city">set_city</A> (a_city: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_conference_chair_1">set_conference_chair_1</A> (a_conference_chair: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_conference_chair_2">set_conference_chair_2</A> (a_conference_chair: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_contact_email">set_contact_email</A> (an_email: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_contact_name">set_contact_name</A> (a_contact_name: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_contact_role">set_contact_role</A> (a_contact_role: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_country">set_country</A> (a_country: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_ending_date">set_ending_date</A> (an_ending_date: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_id">set_id</A> (an_id: NATURAL_64)
+    <A HREF="..\informatics_events/event.html#f_set_keywords">set_keywords</A> (some_keywords: ARRAYED_LIST [STRING_8])
+    <A HREF="..\informatics_events/event.html#f_set_main_sponsor">set_main_sponsor</A> (the_main_sponsor: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_name">set_name</A> (a_name: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_organizing_chair">set_organizing_chair</A> (an_organizing_chair: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_papers_submission_deadline">set_papers_submission_deadline</A> (a_papers_submission_deadline: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_proceeding_type">set_proceeding_type</A> (a_type: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_proceedings_publisher">set_proceedings_publisher</A> (a_proceedings_publisher: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_program_committee_chair_1">set_program_committee_chair_1</A> (a_program_committee_chair: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_program_committee_chair_2">set_program_committee_chair_2</A> (a_program_committee_chair: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_short_description">set_short_description</A> (a_description: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_starting_date">set_starting_date</A> (a_starting_date: DATE)
+    <A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (a_status: INTEGER_32)
+    <A HREF="..\informatics_events/event.html#f_set_submitter">set_submitter</A> (an_author: STRING_8)
+    <A HREF="..\informatics_events/event.html#f_set_url">set_url</A> (an_url: STRING_8)
+
+<B>Constraints</B>
+    event id non negative
+
+<TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="event_links.html">Relations</A></TD><TD><A HREF="event.html">Text</A></TD><TD><A HREF="event_flat.html">Flat</A></TD><TD><A HREF="event_short.html">Contracts</A></TD><TD><A HREF="event_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8" /-->
+    <title>
+      Informatics Europe: Computer Science Event List
+    </title>
+    <link href="{#STYLESHEET#}" rel="Stylesheet" type="text/css" />
+    <script src="{#JAVASCRIPT#}" type="text/javascript"></script>
+  </head>
+  <body>
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="center">
+          <div id="logo">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td height="60">
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  <div style="padding:0px 40px 0px 0px">
+                    {#USER_MENU#}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="mainmaster">
+            <div id="main">
+              <div id="navigation">
+                {#MAIN_MENU#}
+              </div>
+              <div id='content'>
+                <h1>
+                  {#EVENT_LIST_TITLE#} ({#EVENT_COUNT#})
+                </h1>
+                <!--##GUEST_INFORMATION##-->
+                <p>This page is a repository of conferences and other events in computer science, information technology and related fields. 
+                	Events from any country are eligible. By <a href="{#APP_PATH#}?user&amp;cmd=userform&amp;mode=register">registering</a> an account 
+                	and <a href="{#APP_PATH#}?user&amp;cmd=loginform">login</a> you can submit an event. Be sure to observe the criteria for inclusion. 
+                All submissions are reviewed; inclusion is at the discretion of the site's editors.</p>
+                <p>Events are organized into <a href="{#APP_PATH#}?event&amp;cmd=list">current events</a> and <a href="{#APP_PATH#}?event&amp;cmd=past">past events</a>. By clicking on a column header you can sort the listed events.</p>
+                <!--##/GUEST_INFORMATION##-->
+                
+                <!--##USER_INFORMATION##
+                <p>Events are organized into <a href="{#APP_PATH#}?event&amp;cmd=list">current events</a> and <a href="{#APP_PATH#}?event&amp;cmd=past">past events</a>. By clicking on a column header you can sort the listed events.</p>	
+                ##/USER_INFORMATION##-->
+                
+                <!--##EVENT_DELETED##
+                <div id="notice"><table><tr><td valign="top"><img src="{#IMAGE_PATH#}succ.gif" style="float:left" alt="" /></td><td valign="middle">Event successfully deleted.</td></tr></table></div>
+                ##/EVENT_DELETED##-->
+                <br />
+                <table id="positions_table" class="sortable" border="0" cellpadding="5" cellspacing="0">
+                  <tr class="positions_title">
+                    <th width="180">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Conference Name
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="90">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Date
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="10" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            City
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Country
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="120">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Paper deadline
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="120">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Main sponsor
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="100">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Publisher
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                  </tr>
+                  {#EVENT_LIST#}
+                </table>
+              </div>
+            </div>
+          </div>
+          <div id="bottom">
+            <div id="disclaimer">
+              <table id="t_disc" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td id="copyright">
+                    2007 - 2011, <a href="http://www.informatics-europe.org/" target="_blank">Informatics Europe</a>
+                  </td>
+                  <td id="aboutus">
+                    <span><a href="{#APP_PATH#}?other&amp;cmd=about">about us</a></span>&nbsp;&nbsp;&nbsp; <span><a href="{#APP_PATH#}?other&amp;cmd=contact">Contact</a></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

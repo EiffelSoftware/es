@@ -1,0 +1,291 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects implemented SESSION_MANAGER based on serialized sessions (file storage)">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>session_manager_file_impl Flat contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="session_manager_file_impl_links.html">Relations</A></TD><TD><A HREF="session_manager_file_impl.html">Text</A></TD><TD><A HREF="session_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="session_manager_file_impl_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE><B>indexing</B>
+    description: "Objects implemented SESSION_MANAGER based on serialized sessions (file storage)"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "05.01.2008"
+    revision: "$0.6$"
+
+<B>class</B> <B>interface</B>
+    <A HREF="..\webex/session_manager_file_impl_flatshort.html">SESSION_MANAGER_FILE_IMPL</A>
+
+<B>create</B> 
+    <A NAME="f_make"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_make">make</A> (path: STRING_8; expiration, sid_length: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> init session path</FONT>
+</A>
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_generating_type">generating_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generating_type_not_void: <B>Result</B> /= <B>Void</B>
+            generating_type_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>
+    <A NAME="f_generator">generator: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating class</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (base class of the type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generator_not_void: <B>Result</B> /= <B>Void</B>
+            generator_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Comparison</FONT>
+
+    <A NAME="f_deep_equal"><B>frozen</B> deep_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> or attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_equal (some, other) <B>implies</B> <B>Result</B>
+            both_or_none_void: (some = <B>Void</B>) <B>implies</B> (<B>Result</B> = (other = <B>Void</B>))
+            same_type: (<B>Result</B> <B>and</B> (some /= <B>Void</B>)) <B>implies</B> some.same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> deep_equal (other, some)
+</A>
+    <A NAME="f_equal"><B>frozen</B> equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to objects considered equal?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.is_equal (other))
+</A>
+    <A NAME="f_is_deep_equal"><B>frozen</B> is_deep_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`Current'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_is_equal (other) <B>implies</B> <B>Result</B>
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.is_deep_equal (<B>Current</B>)
+</A>
+    <A NAME="f_is_equal">is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object considered</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to current object?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            symmetric: <B>Result</B> <B>implies</B> other.is_equal (<B>Current</B>)
+            consistent: standard_is_equal (other) <B>implies</B> <B>Result</B>
+</A>
+    <A NAME="f_standard_equal"><B>frozen</B> standard_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical objects of the same type?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default object comparison criterion.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.standard_is_equal (other))
+</A>
+    <A NAME="f_standard_is_equal"><B>frozen</B> standard_is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object of the same type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> as current object, and field-by-field identical to it?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.standard_is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_conforms_to">conforms_to (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does type of current object conform to type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`other'<FONT COLOR="red"> (as per Eiffel: The Language, chapter 13)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+</A>
+    <A NAME="f_same_type">same_type (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is type of current object identical to type of </FONT>`other'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (conforms_to (other) <B>and</B> other.conforms_to (<B>Current</B>))
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_copy">copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Update current object using fields of object attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to </FONT>`other'<FONT COLOR="red">, so as to yield equal objects.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_equal: is_equal (other)
+</A>
+    <A NAME="f_deep_copy"><B>frozen</B> deep_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Effect equivalent to that of:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">		</FONT>copy<FONT COLOR="red"> (</FONT>`other'<FONT COLOR="red"> . </FONT>deep_twin<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (<B>Current</B>, other)
+</A>
+    <A NAME="f_deep_twin"><B>frozen</B> deep_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object structure recursively duplicated from Current.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_twin_not_void: <B>Result</B> /= <B>Void</B>
+            deep_equal: deep_equal (<B>Current</B>, <B>Result</B>)
+</A>
+    <A NAME="f_standard_copy"><B>frozen</B> standard_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy every field of </FONT>`other'<FONT COLOR="red"> onto corresponding field</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_standard_equal: standard_is_equal (other)
+</A>
+    <A NAME="f_standard_twin"><B>frozen</B> standard_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            standard_twin_not_void: <B>Result</B> /= <B>Void</B>
+            equal: standard_equal (<B>Result</B>, <B>Current</B>)
+</A>
+    <A NAME="f_twin"><B>frozen</B> twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object equal to </FONT>`Current'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>twin<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">; to change copying/twining semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            twin_not_void: <B>Result</B> /= <B>Void</B>
+            is_equal: <B>Result</B>.is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_default"><B>frozen</B> default: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of object's type</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_pointer"><B>frozen</B> default_pointer: POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of type </FONT>`POINTER'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Avoid the need to write </FONT>`p'<FONT COLOR="red">.</FONT>default<FONT COLOR="red"> for</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> some </FONT>`p'<FONT COLOR="red"> of type </FONT>`POINTER'<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_rescue">default_rescue
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process exception for routines with no Rescue clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_do_nothing"><B>frozen</B> do_nothing
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Execute a null action.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Output</FONT>
+
+    <A NAME="f_io">io: STD_FILES
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handle to standard file setup</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            io_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_out">out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            out_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_print">print (some: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Write terse external representation of </FONT>`some'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> on standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_tagged_out"><B>frozen</B> tagged_out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            tagged_out_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Platform</FONT>
+
+    <A NAME="f_operating_environment">operating_environment: OPERATING_ENVIRONMENT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Objects available from the operating system</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            operating_environment_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes	</FONT>
+
+    <A NAME="f_session_id_length"><A HREF="..\webex/session_manager_flatshort.html#f_session_id_length">session_id_length</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> number of digits/characters used for session id</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_session_path"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> path that stores all session files</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> make</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_make">make</A> (path: STRING_8; expiration, sid_length: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> init session path</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> operations</FONT>
+
+    <A NAME="f_cleanup"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_cleanup">cleanup</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> consolidate saved session information, clean-up expired/invalid sessions in storage (files/db)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> <A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A>
+            <B>True</B>
+        <B>require else</B>
+            path_initialized: <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A>.is_empty
+</A>
+    <A NAME="f_delete_session"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_delete_session">delete_session</A> (sid: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> delete a session based on given id</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> <A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A>
+            <B>True</B>
+        <B>require else</B>
+            session_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+            path_initialized: <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A>.is_empty
+</A>
+    <A NAME="f_generate_session_id"><A HREF="..\webex/session_manager_flatshort.html#f_generate_session_id">generate_session_id</A>: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a new session id</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A><FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_get_session"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_get_session">get_session</A> (sid: STRING_8): <A HREF="..\webex/session_flatshort.html">SESSION</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the saved session object with given session_id</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> otherwise return void</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A>
+            sid_session_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+        <B>require else</B>
+            session_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+            path_initialized: <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A>.is_empty
+</A>
+    <A NAME="f_save_session"><A HREF="..\webex/session_manager_file_impl_flatshort.html#f_save_session">save_session</A> (sid: STRING_8; session: <A HREF="..\webex/session_flatshort.html">SESSION</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save given session information</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A>
+            sid_session_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty <B>and then</B> session /= <B>Void</B>
+        <B>require else</B>
+            session_and_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty <B>and then</B> session /= <B>Void</B>
+            path_initialized: <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl_flatshort.html#f_session_path">session_path</A>.is_empty
+</A>    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/session_manager_flatshort.html">SESSION_MANAGER</A>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+    reflexive_equality: standard_is_equal (<B>Current</B>)
+    reflexive_conformance: conforms_to (<B>Current</B>)
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/session_manager_file_impl_flatshort.html">SESSION_MANAGER_FILE_IMPL</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="session_manager_file_impl_links.html">Relations</A></TD><TD><A HREF="session_manager_file_impl.html">Text</A></TD><TD><A HREF="session_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="session_manager_file_impl_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

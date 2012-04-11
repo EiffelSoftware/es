@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8" /-->
+    <title>
+      Informatics Europe: Computer Science Event List
+    </title>
+    <link href="{#STYLESHEET#}" rel="Stylesheet" type="text/css" />
+    <script src="{#JAVASCRIPT#}" type="text/javascript"></script>
+  </head>
+  <body>
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="center">
+          <div id="logo">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td height="60">
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  <div style="padding:0px 40px 0px 0px">
+                    {#USER_MENU#}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="mainmaster">
+            <div id="main">
+              <div id="navigation">
+                {#MAIN_MENU#}
+              </div>
+              <div id='content'>
+              <h1>{#FORM_TITLE#}</h1>
+
+              <!--##USER_EVENT_SUBMIT_NOTICE##-->
+              <h2>Criteria</h2>
+              <p>All event submissions are subject to review by the editors of this site; inclusion is at their sole discretion.</p><p>Criteria include:</p>
+							<ul>
+								<li>The event's topic must be in computer science, information technology or a neighboring field.</li>
+								<li>The event must have a strong technical content and a transparent selection process. Purely commercial events are not eligible.</li>
+								<li>It must be sponsored by a recognized institution.</li>
+							</ul>
+							<p>Regularly offered courses are not eligible, but specific educational events such as summer schools may be included if they have an advanced scientific content. </p> 
+							<p>If your event is accepted for inclusion, it will appear within 1 to 3 working days.</p>
+							<p>Note: <b> there is no simple way to update information once it has been submitted and approved</b>. Make sure to enter all the information in final form.</p>
+              <br />
+              <!--##/USER_EVENT_SUBMIT_NOTICE##-->
+
+              <!--##EVENT_UPDATE_SUCEEDED_SUBMIT##
+              <div id="notice">
+                   <table>
+                          <tr>
+                             <td valign="top"><img src="{#IMAGE_PATH#}succ.gif" style="float:left" alt="" /></td>
+                             <td valign="middle">
+                                <p>Thank you.</p>
+                                <p>Your conference proposal has been submitted.</p>
+                                <p>You will be notified via email in case of positive outcome of your request.</p>
+                             </td>
+                          </tr>
+                   </table>
+              </div>
+              ##/EVENT_UPDATE_SUCEEDED_SUBMIT##-->
+
+              <!--##EVENT_UPDATE_SUCEEDED_EDIT##
+              <div id="notice">
+                   <table>
+                          <tr>
+                             <td valign="top"><img src="{#IMAGE_PATH#}succ.gif" style="float:left" alt="" /></td>
+                             <td valign="middle">{#SUCCEED_MESSAGE#}</td>
+                          </tr>
+                   </table>
+              </div>
+              ##/EVENT_UPDATE_SUCEEDED_EDIT##-->
+
+			<!--##VALIDATION_ERROR_MESSAGES##
+									<div id="errors_div">
+										<table>
+											<tr>
+												<td valign="top"><img src="{#IMAGE_PATH#}err.gif" style="float:left" alt="" /></td>
+												<td valign="middle">{#ERROR_MESSAGES#}</td>
+											</tr>
+										</table>
+									</div>
+			##/VALIDATION_ERROR_MESSAGES##-->
+
+              <!--##USER_EVENT_SUBMIT_FORM##-->
+             <form action="{#APP_PATH#}?event&amp;cmd=save" method="post">
+
+              <input type="hidden" name="handler_id" value="event" />
+              <input type="hidden" name="cmd" value="save" />
+              <input type="hidden" name="mode" value="{#SAVE_MODE#}" />
+              <input type="hidden" name="event_id" value="{#event_id#}" />
+              <input type="hidden" name="form_id" value="eventform" />
+
+              <table id="position_form" border="0" cellpadding="4" cellspacing="0">
+
+			    <tr>
+
+                  <td class="form_top_left">&nbsp;</td>
+                  <td class="form_top_right">&nbsp;</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand" width="200">Event name</td>
+                  <td><input type="text" name="event_name" maxlength="255" size="50" title="Event name" value="{#event_name#}" /> (as in the roster)</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand">Starting date</td>
+                  <td><input type="text" name="start_date" maxlength="10" size="12" title="Starting date" value="{#start_date#}" /> (dd/mm/yyyy)</td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Ending date</td>
+                  <td><input type="text" name="end_date" maxlength="10" size="12" title="Ending date" value="{#end_date#}" /> (dd/mm/yyyy)</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand">City</td>
+                  <td><input type="text" name="city" maxlength="50" size="12" title="City" value="{#city#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Country</td>
+                  <td>
+                    <select name="country" title="Country">
+                      {#SELECTED_COUNTRY#}
+                      <option>Please choose</option>
+                      <option>Afghanistan</option>
+                      <option>Algeria</option>
+
+                      <option>Albania</option>
+                      <option>Andorra</option>
+                      <option>Angola</option>
+                      <option>Antigua and Barbuda</option>
+                      <option>Argentina</option>
+                      <option>Armenia</option>
+                      <option>Australia</option>
+                      <option>Austria</option>
+                      <option>Azerbaijan</option>
+                      
+                      <option>Bahamas</option>
+                      <option>Bahrain</option>
+                      <option>Bangladesh</option>
+                      <option>Barbados</option>
+                      <option>Belarus</option>
+                      <option>Belgium</option>
+                      <option>Belize</option>
+                      <option>Benin</option>
+                      <option>Bhutan</option>
+                      
+                      <option>Bolivia</option>
+                      <option>Bosnia and Herzegovina</option>
+                      <option>Botswana</option>
+                      <option>Brazil</option>
+                      <option>Brunei</option>
+                      <option>Bulgaria</option>
+                      <option>Burkina Faso</option>
+                      <option>Burundi</option>
+                      <option>Cambodia</option>
+                      
+                      <option>Cameroon</option>
+                      <option>Canada</option>
+                      <option>Cape Verde</option>
+                      <option>Central African Republic</option>
+                      <option>Chad</option>
+                      <option>Chile</option>
+                      <option>China</option>
+                      <option>Colombia</option>
+                      <option>Comoros</option>
+
+                      <option>Democratic Republic of the Congo</option>
+                      <option>Republic of the Congo</option>
+                      <option>Costa Rica</option>
+                      <option>C󳣠d'Ivorie</option>
+                      <option>Croatia</option>
+                      <option>Cuba</option>
+                      <option>Cyprus</option>
+                      <option>Czech Republic</option>
+                      <option>Denmark</option>
+                      
+                      <option>Djibouti</option>
+                      <option>Dominica</option>
+                      <option>Dominican Republic</option>
+                      <option>Ecuador</option>
+                      <option>Egypt</option>
+                      <option>El Salvador</option>
+                      <option>Equatorial Guinea</option>
+                      <option>Eritrea</option>
+                      <option>Estonia</option>
+                      
+                      <option>Ethiopia</option>
+                      <option>Fiji</option>
+                      <option>Finland</option>
+                      <option>France</option>
+                      <option>Gabon</option>
+                      <option>Gambia</option>
+                      <option>Georgia</option>
+                      <option>Germany</option>
+                      <option>Ghana</option>
+                      
+                      <option>Greece</option>
+                      <option>Grenada</option>
+                      <option>Guatemala</option>
+                      <option>Guinea</option>
+                      <option>Guinea-Bissau</option>
+                      <option>Guyana</option>
+                      <option>Haiti</option>
+                      <option>Honduras</option>
+                      <option>Hungary</option>
+                      
+                      <option>Iceland</option>
+                      <option>India</option>
+                      <option>Indonesia</option>
+                      <option>Iran</option>
+                      <option>Iraq</option>
+                      <option>Ireland</option>
+                      <option>Israel</option>
+                      <option>Italy</option>
+                      <option>Jamaica</option>
+                      
+                      <option>Japan</option>
+                      <option>Jordan</option>
+                      <option>Kazakhstan</option>
+                      <option>Kenya</option>
+                      <option>Kiribati</option>
+                      <option>Democratic People's Republic of Korea</option>
+                      <option>Republic of Korea</option>
+                      <option>Kuwait</option>
+                      <option>Kyrgyzstan</option>
+                      
+                      <option>Laos</option>
+                      <option>Latvia</option>
+                      <option>Lebanon</option>
+                      <option>Lesotho</option>
+                      <option>Liberia</option>
+                      <option>Libya</option>
+                      <option>Liechtenstein</option>
+                      <option>Lithuania</option>
+                      <option>Luxembourg</option>
+                      
+                      <option>Macedonia</option>
+                      <option>Madagascar</option>
+                      <option>Malawi</option>
+                      <option>Malaysia</option>
+                      <option>Maldives</option>
+                      <option>Mali</option>
+                      <option>Malta</option>
+                      <option>Marshall Islands</option>
+                      <option>Mauritania</option>
+                      
+                      <option>Mauritius</option>
+                      <option>Mexico</option>
+                      <option>Micronesia</option>
+                      <option>Moldova</option>
+                      <option>Monaco</option>
+                      <option>Mongolia</option>
+                      <option>Montenegro</option>
+                      <option>Morocco</option>
+                      <option>Mozambique</option>
+                      
+                      <option>Myanmar</option>
+                      <option>Namibia</option>
+                      <option>Nauru</option>
+                      <option>Nepal</option>
+                      <option>Netherlands</option>
+                      <option>New Zealand</option>
+                      <option>Nicaragua</option>
+                      <option>Niger</option>
+                      <option>Nigeria</option>
+
+                      <option>Norway</option>
+                      <option>Oman</option>
+                      <option>Pakistan</option>
+                      <option>Palau</option>
+                      <option>Panama</option>
+                      <option>Papua New Guinea</option>
+                      <option>Paraguay</option>
+                      <option>Peru</option>
+                      <option>Philippines</option>
+                      
+                      <option>Poland</option>
+                      <option>Portugal</option>
+                      <option>Qatar</option>
+                      <option>Romania</option>
+                      <option>Russia</option>
+                      <option>Rwanda</option>
+                      <option>Saint Kitts and Nevis</option>
+                      <option>Saint Lucia</option>
+                      <option>Saint Vincent and the Grenadines</option>
+                      
+                      <option>Samoa</option>
+                      <option>San Marino</option>
+                      <option>Sao Tome and Principe</option>
+                      <option>Saudi Arabia</option>
+                      <option>Senegal</option>
+                      <option>Serbia</option>
+                      <option>Seychelles</option>
+                      <option>Sierra Leone</option>
+                      <option>Singapore</option>
+                      
+                      <option>Slovakia</option>
+                      <option>Slovenia</option>
+                      <option>Solomon Islands</option>
+                      <option>Somalia</option>
+                      <option>South Africa</option>
+                      <option>Spain</option>
+                      <option>Sri Lanka</option>
+                      <option>Sudan</option>
+                      <option>Suriname</option>
+                      
+                      <option>Swaziland</option>
+                      <option>Sweden</option>
+                      <option>Switzerland</option>
+                      <option>Syria</option>
+                      <option>Tajikistan</option>
+                      <option>Tanzania</option>
+                      <option>Thailand</option>
+                      <option>Timor-Leste</option>
+                      <option>Togo</option>
+                      
+                      <option>Tonga</option>
+                      <option>Trinidad and Tobago</option>
+                      <option>Tunisia</option>
+                      <option>Turkey</option>
+                      <option>Turkmenistan</option>
+                      <option>Tuvalu</option>
+                      <option>Uganda</option>
+                      <option>Ukraine</option>
+                      <option>United Arab Emirates</option>
+                      
+                      <option>United Kingdom</option>
+                      <option>United States</option>
+                      <option>Uruguay</option>
+                      <option>Uzbekistan</option>
+                      <option>Vanuatu</option>
+                      <option>Venezuela</option>
+                      <option>Vietnam</option>
+                      <option>Yemen</option>
+                      <option>Zambia</option>
+                      
+                      <option>Zimbabwe</option>
+                    </select>
+                    </td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand">Paper's submission deadline</td>
+                  <td><input type="text" name="deadline" maxlength="10" size="12" title="Paper deadline" value="{#deadline#}" /> (dd/mm/yyyy, for other deadlines see below)</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand">Main sponsor</td>
+                  <td><input type="text" name="sponsor" maxlength="255" size="50" title="Main sponsor" value="{#sponsor#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Conference url</td>
+                  <td><input type="text" name="conference_url" maxlength="255" size="50" title="Conference url" value="{#conference_url#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Contact name</td>
+                  <td><input type="text" name="contact_name" maxlength="255" size="50" title="Contact name" value="{#contact_name#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Contact email</td>
+                  <td><input type="text" name="contact_email" maxlength="255" size="50" title="Contact email" value="{#contact_email#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name_mand">Contact role</td>
+                  <td>
+                      <select name="contact_role" title="Contact role">
+                        {#SELECTED_ROLE#}
+                        <option>Event chair</option>
+                        <option>Program committee chair</option>
+                        <option>Organizing chair</option>
+                        <option>Other</option>
+                      </select>
+                  </td>
+                </tr>
+
+                <tr><td></td><td></td>
+                </tr>
+                <tr><td></td><td></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Keywords:</td>
+                  <td><input type="text" name="keyword_1" maxlength="255" size="50" title="keyword1" value="{#keyword_1#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="keyword_2" maxlength="255" size="50" title="keyword2" value="{#keyword_2#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="keyword_3" maxlength="255" size="50" title="keyword3" value="{#keyword_3#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="keyword_4" maxlength="255" size="50" title="keyword4" value="{#keyword_4#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="keyword_5" maxlength="255" size="50" title="keyword5" value="{#keyword_5#}" /></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Additional sponsors:</td>
+                  <td><input type="text" name="sponsor_1" maxlength="255" size="50" title="Additional sponsor1" value="{#sponsor_1#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="sponsor_2" maxlength="255" size="50" title="Additional sponsor2" value="{#sponsor_2#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="sponsor_3" maxlength="255" size="50" title="Additional sponsor3" value="{#sponsor_3#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="sponsor_4" maxlength="255" size="50" title="Additional sponsor4" value="{#sponsor_4#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name"></td>
+                  <td><input type="text" name="sponsor_5" maxlength="255" size="50" title="Additional sponsor5" value="{#sponsor_5#}" /></td>
+                </tr>
+
+
+                <tr>
+                  <td class="input_name">Short event description</td>
+                  <td><textarea name="description" rows="10" cols="60" title="Event description">{#description#}</textarea></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Additional notes</td>
+                  <td><textarea name="notes" rows="10" cols="60" title="Additional Notes">{#notes#}</textarea></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Event chair 1</td>
+                  <td><input type="text" name="chair_1" maxlength="255" size="50" title="Event chair 1" value="{#chair_1#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Event chair 2</td>
+                  <td><input type="text" name="chair_2" maxlength="255" size="50" title="Event chair 2" value="{#chair_2#}" /></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Program committee chair 1</td>
+                  <td><input type="text" name="committee_1" maxlength="255" size="50" title="Program committee chair 1" value="{#committee_1#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Program committee chair 2</td>
+                  <td><input type="text" name="committee_2" maxlength="255" size="50" title="Program committee chair 1" value="{#committee_2#}" /></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Organization chair</td>
+                  <td><input type="text" name="organization" maxlength="255" size="50" title="Organization chair" value="{#organization#}" /></td>
+                </tr>
+                
+                <tr>
+                  <td class="input_name">Proceedings</td>
+                  <td>
+                      <select name="proceedings" title="Proceedings">
+                        {#SELECTED_PROCEEDING#}
+                        <option></option>
+                        <option>At conference</option>
+                        <option>Post conference</option>
+                      </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="input_name">Proceeding Publisher</td>
+                  <td><input type="text" name="publisher" maxlength="255" size="50" title="Proceeding Publisher" value="{#publisher#}" /></td>
+                </tr>
+
+                <tr>
+                  <td class="input_name">Other deadline</td>
+                  <td><input type="text" name="deadline_1" maxlength="10" size="50" title="Other deadline" value="{#deadline_1#}" /> (dd/mm/yyyy)</td>
+                </tr>
+                <tr>
+                  <td class="input_name">Deadline for</td>
+                  <td><input type="text" name="topic_1" maxlength="255" size="50" title="Deadline for" value="{#topic_1#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Other deadline</td>
+                  <td><input type="text" name="deadline_2" maxlength="10" size="50" title="Other deadline" value="{#deadline_2#}" /> (dd/mm/yyyy)</td>
+                </tr>
+                <tr>
+                  <td class="input_name">Deadline for</td>
+                  <td><input type="text" name="topic_2" maxlength="255" size="50" title="Deadline for" value="{#topic_2#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Other deadline</td>
+                  <td><input type="text" name="deadline_3" maxlength="10" size="50" title="Other deadline" value="{#deadline_3#}" /> (dd/mm/yyyy)</td>
+                </tr>
+                <tr>
+                  <td class="input_name">Deadline for</td>
+                  <td><input type="text" name="topic_3" maxlength="255" size="50" title="Deadline for" value="{#topic_3#}" /></td>
+                </tr>
+
+
+
+
+              <!--##ADMINISTRATOR_INFORMATION##
+                <tr><td></td><td></td>
+                </tr>
+                <tr>
+                  <td class="input_subtitle">Administrator Information</td>
+                  <td>&nbsp;</td>
+                </tr>
+
+                <tr>
+                  <td class="input_name_mand">Submitted by</td>
+                  <td><input type="text" name="submitted_by" maxlength="255" size="50" title="submitted_by" value="{#submitted_by#}" /></td>
+                </tr>
+                <tr>
+                  <td class="input_name">Proposed</td>
+                  <td>
+                    <input type="radio" name="status" value="proposed" {#proposed#} />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="input_name">Accepted</td>
+                  <td>
+                    <input type="radio" name="status" value="accepted" {#accepted#} />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="input_name">Rejected</td>
+                  <td>
+                    <input type="radio" name="status" value="rejected" {#rejected#} />
+                  </td>
+                </tr>
+              ##/ADMINISTRATOR_INFORMATION##-->
+
+
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <input type="submit" name="send" value="{#BUTTON_TEXT#}" title="Send button" />
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="form_bottom_left">&nbsp;</td>
+                  <td class="form_bottom_right">&nbsp;</td>
+                </tr>
+              </table>
+
+              </form>
+              <!--##/USER_EVENT_SUBMIT_FORM##-->
+
+              	</div>
+            </div>
+          </div>
+          <div id="bottom">
+            <div id="disclaimer">
+              <table id="t_disc" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td id="copyright">
+                    2007 - 2011, <a href="http://www.informatics-europe.org/" target="_blank">Informatics Europe</a>
+                  </td>
+                  <td id="aboutus">
+                    <span><a href="{#APP_PATH#}?other&amp;cmd=about">about us</a></span>&nbsp;&nbsp;&nbsp; <span><a href="{#APP_PATH#}?other&amp;cmd=contact">Contact</a></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

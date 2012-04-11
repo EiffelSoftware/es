@@ -1,0 +1,756 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="handler for event related requests">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_handler Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_handler_chart.html">Chart</A></TD><TD><A HREF="event_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_handler_flat.html">Flat</A></TD><TD><A HREF="event_handler_short.html">Contracts</A></TD><TD><A HREF="event_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "handler for event related requests"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "$05.02.2008$"
+    revision: "$0.8.1$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/event_handler.html">EVENT_HANDLER</A>
+
+<B>inherit</B>
+    <A HREF="..\informatics_events/informatics_handler.html">INFORMATICS_HANDLER</A>
+        <B>redefine</B>
+            <A HREF="..\informatics_events/event_handler.html#f_make">make</A>
+        <B>end</B>
+
+    <A HREF="..\informatics_events/application_constants.html">APPLICATION_CONSTANTS</A>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/event_handler.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> access</FONT>
+
+    <A NAME="f_event_dao"><A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>: <A HREF="..\informatics_events/event_dao.html">EVENT_DAO</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> all events</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\informatics_events/event_handler.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handler initialization</FONT>
+        <B>do</B>
+            <B>Precursor</B> {<A HREF="..\informatics_events/informatics_handler.html">INFORMATICS_HANDLER</A>}
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> process request</FONT>
+
+    <A NAME="f_handling_request"><A HREF="..\informatics_events/event_handler.html#f_handling_request">handling_request</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> dispatching requests to relevant handling routines, processing request</FONT>
+        <B>require else</B>
+            <A HREF="..\webex/request_handler.html#f_context">context</A> /= <B>Void</B>
+        <B>do</B>
+            <B>create</B> {<A HREF="..\informatics_events/event_dao_file_impl.html">EVENT_DAO_FILE_IMPL</A>} <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao_file_impl.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> ("app_data_folder"), <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> ("event_list_data_file_name"), <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> ("event_id_generator_data_file_name"))
+            <B>create</B> <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_template">template</A>)
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("eventform") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_form">display_event_form</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("save") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_validate_and_save_event">validate_and_save_event</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("delete") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_delete_event">delete_event</A>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("approve") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_approve_event">approve_event</A>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("reject") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_reject_event">reject_event</A>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("details") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_details">display_event_details</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("logout") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_logout_user">logout_user</A>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("list") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("past") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("approved") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("rejected") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("ownevents") <B>then</B>
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <B>else</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> implementation</FONT>
+<FONT COLOR="red">--</FONT><FONT COLOR="red">----------------------------------------------------------------------------------------------</FONT>
+
+    <A NAME="f_approve_event"><A HREF="..\informatics_events/event_handler.html#f_approve_event">approve_event</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handling a "Approve Event" request, check permission and event_id parameter, update event status as "Approved" if ok, display notification message.</FONT>
+        <B>local</B>
+            id: NATURAL_64
+            the_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>elseif</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+            <B>else</B>
+                id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id").to_natural_64
+                the_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (id)
+                <B>if</B> the_event /= <B>Void</B> <B>then</B>
+                    the_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A>)
+                    <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_update_event">update_event</A> (the_event)
+                    <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_persist_data">persist_data</A>
+                <B>end</B>
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATED")
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("UPDATE_MESSAGE", "Event approved.")
+        <B>end</B></A>
+
+    <A NAME="f_reject_event"><A HREF="..\informatics_events/event_handler.html#f_reject_event">reject_event</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handling a "reject Event" request, check permission and event_id parameter, update event status as "Rejected" if ok, display notification message.</FONT>
+        <B>local</B>
+            id: NATURAL_64
+            the_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>elseif</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+            <B>else</B>
+                id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id").to_natural_64
+                the_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (id)
+                <B>if</B> the_event /= <B>Void</B> <B>then</B>
+                    the_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_rejected">rejected</A>)
+                    <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_update_event">update_event</A> (the_event)
+                    <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_persist_data">persist_data</A>
+                <B>end</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATED")
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("UPDATE_MESSAGE", "Event rejected.")
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_delete_event"><A HREF="..\informatics_events/event_handler.html#f_delete_event">delete_event</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handling a "delete event" request, check permission and "event_id" parameter, delete event if permission ok and display notification message.</FONT>
+        <B>local</B>
+            id: NATURAL_64
+            the_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+        <B>do</B>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+            <B>else</B>
+                id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id").to_natural_64
+                the_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (id)
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>and then</B> <B>not</B> (the_event /= <B>Void</B> <B>and then</B> the_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>.is_equal (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>) <B>and then</B> the_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>) <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+                <B>else</B>
+                    <B>if</B> the_event /= <B>Void</B> <B>then</B>
+                        <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_delete_event">delete_event</A> (the_event)
+                        <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_persist_data">persist_data</A>
+                    <B>end</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATED")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("UPDATE_MESSAGE", "Event deleted.")
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_display_event_details"><A HREF="..\informatics_events/event_handler.html#f_display_event_details">display_event_details</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handling request, generate "Event Details" page</FONT>
+        <B>local</B>
+            id: NATURAL_64
+            the_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+            admin_command: STRING_8
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id").to_natural_64
+                the_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (id)
+                <B>check</B>
+                    found_event: the_event /= <B>Void</B>
+                <B>end</B>
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>or</B> (the_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>.is_equal (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>) <B>and then</B> the_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>) <B>then</B>
+                    admin_command := "{
+                    						&lt;td style="padding: 0px 10px 0px 0px"&gt;
+                    	                      &lt;a href="{#CGI_FILE_NAME#}?event&#38;amp;cmd=eventform&#38;amp;mode=edit&#38;amp;event_id={#event_id#}"&gt;Edit&lt;/a&gt;
+                    	                    &lt;/td&gt;
+                    	                    &lt;td&gt;
+                    	                      &lt;a href="{#CGI_FILE_NAME#}?event&#38;amp;cmd=delete&#38;amp;event_id={#event_id#}"&gt;Delete&lt;/a&gt;
+                    	                    &lt;/td&gt;
+                    }"
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ADMIN_EVENT_COMMAND", admin_command)
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("event_id", id.out)
+                <B>end</B>
+                <A HREF="..\informatics_events/event_handler.html#f_restore_event_data">restore_event_data</A> (the_event)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_display_event_list"><A HREF="..\informatics_events/event_handler.html#f_display_event_list">display_event_list</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate an event-list view</FONT>
+        <B>local</B>
+            table_content: STRING_8
+            a_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+            odd_row: BOOLEAN
+            the_event_list: <A HREF="..\informatics_events/event_list.html">EVENT_LIST</A>
+            today: DATE
+            listed_days: INTEGER_32
+            sorter: <A HREF="..\informatics_events/sort_helper.html">SORT_HELPER</A>
+            view: STRING_8
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <B>create</B> <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> ("adminlist_template"))
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("view") <B>and then</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("view").is_empty <B>then</B>
+                <B>create</B> view.make_from_string (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("view"))
+            <B>else</B>
+                <B>create</B> view.make_from_string (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>)
+            <B>end</B>
+            <B>create</B> a_event.<A HREF="..\informatics_events/event.html#f_make">make</A>
+            <B>create</B> table_content.make_empty
+            <B>create</B> today.make_now
+            listed_days := <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> ("listed_days").to_integer
+            <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A>.start
+            the_event_list := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A>.duplicate (<A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A>.count)
+            <B>create</B> sorter
+            sorter.<A HREF="..\informatics_events/sort_helper.html#f_sort_event_list_by_starting_date">sort_event_list_by_starting_date</A> (the_event_list)
+            <B>if</B> the_event_list.count &gt; 0 <B>then</B>
+                the_event_list.start
+                odd_row := <B>True</B>
+                <B>from</B>
+                    the_event_list.start
+                <B>until</B>
+                    the_event_list.after
+                <B>loop</B>
+                    <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                        <B>if</B> view.is_equal ("ownevents") <B>then</B>
+                            <B>if</B> the_event_list.item.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>.is_equal (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>) <B>then</B>
+                                table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_list">format_event_for_list</A> (the_event_list.item, odd_row))
+                                odd_row := <B>not</B> odd_row
+                            <B>end</B>
+                        <B>elseif</B> the_event_list.item.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A> <B>then</B>
+                            <B>if</B> view.is_equal ("past") <B>then</B>
+                                <B>if</B> today.days - the_event_list.item.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.days &gt; listed_days <B>then</B>
+                                    table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_list">format_event_for_list</A> (the_event_list.item, odd_row))
+                                    odd_row := <B>not</B> odd_row
+                                <B>end</B>
+                            <B>else</B>
+                                <B>if</B> today.days - the_event_list.item.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.days &lt;= listed_days <B>then</B>
+                                    table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_list">format_event_for_list</A> (the_event_list.item, odd_row))
+                                    odd_row := <B>not</B> odd_row
+                                <B>end</B>
+                            <B>end</B>
+                        <B>end</B>
+                    <B>else</B>
+                        <B>if</B> view.is_equal ("approved") <B>then</B>
+                            <B>if</B> the_event_list.item.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A> <B>then</B>
+                                table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_adminlist">format_event_for_adminlist</A> (the_event_list.item, odd_row))
+                                odd_row := <B>not</B> odd_row
+                            <B>end</B>
+                        <B>elseif</B> view.is_equal ("rejected") <B>then</B>
+                            <B>if</B> the_event_list.item.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_rejected">rejected</A> <B>then</B>
+                                table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_adminlist">format_event_for_adminlist</A> (the_event_list.item, odd_row))
+                                odd_row := <B>not</B> odd_row
+                            <B>end</B>
+                        <B>else</B>
+                            <B>if</B> the_event_list.item.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A> <B>then</B>
+                                table_content.append (<A HREF="..\informatics_events/event_handler.html#f_format_event_for_adminlist">format_event_for_adminlist</A> (the_event_list.item, odd_row))
+                                odd_row := <B>not</B> odd_row
+                            <B>end</B>
+                        <B>end</B>
+                    <B>end</B>
+                    the_event_list.forth
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> view.is_equal ("ownevents") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Submitted Events")
+            <B>elseif</B> view.is_equal ("past") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Past Events")
+            <B>elseif</B> view.is_equal ("approved") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Approved Events")
+            <B>elseif</B> view.is_equal ("rejected") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Rejected Events")
+            <B>elseif</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Proposed Events")
+            <B>else</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST_TITLE", "Current Events")
+            <B>end</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <B>if</B> view.is_equal ("approved") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> ("EVENT_VIEW", 1)
+                <B>elseif</B> view.is_equal ("rejected") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> ("EVENT_VIEW", 2)
+                <B>end</B>
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EVENT_LIST", table_content)
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_guest">role_guest</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("GUEST_INFORMATION")
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_normal_user">role_normal_user</A> <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("USER_INFORMATION")
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_logout_user"><A HREF="..\informatics_events/event_handler.html#f_logout_user">logout_user</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> logout user</FONT>
+        <B>do</B>
+            <B>create</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+            <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_email">set_email</A> ("")
+            <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_username">set_username</A> ("")
+        <B>end</B></A>
+
+    <A NAME="f_validate_and_save_event"><A HREF="..\informatics_events/event_handler.html#f_validate_and_save_event">validate_and_save_event</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate event submission form, save/update event to storage</FONT>
+        <B>local</B>
+            error_messages: HASH_TABLE [STRING_8, STRING_8]
+            error_string: STRING_8
+            mode: STRING_8
+            event_id: STRING_8
+            new_event, tmp_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+        <B>do</B>
+            <B>create</B> new_event.<A HREF="..\informatics_events/event.html#f_make">make</A>
+            error_messages := <A HREF="..\informatics_events/event_handler.html#f_validate_event_form">validate_event_form</A> (new_event)
+            <B>if</B> error_messages.count = 0 <B>then</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                    mode := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode")
+                    <B>if</B> mode.is_equal ("edit") <B>then</B>
+                        <B>if</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+                        <B>else</B>
+                            event_id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id")
+                            new_event.<A HREF="..\informatics_events/event.html#f_set_id">set_id</A> (event_id.to_natural_64)
+                            tmp_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (event_id.to_natural_64)
+                            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>and then</B> <B>not</B> (tmp_event /= <B>Void</B> <B>and then</B> tmp_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>.is_equal (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>) <B>and then</B> tmp_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = <A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>) <B>then</B>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+                            <B>else</B>
+                                <B>if</B> tmp_event /= <B>Void</B> <B>then</B>
+                                    <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                                        new_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (tmp_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>)
+                                        new_event.<A HREF="..\informatics_events/event.html#f_set_submitter">set_submitter</A> (tmp_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>)
+                                    <B>end</B>
+                                    <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_update_event">update_event</A> (new_event)
+                                <B>end</B>
+                                <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_persist_data">persist_data</A>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Event Saved")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("USER_EVENT_SUBMIT_NOTICE")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("EVENT_UPDATE_SUCEEDED_SUBMIT")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATE_SUCEEDED_EDIT")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SUCCEED_MESSAGE", "Event saved.")
+                                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("ADMINISTRATOR_INFORMATION")
+                                <B>end</B>
+                                <A HREF="..\informatics_events/event_handler.html#f_restore_event_data">restore_event_data</A> (new_event)
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("event_id", event_id.out)
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit Event")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "edit")
+                            <B>end</B>
+                        <B>end</B>
+                    <B>else</B>
+                        <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A>.<A HREF="..\informatics_events/id_generator.html#f_generate_next_id">generate_next_id</A>
+                        new_event.<A HREF="..\informatics_events/event.html#f_set_id">set_id</A> (<A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A>.<A HREF="..\informatics_events/id_generator.html#f_id">id</A>)
+                        new_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>)
+                        new_event.<A HREF="..\informatics_events/event.html#f_set_submitter">set_submitter</A> (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>)
+                        <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_add_event">add_event</A> (new_event)
+                        <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_persist_data">persist_data</A>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Event Submitted")
+                        <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("USER_EVENT_SUBMIT_NOTICE")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATE_SUCEEDED_EDIT")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SUCCEED_MESSAGE", "Event submitted.")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Submit")
+                        <B>else</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("USER_EVENT_SUBMIT_NOTICE")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("USER_EVENT_SUBMIT_FORM")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("EVENT_UPDATE_SUCEEDED_SUBMIT")
+                        <B>end</B>
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> error_messages.count &gt; 0 <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("VALIDATION_ERROR_MESSAGES")
+                error_string := <A HREF="..\informatics_events/informatics_handler.html#f_expand_error_string">expand_error_string</A> (error_messages)
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ERROR_MESSAGES", error_string)
+                <A HREF="..\informatics_events/event_handler.html#f_restore_event_data">restore_event_data</A> (new_event)
+                <A HREF="..\informatics_events/event_handler.html#f_display_event_form">display_event_form</A>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_display_event_form"><A HREF="..\informatics_events/event_handler.html#f_display_event_form">display_event_form</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> update and display the event submission form based on current context (administrators/users, new event/modify a existing event)</FONT>
+        <B>local</B>
+            actual_event: <A HREF="..\informatics_events/event.html">EVENT</A>
+            event_id: STRING_8
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> ("USER_EVENT_SUBMIT_NOTICE")
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("add") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Submit Event")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Submit")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "add")
+                <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("edit") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("event_id") <B>then</B>
+                    event_id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("event_id")
+                    actual_event := <A HREF="..\informatics_events/event_handler.html#f_event_dao">event_dao</A>.<A HREF="..\informatics_events/event_dao.html#f_get_event_by_id">get_event_by_id</A> (event_id.to_natural_64)
+                    <B>check</B>
+                        found_event_by_id: actual_event /= <B>Void</B>
+                    <B>end</B>
+                    <A HREF="..\informatics_events/event_handler.html#f_restore_event_data">restore_event_data</A> (actual_event)
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("event_id", event_id.out)
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit Event")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "edit")
+                <B>end</B>
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("ADMINISTRATOR_INFORMATION")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("submitted_by", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> event list</FONT>
+
+    <A NAME="f_format_event_for_list"><A HREF="..\informatics_events/event_handler.html#f_format_event_for_list">format_event_for_list</A> (an_event: <A HREF="..\informatics_events/event.html">EVENT</A>; odd_row: BOOLEAN): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> format an_event into a specific row in a HTML Table as expected in the predefined HTML template (for normal user/guest's event-list view)</FONT>
+        <B>local</B>
+            left_border_class, mid_class, right_border_class: STRING_8
+            empty_date: DATE
+        <B>do</B>
+            <B>create</B> empty_date.make_day_month_year (1, 1, 1111)
+            <B>if</B> odd_row <B>then</B>
+                left_border_class := "position_row_odd_left_border"
+                mid_class := "position_row_odd"
+                right_border_class := "position_row_odd_right_border"
+            <B>else</B>
+                left_border_class := "position_row_even_left_border"
+                mid_class := "position_row_even"
+                right_border_class := "position_row_even_right_border"
+            <B>end</B>
+            <B>create</B> <B>Result</B>.make_empty
+            <B>Result</B>.append ("&lt;tr&gt;&lt;td class=%"" + left_border_class + "%"&gt;&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=details&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_name">name</A> + "&lt;/a&gt;&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.formatted_out ("[0]dd/[0]mm/yyyy") + " - " + an_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.formatted_out ("[0]dd/[0]mm/yyyy") + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_city">city</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_country">country</A> + "&lt;/td&gt;%N")
+            <B>if</B> <B>not</B> an_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.is_equal (empty_date) <B>then</B>
+                <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.formatted_out ("[0]dd/[0]mm/yyyy") + "&lt;/td&gt;%N")
+            <B>else</B>
+                <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;&#38;nbsp;&lt;/td&gt;%N")
+            <B>end</B>
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + right_border_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A> + "&lt;/td&gt;%N&lt;/tr&gt;%N")
+        <B>end</B></A>
+
+    <A NAME="f_format_event_for_adminlist"><A HREF="..\informatics_events/event_handler.html#f_format_event_for_adminlist">format_event_for_adminlist</A> (an_event: <A HREF="..\informatics_events/event.html">EVENT</A>; odd_row: BOOLEAN): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> format an_event into a specific row in a HTML Table as expected in the predefined HTML template (for administrator's event-list view)</FONT>
+        <B>local</B>
+            left_border_class, mid_class, right_border_class: STRING_8
+            edit, approve, reject, delete: STRING_8
+            view: STRING_8
+        <B>do</B>
+            <B>if</B> odd_row <B>then</B>
+                left_border_class := "position_row_odd_left_border"
+                mid_class := "position_row_odd"
+                right_border_class := "position_row_odd_right_border"
+            <B>else</B>
+                left_border_class := "position_row_even_left_border"
+                mid_class := "position_row_even"
+                right_border_class := "position_row_even_right_border"
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("view") <B>and then</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("view").is_empty <B>then</B>
+                <B>create</B> view.make_from_string (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("view"))
+            <B>else</B>
+                <B>create</B> view.make_from_string (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>)
+            <B>end</B>
+            edit := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=eventform&#38;amp;mode=edit&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "%"&gt;Edit&lt;/a&gt;"
+            <B>if</B> an_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>) <B>then</B>
+                approve := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=approve&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Approve&lt;/a&gt;"
+                reject := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=reject&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Reject&lt;/a&gt;"
+                delete := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=delete&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Delete&lt;/a&gt;"
+            <B>elseif</B> an_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A>) <B>then</B>
+                approve := ""
+                reject := ""
+                delete := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=delete&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Delete&lt;/a&gt;"
+            <B>elseif</B> an_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_rejected">rejected</A>) <B>then</B>
+                approve := ""
+                reject := ""
+                delete := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=delete&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Delete&lt;/a&gt;"
+            <B>else</B>
+                approve := ""
+                reject := ""
+                delete := "&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=delete&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "&#38;amp;view=" + view + "%"&gt;Delete&lt;/a&gt;"
+            <B>end</B>
+            <B>create</B> <B>Result</B>.make_empty
+            <B>Result</B>.append ("&lt;tr&gt;&lt;td class=%"" + left_border_class + "%"&gt;&lt;a href=%"{#CGI_FILE_NAME#}?event&#38;amp;cmd=details&#38;amp;event_id=" + an_event.<A HREF="..\informatics_events/event.html#f_id">id</A>.out + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_name">name</A> + "&lt;/a&gt;&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.formatted_out ("[0]dd/[0]mm/yyyy") + " - " + an_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.formatted_out ("[0]dd/[0]mm/yyyy") + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_city">city</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_country">country</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=details&#38;amp;user_id=" + an_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A> + "%"&gt;" + an_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A> + "&lt;/a&gt;&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"right%"&gt;" + edit + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"right%"&gt;" + approve + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"right%"&gt;" + reject + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + right_border_class + "%"&gt;" + delete + "&lt;/td&gt;%N&lt;/tr&gt;%N")
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> event form</FONT>
+
+    <A NAME="f_parse_date_string"><A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (value: STRING_8): DATE
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing a DD/MM/YYYY string, return a Date object when success or void if failed</FONT>
+        <B>local</B>
+            day, month, year: INTEGER_32
+            month_start, year_start: INTEGER_32
+            date_checker: DATE_VALIDITY_CHECKER
+        <B>do</B>
+            <B>if</B> value.has ('/') <B>then</B>
+                month_start := value.index_of ('/', 1)
+                day := value.substring (1, month_start - 1).to_integer
+            <B>end</B>
+            <B>if</B> month_start &gt; 0 <B>then</B>
+                year_start := value.index_of ('/', month_start + 1)
+                <B>if</B> year_start &gt; 0 <B>then</B>
+                    month := value.substring (month_start + 1, year_start - 1).to_integer
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> year_start &gt; 0 <B>then</B>
+                year := value.substring (year_start + 1, value.count).to_integer
+            <B>end</B>
+            <B>create</B> date_checker
+            <B>if</B> date_checker.is_correct_date (year, month, day) <B>then</B>
+                <B>create</B> <B>Result</B>.make_day_month_year (day, month, year)
+            <B>else</B>
+                <B>Result</B> := <B>Void</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_validate_event_form"><A HREF="..\informatics_events/event_handler.html#f_validate_event_form">validate_event_form</A> (an_event: <A HREF="..\informatics_events/event.html">EVENT</A>): HASH_TABLE [STRING_8, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate the event submission form, save and return a [Error-Message, Form-Field] table for validation failures</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> an_event is updated with user inputs</FONT>
+        <B>require</B>
+            environment_set: <A HREF="..\webex/request_handler.html#f_context">context</A> /= <B>Void</B>
+        <B>local</B>
+            validator: <A HREF="..\webex/form_validator.html">FORM_VALIDATOR</A>
+            error_string_table: HASH_TABLE [STRING_8, STRING_8]
+            a_date: DATE
+            temp_keywords, temp_additional_sponsors: ARRAYED_LIST [STRING_8]
+        <B>do</B>
+            <B>create</B> validator.<A HREF="..\webex/form_validator.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>)
+            <B>create</B> error_string_table.make (100)
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("event_name") <B>then</B>
+                error_string_table.put ("Event name must be specified.", "Event name")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_name">set_name</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("event_name"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("start_date") <B>then</B>
+                error_string_table.put ("Starting date must be specified.", "Starting date")
+            <B>else</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("start_date"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_starting_date">set_starting_date</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("Starting date is invalid.", "Starting date")
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("end_date") <B>then</B>
+                error_string_table.put ("Ending date must be specified.", "Ending date")
+            <B>else</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("end_date"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_ending_date">set_ending_date</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("Ending date is invalid.", "Ending date")
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("city") <B>then</B>
+                error_string_table.put ("The city must be specified.", "City")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_city">set_city</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("city"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("country") <B>or</B> validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("country").is_equal ("Please choose") <B>then</B>
+                error_string_table.put ("The Country must be specified.", "Country")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_country">set_country</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("country"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("deadline") <B>then</B>
+                error_string_table.put ("The paper submission deadline must be specified.", "Deadline")
+            <B>else</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("deadline"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_papers_submission_deadline">set_papers_submission_deadline</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("Paper submission deadline is invalid.", "Paper submission deadline")
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("sponsor") <B>then</B>
+                error_string_table.put ("The main sponsor must be specified.", "Main sponsor")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_main_sponsor">set_main_sponsor</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("conference_url") <B>then</B>
+                error_string_table.put ("An url for the event must be specified.", "Conference url")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_url">set_url</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("conference_url"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("contact_name") <B>then</B>
+                error_string_table.put ("A contact person must be specified.", "Contact name")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_contact_name">set_contact_name</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("contact_name"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("contact_email") <B>then</B>
+                error_string_table.put ("A email for contact must be specified.", "Contact email")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_contact_email">set_contact_email</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("contact_email"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("contact_role") <B>then</B>
+                error_string_table.put ("The role of the given contact must be specified.", "Contact role")
+            <B>else</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_contact_role">set_contact_role</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("contact_role"))
+            <B>end</B>
+            <B>create</B> temp_keywords.make_filled (5)
+            temp_keywords [1] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("keyword_1")
+            temp_keywords [2] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("keyword_2")
+            temp_keywords [3] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("keyword_3")
+            temp_keywords [4] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("keyword_4")
+            temp_keywords [5] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("keyword_5")
+            an_event.<A HREF="..\informatics_events/event.html#f_set_keywords">set_keywords</A> (temp_keywords)
+            <B>create</B> temp_additional_sponsors.make_filled (5)
+            temp_additional_sponsors [1] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor_1")
+            temp_additional_sponsors [2] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor_2")
+            temp_additional_sponsors [3] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor_3")
+            temp_additional_sponsors [4] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor_4")
+            temp_additional_sponsors [5] := validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("sponsor_5")
+            an_event.<A HREF="..\informatics_events/event.html#f_set_additional_sponsors">set_additional_sponsors</A> (temp_additional_sponsors)
+            an_event.<A HREF="..\informatics_events/event.html#f_set_short_description">set_short_description</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("description"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_additional_notes">set_additional_notes</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("notes"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_conference_chair_1">set_conference_chair_1</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("chair_1"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_conference_chair_2">set_conference_chair_2</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("chair_2"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_program_committee_chair_1">set_program_committee_chair_1</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("committee_1"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_program_committee_chair_2">set_program_committee_chair_2</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("committee_2"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_organizing_chair">set_organizing_chair</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("organization"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_proceeding_type">set_proceeding_type</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("proceedings"))
+            an_event.<A HREF="..\informatics_events/event.html#f_set_proceedings_publisher">set_proceedings_publisher</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("publisher"))
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                an_event.<A HREF="..\informatics_events/event.html#f_set_submitter">set_submitter</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("submitted_by"))
+                <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("accepted").is_equal ("1") <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A>)
+                <B>elseif</B> validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("rejected").is_equal ("1") <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_rejected">rejected</A>)
+                <B>else</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>)
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> ("deadline_1") <B>then</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("deadline_1"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_1">set_additional_deadline_1</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("The first additional deadline is invalid.", "Additional deadline")
+                <B>end</B>
+            <B>end</B>
+            an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_1">set_additional_deadline_specification_1</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("topic_1"))
+            <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> ("deadline_2") <B>then</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("deadline_2"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_2">set_additional_deadline_2</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("The second additional deadline is invalid.", "Additional deadline")
+                <B>end</B>
+            <B>end</B>
+            an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_2">set_additional_deadline_specification_2</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("topic_2"))
+            <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> ("deadline_3") <B>then</B>
+                a_date := <A HREF="..\informatics_events/event_handler.html#f_parse_date_string">parse_date_string</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("deadline_3"))
+                <B>if</B> a_date /= <B>Void</B> <B>then</B>
+                    an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_3">set_additional_deadline_3</A> (a_date)
+                <B>else</B>
+                    error_string_table.put ("The third additional deadline is invalid.", "Additional deadline")
+                <B>end</B>
+            <B>end</B>
+            an_event.<A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_3">set_additional_deadline_specification_3</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("topic_3"))
+            <B>Result</B> := error_string_table
+        <B>end</B></A>
+
+    <A NAME="f_restore_event_data"><A HREF="..\informatics_events/event_handler.html#f_restore_event_data">restore_event_data</A> (a_event: <A HREF="..\informatics_events/event.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> fill the event form with given event data</FONT>
+        <B>local</B>
+            empty_date: DATE
+            s1, s2: STRING_8
+        <B>do</B>
+            <B>create</B> empty_date.make_day_month_year (1, 1, 1111)
+            s1 := ""
+            s2 := ""
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("event_name", a_event.<A HREF="..\informatics_events/event.html#f_name">name</A>)
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.is_equal (empty_date) <B>then</B>
+                s1 := a_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("start_date", s1)
+            <B>end</B>
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.is_equal (empty_date) <B>then</B>
+                s2 := a_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("end_date", s2)
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("event_date", s1 + " - " + s2)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("city", a_event.<A HREF="..\informatics_events/event.html#f_city">city</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("country", a_event.<A HREF="..\informatics_events/event.html#f_country">country</A>)
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.is_equal (empty_date) <B>then</B>
+                s1 := a_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("deadline", s1)
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsor", a_event.<A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("conference_url", a_event.<A HREF="..\informatics_events/event.html#f_url">url</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("contact_name", a_event.<A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("contact_email", a_event.<A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("contact_role", a_event.<A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [1] + " " + a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [2] + " " + a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [3] + " " + a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [4] + " " + a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [5])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords_1", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [1])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords_2", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [2])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords_3", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [3])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords_4", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [4])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("keywords_5", a_event.<A HREF="..\informatics_events/event.html#f_keywords">keywords</A> [5])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("additonal_sponsors", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [1] + " " + a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [2] + " " + a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [3] + " " + a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [4] + " " + a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [5])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsors_1", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [1])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsors_2", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [2])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsors_3", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [3])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsors_4", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [4])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("sponsors_5", a_event.<A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> [5])
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("description", a_event.<A HREF="..\informatics_events/event.html#f_short_description">short_description</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("notes", a_event.<A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("chair_1", a_event.<A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("chair_2", a_event.<A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("committee_1", a_event.<A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("committee_2", a_event.<A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("organization", a_event.<A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("proceedings", a_event.<A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("publisher", a_event.<A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A>)
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>.is_equal (empty_date) <B>then</B>
+                s1 := a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("deadline_1", s1)
+            <B>end</B>
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>.is_equal (empty_date) <B>then</B>
+                s1 := a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("deadline_2", s1)
+            <B>end</B>
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>.is_equal (empty_date) <B>then</B>
+                s1 := a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>.day.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>.month.out + "/" + a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>.year.out
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("deadline_3", s1)
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("topic_1", a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("topic_2", a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("topic_3", a_event.<A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SELECTED_COUNTRY", "&lt;option value=%"" + a_event.<A HREF="..\informatics_events/event.html#f_country">country</A> + "%" selected=%"selected%"&gt;" + a_event.<A HREF="..\informatics_events/event.html#f_country">country</A> + "&lt;/option&gt;")
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SELECTED_ROLE", "&lt;option value=%"" + a_event.<A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A> + "%" selected=%"selected%"&gt;" + a_event.<A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A> + "&lt;/option&gt;")
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SELECTED_PROCEEDING", "&lt;option value=%"" + a_event.<A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A> + "%" selected=%"selected%"&gt;" + a_event.<A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A> + "&lt;/option&gt;")
+            <B>if</B> <B>not</B> a_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>.is_empty <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("submitted_by", a_event.<A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>)
+            <B>elseif</B> <B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>.is_empty <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("submitted_by", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+            <B>end</B>
+            <B>if</B> a_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_accepted">accepted</A>) <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("accepted", "checked=%"checked%"")
+            <B>elseif</B> a_event.<A HREF="..\informatics_events/event.html#f_event_status">event_status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_rejected">rejected</A>) <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("rejected", "checked=%"checked%"")
+            <B>else</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("proposed", "checked=%"checked%"")
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event_handler.html">EVENT_HANDLER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_handler_chart.html">Chart</A></TD><TD><A HREF="event_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_handler_flat.html">Flat</A></TD><TD><A HREF="event_handler_short.html">Contracts</A></TD><TD><A HREF="event_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

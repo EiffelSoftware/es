@@ -1,0 +1,381 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>error_page_view Flat contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="error_page_view_chart.html">Chart</A></TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD><A HREF="error_page_view.html">Text</A></TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE><B>indexing</B>
+    description: "Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "22.12.2007"
+    revision: "$0.6$"
+
+<B>class</B> <B>interface</B>
+    <A HREF="..\webex/error_page_view_flatshort.html">ERROR_PAGE_VIEW</A>
+
+<B>create</B> 
+    <A NAME="f_make"><A HREF="..\webex/html_template_view_flatshort.html#f_make">make</A> (template: STRING_8)
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+        <B>require else</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+            template_file_name_valid: template /= <B>Void</B> <B>and then</B> <B>not</B> template.is_empty
+</A>
+    <A NAME="f_make_default_error_page"><A HREF="..\webex/error_page_view_flatshort.html#f_make_default_error_page">make_default_error_page</A> (title, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page with specified 'title' and 'content'</FONT>
+</A>
+    <A NAME="f_build_default_not_found_page"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_not_found_page">build_default_not_found_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 404 error</FONT>
+</A>
+    <A NAME="f_build_default_not_enough_permission_page"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 403 error</FONT>
+</A>
+    <A NAME="f_build_default_database_not_connected"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_database_not_connected">build_default_database_not_connected</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database connection failed</FONT>
+</A>
+    <A NAME="f_build_default_database_problem"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_database_problem">build_default_database_problem</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database problems</FONT>
+</A>
+<B>feature</B> {ANY} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make">make_empty
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Create an HTML page.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make_from_template">make_from_template (fi_n: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Create an HTML page from a template whose path name is</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> 'fi'. The template may contains special symbols/words, which</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> will allow smart replacing (see feature 'replace').</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+            path_not_void: fi_n /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+            image_exists: image /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_build_default_database_not_connected"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_database_not_connected">build_default_database_not_connected</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database connection failed</FONT>
+</A>
+    <A NAME="f_build_default_database_problem"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_database_problem">build_default_database_problem</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database problems</FONT>
+</A>
+    <A NAME="f_build_default_not_enough_permission_page"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 403 error</FONT>
+</A>
+    <A NAME="f_build_default_not_found_page"><A HREF="..\webex/error_page_view_flatshort.html#f_build_default_not_found_page">build_default_not_found_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 404 error</FONT>
+</A>
+    <A NAME="f_generating_type">generating_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generating_type_not_void: <B>Result</B> /= <B>Void</B>
+            generating_type_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>
+    <A NAME="f_generator">generator: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating class</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (base class of the type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generator_not_void: <B>Result</B> /= <B>Void</B>
+            generator_not_empty: <B>not</B> <B>Result</B>.is_empty
+</A>
+    <A NAME="f_make_default_error_page"><A HREF="..\webex/error_page_view_flatshort.html#f_make_default_error_page">make_default_error_page</A> (title, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page with specified 'title' and 'content'</FONT>
+</A>
+    <A NAME="f_out">out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Usable copy of the output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            out_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_set_error_title_and_content"><A HREF="..\webex/error_page_view_flatshort.html#f_set_error_title_and_content">set_error_title_and_content</A> (title, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace TITLE, BODY smart tag with given text</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Comparison</FONT>
+
+    <A NAME="f_deep_equal"><B>frozen</B> deep_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> or attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_equal (some, other) <B>implies</B> <B>Result</B>
+            both_or_none_void: (some = <B>Void</B>) <B>implies</B> (<B>Result</B> = (other = <B>Void</B>))
+            same_type: (<B>Result</B> <B>and</B> (some /= <B>Void</B>)) <B>implies</B> some.same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> deep_equal (other, some)
+</A>
+    <A NAME="f_equal"><B>frozen</B> equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to objects considered equal?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.is_equal (other))
+</A>
+    <A NAME="f_is_deep_equal"><B>frozen</B> is_deep_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`Current'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_is_equal (other) <B>implies</B> <B>Result</B>
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.is_deep_equal (<B>Current</B>)
+</A>
+    <A NAME="f_is_equal">is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object considered</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to current object?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            symmetric: <B>Result</B> <B>implies</B> other.is_equal (<B>Current</B>)
+            consistent: standard_is_equal (other) <B>implies</B> <B>Result</B>
+</A>
+    <A NAME="f_standard_equal"><B>frozen</B> standard_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical objects of the same type?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default object comparison criterion.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.standard_is_equal (other))
+</A>
+    <A NAME="f_standard_is_equal"><B>frozen</B> standard_is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object of the same type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> as current object, and field-by-field identical to it?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.standard_is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_conforms_to">conforms_to (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does type of current object conform to type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`other'<FONT COLOR="red"> (as per Eiffel: The Language, chapter 13)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+</A>
+    <A NAME="f_same_type">same_type (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is type of current object identical to type of </FONT>`other'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (conforms_to (other) <B>and</B> other.conforms_to (<B>Current</B>))
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_copy">copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Update current object using fields of object attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to </FONT>`other'<FONT COLOR="red">, so as to yield equal objects.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_equal: is_equal (other)
+</A>
+    <A NAME="f_deep_copy"><B>frozen</B> deep_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Effect equivalent to that of:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">		</FONT>copy<FONT COLOR="red"> (</FONT>`other'<FONT COLOR="red"> . </FONT>deep_twin<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (<B>Current</B>, other)
+</A>
+    <A NAME="f_deep_twin"><B>frozen</B> deep_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object structure recursively duplicated from Current.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_twin_not_void: <B>Result</B> /= <B>Void</B>
+            deep_equal: deep_equal (<B>Current</B>, <B>Result</B>)
+</A>
+    <A NAME="f_standard_copy"><B>frozen</B> standard_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy every field of </FONT>`other'<FONT COLOR="red"> onto corresponding field</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_standard_equal: standard_is_equal (other)
+</A>
+    <A NAME="f_standard_twin"><B>frozen</B> standard_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            standard_twin_not_void: <B>Result</B> /= <B>Void</B>
+            equal: standard_equal (<B>Result</B>, <B>Current</B>)
+</A>
+    <A NAME="f_twin"><B>frozen</B> twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object equal to </FONT>`Current'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>twin<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">; to change copying/twining semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            twin_not_void: <B>Result</B> /= <B>Void</B>
+            is_equal: <B>Result</B>.is_equal (<B>Current</B>)
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_default"><B>frozen</B> default: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of object's type</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_pointer"><B>frozen</B> default_pointer: POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of type </FONT>`POINTER'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Avoid the need to write </FONT>`p'<FONT COLOR="red">.</FONT>default<FONT COLOR="red"> for</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> some </FONT>`p'<FONT COLOR="red"> of type </FONT>`POINTER'<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_default_rescue">default_rescue
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process exception for routines with no Rescue clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_do_nothing"><B>frozen</B> do_nothing
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Execute a null action.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic Operations</FONT>
+
+    <A NAME="f_add_html_code">add_html_code (s: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add html code 's'.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+            code_exists: s /= <B>Void</B>
+</A>
+    <A NAME="f_insert_hidden_field">insert_hidden_field (name, value: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Insert hidden field with name 'name' and value 'value'.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+            has_form: out.substring_index ("&lt;/form&gt;", 1) &gt; 0 <B>or</B> out.substring_index ("&lt;/FORM&gt;", 1) &gt; 0
+</A>
+    <A NAME="f_replace_marker">replace_marker (a_marker, s: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace marker 'a_marker' by string 's' </FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> within the template.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do nothing if it does not exist.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>HTML_PAGE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+            not_void: a_marker /= <B>Void</B> <B>and</B> s /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Commands</FONT>
+
+    <A NAME="f_cleanup_tags"><A HREF="..\webex/html_template_view_flatshort.html#f_cleanup_tags">cleanup_tags</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_cleanup_unused_sections"><A HREF="..\webex/html_template_view_flatshort.html#f_cleanup_unused_sections">cleanup_unused_sections</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_comment_out_section"><A HREF="..\webex/html_template_view_flatshort.html#f_comment_out_section">comment_out_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+</A>
+    <A NAME="f_enable_alternative_section"><A HREF="..\webex/html_template_view_flatshort.html#f_enable_alternative_section">enable_alternative_section</A> (marker_string: STRING_8; a_number: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+            number_valid: a_number &gt; 0
+</A>
+    <A NAME="f_enable_section"><A HREF="..\webex/html_template_view_flatshort.html#f_enable_section">enable_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+</A>
+    <A NAME="f_remove_section"><A HREF="..\webex/html_template_view_flatshort.html#f_remove_section">remove_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/html_template_view_flatshort.html#f_make">make</A> (template: STRING_8)
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+        <B>require else</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+            template_file_name_valid: template /= <B>Void</B> <B>and then</B> <B>not</B> template.is_empty
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Output</FONT>
+
+    <A NAME="f_io">io: STD_FILES
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handle to standard file setup</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            io_not_void: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_print">print (some: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Write terse external representation of </FONT>`some'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> on standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_tagged_out"><B>frozen</B> tagged_out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            tagged_out_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Platform</FONT>
+
+    <A NAME="f_operating_environment">operating_environment: OPERATING_ENVIRONMENT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Objects available from the operating system</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            operating_environment_not_void: <B>Result</B> /= <B>Void</B>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> set content</FONT>
+
+    <A NAME="f_set_content"><A HREF="..\webex/view_flatshort.html#f_set_content">set_content</A> (a_content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace  content of the current HTML page with 'a_content' string</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/view_flatshort.html">VIEW</A><FONT COLOR="red">)</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Set</FONT>
+
+    <A NAME="f_replace_marker_with_file"><A HREF="..\webex/html_template_view_flatshort.html#f_replace_marker_with_file">replace_marker_with_file</A> (mark_string, filename: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace marker with the content of a text file</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+</A>
+    <A NAME="f_replace_marker_with_string"><A HREF="..\webex/html_template_view_flatshort.html#f_replace_marker_with_string">replace_marker_with_string</A> (mark_string, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace marker with content</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A><FONT COLOR="red">)</FONT>
+</A>    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/html_template_view_flatshort.html">HTML_TEMPLATE_VIEW</A>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/view_flatshort.html">VIEW</A>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>HTML_PAGE
+    page_exists: out /= <B>Void</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+    reflexive_equality: standard_is_equal (<B>Current</B>)
+    reflexive_conformance: conforms_to (<B>Current</B>)
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/error_page_view_flatshort.html">ERROR_PAGE_VIEW</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="error_page_view_chart.html">Chart</A></TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD><A HREF="error_page_view.html">Text</A></TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD>Flat contracts</TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

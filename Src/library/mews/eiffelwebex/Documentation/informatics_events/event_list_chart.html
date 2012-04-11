@@ -1,0 +1,105 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that represent a list of events.">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_list Chart</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="event_list_links.html">Relations</A></TD><TD><A HREF="event_list.html">Text</A></TD><TD><A HREF="event_list_flat.html">Flat</A></TD><TD><A HREF="event_list_short.html">Contracts</A></TD><TD><A HREF="event_list_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>class</B>
+    <A HREF="..\informatics_events/event_list_chart.html">EVENT_LIST</A>
+
+<B>General</B>
+    cluster: <A HREF="..\informatics_events/index.html">informatics_events</A>
+    description: "Objects that represent a list of events."
+    create: make
+
+<B>Ancestors</B>
+    ARRAYED_LIST [G]
+
+<B>Queries</B>
+    after: BOOLEAN<FONT COLOR="red"> -- (from LIST)</FONT>
+    before: BOOLEAN<FONT COLOR="red"> -- (from LIST)</FONT>
+    capacity: INTEGER_32<FONT COLOR="red"> -- (from ARRAY)</FONT>
+    changeable_comparison_criterion: BOOLEAN<FONT COLOR="red"> -- (from CONTAINER)</FONT>
+    count: INTEGER_32<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    cursor: ARRAYED_LIST_CURSOR<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    duplicate (n: INTEGER_32): [<B>like</B> <B>Current</B>] <A HREF="..\informatics_events/event_list_chart.html">EVENT_LIST</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    exhausted: BOOLEAN<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    Extendible: BOOLEAN<FONT COLOR="red"> -- (from DYNAMIC_CHAIN)</FONT>
+    first: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    for_all (test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>], BOOLEAN]): BOOLEAN<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    full: BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    has (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>): BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    i_th <B>alias</B> "[]" (i: INTEGER_32): [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    index: INTEGER_32<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    index_of (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>; i: INTEGER_32): INTEGER_32<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    index_set: INTEGER_INTERVAL<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    <B>infix</B> "@" (i: INTEGER_32): [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    is_empty: BOOLEAN<FONT COLOR="red"> -- (from FINITE)</FONT>
+    is_equal (other: [<B>like</B> <B>Current</B>] <A HREF="..\informatics_events/event_list_chart.html">EVENT_LIST</A>): BOOLEAN<FONT COLOR="red"> -- (from LIST)</FONT>
+    is_inserted (v: <A HREF="..\informatics_events/event_chart.html">EVENT</A>): BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    isfirst: BOOLEAN<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    islast: BOOLEAN<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    item: <A HREF="..\informatics_events/event_chart.html">EVENT</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    last: [<B>like</B> first] <A HREF="..\informatics_events/event_chart.html">EVENT</A><FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    linear_representation: LINEAR [<A HREF="..\informatics_events/event_chart.html">EVENT</A>]<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    object_comparison: BOOLEAN<FONT COLOR="red"> -- (from CONTAINER)</FONT>
+    occurrences (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>): INTEGER_32<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    off: BOOLEAN<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    prunable: BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    readable: BOOLEAN<FONT COLOR="red"> -- (from SEQUENCE)</FONT>
+    <A HREF="..\informatics_events/event_list.html#f_search_by_id">search_by_id</A> (id: NATURAL_64): <A HREF="..\informatics_events/event_chart.html">EVENT</A>
+    sequential_occurrences (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>): INTEGER_32<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    there_exists (test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>], BOOLEAN]): BOOLEAN<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    valid_cursor (p: CURSOR): BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    valid_cursor_index (i: INTEGER_32): BOOLEAN<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    valid_index (i: INTEGER_32): BOOLEAN<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    writable: BOOLEAN<FONT COLOR="red"> -- (from SEQUENCE)</FONT>
+
+<B>Commands</B>
+    <A HREF="..\informatics_events/event_list.html#f_add_event">add_event</A> (an_event: <A HREF="..\informatics_events/event_chart.html">EVENT</A>)
+    append (s: SEQUENCE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>])<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    back<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    compare_objects<FONT COLOR="red"> -- (from CONTAINER)</FONT>
+    compare_references<FONT COLOR="red"> -- (from CONTAINER)</FONT>
+    copy (other: [<B>like</B> <B>Current</B>] <A HREF="..\informatics_events/event_list_chart.html">EVENT_LIST</A>)<FONT COLOR="red"> -- (from ARRAY)</FONT>
+    <A HREF="..\informatics_events/event_list.html#f_delete_event">delete_event</A> (an_event: <A HREF="..\informatics_events/event_chart.html">EVENT</A>)
+    do_all (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>]])<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    do_if (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>]]; test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_chart.html">EVENT</A>], BOOLEAN])<FONT COLOR="red"> -- (from LINEAR)</FONT>
+    extend (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    fill (other: CONTAINER [<A HREF="..\informatics_events/event_chart.html">EVENT</A>])<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    finish<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    force (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    forth<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    go_i_th (i: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    go_to (p: CURSOR)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    make (n: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    make_filled (n: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    make_from_array (a: ARRAY [<A HREF="..\informatics_events/event_chart.html">EVENT</A>])<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    merge_left (other: ARRAYED_LIST [<A HREF="..\informatics_events/event_chart.html">EVENT</A>])<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    merge_right (other: ARRAYED_LIST [<A HREF="..\informatics_events/event_chart.html">EVENT</A>])<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    move (i: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    prune (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    prune_all (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    put (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from CHAIN)</FONT>
+    put_front (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    put_i_th (v: [<B>like</B> i_th] <A HREF="..\informatics_events/event_chart.html">EVENT</A>; i: INTEGER_32)<FONT COLOR="red"> -- (from ARRAY)</FONT>
+    put_left (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    put_right (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    remove<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    remove_left<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    remove_right<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    replace (v: [<B>like</B> first] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    resize (new_capacity: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    search (v: [<B>like</B> item] <A HREF="..\informatics_events/event_chart.html">EVENT</A>)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    start<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    swap (i: INTEGER_32)<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+    <A HREF="..\informatics_events/event_list.html#f_update_event">update_event</A> (an_event: <A HREF="..\informatics_events/event_chart.html">EVENT</A>)
+    wipe_out<FONT COLOR="red"> -- (from ARRAYED_LIST)</FONT>
+
+<TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="event_list_links.html">Relations</A></TD><TD><A HREF="event_list.html">Text</A></TD><TD><A HREF="event_list_flat.html">Flat</A></TD><TD><A HREF="event_list_short.html">Contracts</A></TD><TD><A HREF="event_list_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>

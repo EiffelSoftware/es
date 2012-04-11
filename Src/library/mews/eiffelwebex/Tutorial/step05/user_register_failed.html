@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8" /-->
+    <title>
+      Informatics Europe: General
+    </title>
+    <link href="./css/style01.css" rel="Stylesheet" type="text/css" />
+<script src="./sorttable.js" type="text/javascript">
+</script>
+  </head>
+  <body>
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="center">
+          <div id="logo">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td height="60"></td>
+              </tr>
+              <tr>
+                <td align="right">
+                  <div style="padding:0px 40px 0px 0px">
+                    Welcome, Guest&nbsp;|&nbsp; <a href="/cgi-bin/informatics_events.exe?user&amp;cmd=userform&amp;mode=register">Register</a>&nbsp;|&nbsp; <a href="/cgi-bin/informatics_events.exe?user&amp;cmd=loginform">Login</a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="mainmaster">
+            <div id="main">
+              <div id="navigation">
+                <span><a href="/cgi-bin/informatics_events.exe?event&amp;cmd=list">Home</a></span>
+              </div>
+              <div id='content'>
+                <h1>
+                  Add User
+                </h1>
+                <div id="errors_div">
+                  <table>
+                    <tr>
+                      <td valign="top">
+                        <img src="./images/err.gif" style="float:left" alt="" />
+                      </td>
+                      <td valign="middle">
+                        An email address must be specified (used as the login name).
+                        <br />
+                        Please enter your family name.
+                        <br />
+                        password should be typed in both fields
+                        <br />
+                        Please enter your first name.
+                        <br />
+                        Please specify your organization.
+                        <br />
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <form action="/cgi-bin/informatics_events.exe?user&amp;cmd=saveuser" method="post">
+                  <div>
+                    <input type="hidden" name="handler_id" value="user" />
+                  </div>
+                  <div>
+                    <input type="hidden" name="cmd" value="saveuser" />
+                  </div>
+                  <div>
+                    <input type="hidden" name="mode" value="add" />
+                  </div><!--update/new-->
+                  <table id="user_form" border="0" cellpadding="4" cellspacing="0">
+                    <tr>
+                      <td class="form_top_left">
+                        &nbsp;
+                      </td>
+                      <td class="form_top_right">
+                        &nbsp;
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand" width="200px">
+                        First name
+                      </td>
+                      <td>
+                        <input type="text" name="first_name" maxlength="25" size="50" title="First Name" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand">
+                        Family name
+                      </td>
+                      <td>
+                        <input type="text" name="last_name" maxlength="25" size="50" title="Family Name" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand">
+                        Email (username)
+                      </td>
+                      <td>
+                        <input type="text" name="email" maxlength="50" size="50" title="E-mail" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand">
+                        Password
+                      </td>
+                      <td>
+                        <input type="password" name="password" maxlength="25" size="50" title="Password" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand">
+                        Password again
+                      </td>
+                      <td>
+                        <input type="password" name="confirm_password" maxlength="25" size="50" title="Password again" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name_mand">
+                        Organization
+                      </td>
+                      <td>
+                        <input type="text" name="organization" maxlength="100" size="50" title="Institution name" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="input_name">
+                        Telephone
+                      </td>
+                      <td>
+                        <input type="text" name="telephone" maxlength="100" size="50" title="Institution name" value="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        &nbsp;
+                      </td>
+                      <td>
+                        <input type="submit" name="send" value="Add User" title="Send button" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="form_bottom_left">
+                        &nbsp;
+                      </td>
+                      <td class="form_bottom_right">
+                        &nbsp;
+                      </td>
+                    </tr>
+                  </table>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div id="bottom">
+            <div id="disclaimer">
+              <table id="t_disc" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td id="copyright">
+                    2007 - 2008, <a href="http://www.informatics-europe.org/" target="_blank">Informatics europe</a>
+                  </td>
+                  <td id="aboutus">
+                    <span><a href="/cgi-bin/informatics_events.exe?other&amp;cmd=about">about us</a></span>&nbsp;&nbsp;&nbsp; <span><a href="/cgi-bin/informatics_events.exe?other&amp;cmd=contact">Contact</a></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

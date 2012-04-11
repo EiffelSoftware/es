@@ -1,0 +1,163 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that provide a simple encryption engine">
+<META NAME="author" CONTENT="CSARDAS TEAM">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>enigma Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="enigma_chart.html">Chart</A></TD><TD><A HREF="enigma_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="enigma_flat.html">Flat</A></TD><TD><A HREF="enigma_short.html">Contracts</A></TD><TD><A HREF="enigma_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects that provide a simple encryption engine"
+    author: "CSARDAS TEAM"
+    date: "May 2007"
+    revision: "$1.0$"
+
+<B>class</B> 
+    <A HREF="..\webex/enigma.html">ENIGMA</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/encryptor.html">ENCRYPTOR</A>
+
+<B>create</B> 
+    <A HREF="..\webex/enigma.html#f_make">make</A>
+
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes</FONT>
+
+    <A NAME="f_char_to"><A HREF="..\webex/enigma.html#f_char_to">char_to</A>: HASH_TABLE [CHARACTER_8, CHARACTER_8]</A>
+
+    <A NAME="f_char_from"><A HREF="..\webex/enigma.html#f_char_from">char_from</A>: HASH_TABLE [CHARACTER_8, CHARACTER_8]</A>
+
+    <A NAME="f_key"><A HREF="..\webex/enigma.html#f_key">key</A>: INTEGER_32</A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/enigma.html#f_make">make</A> (k: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialize </FONT>`Current'<FONT COLOR="red">.</FONT>
+        <B>require else</B>
+            k &gt; -1 <B>and</B> k &lt; 10
+        <B>do</B>
+            <A HREF="..\webex/enigma.html#f_key">key</A> := k \\ 3
+            <B>create</B> <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.make (40)
+            <B>create</B> <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.make (40)
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('a', 'q')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('q', 'a')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('b', 'w')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('w', 'b')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('c', 'e')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('e', 'c')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('d', 'r')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('r', 'd')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('e', 't')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('t', 'e')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('f', 'y')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('y', 'f')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('g', 'u')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('u', 'g')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('h', 'i')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('i', 'h')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('i', 'o')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('o', 'i')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('j', 'p')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('p', 'j')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('k', 'a')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('a', 'k')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('l', 's')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('s', 'l')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('m', 'd')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('d', 'm')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('n', 'f')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('f', 'n')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('o', 'g')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('g', 'o')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('p', 'h')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('h', 'p')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('q', 'j')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('j', 'q')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('r', 'k')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('k', 'r')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('s', 'l')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('l', 's')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('t', 'z')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('z', 't')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('u', 'x')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('x', 'u')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('v', 'c')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('c', 'v')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('x', 'v')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('v', 'x')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('w', 'b')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('b', 'w')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('y', 'n')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('n', 'y')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('z', 'm')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('m', 'z')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('!', '@')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('@', '!')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('%%', '.')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put ('.', '%%')
+            <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.put ('^', ' ')
+            <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.put (' ', '^')
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> operation</FONT>
+
+    <A NAME="f_encrypt"><A HREF="..\webex/enigma.html#f_encrypt">encrypt</A> (str: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> IT ONLY STORE LOWER CASE STRING</FONT>
+        <B>require else</B>
+            str /= <B>Void</B>
+        <B>local</B>
+            size: INTEGER_32
+            i: INTEGER_32
+            e_str: STRING_8
+        <B>do</B>
+            <B>create</B> e_str.make_from_string (str)
+            e_str.to_lower
+            size := e_str.count
+            <B>create</B> <B>Result</B>.make_empty
+            <B>from</B>
+                i := 1
+            <B>until</B>
+                i &gt; size
+            <B>loop</B>
+                <B>if</B> <A HREF="..\webex/enigma.html#f_char_to">char_to</A>.has (e_str.item (i)) <B>then</B>
+                    <B>Result</B>.append_character (<A HREF="..\webex/enigma.html#f_char_to">char_to</A>.item (e_str.item (i)) + <A HREF="..\webex/enigma.html#f_key">key</A>)
+                <B>else</B>
+                    <B>Result</B>.append_character (e_str.item (i))
+                <B>end</B>
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_decrypt"><A HREF="..\webex/enigma.html#f_decrypt">decrypt</A> (str: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT>
+        <B>require else</B>
+            str /= <B>Void</B>
+        <B>local</B>
+            size: INTEGER_32
+            i: INTEGER_32
+            e_str: STRING_8
+        <B>do</B>
+            <B>create</B> e_str.make_from_string (str)
+            e_str.to_lower
+            size := e_str.count
+            <B>create</B> <B>Result</B>.make_empty
+            <B>from</B>
+                i := 1
+            <B>until</B>
+                i &gt; size
+            <B>loop</B>
+                <B>if</B> <A HREF="..\webex/enigma.html#f_char_from">char_from</A>.has (e_str.item (i) - <A HREF="..\webex/enigma.html#f_key">key</A>) <B>then</B>
+                    <B>Result</B>.append_character (<A HREF="..\webex/enigma.html#f_char_from">char_from</A>.item (e_str.item (i) - <A HREF="..\webex/enigma.html#f_key">key</A>))
+                <B>else</B>
+                    <B>Result</B>.append_character (e_str.item (i))
+                <B>end</B>
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/enigma.html">ENIGMA</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="enigma_chart.html">Chart</A></TD><TD><A HREF="enigma_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="enigma_flat.html">Flat</A></TD><TD><A HREF="enigma_short.html">Contracts</A></TD><TD><A HREF="enigma_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

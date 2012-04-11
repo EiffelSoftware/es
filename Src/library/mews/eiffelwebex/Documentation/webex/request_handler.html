@@ -1,0 +1,222 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="The abstract class used to handle a specific group of user requests">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>request_handler Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="request_handler_chart.html">Chart</A></TD><TD><A HREF="request_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="request_handler_flat.html">Flat</A></TD><TD><A HREF="request_handler_short.html">Contracts</A></TD><TD><A HREF="request_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "The abstract class used to handle a specific group of user requests"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "12.12.2007"
+    revision: "$0.6$"
+
+<B>deferred</B> <B>class</B> 
+    <A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes</FONT>
+
+    <A NAME="f_context"><A HREF="..\webex/request_handler.html#f_context">context</A>: <A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> all http environment variables</FONT>
+
+    <A NAME="f_session"><A HREF="..\webex/request_handler.html#f_session">session</A>: <A HREF="..\webex/session.html">SESSION</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> reference to actual session object</FONT>
+
+    <A NAME="f_return_page"><A HREF="..\webex/request_handler.html#f_return_page">return_page</A>: <A HREF="..\webex/view.html">VIEW</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> result html page</FONT>
+
+    <A NAME="f_processing_finished"><A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether processing should be stopped (prematured)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/request_handler.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_initialize"><A HREF="..\webex/request_handler.html#f_initialize">initialize</A> (dispatcher: <A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> initialize with parameters from dispatcher object</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_handler.html#f_make">make</A>
+            <A HREF="..\webex/request_handler.html#f_context">context</A> := dispatcher
+            <A HREF="..\webex/request_handler.html#f_session">session</A> := dispatcher.<A HREF="..\webex/request_dispatcher.html#f_session">session</A>
+            <A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A> := <B>False</B>
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> processing</FONT>
+
+    <A NAME="f_pre_processing"><A HREF="..\webex/request_handler.html#f_pre_processing">pre_processing</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed before starting process user request</FONT>
+        <B>deferred</B>
+        <B>end</B></A>
+
+    <A NAME="f_post_processing"><A HREF="..\webex/request_handler.html#f_post_processing">post_processing</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed after request processed</FONT>
+        <B>deferred</B>
+        <B>end</B></A>
+
+    <A NAME="f_handling_request"><A HREF="..\webex/request_handler.html#f_handling_request">handling_request</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed after request processed</FONT>
+        <B>deferred</B>
+        <B>end</B></A>
+
+    <A NAME="f_handler_redirection"><A HREF="..\webex/request_handler.html#f_handler_redirection">handler_redirection</A> (type: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> let another handler processing and generate</FONT>
+        <B>local</B>
+            new_handler: <A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A>
+        <B>do</B>
+            new_handler ?= <A HREF="..\webex/request_handler.html#f_instantiate_handler">instantiate_handler</A> (type)
+            <B>if</B> new_handler /= <B>Void</B> <B>then</B>
+                <A HREF="..\webex/request_handler.html#f_return_page">return_page</A> ?= new_handler.<A HREF="..\webex/request_handler.html#f_process_request">process_request</A>
+                <A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A> := <B>True</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_url_redirection"><A HREF="..\webex/request_handler.html#f_url_redirection">url_redirection</A> (url: STRING_8; is_secure: BOOLEAN)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> let another handler processing and generate</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_handler.html#f_context">context</A>.response_header.generate_http_redirection (url, is_secure)
+            <A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A> := <B>True</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> form helper</FONT>
+
+    <A NAME="f_fill_form_with_submitted_values"><A HREF="..\webex/request_handler.html#f_fill_form_with_submitted_values">fill_form_with_submitted_values</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> trying to check all fields in request url and replace corresponding tags with their values if any</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> valid only when return_page is an HTML_TEMPLATE_VIEW instance</FONT>
+        <B>local</B>
+            a_template_based_page: <A HREF="..\webex/html_template_view.html">HTML_TEMPLATE_VIEW</A>
+            i: INTEGER_32
+            field_name, field_value: STRING_8
+        <B>do</B>
+            a_template_based_page ?= <A HREF="..\webex/request_handler.html#f_return_page">return_page</A>
+            <B>if</B> a_template_based_page /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                    i := 1
+                <B>until</B>
+                    i &gt; <A HREF="..\webex/request_handler.html#f_context">context</A>.fields.count
+                <B>loop</B>
+                    field_name := <A HREF="..\webex/request_handler.html#f_context">context</A>.fields.item (i)
+                    field_value := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value (field_name)
+                    <B>if</B> <B>not</B> field_name.is_empty <B>then</B>
+                        a_template_based_page.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> (field_name, field_value)
+                    <B>end</B>
+                    i := i + 1
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> main entry</FONT>
+
+    <A NAME="f_process_request"><A HREF="..\webex/request_handler.html#f_process_request">process_request</A>: HTML_PAGE
+            <FONT COLOR="red">--</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_handler.html#f_pre_processing">pre_processing</A>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A> <B>then</B>
+                <A HREF="..\webex/request_handler.html#f_handling_request">handling_request</A>
+            <B>end</B>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_processing_finished">processing_finished</A> <B>then</B>
+                <A HREF="..\webex/request_handler.html#f_post_processing">post_processing</A>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A> <B>and</B> <B>not</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_cookie_enabled">cookie_enabled</A> <B>then</B>
+                <A HREF="..\webex/request_handler.html#f_url_rewriting">url_rewriting</A>
+            <B>end</B>
+            <B>Result</B> := <A HREF="..\webex/request_handler.html#f_return_page">return_page</A>
+        <B>ensure</B>
+            result_page_generated: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> implementation</FONT>
+
+    <A NAME="f_instantiate_handler"><A HREF="..\webex/request_handler.html#f_instantiate_handler">instantiate_handler</A> (handler_type: STRING_8): <A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on initialized handler mapping table, lookup and initialize a handler for current request</FONT>
+        <B>require</B>
+            handler_type_specified: handler_type /= <B>Void</B> <B>and</B> <B>not</B> handler_type.is_empty
+        <B>local</B>
+            handler: INTERNAL
+            type: INTEGER_32
+        <B>do</B>
+            <B>create</B> handler
+            type := handler.dynamic_type_from_string (handler_type)
+            <B>Result</B> ?= handler.new_instance_of (type)
+            <B>if</B> <B>Result</B> /= <B>Void</B> <B>then</B>
+                <B>Result</B>.<A HREF="..\webex/request_handler.html#f_initialize">initialize</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_url_rewriting"><A HREF="..\webex/request_handler.html#f_url_rewriting">url_rewriting</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> rewrite urls and forms, insert 'sid=session_id' to all url/form actions, so as to enable session support</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in certain cases post action url with field texts is not supported (z.B. on apache windows), one hidden input item will be inserted into forms</FONT>
+        <B>local</B>
+            image, url, url_with_sid: STRING_8
+            form_input_sid: STRING_8
+            start_index, end_index, href_index, endhref_index, form_index, count: INTEGER_32
+            result_view: <A HREF="..\webex/view.html">VIEW</A>
+        <B>do</B>
+            image := <A HREF="..\webex/request_handler.html#f_return_page">return_page</A>.out
+            image.replace_substring_all ("&lt;A ", "&lt;a ")
+            image.replace_substring_all (" Href=%"", " href=%"")
+            image.replace_substring_all (" HREF=%"", " href=%"")
+            href_index := 1
+            count := 0
+            <B>from</B>
+                start_index := 1
+            <B>until</B>
+                start_index = 0 <B>or</B> start_index &gt;= image.count
+            <B>loop</B>
+                start_index := image.substring_index ("&lt;a ", start_index)
+                <B>if</B> start_index /= 0 <B>then</B>
+                    end_index := image.index_of ('&gt;', start_index + 2)
+                    <B>if</B> end_index /= 0 <B>then</B>
+                        href_index := image.substring_index_in_bounds (" href=%"", start_index, end_index)
+                        <B>if</B> href_index /= 0 <B>then</B>
+                            endhref_index := image.index_of ('"', href_index + 7)
+                            <B>if</B> endhref_index /= 0 <B>and then</B> endhref_index &lt; end_index <B>then</B>
+                                url := image.substring (href_index, endhref_index - 1)
+                                <B>if</B> url.index_of ('?', 1) /= 0 <B>then</B>
+                                    url_with_sid := url + "&#38;amp;sid=" + <A HREF="..\webex/request_handler.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>
+                                <B>else</B>
+                                    url_with_sid := url + "?sid=" + <A HREF="..\webex/request_handler.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>
+                                <B>end</B>
+                                image.replace_substring_all (url, url_with_sid)
+                            <B>end</B>
+                        <B>end</B>
+                    <B>end</B>
+                    <B>check</B>
+                        end_index &gt; 0
+                    <B>end</B>
+                    start_index := end_index + 1
+                <B>end</B>
+            <B>end</B>
+            image.replace_substring_all ("&lt;Form ", "&lt;form ")
+            image.replace_substring_all ("&lt;FORM ", "&lt;form ")
+            form_input_sid := "%N&lt;div&gt;&lt;input name=%"sid%" type=%"hidden%" value=%"" + <A HREF="..\webex/request_handler.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A> + "%" /&gt;&lt;/div&gt;%N"
+            form_index := 1
+            count := 0
+            <B>from</B>
+                start_index := 1
+            <B>until</B>
+                form_index = 0
+            <B>loop</B>
+                form_index := image.substring_index ("&lt;form ", start_index)
+                <B>if</B> form_index /= 0 <B>then</B>
+                    end_index := image.index_of ('&gt;', form_index + 1)
+                    <B>if</B> end_index /= 0 <B>then</B>
+                        image.insert_string (form_input_sid, end_index + 1)
+                    <B>end</B>
+                <B>end</B>
+                start_index := form_index + 5
+            <B>end</B>
+            <B>create</B> result_view.make
+            result_view.<A HREF="..\webex/view.html#f_set_content">set_content</A> (image)
+            <A HREF="..\webex/request_handler.html#f_return_page">return_page</A> ?= result_view
+        <B>end</B></A>
+    
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="request_handler_chart.html">Chart</A></TD><TD><A HREF="request_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="request_handler_flat.html">Flat</A></TD><TD><A HREF="request_handler_short.html">Contracts</A></TD><TD><A HREF="request_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

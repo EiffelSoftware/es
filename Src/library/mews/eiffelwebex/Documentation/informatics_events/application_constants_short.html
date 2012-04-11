@@ -1,0 +1,67 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Application constants unique repository. Useful for configuring the application">
+<META NAME="author" CONTENT="Marco Piccioni">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>application_constants Contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="application_constants_chart.html">Chart</A></TD><TD><A HREF="application_constants_links.html">Relations</A></TD><TD><A HREF="application_constants.html">Text</A></TD><TD><A HREF="application_constants_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="application_constants_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Application constants unique repository. Useful for configuring the application"
+    author: "Marco Piccioni"
+    date: "$05.02.2008$"
+    revision: "$0.8.1$"
+
+<B>deferred</B> <B>class</B> <B>interface</B>
+    <A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> event status</FONT>
+
+    <A NAME="f_proposed"><A HREF="..\informatics_events/application_constants_short.html#f_proposed">proposed</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_accepted">Accepted</A><FONT COLOR="red">, </FONT><A HREF="..\informatics_events/application_constants_short.html#f_rejected">Rejected</A><FONT COLOR="red"> and </FONT><A HREF="..\informatics_events/application_constants_short.html#f_deleted">Deleted</A><FONT COLOR="red">.</FONT>
+
+    <A NAME="f_accepted"><A HREF="..\informatics_events/application_constants_short.html#f_accepted">accepted</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_proposed">Proposed</A><FONT COLOR="red">, </FONT><A HREF="..\informatics_events/application_constants_short.html#f_rejected">Rejected</A><FONT COLOR="red"> and </FONT><A HREF="..\informatics_events/application_constants_short.html#f_deleted">Deleted</A><FONT COLOR="red">.</FONT>
+
+    <A NAME="f_rejected"><A HREF="..\informatics_events/application_constants_short.html#f_rejected">rejected</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_proposed">Proposed</A><FONT COLOR="red">, </FONT><A HREF="..\informatics_events/application_constants_short.html#f_accepted">Accepted</A><FONT COLOR="red"> and </FONT><A HREF="..\informatics_events/application_constants_short.html#f_deleted">Deleted</A><FONT COLOR="red">.</FONT>
+
+    <A NAME="f_deleted"><A HREF="..\informatics_events/application_constants_short.html#f_deleted">deleted</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_proposed">Proposed</A><FONT COLOR="red">, </FONT><A HREF="..\informatics_events/application_constants_short.html#f_accepted">Accepted</A><FONT COLOR="red"> and </FONT><A HREF="..\informatics_events/application_constants_short.html#f_rejected">Rejected</A><FONT COLOR="red">.</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> user status</FONT>
+
+    <A NAME="f_user_active"><A HREF="..\informatics_events/application_constants_short.html#f_user_active">user_active</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_user_suspended">User_suspended</A><FONT COLOR="red">.</FONT>
+
+    <A NAME="f_user_suspended"><A HREF="..\informatics_events/application_constants_short.html#f_user_suspended">user_suspended</A>: INTEGER_32 <B>is</B> <B>unique</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><FONT COLOR="red"> with other unique constants </FONT><A HREF="..\informatics_events/application_constants_short.html#f_user_active">User_active</A><FONT COLOR="red">.</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> user roles</FONT>
+
+    <A NAME="f_role_guest"><A HREF="..\informatics_events/application_constants_short.html#f_role_guest">role_guest</A>: INTEGER_32 <B>is</B> 0</A>
+
+    <A NAME="f_role_normal_user"><A HREF="..\informatics_events/application_constants_short.html#f_role_normal_user">role_normal_user</A>: INTEGER_32 <B>is</B> 1</A>
+
+    <A NAME="f_role_administrator"><A HREF="..\informatics_events/application_constants_short.html#f_role_administrator">role_administrator</A>: INTEGER_32 <B>is</B> 2</A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> precreated admin account</FONT>
+
+    <A NAME="f_admin_email"><A HREF="..\informatics_events/application_constants_short.html#f_admin_email">admin_email</A>: STRING_8 <B>is</B> "admin@informatics_events.org"</A>
+
+    <A NAME="f_admin_first_name"><A HREF="..\informatics_events/application_constants_short.html#f_admin_first_name">admin_first_name</A>: STRING_8 <B>is</B> "admin"</A>
+
+    <A NAME="f_admin_last_name"><A HREF="..\informatics_events/application_constants_short.html#f_admin_last_name">admin_last_name</A>: STRING_8 <B>is</B> ""</A>
+
+    <A NAME="f_admin_password"><A HREF="..\informatics_events/application_constants_short.html#f_admin_password">admin_password</A>: STRING_8 <B>is</B> "dummy"</A>
+
+    <A NAME="f_admin_organization"><A HREF="..\informatics_events/application_constants_short.html#f_admin_organization">admin_organization</A>: STRING_8 <B>is</B> "Informatics Europe / Computer Science Department, ETH Zürich"</A>
+
+    <A NAME="f_admin_telephone"><A HREF="..\informatics_events/application_constants_short.html#f_admin_telephone">admin_telephone</A>: STRING_8 <B>is</B> "-"</A>
+    
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/application_constants_short.html">APPLICATION_CONSTANTS</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="application_constants_chart.html">Chart</A></TD><TD><A HREF="application_constants_links.html">Relations</A></TD><TD><A HREF="application_constants.html">Text</A></TD><TD><A HREF="application_constants_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="application_constants_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

@@ -1,0 +1,437 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that represent a event">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_chart.html">Chart</A></TD><TD><A HREF="event_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_flat.html">Flat</A></TD><TD><A HREF="event_short.html">Contracts</A></TD><TD><A HREF="event_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects that represent a event"
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/event.html">EVENT</A>
+
+<B>inherit</B>
+    <A HREF="..\informatics_events/application_constants.html">APPLICATION_CONSTANTS</A>
+        <B>redefine</B>
+            <A HREF="..\informatics_events/event.html#f_is_equal">is_equal</A>
+        <B>end</B>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/event.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_name"><A HREF="..\informatics_events/event.html#f_name">name</A>: STRING_8</A>
+
+    <A NAME="f_starting_date"><A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>: DATE</A>
+
+    <A NAME="f_ending_date"><A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>: DATE</A>
+
+    <A NAME="f_city"><A HREF="..\informatics_events/event.html#f_city">city</A>: STRING_8</A>
+
+    <A NAME="f_country"><A HREF="..\informatics_events/event.html#f_country">country</A>: STRING_8</A>
+
+    <A NAME="f_papers_submission_deadline"><A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>: DATE</A>
+
+    <A NAME="f_main_sponsor"><A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A>: STRING_8</A>
+
+    <A NAME="f_url"><A HREF="..\informatics_events/event.html#f_url">url</A>: STRING_8</A>
+
+    <A NAME="f_contact_name"><A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A>: STRING_8</A>
+
+    <A NAME="f_contact_email"><A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A>: STRING_8</A>
+
+    <A NAME="f_contact_role"><A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A>: STRING_8</A>
+
+    <A NAME="f_keywords"><A HREF="..\informatics_events/event.html#f_keywords">keywords</A>: ARRAYED_LIST [STRING_8]</A>
+
+    <A NAME="f_additional_sponsors"><A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A>: ARRAYED_LIST [STRING_8]</A>
+
+    <A NAME="f_short_description"><A HREF="..\informatics_events/event.html#f_short_description">short_description</A>: STRING_8</A>
+
+    <A NAME="f_conference_chair_1"><A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A>: STRING_8</A>
+
+    <A NAME="f_conference_chair_2"><A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A>: STRING_8</A>
+
+    <A NAME="f_program_committee_chair_1"><A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A>: STRING_8</A>
+
+    <A NAME="f_program_committee_chair_2"><A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A>: STRING_8</A>
+
+    <A NAME="f_organizing_chair"><A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A>: STRING_8</A>
+
+    <A NAME="f_event_status"><A HREF="..\informatics_events/event.html#f_event_status">event_status</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> See the State Pattern (GoF) for a more flexible and complex solution, in this case not needed in my opinion</FONT>
+
+    <A NAME="f_proceeding_type"><A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A>: STRING_8</A>
+
+    <A NAME="f_proceedings_publisher"><A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A>: STRING_8</A>
+
+    <A NAME="f_additional_deadline_1"><A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>: DATE</A>
+
+    <A NAME="f_additional_deadline_2"><A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>: DATE</A>
+
+    <A NAME="f_additional_deadline_3"><A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>: DATE</A>
+
+    <A NAME="f_additional_deadline_specification_1"><A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A>: STRING_8</A>
+
+    <A NAME="f_additional_deadline_specification_2"><A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A>: STRING_8</A>
+
+    <A NAME="f_additional_deadline_specification_3"><A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A>: STRING_8</A>
+
+    <A NAME="f_additional_notes"><A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A>: STRING_8</A>
+
+    <A NAME="f_id"><A HREF="..\informatics_events/event.html#f_id">id</A>: NATURAL_64</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">conference unique id</FONT>
+
+    <A NAME="f_submitted_by"><A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A>: STRING_8</A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> default creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\informatics_events/event.html#f_make">make</A>
+        <B>local</B>
+            index: INTEGER_32
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_name">name</A> := ""
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A>.make_day_month_year (1, 1, 1111)
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A>.make_day_month_year (1, 1, 1111)
+            <A HREF="..\informatics_events/event.html#f_city">city</A> := ""
+            <A HREF="..\informatics_events/event.html#f_country">country</A> := ""
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A>.make_day_month_year (1, 1, 1111)
+            <A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A> := ""
+            <A HREF="..\informatics_events/event.html#f_url">url</A> := ""
+            <A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A> := ""
+            <A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A> := ""
+            <A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A> := ""
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_keywords">keywords</A>.make (5)
+            <B>from</B>
+                index := 1
+            <B>until</B>
+                index &gt; 5
+            <B>loop</B>
+                <A HREF="..\informatics_events/event.html#f_keywords">keywords</A>.extend ("")
+                index := index + 1
+            <B>end</B>
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A>.make (5)
+            <B>from</B>
+                index := 1
+            <B>until</B>
+                index &gt; 5
+            <B>loop</B>
+                <A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A>.extend ("")
+                index := index + 1
+            <B>end</B>
+            <A HREF="..\informatics_events/event.html#f_short_description">short_description</A> := ""
+            <A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A> := ""
+            <A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A> := ""
+            <A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A> := ""
+            <A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A> := ""
+            <A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A> := ""
+            <A HREF="..\informatics_events/event.html#f_event_status">event_status</A> := <A HREF="..\informatics_events/application_constants.html#f_proposed">proposed</A>
+            <A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A> := ""
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A>.make_day_month_year (1, 1, 1111)
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A>.make_day_month_year (1, 1, 1111)
+            <B>create</B> <A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A>.make_day_month_year (1, 1, 1111)
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A> := ""
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A> := ""
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A> := ""
+            <A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A> := ""
+            <A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A> := ""
+            <A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A> := ""
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Redefinitions</FONT>
+
+    <A NAME="f_is_equal"><A HREF="..\informatics_events/event.html#f_is_equal">is_equal</A> (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">	two events are considered equal is they have the same id</FONT>
+        <B>do</B>
+            <B>Result</B> := <B>Current</B>.<A HREF="..\informatics_events/event.html#f_id">id</A> = other.<A HREF="..\informatics_events/event.html#f_id">id</A>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status setting</FONT>
+
+    <A NAME="f_set_name"><A HREF="..\informatics_events/event.html#f_set_name">set_name</A> (a_name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event name</FONT>
+        <B>require</B>
+            name_has_meaning: a_name /= <B>Void</B> <B>and then</B> (<B>not</B> a_name.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_name">name</A> := a_name
+        <B>ensure</B>
+            name_is_set: <A HREF="..\informatics_events/event.html#f_name">name</A> = a_name
+        <B>end</B></A>
+
+    <A NAME="f_set_starting_date"><A HREF="..\informatics_events/event.html#f_set_starting_date">set_starting_date</A> (a_starting_date: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event starting date</FONT>
+        <B>require</B>
+            starting_date_has_meaning: a_starting_date /= <B>Void</B>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A> := a_starting_date
+        <B>ensure</B>
+            starting_date_is_set: <A HREF="..\informatics_events/event.html#f_starting_date">starting_date</A> = a_starting_date
+        <B>end</B></A>
+
+    <A NAME="f_set_ending_date"><A HREF="..\informatics_events/event.html#f_set_ending_date">set_ending_date</A> (an_ending_date: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event ending date</FONT>
+        <B>require</B>
+            ending_date_has_meaning: an_ending_date /= <B>Void</B>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A> := an_ending_date
+        <B>ensure</B>
+            ending_date_is_set: <A HREF="..\informatics_events/event.html#f_ending_date">ending_date</A> = an_ending_date
+        <B>end</B></A>
+
+    <A NAME="f_set_city"><A HREF="..\informatics_events/event.html#f_set_city">set_city</A> (a_city: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event city</FONT>
+        <B>require</B>
+            city_has_meaning: a_city /= <B>Void</B> <B>and then</B> (<B>not</B> a_city.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_city">city</A> := a_city
+        <B>ensure</B>
+            city_is_set: <A HREF="..\informatics_events/event.html#f_city">city</A> = a_city
+        <B>end</B></A>
+
+    <A NAME="f_set_country"><A HREF="..\informatics_events/event.html#f_set_country">set_country</A> (a_country: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event country</FONT>
+        <B>require</B>
+            country_has_meaning: a_country /= <B>Void</B> <B>and then</B> (<B>not</B> a_country.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_country">country</A> := a_country
+        <B>ensure</B>
+            country_is_set: <A HREF="..\informatics_events/event.html#f_country">country</A> = a_country
+        <B>end</B></A>
+
+    <A NAME="f_set_papers_submission_deadline"><A HREF="..\informatics_events/event.html#f_set_papers_submission_deadline">set_papers_submission_deadline</A> (a_papers_submission_deadline: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets papers submission deadline</FONT>
+        <B>require</B>
+            papers_submission_deadline_has_meaning: a_papers_submission_deadline /= <B>Void</B>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A> := a_papers_submission_deadline
+        <B>ensure</B>
+            papers_submission_deadline_is_set: <A HREF="..\informatics_events/event.html#f_papers_submission_deadline">papers_submission_deadline</A> = a_papers_submission_deadline
+        <B>end</B></A>
+
+    <A NAME="f_set_main_sponsor"><A HREF="..\informatics_events/event.html#f_set_main_sponsor">set_main_sponsor</A> (the_main_sponsor: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event main sponsor</FONT>
+        <B>require</B>
+            main_sponsor_has_meaning: the_main_sponsor /= <B>Void</B> <B>and then</B> (<B>not</B> the_main_sponsor.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A> := the_main_sponsor
+        <B>ensure</B>
+            main_sponsor_is_set: <A HREF="..\informatics_events/event.html#f_main_sponsor">main_sponsor</A> = the_main_sponsor
+        <B>end</B></A>
+
+    <A NAME="f_set_url"><A HREF="..\informatics_events/event.html#f_set_url">set_url</A> (an_url: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event url</FONT>
+        <B>require</B>
+            url_has_meaning: an_url /= <B>Void</B> <B>and then</B> (<B>not</B> an_url.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_url">url</A> := an_url
+        <B>ensure</B>
+            url_is_set: <A HREF="..\informatics_events/event.html#f_url">url</A> = an_url
+        <B>end</B></A>
+
+    <A NAME="f_set_contact_name"><A HREF="..\informatics_events/event.html#f_set_contact_name">set_contact_name</A> (a_contact_name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event contact_name</FONT>
+        <B>require</B>
+            contact_name_has_meaning: a_contact_name /= <B>Void</B> <B>and then</B> (<B>not</B> a_contact_name.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A> := a_contact_name
+        <B>ensure</B>
+            contact_name_is_set: <A HREF="..\informatics_events/event.html#f_contact_name">contact_name</A> = a_contact_name
+        <B>end</B></A>
+
+    <A NAME="f_set_contact_email"><A HREF="..\informatics_events/event.html#f_set_contact_email">set_contact_email</A> (an_email: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event contact email</FONT>
+        <B>require</B>
+            contact_email_has_meaning: an_email /= <B>Void</B> <B>and then</B> (<B>not</B> an_email.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A> := an_email
+        <B>ensure</B>
+            contact_email_is_set: <A HREF="..\informatics_events/event.html#f_contact_email">contact_email</A> = an_email
+        <B>end</B></A>
+
+    <A NAME="f_set_contact_role"><A HREF="..\informatics_events/event.html#f_set_contact_role">set_contact_role</A> (a_contact_role: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event contact_role</FONT>
+        <B>require</B>
+            contact_role_has_meaning: a_contact_role /= <B>Void</B> <B>and then</B> (<B>not</B> a_contact_role.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A> := a_contact_role
+        <B>ensure</B>
+            contact_role_is_set: <A HREF="..\informatics_events/event.html#f_contact_role">contact_role</A> = a_contact_role
+        <B>end</B></A>
+
+    <A NAME="f_set_keywords"><A HREF="..\informatics_events/event.html#f_set_keywords">set_keywords</A> (some_keywords: ARRAYED_LIST [STRING_8])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event keywords</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_keywords">keywords</A> := some_keywords
+        <B>ensure</B>
+            keywords_are_set: <A HREF="..\informatics_events/event.html#f_keywords">keywords</A> = some_keywords
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_sponsors"><A HREF="..\informatics_events/event.html#f_set_additional_sponsors">set_additional_sponsors</A> (some_other_sponsors: ARRAYED_LIST [STRING_8])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event additional_sponsors</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> := some_other_sponsors
+        <B>ensure</B>
+            additional_sponsors_are_set: <A HREF="..\informatics_events/event.html#f_additional_sponsors">additional_sponsors</A> = some_other_sponsors
+        <B>end</B></A>
+
+    <A NAME="f_set_short_description"><A HREF="..\informatics_events/event.html#f_set_short_description">set_short_description</A> (a_description: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event short description</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_short_description">short_description</A> := a_description
+        <B>ensure</B>
+            country_is_set: <A HREF="..\informatics_events/event.html#f_short_description">short_description</A> = a_description
+        <B>end</B></A>
+
+    <A NAME="f_set_conference_chair_1"><A HREF="..\informatics_events/event.html#f_set_conference_chair_1">set_conference_chair_1</A> (a_conference_chair: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets conference_chair_1</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A> := a_conference_chair
+        <B>ensure</B>
+            conference_chair_1_is_set: <A HREF="..\informatics_events/event.html#f_conference_chair_1">conference_chair_1</A> = a_conference_chair
+        <B>end</B></A>
+
+    <A NAME="f_set_conference_chair_2"><A HREF="..\informatics_events/event.html#f_set_conference_chair_2">set_conference_chair_2</A> (a_conference_chair: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets conference_chair_2</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A> := a_conference_chair
+        <B>ensure</B>
+            conference_chair_2_is_set: <A HREF="..\informatics_events/event.html#f_conference_chair_2">conference_chair_2</A> = a_conference_chair
+        <B>end</B></A>
+
+    <A NAME="f_set_program_committee_chair_1"><A HREF="..\informatics_events/event.html#f_set_program_committee_chair_1">set_program_committee_chair_1</A> (a_program_committee_chair: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets program_committee_chair_1</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A> := a_program_committee_chair
+        <B>ensure</B>
+            program_committee_chair_1_is_set: <A HREF="..\informatics_events/event.html#f_program_committee_chair_1">program_committee_chair_1</A> = a_program_committee_chair
+        <B>end</B></A>
+
+    <A NAME="f_set_program_committee_chair_2"><A HREF="..\informatics_events/event.html#f_set_program_committee_chair_2">set_program_committee_chair_2</A> (a_program_committee_chair: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets program_committee_chair_2</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A> := a_program_committee_chair
+        <B>ensure</B>
+            program_committee_chair_2_is_set: <A HREF="..\informatics_events/event.html#f_program_committee_chair_2">program_committee_chair_2</A> = a_program_committee_chair
+        <B>end</B></A>
+
+    <A NAME="f_set_organizing_chair"><A HREF="..\informatics_events/event.html#f_set_organizing_chair">set_organizing_chair</A> (an_organizing_chair: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets organizing_chair</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A> := an_organizing_chair
+        <B>ensure</B>
+            organizing_chair_is_set: <A HREF="..\informatics_events/event.html#f_organizing_chair">organizing_chair</A> = an_organizing_chair
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_1"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_1">set_additional_deadline_1</A> (an_additional_deadline: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event first additional deadline</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A> := an_additional_deadline
+        <B>ensure</B>
+            additional_deadline_1_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_1">additional_deadline_1</A> = an_additional_deadline
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_2"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_2">set_additional_deadline_2</A> (an_additional_deadline: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event second additional deadline</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A> := an_additional_deadline
+        <B>ensure</B>
+            additional_deadline_2_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_2">additional_deadline_2</A> = an_additional_deadline
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_3"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_3">set_additional_deadline_3</A> (an_additional_deadline: DATE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event third additional deadline</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A> := an_additional_deadline
+        <B>ensure</B>
+            additional_deadline_3_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_3">additional_deadline_3</A> = an_additional_deadline
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_specification_1"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_1">set_additional_deadline_specification_1</A> (an_additional_deadline_specification: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets first additional_deadline_specification</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A> := an_additional_deadline_specification
+        <B>ensure</B>
+            additional_deadline_specification_1_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_1">additional_deadline_specification_1</A> = an_additional_deadline_specification
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_specification_2"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_2">set_additional_deadline_specification_2</A> (an_additional_deadline_specification: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets second additional_deadline_specification</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A> := an_additional_deadline_specification
+        <B>ensure</B>
+            additional_deadline_specification_2_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_2">additional_deadline_specification_2</A> = an_additional_deadline_specification
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_deadline_specification_3"><A HREF="..\informatics_events/event.html#f_set_additional_deadline_specification_3">set_additional_deadline_specification_3</A> (an_additional_deadline_specification: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets third additional_deadline_specification</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A> := an_additional_deadline_specification
+        <B>ensure</B>
+            additional_deadline_specification_3_is_set: <A HREF="..\informatics_events/event.html#f_additional_deadline_specification_3">additional_deadline_specification_3</A> = an_additional_deadline_specification
+        <B>end</B></A>
+
+    <A NAME="f_set_additional_notes"><A HREF="..\informatics_events/event.html#f_set_additional_notes">set_additional_notes</A> (some_additional_notes: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets third additional_deadline_specification</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A> := some_additional_notes
+        <B>ensure</B>
+            additional_notes_are_set: <A HREF="..\informatics_events/event.html#f_additional_notes">additional_notes</A> = some_additional_notes
+        <B>end</B></A>
+
+    <A NAME="f_set_status"><A HREF="..\informatics_events/event.html#f_set_status">set_status</A> (a_status: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event status of approval</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_event_status">event_status</A> := a_status
+        <B>ensure</B>
+            status_of_approval_is_set: <A HREF="..\informatics_events/event.html#f_event_status">event_status</A> = a_status
+        <B>end</B></A>
+
+    <A NAME="f_set_proceeding_type"><A HREF="..\informatics_events/event.html#f_set_proceeding_type">set_proceeding_type</A> (a_type: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets conference proceedings to be at conference (True) or post conference (False)</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A> := a_type
+        <B>ensure</B>
+            proceeding_type_is_set: <A HREF="..\informatics_events/event.html#f_proceeding_type">proceeding_type</A> = a_type
+        <B>end</B></A>
+
+    <A NAME="f_set_proceedings_publisher"><A HREF="..\informatics_events/event.html#f_set_proceedings_publisher">set_proceedings_publisher</A> (a_proceedings_publisher: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets proceedings_publisher name</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A> := a_proceedings_publisher
+        <B>ensure</B>
+            proceedings_publisher_is_set: <A HREF="..\informatics_events/event.html#f_proceedings_publisher">proceedings_publisher</A> = a_proceedings_publisher
+        <B>end</B></A>
+
+    <A NAME="f_set_id"><A HREF="..\informatics_events/event.html#f_set_id">set_id</A> (an_id: NATURAL_64)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets event id</FONT>
+        <B>require</B>
+            an_id_has_meaning: an_id &gt; 0
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_id">id</A> := an_id
+        <B>ensure</B>
+            id_is_set: <A HREF="..\informatics_events/event.html#f_id">id</A> = an_id
+        <B>end</B></A>
+
+    <A NAME="f_set_submitter"><A HREF="..\informatics_events/event.html#f_set_submitter">set_submitter</A> (an_author: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets author</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A> := an_author
+        <B>ensure</B>
+            submitter_is_set: <A HREF="..\informatics_events/event.html#f_submitted_by">submitted_by</A> = an_author
+        <B>end</B></A>
+    
+<B>invariant</B>
+    event_id_non_negative: <A HREF="..\informatics_events/event.html#f_id">id</A> &gt;= 0
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event.html">EVENT</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_chart.html">Chart</A></TD><TD><A HREF="event_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_flat.html">Flat</A></TD><TD><A HREF="event_short.html">Contracts</A></TD><TD><A HREF="event_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

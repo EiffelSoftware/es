@@ -1,0 +1,529 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="handler for user related requests">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>user_handler Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_handler_chart.html">Chart</A></TD><TD><A HREF="user_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_handler_flat.html">Flat</A></TD><TD><A HREF="user_handler_short.html">Contracts</A></TD><TD><A HREF="user_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "handler for user related requests"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "$05.02.2008$"
+    revision: "$0.8.1$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/user_handler.html">USER_HANDLER</A>
+
+<B>inherit</B>
+    <A HREF="..\informatics_events/informatics_handler.html">INFORMATICS_HANDLER</A>
+        <B>redefine</B>
+            <A HREF="..\informatics_events/user_handler.html#f_post_processing">post_processing</A>
+        <B>end</B>
+
+    <A HREF="..\informatics_events/application_constants.html">APPLICATION_CONSTANTS</A>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/informatics_handler.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> process request</FONT>
+
+    <A NAME="f_handling_request"><A HREF="..\informatics_events/user_handler.html#f_handling_request">handling_request</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> dispatching requests to relevant handling routines, processing request</FONT>
+        <B>require else</B>
+            <A HREF="..\webex/request_handler.html#f_context">context</A> /= <B>Void</B>
+        <B>do</B>
+            <B>create</B> <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_template">template</A>)
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("login") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_authenticate_user">authenticate_user</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("submit") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_create_update_user_account">create_update_user_account</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("userform") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_display_user_form">display_user_form</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("loginform") <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("USER_ID", "")
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("details") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_display_user_details">display_user_details</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("delete") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_delete_user_account">delete_user_account</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                <A HREF="..\informatics_events/user_handler.html#f_admin_user_list">admin_user_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("suspend") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_suspend_user_account">suspend_user_account</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                <A HREF="..\informatics_events/user_handler.html#f_admin_user_list">admin_user_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("activate") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_activate_user_account">activate_user_account</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                <A HREF="..\informatics_events/user_handler.html#f_admin_user_list">admin_user_list</A>
+            <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_equal ("list") <B>then</B>
+                <A HREF="..\informatics_events/user_handler.html#f_admin_user_list">admin_user_list</A>
+            <B>else</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_post_processing"><A HREF="..\informatics_events/user_handler.html#f_post_processing">post_processing</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks for user related pages</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ORGANIZATION", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("TELEPHONE", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("PASSWORD", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_password">password</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("CONFIRM_PASSWORD", <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_password">password</A>)
+            <B>Precursor</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> implementation</FONT>
+
+    <A NAME="f_format_user_for_adminlist"><A HREF="..\informatics_events/user_handler.html#f_format_user_for_adminlist">format_user_for_adminlist</A> (a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>; odd_row: BOOLEAN): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> format user information into a &lt;td&gt; row for user administration view</FONT>
+        <B>local</B>
+            left_border_class, mid_class, right_border_class: STRING_8
+            edit, suspend, delete, role: STRING_8
+            img_yes, img_no, img_suspended: STRING_8
+        <B>do</B>
+            <B>if</B> odd_row <B>then</B>
+                left_border_class := "user_row_odd_left_border"
+                mid_class := "user_row_odd"
+                right_border_class := "user_row_odd_right_border"
+            <B>else</B>
+                left_border_class := "user_row_even_left_border"
+                mid_class := "user_row_even"
+                right_border_class := "user_row_even_right_border"
+            <B>end</B>
+            img_yes := "&lt;img src=%"{#IMAGE_PATH#}yes.gif%" alt=%"%" /&gt;"
+            img_no := "&lt;img src=%"{#IMAGE_PATH#}no.gif%" alt=%"%" /&gt;"
+            <B>if</B> <B>not</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_status">status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_user_suspended">user_suspended</A>) <B>then</B>
+                img_suspended := img_yes
+                suspend := "&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=suspend&#38;amp;user_id=" + a_user.<A HREF="..\webex/user.html#f_username">username</A> + "%"&gt;Suspend&lt;/a&gt;"
+            <B>else</B>
+                img_suspended := img_no
+                suspend := "&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=activate&#38;amp;user_id=" + a_user.<A HREF="..\webex/user.html#f_username">username</A> + "%"&gt;Activate&lt;/a&gt;"
+            <B>end</B>
+            <B>if</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                role := "Administrator"
+            <B>else</B>
+                role := "User"
+            <B>end</B>
+            edit := "&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=userform&#38;amp;mode=edit&#38;amp;user_id=" + a_user.<A HREF="..\webex/user.html#f_username">username</A> + "%"&gt;Edit&lt;/a&gt;"
+            delete := "&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=delete&#38;amp;user_id=" + a_user.<A HREF="..\webex/user.html#f_username">username</A> + "%"&gt;Delete&lt;/a&gt;"
+            <B>create</B> <B>Result</B>.make_empty
+            <B>Result</B>.append ("&lt;tr&gt;&lt;td class=%"" + left_border_class + "%"&gt;&lt;a href=%"{#CGI_FILE_NAME#}?user&#38;amp;cmd=details&#38;amp;user_id=" + a_user.<A HREF="..\webex/user.html#f_username">username</A> + "%"&gt;" + a_user.<A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A> + " " + a_user.<A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A> + "&lt;/a&gt;&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + a_user.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + a_user.<A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A> + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%"&gt;" + role + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"center%"&gt;" + img_suspended + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"right%"&gt;" + edit + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + mid_class + "%" align=%"right%"&gt;" + suspend + "&lt;/td&gt;%N")
+            <B>Result</B>.append ("  &lt;td class=%"" + right_border_class + "%" align=%"right%"&gt;" + delete + "&lt;/td&gt;%N&lt;/tr&gt;%N")
+        <B>end</B></A>
+
+    <A NAME="f_admin_user_list"><A HREF="..\informatics_events/user_handler.html#f_admin_user_list">admin_user_list</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate the user administation view</FONT>
+        <B>local</B>
+            table_content: STRING_8
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+            odd_row: BOOLEAN
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>end</B>
+            <B>create</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+            <B>create</B> table_content.make_empty
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_count">user_count</A> &gt; 0 <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.start
+                odd_row := <B>True</B>
+                <B>from</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.start
+                <B>until</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.after
+                <B>loop</B>
+                    a_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.item_for_iteration
+                    table_content.append (<A HREF="..\informatics_events/user_handler.html#f_format_user_for_adminlist">format_user_for_adminlist</A> (a_user, odd_row))
+                    <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.forth
+                    odd_row := <B>not</B> odd_row
+                <B>end</B>
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("USER_LIST", table_content)
+        <B>end</B></A>
+
+    <A NAME="f_authenticate_user"><A HREF="..\informatics_events/user_handler.html#f_authenticate_user">authenticate_user</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate "login" form and authenticate user</FONT>
+        <B>local</B>
+            error_messages: HASH_TABLE [STRING_8, STRING_8]
+            error_string: STRING_8
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+        <B>do</B>
+            error_messages := <A HREF="..\informatics_events/user_handler.html#f_validate_login_form">validate_login_form</A>
+            <B>if</B> error_messages.count = 0 <B>then</B>
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_is_user_authentication_valid">is_user_authentication_valid</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"), <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("password")) <B>then</B>
+                    a_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                    <B>if</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_status">status</A> = <A HREF="..\informatics_events/application_constants.html#f_user_suspended">user_suspended</A> <B>then</B>
+                        error_messages.put ("User account &lt;b&gt;" + <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id") + "&lt;/b&gt; is suspended.&lt;br /&gt;Please contact administrator for further information.", "Account Suspended")
+                    <B>else</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> ("AUTHENTICATION_FORM", 1)
+                        <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A> ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                        <B>check</B>
+                            actual_user_updated: <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A> /= <B>Void</B> <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>.is_equal (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                        <B>end</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_email">set_email</A> (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+                        <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_username">set_username</A> (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+                        <A HREF="..\webex/request_handler.html#f_session">session</A>.<A HREF="..\webex/session.html#f_set_expiration_after_seconds">set_expiration_after_seconds</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A>)
+                    <B>end</B>
+                <B>else</B>
+                    error_messages.put ("Invalid password for " + <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id") + ". Please try again.", "Password")
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> error_messages.count &gt; 0 <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("VALIDATION_ERROR_MESSAGES")
+                error_string := <A HREF="..\informatics_events/informatics_handler.html#f_expand_error_string">expand_error_string</A> (error_messages)
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ERROR_MESSAGES", error_string)
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("USER_ID", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_create_update_user_account"><A HREF="..\informatics_events/user_handler.html#f_create_update_user_account">create_update_user_account</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate user form, create/update an user account if ok</FONT>
+        <B>local</B>
+            error_messages: HASH_TABLE [STRING_8, STRING_8]
+            error_string: STRING_8
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+            email: STRING_8
+        <B>do</B>
+            <B>create</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+            error_messages := <A HREF="..\informatics_events/user_handler.html#f_validate_user_form">validate_user_form</A> (a_user)
+            <B>if</B> error_messages.count = 0 <B>then</B>
+                email := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("email")
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_guest">role_guest</A> <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (email) <B>then</B>
+                    error_messages.put ("Given email address is already registered.", "Email")
+                <B>elseif</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_normal_user">role_normal_user</A> <B>and then</B> (<B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>.is_equal (email) <B>and</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (email)) <B>then</B>
+                    error_messages.put ("Given email address is already registered by another user.", "Email")
+                <B>else</B>
+                    <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                        <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("add") <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> ("USER_FORM", 1)
+                            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>then</B>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Register")
+                            <B>else</B>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Add User")
+                            <B>end</B>
+                        <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("edit") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("update") <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> ("USER_FORM", 2)
+                            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("edit") <B>then</B>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit User")
+                            <B>else</B>
+                                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit Profile")
+                            <B>end</B>
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                        a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_role">set_role</A> (<A HREF="..\informatics_events/application_constants.html#f_role_normal_user">role_normal_user</A>)
+                        a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_user_active">user_active</A>)
+                    <B>end</B>
+                    <B>if</B> <B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (a_user.<A HREF="..\webex/user.html#f_username">username</A>) <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_add_user">add_user</A> (a_user)
+                    <B>else</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_update_user">update_user</A> (a_user)
+                    <B>end</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_persist_data">persist_data</A>
+                    <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_username">set_username</A> (a_user.<A HREF="..\webex/user.html#f_username">username</A>)
+                        <A HREF="..\informatics_events/informatics_handler.html#f_my_session">my_session</A>.<A HREF="..\informatics_events/informatics_session.html#f_set_email">set_email</A> (a_user.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+                        <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A> := a_user
+                    <B>end</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("EMAIL_ADDRESS", a_user.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> error_messages.count &gt; 0 <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("VALIDATION_ERROR_MESSAGES")
+                error_string := <A HREF="..\informatics_events/informatics_handler.html#f_expand_error_string">expand_error_string</A> (error_messages)
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ERROR_MESSAGES", error_string)
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                    <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("add") <B>then</B>
+                        <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Register")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Register")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "register")
+                        <B>else</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Add User")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Add User")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "add")
+                        <B>end</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("READONLY", "")
+                    <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("edit") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit User")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "edit")
+                    <B>else</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit Profile")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "update")
+                    <B>end</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("READONLY", "readonly=%"readonly%"")
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("first_name") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("first_name", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("first_name"))
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("last_name") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("last_name", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("last_name"))
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("email") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("email_address", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("email"))
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("email", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("email"))
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("organization") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("organization", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("organization"))
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("telephone") <B>then</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("telephone", <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("telephone"))
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_display_user_form"><A HREF="..\informatics_events/user_handler.html#f_display_user_form">display_user_form</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> update and display user registration form based on actual context (register / admin / update mode)</FONT>
+        <B>local</B>
+            edit_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+            user_id: STRING_8
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>or</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("add") <B>then</B>
+                    <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("register") <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Register")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Register")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "register")
+                    <B>else</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Add User")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Add User")
+                        <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "add")
+                    <B>end</B>
+                    <B>create</B> edit_user.<A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+                    <A HREF="..\informatics_events/user_handler.html#f_restore_user_data">restore_user_data</A> (edit_user)
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("READONLY", "")
+                <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("edit") <B>and then</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>then</B>
+                    user_id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> ("ADMINISTRATOR_INFORMATION")
+                    <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+                    <B>elseif</B> <B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (user_id) <B>then</B>
+                        <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+                    <B>else</B>
+                        edit_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (user_id)
+                        <B>if</B> edit_user = <B>Void</B> <B>then</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_invalid_request_page">redirect_to_invalid_request_page</A>
+                        <B>else</B>
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit User")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "edit")
+                            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("READONLY", "readonly=%"readonly%"")
+                            <A HREF="..\informatics_events/user_handler.html#f_restore_user_data">restore_user_data</A> (edit_user)
+                        <B>end</B>
+                    <B>end</B>
+                <B>else</B>
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("FORM_TITLE", "Edit Profile")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BUTTON_TEXT", "Save")
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("SAVE_MODE", "update")
+                    <A HREF="..\informatics_events/user_handler.html#f_restore_user_data">restore_user_data</A> (<A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>)
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("READONLY", "readonly=%"readonly%"")
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_display_user_details"><A HREF="..\informatics_events/user_handler.html#f_display_user_details">display_user_details</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> update the "User details" view</FONT>
+        <B>local</B>
+            s, user_id: STRING_8
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>and then</B> (<A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>and then</B> <B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>.is_equal (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id"))) <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>else</B>
+                <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                    s := "{
+                    						&lt;td style="padding: 0px 10px 0px 0px"&gt;
+                    	                      &lt;a href="{#CGI_FILE_NAME#}?user&#38;amp;cmd=userform&#38;amp;mode=edit&#38;amp;user_id={#user_id#}"&gt;Edit&lt;/a&gt;
+                    	                    &lt;/td&gt;
+                    	                    &lt;td&gt;
+                    	                      &lt;a href="{#CGI_FILE_NAME#}?user&#38;amp;cmd=delete&#38;amp;user_id={#user_id#}"&gt;Delete&lt;/a&gt;
+                    	                    &lt;/td&gt;
+                    }"
+                    <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("ADMIN_USER_COMMAND", s)
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("user_id") <B>then</B>
+                    user_id := <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id")
+                <B>else</B>
+                    user_id := <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\webex/user.html#f_username">username</A>
+                <B>end</B>
+                a_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (user_id)
+                <B>if</B> a_user /= <B>Void</B> <B>then</B>
+                    <A HREF="..\informatics_events/user_handler.html#f_restore_user_data">restore_user_data</A> (a_user)
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_delete_user_account"><A HREF="..\informatics_events/user_handler.html#f_delete_user_account">delete_user_account</A> (user_id: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> delete an user account</FONT>
+        <B>require</B>
+            user_exists: user_id /= <B>Void</B> <B>and then</B> <B>not</B> user_id.is_empty <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (user_id)
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>else</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_delete_user_by_name">delete_user_by_name</A> (user_id)
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_persist_data">persist_data</A>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_suspend_user_account"><A HREF="..\informatics_events/user_handler.html#f_suspend_user_account">suspend_user_account</A> (user_id: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> suspend an user account</FONT>
+        <B>require</B>
+            user_exists: user_id /= <B>Void</B> <B>and then</B> <B>not</B> user_id.is_empty <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (user_id)
+        <B>local</B>
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>else</B>
+                a_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (user_id)
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_user_suspended">user_suspended</A>)
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_update_user">update_user</A> (a_user)
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_persist_data">persist_data</A>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_activate_user_account"><A HREF="..\informatics_events/user_handler.html#f_activate_user_account">activate_user_account</A> (user_id: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> activate a suspended user account</FONT>
+        <B>require</B>
+            user_exists: user_id /= <B>Void</B> <B>and then</B> <B>not</B> user_id.is_empty <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (user_id)
+        <B>local</B>
+            a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/informatics_handler.html#f_actual_user">actual_user</A>.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> /= <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_redirect_to_permission_denied_page">redirect_to_permission_denied_page</A>
+            <B>else</B>
+                a_user ?= <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_get_user_by_name">get_user_by_name</A> (user_id)
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_user_active">user_active</A>)
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_update_user">update_user</A> (a_user)
+                <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_persist_data">persist_data</A>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> form processing</FONT>
+
+    <A NAME="f_restore_user_data"><A HREF="..\informatics_events/user_handler.html#f_restore_user_data">restore_user_data</A> (a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> fill user registration form with given user information</FONT>
+        <B>local</B>
+            role: STRING_8
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("first_name", a_user.<A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("last_name", a_user.<A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("user_name", a_user.<A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A> + " " + a_user.<A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("email", a_user.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("user_id", a_user.<A HREF="..\informatics_events/informatics_user.html#f_email">email</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("password", a_user.<A HREF="..\webex/user.html#f_password">password</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("confirm_password", a_user.<A HREF="..\webex/user.html#f_password">password</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("organization", a_user.<A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A>)
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("telephone", a_user.<A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A>)
+            <B>if</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = <A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A> <B>then</B>
+                role := "&lt;option selected=%"selected%" value=%"Administrator%"&gt;Administrator&lt;/option&gt;"
+            <B>else</B>
+                role := "&lt;option selected=%"selected%" value=%"User%"&gt;User&lt;/option&gt;"
+            <B>end</B>
+            <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("user_role", role)
+            <B>if</B> a_user.<A HREF="..\informatics_events/informatics_user.html#f_status">status</A>.is_equal (<A HREF="..\informatics_events/application_constants.html#f_user_suspended">user_suspended</A>) <B>then</B>
+                <A HREF="..\informatics_events/informatics_handler.html#f_return_view">return_view</A>.<A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("suspend", "checked=%"checked%"")
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_validate_login_form"><A HREF="..\informatics_events/user_handler.html#f_validate_login_form">validate_login_form</A>: HASH_TABLE [STRING_8, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate login form, return a table filled with validation failure messages if any</FONT>
+        <B>require</B>
+            environment_set: <A HREF="..\webex/request_handler.html#f_context">context</A> /= <B>Void</B>
+        <B>local</B>
+            validator: <A HREF="..\webex/form_validator.html">FORM_VALIDATOR</A>
+            error_string_table: HASH_TABLE [STRING_8, STRING_8]
+        <B>do</B>
+            <B>create</B> validator.<A HREF="..\webex/form_validator.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>)
+            <B>create</B> error_string_table.make (100)
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("user_id") <B>then</B>
+                error_string_table.put ("Please enter your registered email address.", "Email")
+            <B>else</B>
+                <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_email_valid">is_email_valid</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("user_id")) <B>then</B>
+                    error_string_table.put ("Given email address seems not valid.", "Email")
+                <B>elseif</B> <B>not</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("user_id")) <B>then</B>
+                    error_string_table.put ("Given email address is not registered.", "Email")
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("password") <B>then</B>
+                error_string_table.put ("please enter the password.", "Password")
+            <B>end</B>
+            <B>Result</B> := error_string_table
+        <B>end</B></A>
+
+    <A NAME="f_validate_user_form"><A HREF="..\informatics_events/user_handler.html#f_validate_user_form">validate_user_form</A> (a_user: <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>): HASH_TABLE [STRING_8, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> validate user registation form, , return a table filled with validation failure messages if any</FONT>
+        <B>require</B>
+            environment_set: <A HREF="..\webex/request_handler.html#f_context">context</A> /= <B>Void</B>
+        <B>local</B>
+            validator: <A HREF="..\webex/form_validator.html">FORM_VALIDATOR</A>
+            error_string_table: HASH_TABLE [STRING_8, STRING_8]
+        <B>do</B>
+            <B>create</B> validator.<A HREF="..\webex/form_validator.html#f_make">make</A> (<A HREF="..\webex/request_handler.html#f_context">context</A>)
+            <B>create</B> error_string_table.make (100)
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("email") <B>then</B>
+                error_string_table.put ("An email address must be specified (used as the login name).", "Email")
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_email">set_email</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("email"))
+                a_user.<A HREF="..\webex/user.html#f_set_username">set_username</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("email"))
+                <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_email_valid">is_email_valid</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("email")) <B>then</B>
+                    error_string_table.put ("Given email address seems not valid.", "Email")
+                <B>elseif</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.field_defined ("mode") <B>then</B>
+                    <B>if</B> <A HREF="..\webex/request_handler.html#f_context">context</A>.text_field_value ("mode").is_equal ("add") <B>and then</B> <A HREF="..\informatics_events/informatics_handler.html#f_user_manager">user_manager</A>.<A HREF="..\webex/user_manager.html#f_username_defined">username_defined</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("email")) <B>then</B>
+                        error_string_table.put ("Given email address is already registered.", "Email")
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("first_name") <B>then</B>
+                error_string_table.put ("Please enter your first name.", "First name")
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_first_name">set_first_name</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("first_name"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("last_name") <B>then</B>
+                error_string_table.put ("Please enter your family name.", "Family name")
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_last_name">set_last_name</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("last_name"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("organization") <B>then</B>
+                error_string_table.put ("Please specify your organization.", "Organization")
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_organization">set_organization</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("organization"))
+            <B>end</B>
+            <B>if</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("password") <B>or</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> ("confirm_password") <B>then</B>
+                error_string_table.put ("password should be typed in both fields", "Password")
+            <B>elseif</B> <B>not</B> validator.<A HREF="..\webex/form_validator.html#f_are_fields_equal">are_fields_equal</A> ("password", "confirm_password") <B>then</B>
+                error_string_table.put ("typed passwords not match each other", "Password")
+            <B>else</B>
+                a_user.<A HREF="..\webex/user.html#f_set_password">set_password</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("password"))
+            <B>end</B>
+            a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_telephone">set_telephone</A> (validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("telephone"))
+            <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("user_role").is_equal ("Administrator") <B>then</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_role">set_role</A> (<A HREF="..\informatics_events/application_constants.html#f_role_administrator">role_administrator</A>)
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_role">set_role</A> (<A HREF="..\informatics_events/application_constants.html#f_role_normal_user">role_normal_user</A>)
+            <B>end</B>
+            <B>if</B> validator.<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> ("suspend").is_equal ("1") <B>then</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_user_suspended">user_suspended</A>)
+            <B>else</B>
+                a_user.<A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (<A HREF="..\informatics_events/application_constants.html#f_user_active">user_active</A>)
+            <B>end</B>
+            <B>Result</B> := error_string_table
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/user_handler.html">USER_HANDLER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_handler_chart.html">Chart</A></TD><TD><A HREF="user_handler_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_handler_flat.html">Flat</A></TD><TD><A HREF="user_handler_short.html">Contracts</A></TD><TD><A HREF="user_handler_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

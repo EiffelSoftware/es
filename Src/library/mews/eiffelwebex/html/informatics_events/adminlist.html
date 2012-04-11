@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8" /-->
+    <title>
+      Informatics Europe: Computer Science Event List
+    </title>
+    <link href="{#STYLESHEET#}" rel="Stylesheet" type="text/css" />
+    <script src="{#JAVASCRIPT#}" type="text/javascript"></script>
+  </head>
+  <body>
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="center">
+          <div id="logo">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td height="60">
+                </td>
+              </tr>
+              <tr>
+                <td align="right">
+                  <div style="padding:0px 40px 0px 0px">
+                    {#USER_MENU#}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="mainmaster">
+            <div id="main">
+              <div id="navigation">
+                {#MAIN_MENU#}
+              </div>
+              <div id='content'>
+                <h1>
+                  {#EVENT_LIST_TITLE#} ({#EVENT_COUNT#})
+                </h1>
+                <!--##EVENT_VIEW_0##-->
+                <p>View <a href="{#APP_PATH#}?event&amp;cmd=approved">Approved Events</a>&nbsp;&nbsp;<a href="{#APP_PATH#}?event&amp;cmd=rejected">Rejected Events</a></p>
+                <!--##/EVENT_VIEW_0##-->
+                <!--##EVENT_VIEW_1##
+                <p>View <a href="{#APP_PATH#}?event&amp;cmd=list">Proposed Events</a>&nbsp;&nbsp;<a href="{#APP_PATH#}?event&amp;cmd=rejected">Rejected Events</a></p>
+                ##/EVENT_VIEW_1##-->
+                <!--##EVENT_VIEW_2##
+                <p>View <a href="{#APP_PATH#}?event&amp;cmd=list">Proposed Events</a>&nbsp;&nbsp;<a href="{#APP_PATH#}?event&amp;cmd=approved">Approved Events</a></p>
+                ##/EVENT_VIEW_2##-->
+                <!--##EVENT_UPDATED##
+                <div id="notice"><table><tr><td valign="top"><img src="{#IMAGE_PATH#}succ.gif" style="float:left" alt="" /></td><td valign="middle">{#EVENT_UPDATED_MESSAGE#}</td></tr></table></div>
+                ##/EVENT_UPDATED##-->
+                <br />
+                <table id="positions_table" class="sortable" border="0" cellpadding="5" cellspacing="0">
+                  <tr class="positions_title">
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Conference Name
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="90">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Date
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="10" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            City
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Country
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th width="120">
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Main sponsor
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="12" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                            Submitted by
+                          </td>
+                          <td>
+                            <img src="{#IMAGE_PATH#}arrow_up.gif" height="10" width="11" border="0" alt="" />
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                    <th>
+                      <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </table>
+                    </th>
+                  </tr>
+                  {#EVENT_LIST#}
+                </table>
+              </div>
+            </div>
+          </div>
+          <div id="bottom">
+            <div id="disclaimer">
+              <table id="t_disc" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td id="copyright">
+                    2007 - 2011, <a href="http://www.informatics-europe.org/" target="_blank">Informatics Europe</a>
+                  </td>
+                  <td id="aboutus">
+                    <span><a href="{#CGI_FILE_NAME#}?other&amp;cmd=about">about us</a></span>&nbsp;&nbsp;&nbsp; <span><a href="{#CGI_FILE_NAME#}?other&amp;cmd=contact">Contact</a></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

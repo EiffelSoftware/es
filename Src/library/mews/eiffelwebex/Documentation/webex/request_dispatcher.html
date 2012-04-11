@@ -1,0 +1,293 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses">
+<META NAME="author" CONTENT="Peizhu Li <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>request_dispatcher Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="request_dispatcher_chart.html">Chart</A></TD><TD><A HREF="request_dispatcher_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="request_dispatcher_flat.html">Flat</A></TD><TD><A HREF="request_dispatcher_short.html">Contracts</A></TD><TD><A HREF="request_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses"
+    author: "Peizhu Li &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "12.12.2007"
+    revision: "0.2"
+
+<B>deferred</B> <B>class</B> 
+    <A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>
+
+<B>inherit</B>
+    CGI_INTERFACE
+        <B>redefine</B>
+            <A HREF="..\webex/request_dispatcher.html#f_make">make</A>
+        <B>end</B>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_cookie_enabled"><A HREF="..\webex/request_dispatcher.html#f_cookie_enabled">cookie_enabled</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether cookie is enabled by browser</FONT>
+
+    <A NAME="f_session_enabled"><A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether session support should be enabled</FONT>
+
+    <A NAME="f_session"><A HREF="..\webex/request_dispatcher.html#f_session">session</A>: <A HREF="..\webex/session.html">SESSION</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> actual session object</FONT>
+
+    <A NAME="f_config"><A HREF="..\webex/request_dispatcher.html#f_config">config</A>: <A HREF="..\webex/config_reader.html">CONFIG_READER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> website configuration (handler, default stylesheet, actual session class)</FONT>
+
+    <A NAME="f_handler_id_string"><A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> string identifies which handler should be instantiated for actual request</FONT>
+
+    <A NAME="f_command_string"><A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> command string that handler need to process</FONT>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_debug_mode"><A HREF="..\webex/request_dispatcher.html#f_debug_mode">debug_mode</A>: BOOLEAN <B>is</B> <B>True</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Should exception trace be displayed in case a crash occurs?</FONT>
+
+    <A NAME="f_session_manager"><A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>: <A HREF="..\webex/session_manager.html">SESSION_MANAGER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> object that responsable to retrieve/store session</FONT>
+
+    <A NAME="f_actual_handler"><A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A>: <A HREF="..\webex/request_handler.html">REQUEST_HANDLER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handler that will process actual request</FONT>
+
+    <A NAME="f_processing_finished"><A HREF="..\webex/request_dispatcher.html#f_processing_finished">processing_finished</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> finished processing, return result</FONT>
+
+    <A NAME="f_return_page"><A HREF="..\webex/request_dispatcher.html#f_return_page">return_page</A>: HTML_PAGE</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> result HTML_PAGE to be sent back to the browser</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/request_dispatcher.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initiate input data parsing and process information.</FONT>
+        <B>local</B>
+            retried: BOOLEAN
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A> := <B>True</B>
+            <B>if</B> <B>not</B> retried <B>then</B>
+                parse_input
+                <A HREF="..\webex/request_dispatcher.html#f_execute">execute</A>
+            <B>else</B>
+                <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_debug_mode">debug_mode</A> <B>then</B>
+                    handle_exception
+                <B>end</B>
+            <B>end</B>
+        <B>rescue</B>
+            retried := <B>True</B>
+            <B>retry</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> dispatching</FONT>
+
+    <A NAME="f_execute"><A HREF="..\webex/request_dispatcher.html#f_execute">execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> process actual request, send back result html page to the browser.</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher.html#f_parse_handler_command_string">parse_handler_command_string</A>
+            <A HREF="..\webex/request_dispatcher.html#f_init_configuration">init_configuration</A>
+            <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_read_configuration">read_configuration</A> (<A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>, <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>)
+            <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.is_empty <B>then</B>
+                <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A> := <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_default_request">default_request</A>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.is_empty <B>then</B>
+                <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A> := <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_default_command">default_command</A>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher.html#f_init_session_manager">init_session_manager</A>
+                <A HREF="..\webex/request_dispatcher.html#f_init_session">init_session</A>
+            <B>end</B>
+            <A HREF="..\webex/request_dispatcher.html#f_pre_execute">pre_execute</A>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_processing_finished">processing_finished</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher.html#f_instantiate_handler">instantiate_handler</A>
+                <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A> = <B>Void</B> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_process_undefined_request">process_undefined_request</A>
+                    <A HREF="..\webex/request_dispatcher.html#f_processing_finished">processing_finished</A> := <B>True</B>
+                <B>else</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_return_page">return_page</A> := <A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A>.<A HREF="..\webex/request_handler.html#f_process_request">process_request</A>
+                <B>end</B>
+                <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_processing_finished">processing_finished</A> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_post_execute">post_execute</A>
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> response_header.is_complete_header <B>then</B>
+                response_header.generate_text_header
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher.html#f_save_session">save_session</A>
+                <A HREF="..\webex/request_dispatcher.html#f_setup_sid_cookie">setup_sid_cookie</A>
+            <B>end</B>
+            response_header.send_to_browser
+            response_header.output.put_string (<A HREF="..\webex/request_dispatcher.html#f_return_page">return_page</A>.out)
+        <B>rescue</B>
+            io.error.putstring ("crash in `request_dispatcher.execute()' %N")
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red">  initialization</FONT>
+
+    <A NAME="f_set_session_enabled"><A HREF="..\webex/request_dispatcher.html#f_set_session_enabled">set_session_enabled</A> (a_enabled: BOOLEAN)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> set whether session should be enabled</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A> := a_enabled
+        <B>end</B></A>
+
+    <A NAME="f_process_undefined_request"><A HREF="..\webex/request_dispatcher.html#f_process_undefined_request">process_undefined_request</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate result page in case unkown request</FONT>
+        <B>do</B>
+            <B>create</B> {<A HREF="..\webex/error_page_view.html">ERROR_PAGE_VIEW</A>} <A HREF="..\webex/request_dispatcher.html#f_return_page">return_page</A>.<A HREF="..\webex/error_page_view.html#f_build_default_not_found_page">build_default_not_found_page</A>
+        <B>end</B></A>
+
+    <A NAME="f_parse_handler_command_string"><A HREF="..\webex/request_dispatcher.html#f_parse_handler_command_string">parse_handler_command_string</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> identify request and command strings ((</FONT><FONT COLOR="red">http://localhost/cgi-bin/zen.cgi?zengarden&#38;action=register</FONT><FONT COLOR="red"> -&gt; zengarden, register)</FONT>
+        <B>do</B>
+            <B>create</B> <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.make_empty
+            <B>if</B> <B>not</B> input_data.is_empty <B>then</B>
+                <B>if</B> input_data.has ('&#38;') <B>then</B>
+                    <B>if</B> <B>not</B> input_data.split ('&#38;').i_th (1).has ('=') <B>then</B>
+                        <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.append ((input_data.split ('&#38;')).i_th (1))
+                    <B>end</B>
+                <B>else</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.append (input_data)
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.is_empty <B>and</B> field_defined ("handler_id") <B>then</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>.append (text_field_value ("handler_id"))
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> field_defined ("cmd") <B>then</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.make_from_string (text_field_value ("cmd"))
+            <B>else</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>.make_empty
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_init_configuration"><A HREF="..\webex/request_dispatcher.html#f_init_configuration">init_configuration</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> read configuration file</FONT>
+        <B>local</B>
+            istart, iend: INTEGER_32
+        <B>do</B>
+            istart := script_name.last_index_of ('/', script_name.count) + 1
+            iend := script_name.last_index_of ('.', script_name.count) - 1
+            <B>if</B> iend = -1 <B>or</B> iend &lt;= istart <B>then</B>
+                iend := script_name.count
+            <B>end</B>
+            <B>create</B> <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_make">make</A> ("./" + script_name.substring (istart, iend) + ".conf")
+        <B>end</B></A>
+
+    <A NAME="f_instantiate_handler"><A HREF="..\webex/request_dispatcher.html#f_instantiate_handler">instantiate_handler</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on initialized handler mapping table, lookup and initialize a handler for current request</FONT>
+        <B>require</B>
+            config_is_set: <A HREF="..\webex/request_dispatcher.html#f_config">config</A> /= <B>Void</B>
+        <B>local</B>
+            handler_type: STRING_8
+            handler: INTERNAL
+            type: INTEGER_32
+        <B>do</B>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_handler">handler</A>.is_empty <B>then</B>
+                <B>create</B> handler_type.make_from_string (<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_handler">handler</A>)
+            <B>elseif</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_notfound_request">notfound_request</A>.is_empty <B>then</B>
+                <B>create</B> handler_type.make_from_string (<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_notfound_request">notfound_request</A>)
+                <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A> := <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_notfound_request">notfound_request</A>
+                <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A> := <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_notfound_command">notfound_command</A>
+            <B>else</B>
+                <B>create</B> handler_type.make_empty
+            <B>end</B>
+            <B>if</B> <B>not</B> handler_type.is_empty <B>then</B>
+                <B>create</B> handler
+                type := handler.dynamic_type_from_string (handler_type)
+                <A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A> ?= handler.new_instance_of (type)
+                <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A> /= <B>Void</B> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_actual_handler">actual_handler</A>.<A HREF="..\webex/request_handler.html#f_initialize">initialize</A> (<B>Current</B>)
+                <B>end</B>
+            <B>end</B>
+        <B>rescue</B>
+            io.error.putstring ("crash in `lookup_and_instantiate_handler' %N")
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> pre/post execution</FONT>
+
+    <A NAME="f_pre_execute"><A HREF="..\webex/request_dispatcher.html#f_pre_execute">pre_execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed before starting process user request</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> if necessary, set 'processing_finished' tag and return_page to premature processing</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_post_execute"><A HREF="..\webex/request_dispatcher.html#f_post_execute">post_execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed after request processed</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> session/cookie</FONT>
+
+    <A NAME="f_init_session_manager"><A HREF="..\webex/request_dispatcher.html#f_init_session_manager">init_session_manager</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> init session_manager object</FONT>
+        <B>do</B>
+            <B>create</B> {<A HREF="..\webex/session_manager_file_impl.html">SESSION_MANAGER_FILE_IMPL</A>} <A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_file_impl.html#f_make">make</A> (<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>, <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A>, <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_session_id_length">session_id_length</A>)
+        <B>end</B></A>
+
+    <A NAME="f_init_session"><A HREF="..\webex/request_dispatcher.html#f_init_session">init_session</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the saved session or create a new session object</FONT>
+        <B>local</B>
+            sid: STRING_8
+        <B>do</B>
+            <B>create</B> sid.make_empty
+            <B>if</B> cookies /= <B>Void</B> <B>and then</B> cookies.has ("sid") <B>then</B>
+                <B>create</B> sid.make_from_string (cookies.item ("sid"))
+                <A HREF="..\webex/request_dispatcher.html#f_session">session</A> := <A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager.html#f_get_session">get_session</A> (sid)
+                <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_expired">expired</A> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher.html#f_cookie_enabled">cookie_enabled</A> := <B>True</B>
+                    <B>check</B>
+                        cookie_enabled_and_sid_ok: <B>not</B> sid.is_empty
+                    <B>end</B>
+                <B>else</B>
+                    <B>create</B> sid.make_empty
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> sid.is_empty <B>then</B>
+                <B>if</B> field_defined ("sid") <B>and</B> <B>not</B> text_field_value ("sid").is_empty <B>then</B>
+                    <B>create</B> sid.make_from_string (<B>Current</B>.text_field_value ("sid"))
+                <B>else</B>
+                    <B>check</B>
+                        cookie_disabled_and_sid_empty: sid.is_empty
+                    <B>end</B>
+                    <B>create</B> sid.make_from_string (<A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager.html#f_generate_session_id">generate_session_id</A>)
+                <B>end</B>
+            <B>end</B>
+            <B>check</B>
+                sid_not_empty: <B>not</B> sid.is_empty
+            <B>end</B>
+            <A HREF="..\webex/request_dispatcher.html#f_session">session</A> := <A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager.html#f_get_session">get_session</A> (sid)
+            <B>if</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A> = <B>Void</B> <B>or</B> (<A HREF="..\webex/request_dispatcher.html#f_session">session</A> /= <B>Void</B> <B>and then</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_expired">expired</A>) <B>then</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_make">make</A>
+                <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_set_session_id">set_session_id</A> (sid)
+                <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_set_expiration_after_seconds">set_expiration_after_seconds</A> (<A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A>)
+            <B>end</B>
+        <B>ensure</B>
+            app_session_object_initialized: <A HREF="..\webex/request_dispatcher.html#f_session">session</A> /= <B>Void</B> <B>and</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_save_session"><A HREF="..\webex/request_dispatcher.html#f_save_session">save_session</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save actual session to session manager</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager.html#f_save_session">save_session</A> (<A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>, <A HREF="..\webex/request_dispatcher.html#f_session">session</A>)
+        <B>end</B></A>
+
+    <A NAME="f_setup_sid_cookie"><A HREF="..\webex/request_dispatcher.html#f_setup_sid_cookie">setup_sid_cookie</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> update cookie in the client</FONT>
+        <B>require</B>
+            <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>.is_empty
+        <B>local</B>
+            expire: STRING_8
+        <B>do</B>
+            expire := <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_expiration_time">expiration_time</A>.formatted_out ("ddd, [0]dd-[0]mm-yyyy [0]hh:[0]mi:[0]ss") + " GMT"
+            response_header.set_cookie ("sid", <A HREF="..\webex/request_dispatcher.html#f_session">session</A>.<A HREF="..\webex/session.html#f_session_id">session_id</A>.out, expire, <A HREF="..\webex/request_dispatcher.html#f_config">config</A>.<A HREF="..\webex/config_reader.html#f_application_path">application_path</A>, <B>Void</B>, <B>Void</B>)
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="request_dispatcher_chart.html">Chart</A></TD><TD><A HREF="request_dispatcher_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="request_dispatcher_flat.html">Flat</A></TD><TD><A HREF="request_dispatcher_short.html">Contracts</A></TD><TD><A HREF="request_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

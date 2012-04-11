@@ -1,0 +1,115 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Data Access Objects that serialize data using raw files">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>user_manager_file_impl Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="user_manager_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="user_manager_file_impl_short.html">Contracts</A></TD><TD><A HREF="user_manager_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Data Access Objects that serialize data using raw files"
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/user_manager_file_impl.html">USER_MANAGER_FILE_IMPL</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/user_manager.html">USER_MANAGER</A>
+
+<B>create</B> 
+    <A HREF="..\webex/user_manager_file_impl.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes</FONT>
+
+    <A NAME="f_data_path"><A HREF="..\webex/user_manager_file_impl.html#f_data_path">data_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> where to save user list</FONT>
+
+    <A NAME="f_file_name"><A HREF="..\webex/user_manager_file_impl.html#f_file_name">file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> where to save user list</FONT>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/user_manager_file_impl.html#f_make">make</A> (folder, filename: STRING_8; cryptor: <A HREF="..\webex/encryptor.html">ENCRYPTOR</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Creation procedure. Serialized data are retrieved</FONT>
+        <B>require</B>
+            file_path_valid: folder /= <B>Void</B> <B>and then</B> <B>not</B> folder.is_empty <B>and then</B> filename /= <B>Void</B> <B>and then</B> <B>not</B> filename.is_empty
+            encryptor_valid: cryptor /= <B>Void</B>
+        <B>local</B>
+            user: <A HREF="..\webex/user.html">USER</A>
+        <B>do</B>
+            <B>create</B> <A HREF="..\webex/user_manager_file_impl.html#f_data_path">data_path</A>.make_from_string (folder)
+            <B>create</B> <A HREF="..\webex/user_manager_file_impl.html#f_file_name">file_name</A>.make_from_string (filename)
+            <A HREF="..\webex/user_manager.html#f_set_encryptor">set_encryptor</A> (cryptor)
+            <B>create</B> <A HREF="..\webex/user_manager_file_impl.html#f_store_handler">store_handler</A>
+            <B>create</B> <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.make (<A HREF="..\webex/user_manager_file_impl.html#f_data_path">data_path</A> + <A HREF="..\webex/user_manager_file_impl.html#f_file_name">file_name</A>)
+            <B>create</B> <A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>.make (<A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>)
+            <B>if</B> <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.exists <B>then</B>
+                <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.open_read
+                <A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>.set_for_reading
+                <A HREF="..\webex/user_manager.html#f_user_list">user_list</A> ?= <A HREF="..\webex/user_manager_file_impl.html#f_store_handler">store_handler</A>.retrieved (<A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>, <B>True</B>)
+                <B>if</B> <A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A> /= <B>Void</B> <B>then</B>
+                    <B>from</B>
+                        <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.start
+                    <B>until</B>
+                        <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.after
+                    <B>loop</B>
+                        user := <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.item (<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.key_for_iteration)
+                        user.<A HREF="..\webex/user.html#f_set_password">set_password</A> (<A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A>.<A HREF="..\webex/encryptor.html#f_decrypt">decrypt</A> (user.<A HREF="..\webex/user.html#f_password">password</A>))
+                        <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.replace (user, <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.key_for_iteration)
+                        <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.forth
+                    <B>end</B>
+                <B>end</B>
+            <B>else</B>
+                <B>create</B> <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.make (100)
+            <B>end</B>
+        <B>ensure</B>
+            user_list_exists: <A HREF="..\webex/user_manager.html#f_user_list">user_list</A> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_persist_data"><A HREF="..\webex/user_manager_file_impl.html#f_persist_data">persist_data</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">serializes data</FONT>
+        <B>local</B>
+            user: <A HREF="..\webex/user.html">USER</A>
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A> /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                    <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.start
+                <B>until</B>
+                    <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.after
+                <B>loop</B>
+                    user := <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.item (<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.key_for_iteration)
+                    user.<A HREF="..\webex/user.html#f_set_password">set_password</A> (<A HREF="..\webex/user_manager.html#f_encryptor">encryptor</A>.<A HREF="..\webex/encryptor.html#f_encrypt">encrypt</A> (user.<A HREF="..\webex/user.html#f_password">password</A>))
+                    <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.replace (user, <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.key_for_iteration)
+                    <A HREF="..\webex/user_manager.html#f_user_list">user_list</A>.forth
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.exists <B>then</B>
+                <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.reopen_write (<A HREF="..\webex/user_manager_file_impl.html#f_data_path">data_path</A> + <A HREF="..\webex/user_manager_file_impl.html#f_file_name">file_name</A>)
+            <B>else</B>
+                <A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>.open_write
+            <B>end</B>
+            <A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>.set_for_writing
+            <A HREF="..\webex/user_manager_file_impl.html#f_store_handler">store_handler</A>.independent_store (<A HREF="..\webex/user_manager.html#f_user_list">user_list</A>, <A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>, <B>True</B>)
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> implementation</FONT>
+
+    <A NAME="f_store_handler"><A HREF="..\webex/user_manager_file_impl.html#f_store_handler">store_handler</A>: SED_STORABLE_FACILITIES</A>
+
+    <A NAME="f_user_list_data_file"><A HREF="..\webex/user_manager_file_impl.html#f_user_list_data_file">user_list_data_file</A>: RAW_FILE</A>
+
+    <A NAME="f_user_list_serializer"><A HREF="..\webex/user_manager_file_impl.html#f_user_list_serializer">user_list_serializer</A>: SED_MEDIUM_READER_WRITER</A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/user_manager_file_impl.html">USER_MANAGER_FILE_IMPL</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="user_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="user_manager_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="user_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="user_manager_file_impl_short.html">Contracts</A></TD><TD><A HREF="user_manager_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

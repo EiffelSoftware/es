@@ -1,0 +1,2417 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that represent a list of events.">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_list Flat</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_list_chart.html">Chart</A></TD><TD><A HREF="event_list_links.html">Relations</A></TD><TD><A HREF="event_list.html">Text</A></TD><TD>Flat</TD><TD><A HREF="event_list_short.html">Contracts</A></TD><TD><A HREF="event_list_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects that represent a list of events."
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/event_list_flat.html">EVENT_LIST</A>
+
+<B>create</B> 
+    make
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make">make (n: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Allocate list with </FONT>`n'<FONT COLOR="red"> items.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (</FONT>`n'<FONT COLOR="red"> may be zero for empty list.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            valid_number_of_items: n &gt;= 0
+        <B>do</B>
+            index := 0
+            set_count (0)
+            array_make (1, n)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            correct_position: before
+            is_empty: is_empty
+        <B>end</B></A>
+
+    <A NAME="f_make_filled">make_filled (n: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Allocate list with </FONT>`n'<FONT COLOR="red"> items.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (</FONT>`n'<FONT COLOR="red"> may be zero for empty list.)</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> This list will be full.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            valid_number_of_items: n &gt;= 0
+        <B>do</B>
+            index := 0
+            set_count (n)
+            array_make (1, n)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            correct_position: before
+            filled: full
+        <B>end</B></A>
+
+    <A NAME="f_make_from_array">make_from_array (a: ARRAY [<A HREF="..\informatics_events/event_flat.html">EVENT</A>])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Create list from array </FONT>`a'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            array_exists: a /= <B>Void</B>
+        <B>do</B>
+            <B>Precursor</B> (a)
+            lower := 1
+            set_count (a.count)
+            upper := count
+            index := 0
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            correct_position: before
+            filled: count = a.count
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make">array_make (min_index, max_index: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Allocate array; set index interval to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>`min_index'<FONT COLOR="red"> .. </FONT>`max_index'<FONT COLOR="red">; set all values to default.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Make array empty if </FONT>`min_index'<FONT COLOR="red"> = </FONT>`max_index'<FONT COLOR="red"> + 1).</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            valid_bounds: min_index &lt;= max_index + 1
+        <B>do</B>
+            lower := min_index
+            upper := max_index
+            <B>if</B> min_index &lt;= max_index <B>then</B>
+                make_area (max_index - min_index + 1)
+            <B>else</B>
+                make_area (0)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            lower_set: lower = min_index
+            upper_set: upper = max_index
+            items_set: all_default
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_default_create">default_create
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process instances of classes with no creation clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_make_area">make_area (n: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Creates a special object for </FONT>`n'<FONT COLOR="red"> entries.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>TO_SPECIAL<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            non_negative_argument: n &gt;= 0
+        <B>do</B>
+            <B>create</B> area.make (n)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            area_allocated: area /= <B>Void</B> <B>and then</B> area.count = n
+        <B>end</B></A>
+
+    <A NAME="f_make_from_cil">make_from_cil (na: NATIVE_ARRAY [<B>like</B> i_th])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialize array from </FONT>`na'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            is_dotnet: {PLATFORM}.is_dotnet
+            na_not_void: na /= <B>Void</B>
+        <B>do</B>
+            <B>create</B> area.make_from_native_array (na)
+            lower := 1
+            upper := area.count
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_cursor">cursor: ARRAYED_LIST_CURSOR
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Current cursor position</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (index)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CURSOR_STRUCTURE
+            cursor_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_first">first: <B>like</B> item
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Item at first position</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            not_empty: <B>not</B> is_empty
+        <B>do</B>
+            <B>Result</B> := area.item (0)
+        <B>end</B></A>
+
+    <A NAME="f_generating_type">generating_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generating_type_not_void: <B>Result</B> /= <B>Void</B>
+            generating_type_not_empty: <B>not</B> <B>Result</B>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_generator">generator: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating class</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (base class of the type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generator_not_void: <B>Result</B> /= <B>Void</B>
+            generator_not_empty: <B>not</B> <B>Result</B>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_has">has (v: <B>like</B> item): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does current include </FONT>`v'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> CONTAINER
+            <B>True</B>
+        <B>local</B>
+            l_area: <B>like</B> area
+            l_item: <B>like</B> item
+            i, nb: INTEGER_32
+        <B>do</B>
+            l_area := area
+            nb := count - 1
+            <B>if</B> object_comparison <B>and</B> v /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                <B>until</B>
+                    i &gt; nb <B>or</B> <B>Result</B>
+                <B>loop</B>
+                    l_item := l_area.item (i)
+                    <B>Result</B> := l_item /= <B>Void</B> <B>and then</B> v.is_equal (l_item)
+                    i := i + 1
+                <B>end</B>
+            <B>else</B>
+                <B>from</B>
+                <B>until</B>
+                    i &gt; nb <B>or</B> <B>Result</B>
+                <B>loop</B>
+                    <B>Result</B> := v = l_area.item (i)
+                    i := i + 1
+                <B>end</B>
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            not_found_in_empty: <B>Result</B> <B>implies</B> <B>not</B> is_empty
+        <B>end</B></A>
+
+    <A NAME="f_i_th"><B>i_th</B> <B>alias</B> "[]" (i: INTEGER_32): <B>like</B> item <B>assign</B> put_i_th
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Item at </FONT>`i'<FONT COLOR="red">-th position</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT>ARRAYED_LIST<FONT COLOR="red"> as synonym of </FONT><B>infix</B> "@"<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TABLE
+            valid_key: valid_index (i)
+        <B>do</B>
+            <B>Result</B> := area.item (i - 1)
+        <B>end</B></A>
+
+    <A NAME="f_index">index: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Index of </FONT>item<FONT COLOR="red">, if valid.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_index_of">index_of (v: <B>like</B> item; i: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Index of </FONT>`i'<FONT COLOR="red">-th occurrence of item identical to </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> 0 if none.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            positive_occurrences: i &gt; 0
+        <B>local</B>
+            pos: CURSOR
+        <B>do</B>
+            pos := cursor
+            <B>Result</B> := sequential_index_of (v, i)
+            go_to (pos)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            non_negative_result: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+
+    <A NAME="f_item">item: <A HREF="..\informatics_events/event_flat.html">EVENT</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Current item</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+            not_off: <B>not</B> off
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ACTIVE
+            readable: readable
+        <B>require else</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            index_is_valid: valid_index (index)
+        <B>do</B>
+            <B>Result</B> := area.item (index - 1)
+        <B>end</B></A>
+
+    <A NAME="f_last">last: <B>like</B> first
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Item at last position</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            not_empty: <B>not</B> is_empty
+        <B>do</B>
+            <B>Result</B> := area.item (count - 1)
+        <B>end</B></A>
+
+    <A NAME="f_occurrences">sequential_occurrences (v: <B>like</B> item): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of times </FONT>`v'<FONT COLOR="red"> appears.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> BAG
+            <B>True</B>
+        <B>do</B>
+            <B>from</B>
+                start
+                search (v)
+            <B>until</B>
+                exhausted
+            <B>loop</B>
+                <B>Result</B> := <B>Result</B> + 1
+                forth
+                search (v)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BAG
+            non_negative_occurrences: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+
+    <A NAME="f_infix "@""><B>infix</B> "@" (i: INTEGER_32): <B>like</B> item <B>assign</B> put_i_th
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Item at </FONT>`i'<FONT COLOR="red">-th position</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT>ARRAYED_LIST<FONT COLOR="red"> as synonym of </FONT>i_th<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TABLE
+            valid_key: valid_index (i)
+        <B>do</B>
+            <B>Result</B> := area.item (i - 1)
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_entry">entry (i: INTEGER_32): <A HREF="..\informatics_events/event_flat.html">EVENT</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Entry at index </FONT>`i'<FONT COLOR="red">, if in index interval</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            valid_key: valid_index (i)
+        <B>do</B>
+            <B>Result</B> := i_th (i)
+        <B>end</B></A>
+
+    <A NAME="f_has">sequential_has (v: <B>like</B> item): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does structure include an occurrence of </FONT>`v'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> CONTAINER
+            <B>True</B>
+        <B>do</B>
+            start
+            <B>if</B> <B>not</B> off <B>then</B>
+                search (v)
+            <B>end</B>
+            <B>Result</B> := <B>not</B> exhausted
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            not_found_in_empty: <B>Result</B> <B>implies</B> <B>not</B> is_empty
+        <B>end</B></A>
+
+    <A NAME="f_index_of">sequential_index_of (v: <B>like</B> item; i: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Index of </FONT>`i'<FONT COLOR="red">-th occurrence of </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> 0 if none.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            positive_occurrences: i &gt; 0
+        <B>local</B>
+            occur, pos: INTEGER_32
+        <B>do</B>
+            <B>if</B> object_comparison <B>and</B> v /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                    start
+                    pos := 1
+                <B>until</B>
+                    exhausted <B>or</B> (occur = i)
+                <B>loop</B>
+                    <B>if</B> item /= <B>Void</B> <B>and then</B> v.is_equal (item) <B>then</B>
+                        occur := occur + 1
+                    <B>end</B>
+                    forth
+                    pos := pos + 1
+                <B>end</B>
+            <B>else</B>
+                <B>from</B>
+                    start
+                    pos := 1
+                <B>until</B>
+                    exhausted <B>or</B> (occur = i)
+                <B>loop</B>
+                    <B>if</B> item = v <B>then</B>
+                        occur := occur + 1
+                    <B>end</B>
+                    forth
+                    pos := pos + 1
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> occur = i <B>then</B>
+                <B>Result</B> := pos - 1
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            non_negative_result: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+
+    <A NAME="f_item"><B>item</B> <B>alias</B> "[]" (i: INTEGER_32): <A HREF="..\informatics_events/event_flat.html">EVENT</A> <B>assign</B> put
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Entry at index </FONT>`i'<FONT COLOR="red">, if in index interval</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TABLE
+            valid_key: valid_index (i)
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            valid_index: valid_index (i)
+        <B>do</B>
+            <B>Result</B> := area.item (i - lower)
+        <B>end</B></A>
+
+    <A NAME="f_search">sequential_search (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move to first position (at or after current</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> position) where </FONT>item<FONT COLOR="red"> and </FONT>`v'<FONT COLOR="red"> are equal.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> If no such position ensure that </FONT>exhausted<FONT COLOR="red"> will be true.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> object_comparison <B>and</B> v /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                <B>until</B>
+                    exhausted <B>or else</B> (item /= <B>Void</B> <B>and then</B> v.is_equal (item))
+                <B>loop</B>
+                    forth
+                <B>end</B>
+            <B>else</B>
+                <B>from</B>
+                <B>until</B>
+                    exhausted <B>or else</B> v = item
+                <B>loop</B>
+                    forth
+                <B>end</B>
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            object_found: (<B>not</B> exhausted <B>and</B> object_comparison) <B>implies</B> equal (v, item)
+            item_found: (<B>not</B> exhausted <B>and</B> <B>not</B> object_comparison) <B>implies</B> v = item
+        <B>end</B></A>
+
+    <A NAME="f_infix "@"">array_infix_at (i: INTEGER_32): <A HREF="..\informatics_events/event_flat.html">EVENT</A> <B>assign</B> put
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Entry at index </FONT>`i'<FONT COLOR="red">, if in index interval</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TABLE
+            valid_key: valid_index (i)
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            valid_index: valid_index (i)
+        <B>do</B>
+            <B>Result</B> := area.item (i - lower)
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_area">area: SPECIAL [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Special data zone</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>TO_SPECIAL<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Measurement</FONT>
+
+    <A NAME="f_count">count: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_index_set">index_set: INTEGER_INTERVAL
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Range of acceptable indexes</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> INDEXABLE
+            <B>True</B>
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (1, count)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>INDEXABLE
+            not_void: <B>Result</B> /= <B>Void</B>
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            count_definition: <B>Result</B>.count = count
+        <B>end</B></A>
+
+    <A NAME="f_occurrences">occurrences (v: <B>like</B> item): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of times </FONT>`v'<FONT COLOR="red"> appears.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> BAG
+            <B>True</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> LINEAR
+            <B>True</B>
+        <B>local</B>
+            pos: CURSOR
+        <B>do</B>
+            pos := cursor
+            <B>Result</B> := sequential_occurrences (v)
+            go_to (pos)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BAG
+            non_negative_occurrences: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Measurement</FONT>
+
+    <A NAME="f_lower">lower: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Minimum index</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_upper">upper: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Maximum index</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Measurement</FONT>
+
+    <A NAME="f_additional_space">additional_space: INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Proposed number of additional items</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>RESIZABLE<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (capacity // 2).max (minimal_increase)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>RESIZABLE
+            at_least_one: <B>Result</B> &gt;= 1
+        <B>end</B></A>
+
+    <A NAME="f_count">array_count: INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of available indices</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> FINITE
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := upper - lower + 1
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            consistent_with_bounds: <B>Result</B> = upper - lower + 1
+        <B>end</B></A>
+
+    <A NAME="f_growth_percentage">growth_percentage: INTEGER_32 <B>is</B> 50</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Percentage by which structure will grow automatically</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>RESIZABLE<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_index_set">array_index_set: INTEGER_INTERVAL
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Range of acceptable indexes</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> INDEXABLE
+            <B>True</B>
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (lower, upper)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>INDEXABLE
+            not_void: <B>Result</B> /= <B>Void</B>
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            same_count: <B>Result</B>.count = count
+            same_bounds: ((<B>Result</B>.lower = lower) <B>and</B> (<B>Result</B>.upper = upper))
+        <B>end</B></A>
+
+    <A NAME="f_minimal_increase">minimal_increase: INTEGER_32 <B>is</B> 5</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Minimal number of additional items</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>RESIZABLE<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> {ANY} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Measurement</FONT>
+
+    <A NAME="f_capacity">capacity: INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of available indices</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT>ARRAY<FONT COLOR="red"> as synonym of </FONT>count<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> BOUNDED
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := upper - lower + 1
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            consistent_with_bounds: <B>Result</B> = upper - lower + 1
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Comparison</FONT>
+
+    <A NAME="f_deep_equal"><B>frozen</B> deep_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> or attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.is_deep_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_equal (some, other) <B>implies</B> <B>Result</B>
+            both_or_none_void: (some = <B>Void</B>) <B>implies</B> (<B>Result</B> = (other = <B>Void</B>))
+            same_type: (<B>Result</B> <B>and</B> (some /= <B>Void</B>)) <B>implies</B> some.same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> deep_equal (other, some)
+        <B>end</B></A>
+
+    <A NAME="f_equal"><B>frozen</B> equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to objects considered equal?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.is_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.is_equal (other))
+        <B>end</B></A>
+
+    <A NAME="f_is_deep_equal"><B>frozen</B> is_deep_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`Current'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_is_equal (other) <B>implies</B> <B>Result</B>
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.is_deep_equal (<B>Current</B>)
+        <B>end</B></A>
+
+    <A NAME="f_is_equal">is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does </FONT>`other'<FONT COLOR="red"> contain the same elements?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>local</B>
+            c1, c2: CURSOR
+        <B>do</B>
+            <B>if</B> <B>Current</B> = other <B>then</B>
+                <B>Result</B> := <B>True</B>
+            <B>else</B>
+                <B>Result</B> := (is_empty = other.is_empty) <B>and</B> (object_comparison = other.object_comparison) <B>and</B> (count = other.count)
+                <B>if</B> <B>Result</B> <B>and</B> <B>not</B> is_empty <B>then</B>
+                    c1 ?= cursor
+                    c2 ?= other.cursor
+                    <B>check</B>
+                        cursors_exist: c1 /= <B>Void</B> <B>and</B> c2 /= <B>Void</B>
+                    <B>end</B>
+                    <B>from</B>
+                        start
+                        other.start
+                    <B>until</B>
+                        after <B>or</B> <B>not</B> <B>Result</B>
+                    <B>loop</B>
+                        <B>if</B> object_comparison <B>then</B>
+                            <B>Result</B> := equal (item, other.item)
+                        <B>else</B>
+                            <B>Result</B> := (item = other.item)
+                        <B>end</B>
+                        forth
+                        other.forth
+                    <B>end</B>
+                    go_to (c1)
+                    other.go_to (c2)
+                <B>elseif</B> is_empty <B>and</B> other.is_empty <B>and</B> object_comparison = other.object_comparison <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>end</B>
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            symmetric: <B>Result</B> <B>implies</B> other.is_equal (<B>Current</B>)
+            consistent: standard_is_equal (other) <B>implies</B> <B>Result</B>
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LIST
+            indices_unchanged: index = <B>old</B> index <B>and</B> other.index = <B>old</B> other.index
+            true_implies_same_size: <B>Result</B> <B>implies</B> count = other.count
+        <B>end</B></A>
+
+    <A NAME="f_standard_equal"><B>frozen</B> standard_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical objects of the same type?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default object comparison criterion.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.standard_is_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.standard_is_equal (other))
+        <B>end</B></A>
+
+    <A NAME="f_standard_is_equal"><B>frozen</B> standard_is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object of the same type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> as current object, and field-by-field identical to it?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.standard_is_equal (<B>Current</B>)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_after">after: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there no valid cursor position to the right of cursor?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> LINEAR
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := (index = count + 1)
+        <B>end</B></A>
+
+    <A NAME="f_before">before: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there no valid cursor position to the left of cursor?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> BILINEAR
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := (index = 0)
+        <B>end</B></A>
+
+    <A NAME="f_changeable_comparison_criterion">changeable_comparison_criterion: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> May </FONT>object_comparison<FONT COLOR="red"> be changed?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Answer: yes by default.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CONTAINER<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := <B>True</B>
+        <B>end</B></A>
+
+    <A NAME="f_conforms_to">conforms_to (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does type of current object conform to type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`other'<FONT COLOR="red"> (as per Eiffel: The Language, chapter 13)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>end</B></A>
+
+    <A NAME="f_empty">empty: BOOLEAN
+        <B>obsolete</B> "ELKS 2000: Use `is_empty' instead"
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there no element?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CONTAINER<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := is_empty
+        <B>end</B></A>
+
+    <A NAME="f_exhausted">exhausted: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Has structure been completely explored?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := off
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            exhausted_when_off: off <B>implies</B> <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_extendible">extendible: BOOLEAN <B>is</B> <B>True</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> May new items be added? (Answer: yes.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>DYNAMIC_CHAIN<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_full">full: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is structure filled to capacity?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> BOX
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := (count = capacity)
+        <B>end</B></A>
+
+    <A NAME="f_is_empty">is_empty: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is structure empty?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>FINITE<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (count = 0)
+        <B>end</B></A>
+
+    <A NAME="f_is_inserted">is_inserted (v: <A HREF="..\informatics_events/event_flat.html">EVENT</A>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Has </FONT>`v'<FONT COLOR="red"> been inserted at the end by the most recent </FONT>put<FONT COLOR="red"> or</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>extend<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>check</B>
+                put_constraint: (v /= last) <B>implies</B> <B>not</B> off
+            <B>end</B>
+            <B>Result</B> := (v = last) <B>or else</B> (v = item)
+        <B>end</B></A>
+
+    <A NAME="f_isfirst">isfirst: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is cursor at first position?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := <B>not</B> is_empty <B>and</B> (index = 1)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            valid_position: <B>Result</B> <B>implies</B> <B>not</B> is_empty
+        <B>end</B></A>
+
+    <A NAME="f_islast">islast: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is cursor at last position?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := <B>not</B> is_empty <B>and</B> (index = count)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            valid_position: <B>Result</B> <B>implies</B> <B>not</B> is_empty
+        <B>end</B></A>
+
+    <A NAME="f_object_comparison">object_comparison: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Must search operations use </FONT>equal<FONT COLOR="red"> rather than </FONT>`='
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> for comparing references? (Default: no, use </FONT>`='<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CONTAINER<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_off">off: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there no current item?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> TRAVERSABLE
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := (index = 0) <B>or</B> (index = count + 1)
+        <B>end</B></A>
+
+    <A NAME="f_prunable">prunable: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> May items be removed? (Answer: yes.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> COLLECTION
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := <B>True</B>
+        <B>end</B></A>
+
+    <A NAME="f_readable">readable: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there a current item that may be read?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>SEQUENCE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> ACTIVE
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := <B>not</B> off
+        <B>end</B></A>
+
+    <A NAME="f_same_type">same_type (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is type of current object identical to type of </FONT>`other'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (conforms_to (other) <B>and</B> other.conforms_to (<B>Current</B>))
+        <B>end</B></A>
+
+    <A NAME="f_valid_cursor">valid_cursor (p: CURSOR): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Can the cursor be moved to position </FONT>`p'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            al_c: ARRAYED_LIST_CURSOR
+        <B>do</B>
+            al_c ?= p
+            <B>if</B> al_c /= <B>Void</B> <B>then</B>
+                <B>Result</B> := valid_cursor_index (al_c.index)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_valid_cursor_index">valid_cursor_index (i: INTEGER_32): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`i'<FONT COLOR="red"> correctly bounded for cursor movement?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (i &gt;= 0) <B>and</B> (i &lt;= count + 1)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            valid_cursor_index_definition: <B>Result</B> = ((i &gt;= 0) <B>and</B> (i &lt;= count + 1))
+        <B>end</B></A>
+
+    <A NAME="f_valid_index">valid_index (i: INTEGER_32): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`i'<FONT COLOR="red"> a valid index?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> TABLE
+            <B>True</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> TO_SPECIAL
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := (1 &lt;= i) <B>and</B> (i &lt;= count)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>INDEXABLE
+            only_if_in_index_set: <B>Result</B> <B>implies</B> ((i &gt;= index_set.lower) <B>and</B> (i &lt;= index_set.upper))
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            valid_index_definition: <B>Result</B> = ((i &gt;= 1) <B>and</B> (i &lt;= count))
+        <B>end</B></A>
+
+    <A NAME="f_writable">writable: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is there a current item that may be modified?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>SEQUENCE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> ACTIVE
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := <B>not</B> off
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_all_default">all_default: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are all items set to default values?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := area.all_default (upper - lower)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            definition: <B>Result</B> = (count = 0 <B>or else</B> ((i_th (upper) = <B>Void</B> <B>or else</B> i_th (upper) = i_th (upper).default) <B>and</B> subarray (lower, upper - 1).all_default))
+        <B>end</B></A>
+
+    <A NAME="f_same_items">same_items (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do </FONT>`other'<FONT COLOR="red"> and Current have same items?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            other_not_void: other /= <B>Void</B>
+        <B>do</B>
+            <B>if</B> count = other.count <B>then</B>
+                <B>Result</B> := area.same_items (other.area, upper - lower)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            definition: <B>Result</B> = ((count = other.count) <B>and then</B> (count = 0 <B>or else</B> (i_th (upper) = other.item (other.upper) <B>and</B> subarray (lower, upper - 1).same_items (other.subarray (other.lower, other.upper - 1)))))
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_all_cleared">all_cleared: BOOLEAN
+        <B>obsolete</B> "Use `all_default' instead"
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are all items set to default values?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := all_default
+        <B>end</B></A>
+
+    <A NAME="f_resizable">resizable: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> May </FONT>capacity<FONT COLOR="red"> be changed? (Answer: yes.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>RESIZABLE<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := <B>True</B>
+        <B>end</B></A>
+
+    <A NAME="f_valid_index_set">valid_index_set: BOOLEAN
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := index_set.count = count
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status setting</FONT>
+
+    <A NAME="f_compare_objects">compare_objects
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Ensure that future search operations will use </FONT>equal
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> rather than </FONT>`='<FONT COLOR="red"> for comparing references.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CONTAINER<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            changeable_comparison_criterion: changeable_comparison_criterion
+        <B>do</B>
+            object_comparison := <B>True</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            object_comparison
+        <B>end</B></A>
+
+    <A NAME="f_compare_references">compare_references
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Ensure that future search operations will use </FONT>`='
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> rather than </FONT>equal<FONT COLOR="red"> for comparing references.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CONTAINER<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            changeable_comparison_criterion: changeable_comparison_criterion
+        <B>do</B>
+            object_comparison := <B>False</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CONTAINER
+            reference_comparison: <B>not</B> object_comparison
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Cursor movement</FONT>
+
+    <A NAME="f_back">back
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor one position backward.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BILINEAR
+            not_before: <B>not</B> before
+        <B>do</B>
+            index := index - 1
+        <B>end</B></A>
+
+    <A NAME="f_finish">finish
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to last position if any.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> LINEAR
+            <B>True</B>
+        <B>do</B>
+            index := count
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            at_last: <B>not</B> is_empty <B>implies</B> islast
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            before_when_empty: is_empty <B>implies</B> before
+        <B>end</B></A>
+
+    <A NAME="f_forth">forth
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor one position forward.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            not_after: <B>not</B> after
+        <B>do</B>
+            index := index + 1
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LIST
+            moved_forth: index = <B>old</B> index + 1
+        <B>end</B></A>
+
+    <A NAME="f_go_i_th">go_i_th (i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to </FONT>`i'<FONT COLOR="red">-th position.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            valid_cursor_index: valid_cursor_index (i)
+        <B>do</B>
+            index := i
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            position_expected: index = i
+        <B>end</B></A>
+
+    <A NAME="f_go_to">go_to (p: CURSOR)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to position </FONT>`p'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CURSOR_STRUCTURE
+            cursor_position_valid: valid_cursor (p)
+        <B>local</B>
+            al_c: ARRAYED_LIST_CURSOR
+        <B>do</B>
+            al_c ?= p
+            <B>check</B>
+                al_c /= <B>Void</B>
+            <B>end</B>
+            index := al_c.index
+        <B>end</B></A>
+
+    <A NAME="f_move">move (i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor </FONT>`i'<FONT COLOR="red"> positions.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            index := index + i
+            <B>if</B> (index &gt; count + 1) <B>then</B>
+                index := count + 1
+            <B>elseif</B> (index &lt; 0) <B>then</B>
+                index := 0
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            too_far_right: (<B>old</B> index + i &gt; count) <B>implies</B> exhausted
+            too_far_left: (<B>old</B> index + i &lt; 1) <B>implies</B> exhausted
+            expected_index: (<B>not</B> exhausted) <B>implies</B> (index = <B>old</B> index + i)
+        <B>end</B></A>
+
+    <A NAME="f_search">search (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move to first position (at or after current</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> position) where </FONT>item<FONT COLOR="red"> and </FONT>`v'<FONT COLOR="red"> are equal.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> If structure does not include </FONT>`v'<FONT COLOR="red"> ensure that</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>exhausted<FONT COLOR="red"> will be true.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> LINEAR
+            <B>True</B>
+        <B>local</B>
+            l_area: <B>like</B> area
+            l_item: <B>like</B> item
+            i, nb: INTEGER_32
+            l_found: BOOLEAN
+        <B>do</B>
+            l_area := area
+            nb := count - 1
+            i := (index - 1).max (0)
+            <B>if</B> object_comparison <B>and</B> v /= <B>Void</B> <B>then</B>
+                <B>from</B>
+                <B>until</B>
+                    i &gt; nb <B>or</B> l_found
+                <B>loop</B>
+                    l_item := l_area.item (i)
+                    l_found := l_item /= <B>Void</B> <B>and then</B> v.is_equal (l_item)
+                    i := i + 1
+                <B>end</B>
+            <B>else</B>
+                <B>from</B>
+                <B>until</B>
+                    i &gt; nb <B>or</B> l_found
+                <B>loop</B>
+                    l_found := v = l_area.item (i)
+                    i := i + 1
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> l_found <B>then</B>
+                index := i
+            <B>else</B>
+                index := i + 1
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            object_found: (<B>not</B> exhausted <B>and</B> object_comparison) <B>implies</B> equal (v, item)
+            item_found: (<B>not</B> exhausted <B>and</B> <B>not</B> object_comparison) <B>implies</B> v = item
+        <B>end</B></A>
+
+    <A NAME="f_start">start
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to first position if any.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> TRAVERSABLE
+            <B>True</B>
+        <B>do</B>
+            index := 1
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            at_first: <B>not</B> is_empty <B>implies</B> isfirst
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            after_when_empty: is_empty <B>implies</B> after
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Element change</FONT>
+
+    <A NAME="f_append">append (s: SEQUENCE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Append a copy of </FONT>`s'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>SEQUENCE
+            argument_not_void: s /= <B>Void</B>
+        <B>local</B>
+            al: ARRAYED_LIST [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            c, old_count, new_count: INTEGER_32
+        <B>do</B>
+            al ?= s
+            <B>if</B> al /= <B>Void</B> <B>then</B>
+                c := al.count
+                <B>if</B> c &gt; 0 <B>then</B>
+                    old_count := count
+                    new_count := old_count + c
+                    conservative_resize (1, new_count)
+                    set_count (new_count)
+                    subcopy (al, 1, c, old_count + 1)
+                <B>end</B>
+            <B>else</B>
+                <B>Precursor</B> {DYNAMIC_LIST} (s)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>SEQUENCE
+            new_count: count &gt;= <B>old</B> count
+        <B>end</B></A>
+
+    <A NAME="f_extend">extend (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to end.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT>ARRAYED_LIST<FONT COLOR="red"> as synonym of </FONT>force<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            extendible: extendible
+        <B>local</B>
+            i: INTEGER_32
+        <B>do</B>
+            i := count + 1
+            set_count (i)
+            force_i_th (v, i)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            item_inserted: is_inserted (v)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BAG
+            one_more_occurrence: occurrences (v) = <B>old</B> (occurrences (v)) + 1
+        <B>end</B></A>
+
+    <A NAME="f_fill">fill (other: CONTAINER [<A HREF="..\informatics_events/event_flat.html">EVENT</A>])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Fill with as many items of </FONT>`other'<FONT COLOR="red"> as possible.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> The representations of </FONT>`other'<FONT COLOR="red"> and current structure</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> need not be the same.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            other_not_void: other /= <B>Void</B>
+            extendible: extendible
+        <B>local</B>
+            lin_rep: LINEAR [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            l_cursor: CURSOR
+        <B>do</B>
+            lin_rep := other.linear_representation
+            <B>from</B>
+                l_cursor := cursor
+                lin_rep.start
+            <B>until</B>
+                <B>not</B> extendible <B>or else</B> lin_rep.off
+            <B>loop</B>
+                extend (lin_rep.item)
+                finish
+                lin_rep.forth
+            <B>end</B>
+            go_to (l_cursor)
+        <B>end</B></A>
+
+    <A NAME="f_force">force (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to end.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Was declared in </FONT>ARRAYED_LIST<FONT COLOR="red"> as synonym of </FONT>extend<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>SEQUENCE
+            extendible: extendible
+        <B>local</B>
+            i: INTEGER_32
+        <B>do</B>
+            i := count + 1
+            set_count (i)
+            force_i_th (v, i)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>SEQUENCE
+            new_count: count = <B>old</B> count + 1
+            item_inserted: has (v)
+        <B>end</B></A>
+
+    <A NAME="f_merge_left">merge_left (other: ARRAYED_LIST [<A HREF="..\informatics_events/event_flat.html">EVENT</A>])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Merge </FONT>`other'<FONT COLOR="red"> into current structure before cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            extendible: extendible
+            not_before: <B>not</B> before
+            other_exists: other /= <B>Void</B>
+            not_current: other /= <B>Current</B>
+        <B>local</B>
+            old_index: INTEGER_32
+            old_other_count: INTEGER_32
+        <B>do</B>
+            old_index := index
+            old_other_count := other.count
+            index := index - 1
+            merge_right (other)
+            index := old_index + old_other_count
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count + <B>old</B> other.count
+            new_index: index = <B>old</B> index + <B>old</B> other.count
+            other_is_empty: other.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_merge_right">merge_right (other: ARRAYED_LIST [<A HREF="..\informatics_events/event_flat.html">EVENT</A>])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Merge </FONT>`other'<FONT COLOR="red"> into current structure after cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            extendible: extendible
+            not_after: <B>not</B> after
+            other_exists: other /= <B>Void</B>
+            not_current: other /= <B>Current</B>
+        <B>local</B>
+            l_new_count, l_old_count: INTEGER_32
+        <B>do</B>
+            <B>if</B> <B>not</B> other.is_empty <B>then</B>
+                l_old_count := count
+                l_new_count := l_old_count + other.count
+                conservative_resize (1, l_new_count)
+                set_count (l_new_count)
+                <B>if</B> index &lt; l_old_count <B>then</B>
+                    subcopy (<B>Current</B>, index + 1, l_old_count, index + other.count + 1)
+                <B>end</B>
+                subcopy (other, 1, other.count, index + 1)
+                other.wipe_out
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count + <B>old</B> other.count
+            same_index: index = <B>old</B> index
+            other_is_empty: other.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_put">put_i_th (v: <B>like</B> i_th; i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace </FONT>`i'<FONT COLOR="red">-th entry, if in index interval, by </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TABLE
+            valid_key: valid_index (i)
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            valid_index: valid_index (i)
+        <B>do</B>
+            area.put (v, i - lower)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>INDEXABLE
+            insertion_done: i_th (i) = v
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TO_SPECIAL
+            inserted: array_item (i) = v
+        <B>end</B></A>
+
+    <A NAME="f_put">put (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace current item by </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Synonym for </FONT>replace<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            extendible: extendible
+        <B>do</B>
+            replace (v)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            item_inserted: is_inserted (v)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            same_count: count = <B>old</B> count
+        <B>end</B></A>
+
+    <A NAME="f_put_front">put_front (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to the beginning.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> is_empty <B>then</B>
+                extend (v)
+            <B>else</B>
+                insert (v, 1)
+            <B>end</B>
+            index := index + 1
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count + 1
+            item_inserted: first = v
+        <B>end</B></A>
+
+    <A NAME="f_put_left">put_left (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to the left of current position.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            extendible: extendible
+            not_before: <B>not</B> before
+        <B>do</B>
+            <B>if</B> after <B>or</B> is_empty <B>then</B>
+                extend (v)
+            <B>else</B>
+                insert (v, index)
+            <B>end</B>
+            index := index + 1
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count + 1
+            new_index: index = <B>old</B> index + 1
+        <B>end</B></A>
+
+    <A NAME="f_put_right">put_right (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to the right of current position.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            extendible: extendible
+            not_after: <B>not</B> after
+        <B>do</B>
+            <B>if</B> index = count <B>then</B>
+                extend (v)
+            <B>else</B>
+                insert (v, index + 1)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count + 1
+            same_index: index = <B>old</B> index
+        <B>end</B></A>
+
+    <A NAME="f_replace">replace (v: <B>like</B> first)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace current item by </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ACTIVE
+            writable: writable
+        <B>do</B>
+            put_i_th (v, index)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ACTIVE
+            item_replaced: item = v
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Element change</FONT>
+
+    <A NAME="f_enter">enter (v: <B>like</B> i_th; i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace </FONT>`i'<FONT COLOR="red">-th entry, if in index interval, by </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            valid_key: valid_index (i)
+        <B>do</B>
+            area.put (v, i - lower)
+        <B>end</B></A>
+
+    <A NAME="f_force">force_i_th (v: <B>like</B> i_th; i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Assign item </FONT>`v'<FONT COLOR="red"> to </FONT>`i'<FONT COLOR="red">-th entry.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always applicable: resize the array if </FONT>`i'<FONT COLOR="red"> falls out of</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> currently defined bounds; preserve existing items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> i &lt; lower <B>then</B>
+                auto_resize (i, upper)
+            <B>elseif</B> i &gt; upper <B>then</B>
+                auto_resize (lower, i)
+            <B>end</B>
+            put_i_th (v, i)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            inserted: i_th (i) = v
+            higher_count: count &gt;= <B>old</B> count
+        <B>end</B></A>
+
+    <A NAME="f_put">sequence_put (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> to end.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>SEQUENCE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            extendible: extendible
+        <B>do</B>
+            extend (v)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            item_inserted: is_inserted (v)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>SEQUENCE
+            new_count: count = <B>old</B> count + 1
+        <B>end</B></A>
+
+    <A NAME="f_set_area">set_area (other: <B>like</B> area)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Make </FONT>`other'<FONT COLOR="red"> the new </FONT>area
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>TO_SPECIAL<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            area := other
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Element change</FONT>
+
+    <A NAME="f_subcopy">subcopy (other: ARRAY [<B>like</B> i_th]; start_pos, end_pos, index_pos: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy items of </FONT>`other'<FONT COLOR="red"> within bounds </FONT>`start_pos'<FONT COLOR="red"> and </FONT>`end_pos'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to current array starting at index </FONT>`index_pos'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            other_not_void: other /= <B>Void</B>
+            valid_start_pos: other.valid_index (start_pos)
+            valid_end_pos: other.valid_index (end_pos)
+            valid_bounds: (start_pos &lt;= end_pos) <B>or</B> (start_pos = end_pos + 1)
+            valid_index_pos: valid_index (index_pos)
+            enough_space: (upper - index_pos) &gt;= (end_pos - start_pos)
+        <B>do</B>
+            area.copy_data (other.area, start_pos - other.lower, index_pos - lower, end_pos - start_pos + 1)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Removal</FONT>
+
+    <A NAME="f_prune">prune (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove first occurrence of </FONT>`v'<FONT COLOR="red">, if any,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> after cursor position.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to right neighbor.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (or </FONT>after<FONT COLOR="red"> if no right neighbor or </FONT>`v'<FONT COLOR="red"> does not occur)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            prunable: prunable
+        <B>do</B>
+            <B>if</B> before <B>then</B>
+                index := 1
+            <B>end</B>
+            <B>if</B> object_comparison <B>then</B>
+                <B>if</B> v /= <B>Void</B> <B>then</B>
+                    <B>from</B>
+                    <B>until</B>
+                        after <B>or else</B> (item /= <B>Void</B> <B>and then</B> v.is_equal (item))
+                    <B>loop</B>
+                        forth
+                    <B>end</B>
+                <B>end</B>
+            <B>else</B>
+                <B>from</B>
+                <B>until</B>
+                    after <B>or else</B> item = v
+                <B>loop</B>
+                    forth
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> after <B>then</B>
+                remove
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_prune_all">prune_all (v: <B>like</B> item)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove all occurrences of </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Reference or object equality,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on </FONT>object_comparison<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            prunable: prunable
+        <B>local</B>
+            i, nb: INTEGER_32
+            offset: INTEGER_32
+            res: BOOLEAN
+            obj_cmp: BOOLEAN
+            default_val: <B>like</B> item
+            l_area: <B>like</B> area
+        <B>do</B>
+            obj_cmp := object_comparison
+            <B>from</B>
+                l_area := area
+                i := 0
+                nb := count
+            <B>until</B>
+                i = count
+            <B>loop</B>
+                <B>if</B> i &lt; nb - offset <B>then</B>
+                    <B>if</B> offset &gt; 0 <B>then</B>
+                        l_area.put (l_area.item (i + offset), i)
+                    <B>end</B>
+                    <B>if</B> obj_cmp <B>then</B>
+                        res := equal (v, l_area.item (i))
+                    <B>else</B>
+                        res := (v = l_area.item (i))
+                    <B>end</B>
+                    <B>if</B> res <B>then</B>
+                        offset := offset + 1
+                    <B>else</B>
+                        i := i + 1
+                    <B>end</B>
+                <B>else</B>
+                    l_area.put (default_val, i)
+                    i := i + 1
+                <B>end</B>
+            <B>end</B>
+            set_count (count - offset)
+            index := count + 1
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            no_more_occurrences: <B>not</B> has (v)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            is_exhausted: exhausted
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            is_after: after
+        <B>end</B></A>
+
+    <A NAME="f_remove">remove
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove current item.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Move cursor to right neighbor</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (or </FONT>after<FONT COLOR="red"> if no right neighbor)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ACTIVE
+            prunable: prunable
+            writable: writable
+        <B>local</B>
+            default_value: <A HREF="..\informatics_events/event_flat.html">EVENT</A>
+        <B>do</B>
+            <B>if</B> index &lt; count <B>then</B>
+                subcopy (<B>Current</B>, index + 1, count, index)
+            <B>end</B>
+            set_count (count - 1)
+            area.put (default_value, count)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_LIST
+            after_when_empty: is_empty <B>implies</B> after
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            index: index = <B>old</B> index
+        <B>end</B></A>
+
+    <A NAME="f_remove_left">remove_left
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove item to the left of cursor position.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            left_exists: index &gt; 1
+        <B>do</B>
+            index := index - 1
+            remove
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count - 1
+            new_index: index = <B>old</B> index - 1
+        <B>end</B></A>
+
+    <A NAME="f_remove_right">remove_right
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove item to the right of cursor position</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not move cursor</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            right_exists: index &lt; count
+        <B>do</B>
+            index := index + 1
+            remove
+            index := index - 1
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            new_count: count = <B>old</B> count - 1
+            same_index: index = <B>old</B> index
+        <B>end</B></A>
+
+    <A NAME="f_wipe_out">wipe_out
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove all items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            prunable: prunable
+        <B>do</B>
+            set_count (0)
+            index := 0
+            clear_all
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            wiped_out: is_empty
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_LIST
+            is_before: before
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Removal</FONT>
+
+    <A NAME="f_clear_all">clear_all
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Reset all items to default values.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            area.clear_all
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            stable_lower: lower = <B>old</B> lower
+            stable_upper: upper = <B>old</B> upper
+            default_items: all_default
+        <B>end</B></A>
+
+    <A NAME="f_discard_items">discard_items
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Reset all items to default values with reallocation.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            make_area (capacity)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            default_items: all_default
+        <B>end</B></A>
+
+    <A NAME="f_wipe_out">chain_wipe_out
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Remove all items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>DYNAMIC_CHAIN<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            prunable: prunable
+        <B>do</B>
+            <B>from</B>
+                start
+            <B>until</B>
+                is_empty
+            <B>loop</B>
+                remove
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            wiped_out: is_empty
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Resizing</FONT>
+
+    <A NAME="f_resize">resize (new_capacity: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Resize list so that it can contain</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> at least </FONT>`n'<FONT COLOR="red"> items. Do not lose any item.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            new_capacity_large_enough: new_capacity &gt;= capacity
+        <B>do</B>
+            grow (new_capacity)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            capacity_set: capacity &gt;= new_capacity
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Resizing</FONT>
+
+    <A NAME="f_automatic_grow">automatic_grow
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Change the capacity to accommodate at least</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>Growth_percentage<FONT COLOR="red"> more items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>RESIZABLE<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            grow (capacity + additional_space)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>RESIZABLE
+            increased_capacity: capacity &gt;= <B>old</B> capacity + <B>old</B> additional_space
+        <B>end</B></A>
+
+    <A NAME="f_conservative_resize">conservative_resize (min_index, max_index: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Rearrange array so that it can accommodate</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> indices down to </FONT>`min_index'<FONT COLOR="red"> and up to </FONT>`max_index'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not lose any previously entered item.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            good_indices: min_index &lt;= max_index
+        <B>local</B>
+            old_size, new_size, old_count: INTEGER_32
+            new_lower, new_upper: INTEGER_32
+            offset: INTEGER_32
+            v: <B>like</B> i_th
+        <B>do</B>
+            <B>if</B> empty_area <B>then</B>
+                new_lower := min_index
+                new_upper := max_index
+            <B>else</B>
+                new_lower := min_index.min (lower)
+                new_upper := max_index.max (upper)
+            <B>end</B>
+            new_size := new_upper - new_lower + 1
+            <B>if</B> <B>not</B> empty_area <B>then</B>
+                old_size := area.count
+                old_count := upper - lower + 1
+            <B>end</B>
+            <B>if</B> empty_area <B>then</B>
+                make_area (new_size)
+            <B>else</B>
+                <B>if</B> new_size &gt; old_size <B>then</B>
+                    area := area.aliased_resized_area (new_size)
+                <B>end</B>
+                <B>if</B> new_lower &lt; lower <B>then</B>
+                    offset := lower - new_lower
+                    area.move_data (0, offset, old_count)
+                    area.fill_with (v, 0, offset - 1)
+                <B>end</B>
+            <B>end</B>
+            lower := new_lower
+            upper := new_upper
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            no_low_lost: lower = min_index <B>or else</B> lower = <B>old</B> lower
+            no_high_lost: upper = max_index <B>or else</B> upper = <B>old</B> upper
+        <B>end</B></A>
+
+    <A NAME="f_grow">grow (i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Change the capacity to at least </FONT>`i'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> i &gt; capacity <B>then</B>
+                conservative_resize (lower, upper + i - capacity)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>RESIZABLE
+            new_capacity: capacity &gt;= i
+        <B>end</B></A>
+
+    <A NAME="f_resize">array_resize (min_index, max_index: INTEGER_32)
+        <B>obsolete</B> "Use `conservative_resize' instead as future versions will implement `resize' as specified in ELKS."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Rearrange array so that it can accommodate</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> indices down to </FONT>`min_index'<FONT COLOR="red"> and up to </FONT>`max_index'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not lose any previously entered item.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            good_indices: min_index &lt;= max_index
+        <B>do</B>
+            conservative_resize (min_index, max_index)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            no_low_lost: lower = min_index <B>or else</B> lower = <B>old</B> lower
+            no_high_lost: upper = max_index <B>or else</B> upper = <B>old</B> upper
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Transformation</FONT>
+
+    <A NAME="f_swap">swap (i: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exchange item at </FONT>`i'<FONT COLOR="red">-th position with item</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> at cursor position.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            not_off: <B>not</B> off
+            valid_index: valid_index (i)
+        <B>local</B>
+            old_item: <B>like</B> item
+        <B>do</B>
+            old_item := item
+            replace (area.item (i - 1))
+            area.put (old_item, i - 1)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            swapped_to_item: item = <B>old</B> i_th (i)
+            swapped_from_item: i_th (i) = <B>old</B> item
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Conversion</FONT>
+
+    <A NAME="f_to_c">to_c: ANY
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Address of actual sequence of values,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> for passing to external (non-Eiffel) routines.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            not_is_dotnet: <B>not</B> {PLATFORM}.is_dotnet
+        <B>do</B>
+            <B>Result</B> := area
+        <B>end</B></A>
+
+    <A NAME="f_to_cil">to_cil: NATIVE_ARRAY [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Address of actual sequence of values,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> for passing to external (non-Eiffel) routines.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            is_dotnet: {PLATFORM}.is_dotnet
+        <B>do</B>
+            <B>Result</B> := area.native_array
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            to_cil_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_to_special">to_special: SPECIAL [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> 'area'.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := area
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            to_special_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Conversion</FONT>
+
+    <A NAME="f_linear_representation">linear_representation: LINEAR [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Representation as a linear structure</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> CONTAINER
+            <B>True</B>
+        <B>do</B>
+            <B>Result</B> := <B>Current</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_clone"><B>frozen</B> clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void; otherwise new object</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to </FONT>`other'
+            <FONT COLOR="red">--</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> For non-void </FONT>`other'<FONT COLOR="red">, </FONT>clone<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to change copying/cloning semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            equal: equal (<B>Result</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_copy">copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Reinitialize by copying all the items of </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (This is also used by </FONT>clone<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>do</B>
+            <B>if</B> other /= <B>Current</B> <B>then</B>
+                standard_copy (other)
+                set_area (other.area.twin)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_equal: is_equal (other)
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            equal_areas: area.is_equal (other.area)
+        <B>end</B></A>
+
+    <A NAME="f_deep_clone"><B>frozen</B> deep_clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `deep_twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void: otherwise, new object structure</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> recursively duplicated from the one attached to </FONT>`other'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.deep_twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (other, <B>Result</B>)
+        <B>end</B></A>
+
+    <A NAME="f_deep_copy"><B>frozen</B> deep_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Effect equivalent to that of:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">		</FONT>copy<FONT COLOR="red"> (</FONT>`other'<FONT COLOR="red"> . </FONT>deep_twin<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>do</B>
+            copy (other.deep_twin)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (<B>Current</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_deep_twin"><B>frozen</B> deep_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object structure recursively duplicated from Current.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_twin_not_void: <B>Result</B> /= <B>Void</B>
+            deep_equal: deep_equal (<B>Current</B>, <B>Result</B>)
+        <B>end</B></A>
+
+    <A NAME="f_duplicate">duplicate (n: INTEGER_32): <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy of sub-list beginning at current position</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> and having min (</FONT>`n'<FONT COLOR="red">, </FONT>count<FONT COLOR="red"> - </FONT>index<FONT COLOR="red"> + 1) items.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+            not_off_unless_after: off <B>implies</B> after
+            valid_subchain: n &gt;= 0
+        <B>local</B>
+            end_pos: INTEGER_32
+        <B>do</B>
+            <B>if</B> after <B>then</B>
+                <B>Result</B> := new_filled_list (0)
+            <B>else</B>
+                end_pos := count.min (index + n - 1)
+                <B>Result</B> := new_filled_list (end_pos - index + 1)
+                <B>Result</B>.subcopy (<B>Current</B>, index, end_pos, 1)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_standard_clone"><B>frozen</B> standard_clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `standard_twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void; otherwise new object</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.standard_twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            equal: standard_equal (<B>Result</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_standard_copy"><B>frozen</B> standard_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy every field of </FONT>`other'<FONT COLOR="red"> onto corresponding field</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_standard_equal: standard_is_equal (other)
+        <B>end</B></A>
+
+    <A NAME="f_standard_twin"><B>frozen</B> standard_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_temp: BOOLEAN
+        <B>do</B>
+            l_temp := {ISE_RUNTIME}.check_assert (<B>False</B>)
+            <B>Result</B> ?= {ISE_RUNTIME}.c_standard_clone ($<B>Current</B>)
+            <B>Result</B>.standard_copy (<B>Current</B>)
+            l_temp := {ISE_RUNTIME}.check_assert (l_temp)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            standard_twin_not_void: <B>Result</B> /= <B>Void</B>
+            equal: standard_equal (<B>Result</B>, <B>Current</B>)
+        <B>end</B></A>
+
+    <A NAME="f_twin"><B>frozen</B> twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object equal to </FONT>`Current'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>twin<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">; to change copying/twining semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_temp: BOOLEAN
+        <B>do</B>
+            l_temp := {ISE_RUNTIME}.check_assert (<B>False</B>)
+            <B>Result</B> ?= {ISE_RUNTIME}.c_standard_clone ($<B>Current</B>)
+            <B>Result</B>.copy (<B>Current</B>)
+            l_temp := {ISE_RUNTIME}.check_assert (l_temp)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            twin_not_void: <B>Result</B> /= <B>Void</B>
+            is_equal: <B>Result</B>.is_equal (<B>Current</B>)
+        <B>end</B></A>
+    
+<B>feature</B> {ARRAYED_LIST} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_subarray">subarray (start_pos, end_pos: INTEGER_32): ARRAY [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Array made of items of current array within</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> bounds </FONT>`start_pos'<FONT COLOR="red"> and </FONT>`end_pos'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            valid_start_pos: valid_index (start_pos)
+            valid_end_pos: end_pos &lt;= upper
+            valid_bounds: (start_pos &lt;= end_pos) <B>or</B> (start_pos = end_pos + 1)
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (start_pos, end_pos)
+            <B>if</B> start_pos &lt;= end_pos <B>then</B>
+                <B>Result</B>.subcopy (<B>Current</B>, start_pos, end_pos, start_pos)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            lower: <B>Result</B>.lower = start_pos
+            upper: <B>Result</B>.upper = end_pos
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_default"><B>frozen</B> default: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of object's type</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_default_pointer"><B>frozen</B> default_pointer: POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of type </FONT>`POINTER'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Avoid the need to write </FONT>`p'<FONT COLOR="red">.</FONT>default<FONT COLOR="red"> for</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> some </FONT>`p'<FONT COLOR="red"> of type </FONT>`POINTER'<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_default_rescue">default_rescue
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process exception for routines with no Rescue clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_do_nothing"><B>frozen</B> do_nothing
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Execute a null action.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Inapplicable</FONT>
+
+    <A NAME="f_bag_put">bag_put (v: <A HREF="..\informatics_events/event_flat.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>TABLE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            extendible: extendible
+        <B>do</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>COLLECTION
+            item_inserted: is_inserted (v)
+        <B>end</B></A>
+
+    <A NAME="f_new_chain">new_chain: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Unused</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+            result_exists: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Implementation</FONT>
+
+    <A NAME="f_auto_resize">auto_resize (min_index, max_index: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Rearrange array so that it can accommodate</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> indices down to </FONT>`min_index'<FONT COLOR="red"> and up to </FONT>`max_index'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not lose any previously entered item.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> If area must be extended, ensure that space for at least</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> additional_space item is added.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            valid_indices: min_index &lt;= max_index
+        <B>local</B>
+            old_size, new_size: INTEGER_32
+            new_lower, new_upper: INTEGER_32
+            offset: INTEGER_32
+            v: <B>like</B> i_th
+        <B>do</B>
+            <B>if</B> empty_area <B>then</B>
+                new_lower := min_index
+                new_upper := max_index
+            <B>else</B>
+                new_lower := min_index.min (lower)
+                new_upper := max_index.max (upper)
+            <B>end</B>
+            new_size := new_upper - new_lower + 1
+            <B>if</B> <B>not</B> empty_area <B>then</B>
+                old_size := area.count
+                <B>if</B> new_size &gt; old_size <B>and</B> new_size - old_size &lt; additional_space <B>then</B>
+                    new_size := old_size + additional_space
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> empty_area <B>then</B>
+                make_area (new_size)
+            <B>else</B>
+                <B>if</B> new_size &gt; old_size <B>then</B>
+                    area := area.aliased_resized_area (new_size)
+                <B>end</B>
+                <B>if</B> new_lower &lt; lower <B>then</B>
+                    offset := lower - new_lower
+                    area.move_data (0, offset, capacity)
+                    area.fill_with (v, 0, offset - 1)
+                <B>end</B>
+            <B>end</B>
+            lower := new_lower
+            upper := new_upper
+        <B>end</B></A>
+
+    <A NAME="f_empty_area">empty_area: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>area<FONT COLOR="red"> empty?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := area = <B>Void</B> <B>or else</B> area.count = 0
+        <B>end</B></A>
+
+    <A NAME="f_insert">insert (v: <B>like</B> item; pos: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Add </FONT>`v'<FONT COLOR="red"> at </FONT>`pos'<FONT COLOR="red">, moving subsequent items</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to the right.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            index_small_enough: pos &lt;= count
+            index_large_enough: pos &gt;= 1
+        <B>do</B>
+            <B>if</B> count + 1 &gt; capacity <B>then</B>
+                auto_resize (lower, count + 1)
+            <B>end</B>
+            set_count (count + 1)
+            subcopy (<B>Current</B>, pos, count - 1, pos + 1)
+            enter (v, pos)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            new_count: count = <B>old</B> count + 1
+            index_unchanged: index = <B>old</B> index
+            insertion_done: i_th (pos) = v
+        <B>end</B></A>
+
+    <A NAME="f_new_filled_list">new_filled_list (n: INTEGER_32): <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New list with </FONT>`n'<FONT COLOR="red"> elements.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            n_non_negative: n &gt;= 0
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make_filled (n)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+            new_filled_list_not_void: <B>Result</B> /= <B>Void</B>
+            new_filled_list_count_set: <B>Result</B>.count = n
+            new_filled_list_full: <B>Result</B>.full
+            new_filled_list_before: <B>Result</B>.before
+        <B>end</B></A>
+
+    <A NAME="f_set_count">set_count (new_count: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set </FONT>count<FONT COLOR="red"> to </FONT>`new_count'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAYED_LIST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            count := new_count
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Iteration</FONT>
+
+    <A NAME="f_do_all_with_index">do_all_with_index (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>, INTEGER_32]])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Apply </FONT>`action'<FONT COLOR="red"> to every item, from first to last.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>`action'<FONT COLOR="red"> receives item and its index.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`action'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            action_not_void: action /= <B>Void</B>
+        <B>local</B>
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>, INTEGER_32]
+            i, j, nb: INTEGER_32
+            l_area: <B>like</B> area
+        <B>do</B>
+            <B>from</B>
+                <B>create</B> t
+                i := 0
+                j := lower
+                nb := capacity - 1
+                l_area := area
+            <B>until</B>
+                i &gt; nb
+            <B>loop</B>
+                t.put (l_area.item (i), 1)
+                t.put (j, 2)
+                action.call (t)
+                j := j + 1
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_do_if_with_index">do_if_with_index (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>, INTEGER_32]]; test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>, INTEGER_32], BOOLEAN])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Apply </FONT>`action'<FONT COLOR="red"> to every item that satisfies </FONT>`test'<FONT COLOR="red">, from first to last.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>`action'<FONT COLOR="red"> and </FONT>`test'<FONT COLOR="red"> receive the item and its index.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`action'<FONT COLOR="red"> or </FONT>`test'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ARRAY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            action_not_void: action /= <B>Void</B>
+            test_not_void: test /= <B>Void</B>
+        <B>local</B>
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>, INTEGER_32]
+            i, j, nb: INTEGER_32
+            l_area: <B>like</B> area
+        <B>do</B>
+            <B>from</B>
+                <B>create</B> t
+                i := 0
+                j := lower
+                nb := capacity - 1
+                l_area := area
+            <B>until</B>
+                i &gt; nb
+            <B>loop</B>
+                t.put (l_area.item (i), 1)
+                t.put (j, 2)
+                <B>if</B> test.item (t) <B>then</B>
+                    action.call (t)
+                <B>end</B>
+                j := j + 1
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Iteration</FONT>
+
+    <A NAME="f_do_all">do_all (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Apply </FONT>`action'<FONT COLOR="red"> to every item.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`action'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+            action_exists: action /= <B>Void</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            action_not_void: action /= <B>Void</B>
+        <B>local</B>
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            cs: CURSOR_STRUCTURE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            c: CURSOR
+        <B>do</B>
+            cs ?= <B>Current</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                c := cs.cursor
+            <B>end</B>
+            <B>create</B> t
+            <B>from</B>
+                start
+            <B>until</B>
+                after
+            <B>loop</B>
+                t.put (item, 1)
+                action.call (t)
+                forth
+            <B>end</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                cs.go_to (c)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_do_if">do_if (action: PROCEDURE [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]]; test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>], BOOLEAN])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Apply </FONT>`action'<FONT COLOR="red"> to every item that satisfies </FONT>`test'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`action'<FONT COLOR="red"> or </FONT>`test'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+            action_exists: action /= <B>Void</B>
+            test_exits: test /= <B>Void</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            action_not_void: action /= <B>Void</B>
+            test_not_void: test /= <B>Void</B>
+        <B>local</B>
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            cs: CURSOR_STRUCTURE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            c: CURSOR
+        <B>do</B>
+            cs ?= <B>Current</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                c := cs.cursor
+            <B>end</B>
+            <B>create</B> t
+            <B>from</B>
+                start
+            <B>until</B>
+                after
+            <B>loop</B>
+                t.put (item, 1)
+                <B>if</B> test.item (t) <B>then</B>
+                    action.call (t)
+                <B>end</B>
+                forth
+            <B>end</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                cs.go_to (c)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_for_all">for_all (test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>], BOOLEAN]): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`test'<FONT COLOR="red"> true for all items?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`test'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+            test_exits: test /= <B>Void</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            test_not_void: test /= <B>Void</B>
+        <B>local</B>
+            cs: CURSOR_STRUCTURE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            c: CURSOR
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+        <B>do</B>
+            <B>create</B> t
+            cs ?= <B>Current</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                c := cs.cursor
+            <B>end</B>
+            <B>from</B>
+                start
+                <B>Result</B> := <B>True</B>
+            <B>until</B>
+                after <B>or</B> <B>not</B> <B>Result</B>
+            <B>loop</B>
+                t.put (item, 1)
+                <B>Result</B> := test.item (t)
+                forth
+            <B>end</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                cs.go_to (c)
+            <B>end</B>
+        <B>ensure then</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+            empty: is_empty <B>implies</B> <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_there_exists">there_exists (test: FUNCTION [ANY, TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>], BOOLEAN]): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`test'<FONT COLOR="red"> true for at least one item?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Semantics not guaranteed if </FONT>`test'<FONT COLOR="red"> changes the structure;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in such a case, apply iterator to clone of structure instead.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>LINEAR<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+            test_exits: test /= <B>Void</B>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+            test_not_void: test /= <B>Void</B>
+        <B>local</B>
+            cs: CURSOR_STRUCTURE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+            c: CURSOR
+            t: TUPLE [<A HREF="..\informatics_events/event_flat.html">EVENT</A>]
+        <B>do</B>
+            <B>create</B> t
+            cs ?= <B>Current</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                c := cs.cursor
+            <B>end</B>
+            <B>from</B>
+                start
+            <B>until</B>
+                after <B>or</B> <B>Result</B>
+            <B>loop</B>
+                t.put (item, 1)
+                <B>Result</B> := test.item (t)
+                forth
+            <B>end</B>
+            <B>if</B> cs /= <B>Void</B> <B>then</B>
+                cs.go_to (c)
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Output</FONT>
+
+    <A NAME="f_io">io: STD_FILES
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handle to standard file setup</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+            <B>Result</B>.set_output_default
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            io_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_out">out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := tagged_out
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            out_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_print">print (some: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Write terse external representation of </FONT>`some'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> on standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some /= <B>Void</B> <B>then</B>
+                io.put_string (some.out)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_tagged_out"><B>frozen</B> tagged_out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            tagged_out_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Platform</FONT>
+
+    <A NAME="f_operating_environment">operating_environment: OPERATING_ENVIRONMENT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Objects available from the operating system</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            operating_environment_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Retrieval</FONT>
+
+    <A NAME="f_internal_correct_mismatch"><B>frozen</B> internal_correct_mismatch
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Called from runtime to perform a proper dynamic dispatch on </FONT>`correct_mismatch'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> from MISMATCH_CORRECTOR.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_corrector: MISMATCH_CORRECTOR
+            l_msg: STRING_8
+            l_exc: EXCEPTIONS
+        <B>do</B>
+            l_corrector ?= <B>Current</B>
+            <B>if</B> l_corrector /= <B>Void</B> <B>then</B>
+                l_corrector.correct_mismatch
+            <B>else</B>
+                <B>create</B> l_msg.make_from_string ("Mismatch: ")
+                <B>create</B> l_exc
+                l_msg.append (generating_type)
+                l_exc.raise_retrieval_exception (l_msg)
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">basic operations</FONT>
+
+    <A NAME="f_add_event"><A HREF="..\informatics_events/event_list_flat.html#f_add_event">add_event</A> (an_event: <A HREF="..\informatics_events/event_flat.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">adds an_event to the current list</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+        <B>do</B>
+            extend (an_event)
+        <B>ensure</B>
+            one_event_added: count = <B>old</B> count + 1
+        <B>end</B></A>
+
+    <A NAME="f_delete_event"><A HREF="..\informatics_events/event_list_flat.html#f_delete_event">delete_event</A> (an_event: <A HREF="..\informatics_events/event_flat.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">deletes an_event from the current list</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+        <B>do</B>
+            compare_objects
+            start
+            prune (an_event)
+        <B>ensure</B>
+            one_event_deleted: count = <B>old</B> count - 1
+        <B>end</B></A>
+
+    <A NAME="f_search_by_id"><A HREF="..\informatics_events/event_list_flat.html#f_search_by_id">search_by_id</A> (id: NATURAL_64): <A HREF="..\informatics_events/event_flat.html">EVENT</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">searches and returns an event with given id from the current list</FONT>
+        <B>require</B>
+            id_consistent: id &gt; 0
+        <B>do</B>
+            compare_objects
+            <B>from</B>
+                start
+            <B>until</B>
+                after
+            <B>loop</B>
+                <B>if</B> item.<A HREF="..\informatics_events/event_flat.html#f_id">id</A> = id <B>then</B>
+                    <B>Result</B> := item
+                <B>end</B>
+                forth
+            <B>end</B>
+        <B>ensure</B>
+            one_event_always_found: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_update_event"><A HREF="..\informatics_events/event_list_flat.html#f_update_event">update_event</A> (an_event: <A HREF="..\informatics_events/event_flat.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">updates an_event in the current list</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+        <B>local</B>
+            temp_event: <A HREF="..\informatics_events/event_flat.html">EVENT</A>
+        <B>do</B>
+            temp_event := an_event
+            compare_objects
+            start
+            prune (an_event)
+            put_left (temp_event)
+        <B>ensure</B>
+            same_event_count: count = <B>old</B> count
+        <B>end</B></A>
+    
+<B>invariant</B>
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAYED_LIST
+    prunable: prunable
+    starts_from_one: lower = 1
+    empty_means_storage_empty: is_empty <B>implies</B> all_default
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ARRAY
+    area_exists: area /= <B>Void</B>
+    consistent_size: capacity = upper - lower + 1
+    non_negative_count: count &gt;= 0
+    index_set_has_same_count: valid_index_set
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>RESIZABLE
+    increase_by_at_least_one: minimal_increase &gt;= 1
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BOUNDED
+    valid_count: count &lt;= capacity
+    full_definition: full = (count = capacity)
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>FINITE
+    empty_definition: is_empty = (count = 0)
+    non_negative_count: count &gt;= 0
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+    reflexive_equality: standard_is_equal (<B>Current</B>)
+    reflexive_conformance: conforms_to (<B>Current</B>)
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>INDEXABLE
+    index_set_not_void: index_set /= <B>Void</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LIST
+    before_definition: before = (index = 0)
+    after_definition: after = (index = count + 1)
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CHAIN
+    non_negative_index: index &gt;= 0
+    index_small_enough: index &lt;= count + 1
+    off_definition: off = ((index = 0) <B>or</B> (index = count + 1))
+    isfirst_definition: isfirst = ((<B>not</B> is_empty) <B>and</B> (index = 1))
+    islast_definition: islast = ((<B>not</B> is_empty) <B>and</B> (index = count))
+    item_corresponds_to_index: (<B>not</B> off) <B>implies</B> (item = i_th (index))
+    index_set_has_same_count: index_set.count = count
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ACTIVE
+    writable_constraint: writable <B>implies</B> readable
+    empty_constraint: is_empty <B>implies</B> (<B>not</B> readable) <B>and</B> (<B>not</B> writable)
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BILINEAR
+    not_both: <B>not</B> (after <B>and</B> before)
+    before_constraint: before <B>implies</B> off
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>LINEAR
+    after_constraint: after <B>implies</B> off
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>TRAVERSABLE
+    empty_constraint: is_empty <B>implies</B> off
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>DYNAMIC_CHAIN
+    extendible: extendible
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event_list_flat.html">EVENT_LIST</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_list_chart.html">Chart</A></TD><TD><A HREF="event_list_links.html">Relations</A></TD><TD><A HREF="event_list.html">Text</A></TD><TD>Flat</TD><TD><A HREF="event_list_short.html">Contracts</A></TD><TD><A HREF="event_list_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

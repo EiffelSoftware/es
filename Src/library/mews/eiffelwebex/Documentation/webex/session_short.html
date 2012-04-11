@@ -1,0 +1,89 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects used to hold http session state.">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>session Contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_chart.html">Chart</A></TD><TD><A HREF="session_links.html">Relations</A></TD><TD><A HREF="session.html">Text</A></TD><TD><A HREF="session_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="session_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects used to hold http session state."
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "20.12.2008"
+    revision: "$0.6$"
+
+<B>class</B> <B>interface</B>
+    <A HREF="..\webex/session_short.html">SESSION</A>
+
+<B>create</B> 
+    <A HREF="..\webex/session_short.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">attributes</FONT>
+
+    <A NAME="f_session_id"><A HREF="..\webex/session_short.html#f_session_id">session_id</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save session_id by its own</FONT>
+
+    <A NAME="f_creation_time"><A HREF="..\webex/session_short.html#f_creation_time">creation_time</A>: DATE_TIME</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> session creation timestamp</FONT>
+
+    <A NAME="f_expiration_time"><A HREF="..\webex/session_short.html#f_expiration_time">expiration_time</A>: DATE_TIME</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> when session will get expired</FONT>
+
+    <A NAME="f_object_list"><A HREF="..\webex/session_short.html#f_object_list">object_list</A>: HASH_TABLE [ANY, STRING_8]</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> user injected objects that need to be saved</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/session_short.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> initialize a default session object</FONT>
+</A>    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> access</FONT>
+
+    <A NAME="f_set_session_id"><A HREF="..\webex/session_short.html#f_set_session_id">set_session_id</A> (sid: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> set session id</FONT>
+        <B>require</B>
+            session_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+</A>
+    <A NAME="f_set_expiration_time"><A HREF="..\webex/session_short.html#f_set_expiration_time">set_expiration_time</A> (expiration: DATE_TIME)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> set expiration date</FONT>
+</A>
+    <A NAME="f_set_expiration_after_seconds"><A HREF="..\webex/session_short.html#f_set_expiration_after_seconds">set_expiration_after_seconds</A> (seconds: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> set expiration date to be seconds after now</FONT>
+</A>
+    <A NAME="f_expired"><A HREF="..\webex/session_short.html#f_expired">expired</A>: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether session is expired</FONT>
+</A>
+    <A NAME="f_set_attribute"><A HREF="..\webex/session_short.html#f_set_attribute">set_attribute</A> (name: STRING_8; obj: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> add/update an attribute in session state</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+            valid_object_is_given: obj /= <B>Void</B>
+</A>
+    <A NAME="f_delete_attribute"><A HREF="..\webex/session_short.html#f_delete_attribute">delete_attribute</A> (name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> delete an attribute from state</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+            attribute_exists: <A HREF="..\webex/session_short.html#f_object_list">object_list</A>.has (name)
+        <B>ensure</B>
+            one_attribute_deleted: <A HREF="..\webex/session_short.html#f_object_list">object_list</A>.count = <B>old</B> <A HREF="..\webex/session_short.html#f_object_list">object_list</A>.count - 1
+</A>
+    <A NAME="f_get_attribute"><A HREF="..\webex/session_short.html#f_get_attribute">get_attribute</A> (name: STRING_8): ANY
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve an attribute object from current session state, return void if not exist</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+            attribute_exists: <A HREF="..\webex/session_short.html#f_object_list">object_list</A>.has (name)
+</A>
+    <A NAME="f_has_attribute"><A HREF="..\webex/session_short.html#f_has_attribute">has_attribute</A> (name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> check whether a specified session object exists</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+</A>    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/session_short.html">SESSION</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_chart.html">Chart</A></TD><TD><A HREF="session_links.html">Relations</A></TD><TD><A HREF="session.html">Text</A></TD><TD><A HREF="session_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="session_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

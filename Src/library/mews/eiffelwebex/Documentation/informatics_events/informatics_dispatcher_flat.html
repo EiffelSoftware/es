@@ -1,0 +1,1967 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses">
+<META NAME="author" CONTENT="Peizhu Li <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>informatics_dispatcher Flat</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="informatics_dispatcher_chart.html">Chart</A></TD><TD><A HREF="informatics_dispatcher_links.html">Relations</A></TD><TD><A HREF="informatics_dispatcher.html">Text</A></TD><TD>Flat</TD><TD><A HREF="informatics_dispatcher_short.html">Contracts</A></TD><TD><A HREF="informatics_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses"
+    author: "Peizhu Li &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "$05.02.2008$"
+    revision: "$0.8.1$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/informatics_dispatcher_flat.html">INFORMATICS_DISPATCHER</A>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/informatics_dispatcher_flat.html#f_make">make</A>
+
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_default_create">default_create
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process instances of classes with no creation clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> {CGI_FORMS} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_form_data">form_data: HASH_TABLE [LINKED_LIST [STRING_8], STRING_8]</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> User provided data.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_hexa_to_ascii">hexa_to_ascii (s: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Replace %xy by the corresponding ASCII character.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            char: CHARACTER_8
+            new: STRING_8
+            i: INTEGER_32
+        <B>do</B>
+            <B>create</B> new.make (s.count)
+            <B>from</B>
+                i := 1
+            <B>until</B>
+                i &gt; s.count
+            <B>loop</B>
+                <B>if</B> s.item (i) = '%%' <B>then</B>
+                    <B>if</B> s.valid_index (i + 1) <B>and</B> s.valid_index (i + 2) <B>then</B>
+                        char := charconv (16 * hexa_value (s.item (i + 1)) + hexa_value (s.item (i + 2)))
+                        new.append_character (char)
+                        i := i + 2
+                    <B>else</B>
+                        new.append_character (s.item (i))
+                    <B>end</B>
+                <B>else</B>
+                    new.append_character (s.item (i))
+                <B>end</B>
+                i := i + 1
+            <B>end</B>
+            s.make_from_string (new)
+        <B>end</B></A>
+
+    <A NAME="f_hexa_value">hexa_value (c: CHARACTER_8): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Hexadecimal value of a character from the hexa alphabet.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_INTERFACE
+            valid_hexa_character: (c &gt;= '0' <B>and</B> c &lt;= '9') <B>or</B> (c &gt;= 'A' <B>and</B> c &lt;= 'F')
+        <B>do</B>
+            <B>inspect</B> c
+            <B>when</B> '0'..'9' <B>then</B> 
+                <B>Result</B> := c.code - ('0').code
+            <B>when</B> 'A'..'F' <B>then</B> 
+                <B>Result</B> := c.code - ('A').code + 10
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_input_data">input_data: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Data sent by the server.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>if</B> request_method.is_equal ("POST") <B>then</B>
+                <B>if</B> content_length.is_integer <B>then</B>
+                    stdin.read_stream (content_length.to_integer)
+                    <B>Result</B> := stdin.last_string
+                <B>else</B>
+                    raise_error ("Incorrect value for CONTENT_LENGTH")
+                <B>end</B>
+            <B>else</B>
+                <B>Result</B> := query_string
+            <B>end</B>
+            <B>if</B> <B>Result</B> = <B>Void</B> <B>then</B>
+                <B>Result</B> := ""
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_INTERFACE
+            input_data_exists: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_insert_pair">insert_pair (name, val: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Insert pair (name,value) into form_data; take care of collisions.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            vl: LINKED_LIST [STRING_8]
+        <B>do</B>
+            hexa_to_ascii (name)
+            hexa_to_ascii (val)
+            <B>if</B> form_data.has (name) <B>then</B>
+                form_data.item (name).extend (val)
+                form_data.item (name).start
+            <B>else</B>
+                <B>create</B> vl.make
+                vl.extend (val)
+                vl.start
+                form_data.put (vl, name)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_arguments">parse_arguments (args: ARRAY [STRING_8])
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Parse arguments array and set environment variables.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            i, sep_index: INTEGER_32
+            lh, rh, item: STRING_8
+        <B>do</B>
+            <B>from</B>
+                i := args.lower
+            <B>until</B>
+                i &gt; args.upper
+            <B>loop</B>
+                item := args.item (i)
+                sep_index := item.index_of ('=', 1)
+                <B>if</B> sep_index &gt; 1 <B>then</B>
+                    lh := item.substring (1, sep_index - 1)
+                    <B>if</B> sep_index &lt; item.count <B>then</B>
+                        rh := item.substring (sep_index + 1, item.count)
+                    <B>else</B>
+                        rh := ""
+                    <B>end</B>
+                    set_environment_variable (lh, rh)
+                <B>end</B>
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_input">parse_input
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Split input string and build (name,value) pairs.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            data, pair, key, val: STRING_8
+            nb_pairs, c, sep_index, field_sep_index: INTEGER_32
+            done: BOOLEAN
+        <B>do</B>
+            data := input_data.twin
+            <B>if</B> <B>not</B> data.is_empty <B>then</B>
+                data.replace_substring_all ("+", " ")
+                nb_pairs := data.occurrences (pair_separator) + 1
+                <B>create</B> form_data.make (nb_pairs)
+                <B>from</B>
+                    c := 1
+                <B>until</B>
+                    done <B>or else</B> c &gt; data.count
+                <B>loop</B>
+                    sep_index := data.index_of (pair_separator, c)
+                    <B>if</B> sep_index = 1 <B>then</B>
+                        c := 2
+                    <B>else</B>
+                        <B>if</B> sep_index = 0 <B>then</B>
+                            pair := data.substring (c, data.count)
+                            done := <B>True</B>
+                        <B>else</B>
+                            pair := data.substring (c, sep_index - 1)
+                        <B>end</B>
+                        field_sep_index := pair.index_of (value_separator, 1)
+                        key := pair.substring (1, field_sep_index - 1)
+                        <B>if</B> pair.count &gt;= field_sep_index + 1 <B>then</B>
+                            val := pair.substring (field_sep_index + 1, pair.count)
+                        <B>else</B>
+                            val := ""
+                        <B>end</B>
+                        insert_pair (key, val)
+                        c := sep_index + 1
+                    <B>end</B>
+                <B>end</B>
+            <B>else</B>
+                <B>create</B> form_data.make (0)
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_button_value">button_value (field_name: STRING_8; overriding_value: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is Button relative to 'field_name' selected ?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            field_not_void: field_name /= <B>Void</B>
+            field_exists: field_defined (field_name)
+        <B>local</B>
+            s: STRING_8
+        <B>do</B>
+            s := form_data.item (field_name).first
+            s.to_lower
+            <B>if</B> s.is_equal ("on") <B>then</B>
+                <B>Result</B> := <B>True</B>
+            <B>elseif</B> overriding_value /= <B>Void</B> <B>then</B>
+                overriding_value.to_lower
+                <B>Result</B> := overriding_value.is_equal (s)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_generating_type">generating_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generating_type_not_void: <B>Result</B> /= <B>Void</B>
+            generating_type_not_empty: <B>not</B> <B>Result</B>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_generator">generator: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of current object's generating class</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (base class of the type of which it is a direct instance)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            generator_not_void: <B>Result</B> /= <B>Void</B>
+            generator_not_empty: <B>not</B> <B>Result</B>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_menu_values">menu_values (field_name: STRING_8): LINKED_LIST [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Selected values for a list, whose name</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> is 'field_name'.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            field_not_void: field_name /= <B>Void</B>
+            field_exists: field_defined (field_name)
+        <B>do</B>
+            <B>Result</B> := form_data.item (field_name)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            value_exists: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_output">output: STDOUT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Shared standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_IN_AND_OUT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>.make
+        <B>end</B></A>
+
+    <A NAME="f_response_header">response_header: CGI_RESPONSE_HEADER
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_IN_AND_OUT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_stdin">stdin: STDIN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Shared standard input</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_IN_AND_OUT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>.make
+        <B>end</B></A>
+
+    <A NAME="f_text_field_value">text_field_value (field_name: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> First (unique?) value for a text field.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Applies for a password and a text area too.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            field_not_void: field_name /= <B>Void</B>
+            field_exists: field_defined (field_name)
+        <B>do</B>
+            <B>Result</B> := form_data.item (field_name).first
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            value_exists: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_check_instruction">check_instruction: INTEGER_32 <B>is</B> 7</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for violated check</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_class_invariant">class_invariant: INTEGER_32 <B>is</B> 6</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for violated class invariant</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_com_exception">com_exception: INTEGER_32 <B>is</B> 28</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for a COM error.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_command_line">command_line: ARGUMENTS
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Command line that was used to start current execution</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_create_on_deferred">create_on_deferred: INTEGER_32 <B>is</B> 17</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Create on deferred</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_current_working_directory">current_working_directory: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Directory of current execution</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_dir.h%""
+        <B>alias</B>
+            "dir_current"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            result_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_default_shell">default_shell: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default shell</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get ("SHELL")
+            <B>if</B> <B>Result</B> = <B>Void</B> <B>then</B>
+                <B>Result</B> := ""
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_developer_exception">developer_exception: INTEGER_32 <B>is</B> 24</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for developer exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_dollar_applied_to_melted_feature">dollar_applied_to_melted_feature: INTEGER_32 <B>is</B> 26</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> $ applied to melted feature</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_eiffel_runtime_fatal_error">eiffel_runtime_fatal_error: INTEGER_32 <B>is</B> 25</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Eiffel run-time fatal error</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_eiffel_runtime_panic">eiffel_runtime_panic: INTEGER_32 <B>is</B> 13</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Eiffel run-time panic</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_exception_in_signal_handler">exception_in_signal_handler: INTEGER_32 <B>is</B> 20</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception in signal handler</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_external_exception">external_exception: INTEGER_32 <B>is</B> 18</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for operating system error</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> which does not set the </FONT>`errno'<FONT COLOR="red"> variable</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Unix-specific)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_floating_point_exception">floating_point_exception: INTEGER_32 <B>is</B> 5</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for floating point exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_get">get (s: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Value of </FONT>`s'<FONT COLOR="red"> if it is an environment variable and has been set;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> void otherwise.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            s_exists: s /= <B>Void</B>
+            not_has_null_character: <B>not</B> s.has ('%U')
+        <B>local</B>
+            ext: ANY
+            c_string: POINTER
+            void_pointer: POINTER
+        <B>do</B>
+            ext := s.to_c
+            c_string := eif_getenv ($ext)
+            <B>if</B> c_string /= void_pointer <B>then</B>
+                <B>create</B> <B>Result</B>.make_from_c (c_string)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_home_directory_name">home_directory_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Directory name corresponding to the home directory.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            home_directory_supported: operating_environment.home_directory_supported
+        <B>do</B>
+            <B>Result</B> := eif_home_directory_name
+        <B>end</B></A>
+
+    <A NAME="f_incorrect_inspect_value">incorrect_inspect_value: INTEGER_32 <B>is</B> 9</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for inspect value which is not one</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of the inspect constants, if there is no Else_part</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_io_exception">io_exception: INTEGER_32 <B>is</B> 21</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for I/O error</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_loop_invariant">loop_invariant: INTEGER_32 <B>is</B> 11</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for violated loop invariant</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_loop_variant">loop_variant: INTEGER_32 <B>is</B> 10</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for non-decreased loop variant</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_no_more_memory">no_more_memory: INTEGER_32 <B>is</B> 2</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for failed memory allocation</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_number_of_codes">number_of_codes: INTEGER_32 <B>is</B> 29</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> How many codes are there to represent exceptions?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_operating_system_exception">operating_system_exception: INTEGER_32 <B>is</B> 22</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for operating system error</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> which sets the </FONT>`errno'<FONT COLOR="red"> variable</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Unix-specific)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_out_of_memory">out_of_memory: INTEGER_32 <B>is</B> 15</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Out of memory (cannot be ignored)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_postcondition">postcondition: INTEGER_32 <B>is</B> 4</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for violated postcondition</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_precondition">precondition: INTEGER_32 <B>is</B> 3</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for violated precondition</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_rescue_exception">rescue_exception: INTEGER_32 <B>is</B> 14</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for exception in rescue clause</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_resumption_failed">resumption_failed: INTEGER_32 <B>is</B> 16</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Resumption failed (retry did not succeed)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_retrieve_exception">retrieve_exception: INTEGER_32 <B>is</B> 23</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for retrieval error</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> may be raised by </FONT>`retrieved'<FONT COLOR="red"> in </FONT>`IO_MEDIUM'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_root_directory_name">root_directory_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Directory name corresponding to the root directory.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            root_directory_supported: operating_environment.root_directory_supported
+        <B>do</B>
+            <B>Result</B> := eif_root_directory_name
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            result_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_routine_failure">routine_failure: INTEGER_32 <B>is</B> 8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for failed routine</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_runtime_check_exception">runtime_check_exception: INTEGER_32 <B>is</B> 29</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for runtime check being violated.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_runtime_io_exception">runtime_io_exception: INTEGER_32 <B>is</B> 27</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for I/O error raised by runtime functions</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> such as store/retrieve, file access...</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_signal_exception">signal_exception: INTEGER_32 <B>is</B> 12</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for operating system signal</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_starting_environment_variables">starting_environment_variables: HASH_TABLE [STRING_8, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Table of environment variables when current process starts,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> indexed by variable name</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_ptr: POINTER
+            i: INTEGER_32
+            l_curr_var: TUPLE [value: STRING_8; key: STRING_8]
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (40)
+            <B>from</B>
+                i := 0
+                l_ptr := i_th_environ (i)
+            <B>until</B>
+                l_ptr = default_pointer
+            <B>loop</B>
+                l_curr_var := separated_variables (<B>create</B> {STRING_8}.make_from_c (l_ptr))
+                <B>if</B> l_curr_var /= <B>Void</B> <B>then</B>
+                    <B>Result</B>.force (l_curr_var.value, l_curr_var.key)
+                <B>end</B>
+                i := i + 1
+                l_ptr := i_th_environ (i)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            result_attached: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_valid_code">valid_code (c: INTEGER_32): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`c'<FONT COLOR="red"> a valid code to represent some kind of exceptions?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := c &gt;= 1 <B>and</B> c &lt;= number_of_codes
+        <B>end</B></A>
+
+    <A NAME="f_void_assigned_to_expanded">void_assigned_to_expanded: INTEGER_32 <B>is</B> 19</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for assignment of void value</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to expanded entity</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_void_call_target">void_call_target: INTEGER_32 <B>is</B> 1</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Exception code for feature applied to void reference</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEP_CONST<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> {CGI_ERROR_HANDLING} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_raised_error">raised_error: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Error explicitely raised by developer code.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ERROR_HANDLING<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Comparison</FONT>
+
+    <A NAME="f_deep_equal"><B>frozen</B> deep_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> or attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.is_deep_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_equal (some, other) <B>implies</B> <B>Result</B>
+            both_or_none_void: (some = <B>Void</B>) <B>implies</B> (<B>Result</B> = (other = <B>Void</B>))
+            same_type: (<B>Result</B> <B>and</B> (some /= <B>Void</B>)) <B>implies</B> some.same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> deep_equal (other, some)
+        <B>end</B></A>
+
+    <A NAME="f_equal"><B>frozen</B> equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to objects considered equal?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.is_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.is_equal (other))
+        <B>end</B></A>
+
+    <A NAME="f_is_deep_equal"><B>frozen</B> is_deep_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`Current'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> attached to isomorphic object structures?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            shallow_implies_deep: standard_is_equal (other) <B>implies</B> <B>Result</B>
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.is_deep_equal (<B>Current</B>)
+        <B>end</B></A>
+
+    <A NAME="f_is_equal">is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object considered</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to current object?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>do</B>
+            <B>Result</B> := standard_is_equal (other)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            symmetric: <B>Result</B> <B>implies</B> other.is_equal (<B>Current</B>)
+            consistent: standard_is_equal (other) <B>implies</B> <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_standard_equal"><B>frozen</B> standard_equal (some: ANY; other: <B>like</B> arg #1): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Are </FONT>`some'<FONT COLOR="red"> and </FONT>`other'<FONT COLOR="red"> either both void or attached to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical objects of the same type?</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default object comparison criterion.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some = <B>Void</B> <B>then</B>
+                <B>Result</B> := other = <B>Void</B>
+            <B>else</B>
+                <B>Result</B> := other /= <B>Void</B> <B>and then</B> some.standard_is_equal (other)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (some = <B>Void</B> <B>and</B> other = <B>Void</B>) <B>or else</B> ((some /= <B>Void</B> <B>and</B> other /= <B>Void</B>) <B>and then</B> some.standard_is_equal (other))
+        <B>end</B></A>
+
+    <A NAME="f_standard_is_equal"><B>frozen</B> standard_is_equal (other: <B>like</B> <B>Current</B>): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is </FONT>`other'<FONT COLOR="red"> attached to an object of the same type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> as current object, and field-by-field identical to it?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            same_type: <B>Result</B> <B>implies</B> same_type (other)
+            symmetric: <B>Result</B> <B>implies</B> other.standard_is_equal (<B>Current</B>)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_conforms_to">conforms_to (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Does type of current object conform to type</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`other'<FONT COLOR="red"> (as per Eiffel: The Language, chapter 13)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>end</B></A>
+
+    <A NAME="f_same_type">same_type (other: ANY): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is type of current object identical to type of </FONT>`other'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            definition: <B>Result</B> = (conforms_to (other) <B>and</B> other.conforms_to (<B>Current</B>))
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status report</FONT>
+
+    <A NAME="f_assertion_violation">assertion_violation: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is last exception originally due to a violated</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> assertion or non-decreasing variant?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (original_exception = check_instruction) <B>or else</B> (original_exception = class_invariant) <B>or else</B> (original_exception = loop_invariant) <B>or else</B> (original_exception = loop_variant) <B>or else</B> (original_exception = postcondition) <B>or else</B> (original_exception = precondition)
+        <B>end</B></A>
+
+    <A NAME="f_class_name">class_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of the class that includes the recipient</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of original form of last exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eelclass"
+        <B>end</B></A>
+
+    <A NAME="f_developer_exception_name">developer_exception_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of last developer-raised exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXCEPTIONS
+            applicable: is_developer_exception
+        <B>do</B>
+            <B>Result</B> := original_tag_name
+        <B>end</B></A>
+
+    <A NAME="f_exception">exception: INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Code of last exception that occurred</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eelcode"
+        <B>end</B></A>
+
+    <A NAME="f_exception_trace">exception_trace: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> String representation of the exception trace</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "stack_trace_string"
+        <B>end</B></A>
+
+    <A NAME="f_is_developer_exception">is_developer_exception: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is the last exception originally due to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a developer exception?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (original_exception = developer_exception)
+        <B>end</B></A>
+
+    <A NAME="f_is_developer_exception_of_name">is_developer_exception_of_name (name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is the last exception originally due to a developer</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> exception of name </FONT>`name'<FONT COLOR="red">?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := is_developer_exception <B>and then</B> equal (name, developer_exception_name)
+        <B>end</B></A>
+
+    <A NAME="f_is_signal">is_signal: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is last exception originally due to an external</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> event (operating system signal)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (original_exception = signal_exception)
+        <B>end</B></A>
+
+    <A NAME="f_is_system_exception">is_system_exception: BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is last exception originally due to an</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> external event (operating system error)?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (original_exception = external_exception) <B>or else</B> (original_exception = operating_system_exception)
+        <B>end</B></A>
+
+    <A NAME="f_meaning">meaning (except: INTEGER_32): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> A message in English describing what </FONT>`except'<FONT COLOR="red"> is</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eename"
+        <B>end</B></A>
+
+    <A NAME="f_original_class_name">original_class_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of the class that includes the recipient</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of original form of last exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeoclass"
+        <B>end</B></A>
+
+    <A NAME="f_original_exception">original_exception: INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Original code of last exception that triggered</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> current exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeocode"
+        <B>end</B></A>
+
+    <A NAME="f_original_recipient_name">original_recipient_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of the routine whose execution was</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> interrupted by original form of last exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeorout"
+        <B>end</B></A>
+
+    <A NAME="f_original_tag_name">original_tag_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Assertion tag for original form of last</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> assertion violation.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeotag"
+        <B>end</B></A>
+
+    <A NAME="f_recipient_name">recipient_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name of the routine whose execution was</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> interrupted by last exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eelrout"
+        <B>end</B></A>
+
+    <A NAME="f_tag_name">tag_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Tag of last violated assertion clause</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeltag"
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status setting</FONT>
+
+    <A NAME="f_catch">catch (code: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Make sure that any exception of code </FONT>`code'<FONT COLOR="red"> will be</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> caught. This is the default.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eecatch"
+        <B>end</B></A>
+
+    <A NAME="f_change_working_directory">change_working_directory (path: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set the current directory to </FONT>`path'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            ext: ANY
+        <B>do</B>
+            ext := path.to_c
+            return_code := eif_chdir ($ext)
+        <B>end</B></A>
+
+    <A NAME="f_die">die (code: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Terminate execution with exit status </FONT>`code'<FONT COLOR="red">,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> without triggering an exception.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "esdie"
+        <B>end</B></A>
+
+    <A NAME="f_ignore">ignore (code: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Make sure that any exception of code </FONT>`code'<FONT COLOR="red"> will be</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> ignored. This is not the default.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eeignore"
+        <B>end</B></A>
+
+    <A NAME="f_launch">launch (s: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Pass to the operating system an asynchronous request to</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> execute </FONT>`s'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> If </FONT>`s'<FONT COLOR="red"> is empty, use the default shell as command.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            s_not_void: s /= <B>Void</B>
+        <B>local</B>
+            ext: ANY
+        <B>do</B>
+            <B>if</B> s.is_empty <B>then</B>
+                ext := default_shell.to_c
+            <B>else</B>
+                ext := s.to_c
+            <B>end</B>
+            asynchronous_system_call ($ext)
+        <B>end</B></A>
+
+    <A NAME="f_message_on_failure">message_on_failure
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Print an exception history table</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in case of failure.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> This is the default.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            c_trace_exception (<B>True</B>)
+        <B>end</B></A>
+
+    <A NAME="f_new_die">new_die (code: INTEGER_32)
+        <B>obsolete</B> "Use ``die''"
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "esdie"
+        <B>end</B></A>
+
+    <A NAME="f_no_message_on_failure">no_message_on_failure
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Do not print an exception history table</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in case of failure.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            c_trace_exception (<B>False</B>)
+        <B>end</B></A>
+
+    <A NAME="f_put">put (value, key: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set the environment variable </FONT>`key'<FONT COLOR="red"> to </FONT>`value'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            key_exists: key /= <B>Void</B>
+            key_meaningful: <B>not</B> key.is_empty
+            not_key_has_null_character: <B>not</B> key.has ('%U')
+            value_exists: value /= <B>Void</B>
+            not_value_has_null_character: <B>not</B> value.has ('%U')
+        <B>local</B>
+            l_env: STRING_8
+            l_c_env: C_STRING
+        <B>do</B>
+            <B>create</B> l_env.make (value.count + key.count + 1)
+            l_env.append (key)
+            l_env.append_character ('=')
+            l_env.append (value)
+            <B>create</B> l_c_env.make (l_env)
+            environ.force (l_c_env, key)
+            return_code := eif_putenv (l_c_env.item)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            variable_set: (return_code = 0) <B>implies</B> (equal (value, get (key)) <B>or else</B> (value.is_empty <B>and then</B> (get (key) = <B>Void</B>)))
+        <B>end</B></A>
+
+    <A NAME="f_raise">raise (name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Raise a developer exception of name </FONT>`name'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            str: ANY
+        <B>do</B>
+            <B>if</B> name /= <B>Void</B> <B>then</B>
+                str := name.to_c
+            <B>end</B>
+            eraise ($str, developer_exception)
+        <B>end</B></A>
+
+    <A NAME="f_raise_retrieval_exception">raise_retrieval_exception (name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Raise a retrieval exception of name </FONT>`name'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            str: ANY
+        <B>do</B>
+            <B>if</B> name /= <B>Void</B> <B>then</B>
+                str := name.to_c
+            <B>end</B>
+            eraise ($str, retrieve_exception)
+        <B>end</B></A>
+
+    <A NAME="f_system">system (s: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Pass to the operating system a request to execute </FONT>`s'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> If </FONT>`s'<FONT COLOR="red"> is empty, use the default shell as command.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            s_exists: s /= <B>Void</B>
+        <B>local</B>
+            ext: ANY
+        <B>do</B>
+            <B>if</B> s.is_empty <B>then</B>
+                ext := default_shell.to_c
+            <B>else</B>
+                ext := s.to_c
+            <B>end</B>
+            return_code := system_call ($ext)
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Conversion</FONT>
+
+    <A NAME="f_charconv">charconv (i: INTEGER_32): CHARACTER_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Character associated with integer value </FONT>`i'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := (i &#38; 255).to_character_8
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Duplication</FONT>
+
+    <A NAME="f_clone"><B>frozen</B> clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void; otherwise new object</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> equal to </FONT>`other'
+            <FONT COLOR="red">--</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> For non-void </FONT>`other'<FONT COLOR="red">, </FONT>clone<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">;</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to change copying/cloning semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            equal: equal (<B>Result</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_copy">copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Update current object using fields of object attached</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to </FONT>`other'<FONT COLOR="red">, so as to yield equal objects.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_equal: is_equal (other)
+        <B>end</B></A>
+
+    <A NAME="f_deep_clone"><B>frozen</B> deep_clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `deep_twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void: otherwise, new object structure</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> recursively duplicated from the one attached to </FONT>`other'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.deep_twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (other, <B>Result</B>)
+        <B>end</B></A>
+
+    <A NAME="f_deep_copy"><B>frozen</B> deep_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Effect equivalent to that of:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">		</FONT>copy<FONT COLOR="red"> (</FONT>`other'<FONT COLOR="red"> . </FONT>deep_twin<FONT COLOR="red">)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+        <B>do</B>
+            copy (other.deep_twin)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_equal: deep_equal (<B>Current</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_deep_twin"><B>frozen</B> deep_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object structure recursively duplicated from Current.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            deep_twin_not_void: <B>Result</B> /= <B>Void</B>
+            deep_equal: deep_equal (<B>Current</B>, <B>Result</B>)
+        <B>end</B></A>
+
+    <A NAME="f_standard_clone"><B>frozen</B> standard_clone (other: ANY): <B>like</B> other
+        <B>obsolete</B> "Use `standard_twin' instead."
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Void if </FONT>`other'<FONT COLOR="red"> is void; otherwise new object</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> other /= <B>Void</B> <B>then</B>
+                <B>Result</B> := other.standard_twin
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            equal: standard_equal (<B>Result</B>, other)
+        <B>end</B></A>
+
+    <A NAME="f_standard_copy"><B>frozen</B> standard_copy (other: <B>like</B> <B>Current</B>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Copy every field of </FONT>`other'<FONT COLOR="red"> onto corresponding field</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            other_not_void: other /= <B>Void</B>
+            type_identity: same_type (other)
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            is_standard_equal: standard_is_equal (other)
+        <B>end</B></A>
+
+    <A NAME="f_standard_twin"><B>frozen</B> standard_twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object field-by-field identical to </FONT>`other'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Always uses default copying semantics.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_temp: BOOLEAN
+        <B>do</B>
+            l_temp := {ISE_RUNTIME}.check_assert (<B>False</B>)
+            <B>Result</B> ?= {ISE_RUNTIME}.c_standard_clone ($<B>Current</B>)
+            <B>Result</B>.standard_copy (<B>Current</B>)
+            l_temp := {ISE_RUNTIME}.check_assert (l_temp)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            standard_twin_not_void: <B>Result</B> /= <B>Void</B>
+            equal: standard_equal (<B>Result</B>, <B>Current</B>)
+        <B>end</B></A>
+
+    <A NAME="f_twin"><B>frozen</B> twin: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New object equal to </FONT>`Current'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> </FONT>twin<FONT COLOR="red"> calls </FONT>copy<FONT COLOR="red">; to change copying/twining semantics, redefine </FONT>copy<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_temp: BOOLEAN
+        <B>do</B>
+            l_temp := {ISE_RUNTIME}.check_assert (<B>False</B>)
+            <B>Result</B> ?= {ISE_RUNTIME}.c_standard_clone ($<B>Current</B>)
+            <B>Result</B>.copy (<B>Current</B>)
+            l_temp := {ISE_RUNTIME}.check_assert (l_temp)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            twin_not_void: <B>Result</B> /= <B>Void</B>
+            is_equal: <B>Result</B>.is_equal (<B>Current</B>)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_default"><B>frozen</B> default: <B>like</B> <B>Current</B>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of object's type</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_default_pointer"><B>frozen</B> default_pointer: POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Default value of type </FONT>`POINTER'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Avoid the need to write </FONT>`p'<FONT COLOR="red">.</FONT>default<FONT COLOR="red"> for</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> some </FONT>`p'<FONT COLOR="red"> of type </FONT>`POINTER'<FONT COLOR="red">.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_default_rescue">default_rescue
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Process exception for routines with no Rescue clause.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> (Default: do nothing.)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_do_nothing"><B>frozen</B> do_nothing
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Execute a null action.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_abs">abs (n: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Absolute value of </FONT>`n'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> n &lt; 0 <B>then</B>
+                <B>Result</B> := - n
+            <B>else</B>
+                <B>Result</B> := n
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BASIC_ROUTINES
+            non_negative_result: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+
+    <A NAME="f_bottom_int_div">bottom_int_div (n1, n2: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Greatest lower bound of the integer division of </FONT>`n1'<FONT COLOR="red"> by </FONT>`n2'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := n1 // n2
+            <B>if</B> n1 &gt;= 0 <B>xor</B> n2 &gt; 0 <B>then</B>
+                <B>if</B> (n1 \\ n2) /= 0 <B>then</B>
+                    <B>Result</B> := <B>Result</B> - 1
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_rsign">rsign (r: REAL_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Sign of </FONT>`r'<FONT COLOR="red">:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> -1 if </FONT>`r'<FONT COLOR="red"> &lt; 0</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">  0 if </FONT>`r'<FONT COLOR="red"> = 0</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> +1 if </FONT>`r'<FONT COLOR="red"> &gt; 0</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> r &lt; 0 <B>then</B>
+                <B>Result</B> := -1
+            <B>elseif</B> r &gt; 0 <B>then</B>
+                <B>Result</B> := 1
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BASIC_ROUTINES
+            correct_negative: (r &lt; 0) = (<B>Result</B> = -1)
+            correct_zero: (r = 0) = (<B>Result</B> = 0)
+            correct_positive: (r &gt; 0) = (<B>Result</B> = 1)
+        <B>end</B></A>
+
+    <A NAME="f_sign">sign (n: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Sign of </FONT>`n'<FONT COLOR="red">:</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> -1 if </FONT>`n'<FONT COLOR="red"> &lt; 0</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">  0 if </FONT>`n'<FONT COLOR="red"> = 0</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> +1 if </FONT>`n'<FONT COLOR="red"> &gt; 0</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> n &lt; 0 <B>then</B>
+                <B>Result</B> := -1
+            <B>elseif</B> n &gt; 0 <B>then</B>
+                <B>Result</B> := 1
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>BASIC_ROUTINES
+            correct_negative: (n &lt; 0) = (<B>Result</B> = -1)
+            correct_zero: (n = 0) = (<B>Result</B> = 0)
+            correct_positive: (n &gt; 0) = (<B>Result</B> = 1)
+        <B>end</B></A>
+
+    <A NAME="f_up_int_div">up_int_div (n1, n2: INTEGER_32): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Least upper bound of the integer division</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of </FONT>`n1'<FONT COLOR="red"> by </FONT>`n2'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>BASIC_ROUTINES<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := n1 // n2
+            <B>if</B> <B>not</B> (n1 &gt;= 0 <B>xor</B> n2 &gt; 0) <B>then</B>
+                <B>if</B> (n1 \\ n2) /= 0 <B>then</B>
+                    <B>Result</B> := <B>Result</B> + 1
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Implementation</FONT>
+
+    <A NAME="f_c_trace_exception">c_trace_exception (b: BOOLEAN)
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_except.h%""
+        <B>alias</B>
+            "eetrace"
+        <B>end</B></A>
+
+    <A NAME="f_environ">environ: HASH_TABLE [C_STRING, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Environment variable memory set by current execution,</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> indexed by environment variable name. Needed otherwise</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> we would corrupt memory after freeing memory used by</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> C_STRING instance since not referenced anywhere else.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>.make (10)
+        <B>end</B></A>
+
+    <A NAME="f_eraise">eraise (str: POINTER; code: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Raise an exception</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXCEPTIONS<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C signature (char *, long) use %"eif_except.h%""
+        <B>end</B></A>
+
+    <A NAME="f_get_env_variable">get_env_variable (v: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Get value of environment variable </FONT>`v'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := get (v)
+            <B>if</B> <B>Result</B> = <B>Void</B> <B>then</B>
+                <B>Result</B> := ""
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_i_th_environ">i_th_environ (i: INTEGER_32): POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Environment variable at </FONT>`i'<FONT COLOR="red">-th position of </FONT>`eif_environ'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            i_valid: i &gt;= 0
+        <B>external</B>
+            "C inline use &lt;string.h&gt;"
+        <B>alias</B>
+            "[
+                if (eif_environ) {
+                	#ifdef EIF_WINDOWS
+                		LPSTR vars = (LPSTR) eif_environ;
+                		int cnt = 0;
+                		for (; *vars; vars++) {
+                		   if ($i==cnt) return vars;
+                		   while (*vars) { vars++; }
+                		   cnt++;
+                		}
+                		return NULL;
+                	#else
+                		return ((char **)eif_environ)[$i];
+                	#endif
+                } else {
+                	return NULL;
+                }
+            ]"
+        <B>end</B></A>
+
+    <A NAME="f_separated_variables">separated_variables (a_var: STRING_8): TUPLE [value: STRING_8; key: STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Given an environment variable </FONT>`a_var'<FONT COLOR="red"> in form of "key=value",</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> return separated key and value.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Return Void if </FONT>`a_var'<FONT COLOR="red"> is in incorrect format.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>EXECUTION_ENVIRONMENT
+            a_var_attached: a_var /= <B>Void</B>
+        <B>local</B>
+            i, j: INTEGER_32
+            done: BOOLEAN
+        <B>do</B>
+            j := a_var.count
+            <B>from</B>
+                i := 1
+            <B>until</B>
+                i &gt; j <B>or</B> done
+            <B>loop</B>
+                <B>if</B> a_var.item (i) = '=' <B>then</B>
+                    done := <B>True</B>
+                <B>else</B>
+                    i := i + 1
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> i &gt; 1 <B>and then</B> i &lt; j <B>then</B>
+                <B>Result</B> := [a_var.substring (i + 1, j), a_var.substring (1, i - 1)]
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red">  initialization</FONT>
+
+    <A NAME="f_init_configuration"><A HREF="..\webex/request_dispatcher_flat.html#f_init_configuration">init_configuration</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> read configuration file</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>local</B>
+            istart, iend: INTEGER_32
+        <B>do</B>
+            istart := script_name.last_index_of ('/', script_name.count) + 1
+            iend := script_name.last_index_of ('.', script_name.count) - 1
+            <B>if</B> iend = -1 <B>or</B> iend &lt;= istart <B>then</B>
+                iend := script_name.count
+            <B>end</B>
+            <B>create</B> <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_make">make</A> ("./" + script_name.substring (istart, iend) + ".conf")
+        <B>end</B></A>
+
+    <A NAME="f_instantiate_handler"><A HREF="..\webex/request_dispatcher_flat.html#f_instantiate_handler">instantiate_handler</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> based on initialized handler mapping table, lookup and initialize a handler for current request</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>
+            config_is_set: <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A> /= <B>Void</B>
+        <B>local</B>
+            handler_type: STRING_8
+            handler: INTERNAL
+            type: INTEGER_32
+        <B>do</B>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_handler">handler</A>.is_empty <B>then</B>
+                <B>create</B> handler_type.make_from_string (<A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_handler">handler</A>)
+            <B>elseif</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_notfound_request">notfound_request</A>.is_empty <B>then</B>
+                <B>create</B> handler_type.make_from_string (<A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_notfound_request">notfound_request</A>)
+                <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_notfound_request">notfound_request</A>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_notfound_command">notfound_command</A>
+            <B>else</B>
+                <B>create</B> handler_type.make_empty
+            <B>end</B>
+            <B>if</B> <B>not</B> handler_type.is_empty <B>then</B>
+                <B>create</B> handler
+                type := handler.dynamic_type_from_string (handler_type)
+                <A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A> ?= handler.new_instance_of (type)
+                <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A> /= <B>Void</B> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A>.<A HREF="..\webex/request_handler_flat.html#f_initialize">initialize</A> (<B>Current</B>)
+                <B>end</B>
+            <B>end</B>
+        <B>rescue</B>
+            io.error.putstring ("crash in `lookup_and_instantiate_handler' %N")
+        <B>end</B></A>
+
+    <A NAME="f_parse_handler_command_string"><A HREF="..\webex/request_dispatcher_flat.html#f_parse_handler_command_string">parse_handler_command_string</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> identify request and command strings ((</FONT><FONT COLOR="red">http://localhost/cgi-bin/zen.cgi?zengarden&#38;action=register</FONT><FONT COLOR="red"> -&gt; zengarden, register)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>create</B> <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.make_empty
+            <B>if</B> <B>not</B> input_data.is_empty <B>then</B>
+                <B>if</B> input_data.has ('&#38;') <B>then</B>
+                    <B>if</B> <B>not</B> input_data.split ('&#38;').i_th (1).has ('=') <B>then</B>
+                        <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.append ((input_data.split ('&#38;')).i_th (1))
+                    <B>end</B>
+                <B>else</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.append (input_data)
+                <B>end</B>
+                <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.is_empty <B>and</B> field_defined ("handler_id") <B>then</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.append (text_field_value ("handler_id"))
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> field_defined ("cmd") <B>then</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A>.make_from_string (text_field_value ("cmd"))
+            <B>else</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A>.make_empty
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_process_undefined_request"><A HREF="..\webex/request_dispatcher_flat.html#f_process_undefined_request">process_undefined_request</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate result page in case unkown request</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>create</B> {<A HREF="..\webex/error_page_view_flat.html">ERROR_PAGE_VIEW</A>} <A HREF="..\webex/request_dispatcher_flat.html#f_return_page">return_page</A>.<A HREF="..\webex/error_page_view_flat.html#f_build_default_not_found_page">build_default_not_found_page</A>
+        <B>end</B></A>
+
+    <A NAME="f_set_session_enabled"><A HREF="..\webex/request_dispatcher_flat.html#f_set_session_enabled">set_session_enabled</A> (a_enabled: BOOLEAN)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> set whether session should be enabled</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_session_enabled">session_enabled</A> := a_enabled
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Advanced Access</FONT>
+
+    <A NAME="f_fields">fields: ARRAY [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Names of fields in the form.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := form_data.current_keys
+            <B>Result</B>.compare_objects
+        <B>end</B></A>
+
+    <A NAME="f_value_count">value_count (field_name: STRING_8): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Number of values for a field.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            field_not_void: field_name /= <B>Void</B>
+            field_exists: field_defined (field_name)
+        <B>do</B>
+            <B>Result</B> := form_data.item (field_name).count
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            valid_count: <B>Result</B> &gt;= 0
+        <B>end</B></A>
+
+    <A NAME="f_value_list">value_list (field_name: STRING_8): LINKED_LIST [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> List of values for a field.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            field_not_void: field_name /= <B>Void</B>
+            field_exists: field_defined (field_name)
+        <B>do</B>
+            <B>Result</B> := form_data.item (field_name)
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            valid_count: <B>Result</B>.count = value_count (field_name)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_command_string"><A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> command string that handler need to process</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_config"><A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>: <A HREF="..\webex/config_reader_flat.html">CONFIG_READER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> website configuration (handler, default stylesheet, actual session class)</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_cookie_enabled"><A HREF="..\webex/request_dispatcher_flat.html#f_cookie_enabled">cookie_enabled</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether cookie is enabled by browser</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_handler_id_string"><A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> string identifies which handler should be instantiated for actual request</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_session"><A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>: <A HREF="..\webex/session_flat.html">SESSION</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> actual session object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_session_enabled"><A HREF="..\webex/request_dispatcher_flat.html#f_session_enabled">session_enabled</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether session support should be enabled</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_actual_handler"><A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A>: <A HREF="..\webex/request_handler_flat.html">REQUEST_HANDLER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handler that will process actual request</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_debug_mode"><A HREF="..\webex/request_dispatcher_flat.html#f_debug_mode">debug_mode</A>: BOOLEAN <B>is</B> <B>True</B></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Should exception trace be displayed in case a crash occurs?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_processing_finished"><A HREF="..\webex/request_dispatcher_flat.html#f_processing_finished">processing_finished</A>: BOOLEAN</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> finished processing, return result</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_return_page"><A HREF="..\webex/request_dispatcher_flat.html#f_return_page">return_page</A>: HTML_PAGE</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> result HTML_PAGE to be sent back to the browser</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+
+    <A NAME="f_session_manager"><A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>: <A HREF="..\webex/session_manager_flat.html">SESSION_MANAGER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> object that responsable to retrieve/store session</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic Operations</FONT>
+
+    <A NAME="f_handle_exception">handle_exception
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> General exception hanlding.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ERROR_HANDLING<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            msg: STRING_8
+        <B>do</B>
+            <B>if</B> raised_error /= <B>Void</B> <B>then</B>
+                msg := raised_error
+            <B>else</B>
+                msg := ""
+            <B>end</B>
+            response_header.send_trace (msg + exception_trace)
+        <B>end</B></A>
+
+    <A NAME="f_raise_error">raise_error (msg: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Raise an error.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ERROR_HANDLING<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_ERROR_HANDLING
+            message_exists: msg /= <B>Void</B>
+        <B>do</B>
+            raised_error := msg
+            handle_exception
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_ERROR_HANDLING
+            exists: raised_error /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Cookies</FONT>
+
+    <A NAME="f_cookies">cookies: HASH_TABLE [STRING_8, STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Cookie Information relative to data.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            i, j: INTEGER_32
+            s: STRING_8
+        <B>once</B>
+            <B>create</B> <B>Result</B>.make (20)
+            s := get_env_variable ("HTTP_COOKIE")
+            s.append_character (';')
+            <B>from</B>
+                i := 1
+            <B>until</B>
+                i &lt; 1
+            <B>loop</B>
+                i := s.index_of ('=', 1)
+                <B>if</B> i &gt; 0 <B>then</B>
+                    j := s.index_of (';', i)
+                    <B>if</B> j &gt; i <B>then</B>
+                        <B>Result</B>.put (s.substring (i + 1, j - 1), s.substring (1, i - 1))
+                        <B>if</B> j &lt; s.count - 1 <B>then</B>
+                            s.remove_head (j + 1)
+                        <B>else</B>
+                            i := 0
+                        <B>end</B>
+                    <B>else</B>
+                        i := 0
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Environment variable setting</FONT>
+
+    <A NAME="f_set_environment_variable">set_environment_variable (variable, val: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set environment variable </FONT>`variable'<FONT COLOR="red"> to </FONT>`val'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_ENVIRONMENT
+            valid_variable: variable /= <B>Void</B> <B>and then</B> variable.count &gt; 0
+            valid_value: val /= <B>Void</B>
+        <B>do</B>
+            variable.to_upper
+            put (val, variable)
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> External</FONT>
+
+    <A NAME="f_asynchronous_system_call">asynchronous_system_call (s: POINTER)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Pass to the operating system an asynchronous request to execute </FONT>`s'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C blocking use %"eif_misc.h%""
+        <B>alias</B>
+            "eif_system_asynchronous"
+        <B>end</B></A>
+
+    <A NAME="f_eif_chdir">eif_chdir (path: POINTER): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set the current directory to </FONT>`path'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_dir.h%""
+        <B>end</B></A>
+
+    <A NAME="f_eif_getenv">eif_getenv (s: POINTER): POINTER
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Value of environment variable </FONT>`s'
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use &lt;stdlib.h&gt;"
+        <B>alias</B>
+            "getenv"
+        <B>end</B></A>
+
+    <A NAME="f_eif_home_directory_name">eif_home_directory_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Directory name corresponding to the home directory</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_path_name.h%""
+        <B>end</B></A>
+
+    <A NAME="f_eif_putenv">eif_putenv (v: POINTER): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set </FONT>`v'<FONT COLOR="red"> in environment.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use &lt;stdlib.h&gt;"
+        <B>alias</B>
+            "putenv"
+        <B>end</B></A>
+
+    <A NAME="f_eif_root_directory_name">eif_root_directory_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Directory name corresponding to the root directory</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C use %"eif_path_name.h%""
+        <B>end</B></A>
+
+    <A NAME="f_system_call">system_call (s: POINTER): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Pass to the operating system a request to execute </FONT>`s'<FONT COLOR="red">.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "C blocking use %"eif_misc.h%""
+        <B>alias</B>
+            "eif_system"
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Headerline based environment variables</FONT>
+
+    <A NAME="f_http_accept">http_accept: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> MIME types which the client will accept.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("HTTP_ACCEPT")
+        <B>end</B></A>
+
+    <A NAME="f_http_user_agent">http_user_agent: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Browser the client is using to send the request.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("HTTP_USER_AGENT")
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Implementation constants</FONT>
+
+    <A NAME="f_pair_separator">pair_separator: CHARACTER_8 <B>is</B> '&#38;'</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name / value pairs separator.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+
+    <A NAME="f_value_separator">value_separator: CHARACTER_8 <B>is</B> '='</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name / value separator.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Miscellanous</FONT>
+
+    <A NAME="f_set_environment">set_environment
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Set environment variable to user value.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_INTERFACE<FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Not request-specific environment variables</FONT>
+
+    <A NAME="f_gateway_interface">gateway_interface: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Revision of the CGI specification to which this server complies.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("GATEWAY_INTERFACE")
+        <B>end</B></A>
+
+    <A NAME="f_server_name">server_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Server's hostname, DNS alias, or IP address.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("SERVER_NAME")
+        <B>end</B></A>
+
+    <A NAME="f_server_software">server_software: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name and version of information server answering the request.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("SERVER_SOFTWARE")
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Output</FONT>
+
+    <A NAME="f_io">io: STD_FILES
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Handle to standard file setup</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+            <B>Result</B>.set_output_default
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            io_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_out">out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>Result</B> := tagged_out
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            out_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+
+    <A NAME="f_print">print (some: ANY)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Write terse external representation of </FONT>`some'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> on standard output.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>if</B> some /= <B>Void</B> <B>then</B>
+                io.put_string (some.out)
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_tagged_out"><B>frozen</B> tagged_out: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> New string containing terse printable representation</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> of current object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>external</B>
+            "built_in"
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            tagged_out_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Platform</FONT>
+
+    <A NAME="f_operating_environment">operating_environment: OPERATING_ENVIRONMENT
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Objects available from the operating system</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>create</B> <B>Result</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+            operating_environment_not_void: <B>Result</B> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Report</FONT>
+
+    <A NAME="f_field_defined">field_defined (field_name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Is field </FONT>`field_name'<FONT COLOR="red"> defined?</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_FORMS<FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>CGI_FORMS
+            filed_name_not_void: field_name /= <B>Void</B>
+        <B>do</B>
+            <B>Result</B> := fields.has (field_name)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Request specific environment variables</FONT>
+
+    <A NAME="f_auth_type">auth_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Protocol-specific authentication method used to validate user.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("AUTH_TYPE")
+        <B>end</B></A>
+
+    <A NAME="f_content_length">content_length: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Length of the said content as given by the client.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("CONTENT_LENGTH")
+        <B>end</B></A>
+
+    <A NAME="f_content_type">content_type: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Content type of data.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("CONTENT_TYPE")
+        <B>end</B></A>
+
+    <A NAME="f_path_info">path_info: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Extra path information, as given by the client.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("PATH_INFO")
+        <B>end</B></A>
+
+    <A NAME="f_path_translated">path_translated: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Translated version of PATH_INFO provided by server.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("PATH_TRANSLATED")
+        <B>end</B></A>
+
+    <A NAME="f_query_string">query_string: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Information which follows ? in URL referencing CGI program.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("QUERY_STRING")
+        <B>end</B></A>
+
+    <A NAME="f_remote_addr">remote_addr: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> IP address of the remote host making the request.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("REMOTE_ADDR")
+        <B>end</B></A>
+
+    <A NAME="f_remote_host">remote_host: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Hostname making the request.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("REMOTE_HOST")
+        <B>end</B></A>
+
+    <A NAME="f_remote_ident">remote_ident: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> User name retrieved from server if RFC 931 supported.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("REMOTE_IDENT")
+        <B>end</B></A>
+
+    <A NAME="f_remote_user">remote_user: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Username, if applicable.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("REMOTE_USER")
+        <B>end</B></A>
+
+    <A NAME="f_request_method">request_method: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Method with which the request was made.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("REQUEST_METHOD")
+        <B>end</B></A>
+
+    <A NAME="f_script_name">script_name: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Virtual path to the script being executed.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("SCRIPT_NAME")
+        <B>end</B></A>
+
+    <A NAME="f_server_port">server_port: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Port number to which request was sent.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("SERVER_PORT")
+        <B>end</B></A>
+
+    <A NAME="f_server_protocol">server_protocol: STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Name and revision of information protocol of this request.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>CGI_ENVIRONMENT<FONT COLOR="red">)</FONT>
+        <B>once</B>
+            <B>Result</B> := get_env_variable ("SERVER_PROTOCOL")
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Retrieval</FONT>
+
+    <A NAME="f_internal_correct_mismatch"><B>frozen</B> internal_correct_mismatch
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Called from runtime to perform a proper dynamic dispatch on </FONT>`correct_mismatch'
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> from MISMATCH_CORRECTOR.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>ANY<FONT COLOR="red">)</FONT>
+        <B>local</B>
+            l_corrector: MISMATCH_CORRECTOR
+            l_msg: STRING_8
+            l_exc: EXCEPTIONS
+        <B>do</B>
+            l_corrector ?= <B>Current</B>
+            <B>if</B> l_corrector /= <B>Void</B> <B>then</B>
+                l_corrector.correct_mismatch
+            <B>else</B>
+                <B>create</B> l_msg.make_from_string ("Mismatch: ")
+                <B>create</B> l_exc
+                l_msg.append (generating_type)
+                l_exc.raise_retrieval_exception (l_msg)
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status</FONT>
+
+    <A NAME="f_return_code">return_code: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status code set by last call to </FONT>system<FONT COLOR="red"> or </FONT>put
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT>EXECUTION_ENVIRONMENT<FONT COLOR="red">)</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\informatics_events/informatics_dispatcher_flat.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> simply call parent's make procedure, but define a local variable for each handler</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> to ensure respective handler classes will be included in the application		</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT> CGI_INTERFACE
+            <B>True</B>
+        <B>local</B>
+            event_handler: <A HREF="..\informatics_events/event_handler_flat.html">EVENT_HANDLER</A>
+            user_handler: <A HREF="..\informatics_events/user_handler_flat.html">USER_HANDLER</A>
+            general_handler: <A HREF="..\informatics_events/general_handler_flat.html">GENERAL_HANDLER</A>
+        <B>do</B>
+            <B>Precursor</B> {<A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>}
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> dispatching</FONT>
+
+    <A NAME="f_execute"><A HREF="..\webex/request_dispatcher_flat.html#f_execute">execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> process actual request, send back result html page to the browser.</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_parse_handler_command_string">parse_handler_command_string</A>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_init_configuration">init_configuration</A>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_read_configuration">read_configuration</A> (<A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>, <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A>)
+            <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A>.is_empty <B>then</B>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_handler_id_string">handler_id_string</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_default_request">default_request</A>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A>.is_empty <B>then</B>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_command_string">command_string</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_default_command">default_command</A>
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session_enabled">session_enabled</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_init_session_manager">init_session_manager</A>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_init_session">init_session</A>
+            <B>end</B>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_pre_execute">pre_execute</A>
+            <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_processing_finished">processing_finished</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_instantiate_handler">instantiate_handler</A>
+                <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A> = <B>Void</B> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_process_undefined_request">process_undefined_request</A>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_processing_finished">processing_finished</A> := <B>True</B>
+                <B>else</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_return_page">return_page</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_actual_handler">actual_handler</A>.<A HREF="..\webex/request_handler_flat.html#f_process_request">process_request</A>
+                <B>end</B>
+                <B>if</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_processing_finished">processing_finished</A> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_post_execute">post_execute</A>
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> <B>not</B> response_header.is_complete_header <B>then</B>
+                response_header.generate_text_header
+            <B>end</B>
+            <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session_enabled">session_enabled</A> <B>then</B>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_save_session">save_session</A>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_setup_sid_cookie">setup_sid_cookie</A>
+            <B>end</B>
+            response_header.send_to_browser
+            response_header.output.put_string (<A HREF="..\webex/request_dispatcher_flat.html#f_return_page">return_page</A>.out)
+        <B>rescue</B>
+            io.error.putstring ("crash in `request_dispatcher.execute()' %N")
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> pre/post execution</FONT>
+
+    <A NAME="f_post_execute"><A HREF="..\webex/request_dispatcher_flat.html#f_post_execute">post_execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed after request processed</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+
+    <A NAME="f_pre_execute"><A HREF="..\webex/request_dispatcher_flat.html#f_pre_execute">pre_execute</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> common tasks to be executed before starting process user request</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> if necessary, set 'processing_finished' tag and return_page to premature processing</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+        <B>end</B></A>
+    
+<B>feature</B> {<A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>} <FONT COLOR="red">--</FONT><FONT COLOR="red"> session/cookie</FONT>
+
+    <A NAME="f_init_session"><A HREF="..\webex/request_dispatcher_flat.html#f_init_session">init_session</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the saved session or create a new session object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>local</B>
+            sid: STRING_8
+        <B>do</B>
+            <B>create</B> sid.make_empty
+            <B>if</B> cookies /= <B>Void</B> <B>and then</B> cookies.has ("sid") <B>then</B>
+                <B>create</B> sid.make_from_string (cookies.item ("sid"))
+                <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_flat.html#f_get_session">get_session</A> (sid)
+                <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_expired">expired</A> <B>then</B>
+                    <A HREF="..\webex/request_dispatcher_flat.html#f_cookie_enabled">cookie_enabled</A> := <B>True</B>
+                    <B>check</B>
+                        cookie_enabled_and_sid_ok: <B>not</B> sid.is_empty
+                    <B>end</B>
+                <B>else</B>
+                    <B>create</B> sid.make_empty
+                <B>end</B>
+            <B>end</B>
+            <B>if</B> sid.is_empty <B>then</B>
+                <B>if</B> field_defined ("sid") <B>and</B> <B>not</B> text_field_value ("sid").is_empty <B>then</B>
+                    <B>create</B> sid.make_from_string (<B>Current</B>.text_field_value ("sid"))
+                <B>else</B>
+                    <B>check</B>
+                        cookie_disabled_and_sid_empty: sid.is_empty
+                    <B>end</B>
+                    <B>create</B> sid.make_from_string (<A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_flat.html#f_generate_session_id">generate_session_id</A>)
+                <B>end</B>
+            <B>end</B>
+            <B>check</B>
+                sid_not_empty: <B>not</B> sid.is_empty
+            <B>end</B>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> := <A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_flat.html#f_get_session">get_session</A> (sid)
+            <B>if</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> = <B>Void</B> <B>or</B> (<A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> /= <B>Void</B> <B>and then</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_expired">expired</A>) <B>then</B>
+                <B>create</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_make">make</A>
+                <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_set_session_id">set_session_id</A> (sid)
+                <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_set_expiration_after_seconds">set_expiration_after_seconds</A> (<A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_session_expiration">session_expiration</A>)
+            <B>end</B>
+        <B>ensure</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>
+            app_session_object_initialized: <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A> /= <B>Void</B> <B>and</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_session_id">session_id</A>.is_empty
+        <B>end</B></A>
+
+    <A NAME="f_init_session_manager"><A HREF="..\webex/request_dispatcher_flat.html#f_init_session_manager">init_session_manager</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> init session_manager object</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <B>create</B> {<A HREF="..\webex/session_manager_file_impl_flat.html">SESSION_MANAGER_FILE_IMPL</A>} <A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_file_impl_flat.html#f_make">make</A> (<A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_session_files_folder">session_files_folder</A>, <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_session_expiration">session_expiration</A>, <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_session_id_length">session_id_length</A>)
+        <B>end</B></A>
+
+    <A NAME="f_save_session"><A HREF="..\webex/request_dispatcher_flat.html#f_save_session">save_session</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save actual session to session manager</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>do</B>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_session_manager">session_manager</A>.<A HREF="..\webex/session_manager_flat.html#f_save_session">save_session</A> (<A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_session_id">session_id</A>, <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>)
+        <B>end</B></A>
+
+    <A NAME="f_setup_sid_cookie"><A HREF="..\webex/request_dispatcher_flat.html#f_setup_sid_cookie">setup_sid_cookie</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> update cookie in the client</FONT>
+            <FONT COLOR="red">--</FONT> <FONT COLOR="red">(from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A><FONT COLOR="red">)</FONT>
+        <B>require</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>
+            <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_session_id">session_id</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_session_id">session_id</A>.is_empty
+        <B>local</B>
+            expire: STRING_8
+        <B>do</B>
+            expire := <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_expiration_time">expiration_time</A>.formatted_out ("ddd, [0]dd-[0]mm-yyyy [0]hh:[0]mi:[0]ss") + " GMT"
+            response_header.set_cookie ("sid", <A HREF="..\webex/request_dispatcher_flat.html#f_session">session</A>.<A HREF="..\webex/session_flat.html#f_session_id">session_id</A>.out, expire, <A HREF="..\webex/request_dispatcher_flat.html#f_config">config</A>.<A HREF="..\webex/config_reader_flat.html#f_application_path">application_path</A>, <B>Void</B>, <B>Void</B>)
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT><A HREF="..\webex/request_dispatcher_flat.html">REQUEST_DISPATCHER</A>
+    invariant_clause: <B>True</B>
+
+        <FONT COLOR="red">--</FONT> <FONT COLOR="red">from </FONT>ANY
+    reflexive_equality: standard_is_equal (<B>Current</B>)
+    reflexive_conformance: conforms_to (<B>Current</B>)
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/informatics_dispatcher_flat.html">INFORMATICS_DISPATCHER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="informatics_dispatcher_chart.html">Chart</A></TD><TD><A HREF="informatics_dispatcher_links.html">Relations</A></TD><TD><A HREF="informatics_dispatcher.html">Text</A></TD><TD>Flat</TD><TD><A HREF="informatics_dispatcher_short.html">Contracts</A></TD><TD><A HREF="informatics_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

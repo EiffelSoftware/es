@@ -1,0 +1,266 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="class that provides basic form validation functions">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>form_validator Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="form_validator_chart.html">Chart</A></TD><TD><A HREF="form_validator_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="form_validator_flat.html">Flat</A></TD><TD><A HREF="form_validator_short.html">Contracts</A></TD><TD><A HREF="form_validator_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "class that provides basic form validation functions"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "10.12.2007"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/form_validator.html">FORM_VALIDATOR</A>
+
+<B>create</B> 
+    <A HREF="..\webex/form_validator.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Attributes</FONT>
+
+    <A NAME="f_context"><A HREF="..\webex/form_validator.html#f_context">context</A>: <A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> actual HTTP context</FONT>
+
+    <A NAME="f_last_value"><A HREF="..\webex/form_validator.html#f_last_value">last_value</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> value from last checked field</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/form_validator.html#f_make">make</A> (a_context: <A HREF="..\webex/request_dispatcher.html">REQUEST_DISPATCHER</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> initialization</FONT>
+        <B>do</B>
+            <A HREF="..\webex/form_validator.html#f_context">context</A> := a_context
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> CGI_FORMS</FONT>
+
+    <A NAME="f_text_field_value"><A HREF="..\webex/form_validator.html#f_text_field_value">text_field_value</A> (field_name: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> get a text field value as string /wrapper of CGI_FORM text_field_value</FONT>
+        <B>do</B>
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <A HREF="..\webex/form_validator.html#f_context">context</A>.text_field_value (field_name)
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.left_adjust
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.right_adjust
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>
+        <B>end</B></A>
+
+    <A NAME="f_button_value"><A HREF="..\webex/form_validator.html#f_button_value">button_value</A> (field_name, overriding_value: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM button_value</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.button_value (field_name, overriding_value)
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <B>Result</B>.out
+        <B>end</B></A>
+
+    <A NAME="f_menu_values"><A HREF="..\webex/form_validator.html#f_menu_values">menu_values</A> (field_name: STRING_8): LINKED_LIST [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM menu_values</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.menu_values (field_name)
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <B>Result</B>.out
+        <B>end</B></A>
+
+    <A NAME="f_fields"><A HREF="..\webex/form_validator.html#f_fields">fields</A>: ARRAY [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM fields</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.fields
+        <B>end</B></A>
+
+    <A NAME="f_value_count"><A HREF="..\webex/form_validator.html#f_value_count">value_count</A> (field_name: STRING_8): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM value_count</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.value_count (field_name)
+        <B>end</B></A>
+
+    <A NAME="f_value_list"><A HREF="..\webex/form_validator.html#f_value_list">value_list</A> (field_name: STRING_8): LINKED_LIST [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM value_list</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.value_list (field_name)
+        <B>end</B></A>
+
+    <A NAME="f_field_defined"><A HREF="..\webex/form_validator.html#f_field_defined">field_defined</A> (field_name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> wrapper of CGI_FORM field_defined</FONT>
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_context">context</A>.field_defined (field_name)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_get_field_string"><A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (a_field_name: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the string value of a text field with the specified name.</FONT>
+        <B>require</B>
+            field_name_valid: a_field_name /= <B>Void</B> <B>and then</B> <B>not</B> a_field_name.is_empty
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/form_validator.html#f_field_defined">field_defined</A> (a_field_name) <B>then</B>
+                <B>Result</B> := <A HREF="..\webex/form_validator.html#f_text_field_value">text_field_value</A> (a_field_name)
+                <B>Result</B>.left_adjust
+                <B>Result</B>.right_adjust
+            <B>else</B>
+                <B>create</B> <B>Result</B>.make_empty
+            <B>end</B>
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <B>Result</B>
+        <B>end</B></A>
+
+    <A NAME="f_get_field_integer"><A HREF="..\webex/form_validator.html#f_get_field_integer">get_field_integer</A> (a_field_name: STRING_8): INTEGER_32
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the integer value of a given field</FONT>
+        <B>require</B>
+            field_name_valid: a_field_name /= <B>Void</B> <B>and then</B> <B>not</B> a_field_name.is_empty
+            field_defined: <A HREF="..\webex/form_validator.html#f_field_defined">field_defined</A> (a_field_name) <B>and then</B> <A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> (a_field_name)
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (a_field_name).to_integer
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <B>Result</B>.out
+        <B>end</B></A>
+
+    <A NAME="f_get_field_double"><A HREF="..\webex/form_validator.html#f_get_field_double">get_field_double</A> (a_field_name: STRING_8): REAL_64
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the double value of a given field</FONT>
+        <B>require</B>
+            field_name_valid: a_field_name /= <B>Void</B> <B>and then</B> <B>not</B> a_field_name.is_empty
+            field_defined: <A HREF="..\webex/form_validator.html#f_field_defined">field_defined</A> (a_field_name) <B>and then</B> <A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> (a_field_name)
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (a_field_name).to_double
+            <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <B>Result</B>.out
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> validation</FONT>
+
+    <A NAME="f_is_string_not_empty"><A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (value: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">is field value valid?</FONT>
+        <B>do</B>
+            <B>if</B> value /= <B>Void</B> <B>then</B>
+                value.left_adjust
+                value.right_adjust
+                <B>if</B> (<B>not</B> value.is_empty) <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_field_value_not_empty"><A HREF="..\webex/form_validator.html#f_is_field_value_not_empty">is_field_value_not_empty</A> (field: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">is field value valid?</FONT>
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/form_validator.html#f_field_defined">field_defined</A> (field) <B>and then</B> <A HREF="..\webex/form_validator.html#f_text_field_value">text_field_value</A> (field) /= <B>Void</B> <B>then</B>
+                <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := <A HREF="..\webex/form_validator.html#f_text_field_value">text_field_value</A> (field)
+                <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.left_adjust
+                <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.right_adjust
+                <B>if</B> (<B>not</B> <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.is_empty) <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>end</B>
+            <B>else</B>
+                <A HREF="..\webex/form_validator.html#f_last_value">last_value</A> := ""
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_email_valid"><A HREF="..\webex/form_validator.html#f_is_email_valid">is_email_valid</A> (email: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">is email valid? (non-void, non-empty after eliminating leading and trailing spaces, with only one '@')</FONT>
+        <B>do</B>
+            <B>if</B> email /= <B>Void</B> <B>then</B>
+                email.left_adjust
+                email.right_adjust
+                <B>if</B> (<B>not</B> email.is_empty <B>and then</B> email.occurrences ('@') = 1) <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_date_valid"><A HREF="..\webex/form_validator.html#f_is_date_valid">is_date_valid</A> (day, month, year: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> is date valid?</FONT>
+        <B>local</B>
+            date_checker: DATE_VALIDITY_CHECKER
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (day) <B>and</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (month) <B>and</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (year) <B>then</B>
+                <B>if</B> day.is_integer <B>and</B> month.is_integer <B>and</B> year.is_integer <B>then</B>
+                    <B>create</B> date_checker
+                    <B>if</B> date_checker.is_correct_date (year.to_integer, month.to_integer, day.to_integer) <B>then</B>
+                        <B>Result</B> := <B>True</B>
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_non_required_date_valid"><A HREF="..\webex/form_validator.html#f_is_non_required_date_valid">is_non_required_date_valid</A> (day, month, year: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> is date which is not required valid? It accepts 'n/a'</FONT>
+        <B>local</B>
+            date_checker: DATE_VALIDITY_CHECKER
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (day) <B>and</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (month) <B>and</B> <A HREF="..\webex/form_validator.html#f_is_string_not_empty">is_string_not_empty</A> (year) <B>then</B>
+                <B>if</B> day.is_equal ("n/a") <B>or</B> month.is_equal ("n/a") <B>or</B> year.is_equal ("n/a") <B>then</B>
+                    <B>Result</B> := <B>True</B>
+                <B>elseif</B> day.is_integer <B>and</B> month.is_integer <B>and</B> year.is_integer <B>then</B>
+                    <B>create</B> date_checker
+                    <B>if</B> date_checker.is_correct_date (year.to_integer, month.to_integer, day.to_integer) <B>then</B>
+                        <B>Result</B> := <B>True</B>
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_must_field_filled"><A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> (a_field_name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> check a field value for non emptyness</FONT>
+        <B>require</B>
+            field_name_valud: a_field_name /= <B>Void</B> <B>and then</B> <B>not</B> a_field_name.is_empty
+        <B>do</B>
+            <B>create</B> <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.make_from_string (<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (a_field_name))
+            <B>if</B> <B>not</B> <A HREF="..\webex/form_validator.html#f_last_value">last_value</A>.is_empty <B>then</B>
+                <B>Result</B> := <B>True</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_field_in_range"><A HREF="..\webex/form_validator.html#f_is_field_in_range">is_field_in_range</A> (field_name: STRING_8; min, max: REAL_64): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether a integer/float field in specified min/max range</FONT>
+        <B>require</B>
+            field_name_valud: field_name /= <B>Void</B> <B>and then</B> <B>not</B> field_name.is_empty
+            field_exists: <A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> (field_name)
+        <B>local</B>
+            value: REAL_64
+        <B>do</B>
+            value := <A HREF="..\webex/form_validator.html#f_get_field_double">get_field_double</A> (field_name)
+            <B>if</B> value &gt;= min <B>and then</B> value &lt;= max <B>then</B>
+                <B>Result</B> := <B>True</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_are_fields_equal"><A HREF="..\webex/form_validator.html#f_are_fields_equal">are_fields_equal</A> (name1, name2: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> whether two fields have same values</FONT>
+        <B>require</B>
+            field_name_valud: name1 /= <B>Void</B> <B>and then</B> <B>not</B> name1.is_empty <B>and then</B> name2 /= <B>Void</B> <B>and then</B> <B>not</B> name2.is_empty
+            fields_exist: <A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> (name1) <B>and then</B> <A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> (name2)
+        <B>local</B>
+            value1, value2: STRING_8
+        <B>do</B>
+            <B>create</B> value1.make_from_string (<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (name1))
+            <B>create</B> value2.make_from_string (<A HREF="..\webex/form_validator.html#f_get_field_string">get_field_string</A> (name2))
+            <B>if</B> value1.is_equal (value2) <B>then</B>
+                <B>Result</B> := <B>True</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_is_must_fields_valid"><A HREF="..\webex/form_validator.html#f_is_must_fields_valid">is_must_fields_valid</A> (names: ARRAY [STRING_8]): ARRAY [STRING_8]
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> check a given must field list to see whether they are filled with values. return an array contains fields names that failed validation.</FONT>
+        <B>local</B>
+            i, j: INTEGER_32
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make (1, 100)
+            j := 1
+            <B>from</B>
+                i := names.lower
+            <B>until</B>
+                i &gt; names.upper
+            <B>loop</B>
+                <B>if</B> names.item (i) /= <B>Void</B> <B>then</B>
+                    <B>if</B> <B>not</B> <A HREF="..\webex/form_validator.html#f_is_must_field_filled">is_must_field_filled</A> (names.item (i)) <B>then</B>
+                        <B>Result</B>.put (names.item (i), j)
+                        j := j + 1
+                    <B>end</B>
+                <B>end</B>
+                i := i + 1
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/form_validator.html">FORM_VALIDATOR</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="form_validator_chart.html">Chart</A></TD><TD><A HREF="form_validator_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="form_validator_flat.html">Flat</A></TD><TD><A HREF="form_validator_short.html">Contracts</A></TD><TD><A HREF="form_validator_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

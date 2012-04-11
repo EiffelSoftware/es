@@ -1,0 +1,165 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects implemented SESSION_MANAGER based on serialized sessions (file storage)">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>session_manager_file_impl Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="session_manager_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="session_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="session_manager_file_impl_short.html">Contracts</A></TD><TD><A HREF="session_manager_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects implemented SESSION_MANAGER based on serialized sessions (file storage)"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "05.01.2008"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/session_manager_file_impl.html">SESSION_MANAGER_FILE_IMPL</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/session_manager.html">SESSION_MANAGER</A>
+
+<B>create</B> 
+    <A HREF="..\webex/session_manager_file_impl.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes	</FONT>
+
+    <A NAME="f_session_path"><A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> path that stores all session files</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> make</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/session_manager_file_impl.html#f_make">make</A> (path: STRING_8; expiration, sid_length: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> init session path</FONT>
+        <B>local</B>
+        <B>do</B>
+            <A HREF="..\webex/session_manager.html#f_init_manager">init_manager</A> (expiration, sid_length)
+            <B>create</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.make_from_string (path)
+            <B>if</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.item (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.count) /= '/' <B>then</B>
+                <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.extend ('/')
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> operations</FONT>
+
+    <A NAME="f_get_session"><A HREF="..\webex/session_manager_file_impl.html#f_get_session">get_session</A> (sid: STRING_8): <A HREF="..\webex/session.html">SESSION</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve the saved session object with given session_id</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> otherwise return void</FONT>
+        <B>require else</B>
+            session_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+            path_initialized: <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.is_empty
+        <B>local</B>
+            session: <A HREF="..\webex/session.html">SESSION</A>
+            session_file: RAW_FILE
+        <B>do</B>
+            <B>create</B> session_file.make (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> + sid)
+            <B>if</B> session_file.exists <B>then</B>
+                session := <A HREF="..\webex/session_manager_file_impl.html#f_initialize_from_file">initialize_from_file</A> (session_file)
+                <B>Result</B> ?= session
+            <B>else</B>
+                <B>Result</B> := <B>Void</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_save_session"><A HREF="..\webex/session_manager_file_impl.html#f_save_session">save_session</A> (sid: STRING_8; session: <A HREF="..\webex/session.html">SESSION</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save given session information</FONT>
+        <B>require else</B>
+            session_and_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty <B>and then</B> session /= <B>Void</B>
+            path_initialized: <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.is_empty
+        <B>local</B>
+            session_file: RAW_FILE
+        <B>do</B>
+            <B>create</B> session_file.make (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> + sid)
+            <A HREF="..\webex/session_manager_file_impl.html#f_save_to_file">save_to_file</A> (session, session_file)
+        <B>end</B></A>
+
+    <A NAME="f_delete_session"><A HREF="..\webex/session_manager_file_impl.html#f_delete_session">delete_session</A> (sid: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> delete a session based on given id</FONT>
+        <B>require else</B>
+            session_id_valid: sid /= <B>Void</B> <B>and then</B> <B>not</B> sid.is_empty
+            path_initialized: <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.is_empty
+        <B>local</B>
+            session_file: RAW_FILE
+        <B>do</B>
+            <B>create</B> session_file.make (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> + sid)
+            <B>if</B> session_file.exists <B>then</B>
+                session_file.delete
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_cleanup"><A HREF="..\webex/session_manager_file_impl.html#f_cleanup">cleanup</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> consolidate saved session information, clean-up expired/invalid sessions in storage (files/db)</FONT>
+        <B>require else</B>
+            path_initialized: <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> /= <B>Void</B> <B>and then</B> <B>not</B> <A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>.is_empty
+        <B>local</B>
+            dir: DIRECTORY
+            session: <A HREF="..\webex/session.html">SESSION</A>
+            session_file: RAW_FILE
+        <B>do</B>
+            <B>create</B> dir.make_open_read (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A>)
+            <B>from</B>
+                dir.start
+            <B>until</B>
+                dir.lastentry.is_empty
+            <B>loop</B>
+                <B>create</B> session_file.make (<A HREF="..\webex/session_manager_file_impl.html#f_session_path">session_path</A> + dir.lastentry)
+                <B>if</B> session_file.exists <B>then</B>
+                    session := <A HREF="..\webex/session_manager_file_impl.html#f_initialize_from_file">initialize_from_file</A> (session_file)
+                    <B>if</B> session.<A HREF="..\webex/session.html#f_expired">expired</A> <B>then</B>
+                        session_file.delete
+                    <B>end</B>
+                <B>end</B>
+                dir.readentry
+            <B>end</B>
+            dir.close
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> persist file storage</FONT>
+
+    <A NAME="f_initialize_from_file"><A HREF="..\webex/session_manager_file_impl.html#f_initialize_from_file">initialize_from_file</A> (session_file: RAW_FILE): <A HREF="..\webex/session.html">SESSION</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve session object from serialized file</FONT>
+        <B>require</B>
+            session_file_exists: session_file.exists
+        <B>local</B>
+            store_handler: SED_STORABLE_FACILITIES
+            session_serializer: SED_MEDIUM_READER_WRITER
+            session: <A HREF="..\webex/session.html">SESSION</A>
+        <B>do</B>
+            <B>create</B> store_handler
+            <B>create</B> session_serializer.make (session_file)
+            session_file.open_read
+            session_serializer.set_for_reading
+            session ?= store_handler.retrieved (session_serializer, <B>True</B>)
+            <B>check</B>
+                read_ok: session /= <B>Void</B>
+            <B>end</B>
+            <B>check</B>
+                session_initialized: session /= <B>Void</B>
+            <B>end</B>
+            session_file.close
+            <B>Result</B> := session
+        <B>end</B></A>
+
+    <A NAME="f_save_to_file"><A HREF="..\webex/session_manager_file_impl.html#f_save_to_file">save_to_file</A> (session: <A HREF="..\webex/session.html">SESSION</A>; session_file: RAW_FILE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> save session object to file</FONT>
+        <B>local</B>
+            store_handler: SED_STORABLE_FACILITIES
+            session_serializer: SED_MEDIUM_READER_WRITER
+        <B>do</B>
+            <B>create</B> store_handler
+            <B>create</B> session_serializer.make (session_file)
+            session_file.open_write
+            session_serializer.set_for_writing
+            store_handler.independent_store (session, session_serializer, <B>True</B>)
+            session_file.flush
+            session_file.close
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/session_manager_file_impl.html">SESSION_MANAGER_FILE_IMPL</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="session_manager_file_impl_chart.html">Chart</A></TD><TD><A HREF="session_manager_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="session_manager_file_impl_flat.html">Flat</A></TD><TD><A HREF="session_manager_file_impl_short.html">Contracts</A></TD><TD><A HREF="session_manager_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

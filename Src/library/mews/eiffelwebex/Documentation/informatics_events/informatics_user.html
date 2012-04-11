@@ -1,0 +1,145 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Objects that represents an user of the informatics_event application.">
+<META NAME="author" CONTENT="Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>informatics_user Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="informatics_user_chart.html">Chart</A></TD><TD><A HREF="informatics_user_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="informatics_user_flat.html">Flat</A></TD><TD><A HREF="informatics_user_short.html">Contracts</A></TD><TD><A HREF="informatics_user_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Objects that represents an user of the informatics_event application."
+    author: "Peizhu Li"
+    date: "$05.02.2008$"
+    revision: "$0.8.1$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/user.html">USER</A>
+        <B>redefine</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+        <B>end</B>
+
+    <A HREF="..\informatics_events/application_constants.html">APPLICATION_CONSTANTS</A>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+<FONT COLOR="red">--</FONT><FONT COLOR="red">personal data</FONT>
+
+    <A NAME="f_first_name"><A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> first name</FONT>
+
+    <A NAME="f_last_name"><A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">last name</FONT>
+
+    <A NAME="f_organization"><A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">organization</FONT>
+
+    <A NAME="f_email"><A HREF="..\informatics_events/informatics_user.html#f_email">email</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">email</FONT>
+
+    <A NAME="f_telephone"><A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">phone</FONT>
+
+    <A NAME="f_role"><A HREF="..\informatics_events/informatics_user.html#f_role">role</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">role of current user, should be a enum type</FONT>
+
+    <A NAME="f_status"><A HREF="..\informatics_events/informatics_user.html#f_status">status</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> deleted, blocked</FONT>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make"><A HREF="..\informatics_events/informatics_user.html#f_make">make</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialize </FONT>`Current'<FONT COLOR="red">.</FONT>
+        <B>do</B>
+            <B>Precursor</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A> := ""
+            <A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A> := ""
+            <A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A> := ""
+            <A HREF="..\informatics_events/informatics_user.html#f_email">email</A> := ""
+            <A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A> := ""
+            <A HREF="..\informatics_events/informatics_user.html#f_role">role</A> := <A HREF="..\informatics_events/application_constants.html#f_role_guest">role_guest</A>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Status setting</FONT>
+
+    <A NAME="f_set_first_name"><A HREF="..\informatics_events/informatics_user.html#f_set_first_name">set_first_name</A> (a_first_name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets first name</FONT>
+        <B>require</B>
+            first_name_has_meaning: a_first_name /= <B>Void</B> <B>and then</B> (<B>not</B> a_first_name.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A> := a_first_name
+        <B>ensure</B>
+            first_name_is_set: <A HREF="..\informatics_events/informatics_user.html#f_first_name">first_name</A> = a_first_name
+        <B>end</B></A>
+
+    <A NAME="f_set_last_name"><A HREF="..\informatics_events/informatics_user.html#f_set_last_name">set_last_name</A> (a_last_name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets last name</FONT>
+        <B>require</B>
+            last_name_has_meaning: a_last_name /= <B>Void</B> <B>and then</B> (<B>not</B> a_last_name.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A> := a_last_name
+        <B>ensure</B>
+            last_name_is_set: <A HREF="..\informatics_events/informatics_user.html#f_last_name">last_name</A> = a_last_name
+        <B>end</B></A>
+
+    <A NAME="f_set_organization"><A HREF="..\informatics_events/informatics_user.html#f_set_organization">set_organization</A> (an_organization: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets organization</FONT>
+        <B>require</B>
+            organization_has_meaning: an_organization /= <B>Void</B> <B>and then</B> (<B>not</B> an_organization.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A> := an_organization
+        <B>ensure</B>
+            organization_is_set: <A HREF="..\informatics_events/informatics_user.html#f_organization">organization</A> = an_organization
+        <B>end</B></A>
+
+    <A NAME="f_set_email"><A HREF="..\informatics_events/informatics_user.html#f_set_email">set_email</A> (an_email: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets email</FONT>
+        <B>require</B>
+            email_has_meaning: an_email /= <B>Void</B> <B>and then</B> (<B>not</B> an_email.is_empty)
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_email">email</A> := an_email
+        <B>ensure</B>
+            email_is_set: <A HREF="..\informatics_events/informatics_user.html#f_email">email</A> = an_email
+        <B>end</B></A>
+
+    <A NAME="f_set_telephone"><A HREF="..\informatics_events/informatics_user.html#f_set_telephone">set_telephone</A> (an_phone: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets telephone</FONT>
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A> := an_phone
+        <B>ensure</B>
+            phone_is_set: <A HREF="..\informatics_events/informatics_user.html#f_telephone">telephone</A> = an_phone
+        <B>end</B></A>
+
+    <A NAME="f_set_role"><A HREF="..\informatics_events/informatics_user.html#f_set_role">set_role</A> (a_role: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets role</FONT>
+        <B>require</B>
+            role_has_meaning: a_role &gt;= 0
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_role">role</A> := a_role
+        <B>ensure</B>
+            role_is_set: <A HREF="..\informatics_events/informatics_user.html#f_role">role</A> = a_role
+        <B>end</B></A>
+
+    <A NAME="f_set_status"><A HREF="..\informatics_events/informatics_user.html#f_set_status">set_status</A> (a_status: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">sets status</FONT>
+        <B>require</B>
+            status_has_meaning: a_status &gt;= 0
+        <B>do</B>
+            <A HREF="..\informatics_events/informatics_user.html#f_status">status</A> := a_status
+        <B>ensure</B>
+            status_is_set: <A HREF="..\informatics_events/informatics_user.html#f_status">status</A> = a_status
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/informatics_user.html">INFORMATICS_USER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="informatics_user_chart.html">Chart</A></TD><TD><A HREF="informatics_user_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="informatics_user_flat.html">Flat</A></TD><TD><A HREF="informatics_user_short.html">Contracts</A></TD><TD><A HREF="informatics_user_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

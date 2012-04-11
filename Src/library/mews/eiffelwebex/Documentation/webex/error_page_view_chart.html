@@ -1,0 +1,53 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>error_page_view Chart</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD><A HREF="error_page_view.html">Text</A></TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD><A HREF="error_page_view_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>class</B>
+    <A HREF="..\webex/error_page_view_chart.html">ERROR_PAGE_VIEW</A>
+
+<B>General</B>
+    cluster: <A HREF="..\webex/index.html">webex</A>
+    description: "Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)"
+    create: <A HREF="..\webex/html_template_view.html#f_make">make</A>, <A HREF="..\webex/error_page_view.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>, <A HREF="..\webex/error_page_view.html#f_make_default_error_page">make_default_error_page</A>, <A HREF="..\webex/error_page_view.html#f_build_default_not_found_page">build_default_not_found_page</A>, <A HREF="..\webex/error_page_view.html#f_build_default_database_not_connected">build_default_database_not_connected</A>, <A HREF="..\webex/error_page_view.html#f_build_default_database_problem">build_default_database_problem</A>
+
+<B>Ancestors</B>
+    <A HREF="..\webex/html_template_view_chart.html">HTML_TEMPLATE_VIEW</A>
+
+<B>Queries</B>
+    out: STRING_8<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+
+<B>Commands</B>
+    add_html_code (s: STRING_8)<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+    <A HREF="..\webex/error_page_view.html#f_build_default_database_not_connected">build_default_database_not_connected</A>
+    <A HREF="..\webex/error_page_view.html#f_build_default_database_problem">build_default_database_problem</A>
+    <A HREF="..\webex/error_page_view.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>
+    <A HREF="..\webex/error_page_view.html#f_build_default_not_found_page">build_default_not_found_page</A>
+    <A HREF="..\webex/html_template_view.html#f_cleanup_tags">cleanup_tags</A><FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_cleanup_unused_sections">cleanup_unused_sections</A><FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_comment_out_section">comment_out_section</A> (marker_string: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> (marker_string: STRING_8; a_number: INTEGER_32)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> (marker_string: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    insert_hidden_field (name, value: STRING_8)<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_make">make</A> (template: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/error_page_view.html#f_make_default_error_page">make_default_error_page</A> (title, content: STRING_8)
+    make_empty<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+    make_from_template (fi_n: STRING_8)<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> (marker_string: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    replace_marker (a_marker, s: STRING_8)<FONT COLOR="red"> -- (from HTML_PAGE)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_replace_marker_with_file">replace_marker_with_file</A> (mark_string, filename: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> (mark_string, content: STRING_8)<FONT COLOR="red"> -- (from HTML_TEMPLATE_VIEW)</FONT>
+    <A HREF="..\webex/view.html#f_set_content">set_content</A> (a_content: STRING_8)<FONT COLOR="red"> -- (from VIEW)</FONT>
+    <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> (title, content: STRING_8)
+
+<B>Constraints</B>
+    invariant clause
+
+<TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD><A HREF="error_page_view.html">Text</A></TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD><A HREF="error_page_view_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>

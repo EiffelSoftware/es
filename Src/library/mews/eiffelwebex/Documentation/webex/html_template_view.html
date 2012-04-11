@@ -1,0 +1,199 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="a template based HTML page view, implement a rich set of routines to help generating a result HTML page based on a predefined HTML template.">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>html_template_view Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="html_template_view_chart.html">Chart</A></TD><TD><A HREF="html_template_view_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="html_template_view_flat.html">Flat</A></TD><TD><A HREF="html_template_view_short.html">Contracts</A></TD><TD><A HREF="html_template_view_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "a template based HTML page view, implement a rich set of routines to help generating a result HTML page based on a predefined HTML template."
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "12.01.2007"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/html_template_view.html">HTML_TEMPLATE_VIEW</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/view.html">VIEW</A>
+        <B>rename</B>
+            make <B>as</B> make_empty
+        <B>export</B>
+            {ANY} make_empty
+        <B>end</B>
+
+<B>create</B> 
+    <A HREF="..\webex/html_template_view.html#f_make">make</A>,
+    make_empty
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Set</FONT>
+
+    <A NAME="f_replace_marker_with_string"><A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> (mark_string, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace marker with content</FONT>
+        <B>local</B>
+            marker: STRING_8
+        <B>do</B>
+            <B>create</B> marker.make_from_string ("{#" + mark_string + "#}")
+            replace_marker (marker, content)
+        <B>end</B></A>
+
+    <A NAME="f_replace_marker_with_file"><A HREF="..\webex/html_template_view.html#f_replace_marker_with_file">replace_marker_with_file</A> (mark_string, filename: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace marker with the content of a text file</FONT>
+        <B>local</B>
+            contentfile: PLAIN_TEXT_FILE
+            content: STRING_8
+        <B>do</B>
+            <B>create</B> contentfile.make_open_read (filename)
+            <B>create</B> content.make_empty
+            <B>from</B>
+                contentfile.start
+            <B>until</B>
+                contentfile.after
+            <B>loop</B>
+                contentfile.read_line
+                content.append (contentfile.last_string + "%N")
+            <B>end</B>
+            contentfile.close
+            <A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> (mark_string, content)
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Commands</FONT>
+
+    <A NAME="f_enable_alternative_section"><A HREF="..\webex/html_template_view.html#f_enable_alternative_section">enable_alternative_section</A> (marker_string: STRING_8; a_number: INTEGER_32)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+        <B>require</B>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+            number_valid: a_number &gt; 0
+        <B>do</B>
+            <A HREF="..\webex/html_template_view.html#f_comment_out_section">comment_out_section</A> (marker_string + "_0")
+            <A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> (marker_string + "_" + a_number.out)
+        <B>end</B></A>
+
+    <A NAME="f_enable_section"><A HREF="..\webex/html_template_view.html#f_enable_section">enable_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+        <B>require</B>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+        <B>do</B>
+            replace_marker ("&lt;!--##" + marker_string + "##--&gt;", "")
+            replace_marker ("&lt;!--##/" + marker_string + "##--&gt;", "")
+            replace_marker ("&lt;!--##" + marker_string + "##", "")
+            replace_marker ("##/" + marker_string + "##--&gt;", "")
+        <B>end</B></A>
+
+    <A NAME="f_comment_out_section"><A HREF="..\webex/html_template_view.html#f_comment_out_section">comment_out_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> turns an alternative marker section of the html code on, and the default off.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a_number indicates which alternative section to use, starting with 1.</FONT>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> the default section labeled with number 0 is already turned on and cannot be enabled again.</FONT>
+        <B>require</B>
+            marker_string_valid: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+        <B>do</B>
+            replace_marker ("&lt;!--##" + marker_string + "##--&gt;", "&lt;!--##" + marker_string + "##")
+            replace_marker ("&lt;!--##/" + marker_string + "##--&gt;", "##/" + marker_string + "##--&gt;")
+        <B>end</B></A>
+
+    <A NAME="f_cleanup_unused_sections"><A HREF="..\webex/html_template_view.html#f_cleanup_unused_sections">cleanup_unused_sections</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+        <B>local</B>
+            start_index, end_index, marker_start, marker_end, enabled_marker_start: INTEGER_32
+            marker_string: STRING_8
+            end_tag_string: STRING_8
+        <B>do</B>
+            <B>from</B>
+                start_index := 1
+            <B>until</B>
+                start_index = 0
+            <B>loop</B>
+                start_index := image.substring_index ("&lt;!--##", start_index)
+                <B>if</B> start_index &gt; 0 <B>then</B>
+                    marker_start := start_index + 6
+                    marker_end := image.substring_index ("##", marker_start)
+                    <B>if</B> marker_end &gt; marker_start <B>then</B>
+                        marker_string := image.substring (marker_start, marker_end - 1)
+                    <B>end</B>
+                    <B>check</B>
+                        identified_marker: marker_string /= <B>Void</B> <B>and then</B> <B>not</B> marker_string.is_empty
+                    <B>end</B>
+                    enabled_marker_start := image.substring_index ("&lt;!--##" + marker_string + "##--&gt;", start_index)
+                    <B>if</B> enabled_marker_start = start_index <B>then</B>
+                        replace_marker ("&lt;!--##" + marker_string + "##--&gt;", "")
+                        replace_marker ("&lt;!--/##" + marker_string + "##--&gt;", "")
+                    <B>else</B>
+                        end_tag_string := "##/" + marker_string + "##--&gt;"
+                        end_index := image.substring_index (end_tag_string, start_index)
+                        <B>if</B> end_index &lt; 1 <B>then</B>
+                            end_index := image.count - end_tag_string.count + 1
+                        <B>end</B>
+                        image.remove_substring (start_index, end_index + end_tag_string.count - 1)
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_cleanup_tags"><A HREF="..\webex/html_template_view.html#f_cleanup_tags">cleanup_tags</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+        <B>local</B>
+            start_index, end_index: INTEGER_32
+        <B>do</B>
+            <B>from</B>
+                start_index := 1
+            <B>until</B>
+                start_index = 0
+            <B>loop</B>
+                start_index := image.substring_index ("{#", start_index)
+                <B>if</B> start_index &gt; 0 <B>then</B>
+                    end_index := image.substring_index ("#}", start_index + 2)
+                    <B>if</B> end_index &gt; 0 <B>then</B>
+                        image.remove_substring (start_index, end_index + 1)
+                    <B>else</B>
+                        start_index := start_index + 2
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_remove_section"><A HREF="..\webex/html_template_view.html#f_remove_section">remove_section</A> (marker_string: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> remove the comments from the html code.</FONT>
+        <B>local</B>
+            start_index, end_index: INTEGER_32
+            end_tag_string: STRING_8
+        <B>do</B>
+            <B>from</B>
+                start_index := 1
+            <B>until</B>
+                start_index = 0
+            <B>loop</B>
+                start_index := image.substring_index ("&lt;!--##" + marker_string + "##", start_index)
+                <B>if</B> start_index &gt; 0 <B>then</B>
+                    end_tag_string := "##/" + marker_string + "##--&gt;"
+                    end_index := image.substring_index (end_tag_string, start_index)
+                    <B>if</B> end_index &lt; 1 <B>then</B>
+                        end_index := image.count - end_tag_string.count + 1
+                    <B>end</B>
+                    image.remove_substring (start_index, end_index + end_tag_string.count - 1)
+                <B>end</B>
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/html_template_view.html#f_make">make</A> (template: STRING_8)
+        <B>require else</B>
+            template_file_name_valid: template /= <B>Void</B> <B>and then</B> <B>not</B> template.is_empty
+        <B>do</B>
+            make_from_template (template)
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/html_template_view.html">HTML_TEMPLATE_VIEW</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="html_template_view_chart.html">Chart</A></TD><TD><A HREF="html_template_view_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="html_template_view_flat.html">Flat</A></TD><TD><A HREF="html_template_view_short.html">Contracts</A></TD><TD><A HREF="html_template_view_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

@@ -1,0 +1,108 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Data Access Objects that serialize data using raw files">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_dao_file_impl Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_file_impl_chart.html">Chart</A></TD><TD><A HREF="event_dao_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_dao_file_impl_flat.html">Flat</A></TD><TD><A HREF="event_dao_file_impl_short.html">Contracts</A></TD><TD><A HREF="event_dao_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Data Access Objects that serialize data using raw files"
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\informatics_events/event_dao_file_impl.html">EVENT_DAO_FILE_IMPL</A>
+
+<B>inherit</B>
+    <A HREF="..\informatics_events/event_dao.html">EVENT_DAO</A>
+
+<B>create</B> 
+    <A HREF="..\informatics_events/event_dao_file_impl.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attributes</FONT>
+
+    <A NAME="f_data_path"><A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> directory to save all these conference data files</FONT>
+
+    <A NAME="f_events_file_name"><A HREF="..\informatics_events/event_dao_file_impl.html#f_events_file_name">events_file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> file names</FONT>
+
+    <A NAME="f_id_file_name"><A HREF="..\informatics_events/event_dao_file_impl.html#f_id_file_name">id_file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> file names</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">Access</FONT>
+
+    <A NAME="f_store_handler"><A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>: SED_STORABLE_FACILITIES</A>
+
+    <A NAME="f_events_data_file"><A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>: RAW_FILE</A>
+
+    <A NAME="f_event_id_generator_data_file"><A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>: RAW_FILE</A>
+
+    <A NAME="f_events_serializer"><A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>: SED_MEDIUM_READER_WRITER</A>
+
+    <A NAME="f_event_id_generator_serializer"><A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>: SED_MEDIUM_READER_WRITER</A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Initialization</FONT>
+
+    <A NAME="f_make"><A HREF="..\informatics_events/event_dao_file_impl.html#f_make">make</A> (path, event_fname, id_fname: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">	Creation procedure. Serialized data are retrieved</FONT>
+        <B>do</B>
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A>.make_from_string (path)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_file_name">events_file_name</A>.make_from_string (event_fname)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_id_file_name">id_file_name</A>.make_from_string (id_fname)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.make (<A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A> + <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_file_name">events_file_name</A>)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.make (<A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A> + <A HREF="..\informatics_events/event_dao_file_impl.html#f_id_file_name">id_file_name</A>)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>.make (<A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>)
+            <B>create</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>.make (<A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>)
+            <B>if</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.exists <B>then</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.open_read
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>.set_for_reading
+                <A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A> ?= <A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>.retrieved (<A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>, <B>True</B>)
+            <B>else</B>
+                <B>create</B> <A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A>.make (50)
+            <B>end</B>
+            <B>if</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.exists <B>then</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.open_read
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>.set_for_reading
+                <A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A> ?= <A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>.retrieved (<A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>, <B>True</B>)
+            <B>else</B>
+                <B>create</B> <A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A>
+            <B>end</B>
+        <B>ensure</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A> /= <B>Void</B>
+            event_id_generator_exists: <A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A> /= <B>Void</B>
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Basic operations</FONT>
+
+    <A NAME="f_persist_data"><A HREF="..\informatics_events/event_dao_file_impl.html#f_persist_data">persist_data</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">serializes data</FONT>
+        <B>do</B>
+            <B>if</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.exists <B>then</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.reopen_write (<A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A> + <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_file_name">events_file_name</A>)
+            <B>else</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_data_file">events_data_file</A>.open_write
+            <B>end</B>
+            <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>.set_for_writing
+            <A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>.independent_store (<A HREF="..\informatics_events/event_dao.html#f_event_list">event_list</A>, <A HREF="..\informatics_events/event_dao_file_impl.html#f_events_serializer">events_serializer</A>, <B>True</B>)
+            <B>if</B> <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.exists <B>then</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.reopen_write (<A HREF="..\informatics_events/event_dao_file_impl.html#f_data_path">data_path</A> + <A HREF="..\informatics_events/event_dao_file_impl.html#f_id_file_name">id_file_name</A>)
+            <B>else</B>
+                <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_data_file">event_id_generator_data_file</A>.open_write
+            <B>end</B>
+            <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>.set_for_writing
+            <A HREF="..\informatics_events/event_dao_file_impl.html#f_store_handler">store_handler</A>.independent_store (<A HREF="..\informatics_events/event_dao.html#f_event_id_generator">event_id_generator</A>, <A HREF="..\informatics_events/event_dao_file_impl.html#f_event_id_generator_serializer">event_id_generator_serializer</A>, <B>True</B>)
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event_dao_file_impl.html">EVENT_DAO_FILE_IMPL</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_file_impl_chart.html">Chart</A></TD><TD><A HREF="event_dao_file_impl_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="event_dao_file_impl_flat.html">Flat</A></TD><TD><A HREF="event_dao_file_impl_short.html">Contracts</A></TD><TD><A HREF="event_dao_file_impl_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

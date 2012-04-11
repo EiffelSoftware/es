@@ -1,0 +1,73 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses">
+<META NAME="author" CONTENT="Peizhu Li <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>informatics_dispatcher Chart</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="informatics_dispatcher_links.html">Relations</A></TD><TD><A HREF="informatics_dispatcher.html">Text</A></TD><TD><A HREF="informatics_dispatcher_flat.html">Flat</A></TD><TD><A HREF="informatics_dispatcher_short.html">Contracts</A></TD><TD><A HREF="informatics_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>class</B>
+    <A HREF="..\informatics_events/informatics_dispatcher_chart.html">INFORMATICS_DISPATCHER</A>
+
+<B>General</B>
+    cluster: <A HREF="..\informatics_events/index.html">informatics_events</A>
+    description: "System's entry class derived from CGI_INTERFACE, takes care of requests and sends back responses"
+    create: <A HREF="..\informatics_events/informatics_dispatcher.html#f_make">make</A>
+
+<B>Ancestors</B>
+    <A HREF="..\webex/request_dispatcher_chart.html">REQUEST_DISPATCHER</A>*
+
+<B>Queries</B>
+    Auth_type: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    button_value (field_name, overriding_value: STRING_8): BOOLEAN<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_command_string">command_string</A>: STRING_8<FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_config">config</A>: <A HREF="..\webex/config_reader_chart.html">CONFIG_READER</A><FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    Content_length: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Content_type: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_cookie_enabled">cookie_enabled</A>: BOOLEAN<FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    Cookies: HASH_TABLE [STRING_8, STRING_8]<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    field_defined (field_name: STRING_8): BOOLEAN<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    Fields: ARRAY [STRING_8]<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    Gateway_interface: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_handler_id_string">handler_id_string</A>: STRING_8<FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    Http_accept: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Http_user_agent: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    menu_values (field_name: STRING_8): LINKED_LIST [STRING_8]<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    Output: STDOUT<FONT COLOR="red"> -- (from CGI_IN_AND_OUT)</FONT>
+    Path_info: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Path_translated: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Query_string: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Remote_addr: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Remote_host: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Remote_ident: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Remote_user: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Request_method: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Response_header: CGI_RESPONSE_HEADER<FONT COLOR="red"> -- (from CGI_IN_AND_OUT)</FONT>
+    Script_name: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Server_name: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Server_port: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Server_protocol: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    Server_software: STRING_8<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_session">session</A>: <A HREF="..\webex/session_chart.html">SESSION</A><FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    <A HREF="..\webex/request_dispatcher.html#f_session_enabled">session_enabled</A>: BOOLEAN<FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    Stdin: STDIN<FONT COLOR="red"> -- (from CGI_IN_AND_OUT)</FONT>
+    text_field_value (field_name: STRING_8): STRING_8<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    value_count (field_name: STRING_8): INTEGER_32<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+    value_list (field_name: STRING_8): LINKED_LIST [STRING_8]<FONT COLOR="red"> -- (from CGI_FORMS)</FONT>
+
+<B>Commands</B>
+    <A HREF="..\webex/request_dispatcher.html#f_execute">execute</A><FONT COLOR="red"> -- (from REQUEST_DISPATCHER)</FONT>
+    handle_exception<FONT COLOR="red"> -- (from CGI_ERROR_HANDLING)</FONT>
+    <A HREF="..\informatics_events/informatics_dispatcher.html#f_make">make</A>
+    raise_error (msg: STRING_8)<FONT COLOR="red"> -- (from CGI_ERROR_HANDLING)</FONT>
+    set_environment<FONT COLOR="red"> -- (from CGI_INTERFACE)</FONT>
+    set_environment_variable (variable, val: STRING_8)<FONT COLOR="red"> -- (from CGI_ENVIRONMENT)</FONT>
+
+<B>Constraints</B>
+    invariant clause
+
+<TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD>Chart</TD><TD><A HREF="informatics_dispatcher_links.html">Relations</A></TD><TD><A HREF="informatics_dispatcher.html">Text</A></TD><TD><A HREF="informatics_dispatcher_flat.html">Flat</A></TD><TD><A HREF="informatics_dispatcher_short.html">Contracts</A></TD><TD><A HREF="informatics_dispatcher_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>

@@ -1,0 +1,498 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="read the website configuration file, initialize handler-mapping, actual session class name and expiration time information.">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>config_reader Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="config_reader_chart.html">Chart</A></TD><TD><A HREF="config_reader_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="config_reader_flat.html">Flat</A></TD><TD><A HREF="config_reader_short.html">Contracts</A></TD><TD><A HREF="config_reader_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "read the website configuration file, initialize handler-mapping, actual session class name and expiration time information."
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "20.12.2008"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/config_reader.html">CONFIG_READER</A>
+
+<B>create</B> 
+    <A HREF="..\webex/config_reader.html#f_make">make</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> attribute</FONT>
+
+    <A NAME="f_config_file_name"><A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> full path to the config file</FONT>
+
+    <A NAME="f_application_path"><A HREF="..\webex/config_reader.html#f_application_path">application_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> path to eiffel application</FONT>
+
+    <A NAME="f_default_request"><A HREF="..\webex/config_reader.html#f_default_request">default_request</A>: STRING_8</A>
+
+    <A NAME="f_default_command"><A HREF="..\webex/config_reader.html#f_default_command">default_command</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> default request and command string in case client hasn't specified a request</FONT>
+
+    <A NAME="f_notfound_request"><A HREF="..\webex/config_reader.html#f_notfound_request">notfound_request</A>: STRING_8</A>
+
+    <A NAME="f_notfound_command"><A HREF="..\webex/config_reader.html#f_notfound_command">notfound_command</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> in case of an unknown request, request/command string used to identify a handler</FONT>
+
+    <A NAME="f_stylesheet"><A HREF="..\webex/config_reader.html#f_stylesheet">stylesheet</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> stylesheet path</FONT>
+
+    <A NAME="f_javascript"><A HREF="..\webex/config_reader.html#f_javascript">javascript</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> javascript path</FONT>
+
+    <A NAME="f_image_path"><A HREF="..\webex/config_reader.html#f_image_path">image_path</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> path to image files</FONT>
+
+    <A NAME="f_error_template_page"><A HREF="..\webex/config_reader.html#f_error_template_page">error_template_page</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> a template page will be used for HTML error pages (4xx errors)</FONT>
+
+    <A NAME="f_database_server"><A HREF="..\webex/config_reader.html#f_database_server">database_server</A>: STRING_8</A>
+
+    <A NAME="f_database_port"><A HREF="..\webex/config_reader.html#f_database_port">database_port</A>: INTEGER_32</A>
+
+    <A NAME="f_database_socket_file"><A HREF="..\webex/config_reader.html#f_database_socket_file">database_socket_file</A>: STRING_8</A>
+
+    <A NAME="f_database_name"><A HREF="..\webex/config_reader.html#f_database_name">database_name</A>: STRING_8</A>
+
+    <A NAME="f_database_username"><A HREF="..\webex/config_reader.html#f_database_username">database_username</A>: STRING_8</A>
+
+    <A NAME="f_database_password"><A HREF="..\webex/config_reader.html#f_database_password">database_password</A>: STRING_8</A>
+
+    <A NAME="f_session_files_folder"><A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> folder that all session files will be saved in</FONT>
+
+    <A NAME="f_session_expiration"><A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> session expirated (in hours)</FONT>
+
+    <A NAME="f_session_id_length"><A HREF="..\webex/config_reader.html#f_session_id_length">session_id_length</A>: INTEGER_32</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> length of generated session id</FONT>
+
+    <A NAME="f_variables"><A HREF="..\webex/config_reader.html#f_variables">variables</A>: HASH_TABLE [STRING_8, STRING_8]</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> application constants as strings</FONT>
+
+    <A NAME="f_handler"><A HREF="..\webex/config_reader.html#f_handler">handler</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> handler class name for given request/action</FONT>
+
+    <A NAME="f_template"><A HREF="..\webex/config_reader.html#f_template">template</A>: STRING_8</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> html template file for given request/action</FONT>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> creation</FONT>
+
+    <A NAME="f_make"><A HREF="..\webex/config_reader.html#f_make">make</A> (file_name: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> initialize objects / default values</FONT>
+        <B>do</B>
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A>.make_from_string (file_name)
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_application_path">application_path</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_default_command">default_command</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_stylesheet">stylesheet</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_javascript">javascript</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_image_path">image_path</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_error_template_page">error_template_page</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_database_server">database_server</A>.make_empty
+            <A HREF="..\webex/config_reader.html#f_database_port">database_port</A> := 3306
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_database_socket_file">database_socket_file</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_database_name">database_name</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_database_username">database_username</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_database_password">database_password</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>.make_from_string ("")
+            <A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A> := 600
+            <A HREF="..\webex/config_reader.html#f_session_id_length">session_id_length</A> := 12
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_variables">variables</A>.make (100)
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_handler">handler</A>.make_empty
+            <B>create</B> <A HREF="..\webex/config_reader.html#f_template">template</A>.make_empty
+        <B>end</B></A>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> access</FONT>
+
+    <A NAME="f_read_configuration"><A HREF="..\webex/config_reader.html#f_read_configuration">read_configuration</A> (request, command: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parse config file to get configurations for sepcified request/command</FONT>
+        <B>require</B>
+            <A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A> /= <B>Void</B>
+        <B>local</B>
+            configfile: PLAIN_TEXT_FILE
+        <B>do</B>
+            <B>create</B> configfile.make_open_read (<A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A>)
+            <B>from</B>
+                configfile.start
+            <B>until</B>
+                configfile.after
+            <B>loop</B>
+                configfile.read_line
+                <B>if</B> <B>not</B> configfile.last_string.is_empty <B>and then</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has_substring ("[general]") <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_parse_general_section">parse_general_section</A> (configfile)
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("[database]") <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_parse_database_section">parse_database_section</A> (configfile)
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("[session]") <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_parse_session_section">parse_session_section</A> (configfile)
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("[constants]") <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_parse_constants_section">parse_constants_section</A> (configfile)
+                    <B>end</B>
+                    <B>if</B> (<B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty) <B>and then</B> configfile.last_string.has_substring ("[RequestHandler]") <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_parse_requesthandler_section">parse_requesthandler_section</A> (configfile, request, command)
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+            configfile.close
+        <B>end</B></A>
+
+    <A NAME="f_has_constant"><A HREF="..\webex/config_reader.html#f_has_constant">has_constant</A> (name: STRING_8): BOOLEAN
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> check whether a specified constant is defined in config file</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+        <B>do</B>
+            <B>Result</B> := <A HREF="..\webex/config_reader.html#f_variables">variables</A>.has (name)
+        <B>end</B></A>
+
+    <A NAME="f_get_constant"><A HREF="..\webex/config_reader.html#f_get_constant">get_constant</A> (name: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> retrieve a constant string defined in configuration file, return "" if not exists</FONT>
+        <B>require</B>
+            valid_name_is_given: name /= <B>Void</B> <B>and</B> <B>not</B> name.is_empty
+        <B>do</B>
+            <B>if</B> <A HREF="..\webex/config_reader.html#f_variables">variables</A>.has (name) <B>then</B>
+                <B>Result</B> := <A HREF="..\webex/config_reader.html#f_variables">variables</A>.item (name)
+            <B>else</B>
+                <B>Result</B> := ""
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_get_handler_type"><A HREF="..\webex/config_reader.html#f_get_handler_type">get_handler_type</A> (request: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parse config file to get the handler id string for specified request/command</FONT>
+        <B>require</B>
+            <A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A> /= <B>Void</B>
+        <B>local</B>
+            configfile: PLAIN_TEXT_FILE
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make_empty
+            <B>create</B> configfile.make_open_read (<A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A>)
+            <B>from</B>
+                configfile.start
+            <B>until</B>
+                configfile.after
+            <B>loop</B>
+                configfile.read_line
+                <B>if</B> <B>not</B> configfile.last_string.is_empty <B>and then</B> configfile.last_string.item (1) /= '#' <B>and then</B> <B>Result</B>.is_empty <B>then</B>
+                    <B>if</B> (<B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty) <B>and then</B> configfile.last_string.has_substring ("[RequestHandler]") <B>then</B>
+                        <B>Result</B> := <A HREF="..\webex/config_reader.html#f_lookup_handler_type">lookup_handler_type</A> (configfile, request)
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+            configfile.close
+        <B>end</B></A>
+
+    <A NAME="f_get_template_file"><A HREF="..\webex/config_reader.html#f_get_template_file">get_template_file</A> (request, command: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parse config file to get template file for specified request/command</FONT>
+        <B>require</B>
+            <A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A> /= <B>Void</B>
+        <B>local</B>
+            configfile: PLAIN_TEXT_FILE
+        <B>do</B>
+            <B>create</B> <B>Result</B>.make_empty
+            <B>create</B> configfile.make_open_read (<A HREF="..\webex/config_reader.html#f_config_file_name">config_file_name</A>)
+            <B>from</B>
+                configfile.start
+            <B>until</B>
+                configfile.after
+            <B>loop</B>
+                configfile.read_line
+                <B>if</B> <B>not</B> configfile.last_string.is_empty <B>and then</B> configfile.last_string.item (1) /= '#' <B>and then</B> <B>Result</B>.is_empty <B>then</B>
+                    <B>if</B> (<B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty) <B>and then</B> configfile.last_string.has_substring ("[RequestHandler]") <B>then</B>
+                        <B>Result</B> := <A HREF="..\webex/config_reader.html#f_lookup_template_file">lookup_template_file</A> (configfile, request, command)
+                    <B>end</B>
+                <B>end</B>
+            <B>end</B>
+            configfile.close
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> implementation</FONT>
+
+    <A NAME="f_parse_general_section"><A HREF="..\webex/config_reader.html#f_parse_general_section">parse_general_section</A> (configfile: PLAIN_TEXT_FILE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[general]</FONT><FONT COLOR="red"> section</FONT>
+        <B>local</B>
+            value: STRING_8
+        <B>do</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("app_path") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_application_path">application_path</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("default_request") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_default_request">default_request</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("default_command") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_default_command">default_command</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("notfound_request") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_notfound_request">notfound_request</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("notfound_command") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_notfound_command">notfound_command</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("stylesheet") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_stylesheet">stylesheet</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("javascript") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_javascript">javascript</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("image_path") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_image_path">image_path</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("error_template_page") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_error_template_page">error_template_page</A> := value
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_database_section"><A HREF="..\webex/config_reader.html#f_parse_database_section">parse_database_section</A> (configfile: PLAIN_TEXT_FILE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[database]</FONT><FONT COLOR="red"> section</FONT>
+        <B>local</B>
+            value: STRING_8
+        <B>do</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("host") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_server">database_server</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("port") <B>and then</B> value /= <B>Void</B> <B>and then</B> <B>not</B> value.is_empty <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_port">database_port</A> := value.to_integer
+                    <B>elseif</B> configfile.last_string.has_substring ("socketfile") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_socket_file">database_socket_file</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("database") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_name">database_name</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("username") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_username">database_username</A> := value
+                    <B>elseif</B> configfile.last_string.has_substring ("password") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_database_password">database_password</A> := value
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_session_section"><A HREF="..\webex/config_reader.html#f_parse_session_section">parse_session_section</A> (configfile: PLAIN_TEXT_FILE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[session]</FONT><FONT COLOR="red"> section</FONT>
+        <B>local</B>
+            value: STRING_8
+        <B>do</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("session_files_folder") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A> := value
+                        <B>if</B> <A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>.item (<A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>.count) /= '/' <B>then</B>
+                            <A HREF="..\webex/config_reader.html#f_session_files_folder">session_files_folder</A>.extend ('/')
+                        <B>end</B>
+                    <B>elseif</B> configfile.last_string.has_substring ("expiration") <B>and then</B> value /= <B>Void</B> <B>and then</B> <B>not</B> value.is_empty <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_session_expiration">session_expiration</A> := value.to_integer
+                    <B>elseif</B> configfile.last_string.has_substring ("session_id_length") <B>and then</B> value /= <B>Void</B> <B>and then</B> <B>not</B> value.is_empty <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_session_id_length">session_id_length</A> := value.to_integer
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_constants_section"><A HREF="..\webex/config_reader.html#f_parse_constants_section">parse_constants_section</A> (configfile: PLAIN_TEXT_FILE)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[constants]</FONT><FONT COLOR="red"> section</FONT>
+        <B>local</B>
+            name: STRING_8
+            value: STRING_8
+        <B>do</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        name := configfile.last_string.split ('=').i_th (1)
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            name.left_adjust
+                            name.right_adjust
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> <B>not</B> name.is_empty <B>and then</B> <B>not</B> value.is_empty <B>then</B>
+                        <A HREF="..\webex/config_reader.html#f_variables">variables</A>.extend (value, name)
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_parse_requesthandler_section"><A HREF="..\webex/config_reader.html#f_parse_requesthandler_section">parse_requesthandler_section</A> (configfile: PLAIN_TEXT_FILE; request, command: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[requesthandler]</FONT><FONT COLOR="red"> section</FONT>
+        <B>require</B>
+            <B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty
+        <B>local</B>
+            right_section: BOOLEAN
+            actual_request: STRING_8
+            command_template: STRING_8
+            value: STRING_8
+        <B>do</B>
+            right_section := <B>False</B>
+            <B>if</B> request.is_empty <B>then</B>
+                <B>create</B> actual_request.make_from_string (<A HREF="..\webex/config_reader.html#f_default_request">default_request</A>)
+            <B>else</B>
+                <B>create</B> actual_request.make_from_string (request)
+            <B>end</B>
+            <B>if</B> command.is_empty <B>then</B>
+                <B>create</B> command_template.make_from_string (<A HREF="..\webex/config_reader.html#f_default_command">default_command</A> + "_template")
+            <B>else</B>
+                <B>create</B> command_template.make_from_string (command + "_template")
+            <B>end</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("request") <B>and then</B> value /= <B>Void</B> <B>and then</B> value.is_equal (actual_request) <B>then</B>
+                        right_section := <B>True</B>
+                    <B>end</B>
+                    <B>if</B> right_section <B>then</B>
+                        <B>if</B> configfile.last_string.has_substring ("handler") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <A HREF="..\webex/config_reader.html#f_handler">handler</A> := value
+                        <B>end</B>
+                        <B>if</B> configfile.last_string.has_substring ("default_template") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <A HREF="..\webex/config_reader.html#f_template">template</A> := value
+                        <B>end</B>
+                        <B>if</B> (<B>not</B> command.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_command">default_command</A>.is_empty) <B>and then</B> configfile.last_string.has_substring (command_template) <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <A HREF="..\webex/config_reader.html#f_template">template</A> := value
+                        <B>end</B>
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_lookup_template_file"><A HREF="..\webex/config_reader.html#f_lookup_template_file">lookup_template_file</A> (configfile: PLAIN_TEXT_FILE; request, command: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[requesthandler]</FONT><FONT COLOR="red"> section for template file for specified request/command</FONT>
+        <B>require</B>
+            <B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty
+        <B>local</B>
+            right_section: BOOLEAN
+            command_template: STRING_8
+            value: STRING_8
+        <B>do</B>
+            <B>Result</B> := ""
+            right_section := <B>False</B>
+            <B>if</B> command.is_empty <B>then</B>
+                <B>create</B> command_template.make_empty
+            <B>else</B>
+                <B>create</B> command_template.make_from_string (command + "_template")
+            <B>end</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '['
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("request") <B>and then</B> value /= <B>Void</B> <B>and then</B> value.is_equal (request) <B>then</B>
+                        right_section := <B>True</B>
+                    <B>end</B>
+                    <B>if</B> right_section <B>then</B>
+                        <B>if</B> configfile.last_string.has_substring ("default_template") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <B>Result</B> := value
+                        <B>end</B>
+                        <B>if</B> <B>not</B> command_template.is_empty <B>and then</B> configfile.last_string.has_substring (command_template) <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <B>Result</B> := value
+                        <B>end</B>
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+
+    <A NAME="f_lookup_handler_type"><A HREF="..\webex/config_reader.html#f_lookup_handler_type">lookup_handler_type</A> (configfile: PLAIN_TEXT_FILE; request: STRING_8): STRING_8
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> parsing </FONT><FONT COLOR="red">[requesthandler]</FONT><FONT COLOR="red"> section for handler id string for specified request/command</FONT>
+        <B>require</B>
+            <B>not</B> request.is_empty <B>or</B> <B>not</B> <A HREF="..\webex/config_reader.html#f_default_request">default_request</A>.is_empty
+        <B>local</B>
+            right_section: BOOLEAN
+            value: STRING_8
+        <B>do</B>
+            <B>Result</B> := ""
+            right_section := <B>False</B>
+            <B>from</B>
+                configfile.read_line
+            <B>until</B>
+                configfile.last_string.is_empty <B>or</B> configfile.last_string.item (1) = '[' <B>or</B> <B>not</B> <B>Result</B>.is_empty
+            <B>loop</B>
+                <B>if</B> configfile.last_string.item (1) /= '#' <B>then</B>
+                    <B>if</B> configfile.last_string.has ('=') <B>then</B>
+                        value := configfile.last_string.split ('=').i_th (2)
+                        <B>if</B> value /= <B>Void</B> <B>then</B>
+                            value.left_adjust
+                            value.right_adjust
+                        <B>end</B>
+                    <B>end</B>
+                    <B>if</B> configfile.last_string.has_substring ("request") <B>and then</B> value /= <B>Void</B> <B>and then</B> value.is_equal (request) <B>then</B>
+                        right_section := <B>True</B>
+                    <B>end</B>
+                    <B>if</B> right_section <B>then</B>
+                        <B>if</B> configfile.last_string.has_substring ("handler") <B>and then</B> value /= <B>Void</B> <B>then</B>
+                            <B>Result</B> := value
+                        <B>end</B>
+                    <B>end</B>
+                <B>end</B>
+                configfile.read_line
+            <B>end</B>
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/config_reader.html">CONFIG_READER</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="config_reader_chart.html">Chart</A></TD><TD><A HREF="config_reader_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="config_reader_flat.html">Flat</A></TD><TD><A HREF="config_reader_short.html">Contracts</A></TD><TD><A HREF="config_reader_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

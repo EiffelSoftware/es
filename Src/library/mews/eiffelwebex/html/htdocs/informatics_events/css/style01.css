@@ -1,0 +1,416 @@
+body {
+  background: #999999;
+  margin: 0px;
+}
+
+h1, h2, h3, h4 {
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  font-weight: normal;
+}
+
+h1 {
+  color: #AA4422;
+  font-size: 24px;
+  border-bottom: 2px dotted #DDDDDD;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  margin: 0px;
+}
+
+fieldset {
+  border: 1px solid #DDDDDD;
+}
+
+legend {
+  color: #999999;
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+select {
+  padding: 1px;
+}
+
+textarea {
+  padding: 1px;
+}
+
+input[type=text], input[type=password], textarea, select {
+  border: 1px solid #999999;
+}
+
+input[type=text], input[type=password], textarea {
+  font-family: Verdana, Arial, sans serif;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+input[type=text], input[type=password] {
+  padding: 4px;
+}
+
+input[readonly=readonly] {
+  background: #EEEEEE;
+}
+
+#logo a {
+  color: #EEEEEE;
+  text-decoration: underline;
+}
+
+#navigation a {
+  color: #777777;
+  text-decoration: none;
+}
+
+#bottom a, #content a {
+  color: #2244DD;
+  text-decoration: none;
+}
+
+tr.user_list_header {
+ background-color: #9999ff;
+ font-size: 14px;
+ color: #000000;
+}
+
+tr.user_list_body {
+ background-color: #ffffff;
+ font-size: 12px;
+ color: #000000;
+}
+
+#bottom a:hover, #content a:hover {
+  text-decoration: underline;
+}
+
+#navigation a:hover {
+  color: #2244DD;
+}
+
+#notice {
+}
+
+#errors_div {
+}
+
+#notice, #errors_div {
+  color: #777777;
+  text-align: left;
+  background-image: url(/informatics_events/images/flash_bg.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  padding: 10px 10px 20px 10px;
+}
+
+body, #link_table, #main {
+  font-family: Verdana, Arial, sans serif;
+  font-size: 12px;
+}
+
+/* BEGIN: Application layout */
+#mainmaster {
+  text-align: left;
+  background: #FFFFFF;
+  background-image: url(/informatics_events/images/main_border.jpg);
+  background-repeat: repeat-y;
+  background-position: left;
+  width: 1000px;
+}
+
+#main {
+  text-align: left;
+  background: #FFFFFF;
+  margin: 0px 20px 0px 20px;
+  width: 960px;
+}
+
+#logo {
+  color: #FFFFFF;
+  background: #999999;
+  background-image: url(/informatics_events/images/logo.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  height:80px;
+  width: 1000px;
+}
+
+#navigation {
+  font-size: 14px;
+  background: #EEEEEE;
+  border-top: 1px solid #DDDDDD;
+  border-bottom: 1px solid #DDDDDD;
+  padding: 3px 0px;
+}
+
+#navigation span a {
+  padding: 3px 10px;
+}
+
+#divisor span {
+  padding: 0px 0px;
+  color: #555555;
+  font-size: 10px;
+}
+
+.navigation_button {
+  margin: 0px 10px 0px 10px;
+}
+
+#content {
+  padding: 0px 20px 40px 20px;
+  
+}
+
+#smallcontent {
+  font-size: 10px;
+  color: rgb(0,0,153);
+  padding: 8px 0px;
+}
+#bottom {
+  background: #999999;
+  background-image: url(/informatics_events/images/bottom.jpg);
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  height: 55px;
+  width: 1000px;
+}
+
+#disclaimer {
+  color: #999999;
+  margin: 0px 40px;
+}
+
+#t_disc {
+  width: 920px;
+  padding: 10px 0px;
+  border-top: 1px solid #DDDDDD;
+}
+
+#copyright {
+  font-size: 10px;
+  text-align: left;
+}
+
+#aboutus {
+  text-align: right;
+}
+
+/* END: Application layout */
+
+.redstar {
+  color: #FF3333;
+}
+
+/* BEGIN: Positions Table*/
+#positions_table {
+  font-size: 12px;
+  width: 100%;
+  border-bottom: 1px solid #444444;
+  background-image: url(/informatics_events/images/t_head.jpg);
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+#positions_table th {
+  color: #FFFFFF;
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  vertical-align: top;
+}
+
+#positions_table td {
+  vertical-align: top;
+}
+
+.positions_title {
+}
+
+.position_row_odd {
+  background: #FAFAFA;
+}
+
+.position_row_odd_left_border {
+  background: #FAFAFA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: left top;
+  background-repeat: repeat-y;
+}
+
+.position_row_odd_right_border {
+  background: #FAFAFA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+
+.position_row_even {
+  background: #EAEAEA;
+}
+
+.position_row_even_left_border {
+  background: #EAEAEA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: left top;
+  background-repeat: repeat-y;
+}
+
+.position_row_even_right_border {
+  background: #EAEAEA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+
+/* END: Positions Table*/
+
+/* BEGIN: Users Table*/
+#users_table {
+  font-size: 12px;
+  width: 100%;
+  border-bottom: 1px solid #444444;
+  background-image: url(/informatics_events/images/t_head.jpg);
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+#users_table th {
+  color: #FFFFFF;
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  vertical-align: top;
+}
+
+#users_table td {
+  vertical-align: top;
+}
+
+.users_title {
+}
+
+.user_row_odd {
+  background: #FAFAFA;
+}
+
+.user_row_odd_left_border {
+  background: #FAFAFA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: left top;
+  background-repeat: repeat-y;
+}
+
+.user_row_odd_right_border {
+  background: #FAFAFA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+
+.user_row_even {
+  background: #EAEAEA;
+}
+
+.user_row_even_left_border {
+  background: #EAEAEA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: left top;
+  background-repeat: repeat-y;
+}
+
+.user_row_even_right_border {
+  background: #EAEAEA;
+  background-image: url(/informatics_events/images/table_border.gif);
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+
+/* END: Users Table*/
+
+/* BEGIN: Position / User Details Table */
+#position_details_table, #user_details_table {
+  font-size: 12px;
+  width: 100%;
+  background: url(/informatics_events/images/flash_bg.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+#position_details_table td, #user_details_table td {
+  vertical-align: top;
+}
+
+#position_details_table .name, #user_details_table .name {
+  color: #999999;
+  font-size: 11px;
+  text-align: right;
+  padding: 6px 15px 5px 0px;
+}
+
+#position_details_table .title, #user_details_table .title {
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  font-size: 18px;
+  padding: 15px 5px 5px 5px;
+}
+
+#position_details_table .subtitle, #user_details_table .subtitle {
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  text-align: right;
+  padding: 15px 15px 5px 15px;
+  background: url(/informatics_events/images/flash_bg.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+/* END: Position / User Details Table */
+
+/* BEGIN: User / Position Form */
+table#user_form, table#position_form {
+  background-image: url(/informatics_events/images/form_body.gif);
+  background-position: left top;
+  background-repeat: repeat-y;
+  width: 920px;
+}
+
+.form_top_left {
+  background-image: url(/informatics_events/images/form_top.gif);
+  background-position: left top;
+  background-repeat: no-repeat;
+}
+
+.form_top_right {
+  background-image: url(/informatics_events/images/form_top.gif);
+  background-position: right top;
+  background-repeat: no-repeat;
+}
+
+.form_bottom_left {
+  background-image: url(/informatics_events/images/form_bottom.gif);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+}
+
+.form_bottom_right {
+  background-image: url(/informatics_events/images/form_bottom.gif);
+  background-position: right bottom;
+  background-repeat: no-repeat;
+}
+
+td.input_subtitle {
+  font-size: 14px;
+  font-family: Georgia, Palatino, "Times New Roman", Times, serif;
+  text-align: right;
+  padding: 20px 5px 5px 0px;
+}
+
+td.input_name, td.input_name_mand {
+  font-size: 11px;
+  text-align: right;
+}
+
+td.input_name_mand {
+  color: #DD4444;
+}
+/* END: User / Position Form *

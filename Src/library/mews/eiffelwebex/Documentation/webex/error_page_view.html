@@ -1,0 +1,93 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)">
+<META NAME="author" CONTENT="Peizhu Li, <lip@student.ethz.ch>">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>error_page_view Text</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="error_page_view_chart.html">Chart</A></TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD><A HREF="error_page_view_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Build a simple error page tells the problem encounted (based on a given template or the default by updating TITLE and CONTENT smart tags)"
+    author: "Peizhu Li, &lt;<a href="mailto:lip@student.ethz.ch>"">lip@student.ethz.ch&gt;"</a>
+    date: "22.12.2007"
+    revision: "$0.6$"
+
+<B>class</B> 
+    <A HREF="..\webex/error_page_view.html">ERROR_PAGE_VIEW</A>
+
+<B>inherit</B>
+    <A HREF="..\webex/html_template_view.html">HTML_TEMPLATE_VIEW</A>
+
+<B>create</B> 
+    <A HREF="..\webex/html_template_view.html#f_make">make</A>,
+    <A HREF="..\webex/error_page_view.html#f_make_default_error_page">make_default_error_page</A>,
+    <A HREF="..\webex/error_page_view.html#f_build_default_not_found_page">build_default_not_found_page</A>,
+    <A HREF="..\webex/error_page_view.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>,
+    <A HREF="..\webex/error_page_view.html#f_build_default_database_not_connected">build_default_database_not_connected</A>,
+    <A HREF="..\webex/error_page_view.html#f_build_default_database_problem">build_default_database_problem</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_make_default_error_page"><A HREF="..\webex/error_page_view.html#f_make_default_error_page">make_default_error_page</A> (title, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page with specified 'title' and 'content'</FONT>
+        <B>do</B>
+            <A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> (title, content)
+        <B>end</B></A>
+
+    <A NAME="f_build_default_not_found_page"><A HREF="..\webex/error_page_view.html#f_build_default_not_found_page">build_default_not_found_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 404 error</FONT>
+        <B>local</B>
+        <B>do</B>
+            <A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> ("404 Not Found", "The URL you request is not found.")
+        <B>end</B></A>
+
+    <A NAME="f_build_default_not_enough_permission_page"><A HREF="..\webex/error_page_view.html#f_build_default_not_enough_permission_page">build_default_not_enough_permission_page</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for 403 error</FONT>
+        <B>local</B>
+        <B>do</B>
+            <A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> ("403 Forbidden", "You are not authorized to access the requested URL.")
+        <B>end</B></A>
+
+    <A NAME="f_build_default_database_not_connected"><A HREF="..\webex/error_page_view.html#f_build_default_database_not_connected">build_default_database_not_connected</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database connection failed</FONT>
+        <B>local</B>
+        <B>do</B>
+            <A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> ("417 Expectation Failed", "Failed to connect to database.")
+        <B>end</B></A>
+
+    <A NAME="f_build_default_database_problem"><A HREF="..\webex/error_page_view.html#f_build_default_database_problem">build_default_database_problem</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> generate a simple error page for database problems</FONT>
+        <B>local</B>
+        <B>do</B>
+            <A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> ("417 Expectation Failed", "Database problem encounted")
+        <B>end</B></A>
+
+    <A NAME="f_set_error_title_and_content"><A HREF="..\webex/error_page_view.html#f_set_error_title_and_content">set_error_title_and_content</A> (title, content: STRING_8)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> replace TITLE, BODY smart tag with given text</FONT>
+        <B>do</B>
+            <A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("TITLE", title)
+            <A HREF="..\webex/html_template_view.html#f_replace_marker_with_string">replace_marker_with_string</A> ("BODY", content)
+        <B>end</B></A>
+    
+<B>feature</B> {NONE} <FONT COLOR="red">--</FONT><FONT COLOR="red"> Implementation</FONT>
+
+    <A NAME="f_make_default"><A HREF="..\webex/error_page_view.html#f_make_default">make_default</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red"> template for the error page</FONT>
+        <B>do</B>
+            image := "&lt;html&gt;%N%T&lt;head&gt;%N%T%T&lt;title&gt;{#TITLE#}&lt;/title&gt;%N%T&lt;/head&gt;%N%T&lt;body&gt;%N%T%T&lt;h1&gt;{#TITLE#}&lt;/h1&gt;%N%T%T&lt;/p&gt;{#BODY#}&lt;p&gt;%N%T&lt;/body&gt;%N&lt;/html&gt;"
+        <B>end</B></A>
+    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\webex/error_page_view.html">ERROR_PAGE_VIEW</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="error_page_view_chart.html">Chart</A></TD><TD><A HREF="error_page_view_links.html">Relations</A></TD><TD>Text</TD><TD><A HREF="error_page_view_flat.html">Flat</A></TD><TD><A HREF="error_page_view_short.html">Contracts</A></TD><TD><A HREF="error_page_view_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+

@@ -1,0 +1,73 @@
+<HTML><HEAD>
+<META NAME="description" CONTENT="Deferred Class that is a template for all event Data Access Classes.">
+<META NAME="author" CONTENT="Marco Piccioni, Peizhu Li">
+<META NAME="keywords" CONTENT="Eiffel class">
+<META NAME="keywords" CONTENT="Eiffel class">
+<TITLE>event_dao Contracts</TITLE></HEAD>
+<BODY BGCOLOR="white">
+<P ALIGN="CENTER">Automatic generation produced by ISE Eiffel</P>
+<PRE><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_chart.html">Chart</A></TD><TD><A HREF="event_dao_links.html">Relations</A></TD><TD><A HREF="event_dao.html">Text</A></TD><TD><A HREF="event_dao_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="event_dao_flatshort.html">Flat contracts</A></TD></TR></TABLE><B>indexing</B>
+    description: "Deferred Class that is a template for all event Data Access Classes."
+    author: "Marco Piccioni, Peizhu Li"
+    date: "$Date$"
+    revision: "$0.6$"
+
+<B>deferred</B> <B>class</B> <B>interface</B>
+    <A HREF="..\informatics_events/event_dao_short.html">EVENT_DAO</A>
+
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red"> Access</FONT>
+
+    <A NAME="f_event_list"><A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>: <A HREF="..\informatics_events/event_list_short.html">EVENT_LIST</A></A>
+
+    <A NAME="f_event_id_generator"><A HREF="..\informatics_events/event_dao_short.html#f_event_id_generator">event_id_generator</A>: <A HREF="..\informatics_events/id_generator_short.html">ID_GENERATOR</A></A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">id generator, used to identify each event rerdless of its status</FONT>
+    
+<B>feature</B> <FONT COLOR="red">--</FONT><FONT COLOR="red">basic operations</FONT>
+
+    <A NAME="f_add_event"><A HREF="..\informatics_events/event_dao_short.html#f_add_event">add_event</A> (an_event: <A HREF="..\informatics_events/event_short.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">adds a event to the appropriate list, based on its status</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B>
+            one_event_added: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count + 1
+</A>
+    <A NAME="f_delete_event"><A HREF="..\informatics_events/event_dao_short.html#f_delete_event">delete_event</A> (an_event: <A HREF="..\informatics_events/event_short.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">deletes an accepted, delayed or rejected event from the proposed event list</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B>
+            one_event_deleted: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count - 1
+</A>
+    <A NAME="f_update_event"><A HREF="..\informatics_events/event_dao_short.html#f_update_event">update_event</A> (an_event: <A HREF="..\informatics_events/event_short.html">EVENT</A>)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">updates an accepted event in the accepted event list</FONT>
+        <B>require</B>
+            event_exists: an_event /= <B>Void</B>
+            event_list_exists: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A> /= <B>Void</B>
+        <B>ensure</B>
+            same_event_count: <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count = <B>old</B> <A HREF="..\informatics_events/event_dao_short.html#f_event_list">event_list</A>.count
+</A>
+    <A NAME="f_get_event_by_id"><A HREF="..\informatics_events/event_dao_short.html#f_get_event_by_id">get_event_by_id</A> (id: NATURAL_64): <A HREF="..\informatics_events/event_short.html">EVENT</A>
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">returns an accepted event with given id</FONT>
+        <B>require</B>
+            id_has_meaning: id &gt; 0
+        <B>ensure</B>
+            event_found: <B>Result</B> /= <B>Void</B>
+</A>
+    <A NAME="f_delete_event_by_id"><A HREF="..\informatics_events/event_dao_short.html#f_delete_event_by_id">delete_event_by_id</A> (id: NATURAL_64)
+            <FONT COLOR="red">--</FONT><FONT COLOR="red">returns an accepted event with given id</FONT>
+        <B>require</B>
+            id_has_meaning: id &gt; 0
+</A>
+    <A NAME="f_persist_data"><A HREF="..\informatics_events/event_dao_short.html#f_persist_data">persist_data</A>
+</A>    
+<B>invariant</B>
+    invariant_clause: <B>True</B>
+
+<B>end</B> <FONT COLOR="red">--</FONT> <FONT COLOR="red">class </FONT><A HREF="..\informatics_events/event_dao_short.html">EVENT_DAO</A><TABLE BORDER="1" ALIGN="CENTER"><TR><TD><A HREF="..\class_list.html">Classes</A></TD><TD><A HREF="..\cluster_list.html">Clusters</A></TD><TD><A HREF="..\cluster_hierarchy.html">Cluster hierarchy</A></TD><TD><A HREF="event_dao_chart.html">Chart</A></TD><TD><A HREF="event_dao_links.html">Relations</A></TD><TD><A HREF="event_dao.html">Text</A></TD><TD><A HREF="event_dao_flat.html">Flat</A></TD><TD>Contracts</TD><TD><A HREF="event_dao_flatshort.html">Flat contracts</A></TD></TR></TABLE></PRE>
+<P ALIGN="CENTER"> &#045;&#045; Generated by ISE Eiffel &#045;&#045 </P>
+<P ALIGN="CENTER">For more details: <A HREF="http://www.eiffel.com">www.eiffel.com</A></P>
+</BODY>
+</HTML>
+
