@@ -3038,11 +3038,11 @@ Src/library/defcon/c_persistence/lib/Db4objects.Db4o.dll -text
 Src/library/defcon/docs/db4o_for_eiffel_manual.pdf -text
 Src/library/defcon/docs/eiffel_for_net_binding_for_db4o.ppt -text
 Src/library/defcon/docs/eiffel_the_essentials.pdf -text svneol=unset#unset
-Src/library/defcon/docs/web/Blogs[!!-~]|[!!-~]Defcon.webarchive -text
+Src/library/defcon/docs/web/Blogs_Defcon.webarchive -text
 Src/library/defcon/docs/web/Defcon_main.webarchive -text
 Src/library/defcon/docs/web/Getting[!!-~]Started[!!-~]with[!!-~]Db4o[!!-~]for[!!-~]Eiffel.webarchive -text
-Src/library/defcon/docs/web/Issues[!!-~]|[!!-~]Defcon.webarchive -text
-Src/library/defcon/docs/web/\[#COR-1131\][!!-~]AND,[!!-~]NOT[!!-~]constraints[!!-~]return[!!-~]wrong[!!-~]query[!!-~]results[!!-~]-[!!-~]db4o[!!-~]Tracker.webarchive -text
+Src/library/defcon/docs/web/Issues_Defcon.webarchive -text
+Src/library/defcon/docs/web/db4o_Tracker.webarchive -text
 Src/library/defcon/eiffel_objects_4_net_clients/CrossCompatibility_NetClient/CrossCompatibility_NetClient.csproj -text
 Src/library/defcon/eiffel_objects_4_net_clients/CrossCompatibility_NetClient/CrossCompatibility_NetClient.sln -text
 Src/library/defcon/eiffel_objects_4_net_clients/CrossCompatibility_NetClient/Program.cs -text
