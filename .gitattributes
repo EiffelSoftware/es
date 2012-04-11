@@ -3671,7 +3671,6 @@ Src/library/mews/sample_layout/layout2col.png -text
 Src/library/mews/sample_layout/layout3col.html -text
 Src/library/mews/sample_layout/layout3col.png -text
 Src/library/mews/web_doc/Doc_Mews.webarchive -text
-Src/library/mews/web_doc/MEWS:[!!-~]More[!!-~]Eiffel[!!-~]Web[!!-~]Support_Mews.webarchive -text
 Src/library/mews/web_doc/MEWS_More[!!-~]Eiffel[!!-~]Web[!!-~]Support_Mews.webarchive -text
 Src/library/mews/web_doc/Screenshots_Mews.webarchive -text
 Src/library/mysql/Clib_Full/Makefile-win.SH -text
