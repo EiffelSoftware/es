@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			repository := a_repository
 			create {PS_NO_ERROR} error
 			is_readonly:=False
+			is_active:=True
 		end
 
 	make_readonly (a_repository:PS_REPOSITORY)
@@ -37,6 +38,7 @@ feature {NONE} -- Initialization
 			repository := a_repository
 			create {PS_NO_ERROR} error
 			is_readonly:=True
+			is_active:=True
 		end
 
 feature -- Basic operations

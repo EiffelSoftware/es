@@ -107,4 +107,32 @@ feature -- Status Report
 			Result.append ("real_64_max = " + real_64_max.out + " real_64_min = " + real_64_min.out + "%N")
 			Result.append ("a_boolean = " + a_boolean.out + " a_string_8 = " + a_string_8 + " a_string_32 = " + a_string_32 + "%N")
 		end
+
+
+feature -- Update function
+
+	update
+		-- update some fields for testing
+		do
+			int_8_max:= int_8_max-1
+			int_16_max:= int_16_max-1
+			int_32_max:= int_32_max-1
+			int_64_max:= int_64_max-1
+			nat_8_max:= nat_8_max-1
+			nat_16_max:= nat_16_max-1
+			nat_32_max:= nat_32_max-1
+			nat_64_max:= nat_64_max-1
+
+			char_8_max:= (char_8_max.max_value -1).to_character_8
+			char_32_max:= (char_32_max.max_value -1).to_character_32
+
+			real_32_max:= real_32_max-1
+			real_64_max:= real_64_max-1
+
+			a_boolean:= a_boolean.negated
+			a_string_8 := a_string_8 + "0"
+			a_string_32 := a_string_32 + "0"
+
+		end
+
 end

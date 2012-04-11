@@ -5,20 +5,12 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_REPOSITORY_TESTS
+	PS_CRITERIA_TESTS
 
 inherit
 
-	EQA_TEST_SET
-	undefine
-			on_prepare
-	end
+	PS_TESTS_GENERAL
 
-feature
-
-	on_prepare
-		deferred
-		end
 
 feature {NONE} -- Test criteria setting
 
@@ -364,33 +356,26 @@ feature {NONE} -- Test criteria setting
 
 feature {NONE} -- Initialization
 
-	initialize (rep: PS_REPOSITORY)
+	initialize_criteria_tests
 			-- make sure this function is called when redefining onCreate
 		do
-			repository := rep
-			create factory
-			create test_data.make
+			initialize_tests_general
 			create person_executor.make_with_repository (repository)
+			create p_dao
+			insert_data
+		end
+
+	insert_data
+			-- Insert the data needed for the tests into the repository
+		do
 			across
 				test_data.people as p
 			loop
 				person_executor.insert (p.item)
 			end
-			create p_dao
-			create tuple_query.make
-			--across tuple_query.projection as proj loop print (proj.item)  end
 		end
 
-	factory: PS_CRITERION_FACTORY
-
-	repository: PS_REPOSITORY
-
-	test_data: PS_TEST_DATA
-
 	person_executor: PS_CRUD_EXECUTOR [PERSON]
-
 	p_dao: PERSON_DAO
-
-	tuple_query: PS_TUPLE_QUERY [PERSON]
 
 end

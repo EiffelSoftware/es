@@ -8,7 +8,7 @@ class
 	PS_MANUAL_TEST_MYSQL
 
 inherit
-	PS_REPOSITORY_TESTS
+	PS_CRITERIA_TESTS
 
 feature
 
@@ -36,7 +36,8 @@ feature {NONE} -- Database connection details
 			create strategy.make
 			create rep.make (strategy, username, password, db_name, db_host, db_port)
 			rep.clean_db_for_testing
-			initialize(rep)
+			repository:=rep
+			initialize_criteria_tests
 
 		end
 

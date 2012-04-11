@@ -8,17 +8,17 @@ class
 	PS_MANUAL_TEST_IN_MEMORY
 
 inherit
-	PS_REPOSITORY_TESTS
-
+	PS_CRITERIA_TESTS
+	PS_CRUD_TESTS
 
 
 feature {NONE}
 	on_prepare
-		local
-			rep:PS_IN_MEMORY_REPOSITORY
 		do
-			create rep.make
-			initialize (rep)
+			create {PS_IN_MEMORY_REPOSITORY} repository.make
+			initialize_tests_general
+			initialize_criteria_tests
+			initialize_crud_tests
 		end
 
 
@@ -29,6 +29,13 @@ feature
 		test_criteria_agents
 		test_criteria_predefined
 		test_criteria_agents_and_predefined
+	end
+
+
+	test_crud_in_memory
+	do
+		test_flat_class_store
+		test_flat_class_all_crud
 	end
 
 end
