@@ -3027,6 +3027,7 @@ Src/library/abel/resources/documentation/old/Abel_class_diagram_2.odt -text
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
 Src/library/cURL/readme.txt -text
+Src/library/dadle/test_project/README.txt -text
 Src/library/diff/diff_index_link.e -text
 Src/library/diff/diff_line.e -text
 Src/library/diff/diff_line_add.e -text
