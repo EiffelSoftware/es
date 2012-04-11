@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="db4o_for_eiffel" uuid="3F649A45-57C2-452E-B6AE-450A392CAF0B">
+	<target name="db4o_for_eiffel">
+		<root cluster="root_cluster" class="TEST" feature="make"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<setting name="dotnet_naming_convention" value="True"/>
+		<setting name="msil_generation" value="True"/>
+		<setting name="msil_generation_type" value="exe"/>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<assembly name="db4objects.db4o" location=".\references\Db4objects.Db4o.dll">
+			<renaming old_name="PREDICATE" new_name="DB4O_PREDICATE"/>
+			<renaming old_name="FIELD_INFO" new_name="DB4O_FIELD_INFO"/>
+		</assembly>
+		<assembly name="eiffelsoftware.runtime" location="C:\Program Files\Eiffel Software\EiffelStudio 6.1 GPL\\studio\spec\windows\lib\EiffelSoftware.Runtime.dll"/>
+		<assembly name="mscorlib" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll"/>
+		<assembly name="reflector" location=".\references\Reflector.exe">
+			<renaming old_name="ASSEMBLY" new_name="REFLECTOR_ASSEMBLY"/>
+			<renaming old_name="ICONFIGURATION" new_name="REFLECTOR_ICONFIGURATION"/>
+		</assembly>
+		<cluster name="root_cluster" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/test/string_test$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
