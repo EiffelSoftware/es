@@ -3267,6 +3267,7 @@ eweasel/compilation/install_eweasel -text
 eweasel/compilation/install_eweasel.bat -text
 eweasel/compilation/package_eweasel -text
 eweasel/compilation/unfix_permission -text
+eweasel/control/eweasel_gui_config.xml -text
 eweasel/doc/buglist -text
 eweasel/doc/eweasel.doc -text
 eweasel/doc/notes-5.0.001 -text
