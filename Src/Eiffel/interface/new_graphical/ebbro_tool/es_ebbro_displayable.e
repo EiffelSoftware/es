@@ -8,21 +8,22 @@ class
 	ES_EBBRO_DISPLAYABLE
 
 create
-	make, make_wrapping
+	--make,
+	make_wrapping
 
 feature -- creation
 
-	make (a_class_name:STRING; a_decoded:GENERAL_DECODED) is
+--	make (a_class_name:STRING; a_decoded:GENERAL_DECODED) is
 			-- init
-		require
-			class_name_not_void: a_class_name /= void
-			a_decoded_not_void: a_decoded /= Void
-		do
-			class_name := a_class_name
-			original_decoded := a_decoded
-			create attributes.make(10)
-			create history.make
-		end
+--		require
+--			class_name_not_void: a_class_name /= void
+--			a_decoded_not_void: a_decoded /= Void
+--		do
+--			class_name := a_class_name
+--			original_decoded := a_decoded
+--			create attributes.make(10)
+--			create history.make
+--		end
 
 	make_wrapping (a_class_name:STRING) is
 			-- wrap a base type
@@ -57,7 +58,7 @@ feature -- access
 	wrapped_object:ANY
 			-- object which is wrapped
 
-	original_decoded: GENERAL_DECODED
+--	original_decoded: GENERAL_DECODED
 			-- 'DECODED' object which was converted to this 'DISPLAYABLE' object.
 
 	is_cyclic:BOOLEAN
@@ -156,7 +157,7 @@ feature -- basic operation
 
 
 indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -180,10 +181,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -25,30 +25,30 @@ feature --creation
 
 feature -- basic operations
 
-	retrieve_object(a_medium:IO_MEDIUM) is
+	retrieve_object(a_medium:IO_MEDIUM)
 			-- retrieve a object stored in the DADL format and store it in last decoded object.
 		local
 			l_obj: ANY
-			l_dadl_dec: DADL_DECODED
+		--	l_dadl_dec: DADL_DECODED
 			l_internal: INTERNAL
 		do
 			create l_internal
-			l_obj := persistence_manager.format.retrieve (persistence_manager.medium)
+		--	l_obj := persistence_manager.format.retrieve (persistence_manager.medium)
 
-			l_dadl_dec ?= l_obj
-			if l_dadl_dec /= void then
+		--	l_dadl_dec ?= l_obj
+	--		if l_dadl_dec /= void then
 
-				generate_displayable_object (l_dadl_dec)
+	--			generate_displayable_object (l_dadl_dec)
 
-			elseif l_obj /= void then
+	--		elseif l_obj /= void then
 				--simple base type?
-				generate_display_wrap (l_obj)
-			else
-				has_error := true
-				error_message := persistence_manager.format.error_message
-				last_decoded_object := void
+	--			generate_display_wrap (l_obj)
+	--		else
+	--			has_error := true
+			--	error_message := persistence_manager.format.error_message
+	--			last_decoded_object := void
 
-			end
+	--		end
 
 		end
 
@@ -65,7 +65,7 @@ feature -- actions
 			if not retried then
 				create l_text_file.make(file_name)
 				--l_text_file.open_read
-				create persistence_manager.make(file_name)
+			--	create persistence_manager.make(file_name)
 				-- TODO: refactor, l_text_file never used by persistence_manager!
 				retrieve_object(l_text_file)
 
@@ -94,7 +94,7 @@ feature -- actions
 
 feature {NONE} -- Implementation
 
-	persistence_manager: DADL_PERSISTENCE_MANAGER
+--	persistence_manager: DADL_PERSISTENCE_MANAGER
 
 feature {NONE} -- Display Helpers
 
@@ -112,70 +112,70 @@ feature {NONE} -- Display Helpers
 		end
 
 
-	generate_displayable_object (a_decoded: DADL_DECODED) is
+--	generate_displayable_object (a_decoded: DADL_DECODED) is
 			-- generates the displayable root object
-		require
-			not_void: a_decoded /= void
-		do
-			last_decoded_object := convert_object(a_decoded)
-			last_decoded_object.set_format_id (dadl_format_id)
-			already_decoded.wipe_out
-		ensure
-			not_void: last_decoded_object /= void
-		end
+--		require
+--			not_void: a_decoded /= void
+--		do
+--			last_decoded_object := convert_object(a_decoded)
+--			last_decoded_object.set_format_id (dadl_format_id)
+--			already_decoded.wipe_out
+--		ensure
+--			not_void: last_decoded_object /= void
+--		end
 
 
-	convert_object(a_obj:DADL_DECODED):ES_EBBRO_DISPLAYABLE is
-			-- converts a decoded object into a displayable object
-		require
-			not_void: a_obj /= void
-		local
-			l_attr:ARRAYED_LIST [TUPLE [object: ANY; name: STRING_8]]
-			l_obj:ES_EBBRO_DISPLAYABLE
-			l_dec:DADL_DECODED
-			l_dtype:INTEGER
-		do
-			l_dtype := a_obj.dtype
-			if not already_decoded.has(l_dtype) then
-				create l_obj.make (a_obj.name, a_obj)
-				already_decoded.put (l_obj, l_dtype)
+--	convert_object(a_obj:DADL_DECODED):ES_EBBRO_DISPLAYABLE is
+--			-- converts a decoded object into a displayable object
+--		require
+--			not_void: a_obj /= void
+--		local
+--			l_attr:ARRAYED_LIST [TUPLE [object: ANY; name: STRING_8]]
+--			l_obj:ES_EBBRO_DISPLAYABLE
+--			l_dec:DADL_DECODED
+--			l_dtype:INTEGER
+--		do
+--			l_dtype := a_obj.dtype
+--			if not already_decoded.has(l_dtype) then
+--				create l_obj.make (a_obj.name, a_obj)
+--				already_decoded.put (l_obj, l_dtype)
+--
+--				if a_obj.is_tuple then
+--					l_obj.set_is_tuple
+--				elseif a_obj.is_special then
+--					l_obj.set_is_container
+--				elseif a_obj.name.index_of ('[',1) > 0 then
+--					l_obj.set_is_container
+--				end
 
-				if a_obj.is_tuple then
-					l_obj.set_is_tuple
-				elseif a_obj.is_special then
-					l_obj.set_is_container
-				elseif a_obj.name.index_of ('[',1) > 0 then
-					l_obj.set_is_container
-				end
+--				l_attr := a_obj.attribute_values.twin()
+--				if a_obj.has_non_base_type_attr then
+--					from
+--						l_attr.start
+--					until
+--						l_attr.after
+--					loop
+			--			l_dec ?= l_attr.item.object
+			--			if  l_dec /= void then
+			--				l_obj.insert_attr (l_attr.item.name, convert_object(l_dec))
+			--			else
+			--				l_obj.insert_attr_tuple (l_attr.item)
+			--			end
+--						l_attr.forth
+--					end
+--				else
+--					l_obj.insert_attr_seq (a_obj.attribute_values)
+--				end
 
-				l_attr := a_obj.attribute_values.twin()
-				if a_obj.has_non_base_type_attr then
-					from
-						l_attr.start
-					until
-						l_attr.after
-					loop
-						l_dec ?= l_attr.item.object
-						if  l_dec /= void then
-							l_obj.insert_attr (l_attr.item.name, convert_object(l_dec))
-						else
-							l_obj.insert_attr_tuple (l_attr.item)
-						end
-						l_attr.forth
-					end
-				else
-					l_obj.insert_attr_seq (a_obj.attribute_values)
-				end
-
-				result := l_obj
-			else
-				result := already_decoded.item (l_dtype)
-			end
-		end
+--				result := l_obj
+--			else
+--				result := already_decoded.item (l_dtype)
+--			end
+--		end
 
 
 ;indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -199,10 +199,10 @@ feature {NONE} -- Display Helpers
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end
