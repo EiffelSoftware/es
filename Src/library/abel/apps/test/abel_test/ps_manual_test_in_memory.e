@@ -32,10 +32,16 @@ feature
 	end
 
 
-	test_crud_in_memory
+	test_crud_flat_in_memory
 	do
 		test_flat_class_store
 		test_flat_class_all_crud
+	end
+
+	test_crud_structures_in_memory
+	do
+		test_data_structures_store
+		test_update_on_reference
 	end
 
 end

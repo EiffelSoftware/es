@@ -155,4 +155,14 @@ feature {NONE} -- Implementation
 	cache: PS_OBJECT_CACHE [ANY]
 			-- A cache to remember inserted/queried objects
 
+
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
+
+	clean_db_for_testing
+		-- Wipe out all data
+		do
+			make
+		end
+
+
 end

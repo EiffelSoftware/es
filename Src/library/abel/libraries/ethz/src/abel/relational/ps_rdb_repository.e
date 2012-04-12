@@ -97,11 +97,12 @@ feature {NONE} -- Initialization
 			strategy_set: strategy = a_strategy
 		end
 
-feature -- Testing
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
-			-- Delete all entries from the table. This only works for PS_GENERIC_LAYOUT_STRATEGY.
+		-- Wipe out all data
 		do
+			-- Delete all entries from the table. This only works for PS_GENERIC_LAYOUT_STRATEGY.
 			database.execute_query ("DROP TABLE ps_value")
 			print (database.last_error_message)
 		end

@@ -109,4 +109,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 		end
 
+
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
+
+	clean_db_for_testing
+		-- Wipe out all data
+		deferred
+		end
+
 end

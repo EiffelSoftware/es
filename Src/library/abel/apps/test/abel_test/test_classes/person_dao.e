@@ -7,21 +7,6 @@ note
 class
 	PERSON_DAO
 
-create
-	make_with_repository,
-	default_create
-
-feature -- Initialization
-
-	make_with_repository (a_repository: CUSTOM_IN_MEMORY_REPOSITORY)
-			-- Initialize `Current' with a repository implementation.
-		do
-
-		end
-
-feature -- Access
-
-
 
 feature -- Routines for agent criteria.
 
@@ -66,10 +51,5 @@ feature -- Routines for agent criteria.
 		do
 			Result := p.last_name.has_substring (s)
 		end
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
 
 end

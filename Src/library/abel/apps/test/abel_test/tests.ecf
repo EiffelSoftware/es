@@ -7,6 +7,12 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/.svn$</exclude>
 		</file_rule>
+		<file_rule>
+				<exclude>^/test_classes$</exclude>
+		</file_rule>
+
+		<cluster name="test_classes" location=".\test_classes\" recursive="true"/>
+		
 		<option trace="false" cat_call_detection="false" is_attached_by_default="true" void_safety="all" syntax="provisional" namespace="EiffelSoftware.Library">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>

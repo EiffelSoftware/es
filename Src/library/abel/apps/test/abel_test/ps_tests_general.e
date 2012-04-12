@@ -9,10 +9,13 @@ deferred class
 
 inherit
 	EQA_TEST_SET
-	undefine
-		on_prepare
-	end
-
+		undefine
+			on_prepare
+		end
+	PS_EIFFELSTORE_EXPORT
+		undefine
+			default_create
+		end
 
 feature {NONE}
 

@@ -29,27 +29,27 @@ feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
 			i: NATURAL
 			s: STRING
 		do
-			create array_1.make_filled (create {FLAT_CLASS_1}.make, 1, 1000)
-			create array_2.make_filled (create {FLAT_CLASS_1}.make, 100, 100)
-			create array_3.make_filled (create {FLAT_CLASS_1}.make, 1000)
+			create array_1.make_filled (create {FLAT_CLASS_1}.make, 1, 10)
+			create array_2.make_filled (create {FLAT_CLASS_1}.make, 5, 5)
+			create array_3.make_filled (create {FLAT_CLASS_1}.make, 10)
 			create arrayed_list_1.make_from_array (array_1)
 			create linked_list_1.make
 
 			from
 				i := 1
 			until
-				i > 1000
+				i > 10
 			loop
 				linked_list_1.extend (create {FLAT_CLASS_1}.make)
 				linked_list_1.forth
 				i := i + 1
 			end
 
-			create hash_table_1.make (100)
+			create hash_table_1.make (10)
 			from
 				i := 1
 			until
-				i > 100
+				i > 10
 			loop
 				create s.make_from_string ("key")
 				s.append_natural_32 (i)
@@ -61,12 +61,12 @@ feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
 			tuple_1.put (2, 2)
 			tuple_1.put ("third", 3)
 		ensure
-			array_1_size_correct: array_1.count = 1000
-			array_2_size_correct: array_2.count = 10000
-			array_3.count = 1000
-			arrayed_list_1_size_correct: arrayed_list_1.count = 1000
-			linked_list_1_size_correct: linked_list_1.count = 1000
-			hash_table_1_size_correct: hash_table_1.count = 100
+			array_1_size_correct: array_1.count = 10
+			array_2_size_correct: array_2.count = 25
+			array_3.count = 10
+			arrayed_list_1_size_correct: arrayed_list_1.count = 10
+			linked_list_1_size_correct: linked_list_1.count = 10
+			hash_table_1_size_correct: hash_table_1.count = 10
 			tuple_1_size_correct: tuple_1.count = 3
 		end
 
