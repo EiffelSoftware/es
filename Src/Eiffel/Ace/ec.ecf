@@ -206,6 +206,7 @@
 			</option>
 		</library>
 		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf" readonly="false"/>
+		<library name="dadle" location="$EIFFEL_SRC\library\dadle\lib\dadle_library.ecf" readonly="false"/>
 		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf" readonly="false"/>
