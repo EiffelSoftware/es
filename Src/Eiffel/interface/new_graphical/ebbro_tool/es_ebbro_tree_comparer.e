@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Compares two root-object tree rows and its children."
 	author: "Lucien Hansen"
 	date: "$Date$"
@@ -17,7 +17,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	compare_two_root_objects (root_object_row1, root_object_row2: EV_GRID_ROW) is
+	compare_two_root_objects (root_object_row1, root_object_row2: EV_GRID_ROW)
 			-- compare two root object rows and subrows
 		local
 			l_default_color: EV_COLOR
@@ -38,7 +38,7 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 
-	compare_subrows (a_parent_row1, a_parent_row2: EV_GRID_ROW) is
+	compare_subrows (a_parent_row1, a_parent_row2: EV_GRID_ROW)
 			-- compare subrows recursively
 		require
 			not_void: a_parent_row1 /= void and a_parent_row2 /= void
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 
 
 
-	find_row_in_subrows (a_row: EV_GRID_ROW; a_parent_of_subrows: EV_GRID_ROW): EV_GRID_ROW is
+	find_row_in_subrows (a_row: EV_GRID_ROW; a_parent_of_subrows: EV_GRID_ROW): EV_GRID_ROW
 			-- tries to find a_row inside the subrows of a_parent_of_subrows
 			-- if present -> result will be the found subrow
 			-- else -> result := void
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 
 
 
-	are_two_rows_identical (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
+	are_two_rows_identical (a_row1, a_row2: EV_GRID_ROW): BOOLEAN
 			-- check whether two rows are identical or not
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	are_attribute_types_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
+	are_attribute_types_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN
 			-- two rows: type equality check
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
 		end
 
 
-	are_attribute_names_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
+	are_attribute_names_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN
 			-- two rows: name equality check
 		local
 			l_item1,l_item2: EV_GRID_LABEL_ITEM
@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	are_attribute_values_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
+	are_attribute_values_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN
 			-- two rows: value equality check
 		local
 			l_item1,l_item2: EV_GRID_LABEL_ITEM
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 		end
 
 
-	highlight_difference (a_row1, a_row2: EV_GRID_ROW) is
+	highlight_difference (a_row1, a_row2: EV_GRID_ROW)
 			-- highlights the differences of two rows
 		do
 			a_row1.set_background_color (compare_diff_color)
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			highlight_all_parent_rows(a_row2)
 		end
 
-	highlight_all_parent_rows (a_row1: EV_GRID_ROW) is
+	highlight_all_parent_rows (a_row1: EV_GRID_ROW)
 			-- highlight all parent rows
 		do
 			if a_row1.parent_row /= void and then a_row1.parent_row.background_color /= compare_diff_parents_color then
@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 		end
 
 
-	highlight_additional_attribute (a_row1: EV_GRID_ROW; is_on_left: BOOLEAN) is
+	highlight_additional_attribute (a_row1: EV_GRID_ROW; is_on_left: BOOLEAN)
 			-- additional attribute highlighting
 		do
 			if is_on_left then
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	highlight_identical_rows (a_row1, a_row2: EV_GRID_ROW) is
+	highlight_identical_rows (a_row1, a_row2: EV_GRID_ROW)
 			-- two rows are identical -> used for root-object rows
 		do
 			a_row1.set_background_color (compare_identical_color)
@@ -260,8 +260,8 @@ feature {NONE} -- Implementation
 invariant
 	invariant_clause: True -- Your invariant here
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -285,10 +285,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

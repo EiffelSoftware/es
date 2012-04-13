@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 		Automatically generated class for EiffelStudio 16 x16  tool icons.
 	]"
@@ -40,7 +40,7 @@ feature {NONE} -- Access
 
 feature -- Icons
 
-	frozen object_type_base_icon: !EV_PIXMAP
+	frozen object_type_base_icon: attached EV_PIXMAP
 			-- Access to 'routine' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_base_name)
@@ -48,7 +48,7 @@ feature -- Icons
 			Result := named_icon (object_type_base_name)
 		end
 
-	frozen object_type_base_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_base_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'routine' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_base_name)
@@ -56,7 +56,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_base_name)
 		end
 
-	frozen object_type_boolean_icon: !EV_PIXMAP
+	frozen object_type_boolean_icon: attached EV_PIXMAP
 			-- Access to 'routine' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_boolean_name)
@@ -64,7 +64,7 @@ feature -- Icons
 			Result := named_icon (object_type_boolean_name)
 		end
 
-	frozen object_type_boolean_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_boolean_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'routine' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_boolean_name)
@@ -72,7 +72,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_boolean_name)
 		end
 
-	frozen object_type_container_icon: !EV_PIXMAP
+	frozen object_type_container_icon: attached EV_PIXMAP
 			-- Access to 'container' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_container_name)
@@ -80,7 +80,7 @@ feature -- Icons
 			Result := named_icon (object_type_container_name)
 		end
 
-	frozen object_type_container_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_container_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'container' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_container_name)
@@ -88,7 +88,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_container_name)
 		end
 
-	frozen object_type_numeric_icon: !EV_PIXMAP
+	frozen object_type_numeric_icon: attached EV_PIXMAP
 			-- Access to 'numeric' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_numeric_name)
@@ -96,7 +96,7 @@ feature -- Icons
 			Result := named_icon (object_type_numeric_name)
 		end
 
-	frozen object_type_numeric_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_numeric_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'numeric' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_numeric_name)
@@ -104,7 +104,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_numeric_name)
 		end
 
-	frozen object_type_pointer_icon: !EV_PIXMAP
+	frozen object_type_pointer_icon: attached EV_PIXMAP
 			-- Access to 'pointer' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_pointer_name)
@@ -112,7 +112,7 @@ feature -- Icons
 			Result := named_icon (object_type_pointer_name)
 		end
 
-	frozen object_type_pointer_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_pointer_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'pointer' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_pointer_name)
@@ -120,7 +120,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_pointer_name)
 		end
 
-	frozen object_type_reference_icon: !EV_PIXMAP
+	frozen object_type_reference_icon: attached EV_PIXMAP
 			-- Access to 'reference' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_reference_name)
@@ -128,7 +128,7 @@ feature -- Icons
 			Result := named_icon (object_type_reference_name)
 		end
 
-	frozen object_type_reference_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_reference_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'reference' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_reference_name)
@@ -136,7 +136,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_reference_name)
 		end
 
-	frozen object_type_string_icon: !EV_PIXMAP
+	frozen object_type_string_icon: attached EV_PIXMAP
 			-- Access to 'string' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_string_name)
@@ -144,7 +144,7 @@ feature -- Icons
 			Result := named_icon (object_type_string_name)
 		end
 
-	frozen object_type_string_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_string_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'string' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_string_name)
@@ -152,7 +152,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_string_name)
 		end
 
-	frozen object_type_tuple_icon: !EV_PIXMAP
+	frozen object_type_tuple_icon: attached EV_PIXMAP
 			-- Access to 'tuple' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_tuple_name)
@@ -160,7 +160,7 @@ feature -- Icons
 			Result := named_icon (object_type_tuple_name)
 		end
 
-	frozen object_type_tuple_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_tuple_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'tuple' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_tuple_name)
@@ -168,7 +168,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_tuple_name)
 		end
 
-	frozen object_type_void_icon: !EV_PIXMAP
+	frozen object_type_void_icon: attached EV_PIXMAP
 			-- Access to 'void' pixmap.
 		require
 			has_named_icon: has_named_icon (object_type_void_name)
@@ -176,7 +176,7 @@ feature -- Icons
 			Result := named_icon (object_type_void_name)
 		end
 
-	frozen object_type_void_icon_buffer: !EV_PIXEL_BUFFER
+	frozen object_type_void_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'void' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (object_type_void_name)
@@ -184,7 +184,7 @@ feature -- Icons
 			Result := named_icon_buffer (object_type_void_name)
 		end
 
-	frozen grid_cycle_reference_icon: !EV_PIXMAP
+	frozen grid_cycle_reference_icon: attached EV_PIXMAP
 			-- Access to 'cycle_reference' pixmap.
 		require
 			has_named_icon: has_named_icon (grid_cycle_reference_name)
@@ -192,7 +192,7 @@ feature -- Icons
 			Result := named_icon (grid_cycle_reference_name)
 		end
 
-	frozen grid_cycle_reference_icon_buffer: !EV_PIXEL_BUFFER
+	frozen grid_cycle_reference_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'cycle_reference' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (grid_cycle_reference_name)
@@ -200,7 +200,7 @@ feature -- Icons
 			Result := named_icon_buffer (grid_cycle_reference_name)
 		end
 
-	frozen gui_move_left_icon: !EV_PIXMAP
+	frozen gui_move_left_icon: attached EV_PIXMAP
 			-- Access to 'move_left' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_move_left_name)
@@ -208,7 +208,7 @@ feature -- Icons
 			Result := named_icon (gui_move_left_name)
 		end
 
-	frozen gui_move_left_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_move_left_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'move_left' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_move_left_name)
@@ -216,7 +216,7 @@ feature -- Icons
 			Result := named_icon_buffer (gui_move_left_name)
 		end
 
-	frozen gui_move_right_icon: !EV_PIXMAP
+	frozen gui_move_right_icon: attached EV_PIXMAP
 			-- Access to 'move_right' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_move_right_name)
@@ -224,7 +224,7 @@ feature -- Icons
 			Result := named_icon (gui_move_right_name)
 		end
 
-	frozen gui_move_right_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_move_right_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'move_right' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_move_right_name)
@@ -232,7 +232,7 @@ feature -- Icons
 			Result := named_icon_buffer (gui_move_right_name)
 		end
 
-	frozen gui_filter_icon: !EV_PIXMAP
+	frozen gui_filter_icon: attached EV_PIXMAP
 			-- Access to 'filter' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_filter_name)
@@ -240,7 +240,7 @@ feature -- Icons
 			Result := named_icon (gui_filter_name)
 		end
 
-	frozen gui_filter_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_filter_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'filter' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_filter_name)
@@ -248,7 +248,7 @@ feature -- Icons
 			Result := named_icon_buffer (gui_filter_name)
 		end
 
-	frozen gui_ebbro_icon: !EV_PIXMAP
+	frozen gui_ebbro_icon: attached EV_PIXMAP
 			-- Access to 'ebbro' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_ebbro_name)
@@ -256,7 +256,7 @@ feature -- Icons
 			Result := named_icon (gui_ebbro_name)
 		end
 
-	frozen gui_ebbro_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_ebbro_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'ebbro' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_ebbro_name)
@@ -264,7 +264,7 @@ feature -- Icons
 			Result := named_icon_buffer (gui_ebbro_name)
 		end
 
-	frozen gui_custom_serialization_icon: !EV_PIXMAP
+	frozen gui_custom_serialization_icon: attached EV_PIXMAP
 			-- Access to 'custom serialization' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_custom_serialization_name)
@@ -272,7 +272,7 @@ feature -- Icons
 			Result := named_icon (gui_custom_serialization_name)
 		end
 
-	frozen gui_custom_serialization_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_custom_serialization_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'custom serialization' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_custom_serialization_name)
@@ -280,7 +280,7 @@ feature -- Icons
 			Result := named_icon_buffer (gui_custom_serialization_name)
 		end
 
-	frozen gui_comparer_icon: !EV_PIXMAP
+	frozen gui_comparer_icon: attached EV_PIXMAP
 			-- Access to 'comparer' pixmap.
 		require
 			has_named_icon: has_named_icon (gui_comparer_name)
@@ -288,7 +288,7 @@ feature -- Icons
 			Result := named_icon (gui_comparer_name)
 		end
 
-	frozen gui_comparer_icon_buffer: !EV_PIXEL_BUFFER
+	frozen gui_comparer_icon_buffer: attached EV_PIXEL_BUFFER
 			-- Access to 'comparer' pixmap pixel buffer.
 		require
 			has_named_icon: has_named_icon (gui_comparer_name)
@@ -300,22 +300,22 @@ feature -- Icons
 
 feature -- Constants: Icon names
 
-	object_type_base_name: !STRING = "object_type_base"
-	object_type_boolean_name: !STRING = "object_type_boolean"
-	object_type_container_name: !STRING = "object_type_container"
-	object_type_numeric_name: !STRING = "object_type_numeric"
-	object_type_pointer_name: !STRING = "object_type_pointer"
-	object_type_reference_name: !STRING = "object_type_reference"
-	object_type_string_name: !STRING = "object_type_string"
-	object_type_tuple_name: !STRING = "object_type_tuple"
-	object_type_void_name: !STRING = "object_type_void"
-	grid_cycle_reference_name: !STRING = "grid_cycle_reference"
-	gui_move_left_name: !STRING = "gui_move_left"
-	gui_move_right_name: !STRING = "gui_move_right"
-	gui_filter_name: !STRING = "gui_filter"
-	gui_ebbro_name: !STRING = "gui_ebbro"
-	gui_custom_serialization_name: !STRING = "gui_custom_serialization"
-	gui_comparer_name: !STRING = "gui_comparer"
+	object_type_base_name: attached STRING = "object_type_base"
+	object_type_boolean_name:attached !STRING = "object_type_boolean"
+	object_type_container_name: attached STRING = "object_type_container"
+	object_type_numeric_name: attached STRING = "object_type_numeric"
+	object_type_pointer_name: attached STRING = "object_type_pointer"
+	object_type_reference_name: attached STRING = "object_type_reference"
+	object_type_string_name: attached STRING = "object_type_string"
+	object_type_tuple_name: attached STRING = "object_type_tuple"
+	object_type_void_name: attached STRING = "object_type_void"
+	grid_cycle_reference_name: attached STRING = "grid_cycle_reference"
+	gui_move_left_name: attached STRING = "gui_move_left"
+	gui_move_right_name: attached STRING = "gui_move_right"
+	gui_filter_name: attached STRING = "gui_filter"
+	gui_ebbro_name: attached STRING = "gui_ebbro"
+	gui_custom_serialization_name: attached STRING = "gui_custom_serialization"
+	gui_comparer_name: attached STRING = "gui_comparer"
 
 
 
@@ -342,7 +342,7 @@ feature {NONE} -- Basic operations
 			a_table.put ([{NATURAL_8}6, {NATURAL_8}4], gui_comparer_name)
 		end
 
-;indexing
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

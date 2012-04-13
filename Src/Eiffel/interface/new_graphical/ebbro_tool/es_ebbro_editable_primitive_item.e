@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that provide editing possibility of a primitive type"
 	author: ""
 	date: "$Date$"
@@ -21,7 +21,7 @@ create
 
 feature -- Creation
 
-	make_with_text_and_type (a_text: STRING; a_type: STRING) is
+	make_with_text_and_type (a_text: STRING; a_type: STRING)
 			-- adds the needed actions after initialization
 		do
 			default_create
@@ -34,7 +34,7 @@ feature {NONE}-- Implementation
 
 	type: STRING
 
-	update_value (a_value: STRING_32): BOOLEAN is
+	update_value (a_value: STRING_32): BOOLEAN
 			-- after the user changed the value in the gui,
 			-- update that value in the DECODED object
 		local
@@ -97,7 +97,7 @@ feature {NONE}-- Implementation
 		end
 
 
-	validate_input (a_value: STRING): BOOLEAN is
+	validate_input (a_value: STRING): BOOLEAN
 			-- test if a value entered is conform to a type
 		local
 			l_type_name: STRING
@@ -202,7 +202,7 @@ feature {NONE}-- Implementation
 --			internal.unmark (a_decoded)
 --		end
 
-	find_row_nondecoded(a_position: INTEGER; a_obj: ANY; a_new_value: STRING): INTEGER is
+	find_row_nondecoded(a_position: INTEGER; a_obj: ANY; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -270,7 +270,7 @@ feature {NONE}-- Implementation
 		end
 
 
-	find_row_array(a_position: INTEGER; an_array: ARRAY[ANY]; a_new_value: STRING): INTEGER is
+	find_row_array(a_position: INTEGER; an_array: ARRAY[ANY]; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -327,7 +327,7 @@ feature {NONE}-- Implementation
 		end
 
 
-	find_row_special(a_position: INTEGER; a_spec: SPECIAL[ANY]; a_new_value: STRING): INTEGER is
+	find_row_special(a_position: INTEGER; a_spec: SPECIAL[ANY]; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -383,7 +383,7 @@ feature {NONE}-- Implementation
 --			internal.unmark (a_spec)
 		end
 
-	find_row_chain(a_position: INTEGER; a_chain: CHAIN[ANY]; a_new_value: STRING): INTEGER is
+	find_row_chain(a_position: INTEGER; a_chain: CHAIN[ANY]; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -437,7 +437,7 @@ feature {NONE}-- Implementation
 --			internal.unmark (a_chain)
 		end
 
-	find_row_tuple(a_position: INTEGER; a_tuple: TUPLE[ANY]; a_new_value: STRING): INTEGER is
+	find_row_tuple(a_position: INTEGER; a_tuple: TUPLE[ANY]; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -493,7 +493,7 @@ feature {NONE}-- Implementation
 --			internal.unmark (a_tuple)
 		end
 
-	find_row_hashtable(a_position: INTEGER; a_hash: HASH_TABLE[ANY,HASHABLE]; a_new_value: STRING): INTEGER is
+	find_row_hashtable(a_position: INTEGER; a_hash: HASH_TABLE[ANY,HASHABLE]; a_new_value: STRING): INTEGER
 			-- same as `find_row_decoded', but for a non-DECODED object
 		local
 			internal: INTERNAL
@@ -551,13 +551,13 @@ feature {NONE}-- Implementation
 --			internal.unmark (a_hash)
 		end
 
-	get_root_row_index: INTEGER is
+	get_root_row_index: INTEGER
 			-- returns the index of the root row for that object
 		do
 			Result := get_root_row.index
 		end
 
-	get_root_object: ANY is
+	get_root_object: ANY
 			-- returns the root object
 		local
 			l_data:TUPLE[ANY,ARRAY[INTEGER]]
@@ -574,7 +574,7 @@ feature {NONE}-- Implementation
 		end
 
 
-	get_root_row: EV_GRID_ROW is
+	get_root_row: EV_GRID_ROW
 			-- returns the root row this item is part of
 		local
 			r: EV_GRID_ROW
@@ -599,7 +599,7 @@ feature {NONE}-- Implementation
 --			a_decoded.change_value (a_value, a_position)
 --		end
 
-	change_value_nondecoded (a_obj: ANY; a_value: STRING; a_position: INTEGER) is
+	change_value_nondecoded (a_obj: ANY; a_value: STRING; a_position: INTEGER)
 			-- change the value at a specified position given a nondecoded object
 		local
 			l_type_name: STRING
@@ -656,7 +656,7 @@ feature {NONE}-- Implementation
 		end
 
 
-	change_value_array (a_array: ARRAY[ANY]; a_value: STRING; a_position: INTEGER) is
+	change_value_array (a_array: ARRAY[ANY]; a_value: STRING; a_position: INTEGER)
 			-- change one field of an array (non-DECODED)
 		local
 			l_internal: INTERNAL
@@ -713,7 +713,7 @@ feature {NONE}-- Implementation
 
 		end
 
-	change_value_spec(a_spec: SPECIAL[ANY]; a_value: STRING; a_position: INTEGER) is
+	change_value_spec(a_spec: SPECIAL[ANY]; a_value: STRING; a_position: INTEGER)
 			-- change one field of an special (non-DECODED)
 		local
 			l_internal: INTERNAL
@@ -769,7 +769,7 @@ feature {NONE}-- Implementation
 
 		end
 
-	change_value_chain(a_chain: CHAIN[ANY]; a_value: STRING; a_position: INTEGER) is
+	change_value_chain(a_chain: CHAIN[ANY]; a_value: STRING; a_position: INTEGER)
 			-- change one field of a chain (non-DECODED)
 		local
 			l_internal: INTERNAL
@@ -826,7 +826,7 @@ feature {NONE}-- Implementation
 
 		end
 
-	change_value_tuple(a_tuple: TUPLE[ANY]; a_value: STRING; a_position: INTEGER) is
+	change_value_tuple(a_tuple: TUPLE[ANY]; a_value: STRING; a_position: INTEGER)
 			-- change one field of a tuple (non-DECODED)
 		local
 			l_internal: INTERNAL
@@ -883,7 +883,7 @@ feature {NONE}-- Implementation
 
 		end
 
-	change_value_hashtable(a_hash: HASH_TABLE[ANY,HASHABLE]; a_new_value: STRING; a_position: INTEGER) is
+	change_value_hashtable(a_hash: HASH_TABLE[ANY,HASHABLE]; a_new_value: STRING; a_position: INTEGER)
 			-- change one field of a hashtable (non-DECODED)
 		local
 			l_internal: INTERNAL
@@ -929,7 +929,7 @@ feature {NONE} -- Implementation helper
 
 	change_value:STRING
 
-	update_all_possible_shared_values(a_value:STRING) is
+	update_all_possible_shared_values(a_value:STRING)
 			-- if the currently edited value, belongs to an object which is shared among other objects
 			-- this procedure updates all values - which belong to the same displayable object (to which the edited item belongs to)
 		local
@@ -956,7 +956,7 @@ feature {NONE} -- Implementation helper
 
 		end
 
-	update_all_possible_values_rek(a_row:EV_GRID_ROW) is
+	update_all_possible_values_rek(a_row:EV_GRID_ROW)
 			-- if the currently edited value, belongs to an object which is shared among other objects
 			-- this procedure updates all values - which belong to the same ES_EBBRO_ES_EBBRO_DISPLAYABLE object (to which the edited item belongs to)
 			-- rekursive implementation to update values ...
@@ -999,7 +999,7 @@ feature {NONE} -- Implementation helper
 
 
 
-	get_first_display_parent(a_row:EV_GRID_ROW):ES_EBBRO_DISPLAYABLE is
+	get_first_display_parent(a_row:EV_GRID_ROW):ES_EBBRO_DISPLAYABLE
 			-- returns the display object to which the currently edited row belongs to...
 			-- rekursivly goes from parent to parent ...until the first displayable.
 		local
@@ -1019,7 +1019,7 @@ feature {NONE} -- Implementation helper
 			end
 		end
 
-	get_local_index(a_parent_row:EV_GRID_ROW;a_child_row:EV_GRID_ROW):INTEGER is
+	get_local_index(a_parent_row:EV_GRID_ROW;a_child_row:EV_GRID_ROW):INTEGER
 			-- returns the real offset from a parent row (which holds the display object) and the row
 			-- which value has been edited.
 		local
@@ -1049,14 +1049,14 @@ feature {NONE} -- Implementation helper
 			end
 		end
 
-	is_valid_character_type(a_value:STRING):BOOLEAN is
+	is_valid_character_type(a_value:STRING):BOOLEAN
 			-- checks whether value is a character
 		do
 			result := a_value.count <=1
 		end
 
 
-	generate_correct_object(l_type_name:STRING;a_value:STRING):ANY is
+	generate_correct_object(l_type_name:STRING;a_value:STRING):ANY
 			-- creates a object which corresponds to l_type_name from a_value
 		do
 
@@ -1102,7 +1102,7 @@ feature {NONE} -- Implementation helper
 				end
 			end
 		end
-indexing
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

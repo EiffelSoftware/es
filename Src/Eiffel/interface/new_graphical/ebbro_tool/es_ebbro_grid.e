@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Ebbro grid represents a main grid which displays objects - like EV_GRID"
 	author: ""
 	date: "$Date$"
@@ -18,7 +18,7 @@ inherit
 
 feature -- init
 
-	ebbro_init(a_panel:ES_EBBRO_TOOL_PANEL;is_on_left_hand:BOOLEAN) is
+	ebbro_init(a_panel:ES_EBBRO_TOOL_PANEL;is_on_left_hand:BOOLEAN)
 			-- creation
 		do
 			is_left := is_on_left_hand
@@ -57,7 +57,7 @@ feature -- init
 			pointer_button_press_item_actions.extend (agent on_p_button_press)
 		end
 
-	set_is_left is
+	set_is_left
 			-- set is left flag (left grid, in split view)
 		do
 			is_left := true
@@ -89,19 +89,19 @@ feature -- access
 
 feature -- basic operations
 
-	toggle_is_split_screen is
+	toggle_is_split_screen
 			-- toggles split screen option on/off
 		do
 			split_screen_enabled := not split_screen_enabled
 		end
 
-	set_filter_in(a_value:BOOLEAN) is
+	set_filter_in(a_value:BOOLEAN)
 			-- sets the filter in option
 		do
 			tree_filter.set_filter_in(a_value)
 		end
 
-	display_object(an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING;a_filter_id:INTEGER) is
+	display_object(an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING;a_filter_id:INTEGER)
 			-- displays an object of type displayable
 		local
 			l_data:TUPLE[ANY,ARRAY[INTEGER]]
@@ -125,7 +125,7 @@ feature -- basic operations
 
 feature -- implementation
 
-	build_right_click_menu is
+	build_right_click_menu
 			-- builds the right click menu
 		local
 			l_item:EV_MENU_ITEM
@@ -164,7 +164,7 @@ feature -- implementation
 
 		end
 
-	build_filter_menu is
+	build_filter_menu
 			-- builds the filter menu
 		local
 			menu_item:EV_RADIO_MENU_ITEM
@@ -191,7 +191,7 @@ feature -- implementation
 			filter_menu.extend (menu_item)
 		end
 
-	select_correct_filters_on_menu(a_tuple:TUPLE[ANY,ARRAY[INTEGER]]) is
+	select_correct_filters_on_menu(a_tuple:TUPLE[ANY,ARRAY[INTEGER]])
 			-- selects the correct filter in the menu
 		require
 			not_void:a_tuple /= void
@@ -209,7 +209,7 @@ feature -- implementation
 			end
 		end
 
-	activate_filter(a_row:EV_GRID_ROW;a_filter_id:INTEGER) is
+	activate_filter(a_row:EV_GRID_ROW;a_filter_id:INTEGER)
 			-- activates a filter on a given row
 		do
 			inspect a_filter_id
@@ -229,7 +229,7 @@ feature -- implementation
 
 feature -- actions
 
-	on_moving_root_object is
+	on_moving_root_object
 			-- move an object to other split area
 		local
 			l_row:EV_GRID_ROW
@@ -270,7 +270,7 @@ feature -- actions
 		end
 
 
-	on_p_button_press(x_pos,y_pos,a_button:INTEGER_32;a_item:EV_GRID_ITEM) is
+	on_p_button_press(x_pos,y_pos,a_button:INTEGER_32;a_item:EV_GRID_ITEM)
 			-- on pointer button press - show right click menu
 		local
 			l_data:TUPLE[ANY,ARRAY[INTEGER]]
@@ -305,7 +305,7 @@ feature -- actions
 		end
 
 
-	on_grid_scroll(b:INTEGER;a_grid:EV_GRID) is
+	on_grid_scroll(b:INTEGER;a_grid:EV_GRID)
 			-- manually scrolling ...not working otherwise ?!
 		do
 			if b /= 0 and vertical_scroll_bar.is_displayed then
@@ -319,7 +319,7 @@ feature -- actions
 
 		end
 
-	on_remove_row_request is
+	on_remove_row_request
 			-- on remove object
 		do
 			tree_builder.remove_selected_root_object
@@ -328,7 +328,7 @@ feature -- actions
 		end
 
 
-	on_grid_key_press(a_key:EV_KEY) is
+	on_grid_key_press(a_key:EV_KEY)
 			-- key press action handler
 		do
 			if selected_rows.count > 0 then
@@ -342,7 +342,7 @@ feature -- actions
 			end
 		end
 
-	set_allow_cyclic_browsing(a_value:BOOLEAN) is
+	set_allow_cyclic_browsing(a_value:BOOLEAN)
 			-- sets allowing cycle browsing
 		do
 			tree_builder.set_allow_cyclic_browsing (a_value)
@@ -354,7 +354,7 @@ feature -- actions
 			tree_builder.update_obj_addresses
 		end
 
-	on_activate_filter(a_filter_id:INTEGER) is
+	on_activate_filter(a_filter_id:INTEGER)
 			-- action when filter should get activated
 		local
 			l_data:TUPLE[ANY,ARRAY[INTEGER]]
@@ -374,7 +374,7 @@ feature -- actions
 			end
 		end
 
-	on_save is
+	on_save
 			-- On save request
 
 		local
@@ -389,7 +389,7 @@ feature -- actions
 			end
 		end
 
-	on_save_as is
+	on_save_as
 			--TODO: implement
 
 		local
@@ -412,8 +412,8 @@ feature -- actions
 
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -437,10 +437,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

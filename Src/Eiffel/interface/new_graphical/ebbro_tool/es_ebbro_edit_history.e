@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Stores the history of items which were edited. Used inside the ES_EBBRO_DISPLAYABLE class."
 	author: ""
 	date: "$Date$"
@@ -12,7 +12,7 @@ create
 
 feature -- init
 
-	make is
+	make
 			-- init
 		do
 			create history.make
@@ -21,7 +21,7 @@ feature -- init
 
 feature -- Access
 
-	history_item: TUPLE[EV_GRID_EDITABLE_ITEM,STRING,STRING] is
+	history_item: TUPLE[EV_GRID_EDITABLE_ITEM,STRING,STRING]
 			-- current history item
 			--[editable_grid_item,old_value,new_value]
 		do
@@ -30,13 +30,13 @@ feature -- Access
 
 feature -- Status report
 
-	is_undo_possible: BOOLEAN is
+	is_undo_possible: BOOLEAN
 			--
 		do
 			Result := not (history.before or history.is_empty)
 		end
 
-	is_redo_possible: BOOLEAN is
+	is_redo_possible: BOOLEAN
 			--
 		do
 			Result := not (history.islast or history.is_empty or history.after)
@@ -44,7 +44,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	add_item (an_edit_item:EV_GRID_EDITABLE_ITEM;an_old_value,a_new_value:STRING) is
+	add_item (an_edit_item:EV_GRID_EDITABLE_ITEM;an_old_value,a_new_value:STRING)
 			-- add item to history
 			-- [editable_grid_item,old_value,new_value]
 		require
@@ -71,7 +71,7 @@ feature -- Basic operations
 			history.finish
 		end
 
-	undo is
+	undo
 			-- undo
 			-- history_item gets reset to old_vale
 			-- and cursor of history is moved back
@@ -92,7 +92,7 @@ feature -- Basic operations
 			end
 		end
 
-	redo is
+	redo
 			-- redo
 			-- cursor of history is moved forth
 			-- and then the history item gets reset to the new_value
@@ -113,7 +113,7 @@ feature -- Basic operations
 			end
 		end
 
-	reset is
+	reset
 			-- removes all history items
 		do
 			history.wipe_out
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 
 	history: LINKED_LIST[like history_item]
 
-	ensure_item_visible (an_edit_item:EV_GRID_EDITABLE_ITEM) is
+	ensure_item_visible (an_edit_item:EV_GRID_EDITABLE_ITEM)
 			-- ensures that the item is visible
 		require
 			valid_item:an_edit_item /= void
@@ -145,8 +145,8 @@ feature {NONE} -- Implementation
 invariant
 	history_initialized: history /= void
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -170,10 +170,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

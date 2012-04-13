@@ -1,4 +1,4 @@
-indexing
+note
 	description: "An object which was deserialized and can be displayed by an ebbro grid."
 	author: ""
 	date: "$Date$"
@@ -25,7 +25,7 @@ feature -- creation
 --			create history.make
 --		end
 
-	make_wrapping (a_class_name:STRING) is
+	make_wrapping (a_class_name:STRING)
 			-- wrap a base type
 		require
 			class_name_not_void: a_class_name /= void
@@ -74,20 +74,20 @@ feature -- access
 
 feature -- basic operation
 
-	set_is_cyclic is
+	set_is_cyclic
 			-- sets the cyclic flag
 		do
 			is_cyclic := true
 		end
 
-	set_format_id(a_id:INTEGER) is
+	set_format_id(a_id:INTEGER)
 			-- sets the format id to a_id
 		do
 			format_id := a_id
 		end
 
 
-	set_wrapped_object(an_obj:ANY) is
+	set_wrapped_object(an_obj:ANY)
 			-- sets the wrapped object
 		require
 			not_void: an_obj /= void
@@ -95,13 +95,13 @@ feature -- basic operation
 			wrapped_object := an_obj
 		end
 
-	set_is_wrapper is
+	set_is_wrapper
 			-- sets the wrapper flag
 		do
 			is_wrapper := true
 		end
 
-	insert_attr_seq(a_seq:SEQUENCE[TUPLE[ANY,STRING]]) is
+	insert_attr_seq(a_seq:SEQUENCE[TUPLE[ANY,STRING]])
 			-- insert a whole attribute sequence
 		require
 			not_void: a_seq /= void
@@ -109,7 +109,7 @@ feature -- basic operation
 			attributes.append (a_seq)
 		end
 
-	insert_attr(a_name:STRING;a_object:ANY) is
+	insert_attr(a_name:STRING;a_object:ANY)
 			-- insert a single attribute
 		require
 			not_void: a_name /= void
@@ -122,7 +122,7 @@ feature -- basic operation
 			attributes.extend(tuple)
 		end
 
-	insert_attr_tuple(a_tuple:TUPLE[ANY,STRING]) is
+	insert_attr_tuple(a_tuple:TUPLE[ANY,STRING])
 			-- insert a tuple (a_object,attr_name)
 		require
 			not_void: a_tuple /= void
@@ -130,25 +130,25 @@ feature -- basic operation
 			attributes.extend(a_tuple)
 		end
 
-	attr_cout:INTEGER is
+	attr_cout:INTEGER
 			-- returns the actual number of attributes to display
 		do
 			result := attributes.count
 		end
 
-	set_is_tuple is
+	set_is_tuple
 			-- is representing a tuple type
 		do
 			is_tuple := true
 		end
 
-	set_is_container is
+	set_is_container
 			-- is representing a container structure
 		do
 			is_container := true
 		end
 
-	reset_history is
+	reset_history
 			-- reset the history
 		do
 			history.reset
@@ -156,7 +156,7 @@ feature -- basic operation
 
 
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

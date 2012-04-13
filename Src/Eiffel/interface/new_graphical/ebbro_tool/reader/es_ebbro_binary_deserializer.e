@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object deserializes objects stored via the eiffel binary serialization mechanism."
 	author: ""
 	date: "$Date$"
@@ -15,7 +15,7 @@ create
 
 feature -- init
 
-	make is
+	make
 			-- creation
 		do
 			create store_handler.make
@@ -26,7 +26,7 @@ feature -- init
 
 feature -- basic operations
 
-	retrieve_object(medium:IO_MEDIUM) is
+	retrieve_object(medium:IO_MEDIUM)
 			-- retrieve object which was stored by independent serialization mechanism
 		local
 			l_obj:ANY
@@ -56,7 +56,7 @@ feature -- basic operations
 			end
 		end
 
-	on_user_file_open(file_name,file_path:STRING) is
+	on_user_file_open(file_name,file_path:STRING)
 			-- user request to decode a object stored in file
 		local
 			l_raw_file:RAW_FILE
@@ -106,7 +106,7 @@ feature {NONE} -- Display Helpers
 	already_decoded:HASH_TABLE[ES_EBBRO_DISPLAYABLE,INTEGER] --dtype,count (dtype - key)
 			-- objects which were already decoded
 
-	generate_display_wrap(a_obj:ANY) is
+	generate_display_wrap(a_obj:ANY)
 			-- generates a displayable object, which wrapps a base type object
 		do
 			create last_decoded_object.make_wrapping (a_obj.generating_type)
@@ -116,7 +116,7 @@ feature {NONE} -- Display Helpers
 		end
 
 
-	generate_displayable_object is
+	generate_displayable_object
 			-- generates the displayable root object
 		require
 			not_void: decoded_object /= void
@@ -128,7 +128,7 @@ feature {NONE} -- Display Helpers
 			not_void: last_decoded_object /= void
 		end
 
---	convert_object(a_obj:GENERAL_DECODED):ES_EBBRO_DISPLAYABLE is
+--	convert_object(a_obj:GENERAL_DECODED):ES_EBBRO_DISPLAYABLE
 			-- converts a decoded object into a displayable object
 --		require
 --			not_void: a_obj /= void
@@ -176,7 +176,7 @@ feature {NONE} -- Display Helpers
 --			end
 --		end
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

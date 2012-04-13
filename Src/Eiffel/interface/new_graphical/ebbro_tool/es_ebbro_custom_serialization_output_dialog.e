@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog which outputs the generated code for the custom serialization feature."
 	author: "Lucien Hansen"
 	date: "$Date$"
@@ -18,7 +18,7 @@ create
 
 feature --init
 
-	make_with_attributes (an_attribute_list: ARRAYED_LIST [STRING_8]; a_class_name: STRING) is
+	make_with_attributes (an_attribute_list: ARRAYED_LIST [STRING_8]; a_class_name: STRING)
 			-- init - provide attribute list and class name
 		require
 			valid_attributes:an_attribute_list /= void and then not an_attribute_list.is_empty
@@ -80,7 +80,7 @@ feature {NONE} -- Initialization
 		ensure then
 		end
 
-	prepare (a_container: EV_VERTICAL_BOX) is
+	prepare (a_container: EV_VERTICAL_BOX)
 			-- Create the controls and setup the layout
 		local
 			controls_box: EV_VERTICAL_BOX
@@ -159,13 +159,13 @@ feature {NONE} -- actions
 
 feature {NONE} -- Vision2 events
 
-	on_ok is
+	on_ok
 			-- Terminate the dialog.
 		do
 			selected := true
 		end
 
-	on_cancel is
+	on_cancel
 			-- Terminate the dialog and clear the selection.
 		do
 			selected := False
@@ -180,8 +180,8 @@ feature {NONE} -- Controls
 
 invariant
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -205,11 +205,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

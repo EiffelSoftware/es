@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object which is responsible for populating an ebbro grid."
 	author: ""
 	date: "$Date$"
@@ -17,7 +17,7 @@ create
 
 feature -- creation
 
-	make is
+	make
 			-- init
 		do
 			create internal
@@ -29,7 +29,7 @@ feature -- creation
 
 feature -- establishment
 
-	set_grid(a_grid_view:EV_GRID) is
+	set_grid(a_grid_view:EV_GRID)
 			-- sets the grid on which the tree should be build on
 		require
 			not_void: a_grid_view /= void
@@ -41,7 +41,7 @@ feature -- establishment
 feature -- basic operations
 
 
-	display_object(an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING) is
+	display_object(an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING)
 			-- action triggered when object decoded -> build browse tree
 		require
 			not_void: an_obj /= void
@@ -76,7 +76,7 @@ feature -- basic operations
 			end
 		end
 
-	update_obj_addresses is
+	update_obj_addresses
 			-- event to update the object addresses
 		local
 			l_tuple:TUPLE[ANY,ARRAY[INTEGER]]
@@ -94,13 +94,13 @@ feature -- basic operations
 			end
 		end
 
-	set_allow_cyclic_browsing(a_val:BOOLEAN) is
+	set_allow_cyclic_browsing(a_val:BOOLEAN)
 			-- enable cyclic browsing
 		do
 			cyclic_enabled := a_val
 		end
 
-	key_pressed(a_key:EV_KEY) is
+	key_pressed(a_key:EV_KEY)
 			-- a key was pressed
 		do
 			inspect a_key.code
@@ -111,13 +111,13 @@ feature -- basic operations
 			end
 		end
 
-	remove_selected_root_object is
+	remove_selected_root_object
 			-- trys to remove selected root object
 		do
 			try_delete_root_object
 		end
 
-	set_insert_at_top(a_value:BOOLEAN) is
+	set_insert_at_top(a_value:BOOLEAN)
 			-- set insert at top / or bottom
 		do
 			insert_at_top := a_value
@@ -149,7 +149,7 @@ feature {NONE} -- implementation
 	root_object_count:INTEGER
 			-- the number of root objects (deserialized files)
 
-	clean_up is
+	clean_up
 			-- cleans up the main grid i.e removes rows and items
 		do
 			if main_grid.row_count > 0 then
@@ -161,7 +161,7 @@ feature {NONE} -- implementation
 			root_object_count := 0
 		end
 
-	display_displayable_object(an_obj:ES_EBBRO_DISPLAYABLE;a_parent:EV_GRID_ROW) is
+	display_displayable_object(an_obj:ES_EBBRO_DISPLAYABLE;a_parent:EV_GRID_ROW)
 			-- generates rows for a object of type displayable
 		require
 			not_void: an_obj /= void and a_parent /= void
@@ -234,7 +234,7 @@ feature {NONE} -- implementation
 
 		end
 
-	display_any_object(a_row:EV_GRID_ROW;an_obj:ANY) is
+	display_any_object(a_row:EV_GRID_ROW;an_obj:ANY)
 			-- generates rows for any given object
 		require
 			not_void: a_row /= void
@@ -367,7 +367,7 @@ feature {NONE} -- implementation
 
 		end
 
-	display_tuple_type(a_row:EV_GRID_ROW;an_obj:ANY) is
+	display_tuple_type(a_row:EV_GRID_ROW;an_obj:ANY)
 			-- generates display rows for tuple objects
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -399,7 +399,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	display_linear_type(a_row:EV_GRID_ROW;an_obj:LINEAR[ANY]) is
+	display_linear_type(a_row:EV_GRID_ROW;an_obj:LINEAR[ANY])
 			-- generates display rows for sequence type objects
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -425,7 +425,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	display_traversable_set_type(a_row:EV_GRID_ROW;an_obj:TRAVERSABLE_SUBSET[ANY]) is
+	display_traversable_set_type(a_row:EV_GRID_ROW;an_obj:TRAVERSABLE_SUBSET[ANY])
 			-- generates display rows for traversable subset type objects
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -451,7 +451,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	display_hash_table_type(a_row:EV_GRID_ROW;an_obj:HASH_TABLE[ANY,HASHABLE]) is
+	display_hash_table_type(a_row:EV_GRID_ROW;an_obj:HASH_TABLE[ANY,HASHABLE])
 			-- generates display rows for hash table objects
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -493,7 +493,7 @@ feature {NONE} -- implementation
 		end
 
 
-	display_array_type(a_row:EV_GRID_ROW;an_obj:ARRAY[ANY]) is
+	display_array_type(a_row:EV_GRID_ROW;an_obj:ARRAY[ANY])
 			-- generates display rows for an array type object
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -517,7 +517,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	display_active_type(a_row:EV_GRID_ROW;an_obj:ACTIVE[ANY]) is
+	display_active_type(a_row:EV_GRID_ROW;an_obj:ACTIVE[ANY])
 			-- generates display rows for an active type object
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -545,7 +545,7 @@ feature {NONE} -- implementation
 --			end
 		end
 
-	display_special_type(a_row:EV_GRID_ROW;an_obj:SPECIAL[ANY]) is
+	display_special_type(a_row:EV_GRID_ROW;an_obj:SPECIAL[ANY])
 			-- generates display rows for a special type object
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -571,7 +571,7 @@ feature {NONE} -- implementation
 		end
 
 
-	get_display_values(a_tuple:TUPLE [object: ANY; name: STRING_8]):TUPLE[name:STRING;value:STRING;type:STRING;addr:STRING] is
+	get_display_values(a_tuple:TUPLE [object: ANY; name: STRING_8]):TUPLE[name:STRING;value:STRING;type:STRING;addr:STRING]
 			-- gets display values of basic type
 		do
 			create result
@@ -587,7 +587,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	fill_grid_row(a_row:EV_GRID_ROW;a_tuple:TUPLE[name:STRING;value:STRING;type:STRING;addr:STRING];is_parent_cyclic:BOOLEAN) is
+	fill_grid_row(a_row:EV_GRID_ROW;a_tuple:TUPLE[name:STRING;value:STRING;type:STRING;addr:STRING];is_parent_cyclic:BOOLEAN)
 			-- fills a grid row with provided values
 		require
 			not_void: a_tuple /= void and a_row /= void
@@ -608,7 +608,7 @@ feature {NONE} -- implementation
 			a_row.set_item (4, l_grid_item4)
 		end
 
-	generate_root_object_row(a_row:EV_GRID_ROW;an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING) is
+	generate_root_object_row(a_row:EV_GRID_ROW;an_obj:ES_EBBRO_DISPLAYABLE;a_file_name,an_object_name:STRING)
 			-- generates initial row for object which was decoded
 		require
 			not_void: a_row /= void and an_obj /= void
@@ -641,7 +641,7 @@ feature {NONE} -- implementation
 			a_row.set_item (4, l_grid_item4)
 		end
 
-	set_pixmap_item(an_item:EV_GRID_LABEL_ITEM;id:INTEGER) is
+	set_pixmap_item(an_item:EV_GRID_LABEL_ITEM;id:INTEGER)
 			-- sets a pixmap to an item given ´an_item´and a style ´id´
 		do
 			inspect id
@@ -666,7 +666,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	set_pixmap_item_base_type(an_item:EV_GRID_LABEL_ITEM;an_obj:ANY) is
+	set_pixmap_item_base_type(an_item:EV_GRID_LABEL_ITEM;an_obj:ANY)
 			-- sets the correct item for a base type object
 		require
 			not_void: an_item /= void and an_obj /= void
@@ -690,7 +690,7 @@ feature {NONE} -- implementation
 		end
 
 
-	mark_same_addr(a_row,a_parents_row:EV_GRID_ROW) is
+	mark_same_addr(a_row,a_parents_row:EV_GRID_ROW)
 			-- marks the same addresses (cyclic reference)
 		require
 			not_void: a_row /= void and a_parents_row /= void
@@ -732,7 +732,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	update_all_addresses(a_row:EV_GRID_ROW) is
+	update_all_addresses(a_row:EV_GRID_ROW)
 			-- updates the address column with the current addresses
 		local
 			i,count:INTEGER
@@ -759,7 +759,7 @@ feature {NONE} -- implementation
 			end
 		end
 
-	update_root_object_names is
+	update_root_object_names
 			-- updates all the root object names
 		local
 			l_row:EV_GRID_ROW
@@ -787,7 +787,7 @@ feature {NONE} -- implementation
 
 feature{NONE} -- implementation key press commands
 
-	try_delete_root_object is
+	try_delete_root_object
 			-- delete selected root object
 		local
 			l_row:EV_GRID_ROW
@@ -806,7 +806,7 @@ feature{NONE} -- implementation key press commands
 
 feature{NONE} -- implementation actions
 
-	on_expanding_disp_object(a_parent:EV_GRID_ROW) is
+	on_expanding_disp_object(a_parent:EV_GRID_ROW)
 			-- action called when expanding a row
 		local
 			l_obj_addr:STRING
@@ -839,7 +839,7 @@ feature{NONE} -- implementation actions
 			end
 		end
 
-	on_collapsing_disp_object(an_obj:ES_EBBRO_DISPLAYABLE;a_parent:EV_GRID_ROW) is
+	on_collapsing_disp_object(an_obj:ES_EBBRO_DISPLAYABLE;a_parent:EV_GRID_ROW)
 			-- not used at the moment
 		do
 			--main_grid.remove_rows (a_parent.index, a_parent.subrow_count_recursive)
@@ -847,8 +847,8 @@ feature{NONE} -- implementation actions
 		end
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -872,10 +872,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

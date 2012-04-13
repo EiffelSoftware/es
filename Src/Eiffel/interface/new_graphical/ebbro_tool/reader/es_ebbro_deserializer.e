@@ -1,4 +1,4 @@
-indexing
+note
 	description: "A deserializer which deserializes objects."
 	author: ""
 	date: "$Date$"
@@ -12,7 +12,7 @@ inherit
 
 feature -- init
 
-	initialization(a_controller:ES_EBBRO_CONTROLLER) is
+	initialization(a_controller:ES_EBBRO_CONTROLLER)
 			-- establishes set up with controller and registers for actions
 		require
 			not_void: a_controller /= void
@@ -48,14 +48,14 @@ feature -- controller
 feature -- Basic operations
 
 
-	retrieve_object(a_medium:IO_MEDIUM) is
+	retrieve_object(a_medium:IO_MEDIUM)
 			-- retrieve an object and store it in last decoded object.
 		require
 			not_void: a_medium /= void
 		deferred
 		end
 
-	clean_up is
+	clean_up
 			-- clean up for next decoding of object
 		do
 			has_error := false
@@ -66,14 +66,14 @@ feature -- Basic operations
 
 feature -- actions
 
-	on_user_file_open(file_name,file_path:STRING) is
+	on_user_file_open(file_name,file_path:STRING)
 			-- user request to decode a object stored in file
 		require
 			not_void: file_name /= void and file_path /= void
 		deferred
 		end
 
-	on_object_decoded is
+	on_object_decoded
 			-- object decoded
 		require
 			not_void: last_decoded_object /= void
@@ -81,7 +81,7 @@ feature -- actions
 			controller.object_decoded_actions.call ([last_decoded_object])
 		end
 
-	on_decode_error is
+	on_decode_error
 			-- error while decoding object
 		require
 			error: has_error
@@ -90,7 +90,7 @@ feature -- actions
 			controller.decoding_error_actions.call([error_message])
 		end
 
-	on_information is
+	on_information
 			-- decode facility has information for user - event to display it
 		require
 			info: has_information
@@ -104,11 +104,11 @@ feature -- actions
 
 feature {NONE} -- Implementation constants
 
-	default_error_string:STRING is "Error while trying to decode object...%NMake sure you selected a file which contains a supported object type."
+	default_error_string:STRING = "Error while trying to decode object...%NMake sure you selected a file which contains a supported object type."
 
 
-;indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -132,10 +132,10 @@ feature {NONE} -- Implementation constants
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

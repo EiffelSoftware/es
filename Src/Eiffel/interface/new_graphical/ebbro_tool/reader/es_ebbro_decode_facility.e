@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Facility for decoding used by the binary deserializer"
 	author: ""
 	date: "$Date$"
@@ -17,7 +17,7 @@ create
 
 feature --init
 
-	make is
+	make
 			-- init
 		do
 			has_error := false
@@ -47,16 +47,16 @@ feature -- access
 
 feature -- implementation constants
 
-	eiffel_session_store_msg:STRING is "Decoding objects stored via eiffel session store mechanism is not supported."
+	eiffel_session_store_msg:STRING = "Decoding objects stored via eiffel session store mechanism is not supported."
 
-	eiffel_basic_store_msg:STRING is "Decoding objects stored via eiffel basic store mechanism is not supported."
+	eiffel_basic_store_msg:STRING = "Decoding objects stored via eiffel basic store mechanism is not supported."
 
-	unknown_type_msg:STRING is "Unknown serialization type of object.%NSupported type is eiffel independent object storage."
+	unknown_type_msg:STRING = "Unknown serialization type of object.%NSupported type is eiffel independent object storage."
 
 feature -- basic operations
 
 
-	retrieved (a_reader: SED_READER_WRITER; a_is_gc_enabled: BOOLEAN): ANY is
+	retrieved (a_reader: SED_READER_WRITER; a_is_gc_enabled: BOOLEAN): ANY
 			-- Deserialization of object from `a_reader'.
 			-- Garbage collection will be enabled if `a_is_gc_enabled'.
 		require else
@@ -96,8 +96,8 @@ feature -- basic operations
 				end
 			end
 		end
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -121,10 +121,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

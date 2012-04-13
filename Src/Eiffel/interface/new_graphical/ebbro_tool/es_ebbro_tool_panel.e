@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Browse through serialized objects."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- User interface initialization
 
-	 build_tool_interface (a_widget: EV_HORIZONTAL_SPLIT_AREA) is
+	 build_tool_interface (a_widget: EV_HORIZONTAL_SPLIT_AREA)
 			-- Builds the tools user interface elements.
 			-- Note: This function is called prior to showing the tool for the first time.
 			--
@@ -106,7 +106,7 @@ feature {NONE} -- User interface initialization
 			end
 		end
 
-	build_view_menu is
+	build_view_menu
 			-- create and populate the view_menu.
 		require
 			view_menu_not_yet_created: view_menu = Void
@@ -173,7 +173,7 @@ feature {NONE} -- User interface initialization
 			view_menu_created: view_menu /= Void and then not view_menu.is_empty
 		end
 
-	init_ebbro is
+	init_ebbro
 			-- initialize
 		do
 			create controller.make
@@ -183,7 +183,7 @@ feature {NONE} -- User interface initialization
 		end
 
 
-	init_actions is
+	init_actions
 			-- registers for actions
 		do
 			controller.object_decoded_actions.extend (agent on_object_decoded(?))
@@ -192,7 +192,7 @@ feature {NONE} -- User interface initialization
 			controller.encoding_error_actions.extend (agent on_encoding_error(?))
 		end
 
-	init_pixmaps is
+	init_pixmaps
 			-- initialize the shared pixmap hashtable
 		do
 			pixmap_hashtable.put (icons.object_type_base_icon, pixmap_base)
@@ -287,7 +287,7 @@ feature {NONE} -- Controller connection
 	controller: ES_EBBRO_CONTROLLER
 			-- controller between GUI and Deserializer/Serializer
 
-	file_opened (a_file_name,a_file_path:STRING) is
+	file_opened (a_file_name,a_file_path:STRING)
 			-- a file opened
 		require
 			not_void: a_file_name /= void and a_file_path /= void
@@ -296,7 +296,7 @@ feature {NONE} -- Controller connection
 			controller.open_file_actions.call ([a_file_name,a_file_path])
 		end
 
-	file_saved (a_displayable: ES_EBBRO_DISPLAYABLE;a_format:INTEGER; a_filename: STRING; a_filepath: STRING) is
+	file_saved (a_displayable: ES_EBBRO_DISPLAYABLE;a_format:INTEGER; a_filename: STRING; a_filepath: STRING)
 			-- save to file
 		do
 			controller.encoding_object_actions.call ([a_displayable,a_format, a_filename, a_filepath])
@@ -317,7 +317,7 @@ feature -- Basic operations
 			end
         end
 
-	set_active_filter_text (a_filter_id:INTEGER) is
+	set_active_filter_text (a_filter_id:INTEGER)
 			-- sets the correct filter text for filtered objects
 		local
 			l_filter_prefix:STRING
@@ -346,13 +346,13 @@ feature -- Basic operations
 			end
 		end
 
-	reset_active_filter_text is
+	reset_active_filter_text
 			-- resets the filter text
 		do
 			active_filter_label.set_text ("")
 		end
 
-	set_right_click_menu_pixmaps (a_menu:EV_MENU;is_left:BOOLEAN) is
+	set_right_click_menu_pixmaps (a_menu:EV_MENU;is_left:BOOLEAN)
 			-- sets the pixmaps in the right_click_menu of the ebbro_grid
 		require
 			non_void:a_menu /= void
@@ -367,7 +367,7 @@ feature -- Basic operations
 			a_menu.i_th (7).set_pixmap (stock_pixmaps.general_save_icon)
 		end
 
-	reset_object_buttons is
+	reset_object_buttons
 			-- resets the buttons: move_left, move_right, delete_object
 		do
 			move_left_button.disable_sensitive
@@ -381,7 +381,7 @@ feature -- Basic operations
 
 feature {ES_EBBRO_GRID} -- Action handlers
 
-	request_open_file is
+	request_open_file
 			-- on opening an object
 			-- show open file dialog
 		local
@@ -397,7 +397,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 			end
 		end
 
-	on_request_save_file (a_displayable:ES_EBBRO_DISPLAYABLE;a_filename:STRING) is
+	on_request_save_file (a_displayable:ES_EBBRO_DISPLAYABLE;a_filename:STRING)
 			-- write the object back to the file
 			-- with overwrite question or not...
 		require
@@ -432,7 +432,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 
 
 
-	on_request_save_file_as (a_displayable: ES_EBBRO_DISPLAYABLE) is
+	on_request_save_file_as (a_displayable: ES_EBBRO_DISPLAYABLE)
 		-- select the file to write to.
 		local
 			dialog:EB_FILE_SAVE_DIALOG
@@ -481,7 +481,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 			end
 		end
 
-	on_custom_serialization is
+	on_custom_serialization
 			-- let user select a class to create a custom serialization form
 		local
 			l_choose_dialog:EB_CHOOSE_CLASS_DIALOG
@@ -493,7 +493,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 			end
 		end
 
-	on_custom_serialization_drop (a_pebble:ANY) is
+	on_custom_serialization_drop (a_pebble:ANY)
 			-- drop occured on custom serialization button
 			-- if its a class_stone -> show custom serialization dialog
 		local
@@ -507,7 +507,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 			end
 		end
 
-	on_object_compare is
+	on_object_compare
 			-- show compare dialog to user
 		local
 			l_diag:ES_EBBRO_COMPARE_OBJECTS_DIALOG
@@ -524,7 +524,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 
 feature {NONE} -- Events
 
-	on_object_decoded (a_obj:ES_EBBRO_DISPLAYABLE) is
+	on_object_decoded (a_obj:ES_EBBRO_DISPLAYABLE)
 			-- object decoded handler
 		do
 			if pending_compare_operation then
@@ -539,26 +539,26 @@ feature {NONE} -- Events
 
 		end
 
-	on_decoding_error (a_msg:STRING) is
+	on_decoding_error (a_msg:STRING)
 			-- object decoded error handler
 		do
 			prompts.show_error_prompt (a_msg, parent_window, void)
 		end
 
-	on_encoding_error (a_msg:STRING) is
+	on_encoding_error (a_msg:STRING)
 			-- object decoded error handler
 		do
 			prompts.show_error_prompt (a_msg, parent_window, void)
 		end
 
 
-	on_information (a_msg:STRING) is
+	on_information (a_msg:STRING)
 			-- object decoding information handler
 		do
 			prompts.show_info_prompt (a_msg, parent_window, void)
 		end
 
-	on_view_addr_column (a_item:EV_CHECK_MENU_ITEM) is
+	on_view_addr_column (a_item:EV_CHECK_MENU_ITEM)
 			-- view address bar
 		do
 			if a_item.is_selected then
@@ -578,7 +578,7 @@ feature {NONE} -- Events
 			left_grid_view.update_obj_addresses
 		end
 
-	on_allow_cyclic (a_item:EV_CHECK_MENU_ITEM) is
+	on_allow_cyclic (a_item:EV_CHECK_MENU_ITEM)
 			-- allow cyclic handler
 		do
 			if a_item.is_selected then
@@ -591,7 +591,7 @@ feature {NONE} -- Events
 			preferences.ebbro_tool_data.cyclic_browsing_preference.set_value ( not preferences.ebbro_tool_data.is_cyclic_browsing_enabled)
 		end
 
-	on_show_split_screen (a_item:EV_CHECK_MENU_ITEM) is
+	on_show_split_screen (a_item:EV_CHECK_MENU_ITEM)
 			-- show split screen handler
 		local
 			l_sel_row:EV_GRID_ROW
@@ -615,7 +615,7 @@ feature {NONE} -- Events
 			preferences.ebbro_tool_data.split_screen_preference.set_value ( not preferences.ebbro_tool_data.is_split_screen_enabled)
 		end
 
-	on_filter_in (a_item:EV_RADIO_MENU_ITEM) is
+	on_filter_in (a_item:EV_RADIO_MENU_ITEM)
 			-- on filter in handler
 		local
 			l_filter_text:STRING
@@ -630,7 +630,7 @@ feature {NONE} -- Events
 			preferences.ebbro_tool_data.filter_in_preference.set_value (true)
 		end
 
-	on_filter_out (a_item:EV_RADIO_MENU_ITEM) is
+	on_filter_out (a_item:EV_RADIO_MENU_ITEM)
 			-- on filter out handler
 		local
 			l_filter_text:STRING
@@ -645,7 +645,7 @@ feature {NONE} -- Events
 			preferences.ebbro_tool_data.filter_in_preference.set_value (false)
 		end
 
-	on_selecting_row (a_row:EV_GRID_ROW;is_on_left_grid:BOOLEAN) is
+	on_selecting_row (a_row:EV_GRID_ROW;is_on_left_grid:BOOLEAN)
 			-- on selecting a row
 		local
 			l_data:TUPLE[ANY,ARRAY[INTEGER]]
@@ -695,19 +695,19 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_move_right is
+	on_move_right
 			-- action when moving a root_object_row to the right of split screen
 		do
 			left_grid_view.on_moving_root_object
 		end
 
-	on_move_left is
+	on_move_left
 			-- action when moving a root_object_row to the left of split screen
 		do
 			right_grid_view.on_moving_root_object
 		end
 
-	on_remove_object is
+	on_remove_object
 			-- action when removing a root_object_row
 		do
 			if is_last_selected_row_on_left then
@@ -717,7 +717,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_undo is
+	on_undo
 			-- action when undo on selected root_object_row is called
 		local
 			l_row: EV_GRID_ROW
@@ -752,7 +752,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_redo is
+	on_redo
 			-- action when redo on selected root_object_row is called
 		local
 			l_row: EV_GRID_ROW
@@ -791,7 +791,7 @@ feature {NONE} -- Events
 
 feature {NONE} -- Factory
 
-	create_widget: EV_HORIZONTAL_SPLIT_AREA is
+	create_widget: EV_HORIZONTAL_SPLIT_AREA
 			-- Create a new container widget upon request
 		do
 			create main_container
@@ -929,13 +929,13 @@ feature {NONE} -- Implementation
 			-- the first object to compare to the next one, which will be deserialized
 			-- used for compare feature
 
-	parent_window: EV_WINDOW is
+	parent_window: EV_WINDOW
 			-- the parent window
 		do
 			Result := window_manager.last_focused_development_window.window
 		end
 
-	show_custom_serialization_selection (a_class_name:STRING) is
+	show_custom_serialization_selection (a_class_name:STRING)
 			-- shows dialog in which the user can select attributes to serialize
 		require
 			valid_name:a_class_name /= void and then not a_class_name.is_empty
@@ -954,7 +954,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	show_custom_serialization_output (an_attribute_list: ARRAYED_LIST [STRING_8];a_class_name:STRING) is
+	show_custom_serialization_output (an_attribute_list: ARRAYED_LIST [STRING_8];a_class_name:STRING)
 			-- shows output dialog of custom_serialization code generator
 		require
 			valid_attributes: an_attribute_list /= void and then not an_attribute_list.is_empty
@@ -966,7 +966,7 @@ feature {NONE} -- Implementation
 			l_diag.show_on_active_window
 		end
 
-	compare_two_objects (a_file_name1,a_file_name2:STRING) is
+	compare_two_objects (a_file_name1,a_file_name2:STRING)
 			-- starts the comparison of two object files
 			-- will set pending_compare_operation to true
 			-- so the on_object_decoded will know how to handle the decoded object
@@ -995,7 +995,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	run_comparison_and_display (an_obj1,an_obj2:ES_EBBRO_DISPLAYABLE) is
+	run_comparison_and_display (an_obj1,an_obj2:ES_EBBRO_DISPLAYABLE)
 			-- once both object files have been deserialized
 			-- this method will run and display the objects
 			-- then run the comparison
@@ -1027,7 +1027,7 @@ feature {NONE} -- Implementation
 
 invariant
 
-indexing
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

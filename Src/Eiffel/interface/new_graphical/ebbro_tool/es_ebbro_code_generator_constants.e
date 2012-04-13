@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Constants for Code Generator."
 	author: "Lucien Hansen"
 	date: "$Date$"
@@ -9,9 +9,9 @@ class
 
 feature -- tokens
 
-	t_tab: STRING is "%T"
+	t_tab: STRING = "%T"
 
-	t_newline: STRING is "%N"
+	t_newline: STRING = "%N"
 
 feature -- indents
 
@@ -19,25 +19,25 @@ feature -- indents
 
 feature -- header strings
 
-	feature_header_comment: STRING is "Adds the custom serialization to 'a_form' object"
+	feature_header_comment: STRING = "Adds the custom serialization to 'a_form' object"
 
-	feature_start_name_string: STRING is "create_custom_form_for_"
+	feature_start_name_string: STRING = "create_custom_form_for_"
 
-	feature_argument_string: STRING is "(a_form: SERIALIZED_FORM)"
+	feature_argument_string: STRING = "(a_form: SERIALIZED_FORM)"
 
-	feature_precondition_string: STRING is "not_void: a_form /= void"
+	feature_precondition_string: STRING = "not_void: a_form /= void"
 
-	feature_locals_string: STRING is "l_list"
+	feature_locals_string: STRING = "l_list"
 
-	feature_locals_type: STRING is "ARRAYED_LIST [STRING]"
+	feature_locals_type: STRING = "ARRAYED_LIST [STRING]"
 
 feature -- body strings
 
 
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -61,10 +61,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

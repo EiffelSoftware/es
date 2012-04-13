@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Object which was decoded."
 	author: ""
 	date: "$Date$"
@@ -15,7 +15,7 @@ create make
 
 feature -- creation
 
-	make(an_old_dtype,new_dtype:INTEGER;a_class_name:STRING) is
+	make(an_old_dtype,new_dtype:INTEGER;a_class_name:STRING)
 			-- init with old dtype and a new dtype and a class name
 		do
 			generic_type := an_old_dtype
@@ -48,7 +48,7 @@ feature --access
 
 feature -- basic operations
 
-	set_header_tuple(a_table:HASH_TABLE[STRING,INTEGER]) is
+	set_header_tuple(a_table:HASH_TABLE[STRING,INTEGER])
 			-- sets the header tuple
 		require
 			not_void: a_table /= void
@@ -57,7 +57,7 @@ feature -- basic operations
 			header_tuple_array := a_table
 		end
 
-	insert_actual_attribute(a_name:STRING;a_object:ANY; a_generic_type: INTEGER) is
+	insert_actual_attribute(a_name:STRING;a_object:ANY; a_generic_type: INTEGER)
 			-- insert an attribute
 		require
 			not_void: a_name /= void
@@ -88,7 +88,7 @@ feature -- basic operations
 
 
 
-	set_special_type (a_dtype: INTEGER) is
+	set_special_type (a_dtype: INTEGER) 
 			-- sets the special type
 		do
 			special_type := a_dtype

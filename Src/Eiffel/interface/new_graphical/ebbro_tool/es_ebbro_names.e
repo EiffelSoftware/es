@@ -9,87 +9,87 @@ class
 
 feature -- Constants - labels
 
-	label_object_decoded:STRING is "Object decoded."
+	label_object_decoded:STRING = "Object decoded."
 
-	label_decoding_object:STRING is "Decoding object..."
+	label_decoding_object:STRING = "Decoding object..."
 
-	label_decoding_error:STRING is "Decoding error."
+	label_decoding_error:STRING = "Decoding error."
 
-	label_startup:STRING is ""
+	label_startup:STRING = ""
 
-	label_filter:STRING is "Filter "
+	label_filter:STRING = "Filter "
 
 	label_out_filter:STRING is "[OUT]"
 
-	label_in_filter:STRING is "[IN]"
+	label_in_filter:STRING = "[IN]"
 
-	label_none_filter:STRING is "None"
+	label_none_filter:STRING = "None"
 
-	label_void_filter:STRING is "Void"
+	label_void_filter:STRING = "Void"
 
-	label_cycle_filter:STRING is "Cycle"
+	label_cycle_filter:STRING = "Cycle"
 
-	l_custom_serialization_selection:STRING is "Select attributes to serialize:"
+	l_custom_serialization_selection:STRING = "Select attributes to serialize:"
 
-	l_custom_serialization_selection_2:STRING is "Select:"
+	l_custom_serialization_selection_2:STRING = "Select:"
 
-	l_custom_serialization_output_copy:STRING is "Copy the following source code:"
+	l_custom_serialization_output_copy:STRING = "Copy the following source code:"
 
-	l_object_comparer_1:STRING is "Object 1"
+	l_object_comparer_1:STRING = "Object 1"
 
-	l_object_comparer_2:STRING is "Object 2"
+	l_object_comparer_2:STRING = "Object 2"
 
 feature -- Constants - Messages
 
-	m_overwrite_object_file:STRING is "Do you really want to overwrite the original object file?"
+	m_overwrite_object_file:STRING = "Do you really want to overwrite the original object file?"
 
-	m_custom_serialization_stone:STRING is "Custom serialization generator only works with compiled classes."
+	m_custom_serialization_stone:STRING = "Custom serialization generator only works with compiled classes."
 
 
 
 feature -- Constants - Interface Names
 
-	t_custom_serialization_dialog:STRING is "Custom Serialization"
+	t_custom_serialization_dialog:STRING = "Custom Serialization"
 
-	t_custom_serialization_output_dialog:STRING is "Custom Serialization - Output"
+	t_custom_serialization_output_dialog:STRING = "Custom Serialization - Output"
 
-	t_object_comparer_dialog:STRING is "Select two Object Files to compare"
+	t_object_comparer_dialog:STRING = "Select two Object Files to compare"
 
 
-	Menu_view_item: STRING is "&View"
+	Menu_view_item: STRING = "&View"
 			-- String for menu "View"
 
-	Menu_view_addr_item: STRING is "&Show Address Column"
+	Menu_view_addr_item: STRING = "&Show Address Column"
 			-- String for menu "Help/show addr"
 
-	Menu_advanced_item: STRING is "&Preferences"
+	Menu_advanced_item: STRING = "&Preferences"
 			-- String for menu "Advanced"
 
-	Menu_advanced_addr_item: STRING is "&Update addresses"
+	Menu_advanced_addr_item: STRING = "&Update addresses"
 			-- String for menu "Advanced/update addresses"
 
-	Menu_advanced_cyclic_item:STRING is "&Enable cyclic browsing"
+	Menu_advanced_cyclic_item:STRING = "&Enable cyclic browsing"
 			-- String for menu "Advanced/Enable cyclic browsing"
 
-	menu_view_split_item:STRING is "&Split screen"
+	menu_view_split_item:STRING = "&Split screen"
 			-- string for menu "View/split screen"
 
-	menu_advanced_filter_options:STRING is "&Filter Options"
+	menu_advanced_filter_options:STRING = "&Filter Options"
 			-- string for menu advanced/filter options
 
-	menu_advanced_filter_in:STRING is "&Filter In"
+	menu_advanced_filter_in:STRING = "&Filter In"
 			--string filter options/filter in
 
-	menu_advanced_filter_out:STRING is "&Filter Out"
+	menu_advanced_filter_out:STRING = "&Filter Out"
 			--string filter options/filter out
 
-	button_custom_selection_all:STRING is "All"
+	button_custom_selection_all:STRING = "All"
 
-	button_custom_selection_none:STRING is "None"
+	button_custom_selection_none:STRING = "None"
 
-	button_custom_selection_invert:STRING is "Invert"
+	button_custom_selection_invert:STRING = "Invert"
 
-	b_custom_serialization_copy:STRING is "Copy All"
+	b_custom_serialization_copy:STRING = "Copy All"
 
 feature -- tooltips
 
@@ -111,8 +111,8 @@ feature -- Internationalization
 
 
 
-;indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -136,10 +136,10 @@ feature -- Internationalization
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

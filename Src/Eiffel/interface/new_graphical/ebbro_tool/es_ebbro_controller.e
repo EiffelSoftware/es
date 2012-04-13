@@ -1,4 +1,4 @@
-indexing
+note
 	description: "The glue between the GUI and the READER"
 	author: ""
 	date: "$Date$"
@@ -12,7 +12,7 @@ create
 
 feature -- creation
 
-	make is
+	make
 			-- init controller
 		local
 			l_deserialization_handler: ES_EBBRO_DESERIALIZATION_HANDLER
@@ -29,7 +29,7 @@ feature -- creation
 
 feature -- establishment
 
-	set_window(a_window:ES_EBBRO_TOOL_PANEL) is
+	set_window(a_window:ES_EBBRO_TOOL_PANEL)
 			-- sets the main window
 		require
 			not_void: a_window /= void
@@ -88,7 +88,7 @@ feature -- GUI
 
 feature {NONE} -- implementation
 
-	init_actions is
+	init_actions
 			-- creates all actions sequences
 		do
 			create open_file_actions
@@ -100,8 +100,8 @@ feature {NONE} -- implementation
 			create encoding_error_actions
 		end
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -125,10 +125,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

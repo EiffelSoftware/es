@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {DESERIALIZATION_HANDLER}."
 	author: ""
 	date: "$Date$"
@@ -15,7 +15,7 @@ create
 
 feature -- Creation
 
-	make (a_controller:ES_EBBRO_CONTROLLER) is
+	make (a_controller:ES_EBBRO_CONTROLLER)
 			-- creation feature
 		require
 			controller_not_void: a_controller /= Void
@@ -42,7 +42,7 @@ feature {NONE} -- Implementation
 		-- deserializer for objects stored in DADL
 
 
-	on_user_file_open(file_name,file_path:STRING) is
+	on_user_file_open(file_name,file_path:STRING)
 			-- user request to decode a object stored in file
 		require
 			not_void: file_name /= void and file_path /= void
@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	on_multiple_file_open(a_list:ARRAYED_LIST[STRING]) is
+	on_multiple_file_open(a_list:ARRAYED_LIST[STRING])
 			-- user request to open multiple files
 		require
 			not_void: a_list /= void
@@ -73,8 +73,8 @@ feature {NONE} -- Implementation
 		end
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -98,10 +98,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

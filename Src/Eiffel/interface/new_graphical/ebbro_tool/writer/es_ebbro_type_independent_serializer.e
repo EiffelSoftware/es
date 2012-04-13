@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
@@ -24,7 +24,7 @@ create
 
 feature --Creation
 
-	make (a_serializer: SED_READER_WRITER) is
+	make (a_serializer: SED_READER_WRITER)
 			-- Initialize current instance
 		do
 			create internal
@@ -44,13 +44,13 @@ feature {NONE} -- Implementation
 	decoded_map: HASH_TABLE[BINARY_DECODED,INTEGER]
 		-- mapping of all decoded objects found using `traversable.traverse'
 
-	decoded_breadth_first_traversable: ES_EBBRO_DECODED_GRAPH_BREADTH_FIRST_TRAVERSABLE is
+	decoded_breadth_first_traversable: ES_EBBRO_DECODED_GRAPH_BREADTH_FIRST_TRAVERSABLE
 			-- Return an instance of DECODED_GRAPH_BREADTH_FIRST_TRAVERSABLE.
 		once
 			Result := create {ES_EBBRO_DECODED_GRAPH_BREADTH_FIRST_TRAVERSABLE}
 		end
 
-	decoded_depth_first_traversable: ES_EBBRO_DECODED_GRAPH_DEPTH_FIRST_TRAVERSABLE is
+	decoded_depth_first_traversable: ES_EBBRO_DECODED_GRAPH_DEPTH_FIRST_TRAVERSABLE
 			-- Return an instance of DECODED_GRAPH_DEPTH_FIRST_TRAVERSABLE.
 		once
 			Result := create {ES_EBBRO_DECODED_GRAPH_DEPTH_FIRST_TRAVERSABLE}
@@ -60,14 +60,14 @@ feature {NONE} -- Implementation
 
 feature -- Access
 
-	set_root_object (a_decoded_object: BINARY_DECODED ) is
+	set_root_object (a_decoded_object: BINARY_DECODED )
 			-- Make 'an_object' the root_object.
 		do
 			traversable.set_root_object (a_decoded_object)
 			is_root_object_set := true
 		end
 
-	write_header (a_list: ARRAYED_LIST [ANY]) is
+	write_header (a_list: ARRAYED_LIST [ANY])
 			-- Write header of storable.
 		local
 			l_dtype_table, l_attr_dtype_table: like type_table
@@ -154,7 +154,7 @@ feature -- Access
 
 
 
-	type_table (a_list: ARRAYED_LIST [ANY]): HASH_TABLE [INTEGER, INTEGER] is
+	type_table (a_list: ARRAYED_LIST [ANY]): HASH_TABLE [INTEGER, INTEGER]
 			-- Given a list of objects `a_list', builds a compact table of the
 			-- dynamic type IDs present in `a_list'.
 			-- it also records the type NAMES in this version
@@ -201,7 +201,7 @@ feature -- Access
 			end
 		end
 
-	write_attributes_decoded (a_decoded: BINARY_DECODED) is
+	write_attributes_decoded (a_decoded: BINARY_DECODED)
 			-- Write attribute description for type whose dynamic type id is `a_dtype'.
 			-- if the object to be written is a decoded
 		local
@@ -267,7 +267,7 @@ feature -- Access
 		end
 
 
-	encode_objects (a_list: ARRAYED_LIST [ANY]) is
+	encode_objects (a_list: ARRAYED_LIST [ANY])
 			-- Encode all objects referenced in `a_list'.
 			-- allow encoding of `DECODED' objects.
 		local
@@ -406,7 +406,7 @@ feature -- Access
 		end
 
 
-	write_object_table (a_list: ARRAYED_LIST [ANY]) is
+	write_object_table (a_list: ARRAYED_LIST [ANY])
 			-- Write mapping between object's reference ID in `a_list' with
 			-- all the necessary information necessary to recreate it at a
 			-- later time.
@@ -526,7 +526,7 @@ feature -- Access
 
 
 
-	encode_special_decoded(a_decoded: BINARY_DECODED) is
+	encode_special_decoded(a_decoded: BINARY_DECODED)
 			-- encode a special type object wrapped in a DECODED object
 			-- note: this has to be of type SPECIAL[ANY], otherwise it wouldn't be wrapped in a DECODED
 		require
@@ -545,7 +545,7 @@ feature -- Access
 			end
 		end
 
-	encode_tuple_decoded(a_decoded: BINARY_DECODED) is
+	encode_tuple_decoded(a_decoded: BINARY_DECODED)
 			-- encode a tuple object wrapped in a DECODED object
 		require
 			is_tuple_decoded: a_decoded.is_tuple
@@ -633,7 +633,7 @@ feature -- Access
 		end
 
 
-	encode_normal_decoded(a_decoded: BINARY_DECODED) is
+	encode_normal_decoded(a_decoded: BINARY_DECODED)
 			-- encode a normal DECODED object
 		require
 			a_decoded_not_special: not a_decoded.is_special
@@ -741,7 +741,7 @@ feature -- Access
 		end
 
 
-	attributes_dynamic_types (a_type_table: like type_table): like type_table is
+	attributes_dynamic_types (a_type_table: like type_table): like type_table
 			-- Table of dynamic types of attributes appearing in `a_type_table'.
 		local
 			l_int: like internal
@@ -822,15 +822,15 @@ feature -- Access
 			end
 		end
 
-	is_dtype_of_decoded(a_dtype: INTEGER): BOOLEAN is
+	is_dtype_of_decoded(a_dtype: INTEGER): BOOLEAN
 			-- tests if a d_type occurs in a DECODED object
 		do
 			result := decoded_map.has (a_dtype)
 		end
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -854,10 +854,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

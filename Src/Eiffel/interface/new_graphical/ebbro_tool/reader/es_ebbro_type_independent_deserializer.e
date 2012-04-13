@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Deserializer which can also handle objects of an unknown type."
 	author: ""
 	date: "$Date$"
@@ -22,7 +22,7 @@ create
 
 feature -- creation
 
-	make (a_deserializer: SED_READER_WRITER) is
+	make (a_deserializer: SED_READER_WRITER)
 			-- init of reader
 		do
 			PRECURSOR(a_deserializer)
@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- basic operations
 
-	decode (a_is_gc_enabled: BOOLEAN) is
+	decode (a_is_gc_enabled: BOOLEAN)
 			-- Decode object graph stored in `deserializer'.
 		local
 			l_count: NATURAL_32
@@ -115,44 +115,44 @@ feature{NONE} -- Implementation
 	next_object_id:INTEGER
 			-- represents the dynamic object id of the next parsed object
 
-	header_tuples:HASH_TABLE[STRING,INTEGER] is
+	header_tuples:HASH_TABLE[STRING,INTEGER]
 			-- all old_dtypes and strings in the header
 		once
 			create result.make(10)
 		end
 
-	unknown_types:ARRAYED_LIST[INTEGER] is
+	unknown_types:ARRAYED_LIST[INTEGER]
 			-- types which are unknown (old dtypes)
 		once
 			create result.make(10)
 		end
 
-	generic_types:HASH_TABLE[ES_EBBRO_UNIVERSAL_TYPE,INTEGER] is
+	generic_types:HASH_TABLE[ES_EBBRO_UNIVERSAL_TYPE,INTEGER]
 			-- all generic types (each one stands for an unknown type old dtype)
 		once
 			create result.make(10)
 		end
 
-	decoded_object_storage:HASH_TABLE[BINARY_DECODED,INTEGER] is
+	decoded_object_storage:HASH_TABLE[BINARY_DECODED,INTEGER]
 			-- all decoded objects (hash is the new object id)
 		once
 			create result.make(10)
 		end
 
-	attribute_references:ARRAYED_LIST[TUPLE[ref_id:INTEGER;new_dtype:INTEGER;attr_name:STRING;generic_type:INTEGER]] is
+	attribute_references:ARRAYED_LIST[TUPLE[ref_id:INTEGER;new_dtype:INTEGER;attr_name:STRING;generic_type:INTEGER]]
 			-- list with all objects which have to be connected to the right decoded object attributes
 		once
 			create result.make(5)
 		end
 
-	get_next_object_id:INTEGER is
+	get_next_object_id:INTEGER
 			-- returns the next object id
 		do
 			result := next_object_id
 			next_object_id := next_object_id + 1
 		end
 
-	read_header (a_count: NATURAL_32) is
+	read_header (a_count: NATURAL_32)
 			-- Read header which contains mapping between dynamic type and their
 			-- string representation.
 		local
@@ -277,7 +277,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	read_object_table (a_count: NATURAL_32) is
+	read_object_table (a_count: NATURAL_32)
 			-- Read object table if any, which has `a_count' objects.
 		local
 			l_objs: like object_references
@@ -376,7 +376,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	read_attributes_unknown_type(a_generic_object:ES_EBBRO_UNIVERSAL_TYPE) is
+	read_attributes_unknown_type(a_generic_object:ES_EBBRO_UNIVERSAL_TYPE)
 			-- read the attributes of an unknown type and update generic object representing this type
 		local
 			l_deser: like deserializer
@@ -403,7 +403,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	decode_object_unknown_type(a_new_obj:BINARY_DECODED) is
+	decode_object_unknown_type(a_new_obj:BINARY_DECODED)
 			-- decode an object of unknown type and store information to provided object of type decoded
 		local
 			l_int: like internal
@@ -472,7 +472,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	decode_unknown_tuple (a_new_obj:BINARY_DECODED) is
+	decode_unknown_tuple (a_new_obj:BINARY_DECODED)
 			-- Decode TUPLE object of type
 		require
 			not_void: a_new_obj /= void
@@ -530,7 +530,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	decode_special_unknown(a_new_obj:BINARY_DECODED) is
+	decode_special_unknown(a_new_obj:BINARY_DECODED)
 			-- decode special ...SPECIAL[ANY]
 		require
 			not_void: a_new_obj /= void
@@ -561,7 +561,7 @@ feature{NONE} -- Implementation
 		end
 
 
-	decode_object (is_root: BOOLEAN) is
+	decode_object (is_root: BOOLEAN)
 			-- Decode one object and store it in `last_decoded_object' if `is_root'.
 		local
 			l_dtype: INTEGER
@@ -694,8 +694,8 @@ feature{NONE} -- Implementation
 				last_header_tuple := header_tuples.deep_twin()
 			end
 		end
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -719,10 +719,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end
