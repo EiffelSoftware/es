@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {DADLE_DESERIALIZER}."
 	author: ""
 	date: "$Date$"
@@ -17,7 +17,7 @@ create
 
 feature --creation
 
-	make is
+	make
 			-- creation
 		do
 			create already_decoded.make (10)
@@ -56,7 +56,7 @@ feature -- basic operations
 
 feature -- actions
 
-	on_user_file_open(file_name,file_path:STRING) is
+	on_user_file_open(file_name,file_path:STRING)
 			-- user request to decode a object stored in file
 		local
 			l_text_file:PLAIN_TEXT_FILE
@@ -102,7 +102,7 @@ feature {NONE} -- Display Helpers
 			-- objects which were already decoded
 
 
-	generate_display_wrap(a_obj:ANY) is
+	generate_display_wrap(a_obj:ANY)
 			-- generates a displayable object, which wrapps a base type object
 		do
 			create last_decoded_object.make_wrapping (a_obj.generating_type)
@@ -112,7 +112,7 @@ feature {NONE} -- Display Helpers
 		end
 
 
---	generate_displayable_object (a_decoded: DADL_DECODED) is
+--	generate_displayable_object (a_decoded: DADL_DECODED)
 			-- generates the displayable root object
 --		require
 --			not_void: a_decoded /= void
@@ -125,7 +125,7 @@ feature {NONE} -- Display Helpers
 --		end
 
 
---	convert_object(a_obj:DADL_DECODED):ES_EBBRO_DISPLAYABLE is
+--	convert_object(a_obj:DADL_DECODED):ES_EBBRO_DISPLAYABLE
 --			-- converts a decoded object into a displayable object
 --		require
 --			not_void: a_obj /= void
@@ -174,7 +174,7 @@ feature {NONE} -- Display Helpers
 --		end
 
 
-;indexing
+note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

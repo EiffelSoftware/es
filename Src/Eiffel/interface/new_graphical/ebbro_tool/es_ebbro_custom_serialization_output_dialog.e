@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- actions
 
-	on_copy is
+	on_copy 
 			-- copy code to clipboard
 		do
 			output_widget.select_all

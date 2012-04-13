@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {ITEM_FACTORY}."
 	author: ""
 	date: "$Date$"
@@ -10,10 +10,9 @@ class
 create
 	make
 
-
 feature -- Creation
 
-	make is
+	make
 			-- standard creation, add all primitive types
 		do
 
@@ -43,7 +42,7 @@ feature -- Creation
 
 feature -- Access
 
-	create_item (a_text: STRING; a_type: STRING;is_parent_cyclic:BOOLEAN) : EV_GRID_ITEM is
+	create_item (a_text: STRING; a_type: STRING;is_parent_cyclic:BOOLEAN) : EV_GRID_ITEM
 			-- create either a EV_LABEL_ITEM, or a EDITABLE_PRIMITIVE_ITEM depending on the type
 		do
 			if is_primitive_type (a_type) and not is_parent_cyclic then
@@ -54,7 +53,7 @@ feature -- Access
 		end
 
 
-	is_primitive_type (a_type: STRING): BOOLEAN is
+	is_primitive_type (a_type: STRING): BOOLEAN
 			-- is a_type a primitive type? Note: here STRINGS are also handled as primitive types,
 			-- though they are actually extended types
 		do
@@ -66,10 +65,9 @@ feature {NONE} -- Implementation
 
 	primitive_types: SET[STRING]
 
-
-;indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -92,10 +90,10 @@ feature {NONE} -- Implementation
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

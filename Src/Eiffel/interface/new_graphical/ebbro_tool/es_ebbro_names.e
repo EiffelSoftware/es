@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Summary description for {ES_EBBRO_NAMES}."
 	author: ""
 	date: "$Date$"
@@ -19,7 +19,7 @@ feature -- Constants - labels
 
 	label_filter:STRING = "Filter "
 
-	label_out_filter:STRING is "[OUT]"
+	label_out_filter:STRING = "[OUT]"
 
 	label_in_filter:STRING = "[IN]"
 
@@ -93,21 +93,21 @@ feature -- Constants - Interface Names
 
 feature -- tooltips
 
-	tt_custom_selection_all: !STRING = "Select all attributes"
-	tt_custom_selection_none: !STRING = "Select none"
-	tt_custom_selection_invert: !STRING = "Invert current selection"
-	tt_custom_serialization_copy:!STRING = "Copy all code to clipboard"
+	tt_custom_selection_all: attached STRING = "Select all attributes"
+	tt_custom_selection_none: attached STRING = "Select none"
+	tt_custom_selection_invert: attached STRING = "Invert current selection"
+	tt_custom_serialization_copy:attached STRING = "Copy all code to clipboard"
 
 feature -- Internationalization
 
-	f_open_button: !STRING = "Open an Object File"
-	f_move_right_button: !STRING = "Move selected root-object to the right"
-	f_move_left_button: !STRING = "Move selected root-object to the left"
-	f_delete_button: !STRING = "Remove selected root-object (Del)"
-	f_custom_serialization_button: !STRING = "Create custom serialization [Click or drop class on this button]"
-	f_object_compare_button:!STRING = "Compare two Object Files"
-	f_redo_button:!STRING = "Redo edit operation on selected root-object"
-	f_undo_button:!STRING = "Undo edit operation on selected root-object"
+	f_open_button: attached STRING = "Open an Object File"
+	f_move_right_button: attached STRING = "Move selected root-object to the right"
+	f_move_left_button: attached STRING = "Move selected root-object to the left"
+	f_delete_button: attached STRING = "Remove selected root-object (Del)"
+	f_custom_serialization_button: attached STRING = "Create custom serialization [Click or drop class on this button]"
+	f_object_compare_button:attached STRING = "Compare two Object Files"
+	f_redo_button:attached STRING = "Redo edit operation on selected root-object"
+	f_undo_button:attached STRING = "Undo edit operation on selected root-object"
 
 
 

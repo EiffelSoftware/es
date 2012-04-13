@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Dialog to let user select attributes for custom serialized form feature."
 	author: "Lucien Hansen"
 	date: "$Date$"
@@ -24,7 +24,7 @@ create
 
 feature --init
 
-	make_with_name (a_class_name: STRING) is
+	make_with_name (a_class_name: STRING)
 			-- init
 		require
 			valid_name:a_class_name /= void and not a_class_name.is_empty
@@ -84,7 +84,7 @@ feature {NONE} -- Initialization
 		ensure then
 		end
 
-	prepare (a_container: EV_VERTICAL_BOX) is
+	prepare (a_container: EV_VERTICAL_BOX)
 			-- Create the controls and setup the layout
 		local
 			controls_box: EV_VERTICAL_BOX
@@ -153,7 +153,7 @@ feature -- Access
 	attribute_list: ARRAYED_LIST [STRING]
 			-- attributes which were selected
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- checks whether the selection can be generated or not
 		do
 			Result := get_class_i.compiled_class /= void
@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 	class_name: STRING
 			-- name of the class
 
-	fill_feature_check_list is
+	fill_feature_check_list
 			-- fill the feature_check_list control with the attributes from 'class_name'
 		local
 			l_internal: INTERNAL
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	get_class_i: CLASS_I is
+	get_class_i: CLASS_I
 			-- Find the corresponding class_i, depending on the name.
 		local
 			loc_list: LIST [CLASS_I]
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	generate_item_tooltip (a_type_str:STRING;a_signature:STRING): STRING is
+	generate_item_tooltip (a_type_str:STRING;a_signature:STRING): STRING
 			-- create the tooltip for a ev_item -> which is holding an attribtue
 		do
 			create Result.make_empty
@@ -226,37 +226,37 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- actions
 
-	on_select_all is
+	on_select_all
 			-- select all attributes
 		do
 			feature_check_list.do_all (agent select_item(?))
 		end
 
-	select_item (a_item: EV_LIST_ITEM) is
+	select_item (a_item: EV_LIST_ITEM)
 			-- select item in feature_check_list
 		do
 			feature_check_list.check_item (a_item)
 		end
 
-	on_select_none is
+	on_select_none
 			-- select all attributes
 		do
 			feature_check_list.do_all (agent unselect_item(?))
 		end
 
-	unselect_item (a_item: EV_LIST_ITEM) is
+	unselect_item (a_item: EV_LIST_ITEM)
 			-- unselect selection
 		do
 			feature_check_list.uncheck_item (a_item)
 		end
 
-	on_select_invert is
+	on_select_invert
 			-- select all attributes
 		do
 			feature_check_list.do_all (agent invert_item(?))
 		end
 
-	invert_item (a_item: EV_LIST_ITEM) is
+	invert_item (a_item: EV_LIST_ITEM)
 			-- invert selection
 		do
 			if feature_check_list.is_item_checked (a_item) then
@@ -270,7 +270,7 @@ feature {NONE} -- actions
 
 feature {NONE} -- Vision2 events
 
-	on_ok is
+	on_ok
 			-- Terminate the dialog.
 		local
 			l_list: DYNAMIC_LIST [EV_LIST_ITEM]
@@ -295,7 +295,7 @@ feature {NONE} -- Vision2 events
 
 		end
 
-	on_cancel is
+	on_cancel
 			-- Terminate the dialog and clear the selection.
 		do
 			selected := False
@@ -311,8 +311,8 @@ feature {NONE} -- Controls
 
 invariant
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -336,11 +336,11 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -571,7 +571,7 @@ feature {NONE} -- Events
 			preferences.ebbro_tool_data.show_addr_column_preference.set_value ( not preferences.ebbro_tool_data.is_addr_column_shown)
 		end
 
-	on_update_addr is
+	on_update_addr 
 			-- update address handler
 		do
 			right_grid_view.update_obj_addresses

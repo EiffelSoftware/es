@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Persistence constants used in Ebbro."
 	author: "Lucien Hansen"
 	date: "$Date$"
@@ -10,17 +10,17 @@ deferred class
 
 feature -- serialization / deserialization
 
-	dadl_file_ending: STRING is ".adls"
+	dadl_file_ending: STRING = ".adls"
 
-	binary_file_ending: STRING is ".*"
+	binary_file_ending: STRING = ".*"
 
-	dadl_format_id: INTEGER is 1
+	dadl_format_id: INTEGER = 1
 
-	binary_format_id: INTEGER is 2
+	binary_format_id: INTEGER = 2
 
 feature -- dialog filters
 
-	dadl_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	dadl_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL]
 			-- filter for dadl files
 		once
 			create result
@@ -28,7 +28,7 @@ feature -- dialog filters
 			result.put ("dadl Files ("+result.item (1).out+")", 2)
 		end
 
-	binary_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	binary_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL]
 			-- filter for binary files
 		once
 			create result
@@ -36,7 +36,7 @@ feature -- dialog filters
 			result.put ("Binary Files ("+result.item (1).out+")", 2)
 		end
 
-	all_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	all_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL]
 			-- filter for binary files
 		once
 			create result
@@ -45,8 +45,8 @@ feature -- dialog filters
 		end
 
 
-indexing
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -70,10 +70,10 @@ indexing
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

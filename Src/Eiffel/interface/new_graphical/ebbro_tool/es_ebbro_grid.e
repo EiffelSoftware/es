@@ -33,7 +33,7 @@ feature -- init
 		end
 
 
-	set_up is
+	set_up
 			-- set up default settings, visualization
 		do
 			enable_tree
@@ -348,7 +348,7 @@ feature -- actions
 			tree_builder.set_allow_cyclic_browsing (a_value)
 		end
 
-	update_obj_addresses is
+	update_obj_addresses 
 			-- updated the object addresses within column 4
 		do
 			tree_builder.update_obj_addresses

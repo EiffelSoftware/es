@@ -161,7 +161,7 @@ feature -- Access
 		local
 			l_dtype: INTEGER
 			l_int: like internal
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 			l_area: SPECIAL [ANY]
 			i, nb: INTEGER
 
@@ -280,7 +280,7 @@ feature -- Access
 			l_obj: ANY
 			i, nb: INTEGER
 			l_area: SPECIAL [ANY]
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 			l_dec: BINARY_DECODED
 		do
 			l_int := internal
@@ -419,7 +419,7 @@ feature -- Access
 			l_dtype, l_spec_item_type: INTEGER
 			l_obj: ANY
 			l_area: SPECIAL [ANY]
-			l_array: ?ARRAY [ANY]
+			l_array: detachable ARRAY [ANY]
 			l_dec: BINARY_DECODED
 		do
 			if is_for_fast_retrieval then
