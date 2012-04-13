@@ -36,10 +36,13 @@ feature -- Basic operation
 			l_boolean_count := l_boolean_expressions.count
 			l_integer_expressions := integer_expressions (a_base_expressions)
 			l_integer_count := l_integer_expressions.count
+			l_reference_expressions := reference_expressions (a_base_expressions)
+			l_reference_count := l_reference_expressions.count
 
-			last_derived_skeleton.resize (l_boolean_count * 2 + 3 * l_integer_count * (l_integer_count + 1) + 2 * l_reference_count)
+			last_derived_skeleton.resize (l_boolean_count * 2 + 3 * l_integer_count * (l_integer_count + 1) + 2 * l_reference_count + 1)
 			last_derived_skeleton.merge (skeleton_based_on_booleans (l_boolean_expressions))
 			last_derived_skeleton.merge (skeleton_based_on_integers (l_integer_expressions))
+			last_derived_skeleton.merge (skeleton_based_on_references (l_reference_expressions))
 		end
 
 	reset_builder
@@ -132,7 +135,7 @@ feature{NONE} -- Expressions of different types
 			loop
 				l_exp := a_expressions.item_for_iteration
 				l_type := l_exp.type
-				if not l_type.is_formal and then not l_type.is_void and then not l_type.is_basic then
+				if not l_type.is_void and then not l_type.is_basic then
 					Result.force (l_exp)
 				end
 				a_expressions.forth
@@ -147,26 +150,55 @@ feature{NONE} -- Program state aspects
 		require
 			expressions_attached: a_expressions /= Void
 		local
-			l_exp: EPA_EXPRESSION
-			l_aspect, l_aspect_neg: AFX_PROGRAM_STATE_ASPECT_VOID_CHECK
+			l_combinations: LINKED_LIST [EPA_HASH_SET [EPA_EXPRESSION]]
+			l_comb: EPA_HASH_SET [EPA_EXPRESSION]
+			l_left, l_right: EPA_EXPRESSION
+			l_context_class, l_written_class: CLASS_C
+			l_context_feature: FEATURE_I
+			l_aspect: AFX_PROGRAM_STATE_ASPECT_REFERENCE_COMPARISON
+
+--			l_exp: EPA_EXPRESSION
+--			l_aspect, l_aspect_neg: AFX_PROGRAM_STATE_ASPECT_VOID_CHECK
 		do
-			create Result.make_basic (context_class, context_feature, a_expressions.count * 2 + 1)
+			if a_expressions.count < 2 then
+				create Result.make_basic (context_class, context_feature, 1)
+			else
+				l_combinations := a_expressions.combinations (2)
+				create Result.make_basic (context_class, context_feature, l_combinations.count * 2 + 1)
+				l_context_class := context_class
+				l_written_class := written_class
+				l_context_feature := context_feature
+				from l_combinations.start
+				until l_combinations.after
+				loop
+					l_comb := l_combinations.item_for_iteration
+					check l_comb.count = 2 end
 
-			from a_expressions.start
-			until a_expressions.after
-			loop
-				l_exp := a_expressions.item_for_iteration
+					l_left := l_comb.first
+					l_right := l_comb.last
+					create l_aspect.make_comparison (l_context_class, l_context_feature, l_written_class, l_left, l_right, {AFX_PROGRAM_STATE_ASPECT_REFERENCE_COMPARISON}.operator_reference_eq)
+					Result.force (l_aspect)
+					create l_aspect.make_comparison (l_context_class, l_context_feature, l_written_class, l_left, l_right, {AFX_PROGRAM_STATE_ASPECT_REFERENCE_COMPARISON}.operator_reference_ne)
+					Result.force (l_aspect)
 
-				create l_aspect.make_void_check (context_class, context_feature, written_class,
-						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_equal)
-				Result.force (l_aspect)
-
-				create l_aspect_neg.make_void_check (context_class, context_feature, written_class,
-						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_not_equal)
-				Result.force (l_aspect_neg)
-
-				a_expressions.forth
+					l_combinations.forth
+				end
 			end
+--			from a_expressions.start
+--			until a_expressions.after
+--			loop
+--				l_exp := a_expressions.item_for_iteration
+
+--				create l_aspect.make_void_check (context_class, context_feature, written_class,
+--						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_equal)
+--				Result.force (l_aspect)
+
+--				create l_aspect_neg.make_void_check (context_class, context_feature, written_class,
+--						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_not_equal)
+--				Result.force (l_aspect_neg)
+
+--				a_expressions.forth
+--			end
 		end
 
 	skeleton_based_on_booleans (a_expressions: EPA_HASH_SET [EPA_EXPRESSION]): EPA_STATE_SKELETON

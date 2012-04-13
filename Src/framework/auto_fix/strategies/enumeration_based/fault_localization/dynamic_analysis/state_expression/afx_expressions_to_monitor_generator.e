@@ -12,6 +12,8 @@ inherit
 
 	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
 
+	EPA_UTILITY
+
 feature -- Access
 
 	last_expressions_to_monitor: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
@@ -36,6 +38,10 @@ feature -- Basic operation
 			l_base_expressions, l_expressions_to_monitor: EPA_HASH_SET [EPA_EXPRESSION]
 			l_constructor: AFX_BASIC_TYPE_EXPRESSION_CONSTRUCTOR
 			l_rank: AFX_EXPR_RANK
+			l_operands: DS_HASH_TABLE [TYPE_A, STRING_8]
+			l_operand_expression: EPA_EXPRESSION
+			l_operand_name: STRING
+			l_operand_type: TYPE_A
 		do
 			reset
 
@@ -70,6 +76,20 @@ feature -- Basic operation
 				create l_constructor
 				l_constructor.construct_from (l_base_expressions)
 				l_expressions_to_monitor := l_constructor.last_constructed_expressions
+
+					-- Add also operands of reference types.
+				l_operands := operand_name_types_with_feature (a_feature.feature_, a_feature.context_class)
+				from l_operands.start
+				until l_operands.after
+				loop
+					l_operand_name := l_operands.key_for_iteration
+					l_operand_type := l_operands.value (l_operand_name)
+					create {EPA_AST_EXPRESSION} l_operand_expression.make_with_text (a_feature.context_class, a_feature.feature_, l_operand_name, a_feature.written_class)
+					l_expressions_to_monitor.put (l_operand_expression)
+
+					l_operands.forth
+				end
+
 					-- Expressions to monitor with rankings.
 				from
 					create l_rank.make ({AFX_EXPR_RANK}.rank_basic)

@@ -76,12 +76,43 @@ feature -- Timing in MILLISECONDS.
 
 	clean_up
 			-- Clean up session.
+		local
+			l_default_report_file, l_fault_signature: STRING
+			l_new_report_file: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_now: DATE_TIME
 		do
 			if proxy_logger /= Void and then proxy_logger.log_file /= Void and then proxy_logger.log_file.is_open_write then
 				proxy_logger.log_file.close
 			end
 			if result_logger /= Void and then result_logger.log_file /= Void and then result_logger.log_file.is_open_write then
 				result_logger.log_file.close
+			end
+
+				-- Rename the default report file after the signature of the fault under fix.
+			if config.is_using_default_report_file_path and then exception_signature /= Void then
+				l_default_report_file := config.report_file_path
+
+					-- New report file name.
+				create l_new_report_file.make_from_string (config.output_directory)
+				l_fault_signature := exception_signature.id
+				l_fault_signature.replace_substring_all (".", "__")
+				l_new_report_file.set_file_name (l_fault_signature)
+				l_new_report_file.add_extension (config.report_file_extension)
+
+					-- Rename the existing report for the same fault.
+				create l_file.make (l_new_report_file)
+				if l_file.exists then
+					create l_now.make_now
+					l_file.change_name (l_new_report_file + "." + l_now.seconds.out)
+				end
+
+					-- Rename the default report name to the new name.
+				create l_file.make (l_new_report_file)
+				if not l_file.exists then
+					create l_file.make (l_default_report_file)
+					l_file.change_name (l_new_report_file)
+				end
 			end
 		end
 
@@ -168,15 +199,14 @@ feature -- Logging
 			-- Initialize logging.
 		local
 			l_result_path: STRING
+			l_report_file: FILE_NAME
 		do
 			create progression_monitor.make
 			event_actions.subscribe_action_listener (progression_monitor)
 
 			l_result_path := config.report_file_path
-			if l_result_path /= Void and then not l_result_path.is_empty then
-				create result_logger.make (create {PLAIN_TEXT_FILE}.make_open_write (l_result_path))
-				event_actions.subscribe_action_listener (result_logger)
-			end
+			create result_logger.make (create {PLAIN_TEXT_FILE}.make_open_write (l_result_path))
+			event_actions.subscribe_action_listener (result_logger)
 
 			create proxy_logger.make(create {PLAIN_TEXT_FILE}.make_open_write (config.proxy_log_path), False)
 			event_actions.subscribe_action_listener (proxy_logger)

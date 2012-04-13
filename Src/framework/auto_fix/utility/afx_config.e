@@ -152,10 +152,33 @@ feature -- Access
 			Result := l_path
 		end
 
+	is_using_default_report_file_path: BOOLEAN
+			-- Is AutoFix using the default report file path?
+
 	report_file_path: STRING
 			-- Path to the AutoFix report file.
+		local
+			l_report_file: FILE_NAME
 		do
+			if is_using_default_report_file_path and then report_file_path_cache = Void then
+				create l_report_file.make_from_string (output_directory)
+				l_report_file.set_file_name (default_report_file_name)
+				l_report_file.add_extension (report_file_extension)
+				report_file_path_cache := l_report_file
+			end
 			Result := report_file_path_cache
+		end
+
+	default_report_file_name: STRING
+			-- Default report file name for fixing.
+		once
+			Result := "default_report_file"
+		end
+
+	report_file_extension: STRING
+			-- Extension name of the report file.
+		once
+			Result := "afr"
 		end
 
 	maximum_session_length_in_minutes: NATURAL
@@ -172,18 +195,6 @@ feature -- Constant
 
 	Afx_cluster_name: STRING = "afx_cluster"
 			-- Name of AFX_cluster.
-
-feature -- State retrieval related
-
---	state_test_case_class_name: detachable STRING
---			-- Name of the test case class used for state retrieval
---			-- A test case class name starts with "TC__".
---		do
---			if state_test_case_class_name_cache = Void then
---				state_test_case_class_name_cache := first_test_case_class_name
---			end
---			Result := state_test_case_class_name_cache
---		end
 
 feature -- Test case analysis
 
@@ -638,6 +649,7 @@ feature -- Setting
 			path_not_empty: a_path /= VOid and then not a_path.is_empty
 		do
 			report_file_path_cache := a_path
+			is_using_default_report_file_path := false
 		end
 
 feature{NONE} -- Implementation
@@ -665,37 +677,6 @@ feature{NONE} -- Implementation
 
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
-
-feature{NONE} -- Implementation
-
---	first_test_case_class_name: detachable STRING is
---			-- Name of the test case class
---			-- Search for a class whose name starts with "TC__", it is a naming convention
---			-- for test cases. The first found class is returned.
---			-- Note: If there are more than one test case classes in a probject, there is no
---			-- guarantee which one will be returned.
---		local
---			l_classes: CLASS_C_SERVER
---			i: INTEGER
---			n: INTEGER
---			l_done: BOOLEAN
---			l_class: CLASS_C
---		do
---			l_classes := eiffel_system.classes
---			i := l_classes.lower
---			n := l_classes.count
-
---			from
---			until
---				i = n or else Result /= Void
---			loop
---				l_class := l_classes.item (i)
---				if l_class /= Void and then l_class.already_compiled and then l_class.name.starts_with (once "TC__") then
---					Result := l_class.name.twin
---				end
---				i := i + 1
---			end
---		end
 
 invariant
 

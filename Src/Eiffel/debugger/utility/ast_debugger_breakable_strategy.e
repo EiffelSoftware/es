@@ -280,12 +280,12 @@ feature {NONE} -- Element change
 					s := a_text
 				else
 					s := text_of (l_as)
-					i := s.index_of ('%N', 1)
-					if i > 0 then
-						s := s.substring (1, i - 1)
-					else
-						s := s.string
-					end
+--					i := s.index_of ('%N', 1)
+--					if i > 0 then
+--						s := s.substring (1, i - 1)
+--					else
+--						s := s.string
+--					end
 				end
 				create fi.make (3)
 				l_line := a_line
@@ -313,12 +313,12 @@ feature {NONE} -- Element change
 					s := a_text
 				else
 					s := text_of (l_as)
-					i := s.index_of ('%N', 1)
-					if i > 0 then
-						s := s.substring (1, i - 1)
-					else
-						s := s.string
-					end
+--					i := s.index_of ('%N', 1)
+--					if i > 0 then
+--						s := s.substring (1, i - 1)
+--					else
+--						s := s.string
+--					end
 				end
 				l_line := a_line
 				if l_line = 0 then

@@ -313,26 +313,35 @@ feature{NONE} -- Implementation operations
 
 				-- Node list containing only the instruction right after the position of `a_target'.
 			l_bp_index := a_target.bp_index
-			l_node := l_recipient.ast_structure.surrounding_instruction (l_bp_index)
-			create l_node_list.make
-			l_node_list.force (l_node)
-			Result.force ([l_scope_level, l_node_list])
-
-				-- Node list containing all instructions after `a_target', but within the same instruction list.
-			if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as lt_list and then lt_list.count > 1 then
+			l_scope_level := 1
+			from
+				l_node := l_recipient.ast_structure.surrounding_instruction (l_bp_index)
+			until
+				l_node = Void or else l_node.is_feature_node or else l_scope_level > config.max_fixing_location_scope_level
+			loop
 				create l_node_list.make
-				from lt_list.start
-				until lt_list.after
-				loop
-					l_node := lt_list.item_for_iteration
-					if l_node.breakpoint_slot >= l_bp_index then
-						l_node_list.force (l_node)
+				l_node_list.force (l_node)
+				Result.force ([l_scope_level, l_node_list])
+
+					-- Node list containing all instructions after `a_target', but within the same instruction list.
+				if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as lt_list and then lt_list.count > 1 then
+					create l_node_list.make
+					from lt_list.start
+					until lt_list.after
+					loop
+						l_node := lt_list.item_for_iteration
+						if l_node.breakpoint_slot >= l_bp_index then
+							l_node_list.force (l_node)
+						end
+						lt_list.forth
 					end
-					lt_list.forth
+					if l_node_list.count > 1 then
+						Result.force ([l_scope_level, l_node_list])
+					end
 				end
-				if l_node_list.count > 1 then
-					Result.force ([l_scope_level, l_node_list])
-				end
+
+				l_node := l_node.parent
+				l_scope_level := l_scope_level + 1
 			end
 		end
 
