@@ -28,8 +28,7 @@ feature{NONE} -- Initlization
 
 			create internal_shared
 			create l_button_cell.make
-			-- shadowless_square_bezel_style = 6
-			l_button_cell.set_bezel_style_ (6)
+			l_button_cell.set_bezel_style ({NS_BUTTON_CELL}.shadowless_square_bezel_style)
 		end
 
 feature -- Redefine
@@ -88,12 +87,11 @@ feature -- Redefine
 --					io.put_string ("Drawing Button item at (" + l_rect.x.out + ", " + l_rect.y.out + ") size (" + l_rect.width.out + "," + l_rect.height.out + ")%N")
 					-- Paint button background
 					if a_arguments.item.state = {SD_TOOL_BAR_ITEM_STATE}.pressed then
-						l_button_cell.set_highlighted_ (True)
+						l_button_cell.set_highlighted (True)
 					else
-						l_button_cell.set_highlighted_ (False)
+						l_button_cell.set_highlighted (False)
 					end
---					l_button_cell.draw_bezel (create {NS_RECT}.make_rect (l_rect.x, l_rect.y, l_rect.width, l_rect.height), tool_bar_imp.cocoa_view)
-					l_button_cell.draw_bezel_with_frame__in_view_ (create {NS_RECT}.make_with_coordinates (l_rect.x, l_rect.y, l_rect.width, l_rect.height), tool_bar_imp.cocoa_view)
+					l_button_cell.draw_bezel (create {NS_RECT}.make_rect (l_rect.x, l_rect.y, l_rect.width, l_rect.height), tool_bar_imp.cocoa_view)
 
 					draw_pixmap (a_arguments)
 					draw_text (a_arguments)
@@ -146,16 +144,15 @@ feature {NONE} -- Implementation
 			-- Draw pixmap
 		local
 			l_coordinate: EV_COORDINATE
-			l_pixmap_imp: EV_PIXMAP_IMP
 		do
 			if attached {SD_TOOL_BAR_BUTTON} a_arguments.item as l_button and then ((l_button.pixmap /= Void or l_button.pixel_buffer /= Void) and l_button.tool_bar /= Void) then
 				l_coordinate := l_button.pixmap_position
 				if attached l_button.pixmap then
 					l_button.pixmap.stretch (20, 20)
 					--a_arguments.tool_bar.draw_pixmap (l_coordinate.x, l_coordinate.y, l_button.pixmap)
-					l_pixmap_imp ?= l_button.pixmap.implementation
-					l_button_cell.draw_image__with_frame__in_view_ (l_pixmap_imp.image, create {NS_RECT}.make_with_coordinates (l_coordinate.x, l_coordinate.y, 20, 20), tool_bar_imp.cocoa_view)
---					l_button_cell.draw_image (l_pixmap_imp.image, create {NS_RECT}.make_rect (l_coordinate.x, l_coordinate.y, 20, 20), tool_bar_imp.cocoa_view)
+					check attached {EV_PIXMAP_IMP} l_button.pixmap.implementation as l_pixmap_imp then
+						l_button_cell.draw_image (l_pixmap_imp.image, create {NS_RECT}.make_rect (l_coordinate.x, l_coordinate.y, 20, 20), tool_bar_imp.cocoa_view)
+					end
 				end
 			end
 		end
@@ -172,19 +169,17 @@ feature {NONE} -- Implementation
 					l_text_vision_rect := l_button.text_rectangle
 					--da.draw_text_top_left (l_text_vision_rect.x, l_text_vision_rect.y, l_button.text)
 
-					create l_string.make_with_string_ (create {NS_STRING}.make_with_eiffel_string (l_button.text))
-					l_rect := l_button_cell.draw_title__with_frame__in_view_ (l_string, create {NS_RECT}.make_with_coordinates (l_text_vision_rect.x, l_text_vision_rect.y, l_text_vision_rect.width, l_text_vision_rect.height), tool_bar_imp.cocoa_view)
+					create l_string.make_with_string (create {NS_STRING}.make_with_string(l_button.text))
+					l_rect := l_button_cell.draw_title (l_string, create {NS_RECT}.make_rect (l_text_vision_rect.x, l_text_vision_rect.y, l_text_vision_rect.width, l_text_vision_rect.height), tool_bar_imp.cocoa_view)
 				end
 			end
 		end
 
 	tool_bar_imp: EV_DRAWING_AREA_IMP
 		local
-			l_tool_bar_imp: EV_DRAWING_AREA_IMP
-		do
-			l_tool_bar_imp ?= tool_bar.implementation
-			check not_void: l_tool_bar_imp /= Void end
-			Result := l_tool_bar_imp
+			check attached {EV_DRAWING_AREA_IMP} tool_bar.implementation as l_tool_bar_imp then
+				Result := l_tool_bar_imp
+			end
 		end
 
 
@@ -198,7 +193,7 @@ feature {NONE} -- Implementation
 
 note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

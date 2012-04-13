@@ -47,9 +47,9 @@ feature -- Command
 	expose_selected (a_width: INTEGER; a_tab_info: SD_NOTEBOOK_TAB_INFO)
 			-- <Precursor>
 		local
---			l_pixmap_imp: EV_PIXMAP_IMP
---			l_segmented_control: NS_SEGMENTED_CONTROL
---			icon: NS_IMAGE
+			l_pixmap_imp: EV_PIXMAP_IMP
+			l_segmented_control: NS_SEGMENTED_CONTROL
+			icon: NS_IMAGE
 		do
 			Precursor {SD_NOTEBOOK_TAB_DRAWER_I} (a_width, a_tab_info)
 			expose (a_width, a_tab_info)
@@ -64,51 +64,42 @@ feature -- Command
 
 	expose (a_width: INTEGER;  a_tab_info: SD_NOTEBOOK_TAB_INFO)
 		local
-			l_pixmap_imp: EV_PIXMAP_IMP
 			l_segmented_control: NS_SEGMENTED_CONTROL
 			icon: NS_IMAGE
 			trans: NS_AFFINE_TRANSFORM
-			l_size: NS_SIZE
 		do
 			start_draw
 
-			l_pixmap_imp ?= buffer_pixmap.implementation
-			check not_void: l_pixmap_imp /= Void end
+			check attached {EV_PIXMAP_IMP} buffer_pixmap.implementation as l_pixmap_imp then
 
-			l_pixmap_imp.prepare_drawing
+				l_pixmap_imp.prepare_drawing
 
-			create trans.make
-			trans.translate_x_by__y_by_ ({REAL_32}0.0, l_pixmap_imp.image.size.height.truncated_to_real)
-			trans.scale_x_by__y_by_ ({REAL_32}1.0, {REAL_32}-1.0)
---			[NSAffineTransform concat] not present in Matteo's framework
---			trans.concat
+				create trans.make
+				trans.translate_by_xy ({REAL_32}0.0, l_pixmap_imp.image.size.height.truncated_to_real)
+				trans.scale_by_xy ({REAL_32}1.0, {REAL_32}-1.0)
+				trans.concat
 
-			create l_segmented_control.make
-			l_segmented_control.set_segment_count_ (1)
-			-- segment_style_small_quare = 6
-			l_segmented_control.set_segment_style_ (6)
-			if is_selected then
-				l_segmented_control.set_selected_segment_ (0)
+				create l_segmented_control.make
+				l_segmented_control.set_segment_count (1)
+				l_segmented_control.set_segment_style ({NS_SEGMENTED_CONTROL}.segment_style_small_square)
+				if is_selected then
+					l_segmented_control.set_selected_segment (0)
+				end
+				l_segmented_control.set_label_for_segment (text, 0)
+				l_segmented_control.set_enabled_for_segment (True, 0)
+				l_segmented_control.set_width_for_segment (a_width-4, 0)
+				if attached {EV_PIXMAP_IMP} pixmap.implementation as l_icon_imp then
+					icon := l_icon_imp.image.twin
+					--icon.set_flipped (True)
+					icon.set_size (create {NS_SIZE}.make_size (20, 20))
+					l_segmented_control.set_image_for_segment (icon, 0)
+				end
+
+				l_segmented_control.set_frame (create {NS_RECT}.make_rect (0, 0, a_width, buffer_pixmap.height + 1))
+				l_segmented_control.draw_rect (create {NS_RECT}.make_rect (0, 0, a_width, buffer_pixmap.height + 1))
+
+				l_pixmap_imp.finish_drawing
 			end
-			l_segmented_control.set_label__for_segment_ (create {NS_STRING}.make_with_eiffel_string (text), 0)
-			l_segmented_control.set_enabled__for_segment_ (True, 0)
-			l_segmented_control.set_width__for_segment_ (a_width-4, 0)
-			if attached {EV_PIXMAP_IMP} pixmap.implementation as l_icon_imp then
-				-- Twin is not allowd on wrapped objects
---				icon := l_icon_imp.image.twin
-				--icon.set_flipped (True)
-				icon := l_icon_imp.image
-				create l_size.make
-				l_size.set_width (20)
-				l_size.set_height (20)
-				icon.set_size_ (l_size)
-				l_segmented_control.set_image__for_segment_ (icon, 0)
-			end
-
-			l_segmented_control.set_frame_ (create {NS_RECT}.make_with_coordinates (0, 0, a_width, buffer_pixmap.height + 1))
-			l_segmented_control.draw_rect_ (create {NS_RECT}.make_with_coordinates (0, 0, a_width, buffer_pixmap.height + 1))
-
-			l_pixmap_imp.finish_drawing
 
 
 --			pixmap.stretch (20, 20)
@@ -162,7 +153,7 @@ feature {NONE}  -- Implementation
 
 note
 	library:	"SmartDocking: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
