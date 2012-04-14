@@ -93,6 +93,7 @@ feature {NONE} -- Initialization
 			create metadata.make (database)
 			create transaction_isolation_level
 			create default_object_graph.make_default
+			create id_manager.make
 		ensure
 			strategy_set: strategy = a_strategy
 		end

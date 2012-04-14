@@ -124,6 +124,7 @@ feature {NONE} -- Initialization
 			create cache.make
 			create transaction_isolation_level
 			create default_object_graph.make_default
+			create id_manager.make
 		end
 
 feature {NONE} -- Implementation

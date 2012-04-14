@@ -110,11 +110,25 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		end
 
 
+feature {PS_EIFFELSTORE_EXPORT} -- Status
+
+	is_identified (an_object:ANY):BOOLEAN
+		-- Is `an_object' already identified and thus registered in this repository?
+		do
+			Result:=id_manager.is_identified (an_object)
+		end
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
 		-- Wipe out all data
 		deferred
 		end
+
+feature {NONE} -- Implementation
+
+	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
+
 
 end
