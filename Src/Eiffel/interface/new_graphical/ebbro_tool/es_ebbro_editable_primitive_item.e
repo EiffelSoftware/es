@@ -47,7 +47,7 @@ feature {NONE}-- Implementation
 				if not a_value.is_equal (text) and validate_input (a_value) then
 					-- only update if value is different than already exisiting value
 					l_root_obj := get_root_object
-					if {l_root_disp: ES_EBBRO_DISPLAYABLE} l_root_obj then
+					if attached {ES_EBBRO_DISPLAYABLE} l_root_obj as l_root_disp then
 						if l_root_disp.is_wrapper then
 							if find_row_nondecoded (row.index - get_root_row_index + 1, l_root_disp.wrapped_object, a_value) = 0 then
 								--set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 180, 180))
@@ -77,7 +77,7 @@ feature {NONE}-- Implementation
 						update_all_possible_shared_values(a_value)
 
 						--add to history
-						if {l_root_disp2: ES_EBBRO_DISPLAYABLE} l_root_obj then
+						if attached {ES_EBBRO_DISPLAYABLE} l_root_obj as l_root_disp2 then
 							l_root_disp2.history.add_item (current, current.text, a_value)
 						end
 					end

@@ -74,7 +74,8 @@ feature -- basic operations
 				end
 
 			else
-				if a_format = binary_format_id and then {l_bin_dec:BINARY_DECODED} a_displayable.original_decoded then
+				if a_format = binary_format_id and then attached {BINARY_DECODED} a_displayable.original_decoded as l_bin_dec then
+			--	if a_format = binary_format_id and then {l_bin_dec:BINARY_DECODED} a_displayable.original_decoded then
 					-- object that was displayed is attached as a `BINARY_DECODED' object, use the `TYPE_INDEPENDENT_SERIALIZER'
 					l_type_ind_ser.set_is_for_fast_retrieval (false)
 

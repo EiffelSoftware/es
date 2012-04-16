@@ -69,7 +69,8 @@ feature -- implementation
 				l_dtype := l_int.dynamic_type (l_object)
 				if l_int.is_special_type (l_dtype) then
 					if l_int.is_special_any_type (l_dtype) then
-						if {l_sp: SPECIAL [ANY]} l_object then
+					--	if {l_sp: SPECIAL [ANY]} l_object then
+						if attached {SPECIAL [ANY]} l_object as l_sp then
 							from
 								i := 0
 								nb := l_sp.count
@@ -86,7 +87,8 @@ feature -- implementation
 						end
 					end
 				elseif l_int.is_tuple (l_object) then
-					if {l_tuple_obj: TUPLE} l_object then
+				--	if {l_tuple_obj: TUPLE} l_object then
+					if attached {TUPLE} l_object as l_tuple_obj then
 						from
 							i := 1
 							nb := l_tuple_obj.count + 1
@@ -107,8 +109,6 @@ feature -- implementation
 					from
 						i := 1
 						nb := l_int.field_count_of_type (l_dtype) + 1
-					variant
-						nb - i
 					until
 						i = nb
 					loop
@@ -120,6 +120,8 @@ feature -- implementation
 							end
 						end
 						i := i + 1
+					variant
+						nb - i
 					end
 				end
 -----------------------------------------------------------------------------
@@ -128,8 +130,6 @@ feature -- implementation
 				from
 					i := 1
 					nb := l_decoded.attribute_values.count + 1
-				variant
-					nb - i
 				until
 					i = nb
 				loop
@@ -147,6 +147,8 @@ feature -- implementation
 						end
 					end
 					i := i + 1
+				variant
+					nb - i
 				end
 			end
 

@@ -150,7 +150,7 @@ feature{NONE} --implementation
 				l_sub_row := a_row.subrow (i)
 				if l_sub_row.subrow_count > 0 then
 					result := has_void_subrow(l_sub_row)
-				elseif {l_item:EV_GRID_LABEL_ITEM} l_sub_row.item (3) and then l_item.text.is_equal (void_type)  then
+				elseif attached {EV_GRID_LABEL_ITEM} l_sub_row.item (3) as l_item and then l_item.text.is_equal (void_type)  then
 					result := true
 				end
 				i := i + 1
@@ -200,7 +200,7 @@ feature{NONE} --implementation
 					if l_sub_row.subrow_count > 0 and then has_void_subrow (l_sub_row) then
 						filter_void_objects(l_sub_row)
 					else
-						if {l_item:EV_GRID_LABEL_ITEM} l_sub_row.item (3) and then not l_item.text.is_equal (void_type) then
+						if attached {EV_GRID_LABEL_ITEM} l_sub_row.item (3) as l_item and then not l_item.text.is_equal (void_type) then
 							l_sub_row.hide
 						else
 							l_sub_row.show
@@ -211,7 +211,7 @@ feature{NONE} --implementation
 					if l_sub_row.subrow_count > 0 then
 						filter_void_objects(l_sub_row)
 					else
-						if {l_item2:EV_GRID_LABEL_ITEM} l_sub_row.item (3) and then l_item2.text.is_equal (void_type) then
+						if attached {EV_GRID_LABEL_ITEM} l_sub_row.item (3) as l_item2 and then l_item2.text.is_equal (void_type) then
 							l_sub_row.hide
 						else
 							l_sub_row.show
