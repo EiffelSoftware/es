@@ -128,7 +128,7 @@ feature -- Basic operations
 			l_extract_fragments.set_description ("Extract fragments of the snippets.")
 			l_parser.options.force_last (l_extract_fragments)
 
-			create l_extract_hole_type.make_with_long_form ("extract-hole_type")
+			create l_extract_hole_type.make_with_long_form ("extract-hole-type")
 			l_extract_hole_type.set_description ("Try to evaluate type information of expressions substituted by holes.")
 			l_parser.options.force_last (l_extract_hole_type)
 

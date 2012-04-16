@@ -38,7 +38,11 @@ feature -- Basic operations
 			l_new_line: STRING
 		do
 			create last_output.make
-			l_text := text_from_ast (a_ast)
+			if attached ast_to_text_agent as a_agent then
+				l_text := a_agent.item ([a_ast])
+			else
+				l_text := text_from_ast (a_ast)
+			end
 			fixme ("We assume the breakpoint slot of AST starts from 1. Jasonw 21.7.2011")
 			l_bp_slot := 1
 			across l_text.split ('%N') as l_lines loop
@@ -55,6 +59,17 @@ feature -- Basic operations
 					last_output.extend (l_new_line)
 				end
 			end
+		end
+
+feature -- Access
+
+	ast_to_text_agent: FUNCTION [ANY, TUPLE [AST_EIFFEL], STRING]
+			-- Agent to get text out of an AST node
+
+	set_ast_to_text_agent (a_agent: like ast_to_text_agent)
+			-- Set `a_ast_to_text_agent' with `a_agent'.
+		do
+			ast_to_text_agent := a_agent
 		end
 
 feature{NONE} -- Implementation

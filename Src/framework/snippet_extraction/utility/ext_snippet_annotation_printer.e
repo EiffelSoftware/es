@@ -106,8 +106,13 @@ feature{NONE} -- Implemenation
 		local
 			l_printer: EPA_BREAKPOINT_AST_PRINTER
 			l_line: STRING
+			l_output: ETR_AST_STRING_OUTPUT
+			l_transformer: EXT_TEXT_SNIPPET_TRANSFORMER
 		do
+			create l_output.make
+			create l_transformer.make_with_output (l_output)
 			create l_printer
+			l_printer.set_ast_to_text_agent (agent l_transformer.transformed_ast (?, a_snippet))
 			l_printer.print_ast (a_snippet.ast)
 			across l_printer.last_output as l_lines loop
 				l_line := l_lines.item

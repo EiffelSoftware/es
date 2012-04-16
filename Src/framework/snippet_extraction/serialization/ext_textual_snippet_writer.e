@@ -13,6 +13,9 @@ feature -- Basic operations
 
 	write (a_snippet: EXT_SNIPPET; a_medium: IO_MEDIUM)
 			-- Write `a_snippet' into `a_medium'.
+		local
+			l_transformer: EXT_TEXT_SNIPPET_TRANSFORMER
+			l_output: ETR_AST_STRING_OUTPUT
 		do
 			a_medium.put_string (a_snippet.source.out)
 			a_medium.put_new_line
@@ -20,7 +23,10 @@ feature -- Basic operations
 
 			a_medium.put_string ("---%N---")
 			a_medium.put_new_line
-			a_medium.put_string (a_snippet.content)
+			create l_output.make
+			create l_transformer.make_with_output (l_output)
+			l_transformer.transform (a_snippet)
+			a_medium.put_string (l_output.string_representation)
 
 			if attached a_snippet.content_original then
 				a_medium.put_string ("---%N---")
