@@ -17,7 +17,7 @@ class
 inherit
 	PS_ABSTRACT_DB_OPERATION
 
-create make_update_operation, make_insert_operation
+create make_with_mode
 
 
 feature
@@ -36,7 +36,11 @@ feature
 	dependencies:LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
 		do
 			create Result.make
-			across references as ref loop Result.extend (reference_values[ref.item]) end
+			from reference_values.start	until reference_values.after
+			loop
+				Result.extend (reference_values.item_for_iteration)
+				reference_values.forth
+			end
 		end
 
 
@@ -50,19 +54,11 @@ feature {NONE} -- Initialization
 			create reference_values.make (hashtable_size)
 		end
 
-	make_update_operation (an_object: PS_OBJECT_IDENTIFIER_WRAPPER)
-		do
-			object_id:=an_object
-			is_insert:=False
-			mode:=Update
-			make
-		end
 
-	make_insert_operation (an_object: PS_OBJECT_IDENTIFIER_WRAPPER)
+	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: INTEGER)
 		do
 			object_id:=an_object
-			is_insert:=True
-			mode:=Insert
+			mode:=a_mode
 			make
 		end
 

@@ -14,11 +14,13 @@ create make
 
 feature {NONE}
 
+	dependencies: LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
+
 	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER)
 		-- initialize `Current'
 		do
 			object_id:=obj
-			-- and don't care about is_insert
+			create dependencies.make
 		end
 
 end
