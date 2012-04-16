@@ -65,13 +65,14 @@ feature {NONE} -- Initialization
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
-			if argument_count = 11 then
+			if argument_count = 12 then
 				is_passing_test_case_serialized := argument (7).to_boolean
 				is_failing_test_case_serialized := argument (8).to_boolean
 				l_tc_serialization_file_name := argument (9)
 				is_test_case_serialization_enabled := True
 				is_duplicated_test_case_serialized := argument (10).to_boolean
 				is_post_state_serialized := argument (11).to_boolean
+				is_last_test_case_serialization_passed_to_proxy := argument (12).to_boolean
 			else
 				is_failing_test_case_serialized := True
 				l_tc_serialization_file_name := ""
@@ -332,7 +333,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [0, Void, output_buffer, error_buffer]
+			last_response := [0, Void, Void, output_buffer, error_buffer]
 			send_response_to_socket
 		rescue
 			log_message (exception_trace + "%N")
@@ -389,7 +390,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [0, Void, output_buffer, error_buffer]
+			last_response := [0, Void, Void, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -420,6 +421,7 @@ feature {NONE} -- Handlers
 			j: INTEGER
 		do
 			is_failing_test_case := False
+			last_test_case_serialization := Void
 			if attached {TUPLE [l_byte_code: STRING; l_feat_name: detachable STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
 				if l_bcode = Void then
@@ -477,7 +479,7 @@ feature {NONE} -- Handlers
 						end
 					end
 
-						-- Test case serialization.
+						-- Test case serialization.					
 					if is_test_case_serialization_enabled
 							and then not is_test_case_agent_creation
 					then
@@ -491,7 +493,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [invariant_violating_object_index, l_predicate_results, output_buffer, error_buffer]
+			last_response := [invariant_violating_object_index, l_predicate_results, last_test_case_serialization, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -1677,11 +1679,12 @@ feature -- Test case serialization
 			end
 		end
 
-	log_test_case_serialization is
+	log_test_case_serialization
 			-- Log serialization of the last test case into log file.
 		local
 			l_data: TUPLE [serialization:STRING; states: STRING]
 		do
+			last_test_case_serialization := Void
 			if test_case_serializer.is_test_case_setup and then not is_invalid_test_case and then not is_last_invariant_violated then
 				if
 					(is_passing_test_case_serialized and (not is_failing_test_case)) or
@@ -1693,6 +1696,9 @@ feature -- Test case serialization
 					end
 					if not l_data.states.is_empty then
 						test_state_file.put_string (l_data.states)
+					end
+					if is_last_test_case_serialization_passed_to_proxy then
+						last_test_case_serialization := l_data
 					end
 				end
 			end
@@ -1711,6 +1717,14 @@ feature -- Test case serialization
 
 	is_test_case_agent_creation: BOOLEAN
 			-- Is the test case to-be-executed an agent creation?
+
+	last_test_case_serialization: TUPLE [serialization: STRING; states: STRING]
+			-- Serialization data for the last executed test case
+			-- Void if serialization is disabled or no serialization is retrieved.
+
+	is_last_test_case_serialization_passed_to_proxy: BOOLEAN
+			-- Should `last_test_case_serialization' be passed back to the proxy side
+			-- during testing? Used for online analysis, for example, precondition-reduction.
 
 feature -- Semantic search
 
@@ -1755,7 +1769,7 @@ invariant
 	socket_attached: socket /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

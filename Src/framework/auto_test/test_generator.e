@@ -196,7 +196,12 @@ feature -- Options: basic
 	online_statistics_frequency: INTEGER
 			-- Number of seconds for the online-statistics to be outputed once.
 			-- If 0, no online-statistics is outputed.
-			-- Default: 0			
+			-- Default: 0		
+
+	is_test_case_serialization_retrieved_online: BOOLEAN
+			-- Should test case serialization data be retrieved during testing?
+			-- Have effect only if test case serialization is enabled.
+			-- Default: False	
 
 feature -- Options: logging
 
@@ -1116,6 +1121,14 @@ feature -- Status setting
 			online_statistics_frequency_set: online_statistics_frequency = i
 		end
 
+	set_is_test_case_serialization_retrieved_online (b: BOOLEAN)
+			-- Set `is_test_case_serialization_retrieved_online' with `b'.
+		do
+			is_test_case_serialization_retrieved_online := b
+		ensure
+			is_test_case_serialization_retrieved_online_set: is_test_case_serialization_retrieved_online = b
+		end
+
 feature -- Basic operations
 
 	step
@@ -1416,6 +1429,8 @@ feature -- Deserialization
 			l_processor: AUT_DESERIALIZATION_PROCESSOR
 		do
 			create l_processor.make (system, Current)
+			l_processor.on_deserialization_start_actions.extend (agent io.put_string)
+			l_processor.on_deserialization_end_actions.extend (agent io.put_string)
 			l_processor.process
 		end
 

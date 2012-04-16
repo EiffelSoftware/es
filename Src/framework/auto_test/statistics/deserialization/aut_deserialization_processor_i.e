@@ -30,6 +30,28 @@ feature -- Access
 		deferred
 		end
 
+	on_deserialization_start_actions: ACTION_SEQUENCE[TUPLE [STRING]]
+			-- Actions (event hooks) to be performed when the deserialization starts
+		do
+			if attached on_deserialization_start_actions_internal as l_actions then
+				Result := l_actions
+			else
+				create on_deserialization_start_actions_internal
+				Result := on_deserialization_start_actions_internal
+			end
+		end
+
+	on_deserialization_end_actions: ACTION_SEQUENCE[TUPLE [STRING]]
+			-- Actions (event hooks) to be performed when the deserialization ends
+		do
+			if attached on_deserialization_end_actions_internal as l_actions then
+				Result := l_actions
+			else
+				create on_deserialization_end_actions_internal
+				Result := on_deserialization_end_actions_internal
+			end
+		end
+
 feature -- Status report
 
 	is_ready: BOOLEAN
@@ -66,8 +88,14 @@ feature -- Process
 		deferred
 		end
 
-note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+feature{NONE} -- Implementation
+
+	on_deserialization_start_actions_internal: detachable like on_deserialization_start_actions
+
+	on_deserialization_end_actions_internal: detachable like on_deserialization_end_actions
+
+;note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

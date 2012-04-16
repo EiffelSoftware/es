@@ -218,8 +218,7 @@ feature{NONE} -- Implementation
 			l_retried: BOOLEAN
 			l_line: STRING
 		do
-			io.put_string (once "%NNow processing: " + a_file.name + once "...")
-
+			on_deserialization_start_actions.call ([once "%NNow processing: " + a_file.name + once "..."])
 			if not l_retried then
 				a_file.open_read
 				if a_file.is_open_read then
@@ -239,8 +238,7 @@ feature{NONE} -- Implementation
 			else
 				configuration.error_handler.report_error_message ("Bad serialization data file: " + a_file.name)
 			end
-
-			io.put_string (once "Done.")
+			on_deserialization_end_actions.call ([once "Done."])
 		rescue
 			l_retried := True
 			retry
