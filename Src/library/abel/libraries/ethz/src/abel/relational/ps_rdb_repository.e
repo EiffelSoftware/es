@@ -94,6 +94,7 @@ feature {NONE} -- Initialization
 			create transaction_isolation_level
 			create default_object_graph.make_default
 			create id_manager.make
+			create disassembler.make (id_manager)
 		ensure
 			strategy_set: strategy = a_strategy
 		end
@@ -107,6 +108,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 			database.execute_query ("DROP TABLE ps_value")
 			print (database.last_error_message)
 		end
+
+	disassembler:PS_OBJECT_DISASSEMBLER
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 

@@ -130,5 +130,6 @@ feature {NONE} -- Implementation
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
 
+--	disassembler:PS_OBJECT_DISASSEMBLER
 
 end

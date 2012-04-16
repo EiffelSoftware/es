@@ -8,7 +8,7 @@ class
 	PS_BASIC_COLLECTION_WRITE [COLLECTION_TYPE -> ITERABLE[ANY]]
 
 inherit
-	PS_ABSTRACT_COLLECTION_OPERATION
+	PS_ABSTRACT_COLLECTION_OPERATION [COLLECTION_TYPE]
 
 create make
 
@@ -27,6 +27,9 @@ feature { NONE }
 		do
 			create values.make
 			create dependencies.make
+			if is_in_relational_mode then
+				dependencies.extend (reference_owner)
+			end
 		end
 
 

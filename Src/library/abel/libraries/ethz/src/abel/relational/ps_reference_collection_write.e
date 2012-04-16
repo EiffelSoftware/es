@@ -8,7 +8,7 @@ class
 	PS_REFERENCE_COLLECTION_WRITE [COLLECTION_TYPE -> ITERABLE[ANY]]
 
 inherit
-	PS_ABSTRACT_COLLECTION_OPERATION
+	PS_ABSTRACT_COLLECTION_OPERATION [COLLECTION_TYPE]
 
 create make
 
@@ -21,10 +21,14 @@ feature
 
 	is_of_basic_type:BOOLEAN = False
 
-	dependencies: LIST[PS_ABSTRACT_DB_OPERATION]
+	dependencies: LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
 		-- All the operations on which `Current' is dependent on.
 		do
-			Result:= references
+			create Result.make
+			Result.append (references)
+			if is_in_relational_mode then
+				Result.extend (reference_owner)
+			end
 		end
 
 

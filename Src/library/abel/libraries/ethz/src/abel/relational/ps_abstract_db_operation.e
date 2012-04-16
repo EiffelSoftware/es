@@ -10,10 +10,7 @@ deferred class
 feature
 
 	object_id: PS_OBJECT_IDENTIFIER_WRAPPER
-	-- The object id of the object to insert/update.
-
---	is_insert:BOOLEAN
-	-- Is `Current' an insert operation? If no, it is an update operation
+		-- The object id of the object to insert/update.
 
 	mode: INTEGER
 		-- Insert, Update or Delete mode

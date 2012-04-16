@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_ABSTRACT_COLLECTION_OPERATION
+	PS_ABSTRACT_COLLECTION_OPERATION [COLLECTION_TYPE -> ITERABLE[ANY]]
 inherit
 	PS_ABSTRACT_DB_OPERATION
 
@@ -16,22 +16,29 @@ feature
 	deferred
 	end
 
-	parent_id: PS_OBJECT_IDENTIFIER_WRAPPER
-		-- the object that this collection is embedded in.
+	reference_owner:PS_ABSTRACT_DB_OPERATION
+		-- An object that holds a reference to `Current.object_id'
+		-- Please note that this is only required if the insertion happens in relational mode, and the design is flawed if more than one object holds a reference to this collection
+		-- (this cannot really be mapped to relational databases anyway)
 
-	parent_attribute_name: STRING
-		-- The attribute name of the current collection.
+	reference_owner_attribute_name: STRING
+		-- The attribute name of the reference_owner of the current collection.
+		-- Please note that this is only required if the insertion happens in relational mode, and the design is flawed if more than one object holds a reference to this collection
+		-- (this cannot really be mapped to relational databases anyway)
 
+
+	is_in_relational_mode:BOOLEAN
+		-- Is current collection inserted in relational mode?
 
 feature {NONE} -- Initialization
 
-	make (obj, parent: PS_OBJECT_IDENTIFIER_WRAPPER ; attr_name: STRING ; write_mode:INTEGER)
+	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_ABSTRACT_DB_OPERATION; attr_name: STRING ; a_mode:INTEGER; is_relational:BOOLEAN)
 		-- initialize `Current'
 		do
 			object_id:=obj
-			parent_id:= parent
-			parent_attribute_name:= attr_name
-			mode:= write_mode
+			reference_owner:= owner
+			reference_owner_attribute_name:= attr_name
+			mode:= a_mode
 			create_other_attributes
 		end
 
