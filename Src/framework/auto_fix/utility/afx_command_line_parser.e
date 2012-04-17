@@ -270,6 +270,8 @@ feature -- Basic operations
 
 			if l_report_file_option.was_found and then attached l_report_file_option.parameter as lt_report_file_name and then not lt_report_file_name.is_empty then
 				config.set_report_file_path (lt_report_file_name)
+			else
+				config.set_using_default_report_file_path (True)
 			end
 
 			if l_cutoff_time_option.was_found and then attached l_cutoff_time_option.parameter as lt_cutoff_time and then lt_cutoff_time.is_natural then

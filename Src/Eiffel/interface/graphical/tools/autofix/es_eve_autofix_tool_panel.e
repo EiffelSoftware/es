@@ -77,18 +77,20 @@ feature -- Basic operation
 			user_widget.refresh_result (a_fault_signature)
 		end
 
-feature {NONE} -- Implementation
-
 	refresh_all_autofix_results
 			-- Refresh the autofix results.
 		do
-			from autofix_results.start
-			until autofix_results.after
-			loop
-				autofix_results.item_for_iteration.refresh
-				autofix_results.forth
-			end
+			load_all_autofix_results
+			user_widget.refresh_all
+--			from autofix_results.start
+--			until autofix_results.after
+--			loop
+--				autofix_results.item_for_iteration.refresh
+--				autofix_results.forth
+--			end
 		end
+
+feature {NONE} -- Implementation
 
 	load_all_autofix_results
 			-- Load all autofix_results from the default output directory of AutoFix.

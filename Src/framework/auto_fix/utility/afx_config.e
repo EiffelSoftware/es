@@ -155,6 +155,12 @@ feature -- Access
 	is_using_default_report_file_path: BOOLEAN
 			-- Is AutoFix using the default report file path?
 
+	set_using_default_report_file_path (a_flag: BOOLEAN)
+			-- Set `is_using_default_report_file_path' using `a_flag'.
+		do
+			is_using_default_report_file_path := a_flag
+		end
+
 	report_file_path: STRING
 			-- Path to the AutoFix report file.
 		local

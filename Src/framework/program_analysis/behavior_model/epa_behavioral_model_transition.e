@@ -68,14 +68,16 @@ feature -- Initialization
 			loop
 				l_pair := l_pairs.item_for_iteration
 				l_index := l_pair.index_of (':', 1)
-				l_query_name := l_pair.substring (1, l_index - 1)
-				l_value_name := l_pair.substring (l_index + 1, l_pair.count)
-				if l_value_name.is_case_insensitive_equal ("True") then
-					state_changes.force (True, l_query_name)
-				elseif l_value_name.is_case_insensitive_equal ("False") then
-					state_changes.force (False, l_query_name)
-				else
-					check Should_not_happen: False end
+				if l_index /= 0 then
+					l_query_name := l_pair.substring (1, l_index - 1)
+					l_value_name := l_pair.substring (l_index + 1, l_pair.count)
+					if l_value_name.is_case_insensitive_equal ("True") then
+						state_changes.force (True, l_query_name)
+					elseif l_value_name.is_case_insensitive_equal ("False") then
+						state_changes.force (False, l_query_name)
+					else
+						check Should_not_happen: False end
+					end
 				end
 				l_pairs.forth
 			end

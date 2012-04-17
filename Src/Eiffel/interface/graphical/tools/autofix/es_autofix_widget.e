@@ -40,6 +40,9 @@ feature -- Access
 
 feature -- GUI elements
 
+	refresh_button: EV_BUTTON
+			-- Button to refresh all results.
+
 	faults_combo: EV_COMBO_BOX
 			-- Combo-box listing all the faults.
 
@@ -62,6 +65,9 @@ feature -- GUI labels
 
 	faults_label_text: STRING = "Faults"
 			-- Label text shown above the faults combo-box.
+
+	refresh_button_text: STRING = "Refresh"
+			-- Text for the `Refresh' button.
 
 	fixes_label_text: STRING = "Valid fixes"
 			-- Label text shown above the fixes list-box.
@@ -94,8 +100,13 @@ feature {NONE} -- Implementation
 			l_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 			create l_label.make_with_text (faults_label_text)
 			l_label.align_text_left
-			l_v_box.extend (l_label)
-			l_v_box.disable_item_expand (l_label)
+			create refresh_button.make_with_text_and_action (refresh_button_text, agent panel.refresh_all_autofix_results)
+			create l_h_box
+			l_h_box.extend (l_label)
+			l_h_box.extend (refresh_button)
+			l_h_box.disable_item_expand (refresh_button)
+			l_v_box.extend (l_h_box)
+			l_v_box.disable_item_expand (l_h_box)
 			create faults_combo.make_with_text ("--")
 			faults_combo.set_minimum_size (150, 30)
 			faults_combo.disable_edit

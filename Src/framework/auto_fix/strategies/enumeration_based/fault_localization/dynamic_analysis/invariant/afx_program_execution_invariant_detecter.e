@@ -181,10 +181,10 @@ feature{NONE} -- Implementation
 			l_value_str.left_adjust
 			l_value_str.right_adjust
 			if l_expression.type /= Void then
-				if l_expression.type.is_integer then
+				if l_expression.type.is_integer and then l_value_str.is_integer then
 	     			create l_integer_value.make (l_value_str.to_integer)
 	     			create l_equation.make (l_expression, l_integer_value)
-				elseif l_expression.type.is_boolean then
+				elseif l_expression.type.is_boolean and then l_value_str.is_boolean then
 	     			create l_boolean_value.make (l_value_str.to_boolean)
 	     			create l_equation.make (l_expression, l_boolean_value)
 				end
