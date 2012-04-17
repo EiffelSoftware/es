@@ -116,7 +116,8 @@ feature -- Access
 				l_ser.write_compressed_natural_32 (l_dtype.abs.to_natural_32)
 
 				-- Write type name
-				if {l_root_dec: BINARY_DECODED} root_object then
+				if attached {BINARY_DECODED} root_object as l_root_dec then
+			--	if {l_root_dec: BINARY_DECODED} root_object then
 					if l_root_dec.header_tuple_array.has (-l_dtype) then
 						l_ser.write_string_8 (l_root_dec.header_tuple_array.item(-l_dtype))
 					else
@@ -248,7 +249,8 @@ feature -- Access
 						if l_any /= Void then
 							l_ser.write_compressed_natural_32 (l_int.dynamic_type (l_any).to_natural_32)
 						else
-							if {l_root_dec: BINARY_DECODED} root_object then
+						--	if {l_root_dec: BINARY_DECODED} root_object then
+						if attached {BINARY_DECODED} root_object as l_root_dec then
 								if l_root_dec.header_tuple_array.has (l_dtype) and then l_int.dynamic_type_from_string (l_root_dec.header_tuple_array.item (l_dtype)) >= 0 then
 									l_dtype := l_int.dynamic_type_from_string (l_root_dec.header_tuple_array.item (l_dtype))
 								end
@@ -377,7 +379,8 @@ feature -- Access
 							l_ser.write_compressed_integer_32 (l_spec_item_type)
 
 								-- Store count of special
-							if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+						--	if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+							if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
 								l_ser.write_compressed_integer_32 (l_abstract_spec.count)
 							else
 								check l_abstract_spec_attached: False end
@@ -388,7 +391,8 @@ feature -- Access
 						if l_is_for_slow_retrieval then
 							l_ser.write_natural_8 (is_tuple_flag)
 						end
-						if {l_tuple: TUPLE} l_obj then
+					--	if {l_tuple: TUPLE} l_obj then
+						if attached {TUPLE} l_obj as l_tuple then
 							encode_tuple_object (l_tuple)
 						else
 							check
@@ -501,7 +505,8 @@ feature -- Access
 							l_ser.write_compressed_integer_32 (l_spec_item_type)
 
 								-- Write number of elements in SPECIAL
-							if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+						--	if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+							if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
 								l_ser.write_compressed_integer_32 (l_abstract_spec.count)
 							else
 								check
@@ -566,56 +571,57 @@ feature -- Access
 				l_attr := a_decoded.attribute_values.i_th (i).object
 
 				if l_attr /= void then
-					if {l_attr_dec: BINARY_DECODED} l_attr then
+				--	if {l_attr_dec: BINARY_DECODED} l_attr then
+					if attached {BINARY_DECODED} l_attr as l_attr_dec then
 						-- of type DECODED
 						l_ser.write_natural_8 ({TUPLE}.reference_code)
 						encode_reference (l_attr_dec)
 					else
 						-- known type
 
-						if {l_char8: CHARACTER_8} l_attr then
+						if attached {CHARACTER_8} l_attr as l_char8 then
 							l_ser.write_natural_8 ({TUPLE}.character_8_code)
 							l_ser.write_character_8 (l_char8)
-						elseif {l_char32: CHARACTER_32} l_attr then
+						elseif attached {CHARACTER_32} l_attr as l_char32 then
 							l_ser.write_natural_8 ({TUPLE}.character_32_code)
 							l_ser.write_character_32 (l_char32)
 
-						elseif {l_bool: BOOLEAN} l_attr then
+						elseif attached {BOOLEAN} l_attr as l_bool then
 							l_ser.write_natural_8 ({TUPLE}.boolean_code)
 							l_ser.write_boolean ( l_bool )
 
-						elseif {l_nat8: NATURAL_8} l_attr then
+						elseif attached {NATURAL_8} l_attr as l_nat8 then
 							l_ser.write_natural_8 ({TUPLE}.natural_8_code)
 							l_ser.write_natural_8 (l_nat8)
-						elseif {l_nat16: NATURAL_16} l_attr then
+						elseif attached {NATURAL_16} l_attr as l_nat16 then
 							l_ser.write_natural_8 ({TUPLE}.natural_16_code)
 							l_ser.write_natural_16 (l_nat16)
-						elseif {l_nat32: NATURAL_32} l_attr then
+						elseif attached {NATURAL_32} l_attr as l_nat32 then
 							l_ser.write_natural_8 ({TUPLE}.natural_32_code)
 							l_ser.write_natural_32 (l_nat32)
-						elseif {l_nat64: NATURAL_64} l_attr then
+						elseif attached {NATURAL_64} l_attr as l_nat64 then
 							l_ser.write_natural_8 ({TUPLE}.natural_64_code)
 							l_ser.write_natural_64 (l_nat64)
 
-						elseif {l_int8: INTEGER_8} l_attr then
+						elseif attached {INTEGER_8} l_attr as l_int8 then
 							l_ser.write_natural_8 ({TUPLE}.integer_8_code)
 							l_ser.write_integer_8 (l_int8)
-						elseif {l_int16: INTEGER_16} l_attr then
+						elseif attached {INTEGER_16} l_attr as l_int16 then
 							l_ser.write_natural_8 ({TUPLE}.integer_16_code)
 							l_ser.write_integer_16 (l_int16)
-						elseif {l_int32: INTEGER_32} l_attr then
+						elseif attached {INTEGER_32} l_attr as l_int32 then
 							l_ser.write_natural_8 ({TUPLE}.integer_32_code)
 							l_ser.write_integer_32 (l_int32)
-						elseif {l_int64: INTEGER_64} l_attr then
+						elseif attached {INTEGER_64} l_attr as l_int64 then
 							l_ser.write_natural_8 ({TUPLE}.integer_64_code)
 							l_ser.write_integer_64 (l_int64)
-						elseif {l_real32: REAL_32} l_attr then
+						elseif attached {REAL_32} l_attr as l_real32 then
 							l_ser.write_natural_8 ({TUPLE}.real_32_code)
 							l_ser.write_real_32 (l_real32)
-						elseif {l_real64: REAL_64} l_attr then
+						elseif attached {REAL_64} l_attr as l_real64 then
 							l_ser.write_natural_8 ({TUPLE}.real_64_code)
 							l_ser.write_real_64 (l_real64)
-						elseif {l_pointer: POINTER} l_attr then
+						elseif attached {POINTER} l_attr as l_pointer then
 							l_ser.write_natural_8 ({TUPLE}.pointer_code)
 							l_ser.write_pointer (l_pointer)
 						else
@@ -671,7 +677,8 @@ feature -- Access
 				l_field := a_decoded.attribute_values.i_th (i).object
 				l_gen_type := a_decoded.attribute_generic_types.i_th (i).dtype
 
-				if {l_field_dec: BINARY_DECODED} l_field then
+			--	if {l_field_dec: BINARY_DECODED} l_field then
+				if attached {BINARY_DECODED} l_field as l_field_dec then
 						-- field is another DECODED object
 					encode_reference (l_field_dec)
 				else
@@ -770,7 +777,8 @@ feature -- Access
 					loop
 						l_attr := l_dec.attribute_values.i_th (i).object
 						if l_attr /= void then
-							if {l_attr_dec: BINARY_DECODED} l_attr then
+						--	if {l_attr_dec: BINARY_DECODED} l_attr then
+							if attached {BINARY_DECODED} l_attr as l_attr_dec then
 								l_dtype := l_attr_dec.generic_type
 							else
 								l_dtype := l_int.dynamic_type (l_attr)
@@ -782,7 +790,8 @@ feature -- Access
 						else
 							l_dtype := l_dec.attribute_generic_types.i_th (i).dtype
 							l_no_put := false
-							if {l_root_dec: BINARY_DECODED} root_object then
+						--	if {l_root_dec: BINARY_DECODED} root_object then
+							if attached {BINARY_DECODED} root_object as l_root_dec then
 								if l_root_dec.header_tuple_array.has (l_dtype) and then l_int.dynamic_type_from_string (l_root_dec.header_tuple_array.item (l_dtype)) >= 0 then
 									l_dtype := l_int.dynamic_type_from_string (l_root_dec.header_tuple_array.item (l_dtype))
 								elseif l_dtype <= l_int.max_predefined_type then
