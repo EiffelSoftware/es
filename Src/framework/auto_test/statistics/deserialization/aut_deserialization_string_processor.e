@@ -107,6 +107,14 @@ feature -- Basic operations
 					last_trace := l_data.substring (idx1 + trace_tag_start.count, idx2 - 1)
 					last_trace.left_adjust
 					last_trace.right_adjust
+					if last_trace.starts_with (CDATA_tag_start) then
+						last_trace.remove_head (cdata_tag_start.count)
+					end
+					if last_trace.ends_with (CDATA_tag_end) then
+						last_trace.remove_tail (cdata_tag_end.count)
+					end
+					last_trace.left_adjust
+					last_trace.right_adjust
 
 						--<hash_code> section
 					idx1 := l_data.substring_index (hash_code_tag_start, 1)
