@@ -48,11 +48,11 @@ feature -- basic operations
 			l_attr_name:STRING
 		do
 			if not retried then
-				has_error := False
+	--			has_error := False
 
 					-- Read number of objects we are retrieving
 				l_count := deserializer.read_compressed_natural_32
-				create object_references.make (l_count.to_integer_32 + 1)
+				create object_references.make_empty (l_count.to_integer_32 + 1)
 
 					-- Disable GC as only new memory will be allocated.
 				if not a_is_gc_enabled then
@@ -170,8 +170,8 @@ feature{NONE} -- Implementation
 				-- Number of dynamic types in storable
 			nb := l_deser.read_compressed_natural_32.to_integer_32
 			first_header_part_offset := nb
-			create l_table.make (nb)
-			create attributes_mapping.make (nb)
+			create l_table.make_empty (nb)
+			create attributes_mapping.make_empty (nb)
 
 				-- Read table which will give us mapping between the old dynamic types
 				-- and the new ones.

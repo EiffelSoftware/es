@@ -7,8 +7,8 @@ note
 class
 	BINARY_DECODED
 
---inherit
---	GENERAL_DECODED
+inherit
+	GENERAL_DECODED 
 
 
 create make
@@ -88,7 +88,7 @@ feature -- basic operations
 
 
 
-	set_special_type (a_dtype: INTEGER) 
+	set_special_type (a_dtype: INTEGER)
 			-- sets the special type
 		do
 			special_type := a_dtype

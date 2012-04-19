@@ -128,53 +128,53 @@ feature {NONE} -- Display Helpers
 			not_void: last_decoded_object /= void
 		end
 
---	convert_object(a_obj:GENERAL_DECODED):ES_EBBRO_DISPLAYABLE
+	convert_object(a_obj:GENERAL_DECODED):ES_EBBRO_DISPLAYABLE
 			-- converts a decoded object into a displayable object
---		require
---			not_void: a_obj /= void
---		local
---			l_attr:ARRAYED_LIST [TUPLE [object: ANY; name: STRING_8]]
---			l_obj:ES_EBBRO_DISPLAYABLE
---			l_dec:BINARY_DECODED
---			l_dtype:INTEGER
---		do
---			l_dtype := a_obj.dtype
---			if not already_decoded.has(l_dtype) then
---				create l_obj.make (a_obj.name, a_obj)
---				already_decoded.put (l_obj, l_dtype)
---
---				if a_obj.is_tuple then
---					l_obj.set_is_tuple
---				elseif a_obj.is_special then
---					l_obj.set_is_container
---				elseif a_obj.name.index_of ('[',1) > 0 then
---					l_obj.set_is_container
---				end
+		require
+			not_void: a_obj /= void
+		local
+			l_attr:ARRAYED_LIST [TUPLE [object: ANY; name: STRING_8]]
+			l_obj:ES_EBBRO_DISPLAYABLE
+			l_dec:BINARY_DECODED
+			l_dtype:INTEGER
+		do
+			l_dtype := a_obj.dtype
+			if not already_decoded.has(l_dtype) then
+				create l_obj.make (a_obj.name, a_obj)
+				already_decoded.put (l_obj, l_dtype)
 
---				l_attr := a_obj.attribute_values.twin()
---				if a_obj.has_non_base_type_attr then
---					from
---						l_attr.start
---					until
---						l_attr.after
---					loop
---						l_dec ?= l_attr.item.object
---						if  l_dec /= void then
---							l_obj.insert_attr (l_attr.item.name, convert_object(l_dec))
---						else
---							l_obj.insert_attr_tuple (l_attr.item)
---						end
---						l_attr.forth
---					end
---				else
---					l_obj.insert_attr_seq (a_obj.attribute_values)
---				end
---
---				result := l_obj
---			else
---				result := already_decoded.item (l_dtype)
---			end
---		end
+				if a_obj.is_tuple then
+					l_obj.set_is_tuple
+				elseif a_obj.is_special then
+					l_obj.set_is_container
+				elseif a_obj.name.index_of ('[',1) > 0 then
+					l_obj.set_is_container
+				end
+
+				l_attr := a_obj.attribute_values.twin()
+				if a_obj.has_non_base_type_attr then
+					from
+						l_attr.start
+					until
+						l_attr.after
+					loop
+						l_dec ?= l_attr.item.object
+						if  l_dec /= void then
+							l_obj.insert_attr (l_attr.item.name, convert_object(l_dec))
+						else
+							l_obj.insert_attr_tuple (l_attr.item)
+						end
+						l_attr.forth
+					end
+				else
+					l_obj.insert_attr_seq (a_obj.attribute_values)
+				end
+
+				result := l_obj
+			else
+				result := already_decoded.item (l_dtype)
+			end
+		end
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
