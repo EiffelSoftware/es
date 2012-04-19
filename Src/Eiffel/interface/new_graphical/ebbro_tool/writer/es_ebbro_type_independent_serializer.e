@@ -177,7 +177,7 @@ feature -- Access
 					-- there will be in the system, we guessed that 500 should give
 					-- us a good initial number in most cases.
 				create Result.make (500)
-				l_array := a_list
+				l_array := a_list.to_array
 				l_area := l_array.area
 				l_array := Void
 				i := 0
@@ -293,7 +293,7 @@ feature -- Access
 
 
 			from
-				l_array := a_list
+				l_array := a_list.to_array
 				l_area := l_array.area
 				l_array := Void
 				i := 0
@@ -435,9 +435,8 @@ feature -- Access
 				l_object_indexes := object_indexes
 				l_spec_mapping := special_type_mapping
 
-
 				from
-					l_array := a_list
+					l_array := a_list.to_array
 					l_area := l_array.area
 					l_array := Void
 					i := 0

@@ -160,7 +160,7 @@ feature -- implementation
 		from
 			i := 0
 			nb := l_visited.count
-			l_arr := l_visited
+			l_arr := l_visited.to_array
 			l_spec := l_arr.area
 			l_arr := Void
 		until
