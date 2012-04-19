@@ -8,22 +8,22 @@ class
 	ES_EBBRO_DISPLAYABLE
 
 create
-	--make,
+	make,
 	make_wrapping
 
 feature -- creation
 
---	make (a_class_name:STRING; a_decoded:GENERAL_DECODED) is
+	make (a_class_name:STRING; a_decoded:GENERAL_DECODED) 
 			-- init
---		require
---			class_name_not_void: a_class_name /= void
---			a_decoded_not_void: a_decoded /= Void
---		do
---			class_name := a_class_name
---			original_decoded := a_decoded
---			create attributes.make(10)
---			create history.make
---		end
+		require
+			class_name_not_void: a_class_name /= void
+			a_decoded_not_void: a_decoded /= Void
+		do
+			class_name := a_class_name
+			original_decoded := a_decoded
+			create attributes.make(10)
+			create history.make
+		end
 
 	make_wrapping (a_class_name:STRING)
 			-- wrap a base type
@@ -58,7 +58,7 @@ feature -- access
 	wrapped_object:ANY
 			-- object which is wrapped
 
---	original_decoded: GENERAL_DECODED
+	original_decoded: GENERAL_DECODED
 			-- 'DECODED' object which was converted to this 'DISPLAYABLE' object.
 
 	is_cyclic:BOOLEAN

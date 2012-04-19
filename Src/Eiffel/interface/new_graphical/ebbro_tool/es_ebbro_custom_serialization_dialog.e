@@ -186,9 +186,9 @@ feature {NONE} -- Implementation
 				loop
 					l_feature := l_table.item
 					if l_feature.is_attribute then
-						create l_item.make_with_text (l_feature.feature_name+" ("+l_feature.type.name+")")
-						l_item.set_data (l_feature.feature_name)
-						l_item.set_tooltip (generate_item_tooltip(l_feature.type.name,l_feature.e_feature.feature_signature))
+						create l_item.make_with_text (l_feature.feature_name_32 + " (" + l_feature.type.name + ")")
+						l_item.set_data (l_feature.feature_name_32)
+						l_item.set_tooltip (generate_item_tooltip(l_feature.type.name,l_feature.e_feature.feature_signature_32))
 						feature_check_list.extend(l_item)
 					end
 					l_table.forth
