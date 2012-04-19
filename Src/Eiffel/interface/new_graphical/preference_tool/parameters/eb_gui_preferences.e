@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			create error_list_tool_data.make (a_preferences)
 			create misc_shortcut_data.make (a_preferences)
 			create property_data.make (a_preferences)
+			create ebbro_tool_data.make (a_preferences)
 			is_gui_mode := True
 		end
 
@@ -59,25 +60,28 @@ feature -- Access
 			-- Preference data for EiffelStudio editor
 
 	external_command_data: EB_EXTERNAL_COMMAND_SHORTCUT_DATA
-			-- Preference data for external commands
+			-- Preference data for external commands.
 
 	recent_projects_data: EB_RECENT_PROJECTS
 			-- Preference data for recently loaded EiffelStudio projects.	
 
 	search_tool_data: EB_SEARCH_TOOL_DATA
-			-- Preference data for EiffelStudio search tool
+			-- Preference data for EiffelStudio search tool.
 
 	metric_tool_data: EB_METRIC_TOOL_DATA
-			-- Preference data for metric tool
+			-- Preference data for metric tool.
 
 	error_list_tool_data: ES_ERROR_LIST_DATA
-			-- Preference data for error list tool
+			-- Preference data for error list tool.
 
 	misc_shortcut_data: EB_MISC_SHORTCUT_DATA
 			-- Shortcuts other than editor shortcuts and external command shortcuts.
 
 	property_data: EB_PROPERTY_DATA
-			-- Preference data for properties
+			-- Preference data for properties.
+
+	ebbro_tool_data: EB_EBBRO_TOOL_DATA
+			-- Preference data for ebbro tool.
 
 	is_gui_mode: BOOLEAN
 			-- Is current in gui mode?
@@ -96,7 +100,7 @@ invariant
 	property_data_attached: is_gui_mode implies attached property_data
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

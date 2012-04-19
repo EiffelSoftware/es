@@ -355,6 +355,8 @@ feature {EB_SHARED_PREFERENCES, EB_TOOL} -- Preference
 	open_project_dialog_height_preference: INTEGER_PREFERENCE
 	discard_target_scope_customized_formatter_preference: BOOLEAN_PREFERENCE
 
+	last_opened_object_directory_in_ebbro: STRING_PREFERENCE
+
 feature -- Preference strings
 
 	confirm_on_terminate_freezing_string: STRING = "interface.dialogs.confirm_on_terminate_freezing"
@@ -419,6 +421,8 @@ feature -- Preference strings
 	open_project_dialog_width_preference_string: STRING = "interface.dialogs.open_project_dialog_width"
 	open_project_dialog_height_preference_string: STRING = "interface.dialogs.open_project_dialog_height"
 	discard_target_scope_customized_formatter_string: STRING = "interface.dialogs.discard_target_scope_customized_formatter"
+
+	last_opened_object_directory_in_ebbro_string: STRING = "interface.dialogs.last_opened_object_directory_in_ebbro"
 
 feature {NONE} -- Implementation
 
@@ -486,6 +490,8 @@ feature {NONE} -- Implementation
 			open_project_dialog_width_preference := l_manager.new_integer_preference_value (l_manager, open_project_dialog_width_preference_string, 500)
 			open_project_dialog_height_preference := l_manager.new_integer_preference_value (l_manager, open_project_dialog_height_preference_string, 300)
 			discard_target_scope_customized_formatter_preference := l_manager.new_boolean_preference_value (l_manager, discard_target_scope_customized_formatter_string, True)
+
+			last_opened_object_directory_in_ebbro := l_manager.new_string_preference_value (l_manager, last_opened_object_directory_in_ebbro_string, "")
 		end
 
 	preferences: PREFERENCES
@@ -530,7 +536,7 @@ invariant
 	open_project_dialog_height_preference_not_void: open_project_dialog_height_preference /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
