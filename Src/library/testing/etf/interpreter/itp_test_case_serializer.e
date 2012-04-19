@@ -56,7 +56,7 @@ feature -- Access
 			-- Keys are state hash codes, values are the number of times those states have been
 			-- seen.
 
-	string_representation: TUPLE [serialization:STRING; states: STRING]
+	string_representation: TUPLE [serialization: STRING; states: STRING]
 			-- String representation of the test case
 		local
 			i: INTEGER
@@ -108,6 +108,7 @@ feature -- Access
 					l_states.append (l_id)
 					l_states.append (once "%">%N")
 					append_object_state (pre_state_object_summary, l_states, True)
+					append_object_state (post_state_object_summary, l_states, False)
 					l_states.append (once "</state_detail>%N")
 				end
 

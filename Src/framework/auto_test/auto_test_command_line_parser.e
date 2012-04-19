@@ -109,6 +109,7 @@ feature{NONE} -- Initialization
 			l_arff_directory_option: AP_STRING_OPTION
 			l_online_statistics_frequency: AP_INTEGER_OPTION
 			l_retrieve_serialization_on_line_option: AP_FLAG
+			l_output_test_case_on_line_option: AP_FLAG
 
 			l_dir: DIRECTORY
 			l_file_name: FILE_NAME
@@ -417,6 +418,10 @@ feature{NONE} -- Initialization
 			create l_retrieve_serialization_on_line_option.make_with_long_form ("retrieve-serialization-online")
 			l_retrieve_serialization_on_line_option.set_description ("Should the proxy side retrieve test case serialization during testing? Only have effect when test case serialization is enabled. Default: False.")
 			parser.options.force_last (l_retrieve_serialization_on_line_option)
+
+			create l_output_test_case_on_line_option.make_with_long_form ("output-test-case-online")
+			l_output_test_case_on_line_option.set_description ("Should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. Default: False")
+			parser.options.force_last (l_output_test_case_on_line_option)
 
 			parser.parse_list (a_arguments)
 
@@ -1020,6 +1025,10 @@ feature{NONE} -- Initialization
 				is_test_case_serialization_retrieved_online := True
 			end
 
+			if l_output_test_case_on_line_option.was_found then
+				is_output_test_case_on_line := True
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -1381,6 +1390,11 @@ feature -- Status report
 	is_test_case_serialization_retrieved_online: BOOLEAN
 			-- Is test case serialization retrieved online during testing?
 			-- Only have effect when test case serialization is enabled.
+			-- Default: False
+
+	is_output_test_case_on_line: BOOLEAN
+			-- Should AutoTest output test case files during testing?
+			-- Only have effect when `is_test_case_serialization_retrieved_online' is True.
 			-- Default: False
 
 feature{NONE} -- Implementation

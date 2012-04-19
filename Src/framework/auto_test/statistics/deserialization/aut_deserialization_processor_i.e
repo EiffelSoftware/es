@@ -94,6 +94,50 @@ feature{NONE} -- Implementation
 
 	on_deserialization_end_actions_internal: detachable like on_deserialization_end_actions
 
+feature{NONE} -- Implementation
+
+	last_class_name: detachable STRING
+
+	last_time: detachable STRING
+
+	last_test_case: detachable STRING
+
+	last_operands: detachable STRING
+
+	last_variables: detachable STRING
+
+	last_trace: detachable STRING
+
+	last_hash_code: detachable STRING
+
+	last_pre_state: detachable STRING
+
+	last_post_state: detachable STRING
+
+	last_length: detachable STRING
+
+	last_pre_serialization: detachable ARRAY[NATURAL_8]
+
+	last_post_serialization: detachable ARRAY[NATURAL_8]
+
+feature{NONE} -- Implementation
+
+	reset_serialization_data
+			-- Reset serialization data used during parsing.
+		do
+			last_class_name := Void
+			last_time := Void
+			last_test_case := Void
+			last_operands := Void
+			last_variables := Void
+			last_trace := Void
+			last_hash_code := Void
+			last_pre_state := Void
+			last_post_state := Void
+			last_length := Void
+			last_pre_serialization := Void
+		end
+
 ;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

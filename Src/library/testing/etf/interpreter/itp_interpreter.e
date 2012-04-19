@@ -1698,7 +1698,7 @@ feature -- Test case serialization
 						test_state_file.put_string (l_data.states)
 					end
 					if is_last_test_case_serialization_passed_to_proxy then
-						last_test_case_serialization := l_data
+						last_test_case_serialization := [l_data.serialization]
 					end
 				end
 			end
@@ -1718,7 +1718,7 @@ feature -- Test case serialization
 	is_test_case_agent_creation: BOOLEAN
 			-- Is the test case to-be-executed an agent creation?
 
-	last_test_case_serialization: TUPLE [serialization: STRING; states: STRING]
+	last_test_case_serialization: TUPLE [serialization: STRING]
 			-- Serialization data for the last executed test case
 			-- Void if serialization is disabled or no serialization is retrieved.
 

@@ -106,6 +106,7 @@ feature {NONE} -- Initialization
 		local
 			l_itp_class: CLASS_C
 			l_file_printer: AUT_PROXY_LOG_TEXT_STREAM_PRINTER
+			l_dir: DIRECTORY_NAME
 		do
 			configuration := a_config
 
@@ -157,6 +158,15 @@ feature {NONE} -- Initialization
 			end
 			generate_typed_object_pool
 			setup_online_statistics
+
+			create l_dir.make_from_string (configuration.output_dirname)
+			l_dir.extend ("test_cases")
+			online_test_case_directory := l_dir.out
+
+			setup_online_test_case_directory
+			if configuration.is_test_case_serialization_retrieved_online and configuration.is_output_test_case_on_line then
+				on_test_case_serialization_actions.extend (agent output_test_case)
+			end
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -253,7 +263,7 @@ feature -- Access
 			valid_filename: Result.is_equal (proxy_failure_log_file.name)
 		end
 
-	on_test_case_serialization_actions: ACTION_SEQUENCE [TUPLE [serialization: detachable STRING; state: detachable STRING]]
+	on_test_case_serialization_actions: ACTION_SEQUENCE [TUPLE [serialization: detachable STRING]]
 			-- Actions to be performed when test case serialization data arrived.
 			-- Have effect only if test case serialization is enabled.
 		do
@@ -1160,7 +1170,7 @@ feature -- Socket IPC
 			-- store it in `last_raw_response'.
 		local
 			l_raw_data: attached ANY
-			l_data: TUPLE [invariant_violating_object_index: INTEGER; predicate_evaluation: detachable TUPLE [feat_id: INTEGER; results: detachable ARRAY [NATURAL_8]]; serialization: detachable TUPLE [serialization: detachable STRING; state: detachable STRING]; output: STRING; error: STRING]
+			l_data: TUPLE [invariant_violating_object_index: INTEGER; predicate_evaluation: detachable TUPLE [feat_id: INTEGER; results: detachable ARRAY [NATURAL_8]]; serialization: detachable TUPLE [serialization: detachable STRING]; output: STRING; error: STRING]
 			l_retried: BOOLEAN
 			l_socket: like socket
 			l_response_flag: NATURAL_32
@@ -2340,7 +2350,41 @@ feature -- Objec state retrieval
 			online_statistics.set_output_frequency (configuration.online_statistics_frequency)
 		end
 
+	online_test_case_directory: STRING
+			-- Absolute path to the directory to store online test cases
+
+	setup_online_test_case_directory
+			-- Setup the directory to store online test cases (test cases that are output during testing).
+		local
+			l_dir: DIRECTORY
+		do
+			create l_dir.make (online_test_case_directory)
+			if l_dir.exists then
+				l_dir.delete_content
+			else
+				l_dir.create_dir
+			end
+		end
+
 	on_test_case_serialization_actions_internal: detachable like on_test_case_serialization_actions
+
+	output_test_case (a_serialization: detachable STRING)
+			-- Output test case represented by `a_serialization' in `online_test_case_dir'.
+		local
+			l_test_deserializer: AUT_DESERIALIZATION_STRING_PROCESSOR
+		do
+			create l_test_deserializer.make
+			l_test_deserializer.test_case_deserialized_event.subscribe (
+				agent (a_test: AUT_DESERIALIZED_TEST_CASE)
+					local
+						l_test_categorizer: AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST
+					do
+						create l_test_categorizer.make (configuration, online_test_case_directory)
+						l_test_categorizer.write_test_case_to_file (a_test)
+
+					end)
+			l_test_deserializer.process_test_case (a_serialization)
+		end
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

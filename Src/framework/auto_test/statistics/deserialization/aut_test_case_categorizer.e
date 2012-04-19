@@ -32,11 +32,12 @@ inherit
 
 feature -- Initialization
 
-	make (a_conf: TEST_GENERATOR)
+	make (a_conf: TEST_GENERATOR; a_output_dir: STRING)
 			-- Initialization.
+			-- `a_output_dir' is the base directory to store deserialized test cases.
 		do
 			configuration := a_conf
-			create test_case_dir.make_from_string (a_conf.data_output)
+			create test_case_dir.make_from_string (a_output_dir)
 		end
 
 feature -- Basic operation
@@ -69,6 +70,15 @@ feature -- Access
 
 	validator: AUT_TEST_CASE_DESERIALIZABILITY_CHECKER
 			-- Test case validator.
+
+feature -- Basic operations
+
+	write_test_case_to_file (a_test_case: AUT_DESERIALIZED_TEST_CASE)
+			-- Write `a_test_case' into a file, whose location is decided
+			-- by current categorizer.
+		do
+			write_test_case (a_test_case, categorize (a_test_case))
+		end
 
 feature{NONE} -- Implementation
 
@@ -169,7 +179,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

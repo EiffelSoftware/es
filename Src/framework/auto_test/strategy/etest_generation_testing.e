@@ -366,7 +366,7 @@ feature {NONE} -- Implementation
 				--interpreter.log_line (time_passed_mark + duration.second_count.out)
 				times_duration_logged := times_duration_logged + 1
 			end
-
+			
 			time_left := l_time_out - duration
 			time_left.set_time_canonical
 			if time_left.second_count < 0 then
@@ -548,7 +548,7 @@ invariant
 	minimizing_implies_test_task_has_next_step: minimize_task_cache = sub_task implies test_task.has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

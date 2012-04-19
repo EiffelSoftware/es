@@ -203,6 +203,11 @@ feature -- Options: basic
 			-- Have effect only if test case serialization is enabled.
 			-- Default: False	
 
+	is_output_test_case_on_line: BOOLEAN
+			-- Should AutoTest output test case files during testing?
+			-- Have effect only if `is_test_case_serialization_retrieved_online' is True.
+			-- Default: False
+
 feature -- Options: logging
 
 	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
@@ -1127,6 +1132,14 @@ feature -- Status setting
 			is_test_case_serialization_retrieved_online := b
 		ensure
 			is_test_case_serialization_retrieved_online_set: is_test_case_serialization_retrieved_online = b
+		end
+
+	set_is_output_test_case_on_line (b: BOOLEAN)
+			-- Set `is_output_test_case_on_line' with `b'.
+		do
+			is_output_test_case_on_line := b
+		ensure
+			is_output_test_case_on_line_set: is_output_test_case_on_line = b
 		end
 
 feature -- Basic operations

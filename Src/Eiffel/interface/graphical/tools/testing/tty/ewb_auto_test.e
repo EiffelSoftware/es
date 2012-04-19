@@ -215,6 +215,7 @@ feature -- Execution
 				l_generator.set_is_failing_test_case_serialization_enabled (l_ap.is_failing_test_cases_serialization_enabled)
 				l_generator.set_test_case_serialization_file (l_ap.test_case_serialization_file)
 				l_generator.set_is_test_case_serialization_retrieved_online (l_ap.is_test_case_serialization_retrieved_online)
+				l_generator.set_is_output_test_case_on_line (l_ap.is_output_test_case_on_line)
 
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
