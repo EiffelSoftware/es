@@ -3,7 +3,7 @@ note
 		Automatically generated class for EiffelStudio 16x16 icons.
 	]"
 	generator: "Eiffel Matrix Generator"
-	command_line: "emcgen $EIFFEL_SRC/../Delivery/studio/bitmaps/png/16x16.ini -f $EIFFEL_SRC/tools/eiffel_matrix_code_generator/frames/studio.e.frame"
+	command_line: "emcgen $EIFFEL_SRC/Delivery/studio/bitmaps/png/16x16.ini -f $EIFFEL_SRC/tools/eiffel_matrix_code_generator/frames/studio.e.frame"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
 	date: "$Date$"
@@ -5562,6 +5562,46 @@ feature -- Icons
 			new_target_icon_buffer_attached: Result /= Void
 		end
 
+	frozen new_cflag_icon: EV_PIXMAP
+			-- Access to 'cflag' pixmap.
+		require
+			has_named_icon: has_named_icon (new_cflag_name)
+		once
+			Result := named_icon (new_cflag_name)
+		ensure
+			new_cflag_icon_attached: Result /= Void
+		end
+
+	frozen new_cflag_icon_buffer: EV_PIXEL_BUFFER
+			-- Access to 'cflag' pixmap pixel buffer.
+		require
+			has_named_icon: has_named_icon (new_cflag_name)
+		once
+			Result := named_icon_buffer (new_cflag_name)
+		ensure
+			new_cflag_icon_buffer_attached: Result /= Void
+		end
+
+	frozen new_linker_flag_icon: EV_PIXMAP
+			-- Access to 'linker flag' pixmap.
+		require
+			has_named_icon: has_named_icon (new_linker_flag_name)
+		once
+			Result := named_icon (new_linker_flag_name)
+		ensure
+			new_linker_flag_icon_attached: Result /= Void
+		end
+
+	frozen new_linker_flag_icon_buffer: EV_PIXEL_BUFFER
+			-- Access to 'linker flag' pixmap pixel buffer.
+		require
+			has_named_icon: has_named_icon (new_linker_flag_name)
+		once
+			Result := named_icon_buffer (new_linker_flag_name)
+		ensure
+			new_linker_flag_icon_buffer_attached: Result /= Void
+		end
+
 	frozen feature_callers_icon: EV_PIXMAP
 			-- Access to 'callers' pixmap.
 		require
@@ -8042,6 +8082,46 @@ feature -- Icons
 			project_settings_task_icon_buffer_attached: Result /= Void
 		end
 
+	frozen project_settings_cflag_icon: EV_PIXMAP
+			-- Access to 'cflag' pixmap.
+		require
+			has_named_icon: has_named_icon (project_settings_cflag_name)
+		once
+			Result := named_icon (project_settings_cflag_name)
+		ensure
+			project_settings_cflag_icon_attached: Result /= Void
+		end
+
+	frozen project_settings_cflag_icon_buffer: EV_PIXEL_BUFFER
+			-- Access to 'cflag' pixmap pixel buffer.
+		require
+			has_named_icon: has_named_icon (project_settings_cflag_name)
+		once
+			Result := named_icon_buffer (project_settings_cflag_name)
+		ensure
+			project_settings_cflag_icon_buffer_attached: Result /= Void
+		end
+
+	frozen project_settings_linker_flag_icon: EV_PIXMAP
+			-- Access to 'linker flag' pixmap.
+		require
+			has_named_icon: has_named_icon (project_settings_linker_flag_name)
+		once
+			Result := named_icon (project_settings_linker_flag_name)
+		ensure
+			project_settings_linker_flag_icon_attached: Result /= Void
+		end
+
+	frozen project_settings_linker_flag_icon_buffer: EV_PIXEL_BUFFER
+			-- Access to 'linker flag' pixmap pixel buffer.
+		require
+			has_named_icon: has_named_icon (project_settings_linker_flag_name)
+		once
+			Result := named_icon_buffer (project_settings_linker_flag_name)
+		ensure
+			project_settings_linker_flag_icon_buffer_attached: Result /= Void
+		end
+
 	frozen overlay_locked_icon: EV_PIXMAP
 			-- Access to 'locked' pixmap.
 		require
@@ -8820,6 +8900,8 @@ feature -- Constants: Icon names
 	new_pre_compilation_task_name: STRING = "new pre compilation task"
 	new_post_compilation_task_name: STRING = "new post compilation task"
 	new_target_name: STRING = "new target"
+	new_cflag_name: STRING = "new cflag"
+	new_linker_flag_name: STRING = "new linker flag"
 	feature_callers_name: STRING = "feature callers"
 	feature_callees_name: STRING = "feature callees"
 	feature_assigners_name: STRING = "feature assigners"
@@ -8944,6 +9026,8 @@ feature -- Constants: Icon names
 	project_settings_make_file_name: STRING = "project settings make file"
 	project_settings_resource_file_name: STRING = "project settings resource file"
 	project_settings_task_name: STRING = "project settings task"
+	project_settings_cflag_name: STRING = "project settings cflag"
+	project_settings_linker_flag_name: STRING = "project settings linker flag"
 	overlay_locked_name: STRING = "overlay locked"
 	overlay_error_name: STRING = "overlay error"
 	overlay_warning_name: STRING = "overlay warning"
@@ -9248,6 +9332,8 @@ feature {NONE} -- Basic operations
 			a_table.put ([{NATURAL_8} 22, {NATURAL_8} 13], new_pre_compilation_task_name)
 			a_table.put ([{NATURAL_8} 23, {NATURAL_8} 13], new_post_compilation_task_name)
 			a_table.put ([{NATURAL_8} 24, {NATURAL_8} 13], new_target_name)
+			a_table.put ([{NATURAL_8} 25, {NATURAL_8} 13], new_cflag_name)
+			a_table.put ([{NATURAL_8} 26, {NATURAL_8} 13], new_linker_flag_name)
 			a_table.put ([{NATURAL_8} 1, {NATURAL_8} 14], feature_callers_name)
 			a_table.put ([{NATURAL_8} 2, {NATURAL_8} 14], feature_callees_name)
 			a_table.put ([{NATURAL_8} 3, {NATURAL_8} 14], feature_assigners_name)
@@ -9372,6 +9458,8 @@ feature {NONE} -- Basic operations
 			a_table.put ([{NATURAL_8} 15, {NATURAL_8} 20], project_settings_make_file_name)
 			a_table.put ([{NATURAL_8} 16, {NATURAL_8} 20], project_settings_resource_file_name)
 			a_table.put ([{NATURAL_8} 17, {NATURAL_8} 20], project_settings_task_name)
+			a_table.put ([{NATURAL_8} 18, {NATURAL_8} 20], project_settings_cflag_name)
+			a_table.put ([{NATURAL_8} 19, {NATURAL_8} 20], project_settings_linker_flag_name)
 			a_table.put ([{NATURAL_8} 1, {NATURAL_8} 21], overlay_locked_name)
 			a_table.put ([{NATURAL_8} 2, {NATURAL_8} 21], overlay_error_name)
 			a_table.put ([{NATURAL_8} 3, {NATURAL_8} 21], overlay_warning_name)

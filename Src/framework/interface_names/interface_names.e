@@ -2167,6 +2167,7 @@ feature -- Title part
 		once
 			Result := locale.formatted_string (locale.translation ("About $1"), [workbench_name])
 		end
+	t_Add_eis_entry: STRING_32					do Result := locale.translation("Add a new entry in the list.")	end
 	t_Add_search_scope: STRING_32				do Result := locale.translation("Add Search Scope")	end
 	t_Alias: STRING_32							do Result := locale.translation("Alias")	end
 	t_All_test_runs: STRING_32					do Result := locale.translation("Show test run history dialog")	end

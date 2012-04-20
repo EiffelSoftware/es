@@ -32,7 +32,7 @@ inherit
 
 feature -- Creation
 
-	make (cmd: STRING; args: LIST [STRING]; inf, outf, savef: STRING)
+	make (cmd: STRING; args: LIST [STRING]; a_env_vars: HASH_TABLE [STRING, STRING]; inf, outf, savef: STRING)
 			-- Start a new process to run command `cmd'
 			-- with arguments `args'.  The new process
 			-- will gets its input from file `inf' and
@@ -73,6 +73,7 @@ feature -- Creation
 				output.append_new_line
 			end
 
+			set_environment_variables (a_env_vars)
 			create cmd_line.make (1024)
 			cmd_line.append (cmd)
 			cmd_line.append_character (' ')
@@ -132,27 +133,31 @@ feature -- Control
 			l_handle: POINTER
 		do
 			close
-			a_boolean := cwin_exit_code_process (process_info.process_handle, $last_process_result)
-			if a_boolean and then last_process_result = cwin_still_active then
+			a_boolean := {WEL_API}.get_exit_code_process (process_info.process_handle, $last_process_result)
+			if a_boolean and then last_process_result = {WEL_API}.still_active then
 					-- Process is most likely active, we just wait until it has actually finished.
 				from
 				until
-					last_process_result /= cwin_still_active or not a_boolean
+					last_process_result /= {WEL_API}.still_active or not a_boolean
 				loop
 						-- Check every seconds.
 					sleep (1_000_000)
-					a_boolean := cwin_exit_code_process (process_info.process_handle, $last_process_result)
+					a_boolean := {WEL_API}.get_exit_code_process (process_info.process_handle, $last_process_result)
 				end
 			end
 			l_handle := process_info.thread_handle
 			if l_handle /= default_pointer then
 				process_info.set_thread_handle (default_pointer)
-				cwin_close_handle (l_handle)
+				if {WEL_API}.close_handle (l_handle) = 0 then
+					check close_thread_handle_success: False end
+				end
 			end
 			l_handle := process_info.process_handle
 			if l_handle /= default_pointer then
 				process_info.set_process_handle (default_pointer)
-				cwin_close_handle (l_handle)
+				if {WEL_API}.close_handle (l_handle) = 0 then
+					check close_thread_handle_success: False end
+				end
 			end
 			suspended := False
 		end
@@ -167,19 +172,23 @@ feature -- Control
 		do
 			close
 			if process_info.process_handle /= default_pointer then
-				a_boolean := cwin_exit_code_process (process_info.process_handle, $last_process_result)
-				if a_boolean and then last_process_result = cwin_still_active then
-					terminated := cwin_terminate_process (process_info.process_handle, 0)
+				a_boolean := {WEL_API}.get_exit_code_process (process_info.process_handle, $last_process_result)
+				if a_boolean and then last_process_result = {WEL_API}.still_active then
+					terminated := {WEL_API}.terminate_process (process_info.process_handle, 0)
 				end
 				l_handle := process_info.thread_handle
 				if l_handle /= default_pointer then
 					process_info.set_thread_handle (default_pointer)
-					cwin_close_handle (l_handle)
+					if {WEL_API}.close_handle (l_handle) = 0 then
+						check close_thread_handle_success: False end
+					end
 				end
 				l_handle := process_info.process_handle
 				if l_handle /= default_pointer then
 					process_info.set_process_handle (default_pointer)
-					cwin_close_handle (l_handle)
+					if {WEL_API}.close_handle (l_handle) = 0 then
+						check close_thread_handle_succes: False end
+					end
 				end
 			end
 			suspended := False
