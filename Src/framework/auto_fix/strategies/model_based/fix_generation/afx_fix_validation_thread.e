@@ -92,9 +92,20 @@ feature -- Access
 	exception_count: NATURAL_32
 			-- Number of exceptions when executing test cases.
 
+	is_execution_over_time: BOOLEAN assign set_is_execution_over_time
+			-- Is there any test case execution that failed to finish within `max_test_case_time'.
+
 	last_test_case_execution_state: HASH_TABLE [AFX_TEST_CASE_EXECUTION_SUMMARY, EPA_TEST_CASE_INFO]
 			-- State retrieved before/after test case execution.
 			-- Key is test case, value is the execution summary associated with that test case.
+
+feature {AFX_FIX_VALIDATOR} -- Status set
+
+	set_is_execution_over_time (a_flag: BOOLEAN)
+			-- Set `is_execution_over_time'.
+		do
+			is_execution_over_time := a_flag
+		end
 
 feature -- Status report
 
@@ -212,17 +223,18 @@ feature -- Execution
 
 						-- Execute all registered test cases.
 					l_exception_count := exception_count
+					set_is_execution_over_time (False)
 					create last_test_case_execution_state.make (test_cases.count)
 					from
 						test_cases.start
 					until
-						exception_count /= l_exception_count or else test_cases.after or else not session.should_continue
+						exception_count /= l_exception_count or else is_execution_over_time or else test_cases.after or else not session.should_continue
 					loop
 						timer.set_timeout (max_test_case_time)
 						send_execute_test_case_request (test_cases.item_for_iteration, l_origin_fix, False)
 						timer.set_timeout (0)
-						if exception_count /= l_exception_count then
-							io.put_string ("Failing test case: ")
+						if exception_count /= l_exception_count or else is_execution_over_time then
+							io.put_string ("Failing/Looping test case: ")
 							io.put_string (test_cases.item_for_iteration.id)
 							io.put_new_line
 						end
@@ -230,7 +242,7 @@ feature -- Execution
 					end
 
 						-- We found a fix which passes all test cases, re-execute all passing test cases to retrieve post states.
-					if exception_count = l_exception_count and then test_cases.after then
+					if exception_count = l_exception_count and then not is_execution_over_time and then test_cases.after then
 						from
 							passing_test_cases.start
 						until

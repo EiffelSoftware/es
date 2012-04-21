@@ -59,6 +59,12 @@ feature -- Access
 	feature_under_test: STRING
 			-- Name of the feature under test.
 
+	class_and_feature_under_test: STRING
+			-- Class and feature under test.
+		do
+			Result := "" + class_under_test + "__" + feature_under_test
+		end
+
 	recipient_class: STRING
 			-- Name of the class containing `recipient' in case of a failed test case.
 			-- In a passing test case, same as `class_under_test'.

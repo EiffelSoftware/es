@@ -82,10 +82,9 @@ feature -- Basic operation
 			l_root_builder: AFX_FIXING_PROJECT_ROOT_BUILDER
 		do
 				-- Collect passing and failing test cases.
-			create l_test_case_file_selector.make
-			l_test_case_file_selector.collect_all_test_case_files
-			l_test_case_file_selector.start_with_first_fault
-			check l_test_case_file_selector.has_more_fault_signature end
+			create l_test_case_file_selector
+			l_test_case_file_selector.select_fault_and_test_cases
+			check l_test_case_file_selector.fault_signature /= Void end
 			current_fault_signature := l_test_case_file_selector.fault_signature
 			current_passing_test_cases := l_test_case_file_selector.passing_test_case_files
 			current_failing_test_cases := l_test_case_file_selector.failing_test_case_files

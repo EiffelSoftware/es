@@ -129,6 +129,7 @@ feature{NONE} -- Actions
 	on_test_case_execution_time_out
 			-- Action to be performed when test case execution timed out
 		do
+			worker.set_is_execution_over_time (True)
 			event_actions.notify_on_test_case_execution_time_out
 			check process /= Void end
 			process.terminate_tree

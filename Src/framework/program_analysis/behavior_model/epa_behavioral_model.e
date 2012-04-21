@@ -142,8 +142,12 @@ feature -- Query
 
 					l_set.forth
 				end
-				if not l_set.is_empty then
-					Result.force_last ([l_feature.feature_name, (l_usefulness/l_set.count).truncated_to_real])
+
+					-- FIXME: a hack to prevent fixes requesting for too much memory.
+				if l_feature.feature_name /~ "automatic_grow" then
+					if not l_set.is_empty and then l_usefulness > 0 then
+						Result.force_last ([l_feature.feature_name, (l_usefulness/l_set.count).truncated_to_real])
+					end
 				end
 
 				model.forth
