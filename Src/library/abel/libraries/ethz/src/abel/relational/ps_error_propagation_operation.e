@@ -1,27 +1,28 @@
 note
-	description: "A special operation that is only used to propagate errors during the recursive disassembly function, and to have a default value for void safety in case of an error."
-	author: ""
+	description: "An object graph part that can be completely ignored, including the references pointing to it."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PS_ERROR_PROPAGATION_OPERATION
+	PS_IGNORE_PART
 
 inherit
-	PS_ABSTRACT_DB_OPERATION
+	PS_OBJECT_GRAPH_PART
 
 create make
 
 feature
 
-	dependencies:LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
-		once
-			create Result.make
-		end
+	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
+
 
 	make
 		do
-			create object_id.make (0, dependencies)
+			create dependencies.make
+			write_mode:=No_operation
 		end
+
+	is_basic_attribute:BOOLEAN = False
 
 end

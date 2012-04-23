@@ -8,9 +8,9 @@ class
 	PS_BASIC_COLLECTION_WRITE [COLLECTION_TYPE -> ITERABLE[ANY]]
 
 inherit
-	PS_ABSTRACT_COLLECTION_OPERATION [COLLECTION_TYPE]
+--	PS_COLLECTION_PART [COLLECTION_TYPE]
 
-create make
+--create make
 
 feature
 
@@ -19,7 +19,7 @@ feature
 
 	is_of_basic_type:BOOLEAN = True
 
-	dependencies:LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
+	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
 feature { NONE }
 
@@ -27,9 +27,9 @@ feature { NONE }
 		do
 			create values.make
 			create dependencies.make
-			if is_in_relational_mode then
-				dependencies.extend (reference_owner)
-			end
+--			if is_in_relational_mode then
+--				dependencies.extend (reference_owner)
+--			end
 		end
 
 

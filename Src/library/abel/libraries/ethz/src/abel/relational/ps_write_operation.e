@@ -1,8 +1,10 @@
 note
 	description:
 		"[
+			Represents a single object in an object graph.
+		
 			This class encapsulates all information needed to perform a write operation.
-			Only the values in the `basic_attributes' and `references' lists actually get inserted/updated.
+			Only the values in the `attributes' lists actually get inserted/updated.
 			Any other values that might be present in the object will be ignored (this allows to leave current 
 			DB entries "untouched", and later to define non-persistent attributes to an object)
 
@@ -12,10 +14,10 @@ note
 	revision: "$Revision$"
 
 class
-	PS_WRITE_OPERATION
+	PS_SINGLE_OBJECT_PART
 
 inherit
-	PS_ABSTRACT_DB_OPERATION
+	PS_COMPLEX_ATTRIBUTE_PART
 
 create make_with_mode
 
@@ -25,21 +27,41 @@ feature
 
 --	metadata: PS_METADATA
 
-	basic_attributes: LINKED_LIST[STRING]
+--	basic_attributes: LINKED_LIST[STRING]
 
-	basic_attribute_values: HASH_TABLE [ANY, STRING]
+--	basic_attribute_values: HASH_TABLE [ANY, STRING]
 
-	references: LINKED_LIST[STRING]
+--	references: LINKED_LIST[STRING]
 
-	reference_values: HASH_TABLE [PS_ABSTRACT_DB_OPERATION, STRING]
+--	reference_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
 
-	dependencies:LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
+	attributes: LINKED_LIST[STRING]
+
+	attribute_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
+
+	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		do
 			create Result.make
-			from reference_values.start	until reference_values.after
+			from attribute_values.start	until attribute_values.after
 			loop
-				Result.extend (reference_values.item_for_iteration)
-				reference_values.forth
+				if not attribute_values.item_for_iteration.is_basic_attribute then
+					Result.extend (attribute_values.item_for_iteration)
+				end
+				attribute_values.forth
+			end
+		end
+
+
+	add_attribute (name:STRING; value:PS_OBJECT_GRAPH_PART)
+		-- add an attribute to the object (only if it should not be ignored)
+		do
+			if attribute_values.count *2  >= attribute_values.capacity * 3 then
+				attribute_values.accommodate (attribute_values.capacity * 2)
+			end
+
+			if not attached {PS_IGNORE_PART} value then
+				attributes.extend (name)
+				attribute_values.extend (value, name)
 			end
 		end
 
@@ -48,17 +70,20 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create basic_attributes.make
-			create references.make
-			create basic_attribute_values.make (hashtable_size)
-			create reference_values.make (hashtable_size)
+--			create basic_attributes.make
+--			create references.make
+--			create basic_attribute_values.make (hashtable_size)
+--			create reference_values.make (hashtable_size)
+			create attributes.make
+			create attribute_values.make (hashtable_size)
+
 		end
 
 
 	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: INTEGER)
 		do
 			object_id:=an_object
-			mode:=a_mode
+			write_mode:=a_mode
 			make
 		end
 

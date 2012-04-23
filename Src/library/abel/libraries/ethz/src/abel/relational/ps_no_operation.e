@@ -1,26 +1,28 @@
 note
-	description: "Represents a 'no-op', used to just identify objects that already are in database and don't need to be changed."
+	description: "Represents a part of the object graph that should be set to NULL in the database."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PS_NO_OPERATION
+	PS_NULL_REFERENCE_PART
 
 inherit
-	PS_ABSTRACT_DB_OPERATION
+	PS_OBJECT_GRAPH_PART
 
 create make
 
 feature {NONE}
 
-	dependencies: LINKED_LIST[PS_ABSTRACT_DB_OPERATION]
+	dependencies: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
-	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER)
+	make
 		-- initialize `Current'
 		do
-			object_id:=obj
 			create dependencies.make
+			write_mode:=No_operation
 		end
+
+	is_basic_attribute:BOOLEAN = False
 
 end
