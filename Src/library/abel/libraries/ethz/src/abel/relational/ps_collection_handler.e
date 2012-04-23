@@ -23,7 +23,7 @@ feature
 			-- TODO!
 		end
 
-	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:INTEGER; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]
+	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]
 		-- disassemble the collection
 		require
 			can_handle_collection: can_handle (collection)
@@ -39,7 +39,7 @@ feature
 		end
 
 
-	create_result (obj: PS_OBJECT_IDENTIFIER_WRAPPER ref_owner:PS_OBJECT_GRAPH_PART; attr_name: STRING ; mode:INTEGER) : PS_COLLECTION_PART [COLLECTION_TYPE]
+	create_result (obj: PS_OBJECT_IDENTIFIER_WRAPPER ref_owner:PS_OBJECT_GRAPH_PART; attr_name: STRING ; mode:PS_WRITE_OPERATION) : PS_COLLECTION_PART [COLLECTION_TYPE]
 		require
 			no_multidimensional_collections_in_relational_mode: is_in_relational_storage_mode implies not attached {PS_COLLECTION_PART [ITERABLE[ANY]]} ref_owner
 		do

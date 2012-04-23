@@ -26,7 +26,8 @@ feature {NONE} -- Initialization
 		do
 			value:= a_value.out
 			create dependencies.make
-			write_mode:= No_operation
+			create write_mode
+			write_mode:=write_mode.No_operation
 		end
 
 	is_basic_attribute:BOOLEAN = True

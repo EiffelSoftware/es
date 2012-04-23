@@ -80,7 +80,7 @@ feature {NONE} -- Initialization
 		end
 
 
-	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: INTEGER)
+	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: PS_WRITE_OPERATION)
 		do
 			object_id:=an_object
 			write_mode:=a_mode

@@ -20,6 +20,14 @@ feature
 			roots.extend(dependency_graph)
 
 			-- todo: first find all relational collections and break their parents dependency / add them to roots
+			across dependency_graph as graph_cursor
+			loop
+				if attached{PS_COLLECTION_PART} graph_cursor.item as collection and then collection.is_in_relational_mode then
+	--				graph_cursor.previous.remove_dependency (graph_cursor.item)
+	--				roots.extend (graph_cursor.item)
+				end
+			end
+
 
 			from roots.start
 			until roots.after

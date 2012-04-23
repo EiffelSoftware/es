@@ -20,7 +20,8 @@ feature
 	make
 		do
 			create dependencies.make
-			write_mode:=No_operation
+			create write_mode
+			write_mode:=write_mode.No_operation
 		end
 
 	is_basic_attribute:BOOLEAN = False

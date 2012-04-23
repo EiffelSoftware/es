@@ -50,7 +50,7 @@ feature
 
 feature {NONE} -- Initialization
 
-	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_OBJECT_GRAPH_PART; attr_name: STRING ; a_mode:INTEGER; is_relational:BOOLEAN)
+	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_OBJECT_GRAPH_PART; attr_name: STRING ; a_mode:PS_WRITE_OPERATION; is_relational:BOOLEAN)
 		-- initialize `Current'
 		do
 			object_id:=obj

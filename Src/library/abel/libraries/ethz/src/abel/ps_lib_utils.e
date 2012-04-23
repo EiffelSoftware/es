@@ -49,12 +49,12 @@ feature -- Utilities
 	is_criterion_fitting_strategy (criterium: PS_CRITERION; strategy: PS_REPOSITORY): BOOLEAN
 			-- Is `criterium' fitting `strategy'?
 		do
-			if attached {PS_SQL_CRITERION} criterium and attached {PS_RDB_REPOSITORY} strategy then
-				Result := True
-			end
-			if attached {PS_AGENT_CRITERION} criterium and attached {PS_IN_MEMORY_REPOSITORY_OLD} strategy then
-				Result := True
-			end
+		--	if attached {PS_SQL_CRITERION} criterium and attached {PS_RDB_REPOSITORY} strategy then
+		--		Result := True
+		--	end
+		--	if attached {PS_AGENT_CRITERION} criterium and attached {PS_IN_MEMORY_REPOSITORY_OLD} strategy then
+		--		Result := True
+		--	end
 		end
 
 	are_criteria_fitting_strategy (criteria: LIST [PS_CRITERION]; strategy: PS_REPOSITORY): BOOLEAN

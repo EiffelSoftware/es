@@ -7,12 +7,15 @@ note
 deferred class
 	PS_OBJECT_GRAPH_PART
 
+inherit
+	ITERABLE[PS_OBJECT_GRAPH_PART]
+
 feature
 
 --	object_id: PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The object id of the object to insert/update.
 
-	write_mode: INTEGER
+	write_mode: PS_WRITE_OPERATION
 		-- Insert, Update, Delete or No_operation mode
 
 	Insert, Update, Delete, No_operation: INTEGER = unique
@@ -30,6 +33,11 @@ feature
 		deferred
 		end
 
+
+	new_cursor:PS_OBJECT_GRAPH_CURSOR
+		do
+			create Result.make (Current)
+		end
 
 end
 
