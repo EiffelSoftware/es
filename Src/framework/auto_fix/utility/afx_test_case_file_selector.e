@@ -40,6 +40,7 @@ feature -- Access
 			fault_signature_attached: fault_signature /= Void
 		do
 			if failing_test_case_files_cache = Void then
+				check shared_test_case_collector.failing_test_cases.has (fault_signature) end
 				failing_test_case_files_cache := shared_test_case_collector.failing_test_cases.item (fault_signature)
 				failing_test_case_files_cache := test_case_file_selection_from_list (failing_test_case_files_cache, max_failing_test_case_number)
 			end
@@ -60,8 +61,12 @@ feature -- Access
 			if passing_test_case_files_cache = Void then
 				l_passing_test_cases_by_feature_under_test := shared_test_case_collector.passing_test_cases_by_feature_under_test
 				l_class_and_feature_under_test := fault_signature.class_and_feature_under_test
-				passing_test_case_files_cache := l_passing_test_cases_by_feature_under_test.item (l_class_and_feature_under_test)
-				passing_test_case_files_cache := test_case_file_selection_from_list (passing_test_case_files_cache, max_passing_test_case_number)
+				if l_passing_test_cases_by_feature_under_test.has (l_class_and_feature_under_test) then
+					passing_test_case_files_cache := l_passing_test_cases_by_feature_under_test.item (l_class_and_feature_under_test)
+					passing_test_case_files_cache := test_case_file_selection_from_list (passing_test_case_files_cache, max_passing_test_case_number)
+				else
+					create passing_test_case_files_cache.make_equal (1)
+				end
 			end
 			Result := passing_test_case_files_cache
 		ensure
