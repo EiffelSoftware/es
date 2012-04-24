@@ -51,6 +51,40 @@ feature
 			end
 		end
 
+	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
+		-- Remove dependency `obj' from the list
+		do
+			from attributes.start
+			until attributes.after
+			loop
+				if attached attribute_values.item (attributes.item_for_iteration) as item and then item = obj then
+					attribute_values.remove (attributes.item_for_iteration)
+					attributes.remove
+				else
+					attributes.forth
+				end
+			end
+		end
+
+	get_attribute_name (value: PS_OBJECT_GRAPH_PART):STRING
+		-- Get the attribute name of a dependeny
+		local
+			found:BOOLEAN
+		do
+			from
+				attributes.start
+				found:=False
+				Result:=""
+			until attributes.after or found
+			loop
+				if attached attribute_values.item (attributes.item_for_iteration) as val and then val = value then
+					Result:=attributes.item_for_iteration
+					found:=True
+				end
+				attributes.forth
+			end
+		end
+
 
 	add_attribute (name:STRING; value:PS_OBJECT_GRAPH_PART)
 		-- add an attribute to the object (only if it should not be ignored)

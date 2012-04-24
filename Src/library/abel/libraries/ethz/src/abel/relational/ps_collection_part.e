@@ -47,6 +47,19 @@ feature
 			end
 		end
 
+	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
+		-- Remove dependency `obj' from the list
+		do
+			values.prune (obj)
+		end
+
+	split (a_dependency:PS_OBJECT_GRAPH_PART): PS_COLLECTION_PART[COLLECTION_TYPE]
+		-- Create a copy of `Current', whose only dependency is `a_dependency', and with mode `Insert'
+		do
+			create Result.make (object_id, reference_owner, reference_owner_attribute_name, write_mode.insert, is_in_relational_mode)
+			Result.values.extend (a_dependency)
+		end
+
 
 feature {NONE} -- Initialization
 

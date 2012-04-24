@@ -9,6 +9,9 @@ deferred class
 
 inherit
 	PS_OBJECT_GRAPH_PART
+	undefine
+		remove_dependency
+	end
 
 feature
 

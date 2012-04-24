@@ -95,6 +95,7 @@ feature {NONE} -- Initialization
 			create default_object_graph.make_default
 			create id_manager.make
 			create disassembler.make (id_manager)
+			create planner.make
 		ensure
 			strategy_set: strategy = a_strategy
 		end
@@ -110,6 +111,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 		end
 
 	disassembler:PS_OBJECT_DISASSEMBLER
+	planner:PS_WRITE_PLANNER
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 

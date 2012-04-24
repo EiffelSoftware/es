@@ -27,10 +27,24 @@ feature
 		deferred
 		end
 
+	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
+		-- Remove dependency `obj' from the list
+		do
+			dependencies.prune (obj)
+		end
+
 
 	is_basic_attribute:BOOLEAN
 		-- Is `Current' an instance of PS_BASIC_ATTRIBUTE_PART?
 		deferred
+		end
+
+	is_visited:BOOLEAN
+		-- Has current part been visited?
+
+	set_visited (var:BOOLEAN)
+		do
+			is_visited:= var
 		end
 
 
