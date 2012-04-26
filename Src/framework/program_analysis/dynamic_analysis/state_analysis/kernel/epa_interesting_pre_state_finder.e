@@ -54,7 +54,7 @@ feature -- Process operations
 	process_access_id_as (l_as: ACCESS_ID_AS)
 		do
 			if is_nested then
-				if not l_as.access_name_8.is_equal ("io") then
+				if not l_as.access_name_8.is_equal (io_string) then
 					interesting_pre_states.force_last (l_as.breakpoint_slot)
 				end
 			else
@@ -138,5 +138,10 @@ feature {NONE} -- Implementation
 
 	is_nested: BOOLEAN
 			-- Is the current node part of a NESTED_AS node?
+
+feature {NONE} -- Implementation
+
+	io_string: STRING = "io"
+			-- Constant string representing "io"
 
 end

@@ -44,6 +44,10 @@ feature -- Access
 			-- Program locations where the associated expressions should
 			-- be evaluated.
 
+	prgm_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+			-- Program locations where the associated variables should
+			-- be used to build expressions which then are evaluated.
+
 	output_path: STRING
 			-- Output-path where the collected runtime data should be stored.
 
@@ -85,6 +89,10 @@ feature -- Status report
 	is_prgm_locs_with_exprs_set: BOOLEAN
 			-- Are program locations where the associated expressions should be
 			-- evaluated specified?
+
+	is_prgm_locs_with_vars_set: BOOLEAN
+			-- Are program locations where the associated expressions should
+			-- be used to build expressions which then are evaluated specified?
 
 	is_output_path_set: BOOLEAN
 			-- Is a output path set?
@@ -141,6 +149,16 @@ feature -- Setting
 			prgm_locs_with_exprs_set: prgm_locs_with_exprs = a_prgm_locs_with_exprs
 		end
 
+	set_prgm_locs_with_vars (a_prgm_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER])
+			-- Set `prgm_locs_with_vars' to `a_prgm_locs_with_vars'
+		require
+			a_prgm_locs_with_vars_not_void: a_prgm_locs_with_vars /= Void
+		do
+			prgm_locs_with_vars := a_prgm_locs_with_vars
+		ensure
+			prgm_locs_with_vars_set: prgm_locs_with_vars = a_prgm_locs_with_vars
+		end
+
 	set_is_aut_choice_of_prgm_locs_set (b: BOOLEAN)
 			-- Set `is_aut_choice_of_prgm_locs_set' to `b'
 		do
@@ -186,7 +204,7 @@ feature -- Setting
 		do
 			is_specific_exprs_set := b
 		ensure
-			is_specific_exprs_set: is_specific_exprs_set = b
+			is_specific_exprs_set_set: is_specific_exprs_set = b
 		end
 
 	set_is_prgm_locs_with_exprs_set (b: BOOLEAN)
@@ -195,6 +213,14 @@ feature -- Setting
 			is_prgm_locs_with_exprs_set := b
 		ensure
 			is_prgm_locs_with_exprs_set_set: is_prgm_locs_with_exprs_set = b
+		end
+
+	set_is_prgm_locs_with_vars_set (b: BOOLEAN)
+			-- Set `is_prgm_locs_with_vars_set' to `b'
+		do
+			is_prgm_locs_with_vars_set := b
+		ensure
+			is_prgm_locs_with_vars_set_set: is_prgm_locs_with_vars_set = b
 		end
 
 	set_is_output_path_specified (b: BOOLEAN)

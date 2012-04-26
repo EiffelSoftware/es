@@ -46,7 +46,7 @@ feature -- Parsing
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 			l_aut_choice_of_prgm_locs, l_all_prgm_locs, l_aut_choice_of_exprs: AP_FLAG
-			l_location, l_specific_prgm_locs, l_specific_vars, l_specific_exprs, l_prgm_locs_with_exprs, l_output_path: AP_STRING_OPTION
+			l_location, l_specific_prgm_locs, l_specific_vars, l_specific_exprs, l_prgm_locs_with_exprs, l_prgm_locs_with_vars, l_output_path: AP_STRING_OPTION
 		do
 			-- Setup command line argument parser.
 			create l_parser.make
@@ -101,6 +101,12 @@ feature -- Parsing
 				%Format: --prgm_locs_with_exprs bp_slot:expr[;bp_slot:expr].")
 			l_parser.options.force_last (l_prgm_locs_with_exprs)
 
+			create l_prgm_locs_with_vars.make_with_long_form ("prgm_locs_with_vars")
+			l_prgm_locs_with_vars.set_description (
+				"Specify selected program locations with vars which should be evaluated.%
+				%Format: --prgm_locs_with_vars bp_slot:expr[;bp_slot:expr].")
+			l_parser.options.force_last (l_prgm_locs_with_vars)
+
 			create l_output_path.make_with_long_form ("output-path")
 			l_output_path.set_description ("Specify a path where the collected equations should be stored.")
 			l_parser.options.force_last (l_output_path)
@@ -134,6 +140,11 @@ feature -- Parsing
 			if l_prgm_locs_with_exprs.was_found then
 				config.set_is_prgm_locs_with_exprs_set (True)
 				setup_program_locations_with_expressions (l_prgm_locs_with_exprs.parameter)
+			end
+
+			if l_prgm_locs_with_vars.was_found then
+				config.set_is_prgm_locs_with_vars_set (True)
+				setup_program_locations_with_variables (l_prgm_locs_with_vars.parameter)
 			end
 
 			if l_output_path.was_found then
@@ -325,6 +336,72 @@ feature {NONE} -- Implementation
 		ensure
 			prgm_locs_with_exprs_not_void: config.prgm_locs_with_exprs /= Void
 			expressions_not_void: config.expressions /= Void
+		end
+
+	setup_program_locations_with_variables (a_program_locations_with_variables: STRING)
+			-- Setup specific program locations with variables in `config'.
+		require
+			a_program_locations_with_variables_not_void: a_program_locations_with_variables /= Void
+		local
+			l_location_with_variable: LIST [STRING]
+			l_variables: LINKED_LIST [STRING]
+			l_tmp_set: DS_HASH_SET [STRING]
+			l_bp_slot: INTEGER
+			l_bp_slot_string: STRING
+			l_variable: STRING
+			l_tmp: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+		do
+			a_program_locations_with_variables.left_adjust
+			a_program_locations_with_variables.right_adjust
+			create l_tmp.make_default
+			create l_variables.make
+			if a_program_locations_with_variables.has (';') then
+				across a_program_locations_with_variables.split (';') as l_locations_with_variables loop
+					l_locations_with_variables.item.left_adjust
+					l_locations_with_variables.item.right_adjust
+					l_location_with_variable := l_locations_with_variables.item.split (':')
+					l_bp_slot_string := l_location_with_variable.i_th (1)
+					l_bp_slot_string.left_adjust
+					l_bp_slot_string.right_adjust
+					l_bp_slot := l_bp_slot_string.to_integer
+					l_variable := l_location_with_variable.i_th (2)
+					l_variable.left_adjust
+					l_variable.right_adjust
+					if l_tmp.has (l_bp_slot) then
+						l_tmp.item (l_bp_slot).force_last (l_variable)
+					else
+						create l_tmp_set.make_default
+						l_tmp_set.set_equality_tester (string_equality_tester)
+						l_tmp_set.force_last (l_variable)
+						l_tmp.force_last (l_tmp_set, l_bp_slot)
+					end
+					l_variables.extend (l_variable)
+				end
+			else
+				if a_program_locations_with_variables.has (':') then
+					l_location_with_variable := a_program_locations_with_variables.split (':')
+					l_bp_slot_string := l_location_with_variable.i_th (1)
+					l_bp_slot_string.left_adjust
+					l_bp_slot_string.right_adjust
+					l_bp_slot := l_bp_slot_string.to_integer
+					l_variable := l_location_with_variable.i_th (2)
+					l_variable.left_adjust
+					l_variable.right_adjust
+					create l_tmp_set.make_default
+					l_tmp_set.set_equality_tester (string_equality_tester)
+					l_tmp_set.force_last (l_variable)
+					l_tmp.put (l_tmp_set, l_bp_slot)
+					l_variables.extend (l_variable)
+				else
+					post_error_message ("The specified program locations with variables are invalid.%N")
+					die (-1)
+				end
+			end
+			config.set_prgm_locs_with_vars (l_tmp)
+			config.set_variables (l_variables)
+		ensure
+			prgm_locs_with_vars_not_void: config.prgm_locs_with_vars /= Void
+			variables_not_void: config.variables /= Void
 		end
 
 feature {NONE} -- Implementation

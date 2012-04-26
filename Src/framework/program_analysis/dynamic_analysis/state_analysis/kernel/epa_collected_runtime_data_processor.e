@@ -72,7 +72,7 @@ feature -- Post processing
 			i, l_upper_bound: INTEGER
 			l_pre_state_values, l_post_state_values: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			l_list: LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]]
-			l_key, l_expr: STRING
+			l_key, l_expr, l_pre_bp: STRING
 			l_expressions: ARRAY [STRING]
 		do
 			-- Initialize `last_data' and `last_analysis_order' where the result of the post-processing
@@ -114,7 +114,11 @@ feature -- Post processing
 							create l_post_state_value.make (l_post_state_bp_slot, l_post_state_values.item (l_expr))
 
 							-- Check if the key already exists in `last_data'
-							l_key := l_pre_state_bp_slot.out + ";" + l_expr
+							l_pre_bp := l_pre_state_bp_slot.out
+							create l_key.make (l_pre_bp.count + l_expr.count + 1)
+							l_key.append (l_pre_bp)
+							l_key.append_character (';')
+							l_key.append (l_expr)
 							if last_data.has (l_key) then
 								l_list := last_data.item (l_key)
 								l_list.extend ([collected_states.i_th (i).call_stack_count, l_pre_state_value, l_post_state_value])

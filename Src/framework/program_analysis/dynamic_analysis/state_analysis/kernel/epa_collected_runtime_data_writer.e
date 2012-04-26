@@ -113,16 +113,16 @@ feature -- Basic operations
 			create l_object.make
 
 			-- Add context class and feature information
-			l_object.put (create {JSON_STRING}.make_json (context_class.name), create {JSON_STRING}.make_json ("class"))
-			l_object.put (create {JSON_STRING}.make_json (analyzed_feature.feature_name_32), create {JSON_STRING}.make_json ("feature"))
+			l_object.put (json_string_from_string (context_class.name), json_string_from_string ("class"))
+			l_object.put (json_string_from_string (analyzed_feature.feature_name_32), json_string_from_string ("feature"))
 
 			-- Add analysis order.
 			l_analysis_order := analysis_order_from_list (analysis_order)
-			l_object.put (l_analysis_order, create {JSON_STRING}.make_json ("analysis_order"))
+			l_object.put (l_analysis_order, json_string_from_string ("analysis_order"))
 
 			-- Add collected runtime data.
 			l_data := json_object_from_runtime_data (collected_runtime_data)
-			l_object.put (l_data, create {JSON_STRING}.make_json ("data"))
+			l_object.put (l_data, json_string_from_string ("data"))
 
 			-- Write object to disk.
 			create l_printer.make
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 			-- JSON array of pre-state / post-state pairs in the order they were analyzed.
 		local
 			l_object: JSON_OBJECT
-			l_value: STRING
+			l_value, l_pre_bp_slot, l_post_bp_slot: STRING
 			l_bp_slots: TUPLE [pre_state_bp_slot: INTEGER; post_state_bp_slot: INTEGER]
 		do
 			create Result.make_array
@@ -148,8 +148,13 @@ feature {NONE} -- Implementation
 				a_list.after
 			loop
 				l_bp_slots := a_list.item
-				l_value := l_bp_slots.pre_state_bp_slot.out + ";" + l_bp_slots.post_state_bp_slot.out
-				Result.add (create {JSON_STRING}.make_json (l_value))
+				l_pre_bp_slot := l_bp_slots.pre_state_bp_slot.out
+				l_post_bp_slot := l_bp_slots.post_state_bp_slot.out
+				create l_value.make (l_pre_bp_slot.count + l_post_bp_slot.count + 1)
+				l_value.append (l_pre_bp_slot)
+				l_value.append_character (';')
+				l_value.append (l_post_bp_slot)
+				Result.add (json_string_from_string (l_value))
 				a_list.forth
 			end
 		end
@@ -180,38 +185,124 @@ feature {NONE} -- Implementation
 					-- Pre-state value
 					l_type_finder.set_value (l_tuple.pre_value.value)
 					l_type_finder.find
-					l_json_values.put (create {JSON_STRING}.make_json (l_type_finder.type), create {JSON_STRING}.make_json ("pre_type"))
-					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.pre_value.value.text), create {JSON_STRING}.make_json ("pre_value"))
-					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.pre_value.bp_slot.out), create {JSON_STRING}.make_json ("pre_bp"))
-					if l_type_finder.type.is_equal ("EPA_REFERENCE_VALUE") then
+					l_json_values.put (json_string_from_string (l_type_finder.type), pre_type_json_string)
+					l_json_values.put (json_string_from_string (l_tuple.pre_value.value.text), pre_value_json_string)
+					l_json_values.put (json_string_from_string (l_tuple.pre_value.bp_slot.out), pre_bp_json_string)
+					if l_type_finder.type.is_equal (reference_value) then
 						if attached {CL_TYPE_A} l_tuple.pre_value.value.type as l_type then
-							l_json_values.put (create {JSON_STRING}.make_json (l_type.class_id.out), create {JSON_STRING}.make_json ("pre_ref_class_id"))
+							l_json_values.put (json_string_from_string (l_type.class_id.out), pre_ref_class_id_json_string)
 						end
 					end
-					if l_type_finder.type.is_equal ("EPA_STRING_VALUE") then
-						l_json_values.put (create {JSON_STRING}.make_json (l_tuple.pre_value.value.item.out), create {JSON_STRING}.make_json ("pre_string_address"))
+					if l_type_finder.type.is_equal (string_value) then
+						l_json_values.put (json_string_from_string (l_tuple.pre_value.value.item.out), pre_string_address_json_string)
 					end
 
 					-- Post-state value
 					l_type_finder.set_value (l_tuple.post_value.value)
 					l_type_finder.find
-					l_json_values.put (create {JSON_STRING}.make_json (l_type_finder.type), create {JSON_STRING}.make_json ("post_type"))
-					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.post_value.value.text), create {JSON_STRING}.make_json ("post_value"))
-					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.post_value.bp_slot.out), create {JSON_STRING}.make_json ("post_bp"))
-					if l_type_finder.type.is_equal ("EPA_REFERENCE_VALUE") then
+					l_json_values.put (json_string_from_string (l_type_finder.type), post_type_json_string)
+					l_json_values.put (json_string_from_string (l_tuple.post_value.value.text), post_value_json_string)
+					l_json_values.put (json_string_from_string (l_tuple.post_value.bp_slot.out), post_bp_json_string)
+					if l_type_finder.type.is_equal (reference_value) then
 						if attached {CL_TYPE_A} l_tuple.post_value.value.type as l_type then
-							l_json_values.put (create {JSON_STRING}.make_json (l_type.class_id.out), create {JSON_STRING}.make_json ("post_ref_class_id"))
+							l_json_values.put (json_string_from_string (l_type.class_id.out), post_ref_class_id_json_string)
 						end
 					end
-					if l_type_finder.type.is_equal ("EPA_STRING_VALUE") then
-						l_json_values.put (create {JSON_STRING}.make_json (l_tuple.post_value.value.item.out), create {JSON_STRING}.make_json ("post_string_address"))
+					if l_type_finder.type.is_equal (string_value) then
+						l_json_values.put (json_string_from_string (l_tuple.post_value.value.item.out), post_string_address_json_string)
 					end
-					l_json_values.put (create {JSON_STRING}.make_json (l_tuple.call_stack_count.out), create {JSON_STRING}.make_json ("call_stack_count"))
+					l_json_values.put (json_string_from_string (l_tuple.call_stack_count.out), call_stack_count_json_string)
 
 					l_json_array.add (l_json_values)
 				end
-				Result.put (l_json_array, create {JSON_STRING}.make_json (l_keys.item))
+				Result.put (l_json_array, json_string_from_string (l_keys.item))
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	json_string_from_string (a_string: STRING): JSON_STRING
+			-- JSON_STRING representing `a_string'
+		require
+			a_string_not_void: a_string /= Void
+		do
+			Result := create {JSON_STRING}.make_json (a_string)
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	call_stack_count_json_string: JSON_STRING
+			-- JSON_STRING representing "call_stack_count"
+		once
+			create {JSON_STRING} Result.make_json ("call_stack_count")
+		end
+
+	pre_bp_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_bp"
+		once
+			create {JSON_STRING} Result.make_json ("pre_bp")
+		end
+
+	pre_type_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_type"
+		once
+			create {JSON_STRING} Result.make_json ("pre_type")
+		end
+
+	pre_value_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_value"
+		once
+			create {JSON_STRING} Result.make_json ("pre_value")
+		end
+
+	pre_ref_class_id_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_ref_class_id"
+		once
+			create {JSON_STRING} Result.make_json ("pre_ref_class_id")
+		end
+
+	pre_string_address_json_string: JSON_STRING
+			-- JSON_STRING representing "pre_string_address"
+		once
+			create {JSON_STRING} Result.make_json ("pre_string_address")
+		end
+
+	post_bp_json_string: JSON_STRING
+			-- JSON_STRING representing "post_bp"
+		once
+			create {JSON_STRING} Result.make_json ("post_bp")
+		end
+
+	post_type_json_string: JSON_STRING
+			-- JSON_STRING representing "post_type"
+		once
+			create {JSON_STRING} Result.make_json ("post_type")
+		end
+
+	post_value_json_string: JSON_STRING
+			-- JSON_STRING representing "post_value"
+		once
+			create {JSON_STRING} Result.make_json ("post_value")
+		end
+
+	post_ref_class_id_json_string: JSON_STRING
+			-- JSON_STRING representing "post_ref_class_id"
+		once
+			create {JSON_STRING} Result.make_json ("post_ref_class_id")
+		end
+
+	post_string_address_json_string: JSON_STRING
+			-- JSON_STRING representing "post_string_address"
+		once
+			create {JSON_STRING} Result.make_json ("post_string_address")
+		end
+
+feature {NONE} -- Implementation
+
+	reference_value: STRING = "EPA_REFERENCE_VALUE"
+			-- Constant string representing "EPA_REFERENCE_VALUE"
+
+	string_value: STRING = "EPA_STRING_VALUE"
+			-- Constant string representing "EPA_STRING_VALUE"
 
 end

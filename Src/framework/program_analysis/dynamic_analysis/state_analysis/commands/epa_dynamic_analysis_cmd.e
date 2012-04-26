@@ -81,6 +81,7 @@ feature -- Basic operations
 			-- Post process data for writing to disk.
 			l_processor.post_process
 
+			-- Write data to disk			
 			create l_writer.make (class_, feature_, l_processor.last_data, l_processor.last_analysis_order, config.output_path)
 			l_writer.write
 
@@ -96,7 +97,7 @@ feature {NONE} -- Implemenation
 		require
 			a_config_not_void: a_config /= Void
 		local
-			l_class_valid, l_feature_valid, l_prgm_locs_valid, l_exprs_valid, l_exprs_locs_comb_valid, l_outputh_path_valid: BOOLEAN
+			l_class_valid, l_feature_valid, l_prgm_locs_valid, l_exprs_valid, l_exprs_locs_comb_valid, l_vars_locs_comb_valid, l_outputh_path_valid: BOOLEAN
 			l_file_name: FILE_NAME
 		do
 			error_message := "-------------------------------%NThe configuration is not valid:%N-------------------------------%N%N"
@@ -123,13 +124,15 @@ feature {NONE} -- Implemenation
 
 			l_exprs_locs_comb_valid :=
 				(l_prgm_locs_valid and l_exprs_valid) xor
-				a_config.is_prgm_locs_with_exprs_set
+				a_config.is_prgm_locs_with_exprs_set xor
+				a_config.is_prgm_locs_with_vars_set
 			if not l_exprs_locs_comb_valid then
 				error_message.append (
 					"The combination of program locations and expressions must fulfill the following property: " +
 					"((all_prgm_locs xor aut_choice_of_prgm_locs xor specific_prgm_locs) and " +
-					"(aut_choice_of_exprs xor specific_exprs xor specific_vars)) " +
-					"xor prgm_locs_with_exprs%N"
+					"(aut_choice_of_exprs xor specific_exprs xor specific_vars)) xor " +
+					"prgm_locs_with_exprs xor" +
+					"prgm_locs_with_vars%N"
 				)
 			end
 
@@ -177,23 +180,16 @@ feature {NONE} -- Implementation
 				-- Use all pre-states
 				l_bp_interval := feature_body_breakpoint_slots (feature_)
 				create interesting_pre_states.make_default
-				from
-					i := l_bp_interval.lower
-					l_upper := l_bp_interval.upper
-				until
-					i > l_upper
-				loop
-					interesting_pre_states.force_last (i)
-					i := i + 1
-				end
+				l_bp_interval.do_all (agent interesting_pre_states.force_last)
 			elseif config.is_specific_prgm_locs_set then
 				-- Use selected pre-states
 				interesting_pre_states := config.specific_prgm_locs
 			elseif config.is_prgm_locs_with_exprs_set  then
 				create interesting_pre_states.make_default
-				across config.prgm_locs_with_exprs.keys.to_array as l_pre_states loop
-					interesting_pre_states.force_last (l_pre_states.item)
-				end
+				config.prgm_locs_with_exprs.keys.do_all (agent interesting_pre_states.force_last)
+			elseif config.is_prgm_locs_with_vars_set  then
+				create interesting_pre_states.make_default
+				config.prgm_locs_with_vars.keys.do_all (agent interesting_pre_states.force_last)
 			elseif config.is_aut_choice_of_prgm_locs_set then
 				-- Find and use interesting pre-states in `l_feature'.
 				create l_pre_state_finder.make_with (feature_.e_feature.ast)
@@ -206,9 +202,17 @@ feature {NONE} -- Implementation
 			-- Setup expressions to evaluate
 		local
 			l_expr_builder: EPA_EXPRESSIONS_TO_EVALUATE_BUILDER
+			l_locs_with_exprs, l_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
+			l_keys: DS_BILINEAR [INTEGER]
+			l_mapping: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
+			l_vars: DS_HASH_SET [STRING]
+			l_set: DS_HASH_SET [STRING]
 		do
 			create l_expr_builder.make (class_, feature_)
 			if config.is_specific_vars_set then
+				l_expr_builder.build_from_variables (config.variables)
+			elseif config.is_prgm_locs_with_vars_set then
+				l_expr_builder.store_vars_exprs_mapping (True)
 				l_expr_builder.build_from_variables (config.variables)
 			elseif config.is_specific_exprs_set or config.is_prgm_locs_with_exprs_set then
 				l_expr_builder.build_from_expressions (config.expressions)
@@ -217,6 +221,35 @@ feature {NONE} -- Implementation
 			end
 
 			monitored_expressions := l_expr_builder.expressions_to_evaluate
+
+			if l_expr_builder.is_storage_of_vars_exprs_mapping_activated then
+				create l_locs_with_exprs.make_default
+				l_mapping := l_expr_builder.vars_with_exprs
+				l_locs_with_vars := config.prgm_locs_with_vars
+				l_keys := l_locs_with_vars.keys
+				from
+					l_keys.start
+				until
+					l_keys.after
+				loop
+					l_vars := l_locs_with_vars.item (l_keys.item_for_iteration)
+					from
+						l_vars.start
+					until
+						l_vars.after
+					loop
+						l_set := l_mapping.item (l_vars.item_for_iteration)
+						if l_set = Void then
+							create l_set.make_default
+							l_set.set_equality_tester (string_equality_tester)
+						end
+						l_locs_with_exprs.force_last (l_set, l_keys.item_for_iteration)
+						l_vars.forth
+					end
+					l_keys.forth
+				end
+				config.set_prgm_locs_with_exprs (l_locs_with_exprs)
+			end
 		end
 
 	setup_action_for_evaluation (a_processor: EPA_COLLECTED_RUNTIME_DATA_PROCESSOR)

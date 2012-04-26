@@ -124,10 +124,10 @@ feature {NONE} -- Implementation
 								l_bp_slot := string_from_json (l_json_data.item (pre_bp_json_string))
 								l_value := string_from_json (l_json_data.item (pre_value_json_string))
 								l_type := string_from_json (l_json_data.item (pre_type_json_string))
-								if l_type.is_equal ("EPA_REFERENCE_VALUE") then
+								if l_type.is_equal (reference_value) then
 									l_class_id := string_from_json (l_json_data.item (pre_ref_class_id_json_string))
 									create l_pre_pos_value.make (l_bp_slot.to_integer, ref_value_from_data (l_value, l_class_id))
-								elseif l_type.is_equal ("EPA_STRING_VALUE") then
+								elseif l_type.is_equal (string_value) then
 									l_address := string_from_json (l_json_data.item (pre_string_address_json_string))
 									create l_pre_pos_value.make (l_bp_slot.to_integer, string_value_from_data (l_value, l_address))
 								else
@@ -138,10 +138,10 @@ feature {NONE} -- Implementation
 								l_bp_slot := string_from_json (l_json_data.item (post_bp_json_string))
 								l_value := string_from_json (l_json_data.item (post_value_json_string))
 								l_type := string_from_json (l_json_data.item (post_type_json_string))
-								if l_type.is_equal ("EPA_REFERENCE_VALUE") then
+								if l_type.is_equal (reference_value) then
 									l_class_id := string_from_json (l_json_data.item (post_ref_class_id_json_string))
 									create l_post_pos_value.make (l_bp_slot.to_integer, ref_value_from_data (l_value, l_class_id))
-								elseif l_type.is_equal ("EPA_STRING_VALUE") then
+								elseif l_type.is_equal (string_value) then
 									l_address := string_from_json (l_json_data.item (post_string_address_json_string))
 									create l_post_pos_value.make (l_bp_slot.to_integer, string_value_from_data (l_value, l_address))
 								else
@@ -167,19 +167,19 @@ feature {NONE} -- Implementation
 			a_value_not_void: a_value /= Void
 			a_type_not_void: a_type /= Void
 		do
-			if a_type.is_equal ("EPA_BOOLEAN_VALUE") then
+			if a_type.is_equal (boolean_value) then
 				create {EPA_BOOLEAN_VALUE} Result.make (a_value.to_boolean)
-			elseif a_type.is_equal ("EPA_INTEGER_VALUE") then
+			elseif a_type.is_equal (integer_value) then
 				create {EPA_INTEGER_VALUE} Result.make (a_value.to_integer)
-			elseif a_type.is_equal ("EPA_REAL_VALUE") then
+			elseif a_type.is_equal (real_value) then
 				create {EPA_REAL_VALUE} Result.make (a_value.to_real)
-			elseif a_type.is_equal ("EPA_POINTER_VALUE") then
+			elseif a_type.is_equal (pointer_value) then
 				create {EPA_POINTER_VALUE} Result.make (a_value)
-			elseif a_type.is_equal ("EPA_NONSENSICAL_VALUE") then
+			elseif a_type.is_equal (nonsensical_value) then
 				create {EPA_NONSENSICAL_VALUE} Result
-			elseif a_type.is_equal ("EPA_VOID_VALUE") then
+			elseif a_type.is_equal (void_value) then
 				create {EPA_VOID_VALUE} Result.make
-			elseif a_type.is_equal ("EPA_ANY_VALUE") then
+			elseif a_type.is_equal (any_value) then
 				create {EPA_ANY_VALUE} Result.make (a_value)
 			else
 				check not_suported: False end
@@ -271,5 +271,34 @@ feature {NONE} -- Implementation
 		once
 			create {JSON_STRING} Result.make_json ("post_string_address")
 		end
+
+feature {NONE} -- Implementation
+
+	reference_value: STRING = "EPA_REFERENCE_VALUE"
+			-- Constant string representing "EPA_REFERENCE_VALUE"
+
+	string_value: STRING = "EPA_STRING_VALUE"
+			-- Constant string representing "EPA_STRING_VALUE"
+
+	boolean_value: STRING = "EPA_BOOLEAN_VALUE"
+			-- Constant string representing "EPA_BOOLEAN_VALUE"
+
+	integer_value: STRING = "EPA_INTEGER_VALUE"
+			-- Constant string representing "EPA_INTEGER_VALUE"
+
+	real_value: STRING = "EPA_REAL_VALUE"
+			-- Constant string representing "EPA_REAL_VALUE"
+
+	pointer_value: STRING = "EPA_POINTER_VALUE"
+			-- Constant string representing "EPA_POINTER_VALUE"
+
+	nonsensical_value: STRING = "EPA_NONSENSICAL_VALUE"
+			-- Constant string representing "EPA_NONSENSICAL_VALUE"
+
+	void_value: STRING = "EPA_VOID_VALUE"
+			-- Constant string representing "EPA_VOID_VALUE"
+
+	any_value: STRING = "EPA_ANY_VALUE"
+			-- Constant string representing "EPA_ANY_VALUE"
 
 end

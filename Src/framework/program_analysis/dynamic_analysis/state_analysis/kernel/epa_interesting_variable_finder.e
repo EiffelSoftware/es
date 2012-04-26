@@ -23,6 +23,8 @@ inherit
 
 	KL_SHARED_STRING_EQUALITY_TESTER
 
+	EPA_UTILITY
+
 create
 	default_create, make_with
 
@@ -55,13 +57,13 @@ feature -- Process operations
 	process_access_id_as (l_as: ACCESS_ID_AS)
 		do
 			if is_nested then
-				if not l_as.access_name_8.is_equal ("io") then
+				if not l_as.access_name_8.is_equal (io_string) then
 					interesting_variables.force_last (l_as.access_name_8)
 				end
 			elseif is_creation_procedure then
 				interesting_variables.force_last (l_as.access_name_8)
 			else
-				interesting_variables.force_last ("Current")
+				interesting_variables.force_last (ti_current)
 			end
 			process_access_feat_as (l_as)
 		end
@@ -111,7 +113,7 @@ feature -- Process operations
 
 	process_result_as (l_as: RESULT_AS)
 		do
-			interesting_variables.force_last ("Result")
+			interesting_variables.force_last (ti_result)
 		end
 
 feature -- Access
@@ -146,5 +148,8 @@ feature {NONE} -- Implementation
 
 	is_creation_procedure: BOOLEAN
 			-- Is the current node part of a creation procedure?
+
+	io_string: STRING = "io"
+			-- Constant string representing "io"
 
 end

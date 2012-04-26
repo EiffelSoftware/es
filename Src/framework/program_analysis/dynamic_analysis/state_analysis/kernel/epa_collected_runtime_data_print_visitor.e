@@ -23,14 +23,14 @@ feature -- Visitor Pattern
 			-- Visit `a_json_array'.
 		do
 			Precursor (a_json_array)
-			to_json.append ("%N")
+			to_json.append_character ('%N')
 		end
 
 	visit_json_object (a_json_object: JSON_OBJECT)
 			-- Visit `a_json_object'.
 		do
 			Precursor (a_json_object)
-			to_json.append ("%N")
+			to_json.append_character ('%N')
 		end
 
 end
