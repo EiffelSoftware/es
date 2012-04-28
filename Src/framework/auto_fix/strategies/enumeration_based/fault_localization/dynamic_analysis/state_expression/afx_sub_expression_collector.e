@@ -206,10 +206,29 @@ feature{NONE} -- Auxiliary
 			-- Add the expression from `a_text'.
 		local
 			l_expr: EPA_AST_EXPRESSION
+			l_retried: BOOLEAN
 		do
-			create l_expr.make_with_text (context_feature.context_class, context_feature.feature_, a_text, context_feature.written_class)
-			if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
-				last_sub_expressions.force (l_expr)
+			if not l_retried then
+				create l_expr.make_with_text (context_feature.context_class, context_feature.feature_, a_text, context_feature.written_class)
+				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
+					last_sub_expressions.force (l_expr)
+				end
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
+	add_expression_from_ast (a_ast: AST_EIFFEL)
+			-- Add an expression from `a_ast'.
+		local
+			l_expr: EPA_AST_EXPRESSION
+		do
+			if attached {EXPR_AS} a_ast as lt_expr then
+				create l_expr.make_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
+				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
+					last_sub_expressions.force (l_expr)
+				end
 			end
 		end
 
@@ -222,7 +241,7 @@ feature --  Visitor routine
 		do
 			precursor(l_as)
 
-			add_expression_from_text (text_from_ast (l_as))
+			add_expression_from_ast (l_as)
 		end
 
 	process_unary_as (l_as: UNARY_AS)
@@ -232,7 +251,7 @@ feature --  Visitor routine
 		do
 			precursor(l_as)
 
-			add_expression_from_text (text_from_ast (l_as))
+			add_expression_from_ast (l_as)
 		end
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
@@ -348,7 +367,7 @@ feature{NONE} -- Implementation
 				save_current_nesting (l_as.breakpoint_slot)
 			else
 					-- Save standalone expression.
-				add_expression_from_text (l_text)
+				add_expression_from_ast (l_as)
 			end
 		end
 

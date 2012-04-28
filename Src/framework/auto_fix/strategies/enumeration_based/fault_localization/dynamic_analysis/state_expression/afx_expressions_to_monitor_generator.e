@@ -65,29 +65,21 @@ feature -- Basic operation
 				end
 
 			elseif config.is_using_random_based_strategy then
-				create l_base_expressions.make_equal (1)
-					-- Sub-expressions from the recipient feature.
-				l_base_expressions.merge ((create {AFX_SUB_EXPRESSION_SERVER}).sub_expressions (a_feature))
-					-- Sub-expressions from the violated assertion.
-				Sub_expression_collector.collect_from_ast (exception_recipient_feature, exception_signature.exception_condition_in_recipient.ast)
-				l_base_expressions.merge (Sub_expression_collector.last_sub_expressions)
+				if session.exception_signature.is_void_call_target then
+					create l_expressions_to_monitor.make (8)
+					l_expressions_to_monitor.force (session.exception_signature.exception_condition_in_recipient.twin)
+				else
+					create l_base_expressions.make_equal (1)
+						-- Sub-expressions from the recipient feature.
+					l_base_expressions.merge ((create {AFX_SUB_EXPRESSION_SERVER}).sub_expressions (a_feature))
+						-- Sub-expressions from the violated assertion.
+					Sub_expression_collector.collect_from_ast (exception_recipient_feature, exception_signature.exception_condition_in_recipient.ast)
+					l_base_expressions.merge (Sub_expression_collector.last_sub_expressions)
 
-					-- Expressions to monitor.
-				create l_constructor
-				l_constructor.construct_from (l_base_expressions)
-				l_expressions_to_monitor := l_constructor.last_constructed_expressions
-
-					-- Add also operands of reference types.
-				l_operands := operand_name_types_with_feature (a_feature.feature_, a_feature.context_class)
-				from l_operands.start
-				until l_operands.after
-				loop
-					l_operand_name := l_operands.key_for_iteration
-					l_operand_type := l_operands.value (l_operand_name)
-					create {EPA_AST_EXPRESSION} l_operand_expression.make_with_text (a_feature.context_class, a_feature.feature_, l_operand_name, a_feature.written_class)
-					l_expressions_to_monitor.put (l_operand_expression)
-
-					l_operands.forth
+						-- Expressions to monitor.
+					create l_constructor
+					l_constructor.construct_from (l_base_expressions)
+					l_expressions_to_monitor := l_constructor.last_constructed_expressions
 				end
 
 					-- Expressions to monitor with rankings.

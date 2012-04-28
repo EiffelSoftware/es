@@ -42,7 +42,6 @@ feature -- Basic operation
 			last_derived_skeleton.resize (l_boolean_count * 2 + 3 * l_integer_count * (l_integer_count + 1) + 2 * l_reference_count + 1)
 			last_derived_skeleton.merge (skeleton_based_on_booleans (l_boolean_expressions))
 			last_derived_skeleton.merge (skeleton_based_on_integers (l_integer_expressions))
-			last_derived_skeleton.merge (skeleton_based_on_references (l_reference_expressions))
 		end
 
 	reset_builder
