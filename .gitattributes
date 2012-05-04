@@ -4023,7 +4023,6 @@ eweasel/doc/notes-5.0.001 -text
 eweasel/doc/output-5.0.001 -text
 eweasel/doc/proposed.doc -text
 eweasel/doc/summary.doc -text
-eweasel/results/classic/iphone-arm -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
@@ -5083,6 +5082,7 @@ eweasel/tests/term197/test.def -text
 eweasel/tests/term209/test -text svneol=unset#application/octet-stream
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
+eweasel/tests/time004/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
