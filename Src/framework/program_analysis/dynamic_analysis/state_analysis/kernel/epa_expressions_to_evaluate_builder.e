@@ -337,16 +337,18 @@ feature {NONE} -- Implementation
 		once
 			create Result.make_from_array (<<
 				"BOOLEAN",
+				"NATURAL_8",
+				"NATURAL_16",
+				"NATURAL_32",
+				"NATURAL_64",
 				"INTEGER_8",
 				"INTEGER_16",
 				"INTEGER_32",
 				"INTEGER_64",
-				"CHARACTER_8",
-				"CHARACTER_32",
-				"STRING_8",
-				"STRING_32",
 				"REAL_32",
 				"REAL_64",
+				"CHARACTER_8",
+				"CHARACTER_32",
 				"POINTER"
 			>>)
 		end
