@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Builder which build all EB_DEVELOPMENT_WINDOW menus."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -1237,6 +1237,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_EBBRO_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
 			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
+			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})
 
 --			l_customized_tools := develop_window.tools.customized_tools
 --			if not l_customized_tools.is_empty then
