@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		This class represents annotations associated with a break point location
 		from some AST node.
@@ -16,8 +16,6 @@ inherit
 	HASHABLE
 
 	DEBUG_OUTPUT
-
-	OBJECT_IDENTIFIER_HELPER
 
 	ANN_ANNOTATION_HELPER
 
